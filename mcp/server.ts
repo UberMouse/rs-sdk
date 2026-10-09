@@ -197,22 +197,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
         console.warn = (...args) => logs.push('[warn] ' + args.map(fmtLogArg).join(' '));
         // Don't capture console.error - let it go to stderr for MCP debugging
 
-        // Auto-connect if not already connected. The control connection is released after
-        // every call (see the finally below), so this re-attaches on each call: the gateway
-        // allows one controller per bot, and an idle MCP session must not hold it.
-        let connection = botManager.get(botName);
-        if (!connection || !connection.connected) {
-          if (!connection) console.error(`[MCP] Bot "${botName}" not connected, auto-connecting...`);
-          connection = await botManager.connect(botName);
-          // Wait up to 15s for initial world state after fresh connection
+        // Attach for this call only (released in the finally below): the gateway allows one
+        // controller per bot, and an idle MCP session must not hold it. A fresh attach starts with
+        // no cached state, so this waits for the bot's current state, not the last call's.
+        let connection: Awaited<ReturnType<typeof botManager.acquire>>;
+        try {
+          connection = await botManager.acquire(botName);
+        } catch (err) {
+          // Refused (another script or task drives the bot) or unreachable: restore the console.
+          console.log = originalLog;
+          console.warn = originalWarn;
+          throw err;
+        }
+        try {
           try {
-            await connection.sdk.waitForCondition(() => connection!.sdk.getState() !== null, 15000);
+            await connection.sdk.waitForCondition(() => connection.sdk.getState() !== null, 15000);
           } catch {
             console.error(`[MCP] Warning: initial state not received within 15s for bot "${botName}"`);
           }
-        }
-
-        try {
           // The tool advertises TypeScript, so strip type syntax (non-null !,
           // annotations, generics) before evaluation - new Function() alone
           // rejects TS with a bare SyntaxError. Fall back to evaluating the

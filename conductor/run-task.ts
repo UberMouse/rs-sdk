@@ -14,8 +14,7 @@ import { join } from 'node:path';
 import { z } from 'zod/v4';
 import { runScript } from '../sdk/runner';
 import { currentRunLog, executeTask } from './lib/engine';
-import { loadBotEnv, type BotEnv } from './lib/env';
-import { controllerCount } from './lib/saves';
+import { controllerCount, loadBotEnv, type BotEnv } from './lib/env';
 import { parseStop, type StopCondition } from './lib/stop';
 import type { TaskDef, TaskResult } from './lib/task';
 import { errMessage } from './lib/util';
@@ -156,7 +155,9 @@ if (!takeover) {
         // Gateway unreachable: runScript reports the connection failure itself.
     }
     if (controllers > 0)
-        bail(`${botName} already has ${controllers} controller(s) attached; pass --takeover to pre-empt`);
+        bail(
+            `${botName} already has ${controllers} controller(s) attached (another task or script is driving it); wait for it to finish or report back. --takeover pre-empts it: only for a run that is yours`,
+        );
 }
 
 let engineResult: TaskResult | undefined;

@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { z } from 'zod/v4';
-import { type BotEnv, REPO_ROOT } from './env';
+import { type BotEnv, controllerCount, FETCH_TIMEOUT_MS, REPO_ROOT } from './env';
 import { errMessage, fileStamp } from './util';
 
 /** Newest save format the engine reads (PlayerLoading.SAV_VERSION). */
@@ -17,8 +17,6 @@ const SAV_VERSION = 8;
 const SAV_MAGIC = 0x2004;
 /** Oldest format decodeSave reads: earlier ones omit inventory sizes. */
 const MIN_DECODE_VERSION = 5;
-/** Longest a request to the engine or gateway may take before it counts as failed. */
-export const FETCH_TIMEOUT_MS = 5_000;
 /** The engine waits out a combat logout delay for up to 30s before answering a kick. */
 const KICK_FETCH_TIMEOUT_MS = 40_000;
 const MANAGEMENT_PORT = 8898;
@@ -93,20 +91,18 @@ async function managementFetch(env: BotEnv, path: string, init: RequestInit = {}
     return { res, isJson };
 }
 
-export type SaveSource = 'live' | 'logout' | 'checkpoint' | 'file';
-const SAVE_SOURCES: readonly string[] = ['live', 'logout', 'checkpoint', 'file'];
-
-export interface SaveStatus {
-    /**
-     * live: the player is online; logout: its logout save is in flight to disk; checkpoint: a Grand
-     * Exchange checkpoint that the next login loads instead of the .sav; file: the .sav; none: no save.
-     */
-    source: SaveSource | 'none';
-    /** The .sav file this engine reads for the player. */
-    path: string;
-    bytes?: Uint8Array;
-    sha1?: string;
-}
+const SAVE_SOURCES = ['live', 'logout', 'checkpoint', 'file'] as const;
+export type SaveSource = (typeof SAVE_SOURCES)[number];
+/**
+ * The player's save, as GET /save reports it. live: the player is online; logout: its logout save
+ * is in flight to disk; checkpoint: a Grand Exchange checkpoint that the next login loads instead
+ * of the .sav; file: the .sav; none: no save yet. `path` is the .sav file this engine reads.
+ */
+export type SaveStatus =
+    | { source: 'none'; path: string }
+    | { source: SaveSource; path: string; bytes: Uint8Array; sha1: string };
+export type ExistingSave = Exclude<SaveStatus, { source: 'none' }>;
+const isSaveSource = (s: string): s is SaveSource => (SAVE_SOURCES as readonly string[]).includes(s);
 
 /** Throw unless the engine that answered is the one the bot plays on (its web port matches SERVER's). */
 function requireSameEngine(env: BotEnv, webPort: unknown): void {
@@ -132,23 +128,54 @@ export async function saveStatus(env: BotEnv): Promise<SaveStatus> {
     requireSameEngine(env, res.headers.get('x-engine-web-port'));
     const source = res.headers.get('x-save-source') ?? '';
     const path = res.headers.get('x-save-path');
-    if (!SAVE_SOURCES.includes(source) || !path) {
+    if (!isSaveSource(source) || !path) {
         throw new Error(`GET /save/${env.username}: unexpected headers (source "${source}", path "${path}")`);
     }
     const bytes = new Uint8Array(await res.arrayBuffer());
     verifySave(bytes);
-    return { source: source as SaveSource, path, bytes, sha1: sha1(bytes) };
+    return { source, path, bytes, sha1: sha1(bytes) };
 }
 
 /** Is the player in the world (online, or its logout save still in flight)? */
 export const inWorld = (status: SaveStatus) => status.source === 'live' || status.source === 'logout';
 
 /** The player's current save; throws when it has none. */
-export async function exportSave(env: BotEnv): Promise<Required<SaveStatus>> {
+export async function exportSave(env: BotEnv): Promise<ExistingSave> {
     const status = await saveStatus(env);
-    if (status.source === 'none' || !status.bytes || !status.sha1) throw new Error(`${env.username} has no save`);
-    return status as Required<SaveStatus>;
+    if (status.source === 'none') throw new Error(`${env.username} has no save`);
+    return status;
 }
+
+/**
+ * Log an in-world bot out server-side. Refuses (throws) while a script or task controls it, since
+ * that would pull the bot from under it, unless `takeover`; and when the gateway can't say.
+ */
+export async function logOut(env: BotEnv, { takeover = false } = {}): Promise<void> {
+    if (!takeover) {
+        let controllers: number;
+        try {
+            controllers = await controllerCount(env);
+        } catch (e) {
+            throw new Error(
+                `could not check ${env.username} for a running controller (${errMessage(e)}); not logging it out`,
+                {
+                    cause: e,
+                },
+            );
+        }
+        if (controllers > 0) {
+            throw new Error(
+                `${env.username} is controlled by ${controllers} connection(s) (a running task or script); logging it out would pull the bot from under it. Wait for it to finish, or pass --takeover if that run is yours`,
+            );
+        }
+    }
+    if (!(await kick(env))) throw new Error(`${env.username} did not log out (in combat, or still busy); try again`);
+}
+
+/** The filename label writeSave gives the backup of a save it replaces. */
+export const backupLabel = (label: string) => `pre-${label}`;
+/** Is this snapshot label one of writeSave's backups? */
+export const isBackupLabel = (label: string) => label.startsWith('pre-');
 
 /**
  * Log the player out server-side and wait until its save is on disk (POST /kick). Returns false
@@ -185,7 +212,15 @@ export function atomicWrite(dest: string, bytes: Uint8Array): void {
 export async function writeSave(
     env: BotEnv,
     bytes: Uint8Array,
-    { backupDir, label = 'write' }: { backupDir?: string; label?: string } = {},
+    {
+        backupDir,
+        label = 'write',
+        onWrite,
+    }: {
+        backupDir?: string;
+        label?: string;
+        /** Called just before the save file is written. */ onWrite?: () => void;
+    } = {},
 ): Promise<{ path: string; backup?: string }> {
     verifySave(bytes);
     const before = await saveStatus(env);
@@ -197,30 +232,20 @@ export async function writeSave(
         );
     }
     let backup: string | undefined;
-    if (backupDir && before.bytes) {
-        backup = join(backupDir, `${fileStamp()}-pre-${label}.sav`);
+    if (backupDir && before.source !== 'none') {
+        backup = join(backupDir, `${fileStamp()}-${backupLabel(label)}.sav`);
         atomicWrite(backup, before.bytes);
     }
+    onWrite?.();
     atomicWrite(before.path, bytes);
     const after = await saveStatus(env);
     if (after.source !== 'file' || after.sha1 !== sha1(bytes)) {
+        const served = after.source === 'none' ? 'nothing' : `"${after.source}" (sha1 ${after.sha1.slice(0, 12)})`;
         throw new Error(
-            `wrote ${before.path}, but the engine now serves ${env.username}'s save from "${after.source}" (sha1 ${after.sha1?.slice(0, 12)}): ${inWorld(after) ? 'it logged in during the write, and its logout will overwrite it' : 'the write did not take'}${backup ? `; the previous save is in ${backup}` : ''}`,
+            `wrote ${before.path}, but the engine now serves ${env.username}'s save from ${served}: ${inWorld(after) ? 'it logged in during the write, and its logout will overwrite it' : 'the write did not take'}${backup ? `; the previous save is in ${backup}` : ''}`,
         );
     }
     return { path: before.path, backup };
-}
-
-/** Number of control connections the gateway has for the bot. Throws when it can't tell. */
-export async function controllerCount(env: BotEnv): Promise<number> {
-    const url = `${env.webOrigin}/status/${encodeURIComponent(env.username)}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
-    if (!res.ok) throw new Error(`${url}: ${res.status}`);
-    const status = (await res.json()) as { controllers?: unknown };
-    if (status.controllers !== undefined && !Array.isArray(status.controllers)) {
-        throw new Error(`${url}: unexpected controllers field`);
-    }
-    return status.controllers?.length ?? 0;
 }
 
 /** Throw unless the bytes are a save the engine will load: magic, a known version, a matching CRC. */
@@ -372,9 +397,10 @@ const LibraryEntrySchema = z.object({
 });
 /** conductor/saves/<name>.json: what a library save is for, where it came from, what it holds. */
 export type LibraryEntry = z.infer<typeof LibraryEntrySchema>;
-export type LibrarySource = LibraryEntry['source'];
+type LibrarySource = LibraryEntry['source'];
 
-export function libraryPaths(name: string): { sav: string; json: string } {
+function libraryPaths(name: string): { sav: string; json: string } {
+    if (!SAVE_NAME.test(name)) throw new Error(`library save names are letters, digits and dashes: "${name}"`);
     return { sav: join(LIBRARY_DIR, `${name}.sav`), json: join(LIBRARY_DIR, `${name}.json`) };
 }
 
@@ -384,30 +410,38 @@ function readEntry(jsonPath: string): LibraryEntry {
     return parsed.data;
 }
 
-/** Every library entry, by name. */
-export function listLibrary(): LibraryEntry[] {
-    if (!existsSync(LIBRARY_DIR)) return [];
-    return readdirSync(LIBRARY_DIR)
+/** Every library entry, by name, plus any entry files that don't parse (one bad file never hides the rest). */
+export function listLibrary(): { entries: LibraryEntry[]; invalid: { file: string; error: string }[] } {
+    const entries: LibraryEntry[] = [];
+    const invalid: { file: string; error: string }[] = [];
+    if (!existsSync(LIBRARY_DIR)) return { entries, invalid };
+    for (const file of readdirSync(LIBRARY_DIR)
         .filter(f => f.endsWith('.json'))
-        .sort()
-        .map(f => readEntry(join(LIBRARY_DIR, f)));
+        .sort()) {
+        try {
+            entries.push(readEntry(join(LIBRARY_DIR, file)));
+        } catch (e) {
+            invalid.push({ file, error: errMessage(e) });
+        }
+    }
+    return { entries, invalid };
 }
 
 /**
- * Add a library save; its summary is decoded from the bytes, never hand-written. Refuses to replace
- * an existing entry (other agents' tests depend on them) unless `replace`.
+ * Add a library save; its summary is decoded from the bytes, never hand-written. Refuses when an
+ * entry of that name exists, even half-written (other agents' tests depend on them), unless
+ * `replace`. The .sav and .json are two writes: a reader between them sees a sha1 mismatch, which
+ * readLibrarySave reports. The existence check is not a lock: don't let two agents add one name.
  */
 export function writeLibrarySave(
     name: string,
     bytes: Uint8Array,
     meta: { purpose: string; source: LibrarySource; replace?: boolean },
 ): LibraryEntry {
-    if (!SAVE_NAME.test(name)) throw new Error(`library save names are letters, digits and dashes: "${name}"`);
     if (!meta.purpose.trim()) throw new Error('a library save needs a purpose');
     const paths = libraryPaths(name);
-    if (existsSync(paths.json) && !meta.replace) {
-        const old = readEntry(paths.json);
-        throw new Error(`library save "${name}" exists (${old.purpose}); pick another name, or replace it explicitly`);
+    if ((existsSync(paths.json) || existsSync(paths.sav)) && !meta.replace) {
+        throw new Error(`library save "${name}" exists; pick another name, or replace it explicitly`);
     }
     const { saveVersion, ...summary } = decodeSave(bytes);
     const entry: LibraryEntry = {

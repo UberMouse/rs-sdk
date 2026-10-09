@@ -11,13 +11,12 @@ import type { BotSDK } from '../../sdk/index';
 import { waitForLiveClient } from '../../sdk/runner';
 import { MAX_XP } from '../lib/xp';
 import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT } from '../lib/env';
-import { errMessage } from '../lib/util';
+import { errMessage, fail } from '../lib/util';
 
 const args = process.argv.slice(2);
 const name = args.find(a => !a.startsWith('-'));
 if (!name) {
-    console.error('usage: bun conductor/tools/progress.ts <bot> [--json] [--no-record]');
-    process.exit(2);
+    fail('usage: bun conductor/tools/progress.ts <bot> [--json] [--no-record]', 2);
 }
 
 interface Snapshot {

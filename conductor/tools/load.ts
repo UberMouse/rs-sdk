@@ -2,17 +2,19 @@
 //
 //   bun conductor/tools/load.ts <worker> <source> [--client] [--create] [--takeover]
 //
-//   <source>  lib:<name> (or just <name>)  a library save (conductor/saves/<name>.sav)
-//             bot:<bot>                    a live copy of another bot's save, taken without logging it out
-//             path/to/x.sav                a save file
+//   <source>  lib:<name>      a library save (conductor/saves/<name>.sav)
+//             bot:<bot>       a live copy of another bot's save, taken without logging it out
+//             path/to/x.sav   a save file
 //
 // Only loads into accounts whose bots/<worker>/bot.env has WORKER=true. --create makes the account
 // (create-bot.ts --local) and marks it, refusing a name the server already has a save for. A worker
 // in the world is logged out first (refused while a script or task controls it, unless --takeover),
 // and the save it had is kept in conductor/runs/<worker>/saves/. --client then starts the worker's
 // lite client (lib/client.ts; only clients started this way are stopped on the next load) and waits
-// for it to connect. Writes conductor/runs/<worker>/loaded.json, so a test can name the state it
-// started from, and prints one `LOADED <json>` line. Local server only, with the Grand Exchange off.
+// for it to connect. Keeps a copy of what it loaded as conductor/runs/<worker>/saves/<stamp>-loaded.sav
+// (`replay`: pass that path to load.ts to retest from the same state, even for a bot: source), writes
+// conductor/runs/<worker>/loaded.json and prints one `LOADED <json>` line. Local server only, with the
+// Grand Exchange off.
 import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -20,17 +22,17 @@ import { isLocalServer } from '../../sdk/runner';
 import { startLiteClient, stopLiteClient } from '../lib/client';
 import { loadBotEnv, REPO_ROOT } from '../lib/env';
 import {
-    controllerCount,
+    atomicWrite,
     exportSave,
     inWorld,
-    kick,
+    logOut,
     readLibrarySave,
     saveStatus,
     sha1,
     verifySave,
     writeSave,
 } from '../lib/saves';
-import { errMessage, fail } from '../lib/util';
+import { errMessage, fail, fileStamp } from '../lib/util';
 
 const usage =
     'usage: bun conductor/tools/load.ts <worker> <lib:<name>|bot:<bot>|file.sav> [--client] [--create] [--takeover]';
@@ -69,19 +71,22 @@ async function resolveSource(spec: string): Promise<{ bytes: Uint8Array; from: s
         verifySave(bytes);
         return { bytes, from: path };
     }
-    const { bytes, entry } = readLibrarySave(spec.replace(/^lib:/, ''));
+    if (!spec.startsWith('lib:')) fail(`unknown source "${spec}": use lib:<name>, bot:<bot> or a path ending .sav`, 2);
+    const { bytes, entry } = readLibrarySave(spec.slice(4));
     return { bytes, from: `lib:${entry.name}` };
 }
 
 const botDir = join(REPO_ROOT, 'bots', worker);
-let loadedSave = false;
+/** Set once the write may have reached the server: from then on the account is real, so it is kept. */
+let wroteSave = false;
 try {
     const created = !existsSync(join(botDir, 'bot.env'));
     if (created) {
         if (!flags.create) fail(`no bot ${worker} in this checkout; pass --create to make it a worker account`);
         createWorker(worker);
-        // Any exit before the save is written (a refusal or an error) removes the account it made.
-        process.on('exit', () => loadedSave || rmSync(botDir, { recursive: true, force: true }));
+        // Any exit before the save is written (a refusal, an error, Ctrl-C) removes the account it made.
+        process.on('exit', () => wroteSave || rmSync(botDir, { recursive: true, force: true }));
+        for (const sig of ['SIGINT', 'SIGTERM'] as const) process.once(sig, () => process.exit(130));
     }
     const env = loadBotEnv(worker);
     if (!isLocalServer(env.server))
@@ -97,18 +102,26 @@ try {
     }
     const { bytes, from } = await resolveSource(source);
 
-    if (inWorld(status)) {
-        if (!flags.takeover && (await controllerCount(env)) > 0) {
-            fail(`${worker} is controlled by a running task or script; stop it first, or pass --takeover`);
-        }
-        // Kick before stopping the client: a failed kick (combat) then leaves the worker attended.
-        if (!(await kick(env))) fail(`${worker} did not log out (in combat?); try again`);
-    }
+    // Log out before stopping the client: a failed logout (combat) then leaves the worker attended.
+    if (inWorld(status)) await logOut(env, { takeover: flags.takeover });
     await stopLiteClient(worker);
     const runDir = join(REPO_ROOT, 'conductor/runs', worker);
-    const { path, backup } = await writeSave(env, bytes, { backupDir: join(runDir, 'saves'), label: 'load' });
-    loadedSave = true;
-    const loaded = { worker, source: from, sha1: sha1(bytes), loadedAt: new Date().toISOString(), path, backup };
+    const { path, backup } = await writeSave(env, bytes, {
+        backupDir: join(runDir, 'saves'),
+        label: 'load',
+        onWrite: () => (wroteSave = true),
+    });
+    const replay = join(runDir, 'saves', `${fileStamp()}-loaded.sav`);
+    atomicWrite(replay, bytes);
+    const loaded = {
+        worker,
+        source: from,
+        replay,
+        sha1: sha1(bytes),
+        loadedAt: new Date().toISOString(),
+        path,
+        backup,
+    };
     mkdirSync(runDir, { recursive: true });
     writeFileSync(join(runDir, 'loaded.json'), `${JSON.stringify(loaded, null, 4)}\n`);
 

@@ -413,9 +413,10 @@ export async function startManagementWeb() {
                 }
             }
         },
-        async fetch(req: Request) {
-            // /save/:name and /kick/:name (conductor save states; dev only)
-            return (await handleSaveRequest(req, new URL(req.url))) ?? new Response(null, { status: 404 });
+        async fetch(req: Request, server) {
+            // /save/:name and /kick/:name (conductor save states; dev only, loopback only)
+            const ip = server.requestIP(req)?.address;
+            return (await handleSaveRequest(req, new URL(req.url), ip)) ?? new Response(null, { status: 404 });
         },
     });
 }

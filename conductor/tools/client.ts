@@ -19,21 +19,19 @@ import { existsSync } from 'node:fs';
 import { homedir, userInfo } from 'node:os';
 import { join } from 'node:path';
 import { botClientUrl, loadBotEnv, sleep } from '../lib/env';
-import { errMessage } from '../lib/util';
+import { errMessage, fail } from '../lib/util';
 
 const args = process.argv.slice(2);
 const name = args.find(a => !a.startsWith('-'));
 if (!name) {
-    console.error('usage: bun conductor/tools/client.ts <bot> [--headless] [--fps=<n>] [--gpu]');
-    process.exit(2);
+    fail('usage: bun conductor/tools/client.ts <bot> [--headless] [--fps=<n>] [--gpu]', 2);
 }
 const headless = args.includes('--headless');
 const gpu = args.includes('--gpu');
 const fpsArg = args.find(a => a.startsWith('--fps='));
 const fps = fpsArg ? Number(fpsArg.slice('--fps='.length)) : headless ? 10 : 15;
 if (!Number.isInteger(fps) || fps < 1) {
-    console.error(`bad ${fpsArg}: expected a positive integer`);
-    process.exit(2);
+    fail(`bad ${fpsArg}: expected a positive integer`, 2);
 }
 const env = loadBotEnv(name);
 
@@ -47,8 +45,7 @@ const CHROME_CANDIDATES = [
 ].filter((p): p is string => !!p);
 const executablePath = CHROME_CANDIDATES.find(p => existsSync(p));
 if (!executablePath) {
-    console.error(`No Chrome found; set CHROME_PATH. Tried: ${CHROME_CANDIDATES.join(', ')}`);
-    process.exit(2);
+    fail(`No Chrome found; set CHROME_PATH. Tried: ${CHROME_CANDIDATES.join(', ')}`, 2);
 }
 
 const browser = await puppeteer.launch({

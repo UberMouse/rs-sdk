@@ -34,7 +34,7 @@ function fakeGateway(answer: (n: number, msg: Record<string, unknown>, ws: Socke
 const busy = JSON.stringify({ type: 'sdk_error', code: 'controller_busy', error: 'Refused: testbot is already controlled by sdk-other' });
 const ok = JSON.stringify({ type: 'sdk_connected', success: true });
 
-function makeSDK(takeover = false): BotSDK {
+function makeSDK(takeover = false, leaseRetryWindowMs?: number): BotSDK {
     return new BotSDK({
         botUsername: 'testbot',
         password: 'x',
@@ -46,6 +46,7 @@ function makeSDK(takeover = false): BotSDK {
         reconnectMaxDelay: 50,
         autoLaunchBrowser: false,
         takeover,
+        leaseRetryWindowMs,
     });
 }
 
@@ -85,11 +86,56 @@ describe('controller lease', () => {
             }
         });
         const sdk = makeSDK();
-        await sdk.connect();
-        first!.close(); // the connection drops; the SDK reconnects
-        await until(() => connects() >= 4 && sdk.getConnectionState() === 'connected');
-        expect(sdk.isConnected()).toBe(true);
-        await sdk.disconnect();
+        try {
+            await sdk.connect();
+            first!.close(); // the connection drops; the SDK reconnects
+            await until(() => connects() >= 4 && sdk.getConnectionState() === 'connected');
+            expect(sdk.isConnected()).toBe(true);
+        } finally {
+            await sdk.disconnect();
+        }
+    });
+
+    test('a reconnect gives up once the refusals outlast the retry window', async () => {
+        let first: Socket | undefined;
+        const connects = fakeGateway((n, _msg, ws) => {
+            if (n === 1) {
+                first = ws;
+                ws.send(ok);
+            } else {
+                ws.send(busy); // someone else really holds the bot now
+            }
+        });
+        const sdk = makeSDK(false, 200);
+        try {
+            await sdk.connect();
+            first!.close();
+            await until(() => sdk.getConnectionState() === 'disconnected' && connects() > 2);
+            const settled = connects();
+            await Bun.sleep(300); // several reconnect delays
+            expect(connects()).toBe(settled); // stopped retrying
+        } finally {
+            await sdk.disconnect();
+        }
+    });
+
+    test('a reconnect does not resend takeover', async () => {
+        let first: Socket | undefined;
+        const seen: unknown[] = [];
+        fakeGateway((n, msg, ws) => {
+            seen.push(msg.takeover);
+            if (n === 1) first = ws;
+            ws.send(ok);
+        });
+        const sdk = makeSDK(true);
+        try {
+            await sdk.connect();
+            first!.close();
+            await until(() => seen.length >= 2 && sdk.getConnectionState() === 'connected');
+            expect(seen.slice(0, 2)).toEqual([true, false]);
+        } finally {
+            await sdk.disconnect();
+        }
     });
 
     test('sends takeover only when asked', async () => {

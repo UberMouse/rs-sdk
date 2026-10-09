@@ -7,6 +7,7 @@
 // into the knowledge base from here, not from a single run.
 import { parseArgs } from 'node:util';
 import { canonical, loadResults } from '../lib/runs';
+import { fail } from '../lib/util';
 
 const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--json]';
 const { values, positionals } = parseArgs({
@@ -16,14 +17,12 @@ const { values, positionals } = parseArgs({
 });
 const bot = positionals[0];
 if (!bot) {
-    console.error(usage);
-    process.exit(2);
+    fail(usage, 2);
 }
 const taskFilter = values.task;
 const since = values.since === undefined ? 0 : Date.parse(values.since);
 if (Number.isNaN(since)) {
-    console.error(`bad --since "${values.since}": expected YYYY-MM-DD`);
-    process.exit(2);
+    fail(`bad --since "${values.since}": expected YYYY-MM-DD`, 2);
 }
 
 interface Variant {

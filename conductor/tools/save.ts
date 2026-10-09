@@ -21,25 +21,24 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { isLocalServer } from '../../sdk/runner';
-import { type BotEnv, loadBotEnv, REPO_ROOT } from '../lib/env';
+import { loadBotEnv, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
-    controllerCount,
     exportSave,
     inWorld,
-    kick,
+    isBackupLabel,
     LIBRARY_DIR,
     listLibrary,
+    logOut,
     readLibrarySave,
     SAVE_NAME,
     saveStatus,
+    verifySave,
     writeLibrarySave,
     writeSave,
 } from '../lib/saves';
 import { errMessage, fail, FILE_STAMP_PREFIX, fileStamp } from '../lib/util';
 
-/** Labels save.ts writes itself; a rollback ignores them when looking for newer snapshots. */
-const OWN_LABELS = new Set(['pre-restore']);
 const usage =
     'usage: bun conductor/tools/save.ts list|snapshot|restore <bot> [label|lib:<name>|file.sav] [--library --purpose <text> [--replace]] [--logout] [--force] [--takeover]';
 const { values: flags, positionals } = parseArgs({
@@ -60,20 +59,18 @@ const env = loadBotEnv(name);
 if (!isLocalServer(env.server)) fail(`save.ts only works against the local server; ${name} points at ${env.server}`, 2);
 const dir = join(REPO_ROOT, 'conductor/runs', name, 'saves');
 
-/** Log the bot out server-side, unless a script or task controls it (then only with --takeover). */
-async function logOut(botEnv: BotEnv): Promise<void> {
-    let controllers: number;
-    try {
-        controllers = await controllerCount(botEnv);
-    } catch (e) {
-        fail(`could not check ${name} for a running controller (${errMessage(e)}); not logging out`);
+// Flags that only mean something with another flag or command; given without it, they would be ignored.
+if (cmd === 'snapshot') {
+    if (!flags.library && (flags.purpose !== undefined || flags.replace))
+        fail('--purpose and --replace go with --library', 2);
+    if (!flags.logout && flags.takeover) fail('--takeover goes with --logout on snapshot', 2);
+    if (flags.force) fail('--force is for restore', 2);
+} else if (cmd === 'restore') {
+    if (flags.library || flags.purpose !== undefined || flags.replace || flags.logout) {
+        fail('--library, --purpose, --replace and --logout are for snapshot', 2);
     }
-    if (controllers > 0 && !flags.takeover) {
-        fail(
-            `${name} is controlled by ${controllers} connection(s) (a running task or script); logging out would pull the bot from under it. Stop it first, or pass --takeover`,
-        );
-    }
-    if (!(await kick(botEnv))) fail(`${name} did not log out (in combat, or still busy); try again`);
+} else if (cmd === 'list' && Object.values(flags).some(v => v !== undefined)) {
+    fail('list takes no flags', 2);
 }
 
 /** This bot's snapshot files, oldest first. */
@@ -106,7 +103,10 @@ function resolveSave(spec: string): Pick | undefined {
         const all = snapshots();
         const index = all.findLastIndex(f => labelOf(f) === spec);
         if (index < 0) return undefined;
-        const newer = all.slice(index + 1).filter(f => !OWN_LABELS.has(labelOf(f)));
+        // writeSave's own backups (pre-restore, pre-load) are not newer states of the account, unless
+        // the pick is itself a backup: then skipping a newer backup also needs --force.
+        const pickIsBackup = isBackupLabel(spec);
+        const newer = all.slice(index + 1).filter(f => pickIsBackup || !isBackupLabel(labelOf(f)));
         return {
             bytes: new Uint8Array(readFileSync(join(dir, all[index]!))),
             from: join(dir, all[index]!),
@@ -128,16 +128,17 @@ try {
             const all = snapshots();
             if (!all.length) console.log(`no snapshots for ${name}`);
             for (const f of all) console.log(`${f}  ${statSync(join(dir, f)).size} bytes`);
-            const library = listLibrary();
-            if (library.length) console.log(`\nlibrary (${LIBRARY_DIR}), restore with lib:<name>:`);
-            for (const entry of library) console.log(`  ${entry.name}  ${entry.purpose}`);
+            const { entries, invalid } = listLibrary();
+            if (entries.length) console.log(`\nlibrary (${LIBRARY_DIR}), restore with lib:<name>:`);
+            for (const entry of entries) console.log(`  ${entry.name}  ${entry.purpose}`);
+            for (const bad of invalid) console.log(`  ${bad.file}  INVALID: ${bad.error}`);
             break;
         }
         case 'snapshot': {
             if (!arg || !SAVE_NAME.test(arg)) fail('snapshot needs a label of letters, digits and dashes', 2);
             const purpose = flags.purpose?.trim();
             if (flags.library && !purpose) fail('--library needs --purpose "<what the save is for>"', 2);
-            if (flags.logout && inWorld(await saveStatus(env))) await logOut(env);
+            if (flags.logout && inWorld(await saveStatus(env))) await logOut(env, { takeover: flags.takeover });
             const save = await exportSave(env);
             const out = join(dir, `${fileStamp()}-${arg}.sav`);
             atomicWrite(out, save.bytes);
@@ -161,13 +162,19 @@ try {
                 );
             }
             // Every refusal comes before the logout, so a refused restore leaves the bot as it was.
+            verifySave(pick.bytes);
             const status = await saveStatus(env);
+            if (status.source === 'checkpoint') {
+                fail(
+                    `${name} has a Grand Exchange checkpoint that would win over any restore; retire data/market.sqlite (conductor/docs/parallel-bots.md)`,
+                );
+            }
             if (status.source !== 'none' && pick.needsForce && !flags.force) {
                 fail(
                     `not restoring ${pick.from} over ${name}'s save: ${pick.needsForce}. Pass --force to restore anyway`,
                 );
             }
-            if (inWorld(status)) await logOut(env);
+            if (inWorld(status)) await logOut(env, { takeover: flags.takeover });
             const { path, backup } = await writeSave(env, pick.bytes, { backupDir: dir, label: 'restore' });
             console.log(
                 `restored ${pick.from} -> ${path}${backup ? ` (previous save: ${backup})` : ''}; restart ${name}'s client`,

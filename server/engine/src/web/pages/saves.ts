@@ -1,6 +1,7 @@
 // rs-sdk: development endpoints on the management port for conductor save states
 // (conductor/docs/parallel-bots.md). Served only when SAVE_ENDPOINTS=true, which
-// conductor/local/up.sh sets for the local stack.
+// conductor/local/up.sh sets for the local stack, and only to loopback clients: the management
+// port listens on every interface, and these hand out any player's save and log players out.
 //
 //   GET  /save/:name   the save that is current now: the live player if online (no logout,
 //                      nothing touched), else the save in flight to the login thread, else the
@@ -42,7 +43,6 @@ function exportSave(name: string): Response {
     let bytes: Uint8Array | undefined;
     let source: SaveSource;
     const player = World.getPlayerByUsername(name);
-    const checkpoint = playerSaveStore()?.saved(name);
     if (player) {
         // No closeModal(): the export must not disturb the bot. Items parked in temp invs behind
         // an open interface (a trade or duel offer) are therefore not in it.
@@ -51,9 +51,8 @@ function exportSave(name: string): Response {
     } else if (World.logoutRequests.has(name)) {
         bytes = World.logoutRequests.get(name)!.save;
         source = 'logout';
-    } else if (checkpoint) {
-        // PlayerLoading.load prefers this over the .sav.
-        bytes = checkpoint;
+    } else if ((bytes = playerSaveStore()?.saved(name))) {
+        // PlayerLoading.load prefers the GE checkpoint over the .sav.
         source = 'checkpoint';
     } else if (fs.existsSync(file)) {
         bytes = fs.readFileSync(file);
@@ -90,16 +89,25 @@ async function kick(name: string): Promise<Response> {
     return json({ name, loggedOut: false, error: `still logged in after ${KICK_TIMEOUT_MS / 1000}s (in combat?)` }, 409);
 }
 
-/** Routes /save/:name and /kick/:name; undefined for any other path. */
-export async function handleSaveRequest(req: Request, url: URL): Promise<Response | undefined> {
+const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
+
+/** Routes /save/:name and /kick/:name; undefined for any other path. clientIp is the caller's address. */
+export async function handleSaveRequest(req: Request, url: URL, clientIp: string | undefined): Promise<Response | undefined> {
     const match = url.pathname.match(/^\/(save|kick)\/([^/]+)\/?$/);
     if (!match) return undefined;
     if (process.env.SAVE_ENDPOINTS !== 'true') {
         return json({ error: 'save endpoints are off; start the engine with SAVE_ENDPOINTS=true' }, 403);
     }
+    if (!clientIp || !LOOPBACK.has(clientIp)) return json({ error: 'save endpoints answer loopback clients only' }, 403);
     const [, route, raw] = match;
-    const decoded = decodeURIComponent(raw);
-    if (!NAME.test(decoded)) return json({ error: `bad name: ${decoded}` }, 400);
+    let decoded: string;
+    try {
+        decoded = decodeURIComponent(raw);
+    } catch {
+        return json({ error: 'bad name: malformed escape' }, 400);
+    }
+    // toBase37 maps a name of only spaces/underscores to 0, which fromBase37 turns into 'invalid_name'.
+    if (!NAME.test(decoded) || toBase37(decoded) === 0n) return json({ error: `bad name: ${decoded}` }, 400);
     const name = fromBase37(toBase37(decoded));
     if (route === 'save') {
         return req.method === 'GET' ? exportSave(name) : json({ error: 'GET only' }, 405);

@@ -81,11 +81,12 @@ file exists. Now:
 
 `server/engine/src/web/pages/saves.ts`, routed from `startManagementWeb`'s fallback. Served only
 when the engine runs with `SAVE_ENDPOINTS=true`, which `up.sh` sets (403 otherwise), so a
-deployed server never exposes them. Names are validated (1–12 of `[a-z0-9_ ]`; 400 otherwise).
+deployed server never exposes them, and only to loopback clients (the management port listens on
+every interface). Names are validated (1–12 of `[a-z0-9_ ]`, not only `_`/spaces; 400 otherwise).
 
 | Endpoint | Behaviour |
 |---|---|
-| `GET /save/:name` | The save that is current now. Online: `player.save(false)`, with no side effects. Mid-logout: the save in flight to the login thread. Offline: the GE checkpoint if one exists (the next login loads it), else the `.sav`. 404 with `{path}` for an account with no save. Headers: `X-Save-Source: live\|logout\|checkpoint\|file`, `X-Save-Path` (the absolute `.sav` path this engine reads), `X-Save-Sha1`. |
+| `GET /save/:name` | The save that is current now. Online: `player.save(false)`, with no side effects. Mid-logout: the save in flight to the login thread. Offline: the GE checkpoint if one exists (the next login loads it), else the `.sav`. 404 with `{path, webPort}` for an account with no save. Headers: `X-Save-Source: live\|logout\|checkpoint\|file`, `X-Save-Path` (the absolute `.sav` path this engine reads), `X-Save-Sha1`, `X-Engine-Web-Port` (which engine answered; the tools refuse when it isn't the one the bot plays on). |
 | `POST /kick/:name` | Renews `requestLogout` every 5 s until the player has left the world and its save is on disk, up to 30 s. 200 `{loggedOut: true}`; 409 when it did not leave (combat). |
 
 `GET` does not call `closeModal()`, so an export never disturbs the bot. The cost is that items
@@ -95,17 +96,20 @@ player is out of scope: kick, write, relog.
 ### Conductor library code
 
 - `conductor/lib/saves.ts`, all through the engine (no local engine path to configure):
-  - `saveStatus(env)` (`GET /save`), `exportSave`, `inWorld(status)` (live or logout), `kick`,
-    `controllerCount` (the gateway's `/status`);
-  - `writeSave(env, bytes, { backupDir, label })`: verifies magic, version and CRC; refuses
+  - `saveStatus(env)` (`GET /save`, and a refusal when the engine that answered isn't the bot's),
+    `exportSave`, `inWorld(status)` (live or logout), `kick`, and `logOut(env, { takeover })`
+    (refuses while a controller is attached, or when the gateway can't say; then kicks);
+    `controllerCount` (the gateway's `/status`) is in `lib/env.ts`;
+  - `writeSave(env, bytes, { backupDir, label, onWrite })`: verifies magic, version and CRC; refuses
     while the player is in the world or has a GE checkpoint; keeps the save it replaces in
-    `backupDir`; writes atomically to the path the engine reported; then reads it back through
+    `backupDir` as `pre-<label>`; writes atomically to the path the engine reported; then reads it back through
     the engine and fails unless the engine serves exactly those bytes from the file. A tool run
     from another worktree, or racing a login, can't report a write the engine never sees;
   - `decodeSave`: position, base levels, inv/worn/bank with item names from the content pack,
     and non-zero varps; save versions 5–8;
   - the library: `writeLibrarySave` (refuses to replace an entry unless asked), `readLibrarySave`,
-    `listLibrary`; entries are schema-checked (zod) when read.
+    `listLibrary` (lists invalid entries rather than failing); names are validated on every
+    path; entries are schema-checked (zod) when read.
 - `conductor/lib/client.ts`:
   - `startLiteClient(bot, { timeoutMs, attached })` spawns the lite runner from this checkout's
     `server/webclient`, logs to `conductor/runs/<bot>/lite-client.log`, records its pid, and
@@ -142,24 +146,27 @@ player is out of scope: kick, write, relog.
 
 `bun conductor/tools/load.ts <worker> <source> [--client] [--create] [--takeover]`:
 
-- **Sources:** `lib:<name>` (library; a bare `<name>` works too), `bot:<bot>` (a live copy, no
-  logout) or `path.sav`.
+- **Sources:** `lib:<name>` (library), `bot:<bot>` (a live copy, no logout) or `path.sav`;
+  anything else is a usage error.
 - **Only workers can be loaded into:** `load.ts` writes only to accounts whose `bot.env` has
   `WORKER=true`. `--create` makes one with `create-bot.ts --local` and marks it, and refuses a
   name the server already has an account for (`bots/` is per checkout, so the name could be
-  another checkout's bot, even the main account).
+  another checkout's bot, even the main account). A failed or interrupted `--create` removes
+  the bot directory it made, unless the save already reached the server.
 - **A worker that is in the world** is kicked first (refused while a controller is attached,
   unless `--takeover`), then its tracked lite client is stopped, so a failed kick never leaves
   it online without a client. The save it had is kept in `conductor/runs/<worker>/saves/`.
-- **Record of the load:** it writes `conductor/runs/<worker>/loaded.json` and prints
-  `LOADED <json>`, so evidence can name the state a test started from.
+- **Record of the load:** it keeps a copy of what it loaded as
+  `conductor/runs/<worker>/saves/<stamp>-loaded.sav`, writes `loaded.json`, and prints
+  `LOADED <json>` with that `replay` path, so a fix is retested from exactly the author's
+  starting state even when it came from a moving `bot:` source.
 - **Client:** `--client` starts the worker's lite client and waits for it to connect.
 
 Worker names: `<bot>w<n>`, e.g. `conductor1w1`, at most 12 characters. The conductor tracks the
 pool in durable state (`workers`) and assigns one per task-author brief. It stays assigned
 through that change's review, whose fix authors reuse it, until the review commits or reverts.
 
-Rules on a worker (conductor skill, `task-author.md`, `CLAUDE.md`):
+Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLAUDE.md`):
 
 - no player trades with other accounts;
 - never drive the main bot;
@@ -170,10 +177,13 @@ Rules on a worker (conductor skill, `task-author.md`, `CLAUDE.md`):
 
 - **snapshot** exports the live save, with no logout. `--logout` still logs the bot out first
   (the conductor's unsafe-exit step relies on it). `--library --purpose` also files the save in
-  the library.
-- **restore** checks everything before it touches the bot:
+  the library (`--replace` to overwrite an entry). Flags given where they mean nothing are
+  usage errors.
+- **restore** checks everything before it touches the bot (the save's magic, version and CRC,
+  a GE checkpoint, then):
   - restoring the bot's newest snapshot (the normal rollback) needs no flag;
-  - skipping past a newer snapshot needs `--force`;
+  - skipping past a newer snapshot needs `--force` (its own `pre-*` backups don't count as
+    newer, unless the pick is itself a backup);
   - a library save or a file over an existing save needs `--force`: nothing shows it came from
     this account (workers use `load.ts`).
 
@@ -185,24 +195,31 @@ Rules on a worker (conductor skill, `task-author.md`, `CLAUDE.md`):
 
 - `server/gateway/gateway.ts` refuses a `control` connect while another controller is attached,
   with `sdk_error` `code: 'controller_busy'` naming the holder and the time it attached.
-  `takeover: true` pre-empts, as every connect used to.
+  `takeover: true` pre-empts, as every connect used to. The refusal text tells agents to wait or
+  report back, not to take over.
 - A dead socket stops holding the lease when it closes. Bun's default websocket `idleTimeout`
   (120 s, with pings) closes half-open sockets. A socket that closes while the gateway is still
-  authenticating it is never registered, so it can't leave a lease nobody holds.
+  authenticating it is never registered, so it can't leave a lease nobody holds (bot client
+  registration has the same guard).
 - **SDK:** `SDKConfig.takeover` and `RunOptions.takeover` are new; `run-task.ts --takeover`
-  passes it through, and a script takes over with `RS_TAKEOVER=1`.
+  passes it through, and a script takes over with `RS_TAKEOVER=1`. Only the first attach sends
+  it: an auto-reconnect never pre-empts whoever took the free lease meanwhile.
 - **Reconnects:** a reconnect can be refused by the SDK's own not-yet-closed session, so the SDK
-  keeps retrying `controller_busy` on reconnect for 150 s (longer than the idle timeout). On a
-  first connect it is fatal, and `connect()` rejects with the gateway's message.
-- **MCP:** `execute_code` re-attaches at the start of each call and releases the control
-  connection when it ends, so an idle MCP session holds no lease. A call against a bot that a
-  task or script is driving is refused.
+  keeps retrying `controller_busy` on reconnect for 150 s (`leaseRetryWindowMs`, longer than
+  the idle timeout). On a first connect it is fatal, and `connect()` rejects with the gateway's
+  message. `connect()` claims its attempt before its first await, so concurrent calls share one
+  socket, and a fresh attach drops the state cached from an earlier session, so callers wait
+  for the bot's current state.
+- **MCP:** `execute_code` acquires the bot's control connection for the call and releases it
+  when it ends, so an idle MCP session holds no lease. Concurrent calls on one bot share one
+  attach (reference-counted; the last one out disconnects, which also stops any background
+  reconnect). A call against a bot that a task or script is driving is refused.
 - **Scripts:** `bun bots/<bot>/*.ts` scripts connect without takeover, so they are refused while
   a task runs.
 - **Tests:** `server/gateway/lease.test.ts` runs the real gateway (refusal, observer, takeover,
   release on close); `sdk/test/controller-lease.test.ts` covers the SDK side (a first-connect
-  refusal doesn't reconnect, a reconnect retries through its own stale session, `takeover` on
-  the wire).
+  refusal doesn't reconnect, a reconnect retries through its own stale session and gives up
+  once the window passes, `takeover` only on the first attach).
 
 ### Conductor process
 
@@ -243,6 +260,6 @@ Rules on a worker (conductor skill, `task-author.md`, `CLAUDE.md`):
 | Worker pool, `load.ts` | done; tested: live fork into a worker with a backup, kick of an online worker, refusal to load into a non-worker, a failed `--create` leaves nothing behind |
 | Gateway lease, SDK `takeover`, MCP release | done; `server/gateway/lease.test.ts` and `sdk/test/controller-lease.test.ts` pass; MCP release not exercised against a live MCP client |
 | Conductor skill, `task-author.md`, task-review fix brief, `CLAUDE.md`, READMEs, learnings | done |
-| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed |
+| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed; round 2 (whole branch again): 32 confirmed, all fixed |
 | Shared server running this code | needs a merge to main, then an engine (`up.sh` sets `SAVE_ENDPOINTS=true`) and gateway restart, coordinated with other sessions using the shared stack |
 | Automatic library saves at milestones; per-task failure-branch saves | open (roadmap) |

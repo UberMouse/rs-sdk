@@ -23,8 +23,8 @@ This skill keeps durable state. **Before the first write, Read
 | `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run |
 | `bun conductor/tools/stats.ts <bot> [--task t]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons |
 | `bun conductor/tools/progress.ts <bot>` | levels, XP to 99, % to max, change since first/previous snapshot (records a snapshot) |
-| `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back to that snapshot (the newest one needs no flag; skipping past a newer snapshot needs `--force`): logs the bot out itself and keeps the replaced save; restart its client after. `list <bot>` |
-| `bun conductor/tools/load.ts <worker> lib:<save> --client` | load a library save (or `bot:<bot>`, a live copy of a bot) into a worker account and start its headless lite client (no screenshots); prints `LOADED <json>` |
+| `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back to that snapshot (the newest one needs no flag; skipping past a newer snapshot, or restoring `lib:<name>` or a file, needs `--force`): logs the bot out itself and keeps the replaced save; restart its client after. Logging out is refused while a task or script drives the bot (`--takeover` only if that run is yours). `list <bot>` |
+| `bun conductor/tools/load.ts <worker> <save> --client` | `<save>` is `lib:<name>`, `bot:<bot>` (a live copy) or a `.sav` path. Loads it into a worker account and starts its headless lite client (no screenshots); prints `LOADED <json>`, whose `replay` path reloads exactly that state |
 | `bun conductor/tools/library.ts list\|show\|generate` | the scenario save library in `conductor/saves/`; `save.ts snapshot <bot> <name> --library --purpose "..."` adds a live bot's state |
 | `bun sdk/cli.ts <bot>` | full world-state snapshot (position, inventory, skills, nearby) |
 | `bun conductor/tools/screenshot.ts <bot>` | PNG of the game canvas, path on stdout — Read it. Needs the browser client |
@@ -185,6 +185,11 @@ lite client, so measure before adding more), created on first load with
 `bun conductor/tools/load.ts <bot>w<n> lib:fresh-lumbridge --create` (the name must be 12
 characters or fewer; `--create` marks the account `WORKER=true`, the only kind `load.ts` will
 overwrite, and refuses a name the server already has an account for). Record them in `workers`.
+`bots/<name>/bot.env` exists only in the checkout that created it, so a later run in another
+checkout finds the accounts on the server but no `bot.env`: write one by hand rather than
+`--create` (the local login accepts any password), e.g. `bots/<bot>w1/bot.env` with
+`BOT_USERNAME=<bot>w1`, `PASSWORD=<any>`, `SERVER=localhost:8888`, `GATEWAY_URL=ws://localhost:7780`,
+`WORKER=true`.
 A brief needs a starting state the library lacks → name it in the brief (`none: first create
 ...`); the author builds it per `task-author.md` and lists the new `conductor/saves/` files in its
 report, and they are reviewed and committed with the task.
@@ -194,11 +199,14 @@ report, and they are reviewed and committed with the task.
 1. `ListAgents`, and stop **every** subagent, not only the ones in `inFlight`: a review
    orchestrator's fix author is not in `inFlight` and keeps driving its bot when its parent
    stops.
-2. `pgrep -af run-task.ts` — nothing should be left. A leftover run is an orphan still driving a
-   bot: `kill <pid>` (it prints its RESULT on SIGTERM) and journal it.
+2. Find this run's leftover tasks, and only those: `pgrep -af "run-task.ts (<bot>|<worker1>|<worker2>|<worker3>) "`
+   with the main bot and the `workers` names. A match is an orphan still driving one of your bots:
+   `kill <pid>` (it prints its RESULT on SIGTERM) and journal it. Other sessions share this
+   machine and server: never kill a `run-task.ts` on a bot that isn't yours.
 3. `save.ts snapshot <bot> <label> --logout` for the main bot.
 4. Worker lite clients keep running detached and their accounts stay logged in; workers hold
-   nothing worth saving. To stop one: `pkill -f "lite/runner.ts <worker>"`.
+   nothing worth saving. To stop one: `pkill -f "lite/runner.ts <worker>$"` (the `$` keeps
+   `<bot>w1` from also matching `<bot>w10`).
 
 ## Resuming
 

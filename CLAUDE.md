@@ -129,9 +129,10 @@ Rules for every agent working in this repo:
   `execute_code` holds the bot only while its code runs, and is refused while a task or script
   drives it. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect in
   observe mode and are always safe.
-- **Test on a worker account, not the main bot.** Smoke tests and experiments load a library
-  save into a worker (`bun conductor/tools/load.ts <worker> lib:<save> --client`); only the
-  conductor's task-runner dispatches drive the main bot.
+- **In a conductor run, test on a worker account, not the conductor's bot.** Smoke tests and
+  experiments load a save into a worker (`bun conductor/tools/load.ts <worker> lib:<save> --client`);
+  only the conductor's task-runner dispatches drive its bot. Workers never trade with other
+  players: a worker can hold a copy of the main account's items.
 - **Task code is reviewed before it is committed**, with the `task-review` skill. Write to its
   lenses in `.claude/review-lenses/`.
 - **Game knowledge goes in the knowledge base** per the `knowledge` skill, not in task code

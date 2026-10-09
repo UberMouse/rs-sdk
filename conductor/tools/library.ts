@@ -35,6 +35,9 @@ const SpecSchema = z.strictObject({
         .optional(),
 });
 
+/** Typed, not cast: tsc fails here if SpecSchema stops matching save-generator's SaveConfig. */
+const toSaveConfig = (spec: z.infer<typeof SpecSchema>): SaveConfig => spec;
+
 const usage =
     'usage: bun conductor/tools/library.ts list | show <name> | generate <name> (--preset <NAME> | --spec <json>) --purpose <text> [--replace]';
 const { values: flags, positionals } = parseArgs({
@@ -65,15 +68,16 @@ function readSpec(): { spec: SaveConfig; recorded: unknown } {
     }
     const parsed = SpecSchema.safeParse(json);
     if (!parsed.success) fail(`--spec is not a SaveConfig: ${parsed.error.message}`, 2);
-    return { spec: parsed.data as SaveConfig, recorded: parsed.data };
+    return { spec: toSaveConfig(parsed.data), recorded: parsed.data };
 }
 
 try {
     switch (cmd) {
         case 'list': {
-            const all = listLibrary();
-            if (!all.length) console.log(`the library (${LIBRARY_DIR}) is empty`);
-            for (const e of all) {
+            const { entries, invalid } = listLibrary();
+            if (!entries.length && !invalid.length) console.log(`the library (${LIBRARY_DIR}) is empty`);
+            for (const bad of invalid) console.log(`${bad.file}  INVALID: ${bad.error}`);
+            for (const e of entries) {
                 const levels = Object.entries(e.summary.levels)
                     .map(([skill, level]) => `${skill} ${level}`)
                     .join(', ');

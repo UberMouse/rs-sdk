@@ -63,11 +63,12 @@ execute_code({
 
 ### `list_bots`
 
-List all connected bots and their status.
+List the bots this MCP session has used. `execute_code` holds a bot's control connection only
+while its code runs, so `connected` is `false` between calls; that is normal.
 
 ```typescript
 list_bots();
-// Returns: { bots: [{ name: "mybot", username: "mybot", connected: true }], count: 1 }
+// Returns: { bots: [{ name: "mybot", username: "mybot", connected: false }], count: 1 }
 ```
 
 ### `disconnect_bot`
@@ -147,8 +148,8 @@ The `@modelcontextprotocol/sdk` dependency lives in the root `package.json`.
 
 **"Bot is not connected"**
 
-- Bots auto-connect on the first `execute_code` call — check the error output for connection failures
-- Use `list_bots` to see connected bots
+- Bots connect for each `execute_code` call — check that call's error output for connection failures
+- "already controlled by ..." means a task or script is driving the bot: wait for it to finish
 
 **"Connection failed"**
 

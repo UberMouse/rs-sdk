@@ -196,12 +196,6 @@ export class BotSDK {
     // Reconnection state
     private connectionState: ConnectionState = 'disconnected';
     private reconnectAttempt = 0;
-    /**
-     * How long reconnects keep retrying a controller_busy refusal, which can be our own previous
-     * session the gateway hasn't seen close yet. Longer than the gateway's websocket idle timeout
-     * (Bun's default 120s), which is the longest a half-open old session can hold the lease.
-     */
-    private static readonly LEASE_RECONNECT_WINDOW_MS = 150_000;
     /** When the current run of controller_busy refusals on reconnect began; null when none. */
     private leaseRefusedSince: number | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -227,6 +221,7 @@ export class BotSDK {
             reconnectMaxRetries: config.reconnectMaxRetries ?? Infinity,
             reconnectBaseDelay: config.reconnectBaseDelay ?? 1000,
             reconnectMaxDelay: config.reconnectMaxDelay ?? 30000,
+            leaseRetryWindowMs: config.leaseRetryWindowMs ?? 150_000,
             showChat: config.showChat ?? true
         };
         this.sdkClientId = `sdk-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -244,11 +239,27 @@ export class BotSDK {
             return this.connectPromise;
         }
 
+        // Claimed before the first await, so a second connect() joins this attempt instead of
+        // opening a second socket (which would orphan one, still holding the controller lease).
+        const attempt: Promise<void> = this.openConnection().catch(error => {
+            if (this.connectPromise === attempt) this.connectPromise = null;
+            throw error;
+        });
+        this.connectPromise = attempt;
+        return attempt;
+    }
+
+    private async openConnection(): Promise<void> {
         this.intentionalDisconnect = false;
 
         const isReconnect = this.connectionState === 'reconnecting';
         if (!isReconnect) {
             this.leaseRefusedSince = null;
+            // A fresh attach (not an auto-reconnect) must not hand back the state cached from a
+            // previous session: the bot may have moved since. The gateway sends its current state
+            // right after sdk_connected, which waitForReady below then waits for.
+            this.state = null;
+            this.stateReceivedAt = 0;
             this.setConnectionState('connecting');
         }
 
@@ -270,7 +281,7 @@ export class BotSDK {
         }
 
         const configuredUrl = this.config.gatewayUrl || `ws://${this.config.host}:${this.config.port}`;
-        this.connectPromise = preferDirectGateway(configuredUrl).then(url => new Promise<void>((resolve, reject) => {
+        return preferDirectGateway(configuredUrl).then(url => new Promise<void>((resolve, reject) => {
             if (this.intentionalDisconnect) {
                 reject(new Error('Disconnected while connecting'));
                 return;
@@ -298,7 +309,9 @@ export class BotSDK {
                     password: this.config.password,
                     clientId: this.sdkClientId,
                     mode: this.config.connectionMode,
-                    takeover: this.config.takeover
+                    // Only the first attach takes over: an auto-reconnect that pre-empted would kick
+                    // whoever legitimately took the free lease while this connection was down.
+                    takeover: this.config.takeover && !isReconnect
                 });
             };
 
@@ -387,7 +400,7 @@ export class BotSDK {
                         let staleSelf = false;
                         if (msg.code === 'controller_busy' && isReconnect) {
                             this.leaseRefusedSince ??= Date.now();
-                            staleSelf = Date.now() - this.leaseRefusedSince < BotSDK.LEASE_RECONNECT_WINDOW_MS;
+                            staleSelf = Date.now() - this.leaseRefusedSince < this.config.leaseRetryWindowMs;
                         }
                         if (!staleSelf) this.intentionalDisconnect = true;
                         reject(new Error(errorMessage));
@@ -402,8 +415,6 @@ export class BotSDK {
             forgetDirectGateway(configuredUrl);
             throw error;
         });
-
-        return this.connectPromise;
     }
 
     private setConnectionState(state: ConnectionState, attempt?: number) {

@@ -4,35 +4,47 @@
 import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import type { Subprocess } from 'bun';
 
-let gateway: Subprocess;
+let gateway: Subprocess<'ignore', 'ignore', 'pipe'>;
 let port: number;
 
-beforeAll(async () => {
-    const probe = Bun.serve({ port: 0, fetch: () => new Response() });
-    port = probe.port!;
-    probe.stop(true);
-    gateway = Bun.spawn([process.execPath, 'gateway.ts'], {
-        cwd: import.meta.dir,
-        env: { ...process.env, AGENT_PORT: String(port), GATEWAY_HOSTNAME: '127.0.0.1', LOGIN_SERVER: 'false' },
-        stdout: 'ignore',
-        stderr: 'ignore',
-    });
-    const deadline = Date.now() + 10_000;
-    for (;;) {
-        try {
-            if ((await fetch(`http://127.0.0.1:${port}/status`)).ok) break;
-        } catch {}
-        if (Date.now() > deadline) throw new Error('gateway did not start');
-        await Bun.sleep(100);
+/** Start the gateway on a free port; a port taken between probe and bind just means another try. */
+async function startGateway(): Promise<void> {
+    for (let attempt = 1; ; attempt++) {
+        const probe = Bun.serve({ port: 0, fetch: () => new Response() });
+        port = probe.port!;
+        probe.stop(true);
+        gateway = Bun.spawn([process.execPath, 'gateway.ts'], {
+            cwd: import.meta.dir,
+            env: {
+                ...process.env,
+                AGENT_PORT: String(port),
+                GATEWAY_PUBLIC_PORT: '0',
+                GATEWAY_HOSTNAME: '127.0.0.1',
+                LOGIN_SERVER: 'false',
+            },
+            stdin: 'ignore',
+            stdout: 'ignore',
+            stderr: 'pipe',
+        });
+        const deadline = Date.now() + 10_000;
+        while (Date.now() < deadline && gateway.exitCode === null) {
+            try {
+                if ((await fetch(`http://127.0.0.1:${port}/status`)).ok) return;
+            } catch {}
+            await Bun.sleep(100);
+        }
+        gateway.kill();
+        if (attempt === 3) throw new Error(`gateway did not start:\n${await new Response(gateway.stderr).text()}`);
     }
-});
+}
 
+beforeAll(startGateway);
 afterAll(() => gateway?.kill());
 
 type Reply = { type: string; code?: string; error?: string };
 
-/** Open an SDK socket, send sdk_connect, and resolve with the gateway's first reply. */
-async function connect(mode: 'control' | 'observe', takeover?: boolean): Promise<{ ws: WebSocket; reply: Reply }> {
+/** Open an SDK socket for `bot`, send sdk_connect, and resolve with the gateway's first reply. */
+async function connect(bot: string, mode: 'control' | 'observe', takeover?: boolean) {
     const ws = new WebSocket(`ws://127.0.0.1:${port}`);
     await new Promise<void>((resolve, reject) => {
         ws.onopen = () => resolve();
@@ -41,48 +53,58 @@ async function connect(mode: 'control' | 'observe', takeover?: boolean): Promise
     const reply = new Promise<Reply>(resolve => {
         ws.onmessage = e => resolve(JSON.parse(String(e.data)));
     });
-    ws.send(JSON.stringify({ type: 'sdk_connect', username: 'leasebot', clientId: `test-${mode}`, mode, takeover }));
+    ws.send(JSON.stringify({ type: 'sdk_connect', username: bot, clientId: `test-${mode}`, mode, takeover }));
     return { ws, reply: await reply };
 }
 
-async function controllers(): Promise<number> {
-    const status = (await (await fetch(`http://127.0.0.1:${port}/status/leasebot`)).json()) as { controllers?: unknown[] };
+async function controllers(bot: string): Promise<number> {
+    const status = (await (await fetch(`http://127.0.0.1:${port}/status/${bot}`)).json()) as { controllers?: unknown[] };
     return status.controllers?.length ?? 0;
 }
 
-async function closeAndSettle(ws: WebSocket): Promise<void> {
-    const closed = new Promise(resolve => (ws.onclose = resolve));
-    ws.close();
-    await closed;
-    await Bun.sleep(100); // let the gateway run its close handler
+/** Poll until the gateway reports `n` controllers for `bot` (its close handler runs asynchronously). */
+async function expectControllers(bot: string, n: number): Promise<void> {
+    const deadline = Date.now() + 2000;
+    while ((await controllers(bot)) !== n && Date.now() < deadline) await Bun.sleep(20);
+    expect(await controllers(bot)).toBe(n);
 }
 
 describe('controller lease', () => {
-    test('refuses a second controller, admits observers, honours takeover, releases on close', async () => {
-        const first = await connect('control');
+    test('a second controller is refused and the first keeps the lease', async () => {
+        const first = await connect('lease1', 'control');
         expect(first.reply.type).toBe('sdk_connected');
-        expect(await controllers()).toBe(1);
-
-        const second = await connect('control');
+        const second = await connect('lease1', 'control');
         expect(second.reply).toMatchObject({ type: 'sdk_error', code: 'controller_busy' });
         expect(second.reply.error).toContain('test-control');
-        expect(await controllers()).toBe(1);
+        await expectControllers('lease1', 1);
+        first.ws.close();
+    });
 
-        const observer = await connect('observe');
+    test('observers connect alongside a controller', async () => {
+        const controller = await connect('lease2', 'control');
+        const observer = await connect('lease2', 'observe');
         expect(observer.reply.type).toBe('sdk_connected');
+        await expectControllers('lease2', 1);
+        controller.ws.close();
+        observer.ws.close();
+    });
 
+    test('takeover pre-empts the holder', async () => {
+        const first = await connect('lease3', 'control');
         const firstDropped = new Promise(resolve => (first.ws.onclose = resolve));
-        const taker = await connect('control', true);
+        const taker = await connect('lease3', 'control', true);
         expect(taker.reply.type).toBe('sdk_connected');
-        await firstDropped; // the old controller was pre-empted
-        expect(await controllers()).toBe(1);
+        await firstDropped;
+        await expectControllers('lease3', 1);
+        taker.ws.close();
+    });
 
-        await closeAndSettle(taker.ws);
-        expect(await controllers()).toBe(0);
-        const after = await connect('control');
-        expect(after.reply.type).toBe('sdk_connected');
-
-        await closeAndSettle(after.ws);
-        await closeAndSettle(observer.ws);
+    test('a closed controller releases the lease', async () => {
+        const first = await connect('lease4', 'control');
+        first.ws.close();
+        await expectControllers('lease4', 0);
+        const next = await connect('lease4', 'control');
+        expect(next.reply.type).toBe('sdk_connected');
+        next.ws.close();
     });
 });

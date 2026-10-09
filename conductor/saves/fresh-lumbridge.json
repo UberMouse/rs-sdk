@@ -1,6 +1,6 @@
 {
     "name": "fresh-lumbridge",
-    "purpose": "A fresh account just past the tutorial at Lumbridge castle: all skills 1, the starter kit (bronze axe, pickaxe, dagger, sword, shield, shortbow + arrows, net, tinderbox, runes). Base for tasks that start from nothing.",
+    "purpose": "A fresh account just past the tutorial in Lumbridge castle courtyard (3222,3218): every skill 1 except Hitpoints 10, carrying the tutorial's starter inventory (bronze axe, pickaxe, dagger, sword, wooden shield, shortbow + 25 bronze arrows, small fishing net, tinderbox, shrimps, bread, bucket, pot, air/mind/water/earth/body runes), nothing worn, empty bank. Base for tasks that start from nothing.",
     "source": {
         "kind": "generated",
         "spec": {
@@ -85,8 +85,8 @@
             ]
         }
     },
-    "sha1": "8a57662a200beb8d4a266f16b6b0c0e943a24948",
-    "createdAt": "2026-10-09T09:42:48.603Z",
+    "sha1": "00798d2a4840387d424087816e1d0983cbfa9c4e",
+    "createdAt": "2026-10-09T10:38:00.614Z",
     "saveVersion": 6,
     "summary": {
         "position": {

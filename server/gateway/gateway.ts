@@ -369,6 +369,12 @@ const SyncModule = {
                 } catch {}
                 return;
             }
+            // Same guard as SDK connects: a socket that closed during the auth await already ran
+            // handleClose with nothing to remove, and registering it would wedge later takeovers.
+            if (ws.readyState !== 1 /* OPEN */) {
+                console.log(`[Gateway] Bot ${clientId} -> ${username} closed during auth; not registering`);
+                return;
+            }
 
             const existingSession = botSessions.get(username);
             if (existingSession && existingSession.ws !== ws && existingSession.ws) {
@@ -537,7 +543,7 @@ const SyncModule = {
                 ws.send(JSON.stringify({
                     type: 'sdk_error',
                     code: 'controller_busy',
-                    error: `Refused: ${targetUsername} is already controlled by ${holder.sdkClientId} (since ${since}); connect with takeover to pre-empt it`
+                    error: `Refused: ${targetUsername} is already controlled by ${holder.sdkClientId} (since ${since}); another task or script is driving it, so wait for it to finish or report back. Taking over pre-empts it: only for a run that is yours`
                 }));
                 ws.close();
                 return;

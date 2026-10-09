@@ -8,12 +8,11 @@
 import type { BotSDK } from '../../sdk/index';
 import { connectSdk, disconnectQuietly, loadBotEnv } from '../lib/env';
 import { captureScreenshot } from '../lib/screenshot';
-import { errMessage } from '../lib/util';
+import { errMessage, fail } from '../lib/util';
 
 const [name, outArg] = process.argv.slice(2);
 if (!name) {
-    console.error('usage: bun conductor/tools/screenshot.ts <bot> [out.png]');
-    process.exit(2);
+    fail('usage: bun conductor/tools/screenshot.ts <bot> [out.png]', 2);
 }
 const env = loadBotEnv(name);
 let sdk: BotSDK | undefined;

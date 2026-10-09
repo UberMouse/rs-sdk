@@ -721,6 +721,13 @@ export interface SDKConfig {
     reconnectMaxRetries?: number;
     reconnectBaseDelay?: number;
     reconnectMaxDelay?: number;
+    /**
+     * How long auto-reconnects keep retrying a controller_busy refusal, which can come from this
+     * SDK's own previous session that the gateway hasn't seen close yet. Default 150000: longer
+     * than the gateway's websocket idle timeout (Bun's default 120s), the longest a half-open old
+     * session can hold the lease.
+     */
+    leaseRetryWindowMs?: number;
     /** Show other players' chat messages (default: false for safety) */
     showChat?: boolean;
 }

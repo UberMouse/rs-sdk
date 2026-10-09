@@ -170,14 +170,47 @@ class BotManager {
     console.error(`[MCP] Bot "${name}" disconnected`);
   }
 
+  // The gateway allows one controller per bot, so an idle MCP session must not hold it and lock
+  // out scripts and tasks: each execute_code acquires the bot's control connection and releases
+  // it when done. Calls on the same bot share one attach (counted), and the last one out lets go.
+  private holders: Map<string, number> = new Map();
+  private attaching: Map<string, Promise<BotConnection>> = new Map();
+
+  /** Attach (or join the attach in progress) and count this caller. Pair with release(). */
+  async acquire(name: string): Promise<BotConnection> {
+    let attach = this.attaching.get(name);
+    if (!attach) {
+      const existing = this.connections.get(name);
+      if (existing?.connected && (this.holders.get(name) ?? 0) > 0) {
+        this.holders.set(name, this.holders.get(name)! + 1);
+        return existing;
+      }
+      attach = this.connect(name).catch(async (err) => {
+        // A failed attach must not keep auto-reconnecting in the background and take the lease later.
+        await this.connections.get(name)?.sdk.disconnect().catch(() => {});
+        throw err;
+      });
+      this.attaching.set(name, attach);
+      attach.finally(() => this.attaching.delete(name)).catch(() => {});
+    }
+    const connection = await attach;
+    this.holders.set(name, (this.holders.get(name) ?? 0) + 1);
+    return connection;
+  }
+
   /**
-   * Release a bot's control connection but keep its entry (SDK, chat cursor), so the next
-   * connect() re-attaches. The gateway allows one controller per bot, so an idle MCP session
-   * must not hold it and lock out scripts and tasks.
+   * Drop one hold on a bot; the last one disconnects, unconditionally (also stopping any
+   * auto-reconnect in progress), but keeps the entry (SDK, chat cursor) for the next acquire().
    */
   async release(name: string): Promise<void> {
+    const held = (this.holders.get(name) ?? 1) - 1;
+    if (held > 0) {
+      this.holders.set(name, held);
+      return;
+    }
+    this.holders.delete(name);
     const connection = this.connections.get(name);
-    if (!connection?.connected) return;
+    if (!connection) return;
     await connection.sdk.disconnect();
     connection.connected = false;
   }

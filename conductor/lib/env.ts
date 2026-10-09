@@ -32,6 +32,21 @@ export function botClientUrl(env: BotEnv): string {
 
 export const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
+/** Longest a request to the engine or gateway may take before it counts as failed. */
+export const FETCH_TIMEOUT_MS = 5_000;
+
+/** Number of control connections the gateway has for the bot. Throws when it can't tell. */
+export async function controllerCount(env: BotEnv): Promise<number> {
+    const url = `${env.webOrigin}/status/${encodeURIComponent(env.username)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`${url}: ${res.status}`);
+    const status = (await res.json()) as { controllers?: unknown };
+    if (status.controllers !== undefined && !Array.isArray(status.controllers)) {
+        throw new Error(`${url}: unexpected controllers field`);
+    }
+    return status.controllers?.length ?? 0;
+}
+
 /** Connect a BotSDK that never launches a browser or reconnects. Caller must disconnectQuietly it. */
 export async function connectSdk(env: BotEnv, mode: 'observe' | 'control'): Promise<BotSDK> {
     const sdk = new BotSDK({

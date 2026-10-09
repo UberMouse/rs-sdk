@@ -35,18 +35,26 @@ function signal(target: { kill(signal: NodeJS.Signals): unknown } | number, sig:
     }
 }
 
+/** SIGINT (the runner's clean shutdown), wait while `alive`, then SIGKILL. False if it was already gone. */
+async function terminate(
+    target: { kill(signal: NodeJS.Signals): unknown } | number,
+    alive: () => boolean,
+): Promise<boolean> {
+    if (!alive() || !signal(target, 'SIGINT')) return false;
+    const deadline = Date.now() + STOP_GRACE_MS;
+    while (alive() && Date.now() < deadline) await sleep(POLL_MS);
+    if (alive()) signal(target, 'SIGKILL');
+    return true;
+}
+
 /** Stop the lite client startLiteClient last spawned for this bot, if it is still running. Returns whether one was. */
 export async function stopLiteClient(botName: string): Promise<boolean> {
     const pidFile = join(REPO_ROOT, 'conductor/runs', botName, PID_FILE);
     if (!existsSync(pidFile)) return false;
     const pid = Number(readFileSync(pidFile, 'utf8').trim());
     rmSync(pidFile);
-    if (!Number.isInteger(pid) || pid <= 0 || !isRunner(pid, botName)) return false;
-    if (!signal(pid, 'SIGINT')) return false;
-    const deadline = Date.now() + STOP_GRACE_MS;
-    while (isRunner(pid, botName) && Date.now() < deadline) await sleep(POLL_MS);
-    if (isRunner(pid, botName)) signal(pid, 'SIGKILL');
-    return true;
+    if (!Number.isInteger(pid) || pid <= 0) return false;
+    return terminate(pid, () => isRunner(pid, botName));
 }
 
 export interface LiteClient {
@@ -80,6 +88,9 @@ export async function startLiteClient(
         detached: !attached,
     });
     closeSync(fd);
+    // An async spawn failure (missing bun, bad cwd) arrives as an 'error' event; unhandled, it would crash.
+    let spawnError: Error | undefined;
+    proc.once('error', e => (spawnError = e));
     const pid = proc.pid;
     if (pid === undefined) throw new Error(`could not start the lite client for ${botName}`);
     if (attached) {
@@ -90,15 +101,13 @@ export async function startLiteClient(
     writeFileSync(join(runDir, PID_FILE), `${pid}\n`);
 
     const stop = async () => {
-        if (exited(proc) || !signal(proc, 'SIGINT')) return;
-        const deadline = Date.now() + STOP_GRACE_MS;
-        while (!exited(proc) && Date.now() < deadline) await sleep(POLL_MS);
-        if (!exited(proc)) signal(proc, 'SIGKILL');
+        await terminate(proc, () => !exited(proc));
     };
 
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
         if (readFileSync(log, 'utf8').includes(READY)) return { pid, log, stop };
+        if (spawnError) throw new Error(`could not start the lite client for ${botName}: ${spawnError.message}`);
         if (exited(proc)) {
             throw new Error(
                 `lite client for ${botName} exited (${proc.exitCode ?? proc.signalCode}) before connecting; see ${log}`,

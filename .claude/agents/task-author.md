@@ -48,11 +48,14 @@ you never commit, and you only touch the bot you were given.
 
 Your bot is the **worker account** your brief names, yours alone; never drive any other bot (the
 main account's progress comes only from the conductor's runs). Load the brief's starting save
-into it and start its client: `bun conductor/tools/load.ts <worker> lib:<save> --client` (prints
-`LOADED <json>`). Reload the same save to retest a fix from the same state, or another library
-save to test a branch (`bun conductor/tools/library.ts list`). Change the bot only through
-`run-task.ts`: no ad-hoc scripts, no `--takeover`. If your worker is busy (a run is refused
-because another controller is attached), wait or report back; never work around it.
+into it and start its client: `bun conductor/tools/load.ts <worker> <save> --client`, where
+`<save>` is the brief's `lib:<name>` or `bot:<bot>`. It prints `LOADED <json>`; its `replay` is a
+copy of exactly what was loaded, so `load.ts <worker> <replay path> --client` retests a fix from
+the same state (a `bot:` source keeps moving). Load another library save to test a branch
+(`bun conductor/tools/library.ts list`). Change the bot only through `run-task.ts`: no ad-hoc
+scripts, no `--takeover`, no trades with other players (a worker can hold a copy of the main
+account's items). If your worker is busy (a run is refused because another controller is
+attached), wait or report back; never work around it.
 
 If the brief's starting save doesn't exist yet (`none: first create lib:<name> = ...`), make it
 before testing, and prefer generating it:
@@ -78,6 +81,6 @@ format and lint checks on staged files and are refused until they pass.
 ```
 Files: <paths changed or created, including any new conductor/saves/<name>.sav + .json>
 What changed: <3-6 lines>
-Smoke tests: <the save each ran from (its LOADED source), then each RESULT line, verbatim, newest last>
+Smoke tests: <the save each ran from (LOADED source and replay path), then each RESULT line, verbatim, newest last>
 Open questions: <anything the conductor should decide, or "none">
 ```
