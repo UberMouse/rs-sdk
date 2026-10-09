@@ -68,8 +68,38 @@ describe('simulate', () => {
     test('the engine guards act on a built world: hungry and hurt, the bot eats first', async () => {
         const hurt = world().player({ hp: 3 }).inv('Shrimps', 2);
         const r = await simulate(chop, { timeline: hurt.series(30), scan: () => [] });
-        expect(r.legacy[0]).toBe('eat Shrimps');
+        expect(r.sends[0]).toBe('Eat Shrimps');
         expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+    });
+
+    test('the world uses up what the bot eats or drops, from the next tick on, unless the send was refused', async () => {
+        const dropper = defineTask({
+            name: 'drop-one',
+            description: 'eats a shrimp and drops a log',
+            params: z.object({}),
+            steps: [
+                {
+                    name: 'act',
+                    when: () => true,
+                    *run(ctx): Op<Outcome> {
+                        const shrimp = ctx.state().inventory[0];
+                        const logs = ctx.state().inventory.find(i => i.name === 'Logs');
+                        yield* send({ type: 'useInventoryItem', slot: shrimp!.slot, optionIndex: 1, reason: 'eat' });
+                        yield* send({ type: 'dropItem', slot: logs!.slot, reason: 'drop' });
+                        const now = ctx.state().inventory.length;
+                        const next = (yield* wait('a tick', () => false, 1)).state.inventory.map(i => i.name);
+                        return { done: `${now} then ${next.join(',')}` };
+                    },
+                },
+            ],
+        });
+        const kit = world().inv('Shrimps', 2).inv('Logs', 1).series(5);
+        const r = await simulate(dropper, { timeline: kit });
+        expect(r.result.reason).toBe('act: 3 then Shrimps');
+        const refused = await simulate(dropper, { timeline: kit, respond: () => ({ success: false, message: 'no' }) });
+        expect(refused.result.reason).toBe('act: 3 then Shrimps,Shrimps,Logs');
+        const inert = await simulate(dropper, { timeline: kit, react: () => undefined });
+        expect(inert.result.reason).toBe('act: 3 then Shrimps,Shrimps,Logs');
     });
 
     test('a task that never finishes is ended by a stop, not left hanging', async () => {

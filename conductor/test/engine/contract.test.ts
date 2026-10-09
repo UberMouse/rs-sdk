@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../../sdk/types';
-import type { TimelineDriver } from '../../core/drivers/timeline';
+import { DISMISS_WAIT_TICKS } from '../../actions/dismiss';
 import { log, type Op, send, ticks, wait } from '../../core/op';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
@@ -14,9 +14,10 @@ import { runDef, runTask } from './harness';
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
 const xpOf = (s: BotWorldState) => s.skills[0]?.experience ?? 0;
 const count = (xs: string[], x: string) => xs.filter(y => y === x).length;
-/** The guards' calls through BotActions, by label; the eat-if-hurt as a run ends is not one. */
-const calls = (r: { driver: TimelineDriver }, label: string) =>
-    r.driver.commands.filter(c => c.type === 'call' && c.label === label).length;
+/** The low-HP guard's eats; the eat-if-hurt as a run ends is not one. */
+const eats = (r: { sends: string[] }) => count(r.sends, 'Eat Shrimps');
+/** The dialog guard's clicks. */
+const continues = (r: { sends: string[] }) => count(r.sends, 'continue dialog');
 
 /** Done once `tick` is reached. */
 const finishAt = (tick: number): Step => ({
@@ -183,12 +184,11 @@ describe('allow', () => {
         const allowed = await runTask(steps, dialogAt(2, 4), { allow: ['dialog'] });
         expect(allowed.result.reason).toBe('talk: closed at tick 5');
         expect(allowed.sends).toEqual(['talk', 'continue']);
-        expect(allowed.legacy).toEqual([]);
         expect(allowed.result.stepRuns).toEqual({ talk: 1 });
 
         // Without it the guard dismisses the dialog first.
         const guarded = await runTask(steps, dialogAt(2, 4));
-        expect(guarded.legacy).toContain('dismiss');
+        expect(continues(guarded)).toBeGreaterThan(0);
         expect(guarded.result.stepRuns['interrupt:dialog']).toBeGreaterThan(0);
     });
 
@@ -215,7 +215,7 @@ describe('allow', () => {
         const steps = [answer, finishAt(5), idleStep];
         const allowed = await runTask(steps, dialogAt(0, 1), { allow: ['dialog'] });
         expect(allowed.result.status).toBe('done');
-        expect(allowed.legacy).toEqual([]);
+        expect(allowed.sends).toEqual(['continue']);
         expect(allowed.result.stepRuns).toEqual({ answer: 1, idle: 3, finish: 1 });
 
         const guarded = await runTask(steps, dialogAt(0, 1));
@@ -224,8 +224,8 @@ describe('allow', () => {
     });
 });
 
-/** HP 4 of 10 (low) on the ticks `low` picks, with food that the fake eat never uses up. */
-const lowOn = (n: number, low: (t: number) => boolean) => timeline(n, t => ({ hp: low(t) ? 4 : 10, food: 2 }));
+/** HP 4 of 10 (low) on the ticks `low` picks. Each eat uses up one of `food` but heals nothing. */
+const lowOn = (n: number, low: (t: number) => boolean, food = 2) => timeline(n, t => ({ hp: low(t) ? 4 : 10, food }));
 
 /** Waits for tick 10; its finally takes two ticks. */
 function* slowCleanup(): Op<Outcome> {
@@ -243,17 +243,20 @@ function* waitForXp(): Op<Outcome> {
     return { done: `${w.kind} at tick ${w.state.tick}` };
 }
 
+/** A dialog open over two stretches, closed for tick 23 between them. */
+const openTwice = (t: number) => (t >= 2 && t <= 22) || (t >= 24 && t <= 44);
+
 const dialogs = (open: (t: number) => boolean) => timeline(40, t => ({ dialog: open(t), xp: t >= 30 ? 25 : 0 }));
 
 describe('guard episodes', () => {
     test('low-HP eats are bounded within one episode', async () => {
         const r = await runTask(
             [idleStep],
-            lowOn(20, () => true),
+            lowOn(20, () => true, 9),
         );
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218) after 8 eats');
-        expect(calls(r, 'bot.eatFood')).toBe(8);
+        expect(eats(r)).toBe(8);
     });
 
     test('a healthy tick ends a low-HP episode, so the next one gets its own eats', async () => {
@@ -261,10 +264,10 @@ describe('guard episodes', () => {
         // idle step is legacy, so only the check between steps sees tick 6.
         const r = await runTask(
             [finishAt(13), legacyIdle],
-            lowOn(20, t => t !== 6 && t < 13),
+            lowOn(20, t => t !== 6 && t < 13, 12),
         );
         expect(r.result.reason).toBe('finish: at tick 13');
-        expect(calls(r, 'bot.eatFood')).toBe(12);
+        expect(eats(r)).toBe(12);
     });
 
     test('the low-HP guard re-checks HP after the aborted step cleans up, and does not eat once healed', async () => {
@@ -273,7 +276,7 @@ describe('guard episodes', () => {
             lowOn(20, t => t === 3),
         );
         expect(r.result.reason).toBe('work: reached tick 10');
-        expect(r.legacy).toEqual([]);
+        expect(eats(r)).toBe(0);
         expect(r.result.stepRuns).toEqual({ work: 2, 'interrupt:low-hp': 1 });
     });
 
@@ -284,17 +287,21 @@ describe('guard episodes', () => {
         );
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('interrupt:dialog: dialog stuck open: ');
-        expect(count(r.legacy, 'dismiss')).toBe(6);
+        // Each run clicks, and waits DISMISS_WAIT_TICKS for the page to move on.
+        expect(continues(r)).toBe(6);
+        expect(r.driver.state().tick).toBe(2 + 6 * DISMISS_WAIT_TICKS);
     });
 
     test('a dialog seen closed mid-wait ends its episode, so the next one gets its own runs', async () => {
-        // Four stuck runs, closed at tick 10, four more: eight in all, over the limit of five.
+        // Four stuck runs, then a fifth whose click sees the dialog close at tick 23, where the guard
+        // finds it closed; four more stuck runs and a closing one. Eight stuck runs in all, more than
+        // the five an episode allows.
         const r = await runTask(
             [{ name: 'wait', when: () => true, run: waitForXp }],
-            dialogs(t => t >= 2 && t <= 18 && t !== 10),
+            timeline(70, t => ({ dialog: openTwice(t), xp: t >= 60 ? 25 : 0 })),
         );
-        expect(r.result.reason).toBe('wait: met at tick 30');
-        expect(count(r.legacy, 'dismiss')).toBe(8);
+        expect(r.result.reason).toBe('wait: met at tick 60');
+        expect(continues(r)).toBe(10);
     });
 });
 
@@ -309,7 +316,7 @@ describe('low HP with nothing to eat', () => {
         );
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toMatch(/^interrupt:low-hp: hp \d\/10 at \(\d+,\d+\), no food$/);
-        expect(calls(r, 'bot.eatFood')).toBe(0);
+        expect(eats(r)).toBe(0);
     });
 
     test('flat HP out of combat waits for regeneration, then gives up after the cap', async () => {
@@ -441,7 +448,7 @@ describe('task guards', () => {
         );
         expect(r.result.reason).toBe('work: met at tick 20');
         // North still holds as the low-HP guard starts to eat, but ranks below it, so the eat is not cut short.
-        expect(r.legacy).toEqual(['eat Shrimps']);
+        expect(r.sends).toEqual(['start', 'cleanup', 'Eat Shrimps', 'start', 'cleanup']);
         expect(guardLog(r.events)).toEqual(['guard interrupt:low-hp (abort) at 3']);
         expect(r.result.stepRuns['interrupt:north']).toBeUndefined();
     });

@@ -1,7 +1,8 @@
 import { z } from 'zod/v4';
 import type { NearbyLoc } from '../../sdk/types';
 import { CHOP_OPTION, CHOP_WAIT_TICKS, chop } from '../actions/chop';
-import { call, log, type Op, wait } from '../core/op';
+import { drop } from '../actions/drop';
+import { log, type Op, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
@@ -125,10 +126,10 @@ export default defineTask({
             when: ctx => ctx.params.onFull === 'drop' && ctx.inventoryFull(),
             *run(ctx) {
                 if (logsHeld(ctx) === 0) return fullWithoutLogs(ctx);
-                // There is no drop op; `call` runs bot.dropItem under the engine's step bounds.
-                const dropped = yield* call('bot.dropItem', () => ctx.bot.dropItem(TREES[ctx.params.tree].logs, 'all'));
+                const dropped = yield* drop(ctx, TREES[ctx.params.tree].logs);
                 if (ctx.inventoryFull()) {
-                    return { fail: `inventory still full after dropping logs (${dropped.message})` };
+                    const how = dropped.ok ? `dropped ${dropped.slotsDropped}` : dropped.message;
+                    return { fail: `inventory still full after dropping logs (${how})` };
                 }
             },
         },

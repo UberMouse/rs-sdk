@@ -1,10 +1,12 @@
 // Guards every task runs under, so no task has to handle death, low HP, the Wilderness, blocking
 // dialogs or leftover modals itself. The engine checks them at every tick of a generator step's waits
 // and between steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
-import type { BotActions } from '../../sdk/actions';
 import type { BotWorldState } from '../../sdk/types';
+import type { ActionContext } from '../actions/context';
+import { closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
+import { eat } from '../actions/eat';
 import type { GuardOutcome } from '../core/interpret';
-import { call, log, type Op, send, ticks, wait } from '../core/op';
+import { log, type Op, ticks } from '../core/op';
 import { isInWilderness } from './area';
 import { isLowHp } from './threat';
 
@@ -22,42 +24,24 @@ const MAX_EATS_PER_EPISODE = 8;
 const REGEN_SLICE_TICKS = 5;
 /** Ticks of regeneration waiting per low-HP episode before giving up. */
 const REGEN_CAP_TICKS = 500;
-/** The run fails on the dialog guard's Nth run within one episode that leaves the dialog open. */
+/** The run fails on the dialog guard's Nth run within one episode that does not clear the dialog. */
 const DIALOG_STUCK_LIMIT = 6;
 /** Ticks one fight may last while the bot only waits for auto-retaliate to win it. */
 const COMBAT_TICK_LIMIT = 40;
-/** Ticks a close may take to show in the state; bot.dismissBlockingUI allows 2s (5 ticks) after each. */
-const INTERFACE_CLOSE_TICKS = 5;
 /** The run fails on the interface guard's Nth close within one episode that leaves the interface open. */
 const INTERFACE_STUCK_LIMIT = 3;
-
-/**
- * Modals the interface guard must never close: closing declines a two-party screen or strands the
- * player (it must be completed). A copy of sdk/actions.ts NEVER_AUTO_CLOSE, which is not exported, so
- * the guard closes exactly what bot.dismissBlockingUI does. Ids from server/content/pack/interface.pack.
- */
-export const NEVER_CLOSE_INTERFACES: ReadonlySet<number> = new Set([
-    10984, // grand_exchange: a deliberate offer/draft session
-    3323, // trademain: closing declines a player trade
-    3443, // tradeconfirm: the second trade screen, same risk
-    6412, // duel_confirm: same risk for duels
-    6554, // macro_cube: anti-macro random event, must be solved
-    3559, // player_kit: character design, must be accepted
-]);
 
 /** The shared guards (GUARDS); a task's own guards take other names. */
 export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog' | 'interface';
 /** The guards a task may turn off: death and the Wilderness protect the account and are always on. */
 export type AllowableGuard = Exclude<GuardName, 'death' | 'wilderness'>;
 
-/** What a guard knows of the run besides the state it is checking. */
-export interface GuardRun {
+/** What a guard knows of the run besides the state it is checking; its ops read the latest state through it. */
+export interface GuardRun extends ActionContext {
     /** Game tick the run started at; messages from earlier ticks are not this run's. */
     readonly startTick: number;
     /** Where the bot stood at the start of the previous loop; null without a player. */
     readonly previousPos: { x: number; z: number } | null;
-    /** For the legacy actions the guards still call (eating, dismissing dialogs). */
-    readonly bot: BotActions;
 }
 
 /**
@@ -82,7 +66,7 @@ export interface TaskGuard<E extends object = object, N extends string = string>
 /** The name a guard has in logs, step counts and failure reasons. */
 export const guardLabel = (name: string) => `interrupt:${name}`;
 
-/** An inventory item with an Eat option; Drink items are not food for `bot.eatFood`. */
+/** An inventory item with an Eat option; Drink items are not food here. */
 export const findFood = (state: BotWorldState): InventoryItem | undefined =>
     state.inventory.find(i => i.optionsWithIndex.some(o => /^eat$/i.test(o.text)));
 
@@ -152,60 +136,53 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
             return;
         }
         if (++episode.eats > MAX_EATS_PER_EPISODE) return { fail: `${where} after ${MAX_EATS_PER_EPISODE} eats` };
-        const r = yield* call('bot.eatFood', () => run.bot.eatFood(food));
-        yield* log(`low hp: ${where}: ${r.message}`);
-        if (!r.success) return { fail: `${where}: could not eat ${food.name}: ${r.message}` };
+        const r = yield* eat(run, food);
+        if (!r.ok) return { fail: `${where}: could not eat ${food.name}: ${r.message}` };
+        yield* log(`low hp: ${where}: ate ${food.name}, +${r.hpGained} hp`);
     },
 };
 
 /**
  * Clears level-up and other "click to continue" dialogs. Most BotActions methods do this themselves
- * (dismissBlockingUI); ops send raw, so this guard does. A task that drives dialogs on purpose sets
- * `allow: ['dialog']`.
+ * (dismissBlockingUI); ops send raw, so this guard does, through the dismiss op. It never answers a
+ * choice, and does not fire on a skill make menu, which the op that opened it answers. A task that
+ * drives dialogs on purpose sets `allow: ['dialog']`.
  */
 export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
     name: 'dialog',
     policy: 'suspend',
     episode: () => ({ stuckRuns: 0 }),
-    when: s => s.dialog.isOpen,
+    when: s => s.dialog.isOpen && !isSkillMenu(s.dialog),
     *run(_fired, run, episode) {
-        yield* call('bot.dismissBlockingUI', () => run.bot.dismissBlockingUI());
-        const { dialog } = yield* ticks(0);
-        if (!dialog.isOpen) return;
-        // dismissBlockingUI leaves multi-option dialogs alone and returns at once; wait a tick so the
-        // loop yields, and give up if nothing else closes it.
-        yield* ticks(1);
-        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT)
+        const r = yield* dismiss(run, { modals: false });
+        if (r.ok) return;
+        // A choice is left alone (and a refused send waits for nothing): wait a tick so the loop
+        // yields, and give up if nothing else closes it.
+        if (r.reason !== 'stuck') yield* ticks(1);
+        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT) {
+            const { dialog } = run.state();
             return { fail: `dialog stuck open: ${dialog.options.map(o => o.text).join(' | ')}` };
+        }
     },
 };
 
 /**
- * An open main modal bot.dismissBlockingUI would close: a book, scroll or other informational one, not a
- * shop, bank or Grand Exchange session nor one in NEVER_CLOSE_INTERFACES.
- */
-export const closableInterface = (s: BotWorldState): boolean =>
-    s.interface.isOpen &&
-    !s.shop.isOpen &&
-    !s.bank.isOpen &&
-    !s.ge?.isOpen &&
-    !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId);
-
-/**
  * Closes a leftover informational modal: while a main modal is open the server runs no loc or NPC
- * interaction (Player.tryInteract needs canAccess), so every chop would time out. Most BotActions methods
- * close these first (dismissBlockingUI); ops send raw, so this guard does. A task that opens one on purpose sets `allow: ['interface']`.
+ * interaction (Player.tryInteract needs canAccess), so every chop would time out. Most BotActions
+ * methods close these first (dismissBlockingUI); ops send raw, so this guard does, through the dismiss
+ * op. A task that opens one on purpose sets `allow: ['interface']`.
  */
 export const interfaceGuard: TaskGuard<{ stuckCloses: number }, GuardName> = {
     name: 'interface',
     policy: 'suspend',
     episode: () => ({ stuckCloses: 0 }),
     when: closableInterface,
-    *run(fired, _run, episode) {
+    *run(fired, run, episode) {
         const id = fired.interface.interfaceId;
-        yield* send({ type: 'closeModal', reason: `close interface ${id}` });
-        const closed = yield* wait(`interface ${id} closed`, s => !closableInterface(s), INTERFACE_CLOSE_TICKS);
-        if (closed.kind === 'met') return;
+        const r = yield* dismiss(run, { dialogs: false });
+        if (r.ok) return;
+        // A refused close waited for nothing: wait a tick so the loop yields.
+        if (r.reason !== 'stuck') yield* ticks(1);
         if (++episode.stuckCloses >= INTERFACE_STUCK_LIMIT)
             return { fail: `interface ${id} stuck open after ${INTERFACE_STUCK_LIMIT} closes` };
     },

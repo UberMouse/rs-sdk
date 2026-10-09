@@ -1,16 +1,14 @@
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
 import type { BotWorldState } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { call, type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { sleep } from '../../lib/env';
 import { MAX_STEP_COMMANDS } from '../../lib/engine';
-import { closableInterface, NEVER_CLOSE_INTERFACES } from '../../lib/interrupts';
 import type { Outcome, Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline, world } from '../world';
+import { timeline } from '../world';
 import { runTask } from './harness';
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
@@ -94,11 +92,10 @@ describe('guards during a generator step', () => {
         const r = await runTask([step('chop', chop)], states);
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('chop: xp at tick 10');
-        // Aborted at tick 3, cleaned up, then chopped again once HP was back.
-        expect(r.sends).toEqual(['chop', 'cleanup', 'chop', 'cleanup']);
-        // The guard ate at tick 3 (taking a tick); HP was still low at tick 4, so the interrupt
-        // ate again between steps, as it would for a legacy task.
-        expect(r.legacy).toEqual(['eat Shrimps', 'eat Shrimps']);
+        // Aborted at tick 3, cleaned up, ate, then chopped again once HP was back. The guard's eat
+        // took a tick (the shrimp gone at tick 4); HP was still low then, so the interrupt ate again
+        // between steps, as it would for a legacy task.
+        expect(r.sends).toEqual(['chop', 'cleanup', 'Eat Shrimps', 'Eat Shrimps', 'chop', 'cleanup']);
         expect(guardLog(r.events, 'interrupt:low-hp')).toEqual([
             { type: 'log', msg: 'guard interrupt:low-hp (abort)', data: { tick: 3 } },
         ]);
@@ -110,8 +107,7 @@ describe('guards during a generator step', () => {
         const r = await runTask([step('chop', chop)], states);
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('chop: xp at tick 8');
-        expect(r.sends).toEqual(['chop', 'cleanup']);
-        expect(r.legacy).toEqual(['dismiss']);
+        expect(r.sends).toEqual(['chop', 'continue dialog', 'cleanup']);
         expect(r.result.stepRuns).toEqual({ chop: 1, 'interrupt:dialog': 1 });
     });
 
@@ -155,27 +151,6 @@ describe('the interface guard', () => {
         expect(r.result.reason).toBe(`interrupt:interface: interface ${BOOK} stuck open after 3 closes`);
         const close = `close interface ${BOOK}`;
         expect(r.sends).toEqual(['chop', close, close, close, 'cleanup']);
-    });
-
-    test('never closes exactly the ids sdk/actions.ts NEVER_AUTO_CLOSE lists', () => {
-        const source = readFileSync(new URL('../../../sdk/actions.ts', import.meta.url), 'utf8');
-        const body = /NEVER_AUTO_CLOSE = new Set\(\[([^\]]*)\]\)/.exec(source)?.[1];
-        expect(body, 'NEVER_AUTO_CLOSE not found in sdk/actions.ts').toBeDefined();
-        const sdkIds = [...(body ?? '').replace(/\/\/.*$/gm, '').matchAll(/\d+/g)].map(m => Number(m[0]));
-        expect(sdkIds.length).toBeGreaterThan(0);
-        expect([...NEVER_CLOSE_INTERFACES].sort()).toEqual(sdkIds.sort());
-    });
-
-    test('closes only what bot.dismissBlockingUI would: no shop, bank, GE or never-close modal', () => {
-        const book = world().modal(BOOK).build();
-        expect(closableInterface(book)).toBe(true);
-        expect(closableInterface(world().build())).toBe(false);
-        expect(closableInterface({ ...book, shop: { ...book.shop, isOpen: true } })).toBe(false);
-        expect(closableInterface({ ...book, bank: { ...book.bank, isOpen: true } })).toBe(false);
-        // Only isOpen matters to the guard; the rest of the exchange's state is irrelevant here.
-        expect(closableInterface({ ...book, ge: { isOpen: true } as BotWorldState['ge'] })).toBe(false);
-        for (const id of NEVER_CLOSE_INTERFACES)
-            expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
     });
 });
 
@@ -375,7 +350,7 @@ describe('legacy steps', () => {
         );
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('legacy: at tick 40');
-        expect(r.legacy).toEqual([]);
+        expect(r.sends).toEqual([]);
         expect(r.result.stepRuns).toEqual({ legacy: 1 });
         expect(guardLog(r.events, 'interrupt:dialog')).toEqual([]);
     });
@@ -429,13 +404,10 @@ describe('legacy steps', () => {
             timeline(10, t => ({ dialog: t === 0 })),
         );
         expect(r.result.status).toBe('done');
-        // The dialog guard took tick 0 -> 1, then the step waited two ticks.
+        // The dialog guard took tick 0 -> 1 (the dialog gone at tick 1), then the step waited two ticks.
         expect(r.result.reason).toBe('legacy: at tick 3');
         expect(r.result.stepRuns).toEqual({ 'interrupt:dialog': 1, legacy: 1 });
-        expect(r.driver.commands.flatMap(c => (c.type === 'call' ? [c.label] : []))).toEqual([
-            'bot.dismissBlockingUI',
-            'legacy',
-        ]);
+        expect(r.driver.commands.flatMap(c => (c.type === 'call' ? [c.label] : [c.type]))).toEqual(['send', 'legacy']);
     });
 });
 

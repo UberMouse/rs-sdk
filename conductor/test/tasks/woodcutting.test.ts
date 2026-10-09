@@ -63,8 +63,7 @@ describe('woodcutting: chopping', () => {
             stops: xp(25),
         });
         expect(r.result.reason).toBe('reached +25 Woodcutting xp');
-        expect(r.legacy).toEqual(['eat Shrimps']);
-        expect(r.sends).toEqual([CHOP, CHOP]);
+        expect(r.sends).toEqual([CHOP, 'Eat Shrimps', CHOP]);
         expect(r.result.stepRuns).toEqual({ chop: 2, 'interrupt:low-hp': 1 });
     });
 });
@@ -79,13 +78,21 @@ describe('woodcutting: a full inventory', () => {
             stops: xp(25),
         });
         expect(r.result.reason).toBe('reached +25 Woodcutting xp');
-        expect(r.legacy).toEqual(['drop /^Logs$/i all']);
+        // The logs are all gone the tick after the first drop.
+        expect(r.sends).toEqual(['drop Logs', CHOP]);
         expect(r.steps).toEqual(['drop-logs', 'chop']);
     });
 
     test('onFull drop fails when the drop leaves the inventory full', async () => {
-        const r = await simulate(woodcutting, { params: { onFull: 'drop' }, timeline: full.series(5) });
-        expect(r.result.reason).toBe('drop-logs: inventory still full after dropping logs (dropped)');
+        // The world ignores the drop.
+        const r = await simulate(woodcutting, {
+            params: { onFull: 'drop' },
+            timeline: full.series(5),
+            react: () => undefined,
+        });
+        expect(r.result.reason).toBe(
+            'drop-logs: inventory still full after dropping logs (Drop of Logs (slot 1) was not observed)',
+        );
     });
 
     test('onFull stop ends the run done, holding the logs', async () => {
@@ -125,7 +132,7 @@ describe('woodcutting: no tree', () => {
         const r = await simulate(woodcutting, {
             timeline: stumps.inv('Shrimps', 1).series(150, (w, i) => w.player({ hp: i === 100 ? 4 : 10 })),
         });
-        expect(r.legacy).toEqual(['eat Shrimps']);
+        expect(r.sends).toEqual(['Eat Shrimps']);
         expect(r.result.reason).toBe('chop: no reachable tree nearby for 120s');
         expect(r.driver.state().tick).toBe(300);
     });
