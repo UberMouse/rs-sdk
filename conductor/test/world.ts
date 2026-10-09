@@ -273,6 +273,17 @@ export class World {
         });
     }
 
+    /** Opens main modal `id` (a book, a scroll) as the client publishes it, or closes it with `false`. */
+    modal(id: number | false): World {
+        const open = id !== false;
+        const interfaceId = open ? id : -1;
+        return this.with({
+            interface: { isOpen: open, interfaceId, options: [] },
+            modalOpen: open,
+            modalInterface: interfaceId,
+        });
+    }
+
     /** Sets a skill's level (and base level); `xp` defaults to what it had, else 0. Adds the skill if absent. */
     skill(name: string, level: number, xp?: number): World {
         const had = this.s.skills.find(k => k.name === name);
@@ -310,6 +321,8 @@ export interface StateSpec {
     dead?: boolean;
     /** The bot is fighting something. */
     inCombat?: boolean;
+    /** This main modal is open. */
+    interfaceId?: number;
 }
 
 /** The common one-state shorthand of the core and engine tests: a Woodcutting bot at Lumbridge. */
@@ -324,6 +337,7 @@ export function worldState(
         food = 0,
         dead = false,
         inCombat = false,
+        interfaceId,
     }: StateSpec = {},
 ): BotWorldState {
     let w = world()
@@ -333,6 +347,7 @@ export function worldState(
     if (food > 0) w = w.inv('Shrimps', food);
     if (dialog) w = w.dialog();
     if (dead) w = w.message('Oh dear, you are dead!');
+    if (interfaceId !== undefined) w = w.modal(interfaceId);
     return w.build();
 }
 

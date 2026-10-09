@@ -4,10 +4,10 @@
 //
 // A task is an ordered list of steps; every loop the first step whose `when()`
 // passes runs. Shared guards (lib/interrupts.ts) act before every step and at the
-// waits of generator steps, so no task has to handle death, low HP or blocking
-// dialogs itself; a task adds its own threats the same way with `guards`. A
-// watchdog ends runs that stop making progress. A step's
-// `run` is either legacy `async` code or a generator op (core/op.ts).
+// waits of generator steps, so no task has to handle death, low HP, blocking
+// dialogs or leftover modals itself; a task adds its own threats the same way
+// with `guards`. A watchdog ends runs that stop making progress. A step's `run`
+// is either legacy `async` code or a generator op (core/op.ts).
 import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';

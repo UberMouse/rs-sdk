@@ -5,10 +5,11 @@ import { TickStall } from '../../core/interpret';
 import { call, type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { sleep } from '../../lib/env';
 import { MAX_STEP_COMMANDS } from '../../lib/engine';
+import { closableInterface, NEVER_CLOSE_INTERFACES } from '../../lib/interrupts';
 import type { Outcome, Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline } from '../world';
+import { timeline, world } from '../world';
 import { runTask } from './harness';
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
@@ -122,6 +123,49 @@ describe('guards during a generator step', () => {
         expect(r.result.reason).toStartWith('interrupt:death: died');
         expect(r.sends).toEqual(['open bank', 'close bank']);
         expect(r.result.lastStep).toBe('bank');
+    });
+});
+
+/** A main modal outside NEVER_CLOSE_INTERFACES, standing in for a book or quest scroll. */
+const BOOK = 1234;
+
+describe('the interface guard', () => {
+    test('a book opened mid-wait is closed and the same wait completes', async () => {
+        const states = timeline(20, t => ({ interfaceId: t === 3 || t === 4 ? BOOK : undefined, xp: t >= 8 ? 25 : 0 }));
+        const r = await runTask([step('chop', chop)], states);
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('chop: xp at tick 8');
+        expect(r.sends).toEqual(['chop', `close interface ${BOOK}`, 'cleanup']);
+        expect(r.result.stepRuns).toEqual({ chop: 1, 'interrupt:interface': 1 });
+    });
+
+    test('a task that allows it keeps the interface open', async () => {
+        const states = timeline(20, t => ({ interfaceId: t >= 3 ? BOOK : undefined, xp: t >= 8 ? 25 : 0 }));
+        const r = await runTask([step('chop', chop)], states, { allow: ['interface'] });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual(['chop', 'cleanup']);
+        expect(r.result.stepRuns).toEqual({ chop: 1 });
+    });
+
+    test('an interface that will not close fails the run after the episode limit', async () => {
+        const states = timeline(30, t => ({ interfaceId: t >= 3 ? BOOK : undefined }));
+        const r = await runTask([step('chop', chop)], states);
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`interrupt:interface: interface ${BOOK} stuck open after 3 closes`);
+        const close = `close interface ${BOOK}`;
+        expect(r.sends).toEqual(['chop', close, close, close, 'cleanup']);
+    });
+
+    test('closes only what bot.dismissBlockingUI would: no shop, bank, GE or never-close modal', () => {
+        const book = world().modal(BOOK).build();
+        expect(closableInterface(book)).toBe(true);
+        expect(closableInterface(world().build())).toBe(false);
+        expect(closableInterface({ ...book, shop: { ...book.shop, isOpen: true } })).toBe(false);
+        expect(closableInterface({ ...book, bank: { ...book.bank, isOpen: true } })).toBe(false);
+        // Only isOpen matters to the guard; the rest of the exchange's state is irrelevant here.
+        expect(closableInterface({ ...book, ge: { isOpen: true } as BotWorldState['ge'] })).toBe(false);
+        for (const id of NEVER_CLOSE_INTERFACES)
+            expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
     });
 });
 

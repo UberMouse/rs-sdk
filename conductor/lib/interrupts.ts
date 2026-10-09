@@ -1,10 +1,10 @@
-// Guards every task runs under, so no task has to handle death, low HP, the Wilderness or blocking
-// dialogs itself. The engine checks them at every tick of a generator step's waits and between
-// steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
+// Guards every task runs under, so no task has to handle death, low HP, the Wilderness, blocking
+// dialogs or leftover modals itself. The engine checks them at every tick of a generator step's waits
+// and between steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
 import type { BotActions } from '../../sdk/actions';
 import type { BotWorldState } from '../../sdk/types';
 import type { GuardOutcome } from '../core/interpret';
-import { call, log, type Op, ticks } from '../core/op';
+import { call, log, type Op, send, ticks, wait } from '../core/op';
 import { isInWilderness } from './area';
 import { isLowHp } from './threat';
 
@@ -26,9 +26,27 @@ const REGEN_CAP_TICKS = 500;
 const DIALOG_STUCK_LIMIT = 5;
 /** Ticks one fight may last while the bot only waits for auto-retaliate to win it. */
 const COMBAT_TICK_LIMIT = 40;
+/** Ticks a close may take to show in the state; bot.dismissBlockingUI allows 2s (5 ticks) after each. */
+const INTERFACE_CLOSE_TICKS = 5;
+/** Closes that leave an interface open, within one episode, before the run gives up. */
+const INTERFACE_STUCK_LIMIT = 3;
+
+/**
+ * Modals the interface guard must never close: closing declines a two-party screen or strands the
+ * player (it must be completed). A copy of sdk/actions.ts NEVER_AUTO_CLOSE, which is not exported, so
+ * the guard closes exactly what bot.dismissBlockingUI does. Ids from server/content/pack/interface.pack.
+ */
+export const NEVER_CLOSE_INTERFACES: ReadonlySet<number> = new Set([
+    10984, // grand_exchange: a deliberate offer/draft session
+    3323, // trademain: closing declines a player trade
+    3443, // tradeconfirm: the second trade screen, same risk
+    6412, // duel_confirm: same risk for duels
+    6554, // macro_cube: anti-macro random event, must be solved
+    3559, // player_kit: character design, must be accepted
+]);
 
 /** The shared guards (GUARDS); a task's own guards take other names. */
-export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog';
+export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog' | 'interface';
 /** The guards a task may turn off: death and the Wilderness protect the account and are always on. */
 export type AllowableGuard = Exclude<GuardName, 'death' | 'wilderness'>;
 
@@ -162,8 +180,45 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
     },
 };
 
+/**
+ * An open main modal bot.dismissBlockingUI would close: a book, scroll or other informational one, not a
+ * shop, bank or Grand Exchange session nor one in NEVER_CLOSE_INTERFACES.
+ */
+export const closableInterface = (s: BotWorldState): boolean =>
+    s.interface.isOpen &&
+    !s.shop.isOpen &&
+    !s.bank.isOpen &&
+    !s.ge?.isOpen &&
+    !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId);
+
+/**
+ * Closes a leftover informational modal: while a main modal is open the server runs no loc or NPC
+ * interaction (Player.tryInteract needs canAccess), so every chop would time out. BotActions methods
+ * close these first; ops send raw. A task that opens one on purpose sets `allow: ['interface']`.
+ */
+export const interfaceGuard: TaskGuard<{ stuckCloses: number }, GuardName> = {
+    name: 'interface',
+    policy: 'suspend',
+    episode: () => ({ stuckCloses: 0 }),
+    when: closableInterface,
+    *run(fired, _run, episode) {
+        const id = fired.interface.interfaceId;
+        yield* send({ type: 'closeModal', reason: `close interface ${id}` });
+        const closed = yield* wait(`interface ${id} closed`, s => !closableInterface(s), INTERFACE_CLOSE_TICKS);
+        if (closed.kind === 'met') return;
+        if (++episode.stuckCloses >= INTERFACE_STUCK_LIMIT)
+            return { fail: `interface ${id} stuck open after ${INTERFACE_STUCK_LIMIT} closes` };
+    },
+};
+
 /** Priority order: the first whose `when` holds fires. */
-export const GUARDS: readonly TaskGuard<object, GuardName>[] = [deathGuard, wildernessGuard, lowHpGuard, dialogGuard];
+export const GUARDS: readonly TaskGuard<object, GuardName>[] = [
+    deathGuard,
+    wildernessGuard,
+    lowHpGuard,
+    dialogGuard,
+    interfaceGuard,
+];
 
 /**
  * For a skilling task whose interaction (a chop, a mine) would cancel auto-retaliate: while something
