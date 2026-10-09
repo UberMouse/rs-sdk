@@ -281,18 +281,18 @@ buffered.
 
 ### Integration suite (`conductor/test/integration/`)
 
-- `withFixtureBot(save, fn)`: unique name → `createSaveData` (from `sdk/test/utils/save-generator`)
-  written under `RS_ENGINE_DIR/data/players/main` → temp `bots/<name>/bot.env` → spawn
-  `server/webclient/src/lite/runner.ts <name>` (cwd `server/webclient`) and wait for `Gateway
-  connected` → `runScript` SDK → `fn` → kill runner, remove the bot dir.
+- `withFixtureBot(save, fn)`: unique name → temp `bots/<name>/bot.env` → `createSaveData` (from
+  `sdk/test/utils/save-generator`) written by `conductor/lib/saves.ts` `writeSave`, which asks the
+  engine's management port which file it reads → `conductor/lib/client.ts` `startLiteClient`
+  (attached) → SDK → `fn` → stop the client, remove the bot dir.
 - One atomic test per `conductor/actions` op (sdk/test/PRINCIPLES.md style: minimal inventory,
   exit on the observed effect), parity tests against `bot.X` while both exist, one short smoke
   per task at its verified spot, and an upstream-contract set (not built: only the per-op and
   per-task files exist).
 - `bun run test:integration [filter] [-j N]`: parallel (lite clients are cheap), table of
-  pass/fail + time. Gate: the task-review skill and the conductor's commit rule require a green
-  run for changes to `conductor/core` or `conductor/actions` (a git hook can't, it needs the
-  local stack).
+  pass/fail + time. Gate (not built, on the roadmap): the task-review skill and the conductor's
+  commit rule would require a green run for changes to `conductor/core` or `conductor/actions` (a
+  git hook can't, it needs the local stack).
 
 ## Phases
 

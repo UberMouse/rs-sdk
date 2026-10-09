@@ -11,12 +11,11 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 State at 2026-10-09T08:41Z (run 1 paused): total level 310 (WC 70, FM 54, Mining 46, Fletching 35,
 HP 22, Def 21, Str 19, Att 17, Prayer 16, rest 1). conductor1 logged out at the SE Varrock mine
 (snapshot `pause-1`); bank at Varrock West holds 16 longbows, 2 knives, an uncut ruby, 309 shafts.
-Catalog, reviewed: `woodcutting`, `shop`, `combat`, `firemaking`, `pickup`, `fletching`.
-Committed WITHOUT a finished task-review (run 1 was paused mid-review) — review before relying on them:
-- `bank` — smoke-tested; review stopped in round 1; depositAllExcept never run live.
-- `smithing` — never smoke-tested; furnace/anvil coordinates unconfirmed.
-- `mining` — smoke-tested; review stopped in round 2 with 6 verified C findings unfixed.
-- lib `TICK_MS` + engine idle poll + woodcutting drop-mode fix — review stopped at final verify.
+Catalog: `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
+`smithing`. All nine were ported to generator steps (`conductor/docs/interruptible-tasks.md`) and
+reviewed with `task-review` on 2026-10-10, each with unit tests and an integration smoke test;
+that supersedes run 1's unfinished reviews of `bank`, `smithing` and `mining`. No conductor run
+has used them since the port: watch the first runs of each.
 
 - Loop woodcutting (~300k XP/hr) -> firemaking (~810k XP/hr) for logs/XP; both are the fastest
   methods the account has. Combat is the slowest (Attack 41k/hr, Strength 45k/hr, HP 13k/hr).
@@ -39,13 +38,10 @@ requirements before planning it.
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
-- `woodcutting`, `shop`, `combat`, `firemaking` — in catalog.
-- `fletching` (knife + logs -> arrow shafts/shortbows; consumes woodcutting output, fast XP) — idea.
-  Needs a knife from the General Store: one `shop` call.
+- `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
+  `smithing` — in catalog.
 - `fishing` (shrimps/sardines, Lumbridge/Draynor; needs a net, 1 shop call) then `cooking` on a
   range (consumes the catch, gives food for `combat`'s `food` param) — idea
-- `mining` (copper/tin near Lumbridge; pickaxe = 1 shop call) then `smithing` at furnace + anvil
-  (bronze bars -> kit and sellable items) — idea
 - `crafting` (leather/needle, cheap) and `thieving` (men/farmers; HP 17 now survives stuns) — idea
 - `agility` course (Draynor rooftop, Gnome course) — idea, check Unlocks/wiki first
 - `woodcutting` bank mode (keep logs for Firemaking/Fletching and money) — idea
@@ -58,12 +54,17 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
 Changes to the conductor system itself, decided with the user; not for the conductor to start
 on its own.
 
-- **Interrupts and long actions.** Interrupts only run between steps, so a task that waits on
-  a long action has to reimplement the SDK action to make it interruptible. `woodcutting`
-  copies `bot.chopTree`, including its `dismissBlockingUI` call, and holds its own "in combat:
-  wait, don't click" block. Design an architecture where the engine owns waiting on an
-  action's effect and interrupting it, so tasks state intent ("chop this tree") instead of
-  polling. Move the combat wait into it as a shared interrupt.
+- **Interruptible tasks: what is left.** Built on 2026-10-10 (`conductor/docs/interruptible-tasks.md`,
+  which marks what was not built): generator steps, ops in `conductor/actions/`, guards at every
+  wait, scripted-world unit tests, the integration suite, recording and replay. Left:
+  - `conductor/tools/upstream-drift.ts`: list upstream `sdk/actions.ts` changes since the commit
+    each op's "Ported from ... @ <sha>" header names, so fixes get re-ported. Drift is manual now.
+  - Run `bun test conductor` inside `verify:conductor`, and require a green
+    `bun run test:integration` before committing changes to `conductor/core` or `conductor/actions`.
+  - A reactive simulator (the plan's "sim later") beyond `test/react.ts`'s scripted reactions.
+  - walkTo has no stairs, ladders or ferries: a route across levels fails `no-path`.
+  - Recordings (about 2.8 MB per bot-hour) and integration leftovers (`conductor/runs/it*`, and
+    one `it*` account and save per integration test in the shared engine) are never cleaned up.
 - **Task → agent decisions.** Tasks can only end with a RESULT. Add a way for a task to raise a
   predefined decision to the supervising agent mid-run (pause with a question and options)
   instead of failing and making the conductor re-plan from scratch.
@@ -112,22 +113,13 @@ Review findings `task-review` deferred because their fix needs work outside the 
 
 - combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
   the run ends with `inCombat: true` and the next run is refused ("in combat ... handle the
-  attacker first", engine.ts ~l.208). The task can't fix this: no stop hook, and `isComplete` runs
+  attacker first", `executeTask` in engine.ts). The task can't fix this: no stop hook, and `isComplete` runs
   after `checkStops`. The engine fix is to defer a stop while `player.combat.inCombat`, with a
   bounded grace of about 30 s, or to wait out a fight before refusing at start (robustness R5,
   safety S1).
 - Engine/lib: `Counter` has no read method (tasks read with `add(0)`); add `value()` (shop review).
-- Engine/lib: export a `TICK_MS` constant (400 ms, `learnings/local-server.md`). combat.ts was
-  authored with `MS_PER_TICK = 600` after the page was corrected; one reviewer caught it.
-  pickup.ts repeated it (`TICK_MS = 600`, four lenses caught it); it now uses wall-clock time.
-- Lib: pickup and fletching copy the same `attacked` step (fail on any `inCombat`); extract a
-  shared step into `conductor/lib` (next to `returnToAreaStep`) (code-quality Q4, contract T1).
-- SDK: `bot.fletchLogs` clicks the product's make-1 button, so the fletching task cuts one log per
-  call (~4 s/log against 0.8 s); add a quantity option (Make 10 / Make X with the count dialog)
-  and let the task batch (game-semantics G5).
-- Knowledge: the headless-arrow recipe (Feathers on Arrow shafts) the fletching task uses is not
-  in `learnings/fletching.md`; give it to the knowledge-curator (contract T6).
-- Engine: a smoke test never exercises failure branches (woodcutting "area depleted", shop
-  `shop_not_open` reopen); give tasks a test hook or use the snapshot fixtures item.
-- Tooling: `conductor/tools/journal.ts` that appends a journal line stamped with the real UTC
-  time (the conductor guessed times; F16), and a bot lease (owner + expiry) honoured by `run-task.ts`.
+- Lib: pickup and fletching copy the same `attacked` step (fail on any `inCombat`); make it a
+  shared guard in `lib/interrupts.ts` beside `underAttackGuard` (code-quality Q4, contract T1).
+- Actions: the fletch op (`conductor/actions/fletch.ts`, ported from `bot.fletchLogs`) clicks the
+  product's make-1 button, so the fletching task cuts one log per call (~4 s/log against 0.8 s);
+  add Make 10 / Make X to the op and let the task batch (game-semantics G5). No SDK change needed.
