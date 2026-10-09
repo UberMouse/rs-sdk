@@ -6,7 +6,8 @@
 // variant (a different spot, target or mode) against the incumbent; the curator copies XP/hr
 // into the knowledge base from here, not from a single run.
 import { parseArgs } from 'node:util';
-import { canonical, loadResults } from '../lib/runs';
+import { loadResults } from '../lib/runs';
+import { canonical } from '../lib/util';
 
 const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--json]';
 const { values, positionals } = parseArgs({

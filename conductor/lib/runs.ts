@@ -19,19 +19,6 @@ function isTimedResult(e: unknown): e is TimedResult {
     );
 }
 
-/** JSON with sorted keys, so the same params always group together. */
-export function canonical(v: unknown): string {
-    if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;
-    if (v && typeof v === 'object') {
-        const obj = v as Record<string, unknown>;
-        return `{${Object.keys(obj)
-            .sort()
-            .map(k => `${JSON.stringify(k)}:${canonical(obj[k])}`)
-            .join(',')}}`;
-    }
-    return JSON.stringify(v);
-}
-
 /** Every `result` event in conductor/runs/<bot>/*.ndjson, oldest first; unparseable or malformed lines are counted, not fatal. */
 export function loadResults(botName: string): { results: TimedResult[]; skipped: number } {
     const dir = join(REPO_ROOT, 'conductor/runs', botName);

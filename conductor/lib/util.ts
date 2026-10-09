@@ -9,6 +9,19 @@ type Skill = BotWorldState['skills'][number];
  */
 export const TICK_MS = 400;
 
+/** JSON with sorted keys, so equal values always give the same string (params grouping, command matching). */
+export function canonical(v: unknown): string {
+    if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;
+    if (v && typeof v === 'object') {
+        const obj = v as Record<string, unknown>;
+        return `{${Object.keys(obj)
+            .sort()
+            .map(k => `${JSON.stringify(k)}:${canonical(obj[k])}`)
+            .join(',')}}`;
+    }
+    return JSON.stringify(v);
+}
+
 export function errMessage(e: unknown): string {
     return e instanceof Error ? e.message : String(e);
 }
