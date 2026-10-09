@@ -1,9 +1,12 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import type { NearbyLoc } from '../../sdk/types';
+import { drop } from '../actions/drop';
+import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
+import { log, type Op, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
-import { defineTask, type TaskContext } from '../lib/task';
-import { waitUnlessThreatened } from '../lib/threat';
-import { findSkill } from '../lib/util';
+import { underAttackGuard } from '../lib/interrupts';
+import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 
 /**
  * Every rock is named "Rocks" and a mined-out rock is still named "Rocks" with a Mine option
@@ -56,26 +59,31 @@ function pickaxeLevel(name: string): number {
     return PICKAXE_LEVELS[PICKAXE.exec(name)?.[1]?.toLowerCase() ?? ''] ?? Infinity;
 }
 
-/** The longest a mining attempt is awaited (ore gained or rock gone) before it counts as failed. */
-const MINE_WAIT_MS = 30_000;
-/** One wait for a respawn; it ends early when a rock appears or the bot is threatened. */
-const RESPAWN_WAIT_MS = 5_000;
-/** Live-server tick length; the local server's 400 ms ticks only make respawns faster than assumed. */
-const TICK_MS = 600;
-/** Minimum no-rock wait before failing, and the margin added to the slowest listed rock's respawn. */
-const MIN_GIVE_UP_MS = 120_000;
-const GIVE_UP_MARGIN_MS = 30_000;
+/**
+ * The wait for a respawn was sized for the live server's 600 ms ticks (respawn ticks x 600 ms); in game
+ * ticks that is this many per respawn tick, so a 400 ms server waits the same wall-clock time.
+ */
+const GIVE_UP_PER_RESPAWN_TICK = 1.5;
+/** Minimum no-rock wait before failing (2 min), and the margin added to the slowest listed rock's respawn (30 s). */
+const MIN_GIVE_UP_TICKS = 300;
+const GIVE_UP_MARGIN_TICKS = 75;
 /** Runite respawns in ~24 min, longer than the progress watchdog can be stretched to, so it is refused. */
 const REFUSED_ROCKS: readonly RockName[] = ['runite'];
 /** How long the no-rock wait lasts for a rock that respawns in `ticks`. */
-const giveUpMsFor = (ticks: number) => Math.max(MIN_GIVE_UP_MS, ticks * TICK_MS + GIVE_UP_MARGIN_MS);
-const STUCK_SLACK_MS = 30_000;
-/** Give-up of the slowest accepted rock (adamantite) plus slack: stuckAfterMs is static, so a full respawn wait is not reported as a stall. */
-const STUCK_AFTER_MS = giveUpMsFor(ROCKS.adamantite.respawnTicks) + STUCK_SLACK_MS;
+const giveUpTicksFor = (ticks: number) =>
+    Math.max(MIN_GIVE_UP_TICKS, Math.ceil(ticks * GIVE_UP_PER_RESPAWN_TICK) + GIVE_UP_MARGIN_TICKS);
 /** Consecutive failed attempts before the task fails. */
 const MINE_FAIL_LIMIT = 8;
-/** Ticks one combat episode may last while the bot only waits for auto-retaliate to win it. */
-const COMBAT_TICK_LIMIT = 40;
+const STUCK_SLACK_MS = 30_000;
+/**
+ * Give-up of the slowest accepted rock (adamantite) plus slack: stuckAfterMs is static, so a full respawn wait is
+ * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes during
+ * one), plus one more wait for the sends between them, so the specific failure reason surfaces first.
+ */
+const STUCK_AFTER_MS = Math.max(
+    giveUpTicksFor(ROCKS.adamantite.respawnTicks) * TICK_MS + STUCK_SLACK_MS,
+    (MINE_FAIL_LIMIT + 1) * MINE_WAIT_TICKS * TICK_MS,
+);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -89,14 +97,19 @@ const Params = z.object({
 });
 
 type MiningParams = z.infer<typeof Params>;
-type Ctx = TaskContext<MiningParams>;
+interface MiningMemory {
+    /** The tick the bot first found no rock to mine, until it finds one again. */
+    noRockSinceTick: number | null;
+}
+type Ctx = TaskContext<MiningParams, MiningMemory>;
 
 interface Derived {
     rocks: RockName[];
     oreNames: string[];
-    oreSet: Set<string>;
+    /** Exactly the listed rocks' ores, so other items never count. */
+    orePattern: RegExp;
     ids: Set<number>;
-    giveUpMs: number;
+    giveUpTicks: number;
 }
 
 const derivedCache = new WeakMap<MiningParams, Derived>();
@@ -110,89 +123,48 @@ function derive(params: MiningParams): Derived {
         d = {
             rocks,
             oreNames,
-            oreSet: new Set(oreNames.map(n => n.toLowerCase())),
+            orePattern: new RegExp(oreNames.map(n => exactName(n).source).join('|'), 'i'),
             ids: new Set(rocks.flatMap(r => ROCKS[r].ids)),
-            giveUpMs: giveUpMsFor(slowest),
+            giveUpTicks: giveUpTicksFor(slowest),
         };
         derivedCache.set(params, d);
     }
     return d;
 }
 
-const isOre = (params: MiningParams, name: string) => derive(params).oreSet.has(name.toLowerCase());
-
-const countOres = (state: BotWorldState, params: MiningParams) =>
-    state.inventory.filter(i => isOre(params, i.name)).reduce((n, i) => n + i.count, 0);
-
-type MineOutcome = { kind: 'mined' } | { kind: 'threatened' } | { kind: 'failed'; message: string };
+const oresHeld = (ctx: Ctx) => countItems(ctx.state(), derive(ctx.params).orePattern);
 
 /**
- * Interact with the rock, then wait for ore or for the rock to change. Returns at once when
- * the bot is hurt or in combat so the low-HP interrupt runs before the next attempt.
- * Success needs ore gained: a rock mined out by someone else is a failed attempt.
+ * A rock of the listed types the bot can mine now. Only rocks inside the area, or return-to-area and
+ * mine would trade the bot back and forth; mined-out rocks keep their Mine option, so they are told
+ * apart by loc id.
  */
-async function mineRock(ctx: Ctx, rock: NearbyLoc): Promise<MineOutcome> {
-    await ctx.bot.dismissBlockingUI();
-    const before = countOres(ctx.state(), ctx.params);
-    // Raw send: bot.* has no mining porcelain (only chopTree etc.); success is judged by ore gained below.
-    const sent = await ctx.sdk.sendInteractLoc(rock.x, rock.z, rock.id, 1);
-    if (!sent.success) return { kind: 'failed', message: sent.message };
-    const rockGone = (s: BotWorldState) =>
-        !s.nearbyLocs.some(l => l.x === rock.x && l.z === rock.z && l.id === rock.id);
-    const waited = await waitUnlessThreatened(
-        ctx.sdk,
-        s => countOres(s, ctx.params) > before || rockGone(s),
-        MINE_WAIT_MS,
-    );
-    if (waited.kind === 'timeout') return { kind: 'failed', message: 'timed out waiting for ore from rock' };
-    if (waited.kind === 'threatened') return { kind: 'threatened' };
-    if (countOres(waited.state, ctx.params) <= before)
-        return { kind: 'failed', message: `rock at (${rock.x},${rock.z}) was mined out by someone else` };
-    return { kind: 'mined' };
-}
-
-type StepResult = { fail: string } | undefined;
-
-/**
- * Interacting with a rock cancels auto-retaliate, so a bot under attack must not touch one.
- * Waits a tick while in combat (undefined: end the step), fails if it cannot win; 'clear' otherwise.
- */
-async function waitOutCombat(ctx: Ctx): Promise<StepResult | 'clear'> {
-    const state = ctx.state();
-    const p = state.player;
-    if (p?.combat.inCombat) {
-        const at = `(${p.worldX},${p.worldZ})`;
-        if (state.autoRetaliateEnabled === false) return { fail: `attacked with auto-retaliate off at ${at}` };
-        if (ctx.counter('combatTicks').add() > COMBAT_TICK_LIMIT)
-            return { fail: `under attack for ${COMBAT_TICK_LIMIT} ticks at ${at}` };
-        await ctx.sdk.waitForTicks(1);
-        return undefined;
-    }
-    ctx.counter('combatTicks').reset();
-    return 'clear';
+function minable(params: MiningParams): (loc: NearbyLoc) => boolean {
+    const { ids } = derive(params);
+    return r =>
+        ids.has(r.id) && r.reachable === true && r.options.some(o => MINE_OPTION.test(o)) && inArea(params.area, r);
 }
 
 /** No minable rock: mined-out rocks count as none, so stay put (returnToAreaStep keeps us inside) and wait, until the give-up. */
-async function waitForRespawn(ctx: Ctx, d: Derived, isMinable: (r: NearbyLoc) => boolean): Promise<StepResult> {
-    const a = ctx.params.area;
+function* waitForRespawn(ctx: Ctx, d: Derived): Op<Outcome> {
+    const now = ctx.state().tick;
     const label = d.rocks.join('/');
-    const stored = ctx.memory.noRockSince;
-    const since = typeof stored === 'number' ? stored : Date.now();
-    if (typeof stored !== 'number') {
-        ctx.memory.noRockSince = since;
-        ctx.log(`no ${label} rock available, waiting for a respawn`);
+    if (ctx.memory.noRockSinceTick === null) {
+        ctx.memory.noRockSinceTick = now;
+        yield* log(`no ${label} rock available, waiting for a respawn`);
     }
-    const waited = Date.now() - since;
-    if (waited >= d.giveUpMs) {
-        const waitedSeconds = Math.round(waited / 1000);
-        return {
-            fail: a
-                ? `area depleted: no reachable ${label} rock in radius ${a.radius} for ${waitedSeconds}s`
-                : `no reachable ${label} rock nearby for ${waitedSeconds}s`,
-        };
-    }
-    await waitUnlessThreatened(ctx.sdk, s => s.nearbyLocs.some(isMinable), RESPAWN_WAIT_MS);
-    return undefined;
+    const since = ctx.memory.noRockSinceTick;
+    const left = Math.max(0, since + d.giveUpTicks - now);
+    const isMinable = minable(ctx.params);
+    const respawn = yield* wait('rock respawn', s => s.nearbyLocs.some(isMinable), left);
+    if (respawn.kind === 'met') return;
+    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const { area } = ctx.params;
+    return {
+        fail: area
+            ? `area depleted: no reachable ${label} rock in radius ${area.radius} for ${seconds}s`
+            : `no reachable ${label} rock nearby for ${seconds}s`,
+    };
 }
 
 export default defineTask({
@@ -209,6 +181,9 @@ export default defineTask({
         'without it "no reachable <rock> rock nearby for Ns". With `area` it stays within `radius` of that centre; without it, it mines ' +
         'wherever the bot stands. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
     params: Params,
+    memory: (): MiningMemory => ({ noRockSinceTick: null }),
+    // Mining a rock cancels auto-retaliate, so a bot under attack must not touch one.
+    guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -233,8 +208,8 @@ export default defineTask({
         {
             name: 'stop-full',
             when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
-            async run(ctx) {
-                const ores = countOres(ctx.state(), ctx.params);
+            run(ctx) {
+                const ores = oresHeld(ctx);
                 if (ores === 0) return { fail: `inventory full with no ${derive(ctx.params).oreNames.join('/')}` };
                 return { done: `inventory full: ${ores} ores` };
             },
@@ -242,21 +217,16 @@ export default defineTask({
         {
             name: 'drop-ores',
             when: ctx => ctx.params.onFull === 'drop' && ctx.inventoryFull(),
-            async run(ctx) {
-                // One drop per distinct ore item; a "not found" means it already left the inventory.
-                const ores = new Map(
-                    ctx
-                        .state()
-                        .inventory.filter(i => isOre(ctx.params, i.name))
-                        .map(i => [i.id, i]),
-                );
+            *run(ctx) {
+                const d = derive(ctx.params);
+                // One drop per distinct ore item; no-item means it already left the inventory.
                 const failures: string[] = [];
-                for (const item of ores.values()) {
-                    const r = await ctx.bot.dropItem(item, 'all');
-                    if (!r.success && r.reason !== 'item_not_found') failures.push(r.message);
+                for (const name of d.oreNames) {
+                    const dropped = yield* drop(ctx, exactName(name));
+                    if (!dropped.ok && dropped.reason !== 'no-item') failures.push(dropped.message);
                 }
                 if (ctx.inventoryFull()) {
-                    const others = ctx.state().inventory.filter(i => !isOre(ctx.params, i.name));
+                    const others = ctx.state().inventory.filter(i => !d.orePattern.test(i.name));
                     const names = others.map(i => (i.count > 1 ? `${i.name} x${i.count}` : i.name)).join(', ');
                     const why = failures.length > 0 ? `; drop errors: ${failures.join('; ')}` : '';
                     return { fail: `inventory full of non-ore items: ${names}${why}` };
@@ -267,34 +237,23 @@ export default defineTask({
         {
             name: 'mine',
             when: () => true,
-            async run(ctx) {
-                const combat = await waitOutCombat(ctx);
-                if (combat !== 'clear') return combat;
+            *run(ctx) {
                 const d = derive(ctx.params);
-                const a = ctx.params.area;
-                // Only rocks inside the area, or return-to-area and mine would trade the bot back and forth.
-                const isMinable = (r: NearbyLoc) =>
-                    d.ids.has(r.id) && r.reachable === true && r.options.some(o => /^mine$/i.test(o)) && inArea(a, r);
-                const rock = ctx.sdk
-                    .getNearbyLocs()
-                    .filter(isMinable)
+                const rock = ctx
+                    .state()
+                    .nearbyLocs.filter(minable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
-                if (!rock) return waitForRespawn(ctx, d, isMinable);
-                delete ctx.memory.noRockSince;
-                const r = await mineRock(ctx, rock);
-                if (r.kind === 'threatened') {
-                    // Pace the loop; the low-HP interrupt acts on the next one if HP is the problem.
-                    await ctx.sdk.waitForTicks(1);
-                    return;
-                }
-                const mineFails = ctx.counter('mineFails');
-                if (r.kind === 'mined') {
+                if (!rock) return yield* waitForRespawn(ctx, d);
+                ctx.memory.noRockSinceTick = null;
+                const mined = yield* mine(ctx, rock, d.orePattern);
+                const mineFails = ctx.streak('mineFails');
+                if (mined.ok) {
                     mineFails.reset();
                     return;
                 }
-                ctx.log(`mine failed: ${r.message}`);
+                yield* log(`mine failed: ${mined.message}`);
                 if (mineFails.add() >= MINE_FAIL_LIMIT)
-                    return { fail: `${MINE_FAIL_LIMIT} attempts in a row failed (last: ${r.message})` };
+                    return { fail: `${MINE_FAIL_LIMIT} attempts in a row failed (last: ${mined.message})` };
             },
         },
     ],
