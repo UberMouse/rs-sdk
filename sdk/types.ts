@@ -677,11 +677,16 @@ export interface SDKConfig {
     port?: number;
     /**
      * Connection mode: 'control' (default) can send actions, 'observe' is read-only
-     * plus say() - it can chat without stealing (or losing) control. Connecting in
-     * 'control' mode pre-empts whatever controller the bot already has, killing it -
-     * so passive clients must pass 'observe' explicitly.
+     * plus say() - it can chat without stealing (or losing) control. The gateway refuses
+     * a 'control' connect while the bot already has a controller (connect() rejects with
+     * the holder's id) unless `takeover` is set, so passive clients should pass 'observe'.
      */
     connectionMode?: SDKConnectionMode;
+    /**
+     * 'control' only: pre-empt (disconnect) the bot's existing controller instead of being
+     * refused. Default false. Gateways older than the controller lease always pre-empt.
+     */
+    takeover?: boolean;
     /**
      * Auto-launch browser behavior:
      * - 'auto' (default): Launch only if no active client with fresh state data
@@ -716,6 +721,13 @@ export interface SDKConfig {
     reconnectMaxRetries?: number;
     reconnectBaseDelay?: number;
     reconnectMaxDelay?: number;
+    /**
+     * How long auto-reconnects keep retrying a controller_busy refusal, which can come from this
+     * SDK's own previous session that the gateway hasn't seen close yet. Default 150000: longer
+     * than the gateway's websocket idle timeout (Bun's default 120s), the longest a half-open old
+     * session can hold the lease.
+     */
+    leaseRetryWindowMs?: number;
     /** Show other players' chat messages (default: false for safety) */
     showChat?: boolean;
 }

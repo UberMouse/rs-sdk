@@ -3,7 +3,7 @@
  * MCP Code Execution Server for RS-Agent
  *
  * Manages multiple bot connections dynamically at runtime.
- * Agents can connect, disconnect, and execute code on any connected bot.
+ * Agents execute code on any bot; each call attaches for its duration (one controller per bot).
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -21,7 +21,10 @@ import { formatWorldState } from '../sdk/formatter.js';
 import { initPathfinding } from '../sdk/pathfinding.js';
 import { Spells } from '../sdk/spells.js';
 import { marketTool, readMarket } from './market-tools.js';
-import { ConsoleCapture } from './console-capture.js';
+import { ConsoleCapture, installConsoleRouting, runCaptured } from './console-capture.js';
+
+// stdout is the JSON-RPC channel: console.log/warn go to the running execute_code's capture, or stderr.
+installConsoleRouting();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -97,7 +100,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             bot_name: {
               type: 'string',
-              description: 'Bot name (matches folder in bots/). Auto-connects on first use.'
+              description: 'Bot name (matches folder in bots/). The call attaches to the bot for its duration and is refused ("already controlled by ...") while another task or script drives it: wait for that to finish.'
             },
             code: {
               type: 'string',
@@ -113,7 +116,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'disconnect_bot',
-        description: 'Disconnect a connected bot',
+        description: 'Forget a bot this session has used (refused while an execute_code call is running on it; each call releases the bot when it ends anyway)',
         inputSchema: {
           type: 'object',
           properties: {
@@ -127,7 +130,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'list_bots',
-        description: 'List all connected bots',
+        description: 'List the bots this session has used. connected is false between execute_code calls (each call attaches only while it runs); that is normal.',
         inputSchema: {
           type: 'object',
           properties: {}
@@ -178,39 +181,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
 
         const isLongCode = code.length > 2000;
 
-        // Capture console output BEFORE connecting to prevent SDK logs from corrupting MCP JSON-RPC stdout
+        // Only the user's code runs captured (runCaptured below); the SDK's connect chatter goes to stderr.
         const logs = new ConsoleCapture();
-        const originalLog = console.log;
-        const originalWarn = console.warn;
-        const originalError = console.error;
 
-        // Errors need special-casing: JSON.stringify(new Error(...)) is '{}',
-        // which used to swallow every console.log(err) into two braces.
-        const fmtLogArg = (a: unknown): string => {
-          if (a instanceof Error) return a.stack ?? `${a.name}: ${a.message}`;
-          if (typeof a === 'object' && a !== null) {
-            try { return JSON.stringify(a, null, 2) ?? String(a); } catch { return String(a); }
-          }
-          return String(a);
-        };
-        console.log = (...args) => logs.push(args.map(fmtLogArg).join(' '));
-        console.warn = (...args) => logs.push('[warn] ' + args.map(fmtLogArg).join(' '));
-        // Don't capture console.error - let it go to stderr for MCP debugging
-
-        // Auto-connect if not already connected
-        let connection = botManager.get(botName);
-        if (!connection) {
-          console.error(`[MCP] Bot "${botName}" not connected, auto-connecting...`);
-          connection = await botManager.connect(botName);
-          // Wait up to 15s for initial world state after fresh connection
+        // Attach for this call only (released in the finally below): the gateway allows one
+        // controller per bot, and an idle MCP session must not hold it. A fresh attach starts with
+        // no cached state, so this waits for the bot's current state, not the last call's.
+        const connection = await botManager.acquire(botName);
+        try {
           try {
-            await connection.sdk.waitForCondition(() => connection!.sdk.getState() !== null, 15000);
+            await connection.sdk.waitForCondition(() => connection.sdk.getState() !== null, 15000);
           } catch {
             console.error(`[MCP] Warning: initial state not received within 15s for bot "${botName}"`);
           }
-        }
-
-        try {
           // The tool advertises TypeScript, so strip type syntax (non-null !,
           // annotations, generics) before evaluation - new Function() alone
           // rejects TS with a bare SyntaxError. Fall back to evaluating the
@@ -277,7 +260,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
 
           let result: any;
           try {
-            result = await Promise.race([fn(cancellable(connection.bot), cancellable(connection.sdk), Spells), timeoutPromise, cancelPromise]);
+            const run = runCaptured(logs, () => fn(cancellable(connection.bot), cancellable(connection.sdk), Spells));
+            result = await Promise.race([run, timeoutPromise, cancelPromise]);
           } finally {
             clearTimeout(timeoutId!);
             if (!signal.aborted) abortController.abort('Execution finished');
@@ -337,9 +321,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
             content: [{ type: 'text', text: output }]
           };
         } finally {
-          console.log = originalLog;
-          console.warn = originalWarn;
-          console.error = originalError;
+          await botManager.release(botName);
         }
       }
 
@@ -371,7 +353,7 @@ function errorResponse(message: string) {
 // Start server
 async function main() {
   console.error('[MCP Server] Starting RS-Agent MCP server v2.0...');
-  console.error('[MCP Server] Bots auto-connect on the first execute_code call.');
+  console.error('[MCP Server] Each execute_code call attaches to its bot for the call and releases it afterwards.');
 
   // Warm the pathfinder before any live session exists: init is fully
   // synchronous (tens of seconds on slow hosts), and paying it lazily inside

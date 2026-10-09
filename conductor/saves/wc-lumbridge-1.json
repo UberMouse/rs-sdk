@@ -1,0 +1,58 @@
+{
+    "name": "wc-lumbridge-1",
+    "purpose": "Woodcutting from level 1: bronze axe and tinderbox, empty otherwise, standing in Lumbridge castle courtyard (3222,3218), about 27 tiles from the trees. Run the woodcutting task with area {x:3195,z:3220,radius:12} (the verified Lumbridge tree spot); without an area it chops where it stands and finds none. Smoke-tests chop and full-inventory handling from a clean inventory.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "preset": "WOODCUTTER_AT_LUMBRIDGE",
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "skills": {
+                "Woodcutting": 1,
+                "Firemaking": 1
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "03af01bdbc54c1c76946dadf45d582b91905f661",
+    "createdAt": "2026-10-09T10:01:46.658Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

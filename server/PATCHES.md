@@ -70,6 +70,15 @@ survival) is described in the project memory; this file is the human-readable ch
 - [ ] **`view/bot.ejs`** — the entire bot UI page (rs-sdk-only): reads `?bot=`/`?password=`
       (auto-login), **writes both back to the URL on login/field-change**, cache-busted
       `client.js?v=<%= cachebust %>` import, quick-login/create/skip-tutorial controls.
+- [ ] **Save endpoints (opt-in)** — `pages/saves.ts`, routed from the management server's
+      `fetch` fallback in `src/web/index.ts` (`startManagementWeb`): `GET /save/:name` returns
+      the current save (live `save(false)` without a logout, in-flight logout save, GE
+      checkpoint, or `.sav`) with `X-Save-Source` / `X-Save-Path` / `X-Save-Sha1` /
+      `X-Engine-Web-Port` (404 body: `{path, webPort}`); `POST /kick/:name` logs a player out
+      server-side. 403 unless `SAVE_ENDPOINTS=true` (set by `conductor/local/up.sh` only) and
+      the caller is loopback and not a browser (no `Origin`/`Sec-Fetch-Site`, loopback `Host`).
+      Used by `conductor/lib/saves.ts`.
+      Verify: `grep -n "handleSaveRequest" src/web/index.ts`
 - [ ] **Login server** — `LoginServer.ts`: `sdk_auth` message handler (gateway auth path,
       username normalized to match engine); `LoginThread.ts`: **no auto-grant of dev
       staffmodlevel on non-production worlds** (public server safety).
@@ -154,6 +163,8 @@ survival) is described in the project memory; this file is the human-readable ch
       to cover items handed between players since an autosave. Preserve both hooks.
       `data/market.sqlite` (or `GE_DATABASE`) is authoritative durable data, including
       player checkpoints; back it up with the world, never independently delete/restore it.
+      Exception: the conductor's local stack runs `GE_ENABLED=false` and retires the file, so
+      `.sav` files are the only save store there (`conductor/docs/parallel-bots.md`).
 - [ ] **Market web and SDK** — `web/pages/market.ts` registered in `web/index.ts`,
       `public/market.html`, `view/bot.ejs` Market link; `sdk/market.ts` and three
       `BotSDK.getMarket*` methods. API is GET-only and exposes no player identities.

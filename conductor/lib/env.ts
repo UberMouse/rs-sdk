@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
 import { loadEnvFile, webOriginFor } from '../../sdk/runner';
+import { errMessage, fail } from './util';
 
 export const REPO_ROOT = resolve(import.meta.dir, '../..');
 
@@ -26,11 +27,35 @@ export function loadBotEnv(name: string): BotEnv {
     return { username: raw.BOT_USERNAME, password: raw.PASSWORD, server, webOrigin, raw };
 }
 
+/** loadBotEnv for CLI tools: a missing or incomplete bot.env is a usage error (exit 2), not a stack trace. */
+export function loadBotEnvOrFail(name: string): BotEnv {
+    try {
+        return loadBotEnv(name);
+    } catch (e) {
+        fail(errMessage(e), 2);
+    }
+}
+
 export function botClientUrl(env: BotEnv): string {
     return `${env.webOrigin}/bot?bot=${encodeURIComponent(env.username)}&password=${encodeURIComponent(env.password)}`;
 }
 
 export const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+
+/** Longest a request to the engine or gateway may take before it counts as failed. */
+export const FETCH_TIMEOUT_MS = 5_000;
+
+/** Number of control connections the gateway has for the bot. Throws when it can't tell. */
+export async function controllerCount(env: BotEnv): Promise<number> {
+    const url = `${env.webOrigin}/status/${encodeURIComponent(env.username)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`${url}: ${res.status}`);
+    const status = (await res.json()) as { controllers?: unknown };
+    if (status.controllers !== undefined && !Array.isArray(status.controllers)) {
+        throw new Error(`${url}: unexpected controllers field`);
+    }
+    return status.controllers?.length ?? 0;
+}
 
 /** Connect a BotSDK that never launches a browser or reconnects. Caller must disconnectQuietly it. */
 export async function connectSdk(env: BotEnv, mode: 'observe' | 'control'): Promise<BotSDK> {

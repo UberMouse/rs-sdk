@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'bun:test';
-import { ConsoleCapture } from '../../mcp/console-capture';
+import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { bindListenersToCaller, ConsoleCapture, installConsoleRouting, runCaptured } from '../../mcp/console-capture';
 
 describe('ConsoleCapture', () => {
     test('keeps every line while under the cap', () => {
@@ -42,5 +42,76 @@ describe('ConsoleCapture', () => {
         expect(c.length).toBe(600);
         expect(c.total).toBe(1_000_000);
         expect(c.lines().at(-1)).toContain('(999999)');
+    });
+});
+
+describe('console routing', () => {
+    // installConsoleRouting patches the console once per process and binds stderr at install time,
+    // so install it here with a recording stderr and put every patched method back afterwards.
+    const patched = ['log', 'info', 'debug', 'dirxml', 'warn', 'dir', 'table', 'group', 'groupCollapsed', 'trace', 'count', 'countReset', 'error'] as const;
+    const real = Object.fromEntries(patched.map(m => [m, console[m]]));
+    const stderr: string[] = [];
+    beforeAll(() => {
+        console.error = (...args: unknown[]) => stderr.push(args.join(' '));
+        installConsoleRouting();
+    });
+    afterAll(() => Object.assign(console, real));
+
+    test('overlapping captured calls keep their own output; uncaptured output goes to stderr', async () => {
+        const a = new ConsoleCapture();
+        const b = new ConsoleCapture();
+        const callA = runCaptured(a, async () => {
+            console.log('a1');
+            await Bun.sleep(30);
+            console.log('a2'); // after B started and finished
+        });
+        const callB = runCaptured(b, async () => {
+            await Bun.sleep(10);
+            console.warn('b1');
+        });
+        await Promise.all([callA, callB]);
+        console.log('outside');
+        expect(a.lines()).toEqual(['a1', 'a2']);
+        expect(b.lines()).toEqual(['[warn] b1']);
+        expect(stderr).toContain('outside');
+    });
+
+    test('every method Bun writes to stdout is captured, not just log', () => {
+        const c = new ConsoleCapture();
+        runCaptured(c, () => {
+            console.info('i');
+            console.debug('d');
+            console.table([{ a: 1 }]);
+            console.dir({ d: 1 });
+            console.count();
+            console.count();
+            console.trace('t');
+        });
+        const lines = c.lines();
+        expect(lines.slice(0, 2)).toEqual(['i', 'd']);
+        expect(lines[2]).toContain('"a": 1');
+        expect(lines[3]).toContain('"d": 1');
+        expect(lines.slice(4, 6)).toEqual(['default: 1', 'default: 2']);
+        expect(lines[6]).toStartWith('Trace: t\n');
+    });
+
+    test('a listener runs in the context that registered it, not the one that fires it', async () => {
+        const listeners = new Set<(...args: any[]) => void>();
+        const sdk = {
+            onStateUpdate(listener: (...args: any[]) => void) {
+                listeners.add(listener);
+                return () => listeners.delete(listener);
+            },
+            onConnectionStateChange(listener: (...args: any[]) => void) {
+                return this.onStateUpdate(listener);
+            },
+        };
+        bindListenersToCaller(sdk);
+        const c = new ConsoleCapture();
+        const unsubscribe = runCaptured(c, () => sdk.onStateUpdate(s => console.log(`state ${s}`)));
+        for (const l of listeners) l(1); // fired from outside any capture, like the websocket handler
+        unsubscribe();
+        expect(c.lines()).toEqual(['state 1']);
+        expect(listeners.size).toBe(0);
     });
 });

@@ -62,7 +62,29 @@ scenarios, and a smoke test. Any changed task needs its smoke test to pass. `bun
 (throwaway) bot's live state.
 
 `run-task` refuses to start when the bot is already in combat or another controller is attached
-(`<bot> already has N controller(s) attached`); `--takeover` pre-empts the other controller.
+(`<bot> already has N controller(s) attached`); `--takeover` pre-empts the other controller. The
+gateway enforces the same rule for every script: a second control connection is refused unless
+it asks for takeover.
+
+## Parallel testing: worker accounts and the save library
+
+Only task-runner dispatches drive the main bot, and only their runs count as progress. Authors
+and fix authors test in parallel on **worker accounts** (`WORKER=true` in their `bot.env`),
+each loaded from a save in the scenario library. Design and rationale:
+`docs/parallel-bots.md`.
+
+```bash
+bun conductor/tools/library.ts list                                  # scenario saves in conductor/saves/
+bun conductor/tools/load.ts conductor1w1 lib:wc-lumbridge-1 --client --create  # load one into a worker, log it in
+bun conductor/tools/load.ts conductor1w1 bot:conductor1 --client     # or a live copy of the main bot
+bun conductor/tools/save.ts snapshot conductor1w1 my-scenario --library --purpose "..."  # file a new scenario
+bun conductor/tools/library.ts generate <name> --spec '<json>' --purpose "..."          # or build one from a spec
+```
+
+Saves go through the engine's management port (`:8898`), served only when the engine runs with
+`SAVE_ENDPOINTS=true` (`up.sh` sets it): `GET /save/<name>` exports a player's current save
+without logging it out and says which file the engine reads; `POST /kick/<name>` logs a player
+out server-side. MCP `execute_code` holds a bot's control connection only while its code runs.
 
 ## How it learns
 
@@ -75,7 +97,7 @@ scenarios, and a smoke test. Any changed task needs its smoke test to pass. `bun
 | What to do next | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups) |
 | Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |
 | How the agents themselves work | the retrospective reads transcripts via `.claude/skills/session-forensics` |
-| Undo a bad experiment | `bun conductor/tools/save.ts snapshot\|restore <bot> <label> --logout` |
+| Undo a bad experiment | `bun conductor/tools/save.ts snapshot <bot> <label>` before it, `restore <bot> <label>` after |
 | Would changed code decide differently on a past run | `bun conductor/tools/replay.ts conductor/runs/<bot>/<runId>.ticks.ndjson.gz [--task-dir <dir>]` |
 
 ## Local stack
@@ -90,8 +112,13 @@ bun conductor/tools/screenshot.ts conductor1       # PNG of the game canvas (pat
 ```
 
 Run the stack from the main checkout: its `server/engine` holds the database and player saves
-(all gitignored). Worktrees share that server; `save.ts` finds the saves through
-`RS_ENGINE_DIR=<main checkout>/server/engine`.
+(all gitignored). Worktrees share that server; `save.ts` and `load.ts` ask the engine where its
+saves are, so they work from any checkout. A stack whose management port is not the engine host's
+`:8898` is reached with `RS_MANAGEMENT_ORIGIN=http://host:port`.
+
+The Grand Exchange is off locally (`GE_ENABLED=false`): while `data/market.sqlite` exists the
+engine loads players from its checkpoints instead of their `.sav` files, so `up.sh` refuses to
+start the engine until that file is retired.
 
 On NixOS, `conductor/local/migrate-sqlite.ts` stands in for `bun run sqlite:migrate` (Prisma has
 no engines for NixOS); `up.sh` runs it.

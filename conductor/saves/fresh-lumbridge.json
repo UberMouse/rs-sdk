@@ -1,0 +1,209 @@
+{
+    "name": "fresh-lumbridge",
+    "purpose": "A fresh account exactly as the tutorial leaves it (tutorial.rs2 tutorial_complete): at (3222,3222) in Lumbridge, every skill 1 except Hitpoints 10, the starter inventory (bronze axe, pickaxe, dagger, sword, wooden shield, shortbow + 25 bronze arrows, small fishing net, tinderbox, shrimps, bread, bucket, pot, air/mind/water/earth/body runes), nothing worn, 25 coins in the bank. Base for tasks that start from nothing.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3222
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 303,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1931,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 1265,
+                    "count": 1
+                },
+                {
+                    "id": 1205,
+                    "count": 1
+                },
+                {
+                    "id": 1277,
+                    "count": 1
+                },
+                {
+                    "id": 1171,
+                    "count": 1
+                },
+                {
+                    "id": 841,
+                    "count": 1
+                },
+                {
+                    "id": 882,
+                    "count": 25
+                },
+                {
+                    "id": 556,
+                    "count": 25
+                },
+                {
+                    "id": 558,
+                    "count": 15
+                },
+                {
+                    "id": 555,
+                    "count": 6
+                },
+                {
+                    "id": 557,
+                    "count": 4
+                },
+                {
+                    "id": 559,
+                    "count": 2
+                }
+            ],
+            "bank": [
+                {
+                    "id": 995,
+                    "count": 25
+                }
+            ]
+        }
+    },
+    "sha1": "4c7fb1052d5af6c1078a9826f109df8f1a1e166a",
+    "createdAt": "2026-10-09T10:55:27.498Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3222,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 303,
+                "name": "net",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1931,
+                "name": "pot_empty",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 1205,
+                "name": "bronze_dagger",
+                "count": 1
+            },
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            },
+            {
+                "id": 1171,
+                "name": "wooden_shield",
+                "count": 1
+            },
+            {
+                "id": 841,
+                "name": "shortbow",
+                "count": 1
+            },
+            {
+                "id": 882,
+                "name": "bronze_arrow",
+                "count": 25
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 25
+            },
+            {
+                "id": 558,
+                "name": "mindrune",
+                "count": 15
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 6
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 4
+            },
+            {
+                "id": 559,
+                "name": "bodyrune",
+                "count": 2
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 25
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

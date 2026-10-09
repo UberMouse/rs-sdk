@@ -6,8 +6,8 @@
 //   <stop>: level:<skill>:<n> | xp:<skill>:<n> | minutes:<n>   (any one ends the run)
 //
 // The last stdout line is always `RESULT <json>` (a TaskResult). Exit 0 for
-// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first). Refuses to start when another controller already
-// drives the bot, unless --takeover. A game client must already be attached
+// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first).
+// Refuses to start when another controller already drives the bot, unless --takeover. A game client must already be attached
 // (conductor/tools/client.ts or the lite runner).
 //
 // Every run is recorded next to its log, as <runId>.ticks.ndjson.gz, for conductor/tools/replay.ts:
@@ -20,7 +20,7 @@ import { LiveDriver } from './core/drivers/live';
 import { Recorder, recordingFile } from './core/drivers/recording';
 import { loadTask, taskNames } from './lib/catalog';
 import { executeTask, TICK_STALL_MS } from './lib/engine';
-import { loadBotEnv, REPO_ROOT, type BotEnv } from './lib/env';
+import { controllerCount, loadBotEnv, REPO_ROOT, type BotEnv } from './lib/env';
 import { captureScreenshot } from './lib/screenshot';
 import { parseStop, type StopCondition } from './lib/stop';
 import type { Sinks, TaskDef, TaskResult } from './lib/task';
@@ -126,7 +126,6 @@ let openRecorder: Recorder | null = null;
 // Registered before runScript's own handlers so a killed run still prints its RESULT line. runScript
 // disconnects and exits within 5s; the timer covers a signal that lands before it has registered.
 const SIGNAL_EXIT_GRACE_MS = 6000;
-const STATUS_FETCH_TIMEOUT_MS = 5000;
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
         // Synchronous, so the recording is whole before runScript's own handler exits.
@@ -143,22 +142,23 @@ let env: BotEnv;
 try {
     env = loadBotEnv(botName);
 } catch (e) {
-    bail(errMessage(e));
+    bail(errMessage(e), 2); // a usage error, as in the other tools
 }
 
-// A new control connection silently pre-empts the existing one (last controller wins).
+// The gateway's controller lease refuses a second controller by itself; this pre-check fails
+// sooner, with a message naming the flag. It is also the only guard on a gateway that predates
+// the lease, where a new control connection silently pre-empts the existing one.
 if (!takeover) {
+    let controllers = 0;
     try {
-        const res = await fetch(`${env.webOrigin}/status/${encodeURIComponent(env.username)}`, {
-            signal: AbortSignal.timeout(STATUS_FETCH_TIMEOUT_MS),
-        });
-        const status: { controllers?: string[] } = await res.json();
-        const controllers = status.controllers?.length ?? 0;
-        if (controllers > 0)
-            bail(`${botName} already has ${controllers} controller(s) attached; pass --takeover to pre-empt`);
+        controllers = await controllerCount(env);
     } catch {
         // Gateway unreachable: runScript reports the connection failure itself.
     }
+    if (controllers > 0)
+        bail(
+            `${botName} already has ${controllers} controller(s) attached (another task or script is driving it); wait for it to finish or report back. --takeover pre-empts it: only for a run that is yours`,
+        );
 }
 
 let engineResult: TaskResult | undefined;
@@ -202,7 +202,7 @@ const run = await runScript(
             openRecorder = null;
         }
     },
-    { printState: false },
+    { printState: false, takeover },
 );
 
 // Connection failure or an exception outside the engine still honours the RESULT contract.

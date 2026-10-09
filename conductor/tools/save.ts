@@ -1,234 +1,200 @@
-// Snapshot and restore the local server's save for a bot, to roll back a risky experiment.
+// Snapshot and restore a bot's save on the local server, and add saves to the scenario library.
 //
 //   bun conductor/tools/save.ts list <bot>
-//   bun conductor/tools/save.ts snapshot <bot> <label> [--logout] [--takeover]
-//   bun conductor/tools/save.ts restore <bot> <label|path/to/x.sav> [--logout] [--takeover] [--force]
+//   bun conductor/tools/save.ts snapshot <bot> <label> [--library --purpose "<what it is for>" [--replace]] [--logout [--takeover]]
+//   bun conductor/tools/save.ts restore <bot> <label|lib:<name>|path/to/x.sav> [--force] [--takeover]
 //
-// The engine writes data/players/main/<bot>.sav on logout and on autosave, so both copies
-// need the bot logged out of the server. --logout presses the in-game logout button and waits
-// for the server to save; it refuses while a script or task controls the bot unless
-// --takeover. Without --logout the tool refuses while the bot is in the world. Restart the
-// bot's client afterwards: it sits on the login screen.
+// snapshot exports the save as it is now, from the running engine, without logging the bot out or
+// disturbing its controller (items behind an open trade/duel offer are not included). It lands in
+// conductor/runs/<bot>/saves/; --library also files it as conductor/saves/<label>.sav + .json
+// (--replace to overwrite an existing library save). --logout first logs the bot out server-side
+// (so it cannot die unattended), refused while a script or task controls it unless --takeover.
+// The snapshot is written even when the logout fails (combat delays it): then it is the live save,
+// and the tool exits 1 saying the bot is still in the world.
 //
-// A restore label is the part of a snapshot's filename after its timestamp, matched exactly
-// (the newest wins); a path must be a .sav file. Restoring a snapshot older than the current
-// save needs --force. Restore keeps the save it replaces as a `pre-restore` snapshot. Local only.
-import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, statSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-import { parseArgs } from 'node:util';
+// restore rolls the bot back. A label is the part of a snapshot's filename after its timestamp,
+// matched exactly (the newest match wins). Restoring the bot's newest snapshot needs no flag;
+// skipping past a newer snapshot, or restoring a library save (lib:<name>) or a file over an
+// existing save, needs --force (worker accounts load scenarios with load.ts instead). Refused
+// while a script or task is attached to the bot, in the world or not (it would resume on the
+// restored save), unless --takeover; a bot in the world is then logged out server-side first.
+// The replaced save is kept as a `pre-restore` snapshot. Restart the bot's client afterwards.
+// Local server only, with the Grand Exchange off (conductor/docs/parallel-bots.md).
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { isLocalServer } from '../../sdk/runner';
-import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT, sleep } from '../lib/env';
-import { errMessage, FILE_STAMP_PREFIX, fileStamp } from '../lib/util';
-
-/** `logout:try_logout` in server/content/pack/interface.pack. */
-const LOGOUT_BUTTON = 2458;
-/** Combat delays a logout by up to 10s, so the button is re-pressed on this period. */
-const LOGOUT_RETRY_MS = 5_000;
-const LOGOUT_TIMEOUT_MS = 30_000;
-/** Longest a request to the engine's web endpoints may take before it counts as failed. */
-const FETCH_TIMEOUT_MS = 5_000;
-/** A snapshot label, and the part of a snapshot filename after its timestamp. */
-const LABEL = /^[a-z0-9-]+$/i;
+import { loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
+import {
+    atomicWrite,
+    exportSave,
+    inWorld,
+    isBackupLabel,
+    LIBRARY_DIR,
+    RESERVED_LABEL_PREFIX,
+    listLibrary,
+    logOut,
+    prepareForWrite,
+    readLibrarySave,
+    SAVE_NAME,
+    saveStatus,
+    verifySave,
+    writeLibrarySave,
+    writeSave,
+} from '../lib/saves';
+import { errMessage, fail, FILE_STAMP_PREFIX, fileStamp, parseCli } from '../lib/util';
 
 const usage =
-    'usage: bun conductor/tools/save.ts list|snapshot|restore <bot> [label|file.sav] [--logout] [--takeover] [--force]';
-const { values: flags, positionals } = parseArgs({
-    args: process.argv.slice(2),
-    allowPositionals: true,
-    options: { logout: { type: 'boolean' }, takeover: { type: 'boolean' }, force: { type: 'boolean' } },
-});
+    'usage: bun conductor/tools/save.ts list|snapshot|restore <bot> [label|lib:<name>|file.sav] [--library --purpose <text> [--replace]] [--logout] [--force] [--takeover]';
+const { values: flags, positionals } = parseCli(
+    {
+        library: { type: 'boolean' },
+        purpose: { type: 'string' },
+        replace: { type: 'boolean' },
+        logout: { type: 'boolean' },
+        takeover: { type: 'boolean' },
+        force: { type: 'boolean' },
+    },
+    usage,
+);
 const [cmd, name, arg] = positionals;
-if (!cmd || !name) {
-    console.error(usage);
-    process.exit(2);
-}
-const env = loadBotEnv(name);
-if (!isLocalServer(env.server)) {
-    console.error(`save.ts only works against the local server; ${name} points at ${env.server}`);
-    process.exit(2);
-}
-
-// The engine may run from another checkout than this one (one shared local server, many
-// worktrees); RS_ENGINE_DIR points at the server/engine directory it runs from.
-const engineDir = process.env.RS_ENGINE_DIR ?? join(REPO_ROOT, 'server/engine');
-const saveFile = join(engineDir, 'data/players/main', `${env.username.toLowerCase()}.sav`);
+if (!cmd || !name || positionals.length > (cmd === 'list' ? 2 : 3)) fail(usage, 2);
+const env = loadBotEnvOrFail(name);
+if (!isLocalServer(env.server)) fail(`save.ts only works against the local server; ${name} points at ${env.server}`, 2);
 const dir = join(REPO_ROOT, 'conductor/runs', name, 'saves');
 
-/** Server-side truth: is the player still in the world loop? null when the engine is down. */
-async function inWorld(): Promise<boolean | null> {
-    try {
-        const players: { name: string }[] = await (
-            await fetch(`${env.webOrigin}/playerpositions`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
-        ).json();
-        return players.some(p => p.name.toLowerCase() === env.username.toLowerCase());
-    } catch {
-        return null;
+// Flags that only mean something with another flag or command; given without it, they would be ignored.
+if (cmd === 'snapshot') {
+    if (!flags.library && (flags.purpose !== undefined || flags.replace))
+        fail('--purpose and --replace go with --library', 2);
+    if (!flags.logout && flags.takeover) fail('--takeover goes with --logout on snapshot', 2);
+    if (flags.force) fail('--force is for restore', 2);
+} else if (cmd === 'restore') {
+    if (flags.library || flags.purpose !== undefined || flags.replace || flags.logout) {
+        fail('--library, --purpose, --replace and --logout are for snapshot', 2);
     }
+} else if (cmd === 'list' && Object.values(flags).some(v => v !== undefined)) {
+    fail('list takes no flags', 2);
 }
 
-/** Exit unless no script or task holds a control connection (pressing logout pre-empts it). */
-async function requireNoController(): Promise<void> {
-    let controllers: unknown[];
-    try {
-        const status: { controllers?: unknown[] } = await (
-            await fetch(`${env.webOrigin}/status/${encodeURIComponent(env.username)}`, {
-                signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-            })
-        ).json();
-        controllers = status.controllers ?? [];
-    } catch (e) {
-        console.error(`could not check ${name} for a running controller (${errMessage(e)}); not logging out`);
-        process.exit(1);
-    }
-    if (controllers.length > 0 && !flags.takeover) {
-        console.error(
-            `${name} is controlled by ${controllers.length} connection(s) (a running task or script); logging out would pre-empt it. Stop it first, or pass --takeover`,
-        );
-        process.exit(1);
-    }
-}
-
-/** Poll once a second until the player leaves the world or `until` passes; returns the last presence seen. */
-async function pollWhileInWorld(until: number): Promise<boolean | null> {
-    let present = await inWorld();
-    while (present && Date.now() < until) {
-        await sleep(1000);
-        present = await inWorld();
-    }
-    return present;
-}
-
-/** Press logout until the player leaves the world; returns whether it is still in. */
-async function logOut(): Promise<boolean | null> {
-    await requireNoController();
-    const sdk = await connectSdk(env, 'control');
-    try {
-        const deadline = Date.now() + LOGOUT_TIMEOUT_MS;
-        let present: boolean | null = true;
-        while (present && Date.now() < deadline) {
-            // An open shop/bank/dialog would swallow the click.
-            await sdk.sendCloseModal();
-            await sdk.sendClickComponent(LOGOUT_BUTTON);
-            present = await pollWhileInWorld(Math.min(deadline, Date.now() + LOGOUT_RETRY_MS));
-        }
-        return present;
-    } finally {
-        await disconnectQuietly(sdk);
-    }
-}
-
-// /status/<bot> only reports the SDK client's connection, and a player whose client merely
-// dropped stays in the world for ~3.5 min (rs-sdk relaxes TIMEOUT_NO_CONNECTION to 500 ticks)
-// before the idle logout writes the save. So check the world loop, and log out explicitly.
-async function requireLoggedOut(): Promise<void> {
-    const present = await inWorld();
-    if (present === null) return; // engine down: nothing can write the save
-    if (present) {
-        if (!flags.logout) {
-            console.error(`${name} is in the world; rerun with --logout to log it out cleanly first`);
-            process.exit(1);
-        }
-        if (await logOut()) {
-            console.error(
-                `${name} did not log out within ${LOGOUT_TIMEOUT_MS / 1000}s (in combat, or the client is not attached)`,
-            );
-            process.exit(1);
-        }
-    }
-    // Removal posts the save to the login thread; give it a moment to land on disk.
-    await sleep(2000);
-}
-
-/** Last-moment guard: the player may have logged back in since requireLoggedOut. */
-async function requireStillOut(): Promise<void> {
-    if (await inWorld()) {
-        console.error(`${name} is back in the world; not touching its save`);
-        process.exit(1);
-    }
-}
-
-/** Copy via a tmp file in the destination dir, so a reader never sees a half-written .sav. */
-function atomicCopy(src: string, dest: string): void {
-    const tmp = join(dirname(dest), `.${Date.now()}.tmp`);
-    copyFileSync(src, tmp);
-    renameSync(tmp, dest);
-}
-
+/** This bot's snapshot files, oldest first. */
 const snapshots = () =>
     existsSync(dir)
         ? readdirSync(dir)
               .filter(f => f.endsWith('.sav'))
               .sort()
         : [];
+const labelOf = (file: string) => file.replace(FILE_STAMP_PREFIX, '').replace(/\.sav$/, '');
 
-/** The newest snapshot with exactly this label, or an explicit .sav file path. */
-function resolveSnapshot(spec: string): string | undefined {
-    if (LABEL.test(spec)) {
-        const match = snapshots()
-            .filter(f => f.replace(FILE_STAMP_PREFIX, '') === `${spec}.sav`)
-            .pop();
-        return match && join(dir, match);
-    }
-    const path = resolve(spec);
-    return spec.endsWith('.sav') && existsSync(path) && statSync(path).isFile() ? path : undefined;
+interface Pick {
+    bytes: Uint8Array;
+    from: string;
+    /** Why restoring it over an existing save needs --force, if it does. */
+    needsForce?: string;
 }
 
-switch (cmd) {
-    case 'list': {
+/** A snapshot label (newest match), lib:<name>, or a .sav path. */
+function resolveSave(spec: string): Pick | undefined {
+    if (spec.startsWith('lib:')) {
+        const { bytes, entry } = readLibrarySave(spec.slice(4));
+        return {
+            bytes,
+            from: `library save ${entry.name}`,
+            needsForce: 'a library save is another scenario, not an earlier point of this account',
+        };
+    }
+    if (SAVE_NAME.test(spec)) {
         const all = snapshots();
-        if (!all.length) console.log(`no snapshots for ${name}`);
-        for (const f of all) console.log(`${f}  ${statSync(join(dir, f)).size} bytes`);
-        break;
+        const index = all.findLastIndex(f => labelOf(f) === spec);
+        if (index < 0) return undefined;
+        // writeSave's own backups (pre-restore, pre-load) are not newer states of the account, unless
+        // the pick is itself a backup: then skipping a newer backup also needs --force.
+        const pickIsBackup = isBackupLabel(spec);
+        const newer = all.slice(index + 1).filter(f => pickIsBackup || !isBackupLabel(labelOf(f)));
+        return {
+            bytes: new Uint8Array(readFileSync(join(dir, all[index]!))),
+            from: join(dir, all[index]!),
+            needsForce: newer.length ? `newer snapshots exist (${newer.map(labelOf).join(', ')})` : undefined,
+        };
     }
-    case 'snapshot': {
-        if (!arg || !LABEL.test(arg)) {
-            console.error('snapshot needs a label of letters, digits and dashes');
-            process.exit(2);
+    const path = resolve(spec);
+    if (!spec.endsWith('.sav') || !existsSync(path) || !statSync(path).isFile()) return undefined;
+    return {
+        bytes: new Uint8Array(readFileSync(path)),
+        from: path,
+        needsForce: 'nothing shows that file came from this account',
+    };
+}
+
+try {
+    switch (cmd) {
+        case 'list': {
+            const all = snapshots();
+            if (!all.length) console.log(`no snapshots for ${name}`);
+            for (const f of all) console.log(`${f}  ${statSync(join(dir, f)).size} bytes`);
+            const { entries, invalid } = listLibrary();
+            if (entries.length) console.log(`\nlibrary (${LIBRARY_DIR}), restore with lib:<name>:`);
+            for (const entry of entries) console.log(`  ${entry.name}  ${entry.purpose}`);
+            for (const bad of invalid) console.log(`  ${bad.file}  INVALID: ${bad.error}`);
+            break;
         }
-        await requireLoggedOut();
-        if (!existsSync(saveFile)) {
-            console.error(`no save at ${saveFile}`);
-            process.exit(1);
-        }
-        mkdirSync(dir, { recursive: true });
-        await requireStillOut();
-        const out = join(dir, `${fileStamp()}-${arg}.sav`);
-        atomicCopy(saveFile, out);
-        console.log(out);
-        break;
-    }
-    case 'restore': {
-        if (!arg) {
-            console.error(usage);
-            process.exit(2);
-        }
-        const pick = resolveSnapshot(arg);
-        if (!pick) {
-            console.error(
-                `no snapshot "${arg}" for ${name} (a label matches exactly; a path must be a .sav file); run: bun conductor/tools/save.ts list ${name}`,
-            );
-            process.exit(1);
-        }
-        await requireLoggedOut();
-        if (existsSync(saveFile) && !flags.force) {
-            // Compared after logout, which rewrites the save. Snapshots are copies, so their mtime is when they were taken.
-            const snapAt = statSync(pick).mtime;
-            const saveAt = statSync(saveFile).mtime;
-            if (snapAt < saveAt) {
-                console.error(
-                    `${pick} (${snapAt.toISOString()}) is older than the current save (${saveAt.toISOString()}); restoring loses progress since. Pass --force to restore anyway`,
+        case 'snapshot': {
+            if (!arg || !SAVE_NAME.test(arg)) fail('snapshot needs a label of letters, digits and dashes', 2);
+            if (arg.startsWith(RESERVED_LABEL_PREFIX)) {
+                fail(
+                    `snapshot labels starting "${RESERVED_LABEL_PREFIX}" are reserved for the backups restore and load.ts keep`,
+                    2,
                 );
-                process.exit(1);
             }
+            const purpose = flags.purpose?.trim();
+            if (flags.library && !purpose) fail('--library needs --purpose "<what the save is for>"', 2);
+            // A failed logout must not cost the snapshot: it is the safety net for a bot in trouble.
+            let logoutError: unknown;
+            if (flags.logout && inWorld(await saveStatus(env))) {
+                await logOut(env, { takeover: flags.takeover }).catch((e: unknown) => (logoutError = e));
+            }
+            const save = await exportSave(env);
+            const out = join(dir, `${fileStamp()}-${arg}.sav`);
+            atomicWrite(out, save.bytes);
+            console.log(`${out}  (${save.source}, sha1 ${save.sha1.slice(0, 12)})`);
+            if (flags.library && purpose) {
+                const entry = writeLibrarySave(arg, save.bytes, {
+                    purpose,
+                    source: { kind: 'snapshot', bot: name },
+                    replace: flags.replace,
+                });
+                console.log(`library: ${join(LIBRARY_DIR, `${entry.name}.sav`)}`);
+            }
+            if (logoutError !== undefined) {
+                fail(`snapshot written, but ${name} is still in the world: ${errMessage(logoutError)}`);
+            }
+            break;
         }
-        mkdirSync(dir, { recursive: true });
-        await requireStillOut();
-        if (existsSync(saveFile)) atomicCopy(saveFile, join(dir, `${fileStamp()}-pre-restore.sav`));
-        atomicCopy(pick, saveFile);
-        console.log(`restored ${pick} -> ${saveFile}`);
-        break;
+        case 'restore': {
+            if (!arg) fail(usage, 2);
+            const pick = resolveSave(arg);
+            if (!pick) {
+                fail(
+                    `no snapshot "${arg}" for ${name} (a label matches exactly; lib:<name> is a library save; a path must be a .sav file); run: bun conductor/tools/save.ts list ${name}`,
+                );
+            }
+            // Every refusal comes before the logout, so a refused restore leaves the bot as it was.
+            verifySave(pick.bytes);
+            const status = await saveStatus(env);
+            if (status.source !== 'none' && pick.needsForce && !flags.force) {
+                fail(
+                    `not restoring ${pick.from} over ${name}'s save: ${pick.needsForce}. Pass --force to restore anyway`,
+                );
+            }
+            await prepareForWrite(env, status, 'restoring', flags.takeover);
+            const { path, backup } = await writeSave(env, pick.bytes, { backupDir: dir, label: 'restore' });
+            console.log(
+                `restored ${pick.from} -> ${path}${backup ? ` (previous save: ${backup})` : ''}; restart ${name}'s client`,
+            );
+            break;
+        }
+        default:
+            fail(usage, 2);
     }
-    default:
-        console.error(usage);
-        process.exit(2);
+} catch (e) {
+    fail(`save.ts ${cmd}: ${errMessage(e)}`);
 }

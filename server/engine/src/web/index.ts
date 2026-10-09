@@ -9,6 +9,7 @@ import { handleSpriteRequest } from './sprites/SpriteRenderer.js';
 import { handleScreenshotsListPage, handleScreenshotFilePage } from './pages/screenshots.js';
 import { handleScreenshotUpload, handleExportCollisionApi } from './pages/api.js';
 import { handleBugReport } from './pages/bug-report.js';
+import { handleSaveRequest } from './pages/saves.js';
 import { handleDisclaimerPage, handleMapviewPage, handlePublicFiles } from './pages/static.js';
 import { WebSocketData, handleWebSocketUpgrade, handleGatewayEndpointGet, websocketHandlers } from './websocket.js';
 import { getIp } from './utils.js';
@@ -412,8 +413,10 @@ export async function startManagementWeb() {
                 }
             }
         },
-        fetch() {
-            return new Response(null, { status: 404 });
+        async fetch(req: Request, server) {
+            // /save/:name and /kick/:name (conductor save states; dev only, loopback only)
+            const ip = server.requestIP(req)?.address;
+            return (await handleSaveRequest(req, new URL(req.url), ip)) ?? new Response(null, { status: 404 });
         },
     });
 }

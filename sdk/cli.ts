@@ -218,10 +218,9 @@ async function fetchState(botName: string, flags: { server: string; timeout: num
     let result = await fetchStateViaHttp(gatewayUrl, username, password, timeout);
     let sdk: BotSDK | null = null;
     if (!result) {
-        // 'observe', not the BotSDK default of 'control': this is a read-only dump, and the
-        // gateway pre-empts existing controllers when a new one connects. Connecting as a
-        // controller here would kill whatever script currently owns the bot — and pre-emption
-        // disables its auto-reconnect, so it would die permanently on a mere state check.
+        // 'observe', not the BotSDK default of 'control': this is a read-only dump. The gateway
+        // allows one controller per bot, so a control connect would be refused while a script
+        // owns the bot (or, with takeover, would kill that script for a mere state check).
         sdk = new BotSDK({
             botUsername: username,
             password,

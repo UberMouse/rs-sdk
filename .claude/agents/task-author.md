@@ -1,6 +1,6 @@
 ---
 name: task-author
-description: Writes a new conductor catalog task or fixes an existing one under conductor/tasks/, smoke-tests it on the given bot with short runs, and leaves the change uncommitted for the conductor to review. Dispatched by the conductor.
+description: Writes a new conductor catalog task or fixes an existing one under conductor/tasks/, smoke-tests it with short runs on the worker account it was given (loaded from a library save), and leaves the change uncommitted for the conductor to review. Dispatched by the conductor.
 model: sonnet
 tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -285,9 +285,33 @@ Pitfalls earlier authors hit:
 
 ## Smoke test
 
-`bun conductor/run-task.ts <bot> <name> --params '<json>' --until minutes:1`. Iterate until the
-RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the screenshots
-and the `logFile`, and use `bun sdk/cli.ts <bot>` / `bun conductor/tools/screenshot.ts <bot>`.
+Your bot is the **worker account** your brief names, yours alone; never drive any other bot (the
+main account's progress comes only from the conductor's runs). Load the brief's starting save
+into it and start its client: `bun conductor/tools/load.ts <worker> <save> --client`, where
+`<save>` is the brief's `lib:<name>` or `bot:<bot>`. It prints `LOADED <json>`; its `replay` is a
+copy of exactly what was loaded, so `load.ts <worker> <replay path> --client` retests a fix from
+the same state (a `bot:` source keeps moving). Load another library save to test a branch
+(`bun conductor/tools/library.ts list`). Change the bot only through `run-task.ts`: no ad-hoc
+scripts, no `--takeover`, no trades with other players (a worker can hold a copy of the main
+account's items). If your worker is busy (a run is refused because another controller is
+attached), wait or report back; never work around it.
+
+If the brief's starting save doesn't exist yet (`none: first create lib:<name> = ...`), make it
+before testing, and prefer generating it:
+`bun conductor/tools/library.ts generate <name> --spec '<json>' --purpose "<state, and what it tests>"`
+(the spec takes `position`, `skills`, `inventory`, `equipment`, `bank`, `varps`; see
+`sdk/test/utils/save-generator.ts`). Only when a spec can't express the state (quest progress
+you can't name), reach it on your worker with `run-task.ts` runs and file it with
+`bun conductor/tools/save.ts snapshot <worker> <name> --library --purpose "..."`. Never replace
+an existing library save (`--replace`) unless the brief says so; other agents' tests use them.
+
+`bun conductor/run-task.ts <worker> <name> --params '<json>' --until minutes:1`. Iterate until the
+RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the `logFile` and
+use `bun sdk/cli.ts <worker>`. The lite client `load.ts --client` starts has no pixels, so runs on
+it take no screenshots; when you need them, load without `--client` and run the rendering client
+instead (`bun conductor/tools/client.ts <worker> --headless`), then
+`bun conductor/tools/screenshot.ts <worker>`. Every later `load.ts` logs that client out for good
+(it auto-logs in once, then exits after 120 s out of the game): stop it, load, then start it again.
 Finish with `bun test conductor` and `bun run verify:conductor` (oxfmt check, oxlint with
 warnings denied, tsc) and fix everything it reports under `conductor/` (`bun run fmt` formats in
 place). Commits run the same format and lint checks on staged files and are refused until they
@@ -296,9 +320,10 @@ pass.
 ## Report
 
 ```
-Files: <paths changed or created>
+Files: <paths changed or created, including any new conductor/saves/<name>.sav + .json>
 What changed: <3-6 lines>
 Tests: <unit test files and what they cover; integration smoke run, if any>
-Smoke tests: <each RESULT line, verbatim, newest last>
+Smoke tests: <the save each ran from (LOADED source and replay path), then each RESULT line, verbatim, newest last>
+Replay save: <load.ts's replay path the final smoke test ran from (not a tools/replay.ts recording); the review's fixes retest from it>
 Open questions: <anything the conductor should decide, or "none">
 ```

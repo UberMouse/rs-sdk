@@ -3,6 +3,7 @@
 
 import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
 import { BotActions } from '../../sdk/actions';
+import { bindListenersToCaller } from '../console-capture';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -98,11 +99,20 @@ class BotManager {
       showChat,                  // Show other players' chat (default: true; opt out with SHOW_CHAT=false)
     });
 
+    // A console.log in a listener the user's code registers (waitForCondition) reaches its capture.
+    bindListenersToCaller(sdk);
     const bot = new BotActions(sdk);
 
     // Connect with retry to handle race conditions
     console.error(`[MCP] Starting connection...`);
-    await this.connectWithRetry(sdk);
+    try {
+      await this.connectWithRetry(sdk);
+    } catch (err) {
+      // This SDK is not stored anywhere yet: left alone it would keep auto-reconnecting unseen
+      // and take the bot's controller lease whenever the gateway answered.
+      await sdk.disconnect().catch(() => {});
+      throw err;
+    }
     console.error(`[MCP] Bot "${name}" connected!`);
 
     const connection: BotConnection = {
@@ -159,6 +169,12 @@ class BotManager {
     if (!connection) {
       throw new Error(`Bot "${name}" is not connected`);
     }
+    // While a call holds (or is attaching) the bot, its entry must stay: release() finds the SDK
+    // to disconnect through it, and an attach retrying under a removed entry would be orphaned,
+    // holding the controller lease with nothing left to release it.
+    if (this.attaching.has(name) || (this.holders.get(name) ?? 0) > 0) {
+      throw new Error(`Bot "${name}" is in use by a running execute_code call; it is released when that call ends`);
+    }
 
     console.error(`[MCP] Disconnecting bot "${name}"...`);
     if (connection.unsubscribeConnectionState) {
@@ -168,6 +184,59 @@ class BotManager {
     connection.connected = false;
     this.connections.delete(name);
     console.error(`[MCP] Bot "${name}" disconnected`);
+  }
+
+  // The gateway allows one controller per bot, so an idle MCP session must not hold it and lock
+  // out scripts and tasks: each execute_code acquires the bot's control connection and releases
+  // it when done. Calls on the same bot share one attach (counted), and the last one out lets go.
+  private holders: Map<string, number> = new Map();
+  private attaching: Map<string, Promise<BotConnection>> = new Map();
+  private releasing: Map<string, Promise<void>> = new Map();
+
+  /** Attach (or join the attach in progress) and count this caller. Pair with release(). */
+  async acquire(name: string): Promise<BotConnection> {
+    // A release still closing its socket must finish first, or this would get the dying connection.
+    await this.releasing.get(name);
+    let attach = this.attaching.get(name);
+    if (!attach) {
+      const existing = this.connections.get(name);
+      if (existing?.connected && (this.holders.get(name) ?? 0) > 0) {
+        this.holders.set(name, this.holders.get(name)! + 1);
+        return existing;
+      }
+      attach = this.connect(name).catch(async (err) => {
+        // A failed re-attach must not keep auto-reconnecting in the background and take the lease
+        // later, unless another call still holds this SDK (it is reconnecting under that call).
+        if ((this.holders.get(name) ?? 0) === 0) {
+          await this.connections.get(name)?.sdk.disconnect().catch(() => {});
+        }
+        throw err;
+      });
+      this.attaching.set(name, attach);
+      attach.finally(() => this.attaching.delete(name)).catch(() => {});
+    }
+    const connection = await attach;
+    this.holders.set(name, (this.holders.get(name) ?? 0) + 1);
+    return connection;
+  }
+
+  /**
+   * Drop one hold on a bot; the last one disconnects, unconditionally (also stopping any
+   * auto-reconnect in progress), but keeps the entry (SDK, chat cursor) for the next acquire().
+   */
+  async release(name: string): Promise<void> {
+    const held = (this.holders.get(name) ?? 1) - 1;
+    if (held > 0) {
+      this.holders.set(name, held);
+      return;
+    }
+    this.holders.delete(name);
+    const connection = this.connections.get(name);
+    if (!connection) return;
+    connection.connected = false;
+    const closing = connection.sdk.disconnect().finally(() => this.releasing.delete(name));
+    this.releasing.set(name, closing);
+    await closing;
   }
 
   /**

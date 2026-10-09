@@ -38,7 +38,7 @@ export interface SyncToBotMessage {
 }
 
 // SDK connection mode
-// - control: full actions; connecting pre-empts any existing controller
+// - control: full actions; refused while another controller is attached, unless `takeover` is set
 // - observe: read-only (state/chat) plus the 'say' action; never pre-empts
 //   and is never pre-empted, so chat tools can talk without stealing the bot
 export type SDKConnectionMode = 'control' | 'observe';
@@ -50,6 +50,7 @@ export interface SDKMessage {
     password?: string;  // Required in production mode
     clientId?: string;
     mode?: SDKConnectionMode;  // Connection mode: 'control' (default) or 'observe'
+    takeover?: boolean;  // control only: pre-empt an attached controller instead of being refused
     actionId?: string;
     action?: BotAction;
     actionTimeoutMs?: number;
@@ -65,6 +66,7 @@ export interface SyncToSDKMessage {
     actionId?: string;
     result?: ActionResult;
     error?: string;
+    code?: 'controller_busy';  // sdk_error: machine-readable reason (controller lease refusal)
     screenshotId?: string;  // For screenshot response correlation
     dataUrl?: string;       // Screenshot data as data URL (image/png;base64,...)
     mode?: SDKConnectionMode;      // Connection mode (in sdk_connected response)

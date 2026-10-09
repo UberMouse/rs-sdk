@@ -6,16 +6,15 @@
 // Needs the rendering browser client (conductor/tools/client.ts); the headless
 // lite client has no pixels to capture.
 import type { BotSDK } from '../../sdk/index';
-import { connectSdk, disconnectQuietly, loadBotEnv } from '../lib/env';
+import { connectSdk, disconnectQuietly, loadBotEnvOrFail } from '../lib/env';
 import { captureScreenshot } from '../lib/screenshot';
-import { errMessage } from '../lib/util';
+import { errMessage, fail, parseCli } from '../lib/util';
 
-const [name, outArg] = process.argv.slice(2);
-if (!name) {
-    console.error('usage: bun conductor/tools/screenshot.ts <bot> [out.png]');
-    process.exit(2);
-}
-const env = loadBotEnv(name);
+const usage = 'usage: bun conductor/tools/screenshot.ts <bot> [out.png]';
+const { positionals } = parseCli({}, usage);
+const [name, outArg] = positionals;
+if (!name || positionals.length > 2) fail(usage, 2);
+const env = loadBotEnvOrFail(name);
 let sdk: BotSDK | undefined;
 
 try {

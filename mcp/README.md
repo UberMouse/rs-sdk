@@ -63,16 +63,18 @@ execute_code({
 
 ### `list_bots`
 
-List all connected bots and their status.
+List the bots this MCP session has used. `execute_code` holds a bot's control connection only
+while its code runs, so `connected` is `false` between calls; that is normal.
 
 ```typescript
 list_bots();
-// Returns: { bots: [{ name: "mybot", username: "mybot", connected: true }], count: 1 }
+// Returns: { bots: [{ name: "mybot", username: "mybot", connected: false }], count: 1 }
 ```
 
 ### `disconnect_bot`
 
-Disconnect a connected bot.
+Forget a bot this session has used. Refused while an `execute_code` call is running on it; each
+call releases its bot when it ends anyway.
 
 ```typescript
 disconnect_bot({ name: "mybot" });
@@ -89,7 +91,9 @@ Read this to discover available methods.
 
 ## Multiple Bots
 
-Control multiple bots simultaneously — each auto-connects on first use:
+Control multiple bots simultaneously — each auto-connects on first use. `execute_code` holds a
+bot's control connection only while its code runs, and the gateway allows one controller per
+bot: a call against a bot that a script or task is driving is refused (wait for it to finish).
 
 ```typescript
 // Execute on different bots (auto-connects each)
@@ -145,8 +149,8 @@ The `@modelcontextprotocol/sdk` dependency lives in the root `package.json`.
 
 **"Bot is not connected"**
 
-- Bots auto-connect on the first `execute_code` call — check the error output for connection failures
-- Use `list_bots` to see connected bots
+- Bots connect for each `execute_code` call — check that call's error output for connection failures
+- "already controlled by ..." means a task or script is driving the bot: wait for it to finish
 
 **"Connection failed"**
 
