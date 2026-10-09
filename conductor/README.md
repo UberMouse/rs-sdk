@@ -42,7 +42,7 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 - A step returns nothing to loop, `{ fail }` or `{ done }`; the run ends in one `TaskResult`
   printed as the `RESULT` line.
 - Every run is recorded next to its log (`conductor/runs/<bot>/<runId>.ticks.ndjson.gz`, about
-  50 KiB a minute): what the code observed and every command it sent. `bun conductor/tools/replay.ts
+  47 KiB a minute, about 2.8 MB an hour): what the code observed and every command it sent. `bun conductor/tools/replay.ts
   <file>` re-runs the current task code on it and prints the first command that differs.
 
 `conductor/tasks/woodcutting.ts` is the reference task; the design and its rationale are in

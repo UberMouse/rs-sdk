@@ -11,7 +11,7 @@
 // (conductor/tools/client.ts or the lite runner).
 //
 // Every run is recorded next to its log, as <runId>.ticks.ndjson.gz, for conductor/tools/replay.ts:
-// about 55 KiB a minute of play, so always on (sizes in conductor/docs/interruptible-tasks.md).
+// about 47 KiB a minute of play, 2.8 MB an hour, so always on (sizes in conductor/docs/interruptible-tasks.md).
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { z } from 'zod/v4';

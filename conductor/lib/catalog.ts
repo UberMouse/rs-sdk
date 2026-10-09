@@ -1,6 +1,6 @@
 // The task catalog: one `defineTask` default export per conductor/tasks/<name>.ts.
 import { readdirSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 import type { TaskDef } from './task';
 
 export const TASKS_DIR = resolve(import.meta.dir, '../tasks');
@@ -9,7 +9,7 @@ const REPO = resolve(import.meta.dir, '../..');
 /** The task `name` from `dir`, checked to be a task of that name. */
 export async function loadTask(name: string, dir = TASKS_DIR): Promise<TaskDef> {
     if (!/^[a-z0-9-]+$/.test(name)) throw new Error(`bad task name "${name}"`);
-    const file = join(dir, `${name}.ts`);
+    const file = resolve(dir, `${name}.ts`);
     const shown = relative(REPO, file);
     const mod: { default?: TaskDef } = await import(file);
     const def = mod.default;
