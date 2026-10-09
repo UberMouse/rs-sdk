@@ -1,10 +1,9 @@
 // Ported from sdk/actions.ts attack @ 4c2069cc0
-// NPC targets only (attackNpcEntity); the PvP path is not ported. Unlike bot.attack it takes the NPC
-// from the caller, does not walk to it first (a task that must walk through doors does so itself;
-// the client's own pathing covers the last tiles), and drops upstream's coordinate sanity check. It
-// leaves death to the death guard (upstream's `died` result) and level-up dialogs to the dialog guard,
-// and decides on the state its wait ended on, so upstream's "no combat effect observed" race can't
-// happen: a wait that ends with nothing to show is a timeout.
+// NPC targets only (attackNpcEntity); the PvP path is not ported. Differences from bot.attack that
+// change behaviour: the caller passes the NPC; it does not walk first (a task that must walk through
+// doors does so itself; the client's own pathing covers the last tiles); no coordinate sanity check;
+// death and level-up dialogs are left to the guards; and the decision is made on the state the wait
+// ended on, so upstream's "no combat effect observed" race cannot happen (nothing to show is a timeout).
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
@@ -33,10 +32,11 @@ export type AttackResult =
 
 /**
  * Attacks `npc` and waits until the fight with it has started: the bot targets it in combat, or a hit
- * on it lands. That evidence beats an already-fighting refusal that races it, as upstream. `cant-reach`
- * is the client finding no route (nothing sent) or the server's "I can't reach that!"; `already-in-combat` is a single-way
- * combat refusal (the NPC or the bot is fighting someone else); `target-gone` is the NPC leaving view
- * (killed by someone else, despawned) before the fight started.
+ * on it lands while it is the bot's target. That evidence beats an already-fighting refusal that races
+ * it, as upstream. `cant-reach` is the client finding no route (nothing sent) or the server's "I can't
+ * reach that!"; `already-in-combat` is a single-way combat refusal (the NPC or the bot is fighting
+ * someone else); `target-gone` is the NPC leaving view (killed by someone else, despawned) before the
+ * fight started.
  */
 export function* attack(ctx: ActionContext, npc: NearbyNpc): Op<AttackResult> {
     const option = npc.optionsWithIndex.find(o => ATTACK_OPTION.test(o.text));
@@ -60,13 +60,19 @@ export function* attack(ctx: ActionContext, npc: NearbyNpc): Op<AttackResult> {
 
     const engaged = (s: BotWorldState) => {
         const combat = s.player?.combat;
-        if (combat?.inCombat && combat.targetType === 'npc' && combat.targetIndex === npc.index) return true;
-        return s.combatEvents.some(
-            e =>
-                (e.observationId ?? e.tick) > revision &&
-                e.type === 'damage_dealt' &&
-                e.targetType === 'npc' &&
-                e.targetIndex === npc.index,
+        const targeting = combat?.targetType === 'npc' && combat.targetIndex === npc.index;
+        if (targeting && combat.inCombat) return true;
+        // The collector labels any splat on an NPC the bot faces `damage_dealt`, so another player's hit
+        // would count; it is the bot's own only while the bot also targets that NPC in combat.
+        return (
+            targeting &&
+            s.combatEvents.some(
+                e =>
+                    (e.observationId ?? e.tick) > revision &&
+                    e.type === 'damage_dealt' &&
+                    e.targetType === 'npc' &&
+                    e.targetIndex === npc.index,
+            )
         );
     };
     const visible = (s: BotWorldState) => s.nearbyNpcs.some(n => n.index === npc.index);

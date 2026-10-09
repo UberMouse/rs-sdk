@@ -25,7 +25,14 @@ describe('attack', () => {
 
     test('a hit landing on the NPC is a start too, even with the chicken killed by it', async () => {
         const { result } = await runOp(
-            coop.series(10, (w, i) => (i >= 2 ? gone.tick(i + 1).hit(INDEX) : w)),
+            coop.series(10, (w, i) =>
+                i >= 2
+                    ? gone
+                          .tick(i + 1)
+                          .fighting(INDEX)
+                          .hit(INDEX)
+                    : w,
+            ),
             ctx => attack(ctx, chicken),
         );
         expect(result).toEqual({ ok: true });
@@ -35,6 +42,14 @@ describe('attack', () => {
         const before = coop.hit(INDEX);
         const { result } = await runOp(
             before.series(1, w => w.hit(INDEX + 1).fighting(INDEX + 1)),
+            ctx => attack(ctx, chicken),
+        );
+        expect(result).toEqual({ ok: false, reason: 'timeout', message: 'Timeout waiting to attack Chicken' });
+    });
+
+    test("another player's hit on the NPC, while the bot faces but does not target it, is no start", async () => {
+        const { result } = await runOp(
+            coop.series(1, w => w.hit(INDEX)),
             ctx => attack(ctx, chicken),
         );
         expect(result).toEqual({ ok: false, reason: 'timeout', message: 'Timeout waiting to attack Chicken' });
