@@ -11,6 +11,11 @@ const fletcher = world().inv('Feather', 1, { id: FEATHER }).inv('Arrow shaft', 1
 const [feathers, shafts] = fletcher.build().inventory;
 const nothing = (w: World) => w.message('Nothing interesting happens.');
 
+const playing = (w: World, animId: number) => {
+    const b = w.build();
+    return { ...b, player: { ...b.player!, animId } };
+};
+
 describe('useItemOnItem', () => {
     test('sends the use and succeeds on an inventory change', async () => {
         const made = fletcher.inv('Arrow shaft', 0).inv('Headless arrow', 1, { id: HEADLESS }).tick(2);
@@ -32,6 +37,19 @@ describe('useItemOnItem', () => {
         const animating = { ...busy, player: { ...busy.player!, animId: 1248 } };
         const anim = await runOp([fletcher.build(), animating], ctx => useItemOnItem(ctx, feathers!, shafts!));
         expect(anim.result).toEqual({ ok: true });
+    });
+
+    test('an animation already playing at the send is not evidence; a new one is', async () => {
+        const states = [playing(fletcher, 808), playing(fletcher.tick(2), 808), playing(fletcher.tick(3), 808)];
+        const stale = await runOp(states, ctx => useItemOnItem(ctx, feathers!, shafts!));
+        expect(stale.result).toEqual({
+            ok: false,
+            reason: 'timeout',
+            message: 'Timeout using Feather on Arrow shaft',
+        });
+        const changed = [playing(fletcher, 808), playing(fletcher.tick(2), 1248)];
+        const fresh = await runOp(changed, ctx => useItemOnItem(ctx, feathers!, shafts!));
+        expect(fresh.result).toEqual({ ok: true });
     });
 
     test('"Nothing interesting happens." ends it at once; an older one does not count', async () => {

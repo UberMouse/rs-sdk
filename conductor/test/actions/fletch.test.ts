@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
-import { FLETCH_MAKE_TICKS, FLETCH_MENU_TICKS, fletch } from '../../actions/fletch';
+import { isSkillMenu } from '../../actions/dismiss';
+import { FLETCH_CLOSE_TICKS, FLETCH_MAKE_TICKS, FLETCH_MENU_TICKS, fletch } from '../../actions/fletch';
+import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
+import { type Guard, interpret } from '../../core/interpret';
 import type { Step } from '../../lib/task';
 import { runTask } from '../engine/harness';
 import { type World, world } from '../world';
@@ -64,7 +67,8 @@ describe('fletch', () => {
             reason: 'no-product',
             message: 'No fletching product matched "crossbow". Available: "15 Arrow Shafts", "Short Bow", "Long Bow"',
         });
-        expect(sends).toEqual([useKnife]);
+        // It closes the menu it opened: a menu left open freezes the player.
+        expect(sends).toEqual([useKnife, closeMenu]);
     });
 
     test('no menu within its wait is no-menu', async () => {
@@ -96,6 +100,86 @@ describe('fletch', () => {
         expect(noLogs.result).toEqual({ ok: false, reason: 'no-logs', message: 'No logs in inventory' });
         const refused = await runOp(kit.series(1), ctx => fletch(ctx, LOGS), { respond: refuse });
         expect(refused.result).toEqual({ ok: false, reason: 'send-failed', message: 'not connected' });
+    });
+});
+
+const closeMenu: BotAction = { type: 'closeModal', reason: 'close make menu' };
+/** A closeModal takes an open dialog away from the next tick on, as the server's does, then is spent. */
+const react: TimelineOptions['react'] = action =>
+    action.type === 'closeModal'
+        ? s => (s.dialog.isOpen ? { ...s, dialog: { isOpen: false, options: [], isWaiting: false } } : s)
+        : undefined;
+/** The knife is used at tick 1 and the menu is open from `tick` on. */
+const openFrom = (tick: number) =>
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (i >= tick ? menu(kit.tick(i)) : kit.tick(i)).build());
+
+/** Refuses only the click on a product. */
+const refuseClick = (a: BotAction) => (a.type === 'clickDialogOption' ? refuse() : undefined);
+
+describe('fletch owns its make menu', () => {
+    test('no-product closes the menu it opened before returning', async () => {
+        const { result, sends, driver } = await runOp(openFrom(2), ctx => fletch(ctx, LOGS, 'crossbow'), { react });
+        expect(result).toMatchObject({ ok: false, reason: 'no-product' });
+        expect(sends).toEqual([useKnife, closeMenu]);
+        expect(isSkillMenu(driver.state().dialog)).toBe(false);
+    });
+
+    test('a refused click leaves no menu behind either', async () => {
+        const { result, sends } = await runOp(openFrom(2), ctx => fletch(ctx, LOGS, 'arrow shaft'), {
+            react,
+            respond: refuseClick,
+        });
+        expect(result).toMatchObject({ ok: false, reason: 'send-failed' });
+        expect(sends.at(-1)).toEqual(closeMenu);
+    });
+
+    test('a menu already open is closed before the knife is used, not mistaken for the new one', async () => {
+        // Open from the start, gone once closed, open again from tick 4 when the knife has opened the real one.
+        const states = [
+            menu(kit.tick(0)),
+            menu(kit.tick(1)),
+            kit.tick(2),
+            kit.tick(3),
+            ...[4, 5, 6].map(i => menu(kit.tick(i))),
+            cut(kit.tick(7)),
+        ].map(w => w.build());
+        const { result, sends } = await runOp(states, ctx => fletch(ctx, LOGS, 'arrow shaft'), { react });
+        expect(result).toMatchObject({ ok: true });
+        expect(sends).toEqual([closeMenu, useKnife, choose(3, '15 Arrow Shafts')]);
+    });
+
+    test('a stale menu that will not close fails without using the knife', async () => {
+        const { result, sends, driver } = await runOp(menu(kit).series(40), ctx => fletch(ctx, LOGS, 'arrow shaft'));
+        expect(result).toEqual({
+            ok: false,
+            reason: 'timeout',
+            message: 'A make menu was already open and would not close',
+        });
+        expect(sends).toEqual([closeMenu]);
+        expect(driver.state().tick).toBe(1 + FLETCH_CLOSE_TICKS);
+    });
+
+    test('cancelled after the menu opened and before the click, it closes the menu in cleanup', async () => {
+        // The menu opens at tick 3, the tick the guard fires on, so the op is cancelled inside its wait.
+        const states = [kit, kit.tick(1), kit.tick(2), menu(kit.tick(3)), menu(kit.tick(4))].map(w => w.build());
+        const driver = new TimelineDriver(states, { react });
+        const abort: Guard = { name: 'abort', policy: 'abort', when: s => s.tick >= 3, run: () => ({ fail: 'x' }) };
+        const r = await interpret(fletch(driver, LOGS, 'arrow shaft'), { driver, guards: [abort] });
+        expect(r.kind).toBe('aborted');
+        const sent = driver.commands.flatMap(c => (c.type === 'send' ? [c.action] : []));
+        expect(sent).toEqual([useKnife, closeMenu]);
+        expect(isSkillMenu(driver.state().dialog)).toBe(false);
+    });
+
+    test('the members refusal is its own reason, whether the server or the client says it', async () => {
+        const server = "You need to be on a members' world to gain experience in Fletching.";
+        const client = "To use this item please login to a members' server.";
+        for (const text of [server, client]) {
+            const states = [kit.build(), kit.tick(2).message(text).build(), kit.tick(3).message(text).build()];
+            const { result, sends } = await runOp(states, ctx => fletch(ctx, LOGS, 'arrow shaft'));
+            expect(result).toEqual({ ok: false, reason: 'members', message: text });
+            expect(sends).toEqual([useKnife]);
+        }
     });
 });
 

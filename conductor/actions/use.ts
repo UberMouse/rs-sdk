@@ -24,8 +24,8 @@ const inventorySignature = (s: BotWorldState) => s.inventory.map(i => `${i.slot}
 
 /**
  * Sends `action` (`item` used on `on`) and waits for evidence that the game acted on it: the inventory
- * changed, a dialog or modal opened, the player started an animation, or a refusal message arrived.
- * Some uses (a flour bin) only swap an item, so the inventory change counts on its own.
+ * changed, a dialog or modal opened, the player started an animation (one already playing at the send,
+ * from an earlier action, does not count), or a refusal message arrived. Some uses (a flour bin) only swap an item, so the inventory change counts on its own.
  */
 function* used(ctx: ActionContext, item: InventoryItem, on: string, action: BotAction): Op<UseResult> {
     const label = `use ${item.name} on ${on}`;
@@ -41,7 +41,7 @@ function* used(ctx: ActionContext, item: InventoryItem, on: string, action: BotA
             !!messageSince(s, cursor, NOTHING) ||
             (s.dialog.isOpen && !before.dialog.isOpen) ||
             (s.interface.isOpen && !before.interface.isOpen) ||
-            (!!s.player && s.player.animId !== -1) ||
+            (!!s.player && s.player.animId !== -1 && s.player.animId !== before.player?.animId) ||
             inventorySignature(s) !== inventory,
         USE_WAIT_TICKS,
     );

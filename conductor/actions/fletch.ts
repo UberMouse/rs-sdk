@@ -6,9 +6,12 @@
 // guard's, which leaves a skill make menu alone (isSkillMenu), so a level-up mid-fletch is cleared
 // while the op still gets its menu. It has no branch for a make-X interface as upstream does: this
 // game's fletching menus are dialogs (skill_multi), never an interface. A shop or bank hiding the
-// inventory is the SDK's refusal of the send (`send-failed`), not a separate check.
+// inventory is the SDK's refusal of the send (`send-failed`), not a separate check. The op owns its
+// menu: an open chat-modal menu freezes the player's queues and timers (HP regen needs canAccess)
+// until some packet closes it, so the op closes it on every path that leaves it open, and a stale
+// one before it starts.
 import { resolveSkillDialogProduct, skillDialogProductLabels } from '../../sdk/action-quantity';
-import type { BotWorldState } from '../../sdk/types';
+import type { ActionResult, BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
@@ -17,18 +20,34 @@ import { dialogSince, messageCursor, messageSince } from './messages';
 
 /** bot.fletchLogs's 5s wait for the make menu to open, in ticks. */
 export const FLETCH_MENU_TICKS = Math.ceil(5000 / TICK_MS);
+/** Ticks a closeModal gets to take the make menu away. */
+export const FLETCH_CLOSE_TICKS = 5;
 /** bot.fletchLogs's 30 one-tick attempts for the XP after the product is clicked. */
 export const FLETCH_MAKE_TICKS = 30;
 
 const KNIFE = /^knife$/i;
 /** Upstream's game-message check, and this game's level box ("You need a Fletching level of at least 5 ..."). */
 const TOO_LOW = /need a higher|level to|need a fletching level/i;
+/**
+ * Fletching is members-only. The server's refusal (^mes_members_fletching in skill_fletching/scripts:
+ * "You need to be on a members' world to gain experience in Fletching.") and the client's own ("To use
+ * this item please login to a members' server.") both name the members world or server.
+ */
+const MEMBERS = /members'? (world|server)/i;
 
 export type FletchResult =
     | { ok: true; xpGained: number; product: string }
     | {
           ok: false;
-          reason: 'no-knife' | 'no-logs' | 'no-menu' | 'no-product' | 'level-too-low' | 'send-failed' | 'timeout';
+          reason:
+              | 'no-knife'
+              | 'no-logs'
+              | 'members'
+              | 'no-menu'
+              | 'no-product'
+              | 'level-too-low'
+              | 'send-failed'
+              | 'timeout';
           message: string;
       };
 
@@ -36,10 +55,17 @@ const xpOf = (s: BotWorldState) => findSkill(s, 'Fletching')?.experience ?? 0;
 /** A product's label without the literal "\n\n\n\n" the client publishes before it. */
 const label = (text: string) => text.replaceAll('\\n', '').trim();
 
+/** Closes the open modal and waits (bounded) for the make menu to go; the caller checks whether it did. */
+function* closeMenu(): Op<ActionResult> {
+    const sent = yield* send({ type: 'closeModal', reason: 'close make menu' });
+    if (sent.success) yield* wait('make menu closed', st => !isSkillMenu(st.dialog), FLETCH_CLOSE_TICKS);
+    return sent;
+}
+
 /**
  * Uses a knife on the first inventory item matching `logs`, picks `product` in the make menu by its
  * label ("arrow shaft", "short bow", "oak long"; omitted, the first product), and waits for Fletching
- * XP. One call makes one batch: 15 shafts, or one bow.
+ * XP. One call makes one batch: 15 shafts, or one bow. `members` is the free-world refusal.
  */
 export function* fletch(ctx: ActionContext, logs: RegExp, product?: string): Op<FletchResult> {
     const s = ctx.state();
@@ -50,35 +76,58 @@ export function* fletch(ctx: ActionContext, logs: RegExp, product?: string): Op<
     const xpBefore = xpOf(s);
     const cursor = messageCursor(s);
     const tooLow = (st: BotWorldState) => messageSince(st, cursor, TOO_LOW) ?? dialogSince(st, cursor, TOO_LOW);
+    const members = (st: BotWorldState) => messageSince(st, cursor, MEMBERS);
 
-    const used = yield* send({
-        type: 'useItemOnItem',
-        sourceSlot: knife.slot,
-        targetSlot: item.slot,
-        reason: `use ${knife.name} on ${item.name}`,
-    });
-    if (!used.success) return { ok: false, reason: 'send-failed', message: used.message };
-    const menu = yield* wait('fletching menu', st => isSkillMenu(st.dialog), FLETCH_MENU_TICKS);
-    if (menu.kind === 'timeout') return { ok: false, reason: 'no-menu', message: 'Fletching dialog did not open' };
-
-    const options = menu.state.dialog.options;
-    const choice = resolveSkillDialogProduct(options, product);
-    if (!choice) {
-        const available = skillDialogProductLabels(options)
-            .map(l => `"${label(l)}"`)
-            .join(', ');
-        return {
-            ok: false,
-            reason: 'no-product',
-            message: `No fletching product matched "${product}". Available: ${available}`,
-        };
+    // A menu already open would satisfy the wait below on the send tick, and the click would answer
+    // whatever it is for: take it away first.
+    if (isSkillMenu(s.dialog)) {
+        const closed = yield* closeMenu();
+        if (!closed.success) return { ok: false, reason: 'send-failed', message: closed.message };
+        if (isSkillMenu(ctx.state().dialog))
+            return { ok: false, reason: 'timeout', message: 'A make menu was already open and would not close' };
     }
-    const chosen = label(choice.text);
-    const clicked = yield* send({ type: 'clickDialogOption', optionIndex: choice.index, reason: `fletch ${chosen}` });
-    if (!clicked.success) return { ok: false, reason: 'send-failed', message: clicked.message };
-    const made = yield* wait(`fletch ${chosen}`, st => xpOf(st) > xpBefore || !!tooLow(st), FLETCH_MAKE_TICKS);
-    const xpGained = xpOf(made.state) - xpBefore;
-    if (xpGained > 0) return { ok: true, xpGained, product: chosen };
-    if (tooLow(made.state)) return { ok: false, reason: 'level-too-low', message: 'Fletching level too low' };
-    return { ok: false, reason: 'timeout', message: 'Fletching timed out' };
+
+    let sentKnife = false;
+    let clicked = false;
+    try {
+        const used = yield* send({
+            type: 'useItemOnItem',
+            sourceSlot: knife.slot,
+            targetSlot: item.slot,
+            reason: `use ${knife.name} on ${item.name}`,
+        });
+        if (!used.success) return { ok: false, reason: 'send-failed', message: used.message };
+        sentKnife = true;
+        const menu = yield* wait('fletching menu', st => isSkillMenu(st.dialog) || !!members(st), FLETCH_MENU_TICKS);
+        const refused = members(menu.state);
+        if (refused) return { ok: false, reason: 'members', message: refused };
+        if (menu.kind === 'timeout') return { ok: false, reason: 'no-menu', message: 'Fletching dialog did not open' };
+
+        const options = menu.state.dialog.options;
+        const choice = resolveSkillDialogProduct(options, product);
+        if (!choice) {
+            const available = skillDialogProductLabels(options)
+                .map(l => `"${label(l)}"`)
+                .join(', ');
+            return {
+                ok: false,
+                reason: 'no-product',
+                message: `No fletching product matched "${product}". Available: ${available}`,
+            };
+        }
+        const chosen = label(choice.text);
+        const click = yield* send({ type: 'clickDialogOption', optionIndex: choice.index, reason: `fletch ${chosen}` });
+        if (!click.success) return { ok: false, reason: 'send-failed', message: click.message };
+        clicked = true;
+        const made = yield* wait(`fletch ${chosen}`, st => xpOf(st) > xpBefore || !!tooLow(st), FLETCH_MAKE_TICKS);
+        const xpGained = xpOf(made.state) - xpBefore;
+        if (xpGained > 0) return { ok: true, xpGained, product: chosen };
+        if (tooLow(made.state)) return { ok: false, reason: 'level-too-low', message: 'Fletching level too low' };
+        return { ok: false, reason: 'timeout', message: 'Fletching timed out' };
+    } finally {
+        // The menu is the op's from the knife until the click answers it: leaving through no-product, a
+        // refused click or a cancel must not leave it open. Under a cancel this runs in the
+        // interpreter's bounded cleanup.
+        if (sentKnife && !clicked && isSkillMenu(ctx.state().dialog)) yield* closeMenu();
+    }
 }
