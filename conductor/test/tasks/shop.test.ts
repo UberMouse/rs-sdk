@@ -35,7 +35,7 @@ const opensOnly: TimelineOptions['react'] = (action, state) =>
     action.type === 'interactNpc' || action.type === 'closeShop' ? react(action, state) : undefined;
 /** A shop that opens and trades but ignores every close. */
 const staysOpen: TimelineOptions['react'] = (action, state) =>
-    action.type === 'closeShop' ? undefined : react(action, state);
+    action.type === 'closeShop' || action.type === 'closeModal' ? undefined : react(action, state);
 /**
  * The shop opens on tick 1 and a packet sent then lands on tick 2, the tick HP drops: the low-HP guard
  * cancels the op's wait before it sees the items move, so the op never reports them.
@@ -100,7 +100,7 @@ describe('shop: the trip', () => {
         expect(r.result.status).toBe('done');
     });
 
-    test('a shop left open is closed first, and never traded with', async () => {
+    test('a shop left open before the run is closed at its start, and never traded with', async () => {
         const open = carrying.shop(LINES, PAYS, 'Aubury');
         const r = await simulate(shop, {
             params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] },
@@ -108,7 +108,8 @@ describe('shop: the trip', () => {
             react,
         });
         expect(r.result.status).toBe('done');
-        expect(r.steps).toEqual(['close-stale-shop', 'trade', 'finish']);
+        // The engine's run-start close (its closeModal reads "close shop" too), not the task's own.
+        expect(r.steps).toEqual(['close-leftover', 'trade', 'finish']);
         expect(r.sends).toEqual([CLOSE, OPEN, 'buy Hammer', CLOSE]);
     });
 
@@ -123,7 +124,9 @@ describe('shop: the trip', () => {
         expect(r.result.reason).toBe(
             'close-stale-shop: cannot close a shop left open: Shop close timeout - shop.isOpen=true, interface.isOpen=true',
         );
-        expect(r.sends).toHaveLength(6);
+        // The engine's two run-start closes, then the task's three, each a close and a second attempt.
+        const twice = [CLOSE, `${CLOSE} (second attempt)`];
+        expect(r.sends).toEqual([...twice, ...twice, ...twice, ...twice]);
     });
 
     test('far from the shop it walks there first, then trades', async () => {

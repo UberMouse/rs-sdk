@@ -35,7 +35,8 @@ export const SMITHING_INTERFACE = 994;
 /**
  * Main modals an op opens on purpose and owns until it ends, which no guard may close under it. Unlike
  * NEVER_CLOSE_INTERFACES, bot.dismissBlockingUI would close these: an op's wait inside one would have
- * it closed every tick by the interface guard.
+ * it closed every tick by the interface guard. One left open when a run starts is closed then
+ * (leftoverModal, lib/engine.ts).
  */
 export const OP_OWNED_INTERFACES: ReadonlySet<number> = new Set([SMITHING_INTERFACE]);
 
@@ -77,6 +78,21 @@ export const isSkillMenu = (d: DialogState): boolean => {
     const buttons = d.options.map(o => o.text.replace(COLOUR_TAG, '').replaceAll('\\n', '').trim());
     const quantity = buttons.filter(b => QUANTITY_BUTTON.test(b));
     return quantity.length >= MENU_MIN_QUANTITY_BUTTONS && quantity.some(b => X_BUTTON.test(b));
+};
+
+/**
+ * What a run finds open before its first step, which nothing in the run opened, named for a log line: a
+ * main modal (an op's own interface, a book, a bank or shop) left by a run that was killed or whose close
+ * failed, or a skill make menu. Not a two-party or must-complete screen (NEVER_CLOSE_INTERFACES, the
+ * Grand Exchange). Null when nothing is.
+ */
+export const leftoverModal = (s: BotWorldState): string | null => {
+    if (s.interface.isOpen && !s.ge?.isOpen && !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId)) {
+        if (s.bank.isOpen) return 'bank';
+        if (s.shop.isOpen) return 'shop';
+        return `interface ${s.interface.interfaceId}`;
+    }
+    return isSkillMenu(s.dialog) ? 'skill menu' : null;
 };
 
 /** Clicks or closes per call, as bot.dismissBlockingUI's maxAttempts. */

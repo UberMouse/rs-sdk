@@ -1,14 +1,15 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
-import { TimelineDriver } from '../../core/drivers/timeline';
+import { SMITHING_INTERFACE } from '../../actions/dismiss';
+import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { call, type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { sleep } from '../../lib/env';
-import { MAX_STEP_COMMANDS } from '../../lib/engine';
+import { LEFTOVER_CLOSE_TICKS, LEFTOVER_STEP, MAX_STEP_COMMANDS } from '../../lib/engine';
 import type { Outcome, Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline } from '../world';
+import { timeline, world } from '../world';
 import { runTask } from './harness';
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
@@ -153,6 +154,74 @@ describe('the interface guard', () => {
         );
         const close = `close interface ${BOOK}`;
         expect(r.sends).toEqual(['chop', close, close, close, 'cleanup']);
+    });
+});
+
+/** A closeModal takes any main modal and dialog away from the next tick on. */
+const closes: TimelineOptions['react'] = action =>
+    action.type === 'closeModal'
+        ? s => (s.interface.isOpen || s.dialog.isOpen ? world(s).modal(false).dialog(false).build() : s)
+        : undefined;
+const closeLeftover = (what: string) => `close ${what}`;
+const leftoverLog = (events: Record<string, unknown>[]) =>
+    events.filter(e => e.type === 'log' && typeof e.msg === 'string' && e.msg.includes('left open before the run'));
+
+describe('a modal left open before the run', () => {
+    test('the anvil interface open at the start is closed before the first step', async () => {
+        const states = timeline(20, t => ({ interfaceId: SMITHING_INTERFACE, xp: t >= 8 ? 25 : 0 }));
+        const r = await runTask([step('chop', chop)], states, { react: closes });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([closeLeftover(`interface ${SMITHING_INTERFACE}`), 'chop', 'cleanup']);
+        expect(r.result.stepRuns).toEqual({ [LEFTOVER_STEP]: 1, chop: 1 });
+        expect(leftoverLog(r.events).map(e => e.msg)).toEqual([
+            `interface ${SMITHING_INTERFACE} left open before the run: closing it`,
+        ]);
+    });
+
+    test('nothing open sends nothing extra', async () => {
+        const states = timeline(20, t => ({ xp: t >= 8 ? 25 : 0 }));
+        const r = await runTask([step('chop', chop)], states, { react: closes });
+        expect(r.sends).toEqual(['chop', 'cleanup']);
+        expect(r.result.stepRuns).toEqual({ chop: 1 });
+        expect(leftoverLog(r.events)).toEqual([]);
+    });
+
+    test('a skill make menu open at the start is closed too', async () => {
+        const menu = ['Make X', 'Make 10', 'Make 5', 'Arrow shafts'];
+        const states = timeline(20, t => ({ xp: t >= 8 ? 25 : 0 })).map(s =>
+            world(s).dialog({ options: menu }).build(),
+        );
+        const r = await runTask([step('chop', chop)], states, { react: closes });
+        expect(r.sends).toEqual([closeLeftover('skill menu'), 'chop', 'cleanup']);
+    });
+
+    test('one that will not close is closed twice, logged, and the run goes on', async () => {
+        const states = timeline(20, t => ({ interfaceId: SMITHING_INTERFACE, xp: t >= 10 ? 25 : 0 }));
+        let stepStart = -1;
+        const timed = step('chop', ctx => {
+            stepStart = ctx.state().tick;
+            return chop();
+        });
+        const r = await runTask([timed], states);
+        const what = `interface ${SMITHING_INTERFACE}`;
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([closeLeftover(what), `${closeLeftover(what)} (second attempt)`, 'chop', 'cleanup']);
+        expect(r.events).toContainEqual({
+            type: 'log',
+            msg: `${what} left open before the run did not close: ${what} still open after two closes`,
+            data: undefined,
+        });
+        // Bounded: the first close's wait and the second's one tick, then the step runs.
+        expect(stepStart).toBe(LEFTOVER_CLOSE_TICKS + 1);
+        expect(r.result.reason).toBe('chop: xp at tick 10');
+    });
+
+    test('a trade screen open at the start is left alone', async () => {
+        const TRADE = 3323;
+        const states = timeline(20, t => ({ interfaceId: TRADE, xp: t >= 8 ? 25 : 0 }));
+        const r = await runTask([step('chop', chop)], states, { react: closes });
+        expect(r.sends).toEqual(['chop', 'cleanup']);
+        expect(r.result.stepRuns[LEFTOVER_STEP]).toBeUndefined();
     });
 });
 

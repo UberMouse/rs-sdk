@@ -17,7 +17,8 @@ you never commit, and you only touch the bot you were given.
 - `conductor/lib/task.ts` — the contract (`defineTask`, `Step`, `TaskContext`, `memory`,
   `streak`, `counter`, `allow`, `guards`, `stepTimeoutMs`, `stuckAfterMs`).
 - `conductor/lib/engine.ts` and `conductor/lib/interrupts.ts` — what is handled for you: the
-  guards (below), the refusal to start while in combat, `--until` stop conditions, the progress
+  guards (below), the refusal to start while in combat, closing a modal an earlier run left open
+  (an op's interface, a bank, a shop, a skill menu) before the first step, `--until` stop conditions, the progress
   watchdog, auto-screenshots, the RESULT line. Don't re-implement them in a task.
 - `conductor/core/op.ts` — the commands a step yields (`send`, `wait`, `ticks`, `scan`, `call`,
   `log`, `screenshot`, `uninterruptible`) and `Cancelled`; `conductor/actions/*.ts` — the ops.

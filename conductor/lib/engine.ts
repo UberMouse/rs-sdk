@@ -1,4 +1,5 @@
-// Runs one task to its TaskResult. Each loop the first guard (the shared ones in lib/interrupts.ts,
+// Runs one task to its TaskResult. Before the first step it closes a modal left open by an earlier run
+// (closeLeftover). Each loop the first guard (the shared ones in lib/interrupts.ts,
 // then the task's own) whose `when()` holds runs, else the first of the task's steps whose `when()`
 // passes. A generator step is interpreted (core/interpret.ts) with the same guards and the stops,
 // watchdog and step budget as `onTick`, so they act at every tick of its waits; a wall-clock limit
@@ -11,7 +12,10 @@ import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import { type Driver, type Guard, guardsUnder, interpret, type Interpretation, TickStall } from '../core/interpret';
-import { call, type Command, type Op } from '../core/op';
+import type { ActionContext } from '../actions/context';
+import { leftoverModal } from '../actions/dismiss';
+import { closeModalUntil } from '../actions/modal';
+import { call, type Command, log, type Op } from '../core/op';
 import { sleep } from './env';
 import { findFood, guardLabel, GUARDS } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
@@ -37,6 +41,23 @@ export const MAX_STEP_COMMANDS = 1000;
  * it well within this; it bounds a `call` that never settles, which the interpreter waits for.
  */
 export const STEP_GRACE_MS = 30_000;
+
+/** What the run-start close of a leftover modal is reported as, in `stepRuns` and the step events. */
+export const LEFTOVER_STEP = 'close-leftover';
+/** Ticks the run-start close waits for the first of its two closes (closeModalUntil). */
+export const LEFTOVER_CLOSE_TICKS = 5;
+
+/**
+ * Closes `what` (leftoverModal), found open before the run's first step. A modal blocks loc and NPC
+ * interaction, and no guard closes an op's own interface, a bank, a shop or a skill menu, so one left by
+ * a killed run or a failed close would strand every later task. Bounded by closeModalUntil: two closes,
+ * LEFTOVER_CLOSE_TICKS + 1 ticks. One that stays open is logged and the run goes on.
+ */
+function* closeLeftover(ctx: ActionContext, what: string): Op<Outcome> {
+    yield* log(`${what} left open before the run: closing it`);
+    const r = yield* closeModalUntil(ctx, what, s => !leftoverModal(s), LEFTOVER_CLOSE_TICKS);
+    if (!r.ok) yield* log(`${what} left open before the run did not close: ${r.message}`);
+}
 
 /** A zero-tick wait: a point where the interpreter calls `onTick`, which then cancels the step. */
 const CHECKPOINT: Command = { type: 'wait', label: 'command cap', until: () => false, ticks: 0 };
@@ -520,6 +541,13 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     };
 
     try {
+        const leftover = leftoverModal(driver.state());
+        if (leftover) {
+            begin(LEFTOVER_STEP);
+            stepRuns[LEFTOVER_STEP] = 1;
+            const end = await runOp(LEFTOVER_STEP, closeLeftover(ctx, leftover), []);
+            if (end) return finish(end.status, end.reason);
+        }
         for (;;) {
             loops++;
             const s = driver.state();

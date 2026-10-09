@@ -6,7 +6,7 @@ import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timelin
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import bank from '../../tasks/bank';
-import { bankReact, bankWorld } from '../react';
+import { bankReact } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -95,14 +95,16 @@ describe('bank: the trip', () => {
         expect(r.sends).toEqual([OPEN, 'deposit Shrimps', 'deposit Logs', 'withdraw Copper ore', CLOSE]);
     });
 
-    test('a bank that is already open is used without opening it again', async () => {
+    test('a bank left open before the run is closed at its start, then opened for the trip', async () => {
         const open = carrying.bank(BANK_CONTENTS);
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
             timeline: open.series(1),
             react,
         });
-        expect(r.sends).toEqual(['deposit Logs', CLOSE]);
+        // The engine's run-start close reads "close bank" too.
+        expect(r.sends).toEqual([CLOSE, OPEN, 'deposit Logs', CLOSE]);
+        expect(r.result.stepRuns).toEqual({ 'close-leftover': 1, operate: 1, finish: 1 });
         expect(r.result.status).toBe('done');
     });
 
@@ -383,13 +385,12 @@ describe('bank: guards', () => {
     });
 
     test('the interface guard leaves the open bank alone', async () => {
-        const open = carrying.bank(BANK_CONTENTS);
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
-            timeline: open.series(1),
-            react: bankWorld,
+            timeline: carrying.series(1),
+            react,
         });
         expect(r.result.stepRuns).toEqual({ operate: 1, finish: 1 });
-        expect(r.sends).toEqual(['deposit Logs', CLOSE]);
+        expect(r.sends).toEqual([OPEN, 'deposit Logs', CLOSE]);
     });
 });
