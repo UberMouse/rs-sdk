@@ -72,3 +72,10 @@ mode for the same objective). Each line: hypothesis, variants, status.
 
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
+
+- combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
+  the run ends with `inCombat: true` and the next run is refused ("in combat ... handle the
+  attacker first", engine.ts ~l.208). The task can't fix this: no stop hook, and `isComplete` runs
+  after `checkStops`. The engine fix is to defer a stop while `player.combat.inCombat`, with a
+  bounded grace of about 30 s, or to wait out a fight before refusing at start (robustness R5,
+  safety S1).
