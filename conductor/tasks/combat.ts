@@ -337,6 +337,10 @@ export default defineTask({
             // Never walk off to loot while something is hitting the bot.
             when: ctx => !ctx.state().player?.combat.inCombat && wantedGroundItems(ctx).length > 0,
             *run(ctx) {
+                // Expired skips are dropped here, not in `when`/wantedGroundItems, which stay pure.
+                const tick = ctx.state().tick;
+                for (const [key, until] of ctx.memory.lootSkipped)
+                    if (until <= tick) ctx.memory.lootSkipped.delete(key);
                 const item = wantedGroundItems(ctx)[0];
                 if (!item) return;
                 // Run-scoped, not a streak: loot stops applying between failures (skipped items), which

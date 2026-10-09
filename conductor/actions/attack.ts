@@ -31,8 +31,8 @@ export type AttackResult =
       };
 
 /**
- * Attacks `npc` and waits until the fight with it has started: the bot targets it in combat, or a hit
- * on it lands while it is the bot's target. That evidence beats an already-fighting refusal that races
+ * Attacks `npc` and waits until the fight with it has started: the bot targets it in combat (it
+ * survives the tick the NPC dies, so a one-hit kill counts). That evidence beats an already-fighting refusal that races
  * it, as upstream. `cant-reach` is the client finding no route (nothing sent) or the server's "I can't
  * reach that!"; `already-in-combat` is a single-way combat refusal (the NPC or the bot is fighting
  * someone else); `target-gone` is the NPC leaving view (killed by someone else, despawned) before the
@@ -43,7 +43,6 @@ export function* attack(ctx: ActionContext, npc: NearbyNpc): Op<AttackResult> {
     if (!option) return { ok: false, reason: 'no-option', message: `No attack option on ${npc.name}` };
     const before = ctx.state();
     const cursor = messageCursor(before);
-    const revision = before.revision ?? before.tick;
 
     const sent = yield* send({
         type: 'interactNpc',
@@ -58,22 +57,12 @@ export function* attack(ctx: ActionContext, npc: NearbyNpc): Op<AttackResult> {
             message: sent.message,
         };
 
+    // Facing is the evidence: the collector's inCombat is true whenever the bot targets something, and a
+    // landing hit keeps the facing alive through the tick the NPC dies. Another player's hit on the NPC
+    // does not make the bot face it.
     const engaged = (s: BotWorldState) => {
         const combat = s.player?.combat;
-        const targeting = combat?.targetType === 'npc' && combat.targetIndex === npc.index;
-        if (targeting && combat.inCombat) return true;
-        // The collector labels any splat on an NPC the bot faces `damage_dealt`, so another player's hit
-        // would count; it is the bot's own only while the bot also targets that NPC in combat.
-        return (
-            targeting &&
-            s.combatEvents.some(
-                e =>
-                    (e.observationId ?? e.tick) > revision &&
-                    e.type === 'damage_dealt' &&
-                    e.targetType === 'npc' &&
-                    e.targetIndex === npc.index,
-            )
-        );
+        return combat?.targetType === 'npc' && combat.targetIndex === npc.index;
     };
     const visible = (s: BotWorldState) => s.nearbyNpcs.some(n => n.index === npc.index);
     const cantReach = (s: BotWorldState) => messageSince(s, cursor, CANT_REACH);

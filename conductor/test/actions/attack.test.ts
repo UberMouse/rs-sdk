@@ -23,25 +23,17 @@ describe('attack', () => {
         expect(driver.state().tick).toBe(4);
     });
 
-    test('a hit landing on the NPC is a start too, even with the chicken killed by it', async () => {
+    test('a fighting state targeting the NPC on the tick it dies is a start', async () => {
         const { result } = await runOp(
-            coop.series(10, (w, i) =>
-                i >= 2
-                    ? gone
-                          .tick(i + 1)
-                          .fighting(INDEX)
-                          .hit(INDEX)
-                    : w,
-            ),
+            coop.series(10, (w, i) => (i >= 2 ? gone.tick(i + 1).fighting(INDEX) : w)),
             ctx => attack(ctx, chicken),
         );
         expect(result).toEqual({ ok: true });
     });
 
-    test('a hit or a fight on another NPC, or an old hit on this one, is no start', async () => {
-        const before = coop.hit(INDEX);
+    test('a hit or a fight on another NPC is no start', async () => {
         const { result } = await runOp(
-            before.series(1, w => w.hit(INDEX + 1).fighting(INDEX + 1)),
+            coop.series(1, w => w.hit(INDEX + 1).fighting(INDEX + 1)),
             ctx => attack(ctx, chicken),
         );
         expect(result).toEqual({ ok: false, reason: 'timeout', message: 'Timeout waiting to attack Chicken' });
