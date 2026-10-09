@@ -136,12 +136,18 @@ with the next published state), `send(action)`, `scan(radius)`, `call(run)`, `lo
   engine's stops/watchdog; returns a cancel reason or null), (2) each guard's `when(state)`,
   (3) the wait's `until`, (4) the tick budget (`ticks` counted from the wait's first state).
 - A guard has `{ name, when, policy: 'abort' | 'suspend', run(): Op<GuardOutcome> }`.
-  `abort`: `op.return()` (its `finally` blocks run; commands they yield are executed with guards
-  off, capped at a fixed number of ticks), then the guard's op runs, result `aborted`.
+  `abort`: the op is cancelled (its `finally` blocks run; commands they yield are executed with
+  guards off, capped at a fixed number of ticks), then the guard's op runs, result `aborted`.
+  **As built (Task 3):** cancelling throws a `Cancelled` error into the op rather than calling
+  `op.return()`. Once a `finally` inside a `yield*` delegation yields and is resumed with
+  `next()`, the outer generator treats the inner one as having returned normally and runs on, so
+  `return()` cannot cancel a nested stack. The rule this creates for all op/task code: a
+  `catch` must rethrow `Cancelled`.
   `suspend`: the guard's op runs (guards off while it runs), then the same wait resumes and
   re-checks. A guard op returning `{ fail }`/`{ done }` ends the interpretation with that
   outcome as `aborted`, carrying the outcome.
-- `onTick` returning a reason: `op.return()` with the same finally handling, result `cancelled`.
+- `onTick` returning a reason: the op is cancelled with the same finally handling, result
+  `cancelled`.
 - `uninterruptible(op)`: a wrapper op; inside it only guards flagged `critical` (death,
   wilderness) fire.
 - A guard firing during a `call` waits for the call to settle, then acts; it is logged.
@@ -181,7 +187,7 @@ in-memory sinks in tests). Steps may be either `async run(ctx)` (legacy, run thr
 the `INTERRUPTS` as guards (death, wilderness: `critical`, abort+fail; low HP: abort; dialog:
 suspend), and `onTick` = stops + watchdog + tick-stall, so a `minutes:` stop or watchdog fires
 mid-wait in generator steps. Step timeout becomes a tick budget: the engine cancels the step
-(`op.return()`), so `abandoned-step-error` no longer exists for generator steps (it remains for
+(the interpreter's `Cancelled`), so `abandoned-step-error` no longer exists for generator steps (it remains for
 legacy `call` steps, which can't be cancelled). `TaskResult` and the NDJSON event types stay as
 they are.
 
