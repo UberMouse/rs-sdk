@@ -75,7 +75,9 @@ const STUCK_SLACK_MS = 30_000;
 /**
  * Give-up of the slowest accepted rock (adamantite) plus slack: stuckAfterMs is static, so a full respawn wait is
  * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes during
- * one), plus one more wait for the sends between them, so the specific failure reason surfaces first.
+ * one), plus one more wait for the sends between them, so the specific failure reason surfaces first. The watchdog is wall-clock but the give-up is in game
+ * ticks, so the margin assumes the local tick length (TICK_MS); a slower-ticking server could fire the
+ * watchdog before the slowest give-up.
  */
 const STUCK_AFTER_MS = Math.max(
     giveUpTicksFor(ROCKS.adamantite.respawnTicks) * TICK_MS + STUCK_SLACK_MS,

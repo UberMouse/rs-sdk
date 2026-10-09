@@ -41,7 +41,8 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
   changed op has `conductor/test/actions/<op>.test.ts` and `integration/actions/<op>.itest.ts`.
   Flag tests that only restate the code, or that would pass on the pre-change code.
 - **T9 Op layering.** An op in `conductor/actions` starts with `// Ported from sdk/actions.ts
-  <method> @ <sha>` and a paragraph on how it differs from upstream; returns a tagged union (no
+  <method> @ <sha>` (or, with no upstream method, `// Not ported: sdk/actions.ts has no <thing>
+  method; closest upstream is <method> @ <sha>.`) and a paragraph on how it differs from upstream; returns a tagged union (no
   throws for game outcomes); takes `ActionContext` first only if it reads state; waits only for
   its own effect, as a tick budget (`Math.ceil(ms / TICK_MS)` for a ported wall-clock wait),
   deciding from the wait's `state`; and has no threat, HP, dialog or interface handling, which

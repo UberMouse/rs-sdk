@@ -99,7 +99,8 @@ passes its `ctx` as the `ActionContext`.
   stays its own function.
 - **Port, don't invent.** Start from the method in `sdk/actions.ts`. The file's first line is
   `// Ported from sdk/actions.ts <method> @ <upstream sha>` (the short sha of the last commit to
-  `sdk/actions.ts`), followed by a paragraph on how the op differs from upstream and why.
+  `sdk/actions.ts`); an op with no upstream method starts `// Not ported: sdk/actions.ts has no
+  <thing> method; closest upstream is <method> @ <sha>.` instead. Either is followed by a paragraph on how the op differs from upstream and why.
 - **The result is a tagged union**: `{ ok: true } | { ok: false; reason: '<closed set>'; message }`
   so a step can branch on `reason` and log `message`. No throws for game outcomes.
 - **`ActionContext` first, only if the op reads state** (`ctx.state()`). An op that only sends takes
