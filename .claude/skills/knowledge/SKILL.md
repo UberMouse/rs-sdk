@@ -1,0 +1,74 @@
+---
+name: knowledge
+description: How the game knowledge base (learnings/ and wiki/) is laid out, which parts agents maintain, the fact format with provenance, and the rules for correcting and pruning stale facts. Load before editing learnings/ or wiki/, and whenever you need to know where a fact belongs.
+---
+
+# Knowledge base
+
+What every agent learns about the game goes into files the next run can read. The conductor
+keeps it current through the `knowledge-curator` agent after **every** task run; anyone may
+read it at any time.
+
+## Layout
+
+| Path | What it holds | Who edits |
+|---|---|---|
+| `wiki/items/`, `wiki/npcs/`, `wiki/shops/` (+ their `README.md`) | reference generated from game data by `wiki/generate-*.ts` | **nobody** — regenerated wholesale. Put a correction in `learnings/` and name the wiki page it corrects |
+| `wiki/skills/<skill>.md` | per-skill reference: requirements, resources, **verified training spots** | agents |
+| `wiki/quests/<quest>.md` | per-quest reference and walkthrough notes | agents |
+| `learnings/<topic>.md` | how-to: SDK patterns, procedures, gotchas (existing pages: banking, combat, dialogs, fishing, mining, shops, walking, woodcutting, …) | agents |
+| `learnings/equipment.md` | where to get the next gear tier for combat and tools: shop, drop, spawn, cost, requirement | agents |
+| `learnings/hazards.md` | dangerous NPCs and areas, with coordinates and the combat level at which they stop being a problem | agents |
+| `learnings/local-server.md` | facts true only of the local server (XP rate, tick rate, spawn behaviour) | agents |
+
+Where a fact goes:
+- **Where to train skill X / what resource is where** → `wiki/skills/<skill>.md`, section
+  `## Verified training spots` (a table; see below).
+- **How to make the SDK do X** → `learnings/<topic>.md` (`learnings/README.md` sets the snippet
+  conventions: snippets are `execute_code` style).
+- **Gear progression** → `learnings/equipment.md`. **Danger** → `learnings/hazards.md`.
+- **A number that depends on the server** (XP/action, XP/hr, respawn time) → tag it with the
+  server, and put server-wide ones in `learnings/local-server.md`.
+- Create a new `learnings/<topic>.md` only when no existing page fits; add it to the list in
+  `learnings/README.md` if that README lists pages.
+
+## Fact format
+
+A fact verified by a run ends with a provenance tag:
+
+```
+- Normal trees around (3195, 3220), dense west and south of it; no aggressive NPCs. [v 2026-10-09 conductor1 local]
+```
+
+`[v <date> <bot> <server>]`: the date it was last confirmed, the bot that confirmed it, and
+`local` or `hosted`. Facts without a tag are upstream or unverified — trust them less, and tag
+them once a run confirms them.
+
+Training-spot tables:
+
+```
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Lumbridge trees | (3195, 3220) | 1 | normal trees, drop logs | 50k (local) | 2026-10-09 conductor1 local |
+```
+
+XP/hr comes from `bun conductor/tools/stats.ts <bot>`, not from one run.
+
+Coordinates are world `(x, z)` as `sdk.getState().player.worldX/worldZ` report them.
+
+## Editing rules
+
+1. **State the current truth.** Fix a wrong fact in place and update its tag. No "UPDATE:",
+   no strike-through, no "previously we thought" — history lives in git and the journal.
+2. **Contradicted beats verified.** When a run contradicts a fact (the trees aren't there, the
+   NPC is aggressive, the shop doesn't sell it), correct or delete it, even if it was tagged.
+3. **One fact, one place.** Before adding, grep for it (`grep -rn "3195" learnings wiki/skills`).
+   Merge duplicates into the page that owns the fact and leave a link in the other.
+4. **Evidence, not inference.** Only record what a run showed (RESULT, logs, screenshots, state
+   dumps) or what the game data says. A guess goes in the journal, not here.
+5. **Keep pages scannable.** Tables for spots, gear and hazards; short bullets for gotchas;
+   code only where the pattern is non-obvious.
+6. **Prune.** When a page grows a section that no longer matches what runs see, or two sections
+   say the same thing, consolidate. A page that only restates `sdk/API.md` can shrink to a link.

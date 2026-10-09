@@ -25,6 +25,12 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 | Yew | 60 | Yew logs | Cemetery south of Seers, south of Edgeville bank |
 | Magic | 75 | Magic logs | South of Sorcerer's Tower, Gnome Stronghold |
 
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12 | — | 2026-10-09 conductor1 local |
+
 ## Notes
 
 - Higher-level axes chop faster.
