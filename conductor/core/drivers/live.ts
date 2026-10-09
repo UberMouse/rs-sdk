@@ -81,7 +81,10 @@ export class LiveDriver implements Driver {
         return new TickStall(`client stopped publishing ticks for ${this.stallMs / 1000}s`);
     }
 
-    /** Stops listening to the SDK; a pending or later `nextTick` rejects. */
+    /**
+     * Stops listening to the SDK; a pending or later `nextTick` rejects, and so does every later
+     * `send`, `scan` and `call`, so an abandoned op can't act on the game after the run ends.
+     */
     close(): void {
         const closed = new Error('driver closed');
         this.closed = closed;
@@ -91,6 +94,7 @@ export class LiveDriver implements Driver {
 
     /** Each action through the SDK's public `send*` method for it, so the SDK's own checks still apply. */
     async send(a: BotAction): Promise<ActionResult> {
+        if (this.closed) throw this.closed;
         const sdk = this.sdk;
         switch (a.type) {
             case 'none':
@@ -189,10 +193,12 @@ export class LiveDriver implements Driver {
     }
 
     scan(radius?: number): Promise<NearbyLoc[]> {
+        if (this.closed) return Promise.reject(this.closed);
         return this.sdk.scanNearbyLocs(radius);
     }
 
     call(_label: string, run: () => Promise<unknown>): Promise<unknown> {
+        if (this.closed) return Promise.reject(this.closed);
         return run();
     }
 

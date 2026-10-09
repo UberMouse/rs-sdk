@@ -26,8 +26,8 @@ export const DEFAULT_STUCK_AFTER_MS = 90_000;
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;
 /**
- * Commands other than waits a generator step may yield within one tick before the run fails. Guards
- * and stops act only at waits, so this is what bounds an op that sends in a loop and never waits.
+ * Commands other than waits a generator step may yield within one tick before the run fails: it
+ * bounds a loop of commands that settle without a tick passing, which guards and stops never see.
  */
 export const MAX_STEP_COMMANDS = 1000;
 /**
@@ -400,9 +400,10 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
 
     /**
      * The interpreter waits for a pending `call` to settle before it acts on a stop or guard, and has
-     * no timers, so a generator step races two wall-clock limits: its timeout plus the grace from its
-     * start, and the grace from when `onTick` ended the run. Past either the step is abandoned and the
-     * run ends `stuck`; an op still live then is cancelled at its next check, where `onTick` reports it.
+     * no timers, so a generator step gets a wall-clock limit: its timeout plus the grace from its
+     * start. Past it, as when `onTick` ends the run, the op is cancelled at its next check, where
+     * `onTick` reports the end; only if it is still running a grace later is it abandoned and the run
+     * ends `stuck`.
      */
     const runOp = async (step: Step, op: Op<Outcome>): Promise<End | null> => {
         const startTick = driver.state().tick;
@@ -416,18 +417,28 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             expire = res;
         });
         const timers: ReturnType<typeof setTimeout>[] = [];
-        const expireAfter = (ms: number, end: End) =>
+        /** Sets `ending` (the op is cancelled at its next check) and abandons the op a grace later. */
+        const end = (e: End) => {
+            if (ending) return;
+            ending = e;
             timers.push(
-                setTimeout(() => {
-                    ending ??= end;
-                    expire(end);
-                }, ms),
+                setTimeout(
+                    () =>
+                        expire({
+                            status: 'stuck',
+                            reason: `step "${step.name}" still running ${graceMs / 1000}s after "${e.reason}"`,
+                        }),
+                    graceMs,
+                ),
             );
+        };
         const limitMs = stepTimeoutMs + graceMs;
-        expireAfter(limitMs, {
-            status: 'stuck',
-            reason: `step "${step.name}" ran over ${limitMs / 1000}s of wall time`,
-        });
+        timers.push(
+            setTimeout(
+                () => end({ status: 'stuck', reason: `step "${step.name}" ran over ${limitMs / 1000}s of wall time` }),
+                limitMs,
+            ),
+        );
 
         const onTick = (s: BotWorldState): string | null => {
             if (s.tick !== countedTick) {
@@ -435,21 +446,16 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
                 commandsThisTick = 0;
             }
             if (!ending) {
-                ending =
+                const e =
                     checkRun(s) ??
                     overrun ??
                     (s.tick - startTick > stepBudgetTicks
                         ? {
-                              status: 'stuck',
+                              status: 'stuck' as const,
                               reason: `step "${step.name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
                           }
                         : null);
-                if (ending) {
-                    expireAfter(graceMs, {
-                        status: 'stuck',
-                        reason: `step "${step.name}" still running ${graceMs / 1000}s after "${ending.reason}"`,
-                    });
-                }
+                if (e) end(e);
             }
             return ending?.reason ?? null;
         };

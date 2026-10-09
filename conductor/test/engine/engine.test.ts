@@ -5,7 +5,7 @@ import type { BotSDK } from '../../../sdk/index';
 import type { BotWorldState, InventoryItem } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
-import { call, type Op, send, uninterruptible, wait } from '../../core/op';
+import { call, type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { sleep } from '../../lib/env';
 import { executeTask, MAX_STEP_COMMANDS } from '../../lib/engine';
 import type { StopCondition } from '../../lib/stop';
@@ -20,6 +20,8 @@ interface RunOptions {
     stepTimeoutMs?: number;
     stepGraceMs?: number;
     driver?: TimelineDriver;
+    /** The run's events land here, so a test can interleave its own records with them. */
+    events?: Record<string, unknown>[];
 }
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
@@ -39,7 +41,7 @@ class Stalled extends TimelineDriver {
 /** Runs `steps` as a task on a scripted timeline, with in-memory sinks. */
 async function runTask(steps: Step[], states: BotWorldState[], opts: RunOptions = {}) {
     const driver = opts.driver ?? new TimelineDriver(states);
-    const events: Record<string, unknown>[] = [];
+    const events = opts.events ?? [];
     const printed: string[] = [];
     const legacy: string[] = [];
     const sinks: Sinks = {
@@ -303,6 +305,18 @@ async function failAfter(ms: number): Promise<never> {
     throw new Error('late boom');
 }
 
+/** Slow calls with a check between them; its finally sends `cleanup`. */
+function* grind(): Op<Outcome> {
+    try {
+        for (;;) {
+            yield* call('work', () => sleep(20));
+            yield* ticks(0);
+        }
+    } finally {
+        yield* send(act('cleanup'));
+    }
+}
+
 const abandoned = (events: Record<string, unknown>[]) => events.filter(e => e.type === 'abandoned-step-error');
 
 describe('wall-clock limits on a generator step', () => {
@@ -318,18 +332,37 @@ describe('wall-clock limits on a generator step', () => {
         );
     });
 
-    test('a step past its timeout plus grace is abandoned, and its late error is logged', async () => {
+    test('a step still running a grace after its wall-clock limit is abandoned, and its late error is logged', async () => {
         // No tick ever comes, so neither the tick budget nor a stop can end it.
-        const r = await runTask([step('slow', () => calls('slow', () => failAfter(50)))], [], {
+        const r = await runTask([step('slow', () => calls('slow', () => failAfter(100)))], [], {
             driver: new Frozen(timeline(1)),
             stepTimeoutMs: 10,
             stepGraceMs: 20,
         });
         expect(r.result.status).toBe('stuck');
-        expect(r.result.reason).toBe('step "slow" ran over 0.03s of wall time');
+        expect(r.result.reason).toBe('step "slow" still running 0.02s after "step "slow" ran over 0.03s of wall time"');
         expect(abandoned(r.events)).toEqual([]);
-        await sleep(60);
+        await sleep(110);
         expect(abandoned(r.events)).toEqual([{ type: 'abandoned-step-error', step: 'slow', message: 'late boom' }]);
+    });
+
+    test('an op that keeps reaching checks is cancelled cleanly at its wall-clock limit', async () => {
+        const events: Record<string, unknown>[] = [];
+        // No tick ever comes, so only the wall-clock limit can end it.
+        const driver = new Frozen(timeline(1), {
+            respond: a => {
+                events.push({ type: 'sent', reason: a.reason });
+                return undefined;
+            },
+        });
+        const r = await runTask([step('grind', grind)], [], { driver, events, stepTimeoutMs: 10, stepGraceMs: 40 });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('step "grind" ran over 0.05s of wall time');
+        // The interpreter ran the finally before the result, rather than the op running on after it.
+        expect(events.map(e => e.type)).toEqual(['start', 'step', 'sent', 'screenshot', 'result']);
+        await sleep(60);
+        expect(r.sends).toEqual(['cleanup']);
+        expect(abandoned(r.events)).toEqual([]);
     });
 });
 
