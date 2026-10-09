@@ -29,7 +29,7 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
-| Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12 | — | 2026-10-09 conductor1 local |
+| Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12; bronze axe, levels 1-48. XP is at the local 25× rate ([local-server](../../learnings/local-server.md)) | ~300k (local, stats.ts; 248k with onFull drop at lower levels) | 2026-10-09 conductor1 local |
 
 ## Notes
 
