@@ -40,4 +40,5 @@ mode for the same objective). Each line: hypothesis, variants, status.
 
 ## Review follow-ups
 
-Band-C findings from `task-review`, to fold into the next change to that task.
+Review findings `task-review` deferred because their fix needs work outside the reviewed change
+(most findings are fixed in the same pass).

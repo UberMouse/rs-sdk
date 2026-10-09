@@ -1,6 +1,6 @@
 ---
 name: task-review
-description: Agent-driven review -> verify -> fix loop for bot task code (conductor/tasks, conductor/lib), with rs-sdk lenses (game semantics, robustness, task contract, account safety, TypeScript code quality). Run by the conductor after every task-author change, before the change is committed. No human gate; the conductor decides.
+description: Agent-driven review -> verify -> fix loop for bot task code (conductor/tasks, conductor/lib, conductor/tools), with rs-sdk lenses (game semantics, robustness, task contract, account safety, TypeScript code quality). Run by the conductor after every task-author change, before the change is committed, or on a commit range to review code already landed. No human gate; the conductor decides.
 ---
 
 # Task review
@@ -9,11 +9,11 @@ Adapted from kawaka's `branch-review`: parallel lens finders, a recall-first ver
 fix-forward loop. Here there is no human gate: the conductor acts on the verified findings.
 
 ```
-change (uncommitted, from task-author)
+change (uncommitted from task-author, or a commit range)
   -> 5 task-reviewer agents in parallel, one per lens        (.claude/review-lenses/*.md)
-  -> review-verifier: refute wrong findings, re-band the rest
-  -> A/B: task-author fixes + re-smoke-tests  -> round 2 on the lenses that had fixes
-  -> C: backlog in conductor/roadmap.md       D / refuted: dropped
+  -> review-verifier(s): refute wrong findings, re-band the rest
+  -> A/B/C: task-author fixes + re-checks  -> round 2 on the lenses that had fixes
+  -> D / refuted / duplicates: dropped
   -> commit (or revert)
 ```
 
@@ -29,13 +29,16 @@ Lenses (the criteria live in the lens files, not here):
 
 ## 0. Scope
 
-The change is the uncommitted diff under `conductor/` that a task-author left
+Usually the change is the uncommitted diff under `conductor/` that a task-author left
 (`git diff --stat -- conductor/` plus untracked files from `git status --short conductor/`).
-Keep the author's report: its smoke-test RESULT lines are evidence for the reviewers.
+To review code already committed, name a range instead (`git diff <base>..HEAD -- conductor/`);
+then §4's revert becomes "report the A findings to the user" — never rewrite landed history.
+
+Keep the author's report: its smoke-test RESULT lines are evidence for the reviewers. When the
+bot can't run the task (missing gear, dead), say so in the evidence so reviewers don't wait on it.
 
 If the change touches only a task's `description` or comments, run `contract` and
-`code-quality` alone.
-Otherwise run all five.
+`code-quality` alone. Otherwise run all five.
 
 ## 1. Find
 
@@ -43,11 +46,14 @@ Dispatch one `task-reviewer` per lens **in a single message** (they run in paral
 
 ```
 Lens: <lens>
-Change: uncommitted diff under conductor/ (`git diff -- conductor/`; new files: <list>)
-Purpose: <one line: what the task-author was asked to do>
-Evidence: <smoke-test RESULT lines; their logFile and screenshot paths>
+Change: <the diff command; new files: <list>>
+Purpose: <one line: what the change is for>
+Evidence: <smoke-test RESULT lines; their logFile and screenshot paths; what couldn't be run>
 Return the JSON from .claude/review-lenses/common.md only.
 ```
+
+For a long brief (round 2, many prior fixes), write it to a file under `$CLAUDE_JOB_DIR/tmp/`
+and point every reviewer at it.
 
 A reviewer that returns no parseable JSON, or a `checked` list missing criteria from its lens,
 gets re-dispatched once. If it fails again, **fail closed**: do not commit; record the
@@ -55,43 +61,55 @@ incomplete review in the journal and retry on the next loop.
 
 ## 2. Verify
 
-No findings from any lens → skip to §5.
+No findings from any lens → skip to §5. Drop band-D findings before verifying.
 
-Otherwise number all findings `0..n-1` in one list (keep each one's lens) and dispatch one
-`review-verifier` with the list inline and the same Change/Evidence lines. Then sort:
+Number the rest `0..n-1` in one list (keep each one's lens) in a file, grouped by file area
+(engine/interrupts, the task, tools) so duplicates from different lenses sit together. One
+`review-verifier` handles up to ~20 findings; past that, dispatch one per group **in
+parallel**, each told which indices are its own. Then sort:
 
-- **fix**: not refuted, not a duplicate, band A or B.
-- **backlog**: band C → one line each under `## Review follow-ups` in `conductor/roadmap.md`
-  (`- <task>: <summary> (<lens> <criterion>)`).
+- **fix**: not refuted, not a duplicate, band A, B or C.
 - **drop**: band D, refuted, duplicates.
+
+Fix C findings too: the codebase is young, and a backlog of small issues outlives its context.
+Defer one only when its fix needs work outside the change's files (a new task, an SDK change
+upstream would own); then add it to `## Review follow-ups` in `conductor/roadmap.md`
+(`- <task>: <summary> (<lens> <criterion>)`).
 
 ## 3. Fix
 
-If there is anything to fix, dispatch `task-author` once with every fix finding inline:
+Dispatch `task-author` with every fix finding (inline, or in a brief file for many):
 
 ```
-Fix review findings in conductor/tasks/<task>.ts (and <other files>), on bot <bot>.
+Fix review findings in <files>, on bot <bot>.
 For each: <file>:<line> [<lens> <criterion>, band <band>] <summary>
   Evidence: <evidence>
   Fix: <suggestion>
-Change only what these findings call for. Re-run the smoke test and tsc.
+Change only what these findings call for. Re-run the smoke test and `bun run verify:conductor`.
 Leave the change uncommitted; report per finding: fixed / couldn't (why), and the RESULT lines.
 ```
 
+Many findings may go to two fix agents **in parallel only when their files are disjoint**; a
+fix that spans both sets (a shared helper used on both sides) makes them sequential. Never let
+two fix agents drive the bot at once.
+
 ## 4. Round 2
 
-Re-run §1–§2 for only the lenses that had fix findings, on the whole uncommitted change. At
-most two rounds in total. After round 2:
+Re-run §1–§2 for only the lenses that had fix findings, on the whole change, telling the
+reviewers which round-1 fixes to re-check. Round 2 usually finds problems the fixes introduced:
+fix those as in §3. There is no round 3: close with `bun run verify:conductor` and the
+conductor's own read of the round-2 fix diff (each finding resolved, nothing out of scope, no
+new defect). Then:
 
-- No A or B left → §5.
-- B left → §5, and add the B findings to the backlog as well.
-- A left → **revert**: `git checkout -- <changed files>` and delete new files; journal the
-  findings; set the objective back to `pending` with the findings as notes for the next
-  task-author dispatch.
+- No A left → §5.
+- A left → **revert** (uncommitted change): `git checkout -- <changed files>` and delete new
+  files; journal the findings; set the objective back to `pending` with the findings as notes
+  for the next task-author dispatch. For a commit range, report the A findings to the user.
 
 ## 5. Commit
 
-`git add` the specific files, then commit. The message stands alone (no finding ids):
+`git add` the specific files, then commit; the pre-commit hook re-checks format and lint. The
+message stands alone (no finding ids):
 
 ```
 feat(tasks): <what the task does now>      (or fix(tasks): / refactor(tasks):)
@@ -100,5 +118,5 @@ feat(tasks): <what the task does now>      (or fix(tasks): / refactor(tasks):)
 - review: <problem and fix, in prose, one bullet per fixed finding>
 ```
 
-Append a journal line `{ at, kind: "review", task, rounds, found, fixed, backlog, dropped,
+Append a journal line `{ at, kind: "review", task, rounds, found, fixed, deferred, dropped,
 commit }` and clear the `script-approval` gate.
