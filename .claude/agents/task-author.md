@@ -83,8 +83,9 @@ new style, porting the actions they use as ops.
 - **`async run(ctx)`**: legacy, being removed. One opaque promise: guards and stops act only
   between steps, and a timeout abandons it still running. Don't write new ones.
 
-Never `await` in a new or changed step: a generator waits with `yield*`, and an awaited SDK call
-is exactly what guards and cancellation cannot see.
+Never `await` in a new step, or in a ported or substantially rewritten one: a generator waits with
+`yield*`, and an awaited SDK call is exactly what guards and cancellation cannot see. A narrow edit
+to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.md`).
 
 ### Ops
 
