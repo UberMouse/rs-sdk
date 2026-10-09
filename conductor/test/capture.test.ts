@@ -11,3 +11,8 @@ test('trimState keeps what is within the radius and the last messages', () => {
     expect(s.groundItems.length).toBe(1);
     expect(s.gameMessages.map(m => m.text)).toEqual(Array.from({ length: 10 }, (_, i) => `m${i + 5}`));
 });
+
+test('trimState drops the transient menu actions', () => {
+    const raw = { ...world().build(), menuActions: [{ text: 'Walk here' }] };
+    expect('menuActions' in trimState(raw)).toBe(false);
+});

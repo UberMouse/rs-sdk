@@ -86,6 +86,14 @@ function itemOptions(name: string): { text: string; opIndex: number }[] {
     return [];
 }
 
+/** A stable id per entity name (FNV-1a), so tasks that match on id see distinct objects; opts.id overrides. */
+function entityId(name: string, id: number | undefined): number {
+    if (id !== undefined) return id;
+    let h = 0x811c9dc5;
+    for (const c of name.toLowerCase()) h = Math.imul(h ^ c.charCodeAt(0), 0x01000193);
+    return ((h >>> 0) % 60_000) + 1;
+}
+
 function itemId(name: string, id: number | undefined): number {
     const found = id ?? ITEM_IDS.get(name.toLowerCase());
     if (found === undefined) throw new Error(`world: unknown item "${name}"; pass { id }`);
@@ -201,7 +209,7 @@ export class World {
     loc(name: string, x: number, z: number, opts: LocOptions = {}): World {
         const options = opts.options ?? [];
         const loc: NearbyLoc = {
-            id: opts.id ?? 1,
+            id: entityId(name, opts.id),
             name,
             x,
             z,
@@ -218,7 +226,7 @@ export class World {
         const options = opts.options ?? [];
         const npc: NearbyNpc = {
             kind: 'npc',
-            id: opts.id ?? 1,
+            id: entityId(name, opts.id),
             index: opts.index ?? this.s.nearbyNpcs.length + 1,
             name,
             combatLevel: opts.combatLevel ?? 1,

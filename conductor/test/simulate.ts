@@ -8,6 +8,9 @@ import { executeTask } from '../lib/engine';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 
+/** The engine's own grace is 30s, so a task that never finishes would stall a unit test; a simulation needs milliseconds. */
+export const SIMULATE_STEP_GRACE_MS = 200;
+
 export interface SimulateOptions {
     /** Raw params, as `--params` would give them. */
     params?: unknown;
@@ -18,6 +21,7 @@ export interface SimulateOptions {
     /** What `scan` returns. */
     scan?: (radius?: number) => NearbyLoc[];
     stops?: StopCondition[];
+    /** Wall-clock grace for a step to wind down once ended; defaults to SIMULATE_STEP_GRACE_MS. */
     stepGraceMs?: number;
     /** A driver of your own (a TimelineDriver subclass) in place of `timeline`, `respond` and `scan`. */
     driver?: TimelineDriver;
@@ -82,7 +86,7 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         logFile: '/logs/run-1.ndjson',
         rawParams: opts.params ?? {},
         stops: opts.stops ?? [],
-        ...(opts.stepGraceMs !== undefined && { stepGraceMs: opts.stepGraceMs }),
+        stepGraceMs: opts.stepGraceMs ?? SIMULATE_STEP_GRACE_MS,
     });
     return {
         result,

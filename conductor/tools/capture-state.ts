@@ -7,23 +7,36 @@
 // committed.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { parseArgs } from 'node:util';
 import type { BotSDK } from '../../sdk/index';
 import { trimState } from '../lib/capture';
 import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT } from '../lib/env';
 import { errMessage } from '../lib/util';
 
 const READY_TIMEOUT_MS = 30_000;
-const args = process.argv.slice(2);
-const nameFlag = args.indexOf('--name');
-const fixture = nameFlag >= 0 ? args[nameFlag + 1] : undefined;
-const bot = args.find((a, i) => !a.startsWith('--') && i !== nameFlag + 1);
-if (!bot || (nameFlag >= 0 && !fixture)) {
-    console.error('usage: bun conductor/tools/capture-state.ts <bot> [--name <fixture>]');
+const usage = 'usage: bun conductor/tools/capture-state.ts <bot> [--name <fixture>]';
+let parsed: ReturnType<typeof parseArgs<{ allowPositionals: true; options: { name: { type: 'string' } } }>>;
+try {
+    parsed = parseArgs({ args: process.argv.slice(2), allowPositionals: true, options: { name: { type: 'string' } } });
+} catch (e) {
+    console.error(`${errMessage(e)}\n${usage}`);
     process.exit(2);
 }
-if (fixture && !/^[\w-]+$/.test(fixture)) {
-    console.error(`fixture name "${fixture}" must be letters, digits, _ or -`);
+const [bot, ...extra] = parsed.positionals;
+const fixture = parsed.values.name;
+if (!bot || extra.length) {
+    console.error(usage);
     process.exit(2);
+}
+// Both end up in the output path, so neither may carry a separator or `..`.
+for (const [what, value] of [
+    ['bot', bot],
+    ['fixture name', fixture],
+] as const) {
+    if (value !== undefined && !/^[\w-]+$/.test(value)) {
+        console.error(`${what} "${value}" must be letters, digits, _ or -`);
+        process.exit(2);
+    }
 }
 
 let sdk: BotSDK | undefined;

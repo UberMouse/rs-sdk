@@ -72,6 +72,29 @@ describe('simulate', () => {
         expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
     });
 
+    test('a task that never finishes is ended by a stop, not left hanging', async () => {
+        const endless = defineTask({
+            name: 'endless',
+            description: 'waits for something that never happens',
+            params: z.object({}),
+            steps: [
+                {
+                    name: 'wait',
+                    when: () => true,
+                    *run(): Op<Outcome> {
+                        for (;;) yield* wait('never', () => false, 1);
+                    },
+                },
+            ],
+        });
+        const r = await simulate(endless, {
+            timeline: world().series(10),
+            stops: [{ kind: 'minutes', minutes: 0.005 }],
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toContain('reached 0.005 min');
+    });
+
     test('it needs a world to run in', async () => {
         await expect(simulate(chop, {})).rejects.toThrow('timeline or a driver');
     });

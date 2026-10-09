@@ -8,7 +8,7 @@ export const CAPTURE_HISTORY = 10;
 
 export function trimState(state: BotWorldState, radius = CAPTURE_RADIUS, history = CAPTURE_HISTORY): BotWorldState {
     const near = <T extends { distance: number }>(xs: T[]) => xs.filter(x => x.distance <= radius);
-    return {
+    const trimmed: BotWorldState & { menuActions?: unknown } = {
         ...state,
         nearbyNpcs: near(state.nearbyNpcs),
         nearbyPlayers: near(state.nearbyPlayers),
@@ -18,4 +18,8 @@ export function trimState(state: BotWorldState, radius = CAPTURE_RADIUS, history
         recentDialogs: state.recentDialogs.slice(-history),
         combatEvents: state.combatEvents.slice(-history),
     };
+    // The right-click menu of whatever the cursor last hovered: render-derived and transient, so a
+    // fixture only carries noise (the SDK type does not even declare it).
+    delete trimmed.menuActions;
+    return trimmed;
 }
