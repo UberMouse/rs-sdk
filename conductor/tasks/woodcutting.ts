@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { waitUnlessThreatened } from '../lib/threat';
 import { findSkill } from '../lib/util';
@@ -16,11 +16,16 @@ const AXE = /(^|\s)axe$/i;
 
 /** The longest a tree chop is awaited (logs gained or tree gone) before it counts as a failed chop. */
 const CHOP_WAIT_MS = 30_000;
-const NO_TREE_LIMIT = 10;
+/** One wait for a respawn; it ends early when a tree appears or the bot is threatened. */
+const RESPAWN_WAIT_MS = 5_000;
+/** How long with no tree at all before failing; above the 48-80s normal-tree respawn. */
+const NO_TREE_GIVE_UP_MS = 120_000;
+/** Above the give-up time and the engine default (90s) so a full respawn wait is not reported as a stall. */
+const STUCK_AFTER_MS = 150_000;
+/** Consecutive failed chops before the task fails. */
 const CHOP_FAIL_LIMIT = 8;
 /** Ticks one combat episode may last while the bot only waits for auto-retaliate to win it. */
 const COMBAT_TICK_LIMIT = 40;
-const TREE_RESPAWN_WAIT_TICKS = 3;
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -67,11 +72,13 @@ export default defineTask({
     name: 'woodcutting',
     description:
         'Chop trees of one type and drop the logs when full. Needs an axe and the level for the tree. ' +
+        'When every tree in reach is a stump it waits up to 2 min for respawns, then fails "area depleted". ' +
         'With `area` it stays within `radius` of that centre; without it, it chops wherever the bot stands. ' +
         'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
         'Draynor willows (3087,3235, dark wizards nearby). Refuses areas reaching the Wilderness.',
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
+    stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -115,21 +122,36 @@ export default defineTask({
                 const { pattern } = TREES[ctx.params.tree];
                 const a = ctx.params.area;
                 // Only trees inside the area, or return-to-area and chop would trade the bot back and forth.
+                const isChoppable = (t: NearbyLoc) =>
+                    pattern.test(t.name) &&
+                    t.reachable === true &&
+                    t.options.some(o => /chop/i.test(o)) &&
+                    inArea(a, t);
                 const tree = ctx.sdk
                     .getNearbyLocs()
-                    .filter(t => pattern.test(t.name) && t.reachable === true && t.options.some(o => /chop/i.test(o)))
-                    .filter(t => inArea(a, t))
+                    .filter(isChoppable)
                     .sort((x, y) => x.distance - y.distance)[0];
                 if (!tree) {
-                    if (ctx.counter('noTree').add() >= NO_TREE_LIMIT)
-                        return { fail: `no reachable ${ctx.params.tree} nearby` };
-                    // Trees respawn; wait a few ticks, and drift back to the area centre if we have one.
-                    const failure = a ? await walkToArea(ctx, a) : null;
-                    if (failure) return { fail: failure };
-                    await ctx.sdk.waitForTicks(TREE_RESPAWN_WAIT_TICKS);
+                    // Stumps count as no tree: stay put (returnToAreaStep keeps us inside) and wait for a respawn.
+                    const stored = ctx.memory.noTreeSince;
+                    const since = typeof stored === 'number' ? stored : Date.now();
+                    if (typeof stored !== 'number') {
+                        ctx.memory.noTreeSince = since;
+                        ctx.log(`no ${ctx.params.tree} available, waiting for a respawn`);
+                    }
+                    const waited = Date.now() - since;
+                    if (waited >= NO_TREE_GIVE_UP_MS) {
+                        const waitedSeconds = Math.round(waited / 1000);
+                        return {
+                            fail: a
+                                ? `area depleted: no reachable ${ctx.params.tree} in radius ${a.radius} for ${waitedSeconds}s`
+                                : `no reachable ${ctx.params.tree} nearby for ${waitedSeconds}s`,
+                        };
+                    }
+                    await waitUnlessThreatened(ctx.sdk, s => s.nearbyLocs.some(isChoppable), RESPAWN_WAIT_MS);
                     return;
                 }
-                ctx.counter('noTree').reset();
+                delete ctx.memory.noTreeSince;
                 const r = await chopTree(ctx, tree);
                 if (r.kind === 'threatened') {
                     // Pace the loop; the low-HP interrupt acts on the next one if HP is the problem.
