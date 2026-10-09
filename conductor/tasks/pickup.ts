@@ -1,8 +1,10 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
+import { pickup } from '../actions/pickup';
+import { call, log, type Op, ticks } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
-import { defineTask, type TaskContext } from '../lib/task';
-import { INVENTORY_SLOTS } from '../lib/util';
+import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
 
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
@@ -23,9 +25,12 @@ const Params = z.object({
 });
 
 type PickupParams = z.infer<typeof Params>;
-type Ctx = TaskContext<PickupParams>;
+interface PickupMemory {
+    /** The tick the bot first found none of the wanted item in the area, until it finds one again. */
+    noItemSinceTick: number | null;
+}
+type Ctx = TaskContext<PickupParams, PickupMemory>;
 
-const exactName = (name: string) => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
 const held = (state: BotWorldState, name: string) => {
     const pattern = exactName(name);
     return state.inventory.filter(i => pattern.test(i.name)).reduce((n, i) => n + i.count, 0);
@@ -34,6 +39,37 @@ const held = (state: BotWorldState, name: string) => {
 /** The first wanted item still short of its count. */
 const missing = (ctx: Ctx) => ctx.params.items.find(w => held(ctx.state(), w.item) < w.count);
 
+/**
+ * Nothing wanted on the ground in the area: fail when the inventory is full, walk in when the bot is just
+ * outside it, otherwise wait for a respawn and fail after maxWaitSeconds without one.
+ */
+function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
+    const { area, maxWaitSeconds } = ctx.params;
+    if (ctx.inventoryFull()) return { fail: 'inventory is full' };
+    // Only the radius..radius+WORK_REACH strip: returnToAreaStep handles anything farther out.
+    if (ctx.distanceTo(area.x, area.z) > area.radius) {
+        // No walkTo op yet.
+        const failure = yield* call('walkToArea', () => walkToArea(ctx, area));
+        if (failure) return { fail: failure };
+        return;
+    }
+    const now = ctx.state().tick;
+    if (ctx.memory.noItemSinceTick === null) {
+        ctx.memory.noItemSinceTick = now;
+        yield* log(`no ${want} in the area, waiting for a respawn`);
+    }
+    if (now - ctx.memory.noItemSinceTick >= Math.ceil((maxWaitSeconds * 1000) / TICK_MS)) {
+        const pattern = exactName(want);
+        const unreachable = ctx.state().groundItems.some(g => pattern.test(g.name) && inArea(area, g));
+        return {
+            fail: unreachable
+                ? `${want} is present in the area but unreachable (waited ${maxWaitSeconds}s)`
+                : `no ${want} appeared in the area within ${maxWaitSeconds}s`,
+        };
+    }
+    yield* ticks(WAIT_TICKS);
+}
+
 export default defineTask({
     name: 'pickup',
     description:
@@ -41,6 +77,7 @@ export default defineTask({
         'waiting up to maxWaitSeconds for respawns. Verified spot: Knife at area {x:3224,z:3202,radius:4} ' +
         '(SE of Lumbridge castle). Fails if attacked or the inventory is full.',
     params: Params,
+    memory: (): PickupMemory => ({ noItemSinceTick: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -56,12 +93,12 @@ export default defineTask({
         {
             name: 'finish',
             when: ctx => !missing(ctx),
-            run: async () => ({ done: 'holding every requested item' }),
+            run: () => ({ done: 'holding every requested item' }),
         },
         {
             name: 'attacked',
             when: ctx => !!ctx.state().player?.combat.inCombat,
-            run: async ctx => {
+            run(ctx) {
                 const p = ctx.state().player;
                 return { fail: `attacked while picking up at (${p?.worldX},${p?.worldZ})` };
             },
@@ -70,52 +107,27 @@ export default defineTask({
         {
             name: 'pickup',
             when: () => true,
-            async run(ctx) {
+            *run(ctx) {
                 const want = missing(ctx);
                 if (!want) return;
                 const pattern = exactName(want.item);
-                const item = ctx.sdk
-                    .getGroundItems()
-                    .filter(g => pattern.test(g.name) && g.reachable !== false && inArea(ctx.params.area, g))
+                const item = ctx
+                    .state()
+                    .groundItems.filter(
+                        g => pattern.test(g.name) && g.reachable !== false && inArea(ctx.params.area, g),
+                    )
                     .sort((a, b) => a.distance - b.distance)[0];
-                if (!item) {
-                    if (ctx.inventoryFull()) return { fail: 'inventory is full' };
-                    // Only the radius..radius+WORK_REACH strip: returnToAreaStep handles anything farther out.
-                    if (ctx.distanceTo(ctx.params.area.x, ctx.params.area.z) > ctx.params.area.radius) {
-                        const failure = await walkToArea(ctx, ctx.params.area);
-                        if (failure) return { fail: failure };
-                        return;
-                    }
-                    const stored = ctx.memory.noItemSince;
-                    const since = typeof stored === 'number' ? stored : Date.now();
-                    if (typeof stored !== 'number') {
-                        ctx.memory.noItemSince = since;
-                        ctx.log(`no ${want.item} in the area, waiting for a respawn`);
-                    }
-                    if (Date.now() - since >= ctx.params.maxWaitSeconds * 1000) {
-                        const unreachable = ctx.sdk
-                            .getGroundItems()
-                            .some(g => pattern.test(g.name) && inArea(ctx.params.area, g));
-                        const secs = ctx.params.maxWaitSeconds;
-                        return {
-                            fail: unreachable
-                                ? `${want.item} is present in the area but unreachable (waited ${secs}s)`
-                                : `no ${want.item} appeared in the area within ${secs}s`,
-                        };
-                    }
-                    await ctx.sdk.waitForTicks(WAIT_TICKS);
-                    return;
-                }
-                delete ctx.memory.noItemSince;
-                const fails = ctx.counter('pickupFails');
-                const r = await ctx.bot.pickupItem(item);
-                if (r.success) {
+                if (!item) return yield* waitForSpawn(ctx, want.item);
+                ctx.memory.noItemSinceTick = null;
+                const picked = yield* pickup(ctx, item);
+                const fails = ctx.streak('pickupFails');
+                if (picked.ok) {
                     fails.reset();
                     return;
                 }
-                ctx.log(`pickup of ${item.name} at (${item.x},${item.z}) failed: ${r.message}`);
+                yield* log(`pickup of ${item.name} at (${item.x},${item.z}) failed: ${picked.message}`);
                 if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} pickups in a row failed (last: ${r.message})` };
+                    return { fail: `${FAIL_LIMIT} pickups in a row failed (last: ${picked.message})` };
             },
         },
     ],

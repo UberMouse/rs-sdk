@@ -72,3 +72,8 @@ export function fileStamp(): string {
 
 /** Matches the `fileStamp()` prefix, including its trailing `-`, of a filename. */
 export const FILE_STAMP_PREFIX = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-/;
+
+/** A pattern for exactly this item name (case-insensitive), for names that come in as task params. */
+export function exactName(name: string): RegExp {
+    return new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+}

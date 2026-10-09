@@ -23,6 +23,8 @@ export interface SimulateOptions {
     react?: TimelineOptions['react'];
     /** What `scan` returns. */
     scan?: (radius?: number) => NearbyLoc[];
+    /** Fakes for the legacy `bot.*` methods a step calls through `call` (anything else throws). */
+    bot?: Partial<BotActions>;
     stops?: StopCondition[];
     /** Wall-clock grace for a step to wind down once ended; defaults to SIMULATE_STEP_GRACE_MS. */
     stepGraceMs?: number;
@@ -58,9 +60,13 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         screenshot: async label => `/shots/${label}.png`,
     };
     // Legacy steps act through BotActions and the SDK. Only the SDK's tick wait is faked (hence the
-    // casts); any bot.* call throws, naming the method. The engine's eat as a run ends catches its throw.
+    // casts); a bot.* call throws, naming the method, unless the test faked it. The engine's eat as a
+    // run ends catches its throw.
+    const fakes = opts.bot ?? {};
     const bot = new Proxy({} as BotActions, {
         get: (_target, name) => {
+            const fake = fakes[name as keyof BotActions];
+            if (fake) return fake;
             throw new Error(`simulate fakes no bot.${String(name)}`);
         },
     });
