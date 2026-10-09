@@ -39,7 +39,7 @@ Agents (all dispatched in the background):
 |---|---|---|
 | `task-runner` | runs one task, diagnoses a failure (world vs script) | edits anything |
 | `task-author` | writes or fixes a task, smoke-tests it | commits |
-| `task-reviewer` ×4 + `review-verifier` | the `task-review` skill's lens review of a change | edits anything |
+| `task-reviewer` ×5 + `review-verifier` | the `task-review` skill's lens review of a change | edits anything |
 | `knowledge-curator` | folds a run's lessons into the knowledge base | drives the bot, commits |
 | `retrospective` | looks across many runs, updates the roadmap | drives the bot, commits |
 

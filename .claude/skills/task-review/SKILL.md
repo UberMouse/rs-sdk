@@ -1,6 +1,6 @@
 ---
 name: task-review
-description: Agent-driven review -> verify -> fix loop for bot task code (conductor/tasks, conductor/lib), with rs-sdk lenses (game semantics, robustness, task contract, account safety). Run by the conductor after every task-author change, before the change is committed. No human gate; the conductor decides.
+description: Agent-driven review -> verify -> fix loop for bot task code (conductor/tasks, conductor/lib), with rs-sdk lenses (game semantics, robustness, task contract, account safety, TypeScript code quality). Run by the conductor after every task-author change, before the change is committed. No human gate; the conductor decides.
 ---
 
 # Task review
@@ -10,7 +10,7 @@ fix-forward loop. Here there is no human gate: the conductor acts on the verifie
 
 ```
 change (uncommitted, from task-author)
-  -> 4 task-reviewer agents in parallel, one per lens        (.claude/review-lenses/*.md)
+  -> 5 task-reviewer agents in parallel, one per lens        (.claude/review-lenses/*.md)
   -> review-verifier: refute wrong findings, re-band the rest
   -> A/B: task-author fixes + re-smoke-tests  -> round 2 on the lenses that had fixes
   -> C: backlog in conductor/roadmap.md       D / refuted: dropped
@@ -25,6 +25,7 @@ Lenses (the criteria live in the lens files, not here):
 | `robustness` | `.claude/review-lenses/robustness.md` | does every run end, for the right reason, and say why? |
 | `contract` | `.claude/review-lenses/contract.md` | does it fit the task contract and catalog, reusing what exists? |
 | `safety` | `.claude/review-lenses/safety.md` | could it cost the account deaths, items, money? |
+| `code-quality` | `.claude/review-lenses/code-quality.md` | is it well-written TypeScript: types, async hygiene, simplicity, naming, comments, consistency? |
 
 ## 0. Scope
 
@@ -32,8 +33,9 @@ The change is the uncommitted diff under `conductor/` that a task-author left
 (`git diff --stat -- conductor/` plus untracked files from `git status --short conductor/`).
 Keep the author's report: its smoke-test RESULT lines are evidence for the reviewers.
 
-If the change touches only a task's `description` or comments, run the `contract` lens alone.
-Otherwise run all four.
+If the change touches only a task's `description` or comments, run `contract` and
+`code-quality` alone.
+Otherwise run all five.
 
 ## 1. Find
 

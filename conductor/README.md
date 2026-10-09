@@ -9,7 +9,7 @@ conductor (Claude Code session, .claude/skills/conductor)
  ├─ task-runner          runs one task, diagnoses failures (world vs script)
  ├─ knowledge-curator    after every run: folds what it taught into learnings/ + wiki/
  ├─ task-author          writes/fixes tasks, smoke-tests them
- │    └─ task-review     4 lens reviewers + verifier -> fix -> commit or revert
+ │    └─ task-review     5 lens reviewers + verifier -> fix -> commit or revert
  └─ retrospective        every 10 runs: outcomes + agent transcripts -> roadmap, proposals
        │
        ▼

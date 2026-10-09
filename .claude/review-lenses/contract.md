@@ -21,13 +21,13 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
 - **T6 Knowledge consistency.** Coordinates, names and requirements match `learnings/` and
   `wiki/skills/`; a fact the code relies on that the knowledge base lacks is flagged for the
   curator.
-- **T7 Types.** `bunx tsc --noEmit -p .` is clean for `conductor/`; no `any`/`!` hiding a value
-  that can actually be absent at runtime.
+
+Types, async hygiene, naming, comments and style are the `code-quality` lens.
 
 ## Bands
 
 - **A** — the task can't be loaded or run by `run-task.ts` (name mismatch, broken params
-  schema), or a T7 cast hides a value that is absent on a normal path.
+  schema).
 - **B** — engine behaviour re-implemented in a way that fights it (its own watchdog, swallowing
   the death interrupt); a description that promises what the code doesn't do; duplicated logic
   whose copies already differ.

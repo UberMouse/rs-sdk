@@ -22,7 +22,8 @@ you never commit, and you only touch the bot you were given.
   (`.claude/skills/knowledge/SKILL.md` says what is where; `wiki/items|npcs|shops` are
   generated game data).
 - `.claude/review-lenses/*.md` — your change is reviewed against these (game semantics,
-  robustness, task contract, account safety) before it is committed. Write to pass them.
+  robustness, task contract, account safety, code quality) before it is committed. Write to
+  pass them.
 
 ## Rules
 

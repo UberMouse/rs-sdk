@@ -1,6 +1,6 @@
 ---
 name: task-reviewer
-description: Reviews a bot task change through ONE review lens (game-semantics, robustness, contract or safety) and returns JSON findings. Read-only. Dispatched by the conductor's task-review procedure, one per lens, in parallel.
+description: Reviews a bot task change through ONE review lens (game-semantics, robustness, contract, safety or code-quality) and returns JSON findings. Read-only. Dispatched by the conductor's task-review procedure, one per lens, in parallel.
 model: sonnet
 tools: Read, Grep, Glob, Bash
 ---
