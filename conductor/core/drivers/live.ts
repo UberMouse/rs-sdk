@@ -19,6 +19,8 @@ export class LiveDriver implements Driver {
     /** The newest tick seen and when it arrived; tracked even with no caller waiting, so a stall counts from it. */
     private lastTick: number;
     private lastTickAt: number;
+    /** Set when the stall timer fires, cleared by the next tick; later callers are rejected at once while it is. */
+    private stalled = false;
     /** One request shared by every caller until the next tick (see Driver.nextTick). */
     private pending: Pending | null = null;
     private closed: Error | null = null;
@@ -37,7 +39,7 @@ export class LiveDriver implements Driver {
         const initial = sdk.getState();
         if (initial) recorder?.publish(initial);
         this.lastTick = initial?.tick ?? -1;
-        this.lastTickAt = Date.now();
+        this.lastTickAt = performance.now();
         this.unsubscribe = [
             sdk.onStateUpdate(s => this.onState(s)),
             sdk.onConnectionStateChange(c => {
@@ -59,21 +61,27 @@ export class LiveDriver implements Driver {
         if (this.pending) return this.pending.promise;
         if (this.closed) return Promise.reject(this.closed);
         if (this.sdk.getConnectionState() === 'disconnected') return this.refuse(new Error('the SDK disconnected'));
-        const left = this.lastTickAt + this.stallMs - Date.now();
-        if (left <= 0) return this.refuse(this.stall());
+        // Monotonic, like the timers, so a wall-clock jump is no false stall and a timer firing a
+        // millisecond early is not recomputed as time left.
+        const left = this.lastTickAt + this.stallMs - performance.now();
+        if (this.stalled || left <= 0) return this.refuse(this.stall());
         let resolve!: (s: BotWorldState) => void;
         let reject!: (e: Error) => void;
         const promise = new Promise<BotWorldState>((res, rej) => {
             resolve = res;
             reject = rej;
         });
-        const timer = setTimeout(() => this.rejectPending(this.stall()), left);
+        const timer = setTimeout(() => {
+            this.stalled = true;
+            this.rejectPending(this.stall());
+        }, left);
         this.pending = { promise, resolve, reject, timer };
         return promise;
     }
 
     /** A tick request refused on the spot, recorded like one rejected while pending. */
     private refuse(e: Error): Promise<never> {
+        if (e instanceof TickStall) this.stalled = true;
         this.recorder?.tickError(e.message, e instanceof TickStall);
         return Promise.reject(e);
     }
@@ -88,7 +96,8 @@ export class LiveDriver implements Driver {
         this.recorder?.publish(s);
         if (s.tick <= this.lastTick) return;
         this.lastTick = s.tick;
-        this.lastTickAt = Date.now();
+        this.lastTickAt = performance.now();
+        this.stalled = false;
         this.settle(p => p.resolve(s));
     }
 

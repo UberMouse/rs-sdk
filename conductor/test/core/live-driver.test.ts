@@ -93,17 +93,33 @@ describe('LiveDriver', () => {
         const fake = new FakeSdk();
         const d = driverOn(fake, 20);
         await expect(d.nextTick()).rejects.toBeInstanceOf(TickStall);
-        // The stall counts from the last tick, not from the call: a later caller is already rejected.
-        let later = 'pending';
-        d.nextTick().then(
-            () => (later = 'resolved'),
-            (e: unknown) => (later = e instanceof TickStall ? e.message : 'other'),
-        );
-        for (let i = 0; i < 5; i++) await Promise.resolve();
-        expect(later).toBe('client stopped publishing ticks for 0.02s');
+        // The stall is remembered, not recomputed from clocks: later callers are rejected at once.
+        for (let i = 0; i < 3; i++) {
+            // Rejected within a few microtasks, so no timer is involved.
+            let outcome: unknown = 'pending';
+            d.nextTick().then(
+                () => (outcome = 'resolved'),
+                (e: unknown) => (outcome = e),
+            );
+            for (let j = 0; j < 5; j++) await Promise.resolve();
+            expect(outcome).toBeInstanceOf(TickStall);
+            expect((outcome as TickStall).message).toBe('client stopped publishing ticks for 0.02s');
+        }
         // A new tick clears the stall.
         fake.publish(worldState(1));
         const next = d.nextTick();
+        fake.publish(worldState(2));
+        expect((await next).tick).toBe(2);
+        d.close();
+    });
+
+    test('a stalled driver rejects later callers until a tick arrives, then recovers', async () => {
+        const fake = new FakeSdk();
+        const d = driverOn(fake, 10);
+        await expect(d.nextTick()).rejects.toBeInstanceOf(TickStall);
+        await expect(d.nextTick()).rejects.toBeInstanceOf(TickStall);
+        fake.publish(worldState(1));
+        const next = d.nextTick(); // pending again, not rejected
         fake.publish(worldState(2));
         expect((await next).tick).toBe(2);
         d.close();
