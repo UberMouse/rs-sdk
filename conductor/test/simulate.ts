@@ -39,7 +39,7 @@ export interface Simulation {
     sends: string[];
     events: Record<string, unknown>[];
     printed: string[];
-    /** What the guards did through the bot, as "eat <food>" and "dismiss". */
+    /** What the guards and steps did through the bot, as "eat <food>", "dismiss" and "drop <target> <amount>". */
     legacy: string[];
     driver: TimelineDriver;
 }
@@ -57,8 +57,9 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         print: line => printed.push(line),
         screenshot: async label => `/shots/${label}.png`,
     };
-    // The guards still act through BotActions and the SDK. Only what they call is faked (hence
-    // the casts), and each fake takes a tick, as the game would.
+    // The guards and unported steps still act through BotActions and the SDK. Only what they call is
+    // faked (hence the casts), and each fake takes a tick, as the game would; the timeline, not the
+    // fake, says what changed.
     const bot = {
         eatFood: async (food: InventoryItem) => {
             legacy.push(`eat ${food.name}`);
@@ -68,6 +69,11 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         dismissBlockingUI: async () => {
             legacy.push('dismiss');
             await driver.nextTick();
+        },
+        dropItem: async (target: RegExp | string, amount: number | 'all' = 'all') => {
+            legacy.push(`drop ${target} ${amount}`);
+            await driver.nextTick();
+            return { success: true, message: 'dropped', slotsDropped: 0 };
         },
     } as unknown as BotActions;
     const sdk = {

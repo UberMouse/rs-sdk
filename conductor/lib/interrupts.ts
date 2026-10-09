@@ -24,6 +24,8 @@ const REGEN_SLICE_TICKS = 5;
 const REGEN_CAP_TICKS = 500;
 /** Handler runs a dialog may stay open through within one episode before the run gives up. */
 const DIALOG_STUCK_LIMIT = 5;
+/** Ticks one fight may last while the bot only waits for auto-retaliate to win it. */
+const COMBAT_TICK_LIMIT = 40;
 
 /** The shared guards (GUARDS); a task's own guards take other names. */
 export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog';
@@ -162,3 +164,28 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
 
 /** Priority order: the first whose `when` holds fires. */
 export const GUARDS: readonly TaskGuard<object, GuardName>[] = [deathGuard, wildernessGuard, lowHpGuard, dialogGuard];
+
+/**
+ * For a skilling task whose interaction (a chop, a mine) would cancel auto-retaliate: while something
+ * fights the bot, it touches nothing and lets auto-retaliate win. It fails at once when auto-retaliate
+ * is off, and when one fight lasts COMBAT_TICK_LIMIT ticks. Not in GUARDS: a task opts in with
+ * `guards: [underAttackGuard]`.
+ */
+export const underAttackGuard: TaskGuard<{ since: number | null }> = {
+    name: 'under-attack',
+    policy: 'abort',
+    episode: () => ({ since: null }),
+    when: s => !!s.player?.combat.inCombat,
+    *run(_fired, _run, episode) {
+        // The aborted step's cleanup may have taken ticks since the guard fired: decide on the state now.
+        const s = yield* ticks(0);
+        const p = s.player;
+        if (!p?.combat.inCombat) return;
+        const at = `(${p.worldX},${p.worldZ})`;
+        if (s.autoRetaliateEnabled === false) return { fail: `attacked with auto-retaliate off at ${at}` };
+        episode.since ??= s.tick;
+        if (s.tick - episode.since >= COMBAT_TICK_LIMIT)
+            return { fail: `under attack for ${COMBAT_TICK_LIMIT} ticks at ${at}` };
+        yield* ticks(1);
+    },
+};

@@ -167,7 +167,10 @@ defineTask({
   core commands. That is the type-level enforcement that keeps agent-written tasks testable.
 - `INTERRUPTS` become guards: `{ name, when, policy: 'abort' | 'suspend', *run }`. Death and
   wilderness: abort + fail. Low HP: abort, eat/regen, re-select. Dialog: suspend, dismiss,
-  resume. Under attack while skilling (woodcutting/mining today): abort + task-specific handling.
+  resume. Under attack while skilling (woodcutting/mining today): abort + task-specific handling,
+  as built a task's own guard: `guards: [underAttackGuard]` on the task def, checked after the
+  shared guards. Under an abort guard's handler only critical, higher-ranked and suspend guards
+  stay on, so a task guard never cuts short the low-HP eat.
 - Deleted: `waitUnlessThreatened`, `waitOrTimeout`, per-task combat-tick loops,
   `expectDialog`, `Date.now()` in tasks.
 

@@ -1,9 +1,11 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import { chop } from '../actions/chop';
+import { call, log, type Op, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
-import { defineTask, type TaskContext } from '../lib/task';
-import { waitUnlessThreatened } from '../lib/threat';
-import { findSkill } from '../lib/util';
+import { underAttackGuard } from '../lib/interrupts';
+import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { findSkill, TICK_MS } from '../lib/util';
 
 // Each tree drops exactly one log item; dropping by that exact name keeps other *logs items safe.
 const TREES = {
@@ -14,18 +16,12 @@ const TREES = {
 
 const AXE = /(^|\s)axe$/i;
 
-/** The longest a tree chop is awaited (logs gained or tree gone) before it counts as a failed chop. */
-const CHOP_WAIT_MS = 30_000;
-/** One wait for a respawn; it ends early when a tree appears or the bot is threatened. */
-const RESPAWN_WAIT_MS = 5_000;
-/** How long with no tree at all before failing; above the 48-80s normal-tree respawn. */
-const NO_TREE_GIVE_UP_MS = 120_000;
+/** How long with no tree at all before failing (2 min); above the 120-200 tick normal-tree respawn. */
+const NO_TREE_GIVE_UP_TICKS = 300;
 /** Above the give-up time and the engine default (90s) so a full respawn wait is not reported as a stall. */
 const STUCK_AFTER_MS = 150_000;
 /** Consecutive failed chops before the task fails. */
 const CHOP_FAIL_LIMIT = 8;
-/** Ticks one combat episode may last while the bot only waits for auto-retaliate to win it. */
-const COMBAT_TICK_LIMIT = 40;
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -38,7 +34,11 @@ const Params = z.object({
 });
 
 type WoodcuttingParams = z.infer<typeof Params>;
-type Ctx = TaskContext<WoodcuttingParams>;
+interface WoodcuttingMemory {
+    /** The tick the bot first found no tree to chop, until it finds one again. */
+    noTreeSinceTick: number | null;
+}
+type Ctx = TaskContext<WoodcuttingParams, WoodcuttingMemory>;
 
 const countLogs = (state: BotWorldState, logs: RegExp) =>
     state.inventory.filter(i => logs.test(i.name)).reduce((n, i) => n + i.count, 0);
@@ -49,31 +49,38 @@ function fullInventoryLogs(ctx: Ctx): number | { fail: string } {
     return n === 0 ? { fail: `inventory full with no ${ctx.params.tree} logs` } : n;
 }
 
-type ChopOutcome = { kind: 'chopped' } | { kind: 'threatened' } | { kind: 'failed'; message: string };
+/**
+ * A tree of the task's kind the bot can chop now. Only trees inside the area, or return-to-area and
+ * chop would trade the bot back and forth.
+ */
+function choppable(params: WoodcuttingParams): (loc: NearbyLoc) => boolean {
+    const { pattern } = TREES[params.tree];
+    return t =>
+        pattern.test(t.name) && t.reachable === true && t.options.some(o => /chop/i.test(o)) && inArea(params.area, t);
+}
 
 /**
- * Interact with the tree, then wait for logs or for the tree to disappear. Returns at once
- * when the bot is hurt or in combat so the low-HP interrupt runs before the next chop.
- * Success needs logs gained: a tree felled by someone else is a failed chop.
+ * No tree to chop. Stumps count as none, so stay put (returnToAreaStep keeps us inside) and wait for a
+ * respawn, failing once there has been no tree for NO_TREE_GIVE_UP_TICKS.
  */
-async function chopTree(ctx: Ctx, tree: NearbyLoc): Promise<ChopOutcome> {
-    await ctx.bot.dismissBlockingUI();
-    const logs = TREES[ctx.params.tree].logs;
-    const logsBefore = countLogs(ctx.state(), logs);
-    const sent = await ctx.sdk.sendInteractLoc(tree.x, tree.z, tree.id, 1);
-    if (!sent.success) return { kind: 'failed', message: sent.message };
-    const treeGone = (s: BotWorldState) =>
-        !s.nearbyLocs.some(l => l.x === tree.x && l.z === tree.z && l.id === tree.id);
-    const waited = await waitUnlessThreatened(
-        ctx.sdk,
-        s => countLogs(s, logs) > logsBefore || treeGone(s),
-        CHOP_WAIT_MS,
-    );
-    if (waited.kind === 'timeout') return { kind: 'failed', message: `timed out waiting for logs from ${tree.name}` };
-    if (waited.kind === 'threatened') return { kind: 'threatened' };
-    if (countLogs(waited.state, logs) <= logsBefore)
-        return { kind: 'failed', message: `${tree.name} was felled by someone else` };
-    return { kind: 'chopped' };
+function* waitForRespawn(ctx: Ctx): Op<Outcome> {
+    const now = ctx.state().tick;
+    if (ctx.memory.noTreeSinceTick === null) {
+        ctx.memory.noTreeSinceTick = now;
+        yield* log(`no ${ctx.params.tree} available, waiting for a respawn`);
+    }
+    const since = ctx.memory.noTreeSinceTick;
+    const left = Math.max(0, since + NO_TREE_GIVE_UP_TICKS - now);
+    const isChoppable = choppable(ctx.params);
+    const w = yield* wait('tree respawn', s => s.nearbyLocs.some(isChoppable), left);
+    if (w.kind === 'met') return;
+    const seconds = Math.round(((w.state.tick - since) * TICK_MS) / 1000);
+    const a = ctx.params.area;
+    return {
+        fail: a
+            ? `area depleted: no reachable ${ctx.params.tree} in radius ${a.radius} for ${seconds}s`
+            : `no reachable ${ctx.params.tree} nearby for ${seconds}s`,
+    };
 }
 
 export default defineTask({
@@ -86,6 +93,9 @@ export default defineTask({
         'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
         'Draynor willows (3087,3235, dark wizards nearby). Refuses areas reaching the Wilderness.',
     params: Params,
+    memory: (): WoodcuttingMemory => ({ noTreeSinceTick: null }),
+    // Chopping a tree cancels auto-retaliate, so a bot under attack must not touch one.
+    guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -103,7 +113,8 @@ export default defineTask({
         {
             name: 'stop-full',
             when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
-            async run(ctx) {
+            // oxlint-disable-next-line require-yield -- it only decides; a step is an op even when it never waits.
+            *run(ctx) {
                 const held = fullInventoryLogs(ctx);
                 return typeof held === 'number' ? { done: `inventory full: ${held} logs` } : held;
             },
@@ -111,10 +122,11 @@ export default defineTask({
         {
             name: 'drop-logs',
             when: ctx => ctx.params.onFull === 'drop' && ctx.inventoryFull(),
-            async run(ctx) {
+            *run(ctx) {
                 const held = fullInventoryLogs(ctx);
                 if (typeof held !== 'number') return held;
-                const r = await ctx.bot.dropItem(TREES[ctx.params.tree].logs, 'all');
+                // The task's one remaining bot call, until dropping is an op.
+                const r = yield* call('bot.dropItem', () => ctx.bot.dropItem(TREES[ctx.params.tree].logs, 'all'));
                 if (ctx.inventoryFull()) {
                     return { fail: `inventory still full after dropping logs (${r.message})` };
                 }
@@ -124,65 +136,20 @@ export default defineTask({
         {
             name: 'chop',
             when: () => true,
-            async run(ctx) {
-                // Interacting with a tree cancels auto-retaliate, so a bot under attack must not touch one.
-                const state = ctx.state();
-                const p = state.player;
-                if (p?.combat.inCombat) {
-                    const at = `(${p.worldX},${p.worldZ})`;
-                    if (state.autoRetaliateEnabled === false)
-                        return { fail: `attacked with auto-retaliate off at ${at}` };
-                    if (ctx.counter('combatTicks').add() > COMBAT_TICK_LIMIT)
-                        return { fail: `under attack for ${COMBAT_TICK_LIMIT} ticks at ${at}` };
-                    await ctx.sdk.waitForTicks(1);
-                    return;
-                }
-                ctx.counter('combatTicks').reset();
-                const { pattern } = TREES[ctx.params.tree];
-                const a = ctx.params.area;
-                // Only trees inside the area, or return-to-area and chop would trade the bot back and forth.
-                const isChoppable = (t: NearbyLoc) =>
-                    pattern.test(t.name) &&
-                    t.reachable === true &&
-                    t.options.some(o => /chop/i.test(o)) &&
-                    inArea(a, t);
-                const tree = ctx.sdk
-                    .getNearbyLocs()
-                    .filter(isChoppable)
+            *run(ctx) {
+                const tree = ctx
+                    .state()
+                    .nearbyLocs.filter(choppable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
-                if (!tree) {
-                    // Stumps count as no tree: stay put (returnToAreaStep keeps us inside) and wait for a respawn.
-                    const stored = ctx.memory.noTreeSince;
-                    const since = typeof stored === 'number' ? stored : Date.now();
-                    if (typeof stored !== 'number') {
-                        ctx.memory.noTreeSince = since;
-                        ctx.log(`no ${ctx.params.tree} available, waiting for a respawn`);
-                    }
-                    const waited = Date.now() - since;
-                    if (waited >= NO_TREE_GIVE_UP_MS) {
-                        const waitedSeconds = Math.round(waited / 1000);
-                        return {
-                            fail: a
-                                ? `area depleted: no reachable ${ctx.params.tree} in radius ${a.radius} for ${waitedSeconds}s`
-                                : `no reachable ${ctx.params.tree} nearby for ${waitedSeconds}s`,
-                        };
-                    }
-                    await waitUnlessThreatened(ctx.sdk, s => s.nearbyLocs.some(isChoppable), RESPAWN_WAIT_MS);
-                    return;
-                }
-                delete ctx.memory.noTreeSince;
-                const r = await chopTree(ctx, tree);
-                if (r.kind === 'threatened') {
-                    // Pace the loop; the low-HP interrupt acts on the next one if HP is the problem.
-                    await ctx.sdk.waitForTicks(1);
-                    return;
-                }
-                const chopFails = ctx.counter('chopFails');
-                if (r.kind === 'chopped') {
+                if (!tree) return yield* waitForRespawn(ctx);
+                ctx.memory.noTreeSinceTick = null;
+                const r = yield* chop(ctx, tree, TREES[ctx.params.tree].logs);
+                const chopFails = ctx.streak('chopFails');
+                if (r.ok) {
                     chopFails.reset();
                     return;
                 }
-                ctx.log(`chop failed: ${r.message}`);
+                yield* log(`chop failed: ${r.message}`);
                 if (chopFails.add() >= CHOP_FAIL_LIMIT)
                     return { fail: `${CHOP_FAIL_LIMIT} chops in a row failed (last: ${r.message})` };
             },

@@ -9,7 +9,7 @@ import { interactLoc } from './interact';
 
 /** bot.chopTree's 30s wait for logs or the tree gone, in ticks. */
 export const CHOP_WAIT_TICKS = Math.ceil(30_000 / TICK_MS);
-const CHOP = /^chop/i;
+const CHOP = /chop/i;
 
 export type ChopResult =
     | { ok: true }
@@ -21,7 +21,8 @@ const count = (s: BotWorldState, item: RegExp) =>
 /**
  * Chops `tree` and waits until `logs` are gained or the tree is gone. Success needs logs gained: a tree
  * that falls with none was felled by another player, and logs already carried don't count.
- * `send-failed` means nothing reached the game (no Chop option, or the client refused the send).
+ * `send-failed` means nothing reached the game: no Chop option, or the client refused the send (not
+ * logged in, tree out of the loaded scene).
  */
 export function* chop(ctx: ActionContext, tree: NearbyLoc, logs: RegExp): Op<ChopResult> {
     const before = count(ctx.state(), logs);

@@ -280,6 +280,11 @@ export class World {
         return this.with({ skills: had ? this.s.skills.map(k => (k === had ? next : k)) : [...this.s.skills, next] });
     }
 
+    /** Whether the client reports auto-retaliate on; a bare state leaves it unreported. */
+    autoRetaliate(on: boolean): World {
+        return this.with({ autoRetaliateEnabled: on });
+    }
+
     /** A game message arriving on the current tick (type 0, system). */
     message(text: string, type = 0): World {
         const tick = this.s.tick;
