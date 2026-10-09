@@ -33,6 +33,36 @@ status (`idea` / `authoring` / `in catalog`).
 - money making to fund gear and supplies — idea
 - quest tasks for the Unlocks table — idea
 
+## Framework
+
+Changes to the conductor system itself, decided with the user; not for the conductor to start
+on its own.
+
+- **Interrupts and long actions.** Interrupts only run between steps, so a task that waits on
+  a long action has to reimplement the SDK action to make it interruptible. `woodcutting`
+  copies `bot.chopTree`, including its `dismissBlockingUI` call, and holds its own "in combat:
+  wait, don't click" block. Design an architecture where the engine owns waiting on an
+  action's effect and interrupting it, so tasks state intent ("chop this tree") instead of
+  polling. Move the combat wait into it as a shared interrupt.
+- **Task → agent decisions.** Tasks can only end with a RESULT. Add a way for a task to raise a
+  predefined decision to the supervising agent mid-run (pause with a question and options)
+  instead of failing and making the conductor re-plan from scratch.
+- **Account snapshot fixtures.** Today smoke tests run on the live account wherever it stands.
+  A woodcutting smoke test on `conductor1` ended with the bot killed and its axe lost. Plan:
+  - A library of named save states (`<name>.sav` plus a note of what state it is: task, area,
+    levels, gear).
+  - Recorded automatically at important moments (before a quest, on reaching a combat zone).
+  - Generated from a spec by a script that builds a player and serializes it with the engine's
+    own `Player.save()`: stats, inventory, equipment, position, and the varps that store quest
+    progress.
+  - Loaded into throwaway test accounts so tests don't touch the main account and can run
+    concurrently. A `.sav` holds no name or account id (checksum over contents only), so
+    copying it to `<test-bot>.sav` works. Exception: Grand Exchange participants load from the
+    exchange checkpoint store, so keep GE accounts out of fixtures.
+  - task-author smoke-tests against fixtures; task-review's evidence names the fixture.
+- **New-bot setup.** Create a bot, skip the tutorial, record a fresh-account fixture: one
+  scripted path instead of hand-run one-offs.
+
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts` (a different spot, target or
