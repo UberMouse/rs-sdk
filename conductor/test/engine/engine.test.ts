@@ -439,6 +439,38 @@ describe('legacy steps', () => {
     });
 });
 
+describe('decision-only steps', () => {
+    test('a plain run that returns an outcome ends the run, counted and logged like any step', async () => {
+        const r = await runTask([step('decide', () => ({ done: 'decided' }))], timeline(5));
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('decide: decided');
+        expect(r.result.stepRuns).toEqual({ decide: 1 });
+        expect(r.result.lastStep).toBe('decide');
+        expect(r.events).toContainEqual(expect.objectContaining({ type: 'step', step: 'decide' }));
+        expect(r.driver.commands).toEqual([]);
+    });
+
+    test('a plain run that returns nothing lets the loop go on to the next pass', async () => {
+        let runs = 0;
+        const decide = step('decide', ctx => {
+            if (++runs === 3) return { fail: `third run at tick ${ctx.state().tick}` };
+        });
+        const r = await runTask([decide], timeline(10));
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^decide: third run at tick \d+$/);
+        expect(r.result.stepRuns).toEqual({ decide: 3 });
+    });
+
+    test('a guard still acts before it', async () => {
+        const r = await runTask(
+            [step('decide', () => ({ done: 'decided' }))],
+            timeline(10, t => ({ dialog: t === 0 })),
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns).toEqual({ 'interrupt:dialog': 1, decide: 1 });
+    });
+});
+
 describe('the result', () => {
     test('TaskResult fields are populated, with a screenshot on a non-done finish', async () => {
         const states = timeline(10, t => (t < 3 ? { food: 2 } : { food: 1, xp: 100, level: 2 }));

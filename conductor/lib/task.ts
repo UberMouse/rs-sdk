@@ -7,7 +7,7 @@
 // waits of generator steps, so no task has to handle death, low HP, blocking
 // dialogs or leftover modals itself; a task adds its own threats the same way
 // with `guards`. A watchdog ends runs that stop making progress. A step's `run`
-// is either legacy `async` code or a generator op (core/op.ts).
+// is a generator op (core/op.ts), a plain function that only decides, or legacy `async` code.
 import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
@@ -71,11 +71,15 @@ export interface Step<P = unknown, M extends object = UntypedMemory> {
      */
     when(ctx: TaskContext<P, M>): boolean;
     /**
+     * Three shapes. `*run` (a generator) is the normal one. A plain `run` that returns an Outcome (or
+     * nothing) is for a step that only decides: it runs to its end in one go and the guards act before
+     * and after it. `async run` is legacy.
+     *
      * `*run` (an op) is interpreted: guards act at its waits, and stops, the watchdog and the
      * step timeout cancel it there. Legacy `async run` is one opaque call: guards and stops act
      * only between steps, and a timeout abandons it still running.
      */
-    run(ctx: TaskContext<P, M>): Promise<Outcome> | Op<Outcome>;
+    run(ctx: TaskContext<P, M>): Promise<Outcome> | Op<Outcome> | Outcome;
 }
 
 export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = UntypedMemory> {

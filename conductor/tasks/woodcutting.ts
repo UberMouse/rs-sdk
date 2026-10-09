@@ -115,8 +115,7 @@ export default defineTask({
         {
             name: 'stop-full',
             when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
-            // oxlint-disable-next-line require-yield -- it only decides; a step is an op even when it never waits.
-            *run(ctx) {
+            run(ctx) {
                 const held = logsHeld(ctx);
                 return held === 0 ? fullWithoutLogs(ctx) : { done: `inventory full: ${held} logs` };
             },

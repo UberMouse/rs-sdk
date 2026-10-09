@@ -80,6 +80,7 @@ function progressSignature(s: BotWorldState): string {
 const posOf = (s: BotWorldState) => (s.player ? { x: s.player.worldX, z: s.player.worldZ } : null);
 
 const isOp = (x: unknown): x is Op<Outcome> => typeof x === 'object' && x !== null && 'next' in x;
+const isPromise = (x: unknown): x is Promise<Outcome> => x instanceof Promise;
 
 function ended(name: string, outcome: Outcome): End | null {
     if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}` };
@@ -557,7 +558,13 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 running = step;
                 try {
                     const out = step.run(ctx);
-                    stepEnd = isOp(out) ? await runOp(step.name, out, guards) : await runLegacy(step.name, out);
+                    // A generator is an op, a promise is legacy async code, anything else is the outcome of a
+                    // step that only decided.
+                    stepEnd = isOp(out)
+                        ? await runOp(step.name, out, guards)
+                        : isPromise(out)
+                          ? await runLegacy(step.name, out)
+                          : ended(step.name, out);
                 } finally {
                     running = null;
                 }
