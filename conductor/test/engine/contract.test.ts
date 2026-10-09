@@ -14,7 +14,7 @@ import { runDef, runTask } from './harness';
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
 const xpOf = (s: BotWorldState) => s.skills[0]?.experience ?? 0;
 const count = (xs: string[], x: string) => xs.filter(y => y === x).length;
-/** The low-HP guard's eats; the eat-if-hurt as a run ends is not one. */
+/** Eats sent: the low-HP guard's, and the engine's one as a run ends below the line with food left. */
 const eats = (r: { sends: string[] }) => count(r.sends, 'Eat Shrimps');
 /** The dialog guard's clicks. */
 const continues = (r: { sends: string[] }) => count(r.sends, 'continue dialog');
@@ -23,17 +23,8 @@ const continues = (r: { sends: string[] }) => count(r.sends, 'continue dialog');
 const finishAt = (tick: number): Step => ({
     name: 'finish',
     when: ctx => ctx.state().tick >= tick,
-    run: async ctx => ({ done: `at tick ${ctx.state().tick}` }),
+    run: ctx => ({ done: `at tick ${ctx.state().tick}` }),
 });
-
-/** Lets one tick pass, as a legacy step: no guards run inside it. */
-const legacyIdle: Step = {
-    name: 'idle',
-    when: () => true,
-    run: async ctx => {
-        await ctx.sdk.waitForTicks(1);
-    },
-};
 
 /** Lets one tick pass. */
 const idleStep: Step = {
@@ -49,7 +40,7 @@ describe('streaks', () => {
         const counted: number[] = [];
         const others: number[] = [];
         const steps: Step[] = [
-            { name: 'finish', when: ctx => zOf(ctx.state()) === 3, run: async () => ({ done: 'end' }) },
+            { name: 'finish', when: ctx => zOf(ctx.state()) === 3, run: () => ({ done: 'end' }) },
             {
                 name: 'first',
                 when: ctx => [1, 4].includes(zOf(ctx.state())),
@@ -87,18 +78,18 @@ describe('streaks', () => {
         expect(others).toEqual([1]);
     });
 
-    test('a legacy step gets streaks too', async () => {
+    test('a generator step owns its streaks across its waits', async () => {
         const counted: number[] = [];
         const steps: Step[] = [
             finishAt(4),
             {
                 name: 'count',
                 when: ctx => ctx.state().tick !== 2,
-                run: async ctx => {
-                    // Past an await: the step owns its streaks until its run settles.
-                    await Promise.resolve();
+                *run(ctx) {
+                    // Past a wait: the step owns its streaks until its run ends.
+                    yield* ticks(0);
                     counted.push(ctx.streak('runs').add());
-                    await ctx.sdk.waitForTicks(1);
+                    yield* ticks(1);
                 },
             },
             idleStep,
@@ -109,7 +100,7 @@ describe('streaks', () => {
     });
 
     test('asking for a streak outside a step run is an error', async () => {
-        const steps: Step[] = [{ name: 'misuse', when: ctx => ctx.streak('runs').add(0) > 0, run: async () => {} }];
+        const steps: Step[] = [{ name: 'misuse', when: ctx => ctx.streak('runs').add(0) > 0, run: () => {} }];
         const r = await runTask(steps, timeline(3));
         expect(r.result.status).toBe('error');
         expect(r.result.reason).toBe(`setup threw: ctx.streak("runs") called outside a step's run`);
@@ -126,7 +117,7 @@ describe('typed memory', () => {
             {
                 name: 'done',
                 when: ctx => ctx.memory.visits >= 3,
-                run: async ctx => ({ done: `${ctx.memory.visits} visits at ticks ${ctx.memory.ticks.join(',')}` }),
+                run: ctx => ({ done: `${ctx.memory.visits} visits at ticks ${ctx.memory.ticks.join(',')}` }),
             },
             {
                 name: 'unused',
@@ -256,14 +247,14 @@ describe('guard episodes', () => {
         );
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218) after 8 eats');
-        expect(eats(r)).toBe(8);
+        // The guard's eight, then the engine's one as the run ends still low with food left.
+        expect(eats(r)).toBe(8 + 1);
     });
 
     test('a healthy tick ends a low-HP episode, so the next one gets its own eats', async () => {
-        // Six eats, healthy at tick 6, six more: twelve in all, over the per-episode limit of eight. The
-        // idle step is legacy, so only the check between steps sees tick 6.
+        // Six eats, healthy at tick 6, six more: twelve in all, over the per-episode limit of eight.
         const r = await runTask(
-            [finishAt(13), legacyIdle],
+            [finishAt(13), idleStep],
             lowOn(20, t => t !== 6 && t < 13, 12),
         );
         expect(r.result.reason).toBe('finish: at tick 13');
@@ -349,11 +340,11 @@ describe('low HP with nothing to eat', () => {
         expect(r.driver.state().tick).toBeLessThanOrEqual(5);
     });
 
-    test('a death during the wait between steps ends the run at once, under a legacy task', async () => {
-        // The legacy step takes one tick; the guard then waits in slices of five. Dying at tick 8
-        // falls inside a slice: only the guards on during that wait see it before the slice ends.
+    test("a death during the low-HP guard's regeneration wait ends the run at once", async () => {
+        // The guard waits in slices of five. Dying at tick 8 falls inside a slice: only the guards on
+        // during that wait see it before the slice ends.
         const r = await runTask(
-            [legacyIdle],
+            [idleStep],
             noFood(t => ({ hp: 4, dead: t >= 8 })),
         );
         expect(r.result.status).toBe('failed');

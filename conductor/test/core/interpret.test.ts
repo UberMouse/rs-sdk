@@ -3,7 +3,6 @@ import type { ActionResult, BotWorldState, NearbyLoc } from '../../../sdk/types'
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { type Guard, interpret, MAX_SUSPEND_STREAK } from '../../core/interpret';
 import {
-    call,
     type Command,
     log,
     type Op,
@@ -16,7 +15,7 @@ import {
     type WaitResult,
 } from '../../core/op';
 import { TICK_MS } from '../../lib/util';
-import { act, busy, death, dialog, gateAt, guardLogs, lowHp, slowDialog, trace } from './fixtures';
+import { act, busy, death, dialog, GatedSends, gateAt, guardLogs, lowHp, slowDialog, trace, walks } from './fixtures';
 import { timeline, worldState } from '../world';
 
 /** A critical guard with nothing to do in game returns its outcome directly. */
@@ -34,12 +33,11 @@ function* sendsTwo(): Op<ActionResult[]> {
     return [a, b];
 }
 
-function* usesEveryCommand(): Op<[NearbyLoc[], number, string | null]> {
+function* usesEveryCommand(): Op<[NearbyLoc[], string | null]> {
     const locs = yield* scan(15);
-    const n = yield* call('legacy', async () => 42);
-    yield* log('hello', { n });
+    yield* log('hello', { n: locs.length });
     const shot = yield* screenshot('end');
-    return [locs, n, shot];
+    return [locs, shot];
 }
 
 function* catchesSendError(): Op<string> {
@@ -154,7 +152,7 @@ describe('commands', () => {
         expect(trace(d)).toEqual(['send a', 'send b']);
     });
 
-    test('scan, call, log and screenshot forward to the driver and return its results', async () => {
+    test('scan, log and screenshot forward to the driver and return its results', async () => {
         const loc: NearbyLoc = {
             id: 1,
             name: 'Tree',
@@ -167,8 +165,8 @@ describe('commands', () => {
         };
         const d = new TimelineDriver([worldState(0)], { scan: () => [loc] });
         const r = await interpret(usesEveryCommand(), { driver: d });
-        expect(r).toEqual({ kind: 'returned', value: [[loc], 42, null] });
-        expect(trace(d)).toEqual(['scan', 'call legacy', 'log hello', 'screenshot']);
+        expect(r).toEqual({ kind: 'returned', value: [[loc], null] });
+        expect(trace(d)).toEqual(['scan', 'log hello', 'screenshot']);
     });
 
     test('a rejected send is thrown into the op, which can catch it', async () => {
@@ -443,88 +441,75 @@ describe('uninterruptible', () => {
     });
 });
 
-describe('call', () => {
-    test('an instant call consumes no tick; a slow one consumes ticks until it settles', async () => {
+const OK: ActionResult = { success: true, message: 'ok' };
+
+describe('a pending send', () => {
+    test('an instant send consumes no tick; a slow one consumes ticks until it settles', async () => {
         const instant = new TimelineDriver(timeline(10));
-        expect(
-            await interpret(
-                call('instant', async () => 1),
-                { driver: instant },
-            ),
-        ).toEqual({
-            kind: 'returned',
-            value: 1,
-        });
+        expect(await interpret(send(act('instant')), { driver: instant })).toEqual({ kind: 'returned', value: OK });
         expect(instant.ticksElapsed).toBe(0);
 
-        const slow = new TimelineDriver(timeline(10));
         const gate = gateAt(3, 'arrived');
-        const r = await interpret(
-            call('slow', () => gate.promise),
-            { driver: slow, onTick: gate.onTick },
-        );
-        expect(r).toEqual({ kind: 'returned', value: 'arrived' });
+        const slow = new GatedSends(timeline(10), { slow: () => gate.promise });
+        const r = await interpret(send(act('slow')), { driver: slow, onTick: gate.onTick });
+        expect(r).toEqual({ kind: 'returned', value: OK });
         expect(slow.ticksElapsed).toBe(3);
     });
 
-    test('a guard firing during a call acts once the call settles, and is logged', async () => {
-        const d = new TimelineDriver(timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })));
-        // The call settles only after tick 2, when the guard fires, has been checked.
+    test('a guard firing while a send is pending acts once it settles, and is logged', async () => {
+        // The send settles only after tick 2, when the guard fires, has been checked.
         const gate = gateAt(2, 'arrived');
-        const legacyWalk = async () => {
-            const v = await gate.promise;
-            d.log('settled');
-            return v;
-        };
-        function* op(): Op<string> {
-            try {
-                return yield* call('legacy walk', legacyWalk);
-            } finally {
-                yield* send(act('cleanup'));
-            }
-        }
-        const r = await interpret(op(), { driver: d, guards: [lowHp], onTick: gate.onTick });
+        const d: GatedSends = new GatedSends(
+            timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })),
+            {
+                walk: async () => {
+                    await gate.promise;
+                    d.log('settled');
+                },
+            },
+        );
+        const r = await interpret(walks(), { driver: d, guards: [lowHp], onTick: gate.onTick });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(trace(d)).toEqual([
-            'call legacy walk',
-            'log guard low-hp waits for call "legacy walk" to settle',
+            'send walk',
+            'log guard low-hp waits for send to settle',
             'log settled',
             'log guard low-hp (abort)',
             'send cleanup',
             'send eat',
         ]);
-        expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 2, during: 'call "legacy walk"' }]);
-        // Once the guard fires the interpreter stops taking ticks and only waits for the call.
+        expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 2, during: 'send' }]);
+        // Once the guard fires the interpreter stops taking ticks and only waits for the send.
         expect(d.ticksElapsed).toBe(2);
     });
 
-    test('a call that fails after an abort guard fired is logged', async () => {
-        const d = new TimelineDriver(timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })));
+    test('a send that fails after an abort guard fired is logged', async () => {
         const gate = gateAt(2, 'arrived');
-        const failingWalk = async () => {
-            await gate.promise;
-            throw new Error('walk failed');
-        };
-        const r = await interpret(call('legacy walk', failingWalk), {
-            driver: d,
-            guards: [lowHp],
-            onTick: gate.onTick,
-        });
+        const d = new GatedSends(
+            timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })),
+            {
+                walk: async () => {
+                    await gate.promise;
+                    throw new Error('walk failed');
+                },
+            },
+        );
+        const r = await interpret(send(act('walk')), { driver: d, guards: [lowHp], onTick: gate.onTick });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
-        expect(trace(d)).toContain('log call "legacy walk" failed after guard low-hp: walk failed');
+        expect(trace(d)).toContain('log send failed after guard low-hp: walk failed');
     });
 
-    test('after a suspend guard during a call, the op gets the call result', async () => {
-        const d = new TimelineDriver(timeline(10, t => ({ dialog: t === 1 })));
+    test('after a suspend guard during a pending send, the op gets the send result', async () => {
         const gate = gateAt(1, 'arrived');
-        const r = await interpret(
-            call('legacy walk', () => gate.promise),
-            { driver: d, guards: [dialog], onTick: gate.onTick },
+        const d = new GatedSends(
+            timeline(10, t => ({ dialog: t === 1 })),
+            { walk: () => gate.promise },
         );
-        expect(r).toEqual({ kind: 'returned', value: 'arrived' });
+        const r = await interpret(send(act('walk')), { driver: d, guards: [dialog], onTick: gate.onTick });
+        expect(r).toEqual({ kind: 'returned', value: OK });
         expect(trace(d)).toEqual([
-            'call legacy walk',
-            'log guard dialog waits for call "legacy walk" to settle',
+            'send walk',
+            'log guard dialog waits for send to settle',
             'log guard dialog (suspend)',
             'send continue',
         ]);
@@ -550,21 +535,20 @@ describe('TimelineDriver', () => {
         expect((await d.nextTick()).tick).toBe(2);
     });
 
-    test('every tick a call takes is seen by onTick, however long the call takes to settle', async () => {
+    test('every tick a send takes is seen by onTick, however long the send takes to settle', async () => {
         // Sweeps settle times across the interpreter's microtask grace, where a tick request
         // could otherwise be dropped unseen.
         for (let hops = 0; hops < 80; hops++) {
-            const d = new TimelineDriver(timeline(10));
-            const seen: number[] = [];
             const settlesAfterHops = async () => {
                 for (let i = 0; i < hops; i++) await Promise.resolve();
-                return hops;
             };
+            const d = new GatedSends(timeline(10), { settles: settlesAfterHops });
+            const seen: number[] = [];
             const onTick = (s: BotWorldState) => {
                 seen.push(s.tick);
                 return null;
             };
-            await interpret(call('settles', settlesAfterHops), { driver: d, onTick });
+            await interpret(send(act('settles')), { driver: d, onTick });
             expect({ hops, seen: seen.length }).toEqual({ hops, seen: d.ticksElapsed });
         }
     });

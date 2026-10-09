@@ -18,11 +18,6 @@ export interface Driver {
     nextTick(): Promise<BotWorldState>;
     send(action: BotAction): Promise<ActionResult>;
     scan(radius?: number): Promise<NearbyLoc[]>;
-    /**
-     * A legacy call can't be cancelled: interrupts that come up while it runs wait for it to settle,
-     * and a call that cleanup abandons at its tick cap keeps running (and acting) in the background.
-     */
-    call(label: string, run: () => Promise<unknown>): Promise<unknown>;
     log(msg: string, data?: Record<string, unknown>): void;
     screenshot(label: string): Promise<string | null>;
     /** Milliseconds, for the engine's watchdog and `minutes:` stops; ops use `state.tick`. */
@@ -69,9 +64,9 @@ export interface InterpretOptions {
     /**
      * The engine's stops and watchdog. Called on every check of every wait, so often several times
      * per tick (keep it idempotent; dedupe on `state.tick`), and on each tick while a command is
-     * pending. A reason cancels the op, even inside `uninterruptible`. During a `call` it acts only
-     * once the call settles, and nothing here times a call out, so the caller bounds a call that never
-     * settles with a wall-clock limit around the whole interpretation.
+     * pending. A reason cancels the op, even inside `uninterruptible`. While a command is pending it
+     * acts once the command settles: nothing here times a command out, so the driver must settle every
+     * one (the live driver's are bounded by the SDK's own timeouts).
      */
     onTick?: (state: BotWorldState) => string | null;
     /**
@@ -94,14 +89,14 @@ export const CLEANUP_COMMANDS = 20;
 export const MAX_SUSPEND_STREAK = 25;
 /**
  * Microtasks a forwarded command gets to settle before the interpreter asks for a tick, so an
- * already-resolved promise (an instant `call`, a scripted send) consumes no tick.
+ * already-resolved promise (a scripted send) consumes no tick.
  */
 const SETTLE_HOPS = 20;
 
 type Interrupt = { guard: Guard; state: BotWorldState } | { cancel: string };
 type Resume = { value: unknown } | { error: unknown };
 type Wait = Extract<Command, { type: 'wait' }>;
-type Forwarded = Extract<Command, { type: 'send' | 'scan' | 'call' | 'log' | 'screenshot' }>;
+type Forwarded = Extract<Command, { type: 'send' | 'scan' | 'log' | 'screenshot' }>;
 /** Looks at each state while a command runs; non-null stops watching. */
 type Watch<S> = (state: BotWorldState) => S | null;
 /** A forwarded command settled, or a watch stopped it while still pending. */
@@ -136,7 +131,6 @@ export function guardsUnder(guards: readonly Guard[], guard: Guard): Guard[] {
 }
 
 const describe = (i: Interrupt) => ('cancel' in i ? `stop "${i.cancel}"` : `guard ${i.guard.name}`);
-const what = (cmd: Forwarded) => (cmd.type === 'call' ? `call "${cmd.label}"` : cmd.type);
 
 /** The wait's result on `s`, or null to keep waiting. An `until` that throws is thrown into the op. */
 function waitResult(cmd: Wait, s: BotWorldState, from: number): Resume | null {
@@ -160,8 +154,6 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
                 return driver.send(cmd.action);
             case 'scan':
                 return driver.scan(cmd.radius);
-            case 'call':
-                return driver.call(cmd.label, cmd.run);
             case 'log':
                 return driver.log(cmd.msg, cmd.data);
             case 'screenshot':
@@ -243,9 +235,8 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
                     label = `wait "${cmd.label}"`;
                     r = await waitFor(cmd, watch, driver.state().tick);
                 } else {
-                    label = what(cmd);
                     const f: Forwarding<string> = await forward(cmd, watch);
-                    // Abandoning a command can't stop it: a legacy call keeps acting while the guard runs.
+                    // Abandoning a command can't stop it: it may still act while the guard runs.
                     r = 'stop' in f ? { stop: `${f.stop} (still running)` } : f.resume;
                 }
             } catch (e) {
@@ -339,15 +330,15 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
         const runForward = async (cmd: Forwarded): Promise<Resume | Interpretation<R>> => {
             const f = await forward(cmd, s => {
                 const i = check(s);
-                if (i) driver.log(`${describe(i)} waits for ${what(cmd)} to settle`);
+                if (i) driver.log(`${describe(i)} waits for ${cmd.type} to settle`);
                 return i;
             });
             if ('resume' in f) return f.resume;
             const resume = await f.settled;
-            const end = await react(f.stop, what(cmd));
+            const end = await react(f.stop, cmd.type);
             if (!end) return resume;
             if ('error' in resume)
-                driver.log(`${what(cmd)} failed after ${describe(f.stop)}: ${errMessage(resume.error)}`);
+                driver.log(`${cmd.type} failed after ${describe(f.stop)}: ${errMessage(resume.error)}`);
             return end;
         };
 

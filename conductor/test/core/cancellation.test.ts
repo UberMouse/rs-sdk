@@ -2,8 +2,21 @@ import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { CLEANUP_COMMANDS, CLEANUP_TICKS, type Guard, interpret } from '../../core/interpret';
-import { call, log, type Op, rethrowIfCancelled, send, ticks, uninterruptible, wait } from '../../core/op';
-import { act, busy, dialog, gateAt, lowHp, slowDialog, stopAt, trace, waitsThenCleansUp } from './fixtures';
+import { log, type Op, rethrowIfCancelled, send, ticks, uninterruptible, wait } from '../../core/op';
+import {
+    act,
+    busy,
+    dialog,
+    GatedSends,
+    gateAt,
+    lowHp,
+    never,
+    slowDialog,
+    stopAt,
+    trace,
+    waitsThenCleansUp,
+    walks,
+} from './fixtures';
 import { timeline } from '../world';
 
 function* inner(): Op<void> {
@@ -44,8 +57,9 @@ function* waitsTooLong(): Op<void> {
     yield* send(act('after'));
 }
 
+/** Sends `close`, which never settles on a driver that gates it with `never`. */
 function* closesForever(): Op<void> {
-    yield* call('close', () => new Promise<void>(() => {}));
+    yield* send(act('close'));
 }
 
 // oxlint-disable-next-line require-yield -- throws before its first command, the case under test
@@ -141,9 +155,10 @@ function throwsAtTick2(s: BotWorldState): string | null {
     return null;
 }
 
-function* hangingCall(): Op<void> {
+/** Sends `hang`, which never settles on a driver that gates it with `never`; its finally sends `cleanup`. */
+function* hangingSend(): Op<void> {
     try {
-        yield* call('hang', () => new Promise<void>(() => {}));
+        yield* send(act('hang'));
     } finally {
         yield* send(act('cleanup'));
     }
@@ -184,24 +199,13 @@ describe('cancellation', () => {
         expect(trace(d)).toEqual(['send close bank']);
     });
 
-    test('onTick during a call cancels once the call settles', async () => {
-        const d = new TimelineDriver(timeline(10));
+    test('onTick while a send is pending cancels once the send settles', async () => {
         const gate = gateAt(2, 'arrived');
+        const d = new GatedSends(timeline(10), { walk: () => gate.promise });
         const onTick = (s: BotWorldState) => gate.onTick(s) ?? stopAt(2)(s);
-        function* op(): Op<string> {
-            try {
-                return yield* call('legacy walk', () => gate.promise);
-            } finally {
-                yield* send(act('cleanup'));
-            }
-        }
-        const r = await interpret(op(), { driver: d, onTick });
+        const r = await interpret(walks(), { driver: d, onTick });
         expect(r).toEqual({ kind: 'cancelled', reason: 'stop' });
-        expect(trace(d)).toEqual([
-            'call legacy walk',
-            'log stop "stop" waits for call "legacy walk" to settle',
-            'send cleanup',
-        ]);
+        expect(trace(d)).toEqual(['send walk', 'log stop "stop" waits for send to settle', 'send cleanup']);
     });
 
     test("onTick cancels a guard's op, after the target's cleanup and with the guard op's own", async () => {
@@ -245,15 +249,18 @@ describe('cleanup bounds', () => {
         expect(d.ticksElapsed).toBe(1 + CLEANUP_TICKS + 1);
     });
 
-    test('a call in a finally that never settles is abandoned at the cap', async () => {
-        const d = new TimelineDriver(timeline(5, t => ({ hp: t === 1 ? 3 : 10 })));
+    test('a send in a finally that never settles is abandoned at the cap', async () => {
+        const d = new GatedSends(
+            timeline(5, t => ({ hp: t === 1 ? 3 : 10 })),
+            { close: never },
+        );
         const r = await interpret(waitsThenCleansUp(closesForever), { driver: d, guards: [lowHp] });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(trace(d)).toEqual([
             'log guard low-hp (abort)',
             'send cleanup',
-            'call close',
-            `log cleanup abandoned: call "close" past the ${CLEANUP_TICKS}-tick cap (still running)`,
+            'send close',
+            `log cleanup abandoned: send past the ${CLEANUP_TICKS}-tick cap (still running)`,
             'send eat',
         ]);
     });
@@ -327,9 +334,9 @@ describe('errors outside the op', () => {
         expect(trace(d)).toEqual(['send chop', 'send cleanup']);
     });
 
-    test('the driver failing during a call cleans the op up, then the error propagates', async () => {
-        const d = new TimelineDriver(timeline(2), { strict: true });
-        await expect(interpret(hangingCall(), { driver: d })).rejects.toThrow('timeline ended at tick 1');
-        expect(trace(d)).toEqual(['call hang', 'send cleanup']);
+    test('the driver failing while a send is pending cleans the op up, then the error propagates', async () => {
+        const d = new GatedSends(timeline(2), { hang: never }, { strict: true });
+        await expect(interpret(hangingSend(), { driver: d })).rejects.toThrow('timeline ended at tick 1');
+        expect(trace(d)).toEqual(['send hang', 'send cleanup']);
     });
 });

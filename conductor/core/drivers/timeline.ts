@@ -101,11 +101,6 @@ export class TimelineDriver implements Driver {
         return this.opts.scan?.(radius) ?? [];
     }
 
-    call(label: string, run: () => Promise<unknown>): Promise<unknown> {
-        this.commands.push({ type: 'call', label, run });
-        return run();
-    }
-
     log(msg: string, data?: Record<string, unknown>): void {
         this.commands.push({ type: 'log', msg, data });
     }

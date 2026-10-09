@@ -7,10 +7,9 @@
 // waits of generator steps, so no task has to handle death, low HP, blocking
 // dialogs or leftover modals itself; a task adds its own threats the same way
 // with `guards`. A watchdog ends runs that stop making progress. A step's `run`
-// is a generator op (core/op.ts), a plain function that only decides, or legacy `async` code.
+// is a generator op (core/op.ts), or a plain function that only decides. A task never reaches
+// the SDK: it reads the state and acts through ops, which the engine's driver carries out.
 import type { z } from 'zod/v4';
-import type { BotActions } from '../../sdk/actions';
-import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Op, Outcome } from '../core/op';
@@ -31,8 +30,6 @@ export interface Counter {
 }
 
 export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
-    bot: BotActions;
-    sdk: BotSDK;
     botName: string;
     params: P;
     /** Current world state (the driver's latest); throws if the client has published none. */
@@ -76,20 +73,16 @@ export interface Step<P = unknown, M extends object = UntypedMemory> {
     /**
      * The first step whose `when` passes runs this loop. The engine checks every step's `when` on
      * each loop no guard takes, so it must be pure: count "N in a row" with `ctx.streak`, which the
-     * engine resets when `when` is false. Legacy tasks that reset a `ctx.counter` here still work
-     * until ported.
+     * engine resets when `when` is false.
      */
     when(ctx: TaskContext<P, M>): boolean;
     /**
-     * Three shapes. `*run` (a generator) is the normal one. A plain `run` that returns an Outcome (or
-     * nothing) is for a step that only decides: it runs to its end in one go and the guards act before
-     * and after it. `async run` is legacy.
-     *
-     * `*run` (an op) is interpreted: guards act at its waits, and stops, the watchdog and the
-     * step timeout cancel it there. Legacy `async run` is one opaque call: guards and stops act
-     * only between steps, and a timeout abandons it still running.
+     * Two shapes. `*run` (a generator) is the normal one: it is interpreted, so guards act at its waits,
+     * and stops, the watchdog and the step timeout cancel it there. A plain `run` that returns an
+     * Outcome (or nothing) is for a step that only decides: it runs to its end in one go and the
+     * guards act before and after it.
      */
-    run(ctx: TaskContext<P, M>): Promise<Outcome> | Op<Outcome> | Outcome;
+    run(ctx: TaskContext<P, M>): Op<Outcome> | Outcome;
 }
 
 export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = UntypedMemory> {
@@ -110,15 +103,15 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     guards?: readonly TaskGuard[];
     /** Checked once before the loop; return a reason to refuse to start. */
-    preflight?(ctx: TaskContext<z.infer<S>, M>): string | null | Promise<string | null>;
+    preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];
     /** Task-specific completion; return a reason when done. */
     isComplete?(ctx: TaskContext<z.infer<S>, M>): string | null;
     /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (engine.ts). */
     stuckAfterMs?: number;
     /**
-     * A single step.run() longer than this ends the run as `stuck`. Default DEFAULT_STEP_TIMEOUT_MS
-     * (engine.ts); raise it for steps that walk far. A generator step gets it as a tick budget.
+     * A single step.run() longer than this ends the run as `stuck`, enforced as a tick budget
+     * (stepBudgetTicks). Default DEFAULT_STEP_TIMEOUT_MS (engine.ts); raise it for steps that walk far.
      */
     stepTimeoutMs?: number;
 }

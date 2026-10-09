@@ -27,8 +27,6 @@ export type Command =
     | { type: 'send'; action: BotAction }
     | { type: 'wait'; label: string; until: Pred; ticks: number }
     | { type: 'scan'; radius?: number }
-    /** Escape hatch for legacy `bot.*` calls; interrupts wait for it to settle. */
-    | { type: 'call'; label: string; run: () => Promise<unknown> }
     | { type: 'log'; msg: string; data?: Record<string, unknown> }
     | { type: 'screenshot'; label: string }
     | CriticalMarker;
@@ -74,10 +72,6 @@ export function* ticks(n: number): Op<BotWorldState> {
 /** The SDK's extended-range loc scan. */
 export function* scan(radius?: number): Op<NearbyLoc[]> {
     return (yield { type: 'scan', radius }) as NearbyLoc[];
-}
-
-export function* call<T>(label: string, run: () => Promise<T>): Op<T> {
-    return (yield { type: 'call', label, run }) as T;
 }
 
 export function* log(msg: string, data?: Record<string, unknown>): Op<void> {

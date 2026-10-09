@@ -119,20 +119,13 @@ describe('LiveDriver', () => {
         expect(fake.listeners).toEqual({ state: 0, connection: 0 });
     });
 
-    test('a closed driver refuses send, scan and call without reaching the SDK', async () => {
+    test('a closed driver refuses send and scan without reaching the SDK', async () => {
         const fake = new FakeSdk();
         const d = driverOn(fake);
         d.close();
-        let ran = false;
         await expect(d.send({ type: 'walkTo', x: 1, z: 2, reason: 'test' })).rejects.toThrow('driver closed');
         await expect(d.scan(5)).rejects.toThrow('driver closed');
-        await expect(
-            d.call('late', async () => {
-                ran = true;
-            }),
-        ).rejects.toThrow('driver closed');
         expect(fake.calls).toEqual([]);
-        expect(ran).toBe(false);
     });
 
     test('state() throws when the client has published none', () => {

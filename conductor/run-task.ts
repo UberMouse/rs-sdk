@@ -173,7 +173,7 @@ if (!takeover) {
 
 let engineResult: TaskResult | undefined;
 const run = await runScript(
-    async ({ bot, sdk }) => {
+    async ({ sdk }) => {
         const runId = `${fileStamp()}-${def.name}`;
         const logFile = join(REPO_ROOT, 'conductor/runs', botName, `${runId}.ndjson`);
         mkdirSync(dirname(logFile), { recursive: true });
@@ -193,8 +193,6 @@ const run = await runScript(
             engineResult = await executeTask(def, {
                 driver,
                 sinks,
-                bot,
-                sdk,
                 botName,
                 runId,
                 logFile,
@@ -211,5 +209,5 @@ const run = await runScript(
 // Connection failure or an exception outside the engine still honours the RESULT contract.
 const result = engineResult ?? errorResult(run.error?.message ?? 'task did not produce a result', run.duration);
 console.log(`RESULT ${JSON.stringify(result)}`);
-// Exit explicitly so a step abandoned on timeout dies with the process instead of acting on.
+// Exit explicitly, with the status's code, so nothing the run left pending keeps the process alive.
 process.exit(result.status === 'done' ? 0 : 1);

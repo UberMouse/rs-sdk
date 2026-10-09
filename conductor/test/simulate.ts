@@ -1,6 +1,4 @@
 // Runs a task through executeTask on a scripted timeline, with in-memory sinks and no server.
-import type { BotActions } from '../../sdk/actions';
-import type { BotSDK } from '../../sdk/index';
 import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
@@ -10,9 +8,6 @@ import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 import { straightPaths } from './paths';
 import { consume } from './react';
-
-/** The engine's own grace is 30s, so a task that never finishes would stall a unit test; a simulation needs milliseconds. */
-export const SIMULATE_STEP_GRACE_MS = 200;
 
 export interface SimulateOptions {
     /** Raw params, as `--params` would give them. */
@@ -28,8 +23,6 @@ export interface SimulateOptions {
     /** Routes for the walkTo op; default `straightPaths()`, open ground. */
     pathfinder?: Pathfinder;
     stops?: StopCondition[];
-    /** Wall-clock grace for a step to wind down once ended; defaults to SIMULATE_STEP_GRACE_MS. */
-    stepGraceMs?: number;
     /** A driver of your own (a TimelineDriver subclass) in place of `timeline`, `respond` and `scan`. */
     driver?: TimelineDriver;
     /** The run's events land here, so a test can interleave its own records with them. */
@@ -61,30 +54,14 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         print: line => printed.push(line),
         screenshot: async label => `/shots/${label}.png`,
     };
-    // No task acts through BotActions any more, so any bot.* use throws, naming the method; only the
-    // SDK's tick wait is faked (hence the casts). The engine's eat as a run ends catches its throw.
-    const bot = new Proxy({} as BotActions, {
-        get: (_target, name) => {
-            throw new Error(`simulate fakes no bot.${String(name)}`);
-        },
-    });
-    const sdk = {
-        waitForTicks: async (n: number) => {
-            for (let i = 0; i < n; i++) await driver.nextTick();
-            return driver.state();
-        },
-    } as unknown as BotSDK;
     const result = await executeTask(task, {
         driver,
         sinks,
-        bot,
-        sdk,
         botName: 'tester',
         runId: 'run-1',
         logFile: '/logs/run-1.ndjson',
         rawParams: opts.params ?? {},
         stops: opts.stops ?? [],
-        stepGraceMs: opts.stepGraceMs ?? SIMULATE_STEP_GRACE_MS,
         pathfinder: opts.pathfinder ?? straightPaths(),
     });
     return {

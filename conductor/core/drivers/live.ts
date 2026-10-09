@@ -83,7 +83,7 @@ export class LiveDriver implements Driver {
 
     /**
      * Stops listening to the SDK; a pending or later `nextTick` rejects, and so does every later
-     * `send`, `scan` and `call`, so an abandoned op can't act on the game after the run ends.
+     * `send` and `scan`, so nothing can act on the game after the run ends.
      */
     close(): void {
         const closed = new Error('driver closed');
@@ -195,11 +195,6 @@ export class LiveDriver implements Driver {
     scan(radius?: number): Promise<NearbyLoc[]> {
         if (this.closed) return Promise.reject(this.closed);
         return this.sdk.scanNearbyLocs(radius);
-    }
-
-    call(_label: string, run: () => Promise<unknown>): Promise<unknown> {
-        if (this.closed) return Promise.reject(this.closed);
-        return run();
     }
 
     log(msg: string, data?: Record<string, unknown>): void {
