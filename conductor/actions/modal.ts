@@ -4,7 +4,7 @@
 // to the caller, which a cancelled step never reaches.
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import { CLEANUP_TICKS } from '../core/interpret';
-import { type Op, send, wait } from '../core/op';
+import { type Op, type Pred, send, ticks, wait } from '../core/op';
 import type { ActionContext } from './context';
 
 /**
@@ -16,6 +16,29 @@ export const CLEANUP_CLOSE_WAIT_TICKS = Math.floor((CLEANUP_TICKS - 1) / 2);
 
 type Failure<R extends string> = { ok: false; reason: R; message: string };
 export type CloseModalResult = { ok: true; message: string } | Failure<'send-failed' | 'timeout'>;
+/**
+ * Closes what `isClosed` is false for with a closeModal, and a second one if the first shows no effect
+ * within `waitTicks`; already closed is success. `what` names it in labels and messages. At most
+ * `waitTicks + 1` ticks and two sends.
+ */
+export function* closeModalUntil(
+    ctx: ActionContext,
+    what: string,
+    isClosed: Pred,
+    waitTicks: number,
+): Op<CloseModalResult> {
+    if (isClosed(ctx.state())) return { ok: true, message: `${what} already closed` };
+    const sent = yield* send({ type: 'closeModal', reason: `close ${what}` });
+    if (!sent.success) return { ok: false, reason: 'send-failed', message: sent.message };
+    const w = yield* wait(`${what} closed`, isClosed, waitTicks);
+    if (w.kind === 'met') return { ok: true, message: `${what} closed` };
+    const again = yield* send({ type: 'closeModal', reason: `close ${what} (second attempt)` });
+    if (!again.success) return { ok: false, reason: 'send-failed', message: again.message };
+    const last = yield* ticks(1);
+    if (isClosed(last)) return { ok: true, message: `${what} closed (second attempt)` };
+    return { ok: false, reason: 'timeout', message: `${what} still open after two closes` };
+}
+
 /** An open op's failure: only `timeout` means an open was sent that can still land. */
 type OpenFailure = Failure<string>;
 

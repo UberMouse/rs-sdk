@@ -12,6 +12,7 @@ import {
     SMITH_INTERFACE_TICKS,
     SMITH_MAKE_TICKS,
     smithingButton,
+    smithingProduct,
 } from '../../actions/smith';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { type Guard, interpret } from '../../core/interpret';
@@ -82,7 +83,7 @@ const sentOf = (driver: TimelineDriver) => driver.commands.flatMap(c => (c.type 
 describe('smith', () => {
     test('uses the bar on the anvil, clicks the product in the interface, and waits for the xp', async () => {
         const { result, sends, driver } = await runOp(smithing(), ctx => smith(ctx, anvil, 'dagger', BRONZE_BAR));
-        expect(result).toEqual({ ok: true, xpGained: 125, product: 'dagger' });
+        expect(result).toEqual({ ok: true, xpGained: 125, product: 'dagger', message: 'Smithed dagger' });
         // The server closes the interface itself on the click, so there is nothing left to close.
         expect(sends).toEqual([useBar, clickDagger]);
         // It returns once the player's post-smith delay is over: the xp came at tick 4.
@@ -98,6 +99,17 @@ describe('smith', () => {
         // No partial match: "sword" is the sword, never the longsword or the 2h.
         expect(smithingButton('sword')).toMatchObject({ component: 1119, slot: 1 });
         expect(smithingButton('swor')).toBeUndefined();
+    });
+
+    test("other spellings resolve to the op's own name; column 5 is not offered", () => {
+        expect(smithingProduct('Square shield')).toBe('sq shield');
+        expect(smithingProduct('two handed sword')).toBe('2h sword');
+        expect(smithingProduct('Two-handed sword')).toBe('2h sword');
+        expect(smithingProduct('medium helm')).toBe('med helm');
+        expect(smithingProduct('Kite shield')).toBe('kiteshield');
+        // Column 5 differs by metal (wire, nails, studs) and is not offered at all.
+        for (const p of ['nails', 'arrowheads', 'dart tips', 'throwing knives'])
+            expect(smithingButton(p)).toBeUndefined();
     });
 
     test('needs an item named exactly Hammer, the bar asked for and a product it knows, before sending anything', async () => {
@@ -178,6 +190,28 @@ describe('smith', () => {
         expect(sends).toEqual([useBar, clickDagger, closeAnvil]);
         expect(driver.state().interface.isOpen).toBe(false);
         expect(driver.state().tick).toBe(2 + SMITH_MAKE_TICKS + 1);
+    });
+
+    test('an interface that will not close after it is logged and named in the result message', async () => {
+        const states = [
+            anvilKit,
+            anvilKit.tick(1),
+            ...anvilOpen(anvilKit.tick(2))
+                .series(40)
+                .map(s => world(s)),
+        ].map(w => w.build());
+        const { result, sends, driver } = await runOp(states, ctx => smith(ctx, anvil, 'dagger', BRONZE_BAR));
+        const leftOpen = 'smithing interface left open: smithing interface still open after two closes';
+        expect(result).toEqual({ ok: false, reason: 'timeout', message: `Smithing timed out; ${leftOpen}` });
+        expect(sends).toEqual([
+            useBar,
+            clickDagger,
+            closeAnvil,
+            { ...closeAnvil, reason: 'close smithing interface (second attempt)' },
+        ]);
+        expect(driver.commands.filter(c => c.type === 'log')).toEqual([
+            { type: 'log', msg: leftOpen, data: undefined },
+        ]);
     });
 
     test('a refused send fails at once; a refused click closes the interface it opened', async () => {
@@ -293,10 +327,10 @@ describe('smith under the engine: its own interface vs the guards', () => {
         expect(r.result.stepRuns['interrupt:dialog']).toBe(1);
     });
 
-    test('a book left open is still closed by the interface guard, then the op runs', async () => {
+    test('a book opened while the op waits is still closed by the interface guard', async () => {
         const states = [
-            anvilKit.modal(BOOK),
-            anvilKit.tick(1),
+            anvilKit,
+            anvilKit.tick(1).modal(BOOK),
             anvilKit.tick(2),
             anvilOpen(anvilKit.tick(3)),
             anvilOpen(anvilKit.tick(4)),
@@ -304,7 +338,7 @@ describe('smith under the engine: its own interface vs the guards', () => {
         ].map(w => w.build());
         const r = await runTask([step], states, { react: closes });
         expect(r.result.reason).toBe('smith: made dagger');
-        expect(r.sends).toEqual([`close interface ${BOOK}`, 'use Bronze bar on Anvil', 'smith dagger']);
+        expect(r.sends).toEqual(['use Bronze bar on Anvil', `close interface ${BOOK}`, 'smith dagger']);
         expect(r.result.stepRuns['interrupt:interface']).toBe(1);
     });
 });
@@ -354,7 +388,7 @@ const smelting = (made: (w: World) => World = smelted) => [
 describe('smelt', () => {
     test("takes the furnace's Smelt option, clicks the bar's own button by its label, and waits for the bar", async () => {
         const { result, sends } = await runOp(smelting(), ctx => smelt(ctx, furnace, 'Bronze'));
-        expect(result).toEqual({ ok: true, xpGained: 62, product: 'Bronze' });
+        expect(result).toEqual({ ok: true, xpGained: 62, product: 'Bronze', message: 'Smelted Bronze' });
         // The bar's own button smelts one; the quantity buttons come first in each row.
         expect(sends).toEqual([openMenu, choose('Bronze')]);
     });
@@ -368,7 +402,12 @@ describe('smelt', () => {
 
     test('ore gone with no xp is still a smelt: the bar failed (iron), xpGained 0', async () => {
         const { result } = await runOp(smelting(impure), ctx => smelt(ctx, furnace, 'Iron'));
-        expect(result).toEqual({ ok: true, xpGained: 0, product: 'Iron' });
+        expect(result).toEqual({
+            ok: true,
+            xpGained: 0,
+            product: 'Iron',
+            message: 'Smelted Iron: the ore was used and no bar came out',
+        });
     });
 
     test('a furnace without a Smelt option is no-option, with nothing sent', async () => {

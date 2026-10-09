@@ -1,29 +1,22 @@
 // Ported from sdk/actions.ts smithAtAnvil @ 4c2069cc0
 // Not ported: sdk/actions.ts has no furnace smelting method; closest upstream is useItemOnLoc @ 4c2069cc0.
-// smith differs from bot.smithAtAnvil: it takes the anvil, the product and the bar from the caller
-// (upstream finds the nearest anvil, reads a metal off the product name and defaults to any item named
-// "... bar"); it needs an item named exactly Hammer (upstream's /hammer/i also matches a warhammer); a
-// product is looked up by its name with spaces and hyphens ignored, never by a partial match (upstream
-// falls back to the longest key either containing or contained in the name), and an unknown one is
-// `unknown-product`, not upstream's `level_too_low`. The game's refusals arrive as message boxes, which
-// upstream's game-message check misses: here a level box or "don't have enough" ends the wait, and
-// "I can't reach that!" ends the wait for the interface. The op owns the smithing interface it opens:
-// the interface guard leaves it alone (OP_OWNED_INTERFACES), so the op closes it, through withModal, on
-// every path that leaves it open (no XP, a refused click, a cancel), and closes one already open before
-// it starts, since that one may have been opened with another bar. After the XP it waits out the
-// player's post-smith delay (SMITH_DELAY_TICKS), which upstream returns straight into.
-// smelt replaces the legacy task's use of ore on a furnace, which smelts one bar without a menu (and
-// makes steel from iron ore when 2+ coal are held at Smithing 30+): it takes the furnace's Smelt option
-// and answers the smelting menu by the bar's label, which makes exactly the bar asked for. The menu is
-// the op's from the Smelt option until its click answers it, under withModal as the anvil interface is.
+// smith differs from bot.smithAtAnvil: the caller passes the anvil, the product and the bar (upstream
+// finds an anvil and guesses the bar); it needs an item named exactly Hammer (upstream's /hammer/i also
+// matches a warhammer); a product is matched by its whole name, never partially, and an unknown one is
+// `unknown-product`; the game's refusals are read from message boxes as well as game messages; it owns
+// the smithing interface (OP_OWNED_INTERFACES), closing one already open and, under withModal, the one it
+// opens on every path; and it waits out the post-smith delay (SMITH_DELAY_TICKS), as a bar used sooner is
+// lost. smelt takes the furnace's Smelt option and answers the smelting menu by the bar's label, so it
+// makes exactly the bar asked for (ore used on a furnace makes steel from iron when coal is held); it
+// owns that menu as smith owns the interface.
 import type { ActionResult, BotWorldState, InventoryItem, NearbyLoc } from '../../sdk/types';
-import { type Op, type Pred, send, ticks, wait } from '../core/op';
+import { log, type Op, send, ticks, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { isSkillMenu, SMITHING_INTERFACE } from './dismiss';
 import { interactLoc } from './interact';
 import { dialogSince, messageCursor, messageSince } from './messages';
-import { type CloseModalResult, type ModalOps, withModal } from './modal';
+import { type CloseModalResult, closeModalUntil, type ModalOps, withModal } from './modal';
 
 /** bot.smithAtAnvil's 5s wait for the smithing interface to open, in ticks. */
 export const SMITH_INTERFACE_TICKS = Math.ceil(5000 / TICK_MS);
@@ -45,7 +38,8 @@ export const SMITH_DELAY_TICKS = 3;
 /** The furnace option that opens the smelting menu (oploc2 in skill_smithing/scripts/smelting/smelting.rs2). */
 export const SMELT_OPTION = /^smelt$/i;
 
-const HAMMER = /^hammer$/i;
+/** The smith op's hammer: exactly Hammer, never a warhammer. */
+export const HAMMER = /^hammer$/i;
 const CANT_REACH = /can't reach|cannot reach/i;
 /**
  * Upstream's level check, which also matches the game's boxes: "You need a Smithing level of at least 15
@@ -63,46 +57,55 @@ const NOT_ENOUGH_BARS = /don't have enough/i;
 const NO_ORE = /you need at least|you don't have any|run out of|don't have enough coal/i;
 
 /**
- * The anvil interface's product buttons: inventory components smithing:column1..5 (ids 1119-1123 in
- * server/content/pack/interface.pack), each slot a product in the order skill_smithing/configs/smithing/
- * smithing.inv stocks them (the same for every metal). The client publishes no labels for them, so a
- * product is found by name here. Names as upstream's SMITHING_COMPONENTS spells them, aliases included.
+ * The anvil interface's product buttons in columns 1-4: inventory components smithing:column1..4 (ids
+ * 1119-1122 in server/content/pack/interface.pack), each slot a product in the order skill_smithing/
+ * configs/smithing/smithing.inv stocks them, the same for every metal. Column 5 (ammunition, and wire,
+ * nails or studs depending on the metal) is not offered. The client publishes no labels for these, so a
+ * product is found by name: `name` is the op's own, `aliases` other spellings upstream accepts.
  */
-const SMITHING_BUTTONS: readonly { names: readonly string[]; component: number; slot: number }[] = [
-    { names: ['dagger'], component: 1119, slot: 0 },
-    { names: ['sword'], component: 1119, slot: 1 },
-    { names: ['scimitar'], component: 1119, slot: 2 },
-    { names: ['longsword', 'long sword'], component: 1119, slot: 3 },
-    { names: ['2h sword', 'two-handed sword'], component: 1119, slot: 4 },
-    { names: ['axe'], component: 1120, slot: 0 },
-    { names: ['mace'], component: 1120, slot: 1 },
-    { names: ['warhammer', 'war hammer'], component: 1120, slot: 2 },
-    { names: ['battleaxe', 'battle axe'], component: 1120, slot: 3 },
-    { names: ['chainbody', 'chain body'], component: 1121, slot: 0 },
-    { names: ['platelegs', 'plate legs'], component: 1121, slot: 1 },
-    { names: ['plateskirt', 'plate skirt'], component: 1121, slot: 2 },
-    { names: ['platebody', 'plate body'], component: 1121, slot: 3 },
-    { names: ['med helm', 'medium helm'], component: 1122, slot: 0 },
-    { names: ['full helm'], component: 1122, slot: 1 },
-    { names: ['sq shield', 'square shield'], component: 1122, slot: 2 },
-    { names: ['kiteshield', 'kite shield'], component: 1122, slot: 3 },
-    { names: ['dart tips'], component: 1123, slot: 0 },
-    { names: ['arrowheads', 'arrow tips', 'arrowtips'], component: 1123, slot: 1 },
-    { names: ['throwing knives', 'knives'], component: 1123, slot: 2 },
-    { names: ['nails'], component: 1123, slot: 3 },
-];
+const SMITHING_BUTTONS = [
+    { name: 'dagger', aliases: [], component: 1119, slot: 0 },
+    { name: 'sword', aliases: [], component: 1119, slot: 1 },
+    { name: 'scimitar', aliases: [], component: 1119, slot: 2 },
+    { name: 'longsword', aliases: [], component: 1119, slot: 3 },
+    { name: '2h sword', aliases: ['two-handed sword'], component: 1119, slot: 4 },
+    { name: 'axe', aliases: [], component: 1120, slot: 0 },
+    { name: 'mace', aliases: [], component: 1120, slot: 1 },
+    { name: 'warhammer', aliases: [], component: 1120, slot: 2 },
+    { name: 'battleaxe', aliases: [], component: 1120, slot: 3 },
+    { name: 'chainbody', aliases: [], component: 1121, slot: 0 },
+    { name: 'platelegs', aliases: [], component: 1121, slot: 1 },
+    { name: 'plateskirt', aliases: [], component: 1121, slot: 2 },
+    { name: 'platebody', aliases: [], component: 1121, slot: 3 },
+    { name: 'med helm', aliases: ['medium helm'], component: 1122, slot: 0 },
+    { name: 'full helm', aliases: [], component: 1122, slot: 1 },
+    { name: 'sq shield', aliases: ['square shield'], component: 1122, slot: 2 },
+    { name: 'kiteshield', aliases: [], component: 1122, slot: 3 },
+] as const;
+
+/** A product the anvil interface offers, by the op's own name for it. */
+export type SmithingProduct = (typeof SMITHING_BUTTONS)[number]['name'];
+type SmithingButton = (typeof SMITHING_BUTTONS)[number];
 
 /** A product name with case, spaces and hyphens ignored: "Med helm", "med-helm" and "medhelm" are one. */
 const productKey = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
-const BUTTON_BY_KEY = new Map(SMITHING_BUTTONS.flatMap(b => b.names.map(n => [productKey(n), b] as const)));
+const BUTTON_BY_KEY: ReadonlyMap<string, SmithingButton> = new Map(
+    SMITHING_BUTTONS.flatMap(b => [b.name, ...b.aliases].map(n => [productKey(n), b] as const)),
+);
 
-/** The anvil interface's button for `product`, or undefined for a product it does not offer. */
-export const smithingButton = (product: string) => BUTTON_BY_KEY.get(productKey(product));
+/** The anvil interface's button for `product` (any case, spacing or alias), or undefined for one it does not offer. */
+export const smithingButton = (product: string): SmithingButton | undefined => BUTTON_BY_KEY.get(productKey(product));
+
+/** The op's own name for `product` ("Square-shield" is "sq shield"), or undefined for one it does not offer. */
+export const smithingProduct = (product: string): SmithingProduct | undefined => smithingButton(product)?.name;
 
 type Failure<R extends string> = { ok: false; reason: R; message: string };
 
+/** `message` also says when the interface or menu the op opened could not be closed after it. */
+type Made = { ok: true; xpGained: number; product: string; message: string };
+
 export type SmithResult =
-    | { ok: true; xpGained: number; product: string }
+    | Made
     | Failure<
           | 'no-hammer'
           | 'no-bars'
@@ -116,7 +119,7 @@ export type SmithResult =
 
 export type SmeltResult =
     /** `xpGained` 0: the ore went into the furnace and no bar came out (iron's 50% failure). */
-    | { ok: true; xpGained: number; product: string }
+    | Made
     | Failure<
           'no-option' | 'cant-reach' | 'no-menu' | 'no-product' | 'level-too-low' | 'no-ore' | 'send-failed' | 'timeout'
       >;
@@ -130,31 +133,14 @@ const inventorySignature = (s: BotWorldState) => s.inventory.map(i => `${i.slot}
 const saidSince = (s: BotWorldState, cursor: number, pattern: RegExp) =>
     messageSince(s, cursor, pattern) ?? dialogSince(s, cursor, pattern);
 
-/**
- * Closes what `isClosed` is false for with a closeModal, and a second one if the first shows no effect
- * within `waitTicks`; already closed is success. At most `waitTicks + 1` ticks.
- */
-function* closeModalOf(ctx: ActionContext, what: string, isClosed: Pred, waitTicks: number): Op<CloseModalResult> {
-    if (isClosed(ctx.state())) return { ok: true, message: `${what} already closed` };
-    const sent = yield* send({ type: 'closeModal', reason: `close ${what}` });
-    if (!sent.success) return { ok: false, reason: 'send-failed', message: sent.message };
-    const w = yield* wait(`${what} closed`, isClosed, waitTicks);
-    if (w.kind === 'met') return { ok: true, message: `${what} closed` };
-    const again = yield* send({ type: 'closeModal', reason: `close ${what} (second attempt)` });
-    if (!again.success) return { ok: false, reason: 'send-failed', message: again.message };
-    const last = yield* ticks(1);
-    if (isClosed(last)) return { ok: true, message: `${what} closed (second attempt)` };
-    return { ok: false, reason: 'timeout', message: `${what} still open after two closes` };
-}
-
-/** Closes the anvil's smithing interface (see closeModalOf). */
+/** Closes the anvil's smithing interface (see closeModalUntil). */
 export function* closeSmithing(ctx: ActionContext, waitTicks = SMITH_CLOSE_TICKS): Op<CloseModalResult> {
-    return yield* closeModalOf(ctx, 'smithing interface', s => !anvilOpen(s), waitTicks);
+    return yield* closeModalUntil(ctx, 'smithing interface', s => !anvilOpen(s), waitTicks);
 }
 
-/** Closes an open skill make or smelting menu (see closeModalOf). */
+/** Closes an open skill make or smelting menu (see closeModalUntil). */
 function* closeSmeltMenu(ctx: ActionContext, waitTicks = SMITH_CLOSE_TICKS): Op<CloseModalResult> {
-    return yield* closeModalOf(ctx, 'smelting menu', s => !smeltMenuOpen(s), waitTicks);
+    return yield* closeModalUntil(ctx, 'smelting menu', s => !smeltMenuOpen(s), waitTicks);
 }
 
 // What the open ops report; only `timeout` means an open was sent that can still land (withModal).
@@ -167,6 +153,17 @@ const sendFailure = (r: ActionResult): Failure<'cant-reach' | 'send-failed'> => 
     reason: r.reason === 'cant_reach' ? 'cant-reach' : 'send-failed',
     message: r.message,
 });
+
+/**
+ * `result` as is when withModal's closing of `what` went through; else logged, with the failed close
+ * added to its message: the interface guard leaves the op's own interface open, so the next smith or
+ * smelt (or the next run's start) is what closes it.
+ */
+function* notingClose<R extends { message: string }>(result: R, closed: CloseModalResult, what: string): Op<R> {
+    if (closed.ok) return result;
+    yield* log(`${what} left open: ${closed.message}`);
+    return { ...result, message: `${result.message}; ${what} left open: ${closed.message}` };
+}
 
 /** Uses `bar` on `anvil` and waits for the smithing interface, or the game's refusal. */
 function* openAnvil(
@@ -221,7 +218,7 @@ function* forge(
     const xpGained = xpOf(w.state) - xpBefore;
     if (xpGained > 0) {
         yield* ticks(SMITH_DELAY_TICKS);
-        return { ok: true, xpGained, product };
+        return { ok: true, xpGained, product, message: `Smithed ${product}` };
     }
     if (saidSince(w.state, cursor, TOO_LOW))
         return { ok: false, reason: 'level-too-low', message: 'Smithing level too low' };
@@ -267,7 +264,7 @@ export function* smith(ctx: ActionContext, anvil: NearbyLoc, product: string, ba
         closeAction: reason => ({ type: 'closeModal', reason }),
     };
     const r = yield* withModal(ctx, modal, forge(product, button, xpBefore, cursor));
-    if (r.ok) return r.value;
+    if (r.ok) return yield* notingClose(r.value, r.closed, modal.name);
     if (r.reason === 'timeout') return { ok: false, reason: 'no-interface', message: r.message };
     return r;
 }
@@ -335,7 +332,13 @@ function* smeltOne(
         SMELT_MAKE_TICKS,
     );
     const xpGained = xpOf(w.state) - xpBefore;
-    if (xpGained > 0 || inventorySignature(w.state) !== inventory) return { ok: true, xpGained, product: chosen };
+    if (xpGained > 0 || inventorySignature(w.state) !== inventory)
+        return {
+            ok: true,
+            xpGained,
+            product: chosen,
+            message: xpGained > 0 ? `Smelted ${chosen}` : `Smelted ${chosen}: the ore was used and no bar came out`,
+        };
     const tooLow = saidSince(w.state, cursor, TOO_LOW);
     if (tooLow) return { ok: false, reason: 'level-too-low', message: tooLow };
     const noOre = saidSince(w.state, cursor, NO_ORE);
@@ -370,7 +373,7 @@ export function* smelt(ctx: ActionContext, furnace: NearbyLoc, bar: string): Op<
         closeAction: reason => ({ type: 'closeModal', reason }),
     };
     const r = yield* withModal(ctx, modal, smeltOne(ctx, bar, xpBefore, inventory, cursor));
-    if (r.ok) return r.value;
+    if (r.ok) return yield* notingClose(r.value, r.closed, modal.name);
     if (r.reason === 'timeout') return { ok: false, reason: 'no-menu', message: r.message };
     return r;
 }

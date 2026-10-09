@@ -2,7 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
 import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TICK_MS } from '../../lib/util';
-import smithing from '../../tasks/smithing';
+import { type SmithingProduct, smithingProduct } from '../../actions/smith';
+import smithing, { PRODUCTS } from '../../tasks/smithing';
 import { smithyReact } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
@@ -82,7 +83,8 @@ describe('smithing: smelt', () => {
         expect(r.steps).toEqual(['smelt', 'finish']);
         expect(r.result.inventoryDelta).toEqual({ 'Copper ore': -2, 'Tin ore': -2, 'Bronze bar': 2 });
         expect(r.result.xpGained.Smithing).toBe(124);
-        expect(logged(r)).toEqual(['smelt', 'smelt']);
+        // Only failures are logged; the bars made are in the result.
+        expect(logged(r)).toEqual([]);
     });
 
     test('a furnace further than 2 tiles is walked to first (a bot.walkTo stopgap)', async () => {
@@ -198,6 +200,25 @@ describe('smithing: smelt', () => {
 });
 
 describe('smithing: smith', () => {
+    test("every product the task knows is one the smith op offers, keyed by the op's own name", () => {
+        for (const name of Object.keys(PRODUCTS)) expect(smithingProduct(name)).toBe(name as SmithingProduct);
+    });
+
+    test('a product in another spelling passes preflight and is forged by the name the op knows', async () => {
+        const work = {
+            takes: [{ name: 'Bronze bar', count: 2 }],
+            gives: { name: 'Bronze sq shield', id: 1173 },
+            xp: 250,
+        };
+        const r = await simulate(smithing, {
+            params: { ...SMITH_PARAMS, product: 'Square-shield' },
+            timeline: bars(2).skill('Smithing', 8, 801).series(1),
+            react: smithyReact(work),
+        });
+        expect(r.result.reason).toBe('finish: out of Bronze bars for Square-shield');
+        expect(r.sends).toEqual([USE_BAR, 'smith sq shield']);
+    });
+
     test('forges the product from the bars until they run out, then is done', async () => {
         const r = await simulate(smithing, {
             params: SMITH_PARAMS,
