@@ -1,10 +1,12 @@
 // The Driver over a connected BotSDK, for real runs. It holds the only wall clock in a run: `now()`
 // for the engine's watchdog and `minutes:` stops, and the tick-stall timer that keeps a wait from
-// hanging on a client that stopped publishing.
+// hanging on a client that stopped publishing. Given a Recorder, it records what the run's code
+// observes through it (recording.ts), for replay.
 import type { BotSDK } from '../../../sdk/index';
 import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../../sdk/types';
 import type { Sinks } from '../../lib/task';
 import { type Driver, TickStall } from '../interpret';
+import type { Recorder } from './recording';
 
 interface Pending {
     promise: Promise<BotWorldState>;
@@ -22,47 +24,68 @@ export class LiveDriver implements Driver {
     private closed: Error | null = null;
     private readonly unsubscribe: (() => void)[];
 
-    /** `stallMs`: no new tick for this long rejects `nextTick` with TickStall. */
+    /**
+     * `stallMs`: no new tick for this long rejects `nextTick` with TickStall. `recorder`: records the
+     * run; the caller closes it after the driver.
+     */
     constructor(
         private readonly sdk: BotSDK,
         private readonly sinks: Sinks,
         private readonly stallMs: number,
+        private readonly recorder?: Recorder,
     ) {
-        this.lastTick = sdk.getState()?.tick ?? -1;
+        const initial = sdk.getState();
+        if (initial) recorder?.publish(initial);
+        this.lastTick = initial?.tick ?? -1;
         this.lastTickAt = Date.now();
         this.unsubscribe = [
             sdk.onStateUpdate(s => this.onState(s)),
             sdk.onConnectionStateChange(c => {
                 // 'reconnecting' may still recover; the stall timer bounds it.
-                if (c === 'disconnected') this.settle(p => p.reject(new Error('the SDK disconnected')));
+                if (c === 'disconnected') this.rejectPending(new Error('the SDK disconnected'));
             }),
         ];
     }
 
     state(): BotWorldState {
+        this.recorder?.call();
         const s = this.sdk.getState();
         if (!s) throw new Error('no world state from client');
         return s;
     }
 
     nextTick(): Promise<BotWorldState> {
+        this.recorder?.call();
         if (this.pending) return this.pending.promise;
         if (this.closed) return Promise.reject(this.closed);
-        if (this.sdk.getConnectionState() === 'disconnected') return Promise.reject(new Error('the SDK disconnected'));
+        if (this.sdk.getConnectionState() === 'disconnected') return this.refuse(new Error('the SDK disconnected'));
         const left = this.lastTickAt + this.stallMs - Date.now();
-        if (left <= 0) return Promise.reject(this.stall());
+        if (left <= 0) return this.refuse(this.stall());
         let resolve!: (s: BotWorldState) => void;
         let reject!: (e: Error) => void;
         const promise = new Promise<BotWorldState>((res, rej) => {
             resolve = res;
             reject = rej;
         });
-        const timer = setTimeout(() => this.settle(p => p.reject(this.stall())), left);
+        const timer = setTimeout(() => this.rejectPending(this.stall()), left);
         this.pending = { promise, resolve, reject, timer };
         return promise;
     }
 
+    /** A tick request refused on the spot, recorded like one rejected while pending. */
+    private refuse(e: Error): Promise<never> {
+        this.recorder?.tickError(e.message, e instanceof TickStall);
+        return Promise.reject(e);
+    }
+
+    private rejectPending(e: Error): void {
+        if (!this.pending) return;
+        this.recorder?.tickError(e.message, e instanceof TickStall);
+        this.settle(p => p.reject(e));
+    }
+
     private onState(s: BotWorldState): void {
+        this.recorder?.publish(s);
         if (s.tick <= this.lastTick) return;
         this.lastTick = s.tick;
         this.lastTickAt = Date.now();
@@ -92,9 +115,22 @@ export class LiveDriver implements Driver {
         this.settle(p => p.reject(closed));
     }
 
-    /** Each action through the SDK's public `send*` method for it, so the SDK's own checks still apply. */
     async send(a: BotAction): Promise<ActionResult> {
         if (this.closed) throw this.closed;
+        const rec = this.recorder;
+        const id = rec?.command({ type: 'send', action: a });
+        try {
+            const result = await this.dispatch(a);
+            if (id !== undefined) rec?.settled(id, result);
+            return result;
+        } catch (e) {
+            if (id !== undefined) rec?.failed(id, e);
+            throw e;
+        }
+    }
+
+    /** Each action through the SDK's public `send*` method for it, so the SDK's own checks still apply. */
+    private async dispatch(a: BotAction): Promise<ActionResult> {
         const sdk = this.sdk;
         switch (a.type) {
             case 'none':
@@ -192,9 +228,18 @@ export class LiveDriver implements Driver {
         }
     }
 
-    scan(radius?: number): Promise<NearbyLoc[]> {
-        if (this.closed) return Promise.reject(this.closed);
-        return this.sdk.scanNearbyLocs(radius);
+    async scan(radius?: number): Promise<NearbyLoc[]> {
+        if (this.closed) throw this.closed;
+        const rec = this.recorder;
+        const id = rec?.command({ type: 'scan', ...(radius !== undefined && { radius }) });
+        try {
+            const locs = await this.sdk.scanNearbyLocs(radius);
+            if (id !== undefined) rec?.settled(id, locs);
+            return locs;
+        } catch (e) {
+            if (id !== undefined) rec?.failed(id, e);
+            throw e;
+        }
     }
 
     log(msg: string, data?: Record<string, unknown>): void {
@@ -207,6 +252,8 @@ export class LiveDriver implements Driver {
     }
 
     now(): number {
-        return Date.now();
+        const t = Date.now();
+        this.recorder?.now(t);
+        return t;
     }
 }
