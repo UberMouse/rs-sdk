@@ -89,13 +89,13 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 
 ### Ops
 
-Ops live in `conductor/actions/`: `chop`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
+Ops live in `conductor/actions/`: `chop`, `mine`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
 `useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch` and `dismiss`, with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
 passes its `ctx` as the `ActionContext`.
 
 - **Use an existing op** when one does the job. **Add one** when the task needs an action
-  (`bot.mineRock`, `bot.openBank`, ...) that has none; an op other ops build on (`interactLoc`)
+  (`bot.openBank`, `bot.walkTo`, ...) that has none; an op other ops build on (`interactLoc`)
   stays its own function.
 - **Port, don't invent.** Start from the method in `sdk/actions.ts`. The file's first line is
   `// Ported from sdk/actions.ts <method> @ <upstream sha>` (the short sha of the last commit to
