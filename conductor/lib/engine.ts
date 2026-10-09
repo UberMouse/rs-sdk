@@ -9,7 +9,7 @@ import { captureScreenshot } from './screenshot';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import type { Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
 import { isLowHp } from './threat';
-import { errMessage, fileStamp, xpGainedSince } from './util';
+import { distance, errMessage, fileStamp, INVENTORY_SLOTS, memoryCounter, xpGainedSince } from './util';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
 const TICK_STALL_MS = 30_000;
@@ -95,6 +95,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     }
     const invBefore = inventoryCounts(initial);
 
+    const memory: Record<string, unknown> = {};
     const ctx: TaskContext = {
         bot,
         sdk,
@@ -116,8 +117,14 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             }
         },
         startTick: initial.tick,
-        memory: {},
+        memory,
         previousPos: null,
+        counter: name => memoryCounter(memory, name),
+        inventoryFull: () => requireState().inventory.length >= INVENTORY_SLOTS,
+        distanceTo: (x, z) => {
+            const p = requireState().player;
+            return p ? distance({ x: p.worldX, z: p.worldZ }, { x, z }) : Infinity;
+        },
     };
     let currentPos = posOf(initial);
 

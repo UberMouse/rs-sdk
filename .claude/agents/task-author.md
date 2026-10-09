@@ -33,8 +33,14 @@ you never commit, and you only touch the bot you were given.
 - Params carry the variation (location, target, what to do when full); don't hard-code one spot
   when the task makes sense in several.
 - `preflight` refuses early on missing requirements (items, levels) with a clear reason.
-- Every step that can fail repeatedly counts its failures in `ctx.memory` and returns `{ fail }`
-  past a small limit, with the last failure's message in the reason.
+- Every step that can fail repeatedly counts its failures with `ctx.counter(name)` (`add()`
+  returns the new count, `reset()` on success) and returns `{ fail }` past a small limit, with the
+  last failure's message in the reason.
+- Use what the context and `conductor/lib/` already provide instead of task-local copies:
+  `ctx.inventoryFull()`, `ctx.distanceTo(x, z)`, and for any task that works one spot (trees,
+  rocks, fishing spots, monsters) `lib/area.ts`: an `area: AreaSchema.optional()` param,
+  `refuseArea` in preflight, `returnToAreaStep`, `inArea` to filter targets, `walkToArea`.
+  `lib/threat.ts` waits on an action unless the bot is threatened.
 - The game is not buggy; the SDK may be. If an SDK method misbehaves, find a workaround first,
   then file it: `bun sdk/bug-report.ts "<what, and the workaround>"`.
 

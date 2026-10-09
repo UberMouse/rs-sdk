@@ -1,9 +1,9 @@
 // Steps put in front of every task's own steps, so no task has to handle death,
 // low HP, the Wilderness or blocking dialogs itself.
 import type { BotWorldState } from '../../sdk/types';
+import { isInWilderness } from './area';
 import type { Step } from './task';
 import { isLowHp } from './threat';
-import { readCount } from './util';
 
 type InventoryItem = BotWorldState['inventory'][number];
 
@@ -13,14 +13,6 @@ const DEATH = /oh dear,? you are dead/i;
 /** How many of the latest game messages go into a death reason. */
 const DEATH_REASON_MESSAGES = 3;
 
-/**
- * Surface Wilderness box (plane 0), from wilderness_zones.dbrow: x 2944..3391, z >= 3520.
- * The bot has no business there.
- */
-const WILDERNESS_MIN_X = 2944;
-const WILDERNESS_MAX_X = 3391;
-const WILDERNESS_MIN_Z = 3520;
-
 /** Eats (or failed eats) within one low-HP episode before the run gives up. */
 const MAX_EATS_PER_EPISODE = 8;
 /** Ticks waited per slice while regenerating HP with nothing to eat. */
@@ -29,13 +21,6 @@ const REGEN_SLICE_TICKS = 5;
 const REGEN_CAP_TICKS = 500;
 /** Loops a dialog may stay open after dismissal attempts before the run gives up. */
 const DIALOG_STUCK_LIMIT = 5;
-
-const isInWilderness = (level: number, x: number, z: number): boolean =>
-    level === 0 && x >= WILDERNESS_MIN_X && x <= WILDERNESS_MAX_X && z >= WILDERNESS_MIN_Z;
-
-/** True when the square of half-width `radius` around (x, z) overlaps the surface Wilderness. */
-export const areaReachesWilderness = (x: number, z: number, radius: number): boolean =>
-    x + radius >= WILDERNESS_MIN_X && x - radius <= WILDERNESS_MAX_X && z + radius >= WILDERNESS_MIN_Z;
 
 /** An inventory item with an Eat option; Drink items are not food for `bot.eatFood`. */
 export const findFood = (state: BotWorldState): InventoryItem | undefined =>
@@ -83,8 +68,8 @@ export const lowHpCheck: Step = {
     when: ctx => {
         const low = isLowHp(ctx.state());
         if (!low) {
-            ctx.memory.lowHpEats = 0;
-            ctx.memory.lowHpRegenTicks = 0;
+            ctx.counter('lowHpEats').reset();
+            ctx.counter('lowHpRegenTicks').reset();
             ctx.memory.lowHpLast = undefined;
         }
         return low;
@@ -100,14 +85,12 @@ export const lowHpCheck: Step = {
         const food = findFood(s);
         if (!food) {
             if (p?.combat.inCombat || hpFell) return { fail: `${where}, no food` };
-            const waited = readCount(ctx.memory, 'lowHpRegenTicks') + REGEN_SLICE_TICKS;
+            const waited = ctx.counter('lowHpRegenTicks').add(REGEN_SLICE_TICKS);
             if (waited > REGEN_CAP_TICKS) return { fail: `${where} not regenerating after ${REGEN_CAP_TICKS} ticks` };
-            ctx.memory.lowHpRegenTicks = waited;
             await ctx.sdk.waitForTicks(REGEN_SLICE_TICKS);
             return;
         }
-        const eats = readCount(ctx.memory, 'lowHpEats') + 1;
-        ctx.memory.lowHpEats = eats;
+        const eats = ctx.counter('lowHpEats').add();
         if (eats > MAX_EATS_PER_EPISODE) return { fail: `${where} after ${MAX_EATS_PER_EPISODE} eats` };
         const r = await ctx.bot.eatFood(food);
         ctx.log(`low hp: ${where}: ${r.message}`);
@@ -124,7 +107,7 @@ export const dismissDialog: Step = {
     name: 'interrupt:dialog',
     when: ctx => {
         const open = ctx.state().dialog.isOpen;
-        if (!open) ctx.memory.dialogStuckRuns = 0;
+        if (!open) ctx.counter('dialogStuckRuns').reset();
         return !ctx.memory.expectDialog && open;
     },
     run: async ctx => {
@@ -134,8 +117,7 @@ export const dismissDialog: Step = {
         // dismissBlockingUI leaves multi-option dialogs alone and returns at once; wait a tick
         // so the loop yields, and give up if nothing else closes it.
         await ctx.sdk.waitForTicks(1);
-        const stuck = readCount(ctx.memory, 'dialogStuckRuns') + 1;
-        ctx.memory.dialogStuckRuns = stuck;
+        const stuck = ctx.counter('dialogStuckRuns').add();
         if (stuck > DIALOG_STUCK_LIMIT)
             return { fail: `dialog stuck open: ${dialog.options.map(o => o.text).join(' | ')}` };
     },

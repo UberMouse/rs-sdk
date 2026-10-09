@@ -14,6 +14,13 @@ import type { BotWorldState } from '../../sdk/types';
 /** What a step may report. Returning nothing means "keep looping". */
 export type Outcome = void | { done: string } | { fail: string };
 
+/** A named run-scoped number in ctx.memory, for "N failures in a row" style limits. */
+export interface Counter {
+    /** Add `by` (default 1) and return the new value. */
+    add(by?: number): number;
+    reset(): void;
+}
+
 export interface TaskContext<P = unknown> {
     bot: BotActions;
     sdk: BotSDK;
@@ -26,8 +33,17 @@ export interface TaskContext<P = unknown> {
     screenshot(label: string): Promise<string | null>;
     /** Game tick the run started at; messages from earlier ticks are not this run's. */
     readonly startTick: number;
-    /** Scratch shared between steps for one run (counters, remembered targets). Narrow values on read. */
+    /** Scratch shared between steps for one run (remembered targets). Narrow values on read; use `counter` for counts. */
     memory: Record<string, unknown>;
+    /**
+     * The counter stored under `name` in `memory`; the same name returns the same count. Names
+     * starting `area.` belong to lib/area.ts, and `lowHp*` / `dialogStuckRuns` to the interrupts.
+     */
+    counter(name: string): Counter;
+    /** Every inventory slot is used. */
+    inventoryFull(): boolean;
+    /** Straight-line tiles from the bot to (x, z); Infinity when there is no player. */
+    distanceTo(x: number, z: number): number;
     /** Where the bot stood at the start of the previous loop (the engine sets it); null without a player. */
     previousPos: { x: number; z: number } | null;
 }
@@ -36,7 +52,7 @@ export interface Step<P = unknown> {
     name: string;
     /**
      * The first step whose `when` passes runs this loop. A predicate may reset its own
-     * `ctx.memory` counters once the state it guards has ended; that is the documented pattern.
+     * `ctx.counter(...)` once the state it guards has ended; that is the documented pattern.
      */
     when(ctx: TaskContext<P>): boolean;
     run(ctx: TaskContext<P>): Promise<Outcome>;

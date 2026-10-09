@@ -1,4 +1,5 @@
 import type { BotWorldState } from '../../sdk/types';
+import type { Counter } from './task';
 
 type Skill = BotWorldState['skills'][number];
 
@@ -26,10 +27,30 @@ export function xpGainedSince(state: BotWorldState, xpBefore: Record<string, num
     return out;
 }
 
-/** A numeric counter kept in a task's scratch memory; absent or non-numeric reads as 0. */
-export function readCount(memory: Record<string, unknown>, key: string): number {
-    const v = memory[key];
-    return typeof v === 'number' ? v : 0;
+/** Inventory slots in the backpack. */
+export const INVENTORY_SLOTS = 28;
+
+/** Straight-line distance in tiles between two world points. */
+export function distance(a: { x: number; z: number }, b: { x: number; z: number }): number {
+    return Math.hypot(a.x - b.x, a.z - b.z);
+}
+
+/** A counter stored in a task's scratch memory under `key`; absent or non-numeric reads as 0. */
+export function memoryCounter(memory: Record<string, unknown>, key: string): Counter {
+    const read = () => {
+        const v = memory[key];
+        return typeof v === 'number' ? v : 0;
+    };
+    return {
+        add(by = 1) {
+            const next = read() + by;
+            memory[key] = next;
+            return next;
+        },
+        reset() {
+            memory[key] = 0;
+        },
+    };
 }
 
 /** Filename-safe UTC timestamp: the ISO string with `:` and `.` replaced by `-`. */

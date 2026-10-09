@@ -4,10 +4,10 @@ Does every run end, end for the right reason, and say why?
 
 ## Criteria
 
-- **R1 Bounded failure.** Every step that can fail repeatedly counts failures in `ctx.memory`,
-  resets the count on success, and returns `{ fail }` past a small limit with the last failure's
-  message in the reason. No step can loop forever without the watchdog being the only thing that
-  ends it.
+- **R1 Bounded failure.** Every step that can fail repeatedly counts failures with
+  `ctx.counter(name)`, resets the count on success, and returns `{ fail }` past a small limit
+  with the last failure's message in the reason. No step can loop forever without the watchdog
+  being the only thing that ends it.
 - **R2 Progress or fail.** A step that runs but changes nothing (no XP, position or inventory)
   is either waiting for something specific with a bound, or failing. Steps don't spin on
   conditions that cannot change.
