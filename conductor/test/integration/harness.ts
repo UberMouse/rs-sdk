@@ -51,16 +51,14 @@ function taskTimeoutMs(until: string[]): number {
 
 /**
  * A bun:test timeout covering client start, login, the task (runTask's default timeout for these
- * stops) and teardown, so the harness's own timeouts fire before bun's.
+ * stops) and teardown, so the harness's own timeouts fire before bun's. `extraMs` is the test body's
+ * own worst case, for tests that drive the bot with the control SDK instead of a task.
  */
-export function itestTimeout(opts: { taskMinutes: number }): number {
+export function itestTimeout(opts: { taskMinutes?: number; extraMs?: number }): number {
+    const task =
+        opts.taskMinutes === undefined ? 0 : taskTimeoutMs([`minutes:${opts.taskMinutes}`]) + TASK_TERM_GRACE_MS;
     return (
-        LITE_START_TIMEOUT_MS +
-        STATE_READY_TIMEOUT_MS +
-        taskTimeoutMs([`minutes:${opts.taskMinutes}`]) +
-        TASK_TERM_GRACE_MS +
-        TEARDOWN_MS +
-        TIMEOUT_MARGIN_MS
+        LITE_START_TIMEOUT_MS + STATE_READY_TIMEOUT_MS + task + (opts.extraMs ?? 0) + TEARDOWN_MS + TIMEOUT_MARGIN_MS
     );
 }
 
@@ -137,19 +135,42 @@ const SAVE_SKILLS_OFFSET = 28;
 const SAVE_SKILL_BYTES = 5;
 const SAVE_CRC_BYTES = 4;
 
+/** Engine experience for a level, the formula save-generator.ts uses (10 units per displayed xp). */
+export function levelXp(level: number): number {
+    let xp = 0;
+    for (let i = 1; i < level; i++) xp += Math.floor(i + 300 * Math.pow(2, i / 10));
+    return Math.floor(xp / 4) * 10;
+}
+
+/** The level createSaveData writes for a skill: the config's level or 1, and Hitpoints 10 unless raised. */
+function savedLevel(config: SaveConfig, skill: string): number {
+    const key = skill.toUpperCase();
+    const level = Object.entries(config.skills ?? {}).find(([n]) => n.toUpperCase() === key)?.[1] ?? 1;
+    return key === 'HITPOINTS' && level === 1 ? 10 : level;
+}
+
+const slot = (index: number) => SAVE_SKILLS_OFFSET + index * SAVE_SKILL_BYTES;
+const drift = (what: string) =>
+    new Error(`patchSkillXp: save layout drifted from sdk/test/utils/save-generator.ts (${what})`);
+
 /**
  * Raw experience (engine units, 10 per displayed xp) per skill, replacing the threshold of the level
  * SaveConfig gives it. The engine derives the base level from experience on load, so
  * `xp: { Woodcutting: 799 }` at level 1 stands just short of level 2 (800). The save's
  * CRC covers the skill block, so it is recomputed.
  */
-function patchSkillXp(save: Uint8Array, xp: Record<string, number>): Uint8Array {
+function patchSkillXp(save: Uint8Array, config: SaveConfig, xp: Record<string, number>): Uint8Array {
     const out = Uint8Array.from(save);
     const view = new DataView(out.buffer);
+    // This duplicates sdk/test/utils/save-generator.ts's layout; fail loudly if it drifts.
+    const hp = Skills.HITPOINTS;
+    if (view.getInt32(slot(hp), false) !== levelXp(savedLevel(config, 'HITPOINTS')))
+        throw drift('Hitpoints experience');
     for (const [skill, value] of Object.entries(xp)) {
         const index = (Skills as Record<string, number>)[skill.toUpperCase()];
         if (index === undefined) throw new Error(`unknown skill "${skill}" in fixture xp`);
-        view.setInt32(SAVE_SKILLS_OFFSET + index * SAVE_SKILL_BYTES, value, false);
+        if (view.getUint8(slot(index) + 4) !== savedLevel(config, skill)) throw drift(`${skill} level byte`);
+        view.setInt32(slot(index), value, false);
     }
     const body = out.length - SAVE_CRC_BYTES;
     // crc32 is unsigned; the engine's Packet.getcrc is the same CRC-32 read back as a signed int.
@@ -163,7 +184,7 @@ export function writeFixtureSave(username: string, config: SaveConfig, xp?: Reco
     mkdirSync(dirname(file), { recursive: true });
     const tmp = `${file}.tmp-${process.pid}`;
     const bytes = createSaveData(config);
-    writeFileSync(tmp, xp ? patchSkillXp(bytes, xp) : bytes);
+    writeFileSync(tmp, xp ? patchSkillXp(bytes, config, xp) : bytes);
     renameSync(tmp, file);
     return file;
 }

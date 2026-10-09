@@ -5,8 +5,10 @@ import { itestTimeout, runTask, withFixtureBot } from '../harness';
 // Field east of the Lumbridge General Store: the verified spot in the firemaking task description.
 const FIELD = { x: 3230, z: 3240 };
 const LOGS = 3;
-// Fires last about a minute and refuse a second fire on their tile, so back-to-back runs starting on
-// the exact centre can find it burning. Start on a random tile inside the area instead.
+// A recently lit tile can refuse another fire (wiki/skills/firemaking.md), so back-to-back runs on the
+// exact centre can fail. Start on a random tile inside the area instead. This range overlaps the
+// action tests' tiles, which is harmless: dropItem counts only logs on its own tile and
+// dismissBlockingUI retries a refused light on another tile.
 const START = { x: FIELD.x - 4 + Math.floor(Math.random() * 9), z: FIELD.z - 4 + Math.floor(Math.random() * 9) };
 
 test(
