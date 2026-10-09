@@ -11,15 +11,16 @@ Success depends on Firemaking level. Tinderboxes are sold at General Stores.
 
 ## Log Types
 
-| Log | Level | XP |
+| Log | Level | XP (base) |
 |-----|-------|----|
 | Normal logs | 1 | 40 |
-| Oak logs | 1 | 40 |
-| Willow logs | 15 | 60 |
-| Teak logs | 30 | 90 |
+| Oak logs | 15 | 60 |
+| Willow logs | 30 | 90 |
 | Maple logs | 45 | 135 |
 | Yew logs | 60 | 202.5 |
 | Magic logs | 75 | 303.8 |
+
+Source: `server/content/scripts/skill_firemaking/configs/firemaking.obj` (`levelrequire`, `productexp` in tenths of XP); base XP before the local 25x rate (normal logs gave 1000 XP on local = 40 x 25). There is no teak in this engine. [v 2026-10-09 conductor1 local]
 
 ## Notes
 

@@ -9,12 +9,14 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 | Bronze | 1 | Bob's Axes (16 gp), Bandit Duty Free, Jiminua's Jungle Store, Obli's General Store; ground spawns at Camelot (floor 1), west Karamja and m41_58 |
 | Iron | 1 | Bob's Axes, Smithing |
 | Steel | 6 | Bob's Axes, Tree Spirit drops, Smithing |
-| Black | 6 | Black Demon / KBD drops, player trade |
+| Black | 11 | Black Demon / KBD drops, player trade |
 | Mithril | 21 | Tree Spirit drops, Smithing |
 | Adamant | 31 | Tree Spirit drops, Smithing |
 | Rune | 41 | Tree Spirit drops, Smithing |
 
 ## Trees
+
+Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.dbrow` and `axes/axes.obj` (axe levels: bronze/iron 1, steel 6, black 11, mithril 21, adamant 31, rune 41). [v 2026-10-09 conductor1 local]
 
 | Tree | Level | Log Type | Locations |
 |------|-------|----------|-----------|
