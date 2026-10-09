@@ -41,3 +41,12 @@ server/engine/data/market.sqlite*
 
 # Generated when engine utilities are invoked from the repository root
 /data/
+
+# --- local additions (not upstream) ---
+# Upstream ignores every bot folder; we track ours. bot.env holds the
+# account password, so it stays untracked (the template's has placeholders).
+!bots/*/
+bots/*/bot.env
+!bots/_template/bot.env
+# nix-direnv cache for the dev shell
+.direnv/
