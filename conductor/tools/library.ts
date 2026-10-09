@@ -10,11 +10,10 @@
 // entry into a worker with `load.ts <worker> lib:<name>`. An existing entry is replaced only with
 // --replace: other agents' tests depend on them.
 import { join } from 'node:path';
-import { parseArgs } from 'node:util';
 import { z } from 'zod/v4';
 import { createSaveData, type SaveConfig, TestPresets } from '../../sdk/test/utils/save-generator';
 import { LIBRARY_DIR, listLibrary, readLibrarySave, writeLibrarySave } from '../lib/saves';
-import { errMessage, fail } from '../lib/util';
+import { errMessage, fail, parseCli } from '../lib/util';
 
 /** The shape of save-generator's SaveConfig, so a bad --spec fails here rather than as a broken save. */
 const Item = z.object({ id: z.number().int().nonnegative(), count: z.number().int().positive() });
@@ -40,16 +39,15 @@ const toSaveConfig = (spec: z.infer<typeof SpecSchema>): SaveConfig => spec;
 
 const usage =
     'usage: bun conductor/tools/library.ts list | show <name> | generate <name> (--preset <NAME> | --spec <json>) --purpose <text> [--replace]';
-const { values: flags, positionals } = parseArgs({
-    args: process.argv.slice(2),
-    allowPositionals: true,
-    options: {
+const { values: flags, positionals } = parseCli(
+    {
         preset: { type: 'string' },
         spec: { type: 'string' },
         purpose: { type: 'string' },
         replace: { type: 'boolean' },
     },
-});
+    usage,
+);
 const [cmd, name] = positionals;
 
 /** The spec from --preset or --spec, and how to record it as the entry's source. */

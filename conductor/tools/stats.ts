@@ -5,16 +5,14 @@
 // The conductor uses this to pick the best method for an objective and to compare a new
 // variant (a different spot, target or mode) against the incumbent; the curator copies XP/hr
 // into the knowledge base from here, not from a single run.
-import { parseArgs } from 'node:util';
 import { canonical, loadResults } from '../lib/runs';
-import { fail } from '../lib/util';
+import { fail, parseCli } from '../lib/util';
 
 const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--json]';
-const { values, positionals } = parseArgs({
-    args: process.argv.slice(2),
-    allowPositionals: true,
-    options: { task: { type: 'string' }, since: { type: 'string' }, json: { type: 'boolean' } },
-});
+const { values, positionals } = parseCli(
+    { task: { type: 'string' }, since: { type: 'string' }, json: { type: 'boolean' } },
+    usage,
+);
 const bot = positionals[0];
 if (!bot) {
     fail(usage, 2);

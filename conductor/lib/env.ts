@@ -26,6 +26,16 @@ export function loadBotEnv(name: string): BotEnv {
     return { username: raw.BOT_USERNAME, password: raw.PASSWORD, server, webOrigin, raw };
 }
 
+/** loadBotEnv for CLI tools: a missing or incomplete bot.env is a usage error (exit 2), not a stack trace. */
+export function loadBotEnvOrFail(name: string): BotEnv {
+    try {
+        return loadBotEnv(name);
+    } catch (e) {
+        console.error(e instanceof Error ? e.message : String(e));
+        process.exit(2);
+    }
+}
+
 export function botClientUrl(env: BotEnv): string {
     return `${env.webOrigin}/bot?bot=${encodeURIComponent(env.username)}&password=${encodeURIComponent(env.password)}`;
 }

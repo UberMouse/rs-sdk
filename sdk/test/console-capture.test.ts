@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { ConsoleCapture } from '../../mcp/console-capture';
+import { ConsoleCapture, installConsoleRouting, runCaptured } from '../../mcp/console-capture';
 
 describe('ConsoleCapture', () => {
     test('keeps every line while under the cap', () => {
@@ -42,5 +42,38 @@ describe('ConsoleCapture', () => {
         expect(c.length).toBe(600);
         expect(c.total).toBe(1_000_000);
         expect(c.lines().at(-1)).toContain('(999999)');
+    });
+});
+
+describe('console routing', () => {
+    test('overlapping captured calls keep their own output; uncaptured output goes to stderr', async () => {
+        const realLog = console.log;
+        const realWarn = console.warn;
+        const realError = console.error;
+        const stderr: string[] = [];
+        console.error = (...args: unknown[]) => stderr.push(args.join(' '));
+        try {
+            installConsoleRouting();
+            const a = new ConsoleCapture();
+            const b = new ConsoleCapture();
+            const callA = runCaptured(a, async () => {
+                console.log('a1');
+                await Bun.sleep(30);
+                console.log('a2'); // after B started and finished
+            });
+            const callB = runCaptured(b, async () => {
+                await Bun.sleep(10);
+                console.warn('b1');
+            });
+            await Promise.all([callA, callB]);
+            console.log('outside');
+            expect(a.lines()).toEqual(['a1', 'a2']);
+            expect(b.lines()).toEqual(['[warn] b1']);
+            expect(stderr).toContain('outside');
+        } finally {
+            console.log = realLog;
+            console.warn = realWarn;
+            console.error = realError;
+        }
     });
 });

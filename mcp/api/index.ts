@@ -102,7 +102,14 @@ class BotManager {
 
     // Connect with retry to handle race conditions
     console.error(`[MCP] Starting connection...`);
-    await this.connectWithRetry(sdk);
+    try {
+      await this.connectWithRetry(sdk);
+    } catch (err) {
+      // This SDK is not stored anywhere yet: left alone it would keep auto-reconnecting unseen
+      // and take the bot's controller lease whenever the gateway answered.
+      await sdk.disconnect().catch(() => {});
+      throw err;
+    }
     console.error(`[MCP] Bot "${name}" connected!`);
 
     const connection: BotConnection = {
@@ -175,9 +182,12 @@ class BotManager {
   // it when done. Calls on the same bot share one attach (counted), and the last one out lets go.
   private holders: Map<string, number> = new Map();
   private attaching: Map<string, Promise<BotConnection>> = new Map();
+  private releasing: Map<string, Promise<void>> = new Map();
 
   /** Attach (or join the attach in progress) and count this caller. Pair with release(). */
   async acquire(name: string): Promise<BotConnection> {
+    // A release still closing its socket must finish first, or this would get the dying connection.
+    await this.releasing.get(name);
     let attach = this.attaching.get(name);
     if (!attach) {
       const existing = this.connections.get(name);
@@ -186,8 +196,11 @@ class BotManager {
         return existing;
       }
       attach = this.connect(name).catch(async (err) => {
-        // A failed attach must not keep auto-reconnecting in the background and take the lease later.
-        await this.connections.get(name)?.sdk.disconnect().catch(() => {});
+        // A failed re-attach must not keep auto-reconnecting in the background and take the lease
+        // later, unless another call still holds this SDK (it is reconnecting under that call).
+        if ((this.holders.get(name) ?? 0) === 0) {
+          await this.connections.get(name)?.sdk.disconnect().catch(() => {});
+        }
         throw err;
       });
       this.attaching.set(name, attach);
@@ -211,8 +224,10 @@ class BotManager {
     this.holders.delete(name);
     const connection = this.connections.get(name);
     if (!connection) return;
-    await connection.sdk.disconnect();
     connection.connected = false;
+    const closing = connection.sdk.disconnect().finally(() => this.releasing.delete(name));
+    this.releasing.set(name, closing);
+    await closing;
   }
 
   /**

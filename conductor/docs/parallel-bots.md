@@ -102,12 +102,16 @@ player is out of scope: kick, write, relog.
     `controllerCount` (the gateway's `/status`) is in `lib/env.ts`;
   - `writeSave(env, bytes, { backupDir, label, onWrite })`: verifies magic, version and CRC; refuses
     while the player is in the world or has a GE checkpoint; keeps the save it replaces in
-    `backupDir` as `pre-<label>`; writes atomically to the path the engine reported; then reads it back through
+    `conductor-backups/<bot>/<stamp>-pre-<label>.sav` beside the engine's save (so it outlives the
+    worktree that ran the tool) and in `backupDir`; writes atomically to the path the engine reported; then reads it back through
     the engine and fails unless the engine serves exactly those bytes from the file. A tool run
     from another worktree, or racing a login, can't report a write the engine never sees;
   - `decodeSave`: position, base levels, inv/worn/bank with item names from the content pack,
     and non-zero varps; save versions 5–8;
-  - the library: `writeLibrarySave` (refuses to replace an entry unless asked), `readLibrarySave`,
+  - `pre-` snapshot labels are reserved for those backups (`save.ts snapshot` refuses them);
+  - every read checks the body against the engine's `X-Save-Sha1`;
+  - the library: `writeLibrarySave` (refuses to replace an entry unless asked; a failed replace
+    puts the old pair back), `readLibrarySave`,
     `listLibrary` (lists invalid entries rather than failing); names are validated on every
     path; entries are schema-checked (zod) when read.
 - `conductor/lib/client.ts`:
@@ -137,7 +141,8 @@ player is out of scope: kick, write, relog.
     spec (schema-checked) by `sdk/test/utils/save-generator`'s `createSaveData` (levels,
     inventory, worn, bank, position, varps).
   - An existing entry is replaced only with `--replace`: other agents' tests depend on them.
-- **Seeded:** `fresh-lumbridge` (post-tutorial starter kit) and `wc-lumbridge-1` (woodcutting
+- **Seeded:** `fresh-lumbridge` (exactly what the tutorial leaves: (3222,3222), starter kit, 25
+  coins banked) and `wc-lumbridge-1` (woodcutting
   from level 1, in the castle courtyard; tests pass the verified tree `area`).
 - **Naming:** `<skill-or-activity>-<where>-<detail>`.
 - `conductor/runs/<bot>/saves/` stays as the private, gitignored timeline of an account.
@@ -153,8 +158,10 @@ player is out of scope: kick, write, relog.
   name the server already has an account for (`bots/` is per checkout, so the name could be
   another checkout's bot, even the main account). A failed or interrupted `--create` removes
   the bot directory it made, unless the save already reached the server.
-- **A worker that is in the world** is kicked first (refused while a controller is attached,
-  unless `--takeover`), then its tracked lite client is stopped, so a failed kick never leaves
+- **Before touching the worker** it refuses a GE checkpoint, and a controller attached to the
+  worker whether or not it is in the world (a waiting script would resume on the new save),
+  unless `--takeover`.
+- **A worker that is in the world** is kicked first, then its tracked lite client is stopped, so a failed kick never leaves
   it online without a client. The save it had is kept in `conductor/runs/<worker>/saves/`.
 - **Record of the load:** it keeps a copy of what it loaded as
   `conductor/runs/<worker>/saves/<stamp>-loaded.sav`, writes `loaded.json`, and prints
@@ -213,7 +220,11 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 - **MCP:** `execute_code` acquires the bot's control connection for the call and releases it
   when it ends, so an idle MCP session holds no lease. Concurrent calls on one bot share one
   attach (reference-counted; the last one out disconnects, which also stops any background
-  reconnect). A call against a bot that a task or script is driving is refused.
+  reconnect; an acquire waits for a release still closing). A failed attach disconnects its SDK
+  so nothing reconnects unseen. A call against a bot that a task or script is driving is
+  refused. Console output is routed per call with AsyncLocalStorage: only the user's code is
+  captured, overlapping calls keep their own output, and anything else goes to stderr (stdout is
+  the JSON-RPC channel).
 - **Scripts:** `bun bots/<bot>/*.ts` scripts connect without takeover, so they are refused while
   a task runs.
 - **Tests:** `server/gateway/lease.test.ts` runs the real gateway (refusal, observer, takeover,
@@ -226,7 +237,8 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 - Concurrent bot claimants are capped at the worker pool plus the one runner.
 - The pause/stop procedure is in the conductor skill:
   1. `ListAgents`, and stop every subagent.
-  2. `pgrep -af run-task.ts`, and kill any orphan.
+  2. `pgrep -af` with a pattern anchored on the bun process and limited to this run's own bots
+     (the skill has it), and kill those orphans only: other sessions share the machine.
   3. `save.ts snapshot --logout` for the main bot.
   4. Worker clients may keep running.
 
@@ -260,6 +272,6 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 | Worker pool, `load.ts` | done; tested: live fork into a worker with a backup, kick of an online worker, refusal to load into a non-worker, a failed `--create` leaves nothing behind |
 | Gateway lease, SDK `takeover`, MCP release | done; `server/gateway/lease.test.ts` and `sdk/test/controller-lease.test.ts` pass; MCP release not exercised against a live MCP client |
 | Conductor skill, `task-author.md`, task-review fix brief, `CLAUDE.md`, READMEs, learnings | done |
-| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed; round 2 (whole branch again): 32 confirmed, all fixed |
+| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed; round 2 (whole branch again): 32 confirmed, all fixed; round 3: 22 confirmed (1 B in a round-2 MCP fix), all fixed |
 | Shared server running this code | needs a merge to main, then an engine (`up.sh` sets `SAVE_ENDPOINTS=true`) and gateway restart, coordinated with other sessions using the shared stack |
 | Automatic library saves at milestones; per-task failure-branch saves | open (roadmap) |

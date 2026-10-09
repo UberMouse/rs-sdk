@@ -71,7 +71,8 @@ RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read t
 use `bun sdk/cli.ts <worker>`. The lite client `load.ts --client` starts has no pixels, so runs on
 it take no screenshots; when you need them, load without `--client` and run the rendering client
 instead (`bun conductor/tools/client.ts <worker> --headless`), then
-`bun conductor/tools/screenshot.ts <worker>`.
+`bun conductor/tools/screenshot.ts <worker>`. Every later `load.ts` logs that client out for good
+(it auto-logs in once, then exits after 120 s out of the game): stop it, load, then start it again.
 Finish with `bun run verify:conductor` (oxfmt check, oxlint with warnings denied, tsc) and fix
 everything it reports under `conductor/` (`bun run fmt` formats in place). Commits run the same
 format and lint checks on staged files and are refused until they pass.

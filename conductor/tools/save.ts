@@ -19,15 +19,15 @@
 // client afterwards. Local server only, with the Grand Exchange off (conductor/docs/parallel-bots.md).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { parseArgs } from 'node:util';
 import { isLocalServer } from '../../sdk/runner';
-import { loadBotEnv, REPO_ROOT } from '../lib/env';
+import { loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
     exportSave,
     inWorld,
     isBackupLabel,
     LIBRARY_DIR,
+    RESERVED_LABEL_PREFIX,
     listLibrary,
     logOut,
     readLibrarySave,
@@ -37,14 +37,12 @@ import {
     writeLibrarySave,
     writeSave,
 } from '../lib/saves';
-import { errMessage, fail, FILE_STAMP_PREFIX, fileStamp } from '../lib/util';
+import { errMessage, fail, FILE_STAMP_PREFIX, fileStamp, parseCli } from '../lib/util';
 
 const usage =
     'usage: bun conductor/tools/save.ts list|snapshot|restore <bot> [label|lib:<name>|file.sav] [--library --purpose <text> [--replace]] [--logout] [--force] [--takeover]';
-const { values: flags, positionals } = parseArgs({
-    args: process.argv.slice(2),
-    allowPositionals: true,
-    options: {
+const { values: flags, positionals } = parseCli(
+    {
         library: { type: 'boolean' },
         purpose: { type: 'string' },
         replace: { type: 'boolean' },
@@ -52,10 +50,11 @@ const { values: flags, positionals } = parseArgs({
         takeover: { type: 'boolean' },
         force: { type: 'boolean' },
     },
-});
+    usage,
+);
 const [cmd, name, arg] = positionals;
 if (!cmd || !name) fail(usage, 2);
-const env = loadBotEnv(name);
+const env = loadBotEnvOrFail(name);
 if (!isLocalServer(env.server)) fail(`save.ts only works against the local server; ${name} points at ${env.server}`, 2);
 const dir = join(REPO_ROOT, 'conductor/runs', name, 'saves');
 
@@ -136,6 +135,12 @@ try {
         }
         case 'snapshot': {
             if (!arg || !SAVE_NAME.test(arg)) fail('snapshot needs a label of letters, digits and dashes', 2);
+            if (arg.startsWith(RESERVED_LABEL_PREFIX)) {
+                fail(
+                    `snapshot labels starting "${RESERVED_LABEL_PREFIX}" are reserved for the backups restore and load.ts keep`,
+                    2,
+                );
+            }
             const purpose = flags.purpose?.trim();
             if (flags.library && !purpose) fail('--library needs --purpose "<what the save is for>"', 2);
             if (flags.logout && inWorld(await saveStatus(env))) await logOut(env, { takeover: flags.takeover });

@@ -1,13 +1,12 @@
 {
     "name": "fresh-lumbridge",
-    "purpose": "A fresh account just past the tutorial in Lumbridge castle courtyard (3222,3218): every skill 1 except Hitpoints 10, carrying the tutorial's starter inventory (bronze axe, pickaxe, dagger, sword, wooden shield, shortbow + 25 bronze arrows, small fishing net, tinderbox, shrimps, bread, bucket, pot, air/mind/water/earth/body runes), nothing worn, empty bank. Base for tasks that start from nothing.",
+    "purpose": "A fresh account exactly as the tutorial leaves it (tutorial.rs2 tutorial_complete): at (3222,3222) in Lumbridge, every skill 1 except Hitpoints 10, the starter inventory (bronze axe, pickaxe, dagger, sword, wooden shield, shortbow + 25 bronze arrows, small fishing net, tinderbox, shrimps, bread, bucket, pot, air/mind/water/earth/body runes), nothing worn, 25 coins in the bank. Base for tasks that start from nothing.",
     "source": {
         "kind": "generated",
         "spec": {
-            "preset": "LUMBRIDGE_SPAWN",
             "position": {
                 "x": 3222,
-                "z": 3218
+                "z": 3222
             },
             "inventory": [
                 {
@@ -82,16 +81,22 @@
                     "id": 559,
                     "count": 2
                 }
+            ],
+            "bank": [
+                {
+                    "id": 995,
+                    "count": 25
+                }
             ]
         }
     },
-    "sha1": "00798d2a4840387d424087816e1d0983cbfa9c4e",
-    "createdAt": "2026-10-09T10:38:00.614Z",
+    "sha1": "4c7fb1052d5af6c1078a9826f109df8f1a1e166a",
+    "createdAt": "2026-10-09T10:55:27.498Z",
     "saveVersion": 6,
     "summary": {
         "position": {
             "x": 3222,
-            "z": 3218,
+            "z": 3222,
             "level": 0
         },
         "levels": {
@@ -190,7 +195,13 @@
             }
         ],
         "worn": [],
-        "bank": [],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 25
+            }
+        ],
         "varps": {
             "281": 1000
         }

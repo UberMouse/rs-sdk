@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import type { BotSDK } from '../../sdk/index';
 import { waitForLiveClient } from '../../sdk/runner';
 import { MAX_XP } from '../lib/xp';
-import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT } from '../lib/env';
+import { connectSdk, disconnectQuietly, loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
 import { errMessage, fail } from '../lib/util';
 
 const args = process.argv.slice(2);
@@ -24,7 +24,7 @@ interface Snapshot {
     skills: Record<string, { level: number; xp: number }>;
 }
 
-const env = loadBotEnv(name);
+const env = loadBotEnvOrFail(name);
 let sdk: BotSDK | undefined;
 let snap: Snapshot;
 try {

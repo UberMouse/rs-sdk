@@ -59,7 +59,7 @@ For a client you can watch, or that agents can screenshot
 | Tool                           | Description                                    |
 | ------------------------------ | ---------------------------------------------- |
 | `execute_code(bot_name, code)` | Run code on a bot. Auto-connects on first use. |
-| `list_bots()`                  | List connected bots                            |
+| `list_bots()`                  | Bots this session has used (attached only during a call) |
 | `disconnect_bot(name)`         | Disconnect a bot                               |
 
 ### Example

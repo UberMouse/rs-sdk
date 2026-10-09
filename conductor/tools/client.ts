@@ -2,7 +2,7 @@
 //
 //   bun conductor/tools/client.ts <bot>             # visible window: watch it play
 //   bun conductor/tools/client.ts <bot> --headless  # no window, still screenshot-able
-//   --fps=<n>  frame cap (default 15 windowed, 10 headless)
+//   --fps <n>  frame cap (default 15 windowed, 10 headless; --fps=<n> works too)
 //   --gpu      use GPU acceleration (off by default, see below)
 //
 // Unlike the lite runner this client draws the game, so `conductor/tools/screenshot.ts`
@@ -18,22 +18,23 @@ import puppeteer from 'puppeteer';
 import { existsSync } from 'node:fs';
 import { homedir, userInfo } from 'node:os';
 import { join } from 'node:path';
-import { botClientUrl, loadBotEnv, sleep } from '../lib/env';
-import { errMessage, fail } from '../lib/util';
+import { botClientUrl, loadBotEnvOrFail, sleep } from '../lib/env';
+import { errMessage, fail, parseCli } from '../lib/util';
 
-const args = process.argv.slice(2);
-const name = args.find(a => !a.startsWith('-'));
-if (!name) {
-    fail('usage: bun conductor/tools/client.ts <bot> [--headless] [--fps=<n>] [--gpu]', 2);
-}
-const headless = args.includes('--headless');
-const gpu = args.includes('--gpu');
-const fpsArg = args.find(a => a.startsWith('--fps='));
-const fps = fpsArg ? Number(fpsArg.slice('--fps='.length)) : headless ? 10 : 15;
+const usage = 'usage: bun conductor/tools/client.ts <bot> [--headless] [--fps <n>] [--gpu]';
+const { values: flags, positionals } = parseCli(
+    { headless: { type: 'boolean' }, gpu: { type: 'boolean' }, fps: { type: 'string' } },
+    usage,
+);
+const [name] = positionals;
+if (!name || positionals.length > 1) fail(usage, 2);
+const headless = flags.headless ?? false;
+const gpu = flags.gpu ?? false;
+const fps = flags.fps !== undefined ? Number(flags.fps) : headless ? 10 : 15;
 if (!Number.isInteger(fps) || fps < 1) {
-    fail(`bad ${fpsArg}: expected a positive integer`, 2);
+    fail(`bad --fps ${flags.fps}: expected a positive integer`, 2);
 }
-const env = loadBotEnv(name);
+const env = loadBotEnvOrFail(name);
 
 const CHROME_CANDIDATES = [
     process.env.CHROME_PATH,

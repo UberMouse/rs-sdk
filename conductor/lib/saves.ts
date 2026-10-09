@@ -133,7 +133,11 @@ export async function saveStatus(env: BotEnv): Promise<SaveStatus> {
     }
     const bytes = new Uint8Array(await res.arrayBuffer());
     verifySave(bytes);
-    return { source, path, bytes, sha1: sha1(bytes) };
+    const hash = sha1(bytes);
+    const sent = res.headers.get('x-save-sha1');
+    if (sent && sent !== hash)
+        throw new Error(`GET /save/${env.username}: body does not match X-Save-Sha1 (truncated?)`);
+    return { source, path, bytes, sha1: hash };
 }
 
 /** Is the player in the world (online, or its logout save still in flight)? */
@@ -172,10 +176,14 @@ export async function logOut(env: BotEnv, { takeover = false } = {}): Promise<vo
     if (!(await kick(env))) throw new Error(`${env.username} did not log out (in combat, or still busy); try again`);
 }
 
-/** The filename label writeSave gives the backup of a save it replaces. */
-export const backupLabel = (label: string) => `pre-${label}`;
+/** The labels writeSave is called with; its backups are `pre-<label>`, a prefix reserved for them. */
+const WRITE_LABELS = ['restore', 'load', 'write'] as const;
+type WriteLabel = (typeof WRITE_LABELS)[number];
+const backupLabel = (label: WriteLabel) => `pre-${label}`;
 /** Is this snapshot label one of writeSave's backups? */
-export const isBackupLabel = (label: string) => label.startsWith('pre-');
+export const isBackupLabel = (label: string) => WRITE_LABELS.some(l => backupLabel(l) === label);
+/** `pre-` labels are reserved for writeSave's backups; a user snapshot can't take one. */
+export const RESERVED_LABEL_PREFIX = 'pre-';
 
 /**
  * Log the player out server-side and wait until its save is on disk (POST /kick). Returns false
@@ -206,8 +214,9 @@ export function atomicWrite(dest: string, bytes: Uint8Array): void {
 /**
  * Make `bytes` the player's save, at the path the engine reads, then check through the engine that
  * it now serves exactly these bytes. Refuses while the player is in the world (kick() first) or when
- * a GE checkpoint would win. With `backupDir`, the save it replaces is kept there first as
- * `<stamp>-pre-<label>.sav`. Returns the path written and the backup, if one was taken.
+ * a GE checkpoint would win. The save it replaces is kept first as `<stamp>-pre-<label>.sav` in a
+ * `conductor-backups/` directory beside the engine's save (it outlives the worktree that ran the
+ * tool) and, with `backupDir`, there too. Returns the path written and the backup, if one was taken.
  */
 export async function writeSave(
     env: BotEnv,
@@ -218,7 +227,7 @@ export async function writeSave(
         onWrite,
     }: {
         backupDir?: string;
-        label?: string;
+        label?: WriteLabel;
         /** Called just before the save file is written. */ onWrite?: () => void;
     } = {},
 ): Promise<{ path: string; backup?: string }> {
@@ -232,9 +241,14 @@ export async function writeSave(
         );
     }
     let backup: string | undefined;
-    if (backupDir && before.source !== 'none') {
-        backup = join(backupDir, `${fileStamp()}-${backupLabel(label)}.sav`);
+    if (before.source !== 'none') {
+        const file = `${fileStamp()}-${backupLabel(label)}.sav`;
+        backup = join(dirname(before.path), 'conductor-backups', env.username.toLowerCase(), file);
         atomicWrite(backup, before.bytes);
+        if (backupDir) {
+            backup = join(backupDir, file);
+            atomicWrite(backup, before.bytes);
+        }
     }
     onWrite?.();
     atomicWrite(before.path, bytes);
@@ -453,8 +467,18 @@ export function writeLibrarySave(
         saveVersion,
         summary,
     };
-    atomicWrite(paths.sav, bytes);
-    atomicWrite(paths.json, new TextEncoder().encode(`${JSON.stringify(entry, null, 4)}\n`));
+    // A replace keeps the old pair in memory and puts it back if either write fails.
+    const old = [paths.sav, paths.json].map(p => (existsSync(p) ? { p, bytes: readFileSync(p) } : { p }));
+    try {
+        atomicWrite(paths.sav, bytes);
+        atomicWrite(paths.json, new TextEncoder().encode(`${JSON.stringify(entry, null, 4)}\n`));
+    } catch (e) {
+        for (const o of old) {
+            if (o.bytes) atomicWrite(o.p, o.bytes);
+            else rmSync(o.p, { force: true });
+        }
+        throw e;
+    }
     return entry;
 }
 

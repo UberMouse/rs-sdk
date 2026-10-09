@@ -44,7 +44,7 @@ afterAll(() => gateway?.kill());
 type Reply = { type: string; code?: string; error?: string };
 
 /** Open an SDK socket for `bot`, send sdk_connect, and resolve with the gateway's first reply. */
-async function connect(bot: string, mode: 'control' | 'observe', takeover?: boolean) {
+async function connect(bot: string, mode: 'control' | 'observe', takeover?: boolean, clientId = `test-${mode}`) {
     const ws = new WebSocket(`ws://127.0.0.1:${port}`);
     await new Promise<void>((resolve, reject) => {
         ws.onopen = () => resolve();
@@ -53,7 +53,7 @@ async function connect(bot: string, mode: 'control' | 'observe', takeover?: bool
     const reply = new Promise<Reply>(resolve => {
         ws.onmessage = e => resolve(JSON.parse(String(e.data)));
     });
-    ws.send(JSON.stringify({ type: 'sdk_connect', username: bot, clientId: `test-${mode}`, mode, takeover }));
+    ws.send(JSON.stringify({ type: 'sdk_connect', username: bot, clientId, mode, takeover }));
     return { ws, reply: await reply };
 }
 
@@ -71,11 +71,12 @@ async function expectControllers(bot: string, n: number): Promise<void> {
 
 describe('controller lease', () => {
     test('a second controller is refused and the first keeps the lease', async () => {
-        const first = await connect('lease1', 'control');
+        const first = await connect('lease1', 'control', false, 'holder-1');
         expect(first.reply.type).toBe('sdk_connected');
-        const second = await connect('lease1', 'control');
+        const second = await connect('lease1', 'control', false, 'requester-2');
         expect(second.reply).toMatchObject({ type: 'sdk_error', code: 'controller_busy' });
-        expect(second.reply.error).toContain('test-control');
+        expect(second.reply.error).toContain('holder-1'); // names who holds it, not who asked
+        expect(second.reply.error).not.toContain('requester-2');
         await expectControllers('lease1', 1);
         first.ws.close();
     });

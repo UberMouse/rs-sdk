@@ -17,10 +17,9 @@
 // Grand Exchange off.
 import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { parseArgs } from 'node:util';
 import { isLocalServer } from '../../sdk/runner';
 import { startLiteClient, stopLiteClient } from '../lib/client';
-import { loadBotEnv, REPO_ROOT } from '../lib/env';
+import { controllerCount, loadBotEnv, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
     exportSave,
@@ -32,15 +31,14 @@ import {
     verifySave,
     writeSave,
 } from '../lib/saves';
-import { errMessage, fail, fileStamp } from '../lib/util';
+import { errMessage, fail, fileStamp, parseCli } from '../lib/util';
 
 const usage =
     'usage: bun conductor/tools/load.ts <worker> <lib:<name>|bot:<bot>|file.sav> [--client] [--create] [--takeover]';
-const { values: flags, positionals } = parseArgs({
-    args: process.argv.slice(2),
-    allowPositionals: true,
-    options: { client: { type: 'boolean' }, create: { type: 'boolean' }, takeover: { type: 'boolean' } },
-});
+const { values: flags, positionals } = parseCli(
+    { client: { type: 'boolean' }, create: { type: 'boolean' }, takeover: { type: 'boolean' } },
+    usage,
+);
 const [worker, source] = positionals;
 if (!worker || !source) fail(usage, 2);
 
@@ -64,16 +62,16 @@ async function resolveSource(spec: string): Promise<{ bytes: Uint8Array; from: s
         const save = await exportSave(loadBotEnv(spec.slice(4)));
         return { bytes: save.bytes, from: `${spec} (${save.source})` };
     }
-    if (spec.endsWith('.sav')) {
-        const path = resolve(spec);
-        if (!existsSync(path) || !statSync(path).isFile()) fail(`no save file at ${path}`);
-        const bytes = new Uint8Array(readFileSync(path));
-        verifySave(bytes);
-        return { bytes, from: path };
+    if (spec.startsWith('lib:')) {
+        const { bytes, entry } = readLibrarySave(spec.slice(4));
+        return { bytes, from: `lib:${entry.name}` };
     }
-    if (!spec.startsWith('lib:')) fail(`unknown source "${spec}": use lib:<name>, bot:<bot> or a path ending .sav`, 2);
-    const { bytes, entry } = readLibrarySave(spec.slice(4));
-    return { bytes, from: `lib:${entry.name}` };
+    if (!spec.endsWith('.sav')) fail(`unknown source "${spec}": use lib:<name>, bot:<bot> or a path ending .sav`, 2);
+    const path = resolve(spec);
+    if (!existsSync(path) || !statSync(path).isFile()) fail(`no save file at ${path}`);
+    const bytes = new Uint8Array(readFileSync(path));
+    verifySave(bytes);
+    return { bytes, from: path };
 }
 
 const botDir = join(REPO_ROOT, 'bots', worker);
@@ -103,7 +101,27 @@ try {
     const { bytes, from } = await resolveSource(source);
 
     // Log out before stopping the client: a failed logout (combat) then leaves the worker attended.
-    if (inWorld(status)) await logOut(env, { takeover: flags.takeover });
+    // Every refusal comes before the worker is touched.
+    if (status.source === 'checkpoint') {
+        fail(
+            `${worker} has a Grand Exchange checkpoint that would win over any load; retire data/market.sqlite (conductor/docs/parallel-bots.md)`,
+        );
+    }
+    // A script can be attached to an offline worker too, waiting for its client: it would resume on the new save.
+    if (!flags.takeover) {
+        let controllers: number;
+        try {
+            controllers = await controllerCount(env);
+        } catch (e) {
+            fail(`could not check ${worker} for a running controller (${errMessage(e)})`);
+        }
+        if (controllers > 0) {
+            fail(
+                `${worker} is controlled by a running task or script; wait for it to finish, or pass --takeover if that run is yours`,
+            );
+        }
+    }
+    if (inWorld(status)) await logOut(env, { takeover: true }); // controllers checked above
     await stopLiteClient(worker);
     const runDir = join(REPO_ROOT, 'conductor/runs', worker);
     const { path, backup } = await writeSave(env, bytes, {

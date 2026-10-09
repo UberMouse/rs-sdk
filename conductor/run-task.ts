@@ -6,8 +6,8 @@
 //   <stop>: level:<skill>:<n> | xp:<skill>:<n> | minutes:<n>   (any one ends the run)
 //
 // The last stdout line is always `RESULT <json>` (a TaskResult). Exit 0 for
-// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first). Refuses to start when another controller already
-// drives the bot, unless --takeover. A game client must already be attached
+// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first).
+// Refuses to start when another controller already drives the bot, unless --takeover. A game client must already be attached
 // (conductor/tools/client.ts or the lite runner).
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';

@@ -199,9 +199,11 @@ report, and they are reviewed and committed with the task.
 1. `ListAgents`, and stop **every** subagent, not only the ones in `inFlight`: a review
    orchestrator's fix author is not in `inFlight` and keeps driving its bot when its parent
    stops.
-2. Find this run's leftover tasks, and only those: `pgrep -af "run-task.ts (<bot>|<worker1>|<worker2>|<worker3>) "`
-   with the main bot and the `workers` names. A match is an orphan still driving one of your bots:
-   `kill <pid>` (it prints its RESULT on SIGTERM) and journal it. Other sessions share this
+2. Find this run's leftover tasks, and only those:
+   `pgrep -af "^[^ ]*bun (run )?[^ ]*run-task\.ts (<bot>|<worker1>|<worker2>|<worker3>) "` with the main bot
+   and the `workers` names. The `^...bun` anchor matches the bun process itself, not the shell that
+   launched it (whose command line also contains the command). A match is an orphan still driving
+   one of your bots: `kill <pid>` (it prints its RESULT on SIGTERM) and journal it. Other sessions share this
    machine and server: never kill a `run-task.ts` on a bot that isn't yours.
 3. `save.ts snapshot <bot> <label> --logout` for the main bot.
 4. Worker lite clients keep running detached and their accounts stay logged in; workers hold

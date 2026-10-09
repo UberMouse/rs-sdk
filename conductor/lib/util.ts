@@ -1,3 +1,4 @@
+import { parseArgs, type ParseArgsConfig } from 'node:util';
 import type { BotWorldState } from '../../sdk/types';
 import type { Counter } from './task';
 
@@ -11,6 +12,15 @@ export function errMessage(e: unknown): string {
 export function fail(message: string, code = 1): never {
     console.error(message);
     process.exit(code);
+}
+
+/** parseArgs for CLI tools: an unknown or malformed flag is a usage error (exit 2), not a stack trace. */
+export function parseCli<T extends ParseArgsConfig['options']>(options: T, usage: string) {
+    try {
+        return parseArgs({ args: process.argv.slice(2), allowPositionals: true, options });
+    } catch (e) {
+        fail(`${errMessage(e)}\n${usage}`, 2);
+    }
 }
 
 /** Skill by name, ignoring case (`--until level:woodcutting:15` vs the game's "Woodcutting"). */
