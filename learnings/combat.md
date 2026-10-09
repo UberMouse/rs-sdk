@@ -58,7 +58,7 @@ const isAnimating = (state?.player?.animId ?? -1) !== -1;
 |----------|-------------|---------|-------|
 | Lumbridge cows | (3253, 3290) | Cows | Safe, good for all levels. South gate at (3253, 3266) |
 | Lumbridge goblins | (3252, 3230) | Goblins, rats | Mixed enemies. Cluster runs NE from here — nothing at the old (3240, 3220) waypoint |
-| Lumbridge chickens | (3231, 3295), radius 8 | Chickens | Very safe, feathers drop; verified to combat 13 ([strength](../wiki/skills/strength.md#verified-training-spots)) |
+| Lumbridge chickens | (3231, 3295), radius 8 | Chickens | Very safe, feathers drop; verified to combat 21 ([strength](../wiki/skills/strength.md#verified-training-spots)) |
 | Al Kharid warriors | ~(3293, 3170) | `Al-Kharid warrior` (lvl 9) | Faster XP, kebabs nearby for food, can hit hard via multicombat vs low combat levels. |
 
 ## Cow Field Details (Proven from 200+ kills)
