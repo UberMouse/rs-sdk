@@ -44,15 +44,15 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 
 - Arrowheads can be smithed or purchased.
 
-## Crossbow Bolt Tips
+## Crossbow Bolts
 
-| Tip | Fletching Level |
-|-----|----------------|
-| Opal | 17 |
-| Pearl | 34 |
-| Barbed | 51 (buy from Ranging Guild) |
-
-- Opal and Pearl tips are cut with a chisel from the gems.
+| Step | Fletching Level | XP |
+|------|----------------|----|
+| Cut opal bolt tips (chisel) | 11 | 1.5 |
+| Cut oyster pearl bolt tips (chisel) | 41 | 3.2 |
+| Attach opal tips to bolts | 11 | 1.6 |
+| Attach pearl tips to bolts | 41 | 3.2 |
+| Attach barbed tips to bolts (barbed tips: Ranging Guild) | 51 | 9.5 |
 
 ## Throwing Darts
 
@@ -62,3 +62,14 @@ Requires completion of **The Tourist Trap** quest.
 2. Add feathers to tips
 
 Dart types range from Bronze (1 Ranged) to Rune (40 Ranged).
+
+| Dart | Fletching Level | XP |
+|------|----------------|----|
+| Bronze | 1 | 1.8 |
+| Iron | 22 | 3.8 |
+| Steel | 37 | 7.5 |
+| Mithril | 52 | 11.2 |
+| Adamant | 67 | 15 |
+| Rune | 81 | 18.8 |
+
+Levels checked against `server/content/scripts/skill_fletching/configs/{cut_logs/cut_logs.dbrow,stringing/bows.dbrow,arrows/arrows.dbrow,bolts/bolts.dbrow,darts/darts.dbrow}` (bow cut/string levels and arrow levels match; bolt-tip levels fixed; dart levels added) and bow wield levels against `server/content/scripts/levelrequire/scripts/tier*.rs2`. XP is in tenths in the dbrows. The Tourist Trap dart requirement and rune dart Ranged 40 are unverified (darts.rs2 only has a todo). [v 2026-10-09 conductor1 local]

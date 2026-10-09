@@ -15,19 +15,24 @@ Mining is used to extract ores and metals from rocks. Requires a pickaxe (availa
 
 ## Ores
 
-| Level | Ore | Notable Locations |
-|-------|-----|-------------------|
-| 1 | Rune essence | Varrock, Yanille rune essence mines |
-| 1 | Tin | SW Varrock, SE Varrock, Rimmington |
-| 1 | Copper | SW Varrock, SE Varrock, Rimmington |
-| 10 | Iron | Asgarnian Ice Dungeon, Al Kharid |
-| 15 | Silver | SE Varrock, Fight Arena, Al Kharid |
-| 20 | Coal | Al Kharid, SW Varrock, Crafting Guild |
-| 30 | Gold | Dwarven Mine, Coal Trucks, Barbarian Village, Mining Guild |
-| 40 | Mithril | North Brimhaven, Crafting Guild |
-| 40 | Gems | Shilo Village (requires Shilo Village quest) |
-| 55 | Adamantite | Al Kharid, Fight Arena, West Lumbridge Swamp, Mining Guild |
-| 70 | Runite | Al Kharid, West Lumbridge Swamp, Grand Tree, Desert Mining Camp |
+| Level | Ore | XP | Notable Locations |
+|-------|-----|----|-------------------|
+| 1 | Rune essence | 5 | Varrock, Yanille rune essence mines |
+| 1 | Clay | 5 | |
+| 1 | Tin | 17.5 | SW Varrock, SE Varrock, Rimmington |
+| 1 | Copper | 17.5 | SW Varrock, SE Varrock, Rimmington |
+| 10 | Blurite | 17.5 | |
+| 10 | Limestone | 26.5 | |
+| 15 | Iron | 35 | Asgarnian Ice Dungeon, Al Kharid |
+| 20 | Silver | 40 | SE Varrock, Fight Arena, Al Kharid |
+| 30 | Coal | 50 | Al Kharid, SW Varrock, Crafting Guild |
+| 40 | Gold | 65 | Dwarven Mine, Coal Trucks, Barbarian Village, Mining Guild |
+| 40 | Gems | 65 | Shilo Village (requires Shilo Village quest) |
+| 55 | Mithril | 80 | North Brimhaven, Crafting Guild |
+| 70 | Adamantite | 95 | Al Kharid, Fight Arena, West Lumbridge Swamp, Mining Guild |
+| 85 | Runite | 125 | Al Kharid, West Lumbridge Swamp, Grand Tree, Desert Mining Camp |
+
+Levels and XP (`rock_level`, `rock_exp` in tenths) from `server/content/scripts/skill_mining/configs/mine.dbrow`; pickaxe levels from `pickaxes.obj` (`levelrequire`, iron is 0 = no requirement). Locations column is unverified. [v 2026-10-09 conductor1 local]
 
 ## Mining Guild
 

@@ -6,9 +6,9 @@ Crafting covers a wide range of item creation: pottery, leather armour, jewelry,
 
 | Item | Level | XP | Process |
 |------|-------|----|---------|
-| Pot | 1 | 6.3 | Soft clay → Potter's wheel → Pottery oven |
-| Pie dish | 7 | 10 | Soft clay → Potter's wheel → Pottery oven |
-| Bowl | 8 | 15 | Soft clay → Potter's wheel → Pottery oven |
+| Pot | 1 | 6.3 (+6.3 shaping) | Soft clay → Potter's wheel → Pottery oven |
+| Pie dish | 7 | 10 (+15 shaping) | Soft clay → Potter's wheel → Pottery oven |
+| Bowl | 8 | 15 (+18 shaping) | Soft clay → Potter's wheel → Pottery oven |
 
 - **Materials:** Mine clay, use water on it to soften
 - **Location:** Potter's wheel and oven in Barbarian Village
@@ -22,7 +22,10 @@ Crafting covers a wide range of item creation: pottery, leather armour, jewelry,
 | Leather body | 14 | Normal leather |
 | Leather chaps | 18 | Normal leather |
 | Hardleather body | 28 | Hard leather |
-| Studded body | 36 | Studded leather (add steel studs) |
+| Leather vambraces | 11 | Normal leather |
+| Leather cowl | 9 | Normal leather |
+| Coif | 38 | Normal leather |
+| Studded body | 41 | Studded leather (add steel studs) |
 | Studded chaps | 44 | Studded leather (add steel studs) |
 | Green d'hide body | 63 | Green dragonhide |
 | Blue d'hide body | 71 | Blue dragonhide |
@@ -56,7 +59,7 @@ Smelt a gold bar with a mould at a furnace. Gems can be added for bonus stats.
 | Gold ring | 5 | Ring mould | None |
 | Sapphire ring | 20 | Ring mould | Sapphire |
 | Gold necklace | 6 | Necklace mould | None |
-| Sapphire necklace | 22 | Necklace mould | Sapphire |
+| Sapphire necklace | 20 | Necklace mould | Sapphire |
 | Gold amulet (u) | 8 | Amulet mould | None |
 | Sapphire amulet | 24 | Amulet mould | Sapphire |
 | Emerald ring | 27 | Ring mould | Emerald |
@@ -89,13 +92,14 @@ Smelt a gold bar with a mould at a furnace. Gems can be added for bonus stats.
 2. Combine soda ash + bucket of sand at furnace → Molten glass
 3. Use glass-blowing pipe on molten glass
 
+- Glassblowing levels: beer glass 1 (17.5 XP), vial 33 (35), unpowered orb 46 (52.5); melting glass 20 XP.
 - **Seaweed:** Big net fishing or Entrana Island
 - **Sand:** Bucket from sandpit
 - **Glass-blowing pipe:** Entrana
 
 ## Bowstrings
 
-Spin flax on a spinning wheel to create bowstrings. Good XP and useful for Fletching.
+Spin flax on a spinning wheel to create bowstrings (level 10, 15 XP each; wool to ball of wool needs no level, 2.5 XP). Useful for Fletching.
 
 ## Battlestaves (Members)
 
@@ -115,3 +119,5 @@ Spin flax on a spinning wheel to create bowstrings. Good XP and useful for Fletc
 - **Location:** West of Port Sarim, north of Rimmington
 - **Requirement:** 40 Crafting + Brown apron equipped
 - **Features:** Pottery oven, wheels, spinning wheels, gold/silver rocks, tanner
+
+Levels checked against `server/content/scripts/skill_crafting/configs/{leather/leather.dbrow,studded/studded.struct,gem/gem.dbrow,jewellery/jewellery.struct,pottery/pottery.struct,battlestaves/battlestaves.struct,glass/glass.struct,spinning/spinning.struct}` (XP there is in tenths). Studded body and sapphire necklace were wrong and are fixed; all other levels in this page match. Pottery XP column is the firing XP; Magic levels for staves and the guild/process notes are unchecked. [v 2026-10-09 conductor1 local]

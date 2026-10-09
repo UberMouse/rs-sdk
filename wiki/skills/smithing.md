@@ -43,11 +43,14 @@ Use bars on an anvil with a hammer in your inventory.
 
 ### Bars Per Item
 
-- Most items: 1 bar
-- Kite shield, chainbody: 3 bars
-- 2h sword: 3 bars
-- Plateskirt/Platelegs: 3 bars
-- Platebody: 5 bars
+- 1 bar: dagger, axe, mace, med helm, sword (also knife, dart tips, arrowheads, nails)
+- 2 bars: scimitar, longsword, full helm, square shield
+- 3 bars: warhammer, battleaxe, chainbody, kite shield, 2h sword, plateskirt, platelegs
+- 5 bars: platebody
+
+Smelt XP per bar (`productexp` in tenths): bronze 6.2, iron 12.5, silver 13.7, steel 17.5, gold 22.5, mithril 30, adamant 37.5, runite 50.
+
+Smelting levels checked against `server/content/scripts/skill_smithing/configs/smelting/smelting.struct`; forging levels and bar counts against `configs/smithing/smithing.dbrow` (all 6 metals x all 17 items match the table; fixed the bar counts). Iron 50% success confirmed in `scripts/smelting/smelting.rs2`. [v 2026-10-09 conductor1 local]
 
 ## Special Items
 

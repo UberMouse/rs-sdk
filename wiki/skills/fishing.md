@@ -34,6 +34,8 @@ Fishing catches raw fish that can be cooked for food. Different fishing methods 
 | 79 | Sea turtle | 57 | Trawler | Mini-game |
 | 81 | Manta ray | 69 | Trawler | Mini-game |
 
+Levels and XP checked against `server/content/scripts/skill_fishing/scripts/fishing_spots/*.rs2` (level gates, mackerel 16 / cod 23 / bass 46 and their XP inline in `memberfish.rs2`) and `configs/fishing.struct` (`productexp`, tenths); the Fishing Guild's 68 against `fishing_guild.rs2`. All rows match; equipment/spot-type columns and locations unchecked. [v 2026-10-09 conductor1 local]
+
 ## Fishing Locations
 
 | Location | Spot Types | Members |

@@ -11,6 +11,7 @@ Right-click an NPC and select "Pickpocket". Higher Thieving level reduces detect
 | Man/Woman | 1 | 3 gp |
 | Farmer | 10 | 9 gp, seeds |
 | Warrior | 25 | 18 gp |
+| Rogue | 32 | |
 | Guard | 40 | 30 gp |
 | Knight | 55 | 50 gp |
 | Paladin | 70 | 80 gp, 2 chaos runes |
@@ -34,7 +35,7 @@ Steal from stalls when nearby NPCs aren't looking. Located mainly in Ardougne.
 
 | Chest | Level | Location | Loot |
 |-------|-------|----------|------|
-| 10 gp chest | 1 | East Ardougne, Magic Axe Hut, Pirates' Hideout | 10 gp |
+| 10 gp chest | 13 | East Ardougne, Magic Axe Hut, Pirates' Hideout | 10 gp |
 | Nature rune chest | 28 | East Ardougne, Pirates' Hideout | 3 nature runes |
 | 50 gp chest | 43 | Ardougne, Pirates' Hideout | 50 gp |
 | Steel arrowtips chest | 47 | Hemenster | 5 steel arrowtips |
@@ -46,3 +47,5 @@ Steal from stalls when nearby NPCs aren't looking. Located mainly in Ardougne.
 - Lockpicks are a rare reward from pickpocketing Rogues.
 - Traps on chests must be disarmed before opening.
 - Ardougne is the main hub for Thieving training with stalls and NPCs close together.
+
+Levels checked against `server/content/scripts/skill_thieving/configs/{pickpocking/pickpocket.dbrow,stalls/stealing.dbrow,chests/trapped_chest.dbrow}`; the 10 gp chest was listed as level 1, engine says 13; all other levels match. Loot columns unchecked. [v 2026-10-09 conductor1 local]
