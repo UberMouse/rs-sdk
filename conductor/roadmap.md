@@ -8,8 +8,15 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-09T07:58Z: total level 189 (WC 63, FM 53, Att 17, HP 17, Str 13, Prayer 10, Def 4, rest 1).
-Catalog: `woodcutting`, `shop`, `combat`, `firemaking` (all reviewed, committed).
+State at 2026-10-09T08:41Z (run 1 paused): total level 310 (WC 70, FM 54, Mining 46, Fletching 35,
+HP 22, Def 21, Str 19, Att 17, Prayer 16, rest 1). conductor1 logged out at the SE Varrock mine
+(snapshot `pause-1`); bank at Varrock West holds 16 longbows, 2 knives, an uncut ruby, 309 shafts.
+Catalog, reviewed: `woodcutting`, `shop`, `combat`, `firemaking`, `pickup`, `fletching`.
+Committed WITHOUT a finished task-review (run 1 was paused mid-review) — review before relying on them:
+- `bank` — smoke-tested; review stopped in round 1; depositAllExcept never run live.
+- `smithing` — never smoke-tested; furnace/anvil coordinates unconfirmed.
+- `mining` — smoke-tested; review stopped in round 2 with 6 verified C findings unfixed.
+- lib `TICK_MS` + engine idle poll + woodcutting drop-mode fix — review stopped at final verify.
 
 - Loop woodcutting (~300k XP/hr) -> firemaking (~810k XP/hr) for logs/XP; both are the fastest
   methods the account has. Combat is the slowest (Attack 41k/hr, Strength 45k/hr, HP 13k/hr).
