@@ -34,6 +34,13 @@ interface BankMemory {
      * The deposit or withdrawal under way: its index and how many of its item the inventory held before
      * its first send. An abort can land after the transfer did, so a resumed step counts what moved
      * since then and sends only the rest.
+     *
+     * The baseline is the inventory count, so it is approximate when a guard's eat consumes the very
+     * item being banked between the abort and the resume: a deposit then looks that much further along
+     * than it is and under-delivers by the eaten amount, and a withdrawal looks that much less along and
+     * over-pulls by it (the inventory still ends at the requested count). Neither exceeds the op's
+     * amount. Comparing against the bank-side count would not see the eat, but it is only published
+     * while the bank is open and noted withdrawals change it by name, so the inventory count is kept.
      */
     inFlight: { opIndex: number; heldBefore: number } | null;
 }
@@ -58,12 +65,12 @@ const operationsOf = (params: BankParams): Operation[] => [
 const nextOp = (ctx: Ctx): Operation | undefined => operationsOf(ctx.params)[ctx.memory.opsMade];
 
 /**
- * How many of `item` an earlier, aborted run of the current operation already moved (out of the
- * inventory for a deposit, into it for a withdrawal), recording the inventory count before the first
- * send otherwise. Null when this is the operation's first run. Never negative: an eat between the abort
+ * Records the inventory count of `item` as the current operation's baseline on its first run (returning
+ * null), and on a later run returns how many an earlier, aborted run already moved (out of the
+ * inventory for a deposit, into it for a withdrawal). Never negative: an eat between the abort
  * and the resume (the item is food) must not make the resumed step ask for more than the operation.
  */
-function movedBefore(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: string }): number | null {
+function recordOrMoved(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: string }): number | null {
     const held = invCount(ctx.state(), op.item);
     const { inFlight, opsMade } = ctx.memory;
     if (inFlight?.opIndex !== opsMade) {
@@ -76,7 +83,7 @@ function movedBefore(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: string 
 /** Returns a failure message, or null when the operation went through. */
 function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     if (op.kind === 'deposit') {
-        const moved = movedBefore(ctx, op);
+        const moved = recordOrMoved(ctx, op);
         // A resumed deposit-all is done once none is left; a counted one sends only the remainder.
         const amount = op.count === undefined ? 'all' : op.count - (moved ?? 0);
         const left = invCount(ctx.state(), op.item);
@@ -101,7 +108,7 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
         }
         return null;
     }
-    const moved = movedBefore(ctx, op) ?? 0;
+    const moved = recordOrMoved(ctx, op) ?? 0;
     const want = op.count - moved;
     if (want <= 0) {
         yield* log(`withdraw ${op.item} x${op.count}: ${moved} already withdrawn before the step was cut off`);
