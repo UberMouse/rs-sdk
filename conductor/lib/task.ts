@@ -15,6 +15,7 @@ import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Op, Outcome } from '../core/op';
 import type { AllowableGuard, TaskGuard } from './interrupts';
+import { TICK_MS } from './util';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -62,6 +63,12 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     previousPos: { x: number; z: number } | null;
     /** Where the walkTo op gets its routes (ActionContext); unset, the SDK's collision data. */
     readonly pathfinder?: Pathfinder;
+    /**
+     * Ticks the running generator step (or guard op) has left of its budget (stepBudgetTicks): waiting
+     * this many more is within it, one more ends the run `stuck`. Undefined outside one. An op that
+     * waits long (walkTo) caps itself to it (ActionContext).
+     */
+    stepTicksLeft(): number | undefined;
 }
 
 export interface Step<P = unknown, M extends object = UntypedMemory> {
@@ -115,6 +122,9 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     stepTimeoutMs?: number;
 }
+
+/** A generator step's tick budget: its `stepTimeoutMs` in ticks, rounded up, as the engine enforces it. */
+export const stepBudgetTicks = (stepTimeoutMs: number): number => Math.ceil(stepTimeoutMs / TICK_MS);
 
 export function defineTask<S extends z.ZodType, M extends object = UntypedMemory>(def: TaskDef<S, M>): TaskDef<S, M> {
     return def;

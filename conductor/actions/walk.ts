@@ -12,7 +12,8 @@
 //   whose client stops publishing ticks); openDoorAt's 8 s wait is DOOR_OPEN_TICKS.
 // - The whole walk has a tick budget (walkBudgetTicks, from the first route's length), where upstream is
 //   bounded only by its 50 route queries; past it the walk ends `timeout` where it stands, and walking
-//   again carries on from there.
+//   again carries on from there. Inside a task step the budget is also capped to the step's ticks left
+//   less `reserveTicks`, so a step that walks never overruns its own budget; with none left it is `no-time`.
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { log, type Op, send, wait } from '../core/op';
@@ -45,8 +46,10 @@ const RUN_TILES_PER_TICK = 2;
 /** A leg has stopped when the bot has not moved for this many ticks. */
 const STOPPED_TICKS = 2;
 const MIN_LEG_TICKS = 3;
-/** The most ticks one walk takes: below every walking step's budget (smithing's 90 s is the least). */
+/** The most ticks one walk takes, whatever its route; a step's ticks left may cap it lower (WalkOptions). */
 export const WALK_MAX_TICKS = 200;
+/** Ticks a walk leaves its step by default: enough to act on the result (a log, a count) and return. */
+export const WALK_RESERVE_TICKS = 3;
 /** A walk's ticks on top of its route's: one door taking both open attempts and the walk beside it. */
 export const WALK_BASE_TICKS = 2 * DOOR_OPEN_TICKS + 20;
 /** Ticks per tile of route: walking pace (1 tile a tick) with as much again for slack. */
@@ -60,13 +63,27 @@ export type WalkResult =
     | { ok: true; message: string }
     | {
           ok: false;
-          reason: 'bad-coordinates' | 'no-player' | 'no-path' | 'dead-end' | 'stuck' | 'gave-up' | 'timeout';
+          reason:
+              | 'bad-coordinates'
+              | 'no-player'
+              | 'no-path'
+              | 'dead-end'
+              | 'stuck'
+              | 'gave-up'
+              | 'timeout'
+              | 'no-time';
           message: string;
       };
 
 export interface WalkOptions {
     /** The most ticks the walk may take; default WALK_MAX_TICKS. */
     maxTicks?: number;
+    /**
+     * Ticks the step still needs once the walk is over (the op and waits that follow it); default
+     * WALK_RESERVE_TICKS. The walk takes at most the step's ticks left (ActionContext.stepTicksLeft) less
+     * these, so the step finishes inside its tick budget instead of the engine ending the run `stuck`.
+     */
+    reserveTicks?: number;
 }
 
 /** The tick budget of a walk whose first route is `tiles` long (a partial one to the destination), capped at `maxTicks`. */
@@ -113,7 +130,9 @@ function* pause(w: Walk, n: number): Op<void> {
  * waypoint at a time, opening the doors and gates on the way. A route that stops short is walked once
  * (doors open and the map loads along it); stopping at the same tile again is `dead-end`. `stuck` is
  * no closer after three routes and no door to open; `no-path` is no route at all; `gave-up` is 50 routes
- * without arriving; `timeout` is the tick budget spent (walkBudgetTicks), wherever the bot then stands.
+ * without arriving; `timeout` is the tick budget spent (walkBudgetTicks, capped to the step's ticks left
+ * less `reserveTicks`), wherever the bot then stands; `no-time` is a step with no ticks left to walk in,
+ * nothing sent.
  */
 export function* walkTo(
     ctx: ActionContext,
@@ -134,7 +153,16 @@ export function* walkTo(
     let pos = posOf(start.player);
     if (dist(pos, target) <= tolerance) return { ok: true, message: 'Already at destination' };
 
-    const maxTicks = opts.maxTicks ?? WALK_MAX_TICKS;
+    // The step's budget caps the walk's, keeping back what the step does after it.
+    const left = ctx.stepTicksLeft?.();
+    const reserve = opts.reserveTicks ?? WALK_RESERVE_TICKS;
+    const maxTicks = Math.min(opts.maxTicks ?? WALK_MAX_TICKS, left === undefined ? Infinity : left - reserve);
+    if (maxTicks <= 0)
+        return {
+            ok: false,
+            reason: 'no-time',
+            message: `No time to walk to (${x}, ${z}): the step has ${left} ticks left and needs ${reserve} after the walk`,
+        };
     const w: Walk = {
         ctx,
         paths: ctx.pathfinder ?? collisionPaths,

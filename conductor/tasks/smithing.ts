@@ -3,6 +3,7 @@ import { shortestNameMatch } from '../../sdk/action-quantity';
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import {
     SMELT_MAKE_TICKS,
+    SMELT_MAX_TICKS,
     SMELT_MENU_TICKS,
     SMELT_OPTION,
     smelt,
@@ -11,14 +12,15 @@ import {
     SMITH_CLOSE_TICKS,
     SMITH_INTERFACE_TICKS,
     SMITH_MAKE_TICKS,
+    SMITH_MAX_TICKS,
     type SmithingProduct,
     smithingProduct,
     HAMMER,
 } from '../actions/smith';
-import { walkTo } from '../actions/walk';
+import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
-import { defineTask, type TaskContext } from '../lib/task';
+import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { exactName, findSkill, TICK_MS } from '../lib/util';
 
 const BARS = ['bronze', 'iron', 'steel', 'mithril', 'adamant', 'runite'] as const;
@@ -97,21 +99,30 @@ export const PRODUCTS: Record<SmithingProduct, Product> = {
 
 const FURNACE = /furnace/i;
 const ANVIL = /anvil/i;
-const FAIL_LIMIT = 4;
+export const FAIL_LIMIT = 4;
 /** Within this many tiles of the furnace or anvil the client's own pathing reaches it; further, the task walks first. */
 const STATION_REACH = 2;
 /** Each smelt or smith action is a few ticks; a walk to the station can take longer. */
 const STEP_TIMEOUT_MS = 90_000;
+/** The longest smelt or smith op: what the walk to the station leaves of the step (its reserveTicks). */
+export const OP_MAX_TICKS = Math.max(SMELT_MAX_TICKS, SMITH_MAX_TICKS);
+/** The longest walk to a station: walkTo caps itself to the step's budget less OP_MAX_TICKS. */
+export const STATION_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - OP_MAX_TICKS);
 /**
- * The longest attempt that changes nothing the watchdog sees, in ticks: closing a leftover interface or
- * menu (a close wait and a second try), opening one, the make wait, and closing it again. A smith's is
- * the longer.
+ * The longest op that changes nothing the watchdog sees, in ticks: closing a leftover interface or menu
+ * (a close wait and a second try), opening one, the make wait, and closing it again. A smith's is the
+ * longer.
  */
-const ATTEMPT_TICKS =
+const OP_SILENT_TICKS =
     2 * (SMITH_CLOSE_TICKS + 1) +
     Math.max(SMITH_INTERFACE_TICKS + SMITH_MAKE_TICKS, SMELT_MENU_TICKS + SMELT_MAKE_TICKS);
+/**
+ * The longest attempt that changes nothing the watchdog sees: a walk to the station that never moves the
+ * bot, then the op.
+ */
+export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_SILENT_TICKS;
 /** FAIL_LIMIT failed attempts in a row, and one more, so the task's own failure reason surfaces before the watchdog's. */
-const STUCK_AFTER_MS = (FAIL_LIMIT + 1) * ATTEMPT_TICKS * TICK_MS;
+const STUCK_AFTER_MS = (FAIL_LIMIT + 1) * ATTEMPT_SILENT_TICKS * TICK_MS;
 
 const Params = z.object({
     mode: z.enum(['smelt', 'smith']),
@@ -156,10 +167,13 @@ function findStation(ctx: Ctx, name: RegExp, filter: (l: NearbyLoc) => boolean, 
     return reachableOnly && match?.reachable === false ? null : match;
 }
 
-/** Walks within STATION_REACH of a furnace or anvil further away; the walk's failure message, or null. */
+/**
+ * Walks within STATION_REACH of a furnace or anvil further away, leaving the step room for the op after
+ * it; the walk's failure message, or null.
+ */
 function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
     if (ctx.distanceTo(station.x, station.z) <= STATION_REACH) return null;
-    const w = yield* walkTo(ctx, station.x, station.z, STATION_REACH);
+    const w = yield* walkTo(ctx, station.x, station.z, STATION_REACH, { reserveTicks: OP_MAX_TICKS });
     return w.ok ? null : w.message;
 }
 
@@ -261,6 +275,7 @@ export default defineTask({
                 }
                 const walkFailed = yield* walkToStation(ctx, anvil);
                 if (walkFailed) {
+                    yield* log(`walk to the anvil failed: ${walkFailed}`);
                     return fails.add() >= FAIL_LIMIT ? { fail: `can't reach the anvil (${walkFailed})` } : undefined;
                 }
                 const r = yield* smith(ctx, anvil, product.name, exactName(recipe.bar));

@@ -61,6 +61,8 @@ function* sidestep(ctx: Ctx): Op<void> {
             const r = yield* walkTo(ctx, tx, tz, 0);
             if (r.ok) return;
             yield* log(`sidestep to (${tx},${tz}) failed: ${r.message}`);
+            // The step's budget is spent: the next light, in a fresh step, sidesteps again if it must.
+            if (r.reason === 'no-time') return;
         }
     }
     yield* log('sidestep: no candidate tile reachable');

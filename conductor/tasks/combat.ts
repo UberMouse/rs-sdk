@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
-import { ATTACK_OPTION, attack } from '../actions/attack';
+import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
@@ -30,7 +30,9 @@ const NO_PLAYER_WAIT_TICKS = 1;
 const NO_TARGET_LIMIT = 20;
 const NO_TARGET_WAIT_TICKS = 3;
 const ATTACK_FAIL_LIMIT = 6;
-const ATTACK_RETRY_TICKS = 1;
+export const ATTACK_RETRY_TICKS = 1;
+/** What the fight step does after its walk to an NPC: the attack's wait, then the retry wait on a failure. */
+export const AFTER_WALK_TICKS = ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS;
 /**
  * An NPC further than this is walked to first, to within this: the walkTo op opens the doors and gates
  * on the way, which the client's own pathing for the attack does not.
@@ -181,7 +183,7 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
 function* walkAndAttack(ctx: Ctx, npc: NearbyNpc): Op<{ ok: true } | { ok: false; message: string }> {
     if (npc.distance > ATTACK_WALK_BEYOND) {
         // The walk opens the doors and gates on the way, which the client's pathing for the attack does not.
-        const walked = yield* walkTo(ctx, npc.x, npc.z, ATTACK_WALK_BEYOND);
+        const walked = yield* walkTo(ctx, npc.x, npc.z, ATTACK_WALK_BEYOND, { reserveTicks: AFTER_WALK_TICKS });
         if (!walked.ok) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
     }
     return yield* attack(ctx, npc);

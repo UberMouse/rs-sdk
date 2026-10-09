@@ -20,9 +20,18 @@ import { call, type Command, log, type Op } from '../core/op';
 import { sleep } from './env';
 import { findFood, guardLabel, GUARDS } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
-import type { Outcome, Sinks, Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
+import {
+    type Outcome,
+    type Sinks,
+    type Step,
+    stepBudgetTicks as budgetTicksOf,
+    type TaskContext,
+    type TaskDef,
+    type TaskResult,
+    type TaskStatus,
+} from './task';
 import { isLowHp } from './threat';
-import { distance, errMessage, INVENTORY_SLOTS, mapCounter, TICK_MS, xpGainedSince } from './util';
+import { distance, errMessage, INVENTORY_SLOTS, mapCounter, xpGainedSince } from './util';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
 export const TICK_STALL_MS = 30_000;
@@ -168,11 +177,19 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     }
     const invBefore = inventoryCounts(initial);
 
+    const stuckAfterMs = def.stuckAfterMs ?? DEFAULT_STUCK_AFTER_MS;
+    const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
+    const stepBudgetTicks = budgetTicksOf(stepTimeoutMs);
+    const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
+    const graceMs = opts.stepGraceMs ?? STEP_GRACE_MS;
+
     const counters = new Map<string, number>();
     /** Each step's streak counts, dropped when its `when` is checked false. */
     const streaks = new Map<Step<unknown, object>, Map<string, number>>();
     /** The step whose `run` is in progress; it owns the streaks `ctx.streak` returns. */
     let running: Step<unknown, object> | null = null;
+    /** The tick the op runOp is interpreting started at, which its tick budget counts from; null between ops. */
+    let opStartTick: number | null = null;
     const ctx: TaskContext<unknown, object> = {
         bot,
         sdk,
@@ -208,6 +225,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             return mapCounter(counts, name);
         },
         ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
+        stepTicksLeft: () => (opStartTick === null ? undefined : opStartTick + stepBudgetTicks - driver.state().tick),
         inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {
             const p = driver.state().player;
@@ -328,12 +346,6 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         emit({ type: 'exception', message: errMessage(e), stack: e instanceof Error ? e.stack : undefined });
         return finish('error', `preflight threw: ${errMessage(e)}`);
     }
-
-    const stuckAfterMs = def.stuckAfterMs ?? DEFAULT_STUCK_AFTER_MS;
-    const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
-    const stepBudgetTicks = Math.ceil(stepTimeoutMs / TICK_MS);
-    const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
-    const graceMs = opts.stepGraceMs ?? STEP_GRACE_MS;
 
     // Each guard's episode state, from when it first runs until its `when` is next checked false.
     const episodes = new Map<string, object>();
@@ -520,8 +532,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             return true;
         };
 
+        opStartTick = startTick;
         const interpreted = interpret(capped(op, count), { driver: view, guards: active, onTick, firedAt });
         const r = await Promise.race([interpreted, expired]).finally(() => {
+            opStartTick = null;
             for (const t of timers) clearTimeout(t);
         });
         if (!('kind' in r)) {

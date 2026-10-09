@@ -2,8 +2,16 @@ import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
 import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TICK_MS } from '../../lib/util';
-import { type SmithingProduct, smithingProduct } from '../../actions/smith';
-import smithing, { PRODUCTS } from '../../tasks/smithing';
+import { SMELT_MAX_TICKS, SMITH_MAX_TICKS, type SmithingProduct, smithingProduct } from '../../actions/smith';
+import { WALK_MAX_TICKS, walkBudgetTicks } from '../../actions/walk';
+import { stepBudgetTicks } from '../../lib/task';
+import smithing, {
+    ATTEMPT_SILENT_TICKS,
+    FAIL_LIMIT,
+    OP_MAX_TICKS,
+    PRODUCTS,
+    STATION_WALK_TICKS,
+} from '../../tasks/smithing';
 import { fakePaths } from '../paths';
 import { smithyReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
@@ -26,6 +34,15 @@ const refusal = async (params: unknown, w: World) =>
 /** `xs` `n` times over, in order. */
 const times = <T>(n: number, ...xs: T[]): T[] => Array.from({ length: n }, () => xs).flat();
 const levelUp = (w: World) => w.dialog({ options: ['Click here to continue'] });
+/** A bot that walks one tile a tick, where `walking` runs it two: each tick's second step is refused. */
+const crawl = () => {
+    let movedAt = -1;
+    return (_from: unknown, _to: unknown, s: { tick: number }) => {
+        if (s.tick === movedAt) return true;
+        movedAt = s.tick;
+        return false;
+    };
+};
 
 // The furnace's smelting menu as the client publishes it (see the smith op tests).
 const BAR_LABELS = ['Bronze', 'Iron', 'Silver', 'Steel', 'Gold', 'Mithril', 'Adamant', 'Rune'];
@@ -190,6 +207,43 @@ describe('smithing: smelt', () => {
         expect(r.result.reason).toBe('finish: out of ore for Bronze bars');
         expect(r.sends).toEqual([OPEN_MENU, CLICK_BRONZE, 'continue dialog', OPEN_MENU, CLICK_BRONZE]);
         expect(r.result.stepRuns['interrupt:dialog']).toBe(1);
+    });
+});
+
+describe('smithing: the step budget', () => {
+    const budget = stepBudgetTicks(smithing.stepTimeoutMs ?? 0);
+
+    test('the walk to a station leaves the step room for the longest op, and still crosses the view', () => {
+        expect(OP_MAX_TICKS).toBe(Math.max(SMELT_MAX_TICKS, SMITH_MAX_TICKS));
+        expect(STATION_WALK_TICKS + OP_MAX_TICKS).toBeLessThanOrEqual(budget);
+        expect(STATION_WALK_TICKS).toBeLessThan(WALK_MAX_TICKS);
+        // A station 15 tiles off (the edge of the client's view) gets its full walk budget.
+        expect(STATION_WALK_TICKS).toBeGreaterThanOrEqual(walkBudgetTicks(15));
+    });
+
+    test('the watchdog outlasts FAIL_LIMIT attempts that change nothing, a walk that never moves included', () => {
+        expect(smithing.stuckAfterMs).toBeGreaterThan(FAIL_LIMIT * ATTEMPT_SILENT_TICKS * TICK_MS);
+        expect(ATTEMPT_SILENT_TICKS).toBeGreaterThan(STATION_WALK_TICKS);
+    });
+
+    test('a walk that would arrive too late to smith in the step is cut short, and the next run finishes it', async () => {
+        // 202 tiles at a tile a tick: uncapped (WALK_MAX_TICKS) the walk arrives at tick 200 and the
+        // smith runs the step past its 225 ticks (stuck). Capped, it stops at STATION_WALK_TICKS, the step
+        // counts a failed attempt, and the next run walks the rest and smiths.
+        const start = { x: ANVIL.x + 202, z: ANVIL.z };
+        const r = await simulate(smithing, {
+            params: SMITH_PARAMS,
+            timeline: bars(1).player({ at: start }).series(1),
+            react: walking(smithyReact(null), crawl()),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('smith: 4 smiths in a row failed (last: Smithing timed out)');
+        const stoppedAt = start.x - STATION_WALK_TICKS;
+        expect(logged(r)).toEqual([
+            `walk to the anvil failed: Walk to (${ANVIL.x}, ${ANVIL.z}) ran out of its ${STATION_WALK_TICKS} ticks at (${stoppedAt}, ${ANVIL.z})`,
+            ...times(3, 'smith failed: Smithing timed out'),
+        ]);
+        expect(r.result.stepRuns.smith).toBe(4);
     });
 });
 

@@ -186,8 +186,10 @@ Game time is ticks (`state.tick`, 400 ms each). No `Date.now()`, `setTimeout` or
 action or task logic. Budgets are tick counts as named constants; to bound "no tree for 2 minutes"
 remember the tick you started at (`NO_TREE_GIVE_UP_TICKS` in `waitForRespawn`). The only
 millisecond numbers are the contract's `stepTimeoutMs` and `stuckAfterMs` (a generator step gets
-`stepTimeoutMs` as a tick budget). Size `stuckAfterMs` to outlast the task's own longest
-legitimate silence, as woodcutting does for its repeated chop timeouts.
+`stepTimeoutMs` as a tick budget, `stepBudgetTicks` in `lib/task.ts`, and reads what is left of it
+with `ctx.stepTicksLeft()`). Size `stuckAfterMs` to outlast the task's own longest legitimate
+silence, as woodcutting does for its repeated chop timeouts and smithing for attempts whose walk
+never moves the bot.
 
 ### Memory, streaks and counters
 
@@ -214,10 +216,15 @@ No catalog task uses one any more.
 `yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
 (Chebyshev, default 3) on the bot's level, opening the doors and gates on its route. It does not
 climb stairs or ladders. Its result's `reason` says why it stopped short (`no-path`, `dead-end`,
-`stuck`, `gave-up`, `timeout`, ...); `message` is what to put in a fail reason. One walk takes at most
-`WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it stands and
-the next walk carries on from there, so a step that walks far must be one the task runs again (a
-`when` that still holds), with a `stepTimeoutMs` above that cap. For "stay near here" use
+`stuck`, `gave-up`, `timeout`, `no-time`, ...); `message` is what to put in a fail reason. One walk
+takes at most `WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it
+stands and the next walk carries on from there, so a step that walks far must be one the task runs
+again (a `when` that still holds). A walk also never outlasts its step: it caps itself to
+`ctx.stepTicksLeft()` (the step's tick budget left, which the engine gives every generator step) less
+`reserveTicks`, the ticks the step still needs after the walk (default `WALK_RESERVE_TICKS`, enough to
+log and return); with none left it is `no-time` and sends nothing. A step that walks and then does
+more work (an op, a wait) passes `{ reserveTicks: <that work's worst case> }` as a named constant, as
+smithing reserves `OP_MAX_TICKS` for the smelt or smith after its walk. For "stay near here" use
 `lib/area.ts`: `returnToAreaStep` (a generator step) and `walkToArea` (an op that counts failed
 walks per run).
 
@@ -272,6 +279,10 @@ Pitfalls earlier authors hit:
 - A walk is ticks too: each leg takes at least one, and a walk with no route asks again a tick
   later. A timeline that scripts an effect at a fixed tick after a walk must leave room for it.
 - Without `walking` the bot never moves, so a walk ends `stuck` instead of arriving.
+- A step that walks then does more work passes `reserveTicks`: without it the walk may take the
+  step's whole budget and the work after it runs the step over (`stuck`, "ran over N ticks"). Pin the
+  arithmetic in a test: `stepBudgetTicks(stepTimeoutMs)` covers the capped walk plus the longest work
+  after it (`smithing.test.ts`, "the step budget").
 - The last state of a timeline repeats with the tick advancing: end it in the state a waiting step
   should see.
 - Integration tests run in parallel against one engine: choose ground disjoint from every other

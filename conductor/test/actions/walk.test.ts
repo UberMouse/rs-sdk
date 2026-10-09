@@ -4,6 +4,7 @@ import {
     DOOR_OPEN_TICKS,
     WALK_BASE_TICKS,
     WALK_MAX_TICKS,
+    WALK_RESERVE_TICKS,
     WALK_TICKS_PER_TILE,
     walkBudgetTicks,
     type WalkResult,
@@ -31,6 +32,9 @@ interface Run {
     respond?: (action: BotAction) => ActionResult | undefined;
     guards?: Guard[];
     maxTicks?: number;
+    reserveTicks?: number;
+    /** The step's tick budget, counted from the first state's tick, as the engine gives ctx.stepTicksLeft. */
+    stepBudget?: number;
 }
 
 /** Walks to (x, z) from the first state, with sends moving the bot (`walking`). */
@@ -44,8 +48,15 @@ async function walk(states: BotWorldState[], x: number, z: number, tolerance?: n
             return opts.respond?.(a);
         },
     });
-    const ctx = { state: () => driver.state(), pathfinder: paths };
-    const run = await interpret(walkTo(ctx, x, z, tolerance, { maxTicks: opts.maxTicks }), {
+    const startTick = driver.state().tick;
+    const { stepBudget } = opts;
+    const ctx = {
+        state: () => driver.state(),
+        pathfinder: paths,
+        stepTicksLeft: () => (stepBudget === undefined ? undefined : startTick + stepBudget - driver.state().tick),
+    };
+    const walkOpts = { maxTicks: opts.maxTicks, reserveTicks: opts.reserveTicks };
+    const run = await interpret(walkTo(ctx, x, z, tolerance, walkOpts), {
         driver,
         guards: opts.guards,
     });
@@ -355,6 +366,40 @@ describe('walkTo: the tick budget', () => {
         expect(walkBudgetTicks(10)).toBe(WALK_BASE_TICKS + 10 * WALK_TICKS_PER_TILE);
         expect(walkBudgetTicks(10_000)).toBe(WALK_MAX_TICKS);
         expect(walkBudgetTicks(10, 30)).toBe(30);
+    });
+
+    test("a step's ticks left, less the reserve, caps the walk's budget", async () => {
+        const w = await walk(standing(START), 3200, 3240, 0, { stepBudget: 10, reserveTicks: 4 });
+        expect(w.result()).toEqual({
+            ok: false,
+            reason: 'timeout',
+            message: 'Walk to (3200, 3240) ran out of its 6 ticks at (3200, 3212)',
+        });
+        expect(w.driver.state().tick).toBe(6);
+    });
+
+    test('the default reserve is WALK_RESERVE_TICKS, and a budget roomier than the route leaves the walk alone', async () => {
+        const capped = await walk(standing(START), 3200, 3240, 0, { stepBudget: 10 });
+        expect(capped.result().message).toBe(
+            `Walk to (3200, 3240) ran out of its ${10 - WALK_RESERVE_TICKS} ticks at (3200, ${3200 + 2 * (10 - WALK_RESERVE_TICKS)})`,
+        );
+        const roomy = await walk(standing(START), 3200, 3240, 0, { stepBudget: 1000 });
+        expect(roomy.result()).toEqual({ ok: true, message: 'Arrived' });
+    });
+
+    test('a step with no ticks left past the reserve is no-time, nothing sent', async () => {
+        const paths = straightPaths();
+        const w = await walk(standing(START), 3200, 3240, 0, { paths, stepBudget: 5, reserveTicks: 5 });
+        expect(w.result()).toEqual({
+            ok: false,
+            reason: 'no-time',
+            message: 'No time to walk to (3200, 3240): the step has 5 ticks left and needs 5 after the walk',
+        });
+        expect(w.sends).toEqual([]);
+        expect(paths.queries).toHaveLength(0);
+        // Already there needs no time.
+        const there = await walk(standing(START), 3200, 3201, 3, { stepBudget: 0 });
+        expect(there.result()).toEqual({ ok: true, message: 'Already at destination' });
     });
 
     test('a short walk that cannot get anywhere ends within its short budget', async () => {

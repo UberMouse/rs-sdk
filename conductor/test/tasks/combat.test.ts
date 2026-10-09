@@ -2,8 +2,10 @@ import { describe, expect, test } from 'bun:test';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { ATTACK_WAIT_TICKS } from '../../actions/attack';
 import { type Effect, TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
+import { WALK_MAX_TICKS } from '../../actions/walk';
 import type { StopCondition } from '../../lib/stop';
-import combat from '../../tasks/combat';
+import { stepBudgetTicks } from '../../lib/task';
+import combat, { AFTER_WALK_TICKS, ATTACK_RETRY_TICKS } from '../../tasks/combat';
 import { fakePaths } from '../paths';
 import { consume, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
@@ -477,5 +479,12 @@ describe('combat: return to area', () => {
         });
         expect(r.steps[0]).toBe('return-to-area');
         expect(r.sends).toEqual([]);
+    });
+});
+
+describe('combat: the step budget', () => {
+    test('the fight step fits its longest walk, the attack and the retry wait', () => {
+        expect(AFTER_WALK_TICKS).toBe(ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS);
+        expect(stepBudgetTicks(combat.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(WALK_MAX_TICKS + AFTER_WALK_TICKS);
     });
 });

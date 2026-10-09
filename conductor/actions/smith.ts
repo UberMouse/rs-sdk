@@ -10,6 +10,7 @@
 // makes exactly the bar asked for (ore used on a furnace makes steel from iron when coal is held); it
 // owns that menu as smith owns the interface.
 import type { ActionResult, BotWorldState, InventoryItem, NearbyLoc } from '../../sdk/types';
+import { CLEANUP_TICKS } from '../core/interpret';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
@@ -34,6 +35,19 @@ export const SMITH_CLOSE_TICKS = 5;
  * level-up box opens 3 ticks after the XP. A bar used on the anvil sooner is lost: no interface opens.
  */
 export const SMITH_DELAY_TICKS = 3;
+/** A close of the op's own interface or menu: a wait and a second attempt's tick (closeModalUntil). */
+const CLOSE_MAX_TICKS = SMITH_CLOSE_TICKS + 1;
+/**
+ * The most ticks smith takes: closing an interface already open, the wait for its own, then the make
+ * wait, the post-smith delay and the close, or after an open that never showed, withModal's cleanup.
+ */
+export const SMITH_MAX_TICKS =
+    CLOSE_MAX_TICKS +
+    SMITH_INTERFACE_TICKS +
+    Math.max(SMITH_MAKE_TICKS + SMITH_DELAY_TICKS + CLOSE_MAX_TICKS, CLEANUP_TICKS);
+/** The most ticks smelt takes, as SMITH_MAX_TICKS: there is no delay after a smelt. */
+export const SMELT_MAX_TICKS =
+    CLOSE_MAX_TICKS + SMELT_MENU_TICKS + Math.max(SMELT_MAKE_TICKS + CLOSE_MAX_TICKS, CLEANUP_TICKS);
 
 /** The furnace option that opens the smelting menu (oploc2 in skill_smithing/scripts/smelting/smelting.rs2). */
 export const SMELT_OPTION = /^smelt$/i;

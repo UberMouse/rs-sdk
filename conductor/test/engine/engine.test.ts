@@ -84,6 +84,20 @@ function* boom(): Op<Outcome> {
 
 const step = (name: string, run: Step['run']): Step => ({ name, when: () => true, run });
 
+/** A step that waits what ctx.stepTicksLeft() says is left, plus `extra`, recording what it read. */
+const spendLeft = (extra: number, seen: (number | undefined)[]): Step => ({
+    name: 'spend',
+    when: () => true,
+    *run(ctx) {
+        const left = ctx.stepTicksLeft();
+        seen.push(left);
+        yield* ticks(3);
+        seen.push(ctx.stepTicksLeft());
+        yield* ticks((left ?? 0) - 3 + extra);
+        return { done: `waited at tick ${ctx.state().tick}` };
+    },
+});
+
 const guardLog = (events: Record<string, unknown>[], name: string) =>
     events.filter(e => e.type === 'log' && typeof e.msg === 'string' && e.msg.startsWith(`guard ${name} `));
 
@@ -292,6 +306,66 @@ describe('onTick during a generator step', () => {
         expect(r.result.reason).toBe('step "idle" ran over 5 ticks (2s)');
         expect(r.sends).toEqual(['start', 'cleanup']);
         expect(r.events.some(e => e.type === 'abandoned-step-error')).toBe(false);
+    });
+
+    test('ctx.stepTicksLeft is the step budget less the ticks spent, and waiting all of it is within budget', async () => {
+        const seen: (number | undefined)[] = [];
+        // Moving every tick, so only the step budget can end it.
+        const r = await runTask(
+            [spendLeft(0, seen)],
+            timeline(30, t => ({ z: 3200 + t })),
+            {
+                stepTimeoutMs: 10 * TICK_MS,
+            },
+        );
+        expect(seen).toEqual([10, 7]);
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('spend: waited at tick 10');
+    });
+
+    test('one tick past ctx.stepTicksLeft is where the engine ends the step', async () => {
+        const seen: (number | undefined)[] = [];
+        const r = await runTask(
+            [spendLeft(1, seen)],
+            timeline(30, t => ({ z: 3200 + t })),
+            {
+                stepTimeoutMs: 10 * TICK_MS,
+            },
+        );
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('step "spend" ran over 10 ticks (4s)');
+        expect(r.result.durationMs).toBe(11 * TICK_MS);
+    });
+
+    test('ctx.stepTicksLeft is undefined outside a generator step, and each step run starts a full budget', async () => {
+        const seen: (number | undefined)[] = [];
+        let runs = 0;
+        const decide: Step = {
+            name: 'decide',
+            when: () => runs === 1,
+            run: ctx => {
+                seen.push(ctx.stepTicksLeft());
+                runs++;
+            },
+        };
+        const again: Step = {
+            name: 'again',
+            when: () => runs !== 1,
+            *run(ctx) {
+                seen.push(ctx.stepTicksLeft());
+                yield* ticks(4);
+                if (++runs === 3) return { done: 'twice' };
+            },
+        };
+        const r = await runTask(
+            [decide, again],
+            timeline(30, t => ({ z: 3200 + t })),
+            {
+                stepTimeoutMs: 10 * TICK_MS,
+            },
+        );
+        expect(r.result.reason).toBe('again: twice');
+        expect(seen).toEqual([10, undefined, 10]);
     });
 
     test('a step that sends forever without waiting fails at the command cap, running its finally', async () => {
