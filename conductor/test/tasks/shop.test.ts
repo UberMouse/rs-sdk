@@ -302,7 +302,7 @@ describe('shop: failures', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe(
-            'trade: trades done but cannot close shop: Shop close timeout - shop.isOpen=true, interface.isOpen=true',
+            'trade: cannot close the shop after trading: Shop close timeout - shop.isOpen=true, interface.isOpen=true',
         );
         expect(r.driver.state().tick).toBeLessThan(60 + CLOSE_SHOP_WAIT_TICKS);
     });
@@ -555,4 +555,143 @@ describe('shop: the shop closing mid-sale', () => {
             expect(sentAs(r, 'sell Logs')).toHaveLength(lands ? 3 : 4);
         });
     }
+});
+
+describe('shop: a shopkeeper out of reach', () => {
+    const noRoute = { success: false, message: 'no route', reason: 'cant_reach' };
+    /** A driver whose first `refusals` opens find no route, and a walkTo fake that records its calls. */
+    const unreachable = (refusals: number) => {
+        let opens = 0;
+        const driver = new TimelineDriver(carrying.series(1), {
+            react,
+            respond: a => (a.reason === OPEN && ++opens <= refusals ? noRoute : undefined),
+        });
+        const walks: unknown[][] = [];
+        const walkTo = async (...args: unknown[]) => {
+            walks.push(args);
+            await driver.nextTick();
+            return { success: true, message: 'ok' };
+        };
+        return { driver, walks, bot: { walkTo } };
+    };
+
+    test('an open that cannot reach the shopkeeper walks to it, then opens again', async () => {
+        const { driver, walks, bot } = unreachable(1);
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver, bot });
+        expect(r.result.status).toBe('done');
+        expect(walks).toEqual([[KEEPER.x, KEEPER.z + 1, 2]]);
+        expect(r.sends).toEqual([OPEN, OPEN, 'buy Hammer', CLOSE]);
+        expect(logged(r).slice(0, 2)).toEqual([
+            'open shop failed (cant-reach): no route',
+            'walk to Shop keeper (3212,3248) to open the shop: ok',
+        ]);
+    });
+
+    test('three opens that cannot reach it fail the run, with a walk after each of the first two', async () => {
+        const { driver, walks, bot } = unreachable(3);
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver, bot });
+        expect(r.result.reason).toBe('trade: cannot open shop via "Shop keeper": no route');
+        expect(walks).toHaveLength(2);
+        expect(r.sends).toEqual([OPEN, OPEN, OPEN]);
+    });
+});
+
+describe('shop: a price check on a resume', () => {
+    test('a trade cut off before its first packet landed is checked at the price the shop quotes now', async () => {
+        let opens = 0;
+        let sales = 0;
+        // The first sale never lands; the shop pays 4 for logs when first opened and 1 after.
+        const cheaper: TimelineOptions['react'] = (a, s) => {
+            if (a.type === 'interactNpc') return shopReact(LINES, { ...PAYS, logs: ++opens === 1 ? 4 : 1 })(a, s);
+            if (a.type === 'shopSell' && ++sales === 1) return undefined;
+            return react(a, s);
+        };
+        const r = await simulate(shop, {
+            params: { ...NPC, sell: [{ item: 'Logs', count: 3, minUnitPrice: 4 }] },
+            timeline: hurtOnLanding(carrying),
+            react: cheaper,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('trade: shop pays 1 gp each for Logs, below minUnitPrice 4');
+        expect(r.sends).toEqual([OPEN, 'sell Logs', CLOSE, 'Eat Shrimps', OPEN, CLOSE]);
+        expect(r.result.inventoryDelta).toEqual({ Shrimps: -1 });
+    });
+});
+
+/** Each sale whose number (from 1) is in `cut` closes the shop under the bot without landing; the rest go through. */
+const closesOnSales = (cut: number[]): TimelineOptions['react'] => {
+    let sales = 0;
+    return (a, s) => (a.type === 'shopSell' && cut.includes(++sales) ? t => world(t).shop(false).build() : react(a, s));
+};
+
+describe('shop: trades cut off', () => {
+    test('a trade cut off by the shop closing three times in a row fails the run', async () => {
+        const r = await simulate(shop, {
+            params: { ...NPC, sell: [{ item: 'Logs', count: 3 }] },
+            timeline: carrying.series(1),
+            react: closesOnSales([1, 2, 3]),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'trade: sell Logs cut off 3 times in a row; last: shop-not-open: Shop closed with Logs x0 of 3 sold',
+        );
+        expect(r.sends).toEqual([OPEN, 'sell Logs', OPEN, 'sell Logs', OPEN, 'sell Logs']);
+    });
+
+    test('a trade made in between starts the count again', async () => {
+        const r = await simulate(shop, {
+            params: { ...NPC, sell: [{ item: 'Logs', count: 1 }, { item: 'Shrimps' }] },
+            timeline: carrying.series(1),
+            react: closesOnSales([1, 2, 4, 5]),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: all 2 trades made; coins received 5, spent 0');
+        expect(sentAs(r, 'sell Logs')).toHaveLength(3);
+        expect(sentAs(r, 'sell Shrimps')).toHaveLength(3);
+    });
+
+    test('a sale the inventory does not show is not made: the step runs again and sells what is held', async () => {
+        let sales = 0;
+        // The first sale empties the shop's list of the logs, but no log leaves the inventory.
+        const unseen: TimelineOptions['react'] = (a, s) =>
+            a.type === 'shopSell' && ++sales === 1
+                ? t => ({ ...t, shop: { ...t.shop, playerItems: t.shop.playerItems.filter(i => i.name !== 'Logs') } })
+                : react(a, s);
+        const r = await simulate(shop, {
+            params: { ...NPC, sell: [{ item: 'Logs' }] },
+            timeline: carrying.series(1),
+            react: unseen,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([OPEN, 'sell Logs', CLOSE, OPEN, ...Array(3).fill('sell Logs'), CLOSE]);
+        expect(r.result.inventoryDelta).toEqual({ Logs: -3, Coins: 12 });
+        expect(logged(r)).toContain('sold Logs: Sold Logs x3; coins +0');
+        expect(r.result.stepRuns).toEqual({ trade: 2, finish: 1 });
+    });
+});
+
+describe('shop: a long trip', () => {
+    test('trades that outlast the step budget finish over several runs of the step, none overrunning', async () => {
+        const stock = [{ name: 'Air rune', count: 1000, buyPrice: 0 }];
+        const opens = shopReact(stock);
+        // Each Buy-10 lands 11 ticks after it is sent, inside the op's wait: a trade of 100 takes ~110 ticks.
+        const slow: TimelineOptions['react'] = (a, s) => {
+            const effect = opens(a, s);
+            if (a.type !== 'shopBuy' || !effect) return effect;
+            let waited = 0;
+            return t => (++waited <= 10 ? { ...t } : effect(t));
+        };
+        const r = await simulate(shop, {
+            params: { ...NPC, buy: Array.from({ length: 8 }, () => ({ item: 'Air rune', count: 100 })) },
+            timeline: carrying.series(1),
+            react: slow,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.inventoryDelta).toEqual({ 'Air rune': 800 });
+        // One run of the step could not have held the trip: it took longer than the step's budget.
+        expect(r.driver.state().tick).toBeGreaterThan(Math.ceil((shop.stepTimeoutMs ?? 0) / TICK_MS));
+        expect(r.result.stepRuns).toEqual({ trade: 2, finish: 1 });
+        expect(logged(r)).toContain('4 trades made; the step runs again for the rest');
+        // About 900 scripted ticks under ~80 effect overlays: ~1.5 s, which a loaded machine can push past bun's 5 s.
+    }, 20_000);
 });

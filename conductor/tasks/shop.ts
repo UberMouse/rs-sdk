@@ -4,20 +4,31 @@ import { buy, closeShop, sell, withShop } from '../actions/shop';
 import { call, log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
-import { countItems, exactName } from '../lib/util';
+import { countItems, exactName, TICK_MS } from '../lib/util';
 
 const COINS = /^coins$/i;
 const WALK_TOLERANCE = 3;
+/** How close bot.openShop walks to the shopkeeper before trading, as the walk after a cant-reach does. */
+const KEEPER_WALK_TOLERANCE = 2;
 /** Farther than this from `at` and the shopkeeper is probably not loaded or reachable. */
 const AT_REACH = 8;
 /**
- * Consecutive failures of a kind (walks, stale closes, opens, mid-trade closes) before the task fails.
- * Three timed-out opens, each with withShop's wait for a late open, are about 35 s of nothing changing,
- * inside the engine's default stuck window (90 s), so the failure is reported instead of the watchdog.
+ * Consecutive failures of one kind before the task fails, each its own streak: failed walks to the
+ * shop; failed closes of a shop left open; trade step runs whose open failed; and trade step runs that
+ * ended with a trade cut off, unfinished, by the shop closing under it (or by a sale the inventory did
+ * not show), which a finished trade resets. Three timed-out opens, each with withShop's wait for a late
+ * open, are about 35 s of nothing changing, inside the engine's default stuck window (90 s), so the
+ * failure is reported instead of the watchdog.
  */
 const FAIL_LIMIT = 3;
 /** Walks to a far shop outlast the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 300_000;
+/**
+ * The trade step starts no further trade once it has run this long, half its tick budget, and runs
+ * again for the rest (closing and reopening the shop; the resume state is in memory). One trade can
+ * take SHOP_DEADLINE_TICKS and more, so a long list of them would otherwise overrun the step.
+ */
+const TRADE_STEP_YIELD_TICKS = Math.floor(Math.ceil(STEP_TIMEOUT_MS / TICK_MS) / 2);
 
 const Params = z.object({
     /** Exact shopkeeper name (case-insensitive, not a regex): "Shop keeper", "Bob". */
@@ -47,6 +58,8 @@ const Params = z.object({
 });
 
 type ShopParams = z.infer<typeof Params>;
+/** A trade's baseline: its index, and the coins and the item's count the inventory held before its first send. */
+type Baseline = { tradeIndex: number; coins: number; held: number };
 interface ShopMemory {
     /** How many of the task's trades (see `tradesOf`) have gone through, in order. */
     tradesMade: number;
@@ -54,23 +67,26 @@ interface ShopMemory {
     coinsReceived: number;
     coinsSpent: number;
     /**
-     * The trade under way: its index, and the coins and the item's count the inventory held before its
-     * first send. An abort can land after packets did, so a resumed step counts what moved since then and
-     * trades only the rest, and settles the coins against the same start.
+     * The trade under way, by its baseline. An abort can land after packets did, so a resumed step
+     * counts what moved since then and trades only the rest, and settles the coins against the same start.
      *
      * The baseline is the inventory count, so it is approximate when a guard's eat consumes the very item
      * being traded between the abort and the resume: a sale looks that much further along and
      * under-delivers by the eaten amount; a purchase of food looks that much less along and over-buys by
-     * it (the inventory still ends at the requested count). Neither exceeds the trade's amount.
+     * it (the inventory still ends at the requested count), and is price-checked again if the eat took
+     * all of what it had bought. Neither exceeds the trade's amount.
      */
-    inFlight: { tradeIndex: number; coins: number; held: number } | null;
+    inFlight: Baseline | null;
 }
 type Ctx = TaskContext<ShopParams, ShopMemory>;
 type SellTrade = { kind: 'sell' } & ShopParams['sell'][number];
 type BuyTrade = { kind: 'buy' } & ShopParams['buy'][number];
 type Trade = SellTrade | BuyTrade;
-/** How the trades in the shop ended, if they did not all go through. */
-type Ending = { kind: 'fail'; message: string } | { kind: 'closed'; what: string; message: string };
+/**
+ * How the trades in the shop ended, if they did not all go through: a failure that ends the run, or a
+ * trade cut off unfinished that the step's next run resumes.
+ */
+type Ending = { kind: 'fail'; message: string } | { kind: 'cut-off'; what: string; message: string };
 
 /** Sells first, then buys, so a run funds its own purchases. */
 const tradesOf = (params: ShopParams): Trade[] => [
@@ -100,72 +116,117 @@ function priceRefusal(state: BotWorldState, t: Trade): string | null {
     return null;
 }
 
-/** Makes the next trade with the shop open; null when it went through. */
-function* performTrade(ctx: Ctx, t: Trade): Op<Ending | null> {
-    const pattern = exactName(t.item);
-    const at = ctx.memory.tradesMade;
-    const resumed = ctx.memory.inFlight?.tradeIndex === at ? ctx.memory.inFlight : null;
-    let start: NonNullable<ShopMemory['inFlight']>;
-    if (resumed) {
-        start = resumed;
-    } else {
-        // Only a trade's first run checks the price: after packets landed the shop's prices have moved.
-        const refusal = priceRefusal(ctx.state(), t);
-        if (refusal) return { kind: 'fail', message: refusal };
-        start = { tradeIndex: at, coins: countItems(ctx.state(), COINS), held: countItems(ctx.state(), pattern) };
-        ctx.memory.inFlight = start;
-    }
-    const held = countItems(ctx.state(), pattern);
-    const moved = Math.max(0, t.kind === 'sell' ? start.held - held : held - start.held);
-
-    // A resumed trade whose packets all landed is done; otherwise only the rest is asked for.
-    const remaining = t.kind === 'sell' && t.count === undefined ? 'all' : (t.count ?? 0) - moved;
-    const landed = resumed !== null && (remaining === 'all' ? held === 0 : remaining <= 0);
-    let failure: { reason: string; message: string; got: number } | null = null;
-    if (landed) {
-        const verb = t.kind === 'sell' ? 'sold' : 'bought';
-        yield* log(`${t.kind} ${t.item}: ${moved} already ${verb} before the step was cut off`);
-    } else if (t.kind === 'sell') {
-        const r = yield* sell(ctx, pattern, remaining);
-        const gained = countItems(ctx.state(), COINS) - start.coins;
-        yield* log(`sold ${t.item}: ${r.message}; coins +${gained}`);
-        if (!r.ok) failure = { reason: r.reason, message: r.message, got: r.amountSold };
-    } else {
-        // A purchase always has a count, so `remaining` is the number left to buy.
-        const r = yield* buy(ctx, pattern, remaining === 'all' ? t.count : remaining);
-        yield* log(`bought ${t.item}: ${r.message}; coins ${start.coins} -> ${countItems(ctx.state(), COINS)}`);
-        if (!r.ok) failure = { reason: r.reason, message: r.message, got: r.amountBought };
-    }
-
-    // The shop modal closed under the trade (an interrupt, an attack): the step reopens it and resumes,
-    // so the coins are settled once the trade ends for good, against the same start.
-    if (failure?.reason === 'shop-not-open')
-        return { kind: 'closed', what: `${t.kind} ${t.item}`, message: `${failure.reason}: ${failure.message}` };
-
+/** Adds what the trade made or cost since its baseline to the run's coin totals. */
+function settle(ctx: Ctx, t: Trade, start: Baseline): void {
     const coins = countItems(ctx.state(), COINS);
     if (t.kind === 'sell') ctx.memory.coinsReceived += Math.max(0, coins - start.coins);
     else ctx.memory.coinsSpent += Math.max(0, start.coins - coins);
-    if (failure && t.kind === 'sell') {
-        const message = `sell ${t.item} failed (${failure.reason}): ${failure.message}; coins received so far ${ctx.memory.coinsReceived}`;
-        return { kind: 'fail', message };
+}
+
+/** The step's next run reopens the shop and resumes the trade; its coins are settled once it ends for good. */
+const cutOff = (t: Trade, message: string): Ending => ({ kind: 'cut-off', what: `${t.kind} ${t.item}`, message });
+
+/** Sells what of `t` has not left the inventory since `start`; `resumed` says an earlier run began it. */
+function* performSell(ctx: Ctx, t: SellTrade, start: Baseline, resumed: boolean): Op<Ending | null> {
+    const pattern = exactName(t.item);
+    const sold = Math.max(0, start.held - countItems(ctx.state(), pattern));
+    // A resumed sale of all is done once none is left, a counted one once its count has left.
+    if (resumed && (t.count === undefined ? countItems(ctx.state(), pattern) === 0 : sold >= t.count)) {
+        yield* log(`sell ${t.item}: ${sold} already sold before the step was cut off`);
+        settle(ctx, t, start);
+        return null;
     }
-    if (failure) {
-        const message = `buy ${t.item} x${t.count} failed (${failure.reason}, got ${failure.got}): ${failure.message}; ${coins} coins left`;
-        return { kind: 'fail', message };
+    const r = yield* sell(ctx, pattern, t.count === undefined ? 'all' : t.count - sold);
+    const held = countItems(ctx.state(), pattern);
+    yield* log(`sold ${t.item}: ${r.message}; coins +${countItems(ctx.state(), COINS) - start.coins}`);
+    if (!r.ok && r.reason === 'shop-not-open') return cutOff(t, `${r.reason}: ${r.message}`);
+    // The op counts from the shop's list of the inventory; the trade is made only once the inventory
+    // agrees, else the step's next run sells what is still held.
+    if (r.ok && (t.count === undefined ? held > 0 : start.held - held < t.count))
+        return cutOff(t, `shop reported "${r.message}" but the inventory still holds ${held} ${t.item}`);
+    settle(ctx, t, start);
+    if (r.ok) return null;
+    return {
+        kind: 'fail',
+        message: `sell ${t.item} failed (${r.reason}): ${r.message}; coins received so far ${ctx.memory.coinsReceived}`,
+    };
+}
+
+/** Buys what of `t` has not arrived in the inventory since `start`. */
+function* performBuy(ctx: Ctx, t: BuyTrade, start: Baseline): Op<Ending | null> {
+    const pattern = exactName(t.item);
+    const bought = Math.max(0, countItems(ctx.state(), pattern) - start.held);
+    if (bought >= t.count) {
+        yield* log(`buy ${t.item}: ${bought} already bought before the step was cut off`);
+        settle(ctx, t, start);
+        return null;
     }
+    const r = yield* buy(ctx, pattern, t.count - bought);
+    const coins = countItems(ctx.state(), COINS);
+    yield* log(`bought ${t.item}: ${r.message}; coins ${start.coins} -> ${coins}`);
+    if (!r.ok && r.reason === 'shop-not-open') return cutOff(t, `${r.reason}: ${r.message}`);
+    settle(ctx, t, start);
+    if (r.ok) return null;
+    return {
+        kind: 'fail',
+        message: `buy ${t.item} x${t.count} failed (${r.reason}, got ${r.amountBought}): ${r.message}; ${coins} coins left`,
+    };
+}
+
+/** Makes the next trade with the shop open; null when it went through. */
+function* performTrade(ctx: Ctx, t: Trade): Op<Ending | null> {
+    const state = ctx.state();
+    const index = ctx.memory.tradesMade;
+    const resumed = ctx.memory.inFlight?.tradeIndex === index ? ctx.memory.inFlight : null;
+    const held = countItems(state, exactName(t.item));
+    const start = resumed ?? { tradeIndex: index, coins: countItems(state, COINS), held };
+    // The price is checked while nothing of the trade has moved: on its first run, or on a resume cut off
+    // before its first packet landed. Once packets landed, the shop's prices have moved with its stock.
+    const moved = t.kind === 'sell' ? start.held - held : held - start.held;
+    if (moved <= 0) {
+        const refusal = priceRefusal(state, t);
+        if (refusal) return { kind: 'fail', message: refusal };
+    }
+    ctx.memory.inFlight = start;
+    const ending =
+        t.kind === 'sell' ? yield* performSell(ctx, t, start, resumed !== null) : yield* performBuy(ctx, t, start);
+    if (ending) return ending;
     ctx.memory.tradesMade++;
     ctx.memory.inFlight = null;
-    ctx.streak('reopenFails').reset();
+    ctx.streak('cutOffs').reset();
     return null;
 }
 
-/** The trades still to make, in order, with the shop open; the first that does not go through ends them. */
-function* performRemaining(ctx: Ctx): Op<Ending | null> {
+/**
+ * The trades still to make, in order, with the shop open; the first that does not go through ends them.
+ * Once the step has run TRADE_STEP_YIELD_TICKS since `stepStart`, it returns after the trade in hand,
+ * and the step's next run makes the rest.
+ */
+function* performRemaining(ctx: Ctx, stepStart: number): Op<Ending | null> {
     for (let t = nextTrade(ctx); t; t = nextTrade(ctx)) {
         const ending = yield* performTrade(ctx, t);
         if (ending) return ending;
+        if (nextTrade(ctx) && ctx.state().tick - stepStart >= TRADE_STEP_YIELD_TICKS) {
+            yield* log(`${ctx.memory.tradesMade} trades made; the step runs again for the rest`);
+            return null;
+        }
     }
     return null;
+}
+
+/**
+ * Walks to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named `npc`, as bot.openShop does
+ * before trading: bot.walkTo opens doors on the way, which the client's pathing of an open does not.
+ */
+function* walkToKeeper(ctx: Ctx): Op<void> {
+    const name = exactName(ctx.params.npc);
+    const keeper = ctx
+        .state()
+        .nearbyNpcs.filter(n => name.test(n.name))
+        .sort((a, b) => a.distance - b.distance)[0];
+    if (!keeper) return;
+    const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(keeper.x, keeper.z, KEEPER_WALK_TOLERANCE));
+    yield* log(`walk to ${keeper.name} (${keeper.x},${keeper.z}) to open the shop: ${r.message}`);
 }
 
 export default defineTask({
@@ -233,36 +294,36 @@ export default defineTask({
             },
         },
         {
-            // Open, every remaining trade and the close are one step, so whatever cancels it (a guard, a
+            // Open, the remaining trades and the close are one step, so whatever cancels it (a guard, a
             // stop, the step budget) closes the shop on the way out: an open shop hides the inventory the
             // low-HP guard would eat from. An aborted step resumes at the first trade not yet made, less
-            // what of it already landed (`inFlight`). It stands for the legacy `open-shop`, `trade` and
-            // `finish`'s close, so their failures carry this step's name as the prefix.
+            // what of it already landed (`inFlight`); so does a run that stopped after
+            // TRADE_STEP_YIELD_TICKS, or whose trade was cut off by the shop closing.
             name: 'trade',
             when: ctx => !!nextTrade(ctx),
             *run(ctx) {
-                const trip = yield* withShop(ctx, exactName(ctx.params.npc), performRemaining(ctx));
+                const stepStart = ctx.state().tick;
+                const trip = yield* withShop(ctx, exactName(ctx.params.npc), performRemaining(ctx, stepStart));
                 const openFails = ctx.streak('openFails');
                 if (!trip.ok) {
                     yield* log(`open shop failed (${trip.reason}): ${trip.message}`);
                     if (openFails.add() >= FAIL_LIMIT)
                         return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
+                    // openShop does not walk: a shopkeeper behind a door is out of the client's reach.
+                    if (trip.reason === 'cant-reach') yield* walkToKeeper(ctx);
                     return;
                 }
                 openFails.reset();
                 const ending = trip.value;
                 if (!trip.closed.ok) yield* log(`could not close the shop: ${trip.closed.message}`);
-                if (ending?.kind === 'closed') {
-                    const reopens = ctx.streak('reopenFails');
-                    if (reopens.add() >= FAIL_LIMIT)
-                        return {
-                            fail: `shop closed ${FAIL_LIMIT} times during ${ending.what}; last: ${ending.message}`,
-                        };
+                if (ending?.kind === 'cut-off') {
+                    if (ctx.streak('cutOffs').add() >= FAIL_LIMIT)
+                        return { fail: `${ending.what} cut off ${FAIL_LIMIT} times in a row; last: ${ending.message}` };
                     return;
                 }
                 if (ending) return { fail: ending.message };
                 // The shop modal hides the inventory, so a shop that stays open is a failure.
-                if (!trip.closed.ok) return { fail: `trades done but cannot close shop: ${trip.closed.message}` };
+                if (!trip.closed.ok) return { fail: `cannot close the shop after trading: ${trip.closed.message}` };
             },
         },
         {
