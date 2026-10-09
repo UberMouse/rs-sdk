@@ -205,7 +205,7 @@ describe('cancellation', () => {
         const onTick = (s: BotWorldState) => gate.onTick(s) ?? stopAt(2)(s);
         const r = await interpret(walks(), { driver: d, onTick });
         expect(r).toEqual({ kind: 'cancelled', reason: 'stop' });
-        expect(trace(d)).toEqual(['send walk', 'log stop "stop" waits for send to settle', 'send cleanup']);
+        expect(trace(d)).toEqual(['send walk', 'log stop "stop" waits for send none (walk) to settle', 'send cleanup']);
     });
 
     test("onTick cancels a guard's op, after the target's cleanup and with the guard op's own", async () => {
@@ -260,7 +260,7 @@ describe('cleanup bounds', () => {
             'log guard low-hp (abort)',
             'send cleanup',
             'send close',
-            `log cleanup abandoned: send past the ${CLEANUP_TICKS}-tick cap (still running)`,
+            `log cleanup abandoned: send none (close) past the ${CLEANUP_TICKS}-tick cap (still running)`,
             'send eat',
         ]);
     });

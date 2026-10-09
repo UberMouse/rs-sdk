@@ -1,15 +1,17 @@
 import { describe, expect, test } from 'bun:test';
+import { z } from 'zod/v4';
 import type { BotWorldState } from '../../../sdk/types';
 import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { LEFTOVER_CLOSE_TICKS, LEFTOVER_STEP, MAX_STEP_COMMANDS } from '../../lib/engine';
-import type { Outcome, Step } from '../../lib/task';
+import type { TaskGuard } from '../../lib/interrupts';
+import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline, world } from '../world';
-import { runTask } from './harness';
+import { timeline, world, type World } from '../world';
+import { runDef, runTask } from './harness';
 
 const xpOf = (s: BotWorldState) => s.skills[0]?.experience ?? 0;
 
@@ -66,6 +68,21 @@ function* boom(): Op<Outcome> {
     yield* wait('a tick', () => false, 1);
     throw new Error('boom');
 }
+
+/** Rejects a microtask later, so an unhandled rejection would surface while the test still runs. */
+async function lateReject(): Promise<never> {
+    await Promise.resolve();
+    throw new Error('late boom');
+}
+
+/** A task guard whose async `run` (past the types) fires from `from` on. */
+const asyncGuard = (from: number): TaskGuard => ({
+    name: 'async',
+    policy: 'abort',
+    episode: () => ({}),
+    when: s => s.tick >= from,
+    run: lateReject as unknown as TaskGuard['run'],
+});
 
 const step = (name: string, run: Step['run']): Step => ({ name, when: () => true, run });
 
@@ -446,6 +463,34 @@ describe('decision-only steps', () => {
         await Promise.resolve();
         expect(settled).toBe(true);
     });
+
+    test('a preflight that returns a promise ends the run as an error, not "preflight: [object Promise]"', async () => {
+        const def = defineTask({
+            name: 'test',
+            description: 'engine test',
+            params: z.object({}),
+            preflight: lateReject as unknown as () => string | null,
+            steps: [step('idle', idle)],
+        });
+        const r = await runDef(def, timeline(5));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('preflight returned a promise: async preflights are not supported');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a task guard that returns a promise between steps ends the run as an error', async () => {
+        const r = await runTask([step('decide', () => undefined)], timeline(5), { guards: [asyncGuard(0)] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('guard "interrupt:async" returned a promise: async guards are not supported');
+        expect(r.result.stepRuns).toEqual({ 'interrupt:async': 1 });
+    });
+
+    test('a task guard that returns a promise mid-wait ends the run as an error, after the step cleans up', async () => {
+        const r = await runTask([step('idle', idle)], timeline(10), { guards: [asyncGuard(3)] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('guard "interrupt:async" returned a promise: async guards are not supported');
+        expect(r.sends).toEqual(['start', 'cleanup']);
+    });
 });
 
 describe('as the run ends', () => {
@@ -486,6 +531,19 @@ describe('as the run ends', () => {
             { stops },
         );
         expect(noFood.sends).toEqual(['start', 'cleanup']);
+    });
+
+    test('under an open bank or shop it does not try: the game would refuse the eat there', async () => {
+        const stops = [{ kind: 'xp' as const, skill: 'Woodcutting', amount: 10 }];
+        for (const open of [(w: World) => w.bank([]), (w: World) => w.shop([])]) {
+            // The modal opens on the tick the stop is reached, with HP low and food at hand.
+            const states = timeline(20, t => ({ hp: t >= 3 ? 4 : 10, xp: t >= 3 ? 20 : 0, food: 2 })).map(s =>
+                s.tick >= 3 ? open(world(s)).build() : s,
+            );
+            const r = await runTask([step('idle', idle)], states, { stops });
+            expect(r.result.status).toBe('done');
+            expect(r.sends).toEqual(['start', 'cleanup']);
+        }
     });
 
     test('a client that stops ticking does not hold up the result', async () => {

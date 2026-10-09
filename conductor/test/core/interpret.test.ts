@@ -472,7 +472,7 @@ describe('a pending send', () => {
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(trace(d)).toEqual([
             'send walk',
-            'log guard low-hp waits for send to settle',
+            'log guard low-hp waits for send none (walk) to settle',
             'log settled',
             'log guard low-hp (abort)',
             'send cleanup',
@@ -496,7 +496,7 @@ describe('a pending send', () => {
         );
         const r = await interpret(send(act('walk')), { driver: d, guards: [lowHp], onTick: gate.onTick });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
-        expect(trace(d)).toContain('log send failed after guard low-hp: walk failed');
+        expect(trace(d)).toContain('log send none (walk) failed after guard low-hp: walk failed');
     });
 
     test('after a suspend guard during a pending send, the op gets the send result', async () => {
@@ -509,7 +509,7 @@ describe('a pending send', () => {
         expect(r).toEqual({ kind: 'returned', value: OK });
         expect(trace(d)).toEqual([
             'send walk',
-            'log guard dialog waits for send to settle',
+            'log guard dialog waits for send none (walk) to settle',
             'log guard dialog (suspend)',
             'send continue',
         ]);

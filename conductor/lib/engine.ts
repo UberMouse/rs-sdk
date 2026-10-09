@@ -66,7 +66,8 @@ function* closeLeftover(ctx: ActionContext, what: string): Op<Outcome> {
 
 /**
  * Eats once if HP is still low, after clearing a dialog or informational modal that would swallow the
- * eat (as bot.eatFood's dismissBlockingUI does). A bank or shop stays open, and the eat with it fails.
+ * eat (as bot.eatFood's dismissBlockingUI does). The caller skips it under a bank or shop, which this
+ * leaves open.
  */
 function* eatBeforeLeaving(ctx: ActionContext): Op<void> {
     yield* dismiss(ctx);
@@ -116,13 +117,22 @@ const posOf = (s: BotWorldState) => (s.player ? { x: s.player.worldX, z: s.playe
 const isOp = (x: unknown): x is Op<Outcome> => typeof x === 'object' && x !== null && 'next' in x;
 
 /**
- * An `async run` (from a cast or plain JS, as the types allow none) returns a promise that would run on
- * unobserved, out of reach of the guards and stops. True for one, whose rejection is then handled.
+ * An `async` step, guard or preflight (from a cast or plain JS, as the types allow none) returns a
+ * promise that would run on unobserved, out of reach of the guards and stops. True for one, whose
+ * rejection is then handled.
  */
 function strayPromise(x: unknown): boolean {
     if (!(x instanceof Promise)) return false;
     x.catch(() => {});
     return true;
+}
+
+/**
+ * A guard's `run` returned a promise. Thrown from the guard wrapper, so it ends the run whether the
+ * guard fired between steps or inside an interpreted wait; its message is the run's reason.
+ */
+class AsyncGuard extends Error {
+    override name = 'AsyncGuard';
 }
 
 function ended(name: string, outcome: Outcome): End | null {
@@ -267,12 +277,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
      * Best effort, once: leave the bot above the low-HP line when food is at hand. A run can end on the
      * tick HP drops (a stop, the watchdog, a step's `done`, another guard's `fail`) before the low-HP
      * guard acts. Runs with no guards or stops, bounded by the ops' own tick limits and by TickStall.
-     * Never throws.
+     * Skipped under an open bank or shop: the game refuses the eat there, so it would only delay the
+     * result. Never throws.
      */
     const eatIfHurt = async () => {
         try {
             const s = stateOrNull();
-            if (s && isLowHp(s) && findFood(s)) await interpret(eatBeforeLeaving(ctx), { driver: view });
+            if (!s || s.bank.isOpen || s.shop.isOpen) return;
+            if (isLowHp(s) && findFood(s)) await interpret(eatBeforeLeaving(ctx), { driver: view });
         } catch {
             // The result still reports the HP and combat state the bot was left in.
         }
@@ -349,8 +361,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     if (start?.combat.inCombat)
         return finish('failed', `in combat at (${start.worldX},${start.worldZ}); handle the attacker first`);
     try {
-        const refused = def.preflight?.(ctx);
-        if (refused) return finish('failed', `preflight: ${refused}`);
+        const refused: unknown = def.preflight?.(ctx);
+        if (strayPromise(refused))
+            return finish('error', 'preflight returned a promise: async preflights are not supported');
+        if (refused) return finish('failed', `preflight: ${String(refused)}`);
     } catch (e) {
         emit({ type: 'exception', message: errMessage(e), stack: e instanceof Error ? e.stack : undefined });
         return finish('error', `preflight threw: ${errMessage(e)}`);
@@ -374,7 +388,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 episode = g.episode();
                 episodes.set(g.name, episode);
             }
-            return g.run(s, ctx, episode);
+            const out: unknown = g.run(s, ctx, episode);
+            if (strayPromise(out))
+                throw new AsyncGuard(`guard "${label}" returned a promise: async guards are not supported`);
+            return out as ReturnType<Guard['run']>;
         },
     }));
     // One per run, so the dialog guard fires at most once a tick even across consecutive steps.
@@ -560,6 +577,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     } catch (e) {
         if (e instanceof TickStall) return finish('stuck', e.message);
+        if (e instanceof AsyncGuard) return finish('error', e.message);
         emit({ type: 'exception', message: errMessage(e), stack: e instanceof Error ? e.stack : undefined });
         return finish('error', `${lastStep ?? 'setup'} threw: ${errMessage(e)}`);
     }

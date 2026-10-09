@@ -130,6 +130,10 @@ export function guardsUnder(guards: readonly Guard[], guard: Guard): Guard[] {
     return guards.filter((g, i) => g !== guard && (g.critical || i < rank || g.policy === 'suspend'));
 }
 
+/** A forwarded command as logs name it: a send by its action, as many sends may be in flight in one op. */
+const labelOf = (cmd: Forwarded): string =>
+    cmd.type === 'send' ? `send ${cmd.action.type} (${cmd.action.reason})` : cmd.type;
+
 const describe = (i: Interrupt) => ('cancel' in i ? `stop "${i.cancel}"` : `guard ${i.guard.name}`);
 
 /** The wait's result on `s`, or null to keep waiting. An `until` that throws is thrown into the op. */
@@ -235,6 +239,7 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
                     label = `wait "${cmd.label}"`;
                     r = await waitFor(cmd, watch, driver.state().tick);
                 } else {
+                    label = labelOf(cmd);
                     const f: Forwarding<string> = await forward(cmd, watch);
                     // Abandoning a command can't stop it: it may still act while the guard runs.
                     r = 'stop' in f ? { stop: `${f.stop} (still running)` } : f.resume;
@@ -330,7 +335,7 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
         const runForward = async (cmd: Forwarded): Promise<Resume | Interpretation<R>> => {
             const f = await forward(cmd, s => {
                 const i = check(s);
-                if (i) driver.log(`${describe(i)} waits for ${cmd.type} to settle`);
+                if (i) driver.log(`${describe(i)} waits for ${labelOf(cmd)} to settle`);
                 return i;
             });
             if ('resume' in f) return f.resume;
@@ -338,7 +343,7 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
             const end = await react(f.stop, cmd.type);
             if (!end) return resume;
             if ('error' in resume)
-                driver.log(`${cmd.type} failed after ${describe(f.stop)}: ${errMessage(resume.error)}`);
+                driver.log(`${labelOf(cmd)} failed after ${describe(f.stop)}: ${errMessage(resume.error)}`);
             return end;
         };
 
