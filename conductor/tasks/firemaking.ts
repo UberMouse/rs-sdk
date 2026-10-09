@@ -1,8 +1,10 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
+import { burn } from '../actions/burn';
+import { call, log, type Op } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
-import { findSkill } from '../lib/util';
+import { exactName, findSkill } from '../lib/util';
 
 /**
  * Firemaking level per log type, from server/content/scripts/skill_firemaking/configs/firemaking.obj
@@ -51,8 +53,8 @@ const countLogs = (state: BotWorldState, wanted: string) =>
 
 const hasTinderbox = (state: BotWorldState) => state.inventory.some(i => TINDERBOX.test(i.name));
 
-/** After a refused light, walk to the first reachable tile 1..SIDESTEP_MAX_TILES away inside the area. */
-async function sidestep(ctx: Ctx): Promise<void> {
+/** After a refused or timed-out light, walk to the first reachable tile 1..SIDESTEP_MAX_TILES away inside the area. */
+function* sidestep(ctx: Ctx): Op<void> {
     const p = ctx.state().player;
     if (!p) return;
     for (let d = 1; d <= SIDESTEP_MAX_TILES; d++) {
@@ -60,12 +62,13 @@ async function sidestep(ctx: Ctx): Promise<void> {
             const tx = p.worldX + dx * d;
             const tz = p.worldZ + dz * d;
             if (!inArea(ctx.params.area, { x: tx, z: tz })) continue;
-            const r = await ctx.bot.walkTo(tx, tz, 0);
+            // No walkTo op yet.
+            const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(tx, tz, 0));
             if (r.success) return;
-            ctx.log(`sidestep to (${tx},${tz}) failed: ${r.message}`);
+            yield* log(`sidestep to (${tx},${tz}) failed: ${r.message}`);
         }
     }
-    ctx.log('sidestep: no candidate tile reachable');
+    yield* log('sidestep: no candidate tile reachable');
 }
 
 export default defineTask({
@@ -96,30 +99,30 @@ export default defineTask({
         {
             name: 'finish',
             when: ctx => countLogs(ctx.state(), ctx.params.logs) === 0,
-            run: async ctx => ({ done: `no ${ctx.params.logs} left to burn` }),
+            run: ctx => ({ done: `no ${ctx.params.logs} left to burn` }),
         },
         returnToAreaStep<FiremakingParams>(params => params.area),
         {
             name: 'no-tinderbox',
             when: ctx => !hasTinderbox(ctx.state()),
-            run: async () => ({ fail: 'no tinderbox in inventory' }),
+            run: () => ({ fail: 'no tinderbox in inventory' }),
         },
         {
             name: 'burn',
             when: () => true,
-            async run(ctx) {
-                const logs = ctx.state().inventory.find(i => isLogs(i.name, ctx.params.logs));
-                if (!logs) return { fail: `no ${ctx.params.logs} in inventory` };
-                const r = await ctx.bot.burnLogs(logs);
-                const fails = ctx.counter('burnFails');
-                if (r.success) {
+            *run(ctx) {
+                const burned = yield* burn(ctx, exactName(ctx.params.logs));
+                const fails = ctx.streak('burnFails');
+                if (burned.ok) {
                     fails.reset();
                     return;
                 }
-                ctx.log(`light failed: ${r.message}`);
+                yield* log(`light failed: ${burned.message}`);
                 if (fails.add() >= BURN_FAIL_LIMIT)
-                    return { fail: `${BURN_FAIL_LIMIT} lights in a row failed (last: ${r.message})` };
-                await sidestep(ctx);
+                    return { fail: `${BURN_FAIL_LIMIT} lights in a row failed (last: ${burned.message})` };
+                // A refused tile needs another; after a timeout the logs lie on this one (burn.ts), so leave it
+                // rather than light again on top of them. Other failures are not about the tile.
+                if (burned.reason === 'cant-light-here' || burned.reason === 'timeout') yield* sidestep(ctx);
             },
         },
     ],
