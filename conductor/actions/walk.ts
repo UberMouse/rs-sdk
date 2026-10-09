@@ -61,7 +61,11 @@ const STOPPED_TICKS = 2;
 const MIN_LEG_TICKS = 3;
 /** The most ticks one walk takes, whatever its route; a step's ticks left may cap it lower (WalkOptions). */
 export const WALK_MAX_TICKS = 200;
-/** Ticks a walk leaves its step by default: enough to act on the result (a log, a count) and return. */
+/**
+ * Ticks a walk leaves its step by default: enough to act on the result (a log, a count) and return. A
+ * `reserveTicks` passed in its place must count the send that follows the walk, one tick, as well as
+ * the waits after it.
+ */
 export const WALK_RESERVE_TICKS = 3;
 /** A walk's ticks on top of its route's: one door taking both open attempts and the walk beside it. */
 export const WALK_BASE_TICKS = 2 * DOOR_OPEN_TICKS + 20;
@@ -92,8 +96,8 @@ export interface WalkOptions {
     /** The most ticks the walk may take; default WALK_MAX_TICKS. */
     maxTicks?: number;
     /**
-     * Ticks the step still needs once the walk is over (the op and waits that follow it); default
-     * WALK_RESERVE_TICKS. The walk takes at most the step's ticks left (ActionContext.stepTicksLeft) less
+     * Ticks the step still needs once the walk is over (the op and waits that follow it, and the one
+     * tick of its send); default WALK_RESERVE_TICKS. The walk takes at most the step's ticks left (ActionContext.stepTicksLeft) less
      * these, so the step finishes inside its tick budget instead of the engine ending the run `stuck`.
      */
     reserveTicks?: number;
@@ -107,7 +111,10 @@ export interface WalkOptions {
 export const timedOutAdvancing = (r: WalkResult, before: number, after: number): boolean =>
     !r.ok && r.reason === 'timeout' && after < before;
 
-/** The tick budget of a walk whose first route is `tiles` long (a partial one to the destination), capped at `maxTicks`. */
+/**
+ * The tick budget of a walk whose first route is `tiles` long (a partial one to the destination),
+ * capped at `maxTicks`.
+ */
 export const walkBudgetTicks = (tiles: number, maxTicks = WALK_MAX_TICKS): number =>
     Math.min(maxTicks, WALK_BASE_TICKS + WALK_TICKS_PER_TILE * tiles);
 
@@ -163,7 +170,7 @@ function* pause(w: Walk, n: number): Op<void> {
  * no closer after three routes and no door to open; `no-path` is no route at all; `gave-up` is 50 routes
  * without arriving; `timeout` is the tick budget spent (walkBudgetTicks, capped to the step's ticks left
  * less `reserveTicks`), wherever the bot then stands; `no-time` is a step with no ticks left to walk in,
- * nothing sent. A route through the Wilderness to a destination outside it is `no-path` too.
+ * nothing sent. A route through the Wilderness to a destination outside it is `no-path` too, unless the walk starts in it.
  */
 export function* walkTo(
     ctx: ActionContext,
@@ -221,8 +228,12 @@ export function* walkTo(
     // Progress is closing on the destination, not distance walked: an oscillating route moves every
     // time without getting closer.
     let bestRemaining = dist(pos, target);
-    // A walk to a destination outside the Wilderness never takes a route through it (PvP, items lost on death).
-    const destinationTame = !isInWilderness(start.player.level, x, z);
+    // A walk to a destination outside the Wilderness never takes a route through it (PvP, items lost on death),
+    // unless it starts inside: its first waypoints are then in the Wilderness too, and refusing them would
+    // keep a bot there from ever walking out (the critical Wilderness guard ends task runs; this is for
+    // manual and recovery use).
+    const destinationTame =
+        !isInWilderness(start.player.level, x, z) && !isInWilderness(start.player.level, pos.x, pos.z);
 
     for (let i = 0; i < MAX_ROUTES; i++) {
         if (outOfTime(w)) return timedOut();

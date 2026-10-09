@@ -166,6 +166,17 @@ describe('walkTo: the Wilderness', () => {
         expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
     });
 
+    test('a walk that starts in the Wilderness may leave it, by a route through the Wilderness', async () => {
+        const inside = { x: 3090, z: 3525 };
+        const paths = fakePaths(() => ({
+            success: true,
+            reachedDestination: true,
+            waypoints: route({ x: 3090, z: 3521 }, { x: 3100, z: 3521 }, { x: 3100, z: 3510 }),
+        }));
+        const w = await walk(standing(inside), 3100, 3510, 0, { paths });
+        expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
+    });
+
     test('a destination in the Wilderness is not refused here (preflight and the guard own that)', async () => {
         const w = await walk(standing(south), 3090, 3525, 0);
         expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
