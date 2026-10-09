@@ -8,7 +8,14 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-- Woodcutting to 30 on normal trees, then willows (task `woodcutting`).
+State at 2026-10-09T07:58Z: total level 189 (WC 63, FM 53, Att 17, HP 17, Str 13, Prayer 10, Def 4, rest 1).
+Catalog: `woodcutting`, `shop`, `combat`, `firemaking` (all reviewed, committed).
+
+- Loop woodcutting (~300k XP/hr) -> firemaking (~810k XP/hr) for logs/XP; both are the fastest
+  methods the account has. Combat is the slowest (Attack 41k/hr, Strength 45k/hr, HP 13k/hr).
+- Next unlocks of total level are the 13 skills still at 1: each costs one small task and gives
+  ~30-50 levels in minutes at 25x. Author in the order of the Backlog below.
+- Settle combat gear (Defence 4, no armour, no food) before any area above chickens.
 
 ## Unlocks
 
@@ -23,15 +30,21 @@ requirements before planning it.
 ## Backlog
 
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
-status (`idea` / `authoring` / `in catalog`).
+status (`idea` / `authoring` / `in review` / `in catalog`).
 
+- `woodcutting`, `shop`, `combat`, `firemaking` — in catalog.
+- `fletching` (knife + logs -> arrow shafts/shortbows; consumes woodcutting output, fast XP) — idea.
+  Needs a knife from the General Store: one `shop` call.
+- `fishing` (shrimps/sardines, Lumbridge/Draynor; needs a net, 1 shop call) then `cooking` on a
+  range (consumes the catch, gives food for `combat`'s `food` param) — idea
+- `mining` (copper/tin near Lumbridge; pickaxe = 1 shop call) then `smithing` at furnace + anvil
+  (bronze bars -> kit and sellable items) — idea
+- `crafting` (leather/needle, cheap) and `thieving` (men/farmers; HP 17 now survives stuns) — idea
+- `agility` course (Draynor rooftop, Gnome course) — idea, check Unlocks/wiki first
 - `woodcutting` bank mode (keep logs for Firemaking/Fletching and money) — idea
-- `fishing` (shrimps at Lumbridge/Draynor) and `cooking` on a range — idea
-- `mining` (copper/tin near Lumbridge) and `smithing` at a furnace + anvil — idea
-- `combat` against an NPC with food, eating and style rotation (Attack/Strength/Defence) — idea
-- `firemaking` from banked logs — idea
+- `combat` upgrades: eat real food, rotate styles, a better target than chickens (see Experiments) — idea
 - money making to fund gear and supplies — idea
-- quest tasks for the Unlocks table — idea
+- quest tasks for the Unlocks table (Rune Mysteries, Druidic Ritual) — idea
 
 ## Framework
 
@@ -65,8 +78,16 @@ on its own.
 
 ## Experiments
 
-Variants worth comparing with `bun conductor/tools/stats.ts` (a different spot, target or
-mode for the same objective). Each line: hypothesis, variants, status.
+Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
+
+- Combat XP/hr: chickens give Attack 41k/h, Strength 45k/h vs 300-800k/h for WC/FM, so melee to
+  99 would be ~100x slower than gathering. Hypothesis: a higher-HP, higher-XP target (cows,
+  Lumbridge goblins, Al Kharid warriors) and a better weapon give 3-5x. Variants: chicken vs cow
+  vs goblin, bronze vs iron sword. Also compare XP per style (Controlled spreads XP). Status: untested.
+- Firemaking spot/log type: 812k/h measured with normal logs at (3230,3240); compare oak logs
+  (higher XP per log) once WC can supply them. Status: untested.
+- Woodcutting: normal trees 304k/h at Lumbridge vs willows/oaks (higher XP per log, safe spot
+  needed for HP 17). Status: untested.
 
 ## Review follow-ups
 
@@ -79,3 +100,10 @@ Review findings `task-review` deferred because their fix needs work outside the 
   after `checkStops`. The engine fix is to defer a stop while `player.combat.inCombat`, with a
   bounded grace of about 30 s, or to wait out a fight before refusing at start (robustness R5,
   safety S1).
+- Engine/lib: `Counter` has no read method (tasks read with `add(0)`); add `value()` (shop review).
+- Engine/lib: export a `TICK_MS` constant (400 ms, `learnings/local-server.md`). combat.ts was
+  authored with `MS_PER_TICK = 600` after the page was corrected; one reviewer caught it.
+- Engine: a smoke test never exercises failure branches (woodcutting "area depleted", shop
+  `shop_not_open` reopen); give tasks a test hook or use the snapshot fixtures item.
+- Tooling: `conductor/tools/journal.ts` that appends a journal line stamped with the real UTC
+  time (the conductor guessed times; F16), and a bot lease (owner + expiry) honoured by `run-task.ts`.
