@@ -30,6 +30,12 @@ type BankParams = z.infer<typeof Params>;
 interface BankMemory {
     /** How many of the task's operations (see `operationsOf`) have gone through, in order. */
     opsMade: number;
+    /**
+     * The deposit or withdrawal under way: its index and how many of its item the inventory held before
+     * its first send. An abort can land after the transfer did, so a resumed step counts what moved
+     * since then and sends only the rest.
+     */
+    inFlight: { opIndex: number; heldBefore: number } | null;
 }
 type Ctx = TaskContext<BankParams, BankMemory>;
 type Operation =
@@ -51,14 +57,39 @@ const operationsOf = (params: BankParams): Operation[] => [
 /** The next operation to make, or undefined when all are made. */
 const nextOp = (ctx: Ctx): Operation | undefined => operationsOf(ctx.params)[ctx.memory.opsMade];
 
+/**
+ * How many of `item` an earlier, aborted run of the current operation already moved (out of the
+ * inventory for a deposit, into it for a withdrawal), recording the inventory count before the first
+ * send otherwise. Null when this is the operation's first run. Never negative: an eat between the abort
+ * and the resume (the item is food) must not make the resumed step ask for more than the operation.
+ */
+function movedBefore(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: string }): number | null {
+    const held = invCount(ctx.state(), op.item);
+    const { inFlight, opsMade } = ctx.memory;
+    if (inFlight?.opIndex !== opsMade) {
+        ctx.memory.inFlight = { opIndex: opsMade, heldBefore: held };
+        return null;
+    }
+    return Math.max(0, op.kind === 'deposit' ? inFlight.heldBefore - held : held - inFlight.heldBefore);
+}
+
 /** Returns a failure message, or null when the operation went through. */
 function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     if (op.kind === 'deposit') {
-        const r = yield* deposit(ctx, exactName(op.item), op.count ?? 'all');
+        const moved = movedBefore(ctx, op);
+        // A resumed deposit-all is done once none is left; a counted one sends only the remainder.
+        const amount = op.count === undefined ? 'all' : op.count - (moved ?? 0);
+        const left = invCount(ctx.state(), op.item);
+        if (moved !== null && (amount === 'all' ? left === 0 : amount <= 0)) {
+            yield* log(`deposit ${op.item}: ${moved} already deposited before the step was cut off`);
+            return null;
+        }
+        const r = yield* deposit(ctx, exactName(op.item), amount);
         yield* log(`deposit ${op.item}: ${r.message}`);
         return r.ok ? null : `deposit ${op.item} failed (${r.reason}): ${r.message}`;
     }
     if (op.kind === 'depositAllExcept') {
+        // Resumes by itself: a name already deposited is no longer in the inventory.
         const names = new Set<string>();
         for (const i of ctx.state().inventory) {
             if (!op.keep.some(k => sameName(k, i.name))) names.add(i.name);
@@ -70,14 +101,20 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
         }
         return null;
     }
+    const moved = movedBefore(ctx, op) ?? 0;
+    const want = op.count - moved;
+    if (want <= 0) {
+        yield* log(`withdraw ${op.item} x${op.count}: ${moved} already withdrawn before the step was cut off`);
+        return null;
+    }
     const pattern = exactName(op.item);
     const banked = ctx.state().bank.items.filter(i => pattern.test(i.name));
     const have = banked.reduce((n, i) => n + i.count, 0);
-    if (have < op.count) return `bank holds ${have} ${op.item}, need ${op.count}`;
-    const r = yield* withdraw(ctx, pattern, op.count);
-    yield* log(`withdraw ${op.item} x${op.count}: ${r.message}`);
+    if (have < want) return `bank holds ${have} ${op.item}, need ${want}`;
+    const r = yield* withdraw(ctx, pattern, want);
+    yield* log(`withdraw ${op.item} x${want}: ${r.message}`);
     if (r.ok) return null;
-    return `withdraw ${op.item} x${op.count} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
+    return `withdraw ${op.item} x${want} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
 }
 
 /** The operations still to make, in order, with the bank open; the first failure message ends them. */
@@ -86,6 +123,7 @@ function* performRemaining(ctx: Ctx): Op<string | null> {
         const failure = yield* perform(ctx, op);
         if (failure) return failure;
         ctx.memory.opsMade++;
+        ctx.memory.inFlight = null;
     }
     return null;
 }
@@ -97,7 +135,7 @@ export default defineTask({
         'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count}]), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked, or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
     params: Params,
-    memory: (): BankMemory => ({ opsMade: 0 }),
+    memory: (): BankMemory => ({ opsMade: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
 
     preflight(ctx) {
@@ -146,7 +184,8 @@ export default defineTask({
             // Open, every remaining operation and the close are one step, so whatever cancels it (a
             // guard, a stop, the step budget) closes the bank on the way out: an open bank hides the
             // inventory the low-HP guard would eat from. An aborted step resumes at the first operation
-            // not yet made. Named `operate` so its failure reasons keep the prefix runners know.
+            // not yet made, less what of it already landed (`inFlight`). Named `operate` so its failure
+            // reasons keep the prefix runners know.
             name: 'operate',
             when: ctx => !!nextOp(ctx),
             *run(ctx) {

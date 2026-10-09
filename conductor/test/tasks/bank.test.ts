@@ -34,6 +34,14 @@ const opensOnly: TimelineOptions['react'] = (action, state) =>
 /** A bank that opens and moves items but ignores every close. */
 const staysOpen: TimelineOptions['react'] = (action, state) =>
     action.type === 'closeModal' ? undefined : react(action, state);
+/**
+ * The bank opens on tick 1 and a transfer sent then lands on tick 2, the tick HP drops: the low-HP
+ * guard cancels the op's wait before it sees the items move, so the op never reports them.
+ */
+const hurtOnLanding = (w: World) => w.series(40, (x, i) => x.player({ hp: i >= 2 && i < 4 ? 3 : 10 }));
+/** The actions sent with this reason, in order. */
+const sentAs = (r: Simulation, reason: string) =>
+    r.commands.flatMap(c => (c.type === 'send' && c.action.reason === reason ? [c.action] : []));
 const refusal = async (params: unknown, w: World = carrying) =>
     (await simulate(bank, { params, timeline: w.series(1) })).result;
 
@@ -302,6 +310,62 @@ describe('bank: guards', () => {
         ]);
         expect(r.result.stepRuns).toEqual({ operate: 2, 'interrupt:low-hp': 1, finish: 1 });
         expect(r.result.inventoryDelta).toEqual({ Logs: -2, Bones: -1, Shrimps: -1 });
+    });
+
+    describe('an abort on the tick the transfer lands resumes without repeating it', () => {
+        const RESUMED = [OPEN, CLOSE, 'Eat Shrimps', OPEN, CLOSE];
+
+        test('a counted deposit is not deposited again', async () => {
+            const r = await simulate(bank, {
+                params: { deposit: [{ item: 'Logs', count: 2 }] },
+                timeline: hurtOnLanding(carrying.inv('Logs', 5)),
+                react,
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.sends).toEqual(RESUMED.toSpliced(1, 0, 'deposit Logs'));
+            expect(r.result.inventoryDelta).toEqual({ Logs: -2, Shrimps: -1 });
+            expect(logged(r)).toContain('deposit Logs: 2 already deposited before the step was cut off');
+        });
+
+        test('a deposit of all that landed is done, not item-not-found', async () => {
+            const r = await simulate(bank, {
+                params: { deposit: [{ item: 'Logs' }] },
+                timeline: hurtOnLanding(carrying),
+                react,
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.sends).toEqual(RESUMED.toSpliced(1, 0, 'deposit Logs'));
+            expect(r.result.inventoryDelta).toEqual({ Logs: -2, Shrimps: -1 });
+        });
+
+        test('a counted withdrawal is not withdrawn again', async () => {
+            const r = await simulate(bank, {
+                params: { withdraw: [{ item: 'Bones', count: 3 }] },
+                timeline: hurtOnLanding(carrying),
+                react,
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.result.reason).toBe('finish: all 1 bank operations made');
+            expect(r.sends).toEqual(RESUMED.toSpliced(1, 0, 'withdraw Bones'));
+            expect(r.result.inventoryDelta).toEqual({ Bones: 3, Shrimps: -1 });
+            expect(logged(r)).toContain('withdraw Bones x3: 3 already withdrawn before the step was cut off');
+        });
+
+        test('a withdrawal that partly landed asks only for the rest', async () => {
+            let withdrawals = 0;
+            const firstMovesOne: TimelineOptions['react'] = (action, state) =>
+                action.type === 'bankWithdraw' && ++withdrawals === 1
+                    ? react({ ...action, amount: 1 }, state)
+                    : react(action, state);
+            const r = await simulate(bank, {
+                params: { withdraw: [{ item: 'Bones', count: 3 }] },
+                timeline: hurtOnLanding(carrying),
+                react: firstMovesOne,
+            });
+            expect(r.result.status).toBe('done');
+            expect(sentAs(r, 'withdraw Bones')).toMatchObject([{ amount: 3 }, { amount: 2 }]);
+            expect(r.result.inventoryDelta).toEqual({ Bones: 3, Shrimps: -1 });
+        });
     });
 
     test('a level-up dialog mid-deposit is cleared and the trip carries on', async () => {

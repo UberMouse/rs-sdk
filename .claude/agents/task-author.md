@@ -132,7 +132,10 @@ passes its `ctx` as the `ActionContext`.
   open. It returns `{ ok: true, value, closed }` (`closed` is the normal path's close result; a task
   that needs the bank shut should fail on `!closed.ok`) or the failed open's
   `{ ok: false, reason, message }`. Make the body resumable (record progress in typed memory), as the
-  aborted step runs again from the top. The same shape applies to any open/close pair (shop).
+  aborted step runs again from the top, and record it before each send, not after: an abort can land
+  on the tick the effect does, before the op sees it, so a resumed op compares the state with what
+  it recorded and sends only what has not landed (`tasks/bank.ts` `inFlight`). The same shape
+  applies to any open/close pair (shop).
 - **Each op gets tests**: a unit test in `conductor/test/actions/<op>.test.ts` (scripted timeline
   through `interpret`; see `chop.test.ts`) and an integration test in
   `conductor/test/integration/actions/<op>.itest.ts` against the real engine (see `chop.itest.ts`).
