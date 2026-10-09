@@ -8,9 +8,16 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Items } from '../../sdk/test/utils/save-generator';
-import type { BotWorldState, DialogOption, GroundItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
+import type { BotWorldState, CombatStyleOption, DialogOption, GroundItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 
 export const LUMBRIDGE = { x: 3222, z: 3218 };
+
+/** The unarmed combat tab, as conductor/test/fixtures/lumbridge.json captured it. */
+export const UNARMED_STYLES: CombatStyleOption[] = [
+    { index: 0, name: 'Punch', type: 'Accurate', trainsSkills: ['Attack'], damageType: 'Crush' },
+    { index: 1, name: 'Kick', type: 'Aggressive', trainsSkills: ['Strength'], damageType: 'Crush' },
+    { index: 2, name: 'Block', type: 'Defensive', trainsSkills: ['Defence'], damageType: 'Crush' },
+];
 const INVENTORY_SLOTS = 28;
 
 /** The tile distance the client publishes (Chebyshev: a diagonal neighbour is 1). */
@@ -294,6 +301,41 @@ export class World {
     /** Whether the client reports auto-retaliate on; a bare state leaves it unreported. */
     autoRetaliate(on: boolean): World {
         return this.with({ autoRetaliateEnabled: on });
+    }
+
+    /** The bot in combat targeting NPC `index`, or with `false` out of combat with no target. */
+    fighting(index: number | false): World {
+        const cur = this.s.player;
+        if (!cur) throw new Error('world: the base state has no player');
+        const combat =
+            index === false
+                ? { ...cur.combat, inCombat: false, targetType: 'none' as const, targetIndex: -1 }
+                : { ...cur.combat, inCombat: true, targetType: 'npc' as const, targetIndex: index };
+        return this.with({ player: { ...cur, combat } });
+    }
+
+    /** A hit of `damage` the bot dealt NPC `index` on the current tick (a `damage_dealt` combat event). */
+    hit(index: number, damage = 1): World {
+        const event = {
+            tick: this.s.tick,
+            type: 'damage_dealt' as const,
+            damage,
+            sourceType: 'player' as const,
+            sourceIndex: -1,
+            targetType: 'npc' as const,
+            targetIndex: index,
+        };
+        return this.with({ combatEvents: [...this.s.combatEvents, event] });
+    }
+
+    /**
+     * The combat tab with style `current` selected; `styles` default to the unarmed tab (Punch trains
+     * Attack, Kick Strength, Block Defence), as captured from the live client.
+     */
+    combatStyle(current: number, styles: CombatStyleOption[] = UNARMED_STYLES, known = true): World {
+        return this.with({
+            combatStyle: { currentStyle: current, weaponName: 'Unarmed', styles, tabInterfaceId: 5855, known },
+        });
     }
 
     /** A dialog page the client recorded on the current tick (`recentDialogs`), one string per line. */

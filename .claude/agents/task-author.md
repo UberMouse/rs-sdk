@@ -89,7 +89,7 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 
 ### Ops
 
-Ops live in `conductor/actions/`: `chop`, `mine`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
+Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
 `useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch` and `dismiss`, with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
 passes its `ctx` as the `ActionContext`.
