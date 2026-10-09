@@ -18,5 +18,5 @@ You review one change to the bot task code through one lens. You do not edit any
 4. Return the JSON described in `common.md` §Finding format and nothing else. `checked` lists
    every criterion id you ran.
 
-Bash is for reading (`git diff`, `git show`, `grep`, `bunx tsc --noEmit -p .`). Never run
-anything that drives a bot.
+Bash is for reading (`git diff`, `git show`, `grep`, `bunx tsc --noEmit -p .`, `bun run lint`,
+`bun run fmt:check`). Never run anything that drives a bot.

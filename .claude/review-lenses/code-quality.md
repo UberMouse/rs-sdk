@@ -27,8 +27,9 @@ belongs to the other lenses; this one judges the code as code.
   change ("now", "used to", "temporarily"); comments made wrong by the change, including
   existing ones above modified code; comments that survive the halving test (half as long,
   nothing a reader can act on lost) — give the shortened text.
-- **Q6 Consistency.** Matches the surrounding code in `conductor/` and `sdk/`: 4-space indent,
-  single quotes, semicolons, relative imports, `zod/v4`, the reference task's layout
+- **Q6 Consistency.** `bun run fmt:check` and `bun run lint` (oxfmt, and oxlint with warnings
+  denied) are clean for the changed files — mechanical style is theirs, so don't report what
+  they check. Beyond them: relative imports, `zod/v4`, the reference task's layout
   (constants, params schema, `defineTask` with preflight then steps). Comment density like the
   neighbours'.
 - **Q7 Logging.** `ctx.log` for events the conductor or a runner will want in the NDJSON log

@@ -127,6 +127,10 @@ Rules for every agent working in this repo:
   comments or agent prompts.
 - **Long runs keep state on disk** in `.durable-state/` (the `durable-state` skill), so they
   survive compaction and resumes.
+- **`conductor/` code is formatted and linted**: oxfmt (`.oxfmtrc.json`) and oxlint
+  (`.oxlintrc.json`, warnings denied). Finish code edits with `bun run verify:conductor`
+  (`bun run fmt` formats in place). A Claude Code hook formats and lints each edited file, and the
+  git pre-commit hook (`.githooks/`, enabled by `bun install`) refuses staged files that fail.
 
 ## Session Workflow
 

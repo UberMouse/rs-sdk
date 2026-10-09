@@ -9,10 +9,17 @@
     "test": "bun test sdk/test server/webclient/src/bot server/webclient/src/util server/webclient/src/lite server/engine/test/market.test.ts server/engine/test/market-web.test.ts server/engine/test/item-search.test.ts server/engine/test/file-stream.test.ts server/engine/test/get-ip.test.ts server/engine/test/bank-hiscores.test.ts server/gateway/state-fanout.test.ts",
     "typecheck": "tsc --noEmit",
     "typecheck:webclient": "tsc --noEmit -p server/webclient/tsconfig.json",
-    "test:market:integration": "cd server/engine && bun test/market-integration.ts && bun test/market-recovery.ts && bun test/market-protocol.ts && bun test/market-disabled.ts"
+    "test:market:integration": "cd server/engine && bun test/market-integration.ts && bun test/market-recovery.ts && bun test/market-protocol.ts && bun test/market-disabled.ts",
+    "lint": "oxlint --deny-warnings conductor",
+    "fmt": "oxfmt 'conductor/**/*.ts'",
+    "fmt:check": "oxfmt --check 'conductor/**/*.ts'",
+    "verify:conductor": "bun run fmt:check && bun run lint && tsc --noEmit -p conductor",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "oxfmt": "0.70.0",
+    "oxlint": "1.85.0",
     "puppeteer": "^24.0.0"
   },
   "peerDependencies": {

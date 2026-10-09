@@ -43,7 +43,9 @@ you never commit, and you only touch the bot you were given.
 `bun conductor/run-task.ts <bot> <name> --params '<json>' --until minutes:1`. Iterate until the
 RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the screenshots
 and the `logFile`, and use `bun sdk/cli.ts <bot>` / `bun conductor/tools/screenshot.ts <bot>`.
-Also run `bunx tsc --noEmit -p .` and fix anything it reports under `conductor/`.
+Finish with `bun run verify:conductor` (oxfmt check, oxlint with warnings denied, tsc) and fix
+everything it reports under `conductor/` (`bun run fmt` formats in place). Commits run the same
+format and lint checks on staged files and are refused until they pass.
 
 ## Report
 
