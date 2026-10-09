@@ -5,6 +5,7 @@ import { walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { distance } from './util';
+import { squareReachesWilderness } from './wilderness';
 
 /** Radius floor: the walk tolerance is radius - 1, so a smaller area could never be reached. */
 const MIN_AREA_RADIUS = 2;
@@ -16,24 +17,6 @@ const DEFAULT_AREA_RADIUS = 15;
 const WORK_REACH = 2;
 const MAX_WALK_TOLERANCE = 3;
 const WALK_FAIL_LIMIT = 3;
-
-/**
- * Surface Wilderness box (plane 0), from wilderness_zones.dbrow: x 2944..3391, z >= 3520.
- * No task goes there: PvP, and death drops items.
- */
-const WILDERNESS_MIN_X = 2944;
-const WILDERNESS_MAX_X = 3391;
-const WILDERNESS_MIN_Z = 3520;
-
-/** On the surface in the Wilderness. */
-export const isInWilderness = (level: number, worldX: number, worldZ: number): boolean =>
-    level === 0 && worldX >= WILDERNESS_MIN_X && worldX <= WILDERNESS_MAX_X && worldZ >= WILDERNESS_MIN_Z;
-
-/** True when the area's bounding square overlaps the surface Wilderness. */
-const areaReachesWilderness = (area: Area): boolean =>
-    area.x + area.radius >= WILDERNESS_MIN_X &&
-    area.x - area.radius <= WILDERNESS_MAX_X &&
-    area.z + area.radius >= WILDERNESS_MIN_Z;
 
 export const AreaSchema = z.object({
     x: z.number(),
@@ -49,7 +32,7 @@ export function inArea(area: Area | undefined, point: { x: number; z: number }):
 
 /** Preflight check for an area param; returns a refusal reason or null. */
 export function refuseArea(area: Area | undefined): string | null {
-    if (area && areaReachesWilderness(area))
+    if (area && squareReachesWilderness(area.x, area.z, area.radius))
         return `area (${area.x},${area.z}) radius ${area.radius} reaches the Wilderness`;
     return null;
 }

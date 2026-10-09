@@ -215,7 +215,8 @@ No catalog task uses one any more.
 
 `yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
 (Chebyshev, default 3) on the bot's level, opening the doors and gates on its route. It does not
-climb stairs or ladders. Its result's `reason` says why it stopped short (`no-path`, `dead-end`,
+climb stairs or ladders, and it refuses (`no-path`) a route that crosses the Wilderness to a
+destination outside it (`lib/wilderness.ts`). Its result's `reason` says why it stopped short (`no-path`, `dead-end`,
 `stuck`, `gave-up`, `timeout`, `no-time`, ...); `message` is what to put in a fail reason. One walk
 takes at most `WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it
 stands and the next walk carries on from there, so a step that walks far must be one the task runs

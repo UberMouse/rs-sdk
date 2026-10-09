@@ -15,9 +15,12 @@
 //   again carries on from there. Inside a task step the budget is also capped to the step's ticks left
 //   less `reserveTicks`, so a step that walks never overruns its own budget; with none left it is `no-time`.
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
+// - A route that crosses the surface Wilderness to a destination outside it is `no-path`, never walked:
+//   upstream walks whatever the pathfinder returns.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { log, type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
+import { isInWilderness } from '../lib/wilderness';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
 import { messageCursor, messageSince } from './messages';
@@ -132,7 +135,7 @@ function* pause(w: Walk, n: number): Op<void> {
  * no closer after three routes and no door to open; `no-path` is no route at all; `gave-up` is 50 routes
  * without arriving; `timeout` is the tick budget spent (walkBudgetTicks, capped to the step's ticks left
  * less `reserveTicks`), wherever the bot then stands; `no-time` is a step with no ticks left to walk in,
- * nothing sent.
+ * nothing sent. A route through the Wilderness to a destination outside it is `no-path` too.
  */
 export function* walkTo(
     ctx: ActionContext,
@@ -190,6 +193,8 @@ export function* walkTo(
     // Progress is closing on the destination, not distance walked: an oscillating route moves every
     // time without getting closer.
     let bestRemaining = dist(pos, target);
+    // A walk to a destination outside the Wilderness never takes a route through it (PvP, items lost on death).
+    const destinationTame = !isInWilderness(start.player.level, x, z);
 
     for (let i = 0; i < MAX_ROUTES; i++) {
         if (outOfTime(w)) return timedOut();
@@ -211,6 +216,13 @@ export function* walkTo(
             }
         }
         const { waypoints } = path;
+        const wild = destinationTame ? waypoints.find(wp => isInWilderness(wp.level, wp.x, wp.z)) : undefined;
+        if (wild)
+            return {
+                ok: false,
+                reason: 'no-path',
+                message: `Route to (${x}, ${z}) crosses the Wilderness at (${wild.x}, ${wild.z}); not walking it`,
+            };
         const end = waypoints[waypoints.length - 1]!;
         if (!budgeted) {
             w.deadline = w.startTick + walkBudgetTicks(routeTiles(pos, waypoints, target), maxTicks);

@@ -7,7 +7,7 @@ import { closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
 import { eat } from '../actions/eat';
 import type { GuardOutcome } from '../core/interpret';
 import { log, type Op, ticks } from '../core/op';
-import { isInWilderness } from './area';
+import { isInWilderness } from './wilderness';
 import { isLowHp } from './threat';
 
 type InventoryItem = BotWorldState['inventory'][number];

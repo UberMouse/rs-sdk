@@ -121,6 +121,57 @@ describe('walkTo: partial routes (ported from sdk/test/walkto-partial-path.test.
     });
 });
 
+/** Edgeville, just south of the Wilderness ditch (z 3520). */
+const EDGEVILLE = { x: 3090, z: 3500 };
+/** A route from Edgeville that bulges north over the ditch. */
+const clipping: Router = () => ({
+    success: true,
+    reachedDestination: true,
+    waypoints: route({ x: 3090, z: 3521 }, { x: 3100, z: 3521 }, { x: 3100, z: 3510 }),
+});
+/** The same route kept one tile south of the ditch. */
+const alongTheEdge: Router = () => ({
+    success: true,
+    reachedDestination: true,
+    waypoints: route({ x: 3090, z: 3519 }, { x: 3100, z: 3519 }, { x: 3100, z: 3510 }),
+});
+
+describe('walkTo: the Wilderness', () => {
+    const south = EDGEVILLE;
+
+    test('a route through the Wilderness to a destination outside it is no-path, nothing sent', async () => {
+        const w = await walk(standing(south), 3100, 3510, 0, { paths: fakePaths(clipping) });
+        expect(w.result()).toEqual({
+            ok: false,
+            reason: 'no-path',
+            message: 'Route to (3100, 3510) crosses the Wilderness at (3090, 3521); not walking it',
+        });
+        expect(w.sends).toEqual([]);
+    });
+
+    test('a re-route that turns into the Wilderness is refused too', async () => {
+        // The first route stops short on safe ground; the one from there crosses the ditch.
+        const paths = fakePaths(from =>
+            from.z === south.z
+                ? { success: true, reachedDestination: false, waypoints: route({ x: 3090, z: 3505 }) }
+                : clipping(from, { x: 3100, z: 3510 }, []),
+        );
+        const w = await walk(standing(south), 3100, 3510, 0, { paths });
+        expect(w.result()).toMatchObject({ ok: false, reason: 'no-path' });
+        expect(w.sends).toEqual(['walk to (3090, 3505)']);
+    });
+
+    test('a route along the edge, all of it south of z 3520, is walked', async () => {
+        const w = await walk(standing(south), 3100, 3510, 0, { paths: fakePaths(alongTheEdge) });
+        expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
+    });
+
+    test('a destination in the Wilderness is not refused here (preflight and the guard own that)', async () => {
+        const w = await walk(standing(south), 3090, 3525, 0);
+        expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
+    });
+});
+
 describe('walkTo: tolerance (ported from sdk/test/walkto-tolerance.test.ts)', () => {
     test('tolerance 0 reaches the exact tile; an intermediate waypoint is only passed within 2', async () => {
         const paths = fakePaths(full({ x: 3205, z: 3200 }, { x: 3210, z: 3200 }));

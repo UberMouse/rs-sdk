@@ -3,7 +3,7 @@ import type { BotWorldState } from '../../sdk/types';
 import { buy, closeShop, sell, withShop } from '../actions/shop';
 import { walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { isInWilderness } from '../lib/area';
+import { isInWilderness } from '../lib/wilderness';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, TICK_MS } from '../lib/util';
 
