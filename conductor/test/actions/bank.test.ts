@@ -2,7 +2,6 @@ import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
 import {
     BANK_TRANSFER_WAIT_TICKS,
-    CLEANUP_CLOSE_WAIT_TICKS,
     CLOSE_BANK_WAIT_TICKS,
     closeBank,
     deposit,
@@ -14,6 +13,7 @@ import {
     withBank,
     withdraw,
 } from '../../actions/bank';
+import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { CLEANUP_TICKS, type Guard, interpret } from '../../core/interpret';
 import { send } from '../../core/op';

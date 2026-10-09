@@ -138,7 +138,8 @@ passes its `ctx` as the `ActionContext`.
   it recorded and sends only what has not landed (`tasks/bank.ts` `inFlight`). `withShop(ctx,
   target, body)` is the same for a shop (`target` is `openShop`'s shopkeeper: an NPC, a name or a pattern;
   `undefined` = the nearest shopkeeper), with `closeShop` for the close and `reason` strings of its own.
-  The same shape applies to any other open/close pair.
+  Both are `withModal` (`actions/modal.ts`, with `CLEANUP_CLOSE_WAIT_TICKS`) over their open and close
+  ops; give any other open/close pair the same by passing its ops to `withModal`.
 - **Each op gets tests**: a unit test in `conductor/test/actions/<op>.test.ts` (scripted timeline
   through `interpret`; see `chop.test.ts`) and an integration test in
   `conductor/test/integration/actions/<op>.itest.ts` against the real engine (see `chop.itest.ts`).

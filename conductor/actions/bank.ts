@@ -12,8 +12,8 @@
 //   integer or 'all', not -1. Each decides from the state its wait ended on.
 // - closeBank takes its per-attempt wait as a parameter (upstream: a fixed 5s), so withBank's close on
 //   an abort fits the interpreter's cleanup cap.
-// withBank has no upstream method: it pairs openBank with closeBank so an abort closes the bank before
-// the guard's work runs (see withBank for what is guaranteed).
+// withBank has no upstream method: it is withModal (modal.ts) over openBank and closeBank, so an abort
+// closes the bank before the guard's work runs.
 import {
     classifyQuantity,
     MAX_BANK_ACTION_QUANTITY,
@@ -21,11 +21,11 @@ import {
     validateActionQuantity,
 } from '../../sdk/action-quantity';
 import type { BankItem, BotAction, BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
-import { CLEANUP_TICKS } from '../core/interpret';
 import { type Op, send, ticks, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { messageCursor, messageSince } from './messages';
+import { type CloseModalResult, type ModalOps, type WithModalResult, withModal } from './modal';
 
 /** bot.openBank's 10s timeout, in ticks. */
 export const OPEN_BANK_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
@@ -35,12 +35,6 @@ export const CLOSE_BANK_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 export const BANK_TRANSFER_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 /** withdrawItem's 3s wait for the note/item toggle to register, in ticks. */
 export const NOTE_TOGGLE_WAIT_TICKS = Math.ceil(3000 / TICK_MS);
-/**
- * Each wait of withBank's close when it is cancelled (see closeAfterAbort): a late open's, then the
- * first close attempt's. Two of them plus the second attempt's tick fit inside the interpreter's
- * cleanup cap, so a cancelled step's close is never abandoned at the cap.
- */
-export const CLEANUP_CLOSE_WAIT_TICKS = Math.floor((CLEANUP_TICKS - 1) / 2);
 
 /** bank_main:com_93 (withdraw as notes) and bank_main:com_94 (withdraw as items). */
 export const NOTE_COMPONENT = 5386;
@@ -52,7 +46,7 @@ type Failure<R extends string> = { ok: false; reason: R; message: string };
 export type OpenBankResult =
     | { ok: true; message: string }
     | Failure<'no-bank-found' | 'cant-reach' | 'send-failed' | 'timeout'>;
-export type CloseBankResult = { ok: true; message: string } | Failure<'send-failed' | 'timeout'>;
+export type CloseBankResult = CloseModalResult;
 
 type TransferFailure =
     | 'invalid-amount'
@@ -159,60 +153,25 @@ export function* closeBank(ctx: ActionContext, waitTicks = CLOSE_BANK_WAIT_TICKS
     };
 }
 
-export type WithBankResult<T> =
-    | { ok: true; value: T; closed: CloseBankResult }
-    | Extract<OpenBankResult, { ok: false }>;
+export type WithBankResult<T> = WithModalResult<T, Extract<OpenBankResult, { ok: false }>>;
+
+/** The bank as withModal opens and closes it. */
+const bankModal = (ctx: ActionContext): ModalOps<Extract<OpenBankResult, { ok: false }>> => ({
+    name: 'bank',
+    open: () => openBank(ctx),
+    close: waitTicks => closeBank(ctx, waitTicks),
+    isOpen: s => s.bank.isOpen,
+    isClosed: bankClosed,
+    closeAction: reason => ({ type: 'closeModal', reason }),
+});
 
 /**
- * withBank's close when it did not finish normally (cancelled, a failed open, a body that threw), sized
- * to fit the interpreter's cleanup cap (at most 2 * CLEANUP_CLOSE_WAIT_TICKS + 1 ticks). With an open
- * still pending (sent, never confirmed) and no bank showing, it waits for a late open and closes that;
- * if none shows, it still sends one closeModal, for a bank the server opened that the client has not
- * published yet. A close the server takes before the open lands does not stop the open (the engine's
- * close does not clear the pending interaction), hence the wait.
- */
-function* closeAfterAbort(ctx: ActionContext, openPending: boolean): Op<CloseBankResult> {
-    if (openPending && bankClosed(ctx.state())) {
-        const late = yield* wait('late bank open', s => s.bank.isOpen, CLEANUP_CLOSE_WAIT_TICKS);
-        if (late.kind === 'timeout') {
-            const sent = yield* send({ type: 'closeModal', reason: 'close bank (open not confirmed)' });
-            if (!sent.success) return { ok: false, reason: 'send-failed', message: sent.message };
-            return { ok: true, message: 'No bank opened; sent a close in case it was about to' };
-        }
-    }
-    return yield* closeBank(ctx, CLEANUP_CLOSE_WAIT_TICKS);
-}
-
-/**
- * Runs `body` with the bank open and closes it afterwards, however `body` ends: the close is in a
- * `finally`, so an abort (a guard, a stop, the step budget throws `Cancelled` into the op) closes the
- * bank first, under the interpreter's bounded cleanup, before the guard's own work runs. That matters
- * because an open bank hides the inventory: the low-HP guard's eat would be refused server-side. The
- * interface guard leaves a bank alone by design, so this pairing is the only thing that closes it.
- *
- * What is guaranteed: the normal path's close is closeBank's full one, and `closed` is its result. Any
- * other ending (a cancel, a failed open, a throw) gets closeAfterAbort, which fits CLEANUP_TICKS: it
- * sends a close within the cap whenever the bank shows open, or an open was sent and not confirmed
- * (waiting CLEANUP_CLOSE_WAIT_TICKS for a late open to show first), and a second close if the first
- * shows no effect. A bank that ignores both closes, or an open landing after that wait, stays open.
+ * Runs `body` with the bank open and closes it afterwards, however `body` ends (withModal: an abort
+ * closes the bank before the guard's work runs, as an open bank hides the inventory the low-HP guard
+ * would eat from). `closed` is the normal path's closeBank result; a failed open is returned as is.
  */
 export function* withBank<T>(ctx: ActionContext, body: Op<T>): Op<WithBankResult<T>> {
-    let value: T;
-    let closed: CloseBankResult;
-    // Until openBank answers, its interaction may be on the way (cancelled mid-open). Of its failures
-    // only a timeout sent an open that can still land; the others sent nothing or were refused.
-    let openPending = true;
-    let finished = false;
-    try {
-        const opened = yield* openBank(ctx);
-        openPending = !opened.ok && opened.reason === 'timeout';
-        if (!opened.ok) return opened;
-        value = yield* body;
-        finished = true;
-    } finally {
-        closed = finished ? yield* closeBank(ctx) : yield* closeAfterAbort(ctx, openPending);
-    }
-    return { ok: true, value, closed };
+    return yield* withModal(ctx, bankModal(ctx), body);
 }
 
 const asDispatch = (amount: number | 'all') => (amount === 'all' ? -1 : amount);

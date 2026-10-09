@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
-import { CLEANUP_CLOSE_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank';
+import { CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank';
+import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
-import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/bank';
+import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import {
     buy,
     CLOSE_SHOP_WAIT_TICKS,

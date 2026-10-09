@@ -11,8 +11,8 @@
 // - Waits and the 60 s deadline of a multi-packet buy or sell are counted in game ticks.
 // - closeShop takes its per-attempt wait as a parameter (upstream: a fixed 5s), so withShop's close on
 //   an abort fits the interpreter's cleanup cap.
-// withShop has no upstream method: it pairs openShop with closeShop so an abort closes the shop before
-// the guard's work runs (see withShop for what is guaranteed).
+// withShop has no upstream method: it is withModal (modal.ts) over openShop and closeShop, so an abort
+// closes the shop before the guard's work runs.
 import {
     classifyQuantity,
     MAX_SHOP_ACTION_PACKETS,
@@ -26,9 +26,9 @@ import type { BotWorldState, InventoryItem, NearbyNpc, ShopItem } from '../../sd
 import type { Op } from '../core/op';
 import { send, ticks, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import { CLEANUP_CLOSE_WAIT_TICKS } from './bank';
 import type { ActionContext } from './context';
 import { messageCursor, messageSince } from './messages';
+import { type CloseModalResult, type ModalOps, type WithModalResult, withModal } from './modal';
 
 /** bot.openShop's 10s timeout, in ticks. */
 export const OPEN_SHOP_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
@@ -50,7 +50,7 @@ type Failure<R extends string> = { ok: false; reason: R; message: string };
 export type OpenShopResult =
     | { ok: true; message: string }
     | Failure<'npc-not-found' | 'no-trade-option' | 'cant-reach' | 'send-failed' | 'timeout'>;
-export type CloseShopResult = { ok: true; message: string } | Failure<'send-failed' | 'timeout'>;
+export type CloseShopResult = CloseModalResult;
 
 type TradeFailure = 'invalid-amount' | 'shop-not-open' | 'item-not-found' | 'partial-fill' | 'send-failed' | 'timeout';
 export type BuyResult =
@@ -140,65 +140,33 @@ export function* closeShop(ctx: ActionContext, waitTicks = CLOSE_SHOP_WAIT_TICKS
     };
 }
 
-export type WithShopResult<T> =
-    | { ok: true; value: T; closed: CloseShopResult }
-    | Extract<OpenShopResult, { ok: false }>;
+export type WithShopResult<T> = WithModalResult<T, Extract<OpenShopResult, { ok: false }>>;
 
-/**
- * withShop's close when it did not finish normally (cancelled, a failed open, a body that threw), sized
- * to fit the interpreter's cleanup cap (at most 2 * CLEANUP_CLOSE_WAIT_TICKS + 1 ticks). With an open
- * still pending (sent, never confirmed) and no shop showing, it waits for a late open and closes that;
- * if none shows, it still sends one closeShop, for a shop the server opened that the client has not
- * published yet. A close the server takes before the open lands does not stop the open (the engine's
- * close does not clear the pending interaction), hence the wait.
- */
-function* closeAfterAbort(ctx: ActionContext, openPending: boolean): Op<CloseShopResult> {
-    if (openPending && shopClosed(ctx.state())) {
-        const late = yield* wait('late shop open', s => s.shop.isOpen, CLEANUP_CLOSE_WAIT_TICKS);
-        if (late.kind === 'timeout') {
-            const sent = yield* send({ type: 'closeShop', reason: 'close shop (open not confirmed)' });
-            if (!sent.success) return { ok: false, reason: 'send-failed', message: sent.message };
-            return { ok: true, message: 'No shop opened; sent a close in case it was about to' };
-        }
-    }
-    return yield* closeShop(ctx, CLEANUP_CLOSE_WAIT_TICKS);
-}
+/** The shop `target` keeps (see openShop) as withModal opens and closes it. */
+const shopModal = (
+    ctx: ActionContext,
+    target: NearbyNpc | string | RegExp | undefined,
+): ModalOps<Extract<OpenShopResult, { ok: false }>> => ({
+    name: 'shop',
+    open: () => openShop(ctx, target),
+    close: waitTicks => closeShop(ctx, waitTicks),
+    isOpen: s => s.shop.isOpen,
+    isClosed: shopClosed,
+    closeAction: reason => ({ type: 'closeShop', reason }),
+});
 
 /**
  * Runs `body` with the shop open (via `target`, see openShop) and closes it afterwards, however `body`
- * ends: the close is in a `finally`, so an abort (a guard, a stop, the step budget throws `Cancelled`
- * into the op) closes the shop first, under the interpreter's bounded cleanup, before the guard's own
- * work runs. That matters because an open shop hides the inventory: the low-HP guard's eat would be
- * refused server-side. The interface guard leaves a shop alone by design, so this pairing is the only
- * thing that closes it.
- *
- * What is guaranteed: the normal path's close is closeShop's full one, and `closed` is its result. Any
- * other ending (a cancel, a failed open, a throw) gets closeAfterAbort, which fits CLEANUP_TICKS: it
- * sends a close within the cap whenever the shop shows open, or an open was sent and not confirmed
- * (waiting CLEANUP_CLOSE_WAIT_TICKS for a late open to show first), and a second close if the first
- * shows no effect. A shop that ignores both closes, or an open landing after that wait, stays open.
+ * ends (withModal: an abort closes the shop before the guard's work runs, as an open shop hides the
+ * inventory the low-HP guard would eat from). `closed` is the normal path's closeShop result; a failed
+ * open is returned as is.
  */
 export function* withShop<T>(
     ctx: ActionContext,
     target: NearbyNpc | string | RegExp | undefined,
     body: Op<T>,
 ): Op<WithShopResult<T>> {
-    let value: T;
-    let closed: CloseShopResult;
-    // Until openShop answers, its interaction may be on the way (cancelled mid-open). Of its failures
-    // only a timeout sent an open that can still land; the others sent nothing or were refused.
-    let openPending = true;
-    let finished = false;
-    try {
-        const opened = yield* openShop(ctx, target);
-        openPending = !opened.ok && opened.reason === 'timeout';
-        if (!opened.ok) return opened;
-        value = yield* body;
-        finished = true;
-    } finally {
-        closed = finished ? yield* closeShop(ctx) : yield* closeAfterAbort(ctx, openPending);
-    }
-    return { ok: true, value, closed };
+    return yield* withModal(ctx, shopModal(ctx, target), body);
 }
 
 /** What buy and sell answer when no shop is open: nothing is sent. */
