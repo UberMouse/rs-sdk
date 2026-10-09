@@ -3,6 +3,7 @@
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import { ITEM_COMPONENT, NOTE_COMPONENT } from '../actions/bank';
 import { SMITHING_INTERFACE } from '../actions/dismiss';
+import { SMELT_OPTION } from '../actions/smith';
 import type { Effect } from '../core/drivers/timeline';
 import { type BankContents, type ShopContents, world } from './world';
 
@@ -106,7 +107,7 @@ const COINS_ID = 995;
 const heldOf = (s: BotWorldState, id: number) => s.inventory.filter(i => i.id === id).reduce((n, i) => n + i.count, 0);
 
 /**
- * A shop scripted world: a close leaves the shop closed, a buy moves units from the shelf to the
+ * A shop scripted world: a close (closeShop, or closeModal, which sends the same packet) leaves the shop closed, a buy moves units from the shelf to the
  * inventory for coins (as many as the stock and the coins allow), a sell moves them back for the shop's
  * price. Like `bankWorld` it applies on top of every scripted state until nothing is left to move, and
  * falls back to `consume`.
@@ -114,6 +115,7 @@ const heldOf = (s: BotWorldState, id: number) => s.inventory.filter(i => i.id ==
 export function shopWorld(action: BotAction, state: BotWorldState): Effect | undefined {
     switch (action.type) {
         case 'closeShop':
+        case 'closeModal':
             return s => (s.shop.isOpen || s.interface.isOpen ? world(s).shop(false).build() : s);
         case 'shopBuy': {
             const line = state.shop.shopItems.find(i => i.slot === action.slot);
@@ -173,6 +175,16 @@ export interface SmithyWork {
     xp: number;
 }
 
+const ANVIL = /^anvil$/i;
+type LocTarget = { x: number; z: number; locId: number };
+const targetLoc = (s: BotWorldState, a: LocTarget) =>
+    s.nearbyLocs.find(l => l.id === a.locId && l.x === a.x && l.z === a.z);
+/** The name of the loc a send targets, '' when it is not in view. */
+const locName = (s: BotWorldState, a: LocTarget) => targetLoc(s, a)?.name ?? '';
+/** The option an interactLoc send takes on its loc, '' when neither is in view. */
+const locOption = (s: BotWorldState, a: LocTarget & { optionIndex: number }) =>
+    targetLoc(s, a)?.optionsWithIndex.find(o => o.opIndex === a.optionIndex)?.text ?? '';
+
 /**
  * A furnace and an anvil as the game runs them: a bar used on an anvil opens the smithing interface, the
  * furnace's Smelt option opens the smelting menu (`menu`, its option labels), a click in either closes
@@ -202,10 +214,10 @@ export function smithyReact(work: SmithyWork | null, menu: string[] = []) {
     return (action: BotAction, state: BotWorldState): Effect | undefined => {
         switch (action.type) {
             case 'useItemOnLoc':
-                if (/ on anvil$/i.test(action.reason)) open = 'anvil';
+                if (ANVIL.test(locName(state, action))) open = 'anvil';
                 break;
             case 'interactLoc':
-                if (/^smelt /i.test(action.reason)) open = 'menu';
+                if (SMELT_OPTION.test(locOption(state, action))) open = 'menu';
                 break;
             case 'clickComponentWithOption':
             case 'clickDialogOption': {
