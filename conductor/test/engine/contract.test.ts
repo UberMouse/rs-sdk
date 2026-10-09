@@ -286,7 +286,7 @@ describe('guard episodes', () => {
             dialogs(t => t >= 2),
         );
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('interrupt:dialog: dialog stuck open: ');
+        expect(r.result.reason).toBe('interrupt:dialog: dialog stuck open: dialog still on the same page: ');
         // Each run clicks, and waits DISMISS_WAIT_TICKS for the page to move on.
         expect(continues(r)).toBe(6);
         expect(r.driver.state().tick).toBe(2 + 6 * DISMISS_WAIT_TICKS);

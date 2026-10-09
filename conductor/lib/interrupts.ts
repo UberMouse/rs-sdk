@@ -159,10 +159,9 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
         // A choice is left alone (and a refused send waits for nothing): wait a tick so the loop
         // yields, and give up if nothing else closes it.
         if (r.reason !== 'stuck') yield* ticks(1);
-        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT) {
-            const { dialog } = run.state();
-            return { fail: `dialog stuck open: ${dialog.options.map(o => o.text).join(' | ')}` };
-        }
+        // The op's own message: a fresh state's options are empty once the dialog has closed, and only the
+        // message tells a choice from a stuck page or a refused send.
+        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT) return { fail: `dialog stuck open: ${r.message}` };
     },
 };
 
@@ -184,7 +183,7 @@ export const interfaceGuard: TaskGuard<{ stuckCloses: number }, GuardName> = {
         // A refused close waited for nothing: wait a tick so the loop yields.
         if (r.reason !== 'stuck') yield* ticks(1);
         if (++episode.stuckCloses >= INTERFACE_STUCK_LIMIT)
-            return { fail: `interface ${id} stuck open after ${INTERFACE_STUCK_LIMIT} closes` };
+            return { fail: `interface ${id} stuck open after ${INTERFACE_STUCK_LIMIT} closes: ${r.message}` };
     },
 };
 

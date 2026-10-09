@@ -148,7 +148,9 @@ describe('the interface guard', () => {
         const states = timeline(30, t => ({ interfaceId: t >= 3 ? BOOK : undefined }));
         const r = await runTask([step('chop', chop)], states);
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe(`interrupt:interface: interface ${BOOK} stuck open after 3 closes`);
+        expect(r.result.reason).toBe(
+            `interrupt:interface: interface ${BOOK} stuck open after 3 closes: interface ${BOOK} still open`,
+        );
         const close = `close interface ${BOOK}`;
         expect(r.sends).toEqual(['chop', close, close, close, 'cleanup']);
     });
