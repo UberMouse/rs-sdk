@@ -19,7 +19,8 @@ Does the code's model of the game match how the game and the SDK actually behave
   bank, shop or other modal is open (the server drops them silently); the interface guard closes
   leftover informational modals, never a shop or bank. Skill dialogs are driven by
   option text (`clickDialogByText`, `bot.fletchLogs(...)`), never by assumed option order. A task
-  that opens a dialog on purpose sets `allow: ['dialog']` so the dialog guard doesn't close it, and
+  that opens a dialog on purpose sets `allow: ['dialog']` so the dialog guard doesn't close it
+  (a skill make menu an op answers itself, like `fletch`'s, needs none: the guard leaves it), and
   one that leaves an informational interface open on purpose (one bot.dismissBlockingUI would
   close) between steps or inside a wait sets `allow: ['interface']`.
 - **G5 Game time.** Waits are in ticks (`wait`/`ticks` ops; `waitForTicks` in legacy code) and

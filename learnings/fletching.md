@@ -16,7 +16,10 @@
 - `bot.fletchLogs()` returns at the first XP drop while the batch keeps running; wait for the logs to leave the inventory before the next step. [v 2026-10-09 conductor1 local]
 - Observed: 13 logs -> 195 shafts, Fletching 1->17 in 1 min (~12 logs/min, ~139k XP/hr). 95 feathers on shafts -> 95 headless arrows, 17->27 in 40 s. Rates: `wiki/skills/fletching.md`. [v 2026-10-09 conductor1 local]
 - Shortbows can be made at level 5.
-- The fletching dialog labels products "Short Bow", "Long Bow" and "Arrow shaft" (not "shortbow (u)"); the `fletching` task accepts either spelling. [v 2026-10-09 conductor1 local]
+- Knife on normal logs opens a 12-button make menu: Make X, Make 10, Make 5 and then the product's own button, for each of "15 Arrow Shafts", "Short Bow" and "Long Bow". The client publishes each product label with a literal `\n\n\n\n` in front ("\n\n\n\n15 Arrow Shafts"), so match a product by its words, never by equality or position; the `fletching` task also accepts "shortbow (u)". [v 2026-10-10 integration-tests local]
+- Other logs offer only the two bows, labelled with the wood ("Oak Short Bow", "Oak Long Bow") (`server/content/scripts/skill_fletching/scripts/cut_logs.rs2`).
+- Too low a level for the product is a dialog box ("You need a Fletching level of at least N to make a ..."), not a game message (`server/content/scripts/skill_fletching/scripts/cut_logs.rs2`, `~doubleobjbox`).
+- A level-up that unlocks a product has a second page ("You can now make Shortbows.") after "Congratulations, you just advanced a fletching level.". [v 2026-10-10 integration-tests local]
 - `bot.fletchLogs(product)` clicks the make-1 option, so it makes one item per call (~2.4 s per log) for bows; shafts come 15 per log. Longbow (u) from normal logs: Fletching 27->34 in a 1-min run, +4000 XP, 16 longbows. [v 2026-10-09 conductor1 local]
 - `interrupt:dialog` steps seen during fletching runs are level-up dialogs; dismiss and carry on. [v 2026-10-09 conductor1 local]
 - Selling bows to a shop is unverified; leave it to a shop run.

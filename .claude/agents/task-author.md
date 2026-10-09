@@ -89,8 +89,10 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 
 ### Ops
 
-Ops live in `conductor/actions/` (`chop.ts`, `interact.ts`, `context.ts`). Call one with
-`yield* chop(ctx, tree, logs)`; a step passes its `ctx` as the `ActionContext`.
+Ops live in `conductor/actions/`: `chop`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
+`useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch` and `dismiss`, with `context.ts` and
+`messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
+passes its `ctx` as the `ActionContext`.
 
 - **Use an existing op** when one does the job. **Add one** when the task needs an action
   (`bot.mineRock`, `bot.openBank`, ...) that has none; an op other ops build on (`interactLoc`)
@@ -103,7 +105,11 @@ Ops live in `conductor/actions/` (`chop.ts`, `interact.ts`, `context.ts`). Call 
 - **`ActionContext` first, only if the op reads state** (`ctx.state()`). An op that only sends takes
   none (`interactLoc`).
 - **An op waits only for its own effect** (logs gained or tree gone; ore gained). No threat, HP,
-  dialog or interface handling inside an op: those are the guards' job, and ops send raw.
+  dialog or interface handling inside an op: those are the guards' job, and ops send raw. The one
+  exception is a dialog the op itself opens and answers, as an explicit step (wait for it, click,
+  wait for the effect), never inside a wait's predicate: `fletch`'s make menu. The dialog guard
+  leaves a skill make menu (`isSkillMenu`) alone and still clears a level-up around it, so no
+  `allow: ['dialog']` is needed for it.
 - **Waits are tick budgets.** When porting a wall-clock wait use `Math.ceil(ms / TICK_MS)` (`TICK_MS`
   from `lib/util`) and export it as a named constant (`CHOP_WAIT_TICKS`).
 - **Decide from the wait's state.** `const w = yield* wait(...)`, then read `w.state`, the state of
@@ -126,7 +132,7 @@ death, low HP, dialogs or leftover modals itself. The shared ones are `GUARDS` i
 | `death` | abort, critical | ends the run `failed` if the bot died during it |
 | `wilderness` | abort, critical | ends the run if the bot is on the surface in the Wilderness |
 | `low-hp` | abort | eats; with no food it fails if in combat or still losing HP, else waits to regenerate |
-| `dialog` | suspend | clears level-up and "click to continue" dialogs; the wait carries on |
+| `dialog` | suspend | clears level-up and "click to continue" dialogs (`dismiss`); never answers a choice or a skill make menu; the wait carries on |
 | `interface` | suspend | closes a leftover informational modal (book, scroll) that would block loc/NPC interaction; never a shop, bank, Grand Exchange or trade screen |
 
 `abort` cancels the running step (its `finally` runs), runs the guard, and the loop chooses a step
@@ -169,10 +175,9 @@ legitimate silence, as woodcutting does for its repeated chop timeouts.
 
 ### Calling an action that has no op yet
 
-`yield* call('bot.dropItem', () => ctx.bot.dropItem(...))` runs a legacy action under the step's
-bounds; the guards wait for it to settle. It is a stopgap, for an action you are not porting now
-(woodcutting's drop). `returnToAreaStep` and `walkToArea` in `lib/area.ts` are still legacy and
-work inside a new task.
+`yield* call('bot.openBank', () => ctx.bot.openBank())` runs a legacy action under the step's
+bounds; the guards wait for it to settle. It is a stopgap, for an action you are not porting now.
+`returnToAreaStep` and `walkToArea` in `lib/area.ts` are still legacy and work inside a new task.
 
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.
@@ -189,9 +194,10 @@ new steps, ports and substantial rewrites; any changed task still needs a passin
    (`conductor/test/world.ts`; `world('lumbridge')` loads a captured fixture, bare `world()` is a
    bot at Lumbridge). Builders are immutable: `.inv()`, `.loc()`, `.npc()`, `.ground()`,
    `.skill()`, `.player({ hp, inCombat, at })`, `.dialog()`, `.modal(id)`, `.message()`,
-   `.autoRetaliate()`; `.series(n, (w, i) => w...)` gives one state per tick. `simulate` returns
-   `result`, `sends`, `steps`, `legacy` (what guards and unported actions did through the bot),
-   `events`, `commands`, `driver`. Cover:
+   `.recentDialog()`, `.equipment()`, `.autoRetaliate()`; `.series(n, (w, i) => w...)` gives one
+   state per tick. The timeline is what the world does by itself; `react` is what the bot's sends do
+   to it (default `consume`: food eaten and items dropped leave the inventory the next tick).
+   `simulate` returns `result`, `sends`, `steps`, `events`, `commands`, `driver`. Cover:
    - the success path (the right sends in order, `result.reason`, deltas);
    - each failure reason the task can return, asserting the exact `result.reason`;
    - each streak or limit (the Nth failure fails; a success in between resets it);
