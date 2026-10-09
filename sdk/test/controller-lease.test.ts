@@ -237,4 +237,92 @@ describe('connection ownership', () => {
         await expect(pending).rejects.toThrow(/Disconnected while connecting/);
         expect(Date.now() - started).toBeLessThan(1000); // not the 2s handshake deadline
     });
+
+    test('a close after the handshake but before state rejects connect() instead of resolving later', async () => {
+        fakeGateway((_n, _msg, ws) => {
+            ws.send(ok);
+            setTimeout(() => ws.close(), 50); // no state ever arrives
+        });
+        const sdk = new BotSDK({
+            botUsername: 'testbot',
+            password: 'x',
+            gatewayUrl: `ws://localhost:${server!.port}`,
+            readyTimeout: 2000,
+            autoReconnect: false,
+            autoLaunchBrowser: false,
+        });
+        const started = Date.now();
+        await expect(sdk.connect()).rejects.toThrow(/before game state was ready/);
+        expect(Date.now() - started).toBeLessThan(1000); // not readyTimeout
+        expect(sdk.getConnectionState()).toBe('disconnected');
+    });
+
+    test('no reconnect timer survives disconnect()', async () => {
+        let first: Socket | undefined;
+        const connects = fakeGateway((n, _msg, ws) => {
+            if (n === 1) first = ws;
+            if (n === 2) return ws.close(); // the manual attempt fails before its handshake
+            ws.send(ok);
+        });
+        const sdk = new BotSDK({
+            botUsername: 'testbot',
+            password: 'x',
+            gatewayUrl: `ws://localhost:${server!.port}`,
+            readyTimeout: 0,
+            autoReconnect: true,
+            reconnectBaseDelay: 300,
+            autoLaunchBrowser: false,
+        });
+        await sdk.connect();
+        first!.close(); // a reconnect is scheduled
+        await until(() => sdk.getConnectionState() === 'reconnecting');
+        await sdk.connect().catch(() => {}); // a manual attempt during the backoff schedules another
+        await sdk.disconnect();
+        const settled = connects();
+        await Bun.sleep(800); // past both backoffs
+        expect(connects()).toBe(settled);
+        expect(sdk.getConnectionState()).toBe('disconnected');
+    });
+
+    test('the reconnect loop keeps going when a handshake times out with no close event', async () => {
+        // A peer that accepts TCP and never answers the upgrade: Bun fires no close for the
+        // socket the handshake deadline closes, so the deadline itself must move the loop on.
+        let accepts = 0;
+        const silent = Bun.listen({
+            hostname: '127.0.0.1',
+            port: 0,
+            socket: { open: () => void accepts++, data: () => {} },
+        });
+        const sdk = new BotSDK({
+            botUsername: 'testbot',
+            password: 'x',
+            gatewayUrl: `ws://127.0.0.1:${silent.port}`,
+            connectTimeout: 150,
+            readyTimeout: 0,
+            autoReconnect: true,
+            reconnectBaseDelay: 20,
+            reconnectMaxDelay: 50,
+            autoLaunchBrowser: false,
+        });
+        try {
+            await expect(sdk.connect()).rejects.toThrow(/handshake timed out/);
+            await until(() => accepts >= 3);
+        } finally {
+            await sdk.disconnect();
+            silent.stop(true);
+        }
+    });
+
+    test('connect() right after an unawaited disconnect() opens a new session', async () => {
+        const connects = fakeGateway((_n, _msg, ws) => ws.send(ok));
+        const sdk = makeSDK();
+        await sdk.connect();
+        const closing = sdk.disconnect();
+        await sdk.connect();
+        await closing;
+        expect(connects()).toBe(2);
+        expect(sdk.isAuthenticated()).toBe(true);
+        expect(sdk.getConnectionState()).toBe('connected');
+        await sdk.disconnect();
+    });
 });

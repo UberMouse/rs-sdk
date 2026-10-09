@@ -40,6 +40,7 @@ try {
     }
 } catch (e) {
     console.error(`progress: ${errMessage(e)}`);
+    if (sdk) await disconnectQuietly(sdk); // process.exit skips the finally
     process.exit(1);
 } finally {
     if (sdk) await disconnectQuietly(sdk);

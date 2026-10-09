@@ -253,9 +253,10 @@ export class BotSDK {
         // Claimed before the first await, so a second connect() joins this attempt instead of
         // opening a second socket (which would orphan one, still holding the controller lease).
         const aborted = new Promise<never>((_, reject) => { this.abortAttempt = reject; });
-        const attempt: Promise<void> = Promise.race([this.openConnection(), aborted]).catch(error => {
+        // Forgotten once settled either way: a later connect() then sees the session as it is now
+        // (isAuthenticated), not a resolved promise from a session that may be closing.
+        const attempt: Promise<void> = Promise.race([this.openConnection(), aborted]).finally(() => {
             if (this.connectPromise === attempt) this.connectPromise = null;
-            throw error;
         });
         this.connectPromise = attempt;
         return attempt;
@@ -313,8 +314,32 @@ export class BotSDK {
             // gateway's own 15s auth bound so a slow-but-alive login server
             // doesn't false-negative.
             let handshakeDone = false;
+            let gone = false;
+            /**
+             * This socket is finished: settle the attempt, and if it is still the current socket,
+             * let go of it and reconnect (or stop). Runs once, from onclose or from the handshake
+             * deadline: Bun never fires close for a socket closed while still connecting to a host
+             * that drops packets, so waiting for onclose there would stall the reconnect loop.
+             */
+            const socketGone = (reason: string) => {
+                if (gone) return;
+                gone = true;
+                clearTimeout(deadline);
+                // Settles a connect() still waiting, before or after the handshake (no-op once resolved).
+                reject(new Error(reason));
+                if (this.ws !== ws) return; // disconnect() already let go of this socket
+                this.connectPromise = null;
+                this.dropSocket();
+                if (this.config.autoReconnect && !this.intentionalDisconnect) {
+                    console.warn('[LOGOUT DEBUG] SDK scheduling auto-reconnect');
+                    this.scheduleReconnect();
+                } else {
+                    this.setConnectionState('disconnected');
+                }
+            };
             const deadline = setTimeout(() => {
-                reject(new Error(`Gateway handshake timed out after ${this.config.connectTimeout}ms`));
+                // First: close() on an open socket can run onclose synchronously.
+                socketGone(`Gateway handshake timed out after ${this.config.connectTimeout}ms`);
                 ws.close();
             }, this.config.connectTimeout);
 
@@ -343,23 +368,11 @@ export class BotSDK {
 
             ws.onclose = () => {
                 console.warn(`[LOGOUT DEBUG] SDK WebSocket closed - autoReconnect=${this.config.autoReconnect}, intentionalDisconnect=${this.intentionalDisconnect}`);
-                // A close before the handshake completed must settle the
-                // pending connect() - otherwise its awaiters hang forever
-                // while the auto-reconnect below builds a fresh promise.
-                if (!handshakeDone) {
-                    clearTimeout(deadline);
-                    reject(new Error('Connection closed before the gateway handshake completed'));
-                }
-                if (this.ws !== ws) return; // disconnect() already let go of this socket
-                this.connectPromise = null;
-                this.dropSocket();
-
-                if (this.config.autoReconnect && !this.intentionalDisconnect) {
-                    console.warn('[LOGOUT DEBUG] SDK scheduling auto-reconnect');
-                    this.scheduleReconnect();
-                } else {
-                    this.setConnectionState('disconnected');
-                }
+                // A close must settle the pending connect() - otherwise its awaiters hang (before
+                // the handshake) or it resolves on a dead session once waitForReady gives up (after).
+                socketGone(handshakeDone
+                    ? 'Connection closed before game state was ready'
+                    : 'Connection closed before the gateway handshake completed');
             };
 
             ws.onerror = (error) => {
@@ -466,8 +479,13 @@ export class BotSDK {
 
         console.log(`[BotSDK] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempt})`);
 
+        // One pending reconnect at most, and none once a newer attempt or a disconnect() has run:
+        // a stray timer would reconnect after disconnect() and take the lease (with takeover).
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        const seq = this.attemptSeq;
         this.reconnectTimer = setTimeout(async () => {
             this.reconnectTimer = null;
+            if (seq !== this.attemptSeq) return;
             try {
                 await this.connect();
                 console.log(`[BotSDK] Reconnected successfully after ${this.reconnectAttempt} attempt(s)`);
@@ -491,7 +509,7 @@ export class BotSDK {
     /** Disconnect from the gateway. */
     async disconnect(): Promise<void> {
         this.intentionalDisconnect = true;
-        this.attemptSeq++;
+        const seq = ++this.attemptSeq;
         this.abortAttempt?.(new Error('Disconnected while connecting'));
         this.abortAttempt = null;
 
@@ -500,7 +518,12 @@ export class BotSDK {
             this.reconnectTimer = null;
         }
 
+        // Let go of the session at once, so a connect() made while the socket is still closing
+        // (disconnect() not awaited) starts afresh instead of joining the dying one. Its handlers
+        // ignore it from now on.
         const ws = this.ws;
+        this.connectPromise = null;
+        if (ws) this.dropSocket();
         if (ws) {
             // Wait for the socket to close, but not forever: Bun never fires 'close' for a socket
             // closed while still connecting to a host that drops packets.
@@ -513,11 +536,8 @@ export class BotSDK {
                 ws.addEventListener('close', () => { clearTimeout(timer); resolve(); }, { once: true });
                 ws.close();
             });
-            // onclose already cleaned up unless the wait ran out; then let go of the socket here
-            // (its handlers ignore it from now on).
-            if (this.ws === ws) this.dropSocket();
         }
-        this.connectPromise = null;
+        if (seq !== this.attemptSeq) return; // a newer connect() owns the state now
         this.reconnectAttempt = 0;
         this.setConnectionState('disconnected');
     }

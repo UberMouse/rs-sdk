@@ -1147,6 +1147,8 @@ const gatewayHandlers = {
 
             return new Response(JSON.stringify({
                 status: 'running',
+                // Tells tools and agents this gateway refuses a second controller (an older one pre-empted).
+                controllerLease: true,
                 bots,
                 sdks
             }, null, 2), {

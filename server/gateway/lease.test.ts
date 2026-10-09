@@ -70,6 +70,11 @@ async function expectControllers(bot: string, n: number): Promise<void> {
 }
 
 describe('controller lease', () => {
+    test('/status says this gateway enforces the lease', async () => {
+        const status = (await (await fetch(`http://127.0.0.1:${port}/status`)).json()) as { controllerLease?: boolean };
+        expect(status.controllerLease).toBe(true);
+    });
+
     test('a second controller is refused and the first keeps the lease', async () => {
         const first = await connect('lease1', 'control', false, 'holder-1');
         expect(first.reply.type).toBe('sdk_connected');

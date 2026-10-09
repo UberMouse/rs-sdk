@@ -94,8 +94,8 @@ The worker is the author's: it stays assigned to this change until the review co
 reverts (the conductor's `workers` state, and `openGate.worker`). The save is the `replay` path
 from the `LOADED` line the author's smoke tests ran from (a copy of exactly what was loaded, so
 the fix is retested from the same state even when the author started from a moving `bot:`
-source); it is also in `openGate.replay`, and `conductor/runs/<worker>/loaded.json` holds the
-worker's latest load. Many findings may go to two fix agents **in parallel only when their files
+source); it is also in `openGate.replay`. The author's report lists every save it loaded: a
+finding about a branch it tested from another save names that replay too. Many findings may go to two fix agents **in parallel only when their files
 are disjoint** and the review was given a second free worker; otherwise, or when a fix spans both
 sets (a shared helper used on both sides), they run one after the other. Never let two drive the
 same bot.

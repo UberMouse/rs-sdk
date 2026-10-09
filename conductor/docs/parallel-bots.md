@@ -242,7 +242,10 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 - **Tests:** `server/gateway/lease.test.ts` runs the real gateway (refusal, observer, takeover,
   release on close); `sdk/test/controller-lease.test.ts` covers the SDK side (a first-connect
   refusal doesn't reconnect, a reconnect retries through its own stale session and gives up
-  once the window passes, `takeover` only on the first attach).
+  once the window passes, `takeover` only on the first attach; a superseded attempt never opens
+  a socket, a joined `connect()` resolves only once accepted, `disconnect()` settles a pending
+  `connect()`). The gateway's `/status` reports `controllerLease: true`, so a resuming run can
+  tell it from an older gateway.
 
 ### Conductor process
 

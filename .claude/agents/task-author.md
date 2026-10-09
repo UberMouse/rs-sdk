@@ -83,5 +83,6 @@ format and lint checks on staged files and are refused until they pass.
 Files: <paths changed or created, including any new conductor/saves/<name>.sav + .json>
 What changed: <3-6 lines>
 Smoke tests: <the save each ran from (LOADED source and replay path), then each RESULT line, verbatim, newest last>
+Replay: <the replay path the final smoke test ran from; the review's fixes retest from it>
 Open questions: <anything the conductor should decide, or "none">
 ```
