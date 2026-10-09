@@ -35,8 +35,6 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     /** Current world state (the driver's latest); throws if the client has published none. */
     state(): BotWorldState;
     log(msg: string, data?: Record<string, unknown>): void;
-    /** Best-effort PNG of the game canvas; null on clients that don't render (lite). */
-    screenshot(label: string): Promise<string | null>;
     /** Game tick the run started at; messages from earlier ticks are not this run's. */
     readonly startTick: number;
     /** State shared between steps for one run (remembered targets), from the task's `memory` factory. */

@@ -208,6 +208,18 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     let running: Step<unknown, object> | null = null;
     /** The tick the op runOp is interpreting started at, which its tick budget counts from; null between ops. */
     let opStartTick: number | null = null;
+    /** Best-effort screenshot into this run's log and result; null where the client does not render. */
+    const takeScreenshot = async (label: string): Promise<string | null> => {
+        try {
+            const path = await sinks.screenshot(`${def.name}-${label}`);
+            if (!path) return null;
+            screenshots.push(path);
+            emit({ type: 'screenshot', label, path });
+            return path;
+        } catch {
+            return null;
+        }
+    };
     const ctx: TaskContext<unknown, object> = {
         botName,
         params: parsed.success ? parsed.data : undefined,
@@ -215,17 +227,6 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         log: (msg, data) => {
             say(msg);
             emit({ type: 'log', msg, data });
-        },
-        screenshot: async label => {
-            try {
-                const path = await sinks.screenshot(`${def.name}-${label}`);
-                if (!path) return null;
-                screenshots.push(path);
-                emit({ type: 'screenshot', label, path });
-                return path;
-            } catch {
-                return null;
-            }
         },
         startTick: initial.tick,
         memory: def.memory?.() ?? {},
@@ -257,7 +258,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         send: action => driver.send(action),
         scan: radius => driver.scan(radius),
         log: ctx.log,
-        screenshot: ctx.screenshot,
+        screenshot: takeScreenshot,
         now: () => driver.now(),
     };
 
@@ -291,7 +292,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     };
 
     const finish = async (status: TaskStatus, reason: string): Promise<TaskResult> => {
-        if (status !== 'done') await ctx.screenshot(status);
+        if (status !== 'done') await takeScreenshot(status);
         await eatIfHurt();
         const s = stateOrNull();
         const xpGained = s ? xpGainedSince(s, xpBefore) : {};
