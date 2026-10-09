@@ -16,7 +16,10 @@
 // plus a frame cap costs a little CPU instead.
 import puppeteer from 'puppeteer';
 import { existsSync } from 'node:fs';
-import { botClientUrl, loadBotEnv } from '../lib/env';
+import { homedir, userInfo } from 'node:os';
+import { join } from 'node:path';
+import { botClientUrl, loadBotEnv, sleep } from '../lib/env';
+import { errMessage } from '../lib/util';
 
 const args = process.argv.slice(2);
 const name = args.find(a => !a.startsWith('-'));
@@ -36,7 +39,7 @@ const env = loadBotEnv(name);
 
 const CHROME_CANDIDATES = [
     process.env.CHROME_PATH,
-    '/etc/profiles/per-user/' + process.env.USER + '/bin/google-chrome-stable',
+    `/etc/profiles/per-user/${userInfo().username}/bin/google-chrome-stable`,
     '/run/current-system/sw/bin/google-chrome-stable',
     '/run/current-system/sw/bin/chromium',
     '/usr/bin/google-chrome-stable',
@@ -58,27 +61,35 @@ const browser = await puppeteer.launch({
         '--disable-renderer-backgrounding',
         '--disable-background-timer-throttling',
         '--window-size=1100,780',
-        `--user-data-dir=${process.env.HOME}/.cache/rs-sdk-conductor/chrome-${env.username}`,
+        `--user-data-dir=${join(homedir(), '.cache/rs-sdk-conductor', `chrome-${env.username}`)}`,
         ...(gpu ? [] : ['--disable-gpu']),
     ],
     protocolTimeout: 120_000,
 });
 const page = (await browser.pages())[0] ?? (await browser.newPage());
-page.on('pageerror', e => console.error(`[client:${env.username}] page error: ${e instanceof Error ? e.message : String(e)}`));
+page.on('pageerror', e => console.error(`[client:${env.username}] page error: ${errMessage(e)}`));
 // bot.ejs applies ?fps= via client.setTargetedFramerate once in game.
 await page.goto(`${botClientUrl(env)}&fps=${fps}`, { waitUntil: 'networkidle2', timeout: 60_000 });
-console.log(`[client:${env.username}] ${headless ? 'headless' : 'windowed'} browser client loaded (gpu ${gpu ? 'on' : 'off'}, ${fps} fps)`);
+console.log(
+    `[client:${env.username}] ${headless ? 'headless' : 'windowed'} browser client loaded (gpu ${gpu ? 'on' : 'off'}, ${fps} fps)`,
+);
 
-const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-const inGame = () => page.evaluate(() => !!(window as any).gameClient?.ingame).catch(() => false);
+/** The slice of the page's global that the bot client exposes. */
+type GamePage = Window & { gameClient?: { ingame?: boolean } };
+
+const inGame = () => page.evaluate(() => !!(window as GamePage).gameClient?.ingame).catch(() => false);
 
 let wasInGame = false;
 let outSince = Date.now();
+// browser.close() emits 'disconnected' synchronously; a deliberate shutdown must not exit 1.
+let shuttingDown = false;
 browser.on('disconnected', () => {
+    if (shuttingDown) return;
     console.error(`[client:${env.username}] browser closed`);
     process.exit(1);
 });
 const shutdown = async () => {
+    shuttingDown = true;
     await browser.close().catch(() => {});
     process.exit(0);
 };

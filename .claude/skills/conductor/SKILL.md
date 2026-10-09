@@ -19,7 +19,7 @@ This skill keeps durable state. **Before the first write, Read
 | Piece | What it is |
 |---|---|
 | `bun conductor/run-task.ts --list` | the catalog: each task's name, description and JSON-schema params |
-| `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>...` | runs one task; last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
+| `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>... [--takeover]` | runs one task; refuses to start when the bot is in combat or already has N controller(s) attached (`--takeover` pre-empts them); last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
 | `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run |
 | `bun conductor/tools/stats.ts <bot> [--task t]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons |
 | `bun conductor/tools/progress.ts <bot>` | levels, XP to 99, % to max, change since first/previous snapshot (records a snapshot) |
@@ -117,6 +117,12 @@ Seed `invariants` with the list below on the first write.
   its own objective ahead of this one (buy, bank, walk, quest), or reorder.
 - `failed` / `stuck` / `error` that is the script's fault — dispatch `task-author` with the
   RESULT, the runner's diagnosis and the screenshot paths.
+- Unsafe end state (RESULT `inCombat` true, or `hp` below half) — handle it before anything
+  else and never leave the bot idle there. The catalog has no combat or retreat task yet: queue
+  a retreat/eat objective (a task-author dispatch for one if none exists), or when nothing is
+  running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` (a snapshot is the only command that logs out) so it cannot die unattended. Low HP
+  with no food, out of combat, already waits for regeneration (bounded) rather than failing, so
+  a `failed` low-HP reason means the wait ran out or the bot is under attack.
 - Death or item loss in an experiment — `save.ts restore <bot> <label> --logout`, restart the
   client, add the hazard to the curator's next dispatch.
 - The same objective failing 3 times — retrospective (step 8); if it still has no way forward,

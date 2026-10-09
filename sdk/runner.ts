@@ -77,9 +77,10 @@ interface BotConnection {
 const connections = new Map<string, BotConnection>();
 
 /**
- * Parse a bot.env file and load into process.env
+ * Parse a bot.env file, load it into process.env, and return the parsed pairs.
  */
-function loadEnvFile(envPath: string): void {
+export function loadEnvFile(envPath: string): Record<string, string> {
+    const raw: Record<string, string> = {};
     const content = readFileSync(envPath, 'utf-8');
     for (const line of content.split('\n')) {
         const trimmed = line.trim();
@@ -88,9 +89,30 @@ function loadEnvFile(envPath: string): void {
         if (eqIndex > 0) {
             const key = trimmed.slice(0, eqIndex).trim();
             const value = trimmed.slice(eqIndex + 1).trim();
+            raw[key] = value;
             process.env[key] = value;
         }
     }
+    return raw;
+}
+
+/** True when a bot.env SERVER value points at the local server: unset, localhost or 127.*. */
+export function isLocalServer(server?: string): server is undefined | `localhost${string}` | `127.${string}` {
+    return !server || server.startsWith('localhost') || server.startsWith('127.');
+}
+
+/**
+ * The engine web origin (serves /bot and /status) for a bot.env SERVER value:
+ * unset or localhost[:port] is local (default port 8888), otherwise a bare host
+ * is https and a ws(s):// gateway URL maps to http(s).
+ */
+export function webOriginFor(server: string | undefined): string {
+    if (!isLocalServer(server)) {
+        return /^wss?:\/\//.test(server)
+            ? server.replace(/^ws/, 'http').replace(/\/gateway$/, '')
+            : `https://${server}`;
+    }
+    return server?.includes(':') ? `http://${server}` : 'http://localhost:8888';
 }
 
 /**
@@ -214,8 +236,8 @@ async function getOrCreateConnection(): Promise<BotConnection> {
 const LIVE_CLIENT_WAIT_MS = 10_000;
 
 /**
- * Throw unless a game client (browser tab or lite runner) is publishing state
- * for this bot right now.
+ * Whether a game client (browser tab or lite runner) is publishing state for
+ * this bot right now; false after `timeoutMs` without a new tick.
  *
  * connect() succeeds against the gateway alone, so without this check a script
  * with no client "connects" and every action silently does nothing. Two shapes:
@@ -225,26 +247,26 @@ const LIVE_CLIENT_WAIT_MS = 10_000;
  * `tick` every game tick, so wait for one - this compares ticks rather than
  * `getStateAge()`, which mixes gateway and local clocks.
  */
-async function requireLiveClient(sdk: BotSDK, username: string, server: string | undefined): Promise<void> {
+export async function waitForLiveClient(sdk: BotSDK, timeoutMs = LIVE_CLIENT_WAIT_MS): Promise<boolean> {
     const cached = sdk.getState();
-    if (cached) {
-        try {
-            await sdk.waitForCondition(s => s.tick !== cached.tick, LIVE_CLIENT_WAIT_MS);
-            return;
-        } catch {}
+    if (!cached) return false;
+    try {
+        await sdk.waitForCondition(s => s.tick !== cached.tick, timeoutMs);
+        return true;
+    } catch {
+        return false;
     }
+}
 
+/** Throw, with how to start a client, unless waitForLiveClient finds one. */
+async function requireLiveClient(sdk: BotSDK, username: string, server: string | undefined): Promise<void> {
+    if (await waitForLiveClient(sdk)) return;
+
+    const cached = sdk.getState();
     const why = cached
         ? `its last state is ${Math.round(sdk.getStateAge() / 1000)}s old and no new tick arrived in ${LIVE_CLIENT_WAIT_MS / 1000}s`
         : 'no game state was received';
-    // Same derivation as BotSDK's browser launch URL: SERVER may be a bare
-    // host or a ws(s):// gateway URL.
-    let origin = 'http://localhost:8888';
-    if (server && !server.startsWith('localhost') && !server.startsWith('127.')) {
-        origin = /^wss?:\/\//.test(server)
-            ? server.replace(/^ws/, 'http').replace(/\/gateway$/, '')
-            : `https://${server}`;
-    }
+    const origin = webOriginFor(server);
     throw new Error(
         `No game client is attached to "${username}" (${why}).\n` +
         `Scripts drive a running client; they don't start one. Start one, leave it running, then rerun:\n` +

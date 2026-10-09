@@ -13,7 +13,7 @@ you never commit, and you only touch the bot you were given.
 - `conductor/lib/task.ts` — the contract. A task is `defineTask({ name, description, params (zod
   from 'zod/v4'), preflight?, steps, isComplete? })`. Each loop the first step whose `when()`
   passes runs. A step returns nothing to keep going, `{ fail }` or `{ done }` to end the run.
-- `conductor/lib/engine.ts` — what's handled for you: shared interrupts (death, blocking dialogs),
+- `conductor/lib/engine.ts` — what's handled for you: shared interrupts (death, wilderness, low HP, dialogs), the refusal to start while in combat,
   `--until` stop conditions, the progress watchdog, auto-screenshots, the RESULT line. Don't
   re-implement them in a task.
 - `conductor/tasks/woodcutting.ts` — the reference task.

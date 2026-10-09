@@ -21,8 +21,11 @@ conductor (Claude Code session, .claude/skills/conductor)
 ```
 
 The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first step whose
-`when()` passes runs; shared interrupts (death, blocking dialogs) go first; a watchdog ends runs
+`when()` passes runs; shared interrupts (death, wilderness, low HP, dialogs) go first; a watchdog ends runs
 whose XP, position and inventory stop changing.
+
+`run-task` refuses to start when the bot is already in combat or another controller is attached
+(`<bot> already has N controller(s) attached`); `--takeover` pre-empts the other controller.
 
 ## How it learns
 

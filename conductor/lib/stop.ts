@@ -1,6 +1,7 @@
 // Generic stop conditions the conductor attaches to any task, so tasks don't
 // each re-implement "until level X" / "for N minutes".
 import type { BotWorldState } from '../../sdk/types';
+import { findSkill, skillXpGained } from './util';
 
 export type StopCondition =
     | { kind: 'level'; skill: string; level: number }
@@ -28,14 +29,14 @@ export function parseStop(spec: string): StopCondition {
 
 export function describeStop(c: StopCondition): string {
     switch (c.kind) {
-        case 'level': return `${c.skill} level ${c.level}`;
-        case 'xp': return `+${c.amount} ${c.skill} xp`;
-        case 'minutes': return `${c.minutes} min`;
+        case 'level':
+            return `${c.skill} level ${c.level}`;
+        case 'xp':
+            return `+${c.amount} ${c.skill} xp`;
+        case 'minutes':
+            return `${c.minutes} min`;
     }
 }
-
-const skill = (s: BotWorldState, name: string) =>
-    s.skills.find(k => k.name.toLowerCase() === name.toLowerCase());
 
 /** Returns a reason when any condition is met, else null. */
 export function checkStops(
@@ -49,12 +50,12 @@ export function checkStops(
             return `reached ${describeStop(c)}`;
         }
         if (c.kind === 'level') {
-            const k = skill(state, c.skill);
+            const k = findSkill(state, c.skill);
             if (k && k.baseLevel >= c.level) return `reached ${describeStop(c)}`;
         }
         if (c.kind === 'xp') {
-            const k = skill(state, c.skill);
-            if (k && k.experience - (xpBefore[k.name] ?? k.experience) >= c.amount) return `reached ${describeStop(c)}`;
+            const k = findSkill(state, c.skill);
+            if (k && skillXpGained(k, xpBefore) >= c.amount) return `reached ${describeStop(c)}`;
         }
     }
     return null;
@@ -63,8 +64,10 @@ export function checkStops(
 /** Fail fast on a typo'd skill name rather than running forever. */
 export function validateStops(stops: StopCondition[], state: BotWorldState): void {
     for (const c of stops) {
-        if ((c.kind === 'level' || c.kind === 'xp') && !skill(state, c.skill)) {
-            throw new Error(`unknown skill "${c.skill}" in --until; skills: ${state.skills.map(s => s.name).join(', ')}`);
+        if ((c.kind === 'level' || c.kind === 'xp') && !findSkill(state, c.skill)) {
+            throw new Error(
+                `unknown skill "${c.skill}" in --until; skills: ${state.skills.map(s => s.name).join(', ')}`,
+            );
         }
     }
 }

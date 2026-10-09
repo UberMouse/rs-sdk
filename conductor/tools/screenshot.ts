@@ -5,9 +5,10 @@
 // Connects in observe mode, so it never steals control from a running task.
 // Needs the rendering browser client (conductor/tools/client.ts); the headless
 // lite client has no pixels to capture.
-import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
-import { loadBotEnv } from '../lib/env';
+import type { BotSDK } from '../../sdk/index';
+import { connectSdk, disconnectQuietly, loadBotEnv } from '../lib/env';
 import { captureScreenshot } from '../lib/screenshot';
+import { errMessage } from '../lib/util';
 
 const [name, outArg] = process.argv.slice(2);
 if (!name) {
@@ -15,24 +16,16 @@ if (!name) {
     process.exit(2);
 }
 const env = loadBotEnv(name);
-const sdk = new BotSDK({
-    botUsername: env.username,
-    password: env.password,
-    gatewayUrl: deriveGatewayUrl(env.server),
-    connectionMode: 'observe',
-    autoLaunchBrowser: false,
-    autoReconnect: false,
-    showChat: false,
-});
+let sdk: BotSDK | undefined;
 
 try {
-    await sdk.connect();
+    sdk = await connectSdk(env, 'observe');
     const path = await captureScreenshot(sdk, env.username, outArg);
     console.log(path);
-} catch (e: any) {
-    console.error(`screenshot failed: ${e?.message ?? e}`);
+} catch (e) {
+    console.error(`screenshot failed: ${errMessage(e)}`);
     process.exitCode = 1;
 } finally {
-    await Promise.race([sdk.disconnect(), new Promise(r => setTimeout(r, 3000))]);
+    if (sdk) await disconnectQuietly(sdk);
     process.exit(process.exitCode ?? 0);
 }

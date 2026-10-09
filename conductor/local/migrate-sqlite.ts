@@ -24,9 +24,12 @@ db.exec(`CREATE TABLE IF NOT EXISTS "_prisma_migrations" (
 )`);
 
 const applied = new Set(
-    db.query<{ migration_name: string }, []>(
-        'SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NOT NULL AND rolled_back_at IS NULL'
-    ).all().map(r => r.migration_name)
+    db
+        .query<{ migration_name: string }, []>(
+            'SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NOT NULL AND rolled_back_at IS NULL',
+        )
+        .all()
+        .map(r => r.migration_name),
 );
 
 const names = readdirSync(migrationsDir, { withFileTypes: true })
@@ -44,7 +47,7 @@ for (const name of names) {
         db.run(
             `INSERT INTO _prisma_migrations (id, checksum, finished_at, migration_name, applied_steps_count)
              VALUES (?, ?, current_timestamp, ?, 1)`,
-            [randomUUID(), checksum, name]
+            [randomUUID(), checksum, name],
         );
     })();
     console.log(`applied ${name}`);

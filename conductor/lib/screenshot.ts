@@ -2,11 +2,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { BotSDK } from '../../sdk/index';
 import { REPO_ROOT } from './env';
+import { fileStamp } from './util';
 
 /** Default location: conductor/runs/<bot>/screenshots/<timestamp>-<label>.png (gitignored). */
 export function screenshotPath(bot: string, label = 'shot'): string {
-    const ts = new Date().toISOString().replace(/[:.]/g, '-');
-    return join(REPO_ROOT, 'conductor/runs', bot, 'screenshots', `${ts}-${label}.png`);
+    return join(REPO_ROOT, 'conductor/runs', bot, 'screenshots', `${fileStamp()}-${label}.png`);
 }
 
 /** Ask the attached browser client for its canvas and write it as PNG. Returns the absolute path. */

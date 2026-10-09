@@ -7,8 +7,11 @@
 // since the first and the previous snapshot. The conductor runs it after each task run.
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
-import { loadBotEnv, REPO_ROOT } from '../lib/env';
+import type { BotSDK } from '../../sdk/index';
+import { waitForLiveClient } from '../../sdk/runner';
+import { MAX_XP } from '../lib/xp';
+import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT } from '../lib/env';
+import { errMessage } from '../lib/util';
 
 const args = process.argv.slice(2);
 const name = args.find(a => !a.startsWith('-'));
@@ -17,54 +20,44 @@ if (!name) {
     process.exit(2);
 }
 
-/** Total XP needed for each level, 1..99, per the game's formula. */
-const XP_FOR_LEVEL: number[] = [0, 0];
-{
-    let points = 0;
-    for (let lvl = 1; lvl < 99; lvl++) {
-        points += Math.floor(lvl + 300 * 2 ** (lvl / 7));
-        XP_FOR_LEVEL[lvl + 1] = Math.floor(points / 4);
-    }
-}
-const MAX_XP = XP_FOR_LEVEL[99]!;
-
 interface Snapshot {
     t: number;
     skills: Record<string, { level: number; xp: number }>;
 }
 
 const env = loadBotEnv(name);
-const sdk = new BotSDK({
-    botUsername: env.username,
-    password: env.password,
-    gatewayUrl: deriveGatewayUrl(env.server),
-    connectionMode: 'observe',
-    autoLaunchBrowser: false,
-    autoReconnect: false,
-    showChat: false,
-});
-
+let sdk: BotSDK | undefined;
 let snap: Snapshot;
 try {
-    await sdk.connect();
+    sdk = await connectSdk(env, 'observe');
+    // The gateway replays the last state it cached after a client leaves; only a tick change proves a client is live.
+    if (!(await waitForLiveClient(sdk)))
+        throw new Error(`no live game client (start one: cd server/webclient && bun src/lite/runner.ts ${name})`);
     const state = sdk.getState();
-    if (!state) throw new Error('no game state (is a client attached?)');
+    if (!state) throw new Error('game state vanished after the tick wait');
     snap = { t: Date.now(), skills: {} };
     // Stat18/Stat19 are unused slots in this revision's skill list.
-    for (const k of state.skills.filter(k => !/^Stat\d+$/.test(k.name))) {
+    for (const k of state.skills.filter(skill => !/^Stat\d+$/.test(skill.name))) {
         snap.skills[k.name] = { level: k.baseLevel, xp: k.experience };
     }
-} catch (e: any) {
-    console.error(`progress: ${e?.message ?? e}`);
+} catch (e) {
+    console.error(`progress: ${errMessage(e)}`);
     process.exit(1);
 } finally {
-    await Promise.race([sdk.disconnect(), new Promise(r => setTimeout(r, 3000))]);
+    if (sdk) await disconnectQuietly(sdk);
 }
 
 const file = join(REPO_ROOT, 'conductor/runs', name, 'progress.jsonl');
-const history: Snapshot[] = existsSync(file)
-    ? readFileSync(file, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l))
-    : [];
+const history: Snapshot[] = [];
+let badLines = 0;
+for (const line of existsSync(file) ? readFileSync(file, 'utf8').split('\n').filter(Boolean) : []) {
+    try {
+        history.push(JSON.parse(line));
+    } catch {
+        badLines++;
+    }
+}
+if (badLines) console.error(`progress: skipped ${badLines} unparseable line(s) in ${file}`);
 const first = history[0];
 const prev = history[history.length - 1];
 if (!args.includes('--no-record')) {
@@ -78,19 +71,28 @@ const maxedXp = skills.reduce((n, [, s]) => n + Math.min(s.xp, MAX_XP), 0);
 const pct = (100 * maxedXp) / (MAX_XP * skills.length);
 
 if (args.includes('--json')) {
-    console.log(JSON.stringify({ totalLevel, maxTotal: 99 * skills.length, percentToMax: pct, snapshot: snap, first, previous: prev }, null, 2));
+    console.log(
+        JSON.stringify(
+            { totalLevel, maxTotal: 99 * skills.length, percentToMax: pct, snapshot: snap, first, previous: prev },
+            null,
+            2,
+        ),
+    );
     process.exit(0);
 }
 
 const fmt = (n: number) => n.toLocaleString('en-US');
 const delta = (cur: number, base?: number) => (base === undefined || cur === base ? '' : `+${fmt(cur - base)}`);
 console.log(`${env.username}: total level ${totalLevel}/${99 * skills.length}, ${pct.toFixed(3)}% of max XP`);
-if (first) console.log(`since first snapshot ${new Date(first.t).toISOString().slice(0, 16)}Z; since previous ${new Date(prev!.t).toISOString().slice(0, 16)}Z`);
+if (first)
+    console.log(
+        `since first snapshot ${new Date(first.t).toISOString().slice(0, 16)}Z; since previous ${new Date(prev!.t).toISOString().slice(0, 16)}Z`,
+    );
 console.log('skill         lvl          xp     to 99   Δfirst    Δprev');
 for (const [skill, s] of skills.sort((a, b) => b[1].xp - a[1].xp)) {
     console.log(
         `${skill.padEnd(12)} ${String(s.level).padStart(4)} ${fmt(s.xp).padStart(11)} ${fmt(Math.max(0, MAX_XP - s.xp)).padStart(11)}` +
-        ` ${delta(s.xp, first?.skills[skill]?.xp).padStart(8)} ${delta(s.xp, prev?.skills[skill]?.xp).padStart(8)}`,
+            ` ${delta(s.xp, first?.skills[skill]?.xp).padStart(8)} ${delta(s.xp, prev?.skills[skill]?.xp).padStart(8)}`,
     );
 }
 process.exit(0);

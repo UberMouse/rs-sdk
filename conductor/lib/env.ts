@@ -1,5 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
+import { loadEnvFile, webOriginFor } from '../../sdk/runner';
 
 export const REPO_ROOT = resolve(import.meta.dir, '../..');
 
@@ -16,28 +18,53 @@ export interface BotEnv {
 export function loadBotEnv(name: string): BotEnv {
     const path = join(REPO_ROOT, 'bots', name, 'bot.env');
     if (!existsSync(path)) throw new Error(`No bot.env for "${name}" at ${path}`);
-    const raw: Record<string, string> = {};
-    for (const line of readFileSync(path, 'utf8').split('\n')) {
-        const t = line.trim();
-        if (!t || t.startsWith('#')) continue;
-        const eq = t.indexOf('=');
-        if (eq > 0) raw[t.slice(0, eq).trim()] = t.slice(eq + 1).trim();
-    }
-    for (const [k, v] of Object.entries(raw)) process.env[k] = v;
+    const raw = loadEnvFile(path);
     if (!raw.BOT_USERNAME || !raw.PASSWORD) throw new Error(`${path} is missing BOT_USERNAME or PASSWORD`);
 
     const server = raw.SERVER || undefined;
-    let webOrigin = 'http://localhost:8888';
-    if (server && !server.startsWith('localhost') && !server.startsWith('127.')) {
-        webOrigin = /^wss?:\/\//.test(server)
-            ? server.replace(/^ws/, 'http').replace(/\/gateway$/, '')
-            : `https://${server}`;
-    } else if (server?.includes(':')) {
-        webOrigin = `http://${server}`;
-    }
+    const webOrigin = webOriginFor(server);
     return { username: raw.BOT_USERNAME, password: raw.PASSWORD, server, webOrigin, raw };
 }
 
 export function botClientUrl(env: BotEnv): string {
     return `${env.webOrigin}/bot?bot=${encodeURIComponent(env.username)}&password=${encodeURIComponent(env.password)}`;
+}
+
+export const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+
+/** Connect a BotSDK that never launches a browser or reconnects. Caller must disconnectQuietly it. */
+export async function connectSdk(env: BotEnv, mode: 'observe' | 'control'): Promise<BotSDK> {
+    const sdk = new BotSDK({
+        botUsername: env.username,
+        password: env.password,
+        gatewayUrl: deriveGatewayUrl(env.server),
+        connectionMode: mode,
+        autoLaunchBrowser: false,
+        autoReconnect: false,
+        showChat: false,
+    });
+    try {
+        await sdk.connect();
+    } catch (e) {
+        await disconnectQuietly(sdk);
+        throw e;
+    }
+    return sdk;
+}
+
+/** Disconnect, but never wait more than `ms`; the timeout timer is cleared so it cannot hold the process open. */
+export async function disconnectQuietly(sdk: BotSDK, ms = 3000): Promise<void> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+        await Promise.race([
+            sdk.disconnect(),
+            new Promise(r => {
+                timer = setTimeout(r, ms);
+            }),
+        ]);
+    } catch {
+        // already disconnected
+    } finally {
+        clearTimeout(timer);
+    }
 }
