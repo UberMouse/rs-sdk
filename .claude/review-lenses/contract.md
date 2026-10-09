@@ -13,29 +13,28 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
   base. Magic numbers that encode game facts are named.
 - **T3 Catalog description.** `description` tells the conductor what the task does, its
   requirements, and known-good spots, and matches the code (no promised mode the code lacks).
-- **T4 Ops first.** A new or changed step does its game actions with ops from
+- **T4 Ops first.** A step in scope of the legacy scope rule (`common.md`) does its game actions with ops from
   `conductor/actions` (`chop`, `interactLoc`, …), and when none exists for an action the task
   needs, ports one (see T9) rather than calling `ctx.bot.*` or raw `ctx.sdk.send*`. `yield*
   call('bot.x', …)` is a stopgap for one action not being ported now, labelled with the method,
   not a second way to write steps; raw sends only with a stated reason and effect checks
-  (game-semantics G1). Untouched legacy steps may keep using `ctx.bot.*` porcelain.
+  (game-semantics G1). Legacy steps outside that scope may keep using `ctx.bot.*` porcelain.
 - **T5 No duplication.** Helpers that already exist in `sdk/`, `conductor/lib/` or another task
   are imported, not copied; a helper a second task now needs moves to `conductor/lib/`.
 - **T6 Knowledge consistency.** Coordinates, names and requirements match `learnings/` and
   `wiki/skills/`; a fact the code relies on that the knowledge base lacks is flagged for the
   curator.
-- **T7 Step shape and purity.** A new or changed step is a generator (`*run`, waiting with
-  `yield*`) or, if it only decides, a plain `run` returning an `Outcome`; no `await` in it and no
-  `async run`. `when` has no side effects: no `streak`/`counter` `add`/`reset`, no `ctx.memory`
-  writes, no logging. Per-run state is declared through the task's `memory` factory and read
-  without casts; `ctx.streak` counts runs in a row and `ctx.counter` only run-scoped totals.
-  Guards are used as the contract intends: `allow` only for a guard the task replaces on purpose
+- **T7 Step shape.** A step in scope of the legacy scope rule (`common.md`) is a generator
+  (`*run`, waiting with `yield*`) or, if it only decides, a plain `run` returning an `Outcome`; no
+  `await` in it and no `async run`. Purity of `when` is robustness R3 and the streak/counter rule
+  is R1; do not report them here. Per-run state is declared through the task's `memory` factory
+  and read without casts. Guards are used as the contract intends: `allow` only for a guard the task replaces on purpose
   (`dialog`, `interface`), and `guards: [underAttackGuard]` (or the task's own `TaskGuard`)
   instead of threat checks in a step.
-- **T8 Tests.** A new or changed task has unit tests in `conductor/test/tasks/<name>.test.ts`
+- **T8 Tests.** A new task, or a changed task in scope of the legacy scope rule (`common.md`), has unit tests in `conductor/test/tasks/<name>.test.ts`
   that use `simulate` and `world()` builders: the success path, every failure reason with its
   exact text, each streak or limit, preflight refusals, and the guards that matter to the task
-  (low HP mid-step, a dialog or modal, being attacked). It also has an integration smoke in
+  (low HP mid-step, a dialog or modal, being attacked). Any changed task also has an integration smoke in
   `conductor/test/integration/smoke/<name>.itest.ts`, on ground no other itest uses. A new or
   changed op has `conductor/test/actions/<op>.test.ts` and `integration/actions/<op>.itest.ts`.
   Flag tests that only restate the code, or that would pass on the pre-change code.
@@ -54,8 +53,8 @@ Types, async hygiene, naming, comments and style are the `code-quality` lens.
   schema).
 - **B** — engine behaviour re-implemented in a way that fights it (its own watchdog, swallowing
   the death interrupt); a description that promises what the code doesn't do; duplicated logic
-  whose copies already differ; a T7 `await`, side effect in `when` or `ctx.memory` cast in a
-  new or changed step; a T8 missing unit test or smoke for a new or changed task or op; a T9 op
+  whose copies already differ; a T7 `await` or `ctx.memory` cast in a step in scope; a T8
+  missing unit test (in scope) or smoke (any changed task) or op test; a T9 op
   that handles threats or dialogs itself.
 - **C** — hard-coding that only matters for future spots; a raw `send*` where an op exists
   but the effect is checked; naming.

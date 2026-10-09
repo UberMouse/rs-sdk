@@ -28,4 +28,4 @@ Return JSON only:
       "reasoning": "<one line>", "duplicates": [] } ] }
 ```
 
-Bash is for reading only (`git diff`, `grep`, `bunx tsc --noEmit -p .`). Never drive a bot.
+Bash is for reading only (`git diff`, `grep`, `bun run verify:conductor`). Never drive a bot.

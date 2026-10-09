@@ -35,15 +35,15 @@ To review code already committed, name a range instead (`git diff <base>..HEAD -
 then §4's revert becomes "report the A findings to the user" — never rewrite landed history.
 
 Keep the author's report: its unit tests (`conductor/test/`, run with `bun test conductor`) and
-smoke-test RESULT lines are evidence for the reviewers. A new or changed task or op without unit
-tests (`simulate` + `world()` builders) and an integration smoke is a contract finding (T8), not
-a gap to wave through. When the bot can't run the task (missing gear, dead), say so in the
+smoke-test RESULT lines are evidence for the reviewers. Missing tests are a contract finding (T8), not
+a gap to wave through; which changes need unit tests is the legacy scope rule in
+`.claude/review-lenses/common.md`, and any changed task needs a passing integration smoke. When the bot can't run the task (missing gear, dead), say so in the
 evidence so reviewers don't wait on it.
 
 If the change touches only a task's `description` or comments, run `contract` and
 `code-quality` alone. Otherwise run all five. The lenses are written for the generator-step
-pattern in `.claude/agents/task-author.md`; legacy `async` steps the change does not edit are
-out of scope for its criteria.
+pattern in `.claude/agents/task-author.md`; legacy `async` steps the change does not edit, and
+narrow edits to them, are handled per the legacy scope rule in `.claude/review-lenses/common.md`.
 
 ## 1. Find
 

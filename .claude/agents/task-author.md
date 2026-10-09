@@ -55,8 +55,8 @@ you never commit, and you only touch the bot you were given.
   filter targets.
 - The game is not buggy; the SDK may be. If an SDK method misbehaves, find a workaround first,
   then file it: `bun sdk/bug-report.ts "<what, and the workaround>"`.
-- A new or changed task ships with unit tests and an integration smoke (see Tests). Without them
-  it is not done.
+- A new task, or a changed task in scope of the legacy scope rule (`.claude/review-lenses/common.md`),
+  ships with unit tests and an integration smoke (see Tests). Without them it is not done.
 
 ## The pattern
 
@@ -64,9 +64,10 @@ A task is `defineTask({ name, description, params (zod from 'zod/v4'), memory?, 
 preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
 `when()` passes runs; a step returns nothing to keep going, `{ fail }` or `{ done }` to end the
 run. New and changed tasks are generator steps over ops. Every catalog task except woodcutting is
-still legacy `async` code that is being ported: recognise it, make a small fix in its own style if
-a port is out of scope, but write a new or substantially changed task in the new style, porting the
-actions it uses as ops.
+still legacy `async` code that is being ported: recognise it. What counts as a narrow edit (made in
+the legacy style) and what needs the new style is the legacy scope rule in
+`.claude/review-lenses/common.md`; write new tasks, new steps, ports and substantial rewrites in the
+new style, porting the actions they use as ops.
 
 ### Step shapes
 
@@ -175,7 +176,10 @@ work inside a new task.
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.
 
-## Tests (required for a new or changed task)
+## Tests (required in scope of the legacy scope rule)
+
+The scope rule is in `.claude/review-lenses/common.md`: the unit tests below are for new tasks,
+new steps, ports and substantial rewrites; any changed task still needs a passing integration smoke.
 
 `bun test conductor` runs the unit tests with no server, in well under 10 seconds.
 

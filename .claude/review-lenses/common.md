@@ -15,8 +15,14 @@ watchdog, step timeouts, auto-screenshots and the RESULT line. Steps drive the g
 in `conductor/actions/`; legacy tasks still use the SDK's `sdk/actions.ts` (`ctx.bot.*`) and
 `sdk/index.ts` (`ctx.sdk.*`), which `CLAUDE.md` and `sdk/API.md` describe. The pattern is
 written up in `.claude/agents/task-author.md`. "New or changed" below means a step, op or task
-the change adds or edits; untouched legacy code is not reviewed against the generator-step
-criteria, but a change that edits a legacy step should port it unless the port is out of scope.
+the change adds or edits.
+
+**Scope rule for legacy code.** Untouched legacy (`async`) steps are not reviewed against the
+generator-step criteria. A narrow edit to a legacy step is judged in its own style: contract T4,
+T7 and the unit-test half of T8 apply only to new tasks, new steps, ports and substantial rewrites
+(a step's logic rewritten, or a new behaviour added to it). Do not ask for a port of a narrow
+edit. The integration smoke (T8) must still pass for any changed task, and every other criterion
+applies to the edited lines as usual.
 
 ## How to review
 
@@ -42,7 +48,8 @@ Each lens defines what A–D mean for it. Across lenses they mean, roughly:
 - **C** — latent (no current path reaches it), or a quality issue with no runtime effect.
 - **D** — speculative: needs an input or game state you could not show is possible.
 
-Fixes are applied for A and B. C goes to the backlog. D is dropped.
+Fixes are applied for A, B and C (a C whose fix needs work outside the change is deferred, per
+`.claude/skills/task-review/SKILL.md` §2). D is dropped.
 
 ## Finding format
 

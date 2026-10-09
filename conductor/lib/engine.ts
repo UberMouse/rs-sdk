@@ -559,7 +559,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 try {
                     const out = step.run(ctx);
                     // A generator is an op, a promise is legacy async code, anything else is the outcome of a
-                    // step that only decided.
+                    // step that only decided. That value is trusted to be an Outcome: an object without
+                    // fail/done is read as no outcome, and a string or number makes `'fail' in x` throw,
+                    // which surfaces as the step having thrown.
                     stepEnd = isOp(out)
                         ? await runOp(step.name, out, guards)
                         : isPromise(out)

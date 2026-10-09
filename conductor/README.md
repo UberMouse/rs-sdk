@@ -53,8 +53,9 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 | Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/` | `bun test conductor` (no server) |
 | Integration: ops and one smoke run per task against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
 
-A new or changed task has both: unit tests for its success, failure and guard scenarios, and a
-smoke test. `bun conductor/tools/capture-state.ts <bot> --name <fixture>` records a fixture from a
+A new task (or a port or substantial rewrite; the legacy scope rule is in
+`.claude/review-lenses/common.md`) has both: unit tests for its success, failure and guard
+scenarios, and a smoke test. Any changed task needs its smoke test to pass. `bun conductor/tools/capture-state.ts <bot> --name <fixture>` records a fixture from a
 (throwaway) bot's live state.
 
 `run-task` refuses to start when the bot is already in combat or another controller is attached
