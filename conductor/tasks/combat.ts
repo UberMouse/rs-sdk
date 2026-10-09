@@ -3,7 +3,7 @@ import type { ActionResult, BotWorldState, NearbyNpc } from '../../sdk/types';
 import { ATTACK_OPTION, attack } from '../actions/attack';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
-import { pickup } from '../actions/pickup';
+import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { call, log, type Op, rethrowIfCancelled, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
@@ -14,8 +14,9 @@ const SKILLS = ['Attack', 'Strength', 'Defence'] as const;
 /** An NPC may be this many levels above the bot's combat level before the task refuses to fight it. */
 const DEFAULT_MAX_LEVEL_GAP = 5;
 const DEFAULT_EAT_BELOW = 0.6;
-/** How long one fight may last before it counts as stuck (90 s; a chicken dies in a handful of ticks). */
-const FIGHT_TIMEOUT_TICKS = Math.ceil(90_000 / TICK_MS);
+/** How long one fight may last before it counts as stuck (a chicken dies in a handful of ticks). */
+const FIGHT_TIMEOUT_MS = 90_000;
+const FIGHT_TIMEOUT_TICKS = Math.ceil(FIGHT_TIMEOUT_MS / TICK_MS);
 /** Each wait for the kill is this long (6 s); the fight timeout is checked between them. */
 const FIGHT_SLICE_TICKS = Math.ceil(6_000 / TICK_MS);
 /** How long the combat tab gets to show a style change (3 s). */
@@ -23,16 +24,35 @@ const STYLE_WAIT_TICKS = Math.ceil(3_000 / TICK_MS);
 const STYLE_LIST_WAIT_TICKS = 3;
 /** How long a bone gets to leave the inventory after Bury (5 s). */
 const BURY_WAIT_TICKS = Math.ceil(5_000 / TICK_MS);
+/** The wait for player state to appear, in ticks. */
+const NO_PLAYER_WAIT_TICKS = 1;
 const NO_TARGET_LIMIT = 20;
 const NO_TARGET_WAIT_TICKS = 3;
 const ATTACK_FAIL_LIMIT = 6;
 const ATTACK_RETRY_TICKS = 1;
-/** bot.attack walks to an NPC further than this first (through doors and gates), to within this. */
+/**
+ * An NPC further than this is walked to first, to within this: bot.walkTo opens the doors and gates on
+ * the way, which the client's own pathing for the attack does not.
+ */
 const ATTACK_WALK_BEYOND = 2;
 const STYLE_FAIL_LIMIT = 3;
 const EQUIP_FAIL_LIMIT = 3;
 const BURY_FAIL_LIMIT = 3;
 const LOOT_FAIL_LIMIT = 9;
+/**
+ * How long a ground item a pickup failed on is left alone (20 s): long enough not to retry in a tight
+ * loop, short enough that a transient failure (another player's fight in the way, a momentary block)
+ * does not skip every later drop of the same item on that tile (feathers at a chicken spot) for the run.
+ */
+const LOOT_SKIP_TICKS = Math.ceil(20_000 / TICK_MS);
+/** Margin on the watchdog window, beyond the slowest specific give-up it must let fire first. */
+const STUCK_MARGIN_MS = 30_000;
+/** The longest a fight wait can run past the timeout: the check happens between kill slices. */
+const FIGHT_GIVE_UP_MS = FIGHT_TIMEOUT_MS + FIGHT_SLICE_TICKS * TICK_MS;
+/** The loot give-up: LOOT_FAIL_LIMIT pickups each waiting out a full timeout and grace. */
+const LOOT_GIVE_UP_MS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS) * TICK_MS;
+/** The watchdog (static) waits for the later of the two specific failures, so each can report its reason. */
+const STUCK_AFTER_MS = Math.max(FIGHT_GIVE_UP_MS, LOOT_GIVE_UP_MS) + STUCK_MARGIN_MS;
 /** Ground items further than this are not worth leaving the fight spot for. */
 const LOOT_RADIUS = 6;
 const EAT_FAIL_LIMIT = 3;
@@ -65,8 +85,8 @@ type CombatParams = z.infer<typeof Params>;
 interface CombatMemory {
     /** The tick the fight being waited out was first seen, until the bot is out of combat. */
     fightStartedAtTick: number | null;
-    /** Ground items (`lootKey`) a pickup failed on, so the loop does not retry them forever. */
-    lootSkipped: Set<string>;
+    /** Ground items (`lootKey`) a pickup failed on, with the tick they are skippable until. */
+    lootSkipped: Map<string, number>;
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
@@ -119,7 +139,7 @@ function wantedGroundItems(ctx: Ctx) {
         .state()
         .groundItems.filter(i => names.some(n => sameName(n, i.name)))
         .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inArea(ctx.params.area, i))
-        .filter(i => !ctx.memory.lootSkipped.has(lootKey(i)))
+        .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
 }
 
@@ -143,13 +163,13 @@ function pickTarget(state: BotWorldState, p: CombatParams) {
  * cancels the wait and eats, death ends the run, and the fight's clock survives into the next slice.
  */
 function* waitForKill(ctx: Ctx): Op<Outcome> {
-    const now = ctx.state().tick;
+    const state = ctx.state();
+    const now = state.tick;
     const startedAt = ctx.memory.fightStartedAtTick ?? now;
     ctx.memory.fightStartedAtTick = startedAt;
     if (now - startedAt > FIGHT_TIMEOUT_TICKS) {
-        const p = ctx.state().player;
-        const seconds = Math.round((FIGHT_TIMEOUT_TICKS * TICK_MS) / 1000);
-        return { fail: `fight lasted over ${seconds}s at (${p?.worldX},${p?.worldZ})` };
+        const p = state.player;
+        return { fail: `fight lasted over ${FIGHT_TIMEOUT_MS / 1000}s at (${p?.worldX},${p?.worldZ})` };
     }
     const w = yield* wait('kill', s => !s.player?.combat.inCombat || wantsToEat(s, ctx.params), FIGHT_SLICE_TICKS);
     // The fight being timed is over; a later fight starts a fresh clock.
@@ -184,8 +204,9 @@ export default defineTask({
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
-    memory: (): CombatMemory => ({ fightStartedAtTick: null, lootSkipped: new Set() }),
+    memory: (): CombatMemory => ({ fightStartedAtTick: null, lootSkipped: new Map() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
+    stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -318,13 +339,15 @@ export default defineTask({
             *run(ctx) {
                 const item = wantedGroundItems(ctx)[0];
                 if (!item) return;
-                const lootFails = ctx.streak('lootFails');
+                // Run-scoped, not a streak: loot stops applying between failures (skipped items), which
+                // would reset a streak; only a successful pickup clears it.
+                const lootFails = ctx.counter('lootFails');
                 const r = yield* pickup(ctx, item);
                 if (r.ok) {
                     lootFails.reset();
                     return;
                 }
-                ctx.memory.lootSkipped.add(lootKey(item));
+                ctx.memory.lootSkipped.set(lootKey(item), ctx.state().tick + LOOT_SKIP_TICKS);
                 yield* log(`loot ${item.name} failed: ${r.message}`);
                 if (lootFails.add() >= LOOT_FAIL_LIMIT) return { fail: `looting keeps failing (last: ${r.message})` };
             },
@@ -336,7 +359,7 @@ export default defineTask({
                 const state = ctx.state();
                 const p = state.player;
                 if (!p) {
-                    yield* ticks(1);
+                    yield* ticks(NO_PLAYER_WAIT_TICKS);
                     return;
                 }
                 if (p.combat.inCombat) return yield* waitForKill(ctx);

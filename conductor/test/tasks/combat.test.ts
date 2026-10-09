@@ -385,6 +385,57 @@ describe('combat: bones and loot', () => {
     });
 });
 
+/** The k-th feather's own tile within reach; it is present for three ticks, and once skipped loot does not apply until the next. */
+const tile = (k: number) => ({ x: COOP.x - 2 + (k % 5), z: COOP.z - 1 + Math.floor(k / 5) });
+
+/** One feather per three ticks, each on its own tile; with `gained`, a feather is in the inventory after that one. */
+const spaced = (items: number, gained?: { k: number }) =>
+    base.series(items * 3 + 90, (w, i) => {
+        const k = Math.floor(i / 3);
+        let out = w;
+        if (gained && i > gained.k * 3) out = out.inv('Feather', 1, { id: FEATHER });
+        if (k < items) {
+            const t = tile(k);
+            out = out.ground('Feather', t.x, t.z, 1, { id: FEATHER });
+        }
+        return out;
+    });
+
+describe('combat: loot failure limits', () => {
+    test('failures separated by gaps in loot still reach the limit', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: spaced(12),
+            respond: a => (a.type === 'pickupItem' ? { success: false, message: 'not connected' } : undefined),
+        });
+        expect(r.result.reason).toBe('loot: looting keeps failing (last: not connected)');
+        expect(r.sends.filter(s => s === 'take Feather')).toHaveLength(9);
+    });
+
+    test('a successful pickup resets the count', async () => {
+        const winner = tile(8);
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: spaced(17, { k: 8 }),
+            respond: a =>
+                a.type === 'pickupItem' && !(a.x === winner.x && a.z === winner.z)
+                    ? { success: false, message: 'not connected' }
+                    : undefined,
+        });
+        expect(r.sends.filter(s => s === 'take Feather')).toHaveLength(17);
+        expect(r.result.reason).not.toContain('looting keeps failing');
+    });
+
+    test('a skipped item is lootable again after the skip window', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: chickenAt(feathersDropped(base)).series(1),
+            respond: a => (a.type === 'pickupItem' ? { success: false, message: 'not connected' } : undefined),
+        });
+        expect(r.sends.filter(s => s === 'take Feather').length).toBeGreaterThanOrEqual(2);
+    });
+});
+
 const refusal = async (w: World, params: object = PARAMS) =>
     (await simulate(combat, { params, timeline: w.series(1) })).result.reason;
 
