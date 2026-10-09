@@ -3,6 +3,12 @@ import type { Counter } from './task';
 
 type Skill = BotWorldState['skills'][number];
 
+/**
+ * Milliseconds per game tick on the local server (400, not the classic 600).
+ * See learnings/local-server.md; set by NODE_TICKRATE in server/engine/src/util/Environment.ts.
+ */
+export const TICK_MS = 400;
+
 export function errMessage(e: unknown): string {
     return e instanceof Error ? e.message : String(e);
 }

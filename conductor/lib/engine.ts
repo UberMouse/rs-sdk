@@ -9,14 +9,14 @@ import { captureScreenshot } from './screenshot';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import type { Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
 import { isLowHp } from './threat';
-import { distance, errMessage, fileStamp, INVENTORY_SLOTS, memoryCounter, xpGainedSince } from './util';
+import { distance, errMessage, fileStamp, INVENTORY_SLOTS, memoryCounter, TICK_MS, xpGainedSince } from './util';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
 const TICK_STALL_MS = 30_000;
 /** Consecutive loops with no applicable step before the run fails (covers mid-animation gaps). */
 const MAX_IDLE_LOOPS = 20;
 /** One game tick; the wait between idle loops. */
-const IDLE_POLL_MS = 600;
+const IDLE_POLL_MS = TICK_MS;
 export const DEFAULT_STUCK_AFTER_MS = 90_000;
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;

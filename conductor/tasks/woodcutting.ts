@@ -43,6 +43,12 @@ type Ctx = TaskContext<WoodcuttingParams>;
 const countLogs = (state: BotWorldState, logs: RegExp) =>
     state.inventory.filter(i => logs.test(i.name)).reduce((n, i) => n + i.count, 0);
 
+/** Logs of the task's tree in the full inventory, or the fail result when there are none. */
+function fullInventoryLogs(ctx: Ctx): number | { fail: string } {
+    const n = countLogs(ctx.state(), TREES[ctx.params.tree].logs);
+    return n === 0 ? { fail: `inventory full with no ${ctx.params.tree} logs` } : n;
+}
+
 type ChopOutcome = { kind: 'chopped' } | { kind: 'threatened' } | { kind: 'failed'; message: string };
 
 /**
@@ -98,15 +104,16 @@ export default defineTask({
             name: 'stop-full',
             when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
             async run(ctx) {
-                const logs = countLogs(ctx.state(), TREES[ctx.params.tree].logs);
-                if (logs === 0) return { fail: `inventory full with no ${ctx.params.tree} logs` };
-                return { done: `inventory full: ${logs} logs` };
+                const held = fullInventoryLogs(ctx);
+                return typeof held === 'number' ? { done: `inventory full: ${held} logs` } : held;
             },
         },
         {
             name: 'drop-logs',
             when: ctx => ctx.params.onFull === 'drop' && ctx.inventoryFull(),
             async run(ctx) {
+                const held = fullInventoryLogs(ctx);
+                if (typeof held !== 'number') return held;
                 const r = await ctx.bot.dropItem(TREES[ctx.params.tree].logs, 'all');
                 if (ctx.inventoryFull()) {
                     return { fail: `inventory still full after dropping logs (${r.message})` };
