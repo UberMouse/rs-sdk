@@ -63,7 +63,11 @@ const isAnimating = (state?.player?.animId ?? -1) !== -1;
 
 ## Chicken spawn areas the wiki mislabels
 
-`wiki/npcs/chicken.md` calls the spawn at (3225, 3300) "Varrock (south)" and the one at (3185, 3277) "Barbarian Village". Both are in the Lumbridge area: (3225, 3300) is the Lumbridge coop (next to the verified (3231, 3295) spot above), and (3185, 3277) is Fred's farm, west of Lumbridge. Chickens were attacked at both by the integration tests. [v 2026-10-10 integration-tests local]
+Chickens spawn at (3185..3191, 3277..3279) (map square m49_51); the attack integration test fought them there. [v 2026-10-10 integration-tests local]
+
+The combat smoke fought chickens at (3231, 3295), radius 8. [v 2026-10-10 integration-tests local]
+
+Derived from coordinates, not observed in game: `wiki/npcs/chicken.md` labels (3185, 3277) "Barbarian Village" and (3225, 3300) "Varrock (south)", but both lie within ~50 tiles of the Lumbridge chicken spot (3231, 3295), far from Barbarian Village (~3080, 3420) and Varrock (z > 3400). The labels look wrong.
 
 ## Cow Field Details (Proven from 200+ kills)
 
