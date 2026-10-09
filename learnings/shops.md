@@ -17,7 +17,7 @@ overstocked on that item, not that the sale failed.
 
 | Shop | Location | Coordinates | What They Sell |
 |------|----------|-------------|----------------|
-| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox, Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
+| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
 | Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]), Pickaxes (bronze 1gp) |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear |
