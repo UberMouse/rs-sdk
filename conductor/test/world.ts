@@ -19,6 +19,8 @@ export const UNARMED_STYLES: CombatStyleOption[] = [
     { index: 2, name: 'Block', type: 'Defensive', trainsSkills: ['Defence'], damageType: 'Crush' },
 ];
 const INVENTORY_SLOTS = 28;
+/** The bank_main interface (server/content/pack/interface.pack). */
+export const BANK_INTERFACE = 5292;
 
 /** The tile distance the client publishes (Chebyshev: a diagonal neighbour is 1). */
 const tiles = (a: { x: number; z: number }, b: { x: number; z: number }) =>
@@ -289,6 +291,25 @@ export class World {
             modalOpen: open,
             modalInterface: interfaceId,
         });
+    }
+
+    /**
+     * Opens the bank (the client publishes bank_main as the main modal) holding `items`, one slot
+     * each in order, or closes it with `false`. Withdrawals arrive as notes while `noteMode` is on.
+     */
+    bank(items: { name: string; count: number; id?: number }[] | false, noteMode = false): World {
+        if (!items) return this.with({ bank: { isOpen: false, items: [], noteMode } }).modal(false);
+        const bank = {
+            isOpen: true,
+            noteMode,
+            items: items.map((it, slot) => ({
+                slot,
+                id: itemId(it.name, it.id),
+                name: cap(it.name.toLowerCase()),
+                count: it.count,
+            })),
+        };
+        return this.with({ bank }).modal(BANK_INTERFACE);
     }
 
     /** Sets a skill's level (and base level); `xp` defaults to what it had, else 0. Adds the skill if absent. */

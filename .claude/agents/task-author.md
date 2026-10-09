@@ -90,7 +90,8 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 ### Ops
 
 Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
-`useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch` and `dismiss`, with `context.ts` and
+`useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `dismiss`, and the bank ops `openBank`,
+`deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
 passes its `ctx` as the `ActionContext`.
 
@@ -118,6 +119,17 @@ passes its `ctx` as the `ActionContext`.
 - **Cancellation.** A `catch` in an op or a step must start with `rethrowIfCancelled(e)` (from
   `core/op`): swallowing `Cancelled` leaves a cancelled step running. Cleanup that must happen
   goes in `finally`, which may itself `yield*`.
+- **Interfaces that must be closed again: `withBank`.** An open bank hides the inventory, so a step
+  that leaves it open when it is cancelled (a guard, a stop, the step budget) strands the bot: the
+  low-HP guard's eat is refused server-side, and the interface guard leaves a bank alone by design.
+  Never `yield* openBank(...)` in one step and `closeBank` in another. Run the work inside
+  `yield* withBank(ctx, body)`, where `body` is an `Op` (`withBank(ctx, performAll(ctx))`): it opens,
+  runs `body`, and closes in a `finally`, so an abort closes the bank first, under the interpreter's
+  bounded cleanup (`CLEANUP_TICKS` 10, `CLEANUP_COMMANDS` 20), before the guard's own work runs. It
+  returns `{ ok: true, value, closed }` (`closed` is the close attempt's result; a task that needs the
+  bank shut should fail on `!closed.ok`) or the failed open's `{ ok: false, reason, message }`. Make
+  the body resumable (record progress in typed memory), as the aborted step runs again from the top.
+  The same shape applies to any open/close pair (shop).
 - **Each op gets tests**: a unit test in `conductor/test/actions/<op>.test.ts` (scripted timeline
   through `interpret`; see `chop.test.ts`) and an integration test in
   `conductor/test/integration/actions/<op>.itest.ts` against the real engine (see `chop.itest.ts`).
@@ -176,7 +188,7 @@ legitimate silence, as woodcutting does for its repeated chop timeouts.
 
 ### Calling an action that has no op yet
 
-`yield* call('bot.openBank', () => ctx.bot.openBank())` runs a legacy action under the step's
+`yield* call('bot.walkTo', () => ctx.bot.walkTo(x, z, 2))` runs a legacy action under the step's
 bounds; the guards wait for it to settle. It is a stopgap, for an action you are not porting now.
 `returnToAreaStep` and `walkToArea` in `lib/area.ts` are still legacy and work inside a new task.
 
@@ -195,7 +207,8 @@ new steps, ports and substantial rewrites; any changed task still needs a passin
    (`conductor/test/world.ts`; `world('lumbridge')` loads a captured fixture, bare `world()` is a
    bot at Lumbridge). Builders are immutable: `.inv()`, `.loc()`, `.npc()`, `.ground()`,
    `.skill()`, `.player({ hp, inCombat, at })`, `.dialog()`, `.modal(id)`, `.message()`,
-   `.recentDialog()`, `.equipment()`, `.autoRetaliate()`; `.series(n, (w, i) => w...)` gives one
+   `.recentDialog()`, `.equipment()`, `.autoRetaliate()`, `.bank(items | false)` (an open bank; `bankReact(contents)`
+   in `test/react.ts` makes it open, move items and close as the bot's sends do); `.series(n, (w, i) => w...)` gives one
    state per tick. The timeline is what the world does by itself; `react` is what the bot's sends do
    to it (default `consume`: food eaten and items dropped leave the inventory the next tick).
    `simulate` returns `result`, `sends`, `steps`, `events`, `commands`, `driver`. Cover:
