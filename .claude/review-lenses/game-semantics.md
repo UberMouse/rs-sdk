@@ -16,19 +16,20 @@ Does the code's model of the game match how the game and the SDK actually behave
   unreachable target (gates, doors, fences, other floors); "I can't reach that" and
   `cant_reach` results are handled, not retried blindly.
 - **G4 Modals and dialogs.** Inventory, equipment and interaction packets are not sent while a
-  bank, shop or other modal is open (the server drops them silently). Skill dialogs are driven by
+  bank, shop or other modal is open (the server drops them silently); the interface guard closes
+  leftover informational modals, never a shop or bank. Skill dialogs are driven by
   option text (`clickDialogByText`, `bot.fletchLogs(...)`), never by assumed option order. A task
   that opens a dialog on purpose sets `allow: ['dialog']` so the dialog guard doesn't close it, and
   one that leaves an informational interface open on purpose (one bot.dismissBlockingUI would
   close) between steps or inside a wait sets `allow: ['interface']`.
-- **G5 Game time.** Waits are in ticks (`waitForTicks`, `waitForCondition`) and sized to the
-  action (a tree can take many ticks; a respawn longer). Timeouts exist and are not so short that
+- **G5 Game time.** Waits are in ticks (`wait`/`ticks` ops; `waitForTicks` in legacy code) and
+  sized to the action (a tree can take many ticks; a respawn longer). Timeouts exist and are not so short that
   slow-but-normal actions fail. Tick length is in `learnings/local-server.md` (400 ms locally);
   ms-per-tick constants of 600 are wrong here. Level, XP and respawn data live in
   `server/content/scripts/skill_<name>/` — check a suspected requirement there before banding it.
-- **G6 State freshness.** Decisions read `ctx.state()` after the previous action settled, not a
-  snapshot taken before an `await`; positions use `worldX/worldZ` and check `level` (floor) where
-  floors matter.
+- **G6 State freshness.** Decisions read `ctx.state()` after the previous action settled, or
+  the `state` a wait returned (`w.state`), not a snapshot taken before a `yield*` or `await`; positions use `worldX/worldZ` and check
+  `level` (floor) where floors matter.
 - **G7 Requirements are the game's.** Level, item, quest and membership requirements claimed in
   preflight, params or description match the game data (`wiki/`, `learnings/`), not guesses.
 

@@ -7,12 +7,14 @@ belongs to the other lenses; this one judges the code as code.
 
 - **Q1 Types.** `bunx tsc --noEmit -p .` is clean for `conductor/`. No `any`, `as`, or `!`
   hiding a value that can be absent or the wrong shape at runtime (SDK state fields marked
-  optional, `find` results, `ctx.memory` reads). Params types come from the zod schema
+  optional, `find` results). `ctx.memory` is typed by the task's `memory` factory and read without
+  a cast or a narrowing of `unknown`. Params types come from the zod schema
   (`z.infer`), not a hand-written copy. Unions over loose strings where the set is closed.
 - **Q2 Async hygiene.** Every promise is awaited or deliberately handled: no floating
   `ctx.bot.*` / `ctx.sdk.*` calls, no `async` callbacks in `forEach`, timers from
-  `setTimeout`/`Promise.race` cleared, nothing left running after the step returns.
-  (Throwing for expected game outcomes is robustness R7, not this.)
+  `setTimeout`/`Promise.race` cleared, nothing left running after the step returns. In a new or
+  changed task step the answer is not `await` at all but `yield*` of an op (contract T7);
+  `Date.now()` and timers in task logic are robustness R9. (Throwing for expected game outcomes is robustness R7, not this.)
 - **Q3 Simplicity.** No dead code, unreachable branches or unused params/imports; no
   over-nesting a guard clause would flatten; standard array methods over manual index loops
   where they read better; game numbers (levels, coordinates, ids, limits) are named constants
@@ -29,10 +31,12 @@ belongs to the other lenses; this one judges the code as code.
   nothing a reader can act on lost) — give the shortened text.
 - **Q6 Consistency.** `bun run fmt:check` and `bun run lint` (oxfmt, and oxlint with warnings
   denied) are clean for the changed files — mechanical style is theirs, so don't report what
-  they check. Beyond them: relative imports, `zod/v4`, the reference task's layout
-  (constants, params schema, `defineTask` with preflight then steps). Comment density like the
+  they check; a lint suppression comment (`oxlint-disable`) needs a reason that a plain-`run`
+  decision step or another construct does not remove. Beyond them: relative imports, `zod/v4`, the
+  reference task's layout (constants, params schema, memory type, `defineTask` with preflight then
+  steps). Comment density like the
   neighbours'.
-- **Q7 Logging.** `ctx.log` for events the conductor or a runner will want in the NDJSON log
+- **Q7 Logging.** `yield* log(…)` in a generator step (`ctx.log` elsewhere) for events the conductor or a runner will want in the NDJSON log
   (a failure with its message, a decision), not once per loop iteration. No stray
   `console.log`. Temporary debug logging carries one greppable tag (e.g. `[dbg:woodcutting]`)
   so it can be found and removed, and doesn't ship in a committed task.

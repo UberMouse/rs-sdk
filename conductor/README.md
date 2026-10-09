@@ -16,13 +16,46 @@ conductor (Claude Code session, .claude/skills/conductor)
  bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>   →  RESULT <json>
        │
        ▼
- conductor/tasks/*.ts   defineTask({ params, preflight, steps: [{ name, when, run }] })
- conductor/lib/engine   first valid step runs · interrupts · stop conditions · watchdog · screenshots
+ conductor/tasks/*.ts   defineTask({ params, memory, guards, preflight, steps: [{ name, when, *run }] })
+ conductor/lib/engine   first valid step runs · guards · stop conditions · watchdog · screenshots
+ conductor/actions      ops a step composes: chop, interactLoc, ...
+ conductor/core         op commands + interpreter
 ```
 
 The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first step whose
-`when()` passes runs; shared interrupts (death, wilderness, low HP, dialogs) go first; a watchdog ends runs
-whose XP, position and inventory stop changing.
+`when()` (a pure predicate) passes runs.
+
+### How a task runs
+
+- A step's `run` is a generator (`*run`) that `yield*`s ops from `conductor/actions`
+  (`chop`, `interactLoc`) and the commands in `conductor/core/op.ts` (`send`, `wait`, `ticks`,
+  `log`, `call`, ...). It never touches the SDK itself: the interpreter (`core/interpret.ts`)
+  executes each command against a driver, so the same step runs against the live game (the
+  `LiveDriver`) or a scripted timeline in a unit test. A step that only decides is a plain
+  function returning an outcome; legacy `async` steps still exist while tasks are ported.
+- Waits are game ticks (400 ms here), not wall clock. Every wait is a point where the engine can
+  act: it runs the **guards** (`lib/interrupts.ts`: death, wilderness, low HP, dialog,
+  leftover-interface, plus a task's own such as `underAttackGuard`), applies `--until` stops, the
+  watchdog (XP, position, inventory and HP unchanged for `stuckAfterMs`) and the step's tick
+  budget, cancelling the step (its `finally` blocks run) where needed. Tasks therefore carry no
+  threat, dialog or timeout handling of their own.
+- A step returns nothing to loop, `{ fail }` or `{ done }`; the run ends in one `TaskResult`
+  printed as the `RESULT` line.
+
+`conductor/tasks/woodcutting.ts` is the reference task; the design and its rationale are in
+[`docs/interruptible-tasks.md`](docs/interruptible-tasks.md), and the authoring rules in
+`.claude/agents/task-author.md`.
+
+### Tests
+
+| Layer | Where | Run |
+|---|---|---|
+| Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/` | `bun test conductor` (no server) |
+| Integration: ops and one smoke run per task against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
+
+A new or changed task has both: unit tests for its success, failure and guard scenarios, and a
+smoke test. `bun conductor/tools/capture-state.ts <bot> --name <fixture>` records a fixture from a
+(throwaway) bot's live state.
 
 `run-task` refuses to start when the bot is already in combat or another controller is attached
 (`<bot> already has N controller(s) attached`); `--takeover` pre-empts the other controller.

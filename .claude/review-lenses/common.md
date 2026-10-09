@@ -6,11 +6,17 @@ what a review "usually" asks.
 
 ## What is under review
 
-Bot task code: `conductor/tasks/*.ts` and anything under `conductor/lib/` the change touches.
-The contract is `conductor/lib/task.ts`; the loop that runs it is `conductor/lib/engine.ts`
-(shared interrupts for death and dialogs, `--until` stop conditions, the progress watchdog,
-step timeouts, auto-screenshots, the RESULT line). The SDK it drives is `sdk/actions.ts`
-(`ctx.bot.*`) and `sdk/index.ts` (`ctx.sdk.*`); `CLAUDE.md` and `sdk/API.md` describe them.
+Bot task code: `conductor/tasks/*.ts` and anything under `conductor/lib/`, `conductor/actions/`,
+`conductor/core/` and `conductor/test/` the change touches. The contract is `conductor/lib/task.ts`;
+the loop that runs it is `conductor/lib/engine.ts`, which interprets generator steps
+(`conductor/core/`) under the shared guards in `conductor/lib/interrupts.ts` (death, wilderness,
+low HP, dialogs, leftover modals), the task's own guards, `--until` stop conditions, the progress
+watchdog, step timeouts, auto-screenshots and the RESULT line. Steps drive the game through ops
+in `conductor/actions/`; legacy tasks still use the SDK's `sdk/actions.ts` (`ctx.bot.*`) and
+`sdk/index.ts` (`ctx.sdk.*`), which `CLAUDE.md` and `sdk/API.md` describe. The pattern is
+written up in `.claude/agents/task-author.md`. "New or changed" below means a step, op or task
+the change adds or edits; untouched legacy code is not reviewed against the generator-step
+criteria, but a change that edits a legacy step should port it unless the port is out of scope.
 
 ## How to review
 
@@ -19,8 +25,9 @@ step timeouts, auto-screenshots, the RESULT line). The SDK it drives is `sdk/act
 - Walk your lens **item by item**: every numbered criterion is a separate check against every
   changed step, preflight and helper.
 - The game is not buggy. When code assumes the game misbehaves, the assumption is the suspect.
-- Use the evidence the run left: the author's smoke-test RESULT lines, and the NDJSON logs and
-  screenshots under `conductor/runs/<bot>/` that they name.
+- Use the evidence the change left: its unit tests (`conductor/test/`: do they pin the
+  behaviour under review, and do they pass?), the author's smoke-test RESULT lines, and the NDJSON
+  logs and screenshots under `conductor/runs/<bot>/` that they name.
 - Report what is wrong with the code as written. Uncertain-but-plausible findings are welcome:
   the verifier demotes rather than deletes them.
 

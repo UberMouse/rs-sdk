@@ -18,6 +18,10 @@ Decisions (2026-10-09):
 
 ## Where things stand
 
+*The starting point of the port, before it landed: `INTERRUPTS`, `waitUnlessThreatened` and
+counters reset in `when` are what it replaced. The pattern as built is in
+`.claude/agents/task-author.md`, with `conductor/tasks/woodcutting.ts` as the reference.*
+
 ### Task code (`conductor/lib`, `conductor/tasks`, ~3k lines)
 
 - `engine.ts` already runs a priority list: each loop the first step whose `when()` passes runs,

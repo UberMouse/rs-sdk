@@ -34,11 +34,16 @@ Usually the change is the uncommitted diff under `conductor/` that a task-author
 To review code already committed, name a range instead (`git diff <base>..HEAD -- conductor/`);
 then §4's revert becomes "report the A findings to the user" — never rewrite landed history.
 
-Keep the author's report: its smoke-test RESULT lines are evidence for the reviewers. When the
-bot can't run the task (missing gear, dead), say so in the evidence so reviewers don't wait on it.
+Keep the author's report: its unit tests (`conductor/test/`, run with `bun test conductor`) and
+smoke-test RESULT lines are evidence for the reviewers. A new or changed task or op without unit
+tests (`simulate` + `world()` builders) and an integration smoke is a contract finding (T8), not
+a gap to wave through. When the bot can't run the task (missing gear, dead), say so in the
+evidence so reviewers don't wait on it.
 
 If the change touches only a task's `description` or comments, run `contract` and
-`code-quality` alone. Otherwise run all five.
+`code-quality` alone. Otherwise run all five. The lenses are written for the generator-step
+pattern in `.claude/agents/task-author.md`; legacy `async` steps the change does not edit are
+out of scope for its criteria.
 
 ## 1. Find
 
@@ -48,7 +53,7 @@ Dispatch one `task-reviewer` per lens **in a single message** (they run in paral
 Lens: <lens>
 Change: <the diff command; new files: <list>>
 Purpose: <one line: what the change is for>
-Evidence: <smoke-test RESULT lines; their logFile and screenshot paths; what couldn't be run>
+Evidence: <unit tests added/changed and whether `bun test conductor` passes; smoke-test RESULT lines; their logFile and screenshot paths; what couldn't be run>
 Return the JSON from .claude/review-lenses/common.md only.
 ```
 
