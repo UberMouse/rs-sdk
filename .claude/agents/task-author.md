@@ -92,14 +92,14 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 
 Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
 `useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `smith` / `smelt` / `closeSmithing` (`smith.ts`),
-`dismiss`, and the bank ops `openBank`,
+`dismiss`, `walkTo` (`walk.ts`: routes, doors and gates on the way; see below), and the bank ops `openBank`,
 `deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), the shop ops `openShop`, `buy`, `sell`,
 `closeShop` and `withShop` (`shop.ts`), with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
 passes its `ctx` as the `ActionContext`.
 
 - **Use an existing op** when one does the job. **Add one** when the task needs an action
-  (`bot.openBank`, `bot.walkTo`, ...) that has none; an op other ops build on (`interactLoc`)
+  (`bot.talkTo`, `bot.openDoor`, ...) that has none; an op other ops build on (`interactLoc`)
   stays its own function.
 - **Port, don't invent.** Start from the method in `sdk/actions.ts`. The file's first line is
   `// Ported from sdk/actions.ts <method> @ <upstream sha>` (the short sha of the last commit to
@@ -205,9 +205,21 @@ legitimate silence, as woodcutting does for its repeated chop timeouts.
 
 ### Calling an action that has no op yet
 
-`yield* call('bot.walkTo', () => ctx.bot.walkTo(x, z, 2))` runs a legacy action under the step's
+`yield* call('bot.talkTo', () => ctx.bot.talkTo(npc))` runs a legacy action under the step's
 bounds; the guards wait for it to settle. It is a stopgap, for an action you are not porting now.
-`returnToAreaStep` and `walkToArea` in `lib/area.ts` are still legacy and work inside a new task.
+No catalog task uses one any more.
+
+### Walking
+
+`yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
+(Chebyshev, default 3) on the bot's level, opening the doors and gates on its route. It does not
+climb stairs or ladders. Its result's `reason` says why it stopped short (`no-path`, `dead-end`,
+`stuck`, `gave-up`, `timeout`, ...); `message` is what to put in a fail reason. One walk takes at most
+`WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it stands and
+the next walk carries on from there, so a step that walks far must be one the task runs again (a
+`when` that still holds), with a `stepTimeoutMs` above that cap. For "stay near here" use
+`lib/area.ts`: `returnToAreaStep` (a generator step) and `walkToArea` (an op that counts failed
+walks per run).
 
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.
@@ -228,6 +240,9 @@ new steps, ports and substantial rewrites; any changed task still needs a passin
    in `test/react.ts` makes it open, move items and close as the bot's sends do); `.series(n, (w, i) => w...)` gives one
    state per tick. The timeline is what the world does by itself; `react` is what the bot's sends do
    to it (default `consume`: food eaten and items dropped leave the inventory the next tick).
+   A task that walks needs `react: walking(...)` (`test/react.ts`, wrapping the task's own react) so
+   the walk's sends move the bot; `simulate` routes in straight lines unless you pass a `pathfinder`
+   (`fakePaths` in `test/paths.ts`: a route of your own, or none to make walks fail).
    `simulate` returns `result`, `sends`, `steps`, `events`, `commands`, `driver`. Cover:
    - the success path (the right sends in order, `result.reason`, deltas);
    - each failure reason the task can return, asserting the exact `result.reason`;
@@ -254,6 +269,9 @@ Pitfalls earlier authors hit:
 - Guard logs reach `r.events`, not `driver.commands`; filter `guard ...` messages out when
   asserting what the task logged.
 - `series(n, (w, i) => ...)` starts at tick 0, so `i` is the tick.
+- A walk is ticks too: each leg takes at least one, and a walk with no route asks again a tick
+  later. A timeline that scripts an effect at a fixed tick after a walk must leave room for it.
+- Without `walking` the bot never moves, so a walk ends `stuck` instead of arriving.
 - The last state of a timeline repeats with the tick advancing: end it in the state a waiting step
   should see.
 - Integration tests run in parallel against one engine: choose ground disjoint from every other

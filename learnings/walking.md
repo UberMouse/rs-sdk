@@ -64,6 +64,11 @@ if (dist > 5) {
 
 ## Known Routes
 
+### Lumbridge to Varrock West Bank
+
+- From (3235, 3220) to Varrock West bank (3185, 3436) the conductor `walkTo` op arrives in one walk
+  of 133 ticks with 38 sends, opening no door on the way. [v 2026-10-10 integration-tests local]
+
 ### Varrock Mine to Varrock West Bank (~100 tiles)
 
 ```typescript
@@ -85,6 +90,12 @@ const BANK_TO_MINE = [
 ```
 
 ## Opening Obstacles
+
+- Lumbridge castle's front doors are a pair of `Large door` locs at (3217, 3218) and (3217, 3219),
+  shut (option Open) unless someone opened them; the entrance hall behind them (x 3214..3216) is
+  reached only through them. A second shut pair stands at (3213, 3220) and (3213, 3221). The
+  conductor `walkTo` op opens the front pair on its way in, and `bot.walkTo` gets back out through
+  them shut again. [v 2026-10-10 integration-tests local]
 
 `bot.walkTo()` attempts to open doors and gates on its route. If a route fails,
 inspect nearby objects and open the specific obstacle before retrying:
