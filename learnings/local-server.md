@@ -8,8 +8,9 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
 - XP rate is 25× (`xpRate: 25` in `server/engine/src/util/WorldConfig.ts`, overridable with
   `NODE_XPRATE`): a normal log gives 625 Woodcutting XP instead of 25. A 1-minute woodcutting run
   took level 1 → 22. [v 2026-10-09 conductor1 local]
-- Tick rate is the default 400 ms (`NODE_TICKRATE`; `::speed <ms>` changes it until restart).
-  Kept at 400 so learned timings transfer to the hosted server.
+- Tick rate is 400 ms, not 600: `server/engine/src/util/Environment.ts` defaults `NODE_TICKRATE` to
+  400, and `conductor/local/up.sh` and the engine's env set nothing else. (`::speed <ms>` changes it
+  until restart.) Same as hosted, so learned timings transfer. [v 2026-10-09 conductor1 local]
 
 ## Accounts and saves
 

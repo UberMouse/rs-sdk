@@ -2,35 +2,24 @@
 
 Successful patterns for shop interactions and selling items.
 
-## CRITICAL: General Store Pricing (Major Discovery!)
+## General store pricing
 
-**General stores pay 0 GP when overstocked!**
+General stores price by stock level: the more of an item the shop holds, the less it pays (down to
+~0 GP when overstocked); a depleted item pays the most. A sell that returns 0 GP means the shop is
+overstocked on that item, not that the sale failed.
 
-This was discovered the hard way after selling 40+ cow hides for 0 GP total. General stores have dynamic pricing based on stock levels:
-
-| Stock Level | Price You Get |
-|-------------|---------------|
-| 0 (depleted) | Best price |
-| Normal | Fair price |
-| Overstocked | ~0 GP! |
-
-### Implication for Money-Making
-
-Cow hides are worth ~100 GP each normally, but the Lumbridge general store pays **0 GP** because it's completely overstocked (likely from other bots selling there).
-
-**Solutions:**
-1. Find specialized shops (tanner, leather worker)
-2. Sell items the store actually needs (depleted stock)
-3. Use different money-making methods (mining, fishing sell for more)
+- Hosted: the Lumbridge General Store paid 0 GP total for 40+ cow hides (stock saturated, likely by
+  other bots). Sell to a specialist (tanner) or earn elsewhere instead. [v hosted, date unrecorded]
+- Local: the same store paid 20 GP for one Shortbow (not overstocked for it). Stock is per server,
+  so check `coins` before and after a first sale. [v 2026-10-09 conductor1 local]
 
 ## Shop Locations
 
 | Shop | Location | Coordinates | What They Sell |
 |------|----------|-------------|----------------|
-| Lumbridge General Store | Lumbridge | (3212, 3247) | Basic supplies, tools |
+| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox, Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
-| Bob's Axes | Lumbridge | (3230, 3203) | Axes (bronze 16gp), Pickaxes (bronze 1gp) |
-| Lumbridge General Store | Lumbridge | (3210, 3244) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox, Chisel, Shears |
+| Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]), Pickaxes (bronze 1gp) |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear |
 
 ## Opening a Shop
@@ -104,7 +93,7 @@ of Buy-1 packets.
 
 ## Money-Making Alternatives
 
-Since general stores are unreliable for selling, consider:
+Since general stores can be overstocked, consider:
 
 | Method | GP/Hour (approx) | Requirements |
 |--------|------------------|--------------|
