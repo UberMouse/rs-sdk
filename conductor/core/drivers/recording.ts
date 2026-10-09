@@ -18,7 +18,7 @@
 import { closeSync, mkdirSync, openSync, readFileSync, writeSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { constants, gunzipSync, gzipSync } from 'node:zlib';
-import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../../sdk/types';
+import type { ActionResult, BotAction, BotWorldState, NearbyLoc, SkillState } from '../../../sdk/types';
 import type { StopCondition } from '../../lib/stop';
 import type { Sinks } from '../../lib/task';
 import { errMessage } from '../../lib/util';
@@ -95,8 +95,28 @@ export class StateDecoder {
         for (const [k, v] of Object.entries(d)) this.prev.set(k, JSON.stringify(v));
         const s: Record<string, unknown> = {};
         for (const [k, json] of this.prev) s[k] = JSON.parse(json);
+        if (Array.isArray(s.skills)) s.skills = withSkillNames(s.skills as SkillState[]);
         return s as unknown as BotWorldState;
     }
+}
+
+/**
+ * The SDK wraps live `state.skills` in a Proxy so `skills.Woodcutting` works besides `skills[0]`
+ * (sdk/index.ts, "Wrap skills array with a Proxy"); replayed JSON gets the same, so code reading it
+ * by name behaves alike under replay. Stat<N> placeholder entries are left out of the name lookup.
+ */
+function withSkillNames(skills: SkillState[]): SkillState[] {
+    const byName: Record<string, SkillState> = {};
+    for (const skill of skills) {
+        if (/^Stat\d+$/i.test(skill.name)) continue;
+        byName[skill.name] = skill;
+    }
+    return new Proxy(skills, {
+        get(target, prop, receiver) {
+            if (typeof prop === 'string' && prop in byName) return byName[prop];
+            return Reflect.get(target, prop, receiver);
+        },
+    });
 }
 
 /** Where a recorder's compressed bytes go; the file one in normal use, a fake in tests. */

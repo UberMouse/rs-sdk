@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
-import { parseRecording, Recorder } from '../../core/drivers/recording';
+import { parseRecording, Recorder, StateDecoder } from '../../core/drivers/recording';
 import { chopper, FakeGame, recordRun, RUN } from './fake-game';
 
 describe('the recorder', () => {
@@ -67,5 +67,24 @@ describe('the recorder', () => {
         expect(later.every(r => r.k === 'p' && ('tick' in r.d || 'revision' in r.d))).toBe(true);
         expect(later.some(r => r.k === 'p' && !('tick' in r.d))).toBe(true);
         expect(later.filter(r => r.k === 'p' && 'skills' in r.d).length).toBeLessThan(later.length / 2);
+    });
+});
+
+describe('the state decoder', () => {
+    test('decoded skills look up by name like live ones, and by index', () => {
+        const skills = [
+            { name: 'Attack', level: 1, baseLevel: 1, experience: 0 },
+            { name: 'Woodcutting', level: 5, baseLevel: 5, experience: 388 },
+            { name: 'Stat21', level: 1, baseLevel: 1, experience: 0 },
+        ];
+        const s = new StateDecoder().decode({ tick: 1, skills });
+        // The SDK's types don't declare name keys; live code reaching them is what this mirrors.
+        const byName = s.skills as unknown as Record<string, unknown>;
+        expect(byName.Woodcutting).toEqual(skills[1]!);
+        expect(s.skills.at(1)).toEqual(skills[1]!);
+        expect(s.skills.length).toBe(3);
+        expect(s.skills.find(k => k.name === 'Attack')?.level).toBe(1);
+        expect(byName.Stat21).toBeUndefined();
+        expect(JSON.parse(JSON.stringify(s.skills))).toEqual(skills);
     });
 });
