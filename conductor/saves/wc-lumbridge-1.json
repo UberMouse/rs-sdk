@@ -1,0 +1,58 @@
+{
+    "name": "wc-lumbridge-1",
+    "purpose": "Woodcutting from level 1: bronze axe and tinderbox, empty otherwise, at Lumbridge castle near normal trees. Smoke-tests the woodcutting task (chop, full-inventory handling) from a clean inventory.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "preset": "WOODCUTTER_AT_LUMBRIDGE",
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "skills": {
+                "Woodcutting": 1,
+                "Firemaking": 1
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "5bed519d2a1ced2bb519c006c54729710a50ed6f",
+    "createdAt": "2026-10-09T09:43:03.081Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

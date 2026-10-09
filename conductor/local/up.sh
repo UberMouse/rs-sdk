@@ -30,7 +30,16 @@ if listening 7780; then echo "gateway already up"; else
   echo "gateway starting (log: $LOGS/gateway.log)"
 fi
 if listening 8888; then echo "engine already up"; else
-  (cd "$ROOT/server/engine" && nohup bun run src/app.ts > "$LOGS/engine.log" 2>&1 &)
+  # The Grand Exchange is off locally so that .sav files are the only save store: while
+  # data/market.sqlite exists the engine loads a player from its checkpoint row instead of the
+  # .sav, which would undo save.ts restores. See conductor/docs/parallel-bots.md.
+  market="$ROOT/server/engine/data/market.sqlite"
+  if [[ -e "$market" ]]; then
+    echo "refusing to start the engine: $market exists and would override .sav files." >&2
+    echo "retire it (engine down): for f in $market{,-wal,-shm}; do [ -e \$f ] && mv \$f \${f/market.sqlite/market.sqlite.retired}; done" >&2
+    exit 1
+  fi
+  (cd "$ROOT/server/engine" && GE_ENABLED=false nohup bun run src/app.ts > "$LOGS/engine.log" 2>&1 &)
   echo "engine starting (log: $LOGS/engine.log)"
 fi
 

@@ -145,7 +145,9 @@ try {
     bail(errMessage(e));
 }
 
-// A new control connection silently pre-empts the existing one (last controller wins).
+// The gateway's controller lease refuses a second controller by itself; this pre-check fails
+// sooner, with a message naming the flag. It is also the only guard on a gateway that predates
+// the lease, where a new control connection silently pre-empts the existing one.
 if (!takeover) {
     try {
         const res = await fetch(`${env.webOrigin}/status/${encodeURIComponent(env.username)}`, {
@@ -165,7 +167,7 @@ const run = await runScript(
     async ({ bot, sdk }) => {
         engineResult = await executeTask(def, { bot, sdk, botName, rawParams, stops });
     },
-    { printState: false },
+    { printState: false, takeover },
 );
 
 // Connection failure or an exception outside the engine still honours the RESULT contract.
