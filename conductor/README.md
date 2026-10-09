@@ -34,6 +34,7 @@ whose XP, position and inventory stop changing.
 | Game knowledge: spots, requirements, hazards, gear, SDK gotchas | `learnings/`, `wiki/skills/`, `wiki/quests/` (rules: `.claude/skills/knowledge`) |
 | Which method is best | `bun conductor/tools/stats.ts <bot>` over every run; explore/exploit in the conductor loop |
 | How far from max, how fast | `bun conductor/tools/progress.ts <bot>` |
+| Journal a dispatch with a real UTC stamp | `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (see `--help`) |
 | What to do next | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups) |
 | Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |
 | How the agents themselves work | the retrospective reads transcripts via `.claude/skills/session-forensics` |
