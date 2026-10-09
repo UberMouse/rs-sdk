@@ -1,7 +1,10 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
+import { fletch } from '../actions/fletch';
+import { useItemOnItem } from '../actions/use';
+import { log, wait } from '../core/op';
 import { defineTask, type TaskContext } from '../lib/task';
-import { findSkill } from '../lib/util';
+import { exactName, findSkill, TICK_MS } from '../lib/util';
 
 const NORMAL_LOGS = 'logs';
 const SHAFT_LEVEL = 1;
@@ -22,6 +25,8 @@ const KNIFE = /^knife$/i;
 const FEATHERS = /^feathers?$/i;
 const SHAFTS = /^arrow shafts?$/i;
 const FLETCH_FAIL_LIMIT = 3;
+/** The 5s the feathers get to take the shafts out of the inventory, in ticks. */
+const FEATHER_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 
 const Params = z.object({
     /** Product: "arrow shaft", "short bow" or "long bow" (the dialog labels). "shortbow (u)" / "longbow (u)" are accepted too. */
@@ -81,7 +86,7 @@ export default defineTask({
         const s = ctx.state();
         if (!s.inventory.some(i => KNIFE.test(i.name))) return 'no knife in inventory';
         if (countLogs(s, ctx.params.logs) === 0) return `no "${ctx.params.logs}" in inventory`;
-        // bot.fletchLogs cuts the first logs stack it finds, so a different type could be cut instead.
+        // Kept from when the cut took the first logs stack it found; refusing mixed stacks stays the safe choice.
         if (s.inventory.some(i => isAnyLogs(i.name) && !isWantedLogs(i.name, ctx.params.logs)))
             return `inventory also holds other logs than "${ctx.params.logs}"; fletchLogs would pick the wrong stack`;
         const need = requiredLevel(normalizeProduct(ctx.params.product), ctx.params.logs);
@@ -100,7 +105,7 @@ export default defineTask({
         {
             name: 'attacked',
             when: ctx => !!ctx.state().player?.combat.inCombat,
-            run: async ctx => {
+            run(ctx) {
                 const p = ctx.state().player;
                 return { fail: `attacked while fletching at (${p?.worldX},${p?.worldZ})` };
             },
@@ -108,45 +113,40 @@ export default defineTask({
         {
             name: 'cut',
             when: ctx => countLogs(ctx.state(), ctx.params.logs) > 0,
-            async run(ctx) {
+            *run(ctx) {
                 if (!ctx.state().inventory.some(i => KNIFE.test(i.name))) return { fail: 'no knife in inventory' };
-                const fails = ctx.counter('fletchFails');
-                const r = await ctx.bot.fletchLogs(normalizeProduct(ctx.params.product));
-                if (!r.success) {
-                    ctx.log(`fletch failed: ${r.message}`);
-                    if (fails.add() >= FLETCH_FAIL_LIMIT)
-                        return { fail: `${FLETCH_FAIL_LIMIT} fletch attempts in a row failed (last: ${r.message})` };
+                const fails = ctx.streak('fletchFails');
+                const cut = yield* fletch(ctx, exactName(ctx.params.logs), normalizeProduct(ctx.params.product));
+                if (cut.ok) {
+                    fails.reset();
                     return;
                 }
-                // bot.fletchLogs clicks the make-1 button: one log per call (an SDK quantity option is a roadmap follow-up).
-                fails.reset();
+                yield* log(`fletch failed: ${cut.message}`);
+                if (fails.add() >= FLETCH_FAIL_LIMIT)
+                    return { fail: `${FLETCH_FAIL_LIMIT} fletch attempts in a row failed (last: ${cut.message})` };
             },
         },
         {
             name: 'attach-feathers',
             when: ctx => wantsFeathers(ctx) && countOf(ctx.state(), SHAFTS) > 0 && countOf(ctx.state(), FEATHERS) > 0,
-            async run(ctx) {
+            *run(ctx) {
                 const s = ctx.state();
                 const shafts = s.inventory.find(i => SHAFTS.test(i.name));
                 const feathers = s.inventory.find(i => FEATHERS.test(i.name));
                 if (!shafts || !feathers) return;
-                const fails = ctx.counter('featherFails');
+                const fails = ctx.streak('featherFails');
                 const before = countOf(s, SHAFTS);
-                // No bot.* porcelain exists for feather-on-shaft, so use the raw call.
-                const res = await ctx.sdk.sendUseItemOnItem(feathers.slot, shafts.slot);
+                const used = yield* useItemOnItem(ctx, feathers, shafts);
+                // The op is satisfied by the first sign the game acted; the headless arrows are made when shafts leave.
                 const consumed =
-                    res.success &&
-                    (await ctx.sdk
-                        .waitForCondition(st => countOf(st, SHAFTS) < before, 5000)
-                        .then(
-                            () => true,
-                            () => false,
-                        ));
+                    used.ok &&
+                    (yield* wait('shafts consumed', st => countOf(st, SHAFTS) < before, FEATHER_WAIT_TICKS)).kind ===
+                        'met';
                 if (consumed) {
                     fails.reset();
                     return;
                 }
-                ctx.log(`attaching feathers failed: ${res.success ? 'no shafts consumed' : res.message}`);
+                yield* log(`attaching feathers failed: ${used.ok ? 'no shafts consumed' : used.message}`);
                 if (fails.add() >= FLETCH_FAIL_LIMIT) {
                     const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
                     return { fail: `${FLETCH_FAIL_LIMIT} feather attempts failed (last game message: ${last})` };
@@ -156,7 +156,7 @@ export default defineTask({
         {
             name: 'finish',
             when: () => true,
-            run: async ctx => {
+            run(ctx) {
                 const left = countOf(ctx.state(), SHAFTS);
                 if (wantsFeathers(ctx) && left > 0)
                     return { done: `no ${ctx.params.logs} left to fletch; ${left} Arrow shafts left, no Feathers` };
