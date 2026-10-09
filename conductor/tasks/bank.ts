@@ -200,6 +200,7 @@ export default defineTask({
                 const openFails = ctx.streak('openFails');
                 if (!trip.ok) {
                     yield* log(`open bank failed (${trip.reason}): ${trip.message}`);
+                    if (!trip.closed.ok) yield* log(`a bank may be left open after it: ${trip.closed.message}`);
                     if (openFails.add() >= OPEN_FAIL_LIMIT)
                         return { fail: `cannot open bank (${trip.reason}): ${trip.message}` };
                     return;

@@ -272,6 +272,8 @@ export default defineTask({
         {
             // openShop accepts any open shop, so never trade with one this run did not open: between
             // steps a shop is open only when it was left so (a close that failed, or one from before).
+            // The engine's run-start close takes one left by an earlier run; this step is for one left
+            // open mid-run.
             name: 'close-stale-shop',
             when: ctx => ctx.state().shop.isOpen,
             *run(ctx) {
@@ -311,6 +313,7 @@ export default defineTask({
                 const openFails = ctx.streak('openFails');
                 if (!trip.ok) {
                     yield* log(`open shop failed (${trip.reason}): ${trip.message}`);
+                    if (!trip.closed.ok) yield* log(`a shop may be left open after it: ${trip.closed.message}`);
                     if (openFails.add() >= FAIL_LIMIT)
                         return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
                     // Stopgap until openShop walks: a shopkeeper behind a door is out of the client's reach.

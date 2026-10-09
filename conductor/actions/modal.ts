@@ -58,7 +58,13 @@ export interface ModalOps<F extends OpenFailure> {
     closeAction: (reason: string) => BotAction;
 }
 
-export type WithModalResult<T, F extends OpenFailure> = { ok: true; value: T; closed: CloseModalResult } | F;
+/**
+ * `closed` is the close withModal made: the normal path's full close on success, closeAfterAbort's on a
+ * failed open (a late open, or one the client had not published, may still have left the modal open).
+ */
+export type WithModalResult<T, F extends OpenFailure> =
+    | { ok: true; value: T; closed: CloseModalResult }
+    | (F & { closed: CloseModalResult });
 
 /**
  * withModal's close when it did not finish normally (cancelled, a failed open, a body that threw), sized
@@ -93,8 +99,10 @@ function* closeAfterAbort<F extends OpenFailure>(
  * server-side. The interface guard leaves a bank or shop alone by design, so this pairing is the only
  * thing that closes it.
  *
- * What is guaranteed: the normal path's close is `modal.close`'s full one, and `closed` is its result.
- * Any other ending (a cancel, a failed open, a throw) gets closeAfterAbort, which fits CLEANUP_TICKS: it
+ * What is guaranteed: the normal path's close is `modal.close`'s full one, and `closed` is its result; a
+ * failed open is returned with closeAfterAbort's result as its `closed`, so a caller can report a modal
+ * that close left open. Any other ending (a cancel, a failed open, a throw) gets closeAfterAbort, which
+ * fits CLEANUP_TICKS: it
  * sends a close within the cap whenever the modal shows open, or an open was sent and not confirmed
  * (waiting CLEANUP_CLOSE_WAIT_TICKS for a late open to show first), and a second close if the first
  * shows no effect. A modal that ignores both closes, or an open landing after that wait, stays open.
@@ -104,20 +112,17 @@ export function* withModal<T, F extends OpenFailure>(
     modal: ModalOps<F>,
     body: Op<T>,
 ): Op<WithModalResult<T, F>> {
-    let value: T;
     let closed: CloseModalResult;
+    let ended: { ok: true; value: T } | F | null = null;
     // Until the open answers, its interaction may be on the way (cancelled mid-open). Of its failures
     // only a timeout sent an open that can still land; the others sent nothing or were refused.
     let openPending = true;
-    let finished = false;
     try {
         const opened = yield* modal.open();
         openPending = !opened.ok && opened.reason === 'timeout';
-        if (!opened.ok) return opened;
-        value = yield* body;
-        finished = true;
+        ended = opened.ok ? { ok: true, value: yield* body } : opened;
     } finally {
-        closed = finished ? yield* modal.close() : yield* closeAfterAbort(ctx, modal, openPending);
+        closed = ended?.ok ? yield* modal.close() : yield* closeAfterAbort(ctx, modal, openPending);
     }
-    return { ok: true, value, closed };
+    return { ...ended, closed };
 }

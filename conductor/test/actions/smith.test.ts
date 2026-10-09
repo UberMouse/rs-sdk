@@ -141,6 +141,27 @@ describe('smith', () => {
         expect(driver.state().tick).toBe(SMITH_INTERFACE_TICKS + CLEANUP_CLOSE_WAIT_TICKS);
     });
 
+    test('an interface that opens late and will not close is reported on the no-interface failure', async () => {
+        // Nothing within the open's wait; it shows a tick later, during the abort close, and stays.
+        const late = SMITH_INTERFACE_TICKS + 1;
+        const states = anvilKit.series(late + 20, (w, i) => (i >= late ? anvilOpen(w) : w));
+        const { result, sends, driver } = await runOp(states, ctx => smith(ctx, anvil, 'dagger', BRONZE_BAR));
+        const leftOpen = 'smithing interface left open: smithing interface still open after two closes';
+        expect(result).toEqual({
+            ok: false,
+            reason: 'no-interface',
+            message: `Smithing interface did not open; ${leftOpen}`,
+        });
+        expect(sends).toEqual([
+            useBar,
+            closeAnvil,
+            { ...closeAnvil, reason: 'close smithing interface (second attempt)' },
+        ]);
+        expect(driver.commands.filter(c => c.type === 'log')).toEqual([
+            { type: 'log', msg: leftOpen, data: undefined },
+        ]);
+    });
+
     test("the server's can't-reach, or the client's, is cant-reach", async () => {
         const said = [anvilKit.build(), anvilKit.tick(1).message("I can't reach that!").build()];
         const server = await runOp(said, ctx => smith(ctx, anvil, 'dagger', BRONZE_BAR));

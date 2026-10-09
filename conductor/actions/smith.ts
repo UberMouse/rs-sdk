@@ -155,8 +155,8 @@ const sendFailure = (r: ActionResult): Failure<'cant-reach' | 'send-failed'> => 
 });
 
 /**
- * `result` as is when withModal's closing of `what` went through; else logged, with the failed close
- * added to its message: the interface guard leaves the op's own interface open, so the next smith or
+ * `result` as is when withModal's closing of `what` went through (after the work, or after a failed
+ * open); else logged, with the failed close added to its message: the interface guard leaves the op's own interface open, so the next smith or
  * smelt (or the next run's start) is what closes it.
  */
 function* notingClose<R extends { message: string }>(result: R, closed: CloseModalResult, what: string): Op<R> {
@@ -265,8 +265,8 @@ export function* smith(ctx: ActionContext, anvil: NearbyLoc, product: string, ba
     };
     const r = yield* withModal(ctx, modal, forge(product, button, xpBefore, cursor));
     if (r.ok) return yield* notingClose(r.value, r.closed, modal.name);
-    if (r.reason === 'timeout') return { ok: false, reason: 'no-interface', message: r.message };
-    return r;
+    const reason = r.reason === 'timeout' ? 'no-interface' : r.reason;
+    return yield* notingClose<SmithResult>({ ok: false, reason, message: r.message }, r.closed, modal.name);
 }
 
 /** A menu button's label: the client keeps a literal "\n" before a bar's name, and colour tags are dropped. */
@@ -374,6 +374,6 @@ export function* smelt(ctx: ActionContext, furnace: NearbyLoc, bar: string): Op<
     };
     const r = yield* withModal(ctx, modal, smeltOne(ctx, bar, xpBefore, inventory, cursor));
     if (r.ok) return yield* notingClose(r.value, r.closed, modal.name);
-    if (r.reason === 'timeout') return { ok: false, reason: 'no-menu', message: r.message };
-    return r;
+    const reason = r.reason === 'timeout' ? 'no-menu' : r.reason;
+    return yield* notingClose<SmeltResult>({ ok: false, reason, message: r.message }, r.closed, modal.name);
 }

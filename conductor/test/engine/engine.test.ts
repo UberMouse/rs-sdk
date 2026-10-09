@@ -216,6 +216,22 @@ describe('a modal left open before the run', () => {
         expect(r.result.reason).toBe('chop: xp at tick 10');
     });
 
+    test('death during the close ends the run, as the critical guards act on it', async () => {
+        // The interface never closes, so the close is still waiting when the death message arrives.
+        const states = timeline(20, t => ({ interfaceId: SMITHING_INTERFACE, dead: t === 2 }));
+        const r = await runTask([step('chop', chop)], states);
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('interrupt:death: died');
+        expect(r.sends).toEqual([closeLeftover(`interface ${SMITHING_INTERFACE}`)]);
+        expect(r.result.stepRuns).toEqual({ [LEFTOVER_STEP]: 1, 'interrupt:death': 1 });
+    });
+
+    test('low HP waits for the close: its eat would be refused under the modal', async () => {
+        const states = timeline(20, t => ({ interfaceId: SMITHING_INTERFACE, hp: t < 4 ? 4 : 10, food: 2 }));
+        const r = await runTask([step('chop', chop)], states, { react: closes });
+        expect(r.sends.slice(0, 2)).toEqual([closeLeftover(`interface ${SMITHING_INTERFACE}`), 'Eat Shrimps']);
+    });
+
     test('a trade screen open at the start is left alone', async () => {
         const TRADE = 3323;
         const states = timeline(20, t => ({ interfaceId: TRADE, xp: t >= 8 ? 25 : 0 }));
