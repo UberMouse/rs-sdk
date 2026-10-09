@@ -27,3 +27,6 @@ export function dialogSince(state: BotWorldState, cursor: number, pattern: RegEx
     const page = state.recentDialogs.find(d => position(d) > cursor && d.text.some(line => pattern.test(line)));
     return page ? page.text.join(' ') : null;
 }
+
+/** The server's refusal when a target cannot be walked to; ops read it with `messageSince`. */
+export const CANT_REACH = /can't reach|cannot reach/i;

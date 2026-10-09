@@ -8,12 +8,11 @@ import type { BotAction, BotWorldState, InventoryItem, NearbyLoc } from '../../s
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { messageCursor, messageSince } from './messages';
+import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.useItemOnLoc's default 10s wait for evidence of the use, in ticks. */
 export const USE_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
 
-const CANT_REACH = /can't reach|cannot reach/i;
 const NOTHING = /nothing interesting happens/i;
 
 export type UseResult =

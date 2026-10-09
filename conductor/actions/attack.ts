@@ -8,14 +8,13 @@ import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { messageCursor, messageSince } from './messages';
+import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.attack's default 5s wait for the fight to start or the server's refusal, in ticks. */
 export const ATTACK_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 /** The option that attacks an NPC. */
 export const ATTACK_OPTION = /attack/i;
 
-const CANT_REACH = /can't reach|cannot reach/i;
 /**
  * Single-way combat refusals from player_combat.rs2 ("I'm already under attack!", "Someone else is
  * fighting that."): they clear on their own, a few ticks after the other fight's last hit.

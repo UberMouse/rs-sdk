@@ -16,7 +16,7 @@ import { findSkill, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { isSkillMenu, SMITHING_INTERFACE } from './dismiss';
 import { interactLoc } from './interact';
-import { dialogSince, messageCursor, messageSince } from './messages';
+import { CANT_REACH, dialogSince, messageCursor, messageSince } from './messages';
 import { type CloseModalResult, closeModalUntil, type ModalOps, withModal } from './modal';
 
 /** bot.smithAtAnvil's 5s wait for the smithing interface to open, in ticks. */
@@ -54,7 +54,6 @@ export const SMELT_OPTION = /^smelt$/i;
 
 /** The smith op's hammer: exactly Hammer, never a warhammer. */
 export const HAMMER = /^hammer$/i;
-const CANT_REACH = /can't reach|cannot reach/i;
 /**
  * Upstream's level check, which also matches the game's boxes: "You need a Smithing level of at least 15
  * to work irons." (the anvil), "... of 18 to make a platebody." (a product), "... of 15 to smelt an iron

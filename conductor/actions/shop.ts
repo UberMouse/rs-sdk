@@ -32,7 +32,7 @@ import type { Op } from '../core/op';
 import { send, ticks, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { messageCursor, messageSince } from './messages';
+import { CANT_REACH, messageCursor, messageSince } from './messages';
 import { type CloseModalResult, type ModalOps, type WithModalResult, withModal } from './modal';
 
 /** bot.openShop's 10s timeout, in ticks. */
@@ -46,7 +46,6 @@ export const SELL_ALL_PACKET_WAIT_TICKS = Math.ceil(3000 / TICK_MS);
 /** The 60 s deadline of a multi-packet buy or sell, in ticks. */
 export const SHOP_DEADLINE_TICKS = Math.ceil(SHOP_ACTION_DEADLINE_MS / TICK_MS);
 
-const CANT_REACH = /can't reach|cannot reach/i;
 const CANT_SELL = /can't sell this item/i;
 const INVENTORY_SLOTS = 28;
 

@@ -8,7 +8,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { TICK_MS } from '../lib/util';
+import { exactName, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const SKILLS = ['Attack', 'Strength', 'Defence'] as const;
@@ -77,21 +77,21 @@ const NO_FOOD_MAX_NPC_LEVEL = 5;
 
 const Params = z.object({
     /** Exact NPC name (case-insensitive), e.g. "Chicken", "Cow". */
-    target: z.string().min(1),
+    target: z.string().trim().min(1),
     /** The melee skill to train; picks the combat style that trains it. */
     skill: z.enum(SKILLS).default('Attack'),
     /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
     area: AreaSchema,
     /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
-    weapon: z.string().optional(),
-    shield: z.string().optional(),
+    weapon: z.string().trim().optional(),
+    shield: z.string().trim().optional(),
     /** Food item names to eat when HP falls below `eatBelow` of max. The engine also eats any food below 50%. */
-    food: z.array(z.string()).default([]),
+    food: z.array(z.string().trim()).default([]),
     eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW),
     /** Bury bones for Prayer XP (also picks bones up). */
     buryBones: z.boolean().default(false),
     /** Ground item names to pick up after a kill (exact, case-insensitive), e.g. ["Feather", "Cowhide"]. */
-    loot: z.array(z.string()).default([]),
+    loot: z.array(z.string().trim()).default([]),
     /** Refuse (and never attack) NPCs with combat level above the bot's combat level plus this. */
     maxLevelGap: z.number().min(0).default(DEFAULT_MAX_LEVEL_GAP),
 });
@@ -105,7 +105,6 @@ interface CombatMemory {
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
-const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 const BONES_NAME = 'Bones';
 const BONES = new RegExp(`^${BONES_NAME}$`, 'i');
 const BURY_OPTION = /^bury$/i;
@@ -113,9 +112,9 @@ const isBones = (i: { name: string }) => BONES.test(i.name);
 const countBones = (s: BotWorldState) => s.inventory.filter(isBones).length;
 
 const wornOrCarried = (s: BotWorldState, name: string) =>
-    [...s.inventory, ...s.equipment].some(i => sameName(i.name, name));
-const worn = (s: BotWorldState, name: string) => s.equipment.some(i => sameName(i.name, name));
-const carried = (s: BotWorldState, name: string) => s.inventory.some(i => sameName(i.name, name));
+    [...s.inventory, ...s.equipment].some(i => exactName(name).test(i.name));
+const worn = (s: BotWorldState, name: string) => s.equipment.some(i => exactName(name).test(i.name));
+const carried = (s: BotWorldState, name: string) => s.inventory.some(i => exactName(name).test(i.name));
 
 /** The style that trains `skill`, preferring one that trains only it (not a controlled style). */
 function styleFor(s: BotWorldState, skill: string) {
@@ -131,7 +130,7 @@ function levelLimit(s: BotWorldState, p: CombatParams) {
 
 /** The first inventory item that is configured food. */
 const foodInInventory = (s: BotWorldState, p: CombatParams) =>
-    s.inventory.find(i => p.food.some(f => sameName(f, i.name)));
+    s.inventory.find(i => p.food.some(f => exactName(f).test(i.name)));
 
 /**
  * HP is under the configured eat threshold and there is configured food: the eat step's case. Below
@@ -142,7 +141,7 @@ const foodInInventory = (s: BotWorldState, p: CombatParams) =>
 const wantsToEat = (s: BotWorldState, p: CombatParams) =>
     !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow && !!foodInInventory(s, p);
 
-const matches = (npc: NearbyNpc, p: CombatParams) => sameName(npc.name, p.target);
+const matches = (npc: NearbyNpc, p: CombatParams) => exactName(p.target).test(npc.name);
 
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
@@ -152,7 +151,7 @@ function wantedGroundItems(ctx: Ctx) {
     if (names.length === 0 || ctx.inventoryFull()) return [];
     return ctx
         .state()
-        .groundItems.filter(i => names.some(n => sameName(n, i.name)))
+        .groundItems.filter(i => names.some(n => exactName(n).test(i.name)))
         .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inArea(ctx.params.area, i))
         .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
@@ -246,7 +245,7 @@ export default defineTask({
                     // Fresh state per item: equipping the weapon may have moved the shield's slot.
                     const s = ctx.state();
                     if (!n || worn(s, n)) continue;
-                    const item = s.inventory.find(i => sameName(i.name, n));
+                    const item = s.inventory.find(i => exactName(n).test(i.name));
                     if (!item) continue;
                     const r = yield* equip(ctx, item);
                     if (!r.ok && equipFails.add() >= EQUIP_FAIL_LIMIT)

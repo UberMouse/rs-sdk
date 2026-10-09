@@ -1,12 +1,11 @@
 import { z } from 'zod/v4';
-import type { BotWorldState } from '../../sdk/types';
 import { deposit, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from '../actions/bank';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
-import { exactName } from '../lib/util';
+import { countItems, exactName } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Consecutive failed opens before the task fails. */
@@ -60,10 +59,6 @@ type Operation =
     | { kind: 'depositAllExcept'; keep: string[] }
     | { kind: 'withdraw'; item: string; count: number };
 
-const sameName = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
-const invCount = (state: BotWorldState, name: string) =>
-    state.inventory.filter(i => sameName(i.name, name)).reduce((n, i) => n + i.count, 0);
-
 /** Deposits first, then withdrawals, so freed slots can be refilled in one trip. */
 const operationsOf = (params: BankParams): Operation[] => [
     ...params.deposit.map(d => ({ kind: 'deposit' as const, ...d })),
@@ -81,7 +76,7 @@ const nextOp = (ctx: Ctx): Operation | undefined => operationsOf(ctx.params)[ctx
  * and the resume (the item is food) must not make the resumed step ask for more than the operation.
  */
 function recordOrMoved(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: string }): number | null {
-    const held = invCount(ctx.state(), op.item);
+    const held = countItems(ctx.state(), exactName(op.item));
     const { inFlight, opsMade } = ctx.memory;
     if (inFlight?.opIndex !== opsMade) {
         ctx.memory.inFlight = { opIndex: opsMade, heldBefore: held };
@@ -96,7 +91,7 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
         const moved = recordOrMoved(ctx, op);
         // A resumed deposit-all is done once none is left; a counted one sends only the remainder.
         const amount = op.count === undefined ? 'all' : op.count - (moved ?? 0);
-        const left = invCount(ctx.state(), op.item);
+        const left = countItems(ctx.state(), exactName(op.item));
         if (moved !== null && (amount === 'all' ? left === 0 : amount <= 0)) {
             yield* log(`deposit ${op.item}: ${moved} already deposited before the step was cut off`);
             return null;
@@ -109,7 +104,7 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
         // Resumes by itself: a name already deposited is no longer in the inventory.
         const names = new Set<string>();
         for (const i of ctx.state().inventory) {
-            if (!op.keep.some(k => sameName(k, i.name))) names.add(i.name);
+            if (!op.keep.some(k => exactName(k).test(i.name))) names.add(i.name);
         }
         for (const name of names) {
             const r = yield* deposit(ctx, exactName(name));
@@ -165,7 +160,7 @@ export default defineTask({
         const s = ctx.state();
         const requested = new Map<string, { entries: number; all: boolean; total: number }>();
         for (const t of deposits) {
-            const have = invCount(s, t.item);
+            const have = countItems(s, exactName(t.item));
             if (have === 0) return `cannot deposit ${t.item}: not in inventory`;
             const key = t.item.toLowerCase();
             const acc = requested.get(key) ?? { entries: 0, all: false, total: 0 };

@@ -21,7 +21,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
-import { exactName, findSkill } from '../lib/util';
+import { countItems, exactName, findSkill } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const BARS = ['bronze', 'iron', 'steel', 'mithril', 'adamant', 'runite'] as const;
@@ -139,8 +139,7 @@ const Params = z.object({
 type SmithingParams = z.infer<typeof Params>;
 type Ctx = TaskContext<SmithingParams>;
 
-const countOf = (state: BotWorldState, name: string) =>
-    state.inventory.filter(i => i.name.toLowerCase() === name.toLowerCase()).reduce((n, i) => n + i.count, 0);
+const countOf = (state: BotWorldState, name: string) => countItems(state, exactName(name));
 
 const metalIndex = (bar: Metal) => BARS.indexOf(bar);
 

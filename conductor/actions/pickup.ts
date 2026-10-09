@@ -8,14 +8,13 @@ import type { BotWorldState, GroundItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { messageCursor, messageSince } from './messages';
+import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.pickupItem's 10s wait for the item gained, gone or refused, in ticks. */
 export const PICKUP_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
 /** bot.pickupItem's 1.5s grace for the inventory add after the item leaves the ground, in ticks. */
 export const PICKUP_GRACE_TICKS = Math.ceil(1500 / TICK_MS);
 
-const CANT_REACH = /can't reach|cannot reach/i;
 const NO_SPACE = /inventory space|inventory.*full/i;
 
 export type PickupResult =
