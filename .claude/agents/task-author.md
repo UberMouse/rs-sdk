@@ -30,6 +30,12 @@ you never commit, and you only touch the bot you were given.
 
 ## Rules
 
+- **Drive the bot only through `bun conductor/run-task.ts`.** Never run ad-hoc scripts, MCP
+  `execute_code` or `--takeover` against it: another agent may be mid-action on the same bot,
+  and `run-task.ts`'s refusal is the only thing that serializes controllers (a fix author once
+  dropped items with a script while another agent was mining). If the bot is busy past your
+  wait budget, or its inventory or position blocks your smoke test, stop and report that
+  instead of working around it.
 - One file per task: `conductor/tasks/<name>.ts`, `name` matching the filename. Put shared
   helpers in `conductor/lib/` only when a second task needs them.
 - `description` is for the conductor's catalog: what it does, requirements, known good spots.
