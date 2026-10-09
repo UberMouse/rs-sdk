@@ -253,7 +253,7 @@ describe('cleanup bounds', () => {
             'log guard low-hp (abort)',
             'send cleanup',
             'call close',
-            `log cleanup abandoned: call "close" past the ${CLEANUP_TICKS}-tick cap`,
+            `log cleanup abandoned: call "close" past the ${CLEANUP_TICKS}-tick cap (still running)`,
             'send eat',
         ]);
     });

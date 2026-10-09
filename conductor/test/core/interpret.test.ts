@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import type { ActionResult, BotWorldState, NearbyLoc } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
-import { type Guard, interpret, MAX_SUSPENDS_PER_WAIT } from '../../core/interpret';
+import { type Guard, interpret, MAX_SUSPEND_STREAK } from '../../core/interpret';
 import {
     call,
     type Command,
@@ -314,15 +314,33 @@ describe('suspend guards', () => {
         expect(guardLogs(d).map(g => g.tick)).toEqual([0, 1, 2]);
     });
 
-    test(`a guard still holding after ${MAX_SUSPENDS_PER_WAIT} handler runs in one wait fails the run`, async () => {
-        const d = new TimelineDriver(timeline(20, () => ({ dialog: true })));
+    test('several separate dialogs in one wait are each handled and the wait completes', async () => {
+        // Seven one-tick dialogs (level-ups), each cleared by one continue.
+        const d = new TimelineDriver(timeline(20, t => ({ dialog: t % 2 === 1 && t <= 13 })));
+        const r = await interpret(waitsForTick(15), { driver: d, guards: [dialog] });
+        expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'met', state: { tick: 15 } });
+        expect(guardLogs(d).map(g => g.tick)).toEqual([1, 3, 5, 7, 9, 11, 13]);
+    });
+
+    test('a multi-page dialog, one page per handler run, completes', async () => {
+        // Twelve pages on consecutive ticks: the guard holds twelve runs in a row.
+        const d = new TimelineDriver(timeline(20, t => ({ dialog: t >= 1 && t <= 12 })));
+        const r = await interpret(waitsForTick(14), { driver: d, guards: [dialog] });
+        expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'met', state: { tick: 14 } });
+        expect(trace(d).filter(c => c === 'send continue')).toHaveLength(12);
+    });
+
+    test(`a guard still held after ${MAX_SUSPEND_STREAK} handler runs in a row fails the run`, async () => {
+        const d = new TimelineDriver(timeline(40, () => ({ dialog: true })));
         const r = await interpret(busy(), { driver: d, guards: [dialog] });
         expect(r).toEqual({
             kind: 'aborted',
             by: 'dialog',
-            outcome: { fail: `dialog still holds after ${MAX_SUSPENDS_PER_WAIT} handler runs in wait "logs"` },
+            outcome: {
+                fail: `dialog still held after ${MAX_SUSPEND_STREAK} handler runs in a row in wait "logs"`,
+            },
         });
-        expect(guardLogs(d)).toHaveLength(MAX_SUSPENDS_PER_WAIT);
+        expect(guardLogs(d)).toHaveLength(MAX_SUSPEND_STREAK);
         expect(trace(d).at(-1)).toBe('send cleanup');
     });
 
@@ -479,5 +497,32 @@ describe('TimelineDriver', () => {
 
         const strict = new TimelineDriver(timeline(2), { strict: true });
         await expect(interpret(ticks(5), { driver: strict })).rejects.toThrow('timeline ended at tick 1');
+    });
+
+    test('overlapping nextTick requests share one tick', async () => {
+        const d = new TimelineDriver(timeline(5));
+        const [a, b] = await Promise.all([d.nextTick(), d.nextTick()]);
+        expect(a).toBe(b);
+        expect(d.ticksElapsed).toBe(1);
+        expect((await d.nextTick()).tick).toBe(2);
+    });
+
+    test('every tick a call takes is seen by onTick, however long the call takes to settle', async () => {
+        // Sweeps settle times across the interpreter's microtask grace, where a tick request
+        // could otherwise be dropped unseen.
+        for (let hops = 0; hops < 80; hops++) {
+            const d = new TimelineDriver(timeline(10));
+            const seen: number[] = [];
+            const settlesAfterHops = async () => {
+                for (let i = 0; i < hops; i++) await Promise.resolve();
+                return hops;
+            };
+            const onTick = (s: BotWorldState) => {
+                seen.push(s.tick);
+                return null;
+            };
+            await interpret(call('settles', settlesAfterHops), { driver: d, onTick });
+            expect({ hops, seen: seen.length }).toEqual({ hops, seen: d.ticksElapsed });
+        }
     });
 });

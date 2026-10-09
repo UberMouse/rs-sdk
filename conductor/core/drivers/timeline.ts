@@ -20,6 +20,7 @@ export class TimelineDriver implements Driver {
     private readonly states: BotWorldState[];
     private index = 0;
     private current: BotWorldState;
+    private pending: Promise<BotWorldState> | null = null;
 
     constructor(
         states: BotWorldState[],
@@ -40,7 +41,16 @@ export class TimelineDriver implements Driver {
         return this.index;
     }
 
-    async nextTick(): Promise<BotWorldState> {
+    /** Overlapping requests share one tick, as every listener of a live client gets the same next state. */
+    nextTick(): Promise<BotWorldState> {
+        this.pending ??= Promise.resolve().then(() => {
+            this.pending = null;
+            return this.advance();
+        });
+        return this.pending;
+    }
+
+    private advance(): BotWorldState {
         this.index++;
         const scripted = this.states[this.index];
         if (scripted) this.current = scripted;

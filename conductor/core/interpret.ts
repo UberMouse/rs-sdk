@@ -17,7 +17,10 @@ export interface Driver {
     nextTick(): Promise<BotWorldState>;
     send(action: BotAction): Promise<ActionResult>;
     scan(radius?: number): Promise<NearbyLoc[]>;
-    /** A legacy call can't be cancelled: interrupts that come up while it runs wait for it to settle. */
+    /**
+     * A legacy call can't be cancelled: interrupts that come up while it runs wait for it to settle,
+     * and a call that cleanup abandons at its tick cap keeps running (and acting) in the background.
+     */
     call(label: string, run: () => Promise<unknown>): Promise<unknown>;
     log(msg: string, data?: Record<string, unknown>): void;
     screenshot(label: string): Promise<string | null>;
@@ -42,7 +45,7 @@ export type Interpretation<T> =
     | { kind: 'returned'; value: T }
     /**
      * `outcome` is what the guard returned (a suspend guard only aborts with a `done`/`fail`), or a
-     * `fail` when a suspend guard still held after MAX_SUSPENDS_PER_WAIT handler runs.
+     * `fail` when a suspend guard still held after MAX_SUSPEND_STREAK handler runs in a row.
      */
     | { kind: 'aborted'; by: string; outcome: GuardOutcome }
     | { kind: 'cancelled'; reason: string };
@@ -69,8 +72,13 @@ export interface InterpretOptions {
 export const CLEANUP_TICKS = 10;
 /** Commands a cancelled op's cleanup may yield; more most likely means a `catch` swallowed Cancelled. */
 export const CLEANUP_COMMANDS = 20;
-/** Handler runs a suspend guard gets within one wait before the run fails: the handler isn't clearing it. */
-export const MAX_SUSPENDS_PER_WAIT = 5;
+/**
+ * Handler runs in a row (the guard never seen clear between them) a suspend guard gets within one
+ * wait before the run fails. Only a backstop against a handler that can't clear its guard: judging
+ * progress is the guard's job. Each page of a multi-page dialog is one run, so this sits well above
+ * the longest dialogs while still ending a stuck one within about 25 ticks.
+ */
+export const MAX_SUSPEND_STREAK = 25;
 /**
  * Microtasks a forwarded command gets to settle before the interpreter asks for a tick, so an
  * already-resolved promise (an instant `call`, a scripted send) consumes no tick.
@@ -162,10 +170,17 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
             // Before each tick request, so a command that settles mid-tick doesn't also take the next one.
             const soon = await Promise.race([settled, microtasks(SETTLE_HOPS)]);
             if (soon !== PENDING) return { resume: soon };
-            const r = await Promise.race([settled, driver.nextTick().then(tick => ({ tick }))]);
-            if (!('tick' in r)) return { resume: r };
-            const stop = watch(r.tick);
-            if (stop) return { stop, settled };
+            const next = driver.nextTick();
+            const r = await Promise.race([settled, next.then(tick => ({ tick }))]);
+            if ('tick' in r) {
+                const stop = watch(r.tick);
+                if (stop) return { stop, settled };
+                continue;
+            }
+            // The command won, but a tick that arrived with it is still watched rather than dropped unseen.
+            const late = await Promise.race([next, microtasks(SETTLE_HOPS)]);
+            const stop = late === PENDING ? null : watch(late);
+            return stop ? { stop, settled } : { resume: r };
         }
     };
 
@@ -205,7 +220,8 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
                 } else {
                     label = what(cmd);
                     const f: Forwarding<string> = await forward(cmd, watch);
-                    r = 'stop' in f ? f : f.resume;
+                    // Abandoning a command can't stop it: a legacy call keeps acting while the guard runs.
+                    r = 'stop' in f ? { stop: `${f.stop} (still running)` } : f.resume;
                 }
             } catch (e) {
                 driver.log(`cleanup abandoned: ${errMessage(e)}`);
@@ -229,13 +245,17 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
             await cleanup(target, why);
         };
 
-        const check: Watch<Interrupt> = s => {
+        /** `streak` (one wait's suspend runs in a row per guard) is cleared for a guard seen not holding. */
+        const check = (s: BotWorldState, streak?: Map<string, number>): Interrupt | null => {
             const reason = onTick(s);
             if (reason) return { cancel: reason };
             for (const g of guards) {
                 if (depth > 0 && !g.critical) continue;
                 if (g.policy === 'suspend' && firedAt.get(g.name) === s.tick) continue;
-                if (!g.when(s)) continue;
+                if (!g.when(s)) {
+                    streak?.delete(g.name);
+                    continue;
+                }
                 if (g.policy === 'suspend') firedAt.set(g.name, s.tick);
                 return { guard: g, state: s };
             }
@@ -272,15 +292,20 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
 
         const runWait = async (cmd: Wait): Promise<Resume | Interpretation<R>> => {
             const from = driver.state().tick;
-            let suspends = 0;
+            const streak = new Map<string, number>();
             for (let resumed = false; ; resumed = true) {
-                const r = await waitFor(cmd, check, from, resumed);
+                const r = await waitFor(cmd, s => check(s, streak), from, resumed);
                 if (!('stop' in r)) return r;
                 const i = r.stop;
-                if ('guard' in i && i.guard.policy === 'suspend' && ++suspends > MAX_SUSPENDS_PER_WAIT) {
-                    const fail = `${i.guard.name} still holds after ${MAX_SUSPENDS_PER_WAIT} handler runs in wait "${cmd.label}"`;
-                    await cancel(`guard ${i.guard.name}`);
-                    return { kind: 'aborted', by: i.guard.name, outcome: { fail } };
+                if ('guard' in i && i.guard.policy === 'suspend') {
+                    const { name } = i.guard;
+                    const runs = (streak.get(name) ?? 0) + 1;
+                    streak.set(name, runs);
+                    if (runs > MAX_SUSPEND_STREAK) {
+                        const fail = `${name} still held after ${MAX_SUSPEND_STREAK} handler runs in a row in wait "${cmd.label}"`;
+                        await cancel(`guard ${name}`);
+                        return { kind: 'aborted', by: name, outcome: { fail } };
+                    }
                 }
                 const end = await react(i);
                 if (end) return end;
