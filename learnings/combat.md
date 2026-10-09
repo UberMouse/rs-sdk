@@ -61,6 +61,10 @@ const isAnimating = (state?.player?.animId ?? -1) !== -1;
 | Lumbridge chickens | (3231, 3295), radius 8 | Chickens | Very safe, feathers drop; verified to combat 21 ([strength](../wiki/skills/strength.md#verified-training-spots)) |
 | Al Kharid warriors | ~(3293, 3170) | `Al-Kharid warrior` (lvl 9) | Faster XP, kebabs nearby for food, can hit hard via multicombat vs low combat levels. |
 
+## Chicken spawn areas the wiki mislabels
+
+`wiki/npcs/chicken.md` calls the spawn at (3225, 3300) "Varrock (south)" and the one at (3185, 3277) "Barbarian Village". Both are in the Lumbridge area: (3225, 3300) is the Lumbridge coop (next to the verified (3231, 3295) spot above), and (3185, 3277) is Fred's farm, west of Lumbridge. Chickens were attacked at both by the integration tests. [v 2026-10-10 integration-tests local]
+
 ## Cow Field Details (Proven from 200+ kills)
 
 The cow field is fenced with a gate on the south side:
