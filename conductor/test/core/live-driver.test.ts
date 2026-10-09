@@ -34,6 +34,9 @@ class FakeSdk {
         this.state = s;
         for (const l of this.stateListeners) l(s);
     }
+    get listeners() {
+        return { state: this.stateListeners.size, connection: this.connectionListeners.size };
+    }
     disconnect() {
         this.connection = 'disconnected';
         for (const l of this.connectionListeners) l('disconnected');
@@ -90,7 +93,14 @@ describe('LiveDriver', () => {
         const fake = new FakeSdk();
         const d = driverOn(fake, 20);
         await expect(d.nextTick()).rejects.toBeInstanceOf(TickStall);
-        await expect(d.nextTick()).rejects.toThrow('client stopped publishing ticks for 0.02s');
+        // The stall counts from the last tick, not from the call: a later caller is already rejected.
+        let later = 'pending';
+        d.nextTick().then(
+            () => (later = 'resolved'),
+            (e: unknown) => (later = e instanceof TickStall ? e.message : 'other'),
+        );
+        for (let i = 0; i < 5; i++) await Promise.resolve();
+        expect(later).toBe('client stopped publishing ticks for 0.02s');
         // A new tick clears the stall.
         fake.publish(worldState(1));
         const next = d.nextTick();
@@ -99,11 +109,14 @@ describe('LiveDriver', () => {
         d.close();
     });
 
-    test('close rejects a pending caller', async () => {
-        const d = driverOn(new FakeSdk());
+    test('close rejects a pending caller and stops listening to the SDK', async () => {
+        const fake = new FakeSdk();
+        const d = driverOn(fake);
+        expect(fake.listeners).toEqual({ state: 1, connection: 1 });
         const pending = d.nextTick();
         d.close();
         await expect(pending).rejects.toThrow('driver closed');
+        expect(fake.listeners).toEqual({ state: 0, connection: 0 });
     });
 
     test('state() throws when the client has published none', () => {

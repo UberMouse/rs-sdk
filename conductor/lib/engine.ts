@@ -1,7 +1,9 @@
 // Runs one task to its TaskResult. Each loop the first step whose `when()` passes runs: the shared
 // INTERRUPTS first, then the task's own steps. A generator step is interpreted (core/interpret.ts)
 // with the interrupts as guards and the stops, watchdog and step budget as `onTick`, so they act at
-// every tick of its waits. A legacy `async` step is one opaque call, checked only between steps.
+// every tick of its waits; a wall-clock limit around it bounds a `call` that never settles. A legacy
+// `async` step is one opaque call, checked only between steps, though a tick stall or a disconnect
+// while it runs still ends the run and abandons it.
 // I/O goes through the injected driver and sinks (plus the bot and SDK that legacy steps and the
 // interrupts still use), so tests run a task on a TimelineDriver.
 import type { BotActions } from '../../sdk/actions';
@@ -24,10 +26,16 @@ export const DEFAULT_STUCK_AFTER_MS = 90_000;
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;
 /**
- * Commands other than waits one run of a generator step may yield before the run fails. Guards and
- * stops act only at waits, so this is what bounds an op that sends in a loop and never waits.
+ * Commands other than waits a generator step may yield within one tick before the run fails. Guards
+ * and stops act only at waits, so this is what bounds an op that sends in a loop and never waits.
  */
 export const MAX_STEP_COMMANDS = 1000;
+/**
+ * Wall-clock slack a generator step gets past its timeout, and to finish once a stop, the watchdog or
+ * its tick budget has ended the run, before it is abandoned. Its tick budget and cleanup normally end
+ * it well within this; it bounds a `call` that never settles, which the interpreter waits for.
+ */
+export const STEP_GRACE_MS = 30_000;
 
 /** How each interrupt guards a generator step's waits, in INTERRUPTS order. */
 const GUARDS: [Step, Pick<Guard, 'policy' | 'critical'>][] = [
@@ -56,6 +64,8 @@ export interface ExecuteOptions {
     stops: StopCondition[];
     /** Print a progress line this often. Default DEFAULT_PROGRESS_EVERY_MS. */
     progressEveryMs?: number;
+    /** A generator step's wall-clock grace; see STEP_GRACE_MS, the default. */
+    stepGraceMs?: number;
 }
 
 type End = { status: TaskStatus; reason: string };
@@ -90,19 +100,18 @@ const unexpected = (step: Step, r: Interpretation<Outcome>): End => ({
 });
 
 /**
- * Delegates to `op`. Past MAX_STEP_COMMANDS commands other than waits it calls `over`, then yields
- * a zero-tick wait in place of the next command, where `onTick` reports the overrun and the
- * interpreter cancels the step, running its `finally` blocks. Hand-rolled because `yield*` can't count.
+ * Delegates to `op`, counting each command other than a wait with `count`. When `count` reports the
+ * cap just passed, it yields a zero-tick wait in place of that command, where `onTick` reports the
+ * overrun and the interpreter cancels the step, running its `finally` blocks. Hand-rolled because
+ * `yield*` can't count.
  */
-function* capped<T>(op: Op<T>, over: () => void): Op<T> {
-    let forwarded = 0;
+function* capped<T>(op: Op<T>, count: () => boolean): Op<T> {
     let resume: { value: unknown } | { error: unknown } = { value: undefined };
     for (;;) {
         const r: IteratorResult<Command, T> = 'error' in resume ? op.throw(resume.error) : op.next(resume.value);
         if (r.done) return r.value;
         const cmd: Command = r.value;
-        if (cmd.type !== 'wait' && cmd.type !== 'critical' && ++forwarded === MAX_STEP_COMMANDS + 1) {
-            over();
+        if (cmd.type !== 'wait' && cmd.type !== 'critical' && count()) {
             try {
                 yield CHECKPOINT;
             } catch (error) {
@@ -282,9 +291,10 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
     const stepBudgetTicks = Math.ceil(stepTimeoutMs / TICK_MS);
     const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
+    const graceMs = opts.stepGraceMs ?? STEP_GRACE_MS;
 
     // The interrupts as guards: `when` judges the state the interpreter checks; `run` acts through
-    // the live context, the legacy (async) ones as one call (Task 5 rewrites them as ops).
+    // the live context, the legacy (async) ones as one call.
     const guards: Guard[] = GUARDS.map(([step, how]) => ({
         name: step.name,
         ...how,
@@ -344,8 +354,24 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         return null;
     };
 
-    /** A legacy step can't be cancelled: past its wall-clock timeout it is abandoned, still running. */
+    /** Emits a step's late failure instead of leaving it unhandled once the run has moved on without it. */
+    const abandon = (step: Step, pending: Promise<unknown>) => {
+        pending.catch(e => emit({ type: 'abandoned-step-error', step: step.name, message: errMessage(e) }));
+    };
+
+    /**
+     * A legacy step runs with no guards or `onTick`, so interrupts and stops act only between steps.
+     * It can't be cancelled: past its wall-clock timeout it is abandoned, still running. So it is when
+     * the interpreter's tick requests around it fail, which ends the run `stuck` when the client stops
+     * publishing ticks for TICK_STALL_MS and `error` when the SDK disconnects.
+     */
     const runLegacy = async (step: Step, running: Promise<Outcome>): Promise<End | null> => {
+        let stepSettled = false;
+        const settled = () => {
+            stepSettled = true;
+        };
+        // Registered before the interpreter's own handlers, so it is set by the time the interpreter rejects.
+        running.then(settled, settled);
         const interpreted = interpret(
             call(step.name, () => running),
             { driver: view },
@@ -356,40 +382,95 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             new Promise<'timeout'>(res => {
                 timer = setTimeout(() => res('timeout'), stepTimeoutMs);
             }),
-        ]).finally(() => clearTimeout(timer));
+        ])
+            .catch((e: unknown) => {
+                // The step's own throw rejects the interpreter too; only a driver failure leaves it running.
+                if (!stepSettled) abandon(step, running);
+                throw e;
+            })
+            .finally(() => clearTimeout(timer));
         if (r === 'timeout') {
-            // Log the step's late failure instead of leaving it unhandled. The interpreter around it
-            // also rejects once the driver closes, which says nothing about the step.
-            running.catch(e => emit({ type: 'abandoned-step-error', step: step.name, message: errMessage(e) }));
+            // The interpreter around the step also rejects once the driver closes, which says nothing about the step.
+            abandon(step, running);
             interpreted.catch(() => {});
             return { status: 'stuck', reason: `step "${step.name}" ran over ${stepTimeoutMs / 1000}s` };
         }
         return r.kind === 'returned' ? ended(step.name, r.value) : unexpected(step, r);
     };
 
+    /**
+     * The interpreter waits for a pending `call` to settle before it acts on a stop or guard, and has
+     * no timers, so a generator step races two wall-clock limits: its timeout plus the grace from its
+     * start, and the grace from when `onTick` ended the run. Past either the step is abandoned and the
+     * run ends `stuck`; an op still live then is cancelled at its next check, where `onTick` reports it.
+     */
     const runOp = async (step: Step, op: Op<Outcome>): Promise<End | null> => {
         const startTick = driver.state().tick;
         let ending: End | null = null;
         let overrun: End | null = null;
+        let countedTick = startTick;
+        let commandsThisTick = 0;
+
+        let expire!: (end: End) => void;
+        const expired = new Promise<End>(res => {
+            expire = res;
+        });
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        const expireAfter = (ms: number, end: End) =>
+            timers.push(
+                setTimeout(() => {
+                    ending ??= end;
+                    expire(end);
+                }, ms),
+            );
+        const limitMs = stepTimeoutMs + graceMs;
+        expireAfter(limitMs, {
+            status: 'stuck',
+            reason: `step "${step.name}" ran over ${limitMs / 1000}s of wall time`,
+        });
+
         const onTick = (s: BotWorldState): string | null => {
-            ending ??=
-                checkRun(s) ??
-                overrun ??
-                (s.tick - startTick > stepBudgetTicks
-                    ? {
-                          status: 'stuck',
-                          reason: `step "${step.name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
-                      }
-                    : null);
+            if (s.tick !== countedTick) {
+                countedTick = s.tick;
+                commandsThisTick = 0;
+            }
+            if (!ending) {
+                ending =
+                    checkRun(s) ??
+                    overrun ??
+                    (s.tick - startTick > stepBudgetTicks
+                        ? {
+                              status: 'stuck',
+                              reason: `step "${step.name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
+                          }
+                        : null);
+                if (ending) {
+                    expireAfter(graceMs, {
+                        status: 'stuck',
+                        reason: `step "${step.name}" still running ${graceMs / 1000}s after "${ending.reason}"`,
+                    });
+                }
+            }
             return ending?.reason ?? null;
         };
-        const over = () => {
+        /** Counts one command; true for the first past the cap this tick. */
+        const count = () => {
+            if (++commandsThisTick !== MAX_STEP_COMMANDS + 1) return false;
             overrun = {
                 status: 'failed',
-                reason: `step "${step.name}" yielded over ${MAX_STEP_COMMANDS} commands in one run (a loop that never waits?)`,
+                reason: `step "${step.name}" yielded over ${MAX_STEP_COMMANDS} commands in one tick (a loop that never waits?)`,
             };
+            return true;
         };
-        const r = await interpret(capped(op, over), { driver: view, guards, onTick, firedAt });
+
+        const interpreted = interpret(capped(op, count), { driver: view, guards, onTick, firedAt });
+        const r = await Promise.race([interpreted, expired]).finally(() => {
+            for (const t of timers) clearTimeout(t);
+        });
+        if (!('kind' in r)) {
+            abandon(step, interpreted);
+            return r;
+        }
         switch (r.kind) {
             case 'returned':
                 return ended(step.name, r.value);

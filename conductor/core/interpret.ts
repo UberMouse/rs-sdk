@@ -64,7 +64,8 @@ export interface InterpretOptions {
      * The engine's stops and watchdog. Called on every check of every wait, so often several times
      * per tick (keep it idempotent; dedupe on `state.tick`), and on each tick while a command is
      * pending. A reason cancels the op, even inside `uninterruptible`. During a `call` it acts only
-     * once the call settles, so a hung call is bounded only by the engine's own wall-clock timeout.
+     * once the call settles, and nothing here times a call out, so the caller bounds a call that never
+     * settles with a wall-clock limit around the whole interpretation.
      */
     onTick?: (state: BotWorldState) => string | null;
     /**

@@ -5,7 +5,8 @@ import type { BotSDK } from '../../../sdk/index';
 import type { BotWorldState, InventoryItem } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
-import { type Op, send, uninterruptible, wait } from '../../core/op';
+import { call, type Op, send, uninterruptible, wait } from '../../core/op';
+import { sleep } from '../../lib/env';
 import { executeTask, MAX_STEP_COMMANDS } from '../../lib/engine';
 import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Outcome, type Sinks, type Step } from '../../lib/task';
@@ -17,7 +18,22 @@ interface RunOptions {
     stops?: StopCondition[];
     stuckAfterMs?: number;
     stepTimeoutMs?: number;
+    stepGraceMs?: number;
     driver?: TimelineDriver;
+}
+
+/** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
+class Frozen extends TimelineDriver {
+    override nextTick() {
+        return new Promise<BotWorldState>(() => {});
+    }
+}
+
+/** A client that has stopped publishing: every tick request fails at once. */
+class Stalled extends TimelineDriver {
+    override nextTick() {
+        return Promise.reject(new TickStall('client stopped publishing ticks for 30s'));
+    }
 }
 
 /** Runs `steps` as a task on a scripted timeline, with in-memory sinks. */
@@ -68,6 +84,7 @@ async function runTask(steps: Step[], states: BotWorldState[], opts: RunOptions 
         logFile: '/logs/run-1.ndjson',
         rawParams: {},
         stops: opts.stops ?? [],
+        ...(opts.stepGraceMs !== undefined && { stepGraceMs: opts.stepGraceMs }),
     });
     const sends = driver.commands.flatMap(c => (c.type === 'send' ? [c.action.reason] : []));
     return { result, events, printed, legacy, driver, sends };
@@ -121,6 +138,12 @@ function* spam(): Op<Outcome> {
 function* chopOnce(): Op<Outcome> {
     yield* wait('xp', s => xpOf(s) > 0, 50);
     return { fail: 'out of trees' };
+}
+
+/** Waits a tick, then throws. */
+function* boom(): Op<Outcome> {
+    yield* wait('a tick', () => false, 1);
+    throw new Error('boom');
 }
 
 const step = (name: string, run: Step['run']): Step => ({ name, when: () => true, run });
@@ -228,6 +251,31 @@ describe('onTick during a generator step', () => {
         expect(r.sends.at(-1)).toBe('cleanup');
     });
 
+    test('the command cap counts per tick, so a step that waits may send more in total', async () => {
+        const rounds = MAX_STEP_COMMANDS / 10 + 20;
+        function* chatty(): Op<Outcome> {
+            for (let round = 0; round < rounds; round++) {
+                for (let i = 0; i < 10; i++) yield* send(act('ping'));
+                yield* wait('a tick', () => false, 1);
+            }
+            return { done: 'all sent' };
+        }
+        const r = await runTask(
+            [step('chatty', chatty)],
+            timeline(rounds + 1, t => ({ z: 3200 + t })),
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.sends.length).toBe(rounds * 10);
+        expect(r.sends.length).toBeGreaterThan(MAX_STEP_COMMANDS);
+    });
+
+    test('a step that throws ends the run as an error with an exception event', async () => {
+        const r = await runTask([step('boom', boom)], timeline(5));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('boom threw: boom');
+        expect(r.events).toContainEqual(expect.objectContaining({ type: 'exception', message: 'boom' }));
+    });
+
     test('a client that stops publishing ticks ends the run stuck', async () => {
         class Stalls extends TimelineDriver {
             override nextTick() {
@@ -243,7 +291,106 @@ describe('onTick during a generator step', () => {
     });
 });
 
+/** Calls `run`, then is done. */
+function* calls(label: string, run: () => Promise<unknown>): Op<Outcome> {
+    yield* call(label, run);
+    return { done: `${label} settled` };
+}
+
+/** Rejects with `late boom` after `ms` of wall time. */
+async function failAfter(ms: number): Promise<never> {
+    await sleep(ms);
+    throw new Error('late boom');
+}
+
+const abandoned = (events: Record<string, unknown>[]) => events.filter(e => e.type === 'abandoned-step-error');
+
+describe('wall-clock limits on a generator step', () => {
+    test('a call that never settles ends the run stuck a grace period after a stop', async () => {
+        const r = await runTask([step('hang', () => calls('hang', () => new Promise(() => {})))], timeline(30), {
+            stops: [{ kind: 'minutes', minutes: 0.01 }],
+            stepGraceMs: 20,
+        });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('step "hang" still running 0.02s after "reached 0.01 min"');
+        expect(r.events).toContainEqual(
+            expect.objectContaining({ msg: 'stop "reached 0.01 min" waits for call "hang" to settle' }),
+        );
+    });
+
+    test('a step past its timeout plus grace is abandoned, and its late error is logged', async () => {
+        // No tick ever comes, so neither the tick budget nor a stop can end it.
+        const r = await runTask([step('slow', () => calls('slow', () => failAfter(50)))], [], {
+            driver: new Frozen(timeline(1)),
+            stepTimeoutMs: 10,
+            stepGraceMs: 20,
+        });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('step "slow" ran over 0.03s of wall time');
+        expect(abandoned(r.events)).toEqual([]);
+        await sleep(60);
+        expect(abandoned(r.events)).toEqual([{ type: 'abandoned-step-error', step: 'slow', message: 'late boom' }]);
+    });
+});
+
 describe('legacy steps', () => {
+    test('a dialog that opens during a legacy step is left for the interrupts between steps', async () => {
+        const legacyStep: Step = {
+            name: 'legacy',
+            when: () => true,
+            run: async ctx => {
+                await ctx.sdk.waitForTicks(40);
+                return { done: `at tick ${ctx.state().tick}` };
+            },
+        };
+        // Long enough that the interpreter watches ticks while the call runs (a call that settles
+        // within a few microtasks is never watched), with the dialog open across most of them.
+        const r = await runTask(
+            [legacyStep],
+            timeline(50, t => ({ dialog: t >= 3 && t <= 30 })),
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('legacy: at tick 40');
+        expect(r.legacy).toEqual([]);
+        expect(r.result.stepRuns).toEqual({ legacy: 1 });
+        expect(guardLog(r.events, 'interrupt:dialog')).toEqual([]);
+    });
+
+    test('a legacy step that throws ends the run as an error, not as an abandoned step', async () => {
+        const legacyStep: Step = {
+            name: 'legacy',
+            when: () => true,
+            run: async () => {
+                throw new Error('boom');
+            },
+        };
+        const r = await runTask([legacyStep], timeline(5));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('legacy threw: boom');
+        expect(r.events).toContainEqual(expect.objectContaining({ type: 'exception', message: 'boom' }));
+        await sleep(0);
+        expect(abandoned(r.events)).toEqual([]);
+    });
+
+    test('a legacy step past its wall-clock timeout is abandoned, and its late error is logged', async () => {
+        const legacyStep: Step = { name: 'legacy', when: () => true, run: () => failAfter(40) };
+        const r = await runTask([legacyStep], [], { driver: new Frozen(timeline(1)), stepTimeoutMs: 10 });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('step "legacy" ran over 0.01s');
+        await sleep(50);
+        expect(abandoned(r.events)).toEqual([{ type: 'abandoned-step-error', step: 'legacy', message: 'late boom' }]);
+    });
+
+    test('a tick stall during a legacy step ends the run stuck and abandons the step', async () => {
+        const legacyStep: Step = { name: 'legacy', when: () => true, run: () => failAfter(20) };
+        const r = await runTask([legacyStep], [], { driver: new Stalled(timeline(1)) });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('client stopped publishing ticks for 30s');
+        expect(abandoned(r.events)).toEqual([]);
+        await sleep(30);
+        expect(abandoned(r.events)).toEqual([{ type: 'abandoned-step-error', step: 'legacy', message: 'late boom' }]);
+    });
+
     test('an async step runs as one call, after the interrupts between steps', async () => {
         const legacyStep: Step = {
             name: 'legacy',
