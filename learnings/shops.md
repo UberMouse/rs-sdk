@@ -22,6 +22,17 @@ overstocked on that item, not that the sale failed.
 | Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]), Pickaxes (bronze 1gp) |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear |
 
+## Starter tools: where to get each
+
+| Tool | Source | Cost | Verified |
+|---|---|---|---|
+| Axe | Bob's Brilliant Axes, Lumbridge | bronze 16 gp | 2026-10-09 conductor1 local |
+| Pickaxe | Bob's Brilliant Axes, Lumbridge | bronze 1 gp | 2026-10-09 conductor1 local |
+| Tinderbox | Lumbridge General Store | 1 gp | 2026-10-09 conductor1 local |
+| Knife | ground spawn (3224, 3202), no Lumbridge shop sells it | free | 2026-10-09 conductor1 local |
+| Hammer | Lumbridge General Store (per stock list, wiki/shops/lumbridge-general-store.md) | 1 gp | unverified |
+| Chisel, shears, needle, others | Chisel and shears are in the Lumbridge General Store list above; needle and the rest unknown | | unverified |
+
 ## Opening a Shop
 
 ```typescript

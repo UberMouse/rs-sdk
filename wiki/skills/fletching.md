@@ -2,6 +2,13 @@
 
 Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and other materials. Members only.
 
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Arrow shafts (knife on normal logs), logs chopped nearby | (3224, 3202) knife spawn | 1-17 | 15 shafts per log, ~12 logs/min | ~139k (local, includes early levels) | 2026-10-09 conductor1 local |
+| Headless arrows (feathers on shafts) | anywhere | 17-27 | 1 feather + 1 shaft each, 95 in ~40 s | ~328k (local, includes feather XP) | 2026-10-09 conductor1 local |
+
 ## Bow Making
 
 1. Use a knife on logs to cut an unstrung bow
@@ -27,7 +34,7 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 
 ## Arrow Making
 
-1. Use a knife on normal logs → Arrow shafts (15 per log)
+1. Use a knife on normal logs → Arrow shafts (15 per log) [v 2026-10-09 conductor1 local]
 2. Use feathers on arrow shafts → Headless arrows
 3. Use arrowheads on headless arrows → Finished arrows
 
