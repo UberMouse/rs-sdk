@@ -4,7 +4,7 @@ import { burn } from '../actions/burn';
 import { call, log, type Op } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
-import { exactName, findSkill } from '../lib/util';
+import { countItems, exactName, findSkill } from '../lib/util';
 
 /**
  * Firemaking level per log type, from server/content/scripts/skill_firemaking/configs/firemaking.obj
@@ -46,11 +46,6 @@ const Params = z.object({
 type FiremakingParams = z.infer<typeof Params>;
 type Ctx = TaskContext<FiremakingParams>;
 
-const isLogs = (name: string, wanted: string) => name.toLowerCase() === wanted.toLowerCase();
-
-const countLogs = (state: BotWorldState, wanted: string) =>
-    state.inventory.filter(i => isLogs(i.name, wanted)).reduce((n, i) => n + i.count, 0);
-
 const hasTinderbox = (state: BotWorldState) => state.inventory.some(i => TINDERBOX.test(i.name));
 
 /** After a refused or timed-out light, walk to the first reachable tile 1..SIDESTEP_MAX_TILES away inside the area. */
@@ -76,7 +71,7 @@ export default defineTask({
     description:
         'Light logs from the inventory with a tinderbox until none of the given log type are left. ' +
         'Needs a tinderbox, the logs (exact item name, default "Logs") and the Firemaking level for them. ' +
-        'Each light moves the bot one tile west; a refused light makes it step to another tile. ' +
+        'Each light moves the bot one tile west; a refused light, or one that never catches, makes it step to another tile. ' +
         'Requires `area`: it stays within `radius` of that centre, so pick open ground away from walls, water and monsters. ' +
         'Verified spot: area {x:3230,z:3240,radius:6} (field east of the Lumbridge General Store).',
     params: Params,
@@ -85,7 +80,7 @@ export default defineTask({
     preflight(ctx) {
         const s = ctx.state();
         if (!hasTinderbox(s)) return 'no tinderbox in inventory';
-        if (countLogs(s, ctx.params.logs) === 0) return `no "${ctx.params.logs}" in inventory`;
+        if (countItems(s, exactName(ctx.params.logs)) === 0) return `no "${ctx.params.logs}" in inventory`;
         const need = LOG_LEVELS[ctx.params.logs.toLowerCase()];
         if (need === undefined)
             return `unknown log type "${ctx.params.logs}" (known: ${Object.keys(LOG_LEVELS).join(', ')})`;
@@ -98,7 +93,7 @@ export default defineTask({
     steps: [
         {
             name: 'finish',
-            when: ctx => countLogs(ctx.state(), ctx.params.logs) === 0,
+            when: ctx => countItems(ctx.state(), exactName(ctx.params.logs)) === 0,
             run: ctx => ({ done: `no ${ctx.params.logs} left to burn` }),
         },
         returnToAreaStep<FiremakingParams>(params => params.area),

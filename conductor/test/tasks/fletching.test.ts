@@ -197,7 +197,7 @@ describe('fletching: preflight', () => {
     test('refuses a different log type in the inventory', async () => {
         const mixed = kit.inv('Oak logs', 1, { id: 1521 });
         expect(await refusal(mixed)).toBe(
-            'preflight: inventory also holds other logs than "Logs"; fletchLogs would pick the wrong stack',
+            'preflight: inventory also holds other logs than "Logs"; the task works one log type at a time',
         );
     });
 

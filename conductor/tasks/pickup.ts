@@ -4,7 +4,7 @@ import { pickup } from '../actions/pickup';
 import { call, log, type Op, ticks } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
+import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
 
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
@@ -31,10 +31,7 @@ interface PickupMemory {
 }
 type Ctx = TaskContext<PickupParams, PickupMemory>;
 
-const held = (state: BotWorldState, name: string) => {
-    const pattern = exactName(name);
-    return state.inventory.filter(i => pattern.test(i.name)).reduce((n, i) => n + i.count, 0);
-};
+const held = (state: BotWorldState, name: string) => countItems(state, exactName(name));
 
 /** The first wanted item still short of its count. */
 const missing = (ctx: Ctx) => ctx.params.items.find(w => held(ctx.state(), w.item) < w.count);
