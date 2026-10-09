@@ -247,6 +247,29 @@ describe('buy', () => {
         expect(result).toMatchObject({ ok: false, reason: 'partial-fill', amountBought: 10 });
     });
 
+    test('a shop that closes before the full amount arrived is shop-not-open with what did', async () => {
+        const tenIn = opened.inv('Pot', 10).tick(1);
+        const closed = carrying.inv('Pot', 10).tick(2);
+        const { result, sends } = await runOp([opened.build(), tenIn.build(), closed.build()], ctx =>
+            buy(ctx, 'pot', 12),
+        );
+        expect(result).toEqual({
+            ok: false,
+            reason: 'shop-not-open',
+            amountBought: 10,
+            message: 'Shop closed with Pot x10 of 12 bought',
+        });
+        // The close ends the wait at once instead of waiting it out.
+        expect(sends).toHaveLength(2);
+    });
+
+    test('a shop that closes as the last packet lands is still a full purchase', async () => {
+        const { result } = await runOp([opened.build(), carrying.inv('Pot', 1).tick(1).build()], ctx =>
+            buy(ctx, 'pot', 1),
+        );
+        expect(result).toMatchObject({ ok: true, amountBought: 1 });
+    });
+
     test('a line with nothing on the shelf is out-of-stock, before any send', async () => {
         const { result, sends } = await runOp(opened.series(1), ctx => buy(ctx, /tinderbox/i));
         expect(result).toEqual({
@@ -362,38 +385,77 @@ describe('sell', () => {
             ok: false,
             reason: 'timeout',
             amountSold: 0,
-            message: 'Failed to sell any Logs',
+            message: 'Failed to sell Logs (timeout)',
         });
         expect(all.driver.state().tick).toBe(SELL_ALL_PACKET_WAIT_TICKS);
     });
 
-    test("a can't-sell answer is rejected, worded by which refusal it is", async () => {
+    test("a can't-sell answer is rejected, worded by which refusal it is, counted or all", async () => {
         const cases = [
-            ["You can't sell this item to this shop.", "Shop doesn't buy Logs", "Shop doesn't buy Logs"],
-            ["You can't sell this item to a shop.", 'Cannot sell Logs to any shop', 'Logs cannot be sold'],
-            ["You can't sell this item.", 'Logs is not tradeable', 'Logs cannot be sold'],
+            ["You can't sell this item to this shop.", "Shop doesn't buy Logs"],
+            ["You can't sell this item to a shop.", 'Cannot sell Logs to any shop'],
+            ["You can't sell this item.", 'Logs is not tradeable'],
         ] as const;
-        for (const [text, counted, all] of cases) {
+        for (const [text, message] of cases) {
             const refusal = [opened.build(), opened.tick(1).message(text).build()];
-            const one = await runOp(refusal, ctx => sell(ctx, LOGS, 1));
-            expect(one.result).toEqual({ ok: false, reason: 'rejected', amountSold: 0, message: counted });
-            const every = await runOp(refusal, ctx => sell(ctx, LOGS, 'all'));
-            expect(every.result).toEqual({ ok: false, reason: 'rejected', amountSold: 0, message: all });
+            for (const amount of [1, 'all'] as const) {
+                const { result } = await runOp(refusal, ctx => sell(ctx, LOGS, amount));
+                expect(result).toEqual({ ok: false, reason: 'rejected', amountSold: 0, message });
+            }
         }
     });
 
-    test("'all' that is refused after some sold says the shop stopped buying", async () => {
+    test('a refusal after some sold says how many went first, counted or all', async () => {
         const sold = carrying.inv('Logs', 2).shop(LINES, { logs: 4 });
         const refusal = sold.tick(2).message("You can't sell this item to this shop.");
-        const { result } = await runOp([opened.build(), sold.tick(1).build(), refusal.build()], ctx =>
-            sell(ctx, LOGS, 'all'),
-        );
-        expect(result).toEqual({
-            ok: false,
-            reason: 'rejected',
-            amountSold: 1,
-            message: 'Sold Logs x1 of 3, then shop stopped buying',
-        });
+        for (const amount of [3, 'all'] as const) {
+            const { result } = await runOp([opened.build(), sold.tick(1).build(), refusal.build()], ctx =>
+                sell(ctx, LOGS, amount),
+            );
+            expect(result).toEqual({
+                ok: false,
+                reason: 'rejected',
+                amountSold: 1,
+                message: "Shop doesn't buy Logs (sold x1 of 3 first)",
+            });
+        }
+    });
+
+    test('a shop that closes with a packet in flight is shop-not-open, not sold, counted or all', async () => {
+        // A closed shop lists no inventory, which once read as every unit sold. Here nothing left while
+        // the shop showed open, so nothing counts as sold, whatever the inventory shows after.
+        const closed = carrying.inv('Logs', 2).tick(1);
+        for (const amount of [2, 'all'] as const) {
+            const { result, sends, driver } = await runOp([opened.build(), closed.build()], ctx =>
+                sell(ctx, LOGS, amount),
+            );
+            const requested = amount === 'all' ? 3 : amount;
+            expect(result).toEqual({
+                ok: false,
+                reason: 'shop-not-open',
+                amountSold: 0,
+                message: `Shop closed with Logs x0 of ${requested} sold`,
+            });
+            expect(sends).toHaveLength(1);
+            expect(driver.state().tick).toBe(1);
+        }
+    });
+
+    test('a shop that closes after some sold reports what left while it was open, counted or all', async () => {
+        const one = carrying.inv('Logs', 2).shop(LINES, { logs: 4 }).tick(1);
+        const closed = carrying.inv('Logs', 1).tick(2);
+        for (const amount of [3, 'all'] as const) {
+            const { result, sends } = await runOp([opened.build(), one.build(), closed.build()], ctx =>
+                sell(ctx, LOGS, amount),
+            );
+            expect(result).toEqual({
+                ok: false,
+                reason: 'shop-not-open',
+                amountSold: 1,
+                message: 'Shop closed with Logs x1 of 3 sold',
+            });
+            expect(sends).toHaveLength(2);
+        }
     });
 
     test("a can't-sell message from before the send is not an answer to it", async () => {

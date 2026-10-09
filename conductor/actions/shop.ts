@@ -7,7 +7,12 @@
 //   refusal on as its result, and ignores the server's answer until the wait times out).
 // - buy and sell take an amount of a positive integer (sell also 'all', not -1), and decide from the
 //   state each wait ended on. A short fill is `partial-fill` when some arrived or left, `timeout` or
-//   `send-failed` when none did; upstream's `rejected` flag is the `rejected` reason.
+//   `send-failed` when none did; upstream's `rejected` flag is the `rejected` reason. A shop that
+//   closes mid-trade is `shop-not-open` (upstream: a closed shop's empty list of the inventory reads
+//   as everything sold, and a buy waits out its timeout).
+// - sell 'all' is the counted sale with the amount the shop lists at the start: the same Sell-10/5/1
+//   packets and refusal wording. Upstream's sellAllToShop sends min(10, count), which the client sends
+//   as Sell 1 unless it is 5 or 10, and words its refusals its own way ("cannot be sold").
 // - Waits and the 60 s deadline of a multi-packet buy or sell are counted in game ticks.
 // - closeShop takes its per-attempt wait as a parameter (upstream: a fixed 5s), so withShop's close on
 //   an abort fits the interpreter's cleanup cap.
@@ -182,8 +187,9 @@ const resolveShopItem = (target: ShopItem | InventoryItem | string | RegExp, ite
  * Buys `amount` of a shop item (a shop item, or the shortest-named match of a name or pattern) in
  * Buy-10/5/1 packets, each waiting for the inventory count to rise. Success needs the full amount: a
  * short fill (out of stock, out of coins, a full inventory) is `partial-fill`, or `timeout` when none
- * arrived. A line with no stock on the shelf is `out-of-stock` and a full inventory with no stack of
- * the item `no-inventory-space`, both before any send.
+ * arrived; a shop that closes before the full amount arrived is `shop-not-open`, with what had. A line
+ * with no stock on the shelf is `out-of-stock` and a full inventory with no stack of the item
+ * `no-inventory-space`, both before any send.
  */
 export function* buy(ctx: ActionContext, target: ShopItem | string | RegExp, amount = 1): Op<BuyResult> {
     const valid = validateActionQuantity(amount, { max: MAX_SHOP_ACTION_QUANTITY });
@@ -216,6 +222,7 @@ export function* buy(ctx: ActionContext, target: ShopItem | string | RegExp, amo
         };
     }
 
+    // Counted from the inventory, which a closed shop still publishes.
     const totalBefore = countItemId(s, id);
     const deadline = s.tick + SHOP_DEADLINE_TICKS;
     // What the trade came to as of `st`; `idle` says why nothing arrived, if nothing did.
@@ -229,6 +236,10 @@ export function* buy(ctx: ActionContext, target: ShopItem | string | RegExp, amo
                 item: st.inventory.find(i => i.id === id),
                 message: `Bought ${name} x${amountBought}`,
             };
+        }
+        if (!st.shop.isOpen) {
+            const closed = `Shop closed with ${name} x${amountBought} of ${requested} bought`;
+            return { ok: false, reason: 'shop-not-open', amountBought, message: closed };
         }
         const short = `Bought ${name} x${amountBought} of ${requested} requested`;
         if (quantity.partial) return { ok: false, reason: 'partial-fill', amountBought, message: short };
@@ -244,8 +255,13 @@ export function* buy(ctx: ActionContext, target: ShopItem | string | RegExp, amo
         const sent = yield* send({ type: 'shopBuy', slot: shopItem.slot, amount: step, reason: `buy ${name}` });
         if (!sent.success) return outcome(s, { reason: 'send-failed', message: sent.message });
         packets++;
-        const w = yield* wait(`buy ${name}`, st => countItemId(st, id) > countBefore, SHOP_PACKET_WAIT_TICKS);
+        const w = yield* wait(
+            `buy ${name}`,
+            st => countItemId(st, id) > countBefore || !st.shop.isOpen,
+            SHOP_PACKET_WAIT_TICKS,
+        );
         s = w.state;
+        if (!s.shop.isOpen) return outcome(s, noPackets);
         if (w.kind === 'timeout') {
             const why = `Failed to buy ${name} (no coins, out of stock, or full inventory?)`;
             return outcome(s, { reason: 'timeout', message: why });
@@ -255,7 +271,7 @@ export function* buy(ctx: ActionContext, target: ShopItem | string | RegExp, amo
     return outcome(s, noPackets);
 }
 
-/** How a "can't sell" game message reads for an item, in upstream's wording. */
+/** How a "can't sell" game message reads for an item, in upstream's (sellToShop's) wording. */
 function sellRejection(text: string, name: string): string {
     if (/to this shop/i.test(text)) return `Shop doesn't buy ${name}`;
     if (/to a shop/i.test(text)) return `Cannot sell ${name} to any shop`;
@@ -271,7 +287,9 @@ const playerCount = (s: BotWorldState, id: number) =>
  * The shop's slot for the item is looked up again before every packet: selling a batch of unstackable
  * items removes the slot the first one sat in. A "can't sell this item" answer is `rejected` (the shop
  * does not buy it, or nobody does). Success needs the full amount: a short fill is `partial-fill`, or
- * `timeout` when none left.
+ * `timeout` when none left. A shop that closes mid-sale is `shop-not-open`: a closed shop publishes no
+ * list of the inventory, so `amountSold` is what had left as of the last state the shop showed open,
+ * and a packet in flight as it closed may have sold more (the inventory tells).
  */
 export function* sell(
     ctx: ActionContext,
@@ -295,101 +313,59 @@ export function* sell(
     const cursor = messageCursor(s);
     const countBefore = playerCount(s, id);
     const requested = amount === 'all' ? countBefore : amount;
+    const packetWait = amount === 'all' ? SELL_ALL_PACKET_WAIT_TICKS : SHOP_PACKET_WAIT_TICKS;
     const deadline = s.tick + SHOP_DEADLINE_TICKS;
     const rejection = (st: BotWorldState) => messageSince(st, cursor, CANT_SELL);
-    const soldBy = (st: BotWorldState) => Math.max(0, countBefore - playerCount(st, id));
 
-    // What the trade came to as of `st`; `idle` says why nothing left, if nothing did.
-    const outcome = (
-        st: BotWorldState,
-        idle: { reason: 'send-failed' | 'timeout'; message: string },
-        rejected?: string,
-    ): SellResult => {
-        const amountSold = soldBy(st);
-        const quantity = classifyQuantity(requested, amountSold);
-        if (rejected) return { ok: false, reason: 'rejected', amountSold, message: rejected };
-        if (quantity.complete) return { ok: true, amountSold, message: `Sold ${name} x${amountSold}` };
+    /** As of the last state the shop showed open. */
+    let sold = 0;
+    type Stop = { reason: 'rejected' | 'shop-not-open' | 'send-failed' | 'timeout'; message: string };
+    // What the sale came to; `stop` says why the loop ended short, if it did. A refusal or a closed shop
+    // is reported as such whatever sold before it.
+    const outcome = (stop: Stop): SellResult => {
+        if (stop.reason === 'rejected' || stop.reason === 'shop-not-open')
+            return { ok: false, ...stop, amountSold: sold };
+        const quantity = classifyQuantity(requested, sold);
+        if (quantity.complete) return { ok: true, amountSold: sold, message: `Sold ${name} x${sold}` };
         if (quantity.partial) {
-            const short = `Sold ${name} x${amountSold} of ${requested} requested`;
-            return { ok: false, reason: 'partial-fill', amountSold, message: short };
+            const short = `Sold ${name} x${sold} of ${requested} requested`;
+            return { ok: false, reason: 'partial-fill', amountSold: sold, message: short };
         }
-        return { ok: false, reason: idle.reason, amountSold, message: idle.message };
+        return { ok: false, ...stop, amountSold: sold };
     };
-    const noPackets = { reason: 'timeout', message: `Sold ${name} x0 of ${requested} requested` } as const;
+    const timedOut: Stop = { reason: 'timeout', message: `Failed to sell ${name} (timeout)` };
 
-    if (amount === 'all') {
-        // Each round sells up to 10 of what is left; a round that sells nothing ends the loop.
-        let totalSold = 0;
-        let packets = 0;
-        let idle: { reason: 'send-failed' | 'timeout'; message: string } = {
-            reason: 'timeout',
-            message: `Failed to sell any ${name}`,
-        };
-        while (packets < MAX_SHOP_ACTION_PACKETS && s.tick < deadline) {
-            if (!s.shop.isOpen) break;
-            const current = s.shop.playerItems.find(i => i.id === id);
-            if (!current || current.count === 0) break;
-            const before = playerCount(s, id);
-            const sent = yield* send({
-                type: 'shopSell',
-                slot: current.slot,
-                amount: Math.min(10, current.count),
-                reason: `sell ${name}`,
-            });
-            if (!sent.success) {
-                idle = { reason: 'send-failed', message: sent.message };
-                break;
-            }
-            packets++;
-            const w = yield* wait(
-                `sell ${name}`,
-                st => rejection(st) !== null || playerCount(st, id) < before,
-                SELL_ALL_PACKET_WAIT_TICKS,
-            );
-            s = w.state;
-            const refused = rejection(s);
-            if (refused) {
-                const shopRefuses = /to this shop/i.test(refused);
-                const message = !shopRefuses
-                    ? `${name} cannot be sold`
-                    : totalSold > 0
-                      ? `Sold ${name} x${totalSold} of ${requested}, then shop stopped buying`
-                      : `Shop doesn't buy ${name}`;
-                return { ok: false, reason: 'rejected', amountSold: totalSold, message };
-            }
-            const soldThisRound = before - playerCount(s, id);
-            totalSold += Math.max(0, soldThisRound);
-            if (w.kind === 'timeout' || soldThisRound === 0) break;
-        }
-        const quantity = classifyQuantity(requested, totalSold);
-        if (quantity.complete) return { ok: true, amountSold: totalSold, message: `Sold ${name} x${totalSold}` };
-        if (quantity.partial) {
-            const short = `Sold ${name} x${totalSold} of ${requested} requested`;
-            return { ok: false, reason: 'partial-fill', amountSold: totalSold, message: short };
-        }
-        return { ok: false, reason: idle.reason, amountSold: totalSold, message: idle.message };
-    }
-
-    let remaining = requested;
     let packets = 0;
-    while (remaining > 0 && packets < MAX_SHOP_ACTION_PACKETS && s.tick < deadline) {
+    while (sold < requested && packets < MAX_SHOP_ACTION_PACKETS && s.tick < deadline) {
         const current = s.shop.playerItems.find(i => i.id === id);
-        if (!current) return outcome(s, noPackets);
+        if (!current) break;
         const before = playerCount(s, id);
-        const step = nextShopStep(remaining);
+        const step = nextShopStep(requested - sold);
         const sent = yield* send({ type: 'shopSell', slot: current.slot, amount: step, reason: `sell ${name}` });
-        if (!sent.success) return outcome(s, { reason: 'send-failed', message: sent.message });
+        if (!sent.success) return outcome({ reason: 'send-failed', message: sent.message });
         packets++;
         const w = yield* wait(
             `sell ${name}`,
-            st => rejection(st) !== null || playerCount(st, id) < before,
-            SHOP_PACKET_WAIT_TICKS,
+            st => !st.shop.isOpen || rejection(st) !== null || playerCount(st, id) < before,
+            packetWait,
         );
         s = w.state;
+        if (s.shop.isOpen) sold = Math.max(0, countBefore - playerCount(s, id));
         const refused = rejection(s);
-        if (refused) return outcome(s, noPackets, sellRejection(refused, name));
-        if (w.kind === 'timeout') return outcome(s, { reason: 'timeout', message: `Failed to sell ${name} (timeout)` });
-        remaining -= step;
+        if (refused) {
+            const why = sellRejection(refused, name);
+            return outcome({
+                reason: 'rejected',
+                message: sold > 0 ? `${why} (sold x${sold} of ${requested} first)` : why,
+            });
+        }
+        if (!s.shop.isOpen) {
+            return outcome({
+                reason: 'shop-not-open',
+                message: `Shop closed with ${name} x${sold} of ${requested} sold`,
+            });
+        }
+        if (w.kind === 'timeout') return outcome(timedOut);
     }
-    return outcome(s, noPackets);
+    return outcome(timedOut);
 }

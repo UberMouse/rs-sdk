@@ -234,7 +234,7 @@ describe('shop: failures', () => {
             react: opensOnly,
         });
         expect(r.result.reason).toBe(
-            'trade: sell Logs failed (timeout): Failed to sell any Logs; coins received so far 0',
+            'trade: sell Logs failed (timeout): Failed to sell Logs (timeout); coins received so far 0',
         );
     });
 
@@ -509,4 +509,50 @@ describe('shop: the shop closing between trades', () => {
         expect(r.result.stepRuns).toEqual({ trade: 2, finish: 1 });
         expect(r.result.reason).toBe('finish: all 2 trades made; coins received 0, spent 3');
     });
+});
+
+/**
+ * The shop closes under the bot with its first sale in flight; `lands` says whether that sale went
+ * through as it closed. Later opens (queued after this) show the shop again.
+ */
+const closesOnFirstSale = (lands: boolean): TimelineOptions['react'] => {
+    let sales = 0;
+    return (a, s) => {
+        const effect = react(a, s);
+        if (a.type !== 'shopSell' || ++sales > 1) return effect;
+        return t =>
+            world(lands && effect ? effect(t) : t)
+                .shop(false)
+                .build();
+    };
+};
+
+describe('shop: the shop closing mid-sale', () => {
+    // A closed shop lists no inventory, which once read as every unit sold: the run was done with logs unsold.
+    for (const lands of [true, false]) {
+        const what = lands ? 'that went through' : 'that did not land';
+        test(`a counted sale cut off by a close ${what} is not done: the reopened shop gets the rest`, async () => {
+            const r = await simulate(shop, {
+                params: { ...NPC, sell: [{ item: 'Logs', count: 3 }] },
+                timeline: carrying.series(1),
+                react: closesOnFirstSale(lands),
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.result.reason).toBe('finish: all 1 trades made; coins received 12, spent 0');
+            expect(r.result.inventoryDelta).toEqual({ Logs: -3, Coins: 12 });
+            expect(r.sends).toEqual([OPEN, 'sell Logs', OPEN, ...Array(lands ? 2 : 3).fill('sell Logs'), CLOSE]);
+            expect(r.result.stepRuns).toEqual({ trade: 2, finish: 1 });
+        });
+
+        test(`a sale of all cut off by a close ${what} is not done: the reopened shop gets the rest`, async () => {
+            const r = await simulate(shop, {
+                params: { ...NPC, sell: [{ item: 'Logs' }] },
+                timeline: carrying.series(1),
+                react: closesOnFirstSale(lands),
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.result.inventoryDelta).toEqual({ Logs: -3, Coins: 12 });
+            expect(sentAs(r, 'sell Logs')).toHaveLength(lands ? 3 : 4);
+        });
+    }
 });
