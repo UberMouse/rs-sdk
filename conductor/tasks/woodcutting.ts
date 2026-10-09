@@ -3,7 +3,8 @@ import type { NearbyLoc } from '../../sdk/types';
 import { CHOP_OPTION, CHOP_WAIT_TICKS, chop } from '../actions/chop';
 import { drop } from '../actions/drop';
 import { log, type Op, wait } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
+import { WALK_MAX_TICKS } from '../actions/walk';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
@@ -27,7 +28,10 @@ const CHOP_FAIL_LIMIT = 8;
  * for the task to report them; one more chop wait covers the sends between them and slow ticks. That is
  * also above the no-tree give-up and the engine default (90s), so a full respawn wait is not a stall.
  */
-export const SILENT_STREAK_TICKS = [failStreakTicks(CHOP_FAIL_LIMIT, CHOP_WAIT_TICKS)];
+export const SILENT_STREAK_TICKS = [
+    failStreakTicks(CHOP_FAIL_LIMIT, CHOP_WAIT_TICKS),
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
+];
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;

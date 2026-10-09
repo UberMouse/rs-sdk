@@ -3,7 +3,8 @@ import type { NearbyLoc } from '../../sdk/types';
 import { drop } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
 import { log, type Op, wait } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
+import { WALK_MAX_TICKS } from '../actions/walk';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -82,6 +83,7 @@ const MINE_FAIL_LIMIT = 8;
 export const SILENT_STREAK_TICKS = [
     giveUpTicksFor(ROCKS.adamantite.respawnTicks),
     failStreakTicks(MINE_FAIL_LIMIT, MINE_WAIT_TICKS),
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
 ];
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */

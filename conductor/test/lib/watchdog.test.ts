@@ -33,9 +33,9 @@ describe('every walking task outlasts each fail streak it has', () => {
         ['combat', combat.stuckAfterMs, combatStreaks, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],
         ['firemaking', firemaking.stuckAfterMs, firemakingStreaks, [WALK_STREAK]],
         ['smithing', smithing.stuckAfterMs, smithingStreaks, []],
-        ['woodcutting', woodcutting.stuckAfterMs, woodcuttingStreaks, []],
-        ['mining', mining.stuckAfterMs, miningStreaks, []],
-        ['pickup', pickup.stuckAfterMs, pickupStreaks, [750]],
+        ['woodcutting', woodcutting.stuckAfterMs, woodcuttingStreaks, [WALK_STREAK]],
+        ['mining', mining.stuckAfterMs, miningStreaks, [WALK_STREAK]],
+        ['pickup', pickup.stuckAfterMs, pickupStreaks, [WALK_STREAK, 750]],
     ] as const;
 
     test.each(table)('%s', (_name, stuckAfterMs, streaks, pinned) => {

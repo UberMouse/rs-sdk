@@ -1,18 +1,22 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { pickup } from '../actions/pickup';
+import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
-import { stuckWindowMs } from '../lib/watchdog';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
 const WAIT_TICKS = 5;
 const MAX_WAIT_SECONDS = 300;
 /** The engine's no-progress watchdog must outlast the longest allowed wait, so the task's own give-up fires first. */
-export const SILENT_STREAK_TICKS = [Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS)];
+export const SILENT_STREAK_TICKS = [
+    Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS),
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
+];
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Walking to a far area outlasts the default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
