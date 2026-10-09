@@ -1,13 +1,18 @@
 // bun run test:integration [filter] [-j N]
 // Runs each *.itest.ts under conductor/test/integration as its own `bun test` process (they share
 // one local stack, but every test spawns its own account), N at a time, then prints a table.
-import { spawn } from 'node:child_process';
+// The filter is a substring of the path relative to conductor/test/integration.
+import { spawn, type ChildProcess } from 'node:child_process';
 import { Glob } from 'bun';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { REPO_ROOT } from '../../lib/env';
 
 const DEFAULT_JOBS = 3;
 const ROOT = 'conductor/test/integration';
+/** A test file that has not finished by now is killed and reported as failed. */
+const FILE_TIMEOUT_MS = 10 * 60_000;
+/** After SIGTERM a `bun test` child runs its fixture cleanup; SIGKILL if it takes longer. */
+const KILL_GRACE_MS = 20_000;
 
 let filter = '';
 let jobs = DEFAULT_JOBS;
@@ -23,10 +28,8 @@ if (!Number.isInteger(jobs) || jobs < 1) {
     process.exit(2);
 }
 
-const files = [...new Glob('**/*.itest.ts').scanSync(join(REPO_ROOT, ROOT))]
-    .map(f => join(ROOT, f))
-    .filter(f => f.includes(filter))
-    .sort();
+// Paths relative to ROOT, so the filter cannot match the repo's own location.
+const files = [...new Glob('**/*.itest.ts').scanSync(join(REPO_ROOT, ROOT))].filter(f => f.includes(filter)).sort();
 if (files.length === 0) {
     console.error(`no integration tests match "${filter}"`);
     process.exit(2);
@@ -39,21 +42,60 @@ interface Outcome {
     output: string;
 }
 
+const running = new Set<ChildProcess>();
+let aborting = false;
+
+/** SIGTERM `proc`, then SIGKILL if it is still alive after the grace period. */
+function terminate(proc: ChildProcess): void {
+    proc.kill('SIGTERM');
+    const timer = setTimeout(() => proc.kill('SIGKILL'), KILL_GRACE_MS);
+    proc.once('close', () => clearTimeout(timer));
+}
+
 function runFile(file: string): Promise<Outcome> {
     const started = Date.now();
     return new Promise(resolve => {
         // The ./ prefix makes bun treat the argument as a path rather than a name filter.
-        const proc = spawn(process.execPath, ['test', `./${file}`], {
+        const proc = spawn(process.execPath, ['test', `./${join(ROOT, file)}`], {
             cwd: REPO_ROOT,
             stdio: ['ignore', 'pipe', 'pipe'],
         });
+        running.add(proc);
         let output = '';
+        let timedOut = false;
         proc.stdout.on('data', c => (output += c));
         proc.stderr.on('data', c => (output += c));
-        const done = (ok: boolean, extra = '') =>
-            resolve({ file, ok, seconds: (Date.now() - started) / 1000, output: output + extra });
+        const timer = setTimeout(() => {
+            timedOut = true;
+            terminate(proc);
+        }, FILE_TIMEOUT_MS);
+        let finished = false;
+        const done = (ok: boolean, extra = '') => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            running.delete(proc);
+            const seconds = (Date.now() - started) / 1000;
+            console.log(`${ok ? 'pass' : 'FAIL'}  ${file}  ${seconds.toFixed(1)}s`);
+            resolve({ file, ok, seconds, output: output + extra });
+        };
         proc.once('error', e => done(false, String(e)));
-        proc.once('close', code => done(code === 0));
+        proc.once('close', code =>
+            done(code === 0 && !timedOut, timedOut ? `\ntimeout: killed after ${FILE_TIMEOUT_MS / 1000}s` : ''),
+        );
+    });
+}
+
+// Forward SIGINT/SIGTERM so the children run their fixture cleanup (stop lite clients, kill tasks),
+// wait for them, and exit non-zero.
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.on(signal, () => {
+        if (aborting) return;
+        aborting = true;
+        console.error(`\n${signal}: stopping ${running.size} running test file(s)`);
+        for (const proc of running) terminate(proc);
+        // Backstop: the children are SIGKILLed after KILL_GRACE_MS; don't hang past that.
+        setTimeout(() => process.exit(1), KILL_GRACE_MS + 2000);
     });
 }
 
@@ -61,18 +103,21 @@ const outcomes: Outcome[] = [];
 const queue = [...files];
 await Promise.all(
     Array.from({ length: Math.min(jobs, files.length) }, async () => {
-        for (let file = queue.shift(); file; file = queue.shift()) outcomes.push(await runFile(file));
+        for (let file = queue.shift(); file; file = queue.shift()) {
+            if (aborting) return;
+            outcomes.push(await runFile(file));
+        }
     }),
 );
+if (aborting) process.exit(1);
 outcomes.sort((a, b) => a.file.localeCompare(b.file));
 
 for (const o of outcomes) {
     if (!o.ok) console.log(`\n--- ${o.file} ---\n${o.output}`);
 }
-const names = outcomes.map(o => relative(ROOT, o.file));
-const width = Math.max(...names.map(n => n.length), 4);
+const width = Math.max(...outcomes.map(o => o.file.length), 4);
 console.log(`\n${'file'.padEnd(width)}  result  seconds`);
-outcomes.forEach((o, i) => {
-    console.log(`${names[i]!.padEnd(width)}  ${(o.ok ? 'pass' : 'FAIL').padEnd(6)}  ${o.seconds.toFixed(1)}`);
-});
+for (const o of outcomes) {
+    console.log(`${o.file.padEnd(width)}  ${(o.ok ? 'pass' : 'FAIL').padEnd(6)}  ${o.seconds.toFixed(1)}`);
+}
 process.exit(outcomes.every(o => o.ok) ? 0 : 1);
