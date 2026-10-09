@@ -58,7 +58,7 @@ const isAnimating = (state?.player?.animId ?? -1) !== -1;
 |----------|-------------|---------|-------|
 | Lumbridge cows | (3253, 3290) | Cows | Safe, good for all levels. South gate at (3253, 3266) |
 | Lumbridge goblins | (3252, 3230) | Goblins, rats | Mixed enemies. Cluster runs NE from here — nothing at the old (3240, 3220) waypoint |
-| Lumbridge chickens | (3237, 3295) | Chickens | Very safe, feathers drop |
+| Lumbridge chickens | (3231, 3295), radius 8 | Chickens | Very safe, feathers drop; verified to combat 13 ([strength](../wiki/skills/strength.md#verified-training-spots)) |
 | Al Kharid warriors | ~(3293, 3170) | `Al-Kharid warrior` (lvl 9) | Faster XP, kebabs nearby for food, can hit hard via multicombat vs low combat levels. |
 
 ## Cow Field Details (Proven from 200+ kills)
@@ -76,7 +76,7 @@ function isInsideCowPen(x, z) {
 
 ## Opening Gates
 
-Cow field and chicken coop have fenced gates:
+The cow field has a fenced gate. The chicken coop needed no gate handling: `bot.walkTo` reached it from (3206, 3237) [v 2026-10-09 conductor1 local]. Ducks and cows seen from inside the coop were `[UNREACHABLE]`.
 
 ```typescript
 // Check for gate blocking path
@@ -88,6 +88,10 @@ if (gate) {
     }
 }
 ```
+
+## Timed stops end mid-fight
+
+A `--until minutes:N` stop can land while the player is fighting. The next `combat` run is then refused ("in combat at (x,z)") until the fight ends; wait for `player.combat.inCombat` to clear (or kill the target) before relaunching. Level-up dialogs during fights (10 in 2 min at low levels) are handled by the engine's dialog interrupt. [v 2026-10-09 conductor1 local]
 
 ## Finding New Targets
 

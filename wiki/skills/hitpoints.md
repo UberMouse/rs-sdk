@@ -27,3 +27,7 @@ Some monsters and weapons inflict poison, causing gradual HP loss over time.
 | Antipoison potion | Herblore (level 5) or shops |
 | Superantipoison | Herblore (level 48) |
 | Curing prayers | Prayer book |
+
+## Verified training spots
+
+- Lumbridge chickens (3231, 3295) train Hitpoints as a by-product of melee: about a third of the melee XP; details in [strength](strength.md#verified-training-spots). [v 2026-10-09 conductor1 local]

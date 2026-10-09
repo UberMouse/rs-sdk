@@ -49,3 +49,7 @@ Pray at any church altar to fully restore prayer points.
 - Big bones from Hill Giants (Edgeville Dungeon) are the most accessible F2P training method.
 - Babydragon bones are the best cost-effective members option.
 - Regular bones from Khazard battlefield are easy to collect in bulk.
+
+## Verified training spots
+
+- Lumbridge chickens (3231, 3295) train Prayer as a by-product of melee and bone burying: about a third of the melee XP; details in [strength](strength.md#verified-training-spots). [v 2026-10-09 conductor1 local]
