@@ -41,6 +41,11 @@ export function countItems(state: BotWorldState, pattern: RegExp): number {
     return state.inventory.filter(i => pattern.test(i.name)).reduce((n, i) => n + i.count, 0);
 }
 
+/** How many of item `id` the inventory holds, counting a stack as its size. */
+export function countItemId(state: BotWorldState, id: number): number {
+    return state.inventory.filter(i => i.id === id).reduce((n, i) => n + i.count, 0);
+}
+
 /** Straight-line distance in tiles between two world points. */
 export function distance(a: { x: number; z: number }, b: { x: number; z: number }): number {
     return Math.hypot(a.x - b.x, a.z - b.z);

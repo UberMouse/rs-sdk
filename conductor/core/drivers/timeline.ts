@@ -5,9 +5,18 @@ import { TICK_MS } from '../../lib/util';
 import type { Driver } from '../interpret';
 import type { Command } from '../op';
 
+/** A change a send makes to the world: applied to every state from the next tick on. */
+export type Effect = (state: BotWorldState) => BotWorldState;
+
 export interface TimelineOptions {
     /** Answer a send; undefined (or no `respond`) answers success. */
     respond?: (action: BotAction) => ActionResult | undefined;
+    /**
+     * What a successful send changes in the world (food eaten, an item dropped), on top of the script:
+     * the scripted states say what the world does by itself, this what the bot's sends do to it.
+     * Given the state the send was made on.
+     */
+    react?: (action: BotAction, state: BotWorldState) => Effect | undefined;
     /** What `scan` returns; default none. */
     scan?: (radius?: number) => NearbyLoc[];
     /** Reject `nextTick` past the last state instead of repeating it with the tick advanced. */
@@ -19,7 +28,12 @@ export class TimelineDriver implements Driver {
     readonly commands: Command[] = [];
     private readonly states: BotWorldState[];
     private index = 0;
+    /** The scripted (or repeated) state of this tick, before the sends' effects. */
+    private scripted: BotWorldState;
     private current: BotWorldState;
+    /** Effects queued by this tick's sends, applied from the next tick on. */
+    private readonly queued: Effect[] = [];
+    private readonly effects: Effect[] = [];
     private pending: Promise<BotWorldState> | null = null;
 
     constructor(
@@ -29,6 +43,7 @@ export class TimelineDriver implements Driver {
         const [first] = states;
         if (!first) throw new Error('TimelineDriver needs at least one state');
         this.states = states;
+        this.scripted = first;
         this.current = first;
     }
 
@@ -53,15 +68,20 @@ export class TimelineDriver implements Driver {
     private advance(): BotWorldState {
         this.index++;
         const scripted = this.states[this.index];
-        if (scripted) this.current = scripted;
+        if (scripted) this.scripted = scripted;
         else if (this.opts.strict) throw new Error(`timeline ended at tick ${this.current.tick}`);
-        else this.current = { ...this.current, tick: this.current.tick + 1 };
+        else this.scripted = { ...this.scripted, tick: this.scripted.tick + 1 };
+        this.effects.push(...this.queued.splice(0));
+        this.current = this.effects.reduce((s, effect) => effect(s), this.scripted);
         return this.current;
     }
 
     async send(action: BotAction): Promise<ActionResult> {
         this.commands.push({ type: 'send', action });
-        return this.opts.respond?.(action) ?? { success: true, message: 'ok' };
+        const result = this.opts.respond?.(action) ?? { success: true, message: 'ok' };
+        const effect = result.success ? this.opts.react?.(action, this.current) : undefined;
+        if (effect) this.queued.push(effect);
+        return result;
     }
 
     async scan(radius?: number): Promise<NearbyLoc[]> {

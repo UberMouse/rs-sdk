@@ -296,6 +296,23 @@ export class World {
         return this.with({ autoRetaliateEnabled: on });
     }
 
+    /** A dialog page the client recorded on the current tick (`recentDialogs`), one string per line. */
+    recentDialog(lines: string[], interfaceId = -1): World {
+        return this.with({ recentDialogs: [...this.s.recentDialogs, { text: lines, tick: this.s.tick, interfaceId }] });
+    }
+
+    /** What the player wears; `items` replace it. Ids looked up by name as for `inv`. */
+    equipment(...items: { name: string; id?: number }[]): World {
+        const equipment = items.map((it, slot) => ({
+            slot,
+            id: itemId(it.name, it.id),
+            name: cap(it.name.toLowerCase()),
+            count: 1,
+            optionsWithIndex: [],
+        }));
+        return this.with({ equipment });
+    }
+
     /** A game message arriving on the current tick (type 0, system). */
     message(text: string, type = 0): World {
         const tick = this.s.tick;
