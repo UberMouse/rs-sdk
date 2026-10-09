@@ -89,7 +89,9 @@ Read this to discover available methods.
 
 ## Multiple Bots
 
-Control multiple bots simultaneously — each auto-connects on first use:
+Control multiple bots simultaneously — each auto-connects on first use. `execute_code` holds a
+bot's control connection only while its code runs, and the gateway allows one controller per
+bot: a call against a bot that a script or task is driving is refused (wait for it to finish).
 
 ```typescript
 // Execute on different bots (auto-connects each)

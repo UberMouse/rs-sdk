@@ -90,11 +90,12 @@ Change only what these findings call for. Re-run the smoke test and `bun run ver
 Leave the change uncommitted; report per finding: fixed / couldn't (why), and the RESULT lines.
 ```
 
-The worker is the one the conductor assigned to this review (the author's, unless the brief
-says otherwise); the save is the one the author's smoke tests ran from, so the fix is retested
-from the same state. Many findings may go to two fix agents **in parallel only when their files
-are disjoint**; a fix that spans both sets (a shared helper used on both sides) makes them
-sequential. Two parallel fix agents need two workers: never let two drive the same bot.
+The worker is the author's: it stays assigned to this change until the review commits or
+reverts (the conductor's `workers` state). The save is the one the author's smoke tests ran
+from (their `LOADED` source), so the fix is retested from the same state. Many findings may go
+to two fix agents **in parallel only when their files are disjoint**; a fix that spans both
+sets (a shared helper used on both sides) makes them sequential. Two parallel fix agents need
+two workers (ask the conductor for a second free one): never let two drive the same bot.
 
 ## 4. Round 2
 

@@ -48,15 +48,27 @@ you never commit, and you only touch the bot you were given.
 
 Your bot is the **worker account** your brief names, yours alone; never drive any other bot (the
 main account's progress comes only from the conductor's runs). Load the brief's starting save
-into it and start its client: `bun conductor/tools/load.ts <worker> <save> --client` (prints
+into it and start its client: `bun conductor/tools/load.ts <worker> lib:<save> --client` (prints
 `LOADED <json>`). Reload the same save to retest a fix from the same state, or another library
 save to test a branch (`bun conductor/tools/library.ts list`). Change the bot only through
 `run-task.ts`: no ad-hoc scripts, no `--takeover`. If your worker is busy (a run is refused
 because another controller is attached), wait or report back; never work around it.
 
+If the brief's starting save doesn't exist yet (`none: first create lib:<name> = ...`), make it
+before testing, and prefer generating it:
+`bun conductor/tools/library.ts generate <name> --spec '<json>' --purpose "<state, and what it tests>"`
+(the spec takes `position`, `skills`, `inventory`, `equipment`, `bank`, `varps`; see
+`sdk/test/utils/save-generator.ts`). Only when a spec can't express the state (quest progress
+you can't name), reach it on your worker with `run-task.ts` runs and file it with
+`bun conductor/tools/save.ts snapshot <worker> <name> --library --purpose "..."`. Never replace
+an existing library save (`--replace`) unless the brief says so; other agents' tests use them.
+
 `bun conductor/run-task.ts <worker> <name> --params '<json>' --until minutes:1`. Iterate until the
-RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the screenshots
-and the `logFile`, and use `bun sdk/cli.ts <worker>` / `bun conductor/tools/screenshot.ts <worker>`.
+RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the `logFile` and
+use `bun sdk/cli.ts <worker>`. The lite client `load.ts --client` starts has no pixels, so runs on
+it take no screenshots; when you need them, load without `--client` and run the rendering client
+instead (`bun conductor/tools/client.ts <worker> --headless`), then
+`bun conductor/tools/screenshot.ts <worker>`.
 Finish with `bun run verify:conductor` (oxfmt check, oxlint with warnings denied, tsc) and fix
 everything it reports under `conductor/` (`bun run fmt` formats in place). Commits run the same
 format and lint checks on staged files and are refused until they pass.
@@ -64,7 +76,7 @@ format and lint checks on staged files and are refused until they pass.
 ## Report
 
 ```
-Files: <paths changed or created>
+Files: <paths changed or created, including any new conductor/saves/<name>.sav + .json>
 What changed: <3-6 lines>
 Smoke tests: <the save each ran from (its LOADED source), then each RESULT line, verbatim, newest last>
 Open questions: <anything the conductor should decide, or "none">

@@ -196,8 +196,14 @@ export class BotSDK {
     // Reconnection state
     private connectionState: ConnectionState = 'disconnected';
     private reconnectAttempt = 0;
-    /** Reconnects that may hit our own not-yet-closed session (controller_busy) before giving up. */
-    private static readonly LEASE_RECONNECT_ATTEMPTS = 5;
+    /**
+     * How long reconnects keep retrying a controller_busy refusal, which can be our own previous
+     * session the gateway hasn't seen close yet. Longer than the gateway's websocket idle timeout
+     * (Bun's default 120s), which is the longest a half-open old session can hold the lease.
+     */
+    private static readonly LEASE_RECONNECT_WINDOW_MS = 150_000;
+    /** When the current run of controller_busy refusals on reconnect began; null when none. */
+    private leaseRefusedSince: number | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private intentionalDisconnect = false;
 
@@ -242,6 +248,7 @@ export class BotSDK {
 
         const isReconnect = this.connectionState === 'reconnecting';
         if (!isReconnect) {
+            this.leaseRefusedSince = null;
             this.setConnectionState('connecting');
         }
 
@@ -340,6 +347,7 @@ export class BotSDK {
                         clearTimeout(deadline);
                         this.ws?.removeEventListener('message', checkConnected);
                         this.reconnectAttempt = 0;
+                        this.leaseRefusedSince = null;
                         this.authenticated = true;
                         if (typeof msg.maxMessageLength === 'number' && msg.maxMessageLength > 0) {
                             this.serverMaxMessageLength = msg.maxMessageLength;
@@ -374,10 +382,13 @@ export class BotSDK {
                         const errorMessage = msg.error || 'Authentication failed';
                         console.error(`[BotSDK] Connection error: ${errorMessage}`);
                         // A reconnect can be refused by our own previous session while the
-                        // gateway has yet to see its socket close, so retry a lease refusal
-                        // a few times on reconnect. Anything else won't succeed on retry.
-                        const staleSelf = msg.code === 'controller_busy' && isReconnect
-                            && this.reconnectAttempt < BotSDK.LEASE_RECONNECT_ATTEMPTS;
+                        // gateway has yet to see its socket close, so keep retrying a lease
+                        // refusal on reconnect for a while. Anything else won't succeed on retry.
+                        let staleSelf = false;
+                        if (msg.code === 'controller_busy' && isReconnect) {
+                            this.leaseRefusedSince ??= Date.now();
+                            staleSelf = Date.now() - this.leaseRefusedSince < BotSDK.LEASE_RECONNECT_WINDOW_MS;
+                        }
                         if (!staleSelf) this.intentionalDisconnect = true;
                         reject(new Error(errorMessage));
                         this.ws?.close();

@@ -109,9 +109,8 @@ run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
 
 - Local stack: `conductor/local/up.sh` (gateway `:7780`, engine `:8888`); create bots with
   `--local`. One shared server runs from the main checkout, where its database and player saves
-  live; worktrees use it as is and set `RS_ENGINE_DIR=<main checkout>/server/engine` for
-  `save.ts` and `load.ts`. The Grand Exchange is off locally, so a `.sav` file is the whole
-  saved state of an offline player.
+  live; worktrees use it as is (`save.ts` and `load.ts` ask the engine where its saves are). The
+  Grand Exchange is off locally, so a `.sav` file is the whole saved state of an offline player.
 - Tasks: `bun conductor/run-task.ts --list` for the catalog;
   `bun conductor/run-task.ts {username} <task> --params '<json>' --until minutes:1` to run one.
   The last line is always `RESULT <json>`.
@@ -124,12 +123,14 @@ run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
 Rules for every agent working in this repo:
 
 - **One controller per bot.** The gateway refuses a second control connection to a bot (the
-  SDK's `connect()` rejects naming the holder) unless it asks for `takeover`. Never take over a
-  bot another agent is driving, and never route around the refusal with an ad-hoc script: wait,
-  or report back. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect
-  in observe mode and are always safe.
+  SDK's `connect()` rejects naming the holder) unless it asks for takeover (`--takeover` on
+  `run-task.ts`, `RS_TAKEOVER=1` for a script). Never take over a bot another agent is driving,
+  and never route around the refusal with an ad-hoc script: wait, or report back. MCP
+  `execute_code` holds the bot only while its code runs, and is refused while a task or script
+  drives it. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect in
+  observe mode and are always safe.
 - **Test on a worker account, not the main bot.** Smoke tests and experiments load a library
-  save into a worker (`bun conductor/tools/load.ts <worker> <save> --client`); only the
+  save into a worker (`bun conductor/tools/load.ts <worker> lib:<save> --client`); only the
   conductor's task-runner dispatches drive the main bot.
 - **Task code is reviewed before it is committed**, with the `task-review` skill. Write to its
   lenses in `.claude/review-lenses/`.

@@ -171,6 +171,18 @@ class BotManager {
   }
 
   /**
+   * Release a bot's control connection but keep its entry (SDK, chat cursor), so the next
+   * connect() re-attaches. The gateway allows one controller per bot, so an idle MCP session
+   * must not hold it and lock out scripts and tasks.
+   */
+  async release(name: string): Promise<void> {
+    const connection = this.connections.get(name);
+    if (!connection?.connected) return;
+    await connection.sdk.disconnect();
+    connection.connected = false;
+  }
+
+  /**
    * Get a bot connection by name
    */
   get(name: string): BotConnection | undefined {

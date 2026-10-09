@@ -38,7 +38,7 @@ export interface SyncToBotMessage {
 }
 
 // SDK connection mode
-// - control: full actions; connecting pre-empts any existing controller
+// - control: full actions; refused while another controller is attached, unless `takeover` is set
 // - observe: read-only (state/chat) plus the 'say' action; never pre-empts
 //   and is never pre-empted, so chat tools can talk without stealing the bot
 export type SDKConnectionMode = 'control' | 'observe';

@@ -520,6 +520,13 @@ const SyncModule = {
                 return;
             }
 
+            // A socket that closed during the auth await already ran handleClose, which found nothing
+            // to remove; registering it now would leave a session (and a lease) nobody holds.
+            if (ws.readyState !== 1 /* OPEN */) {
+                console.log(`[Gateway] SDK ${sdkClientId} -> ${targetUsername} closed during auth; not registering`);
+                return;
+            }
+
             // Controller lease: refuse a second controller unless it asks to take over.
             // Checked after the auth await, so two racing connects can't both pass.
             const oldControllers = mode === 'control' ? this.getControllersForBot(targetUsername) : [];

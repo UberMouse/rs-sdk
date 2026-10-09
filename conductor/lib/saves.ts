@@ -1,22 +1,27 @@
-// Player saves on the local server: export a live save, kick, write, decode, and the scenario library.
-// See conductor/docs/parallel-bots.md. Local server only; the Grand Exchange must be off there, so a
-// .sav file on disk is the whole truth for an offline player.
+// Player saves on the local server: read and write them through the engine, kick, decode, and the
+// scenario library. See conductor/docs/parallel-bots.md. Local server only, with the Grand Exchange
+// off, so a .sav file is the whole saved state of an offline player.
+//
+// Writes go to the path the engine itself reports (GET /save on its management port) and are then
+// read back through the engine, so a tool running in another worktree, or against an engine whose
+// GE checkpoint would win, cannot report a write the engine never sees.
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { REPO_ROOT } from './env';
-import { errMessage } from './util';
+import { z } from 'zod/v4';
+import { type BotEnv, REPO_ROOT } from './env';
+import { errMessage, fileStamp } from './util';
 
 /** Newest save format the engine reads (PlayerLoading.SAV_VERSION). */
 const SAV_VERSION = 8;
 const SAV_MAGIC = 0x2004;
 /** Oldest format decodeSave reads: earlier ones omit inventory sizes. */
 const MIN_DECODE_VERSION = 5;
-const FETCH_TIMEOUT_MS = 5_000;
-/** A kick waits out a combat logout delay engine-side (up to 30s), so allow for that. */
+/** Longest a request to the engine or gateway may take before it counts as failed. */
+export const FETCH_TIMEOUT_MS = 5_000;
+/** The engine waits out a combat logout delay for up to 30s before answering a kick. */
 const KICK_FETCH_TIMEOUT_MS = 40_000;
-const ENGINE_ORIGIN = process.env.RS_ENGINE_ORIGIN ?? 'http://localhost:8888';
-const MANAGEMENT_ORIGIN = process.env.RS_MANAGEMENT_ORIGIN ?? 'http://localhost:8898';
+const MANAGEMENT_PORT = 8898;
 export const LIBRARY_DIR = join(REPO_ROOT, 'conductor/saves');
 /** A library save name, and a snapshot label. */
 export const SAVE_NAME = /^[a-z0-9-]+$/i;
@@ -47,29 +52,175 @@ const STATS = [
     null,
     'Runecraft',
 ] as const;
-
-/** The server/engine directory the local server runs from (one shared server, many worktrees). */
-export function engineDir(): string {
-    return process.env.RS_ENGINE_DIR ?? join(REPO_ROOT, 'server/engine');
-}
-
-export function savePath(username: string): string {
-    return join(engineDir(), 'data/players/main', `${username.toLowerCase()}.sav`);
-}
+const MAX_LEVEL = 99;
+/** Bytes between the position and the stats: body (7), colours (5), gender, run energy (2), playtime (4, v2+). */
+const APPEARANCE_AND_ENERGY_BYTES = 7 + 5 + 1 + 2 + 4;
 
 export function sha1(bytes: Uint8Array): string {
     return createHash('sha1').update(bytes).digest('hex');
 }
 
-/** Server-side truth: is the player in the world? null when the engine is down. */
-export async function inWorld(username: string): Promise<boolean | null> {
+/** The engine's management origin: the bot's engine host on port 8898, or RS_MANAGEMENT_ORIGIN. */
+function managementOrigin(env: BotEnv): string {
+    if (process.env.RS_MANAGEMENT_ORIGIN) return process.env.RS_MANAGEMENT_ORIGIN;
+    const url = new URL(env.webOrigin);
+    url.port = String(MANAGEMENT_PORT);
+    return url.origin;
+}
+
+/** fetch with a timeout and errors that say what went wrong: down, too slow, or an engine without the endpoints. */
+async function managementFetch(env: BotEnv, path: string, init: RequestInit = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+    const url = `${managementOrigin(env)}${path}`;
+    let res: Response;
     try {
-        const res = await fetch(`${ENGINE_ORIGIN}/playerpositions`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
-        const players: { name: string }[] = await res.json();
-        return players.some(p => p.name.toLowerCase() === username.toLowerCase());
-    } catch {
-        return null;
+        res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    } catch (e) {
+        if (e instanceof Error && e.name === 'TimeoutError') {
+            throw new Error(`${init.method ?? 'GET'} ${url} timed out after ${timeoutMs / 1000}s`, { cause: e });
+        }
+        throw new Error(`engine management port unreachable at ${url} (${errMessage(e)})`, { cause: e });
     }
+    const isJson = res.headers.get('content-type')?.includes('json') === true;
+    if (res.status === 404 && !isJson) {
+        throw new Error(
+            `the engine at ${managementOrigin(env)} has no ${path.split('/')[1]} endpoint; restart it from a checkout that has it`,
+        );
+    }
+    if (res.status === 403) {
+        const body: unknown = isJson ? await res.json() : await res.text();
+        throw new Error(`${url}: ${JSON.stringify(body)}`);
+    }
+    return { res, isJson };
+}
+
+export type SaveSource = 'live' | 'logout' | 'checkpoint' | 'file';
+const SAVE_SOURCES: readonly string[] = ['live', 'logout', 'checkpoint', 'file'];
+
+export interface SaveStatus {
+    /**
+     * live: the player is online; logout: its logout save is in flight to disk; checkpoint: a Grand
+     * Exchange checkpoint that the next login loads instead of the .sav; file: the .sav; none: no save.
+     */
+    source: SaveSource | 'none';
+    /** The .sav file this engine reads for the player. */
+    path: string;
+    bytes?: Uint8Array;
+    sha1?: string;
+}
+
+/** Throw unless the engine that answered is the one the bot plays on (its web port matches SERVER's). */
+function requireSameEngine(env: BotEnv, webPort: unknown): void {
+    const url = new URL(env.webOrigin);
+    const expected = url.port || (url.protocol === 'https:' ? '443' : '80');
+    if (String(webPort) !== expected) {
+        throw new Error(
+            `the management port at ${managementOrigin(env)} belongs to the engine on web port ${String(webPort)}, but ${env.username} plays on ${env.webOrigin}; set RS_MANAGEMENT_ORIGIN to that engine's management port`,
+        );
+    }
+}
+
+/** The player's current save as the engine sees it, without logging it out (GET /save). */
+export async function saveStatus(env: BotEnv): Promise<SaveStatus> {
+    const { res, isJson } = await managementFetch(env, `/save/${encodeURIComponent(env.username)}`);
+    if (res.status === 404 && isJson) {
+        const body = (await res.json()) as { path?: unknown; webPort?: unknown };
+        if (typeof body.path !== 'string') throw new Error(`GET /save/${env.username}: 404 without a path`);
+        requireSameEngine(env, body.webPort);
+        return { source: 'none', path: body.path };
+    }
+    if (!res.ok) throw new Error(`GET /save/${env.username}: ${res.status} ${await res.text()}`);
+    requireSameEngine(env, res.headers.get('x-engine-web-port'));
+    const source = res.headers.get('x-save-source') ?? '';
+    const path = res.headers.get('x-save-path');
+    if (!SAVE_SOURCES.includes(source) || !path) {
+        throw new Error(`GET /save/${env.username}: unexpected headers (source "${source}", path "${path}")`);
+    }
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    verifySave(bytes);
+    return { source: source as SaveSource, path, bytes, sha1: sha1(bytes) };
+}
+
+/** Is the player in the world (online, or its logout save still in flight)? */
+export const inWorld = (status: SaveStatus) => status.source === 'live' || status.source === 'logout';
+
+/** The player's current save; throws when it has none. */
+export async function exportSave(env: BotEnv): Promise<Required<SaveStatus>> {
+    const status = await saveStatus(env);
+    if (status.source === 'none' || !status.bytes || !status.sha1) throw new Error(`${env.username} has no save`);
+    return status as Required<SaveStatus>;
+}
+
+/**
+ * Log the player out server-side and wait until its save is on disk (POST /kick). Returns false
+ * when it is still in the world after the engine's wait (combat); throws on anything else.
+ */
+export async function kick(env: BotEnv): Promise<boolean> {
+    const path = `/kick/${encodeURIComponent(env.username)}`;
+    const { res, isJson } = await managementFetch(env, path, { method: 'POST' }, KICK_FETCH_TIMEOUT_MS);
+    const body: unknown = isJson ? await res.json() : await res.text();
+    if (res.status === 200) return true;
+    if (res.status === 409) return false;
+    throw new Error(`POST ${path}: ${res.status} ${JSON.stringify(body)}`);
+}
+
+/** Write via a tmp file in the destination dir, so a reader never sees a half-written file. */
+export function atomicWrite(dest: string, bytes: Uint8Array): void {
+    mkdirSync(dirname(dest), { recursive: true });
+    const tmp = join(dirname(dest), `.${Date.now()}-${process.pid}.tmp`);
+    try {
+        writeFileSync(tmp, bytes);
+        renameSync(tmp, dest);
+    } catch (e) {
+        rmSync(tmp, { force: true });
+        throw e;
+    }
+}
+
+/**
+ * Make `bytes` the player's save, at the path the engine reads, then check through the engine that
+ * it now serves exactly these bytes. Refuses while the player is in the world (kick() first) or when
+ * a GE checkpoint would win. With `backupDir`, the save it replaces is kept there first as
+ * `<stamp>-pre-<label>.sav`. Returns the path written and the backup, if one was taken.
+ */
+export async function writeSave(
+    env: BotEnv,
+    bytes: Uint8Array,
+    { backupDir, label = 'write' }: { backupDir?: string; label?: string } = {},
+): Promise<{ path: string; backup?: string }> {
+    verifySave(bytes);
+    const before = await saveStatus(env);
+    if (inWorld(before))
+        throw new Error(`${env.username} is in the world (${before.source}); kick it before writing its save`);
+    if (before.source === 'checkpoint') {
+        throw new Error(
+            `${env.username} has a Grand Exchange checkpoint that the engine loads instead of the .sav; retire data/market.sqlite (conductor/docs/parallel-bots.md)`,
+        );
+    }
+    let backup: string | undefined;
+    if (backupDir && before.bytes) {
+        backup = join(backupDir, `${fileStamp()}-pre-${label}.sav`);
+        atomicWrite(backup, before.bytes);
+    }
+    atomicWrite(before.path, bytes);
+    const after = await saveStatus(env);
+    if (after.source !== 'file' || after.sha1 !== sha1(bytes)) {
+        throw new Error(
+            `wrote ${before.path}, but the engine now serves ${env.username}'s save from "${after.source}" (sha1 ${after.sha1?.slice(0, 12)}): ${inWorld(after) ? 'it logged in during the write, and its logout will overwrite it' : 'the write did not take'}${backup ? `; the previous save is in ${backup}` : ''}`,
+        );
+    }
+    return { path: before.path, backup };
+}
+
+/** Number of control connections the gateway has for the bot. Throws when it can't tell. */
+export async function controllerCount(env: BotEnv): Promise<number> {
+    const url = `${env.webOrigin}/status/${encodeURIComponent(env.username)}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`${url}: ${res.status}`);
+    const status = (await res.json()) as { controllers?: unknown };
+    if (status.controllers !== undefined && !Array.isArray(status.controllers)) {
+        throw new Error(`${url}: unexpected controllers field`);
+    }
+    return status.controllers?.length ?? 0;
 }
 
 /** Throw unless the bytes are a save the engine will load: magic, a known version, a matching CRC. */
@@ -84,89 +235,13 @@ export function verifySave(bytes: Uint8Array): number {
     return version;
 }
 
-export interface ExportedSave {
-    bytes: Uint8Array;
-    /** live: the online player now; logout: the save in flight to disk; file: the .sav on disk. */
-    source: 'live' | 'logout' | 'file';
-    sha1: string;
-}
-
-/** The player's save as it is now, without logging it out (GET /save on the engine's management port). */
-export async function exportSave(username: string): Promise<ExportedSave> {
-    let res: Response;
-    try {
-        res = await fetch(`${MANAGEMENT_ORIGIN}/save/${encodeURIComponent(username)}`, {
-            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        });
-    } catch (e) {
-        throw new Error(`engine management port unreachable at ${MANAGEMENT_ORIGIN} (${errMessage(e)})`, { cause: e });
-    }
-    if (res.status === 404 && res.headers.get('content-type')?.includes('json') !== true) {
-        throw new Error(
-            `the engine at ${MANAGEMENT_ORIGIN} has no /save endpoint; restart it from a checkout that has it`,
-        );
-    }
-    if (!res.ok) throw new Error(`GET /save/${username}: ${res.status} ${await res.text()}`);
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    verifySave(bytes);
-    return { bytes, source: (res.headers.get('x-save-source') ?? 'file') as ExportedSave['source'], sha1: sha1(bytes) };
-}
-
-/** Log the player out server-side and wait until its save is on disk. Returns whether it left the world. */
-export async function kick(username: string): Promise<boolean> {
-    let res: Response;
-    try {
-        res = await fetch(`${MANAGEMENT_ORIGIN}/kick/${encodeURIComponent(username)}`, {
-            method: 'POST',
-            signal: AbortSignal.timeout(KICK_FETCH_TIMEOUT_MS),
-        });
-    } catch (e) {
-        throw new Error(`engine management port unreachable at ${MANAGEMENT_ORIGIN} (${errMessage(e)})`, { cause: e });
-    }
-    if (res.status === 404 && res.headers.get('content-type')?.includes('json') !== true) {
-        throw new Error(
-            `the engine at ${MANAGEMENT_ORIGIN} has no /kick endpoint; restart it from a checkout that has it`,
-        );
-    }
-    const body: { loggedOut?: boolean } = await res.json();
-    return body.loggedOut === true;
-}
-
-/** Write via a tmp file in the destination dir, so a reader never sees a half-written file. */
-export function atomicWrite(dest: string, bytes: Uint8Array): void {
-    mkdirSync(dirname(dest), { recursive: true });
-    const tmp = join(dirname(dest), `.${Date.now()}-${process.pid}.tmp`);
-    writeFileSync(tmp, bytes);
-    renameSync(tmp, dest);
-}
-
-/**
- * Make `bytes` the player's save. Refuses while the player is in the world, where the next logout
- * or autosave would overwrite it; kick() first. Fails if the GE save store is still active.
- */
-export async function writeSave(username: string, bytes: Uint8Array): Promise<string> {
-    verifySave(bytes);
-    if (existsSync(join(engineDir(), 'data/market.sqlite'))) {
-        throw new Error(
-            `${engineDir()}/data/market.sqlite exists: the engine would load its checkpoint instead of the .sav; retire it (see conductor/docs/parallel-bots.md)`,
-        );
-    }
-    const present = await inWorld(username);
-    if (present) throw new Error(`${username} is in the world; kick it before writing its save`);
-    const dest = savePath(username);
-    atomicWrite(dest, bytes);
-    // The player may have logged in between the check and the write; its logout would undo the write.
-    if (await inWorld(username)) throw new Error(`${username} logged in while its save was being written`);
-    return dest;
-}
-
 // ---- decoding ----
 
 /** Engine XP table in tenths of XP (Player.ts levelExperience). */
 const LEVEL_XP = (() => {
     const table: number[] = [];
     let acc = 0;
-    for (let level = 1; level <= 99; level++) {
+    for (let level = 1; level <= MAX_LEVEL; level++) {
         acc += Math.floor(level + Math.pow(2, level / 10) * 300);
         table.push(Math.floor(acc / 4) * 10);
     }
@@ -174,16 +249,16 @@ const LEVEL_XP = (() => {
 })();
 
 function levelForXp(tenths: number): number {
-    for (let i = 98; i >= 0; i--) if (tenths >= LEVEL_XP[i]!) return Math.min(i + 2, 99);
+    for (let i = MAX_LEVEL - 1; i >= 0; i--) if (tenths >= LEVEL_XP[i]!) return Math.min(i + 2, MAX_LEVEL);
     return 1;
 }
 
 let objNames: Map<number, string> | undefined;
-/** Item id -> config name, from the content pack next to the engine. */
+/** Item id -> config name, from this checkout's content pack (ids are the same in every checkout). */
 function objName(id: number): string {
     if (!objNames) {
         objNames = new Map();
-        const pack = join(engineDir(), '../content/pack/obj.pack');
+        const pack = join(REPO_ROOT, 'server/content/pack/obj.pack');
         if (existsSync(pack)) {
             for (const line of readFileSync(pack, 'utf8').split('\n')) {
                 const eq = line.indexOf('=');
@@ -232,7 +307,7 @@ export function decodeSave(bytes: Uint8Array): SaveSummary {
     };
 
     const position = { x: g2(), z: g2(), level: g1() };
-    pos += 7 + 5 + 1 + 2 + 4; // body, colours, gender, run energy, playtime (v2+)
+    pos += APPEARANCE_AND_ENERGY_BYTES;
     const levels: Record<string, number> = {};
     for (const skill of STATS) {
         const level = levelForXp(g4s());
@@ -274,34 +349,66 @@ export function decodeSave(bytes: Uint8Array): SaveSummary {
 
 // ---- library ----
 
-export type SaveSource =
-    | { kind: 'snapshot'; bot: string }
-    | { kind: 'generated'; spec: unknown }
-    | { kind: 'file'; path: string };
-
+const ItemSchema = z.object({ id: z.number(), name: z.string(), count: z.number() });
+const LibraryEntrySchema = z.object({
+    name: z.string(),
+    purpose: z.string(),
+    source: z.discriminatedUnion('kind', [
+        z.object({ kind: z.literal('snapshot'), bot: z.string() }),
+        z.object({ kind: z.literal('generated'), spec: z.unknown() }),
+        z.object({ kind: z.literal('file'), path: z.string() }),
+    ]),
+    sha1: z.string(),
+    createdAt: z.iso.datetime(),
+    saveVersion: z.number(),
+    summary: z.object({
+        position: z.object({ x: z.number(), z: z.number(), level: z.number() }),
+        levels: z.record(z.string(), z.number()),
+        inventory: z.array(ItemSchema),
+        worn: z.array(ItemSchema),
+        bank: z.array(ItemSchema),
+        varps: z.record(z.string(), z.number()),
+    }),
+});
 /** conductor/saves/<name>.json: what a library save is for, where it came from, what it holds. */
-export interface LibraryEntry {
-    name: string;
-    purpose: string;
-    source: SaveSource;
-    sha1: string;
-    createdAt: string;
-    saveVersion: number;
-    summary: Omit<SaveSummary, 'saveVersion'>;
-}
+export type LibraryEntry = z.infer<typeof LibraryEntrySchema>;
+export type LibrarySource = LibraryEntry['source'];
 
 export function libraryPaths(name: string): { sav: string; json: string } {
     return { sav: join(LIBRARY_DIR, `${name}.sav`), json: join(LIBRARY_DIR, `${name}.json`) };
 }
 
-/** Add (or replace) a library save; its summary is decoded from the bytes, never hand-written. */
+function readEntry(jsonPath: string): LibraryEntry {
+    const parsed = LibraryEntrySchema.safeParse(JSON.parse(readFileSync(jsonPath, 'utf8')));
+    if (!parsed.success) throw new Error(`${jsonPath} is not a valid library entry: ${parsed.error.message}`);
+    return parsed.data;
+}
+
+/** Every library entry, by name. */
+export function listLibrary(): LibraryEntry[] {
+    if (!existsSync(LIBRARY_DIR)) return [];
+    return readdirSync(LIBRARY_DIR)
+        .filter(f => f.endsWith('.json'))
+        .sort()
+        .map(f => readEntry(join(LIBRARY_DIR, f)));
+}
+
+/**
+ * Add a library save; its summary is decoded from the bytes, never hand-written. Refuses to replace
+ * an existing entry (other agents' tests depend on them) unless `replace`.
+ */
 export function writeLibrarySave(
     name: string,
     bytes: Uint8Array,
-    meta: { purpose: string; source: SaveSource },
+    meta: { purpose: string; source: LibrarySource; replace?: boolean },
 ): LibraryEntry {
     if (!SAVE_NAME.test(name)) throw new Error(`library save names are letters, digits and dashes: "${name}"`);
     if (!meta.purpose.trim()) throw new Error('a library save needs a purpose');
+    const paths = libraryPaths(name);
+    if (existsSync(paths.json) && !meta.replace) {
+        const old = readEntry(paths.json);
+        throw new Error(`library save "${name}" exists (${old.purpose}); pick another name, or replace it explicitly`);
+    }
     const { saveVersion, ...summary } = decodeSave(bytes);
     const entry: LibraryEntry = {
         name,
@@ -312,7 +419,6 @@ export function writeLibrarySave(
         saveVersion,
         summary,
     };
-    const paths = libraryPaths(name);
     atomicWrite(paths.sav, bytes);
     atomicWrite(paths.json, new TextEncoder().encode(`${JSON.stringify(entry, null, 4)}\n`));
     return entry;
@@ -321,10 +427,11 @@ export function writeLibrarySave(
 /** A library save's bytes, checked against the hash its entry recorded. */
 export function readLibrarySave(name: string): { bytes: Uint8Array; entry: LibraryEntry } {
     const paths = libraryPaths(name);
-    if (!existsSync(paths.sav) || !existsSync(paths.json))
+    if (!existsSync(paths.sav) || !existsSync(paths.json)) {
         throw new Error(`no library save "${name}" in ${LIBRARY_DIR}`);
+    }
     const bytes = new Uint8Array(readFileSync(paths.sav));
-    const entry: LibraryEntry = JSON.parse(readFileSync(paths.json, 'utf8'));
+    const entry = readEntry(paths.json);
     if (sha1(bytes) !== entry.sha1) throw new Error(`${paths.sav} does not match the sha1 in ${paths.json}`);
     return { bytes, entry };
 }

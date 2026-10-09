@@ -7,6 +7,12 @@ export function errMessage(e: unknown): string {
     return e instanceof Error ? e.message : String(e);
 }
 
+/** CLI tools: print the message to stderr and exit (1: failed, 2: usage). */
+export function fail(message: string, code = 1): never {
+    console.error(message);
+    process.exit(code);
+}
+
 /** Skill by name, ignoring case (`--until level:woodcutting:15` vs the game's "Woodcutting"). */
 export function findSkill(state: BotWorldState, name: string): Skill | undefined {
     return state.skills.find(k => k.name.toLowerCase() === name.toLowerCase());

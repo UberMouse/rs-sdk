@@ -35,7 +35,8 @@ export interface RunOptions {
     autoConnect?: boolean;
     /**
      * Pre-empt the bot's existing controller instead of being refused by the
-     * gateway's controller lease (default: false).
+     * gateway's controller lease (default: false, or true with RS_TAKEOVER=1
+     * in the environment, e.g. `RS_TAKEOVER=1 bun bots/<bot>/script.ts`).
      */
     takeover?: boolean;
     /**
@@ -336,7 +337,7 @@ export async function runScript(
         // Use process.env for credentials (loaded by bun --env-file or command line arg)
         try {
             if (autoConnect) {
-                const conn = await getOrCreateConnection(options.takeover ?? false);
+                const conn = await getOrCreateConnection(options.takeover ?? process.env.RS_TAKEOVER === '1');
                 bot = conn.bot;
                 sdk = conn.sdk;
                 managedConnection = true;

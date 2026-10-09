@@ -15,6 +15,7 @@ import { z } from 'zod/v4';
 import { runScript } from '../sdk/runner';
 import { currentRunLog, executeTask } from './lib/engine';
 import { loadBotEnv, type BotEnv } from './lib/env';
+import { controllerCount } from './lib/saves';
 import { parseStop, type StopCondition } from './lib/stop';
 import type { TaskDef, TaskResult } from './lib/task';
 import { errMessage } from './lib/util';
@@ -127,7 +128,6 @@ try {
 // Registered before runScript's own handlers so a killed run still prints its RESULT line. runScript
 // disconnects and exits within 5s; the timer covers a signal that lands before it has registered.
 const SIGNAL_EXIT_GRACE_MS = 6000;
-const STATUS_FETCH_TIMEOUT_MS = 5000;
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
         const log = currentRunLog();
@@ -149,17 +149,14 @@ try {
 // sooner, with a message naming the flag. It is also the only guard on a gateway that predates
 // the lease, where a new control connection silently pre-empts the existing one.
 if (!takeover) {
+    let controllers = 0;
     try {
-        const res = await fetch(`${env.webOrigin}/status/${encodeURIComponent(env.username)}`, {
-            signal: AbortSignal.timeout(STATUS_FETCH_TIMEOUT_MS),
-        });
-        const status: { controllers?: string[] } = await res.json();
-        const controllers = status.controllers?.length ?? 0;
-        if (controllers > 0)
-            bail(`${botName} already has ${controllers} controller(s) attached; pass --takeover to pre-empt`);
+        controllers = await controllerCount(env);
     } catch {
         // Gateway unreachable: runScript reports the connection failure itself.
     }
+    if (controllers > 0)
+        bail(`${botName} already has ${controllers} controller(s) attached; pass --takeover to pre-empt`);
 }
 
 let engineResult: TaskResult | undefined;

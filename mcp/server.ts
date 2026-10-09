@@ -197,10 +197,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
         console.warn = (...args) => logs.push('[warn] ' + args.map(fmtLogArg).join(' '));
         // Don't capture console.error - let it go to stderr for MCP debugging
 
-        // Auto-connect if not already connected
+        // Auto-connect if not already connected. The control connection is released after
+        // every call (see the finally below), so this re-attaches on each call: the gateway
+        // allows one controller per bot, and an idle MCP session must not hold it.
         let connection = botManager.get(botName);
-        if (!connection) {
-          console.error(`[MCP] Bot "${botName}" not connected, auto-connecting...`);
+        if (!connection || !connection.connected) {
+          if (!connection) console.error(`[MCP] Bot "${botName}" not connected, auto-connecting...`);
           connection = await botManager.connect(botName);
           // Wait up to 15s for initial world state after fresh connection
           try {
@@ -340,6 +342,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
           console.log = originalLog;
           console.warn = originalWarn;
           console.error = originalError;
+          await botManager.release(botName);
         }
       }
 

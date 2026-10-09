@@ -15,8 +15,13 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
 
 - Login server is off: any username/password logs in, and the save is created on first login
   at `server/engine/data/players/main/<bot>.sav`. [v 2026-10-09 conductor1 local]
-- The save is written on logout and on autosave (every 15 min), so copy or restore it only
-  while the bot is logged out: `bun conductor/tools/save.ts snapshot|restore <bot> <label> --logout`.
+- The save file is written on logout and on autosave (every 15 min). `bun conductor/tools/save.ts
+  snapshot <bot> <label>` exports the live save from the engine without a logout; `save.ts restore`
+  logs the bot out server-side itself, then writes. [v 2026-10-09 pbtest1 local]
+- The Grand Exchange is off locally (`GE_ENABLED=false` in `up.sh`), so the `.sav` file is the
+  whole saved state of an offline player. While `data/market.sqlite` exists, a login loads the
+  player's GE checkpoint instead of the `.sav`; `up.sh` refuses to start the engine until it is
+  retired. [v 2026-10-09 conductor1 local]
 - Stopping a client does not log the player out. The server keeps a disconnected player in the
   world for 500 ticks (~3.5 min at 400 ms, relaxed for bot background tabs) before an idle
   logout, and force-logs out after 1000 ticks. `/status/<bot>` reports `inGame: false` as soon as

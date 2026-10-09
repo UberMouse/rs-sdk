@@ -23,8 +23,8 @@ This skill keeps durable state. **Before the first write, Read
 | `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run |
 | `bun conductor/tools/stats.ts <bot> [--task t]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons |
 | `bun conductor/tools/progress.ts <bot>` | levels, XP to 99, % to max, change since first/previous snapshot (records a snapshot) |
-| `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back after a bad experiment: logs the bot out itself; restart its client after. `list <bot>` |
-| `bun conductor/tools/load.ts <worker> <save> --client` | load a library save (or `bot:<bot>`, a live copy of a bot) into a worker account and start its client; prints `LOADED <json>` |
+| `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back to that snapshot (the newest one needs no flag; skipping past a newer snapshot needs `--force`): logs the bot out itself and keeps the replaced save; restart its client after. `list <bot>` |
+| `bun conductor/tools/load.ts <worker> lib:<save> --client` | load a library save (or `bot:<bot>`, a live copy of a bot) into a worker account and start its headless lite client (no screenshots); prints `LOADED <json>` |
 | `bun conductor/tools/library.ts list\|show\|generate` | the scenario save library in `conductor/saves/`; `save.ts snapshot <bot> <name> --library --purpose "..."` adds a live bot's state |
 | `bun sdk/cli.ts <bot>` | full world-state snapshot (position, inventory, skills, nearby) |
 | `bun conductor/tools/screenshot.ts <bot>` | PNG of the game canvas, path on stdout — Read it. Needs the browser client |
@@ -59,7 +59,7 @@ Agents (all dispatched in the background):
 | `runsSinceRetro` | task runs since the last retrospective |
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
 | `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId}` from a task-author's return until `task-review` commits or reverts |
-| `workers` | the worker pool: `{ <worker>: <agent id or name driving it> \| null }`. Assign a free worker in each author or review brief; set it back to `null` when that agent (and any fix author it spawned) has finished |
+| `workers` | the worker pool: `{ <worker>: <task id or agent it is assigned to> \| null }`. Assign a free worker in each task-author brief. It stays assigned through that change's `task-review` (its fix authors reuse it) and is set back to `null` when the review commits or reverts. A second fix agent running in parallel gets another free worker, recorded here too |
 
 Seed `invariants` with the list below on the first write.
 
@@ -135,8 +135,9 @@ Seed `invariants` with the list below on the first write.
   running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended. Low HP
   with no food, out of combat, already waits for regeneration (bounded) rather than failing, so
   a `failed` low-HP reason means the wait ran out or the bot is under attack.
-- Death or item loss in an experiment — `save.ts restore <bot> <label>` (it logs the bot out
-  itself), restart the client, add the hazard to the curator's next dispatch.
+- Death or item loss in an experiment — `save.ts restore <bot> <label>` with the snapshot taken
+  before it (it logs the bot out itself; `--force` only if newer snapshots exist and you mean to
+  skip them), restart the client, add the hazard to the curator's next dispatch.
 - The same objective failing 3 times — retrospective (step 8); if it still has no way forward,
   mark it `blocked-needs-human` and tell the user.
 
@@ -152,8 +153,9 @@ Report per your instructions: RESULT verbatim, cause, diagnosis, suggested next 
 **task-author**
 ```
 Bot for smoke tests: worker <worker>, yours alone until you finish. Load your starting state with
-`bun conductor/tools/load.ts <worker> <library save> --client` (reload it to retest from the same
-state). Starting save: <library save name, or bot:<main bot> for the account as it is now>.
+`bun conductor/tools/load.ts <worker> <save> --client` (reload it to retest from the same
+state). Starting save: <lib:<name> | bot:<main bot> for the account as it is now | none: first
+create lib:<name> = <the state: levels, items, position>>.
 Never drive <main bot>.
 Goal: <new task "<name>" that ... | fix task "<name>": <what went wrong>>.
 Evidence: <RESULT json, runner diagnosis, screenshot paths>.
@@ -180,19 +182,23 @@ Objectives that failed 3 times: <list or none>.
 
 Set up once per run, in `setup`: a pool of worker accounts (start with 3; each needs its own
 lite client, so measure before adding more), created on first load with
-`bun conductor/tools/load.ts <bot>w<n> fresh-lumbridge --create` (the name must be 12
+`bun conductor/tools/load.ts <bot>w<n> lib:fresh-lumbridge --create` (the name must be 12
 characters or fewer; `--create` marks the account `WORKER=true`, the only kind `load.ts` will
-overwrite). Record them in `workers`. A brief needs a starting state the library lacks → the
-author's first step is to set it up on its worker and file it with
-`save.ts snapshot <worker> <name> --library --purpose "..."`.
+overwrite, and refuses a name the server already has an account for). Record them in `workers`.
+A brief needs a starting state the library lacks → name it in the brief (`none: first create
+...`); the author builds it per `task-author.md` and lists the new `conductor/saves/` files in its
+report, and they are reviewed and committed with the task.
 
 ## Pausing and stopping
 
 1. `ListAgents`, and stop **every** subagent, not only the ones in `inFlight`: a review
    orchestrator's fix author is not in `inFlight` and keeps driving its bot when its parent
    stops.
-2. `pgrep -af run-task.ts` — nothing should be left.
-3. `save.ts snapshot <bot> <label> --logout` for the main bot. Workers need nothing.
+2. `pgrep -af run-task.ts` — nothing should be left. A leftover run is an orphan still driving a
+   bot: `kill <pid>` (it prints its RESULT on SIGTERM) and journal it.
+3. `save.ts snapshot <bot> <label> --logout` for the main bot.
+4. Worker lite clients keep running detached and their accounts stay logged in; workers hold
+   nothing worth saving. To stop one: `pkill -f "lite/runner.ts <worker>"`.
 
 ## Resuming
 
