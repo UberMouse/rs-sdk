@@ -14,6 +14,8 @@ const rock = state?.nearbyLocs
     .sort((a, b) => a.distance - b.distance)[0];
 ```
 
+**Every rock is named "Rocks"** (options Mine, Prospect), and so are depleted rocks (plainrock1/2, ids 450/452). Copper vs tin vs iron is told apart only by loc id (`rock1`/`rock2` and `macro_` variants in `server/content/pack/loc.pack`); the "Rocks copper ore" label in `cli.ts` is SDK decoration, not the game name. Prospect, or match on loc id, to pick an ore. Dropped ores pile at the bot's feet. [v 2026-10-09 conductor1 local]
+
 ## Mining Action
 
 ```typescript
@@ -45,7 +47,7 @@ const isIdle = animation === -1;
 
 | Location | Coordinates | Notes |
 |----------|-------------|-------|
-| SE Varrock mine | (3285, 3365) | Copper, tin, iron |
+| SE Varrock mine | (3285, 3365) | Copper, tin, iron rocks within 1-4 tiles of the centre; nothing attacked a combat-27 bot; `bot.walkTo` from Lumbridge works. [v 2026-10-09 conductor1 local] |
 | Al Kharid mine | (3295, 3287) | Iron, coal, gold, silver, mithril, tin. Scorpions! |
 | Lumbridge Swamp mine | - | Interactions fail silently, avoid |
 
