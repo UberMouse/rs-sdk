@@ -1,28 +1,15 @@
 import { describe, expect, test } from 'bun:test';
-import { z } from 'zod/v4';
-import type { BotActions } from '../../../sdk/actions';
-import type { BotSDK } from '../../../sdk/index';
-import type { BotWorldState, InventoryItem } from '../../../sdk/types';
+import type { BotWorldState } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { call, type Op, send, ticks, uninterruptible, wait } from '../../core/op';
 import { sleep } from '../../lib/env';
-import { executeTask, MAX_STEP_COMMANDS } from '../../lib/engine';
-import type { StopCondition } from '../../lib/stop';
-import { defineTask, type Outcome, type Sinks, type Step } from '../../lib/task';
+import { MAX_STEP_COMMANDS } from '../../lib/engine';
+import type { Outcome, Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
 import { timeline } from '../core/states';
-
-interface RunOptions {
-    stops?: StopCondition[];
-    stuckAfterMs?: number;
-    stepTimeoutMs?: number;
-    stepGraceMs?: number;
-    driver?: TimelineDriver;
-    /** The run's events land here, so a test can interleave its own records with them. */
-    events?: Record<string, unknown>[];
-}
+import { runTask } from './harness';
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */
 class Frozen extends TimelineDriver {
@@ -36,60 +23,6 @@ class Stalled extends TimelineDriver {
     override nextTick() {
         return Promise.reject(new TickStall('client stopped publishing ticks for 30s'));
     }
-}
-
-/** Runs `steps` as a task on a scripted timeline, with in-memory sinks. */
-async function runTask(steps: Step[], states: BotWorldState[], opts: RunOptions = {}) {
-    const driver = opts.driver ?? new TimelineDriver(states);
-    const events = opts.events ?? [];
-    const printed: string[] = [];
-    const legacy: string[] = [];
-    const sinks: Sinks = {
-        event: e => events.push(e),
-        print: line => printed.push(line),
-        screenshot: async label => `/shots/${label}.png`,
-    };
-    // The interrupts still act through BotActions and the SDK. Only what they call is faked (hence
-    // the casts), and each fake takes a tick, as the game would.
-    const bot = {
-        eatFood: async (food: InventoryItem) => {
-            legacy.push(`eat ${food.name}`);
-            await driver.nextTick();
-            return { success: true, message: 'ate' };
-        },
-        dismissBlockingUI: async () => {
-            legacy.push('dismiss');
-            await driver.nextTick();
-        },
-    } as unknown as BotActions;
-    const sdk = {
-        waitForTicks: async (n: number) => {
-            for (let i = 0; i < n; i++) await driver.nextTick();
-            return driver.state();
-        },
-    } as unknown as BotSDK;
-    const def = defineTask({
-        name: 'test',
-        description: 'engine test',
-        params: z.object({}),
-        steps,
-        ...(opts.stuckAfterMs !== undefined && { stuckAfterMs: opts.stuckAfterMs }),
-        ...(opts.stepTimeoutMs !== undefined && { stepTimeoutMs: opts.stepTimeoutMs }),
-    });
-    const result = await executeTask(def, {
-        driver,
-        sinks,
-        bot,
-        sdk,
-        botName: 'tester',
-        runId: 'run-1',
-        logFile: '/logs/run-1.ndjson',
-        rawParams: {},
-        stops: opts.stops ?? [],
-        ...(opts.stepGraceMs !== undefined && { stepGraceMs: opts.stepGraceMs }),
-    });
-    const sends = driver.commands.flatMap(c => (c.type === 'send' ? [c.action.reason] : []));
-    return { result, events, printed, legacy, driver, sends };
 }
 
 const xpOf = (s: BotWorldState) => s.skills[0]?.experience ?? 0;
@@ -367,7 +300,7 @@ describe('wall-clock limits on a generator step', () => {
 });
 
 describe('legacy steps', () => {
-    test('a dialog that opens during a legacy step is left for the interrupts between steps', async () => {
+    test('a dialog that opens during a legacy step is left for the guards between steps', async () => {
         const legacyStep: Step = {
             name: 'legacy',
             when: () => true,
@@ -424,7 +357,7 @@ describe('legacy steps', () => {
         expect(abandoned(r.events)).toEqual([{ type: 'abandoned-step-error', step: 'legacy', message: 'late boom' }]);
     });
 
-    test('an async step runs as one call, after the interrupts between steps', async () => {
+    test('an async step runs as one call, after the guards between steps', async () => {
         const legacyStep: Step = {
             name: 'legacy',
             when: () => true,
@@ -438,11 +371,11 @@ describe('legacy steps', () => {
             timeline(10, t => ({ dialog: t === 0 })),
         );
         expect(r.result.status).toBe('done');
-        // The dialog interrupt took tick 0 -> 1, then the step waited two ticks.
+        // The dialog guard took tick 0 -> 1, then the step waited two ticks.
         expect(r.result.reason).toBe('legacy: at tick 3');
         expect(r.result.stepRuns).toEqual({ 'interrupt:dialog': 1, legacy: 1 });
         expect(r.driver.commands.flatMap(c => (c.type === 'call' ? [c.label] : []))).toEqual([
-            'interrupt:dialog',
+            'bot.dismissBlockingUI',
             'legacy',
         ]);
     });

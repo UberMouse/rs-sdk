@@ -41,20 +41,16 @@ export function distance(a: { x: number; z: number }, b: { x: number; z: number 
     return Math.hypot(a.x - b.x, a.z - b.z);
 }
 
-/** A counter stored in a task's scratch memory under `key`; absent or non-numeric reads as 0. */
-export function memoryCounter(memory: Record<string, unknown>, key: string): Counter {
-    const read = () => {
-        const v = memory[key];
-        return typeof v === 'number' ? v : 0;
-    };
+/** The counter stored in `counts` under `key`; absent reads as 0. */
+export function mapCounter(counts: Map<string, number>, key: string): Counter {
     return {
         add(by = 1) {
-            const next = read() + by;
-            memory[key] = next;
+            const next = (counts.get(key) ?? 0) + by;
+            counts.set(key, next);
             return next;
         },
         reset() {
-            memory[key] = 0;
+            counts.delete(key);
         },
     };
 }

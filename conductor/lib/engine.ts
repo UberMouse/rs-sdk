@@ -1,22 +1,22 @@
-// Runs one task to its TaskResult. Each loop the first step whose `when()` passes runs: the shared
-// INTERRUPTS first, then the task's own steps. A generator step is interpreted (core/interpret.ts)
-// with the interrupts as guards and the stops, watchdog and step budget as `onTick`, so they act at
-// every tick of its waits; a wall-clock limit around it bounds a `call` that never settles. A legacy
-// `async` step is one opaque call, checked only between steps, though a tick stall or a disconnect
-// while it runs still ends the run and abandons it.
+// Runs one task to its TaskResult. Each loop the first shared guard (lib/interrupts.ts) whose `when()`
+// holds runs, else the first of the task's steps whose `when()` passes. A generator step is
+// interpreted (core/interpret.ts) with the same guards and the stops, watchdog and step budget as
+// `onTick`, so they act at every tick of its waits; a wall-clock limit around it bounds a `call` that
+// never settles. A legacy `async` step is one opaque call, checked only between steps, though a tick
+// stall or a disconnect while it runs still ends the run and abandons it.
 // I/O goes through the injected driver and sinks (plus the bot and SDK that legacy steps and the
-// interrupts still use), so tests run a task on a TimelineDriver.
+// guards still use), so tests run a task on a TimelineDriver.
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import { type Driver, type Guard, interpret, type Interpretation, TickStall } from '../core/interpret';
 import { call, type Command, type Op } from '../core/op';
 import { sleep } from './env';
-import { deathCheck, dismissDialog, findFood, INTERRUPTS, lowHpCheck, wildernessCheck } from './interrupts';
+import { findFood, type GuardName, guardLabel, GUARDS } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import type { Outcome, Sinks, Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
 import { isLowHp } from './threat';
-import { distance, errMessage, INVENTORY_SLOTS, memoryCounter, TICK_MS, xpGainedSince } from './util';
+import { distance, errMessage, INVENTORY_SLOTS, mapCounter, TICK_MS, xpGainedSince } from './util';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
 export const TICK_STALL_MS = 30_000;
@@ -37,14 +37,6 @@ export const MAX_STEP_COMMANDS = 1000;
  */
 export const STEP_GRACE_MS = 30_000;
 
-/** How each interrupt guards a generator step's waits, in INTERRUPTS order. */
-const GUARDS: [Step, Pick<Guard, 'policy' | 'critical'>][] = [
-    [deathCheck, { policy: 'abort', critical: true }],
-    [wildernessCheck, { policy: 'abort', critical: true }],
-    [lowHpCheck, { policy: 'abort' }],
-    [dismissDialog, { policy: 'suspend' }],
-];
-
 /** A zero-tick wait: a point where the interpreter calls `onTick`, which then cancels the step. */
 const CHECKPOINT: Command = { type: 'wait', label: 'command cap', until: () => false, ticks: 0 };
 
@@ -53,7 +45,7 @@ export interface ExecuteOptions {
     sinks: Sinks;
     /** Wall-clock milliseconds for the watchdog, `minutes:` stops and progress lines. Default `driver.now()`. */
     now?: () => number;
-    /** For legacy steps and the interrupts, which still act through BotActions and the SDK. */
+    /** For legacy steps and the guards, which still act through BotActions and the SDK. */
     bot: BotActions;
     sdk: BotSDK;
     botName: string;
@@ -86,7 +78,7 @@ function progressSignature(s: BotWorldState): string {
 
 const posOf = (s: BotWorldState) => (s.player ? { x: s.player.worldX, z: s.player.worldZ } : null);
 
-const isOp = (x: Promise<Outcome> | Op<Outcome>): x is Op<Outcome> => 'next' in x;
+const isOp = (x: unknown): x is Op<Outcome> => typeof x === 'object' && x !== null && 'next' in x;
 
 function ended(name: string, outcome: Outcome): End | null {
     if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}` };
@@ -94,9 +86,9 @@ function ended(name: string, outcome: Outcome): End | null {
     return null;
 }
 
-const unexpected = (step: Step, r: Interpretation<Outcome>): End => ({
+const unexpected = (name: string, r: Interpretation<Outcome>): End => ({
     status: 'error',
-    reason: `step "${step.name}" ended unexpectedly: ${JSON.stringify(r)}`,
+    reason: `step "${name}" ended unexpectedly: ${JSON.stringify(r)}`,
 });
 
 /**
@@ -127,7 +119,10 @@ function* capped<T>(op: Op<T>, count: () => boolean): Op<T> {
     }
 }
 
-export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<TaskResult> {
+/** Any task, whatever its memory type: the engine only creates its memory and hands it to the steps. */
+type AnyTaskDef = TaskDef<TaskDef['params'], object>;
+
+export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promise<TaskResult> {
     const { driver, sinks, bot, sdk, botName, runId, logFile, stops } = opts;
     const now = opts.now ?? (() => driver.now());
     const startedAt = now();
@@ -146,8 +141,12 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     }
     const invBefore = inventoryCounts(initial);
 
-    const memory: Record<string, unknown> = {};
-    const ctx: TaskContext = {
+    const counters = new Map<string, number>();
+    /** Each step's streak counts, dropped when its `when` is checked false. */
+    const streaks = new Map<Step<unknown, object>, Map<string, number>>();
+    /** The step whose `run` is in progress; it owns the streaks `ctx.streak` returns. */
+    let running: Step<unknown, object> | null = null;
+    const ctx: TaskContext<unknown, object> = {
         bot,
         sdk,
         botName,
@@ -169,9 +168,18 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             }
         },
         startTick: initial.tick,
-        memory,
+        memory: def.memory?.() ?? {},
         previousPos: null,
-        counter: name => memoryCounter(memory, name),
+        counter: name => mapCounter(counters, name),
+        streak: name => {
+            if (!running) throw new Error(`ctx.streak("${name}") called outside a step's run`);
+            let counts = streaks.get(running);
+            if (!counts) {
+                counts = new Map();
+                streaks.set(running, counts);
+            }
+            return mapCounter(counts, name);
+        },
         inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {
             const p = driver.state().player;
@@ -286,25 +294,33 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         return finish('error', `preflight threw: ${errMessage(e)}`);
     }
 
-    const steps: Step[] = [...INTERRUPTS, ...def.steps];
     const stuckAfterMs = def.stuckAfterMs ?? DEFAULT_STUCK_AFTER_MS;
     const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
     const stepBudgetTicks = Math.ceil(stepTimeoutMs / TICK_MS);
     const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
     const graceMs = opts.stepGraceMs ?? STEP_GRACE_MS;
 
-    // The interrupts as guards: `when` judges the state the interpreter checks; `run` acts through
-    // the live context, the legacy (async) ones as one call.
-    const guards: Guard[] = GUARDS.map(([step, how]) => ({
-        name: step.name,
-        ...how,
-        when: s => step.when({ ...ctx, state: () => s }),
-        run: () => {
-            stepRuns[step.name] = (stepRuns[step.name] ?? 0) + 1;
-            const out = step.run(ctx);
-            return isOp(out) ? out : call(step.name, () => out);
+    // Each guard's episode state, from when it first runs until its `when` is next checked false.
+    const episodes = new Map<GuardName, object>();
+    const guards: Guard[] = GUARDS.filter(g => !def.allow?.includes(g.name)).map(g => ({
+        name: guardLabel(g.name),
+        policy: g.policy,
+        critical: g.critical,
+        when: s => g.when(s, ctx),
+        cleared: () => episodes.delete(g.name),
+        run: s => {
+            const label = guardLabel(g.name);
+            stepRuns[label] = (stepRuns[label] ?? 0) + 1;
+            let episode = episodes.get(g.name);
+            if (!episode) {
+                episode = g.episode();
+                episodes.set(g.name, episode);
+            }
+            return g.run(s, ctx, episode);
         },
     }));
+    /** The guards on while `guard`'s own op runs, as in the interpreter: the others under an abort, none under a suspend. */
+    const guardsUnder = (guard: Guard) => (guard.policy === 'abort' ? guards.filter(g => g !== guard) : []);
     // One per run, so the dialog guard fires at most once a tick even across consecutive steps.
     const firedAt = new Map<string, number>();
 
@@ -355,25 +371,25 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     };
 
     /** Emits a step's late failure instead of leaving it unhandled once the run has moved on without it. */
-    const abandon = (step: Step, pending: Promise<unknown>) => {
-        pending.catch(e => emit({ type: 'abandoned-step-error', step: step.name, message: errMessage(e) }));
+    const abandon = (name: string, pending: Promise<unknown>) => {
+        pending.catch(e => emit({ type: 'abandoned-step-error', step: name, message: errMessage(e) }));
     };
 
     /**
-     * A legacy step runs with no guards or `onTick`, so interrupts and stops act only between steps.
+     * A legacy step runs with no guards or `onTick`, so guards and stops act only between steps.
      * It can't be cancelled: past its wall-clock timeout it is abandoned, still running. So it is when
      * the interpreter's tick requests around it fail, which ends the run `stuck` when the client stops
      * publishing ticks for TICK_STALL_MS and `error` when the SDK disconnects.
      */
-    const runLegacy = async (step: Step, running: Promise<Outcome>): Promise<End | null> => {
+    const runLegacy = async (name: string, pending: Promise<Outcome>): Promise<End | null> => {
         let stepSettled = false;
         const settled = () => {
             stepSettled = true;
         };
         // Registered before the interpreter's own handlers, so it is set by the time the interpreter rejects.
-        running.then(settled, settled);
+        pending.then(settled, settled);
         const interpreted = interpret(
-            call(step.name, () => running),
+            call(name, () => pending),
             { driver: view },
         );
         let timer: ReturnType<typeof setTimeout> | undefined;
@@ -385,17 +401,17 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         ])
             .catch((e: unknown) => {
                 // The step's own throw rejects the interpreter too; only a driver failure leaves it running.
-                if (!stepSettled) abandon(step, running);
+                if (!stepSettled) abandon(name, pending);
                 throw e;
             })
             .finally(() => clearTimeout(timer));
         if (r === 'timeout') {
             // The interpreter around the step also rejects once the driver closes, which says nothing about the step.
-            abandon(step, running);
+            abandon(name, pending);
             interpreted.catch(() => {});
-            return { status: 'stuck', reason: `step "${step.name}" ran over ${stepTimeoutMs / 1000}s` };
+            return { status: 'stuck', reason: `step "${name}" ran over ${stepTimeoutMs / 1000}s` };
         }
-        return r.kind === 'returned' ? ended(step.name, r.value) : unexpected(step, r);
+        return r.kind === 'returned' ? ended(name, r.value) : unexpected(name, r);
     };
 
     /**
@@ -405,7 +421,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
      * `onTick` reports the end; only if it is still running a grace later is it abandoned and the run
      * ends `stuck`.
      */
-    const runOp = async (step: Step, op: Op<Outcome>): Promise<End | null> => {
+    const runOp = async (name: string, op: Op<Outcome>, active: readonly Guard[]): Promise<End | null> => {
         const startTick = driver.state().tick;
         let ending: End | null = null;
         let overrun: End | null = null;
@@ -426,7 +442,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
                     () =>
                         expire({
                             status: 'stuck',
-                            reason: `step "${step.name}" still running ${graceMs / 1000}s after "${e.reason}"`,
+                            reason: `step "${name}" still running ${graceMs / 1000}s after "${e.reason}"`,
                         }),
                     graceMs,
                 ),
@@ -435,7 +451,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         const limitMs = stepTimeoutMs + graceMs;
         timers.push(
             setTimeout(
-                () => end({ status: 'stuck', reason: `step "${step.name}" ran over ${limitMs / 1000}s of wall time` }),
+                () => end({ status: 'stuck', reason: `step "${name}" ran over ${limitMs / 1000}s of wall time` }),
                 limitMs,
             ),
         );
@@ -452,7 +468,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
                     (s.tick - startTick > stepBudgetTicks
                         ? {
                               status: 'stuck' as const,
-                              reason: `step "${step.name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
+                              reason: `step "${name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
                           }
                         : null);
                 if (e) end(e);
@@ -464,27 +480,34 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             if (++commandsThisTick !== MAX_STEP_COMMANDS + 1) return false;
             overrun = {
                 status: 'failed',
-                reason: `step "${step.name}" yielded over ${MAX_STEP_COMMANDS} commands in one tick (a loop that never waits?)`,
+                reason: `step "${name}" yielded over ${MAX_STEP_COMMANDS} commands in one tick (a loop that never waits?)`,
             };
             return true;
         };
 
-        const interpreted = interpret(capped(op, count), { driver: view, guards, onTick, firedAt });
+        const interpreted = interpret(capped(op, count), { driver: view, guards: active, onTick, firedAt });
         const r = await Promise.race([interpreted, expired]).finally(() => {
             for (const t of timers) clearTimeout(t);
         });
         if (!('kind' in r)) {
-            abandon(step, interpreted);
+            abandon(name, interpreted);
             return r;
         }
         switch (r.kind) {
             case 'returned':
-                return ended(step.name, r.value);
+                return ended(name, r.value);
             case 'aborted':
                 return ended(r.by, r.outcome);
             case 'cancelled':
-                return ending ?? unexpected(step, r);
+                return ending ?? unexpected(name, r);
         }
+    };
+
+    /** A guard or step starts this loop: logged when it differs from the last. */
+    const begin = (name: string) => {
+        idleLoops = 0;
+        if (name !== lastStep) emit({ type: 'step', step: name });
+        lastStep = name;
     };
 
     try {
@@ -499,23 +522,41 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             const complete = def.isComplete?.(ctx);
             if (complete) return finish('done', complete);
 
-            const step = steps.find(st => st.when(ctx));
-            if (!step) {
-                // Nothing applicable can be a transient state (mid-animation); give it a few ticks.
-                if (++idleLoops > MAX_IDLE_LOOPS) return finish('failed', 'no step applies to the current state');
-                await driver.nextTick();
-                continue;
+            let stepEnd: End | null;
+            const guard = guards.find(g => {
+                if (g.when(s)) return true;
+                g.cleared?.();
+                return false;
+            });
+            if (guard) {
+                begin(guard.name);
+                const out = guard.run(s);
+                stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guard)) : ended(guard.name, out);
+            } else {
+                // Every step's `when`, so a step that stopped applying loses its streaks even in a loop
+                // where an earlier step runs.
+                const applies = def.steps.map(st => st.when(ctx));
+                for (const [i, st] of def.steps.entries()) if (!applies[i]) streaks.delete(st);
+                const step = def.steps[applies.indexOf(true)];
+                if (!step) {
+                    // Nothing applicable can be a transient state (mid-animation); give it a few ticks.
+                    if (++idleLoops > MAX_IDLE_LOOPS) return finish('failed', 'no step applies to the current state');
+                    await driver.nextTick();
+                    continue;
+                }
+                begin(step.name);
+                stepRuns[step.name] = (stepRuns[step.name] ?? 0) + 1;
+                running = step;
+                try {
+                    const out = step.run(ctx);
+                    stepEnd = isOp(out) ? await runOp(step.name, out, guards) : await runLegacy(step.name, out);
+                } finally {
+                    running = null;
+                }
             }
-            idleLoops = 0;
-            if (step.name !== lastStep) emit({ type: 'step', step: step.name });
-            lastStep = step.name;
-            stepRuns[step.name] = (stepRuns[step.name] ?? 0) + 1;
-
-            const out = step.run(ctx);
-            const stepEnd = isOp(out) ? await runOp(step, out) : await runLegacy(step, out);
 
             // Yield to the macrotask queue: a step that returns without awaiting I/O (e.g. a
-            // dialog interrupt that stays applicable) would otherwise loop on microtasks only
+            // dialog guard that stays applicable) would otherwise loop on microtasks only
             // and starve the step timeout, watchdog and websocket frames.
             await sleep(0);
 

@@ -56,7 +56,7 @@ export function refuseArea(area: Area | undefined): string | null {
  * Walk to the area centre, counting consecutive failures; returns a fail reason once past the limit.
  * Every caller in a run shares one `area.walkFails` counter, so the limit is per run, not per caller.
  */
-export async function walkToArea(ctx: TaskContext, area: Area): Promise<string | null> {
+export async function walkToArea(ctx: TaskContext<unknown, object>, area: Area): Promise<string | null> {
     const r = await ctx.bot.walkTo(area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1));
     const fails = ctx.counter('area.walkFails');
     if (r.success) {
@@ -67,7 +67,7 @@ export async function walkToArea(ctx: TaskContext, area: Area): Promise<string |
 }
 
 /** A step that walks the bot back once it has strayed beyond the area plus its work reach. */
-export function returnToAreaStep<P>(areaOf: (params: P) => Area | undefined): Step<P> {
+export function returnToAreaStep<P>(areaOf: (params: P) => Area | undefined): Step<P, object> {
     return {
         name: 'return-to-area',
         // No player (logging in, respawning) is not "far away": distanceTo would be Infinity.

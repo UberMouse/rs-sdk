@@ -45,6 +45,12 @@ export interface Guard {
     critical?: boolean;
     /** Given the state the guard fired on. Return the outcome directly when nothing needs doing in game. */
     run(state: BotWorldState): GuardOutcome | Op<GuardOutcome>;
+    /**
+     * Called whenever `when` is checked and false, so the guard's owner can end an episode (eats
+     * since HP went low) without `when` having side effects. A guard that isn't checked (inside
+     * `uninterruptible`, already fired this tick, or behind one that fired) isn't cleared.
+     */
+    cleared?(): void;
 }
 
 export type Interpretation<T> =
@@ -261,6 +267,7 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
                 if (g.policy === 'suspend' && firedAt.get(g.name) === s.tick) continue;
                 if (!g.when(s)) {
                     streak?.delete(g.name);
+                    g.cleared?.();
                     continue;
                 }
                 if (g.policy === 'suspend') firedAt.set(g.name, s.tick);

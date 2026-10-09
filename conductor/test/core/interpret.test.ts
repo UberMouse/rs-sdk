@@ -122,6 +122,13 @@ function* criticalThenWaitForTick5(): Op<WaitResult> {
     return yield* wait('tick 5', s => s.tick >= 5, 10);
 }
 
+/** Two ticks either side of a three-tick uninterruptible section. */
+function* around(): Op<void> {
+    yield* ticks(2);
+    yield* uninterruptible(ticks(3));
+    yield* ticks(2);
+}
+
 function* forgesCritical(): Op<string> {
     try {
         // Only op.ts can make a marker; this forgery is the case under test.
@@ -392,6 +399,20 @@ describe('uninterruptible', () => {
         const r = await interpret(nestedCriticalThenWait(), { driver: d, guards: [lowHp] });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 4 }]);
+    });
+
+    test('a guard skipped inside the section is not cleared; one checked false is, every check', async () => {
+        const cleared: number[] = [];
+        const d = new TimelineDriver(timeline(10));
+        const never: Guard = {
+            name: 'never',
+            policy: 'abort',
+            when: () => false,
+            run: () => undefined,
+            cleared: () => cleared.push(d.state().tick),
+        };
+        await interpret(around(), { driver: d, guards: [never] });
+        expect(cleared).toEqual([0, 1, 2, 5, 6, 7]);
     });
 
     test('a forged critical marker is refused with an error thrown into the op', async () => {

@@ -3,27 +3,31 @@
 // structured TaskResult.
 //
 // A task is an ordered list of steps; every loop the first step whose `when()`
-// passes runs. Shared interrupt steps go in front of every task so no task has
-// to handle death, low HP or blocking dialogs itself, and a watchdog ends runs
-// that stop making progress. A step's `run` is either legacy `async` code or a
-// generator op (core/op.ts), whose waits the same interrupts also guard.
+// passes runs. Shared guards (lib/interrupts.ts) act before every step and at the
+// waits of generator steps, so no task has to handle death, low HP or blocking
+// dialogs itself, and a watchdog ends runs that stop making progress. A step's
+// `run` is either legacy `async` code or a generator op (core/op.ts).
 import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import type { Op, Outcome } from '../core/op';
+import type { GuardName } from './interrupts';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
 
-/** A named run-scoped number in ctx.memory, for "N failures in a row" style limits. */
+/** Memory of a task that declares no `memory` factory: untyped scratch, narrowed on read. */
+export type UntypedMemory = Record<string, unknown>;
+
+/** A named count, for "N failures" style limits. */
 export interface Counter {
     /** Add `by` (default 1) and return the new value. */
     add(by?: number): number;
     reset(): void;
 }
 
-export interface TaskContext<P = unknown> {
+export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     bot: BotActions;
     sdk: BotSDK;
     botName: string;
@@ -35,13 +39,19 @@ export interface TaskContext<P = unknown> {
     screenshot(label: string): Promise<string | null>;
     /** Game tick the run started at; messages from earlier ticks are not this run's. */
     readonly startTick: number;
-    /** Scratch shared between steps for one run (remembered targets). Narrow values on read; use `counter` for counts. */
-    memory: Record<string, unknown>;
+    /** State shared between steps for one run (remembered targets), from the task's `memory` factory. */
+    memory: M;
     /**
-     * The counter stored under `name` in `memory`; the same name returns the same count. Names
-     * starting `area.` belong to lib/area.ts, and `lowHp*` / `dialogStuckRuns` to the interrupts.
+     * A run-scoped count; the same name returns the same count. Names starting `area.` belong to
+     * lib/area.ts. For "N in a row" counts that should end when a step stops applying, use `streak`.
      */
     counter(name: string): Counter;
+    /**
+     * A count owned by the step now running: the engine resets a step's streaks whenever it checks
+     * that step's `when` and gets false, so it counts runs in a row while the step keeps applying.
+     * Throws outside a step's `run`.
+     */
+    streak(name: string): Counter;
     /** Every inventory slot is used. */
     inventoryFull(): boolean;
     /** Straight-line tiles from the bot to (x, z); Infinity when there is no player. */
@@ -50,31 +60,37 @@ export interface TaskContext<P = unknown> {
     previousPos: { x: number; z: number } | null;
 }
 
-export interface Step<P = unknown> {
+export interface Step<P = unknown, M extends object = UntypedMemory> {
     name: string;
     /**
-     * The first step whose `when` passes runs this loop. A predicate may reset its own
-     * `ctx.counter(...)` once the state it guards has ended; that is the documented pattern.
+     * The first step whose `when` passes runs this loop. The engine checks every step's `when` on
+     * each loop no guard takes, so it must be pure: count "N in a row" with `ctx.streak`, which the
+     * engine resets when `when` is false. Legacy tasks that reset a `ctx.counter` here still work
+     * until ported.
      */
-    when(ctx: TaskContext<P>): boolean;
+    when(ctx: TaskContext<P, M>): boolean;
     /**
-     * `*run` (an op) is interpreted: interrupts act at its waits, and stops, the watchdog and the
-     * step timeout cancel it there. Legacy `async run` is one opaque call: interrupts and stops act
+     * `*run` (an op) is interpreted: guards act at its waits, and stops, the watchdog and the
+     * step timeout cancel it there. Legacy `async run` is one opaque call: guards and stops act
      * only between steps, and a timeout abandons it still running.
      */
-    run(ctx: TaskContext<P>): Promise<Outcome> | Op<Outcome>;
+    run(ctx: TaskContext<P, M>): Promise<Outcome> | Op<Outcome>;
 }
 
-export interface TaskDef<S extends z.ZodType = z.ZodType> {
+export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = UntypedMemory> {
     name: string;
     /** One or two lines for the conductor's catalog: what it trains/does and where. */
     description: string;
     params: S;
+    /** A fresh `ctx.memory` for each run; its return type types `ctx.memory`. Default `{}`, untyped. */
+    memory?(): M;
+    /** Guards this task handles itself (e.g. `dialog` for a task that drives dialogs); off for the whole run. */
+    allow?: readonly GuardName[];
     /** Checked once before the loop; return a reason to refuse to start. */
-    preflight?(ctx: TaskContext<z.infer<S>>): string | null | Promise<string | null>;
-    steps: Step<z.infer<S>>[];
+    preflight?(ctx: TaskContext<z.infer<S>, M>): string | null | Promise<string | null>;
+    steps: Step<z.infer<S>, M>[];
     /** Task-specific completion; return a reason when done. */
-    isComplete?(ctx: TaskContext<z.infer<S>>): string | null;
+    isComplete?(ctx: TaskContext<z.infer<S>, M>): string | null;
     /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (engine.ts). */
     stuckAfterMs?: number;
     /**
@@ -84,7 +100,7 @@ export interface TaskDef<S extends z.ZodType = z.ZodType> {
     stepTimeoutMs?: number;
 }
 
-export function defineTask<S extends z.ZodType>(def: TaskDef<S>): TaskDef<S> {
+export function defineTask<S extends z.ZodType, M extends object = UntypedMemory>(def: TaskDef<S, M>): TaskDef<S, M> {
     return def;
 }
 
