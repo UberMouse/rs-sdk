@@ -90,7 +90,8 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 ### Ops
 
 Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
-`useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `dismiss`, and the bank ops `openBank`,
+`useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `smith` / `smelt` / `closeSmithing` (`smith.ts`),
+`dismiss`, and the bank ops `openBank`,
 `deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), the shop ops `openShop`, `buy`, `sell`,
 `closeShop` and `withShop` (`shop.ts`), with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
@@ -109,10 +110,15 @@ passes its `ctx` as the `ActionContext`.
   none (`interactLoc`).
 - **An op waits only for its own effect** (logs gained or tree gone; ore gained). No threat, HP,
   dialog or interface handling inside an op: those are the guards' job, and ops send raw. The one
-  exception is a dialog the op itself opens and answers, as an explicit step (wait for it, click,
-  wait for the effect), never inside a wait's predicate: `fletch`'s make menu. The dialog guard
-  leaves a skill make menu (`isSkillMenu`) alone and still clears a level-up around it, so no
-  `allow: ['dialog']` is needed for it.
+  exception is a dialog or interface the op itself opens and answers, as an explicit step (wait for
+  it, click, wait for the effect), never inside a wait's predicate: `fletch`'s make menu, `smelt`'s
+  smelting menu, `smith`'s anvil interface. The dialog guard leaves a skill make menu
+  (`isSkillMenu`) alone and still clears a level-up around it, so no `allow: ['dialog']` is needed for
+  it. A main modal an op works inside goes in `OP_OWNED_INTERFACES` (`actions/dismiss.ts`, with the
+  id and where it comes from), which the interface guard leaves alone; never `allow: ['interface']`
+  task-wide for it. The op then owns it: it opens and answers it under `withModal`, so every path
+  that leaves it open (no effect, a refused click, a cancel) closes it, and it closes one already
+  open before it starts, as `smith` does.
 - **Waits are tick budgets.** When porting a wall-clock wait use `Math.ceil(ms / TICK_MS)` (`TICK_MS`
   from `lib/util`) and export it as a named constant (`CHOP_WAIT_TICKS`).
 - **Decide from the wait's state.** `const w = yield* wait(...)`, then read `w.state`, the state of
@@ -156,7 +162,7 @@ death, low HP, dialogs or leftover modals itself. The shared ones are `GUARDS` i
 | `wilderness` | abort, critical | ends the run if the bot is on the surface in the Wilderness |
 | `low-hp` | abort | eats; with no food it fails if in combat or still losing HP, else waits to regenerate |
 | `dialog` | suspend | clears level-up and "click to continue" dialogs (`dismiss`); never answers a choice or a skill make or smelt menu (quantity buttons "Make X", "Smelt 10 ..."); the wait carries on |
-| `interface` | suspend | closes a leftover informational modal (book, scroll) that would block loc/NPC interaction; never a shop, bank, Grand Exchange or trade screen |
+| `interface` | suspend | closes a leftover informational modal (book, scroll) that would block loc/NPC interaction; never a shop, bank, Grand Exchange or trade screen, nor an op's own interface (`OP_OWNED_INTERFACES`: the anvil's smithing interface, which `smith` opens and closes itself) |
 
 `abort` cancels the running step (its `finally` runs), runs the guard, and the loop chooses a step
 again; `suspend` runs inside the wait, which then continues (the ticks it took count against the

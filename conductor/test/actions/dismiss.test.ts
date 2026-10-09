@@ -8,6 +8,8 @@ import {
     dismiss,
     isSkillMenu,
     NEVER_CLOSE_INTERFACES,
+    OP_OWNED_INTERFACES,
+    SMITHING_INTERFACE,
 } from '../../actions/dismiss';
 import { world } from '../world';
 import { refuse, runOp } from './harness';
@@ -218,5 +220,10 @@ describe('closableInterface', () => {
         expect(closableInterface({ ...book, ge: { isOpen: true } as BotWorldState['ge'] })).toBe(false);
         for (const id of NEVER_CLOSE_INTERFACES)
             expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
+    });
+
+    test("an op's own interface is not closable: the anvil's smithing interface is the smith op's", () => {
+        for (const id of OP_OWNED_INTERFACES) expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
+        expect(OP_OWNED_INTERFACES.has(SMITHING_INTERFACE)).toBe(true);
     });
 });

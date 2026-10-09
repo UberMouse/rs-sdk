@@ -25,6 +25,10 @@ await sdk.waitForCondition(
 ```
 
 - Use **copper** on furnace — it auto-consumes 1 tin from inventory
+- The furnace's `Smelt` option opens a chat menu instead: per bar `Smelt X <Bar>`, `Smelt 10 <Bar>`,
+  `Smelt 5 <Bar>` and the bar's own button (smelt one), published as `\n\n\n\n<Bar>` with a literal
+  `\n`. Bars are Bronze, Iron, Silver, Steel, Gold, Mithril, Adamant, Rune; the bar arrives ~5 ticks
+  after the click. Taking `Smelt` with a level-up box open still opens the menu. [v 2026-10-10 itest-fixture local]
 - Low-level calls do not dismiss level-up dialogs; use `bot.dismissBlockingUI()`
   when a modal interrupts a batch
 - Each bronze bar gives **155 xp** (at level 1-14 range, leveled from 1→14 with 10 bars = 1550 xp total, so ~155 xp per smelt)
@@ -33,7 +37,7 @@ await sdk.waitForCondition(
 | Location | Coordinates | Furnace IDs | Notes |
 |----------|-------------|-------------|-------|
 | Lumbridge furnace | (3225, 3256) | 2785, 2781 | Right next to spawn, reliable. 2781 has `Smelt`; 2785 is a decoy.
-| Al Kharid furnace | (3273, 3184) | 2785, 2781 | Needs 10gp toll gate. 2781 has `Smelt`; 2785 is a decoy.
+| Al Kharid furnace | (3273, 3184) | 2785, 2781 | Needs 10gp toll gate. 2781 has `Smelt`; 2785 is a decoy. A bot inside Al Kharid smelts from (3275, 3186). [v 2026-10-10 itest-fixture local]
 
 
 ### Anvil Locations
@@ -42,6 +46,9 @@ await sdk.waitForCondition(
 | Varrock (west) | (3188, 3421) | 2783 | Multiple anvils in smithy, near west bank |
 
 Also anvils at (3188, 3424) and (3188, 3426) — same building, same id 2783.
+
+Two more anvils (id 2783) at (3246, 3404) and (3248, 3404) in south-east Varrock, reachable from
+(3247, 3403). [v 2026-10-10 itest-fixture local]
 
 ### How to Smith at Anvil
 
@@ -56,6 +63,10 @@ if (!result.success) console.warn(result.reason, result.message);
 ```
 
 **Requires hammer in inventory** (buy from Lumbridge General Store for 1gp).
+
+A bar used on the anvil within 3 ticks of the previous item's Smithing XP is lost: no interface
+opens. The level-up box, when there is one, shows 3 ticks after the XP; a bar used once it is open
+still opens the interface. [v 2026-10-10 itest-fixture local]
 
 ### XP Rates
 - Smelting bronze bar: ~155 xp per bar (includes level-up bonuses)

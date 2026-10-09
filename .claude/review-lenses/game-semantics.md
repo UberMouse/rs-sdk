@@ -22,7 +22,9 @@ Does the code's model of the game match how the game and the SDK actually behave
   that opens a dialog on purpose sets `allow: ['dialog']` so the dialog guard doesn't close it
   (a skill make menu an op answers itself, like `fletch`'s, needs none: the guard leaves it), and
   one that leaves an informational interface open on purpose (one bot.dismissBlockingUI would
-  close) between steps or inside a wait sets `allow: ['interface']`.
+  close) between steps or inside a wait sets `allow: ['interface']`. A main modal an op opens and
+  owns (`OP_OWNED_INTERFACES` in `actions/dismiss.ts`, like `smith`'s anvil interface) needs none:
+  the guard leaves it, and the op closes it on every path that leaves it open.
 - **G5 Game time.** Waits are in ticks (`wait`/`ticks` ops; `waitForTicks` in legacy code) and
   sized to the action (a tree can take many ticks; a respawn longer). Timeouts exist and are not so short that
   slow-but-normal actions fail. Tick length is in `learnings/local-server.md` (400 ms locally);

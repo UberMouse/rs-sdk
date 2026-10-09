@@ -46,8 +46,8 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
   throws for game outcomes); takes `ActionContext` first only if it reads state; waits only for
   its own effect, as a tick budget (`Math.ceil(ms / TICK_MS)` for a ported wall-clock wait),
   deciding from the wait's `state`; and has no threat, HP, dialog or interface handling, which
-  belongs to the guards (save a dialog the op opens and answers itself as explicit steps, like
-  `fletch`'s make menu).
+  belongs to the guards (save a dialog or interface the op opens and answers itself as explicit
+  steps, like `fletch`'s make menu or `smith`'s anvil interface in `OP_OWNED_INTERFACES`).
 
 Types, async hygiene, naming, comments and style are the `code-quality` lens.
 

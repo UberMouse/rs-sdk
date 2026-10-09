@@ -4,7 +4,8 @@
 // instead of returning nothing. It can be limited to dialogs or to modals, so the dialog and
 // interface guards each clear only their own. Like upstream it never answers a dialog with more than
 // one option: a choice belongs to whoever opened it. A skill make menu it leaves alone without calling
-// it a choice: the op that opened it answers it, and a level-up clicked away can reveal one.
+// it a choice: the op that opened it answers it, and a level-up clicked away can reveal one. Nor does
+// it close the anvil's smithing interface, which upstream would: the smith op owns that one.
 import type { BotWorldState, DialogState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
@@ -25,15 +26,31 @@ export const NEVER_CLOSE_INTERFACES: ReadonlySet<number> = new Set([
 ]);
 
 /**
+ * The anvil's smithing interface (`smithing` in server/content/pack/interface.pack): the smith op
+ * (actions/smith.ts) opens it on purpose by using a bar on an anvil, clicks a product in it, and closes
+ * it itself on every path that leaves it open.
+ */
+export const SMITHING_INTERFACE = 994;
+
+/**
+ * Main modals an op opens on purpose and owns until it ends, which no guard may close under it. Unlike
+ * NEVER_CLOSE_INTERFACES, bot.dismissBlockingUI would close these: an op's wait inside one would have
+ * it closed every tick by the interface guard.
+ */
+export const OP_OWNED_INTERFACES: ReadonlySet<number> = new Set([SMITHING_INTERFACE]);
+
+/**
  * An open main modal bot.dismissBlockingUI would close: a book, scroll or other informational one, not a
- * shop, bank or Grand Exchange session nor one in NEVER_CLOSE_INTERFACES.
+ * shop, bank or Grand Exchange session nor one in NEVER_CLOSE_INTERFACES. An op's own interface
+ * (OP_OWNED_INTERFACES) does not count either: the op that opened it closes it.
  */
 export const closableInterface = (s: BotWorldState): boolean =>
     s.interface.isOpen &&
     !s.shop.isOpen &&
     !s.bank.isOpen &&
     !s.ge?.isOpen &&
-    !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId);
+    !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId) &&
+    !OP_OWNED_INTERFACES.has(s.interface.interfaceId);
 
 /**
  * A skill menu's quantity button: "<verb> X" or "<verb> <n>" once colour tags are stripped. The
