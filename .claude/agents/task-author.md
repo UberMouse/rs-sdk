@@ -91,7 +91,8 @@ to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.
 
 Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
 `useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `dismiss`, and the bank ops `openBank`,
-`deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), with `context.ts` and
+`deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), the shop ops `openShop`, `buy`, `sell`,
+`closeShop` and `withShop` (`shop.ts`), with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
 passes its `ctx` as the `ActionContext`.
 
@@ -119,7 +120,7 @@ passes its `ctx` as the `ActionContext`.
 - **Cancellation.** A `catch` in an op or a step must start with `rethrowIfCancelled(e)` (from
   `core/op`): swallowing `Cancelled` leaves a cancelled step running. Cleanup that must happen
   goes in `finally`, which may itself `yield*`.
-- **Interfaces that must be closed again: `withBank`.** An open bank hides the inventory, so a step
+- **Interfaces that must be closed again: `withBank` and `withShop`.** An open bank hides the inventory, so a step
   that leaves it open when it is cancelled (a guard, a stop, the step budget) strands the bot: the
   low-HP guard's eat is refused server-side, and the interface guard leaves a bank alone by design.
   Never `yield* openBank(...)` in one step and `closeBank` in another. Run the work inside
@@ -134,8 +135,10 @@ passes its `ctx` as the `ActionContext`.
   `{ ok: false, reason, message }`. Make the body resumable (record progress in typed memory), as the
   aborted step runs again from the top, and record it before each send, not after: an abort can land
   on the tick the effect does, before the op sees it, so a resumed op compares the state with what
-  it recorded and sends only what has not landed (`tasks/bank.ts` `inFlight`). The same shape
-  applies to any open/close pair (shop).
+  it recorded and sends only what has not landed (`tasks/bank.ts` `inFlight`). `withShop(ctx,
+  target, body)` is the same for a shop (`target` is `openShop`'s shopkeeper: an NPC, a name or a pattern;
+  `undefined` = the nearest shopkeeper), with `closeShop` for the close and `reason` strings of its own.
+  The same shape applies to any other open/close pair.
 - **Each op gets tests**: a unit test in `conductor/test/actions/<op>.test.ts` (scripted timeline
   through `interpret`; see `chop.test.ts`) and an integration test in
   `conductor/test/integration/actions/<op>.itest.ts` against the real engine (see `chop.itest.ts`).

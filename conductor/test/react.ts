@@ -3,7 +3,7 @@
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import { ITEM_COMPONENT, NOTE_COMPONENT } from '../actions/bank';
 import type { Effect } from '../core/drivers/timeline';
-import { type BankContents, world } from './world';
+import { type BankContents, type ShopContents, world } from './world';
 
 /**
  * One fewer of item `id`, taken from `slot` when it holds it; other slots keep their places, as in the
@@ -98,4 +98,69 @@ export const bankReact =
         if ((action.type === 'interactLoc' || action.type === 'interactNpc') && /bank/i.test(action.reason))
             return s => (s.bank.isOpen ? s : world(s).bank(contents).build());
         return bankWorld(action, state);
+    };
+
+const COINS = 'Coins';
+const COINS_ID = 995;
+const heldOf = (s: BotWorldState, id: number) => s.inventory.filter(i => i.id === id).reduce((n, i) => n + i.count, 0);
+
+/**
+ * A shop scripted world: a close leaves the shop closed, a buy moves units from the shelf to the
+ * inventory for coins (as many as the stock and the coins allow), a sell moves them back for the shop's
+ * price. Like `bankWorld` it applies on top of every scripted state until nothing is left to move, and
+ * falls back to `consume`.
+ */
+export function shopWorld(action: BotAction, state: BotWorldState): Effect | undefined {
+    switch (action.type) {
+        case 'closeShop':
+            return s => (s.shop.isOpen || s.interface.isOpen ? world(s).shop(false).build() : s);
+        case 'shopBuy': {
+            const line = state.shop.shopItems.find(i => i.slot === action.slot);
+            if (!line) return undefined;
+            return s => {
+                const stock = s.shop.shopItems.find(i => i.id === line.id);
+                if (!stock || stock.count === 0) return s;
+                const coins = heldOf(s, COINS_ID);
+                const affordable = stock.buyPrice > 0 ? Math.floor(coins / stock.buyPrice) : action.amount;
+                const moved = Math.min(action.amount, stock.count, affordable);
+                if (moved <= 0) return s;
+                const bought = world(s)
+                    .inv(COINS, coins - stock.buyPrice * moved)
+                    .inv(line.name, heldOf(s, line.id) + moved, { id: line.id })
+                    .build();
+                const shopItems = bought.shop.shopItems.map(i =>
+                    i.id === line.id ? { ...i, count: i.count - moved } : i,
+                );
+                return { ...bought, shop: { ...bought.shop, shopItems } };
+            };
+        }
+        case 'shopSell': {
+            const line = state.shop.playerItems.find(i => i.slot === action.slot);
+            if (!line) return undefined;
+            return s => {
+                const held = heldOf(s, line.id);
+                if (held === 0) return s;
+                const moved = Math.min(action.amount, held);
+                const sold = world(s)
+                    .inv(line.name, held - moved, { id: line.id })
+                    .inv(COINS, heldOf(s, COINS_ID) + line.sellPrice * moved)
+                    .build();
+                const shopItems = sold.shop.shopItems.map(i =>
+                    i.id === line.id ? { ...i, count: i.count + moved } : i,
+                );
+                return { ...sold, shop: { ...sold.shop, shopItems } };
+            };
+        }
+        default:
+            return consume(action, state);
+    }
+}
+
+/** `shopWorld` plus a shop that opens, stocking `lines` and paying `buys` (see `World.shop`), when the bot trades with an NPC. */
+export const shopReact =
+    (lines: ShopContents, buys: Record<string, number> = {}) =>
+    (action: BotAction, state: BotWorldState): Effect | undefined => {
+        if (action.type === 'interactNpc' && /trade/i.test(action.reason))
+            return s => (s.shop.isOpen ? s : world(s).shop(lines, buys).build());
+        return shopWorld(action, state);
     };

@@ -21,6 +21,8 @@ export const UNARMED_STYLES: CombatStyleOption[] = [
 const INVENTORY_SLOTS = 28;
 /** The bank_main interface (server/content/pack/interface.pack). */
 export const BANK_INTERFACE = 5292;
+/** The shop_template interface (server/content/pack/interface.pack). */
+export const SHOP_INTERFACE = 3824;
 
 /** The tile distance the client publishes (Chebyshev: a diagonal neighbour is 1). */
 const tiles = (a: { x: number; z: number }, b: { x: number; z: number }) =>
@@ -199,7 +201,7 @@ export class World {
      */
     inv(name: string, count = 1, opts: ItemOptions = {}): World {
         const kept = this.s.inventory.filter(i => i.name.toLowerCase() !== name.toLowerCase());
-        if (count <= 0) return this.with({ inventory: kept.map((item, slot) => ({ ...item, slot })) });
+        if (count <= 0) return this.withInventory(kept.map((item, slot) => ({ ...item, slot })));
         const id = itemId(name, opts.id);
         const options = opts.options ?? itemOptions(name);
         const counts = stackable(name) ? [count] : Array<number>(count).fill(1);
@@ -211,7 +213,19 @@ export class World {
             count: n,
             optionsWithIndex: options,
         }));
-        return this.with({ inventory: [...kept, ...added].map((item, slot) => ({ ...item, slot })) });
+        return this.withInventory([...kept, ...added].map((item, slot) => ({ ...item, slot })));
+    }
+
+    /** Sets the inventory, and with a shop open the stock it lists as sellable (see `shop`). */
+    private withInventory(inventory: BotWorldState['inventory']): World {
+        const { shop } = this.s;
+        if (!shop.isOpen) return this.with({ inventory });
+        const prices = new Map(shop.playerItems.map(i => [i.id, i]));
+        const playerItems = inventory.flatMap(i => {
+            const priced = prices.get(i.id);
+            return priced ? [{ ...priced, slot: i.slot, count: i.count }] : [];
+        });
+        return this.with({ inventory, shop: { ...shop, playerItems } });
     }
 
     /** A scenery object (tree, rock, bank booth). `options` are its right-click texts. */
@@ -312,6 +326,32 @@ export class World {
         return this.with({ bank }).modal(BANK_INTERFACE);
     }
 
+    /**
+     * Opens a shop (the client publishes shop_template as the main modal) stocking `lines`, one slot
+     * each in order, or closes it with `false`. `buys` is what it pays per unit for inventory items by
+     * lowercase name: those inventory items, as held now, are the sellable `playerItems`, and stay so as
+     * `inv` changes the inventory until none of one is left. Call `inv` before `shop` for items to sell.
+     */
+    shop(lines: ShopContents | false, buys: Record<string, number> = {}, title = 'General Store'): World {
+        if (!lines)
+            return this.with({ shop: { isOpen: false, title: '', shopItems: [], playerItems: [] } }).modal(false);
+        const shopItems = lines.map((l, slot) => ({
+            slot,
+            id: itemId(l.name, l.id),
+            name: cap(l.name.toLowerCase()),
+            count: l.count,
+            baseCost: l.buyPrice ?? 1,
+            buyPrice: l.buyPrice ?? 1,
+            sellPrice: l.sellPrice ?? 0,
+        }));
+        const playerItems = this.s.inventory.flatMap(i => {
+            const sellPrice = buys[i.name.toLowerCase()];
+            if (sellPrice === undefined) return [];
+            return [{ slot: i.slot, id: i.id, name: i.name, count: i.count, baseCost: 0, buyPrice: 0, sellPrice }];
+        });
+        return this.with({ shop: { isOpen: true, title, shopItems, playerItems } }).modal(SHOP_INTERFACE);
+    }
+
     /** Sets a skill's level (and base level); `xp` defaults to what it had, else 0. Adds the skill if absent. */
     skill(name: string, level: number, xp?: number): World {
         const had = this.s.skills.find(k => k.name === name);
@@ -389,6 +429,9 @@ export const world = World.of;
 
 /** What a bank holds, one slot each in order; an `id` overrides the one looked up by name. */
 export type BankContents = { name: string; count: number; id?: number }[];
+
+/** What a shop stocks, one slot each in order: `count` on the shelf and the price to buy one. */
+export type ShopContents = { name: string; count: number; buyPrice?: number; sellPrice?: number; id?: number }[];
 
 /** What a legacy one-line state names; see `worldState`. */
 export interface StateSpec {
