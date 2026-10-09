@@ -110,19 +110,27 @@ run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
 - Local stack: `conductor/local/up.sh` (gateway `:7780`, engine `:8888`); create bots with
   `--local`. One shared server runs from the main checkout, where its database and player saves
   live; worktrees use it as is and set `RS_ENGINE_DIR=<main checkout>/server/engine` for
-  `save.ts`.
+  `save.ts` and `load.ts`. The Grand Exchange is off locally, so a `.sav` file is the whole
+  saved state of an offline player.
 - Tasks: `bun conductor/run-task.ts --list` for the catalog;
   `bun conductor/run-task.ts {username} <task> --params '<json>' --until minutes:1` to run one.
   The last line is always `RESULT <json>`.
 - Tools in `conductor/tools/`: `client.ts` (watchable client, GPU off by default),
   `screenshot.ts`, `stats.ts` (XP/hr per method), `progress.ts` (distance to max), `save.ts`
-  (snapshot/restore the local save).
+  (snapshot a live bot's save without a logout; restore it), `load.ts` (load a library save
+  into a worker account), `library.ts` (the scenario saves in `conductor/saves/`). Design:
+  `conductor/docs/parallel-bots.md`.
 
 Rules for every agent working in this repo:
 
-- **One controller per bot.** Never run a task, script or `save.ts --logout` against a bot
-  another agent is driving. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat)
-  connect in observe mode and are always safe.
+- **One controller per bot.** The gateway refuses a second control connection to a bot (the
+  SDK's `connect()` rejects naming the holder) unless it asks for `takeover`. Never take over a
+  bot another agent is driving, and never route around the refusal with an ad-hoc script: wait,
+  or report back. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect
+  in observe mode and are always safe.
+- **Test on a worker account, not the main bot.** Smoke tests and experiments load a library
+  save into a worker (`bun conductor/tools/load.ts <worker> <save> --client`); only the
+  conductor's task-runner dispatches drive the main bot.
 - **Task code is reviewed before it is committed**, with the `task-review` skill. Write to its
   lenses in `.claude/review-lenses/`.
 - **Game knowledge goes in the knowledge base** per the `knowledge` skill, not in task code

@@ -1,6 +1,6 @@
 ---
 name: task-author
-description: Writes a new conductor catalog task or fixes an existing one under conductor/tasks/, smoke-tests it on the given bot with short runs, and leaves the change uncommitted for the conductor to review. Dispatched by the conductor.
+description: Writes a new conductor catalog task or fixes an existing one under conductor/tasks/, smoke-tests it with short runs on the worker account it was given (loaded from a library save), and leaves the change uncommitted for the conductor to review. Dispatched by the conductor.
 model: sonnet
 tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -46,9 +46,17 @@ you never commit, and you only touch the bot you were given.
 
 ## Smoke test
 
-`bun conductor/run-task.ts <bot> <name> --params '<json>' --until minutes:1`. Iterate until the
+Your bot is the **worker account** your brief names, yours alone; never drive any other bot (the
+main account's progress comes only from the conductor's runs). Load the brief's starting save
+into it and start its client: `bun conductor/tools/load.ts <worker> <save> --client` (prints
+`LOADED <json>`). Reload the same save to retest a fix from the same state, or another library
+save to test a branch (`bun conductor/tools/library.ts list`). Change the bot only through
+`run-task.ts`: no ad-hoc scripts, no `--takeover`. If your worker is busy (a run is refused
+because another controller is attached), wait or report back; never work around it.
+
+`bun conductor/run-task.ts <worker> <name> --params '<json>' --until minutes:1`. Iterate until the
 RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the screenshots
-and the `logFile`, and use `bun sdk/cli.ts <bot>` / `bun conductor/tools/screenshot.ts <bot>`.
+and the `logFile`, and use `bun sdk/cli.ts <worker>` / `bun conductor/tools/screenshot.ts <worker>`.
 Finish with `bun run verify:conductor` (oxfmt check, oxlint with warnings denied, tsc) and fix
 everything it reports under `conductor/` (`bun run fmt` formats in place). Commits run the same
 format and lint checks on staged files and are refused until they pass.
@@ -58,6 +66,6 @@ format and lint checks on staged files and are refused until they pass.
 ```
 Files: <paths changed or created>
 What changed: <3-6 lines>
-Smoke tests: <each RESULT line, verbatim, newest last>
+Smoke tests: <the save each ran from (its LOADED source), then each RESULT line, verbatim, newest last>
 Open questions: <anything the conductor should decide, or "none">
 ```

@@ -81,7 +81,8 @@ upstream would own); then add it to `## Review follow-ups` in `conductor/roadmap
 Dispatch `task-author` with every fix finding (inline, or in a brief file for many):
 
 ```
-Fix review findings in <files>, on bot <bot>.
+Fix review findings in <files>, smoke-testing on worker <worker> from save <save>
+(`bun conductor/tools/load.ts <worker> <save> --client`).
 For each: <file>:<line> [<lens> <criterion>, band <band>] <summary>
   Evidence: <evidence>
   Fix: <suggestion>
@@ -89,9 +90,11 @@ Change only what these findings call for. Re-run the smoke test and `bun run ver
 Leave the change uncommitted; report per finding: fixed / couldn't (why), and the RESULT lines.
 ```
 
-Many findings may go to two fix agents **in parallel only when their files are disjoint**; a
-fix that spans both sets (a shared helper used on both sides) makes them sequential. Never let
-two fix agents drive the bot at once.
+The worker is the one the conductor assigned to this review (the author's, unless the brief
+says otherwise); the save is the one the author's smoke tests ran from, so the fix is retested
+from the same state. Many findings may go to two fix agents **in parallel only when their files
+are disjoint**; a fix that spans both sets (a shared helper used on both sides) makes them
+sequential. Two parallel fix agents need two workers: never let two drive the same bot.
 
 ## 4. Round 2
 

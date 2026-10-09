@@ -19,11 +19,13 @@ This skill keeps durable state. **Before the first write, Read
 | Piece | What it is |
 |---|---|
 | `bun conductor/run-task.ts --list` | the catalog: each task's name, description and JSON-schema params |
-| `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>... [--takeover]` | runs one task; refuses to start when the bot is in combat or already has N controller(s) attached (`--takeover` pre-empts them); last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
+| `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>... [--takeover]` | runs one task; refuses to start when the bot is in combat or already has a controller attached (the gateway enforces this for every script; `--takeover` pre-empts it); last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
 | `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run |
 | `bun conductor/tools/stats.ts <bot> [--task t]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons |
 | `bun conductor/tools/progress.ts <bot>` | levels, XP to 99, % to max, change since first/previous snapshot (records a snapshot) |
-| `bun conductor/tools/save.ts snapshot\|restore\|list <bot> <label> --logout` | roll the account back after a bad experiment. Logs the bot out; restart its client after |
+| `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back after a bad experiment: logs the bot out itself; restart its client after. `list <bot>` |
+| `bun conductor/tools/load.ts <worker> <save> --client` | load a library save (or `bot:<bot>`, a live copy of a bot) into a worker account and start its client; prints `LOADED <json>` |
+| `bun conductor/tools/library.ts list\|show\|generate` | the scenario save library in `conductor/saves/`; `save.ts snapshot <bot> <name> --library --purpose "..."` adds a live bot's state |
 | `bun sdk/cli.ts <bot>` | full world-state snapshot (position, inventory, skills, nearby) |
 | `bun conductor/tools/screenshot.ts <bot>` | PNG of the game canvas, path on stdout — Read it. Needs the browser client |
 | `conductor/local/up.sh` | starts the local stack (idempotent) |
@@ -57,14 +59,23 @@ Agents (all dispatched in the background):
 | `runsSinceRetro` | task runs since the last retrospective |
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
 | `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId}` from a task-author's return until `task-review` commits or reverts |
+| `workers` | the worker pool: `{ <worker>: <agent id or name driving it> \| null }`. Assign a free worker in each author or review brief; set it back to `null` when that agent (and any fix author it spawned) has finished |
 
 Seed `invariants` with the list below on the first write.
 
 ## Invariants
 
-- One controller per bot: a task-runner, a task-author's smoke test and `save.ts --logout` each
-  drive the bot, so at most one of them runs at a time. Curator, reviewers and retrospective
-  don't drive it and may run alongside.
+- The main bot is driven only by task-runner dispatches (and `save.ts`); only those runs count
+  as progress. Task-authors and review fix authors smoke-test on a **worker account** loaded
+  from a library save (`load.ts`), never on the main bot. Work on a worker is thrown away, never
+  copied back. See `conductor/docs/parallel-bots.md`.
+- One controller per bot, enforced by the gateway: a second control connection is refused, so
+  an agent that finds its bot busy waits or reports back; it never passes `--takeover` unless its
+  brief says so. Concurrent bot claimants are capped at the worker pool size plus the one runner;
+  queue authors when no worker is free.
+- Curator, reviewers and retrospective don't drive a bot and may run alongside.
+- Workers share one world with the main bot: don't send a worker to the spot the runner is
+  using, and workers never trade with other accounts.
 - The conductor never plays the game, writes task code or edits knowledge pages itself: it
   decides, dispatches, reviews diffs and commits. (Its own edits are limited to the roadmap's
   Now, state, and small agent-prompt fixes a retrospective evidenced.)
@@ -72,8 +83,9 @@ Seed `invariants` with the list below on the first write.
 - Every task run is followed by a `knowledge-curator` dispatch.
 - New or changed tasks get short runs first (`--until minutes:1`); extend only after a clean
   `done`.
-- Snapshot the save (`save.ts snapshot ... --logout`) before a run that risks death or items:
-  a new area, combat, an untested task, anything `learnings/hazards.md` flags.
+- Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before a run that
+  risks death or items: a new area, combat, an untested task, anything `learnings/hazards.md`
+  flags.
 
 ## Loop
 
@@ -120,11 +132,11 @@ Seed `invariants` with the list below on the first write.
 - Unsafe end state (RESULT `inCombat` true, or `hp` below half) — handle it before anything
   else and never leave the bot idle there. The catalog has no combat or retreat task yet: queue
   a retreat/eat objective (a task-author dispatch for one if none exists), or when nothing is
-  running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` (a snapshot is the only command that logs out) so it cannot die unattended. Low HP
+  running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended. Low HP
   with no food, out of combat, already waits for regeneration (bounded) rather than failing, so
   a `failed` low-HP reason means the wait ran out or the bot is under attack.
-- Death or item loss in an experiment — `save.ts restore <bot> <label> --logout`, restart the
-  client, add the hazard to the curator's next dispatch.
+- Death or item loss in an experiment — `save.ts restore <bot> <label>` (it logs the bot out
+  itself), restart the client, add the hazard to the curator's next dispatch.
 - The same objective failing 3 times — retrospective (step 8); if it still has no way forward,
   mark it `blocked-needs-human` and tell the user.
 
@@ -139,7 +151,10 @@ Report per your instructions: RESULT verbatim, cause, diagnosis, suggested next 
 
 **task-author**
 ```
-Bot for smoke tests: <bot> (no other agent is driving it until you finish).
+Bot for smoke tests: worker <worker>, yours alone until you finish. Load your starting state with
+`bun conductor/tools/load.ts <worker> <library save> --client` (reload it to retest from the same
+state). Starting save: <library save name, or bot:<main bot> for the account as it is now>.
+Never drive <main bot>.
 Goal: <new task "<name>" that ... | fix task "<name>": <what went wrong>>.
 Evidence: <RESULT json, runner diagnosis, screenshot paths>.
 Knowledge to use: <the learnings/wiki pages and spots that apply>.
@@ -160,6 +175,24 @@ Bot: <bot>. Journal: <abs path>, entries since <lastRetroAt>.
 Transcript window: since <lastRetroAt date> (session-forensics corpus --since).
 Objectives that failed 3 times: <list or none>.
 ```
+
+## Workers
+
+Set up once per run, in `setup`: a pool of worker accounts (start with 3; each needs its own
+lite client, so measure before adding more), created on first load with
+`bun conductor/tools/load.ts <bot>w<n> fresh-lumbridge --create` (the name must be 12
+characters or fewer; `--create` marks the account `WORKER=true`, the only kind `load.ts` will
+overwrite). Record them in `workers`. A brief needs a starting state the library lacks → the
+author's first step is to set it up on its worker and file it with
+`save.ts snapshot <worker> <name> --library --purpose "..."`.
+
+## Pausing and stopping
+
+1. `ListAgents`, and stop **every** subagent, not only the ones in `inFlight`: a review
+   orchestrator's fix author is not in `inFlight` and keeps driving its bot when its parent
+   stops.
+2. `pgrep -af run-task.ts` — nothing should be left.
+3. `save.ts snapshot <bot> <label> --logout` for the main bot. Workers need nothing.
 
 ## Resuming
 

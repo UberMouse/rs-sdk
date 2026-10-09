@@ -47,21 +47,17 @@ on its own.
 - **Task → agent decisions.** Tasks can only end with a RESULT. Add a way for a task to raise a
   predefined decision to the supervising agent mid-run (pause with a question and options)
   instead of failing and making the conductor re-plan from scratch.
-- **Account snapshot fixtures.** Today smoke tests run on the live account wherever it stands.
-  A woodcutting smoke test on `conductor1` ended with the bot killed and its axe lost. Plan:
-  - A library of named save states (`<name>.sav` plus a note of what state it is: task, area,
-    levels, gear).
-  - Recorded automatically at important moments (before a quest, on reaching a combat zone).
-  - Generated from a spec by a script that builds a player and serializes it with the engine's
-    own `Player.save()`: stats, inventory, equipment, position, and the varps that store quest
-    progress.
-  - Loaded into throwaway test accounts so tests don't touch the main account and can run
-    concurrently. A `.sav` holds no name or account id (checksum over contents only), so
-    copying it to `<test-bot>.sav` works. Exception: Grand Exchange participants load from the
-    exchange checkpoint store, so keep GE accounts out of fixtures.
-  - task-author smoke-tests against fixtures; task-review's evidence names the fixture.
-- **New-bot setup.** Create a bot, skip the tutorial, record a fresh-account fixture: one
-  scripted path instead of hand-run one-offs.
+- **Account snapshot fixtures.** Built: the save library (`conductor/saves/`, `library.ts`),
+  worker accounts (`load.ts`), live snapshots and server-side logout (`save.ts`), and the gateway
+  controller lease; design in `conductor/docs/parallel-bots.md`. Left:
+  - Record library saves automatically at important moments (before a quest, on reaching a
+    combat zone).
+  - Generated saves cover levels, inventory, worn, bank, position and varps through
+    `sdk/test/utils/save-generator`; add quest-progress specs as quests come up.
+  - A library save per committed task, including its failure branches (full inventory, no
+    tool), so smoke tests can exercise them.
+  - The library records no content version: a content repack that renumbers item or varp ids
+    would change what a saved scenario means. Add one if repacks start happening.
 
 ## Experiments
 
