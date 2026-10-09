@@ -12,7 +12,8 @@ export interface Driver {
     /**
      * Resolves with the next published state. The interpreter races commands against ticks and drops
      * the loser, so a driver must accept a call while an earlier one is pending and resolve every
-     * pending caller with the next state.
+     * pending caller with the next state. Rejects with TickStall when the client has stopped
+     * publishing, so no wait hangs forever.
      */
     nextTick(): Promise<BotWorldState>;
     send(action: BotAction): Promise<ActionResult>;
@@ -26,6 +27,11 @@ export interface Driver {
     screenshot(label: string): Promise<string | null>;
     /** Milliseconds, for the engine's watchdog and `minutes:` stops; ops use `state.tick`. */
     now(): number;
+}
+
+/** No new tick for too long: the client is gone or frozen. The engine ends the run `stuck`. */
+export class TickStall extends Error {
+    override name = 'TickStall';
 }
 
 export type GuardOutcome = Outcome;

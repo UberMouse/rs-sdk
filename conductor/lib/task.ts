@@ -5,12 +5,13 @@
 // A task is an ordered list of steps; every loop the first step whose `when()`
 // passes runs. Shared interrupt steps go in front of every task so no task has
 // to handle death, low HP or blocking dialogs itself, and a watchdog ends runs
-// that stop making progress.
+// that stop making progress. A step's `run` is either legacy `async` code or a
+// generator op (core/op.ts), whose waits the same interrupts also guard.
 import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
-import type { Outcome } from '../core/op';
+import type { Op, Outcome } from '../core/op';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -27,7 +28,7 @@ export interface TaskContext<P = unknown> {
     sdk: BotSDK;
     botName: string;
     params: P;
-    /** Current world state; throws if the client has published none. */
+    /** Current world state (the driver's latest); throws if the client has published none. */
     state(): BotWorldState;
     log(msg: string, data?: Record<string, unknown>): void;
     /** Best-effort PNG of the game canvas; null on clients that don't render (lite). */
@@ -56,7 +57,12 @@ export interface Step<P = unknown> {
      * `ctx.counter(...)` once the state it guards has ended; that is the documented pattern.
      */
     when(ctx: TaskContext<P>): boolean;
-    run(ctx: TaskContext<P>): Promise<Outcome>;
+    /**
+     * `*run` (an op) is interpreted: interrupts act at its waits, and stops, the watchdog and the
+     * step timeout cancel it there. Legacy `async run` is one opaque call: interrupts and stops act
+     * only between steps, and a timeout abandons it still running.
+     */
+    run(ctx: TaskContext<P>): Promise<Outcome> | Op<Outcome>;
 }
 
 export interface TaskDef<S extends z.ZodType = z.ZodType> {
@@ -71,7 +77,10 @@ export interface TaskDef<S extends z.ZodType = z.ZodType> {
     isComplete?(ctx: TaskContext<z.infer<S>>): string | null;
     /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (engine.ts). */
     stuckAfterMs?: number;
-    /** A single step.run() longer than this ends the run as `stuck`. Default DEFAULT_STEP_TIMEOUT_MS (engine.ts); raise it for steps that walk far. */
+    /**
+     * A single step.run() longer than this ends the run as `stuck`. Default DEFAULT_STEP_TIMEOUT_MS
+     * (engine.ts); raise it for steps that walk far. A generator step gets it as a tick budget.
+     */
     stepTimeoutMs?: number;
 }
 
@@ -103,4 +112,14 @@ export interface TaskResult {
     inCombat: boolean | null;
     screenshots: string[];
     logFile: string;
+}
+
+/** Where a run's output goes: its NDJSON log, the console and screenshots. Tests pass in-memory ones. */
+export interface Sinks {
+    /** Appends one event to the run's log; the sink stamps the time. */
+    event(event: Record<string, unknown>): void;
+    /** One line of human-readable output. */
+    print(line: string): void;
+    /** A PNG of the game canvas; resolves to its path, or null on clients that don't render. May throw. */
+    screenshot(label: string): Promise<string | null>;
 }

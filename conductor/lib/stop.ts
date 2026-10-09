@@ -38,15 +38,15 @@ export function describeStop(c: StopCondition): string {
     }
 }
 
-/** Returns a reason when any condition is met, else null. */
+/** Returns a reason when any condition is met, else null. `elapsedMs`: wall time since the run started. */
 export function checkStops(
     stops: StopCondition[],
     state: BotWorldState,
     xpBefore: Record<string, number>,
-    startedAt: number,
+    elapsedMs: number,
 ): string | null {
     for (const c of stops) {
-        if (c.kind === 'minutes' && Date.now() - startedAt >= c.minutes * 60_000) {
+        if (c.kind === 'minutes' && elapsedMs >= c.minutes * 60_000) {
             return `reached ${describeStop(c)}`;
         }
         if (c.kind === 'level') {

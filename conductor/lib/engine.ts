@@ -1,35 +1,64 @@
-import { appendFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+// Runs one task to its TaskResult. Each loop the first step whose `when()` passes runs: the shared
+// INTERRUPTS first, then the task's own steps. A generator step is interpreted (core/interpret.ts)
+// with the interrupts as guards and the stops, watchdog and step budget as `onTick`, so they act at
+// every tick of its waits. A legacy `async` step is one opaque call, checked only between steps.
+// I/O goes through the injected driver and sinks (plus the bot and SDK that legacy steps and the
+// interrupts still use), so tests run a task on a TimelineDriver.
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
-import { REPO_ROOT, sleep } from './env';
-import { findFood, INTERRUPTS } from './interrupts';
-import { captureScreenshot } from './screenshot';
+import { type Driver, type Guard, interpret, type Interpretation, TickStall } from '../core/interpret';
+import { call, type Command, type Op } from '../core/op';
+import { sleep } from './env';
+import { deathCheck, dismissDialog, findFood, INTERRUPTS, lowHpCheck, wildernessCheck } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
-import type { Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
+import type { Outcome, Sinks, Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
 import { isLowHp } from './threat';
-import { distance, errMessage, fileStamp, INVENTORY_SLOTS, memoryCounter, TICK_MS, xpGainedSince } from './util';
+import { distance, errMessage, INVENTORY_SLOTS, memoryCounter, TICK_MS, xpGainedSince } from './util';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
-const TICK_STALL_MS = 30_000;
+export const TICK_STALL_MS = 30_000;
 /** Consecutive loops with no applicable step before the run fails (covers mid-animation gaps). */
 const MAX_IDLE_LOOPS = 20;
-/** One game tick; the wait between idle loops. */
-const IDLE_POLL_MS = TICK_MS;
 export const DEFAULT_STUCK_AFTER_MS = 90_000;
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;
+/**
+ * Commands other than waits one run of a generator step may yield before the run fails. Guards and
+ * stops act only at waits, so this is what bounds an op that sends in a loop and never waits.
+ */
+export const MAX_STEP_COMMANDS = 1000;
+
+/** How each interrupt guards a generator step's waits, in INTERRUPTS order. */
+const GUARDS: [Step, Pick<Guard, 'policy' | 'critical'>][] = [
+    [deathCheck, { policy: 'abort', critical: true }],
+    [wildernessCheck, { policy: 'abort', critical: true }],
+    [lowHpCheck, { policy: 'abort' }],
+    [dismissDialog, { policy: 'suspend' }],
+];
+
+/** A zero-tick wait: a point where the interpreter calls `onTick`, which then cancels the step. */
+const CHECKPOINT: Command = { type: 'wait', label: 'command cap', until: () => false, ticks: 0 };
 
 export interface ExecuteOptions {
+    driver: Driver;
+    sinks: Sinks;
+    /** Wall-clock milliseconds for the watchdog, `minutes:` stops and progress lines. Default `driver.now()`. */
+    now?: () => number;
+    /** For legacy steps and the interrupts, which still act through BotActions and the SDK. */
     bot: BotActions;
     sdk: BotSDK;
     botName: string;
+    runId: string;
+    /** Where the event sink writes; reported in the result. */
+    logFile: string;
     rawParams: unknown;
     stops: StopCondition[];
     /** Print a progress line this often. Default DEFAULT_PROGRESS_EVERY_MS. */
     progressEveryMs?: number;
 }
+
+type End = { status: TaskStatus; reason: string };
 
 function inventoryCounts(s: BotWorldState): Record<string, number> {
     const out: Record<string, number> = {};
@@ -47,46 +76,59 @@ function progressSignature(s: BotWorldState): string {
 
 const posOf = (s: BotWorldState) => (s.player ? { x: s.player.worldX, z: s.player.worldZ } : null);
 
-function newRunId(task: string): string {
-    return `${fileStamp()}-${task}`;
+const isOp = (x: Promise<Outcome> | Op<Outcome>): x is Op<Outcome> => 'next' in x;
+
+function ended(name: string, outcome: Outcome): End | null {
+    if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}` };
+    if (outcome && 'done' in outcome) return { status: 'done', reason: `${name}: ${outcome.done}` };
+    return null;
 }
 
-interface ActiveRun {
-    runId: string;
-    logFile: string;
-    append(event: Record<string, unknown>): void;
-}
+const unexpected = (step: Step, r: Interpretation<Outcome>): End => ({
+    status: 'error',
+    reason: `step "${step.name}" ended unexpectedly: ${JSON.stringify(r)}`,
+});
 
-/** The run whose NDJSON log is open, until its result is written. */
-let activeRun: ActiveRun | null = null;
-
-/** Lets a signal handler record a result for the run in flight; null when none is open. */
-export function currentRunLog(): ActiveRun | null {
-    return activeRun;
+/**
+ * Delegates to `op`. Past MAX_STEP_COMMANDS commands other than waits it calls `over`, then yields
+ * a zero-tick wait in place of the next command, where `onTick` reports the overrun and the
+ * interpreter cancels the step, running its `finally` blocks. Hand-rolled because `yield*` can't count.
+ */
+function* capped<T>(op: Op<T>, over: () => void): Op<T> {
+    let forwarded = 0;
+    let resume: { value: unknown } | { error: unknown } = { value: undefined };
+    for (;;) {
+        const r: IteratorResult<Command, T> = 'error' in resume ? op.throw(resume.error) : op.next(resume.value);
+        if (r.done) return r.value;
+        const cmd: Command = r.value;
+        if (cmd.type !== 'wait' && cmd.type !== 'critical' && ++forwarded === MAX_STEP_COMMANDS + 1) {
+            over();
+            try {
+                yield CHECKPOINT;
+            } catch (error) {
+                resume = { error };
+                continue;
+            }
+        }
+        try {
+            resume = { value: yield cmd };
+        } catch (error) {
+            resume = { error };
+        }
+    }
 }
 
 export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<TaskResult> {
-    const { bot, sdk, botName, stops } = opts;
-    const runId = newRunId(def.name);
-    const logFile = join(REPO_ROOT, 'conductor/runs', botName, `${runId}.ndjson`);
-    mkdirSync(dirname(logFile), { recursive: true });
-    const startedAt = Date.now();
+    const { driver, sinks, bot, sdk, botName, runId, logFile, stops } = opts;
+    const now = opts.now ?? (() => driver.now());
+    const startedAt = now();
     const screenshots: string[] = [];
 
-    const emit = (event: Record<string, unknown>) => {
-        appendFileSync(logFile, JSON.stringify({ t: Date.now(), ...event }) + '\n');
-    };
-    activeRun = { runId, logFile, append: emit };
-    const say = (msg: string) => console.log(`[task:${def.name}] ${msg}`);
-
-    const requireState = (): BotWorldState => {
-        const s = sdk.getState();
-        if (!s) throw new Error('no world state from client');
-        return s;
-    };
+    const emit = (event: Record<string, unknown>) => sinks.event(event);
+    const say = (msg: string) => sinks.print(`[task:${def.name}] ${msg}`);
 
     const parsed = def.params.safeParse(opts.rawParams ?? {});
-    const initial = requireState();
+    const initial = driver.state();
     const xpBefore: Record<string, number> = {};
     const levelBefore: Record<string, number> = {};
     for (const k of initial.skills) {
@@ -101,14 +143,15 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         sdk,
         botName,
         params: parsed.success ? parsed.data : undefined,
-        state: requireState,
+        state: () => driver.state(),
         log: (msg, data) => {
             say(msg);
             emit({ type: 'log', msg, data });
         },
         screenshot: async label => {
             try {
-                const path = await captureScreenshot(sdk, botName, undefined, `${def.name}-${label}`);
+                const path = await sinks.screenshot(`${def.name}-${label}`);
+                if (!path) return null;
                 screenshots.push(path);
                 emit({ type: 'screenshot', label, path });
                 return path;
@@ -120,22 +163,42 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
         memory,
         previousPos: null,
         counter: name => memoryCounter(memory, name),
-        inventoryFull: () => requireState().inventory.length >= INVENTORY_SLOTS,
+        inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {
-            const p = requireState().player;
+            const p = driver.state().player;
             return p ? distance({ x: p.worldX, z: p.worldZ }, { x, z }) : Infinity;
         },
     };
     let currentPos = posOf(initial);
 
+    // Ops' log and screenshot commands land in this run's log and result like the context's own.
+    const view: Driver = {
+        state: () => driver.state(),
+        nextTick: () => driver.nextTick(),
+        send: action => driver.send(action),
+        scan: radius => driver.scan(radius),
+        call: (label, run) => driver.call(label, run),
+        log: ctx.log,
+        screenshot: ctx.screenshot,
+        now: () => driver.now(),
+    };
+
     const stepRuns: Record<string, number> = {};
     let loops = 0;
     let lastStep: string | null = null;
 
+    const stateOrNull = (): BotWorldState | null => {
+        try {
+            return driver.state();
+        } catch {
+            return null;
+        }
+    };
+
     /** Best effort, once: leave the bot above the low-HP line when food is at hand. Never throws. */
     const eatIfHurt = async () => {
         try {
-            const s = sdk.getState();
+            const s = stateOrNull();
             const food = s && isLowHp(s) ? findFood(s) : undefined;
             if (food) await bot.eatFood(food);
         } catch {
@@ -144,10 +207,9 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     };
 
     const finish = async (status: TaskStatus, reason: string): Promise<TaskResult> => {
-        activeRun = null;
         if (status !== 'done') await ctx.screenshot(status);
         await eatIfHurt();
-        const s = sdk.getState();
+        const s = stateOrNull();
         const xpGained = s ? xpGainedSince(s, xpBefore) : {};
         const levelsGained: Record<string, { from: number; to: number }> = {};
         const inventoryDelta: Record<string, number> = {};
@@ -171,7 +233,7 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             status,
             reason,
             params: ctx.params ?? opts.rawParams,
-            durationMs: Date.now() - startedAt,
+            durationMs: now() - startedAt,
             loops,
             stepRuns,
             lastStep,
@@ -218,61 +280,143 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
     const steps: Step[] = [...INTERRUPTS, ...def.steps];
     const stuckAfterMs = def.stuckAfterMs ?? DEFAULT_STUCK_AFTER_MS;
     const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
+    const stepBudgetTicks = Math.ceil(stepTimeoutMs / TICK_MS);
     const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
 
+    // The interrupts as guards: `when` judges the state the interpreter checks; `run` acts through
+    // the live context, the legacy (async) ones as one call (Task 5 rewrites them as ops).
+    const guards: Guard[] = GUARDS.map(([step, how]) => ({
+        name: step.name,
+        ...how,
+        when: s => step.when({ ...ctx, state: () => s }),
+        run: () => {
+            stepRuns[step.name] = (stepRuns[step.name] ?? 0) + 1;
+            const out = step.run(ctx);
+            return isOp(out) ? out : call(step.name, () => out);
+        },
+    }));
+    // One per run, so the dialog guard fires at most once a tick even across consecutive steps.
+    const firedAt = new Map<string, number>();
+
     let signature = progressSignature(initial);
-    let lastProgressAt = Date.now();
+    let lastProgressAt = now();
     let lastTick = initial.tick;
-    let lastTickAt = Date.now();
-    let lastReportAt = Date.now();
+    let lastTickAt = now();
+    let lastReportAt = now();
     let idleLoops = 0;
+
+    /**
+     * Watchdog, stops and progress lines. Runs between steps and on every check of a generator
+     * step's waits, often several times a tick: everything here compares against the last change,
+     * so a repeat call on the same state changes nothing.
+     */
+    const checkRun = (s: BotWorldState): End | null => {
+        const t = now();
+        // Watchdog: the client must keep ticking, and the bot must keep changing something.
+        if (s.tick !== lastTick) {
+            lastTick = s.tick;
+            lastTickAt = t;
+        } else if (t - lastTickAt > TICK_STALL_MS) {
+            return { status: 'stuck', reason: `client stopped publishing ticks for ${TICK_STALL_MS / 1000}s` };
+        }
+        const sig = progressSignature(s);
+        if (sig !== signature) {
+            signature = sig;
+            lastProgressAt = t;
+        } else if (t - lastProgressAt > stuckAfterMs) {
+            return {
+                status: 'stuck',
+                reason: `no XP, position, HP or inventory change for ${Math.round(stuckAfterMs / 1000)}s (last step: ${lastStep})`,
+            };
+        }
+        const stop = checkStops(stops, s, xpBefore, t - startedAt);
+        if (stop) return { status: 'done', reason: stop };
+        if (t - lastReportAt >= progressEveryMs) {
+            lastReportAt = t;
+            const gained = Object.entries(xpGainedSince(s, xpBefore))
+                .map(([n, d]) => `${n} +${d}`)
+                .join(', ');
+            say(
+                `progress ${Math.round((t - startedAt) / 1000)}s: ${gained || 'no xp yet'}; steps ${JSON.stringify(stepRuns)}`,
+            );
+            emit({ type: 'progress', stepRuns, gained });
+        }
+        return null;
+    };
+
+    /** A legacy step can't be cancelled: past its wall-clock timeout it is abandoned, still running. */
+    const runLegacy = async (step: Step, running: Promise<Outcome>): Promise<End | null> => {
+        const interpreted = interpret(
+            call(step.name, () => running),
+            { driver: view },
+        );
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const r = await Promise.race([
+            interpreted,
+            new Promise<'timeout'>(res => {
+                timer = setTimeout(() => res('timeout'), stepTimeoutMs);
+            }),
+        ]).finally(() => clearTimeout(timer));
+        if (r === 'timeout') {
+            // Log the step's late failure instead of leaving it unhandled. The interpreter around it
+            // also rejects once the driver closes, which says nothing about the step.
+            running.catch(e => emit({ type: 'abandoned-step-error', step: step.name, message: errMessage(e) }));
+            interpreted.catch(() => {});
+            return { status: 'stuck', reason: `step "${step.name}" ran over ${stepTimeoutMs / 1000}s` };
+        }
+        return r.kind === 'returned' ? ended(step.name, r.value) : unexpected(step, r);
+    };
+
+    const runOp = async (step: Step, op: Op<Outcome>): Promise<End | null> => {
+        const startTick = driver.state().tick;
+        let ending: End | null = null;
+        let overrun: End | null = null;
+        const onTick = (s: BotWorldState): string | null => {
+            ending ??=
+                checkRun(s) ??
+                overrun ??
+                (s.tick - startTick > stepBudgetTicks
+                    ? {
+                          status: 'stuck',
+                          reason: `step "${step.name}" ran over ${stepBudgetTicks} ticks (${stepTimeoutMs / 1000}s)`,
+                      }
+                    : null);
+            return ending?.reason ?? null;
+        };
+        const over = () => {
+            overrun = {
+                status: 'failed',
+                reason: `step "${step.name}" yielded over ${MAX_STEP_COMMANDS} commands in one run (a loop that never waits?)`,
+            };
+        };
+        const r = await interpret(capped(op, over), { driver: view, guards, onTick, firedAt });
+        switch (r.kind) {
+            case 'returned':
+                return ended(step.name, r.value);
+            case 'aborted':
+                return ended(r.by, r.outcome);
+            case 'cancelled':
+                return ending ?? unexpected(step, r);
+        }
+    };
 
     try {
         for (;;) {
             loops++;
-            const s = requireState();
+            const s = driver.state();
             ctx.previousPos = currentPos;
             currentPos = posOf(s);
 
-            // Watchdog: the client must keep ticking, and the bot must keep changing something.
-            if (s.tick !== lastTick) {
-                lastTick = s.tick;
-                lastTickAt = Date.now();
-            } else if (Date.now() - lastTickAt > TICK_STALL_MS) {
-                return finish('stuck', `client stopped publishing ticks for ${TICK_STALL_MS / 1000}s`);
-            }
-            const sig = progressSignature(s);
-            if (sig !== signature) {
-                signature = sig;
-                lastProgressAt = Date.now();
-            } else if (Date.now() - lastProgressAt > stuckAfterMs) {
-                return finish(
-                    'stuck',
-                    `no XP, position, HP or inventory change for ${Math.round(stuckAfterMs / 1000)}s (last step: ${lastStep})`,
-                );
-            }
-
-            const stopReason = checkStops(stops, s, xpBefore, startedAt);
-            if (stopReason) return finish('done', stopReason);
+            const end = checkRun(s);
+            if (end) return finish(end.status, end.reason);
             const complete = def.isComplete?.(ctx);
             if (complete) return finish('done', complete);
-
-            if (Date.now() - lastReportAt >= progressEveryMs) {
-                lastReportAt = Date.now();
-                const gained = Object.entries(xpGainedSince(s, xpBefore))
-                    .map(([n, d]) => `${n} +${d}`)
-                    .join(', ');
-                say(
-                    `progress ${Math.round((Date.now() - startedAt) / 1000)}s: ${gained || 'no xp yet'}; steps ${JSON.stringify(stepRuns)}`,
-                );
-                emit({ type: 'progress', stepRuns, gained });
-            }
 
             const step = steps.find(st => st.when(ctx));
             if (!step) {
                 // Nothing applicable can be a transient state (mid-animation); give it a few ticks.
                 if (++idleLoops > MAX_IDLE_LOOPS) return finish('failed', 'no step applies to the current state');
-                await sleep(IDLE_POLL_MS);
+                await driver.nextTick();
                 continue;
             }
             idleLoops = 0;
@@ -280,29 +424,18 @@ export async function executeTask(def: TaskDef, opts: ExecuteOptions): Promise<T
             lastStep = step.name;
             stepRuns[step.name] = (stepRuns[step.name] ?? 0) + 1;
 
-            let timer: ReturnType<typeof setTimeout> | undefined;
-            const running = step.run(ctx);
-            const outcome = await Promise.race([
-                running,
-                new Promise<{ timeout: true }>(r => {
-                    timer = setTimeout(() => r({ timeout: true }), stepTimeoutMs);
-                }),
-            ]).finally(() => clearTimeout(timer));
-            // A timed-out step is abandoned but keeps running; log its late failure instead of leaving it unhandled.
-            if (outcome && 'timeout' in outcome)
-                running.catch(e => emit({ type: 'abandoned-step-error', step: step.name, message: errMessage(e) }));
+            const out = step.run(ctx);
+            const stepEnd = isOp(out) ? await runOp(step, out) : await runLegacy(step, out);
 
             // Yield to the macrotask queue: a step that returns without awaiting I/O (e.g. a
             // dialog interrupt that stays applicable) would otherwise loop on microtasks only
             // and starve the step timeout, watchdog and websocket frames.
             await sleep(0);
 
-            if (outcome && 'timeout' in outcome)
-                return finish('stuck', `step "${step.name}" ran over ${stepTimeoutMs / 1000}s`);
-            if (outcome && 'fail' in outcome) return finish('failed', `${step.name}: ${outcome.fail}`);
-            if (outcome && 'done' in outcome) return finish('done', `${step.name}: ${outcome.done}`);
+            if (stepEnd) return finish(stepEnd.status, stepEnd.reason);
         }
     } catch (e) {
+        if (e instanceof TickStall) return finish('stuck', e.message);
         emit({ type: 'exception', message: errMessage(e), stack: e instanceof Error ? e.stack : undefined });
         return finish('error', `${lastStep ?? 'setup'} threw: ${errMessage(e)}`);
     }

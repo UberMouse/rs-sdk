@@ -9,15 +9,17 @@
 // status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first). Refuses to start when another controller already
 // drives the bot, unless --takeover. A game client must already be attached
 // (conductor/tools/client.ts or the lite runner).
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { appendFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { z } from 'zod/v4';
 import { runScript } from '../sdk/runner';
-import { currentRunLog, executeTask } from './lib/engine';
-import { loadBotEnv, type BotEnv } from './lib/env';
+import { LiveDriver } from './core/drivers/live';
+import { executeTask, TICK_STALL_MS } from './lib/engine';
+import { loadBotEnv, REPO_ROOT, type BotEnv } from './lib/env';
+import { captureScreenshot } from './lib/screenshot';
 import { parseStop, type StopCondition } from './lib/stop';
-import type { TaskDef, TaskResult } from './lib/task';
-import { errMessage } from './lib/util';
+import type { Sinks, TaskDef, TaskResult } from './lib/task';
+import { errMessage, fileStamp } from './lib/util';
 
 const TASKS_DIR = join(import.meta.dir, 'tasks');
 
@@ -124,13 +126,22 @@ try {
     bail(reason, 2);
 }
 
+interface RunLog {
+    runId: string;
+    logFile: string;
+    append(event: Record<string, unknown>): void;
+}
+
+/** The run whose NDJSON log is open, until its result is written. */
+let openLog: RunLog | null = null;
+
 // Registered before runScript's own handlers so a killed run still prints its RESULT line. runScript
 // disconnects and exits within 5s; the timer covers a signal that lands before it has registered.
 const SIGNAL_EXIT_GRACE_MS = 6000;
 const STATUS_FETCH_TIMEOUT_MS = 5000;
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
-        const log = currentRunLog();
+        const log = openLog;
         const killed = errorResult(`killed by ${signal}`, undefined, log);
         log?.append({ type: 'result', ...killed });
         console.log(`RESULT ${JSON.stringify(killed)}`);
@@ -163,7 +174,36 @@ if (!takeover) {
 let engineResult: TaskResult | undefined;
 const run = await runScript(
     async ({ bot, sdk }) => {
-        engineResult = await executeTask(def, { bot, sdk, botName, rawParams, stops });
+        const runId = `${fileStamp()}-${def.name}`;
+        const logFile = join(REPO_ROOT, 'conductor/runs', botName, `${runId}.ndjson`);
+        mkdirSync(dirname(logFile), { recursive: true });
+        const append = (event: Record<string, unknown>) =>
+            appendFileSync(logFile, JSON.stringify({ t: Date.now(), ...event }) + '\n');
+        openLog = { runId, logFile, append };
+        const sinks: Sinks = {
+            event: event => {
+                append(event);
+                if (event.type === 'result') openLog = null;
+            },
+            print: line => console.log(line),
+            screenshot: label => captureScreenshot(sdk, botName, undefined, label),
+        };
+        const driver = new LiveDriver(sdk, sinks, TICK_STALL_MS);
+        try {
+            engineResult = await executeTask(def, {
+                driver,
+                sinks,
+                bot,
+                sdk,
+                botName,
+                runId,
+                logFile,
+                rawParams,
+                stops,
+            });
+        } finally {
+            driver.close();
+        }
     },
     { printState: false },
 );

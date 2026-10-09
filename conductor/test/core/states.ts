@@ -1,13 +1,31 @@
-// Minimal well-typed world states for core tests; only tick, HP, dialog and z vary.
-import type { BotWorldState } from '../../../sdk/types';
+// Minimal well-typed world states for core and engine tests; only what a spec names varies.
+import type { BotWorldState, InventoryItem } from '../../../sdk/types';
 
 export interface StateSpec {
     hp?: number;
     dialog?: boolean;
     z?: number;
+    /** Woodcutting XP; its level is `level`. */
+    xp?: number;
+    level?: number;
+    /** Shrimps (an Eat option), one per slot. */
+    food?: number;
+    /** The death message arrives on this state's tick. */
+    dead?: boolean;
 }
 
-export function worldState(tick: number, { hp = 10, dialog = false, z = 3218 }: StateSpec = {}): BotWorldState {
+const shrimps = (slot: number): InventoryItem => ({
+    slot,
+    id: 315,
+    name: 'Shrimps',
+    count: 1,
+    optionsWithIndex: [{ text: 'Eat', opIndex: 1 }],
+});
+
+export function worldState(
+    tick: number,
+    { hp = 10, dialog = false, z = 3218, xp = 0, level = 1, food = 0, dead = false }: StateSpec = {},
+): BotWorldState {
     return {
         tick,
         inGame: true,
@@ -31,14 +49,14 @@ export function worldState(tick: number, { hp = 10, dialog = false, z = 3218 }: 
             respawnCount: 0,
             lastDeathTick: null,
         },
-        skills: [],
-        inventory: [],
+        skills: [{ name: 'Woodcutting', level, baseLevel: level, experience: xp }],
+        inventory: Array.from({ length: food }, (_, slot) => shrimps(slot)),
         equipment: [],
         nearbyNpcs: [],
         nearbyPlayers: [],
         nearbyLocs: [],
         groundItems: [],
-        gameMessages: [],
+        gameMessages: dead ? [{ type: 0, text: 'Oh dear, you are dead!', sender: '', tick, fromSelf: false }] : [],
         recentDialogs: [],
         dialog: { isOpen: dialog, options: [], isWaiting: false },
         interface: { isOpen: false, interfaceId: -1, options: [] },
