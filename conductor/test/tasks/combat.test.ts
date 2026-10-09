@@ -4,7 +4,8 @@ import { ATTACK_WAIT_TICKS } from '../../actions/attack';
 import { type Effect, TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import type { StopCondition } from '../../lib/stop';
 import combat from '../../tasks/combat';
-import { consume } from '../react';
+import { fakePaths } from '../paths';
+import { consume, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -19,6 +20,7 @@ const chickenAt = (w: World, x = COOP.x + 1, z = COOP.z, opts: { combatLevel?: n
     w.npc('Chicken', x, z, { index: CHICKEN, options: ['Attack'], ...opts });
 const coop = chickenAt(base);
 const ATTACK = 'Attack Chicken';
+const noRoute = fakePaths(() => ({ success: false, waypoints: [], error: 'no path' }));
 const xp = (amount: number, skill = 'Attack'): StopCondition[] => [{ kind: 'xp', skill, amount }];
 /** What the task logged, guards' reports left out. */
 const logged = (r: Simulation) =>
@@ -72,35 +74,27 @@ describe('combat: fighting', () => {
         expect(r.result.xpGained).toEqual({ Attack: 25 });
     });
 
-    test('a chicken further than two tiles is walked to first, through bot.walkTo', async () => {
-        const walks: { x: number; z: number; tolerance?: number }[] = [];
+    test('a chicken further than two tiles is walked to first, to within two', async () => {
         const r = await simulate(combat, {
             params: PARAMS,
             timeline: kill(chickenAt(base, COOP.x + 5, COOP.z)),
-            bot: {
-                walkTo: async (x: number, z: number, tolerance?: number) => {
-                    walks.push({ x, z, tolerance });
-                    return { success: true, message: 'arrived' };
-                },
-            },
+            react: walking(),
             stops: xp(25),
         });
         expect(r.result.reason).toBe('reached +25 Attack xp');
-        expect(walks).toEqual([{ x: COOP.x + 5, z: COOP.z, tolerance: 2 }]);
-        expect(
-            r.driver.commands.map(c => (c.type === 'call' ? c.label : c.type === 'send' ? c.action.reason : null)),
-        ).toEqual(['bot.walkTo', ATTACK]);
+        expect(r.sends).toEqual([`walk to (${COOP.x + 5}, ${COOP.z})`, ATTACK]);
     });
 
     test('a failed walk is a failed attack, with upstream wording', async () => {
         const r = await simulate(combat, {
             params: PARAMS,
             timeline: chickenAt(base, COOP.x + 5, COOP.z).series(1),
-            bot: { walkTo: async () => ({ success: false, message: 'no path' }) },
+            pathfinder: noRoute,
         });
-        expect(r.result.reason).toBe('fight: 6 attacks in a row failed (last: Cannot reach Chicken: no path)');
+        const walk = `Cannot reach Chicken: No path to (${COOP.x + 5}, ${COOP.z}) from (${COOP.x}, ${COOP.z}): no path`;
+        expect(r.result.reason).toBe(`fight: 6 attacks in a row failed (last: ${walk})`);
         expect(r.sends).toEqual([]);
-        expect(logged(r)).toEqual(Array<string>(6).fill('attack Chicken failed: Cannot reach Chicken: no path'));
+        expect(logged(r)).toEqual(Array<string>(6).fill(`attack Chicken failed: ${walk}`));
     });
 
     test('six failed attacks in a row fail the run with the last reason, before the watchdog', async () => {
@@ -479,7 +473,7 @@ describe('combat: return to area', () => {
         const r = await simulate(combat, {
             params: { ...PARAMS, area: { x: 3300, z: 3300, radius: 4 } },
             timeline: coop.series(3),
-            bot: { walkTo: async () => ({ success: false, message: 'no path' }) },
+            pathfinder: noRoute,
         });
         expect(r.steps[0]).toBe('return-to-area');
         expect(r.sends).toEqual([]);

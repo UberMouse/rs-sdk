@@ -1,7 +1,8 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { buy, closeShop, sell, withShop } from '../actions/shop';
-import { call, log, type Op } from '../core/op';
+import { walkTo } from '../actions/walk';
+import { log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, TICK_MS } from '../lib/util';
@@ -216,7 +217,7 @@ function* performRemaining(ctx: Ctx, stepStart: number): Op<Ending | null> {
 
 /**
  * Stopgap until openShop walks: walks to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named
- * `npc`, as bot.openShop does before trading: bot.walkTo opens doors on the way, which the client's
+ * `npc`, as bot.openShop does before trading: the walk opens doors on the way, which the client's
  * pathing of an open does not.
  */
 function* walkToKeeper(ctx: Ctx): Op<void> {
@@ -229,7 +230,7 @@ function* walkToKeeper(ctx: Ctx): Op<void> {
         yield* log(`no ${ctx.params.npc} in view to walk to; the next open tries again from here`);
         return;
     }
-    const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(keeper.x, keeper.z, KEEPER_WALK_TOLERANCE));
+    const r = yield* walkTo(ctx, keeper.x, keeper.z, KEEPER_WALK_TOLERANCE);
     yield* log(`walk to ${keeper.name} (${keeper.x},${keeper.z}) to open the shop: ${r.message}`);
 }
 
@@ -293,9 +294,9 @@ export default defineTask({
                 const { at } = ctx.params;
                 // Narrowing only: when() guarantees it.
                 if (!at) return;
-                const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(at.x, at.z, WALK_TOLERANCE));
+                const r = yield* walkTo(ctx, at.x, at.z, WALK_TOLERANCE);
                 const fails = ctx.streak('walkFails');
-                if (r.success) return fails.reset();
+                if (r.ok) return fails.reset();
                 if (fails.add() >= FAIL_LIMIT) return { fail: `cannot walk to shop (${at.x},${at.z}): ${r.message}` };
             },
         },

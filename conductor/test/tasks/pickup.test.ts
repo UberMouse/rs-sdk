@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
-import { TimelineDriver } from '../../core/drivers/timeline';
 import pickup from '../../tasks/pickup';
+import { fakePaths } from '../paths';
+import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -148,36 +149,26 @@ describe('pickup: nothing to pick up', () => {
 
     test('just outside the area, walks in rather than waiting', async () => {
         const outside = world().player({ at: { x: 3224, z: 3207 } });
-        const driver = new TimelineDriver([
-            outside.build(),
-            ...inside.series(40).map((st, i) => ({ ...st, tick: i + 1 })),
-        ]);
-        const walks: unknown[][] = [];
         const r = await simulate(pickup, {
             params: { ...PARAMS, maxWaitSeconds: 10 },
-            driver,
-            bot: {
-                walkTo: async (...args) => {
-                    walks.push(args);
-                    await driver.nextTick();
-                    return { success: true, message: 'ok' };
-                },
-            },
+            timeline: outside.series(1),
+            react: walking(),
         });
-        // The walk tolerance is radius - 1.
-        expect(walks).toEqual([[3224, 3202, 3]]);
+        expect(r.sends).toEqual([`walk to (${AREA.x}, ${AREA.z})`]);
         expect(r.result.reason).toBe('pickup: no Knife appeared in the area within 10s');
     });
 
     test('three failed walks in a row fail the run', async () => {
         const r = await simulate(pickup, {
             params: PARAMS,
-            bot: { walkTo: async () => ({ success: false, message: 'blocked' }) },
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
             timeline: world()
                 .player({ at: { x: 3224, z: 3207 } })
                 .series(1),
         });
-        expect(r.result.reason).toBe("pickup: can't walk to area (blocked)");
+        expect(r.result.reason).toBe(
+            `pickup: can't walk to area (No path to (${AREA.x}, ${AREA.z}) from (3224, 3207): blocked)`,
+        );
     });
 });
 

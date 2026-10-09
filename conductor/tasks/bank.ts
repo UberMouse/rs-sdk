@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { deposit, withBank, withdraw } from '../actions/bank';
-import { call, log, type Op } from '../core/op';
+import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, walkToArea } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { exactName } from '../lib/util';
@@ -183,7 +183,7 @@ export default defineTask({
                 const { area } = ctx.params;
                 // Narrowing only: when() guarantees it.
                 if (!area) return;
-                const failure = yield* call('walkToArea', () => walkToArea(ctx, area));
+                const failure = yield* walkToArea(ctx, area);
                 if (failure) return { fail: failure };
             },
         },

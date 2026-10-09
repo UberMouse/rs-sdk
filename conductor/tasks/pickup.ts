@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { pickup } from '../actions/pickup';
-import { call, log, type Op, ticks } from '../core/op';
+import { log, type Op, ticks } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
@@ -45,8 +45,7 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
     if (ctx.inventoryFull()) return { fail: 'inventory is full' };
     // Only the radius..radius+WORK_REACH strip: returnToAreaStep handles anything farther out.
     if (ctx.distanceTo(area.x, area.z) > area.radius) {
-        // No walkTo op yet.
-        const failure = yield* call('walkToArea', () => walkToArea(ctx, area));
+        const failure = yield* walkToArea(ctx, area);
         if (failure) return { fail: failure };
         return;
     }

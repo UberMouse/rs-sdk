@@ -1,6 +1,8 @@
 // "Stay near here": the area param, the walk back to it, and which targets count as inside it.
 // Every task that works one spot (trees, rocks, fishing spots, monsters) shares this.
 import { z } from 'zod/v4';
+import { walkTo } from '../actions/walk';
+import { log, type Op } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { distance } from './util';
 
@@ -53,16 +55,18 @@ export function refuseArea(area: Area | undefined): string | null {
 }
 
 /**
- * Walk to the area centre, counting consecutive failures; returns a fail reason once past the limit.
- * Every caller in a run shares one `area.walkFails` counter, so the limit is per run, not per caller.
+ * Walks to the area centre, counting consecutive failures; returns a fail reason once past the limit.
+ * Every caller in a run shares one `area.walkFails` counter, so the limit is per run, not per caller. A
+ * walk that ran out of its ticks (a far area) counts too, and the next walk carries on from there.
  */
-export async function walkToArea(ctx: TaskContext<unknown, object>, area: Area): Promise<string | null> {
-    const r = await ctx.bot.walkTo(area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1));
+export function* walkToArea(ctx: TaskContext<unknown, object>, area: Area): Op<string | null> {
+    const r = yield* walkTo(ctx, area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1));
     const fails = ctx.counter('area.walkFails');
-    if (r.success) {
+    if (r.ok) {
         fails.reset();
         return null;
     }
+    yield* log(`walk to area (${area.x},${area.z}) failed: ${r.message}`);
     return fails.add() >= WALK_FAIL_LIMIT ? `can't walk to area (${r.message})` : null;
 }
 
@@ -75,9 +79,11 @@ export function returnToAreaStep<P>(areaOf: (params: P) => Area | undefined): St
             const a = areaOf(ctx.params);
             return !!a && !!ctx.state().player && ctx.distanceTo(a.x, a.z) > a.radius + WORK_REACH;
         },
-        async run(ctx) {
+        *run(ctx) {
             const a = areaOf(ctx.params);
-            const failure = a ? await walkToArea(ctx, a) : null;
+            // Narrowing only: when() guarantees it.
+            if (!a) return;
+            const failure = yield* walkToArea(ctx, a);
             if (failure) return { fail: failure };
         },
     };

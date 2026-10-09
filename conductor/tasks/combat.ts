@@ -1,13 +1,14 @@
 import { z } from 'zod/v4';
-import type { ActionResult, BotWorldState, NearbyNpc } from '../../sdk/types';
+import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { ATTACK_OPTION, attack } from '../actions/attack';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
-import { call, log, type Op, rethrowIfCancelled, send, ticks, wait } from '../core/op';
+import { walkTo } from '../actions/walk';
+import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { errMessage, TICK_MS } from '../lib/util';
+import { TICK_MS } from '../lib/util';
 
 const SKILLS = ['Attack', 'Strength', 'Defence'] as const;
 
@@ -31,8 +32,8 @@ const NO_TARGET_WAIT_TICKS = 3;
 const ATTACK_FAIL_LIMIT = 6;
 const ATTACK_RETRY_TICKS = 1;
 /**
- * An NPC further than this is walked to first, to within this: bot.walkTo opens the doors and gates on
- * the way, which the client's own pathing for the attack does not.
+ * An NPC further than this is walked to first, to within this: the walkTo op opens the doors and gates
+ * on the way, which the client's own pathing for the attack does not.
  */
 const ATTACK_WALK_BEYOND = 2;
 const STYLE_FAIL_LIMIT = 3;
@@ -179,15 +180,9 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
 /** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
 function* walkAndAttack(ctx: Ctx, npc: NearbyNpc): Op<{ ok: true } | { ok: false; message: string }> {
     if (npc.distance > ATTACK_WALK_BEYOND) {
-        let walked: ActionResult;
-        try {
-            // No walkTo op yet; it opens doors and gates on the way, which the client's pathing does not.
-            walked = yield* call('bot.walkTo', () => ctx.bot.walkTo(npc.x, npc.z, ATTACK_WALK_BEYOND));
-        } catch (e) {
-            rethrowIfCancelled(e);
-            walked = { success: false, message: errMessage(e) };
-        }
-        if (!walked.success) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
+        // The walk opens the doors and gates on the way, which the client's pathing for the attack does not.
+        const walked = yield* walkTo(ctx, npc.x, npc.z, ATTACK_WALK_BEYOND);
+        if (!walked.ok) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
     }
     return yield* attack(ctx, npc);
 }

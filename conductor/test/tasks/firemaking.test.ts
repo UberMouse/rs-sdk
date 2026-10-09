@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'bun:test';
-import type { ActionResult } from '../../../sdk/types';
 import { BURN_WAIT_TICKS } from '../../actions/burn';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import firemaking from '../../tasks/firemaking';
+import { fakePaths } from '../paths';
+import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -19,27 +20,39 @@ const lit = (w: World, n: number) => w.inv('Logs', 3 - n).skill('Firemaking', 1,
 const logged = (r: Simulation) =>
     r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
 
-type Walk = (x: number, z: number, tolerance?: number) => Promise<ActionResult>;
-/** A bot whose walkTo answers from `answer` and records where it was sent. */
-function walker(answer: (n: number) => ActionResult = () => ({ success: true, message: 'ok' })) {
-    const walks: [number, number, number | undefined][] = [];
-    const walkTo: Walk = async (x, z, tolerance) => {
-        walks.push([x, z, tolerance]);
-        return answer(walks.length);
-    };
-    return { walks, bot: { walkTo } };
+/**
+ * Routes straight to any tile but the `blocked` ones, which have none, and walks that move the bot
+ * (`walking`): `sim` goes into simulate. `walks` holds each walk's destination once; a walk with no
+ * route asks for one twice, a tick apart.
+ */
+function walker(blocked: (x: number, z: number) => boolean = () => false) {
+    const walks: [number, number][] = [];
+    const pathfinder = fakePaths(
+        (from, to) => {
+            const last = walks.at(-1);
+            if (!last || last[0] !== to.x || last[1] !== to.z) walks.push([to.x, to.z]);
+            return blocked(to.x, to.z)
+                ? { success: true, waypoints: [] }
+                : { success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] };
+        },
+        [],
+        blocked,
+    );
+    return { walks, sim: { pathfinder, react: walking() } };
 }
-const blocked: ActionResult = { success: false, message: 'destination tile is blocked' };
+/** How the walk reports a tile with no route. */
+const noRoute = (x: number, z: number) =>
+    `No path to (${x}, ${z}) from (${CENTRE.x}, ${CENTRE.z}): destination tile is blocked`;
 
 /** A refusal arrives afresh on each tick from 1 until `to`. */
 const refusedUntil = (to: number) => kit.series(60, (w, i) => (i >= 1 && i < to ? w.message(REFUSED) : w));
 
 describe('firemaking: lighting', () => {
     test('lights each log in turn and finishes when none are left', async () => {
-        const { bot, walks } = walker();
+        const { sim, walks } = walker();
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             timeline: kit.series(30, (w, i) => lit(w, i >= 14 ? 3 : i >= 8 ? 2 : i >= 4 ? 1 : 0)),
         });
         expect(r.result.status).toBe('done');
@@ -64,20 +77,31 @@ describe('firemaking: lighting', () => {
 
 describe('firemaking: a refused light', () => {
     test('five in a row fail the run with the game message', async () => {
-        const { bot } = walker();
-        const r = await simulate(firemaking, { params: PARAMS, bot, timeline: refusedUntil(60) });
+        const { sim } = walker();
+        const r = await simulate(firemaking, { params: PARAMS, ...sim, timeline: refusedUntil(60) });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe("burn: 5 lights in a row failed (last: You can't light a fire here.)");
-        expect(r.sends).toEqual(Array(5).fill(LIGHT));
+        // Each refused light steps north of where the bot then stands.
+        expect(r.sends).toEqual([
+            LIGHT,
+            'walk to (3230, 3241)',
+            LIGHT,
+            'walk to (3230, 3242)',
+            LIGHT,
+            'walk to (3230, 3243)',
+            LIGHT,
+            'walk to (3230, 3244)',
+            LIGHT,
+        ]);
         expect(logged(r).filter(m => String(m).startsWith('light failed'))).toHaveLength(5);
     });
 
     test('a success in between resets the count', async () => {
-        const { bot } = walker();
+        const { sim } = walker();
         // Four refusals, a light (tick 7), four more refusals, a light (tick 14): ten lights, no fifth in a row.
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             timeline: kit.series(30, (w, i) => {
                 if (i >= 14) return lit(w, 3);
                 if (i >= 7) return lit(i >= 8 && i <= 11 ? w.message(REFUSED) : w, 1);
@@ -89,33 +113,34 @@ describe('firemaking: a refused light', () => {
     });
 
     test('steps to a neighbouring tile and, when that is blocked, tries the next', async () => {
-        const { bot, walks } = walker(n => (n === 1 ? blocked : { success: true, message: 'ok' }));
+        const { sim, walks } = walker((x, z) => x === 3230 && z === 3241);
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             timeline: kit.series(20, (w, i) => (i === 2 ? w.message(REFUSED) : i >= 7 ? lit(w, 1) : w)),
             stops: [{ kind: 'xp', skill: 'Firemaking', amount: 40 }],
         });
         expect(r.result.reason).toBe('reached +40 Firemaking xp');
         // North first, then south; the tile just east is the last resort (the fire it lit).
         expect(walks).toEqual([
-            [3230, 3241, 0],
-            [3230, 3239, 0],
+            [3230, 3241],
+            [3230, 3239],
         ]);
-        expect(r.sends).toEqual([LIGHT, LIGHT]);
+        expect(r.sends).toEqual([LIGHT, 'walk to (3230, 3239)', LIGHT]);
         expect(logged(r)).toEqual([
             `light failed: ${REFUSED}`,
-            'sidestep to (3230,3241) failed: destination tile is blocked',
+            `sidestep to (3230,3241) failed: ${noRoute(3230, 3241)}`,
         ]);
     });
 
     test('tries tiles further out when every neighbour is blocked, never leaving the area', async () => {
         const small = { ...CENTRE, radius: 2 };
-        const { bot, walks } = walker(() => blocked);
+        const { sim, walks } = walker(() => true);
         const r = await simulate(firemaking, {
             params: { ...PARAMS, area: small },
-            bot,
-            timeline: kit.series(20, (w, i) => (i >= 6 ? lit(w, 1) : i === 1 ? w.message(REFUSED) : w)),
+            ...sim,
+            // Each walk with no route takes a tick (its retry): the eight are over by tick 10.
+            timeline: kit.series(20, (w, i) => (i >= 12 ? lit(w, 1) : i === 1 ? w.message(REFUSED) : w)),
             stops: [{ kind: 'xp', skill: 'Firemaking', amount: 40 }],
         });
         expect(r.result.status).toBe('done');
@@ -128,10 +153,10 @@ describe('firemaking: a refused light', () => {
 
 describe('firemaking: a light that never catches', () => {
     test('is a failed light: the bot leaves the tile and lights the next log', async () => {
-        const { bot, walks } = walker();
+        const { sim, walks } = walker();
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             // The server drops the log on the tile before the first roll, so the inventory loses it at once.
             timeline: kit.series(BURN_WAIT_TICKS + 20, (w, i) => {
                 if (i >= BURN_WAIT_TICKS + 8) return lit(w, 3).inv('Logs', 0).skill('Firemaking', 1, 40);
@@ -140,15 +165,15 @@ describe('firemaking: a light that never catches', () => {
         });
         expect(r.result.reason).toBe('finish: no Logs left to burn');
         expect(logged(r)).toEqual(['light failed: Timed out waiting for fire']);
-        expect(r.sends).toEqual([LIGHT, LIGHT]);
+        expect(r.sends).toEqual([LIGHT, 'walk to (3230, 3241)', LIGHT]);
         expect(walks).toHaveLength(1);
     });
 
     test('with the last log on the ground the run still ends by what the inventory holds', async () => {
-        const { bot } = walker();
+        const { sim } = walker();
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             timeline: kit.inv('Logs', 1).series(BURN_WAIT_TICKS + 5, (w, i) => (i >= 1 ? w.inv('Logs', 0) : w)),
         });
         expect(r.result.status).toBe('done');
@@ -157,11 +182,11 @@ describe('firemaking: a light that never catches', () => {
     });
 
     test('a level the game refuses is a failure that does not move the bot', async () => {
-        const { bot, walks } = walker();
+        const { sim, walks } = walker();
         const msg = 'You need a Firemaking level of 15 to burn Logs.';
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot,
+            ...sim,
             timeline: kit.series(30, (w, i) => (i >= 1 ? w.message(msg) : w)),
         });
         expect(r.result.reason).toBe(`burn: 5 lights in a row failed (last: ${msg})`);
@@ -173,32 +198,30 @@ describe('firemaking: other steps', () => {
     test('walks back to the area when the bot has strayed from it', async () => {
         const far = world().player({ at: { x: CENTRE.x + 20, z: CENTRE.z } });
         const away = far.skill('Firemaking', 1, 0).inv('Tinderbox', 1).inv('Logs', 1);
-        const home = kit.inv('Logs', 1);
-        const driver = new TimelineDriver([
-            away.build(),
-            ...home.series(20, (w, i) => (i >= 6 ? lit(w, 3) : w)).map((st, i) => ({ ...st, tick: i + 1 })),
-        ]);
-        const { bot, walks } = walker();
-        const r = await simulate(firemaking, {
-            params: PARAMS,
-            driver,
-            bot: {
-                walkTo: async (...args) => {
-                    await driver.nextTick();
-                    return bot.walkTo(...args);
+        const { sim, walks } = walker();
+        const litFrom: number[] = [];
+        const driver: TimelineDriver = new TimelineDriver(
+            away.series(30, (w, i) => (i >= 16 ? lit(w, 3) : w)),
+            {
+                ...sim,
+                respond: a => {
+                    if (a.reason === LIGHT) litFrom.push(driver.state().player?.worldX ?? NaN);
+                    return undefined;
                 },
             },
-        });
+        );
+        const r = await simulate(firemaking, { params: PARAMS, pathfinder: sim.pathfinder, driver });
         expect(r.steps[0]).toBe('return-to-area');
-        // The tolerance is capped at 3.
-        expect(walks[0]).toEqual([CENTRE.x, CENTRE.z, 3]);
+        expect(walks[0]).toEqual([CENTRE.x, CENTRE.z]);
+        // The tolerance is capped at 3: running 2 tiles a tick, the walk is done 2 short.
+        expect(litFrom[0]).toBe(CENTRE.x + 2);
         expect(r.result.status).toBe('done');
     });
 
     test('a tinderbox lost mid-run fails the run', async () => {
         const r = await simulate(firemaking, {
             params: PARAMS,
-            bot: walker().bot,
+            ...walker().sim,
             timeline: kit.series(BURN_WAIT_TICKS + 10, (w, i) => (i >= 2 ? w.inv('Tinderbox', 0) : w)),
         });
         expect(r.result.status).toBe('failed');

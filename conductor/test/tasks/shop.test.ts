@@ -6,7 +6,8 @@ import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timelin
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import shop from '../../tasks/shop';
-import { shopReact } from '../react';
+import { fakePaths } from '../paths';
+import { shopReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -131,23 +132,12 @@ describe('shop: the trip', () => {
 
     test('far from the shop it walks there first, then trades', async () => {
         const away = carrying.player({ at: { x: KEEPER.x, z: KEEPER.z + 40 } });
-        const driver = new TimelineDriver(
-            [away.build(), ...carrying.series(40).map((st, i) => ({ ...st, tick: i + 1 }))],
-            { react },
-        );
-        const walks: unknown[][] = [];
         const r = await simulate(shop, {
             params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
-            driver,
-            bot: {
-                walkTo: async (...args) => {
-                    walks.push(args);
-                    await driver.nextTick();
-                    return { success: true, message: 'ok' };
-                },
-            },
+            timeline: away.series(1),
+            react: walking(react),
         });
-        expect(walks).toEqual([[KEEPER.x, KEEPER.z, 3]]);
+        expect(r.sends).toEqual([`walk to (${KEEPER.x}, ${KEEPER.z})`, OPEN, 'buy Hammer', CLOSE]);
         expect(r.steps).toEqual(['walk-to-shop', 'trade', 'finish']);
         expect(r.result.status).toBe('done');
     });
@@ -166,10 +156,12 @@ describe('shop: the trip', () => {
         const r = await simulate(shop, {
             params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
             timeline: away.series(1),
-            bot: { walkTo: async () => ({ success: false, message: 'blocked' }) },
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('walk-to-shop: cannot walk to shop (3212,3247): blocked');
+        expect(r.result.reason).toBe(
+            `walk-to-shop: cannot walk to shop (3212,3247): No path to (3212, 3247) from (3212, ${KEEPER.z + 40}): blocked`,
+        );
         expect(r.sends).toEqual([]);
     });
 });
@@ -560,42 +552,42 @@ describe('shop: the shop closing mid-sale', () => {
     }
 });
 
+/** The task's logs of its walks to the shopkeeper. */
+const walkLogs = (r: Simulation) => logged(r).filter(m => String(m).startsWith('walk to Shop keeper'));
+
 describe('shop: a shopkeeper out of reach', () => {
     const noRoute = { success: false, message: 'no route', reason: 'cant_reach' };
-    /** A driver whose first `refusals` opens find no route, and a walkTo fake that records its calls. */
+    const WALK = `walk to (${KEEPER.x}, ${KEEPER.z + 1})`;
+    /** Five tiles from the shopkeeper; the first `refusals` opens find no route. */
     const unreachable = (refusals: number) => {
         let opens = 0;
-        const driver = new TimelineDriver(carrying.series(1), {
-            react,
+        return new TimelineDriver(carrying.player({ at: { x: KEEPER.x, z: KEEPER.z - 4 } }).series(1), {
+            react: walking(react),
             respond: a => (a.reason === OPEN && ++opens <= refusals ? noRoute : undefined),
         });
-        const walks: unknown[][] = [];
-        const walkTo = async (...args: unknown[]) => {
-            walks.push(args);
-            await driver.nextTick();
-            return { success: true, message: 'ok' };
-        };
-        return { driver, walks, bot: { walkTo } };
     };
 
     test('an open that cannot reach the shopkeeper walks to it, then opens again', async () => {
-        const { driver, walks, bot } = unreachable(1);
-        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver, bot });
+        const driver = unreachable(1);
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver });
         expect(r.result.status).toBe('done');
-        expect(walks).toEqual([[KEEPER.x, KEEPER.z + 1, 2]]);
-        expect(r.sends).toEqual([OPEN, OPEN, 'buy Hammer', CLOSE]);
+        expect(r.sends).toEqual([OPEN, WALK, OPEN, 'buy Hammer', CLOSE]);
         expect(logged(r).slice(0, 2)).toEqual([
             'open shop failed (cant-reach): no route',
-            'walk to Shop keeper (3212,3248) to open the shop: ok',
+            'walk to Shop keeper (3212,3248) to open the shop: Arrived',
         ]);
     });
 
     test('three opens that cannot reach it fail the run, with a walk after each of the first two', async () => {
-        const { driver, walks, bot } = unreachable(3);
-        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver, bot });
+        const driver = unreachable(3);
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver });
         expect(r.result.reason).toBe('trade: cannot open shop via "Shop keeper": no route');
-        expect(walks).toHaveLength(2);
-        expect(r.sends).toEqual([OPEN, OPEN, OPEN]);
+        // The second walk starts within reach of the first: nothing to send.
+        expect(walkLogs(r)).toEqual([
+            'walk to Shop keeper (3212,3248) to open the shop: Arrived',
+            'walk to Shop keeper (3212,3248) to open the shop: Already at destination',
+        ]);
+        expect(r.sends).toEqual([OPEN, WALK, OPEN, OPEN]);
     });
 });
 

@@ -6,7 +6,8 @@ import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timelin
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import bank from '../../tasks/bank';
-import { bankReact } from '../react';
+import { fakePaths } from '../paths';
+import { bankReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -110,26 +111,18 @@ describe('bank: the trip', () => {
 
     test('far from the area it walks there first, then does the trip', async () => {
         const away = carrying.player({ at: { x: AREA.x, z: AREA.z + 40 } });
-        const driver = new TimelineDriver(
-            [away.build(), ...carrying.series(40).map((st, i) => ({ ...st, tick: i + 1 }))],
-            {
-                react,
-            },
-        );
-        const walks: unknown[][] = [];
-        const r = await simulate(bank, {
-            params: { area: AREA, deposit: [{ item: 'Logs' }] },
-            driver,
-            bot: {
-                walkTo: async (...args) => {
-                    walks.push(args);
-                    await driver.nextTick();
-                    return { success: true, message: 'ok' };
-                },
+        const openedFrom: number[] = [];
+        const driver: TimelineDriver = new TimelineDriver(away.series(1), {
+            react: walking(react),
+            respond: a => {
+                if (a.reason === OPEN) openedFrom.push(driver.state().player?.worldZ ?? NaN);
+                return undefined;
             },
         });
-        // The walk tolerance is radius - 1, capped at 3.
-        expect(walks).toEqual([[AREA.x, AREA.z, 3]]);
+        const r = await simulate(bank, { params: { area: AREA, deposit: [{ item: 'Logs' }] }, driver });
+        expect(r.sends[0]).toBe(`walk to (${AREA.x}, ${AREA.z})`);
+        // The walk tolerance is radius - 1, capped at 3: running 2 tiles a tick, the walk is done 2 short.
+        expect(openedFrom[0]).toBe(AREA.z + 2);
         expect(r.steps).toEqual(['walk-to-bank', 'operate', 'finish']);
         expect(r.result.status).toBe('done');
     });
@@ -139,10 +132,12 @@ describe('bank: the trip', () => {
         const r = await simulate(bank, {
             params: { area: AREA, deposit: [{ item: 'Logs' }] },
             timeline: away.series(1),
-            bot: { walkTo: async () => ({ success: false, message: 'blocked' }) },
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe("walk-to-bank: can't walk to area (blocked)");
+        expect(r.result.reason).toBe(
+            `walk-to-bank: can't walk to area (No path to (${AREA.x}, ${AREA.z}) from (${AREA.x}, ${AREA.z + 40}): blocked)`,
+        );
         expect(r.sends).toEqual([]);
     });
 });

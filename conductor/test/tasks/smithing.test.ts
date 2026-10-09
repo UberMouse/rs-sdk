@@ -4,7 +4,8 @@ import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TICK_MS } from '../../lib/util';
 import { type SmithingProduct, smithingProduct } from '../../actions/smith';
 import smithing, { PRODUCTS } from '../../tasks/smithing';
-import { smithyReact } from '../react';
+import { fakePaths } from '../paths';
+import { smithyReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -17,16 +18,8 @@ const PLATEBODY = 1117;
 /** What the task logged, guards' reports left out. */
 const logged = (r: Simulation) =>
     r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
-const failed = { success: false, message: 'blocked' };
-/** A walkTo fake that records its calls and answers `result`. */
-const walker = (result = { success: true, message: 'ok' }) => {
-    const walks: unknown[][] = [];
-    const walkTo = async (...args: unknown[]) => {
-        walks.push(args);
-        return result;
-    };
-    return { walks, bot: { walkTo } };
-};
+/** No route anywhere; each walk asks it twice (a retry a tick later). */
+const blocked = () => fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' }));
 /** The run's result when preflight refuses `params` on `w`. */
 const refusal = async (params: unknown, w: World) =>
     (await simulate(smithing, { params, timeline: w.series(1) })).result;
@@ -87,25 +80,25 @@ describe('smithing: smelt', () => {
         expect(logged(r)).toEqual([]);
     });
 
-    test('a furnace further than 2 tiles is walked to first (a bot.walkTo stopgap)', async () => {
-        const { walks, bot } = walker();
+    test('a furnace further than 2 tiles is walked to first', async () => {
         const far = ores(1).player({ at: { x: FURNACE.x + 6, z: FURNACE.z } });
         const r = await simulate(smithing, {
             params: SMELT_PARAMS,
             timeline: far.series(1),
-            react: smithyReact(BRONZE, MENU),
-            bot,
+            react: walking(smithyReact(BRONZE, MENU)),
         });
         expect(r.result.status).toBe('done');
-        expect(walks).toEqual([[FURNACE.x, FURNACE.z, 2]]);
+        expect(r.sends[0]).toBe(`walk to (${FURNACE.x}, ${FURNACE.z})`);
     });
 
     test('four walks to the furnace that fail in a row fail the run', async () => {
-        const { walks, bot } = walker(failed);
+        const paths = blocked();
         const far = ores(1).player({ at: { x: FURNACE.x + 6, z: FURNACE.z } });
-        const r = await simulate(smithing, { params: SMELT_PARAMS, timeline: far.series(1), bot });
-        expect(r.result.reason).toBe('smelt: 4 smelts in a row failed (last: Cannot reach Furnace: blocked)');
-        expect(walks).toHaveLength(4);
+        const r = await simulate(smithing, { params: SMELT_PARAMS, timeline: far.series(1), pathfinder: paths });
+        expect(r.result.reason).toBe(
+            `smelt: 4 smelts in a row failed (last: Cannot reach Furnace: No path to (${FURNACE.x}, ${FURNACE.z}) from (${FURNACE.x + 6}, ${FURNACE.z}): blocked)`,
+        );
+        expect(paths.queries).toHaveLength(4 * 2);
         expect(r.sends).toEqual([]);
     });
 
@@ -140,7 +133,8 @@ describe('smithing: smelt', () => {
             params: SMELT_PARAMS,
             timeline: ores(2).series(1),
             react: smithyReact(BRONZE, MENU),
-            respond: a => (a.type === 'interactLoc' && refused.has(++opens) ? failed : undefined),
+            respond: a =>
+                a.type === 'interactLoc' && refused.has(++opens) ? { success: false, message: 'blocked' } : undefined,
         });
         expect(r.result.reason).toBe('finish: out of ore for Bronze bars');
         expect(r.result.inventoryDelta['Bronze bar']).toBe(2);
@@ -250,19 +244,19 @@ describe('smithing: smith', () => {
 
     test('an anvil further than 2 tiles is walked to first; four failed walks fail the run', async () => {
         const far = bars(1).player({ at: { x: ANVIL.x + 6, z: ANVIL.z } });
-        const ok = walker();
         const r = await simulate(smithing, {
             params: SMITH_PARAMS,
             timeline: far.series(1),
-            react: smithyReact(DAGGER),
-            bot: ok.bot,
+            react: walking(smithyReact(DAGGER)),
         });
         expect(r.result.status).toBe('done');
-        expect(ok.walks).toEqual([[ANVIL.x, ANVIL.z, 2]]);
-        const blocked = walker(failed);
-        const stuck = await simulate(smithing, { params: SMITH_PARAMS, timeline: far.series(1), bot: blocked.bot });
-        expect(stuck.result.reason).toBe("smith: can't reach the anvil (blocked)");
-        expect(blocked.walks).toHaveLength(4);
+        expect(r.sends[0]).toBe(`walk to (${ANVIL.x}, ${ANVIL.z})`);
+        const paths = blocked();
+        const stuck = await simulate(smithing, { params: SMITH_PARAMS, timeline: far.series(1), pathfinder: paths });
+        expect(stuck.result.reason).toBe(
+            `smith: can't reach the anvil (No path to (${ANVIL.x}, ${ANVIL.z}) from (${ANVIL.x + 6}, ${ANVIL.z}): blocked)`,
+        );
+        expect(paths.queries).toHaveLength(4 * 2);
     });
 
     test('no reachable anvil fails the run on the fourth look', async () => {

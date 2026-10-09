@@ -15,7 +15,8 @@ import {
     smithingProduct,
     HAMMER,
 } from '../actions/smith';
-import { call, log, type Op } from '../core/op';
+import { walkTo } from '../actions/walk';
+import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { exactName, findSkill, TICK_MS } from '../lib/util';
@@ -155,11 +156,11 @@ function findStation(ctx: Ctx, name: RegExp, filter: (l: NearbyLoc) => boolean, 
     return reachableOnly && match?.reachable === false ? null : match;
 }
 
-/** Stopgap until a walk op exists: bot.walkTo within STATION_REACH of a furnace or anvil further away. */
+/** Walks within STATION_REACH of a furnace or anvil further away; the walk's failure message, or null. */
 function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
     if (ctx.distanceTo(station.x, station.z) <= STATION_REACH) return null;
-    const w = yield* call('bot.walkTo', () => ctx.bot.walkTo(station.x, station.z, STATION_REACH));
-    return w.success ? null : w.message;
+    const w = yield* walkTo(ctx, station.x, station.z, STATION_REACH);
+    return w.ok ? null : w.message;
 }
 
 export default defineTask({

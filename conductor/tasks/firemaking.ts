@@ -1,7 +1,8 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { burn } from '../actions/burn';
-import { call, log, type Op } from '../core/op';
+import { walkTo } from '../actions/walk';
+import { log, type Op } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill } from '../lib/util';
@@ -57,9 +58,8 @@ function* sidestep(ctx: Ctx): Op<void> {
             const tx = p.worldX + dx * d;
             const tz = p.worldZ + dz * d;
             if (!inArea(ctx.params.area, { x: tx, z: tz })) continue;
-            // No walkTo op yet.
-            const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(tx, tz, 0));
-            if (r.success) return;
+            const r = yield* walkTo(ctx, tx, tz, 0);
+            if (r.ok) return;
             yield* log(`sidestep to (${tx},${tz}) failed: ${r.message}`);
         }
     }

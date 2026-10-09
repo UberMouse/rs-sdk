@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import type { StopCondition } from '../../lib/stop';
 import mining from '../../tasks/mining';
+import { fakePaths } from '../paths';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -292,10 +293,11 @@ describe('mining: return to area', () => {
         const r = await simulate(mining, {
             params: { ...PARAMS, area: { x: 3300, z: 3300, radius: 4 } },
             timeline: quarry.series(3),
-            bot: { walkTo: async () => ({ success: false, message: 'no path' }) as never },
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'no path' })),
         });
         expect(r.steps[0]).toBe('return-to-area');
         expect(r.sends).toEqual([]);
+        expect(r.result.reason).toStartWith("return-to-area: can't walk to area (No path to (3300, 3300) from");
     });
 });
 
