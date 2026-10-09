@@ -35,4 +35,6 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 
 - Higher-level axes chop faster.
 - Trees respawn after being cut down; higher-tier trees take longer to respawn.
+- Normal trees (no `respawnrate` in `trees.dbrow`) fall on every successful chop and respawn after 120 + random(80) game ticks (48-80 s at 400 ms/tick), scaled down slightly by player count (`server/content/scripts/skill_woodcutting/scripts/woodcut.rs2`, `general/scripts/player_count.rs2`). Other trees deplete with 1/8 chance per log.
+- Lumbridge trees capacity: the few normal trees within radius 12 of (3195, 3220) are not enough for a level-50 bronze-axe bot at 25x XP. In run 2026-10-09T07-28 it cut them all to stumps in ~64 s (21 loops, levels 48-51) and the `woodcutting` task failed with "chop: no reachable tree nearby" (screenshot shows stumps; stumps are not choppable). The tree count in the radius was not counted. For longer runs, widen `area` or rotate to a second spot rather than expecting the cluster to sustain continuous chopping. [v 2026-10-09 conductor1 local]
 - Logs near a bank (Seers, Draynor) are ideal for training since you can bank or burn them quickly.
