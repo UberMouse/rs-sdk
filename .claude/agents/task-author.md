@@ -227,7 +227,8 @@ log and return); with none left it is `no-time` and sends nothing. A step that w
 more work (an op, a wait) passes `{ reserveTicks: <that work's worst case> }` as a named constant, as
 smithing reserves `OP_MAX_TICKS` for the smelt or smith after its walk. For "stay near here" use
 `lib/area.ts`: `returnToAreaStep` (a generator step) and `walkToArea` (an op that counts failed
-walks per run).
+walks per run). A task counting its own failed walks skips one that ran out of ticks nearer the goal
+than it started (`timedOutAdvancing`): it is progress, not a failure, as shop's walk step does.
 
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.

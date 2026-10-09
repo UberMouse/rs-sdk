@@ -89,6 +89,14 @@ export interface WalkOptions {
     reserveTicks?: number;
 }
 
+/**
+ * A walk that ended `timeout` nearer its destination than it started (`before` and `after` are the
+ * distances): it ran out of ticks still closing in, and walking again carries on, so a caller counting
+ * failed walks does not count it.
+ */
+export const timedOutAdvancing = (r: WalkResult, before: number, after: number): boolean =>
+    !r.ok && r.reason === 'timeout' && after < before;
+
 /** The tick budget of a walk whose first route is `tiles` long (a partial one to the destination), capped at `maxTicks`. */
 export const walkBudgetTicks = (tiles: number, maxTicks = WALK_MAX_TICKS): number =>
     Math.min(maxTicks, WALK_BASE_TICKS + WALK_TICKS_PER_TILE * tiles);

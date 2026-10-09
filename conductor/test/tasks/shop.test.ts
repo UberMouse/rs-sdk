@@ -2,11 +2,12 @@ import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { CLOSE_SHOP_WAIT_TICKS, OPEN_SHOP_WAIT_TICKS } from '../../actions/shop';
+import { walkBudgetTicks } from '../../actions/walk';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import shop from '../../tasks/shop';
-import { fakePaths } from '../paths';
+import { door, fakePaths } from '../paths';
 import { shopReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
@@ -163,6 +164,60 @@ describe('shop: the trip', () => {
             `walk-to-shop: cannot walk to shop (3212,3247): No path to (3212, 3247) from (3212, ${KEEPER.z + 40}): blocked`,
         );
         expect(r.sends).toEqual([]);
+    });
+
+    test('a far shop takes several walks: each that ran out of ticks nearer the shop is not a failure', async () => {
+        // 1500 tiles east, running 2 a tick: each walk's 200 ticks cover 400 tiles, so three run out
+        // (FAIL_LIMIT) and the fourth arrives.
+        const away = carrying.player({ at: { x: KEEPER.x + 1500, z: KEEPER.z } });
+        const r = await simulate(shop, {
+            params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
+            timeline: away.series(1),
+            react: walking(react),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns['walk-to-shop']).toBe(4);
+        expect(logged(r).filter(m => String(m).startsWith('walk to shop'))).toEqual(
+            [4312, 3912, 3512].map(
+                x =>
+                    `walk to shop (3212,3247) not there yet: Walk to (3212, 3247) ran out of its 200 ticks at (${x}, 3247)`,
+            ),
+        );
+    });
+
+    test('three walks that run out of ticks where they started fail the run with the last walk message', async () => {
+        // A door between the bot and the shop that never opens, and a bot that cannot move.
+        const from = { x: KEEPER.x, z: KEEPER.z - 15 };
+        const shut = door(from.x, from.z + 5);
+        const paths = fakePaths(
+            () => ({
+                success: true,
+                reachedDestination: true,
+                waypoints: [
+                    { ...shut, level: 0 },
+                    { ...KEEPER, level: 0 },
+                ],
+            }),
+            [shut],
+        );
+        const behindDoor = carrying.player({ at: from }).loc('Door', shut.x, shut.z, { options: ['Open'] });
+        // The watchdog's 90 s is shorter than three walks standing still: out of the way.
+        const r = await simulate(
+            { ...shop, stuckAfterMs: 10 * DEFAULT_STUCK_AFTER_MS },
+            {
+                params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
+                timeline: behindDoor.series(1),
+                pathfinder: paths,
+                react: walking(react, () => true),
+            },
+        );
+        const budget = walkBudgetTicks(15);
+        const message = `Walk to (3212, 3247) ran out of its ${budget} ticks at (${from.x}, ${from.z})`;
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`walk-to-shop: cannot walk to shop (3212,3247): ${message}`);
+        expect(logged(r).filter(m => String(m).startsWith('walk to shop'))).toEqual(
+            Array.from({ length: 3 }, () => `walk to shop (3212,3247) failed: ${message}`),
+        );
     });
 });
 

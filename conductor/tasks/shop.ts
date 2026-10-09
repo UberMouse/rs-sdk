@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { buy, closeShop, sell, withShop } from '../actions/shop';
-import { walkTo } from '../actions/walk';
+import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/wilderness';
 import { defineTask, type TaskContext } from '../lib/task';
@@ -15,7 +15,7 @@ const KEEPER_WALK_TOLERANCE = 2;
 const AT_REACH = 8;
 /**
  * Consecutive failures of one kind before the task fails, each its own streak: failed walks to the
- * shop; failed closes of a shop left open; trade step runs whose open failed; and trade step runs that
+ * shop (not one that ran out of ticks nearer it, timedOutAdvancing); failed closes of a shop left open; trade step runs whose open failed; and trade step runs that
  * ended with a trade cut off, unfinished, by the shop closing under it (or by a sale the inventory did
  * not show), which a finished trade resets. Three timed-out opens, each with withShop's wait for a late
  * open, are about 35 s of nothing changing, inside the engine's default stuck window (90 s), so the
@@ -294,9 +294,16 @@ export default defineTask({
                 const { at } = ctx.params;
                 // Narrowing only: when() guarantees it.
                 if (!at) return;
+                const before = ctx.distanceTo(at.x, at.z);
                 const r = yield* walkTo(ctx, at.x, at.z, WALK_TOLERANCE);
                 const fails = ctx.streak('walkFails');
                 if (r.ok) return fails.reset();
+                // Out of ticks but nearer: the next run walks on, and it is no failure.
+                if (timedOutAdvancing(r, before, ctx.distanceTo(at.x, at.z))) {
+                    yield* log(`walk to shop (${at.x},${at.z}) not there yet: ${r.message}`);
+                    return;
+                }
+                yield* log(`walk to shop (${at.x},${at.z}) failed: ${r.message}`);
                 if (fails.add() >= FAIL_LIMIT) return { fail: `cannot walk to shop (${at.x},${at.z}): ${r.message}` };
             },
         },

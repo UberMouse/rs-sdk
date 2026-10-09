@@ -1,7 +1,7 @@
 // "Stay near here": the area param, the walk back to it, and which targets count as inside it.
 // Every task that works one spot (trees, rocks, fishing spots, monsters) shares this.
 import { z } from 'zod/v4';
-import { walkTo } from '../actions/walk';
+import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { distance } from './util';
@@ -40,13 +40,19 @@ export function refuseArea(area: Area | undefined): string | null {
 /**
  * Walks to the area centre, counting consecutive failures; returns a fail reason once past the limit.
  * Every caller in a run shares one `area.walkFails` counter, so the limit is per run, not per caller. A
- * walk that ran out of its ticks (a far area) counts too, and the next walk carries on from there.
+ * walk that ran out of its ticks nearer the area than it started (a far area) is neither a failure nor
+ * an arrival: it leaves the count alone, and the next walk carries on from there.
  */
 export function* walkToArea(ctx: TaskContext<unknown, object>, area: Area): Op<string | null> {
+    const before = ctx.distanceTo(area.x, area.z);
     const r = yield* walkTo(ctx, area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1));
     const fails = ctx.counter('area.walkFails');
     if (r.ok) {
         fails.reset();
+        return null;
+    }
+    if (timedOutAdvancing(r, before, ctx.distanceTo(area.x, area.z))) {
+        yield* log(`walk to area (${area.x},${area.z}) not there yet: ${r.message}`);
         return null;
     }
     yield* log(`walk to area (${area.x},${area.z}) failed: ${r.message}`);
