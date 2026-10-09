@@ -179,9 +179,12 @@ function getSessionStatus(session: BotSession): SessionStatus {
 /**
  * SDK Session - represents an SDK client connected to control/observe a bot.
  *
- * Controller pre-emption (last controller wins):
- * - When a new 'control' mode client connects, any existing controllers are disconnected
- * - This prevents conflicts from stale daemon connections or background scripts
+ * Controller lease (rs-sdk; was "last controller wins"):
+ * - A 'control' mode client is refused while another controller is attached, so two
+ *   scripts never drive one bot at once (one silently cutting into the other's action)
+ * - A 'control' client that sends `takeover: true` disconnects the existing controller
+ * - A dead controller's socket stops holding the lease when it closes; Bun's default
+ *   websocket idleTimeout (120s, with pings) closes half-open ones
  * - Multiple 'observe' mode clients can coexist freely
  * - Mixed: One controller and multiple observers can coexist
  * - Observers may send the 'say' action (and nothing else), so chat tools can
@@ -198,6 +201,7 @@ interface SDKSession {
     sdkClientId: string;
     targetUsername: string;
     mode: SDKConnectionMode;
+    connectedAt: number;
 }
 
 // ============ State ============
@@ -516,16 +520,29 @@ const SyncModule = {
                 return;
             }
 
+            // Controller lease: refuse a second controller unless it asks to take over.
+            // Checked after the auth await, so two racing connects can't both pass.
+            const oldControllers = mode === 'control' ? this.getControllersForBot(targetUsername) : [];
+            if (oldControllers.length > 0 && !message.takeover) {
+                const holder = oldControllers[0];
+                const since = new Date(holder.connectedAt).toISOString();
+                console.log(`[Gateway] Refused controller ${sdkClientId} for ${targetUsername}: held by ${holder.sdkClientId} since ${since}`);
+                ws.send(JSON.stringify({
+                    type: 'sdk_error',
+                    code: 'controller_busy',
+                    error: `Refused: ${targetUsername} is already controlled by ${holder.sdkClientId} (since ${since}); connect with takeover to pre-empt it`
+                }));
+                ws.close();
+                return;
+            }
+
             const sessionId = newSDKSessionId();
-            const session: SDKSession = { ws, sessionId, sdkClientId, targetUsername, mode };
+            const session: SDKSession = { ws, sessionId, sdkClientId, targetUsername, mode, connectedAt: Date.now() };
             sdkSessions.set(sessionId, session);
             wsToType.set(ws, { type: 'sdk', id: sessionId });
 
-            // Last controller wins: disconnect existing controllers for this bot
+            // Takeover: disconnect the existing controllers for this bot
             if (mode === 'control') {
-                const oldControllers = this.getControllersForBot(targetUsername)
-                    .filter(s => s.sessionId !== sessionId);
-
                 for (const old of oldControllers) {
                     console.log(`[Gateway] Pre-empting old controller ${old.sdkClientId} for ${targetUsername} (replaced by ${sdkClientId})`);
                     this.sendToSDK(old, {

@@ -196,6 +196,8 @@ export class BotSDK {
     // Reconnection state
     private connectionState: ConnectionState = 'disconnected';
     private reconnectAttempt = 0;
+    /** Reconnects that may hit our own not-yet-closed session (controller_busy) before giving up. */
+    private static readonly LEASE_RECONNECT_ATTEMPTS = 5;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private intentionalDisconnect = false;
 
@@ -207,6 +209,7 @@ export class BotSDK {
             host: config.host || 'localhost',
             port: config.port || 7780,
             connectionMode: config.connectionMode || 'control',
+            takeover: config.takeover ?? false,
             autoLaunchBrowser: config.autoLaunchBrowser ?? 'auto',
             freshDataThreshold: config.freshDataThreshold ?? 3000,
             browserLaunchUrl: config.browserLaunchUrl || '',
@@ -287,7 +290,8 @@ export class BotSDK {
                     username: this.config.botUsername,
                     password: this.config.password,
                     clientId: this.sdkClientId,
-                    mode: this.config.connectionMode
+                    mode: this.config.connectionMode,
+                    takeover: this.config.takeover
                 });
             };
 
@@ -369,8 +373,12 @@ export class BotSDK {
                         this.ws?.removeEventListener('message', checkConnected);
                         const errorMessage = msg.error || 'Authentication failed';
                         console.error(`[BotSDK] Connection error: ${errorMessage}`);
-                        // Disable auto-reconnect for auth failures - they won't succeed on retry
-                        this.intentionalDisconnect = true;
+                        // A reconnect can be refused by our own previous session while the
+                        // gateway has yet to see its socket close, so retry a lease refusal
+                        // a few times on reconnect. Anything else won't succeed on retry.
+                        const staleSelf = msg.code === 'controller_busy' && isReconnect
+                            && this.reconnectAttempt < BotSDK.LEASE_RECONNECT_ATTEMPTS;
+                        if (!staleSelf) this.intentionalDisconnect = true;
                         reject(new Error(errorMessage));
                         this.ws?.close();
                     }

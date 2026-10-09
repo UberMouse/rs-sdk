@@ -50,6 +50,7 @@ export interface SDKMessage {
     password?: string;  // Required in production mode
     clientId?: string;
     mode?: SDKConnectionMode;  // Connection mode: 'control' (default) or 'observe'
+    takeover?: boolean;  // control only: pre-empt an attached controller instead of being refused
     actionId?: string;
     action?: BotAction;
     actionTimeoutMs?: number;
@@ -65,6 +66,7 @@ export interface SyncToSDKMessage {
     actionId?: string;
     result?: ActionResult;
     error?: string;
+    code?: 'controller_busy';  // sdk_error: machine-readable reason (controller lease refusal)
     screenshotId?: string;  // For screenshot response correlation
     dataUrl?: string;       // Screenshot data as data URL (image/png;base64,...)
     mode?: SDKConnectionMode;      // Connection mode (in sdk_connected response)

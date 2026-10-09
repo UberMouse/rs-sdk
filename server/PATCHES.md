@@ -70,6 +70,11 @@ survival) is described in the project memory; this file is the human-readable ch
 - [ ] **`view/bot.ejs`** — the entire bot UI page (rs-sdk-only): reads `?bot=`/`?password=`
       (auto-login), **writes both back to the URL on login/field-change**, cache-busted
       `client.js?v=<%= cachebust %>` import, quick-login/create/skip-tutorial controls.
+- [ ] **Save endpoints (dev only)** — `pages/saves.ts`, routed from the management server's
+      `fetch` fallback in `src/web/index.ts` (`startManagementWeb`): `GET /save/:name` exports
+      an online player's `save(false)` without a logout, `POST /kick/:name` logs a player out
+      server-side. Refused when `NODE_PRODUCTION`. Used by `conductor/lib/saves.ts`.
+      Verify: `grep -n "handleSaveRequest" src/web/index.ts`
 - [ ] **Login server** — `LoginServer.ts`: `sdk_auth` message handler (gateway auth path,
       username normalized to match engine); `LoginThread.ts`: **no auto-grant of dev
       staffmodlevel on non-production worlds** (public server safety).

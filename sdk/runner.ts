@@ -34,6 +34,11 @@ export interface RunOptions {
     /** Connect if not connected (default: true) */
     autoConnect?: boolean;
     /**
+     * Pre-empt the bot's existing controller instead of being refused by the
+     * gateway's controller lease (default: false).
+     */
+    takeover?: boolean;
+    /**
      * Disconnect the bot when the script finishes (default: true when the
      * runner opened the connection itself, false when one was passed via
      * `connection`). Pass `false` to keep the connection alive after the
@@ -151,7 +156,7 @@ function loadEnvFromArgs(): void {
     loadEnvFile(envPath);
 }
 
-async function getOrCreateConnection(): Promise<BotConnection> {
+async function getOrCreateConnection(takeover: boolean): Promise<BotConnection> {
     // Try to load from command line args first
     loadEnvFromArgs();
 
@@ -192,6 +197,7 @@ async function getOrCreateConnection(): Promise<BotConnection> {
         password,
         gatewayUrl,
         connectionMode: 'control',
+        takeover,
         autoReconnect: true,
         // Standalone bot scripts must attach to an already-running client. In
         // particular, Lite fleets should never fall back to opening a browser
@@ -330,7 +336,7 @@ export async function runScript(
         // Use process.env for credentials (loaded by bun --env-file or command line arg)
         try {
             if (autoConnect) {
-                const conn = await getOrCreateConnection();
+                const conn = await getOrCreateConnection(options.takeover ?? false);
                 bot = conn.bot;
                 sdk = conn.sdk;
                 managedConnection = true;
