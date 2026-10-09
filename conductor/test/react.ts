@@ -3,7 +3,11 @@
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import type { Effect } from '../core/drivers/timeline';
 
-/** One fewer of item `id`, taken from `slot` when it holds it; other slots keep their places, as in the game. */
+/**
+ * One fewer of item `id`, taken from `slot` when it holds it; other slots keep their places, as in the
+ * game. Once the scripted inventory holds no such item it returns the state unchanged, which retires the
+ * effect (see Effect): an item the script adds later is not the one that was eaten or dropped.
+ */
 const takeOne =
     (id: number, slot: number): Effect =>
     s => {

@@ -1,7 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
+import { TimelineDriver } from '../core/drivers/timeline';
 import { type Op, scan, send, wait } from '../core/op';
 import { defineTask, type Outcome } from '../lib/task';
+import { consume } from './react';
 import { simulate } from './simulate';
 import { world } from './world';
 
@@ -100,6 +102,26 @@ describe('simulate', () => {
         expect(refused.result.reason).toBe('act: 3 then Shrimps,Shrimps,Logs');
         const inert = await simulate(dropper, { timeline: kit, react: () => undefined });
         expect(inert.result.reason).toBe('act: 3 then Shrimps,Shrimps,Logs');
+    });
+
+    test('a consumed item stays gone while the script holds it, and the effect ends once the script has caught up', async () => {
+        // Logs dropped at tick 0; the script has none at tick 1 (it modelled the drop itself) and gains one at tick 2.
+        const none = world().inv('Shrimps', 1);
+        const states = [
+            none.inv('Logs', 1).tick(0),
+            none.tick(1),
+            none.inv('Logs', 1).tick(2),
+            none.inv('Logs', 1).tick(3),
+        ];
+        const driver = new TimelineDriver(
+            states.map(w => w.build()),
+            { react: consume },
+        );
+        await driver.send({ type: 'dropItem', slot: 1, reason: 'drop' });
+        const seen: number[] = [];
+        for (let i = 0; i < 3; i++)
+            seen.push((await driver.nextTick()).inventory.filter(x => x.name === 'Logs').length);
+        expect(seen).toEqual([0, 1, 1]);
     });
 
     test('a task that never finishes is ended by a stop, not left hanging', async () => {

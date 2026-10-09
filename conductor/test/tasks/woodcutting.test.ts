@@ -81,6 +81,8 @@ describe('woodcutting: a full inventory', () => {
         // The logs are all gone the tick after the first drop.
         expect(r.sends).toEqual(['drop Logs', CHOP]);
         expect(r.steps).toEqual(['drop-logs', 'chop']);
+        // 27 logs start, none after the drop, one chopped later: the drop must not eat that one.
+        expect(r.result.inventoryDelta).toEqual({ Logs: -26 });
     });
 
     test('onFull drop fails when the drop leaves the inventory full', async () => {

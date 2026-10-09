@@ -5,7 +5,12 @@ import { TICK_MS } from '../../lib/util';
 import type { Driver } from '../interpret';
 import type { Command } from '../op';
 
-/** A change a send makes to the world: applied to every state from the next tick on. */
+/**
+ * A change a send makes to the world: applied to every state from the next tick on, until it no longer
+ * applies. An effect that finds nothing to change returns the very state it was given, which retires it:
+ * the script has caught up with the send (the dropped item is gone from it), and applying the effect on
+ * would remove what the script adds later.
+ */
 export type Effect = (state: BotWorldState) => BotWorldState;
 
 export interface TimelineOptions {
@@ -33,7 +38,7 @@ export class TimelineDriver implements Driver {
     private current: BotWorldState;
     /** Effects queued by this tick's sends, applied from the next tick on. */
     private readonly queued: Effect[] = [];
-    private readonly effects: Effect[] = [];
+    private effects: Effect[] = [];
     private pending: Promise<BotWorldState> | null = null;
 
     constructor(
@@ -72,7 +77,14 @@ export class TimelineDriver implements Driver {
         else if (this.opts.strict) throw new Error(`timeline ended at tick ${this.current.tick}`);
         else this.scripted = { ...this.scripted, tick: this.scripted.tick + 1 };
         this.effects.push(...this.queued.splice(0));
-        this.current = this.effects.reduce((s, effect) => effect(s), this.scripted);
+        let state = this.scripted;
+        this.effects = this.effects.filter(effect => {
+            const next = effect(state);
+            const applies = next !== state;
+            state = next;
+            return applies;
+        });
+        this.current = state;
         return this.current;
     }
 
