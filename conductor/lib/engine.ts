@@ -281,6 +281,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     } catch (e) {
         return finish('error', errMessage(e));
     }
+    // A task built without defineTask (a cast, JSON) bypasses the AllowableGuard type.
+    const critical = GUARDS.filter(g => g.critical && def.allow?.includes(g.name as never)).map(g => g.name);
+    if (critical.length) return finish('error', `task allows critical guard(s): ${critical.join(', ')}`);
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;

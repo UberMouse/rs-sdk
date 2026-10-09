@@ -43,8 +43,17 @@ test(
                     // Lighting retries until it succeeds, so wait for the level-up unless the light is refused.
                     await sdk.waitForCondition(st => leveled(st) || refusals(st) > refusedBefore, LIGHT_WAIT_MS);
                     if (!leveled(sdk.getState()!)) {
+                        // Some neighbours are blocked (walkTo then fails), so take the first one it reaches.
                         const p = sdk.getState()!.player!;
-                        await bot.walkTo(p.worldX - 1, p.worldZ, 0);
+                        for (const [dx, dz] of [
+                            [-1, 0],
+                            [1, 0],
+                            [0, 1],
+                            [0, -1],
+                        ] as const) {
+                            const walked = await bot.walkTo(p.worldX + dx, p.worldZ + dz, 0);
+                            if (walked.success) break;
+                        }
                     }
                 }
                 expect(leveled(sdk.getState()!), 'no fire was lit').toBe(true);

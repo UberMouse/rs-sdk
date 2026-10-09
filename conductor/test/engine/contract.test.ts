@@ -202,6 +202,14 @@ describe('allow', () => {
         });
     });
 
+    test('a task that allows a critical guard through a cast ends in error', async () => {
+        const def = defineTask({ name: 'critical', description: 'allow', params: z.object({}), steps: [idleStep] });
+        const r = await runDef({ ...def, allow: ['death'] as never }, timeline(5));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('task allows critical guard(s): death');
+        expect(r.sends).toEqual([]);
+    });
+
     test("allow: ['dialog'] leaves a dialog open between steps to the task's own steps", async () => {
         const steps = [answer, finishAt(5), idleStep];
         const allowed = await runTask(steps, dialogAt(0, 1), { allow: ['dialog'] });
@@ -322,7 +330,7 @@ describe('low HP with nothing to eat', () => {
         expect(r.result.reason).toBe('finish: at tick 30');
     });
 
-    test('in combat fails at once', async () => {
+    test('in combat fails within one regeneration slice', async () => {
         const r = await runTask(
             [idleStep],
             // Out of combat only on the first tick (the engine refuses to start in combat), so the guard
