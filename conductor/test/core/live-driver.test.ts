@@ -4,7 +4,7 @@ import type { ActionResult, BotWorldState, ConnectionState } from '../../../sdk/
 import { LiveDriver } from '../../core/drivers/live';
 import { TickStall } from '../../core/interpret';
 import type { Sinks } from '../../lib/task';
-import { worldState } from './states';
+import { worldState } from '../world';
 
 const OK: ActionResult = { success: true, message: 'ok' };
 

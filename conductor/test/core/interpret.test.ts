@@ -17,7 +17,7 @@ import {
 } from '../../core/op';
 import { TICK_MS } from '../../lib/util';
 import { act, busy, death, dialog, gateAt, guardLogs, lowHp, slowDialog, trace } from './fixtures';
-import { timeline, worldState } from './states';
+import { timeline, worldState } from '../world';
 
 /** A critical guard with nothing to do in game returns its outcome directly. */
 const wilderness: Guard = {

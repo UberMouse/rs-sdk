@@ -1,0 +1,2365 @@
+{
+  "tick": 12,
+  "revision": 12,
+  "player": {
+    "name": "Itjrwe0kb4ua",
+    "combatLevel": 3,
+    "hp": 10,
+    "maxHp": 10,
+    "x": 6976,
+    "z": 6464,
+    "worldX": 3222,
+    "worldZ": 3218,
+    "level": 0,
+    "runEnergy": 100,
+    "runWeight": 3,
+    "animId": -1,
+    "spotanimId": -1,
+    "combat": {
+      "inCombat": false,
+      "targetIndex": -1,
+      "targetType": "none",
+      "lastDamageTick": -1
+    },
+    "isDead": false,
+    "lifeId": 1,
+    "respawnCount": 0,
+    "lastDeathTick": null
+  },
+  "skills": [
+    {
+      "name": "Attack",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Defence",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Strength",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Hitpoints",
+      "level": 10,
+      "baseLevel": 10,
+      "experience": 980
+    },
+    {
+      "name": "Ranged",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Prayer",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Magic",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Cooking",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Woodcutting",
+      "level": 5,
+      "baseLevel": 5,
+      "experience": 359
+    },
+    {
+      "name": "Fletching",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Fishing",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Firemaking",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Crafting",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Smithing",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Mining",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Herblore",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Agility",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Thieving",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Stat18",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Stat19",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    },
+    {
+      "name": "Runecraft",
+      "level": 1,
+      "baseLevel": 1,
+      "experience": 0
+    }
+  ],
+  "inventory": [
+    {
+      "slot": 0,
+      "id": 1351,
+      "name": "Bronze axe",
+      "count": 1,
+      "optionsWithIndex": [
+        {
+          "text": "Wield",
+          "opIndex": 2
+        }
+      ]
+    },
+    {
+      "slot": 1,
+      "id": 315,
+      "name": "Shrimps",
+      "count": 1,
+      "optionsWithIndex": [
+        {
+          "text": "Eat",
+          "opIndex": 1
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "id": 315,
+      "name": "Shrimps",
+      "count": 1,
+      "optionsWithIndex": [
+        {
+          "text": "Eat",
+          "opIndex": 1
+        }
+      ]
+    },
+    {
+      "slot": 3,
+      "id": 1511,
+      "name": "Logs",
+      "count": 1,
+      "optionsWithIndex": []
+    },
+    {
+      "slot": 4,
+      "id": 590,
+      "name": "Tinderbox",
+      "count": 1,
+      "optionsWithIndex": []
+    },
+    {
+      "slot": 5,
+      "id": 995,
+      "name": "Coins",
+      "count": 100,
+      "optionsWithIndex": []
+    }
+  ],
+  "equipment": [],
+  "combatStyle": {
+    "currentStyle": 0,
+    "weaponName": "Unarmed",
+    "styles": [
+      {
+        "index": 0,
+        "name": "Punch",
+        "type": "Accurate",
+        "trainsSkills": [
+          "Attack"
+        ],
+        "damageType": "Crush"
+      },
+      {
+        "index": 1,
+        "name": "Kick",
+        "type": "Aggressive",
+        "trainsSkills": [
+          "Strength"
+        ],
+        "damageType": "Crush"
+      },
+      {
+        "index": 2,
+        "name": "Block",
+        "type": "Defensive",
+        "trainsSkills": [
+          "Defence"
+        ],
+        "damageType": "Crush"
+      }
+    ],
+    "tabInterfaceId": 5855,
+    "known": true
+  },
+  "nearbyNpcs": [
+    {
+      "kind": "npc",
+      "id": 3,
+      "index": 2827,
+      "name": "Man",
+      "combatLevel": 2,
+      "x": 3219,
+      "z": 3221,
+      "tileX": 3219,
+      "tileZ": 3221,
+      "size": 1,
+      "distance": 3,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 0,
+      "index": 2817,
+      "name": "Hans",
+      "combatLevel": 0,
+      "x": 3219,
+      "z": 3222,
+      "tileX": 3219,
+      "tileZ": 3222,
+      "size": 1,
+      "distance": 4,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Talk-to"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2828,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3217,
+      "z": 3219,
+      "tileX": 3217,
+      "tileZ": 3219,
+      "size": 1,
+      "distance": 5,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2831,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3227,
+      "z": 3222,
+      "tileX": 3227,
+      "tileZ": 3222,
+      "size": 1,
+      "distance": 5,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 1,
+      "index": 2823,
+      "name": "Man",
+      "combatLevel": 2,
+      "x": 3213,
+      "z": 3218,
+      "tileX": 3213,
+      "tileZ": 3218,
+      "size": 1,
+      "distance": 9,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 4,
+      "index": 2824,
+      "name": "Woman",
+      "combatLevel": 2,
+      "x": 3214,
+      "z": 3208,
+      "tileX": 3214,
+      "tileZ": 3208,
+      "size": 1,
+      "distance": 10,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2811,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3212,
+      "z": 3208,
+      "tileX": 3212,
+      "tileZ": 3208,
+      "size": 1,
+      "distance": 10,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 278,
+      "index": 2819,
+      "name": "Cook",
+      "combatLevel": 0,
+      "x": 3211,
+      "z": 3214,
+      "tileX": 3211,
+      "tileZ": 3214,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Talk-to"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 1,
+      "index": 2833,
+      "name": "Man",
+      "combatLevel": 2,
+      "x": 3233,
+      "z": 3208,
+      "tileX": 3233,
+      "tileZ": 3208,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 155,
+      "index": 2837,
+      "name": "Butterfly",
+      "combatLevel": 0,
+      "x": 3233,
+      "z": 3213,
+      "tileX": 3233,
+      "tileZ": 3213,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2841,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3233,
+      "z": 3211,
+      "tileX": 3233,
+      "tileZ": 3211,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 708,
+      "index": 2825,
+      "name": "Imp",
+      "combatLevel": 2,
+      "x": 3211,
+      "z": 3225,
+      "tileX": 3211,
+      "tileZ": 3225,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2807,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3211,
+      "z": 3207,
+      "tileX": 3211,
+      "tileZ": 3207,
+      "size": 1,
+      "distance": 11,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2810,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3212,
+      "z": 3206,
+      "tileX": 3212,
+      "tileZ": 3206,
+      "size": 1,
+      "distance": 12,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 4,
+      "index": 2838,
+      "name": "Woman",
+      "combatLevel": 2,
+      "x": 3236,
+      "z": 3207,
+      "tileX": 3236,
+      "tileZ": 3207,
+      "size": 1,
+      "distance": 14,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": true
+    },
+    {
+      "kind": "npc",
+      "id": 47,
+      "index": 2812,
+      "name": "Rat",
+      "combatLevel": 1,
+      "x": 3208,
+      "z": 3209,
+      "tileX": 3208,
+      "tileZ": 3209,
+      "size": 1,
+      "distance": 14,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Attack",
+          "opIndex": 2
+        }
+      ],
+      "options": [
+        "Attack"
+      ],
+      "reachable": false
+    },
+    {
+      "kind": "npc",
+      "id": 2,
+      "index": 2839,
+      "name": "Man",
+      "combatLevel": 2,
+      "x": 3236,
+      "z": 3218,
+      "tileX": 3236,
+      "tileZ": 3218,
+      "size": 1,
+      "distance": 14,
+      "hp": null,
+      "maxHp": null,
+      "healthPercent": null,
+      "targetIndex": -1,
+      "inCombat": false,
+      "lastCombatTick": null,
+      "animId": -1,
+      "spotanimId": -1,
+      "optionsWithIndex": [
+        {
+          "text": "Talk-to",
+          "opIndex": 1
+        },
+        {
+          "text": "Attack",
+          "opIndex": 2
+        },
+        {
+          "text": "Pickpocket",
+          "opIndex": 3
+        }
+      ],
+      "options": [
+        "Talk-to",
+        "Attack",
+        "Pickpocket"
+      ],
+      "reachable": true
+    }
+  ],
+  "nearbyPlayers": [],
+  "nearbyLocs": [
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3223,
+      "z": 3217,
+      "level": 0,
+      "distance": 1,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3220,
+      "z": 3217,
+      "level": 0,
+      "distance": 2,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3220,
+      "z": 3220,
+      "level": 0,
+      "distance": 2,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3223,
+      "z": 3220,
+      "level": 0,
+      "distance": 2,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3219,
+      "z": 3217,
+      "level": 0,
+      "distance": 3,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3219,
+      "z": 3220,
+      "level": 0,
+      "distance": 3,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3218,
+      "z": 3217,
+      "level": 0,
+      "distance": 4,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3218,
+      "z": 3220,
+      "level": 0,
+      "distance": 4,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1530,
+      "name": "Door",
+      "x": 3226,
+      "z": 3214,
+      "level": 0,
+      "distance": 4,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3217,
+      "z": 3217,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1516,
+      "name": "Large door",
+      "x": 3217,
+      "z": 3218,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1519,
+      "name": "Large door",
+      "x": 3217,
+      "z": 3219,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1124,
+      "name": "Bush",
+      "x": 3217,
+      "z": 3220,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1187,
+      "name": "Flower",
+      "x": 3226,
+      "z": 3213,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1530,
+      "name": "Door",
+      "x": 3226,
+      "z": 3223,
+      "level": 0,
+      "distance": 5,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1196,
+      "name": "Flowers",
+      "x": 3226,
+      "z": 3212,
+      "level": 0,
+      "distance": 6,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1187,
+      "name": "Flower",
+      "x": 3226,
+      "z": 3224,
+      "level": 0,
+      "distance": 6,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3228,
+      "z": 3216,
+      "level": 0,
+      "distance": 6,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3228,
+      "z": 3221,
+      "level": 0,
+      "distance": 6,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1536,
+      "name": "Door",
+      "x": 3215,
+      "z": 3211,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1536,
+      "name": "Door",
+      "x": 3215,
+      "z": 3225,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1196,
+      "name": "Flowers",
+      "x": 3226,
+      "z": 3211,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1195,
+      "name": "Flowers",
+      "x": 3226,
+      "z": 3225,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1393,
+      "name": "Plant",
+      "x": 3229,
+      "z": 3211,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1747,
+      "name": "Ladder",
+      "x": 3229,
+      "z": 3213,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [
+        {
+          "text": "Climb-up",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Climb-up"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3229,
+      "z": 3216,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3229,
+      "z": 3221,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1747,
+      "name": "Ladder",
+      "x": 3229,
+      "z": 3224,
+      "level": 0,
+      "distance": 7,
+      "optionsWithIndex": [
+        {
+          "text": "Climb-up",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Climb-up"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 879,
+      "name": "Fountain",
+      "x": 3221,
+      "z": 3210,
+      "level": 0,
+      "distance": 8,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 879,
+      "name": "Fountain",
+      "x": 3221,
+      "z": 3226,
+      "level": 0,
+      "distance": 8,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1187,
+      "name": "Flower",
+      "x": 3226,
+      "z": 3210,
+      "level": 0,
+      "distance": 8,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1195,
+      "name": "Flowers",
+      "x": 3226,
+      "z": 3226,
+      "level": 0,
+      "distance": 8,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3213,
+      "z": 3209,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 890,
+      "name": "Portrait",
+      "x": 3213,
+      "z": 3215,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 894,
+      "name": "Landscape",
+      "x": 3213,
+      "z": 3218,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3213,
+      "z": 3219,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1516,
+      "name": "Large door",
+      "x": 3213,
+      "z": 3220,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1519,
+      "name": "Large door",
+      "x": 3213,
+      "z": 3221,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 817,
+      "name": "Suit of armour",
+      "x": 3213,
+      "z": 3222,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1187,
+      "name": "Flower",
+      "x": 3226,
+      "z": 3227,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1393,
+      "name": "Plant",
+      "x": 3231,
+      "z": 3209,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 563,
+      "name": "Statue of a king",
+      "x": 3231,
+      "z": 3217,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 563,
+      "name": "Statue of a king",
+      "x": 3231,
+      "z": 3220,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3231,
+      "z": 3226,
+      "level": 0,
+      "distance": 9,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 114,
+      "name": "Cooking range",
+      "x": 3212,
+      "z": 3215,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 362,
+      "name": "Barrel",
+      "x": 3212,
+      "z": 3217,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3213,
+      "z": 3228,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 887,
+      "name": "Portrait",
+      "x": 3231,
+      "z": 3208,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3232,
+      "z": 3213,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3232,
+      "z": 3228,
+      "level": 0,
+      "distance": 10,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3211,
+      "z": 3209,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 594,
+      "name": "Table",
+      "x": 3211,
+      "z": 3212,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1102,
+      "name": "Stool",
+      "x": 3211,
+      "z": 3213,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 362,
+      "name": "Barrel",
+      "x": 3211,
+      "z": 3217,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3211,
+      "z": 3228,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3224,
+      "z": 3207,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3225,
+      "z": 3229,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 417,
+      "name": "Bed",
+      "x": 3229,
+      "z": 3207,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1300,
+      "name": "Fern",
+      "x": 3231,
+      "z": 3229,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3233,
+      "z": 3211,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1394,
+      "name": "Plant",
+      "x": 3233,
+      "z": 3214,
+      "level": 0,
+      "distance": 11,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 364,
+      "name": "Barrel",
+      "x": 3210,
+      "z": 3217,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1097,
+      "name": "Throne",
+      "x": 3210,
+      "z": 3219,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1097,
+      "name": "Throne",
+      "x": 3210,
+      "z": 3224,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3221,
+      "z": 3206,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3222,
+      "z": 3230,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3223,
+      "z": 3206,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1192,
+      "name": "Flowers",
+      "x": 3224,
+      "z": 3230,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1394,
+      "name": "Plant",
+      "x": 3228,
+      "z": 3230,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 887,
+      "name": "Portrait",
+      "x": 3229,
+      "z": 3206,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 873,
+      "name": "Sink",
+      "x": 3230,
+      "z": 3206,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 380,
+      "name": "Bookcase",
+      "x": 3232,
+      "z": 3206,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [
+        {
+          "text": "Search",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Search"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1530,
+      "name": "Door",
+      "x": 3234,
+      "z": 3207,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3234,
+      "z": 3226,
+      "level": 0,
+      "distance": 12,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3209,
+      "z": 3209,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 594,
+      "name": "Table",
+      "x": 3209,
+      "z": 3212,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1102,
+      "name": "Stool",
+      "x": 3209,
+      "z": 3213,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1568,
+      "name": "Trapdoor",
+      "x": 3209,
+      "z": 3216,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1097,
+      "name": "Throne",
+      "x": 3209,
+      "z": 3219,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 597,
+      "name": "Table",
+      "x": 3209,
+      "z": 3220,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1097,
+      "name": "Throne",
+      "x": 3209,
+      "z": 3224,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 202,
+      "name": "Candles",
+      "x": 3209,
+      "z": 3228,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1278,
+      "name": "Tree",
+      "x": 3217,
+      "z": 3231,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [
+        {
+          "text": "Chop down",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Chop down"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1281,
+      "name": "Oak",
+      "x": 3218,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [
+        {
+          "text": "Chop down",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Chop down"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1192,
+      "name": "Flowers",
+      "x": 3222,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3223,
+      "z": 3231,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1300,
+      "name": "Fern",
+      "x": 3225,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 887,
+      "name": "Portrait",
+      "x": 3229,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 888,
+      "name": "Painting",
+      "x": 3232,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 683,
+      "name": "Grandfather clock",
+      "x": 3233,
+      "z": 3205,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1278,
+      "name": "Tree",
+      "x": 3235,
+      "z": 3230,
+      "level": 0,
+      "distance": 13,
+      "optionsWithIndex": [
+        {
+          "text": "Chop down",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Chop down"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1530,
+      "name": "Door",
+      "x": 3208,
+      "z": 3211,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1088,
+      "name": "Chair",
+      "x": 3208,
+      "z": 3220,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1088,
+      "name": "Chair",
+      "x": 3208,
+      "z": 3221,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1088,
+      "name": "Chair",
+      "x": 3208,
+      "z": 3222,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1088,
+      "name": "Chair",
+      "x": 3208,
+      "z": 3223,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 1278,
+      "name": "Tree",
+      "x": 3212,
+      "z": 3232,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [
+        {
+          "text": "Chop down",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Chop down"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3221,
+      "z": 3204,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1192,
+      "name": "Flowers",
+      "x": 3222,
+      "z": 3232,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1278,
+      "name": "Tree",
+      "x": 3225,
+      "z": 3232,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [
+        {
+          "text": "Chop down",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Chop down"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1016,
+      "name": "Warehouse shelves",
+      "x": 3228,
+      "z": 3204,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1173,
+      "name": "Small fern",
+      "x": 3235,
+      "z": 3232,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1080,
+      "name": "Signpost",
+      "x": 3236,
+      "z": 3227,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3236,
+      "z": 3229,
+      "level": 0,
+      "distance": 14,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1536,
+      "name": "Door",
+      "x": 3207,
+      "z": 3217,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1536,
+      "name": "Door",
+      "x": 3207,
+      "z": 3225,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [
+        {
+          "text": "Open",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Open"
+      ],
+      "reachable": false
+    },
+    {
+      "id": 1187,
+      "name": "Flower",
+      "x": 3214,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1173,
+      "name": "Small fern",
+      "x": 3218,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1188,
+      "name": "Flower",
+      "x": 3221,
+      "z": 3233,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1015,
+      "name": "Warehouse shelves",
+      "x": 3228,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    },
+    {
+      "id": 595,
+      "name": "Table",
+      "x": 3229,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 595,
+      "name": "Table",
+      "x": 3231,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1300,
+      "name": "Fern",
+      "x": 3232,
+      "z": 3233,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1531,
+      "name": "Door",
+      "x": 3233,
+      "z": 3203,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [
+        {
+          "text": "Close",
+          "opIndex": 1
+        }
+      ],
+      "options": [
+        "Close"
+      ],
+      "reachable": true
+    },
+    {
+      "id": 1189,
+      "name": "Daisies",
+      "x": 3237,
+      "z": 3222,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": true
+    },
+    {
+      "id": 1173,
+      "name": "Small fern",
+      "x": 3237,
+      "z": 3230,
+      "level": 0,
+      "distance": 15,
+      "optionsWithIndex": [],
+      "options": [],
+      "reachable": false
+    }
+  ],
+  "groundItems": [
+    {
+      "id": 1935,
+      "name": "Jug",
+      "count": 1,
+      "x": 3212,
+      "z": 3212,
+      "distance": 10,
+      "reachable": false
+    },
+    {
+      "id": 1931,
+      "name": "Pot",
+      "count": 1,
+      "x": 3210,
+      "z": 3212,
+      "distance": 12,
+      "reachable": false
+    }
+  ],
+  "gameMessages": [
+    {
+      "type": 0,
+      "text": "Welcome to RuneScape.",
+      "sender": "",
+      "tick": 1,
+      "observationId": 1,
+      "fromSelf": false
+    }
+  ],
+  "recentDialogs": [],
+  "menuActions": [],
+  "shop": {
+    "isOpen": false,
+    "title": "",
+    "shopItems": [],
+    "playerItems": []
+  },
+  "bank": {
+    "isOpen": false,
+    "items": [],
+    "noteMode": false
+  },
+  "trade": {
+    "isOpen": false,
+    "screen": null,
+    "partner": null,
+    "myOffer": [],
+    "theirOffer": [],
+    "myAccepted": false,
+    "partnerAccepted": false
+  },
+  "ge": null,
+  "inGame": true,
+  "combatEvents": [],
+  "dialog": {
+    "isOpen": false,
+    "options": [],
+    "isWaiting": false,
+    "allComponents": []
+  },
+  "interface": {
+    "isOpen": false,
+    "interfaceId": -1,
+    "options": [],
+    "debugInfo": []
+  },
+  "modalOpen": false,
+  "modalInterface": -1,
+  "prayers": {
+    "activePrayers": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "prayerPoints": 1,
+    "prayerLevel": 1
+  },
+  "isSkulled": false,
+  "autoRetaliateEnabled": true,
+  "opFeedback": {
+    "mapFlagUnsetCount": 0,
+    "lastMapFlagUnsetTick": -1,
+    "opRejectedCount": 0,
+    "lastOpRejectedTick": -1
+  }
+}

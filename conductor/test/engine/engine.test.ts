@@ -8,7 +8,7 @@ import { MAX_STEP_COMMANDS } from '../../lib/engine';
 import type { Outcome, Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline } from '../core/states';
+import { timeline } from '../world';
 import { runTask } from './harness';
 
 /** A client that never publishes another tick and never reports the stall: only wall-clock limits end a step. */

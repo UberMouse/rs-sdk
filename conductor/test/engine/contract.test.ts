@@ -7,7 +7,7 @@ import type { TimelineDriver } from '../../core/drivers/timeline';
 import { log, type Op, send, ticks, wait } from '../../core/op';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { timeline, worldState } from '../core/states';
+import { timeline, worldState } from '../world';
 import { runDef, runTask } from './harness';
 
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;

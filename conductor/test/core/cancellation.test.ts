@@ -4,7 +4,7 @@ import { TimelineDriver } from '../../core/drivers/timeline';
 import { CLEANUP_COMMANDS, CLEANUP_TICKS, type Guard, interpret } from '../../core/interpret';
 import { call, log, type Op, rethrowIfCancelled, send, ticks, uninterruptible, wait } from '../../core/op';
 import { act, busy, dialog, gateAt, lowHp, slowDialog, stopAt, trace, waitsThenCleansUp } from './fixtures';
-import { timeline } from './states';
+import { timeline } from '../world';
 
 function* inner(): Op<void> {
     try {
