@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import type { BotWorldState } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
@@ -154,6 +155,15 @@ describe('the interface guard', () => {
         expect(r.result.reason).toBe(`interrupt:interface: interface ${BOOK} stuck open after 3 closes`);
         const close = `close interface ${BOOK}`;
         expect(r.sends).toEqual(['chop', close, close, close, 'cleanup']);
+    });
+
+    test('never closes exactly the ids sdk/actions.ts NEVER_AUTO_CLOSE lists', () => {
+        const source = readFileSync(new URL('../../../sdk/actions.ts', import.meta.url), 'utf8');
+        const body = /NEVER_AUTO_CLOSE = new Set\(\[([^\]]*)\]\)/.exec(source)?.[1];
+        expect(body, 'NEVER_AUTO_CLOSE not found in sdk/actions.ts').toBeDefined();
+        const sdkIds = [...(body ?? '').replace(/\/\/.*$/gm, '').matchAll(/\d+/g)].map(m => Number(m[0]));
+        expect(sdkIds.length).toBeGreaterThan(0);
+        expect([...NEVER_CLOSE_INTERFACES].sort()).toEqual(sdkIds.sort());
     });
 
     test('closes only what bot.dismissBlockingUI would: no shop, bank, GE or never-close modal', () => {

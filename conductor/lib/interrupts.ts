@@ -22,13 +22,13 @@ const MAX_EATS_PER_EPISODE = 8;
 const REGEN_SLICE_TICKS = 5;
 /** Ticks of regeneration waiting per low-HP episode before giving up. */
 const REGEN_CAP_TICKS = 500;
-/** Handler runs a dialog may stay open through within one episode before the run gives up. */
-const DIALOG_STUCK_LIMIT = 5;
+/** The run fails on the dialog guard's Nth run within one episode that leaves the dialog open. */
+const DIALOG_STUCK_LIMIT = 6;
 /** Ticks one fight may last while the bot only waits for auto-retaliate to win it. */
 const COMBAT_TICK_LIMIT = 40;
 /** Ticks a close may take to show in the state; bot.dismissBlockingUI allows 2s (5 ticks) after each. */
 const INTERFACE_CLOSE_TICKS = 5;
-/** Closes that leave an interface open, within one episode, before the run gives up. */
+/** The run fails on the interface guard's Nth close within one episode that leaves the interface open. */
 const INTERFACE_STUCK_LIMIT = 3;
 
 /**
@@ -159,8 +159,8 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
 };
 
 /**
- * Clears level-up and other "click to continue" dialogs. BotActions methods do this themselves;
- * this covers tasks that use raw sdk.send* calls. A task that drives dialogs on purpose sets
+ * Clears level-up and other "click to continue" dialogs. Most BotActions methods do this themselves
+ * (dismissBlockingUI); ops send raw, so this guard does. A task that drives dialogs on purpose sets
  * `allow: ['dialog']`.
  */
 export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
@@ -175,7 +175,7 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
         // dismissBlockingUI leaves multi-option dialogs alone and returns at once; wait a tick so the
         // loop yields, and give up if nothing else closes it.
         yield* ticks(1);
-        if (++episode.stuckRuns > DIALOG_STUCK_LIMIT)
+        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT)
             return { fail: `dialog stuck open: ${dialog.options.map(o => o.text).join(' | ')}` };
     },
 };
@@ -193,8 +193,8 @@ export const closableInterface = (s: BotWorldState): boolean =>
 
 /**
  * Closes a leftover informational modal: while a main modal is open the server runs no loc or NPC
- * interaction (Player.tryInteract needs canAccess), so every chop would time out. BotActions methods
- * close these first; ops send raw. A task that opens one on purpose sets `allow: ['interface']`.
+ * interaction (Player.tryInteract needs canAccess), so every chop would time out. Most BotActions methods
+ * close these first (dismissBlockingUI); ops send raw, so this guard does. A task that opens one on purpose sets `allow: ['interface']`.
  */
 export const interfaceGuard: TaskGuard<{ stuckCloses: number }, GuardName> = {
     name: 'interface',
