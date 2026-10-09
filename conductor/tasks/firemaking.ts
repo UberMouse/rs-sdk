@@ -1,11 +1,12 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
-import { burn } from '../actions/burn';
-import { walkTo } from '../actions/walk';
+import { BURN_WAIT_TICKS, burn } from '../actions/burn';
+import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Firemaking level per log type, from server/content/scripts/skill_firemaking/configs/firemaking.obj
@@ -22,6 +23,16 @@ const LOG_LEVELS: Record<string, number | undefined> = {
 
 const TINDERBOX = /^tinderbox$/i;
 const BURN_FAIL_LIMIT = 5;
+/**
+ * The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`: the walks
+ * back to the area (WALK_FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the
+ * lights (BURN_FAIL_LIMIT timed-out ones, each BURN_WAIT_TICKS of nothing).
+ */
+export const SILENT_STREAK_TICKS = [
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
+    failStreakTicks(BURN_FAIL_LIMIT, BURN_WAIT_TICKS),
+];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** How far a refused light moves the bot to find another tile. */
 const SIDESTEP_MAX_TILES = 3;
 /**
@@ -78,6 +89,7 @@ export default defineTask({
         'Verified spot: area {x:3230,z:3240,radius:6} (field east of the Lumbridge General Store).',
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
+    stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
         const s = ctx.state();

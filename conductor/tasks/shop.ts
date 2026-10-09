@@ -1,11 +1,13 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
-import { buy, closeShop, sell, withShop } from '../actions/shop';
-import { timedOutAdvancing, walkTo } from '../actions/walk';
+import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
+import { buy, closeShop, OPEN_SHOP_WAIT_TICKS, sell, withShop } from '../actions/shop';
+import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/wilderness';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, TICK_MS } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const COINS = /^coins$/i;
 const WALK_TOLERANCE = 3;
@@ -15,15 +17,28 @@ const KEEPER_WALK_TOLERANCE = 2;
 const AT_REACH = 8;
 /**
  * Consecutive failures of one kind before the task fails, each its own streak: failed walks to the
- * shop (not one that ran out of ticks nearer it, timedOutAdvancing); failed closes of a shop left open; trade step runs whose open failed; and trade step runs that
- * ended with a trade cut off, unfinished, by the shop closing under it (or by a sale the inventory did
- * not show), which a finished trade resets. Three timed-out opens, each with withShop's wait for a late
- * open, are about 35 s of nothing changing, inside the engine's default stuck window (90 s), so the
- * failure is reported instead of the watchdog.
+ * shop (not one that ran out of ticks nearer it, timedOutAdvancing); failed closes of a shop left
+ * open; trade step runs whose open failed; and trade step runs that ended with a trade cut off,
+ * unfinished, by the shop closing under it (or by a sale the inventory did not show), which a
+ * finished trade resets.
  */
 const FAIL_LIMIT = 3;
 /** Walks to a far shop outlast the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 300_000;
+/**
+ * One failed open changes nothing the watchdog sees: the open's wait, withShop's close (a late-open
+ * wait and a second try), and for a can't-reach the walk to the keeper (walkToKeeper).
+ */
+const OPEN_SILENT_TICKS = OPEN_SHOP_WAIT_TICKS + 2 * CLEANUP_CLOSE_WAIT_TICKS + 1 + WALK_MAX_TICKS;
+/**
+ * The watchdog outlasts both fail streaks, so the task's own reason surfaces and not `stuck`: the walks
+ * to the shop (FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the opens.
+ */
+export const SILENT_STREAK_TICKS = [
+    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
+    failStreakTicks(FAIL_LIMIT, OPEN_SILENT_TICKS),
+];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /**
  * The trade step starts no further trade once it has run this long, half its tick budget, and runs
  * again for the rest (closing and reopening the shop; the resume state is in memory). One trade can
@@ -245,6 +260,7 @@ export default defineTask({
     params: Params,
     memory: (): ShopMemory => ({ tradesMade: 0, coinsReceived: 0, coinsSpent: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
+    stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
         const { sell: sells, buy: buys, at } = ctx.params;

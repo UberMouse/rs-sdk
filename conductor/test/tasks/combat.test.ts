@@ -484,7 +484,7 @@ describe('combat: return to area', () => {
 
 describe('combat: the step budget', () => {
     test('the fight step fits its longest walk, the attack and the retry wait', () => {
-        expect(AFTER_WALK_TICKS).toBe(ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS);
+        expect(AFTER_WALK_TICKS).toBe(1 + ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS);
         expect(stepBudgetTicks(combat.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(WALK_MAX_TICKS + AFTER_WALK_TICKS);
     });
 });

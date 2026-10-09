@@ -3,7 +3,6 @@ import type { BotAction } from '../../../sdk/types';
 import { CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
-import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import bank from '../../tasks/bank';
 import { fakePaths } from '../paths';
@@ -166,7 +165,7 @@ describe('bank: failures', () => {
         expect(r.sends).toEqual([OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED]);
         const ticks = r.driver.state().tick;
         expect(ticks).toBe(3 * (OPEN_BANK_WAIT_TICKS + CLEANUP_CLOSE_WAIT_TICKS));
-        expect(ticks * TICK_MS).toBeLessThan(DEFAULT_STUCK_AFTER_MS);
+        expect(ticks * TICK_MS).toBeLessThan(bank.stuckAfterMs ?? 0);
     });
 
     test('an open that fails twice and then goes through does not fail the run', async () => {

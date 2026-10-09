@@ -21,7 +21,8 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
-import { exactName, findSkill, TICK_MS } from '../lib/util';
+import { exactName, findSkill } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const BARS = ['bronze', 'iron', 'steel', 'mithril', 'adamant', 'runite'] as const;
 type Metal = (typeof BARS)[number];
@@ -122,7 +123,8 @@ const OP_SILENT_TICKS =
  */
 export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_SILENT_TICKS;
 /** FAIL_LIMIT failed attempts in a row, and one more, so the task's own failure reason surfaces before the watchdog's. */
-const STUCK_AFTER_MS = (FAIL_LIMIT + 1) * ATTEMPT_SILENT_TICKS * TICK_MS;
+export const SILENT_STREAK_TICKS = [failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS)];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
     mode: z.enum(['smelt', 'smith']),

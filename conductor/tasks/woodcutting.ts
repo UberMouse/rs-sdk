@@ -7,6 +7,7 @@ import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 // Each tree drops exactly one log item; dropping by that exact name keeps other *logs items safe.
 const TREES = {
@@ -26,7 +27,8 @@ const CHOP_FAIL_LIMIT = 8;
  * for the task to report them; one more chop wait covers the sends between them and slow ticks. That is
  * also above the no-tree give-up and the engine default (90s), so a full respawn wait is not a stall.
  */
-const STUCK_AFTER_MS = (CHOP_FAIL_LIMIT + 1) * CHOP_WAIT_TICKS * TICK_MS;
+export const SILENT_STREAK_TICKS = [failStreakTicks(CHOP_FAIL_LIMIT, CHOP_WAIT_TICKS)];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 

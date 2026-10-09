@@ -7,6 +7,7 @@ import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Every rock is named "Rocks" and a mined-out rock is still named "Rocks" with a Mine option
@@ -71,18 +72,18 @@ const REFUSED_ROCKS: readonly RockName[] = ['runite'];
 const giveUpTicksFor = (ticks: number) => Math.max(MIN_GIVE_UP_TICKS, ticks + GIVE_UP_MARGIN_TICKS);
 /** Consecutive failed attempts before the task fails. */
 const MINE_FAIL_LIMIT = 8;
-const STUCK_SLACK_MS = 30_000;
 /**
- * Give-up of the slowest accepted rock (adamantite) plus slack: stuckAfterMs is static, so a full respawn wait is
- * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes during
- * one), plus one more wait for the sends between them, so the specific failure reason surfaces first. The watchdog is wall-clock but the give-up is in game
- * ticks, so the margin assumes the local tick length (TICK_MS); a slower-ticking server could fire the
- * watchdog before the slowest give-up.
+ * Give-up of the slowest accepted rock (adamantite): stuckAfterMs is static, so a full respawn wait is
+ * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes
+ * during one), and one more, so the specific failure reason surfaces first. The watchdog is wall-clock
+ * but the give-up is in game ticks, so the margin assumes the local tick length (TICK_MS); a
+ * slower-ticking server could fire the watchdog before the slowest give-up.
  */
-const STUCK_AFTER_MS = Math.max(
-    giveUpTicksFor(ROCKS.adamantite.respawnTicks) * TICK_MS + STUCK_SLACK_MS,
-    (MINE_FAIL_LIMIT + 1) * MINE_WAIT_TICKS * TICK_MS,
-);
+export const SILENT_STREAK_TICKS = [
+    giveUpTicksFor(ROCKS.adamantite.respawnTicks),
+    failStreakTicks(MINE_FAIL_LIMIT, MINE_WAIT_TICKS),
+];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 

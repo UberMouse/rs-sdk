@@ -245,7 +245,7 @@ describe('shop: failures', () => {
         expect(r.sends).toEqual([OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED]);
         const ticks = r.driver.state().tick;
         expect(ticks).toBe(3 * (OPEN_SHOP_WAIT_TICKS + CLEANUP_CLOSE_WAIT_TICKS));
-        expect(ticks * TICK_MS).toBeLessThan(DEFAULT_STUCK_AFTER_MS);
+        expect(ticks * TICK_MS).toBeLessThan(shop.stuckAfterMs ?? 0);
     });
 
     test('an open that fails twice and then goes through does not fail the run', async () => {

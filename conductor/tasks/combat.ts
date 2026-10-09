@@ -4,11 +4,12 @@ import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
-import { walkTo } from '../actions/walk';
+import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { TICK_MS } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const SKILLS = ['Attack', 'Strength', 'Defence'] as const;
 
@@ -31,8 +32,10 @@ const NO_TARGET_LIMIT = 20;
 const NO_TARGET_WAIT_TICKS = 3;
 const ATTACK_FAIL_LIMIT = 6;
 export const ATTACK_RETRY_TICKS = 1;
-/** What the fight step does after its walk to an NPC: the attack's wait, then the retry wait on a failure. */
-export const AFTER_WALK_TICKS = ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS;
+/** The attack's own send takes a tick; walkTo's reserveTicks must count it (WALK_RESERVE_TICKS). */
+const SEND_TICKS = 1;
+/** What the fight step does after its walk to an NPC: the attack's send, its wait, then the retry wait on a failure. */
+export const AFTER_WALK_TICKS = SEND_TICKS + ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS;
 /**
  * An NPC further than this is walked to first, to within this: the walkTo op opens the doors and gates
  * on the way, which the client's own pathing for the attack does not.
@@ -48,14 +51,23 @@ const LOOT_FAIL_LIMIT = 9;
  * does not skip every later drop of the same item on that tile (feathers at a chicken spot) for the run.
  */
 const LOOT_SKIP_TICKS = Math.ceil(20_000 / TICK_MS);
-/** Margin on the watchdog window, beyond the slowest specific give-up it must let fire first. */
-const STUCK_MARGIN_MS = 30_000;
 /** The longest a fight wait can run past the timeout: the check happens between kill slices. */
-const FIGHT_GIVE_UP_MS = FIGHT_TIMEOUT_MS + FIGHT_SLICE_TICKS * TICK_MS;
+const FIGHT_GIVE_UP_TICKS = FIGHT_TIMEOUT_TICKS + FIGHT_SLICE_TICKS;
 /** The loot give-up: LOOT_FAIL_LIMIT pickups each waiting out a full timeout and grace. */
-const LOOT_GIVE_UP_MS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS) * TICK_MS;
-/** The watchdog (static) waits for the later of the two specific failures, so each can report its reason. */
-const STUCK_AFTER_MS = Math.max(FIGHT_GIVE_UP_MS, LOOT_GIVE_UP_MS) + STUCK_MARGIN_MS;
+const LOOT_GIVE_UP_TICKS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS);
+/**
+ * The watchdog (static) waits for the longest of the specific failures, so each can report its reason:
+ * the fight and loot give-ups, the walks back to the area (WALK_FAIL_LIMIT of them, each up to
+ * WALK_MAX_TICKS without moving the bot) and the attacks (ATTACK_FAIL_LIMIT of them, each a failed walk
+ * to a far NPC and then the attack's wait).
+ */
+export const SILENT_STREAK_TICKS = [
+    FIGHT_GIVE_UP_TICKS,
+    LOOT_GIVE_UP_TICKS,
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
+    failStreakTicks(ATTACK_FAIL_LIMIT, WALK_MAX_TICKS + AFTER_WALK_TICKS),
+];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Ground items further than this are not worth leaving the fight spot for. */
 const LOOT_RADIUS = 6;
 const EAT_FAIL_LIMIT = 3;

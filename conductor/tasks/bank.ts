@@ -1,19 +1,29 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
-import { deposit, withBank, withdraw } from '../actions/bank';
+import { deposit, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from '../actions/bank';
+import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
+import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { AreaSchema, refuseArea, walkToArea } from '../lib/area';
+import { AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { exactName } from '../lib/util';
+import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
-/**
- * Consecutive failed opens before the task fails. Three timed-out opens, each with withBank's wait for
- * a late open, are under 35 s of nothing changing, inside the engine's default stuck window (90 s), so
- * the failure is reported instead of the watchdog.
- */
+/** Consecutive failed opens before the task fails. */
 const OPEN_FAIL_LIMIT = 3;
 /** Walks to a far bank outlast the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 300_000;
+/** One failed open changes nothing the watchdog sees: the open's wait, then withBank's close (a late-open wait and a second try). */
+const OPEN_SILENT_TICKS = OPEN_BANK_WAIT_TICKS + 2 * CLEANUP_CLOSE_WAIT_TICKS + 1;
+/**
+ * The watchdog outlasts both fail streaks, so the task's own reason surfaces and not `stuck`: the walks
+ * to the area (WALK_FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the opens.
+ */
+export const SILENT_STREAK_TICKS = [
+    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
+    failStreakTicks(OPEN_FAIL_LIMIT, OPEN_SILENT_TICKS),
+];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
     /** Walk here first (a bank, e.g. Varrock West (3185,3436)). Omit to use the nearest bank to where the bot stands. */
@@ -144,6 +154,7 @@ export default defineTask({
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
+    stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
         const { deposit: deposits, depositAllExcept, withdraw: withdrawals, area } = ctx.params;

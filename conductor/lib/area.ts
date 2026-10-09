@@ -16,7 +16,8 @@ const DEFAULT_AREA_RADIUS = 15;
  */
 const WORK_REACH = 2;
 const MAX_WALK_TOLERANCE = 3;
-const WALK_FAIL_LIMIT = 3;
+/** Consecutive failed walks to the area before the task fails. */
+export const WALK_FAIL_LIMIT = 3;
 
 export const AreaSchema = z.object({
     x: z.number(),

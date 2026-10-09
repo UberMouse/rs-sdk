@@ -5,13 +5,15 @@ import { log, type Op, ticks } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
+import { stuckWindowMs } from '../lib/watchdog';
 
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
 const WAIT_TICKS = 5;
 const MAX_WAIT_SECONDS = 300;
 /** The engine's no-progress watchdog must outlast the longest allowed wait, so the task's own give-up fires first. */
-const STUCK_AFTER_MS = (MAX_WAIT_SECONDS + 60) * 1000;
+export const SILENT_STREAK_TICKS = [Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS)];
+const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Walking to a far area outlasts the default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
