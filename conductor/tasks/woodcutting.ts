@@ -33,6 +33,8 @@ const Params = z.object({
     tree: z.enum(['tree', 'oak', 'willow']).default('tree'),
     /** Stay near here; walk back when further than `radius`. Omit to chop wherever the bot is. */
     area: AreaSchema.optional(),
+    /** What to do when the inventory is full: drop the logs and keep chopping, or end the run holding them. */
+    onFull: z.enum(['drop', 'stop']).default('drop'),
 });
 
 type WoodcuttingParams = z.infer<typeof Params>;
@@ -71,7 +73,8 @@ async function chopTree(ctx: Ctx, tree: NearbyLoc): Promise<ChopOutcome> {
 export default defineTask({
     name: 'woodcutting',
     description:
-        'Chop trees of one type and drop the logs when full. Needs an axe and the level for the tree. ' +
+        'Chop trees of one type; when the inventory is full, `onFull` "drop" (default) drops the logs and keeps chopping, ' +
+        '"stop" ends the run done ("inventory full: N logs") holding them, e.g. to feed fletching/firemaking. Needs an axe and the level for the tree. ' +
         'When every tree in reach is a stump it waits up to 2 min for respawns, then fails "area depleted". ' +
         'With `area` it stays within `radius` of that centre; without it, it chops wherever the bot stands. ' +
         'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
@@ -92,8 +95,17 @@ export default defineTask({
 
     steps: [
         {
+            name: 'stop-full',
+            when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
+            async run(ctx) {
+                const logs = countLogs(ctx.state(), TREES[ctx.params.tree].logs);
+                if (logs === 0) return { fail: `inventory full with no ${ctx.params.tree} logs` };
+                return { done: `inventory full: ${logs} logs` };
+            },
+        },
+        {
             name: 'drop-logs',
-            when: ctx => ctx.inventoryFull(),
+            when: ctx => ctx.params.onFull === 'drop' && ctx.inventoryFull(),
             async run(ctx) {
                 const r = await ctx.bot.dropItem(TREES[ctx.params.tree].logs, 'all');
                 if (ctx.inventoryFull()) {
