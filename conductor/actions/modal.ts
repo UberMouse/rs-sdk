@@ -99,12 +99,11 @@ function* closeAfterAbort<F extends OpenFailure>(
  * server-side. The interface guard leaves a bank or shop alone by design, so this pairing is the only
  * thing that closes it.
  *
- * What is guaranteed: the normal path's close is `modal.close`'s full one, and `closed` is its result; a
- * failed open is returned with closeAfterAbort's result as its `closed`, so a caller can report a modal
- * that close left open. Any other ending (a cancel, a failed open, a throw) gets closeAfterAbort, which
- * fits CLEANUP_TICKS: it
+ * What is guaranteed: the normal path gets `modal.close`'s full close, and `closed` is its result. Any
+ * other ending (a failed open, a cancel, a throw) gets closeAfterAbort, which fits CLEANUP_TICKS, and a
+ * failed open is returned with its result as `closed`, so a caller can report a modal left open. It
  * sends a close within the cap whenever the modal shows open, or an open was sent and not confirmed
- * (waiting CLEANUP_CLOSE_WAIT_TICKS for a late open to show first), and a second close if the first
+ * (after waiting CLEANUP_CLOSE_WAIT_TICKS for a late open to show), and a second close if the first
  * shows no effect. A modal that ignores both closes, or an open landing after that wait, stays open.
  */
 export function* withModal<T, F extends OpenFailure>(

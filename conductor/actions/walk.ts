@@ -44,8 +44,18 @@ const STUCK_WAYPOINTS = 3;
 const POOR_PROGRESS_LIMIT = 3;
 /** openDoorAt's 8 s wait for the door to change, in ticks. */
 export const DOOR_OPEN_TICKS = Math.ceil(8000 / TICK_MS);
-/** Running speed: a leg gets 1.5x the ticks it needs at it. */
+/** Running speed, in tiles a tick. */
 const RUN_TILES_PER_TICK = 2;
+/**
+ * A leg gets this many times the ticks running straight to its waypoint takes: the server's route there
+ * can be longer than the straight line (round a corner, a door), and the send itself can cost a tick.
+ */
+const LEG_SLACK = 1.5;
+/**
+ * A leg that stopped short having moved less than this (straight line) is stuck: under one running
+ * tick's distance, so something blocked the bot rather than the leg running out of ticks mid-stride.
+ */
+const STUCK_MOVE_TILES = 2;
 /** A leg has stopped when the bot has not moved for this many ticks. */
 const STOPPED_TICKS = 2;
 const MIN_LEG_TICKS = 3;
@@ -126,6 +136,16 @@ const tileKey = (p: Point) => `${p.x},${p.z}`;
 const doorKey = (d: DoorInfo) => `${d.level},${d.x},${d.z}`;
 const hasOpen = (l: NearbyLoc) => l.optionsWithIndex.some(o => OPEN.test(o.text));
 const adjacent = (a: Point, b: Point) => dist(a, b) === 1;
+/** A route's last waypoint; undefined for a failed or empty route. */
+const lastWaypoint = (p: PathResult) => (p.success ? p.waypoints.at(-1) : undefined);
+/** A tile's own offset and its four cardinal neighbours'. */
+const NEIGHBOURS: readonly (readonly [number, number])[] = [
+    [0, 0],
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+];
 
 /** Ticks of `n` the walk's budget still allows. */
 const allowed = (w: Walk, n: number) => Math.max(0, Math.min(n, w.deadline - w.ctx.state().tick));
@@ -207,10 +227,12 @@ export function* walkTo(
     for (let i = 0; i < MAX_ROUTES; i++) {
         if (outOfTime(w)) return timedOut();
         let path = route(w);
-        if (!path.success || !path.waypoints.length) {
+        let end = lastWaypoint(path);
+        if (!end) {
             yield* pause(w, 1);
             path = route(w);
-            if (!path.success || !path.waypoints.length) {
+            end = lastWaypoint(path);
+            if (!end) {
                 // The usual cause is a destination that is itself blocked (a wall, a loc's tile), not
                 // broken collision data: say which.
                 const level = ctx.state().player?.level ?? 0;
@@ -231,7 +253,6 @@ export function* walkTo(
                 reason: 'no-path',
                 message: `Route to (${x}, ${z}) crosses the Wilderness at (${wild.x}, ${wild.z}); not walking it`,
             };
-        const end = waypoints[waypoints.length - 1]!;
         if (!budgeted) {
             w.deadline = w.startTick + walkBudgetTicks(routeTiles(pos, waypoints, target), maxTicks);
             budgeted = true;
@@ -312,13 +333,7 @@ function routeTiles(from: Point, waypoints: readonly Waypoint[], target: Point):
 
 /** A door on the route is on the waypoint's tile or a cardinal neighbour of it. */
 const nearDoor = (shut: Set<string>, wp: Point) =>
-    [
-        [0, 0],
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
-    ].some(([dx, dz]) => shut.has(tileKey({ x: wp.x + dx!, z: wp.z + dz! })));
+    NEIGHBOURS.some(([dx, dz]) => shut.has(tileKey({ x: wp.x + dx, z: wp.z + dz })));
 
 /**
  * Opens the first route door within a tile (Manhattan) of `wp`, as upstream does: one opened (or open
@@ -415,7 +430,10 @@ function* openDoorAt(w: Walk, at: Point): Op<DoorOpen> {
 function* tryOpen(w: Walk, door: NearbyLoc, option: number): Op<'opened' | 'locked' | 'cant-reach' | 'timeout'> {
     const cursor = messageCursor(w.ctx.state());
     const sent = yield* interactLoc(door, option);
-    if (!sent.ok) return 'timeout';
+    if (!sent.ok) {
+        yield* log(`walk: Open on ${door.name} at (${door.x}, ${door.z}) not sent: ${sent.message}`);
+        return 'timeout';
+    }
     const closed = (s: BotWorldState) =>
         s.nearbyLocs.some(l => l.x === door.x && l.z === door.z && l.id === door.id && hasOpen(l));
     const refusal = (s: BotWorldState) => messageSince(s, cursor, DOOR_REFUSAL);
@@ -455,7 +473,7 @@ function* sendWalk(to: Point): Op<void> {
     yield* send({ type: 'walkTo', x: to.x, z: to.z, running: true, reason: `walk to (${to.x}, ${to.z})` });
 }
 
-/** One leg toward a waypoint: `arrived` within `tolerance`, `stuck` (moved under 2 tiles), else `progress`. */
+/** One leg toward a waypoint: `arrived` within `tolerance`, `stuck` (moved under STUCK_MOVE_TILES), else `progress`. */
 function* walkLeg(
     w: Walk,
     wp: Point,
@@ -469,13 +487,13 @@ function* walkLeg(
     const now = posOf(p);
     if (dist(now, wp) <= tolerance) return { status: 'arrived', pos: now };
     // Every leg that did not arrive has stopped (or run out of ticks), so little movement is stuck.
-    if (Math.hypot(now.x - from.x, now.z - from.z) < 2) return { status: 'stuck', pos: now };
+    if (Math.hypot(now.x - from.x, now.z - from.z) < STUCK_MOVE_TILES) return { status: 'stuck', pos: now };
     return { status: 'progress', pos: now };
 }
 
 /**
  * Waits a tick at a time until the bot is within `tolerance` of `to`, has not moved for STOPPED_TICKS,
- * or has had 1.5x the ticks running there takes (at least MIN_LEG_TICKS), within the walk's budget.
+ * or has had LEG_SLACK times the ticks running there takes (at least MIN_LEG_TICKS), within the walk's budget.
  * Like upstream it judges only the states after the send, never the one it was sent on: a leg re-sent
  * to a waypoint already passed takes a tick, in which the bot carries on along its last walk. One tick
  * per wait, so the stop can compare positions; the guards act at every one.
@@ -484,7 +502,7 @@ function* awaitLeg(w: Walk, to: Point, tolerance: number): Op<{ arrived: boolean
     const start = w.ctx.state();
     if (!start.player) return { arrived: false, state: start };
     let last = posOf(start.player);
-    const legTicks = Math.max(MIN_LEG_TICKS, Math.ceil(Math.ceil(dist(last, to) / RUN_TILES_PER_TICK) * 1.5));
+    const legTicks = Math.max(MIN_LEG_TICKS, Math.ceil(Math.ceil(dist(last, to) / RUN_TILES_PER_TICK) * LEG_SLACK));
     let lastMoveTick = start.tick;
     for (;;) {
         const s = (yield* wait(`walk to (${to.x}, ${to.z})`, () => false, allowed(w, 1))).state;

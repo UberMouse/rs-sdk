@@ -353,6 +353,17 @@ describe('walkTo: doors', () => {
         expect(w.sends.filter(s => s === 'Open Door')).toHaveLength(6);
     });
 
+    test('an Open the client refuses to send is logged and fails that attempt without a wait', async () => {
+        const w = await walk(corridor(), DEST.x, DEST.z, 0, {
+            paths: throughDoor,
+            blocked: wall,
+            respond: a => (a.reason === 'Open Door' ? { success: false, message: 'no route to the door' } : undefined),
+        });
+        expect(w.logs[0]).toBe('walk: Open on Door at (3200, 3205) not sent: no route to the door');
+        // Refused at once, not after DOOR_OPEN_TICKS: the walk beside the door goes the same tick.
+        expect(w.sentAt.slice(0, 2)).toEqual([0, 0]);
+    });
+
     test('a door the scene does not show (only the collision data has it) is walked past', async () => {
         const w = await walk(corridor({ doorOptions: null }), DEST.x, DEST.z, 0, { paths: throughDoor });
         expect(w.result()).toEqual({ ok: true, message: 'Arrived' });

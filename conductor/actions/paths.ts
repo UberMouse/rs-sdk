@@ -1,8 +1,11 @@
 // Ported from sdk/index.ts findPath @ ca34325e7, over sdk/pathfinding.ts @ d80066c78.
 // The routes the walkTo op plans with. sdk.findPath reads the player from the SDK's state and the doors
 // to avoid from the SDK session; here both are arguments, so the op passes its own state and the doors
-// it has given up on, and a test passes a Pathfinder of its own instead of the collision data (23 MB,
-// about half a second to load and index).
+// it has given up on, and a test passes a Pathfinder of its own instead of the collision data.
+// sdk/pathfinding.ts imports that data (23 MB of JSON) statically, so it parses when this module is
+// first imported; the collision index and door index build on the first query (about half a second).
+// The import stays static: the Pathfinder is synchronous, and every live run imports pathfinding.ts
+// through the BotSDK (sdk/index.ts) anyway.
 import {
     type DoorInfo,
     findDoorsAlongPath,
@@ -43,7 +46,7 @@ const MAX_WAYPOINTS = 500;
  */
 const OTHER_PLANE_TILES = 100;
 
-/** Routes over the collision data bundled with the SDK, which loads on the first query. */
+/** Routes over the collision data bundled with the SDK, indexed on the first query. */
 export const collisionPaths: Pathfinder = {
     findPath(from, to, avoid) {
         // Only the source zone must be known; the destination's may be past a gate not yet opened.

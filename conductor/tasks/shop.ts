@@ -216,9 +216,9 @@ function* performRemaining(ctx: Ctx, stepStart: number): Op<Ending | null> {
 }
 
 /**
- * Stopgap until openShop walks: walks to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named
- * `npc`, as bot.openShop does before trading: the walk opens doors on the way, which the client's
- * pathing of an open does not.
+ * Stopgap until the openShop op walks to the shopkeeper itself, as bot.openShop does before trading:
+ * walks (the walkTo op) to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named `npc`, opening
+ * the doors on the way, which the client's pathing of the op's Trade click does not.
  */
 function* walkToKeeper(ctx: Ctx): Op<void> {
     const name = exactName(ctx.params.npc);
@@ -324,7 +324,8 @@ export default defineTask({
                     if (!trip.closed.ok) yield* log(`a shop may be left open after it: ${trip.closed.message}`);
                     if (openFails.add() >= FAIL_LIMIT)
                         return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
-                    // Stopgap until openShop walks: a shopkeeper behind a door is out of the client's reach.
+                    // Stopgap until the openShop op walks itself: a shopkeeper behind a door is out of the
+                    // client's reach.
                     if (trip.reason === 'cant-reach') yield* walkToKeeper(ctx);
                     return;
                 }

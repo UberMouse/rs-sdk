@@ -207,9 +207,10 @@ never moves the bot.
 
 ### Calling an action that has no op yet
 
-`yield* call('bot.talkTo', () => ctx.bot.talkTo(npc))` runs a legacy action under the step's
-bounds; the guards wait for it to settle. It is a stopgap, for an action you are not porting now.
-No catalog task uses one any more.
+An action with no op (`bot.talkTo` has none yet) is ported to one, as above. When you are not porting
+it now, `const talked = yield* call('bot.talkTo', () => ctx.bot.talkTo(npc))` is the stopgap: it runs
+the legacy action under the step's bounds, the guards wait for it to settle, and you check
+`talked.success` as you would an op's `ok`.
 
 ### Walking
 

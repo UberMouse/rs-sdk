@@ -169,9 +169,9 @@ const sendFailure = (r: ActionResult): Failure<'cant-reach' | 'send-failed'> => 
 });
 
 /**
- * `result` as is when withModal's closing of `what` went through (after the work, or after a failed
- * open); else logged, with the failed close added to its message: the interface guard leaves the op's own interface open, so the next smith or
- * smelt (or the next run's start) is what closes it.
+ * `result` as is when withModal's close of `what` went through (after the work, or after a failed open).
+ * Otherwise the failed close is logged and added to its message: the interface guard leaves the op's
+ * own interface open, so the next smith or smelt (or the next run's start) is what closes it.
  */
 function* notingClose<R extends { message: string }>(result: R, closed: CloseModalResult, what: string): Op<R> {
     if (closed.ok) return result;

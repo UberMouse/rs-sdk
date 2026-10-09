@@ -1,5 +1,5 @@
-// Runs one task to its TaskResult. Preflight runs first, then, before the first step, the close of a
-// modal left open by an earlier run (closeLeftover), so a preflight sees that modal still open. Each loop the first guard (the shared ones in lib/interrupts.ts,
+// Runs one task to its TaskResult. Preflight runs first, then the close of a modal an earlier run left
+// open (closeLeftover), then the loop. Each loop the first guard (the shared ones in lib/interrupts.ts,
 // then the task's own) whose `when()` holds runs, else the first of the task's steps whose `when()`
 // passes. A generator step is interpreted (core/interpret.ts) with the same guards and the stops,
 // watchdog and step budget as `onTick`, so they act at every tick of its waits; a wall-clock limit
@@ -61,8 +61,13 @@ export const LEFTOVER_CLOSE_TICKS = 5;
  * Closes `what` (leftoverModal), found open before the run's first step. A modal blocks loc and NPC
  * interaction, and no guard closes an op's own interface, a bank, a shop or a skill menu, so one left by
  * a killed run or a failed close would strand every later task. Bounded by closeModalUntil: two closes,
- * LEFTOVER_CLOSE_TICKS + 1 ticks. One that stays open is logged and the run goes on. It runs after
- * preflight, which therefore sees the modal still open, and under the critical guards only.
+ * LEFTOVER_CLOSE_TICKS + 1 ticks. One that stays open is logged and the run goes on.
+ *
+ * It runs after preflight, which therefore sees the modal still open, and under the critical guards
+ * only (death, the Wilderness, and any task guard marked critical): the others act through the game,
+ * which the open modal blocks (the low-HP guard's eat is refused under it, the interface guard would
+ * race this close), and they get their turn at the first loop, at most LEFTOVER_CLOSE_TICKS + 1 ticks
+ * later.
  */
 function* closeLeftover(ctx: ActionContext, what: string): Op<Outcome> {
     yield* log(`${what} left open before the run: closing it`);
@@ -560,15 +565,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     };
 
     try {
-        // After preflight, so a preflight still sees a modal a previous run left open.
         const leftover = leftoverModal(driver.state());
         if (leftover) {
             begin(LEFTOVER_STEP);
             stepRuns[LEFTOVER_STEP] = 1;
-            // Only the critical guards (death, the Wilderness, and any task guard marked critical): the
-            // others act through the game, which the open modal blocks (the low-HP guard's eat is refused
-            // under it, the interface guard would race this close), and they get their turn at the first
-            // loop, at most LEFTOVER_CLOSE_TICKS + 1 ticks later.
             const criticalGuards = guards.filter(g => g.critical);
             const end = await runOp(LEFTOVER_STEP, closeLeftover(ctx, leftover), criticalGuards);
             if (end) return finish(end.status, end.reason);

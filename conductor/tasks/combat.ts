@@ -182,7 +182,6 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
 /** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
 function* walkAndAttack(ctx: Ctx, npc: NearbyNpc): Op<{ ok: true } | { ok: false; message: string }> {
     if (npc.distance > ATTACK_WALK_BEYOND) {
-        // The walk opens the doors and gates on the way, which the client's pathing for the attack does not.
         const walked = yield* walkTo(ctx, npc.x, npc.z, ATTACK_WALK_BEYOND, { reserveTicks: AFTER_WALK_TICKS });
         if (!walked.ok) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
     }
