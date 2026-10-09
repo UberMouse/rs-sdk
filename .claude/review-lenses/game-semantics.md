@@ -21,7 +21,9 @@ Does the code's model of the game match how the game and the SDK actually behave
   that opens a dialog on purpose sets `ctx.memory.expectDialog` so the interrupt doesn't close it.
 - **G5 Game time.** Waits are in ticks (`waitForTicks`, `waitForCondition`) and sized to the
   action (a tree can take many ticks; a respawn longer). Timeouts exist and are not so short that
-  slow-but-normal actions fail.
+  slow-but-normal actions fail. Tick length is in `learnings/local-server.md` (400 ms locally);
+  ms-per-tick constants of 600 are wrong here. Level, XP and respawn data live in
+  `server/content/scripts/skill_<name>/` — check a suspected requirement there before banding it.
 - **G6 State freshness.** Decisions read `ctx.state()` after the previous action settled, not a
   snapshot taken before an `await`; positions use `worldX/worldZ` and check `level` (floor) where
   floors matter.

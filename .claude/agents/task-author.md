@@ -20,7 +20,10 @@ you never commit, and you only touch the bot you were given.
 - `CLAUDE.md` and `sdk/API.md` — the bot API (`ctx.bot.*` porcelain first, `ctx.sdk.*` raw).
 - `learnings/` and `wiki/` — where things are and how the game behaves
   (`.claude/skills/knowledge/SKILL.md` says what is where; `wiki/items|npcs|shops` are
-  generated game data).
+  generated game data). On the local server, read `learnings/local-server.md` before coding any
+  timing, XP or price assumption: ticks are 400 ms, not 600, and XP is 25×.
+- `server/content/scripts/skill_<name>/configs/` — the engine's own level, XP and item data.
+  Check level/XP requirements there, not in hand-maintained tables.
 - `.claude/review-lenses/*.md` — your change is reviewed against these (game semantics,
   robustness, task contract, account safety, code quality) before it is committed. Write to
   pass them.

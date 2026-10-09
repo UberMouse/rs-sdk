@@ -61,7 +61,9 @@ incomplete review in the journal and retry on the next loop.
 
 ## 2. Verify
 
-No findings from any lens → skip to §5. Drop band-D findings before verifying.
+No findings from any lens → skip to §5. Drop band-D findings before verifying, except a D
+whose suspicion is cheap to check (a requirement, level or constant against `server/content`):
+check it, and keep it if it holds (the firemaking review's only round-1 B started as a D).
 
 Number the rest `0..n-1` in one list (keep each one's lens) in a file, grouped by file area
 (engine/interrupts, the task, tools) so duplicates from different lenses sit together. One
@@ -86,6 +88,8 @@ For each: <file>:<line> [<lens> <criterion>, band <band>] <summary>
   Evidence: <evidence>
   Fix: <suggestion>
 Change only what these findings call for. Re-run the smoke test and `bun run verify:conductor`.
+Format only your files (`bunx oxfmt <files>`, not `bun run fmt`: other agents' uncommitted
+files are in conductor/ too); a verify error in a file you didn't touch is theirs, not yours.
 Leave the change uncommitted; report per finding: fixed / couldn't (why), and the RESULT lines.
 ```
 
@@ -96,7 +100,9 @@ two fix agents drive the bot at once.
 ## 4. Round 2
 
 Re-run §1–§2 for only the lenses that had fix findings, on the whole change, telling the
-reviewers which round-1 fixes to re-check. Round 2 usually finds problems the fixes introduced:
+reviewers which round-1 fixes to re-check, the round-1 findings that were dropped (so they
+aren't re-raised), and the newest smoke-test logs, which every round-2 reviewer must read (the
+post-fix log is where regressions show). Round 2 usually finds problems the fixes introduced:
 fix those as in §3. There is no round 3: close with `bun run verify:conductor` and the
 conductor's own read of the round-2 fix diff (each finding resolved, nothing out of scope, no
 new defect). Then:
@@ -108,7 +114,9 @@ new defect). Then:
 
 ## 5. Commit
 
-`git add` the specific files, then commit; the pre-commit hook re-checks format and lint. The
+`git add` the specific files, then commit with a pathspec, `git commit -- <files>`: other agents
+share the worktree's index, and a bare `git commit` sweeps in what they staged. The pre-commit
+hook re-checks format and lint. The
 message stands alone (no finding ids):
 
 ```
