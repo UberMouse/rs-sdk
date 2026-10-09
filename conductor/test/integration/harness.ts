@@ -11,7 +11,8 @@ import { appendFileSync, mkdirSync, readFileSync, renameSync, rmdirSync, rmSync,
 import { dirname, join } from 'node:path';
 import { BotActions } from '../../../sdk/actions';
 import type { BotSDK } from '../../../sdk/index';
-import { createSaveData, type SaveConfig } from '../../../sdk/test/utils/save-generator';
+import { crc32 } from 'node:zlib';
+import { createSaveData, Skills, type SaveConfig } from '../../../sdk/test/utils/save-generator';
 import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT, type BotEnv } from '../../lib/env';
 import { distance } from '../../lib/util';
 
@@ -130,12 +131,39 @@ export function freshBotName(): string {
     return out;
 }
 
+/** Bytes before the skill block in a save: magic, version, position, appearance, energy, playtime. */
+const SAVE_SKILLS_OFFSET = 28;
+/** Bytes per skill in a save: p4 experience, p1 level. */
+const SAVE_SKILL_BYTES = 5;
+const SAVE_CRC_BYTES = 4;
+
+/**
+ * Raw experience (engine units, 10 per displayed xp) per skill, replacing the threshold of the level
+ * SaveConfig gives it. The engine derives the base level from experience on load, so
+ * `xp: { Woodcutting: 799 }` at level 1 stands just short of level 2 (800). The save's
+ * CRC covers the skill block, so it is recomputed.
+ */
+function patchSkillXp(save: Uint8Array, xp: Record<string, number>): Uint8Array {
+    const out = Uint8Array.from(save);
+    const view = new DataView(out.buffer);
+    for (const [skill, value] of Object.entries(xp)) {
+        const index = (Skills as Record<string, number>)[skill.toUpperCase()];
+        if (index === undefined) throw new Error(`unknown skill "${skill}" in fixture xp`);
+        view.setInt32(SAVE_SKILLS_OFFSET + index * SAVE_SKILL_BYTES, value, false);
+    }
+    const body = out.length - SAVE_CRC_BYTES;
+    // crc32 is unsigned; the engine's Packet.getcrc is the same CRC-32 read back as a signed int.
+    view.setInt32(body, crc32(out.subarray(0, body)) | 0, false);
+    return out;
+}
+
 /** Write a generated save where the running engine loads it (atomic tmp + rename). */
-export function writeFixtureSave(username: string, config: SaveConfig): string {
+export function writeFixtureSave(username: string, config: SaveConfig, xp?: Record<string, number>): string {
     const file = join(engineDir(), 'data/players/main', `${username.toLowerCase()}.sav`);
     mkdirSync(dirname(file), { recursive: true });
     const tmp = `${file}.tmp-${process.pid}`;
-    writeFileSync(tmp, createSaveData(config));
+    const bytes = createSaveData(config);
+    writeFileSync(tmp, xp ? patchSkillXp(bytes, xp) : bytes);
     renameSync(tmp, file);
     return file;
 }
@@ -269,28 +297,28 @@ function removeLiteLog(botName: string): void {
 /**
  * Run `fn` against a fresh bot logged in from `save`. The save is checked to have loaded (the bot
  * stands at `save.position`), so a save written where the running engine doesn't look fails loudly.
- * With `connect: false` no control SDK is handed out, for tests that drive the bot through
+ * `xp` overrides a skill's experience (see patchSkillXp). With `connect: false` no control SDK is handed out, for tests that drive the bot through
  * run-task.ts. The lite client log is removed when the run passes and kept (path in the error) when
  * it fails; the .sav stays, because the engine rewrites it on logout.
  */
 export function withFixtureBot<T>(
     save: SaveConfig,
     fn: (bot: FixtureBot) => Promise<T>,
-    opts?: { connect?: true },
+    opts?: { connect?: true; xp?: Record<string, number> },
 ): Promise<T>;
 export function withFixtureBot<T>(
     save: SaveConfig,
     fn: (bot: FixtureBase) => Promise<T>,
-    opts: { connect: false },
+    opts: { connect: false; xp?: Record<string, number> },
 ): Promise<T>;
 export async function withFixtureBot<T>(
     save: SaveConfig,
     // The overloads above are the checked surface; `any` here lets one body serve both.
     fn: (bot: any) => Promise<T>,
-    opts: { connect?: boolean } = {},
+    opts: { connect?: boolean; xp?: Record<string, number> } = {},
 ): Promise<T> {
     const name = freshBotName();
-    writeFixtureSave(name, save);
+    writeFixtureSave(name, save, opts.xp);
     liveFixtures.add(name);
     installCleanup();
     writeBotEnv(name);
@@ -311,6 +339,10 @@ export async function withFixtureBot<T>(
                     `(${save.position.x},${save.position.z}): the save was not loaded. Is ${engineDir()} the ` +
                     'engine directory the running server uses? Set RS_ENGINE_DIR.',
             );
+        }
+        // "Ready" only means a position and some entities: the inventory snapshot can arrive later.
+        if (save.inventory?.length || save.coins) {
+            await connected.waitForCondition(s => s.inventory.length > 0, STATE_READY_TIMEOUT_MS);
         }
         if (opts.connect === false) {
             await disconnectQuietly(connected);
