@@ -123,6 +123,18 @@ const advance = <R>(op: Op<R>, r: Resume) => ('error' in r ? op.throw(r.error) :
 const isOp = (x: GuardOutcome | Op<GuardOutcome>): x is Op<GuardOutcome> =>
     typeof x === 'object' && x !== null && 'next' in x;
 
+/**
+ * The guards on while `guard`'s own op runs. Under an abort guard: the critical ones (death while
+ * regenerating HP), those ranked above it, and the suspend ones (a level-up dialog); not a lower
+ * abort guard, which would cancel the handler of a more urgent one (eating while under attack).
+ * Under a suspend guard: none.
+ */
+export function guardsUnder(guards: readonly Guard[], guard: Guard): Guard[] {
+    if (guard.policy === 'suspend') return [];
+    const rank = guards.indexOf(guard);
+    return guards.filter((g, i) => g !== guard && (g.critical || i < rank || g.policy === 'suspend'));
+}
+
 const describe = (i: Interrupt) => ('cancel' in i ? `stop "${i.cancel}"` : `guard ${i.guard.name}`);
 const what = (cmd: Forwarded) => (cmd.type === 'call' ? `call "${cmd.label}"` : cmd.type);
 
@@ -294,11 +306,9 @@ export function interpret<T>(op: Op<T>, opts: InterpretOptions): Promise<Interpr
             driver.log(`guard ${guard.name} (${guard.policy})`, { tick: state.tick, ...(during && { during }) });
             if (guard.policy === 'abort') {
                 await cancel(`guard ${guard.name}`);
-                // Other guards stay on (death while regenerating HP); this one never re-enters itself.
-                const others = guards.filter(g => g !== guard);
-                return asAborted(guard, await runGuard(guard, state, others));
+                return asAborted(guard, await runGuard(guard, state, guardsUnder(guards, guard)));
             }
-            const r = await runGuard(guard, state, []);
+            const r = await runGuard(guard, state, guardsUnder(guards, guard));
             if (r.kind === 'returned' && !r.value) return null;
             await cancel(r.kind === 'cancelled' ? r.reason : `guard ${guard.name}`);
             return asAborted(guard, r);

@@ -1,18 +1,19 @@
-// Runs one task to its TaskResult. Each loop the first shared guard (lib/interrupts.ts) whose `when()`
-// holds runs, else the first of the task's steps whose `when()` passes. A generator step is
-// interpreted (core/interpret.ts) with the same guards and the stops, watchdog and step budget as
-// `onTick`, so they act at every tick of its waits; a wall-clock limit around it bounds a `call` that
-// never settles. A legacy `async` step is one opaque call, checked only between steps, though a tick
-// stall or a disconnect while it runs still ends the run and abandons it.
+// Runs one task to its TaskResult. Each loop the first guard (the shared ones in lib/interrupts.ts,
+// then the task's own) whose `when()` holds runs, else the first of the task's steps whose `when()`
+// passes. A generator step is interpreted (core/interpret.ts) with the same guards and the stops,
+// watchdog and step budget as `onTick`, so they act at every tick of its waits; a wall-clock limit
+// around it bounds a `call` that never settles. A legacy `async` step is one opaque call, checked
+// only between steps, though a tick stall or a disconnect while it runs still ends the run and
+// abandons it.
 // I/O goes through the injected driver and sinks (plus the bot and SDK that legacy steps and the
 // guards still use), so tests run a task on a TimelineDriver.
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
-import { type Driver, type Guard, interpret, type Interpretation, TickStall } from '../core/interpret';
+import { type Driver, type Guard, guardsUnder, interpret, type Interpretation, TickStall } from '../core/interpret';
 import { call, type Command, type Op } from '../core/op';
 import { sleep } from './env';
-import { findFood, type GuardName, guardLabel, GUARDS } from './interrupts';
+import { findFood, guardLabel, GUARDS } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import type { Outcome, Sinks, Step, TaskContext, TaskDef, TaskResult, TaskStatus } from './task';
 import { isLowHp } from './threat';
@@ -284,6 +285,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     // A task built without defineTask (a cast, JSON) bypasses the AllowableGuard type.
     const critical = GUARDS.filter(g => g.critical && def.allow?.includes(g.name as never)).map(g => g.name);
     if (critical.length) return finish('error', `task allows critical guard(s): ${critical.join(', ')}`);
+    // Guards share episodes, step counts and the suspend bookkeeping by name.
+    const names = [...GUARDS, ...(def.guards ?? [])].map(g => g.name);
+    const clashes = names.filter((n, i) => names.indexOf(n) !== i);
+    if (clashes.length) return finish('error', `task guard name(s) taken: ${[...new Set(clashes)].join(', ')}`);
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;
@@ -304,9 +309,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const graceMs = opts.stepGraceMs ?? STEP_GRACE_MS;
 
     // Each guard's episode state, from when it first runs until its `when` is next checked false.
-    const episodes = new Map<GuardName, object>();
-    const allowed: readonly GuardName[] = def.allow ?? [];
-    const guards: Guard[] = GUARDS.filter(g => !allowed.includes(g.name)).map(g => ({
+    const episodes = new Map<string, object>();
+    const allowed: readonly string[] = def.allow ?? [];
+    const enabled = [...GUARDS.filter(g => !allowed.includes(g.name)), ...(def.guards ?? [])];
+    const guards: Guard[] = enabled.map(g => ({
         name: guardLabel(g.name),
         policy: g.policy,
         critical: g.critical,
@@ -323,8 +329,6 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             return g.run(s, ctx, episode);
         },
     }));
-    /** The guards on while `guard`'s own op runs, as in the interpreter: the others under an abort, none under a suspend. */
-    const guardsUnder = (guard: Guard) => (guard.policy === 'abort' ? guards.filter(g => g !== guard) : []);
     // One per run, so the dialog guard fires at most once a tick even across consecutive steps.
     const firedAt = new Map<string, number>();
 
@@ -535,7 +539,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             if (guard) {
                 begin(guard.name);
                 const out = guard.run(s);
-                stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guard)) : ended(guard.name, out);
+                stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guards, guard)) : ended(guard.name, out);
             } else {
                 // Every step's `when`, so a step that stopped applying loses its streaks even in a loop
                 // where an earlier step runs.

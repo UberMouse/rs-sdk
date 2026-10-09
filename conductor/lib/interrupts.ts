@@ -1,6 +1,6 @@
 // Guards every task runs under, so no task has to handle death, low HP, the Wilderness or blocking
 // dialogs itself. The engine checks them at every tick of a generator step's waits and between
-// steps for every task; a task opts out of one with `allow`.
+// steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
 import type { BotActions } from '../../sdk/actions';
 import type { BotWorldState } from '../../sdk/types';
 import type { GuardOutcome } from '../core/interpret';
@@ -25,6 +25,7 @@ const REGEN_CAP_TICKS = 500;
 /** Handler runs a dialog may stay open through within one episode before the run gives up. */
 const DIALOG_STUCK_LIMIT = 5;
 
+/** The shared guards (GUARDS); a task's own guards take other names. */
 export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog';
 /** The guards a task may turn off: death and the Wilderness protect the account and are always on. */
 export type AllowableGuard = Exclude<GuardName, 'death' | 'wilderness'>;
@@ -43,8 +44,9 @@ export interface GuardRun {
  * A guard over a run. Its episode lasts from when `when` first holds until the engine next checks it
  * and finds it false; `run` gets that episode's state, so its limits bound one episode, not the run.
  */
-export interface TaskGuard<E extends object = object> {
-    name: GuardName;
+export interface TaskGuard<E extends object = object, N extends string = string> {
+    /** Unique among a run's guards; logs, step counts and fail reasons show it as `guardLabel(name)`. */
+    name: N;
     /** `abort` cancels the running step and then runs; `suspend` runs inside the wait, which carries on. */
     policy: 'abort' | 'suspend';
     /** Also fires inside `uninterruptible` sections. */
@@ -58,7 +60,7 @@ export interface TaskGuard<E extends object = object> {
 }
 
 /** The name a guard has in logs, step counts and failure reasons. */
-export const guardLabel = (name: GuardName) => `interrupt:${name}`;
+export const guardLabel = (name: string) => `interrupt:${name}`;
 
 /** An inventory item with an Eat option; Drink items are not food for `bot.eatFood`. */
 export const findFood = (state: BotWorldState): InventoryItem | undefined =>
@@ -67,7 +69,7 @@ export const findFood = (state: BotWorldState): InventoryItem | undefined =>
 const noEpisode = () => ({});
 
 /** Ends the run if the bot died since the task started. */
-export const deathGuard: TaskGuard = {
+export const deathGuard: TaskGuard<object, GuardName> = {
     name: 'death',
     policy: 'abort',
     critical: true,
@@ -86,7 +88,7 @@ export const deathGuard: TaskGuard = {
 };
 
 /** Ends the run if the bot is on the surface in the Wilderness (PvP, death drops items). */
-export const wildernessGuard: TaskGuard = {
+export const wildernessGuard: TaskGuard<object, GuardName> = {
     name: 'wilderness',
     policy: 'abort',
     critical: true,
@@ -106,7 +108,7 @@ interface LowHpEpisode {
  * Eats when HP is low. With nothing to eat it fails the run if the bot is in combat or still losing
  * HP, and otherwise waits for HP to regenerate.
  */
-export const lowHpGuard: TaskGuard<LowHpEpisode> = {
+export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
     name: 'low-hp',
     policy: 'abort',
     episode: () => ({ lastHp: null, eats: 0, regenTicks: 0 }),
@@ -141,7 +143,7 @@ export const lowHpGuard: TaskGuard<LowHpEpisode> = {
  * this covers tasks that use raw sdk.send* calls. A task that drives dialogs on purpose sets
  * `allow: ['dialog']`.
  */
-export const dialogGuard: TaskGuard<{ stuckRuns: number }> = {
+export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
     name: 'dialog',
     policy: 'suspend',
     episode: () => ({ stuckRuns: 0 }),
@@ -159,4 +161,4 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }> = {
 };
 
 /** Priority order: the first whose `when` holds fires. */
-export const GUARDS: readonly TaskGuard[] = [deathGuard, wildernessGuard, lowHpGuard, dialogGuard];
+export const GUARDS: readonly TaskGuard<object, GuardName>[] = [deathGuard, wildernessGuard, lowHpGuard, dialogGuard];

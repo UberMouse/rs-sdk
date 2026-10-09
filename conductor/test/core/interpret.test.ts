@@ -279,6 +279,28 @@ describe('abort guards', () => {
         ]);
         expect(trace(d)).not.toContain('send regenerated');
     });
+
+    test("an abort guard ranked lower does not cut short a higher one's op", async () => {
+        // Low HP on tick 1 only; `attacked` holds from tick 1 but ranks below low-hp.
+        const d = new TimelineDriver(timeline(10, t => ({ hp: t === 1 ? 3 : 10, inCombat: t >= 1 })));
+        const eatSlowly: Guard = {
+            ...lowHp,
+            *run() {
+                yield* ticks(2);
+                yield* send(act('ate'));
+            },
+        };
+        const attacked: Guard = {
+            name: 'attacked',
+            policy: 'abort',
+            when: s => !!s.player?.combat.inCombat,
+            run: () => ({ fail: 'attacked' }),
+        };
+        const r = await interpret(busy(), { driver: d, guards: [eatSlowly, attacked] });
+        expect(r).toEqual({ kind: 'aborted', by: 'low-hp', outcome: undefined });
+        expect(trace(d)).toContain('send ate');
+        expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 1 }]);
+    });
 });
 
 describe('suspend guards', () => {

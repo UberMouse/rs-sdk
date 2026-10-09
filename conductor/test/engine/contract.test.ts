@@ -1,13 +1,14 @@
-// The task contract the engine enforces: typed memory, step streaks, `allow`, and the guards'
-// episode state.
+// The task contract the engine enforces: typed memory, step streaks, `allow`, a task's own guards,
+// and the guards' episode state.
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../../sdk/types';
 import type { TimelineDriver } from '../../core/drivers/timeline';
 import { log, type Op, send, ticks, wait } from '../../core/op';
+import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { timeline, worldState } from '../world';
+import { LUMBRIDGE, timeline, worldState } from '../world';
 import { runDef, runTask } from './harness';
 
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
@@ -359,5 +360,96 @@ describe('low HP with nothing to eat', () => {
         const r = await runTask([finishAt(8), idleStep], states);
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('finish: at tick 8');
+    });
+});
+
+/** A task's own guard: aborts while the bot stands north of Lumbridge, failing on a third run in one episode. */
+const north: TaskGuard<{ runs: number }> = {
+    name: 'north',
+    policy: 'abort',
+    episode: () => ({ runs: 0 }),
+    when: s => zOf(s) > LUMBRIDGE.z,
+    *run(_s, _run, episode) {
+        if (++episode.runs > 2) return { fail: `north for ${episode.runs} runs` };
+        yield* ticks(1);
+    },
+};
+
+/** Sends `start`, waits for XP; its finally sends `cleanup`. */
+function* work(): Op<Outcome> {
+    try {
+        yield* send(act('start'));
+        const w = yield* wait('xp', s => xpOf(s) > 0, 50);
+        return { done: `${w.kind} at tick ${w.state.tick}` };
+    } finally {
+        yield* send(act('cleanup'));
+    }
+}
+
+/** The guards that fired, as "guard <name> (<policy>) at <tick>". */
+const guardLog = (events: Record<string, unknown>[]) =>
+    events.flatMap(e =>
+        e.type === 'log' && typeof e.msg === 'string' && e.msg.startsWith('guard ')
+            ? [`${e.msg} at ${(e.data as { tick: number }).tick}`]
+            : [],
+    );
+
+const workStep: Step = { name: 'work', when: () => true, run: work };
+
+/** North of Lumbridge on the ticks `isNorth` picks; XP from tick 20. */
+const northOn = (isNorth: (t: number) => boolean, more: (t: number) => { hp?: number; food?: number } = () => ({})) =>
+    timeline(30, t => ({ z: isNorth(t) ? LUMBRIDGE.z + 1 : LUMBRIDGE.z, xp: t >= 20 ? 25 : 0, ...more(t) }));
+
+const northTwice = (t: number) => t === 3 || t === 4 || t === 8 || t === 9;
+
+describe('task guards', () => {
+    test('a task guard aborts a step mid-wait, holds between steps, and the step runs again once clear', async () => {
+        const r = await runTask(
+            [workStep],
+            northOn(t => t === 3 || t === 4),
+            { guards: [north] },
+        );
+        expect(r.result.reason).toBe('work: met at tick 20');
+        expect(r.sends).toEqual(['start', 'cleanup', 'start', 'cleanup']);
+        // Fired inside the wait at tick 3; its one-tick wait ended at tick 4, where it held between steps.
+        expect(guardLog(r.events)).toEqual(['guard interrupt:north (abort) at 3']);
+        expect(r.result.stepRuns).toEqual({ work: 2, 'interrupt:north': 2 });
+    });
+
+    test("a clear tick ends a task guard's episode, so its limit is per episode", async () => {
+        const ok = await runTask([workStep], northOn(northTwice), { guards: [north] });
+        expect(ok.result.reason).toBe('work: met at tick 20');
+        expect(ok.result.stepRuns['interrupt:north']).toBe(4);
+
+        const held = await runTask(
+            [workStep],
+            northOn(t => t >= 3 && t <= 10),
+            { guards: [north] },
+        );
+        expect(held.result.status).toBe('failed');
+        expect(held.result.reason).toBe('interrupt:north: north for 3 runs');
+    });
+
+    test("the shared guards come first, and a task's abort guard does not cut short their handlers", async () => {
+        const r = await runTask(
+            [workStep],
+            northOn(
+                t => t === 3,
+                t => ({ hp: t === 3 ? 4 : 10, food: 1 }),
+            ),
+            { guards: [north] },
+        );
+        expect(r.result.reason).toBe('work: met at tick 20');
+        // North still holds as the low-HP guard starts to eat, but ranks below it, so the eat is not cut short.
+        expect(r.legacy).toEqual(['eat Shrimps']);
+        expect(guardLog(r.events)).toEqual(['guard interrupt:low-hp (abort) at 3']);
+        expect(r.result.stepRuns['interrupt:north']).toBeUndefined();
+    });
+
+    test('a task guard named like a shared one ends the run in error before it starts', async () => {
+        const r = await runTask([idleStep], timeline(5), { guards: [{ ...north, name: 'dialog' }] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('task guard name(s) taken: dialog');
+        expect(r.sends).toEqual([]);
     });
 });

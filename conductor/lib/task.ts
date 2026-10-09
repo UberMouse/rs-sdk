@@ -5,14 +5,15 @@
 // A task is an ordered list of steps; every loop the first step whose `when()`
 // passes runs. Shared guards (lib/interrupts.ts) act before every step and at the
 // waits of generator steps, so no task has to handle death, low HP or blocking
-// dialogs itself, and a watchdog ends runs that stop making progress. A step's
+// dialogs itself; a task adds its own threats the same way with `guards`. A
+// watchdog ends runs that stop making progress. A step's
 // `run` is either legacy `async` code or a generator op (core/op.ts).
 import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import type { Op, Outcome } from '../core/op';
-import type { AllowableGuard } from './interrupts';
+import type { AllowableGuard, TaskGuard } from './interrupts';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -89,6 +90,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * whole run. The critical guards, `death` and `wilderness`, cannot be allowed.
      */
     allow?: readonly AllowableGuard[];
+    /**
+     * This task's own guards (being attacked while skilling), checked after the shared ones in this
+     * order, at the same points and with the same episodes. Names must differ from the shared guards'.
+     */
+    guards?: readonly TaskGuard[];
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null | Promise<string | null>;
     steps: Step<z.infer<S>, M>[];
