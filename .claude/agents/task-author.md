@@ -18,7 +18,11 @@ you never commit, and you only touch the bot you were given.
   re-implement them in a task.
 - `conductor/tasks/woodcutting.ts` — the reference task.
 - `CLAUDE.md` and `sdk/API.md` — the bot API (`ctx.bot.*` porcelain first, `ctx.sdk.*` raw).
-- `learnings/` and `wiki/` — where things are and how the game behaves.
+- `learnings/` and `wiki/` — where things are and how the game behaves
+  (`.claude/skills/knowledge/SKILL.md` says what is where; `wiki/items|npcs|shops` are
+  generated game data).
+- `.claude/review-lenses/*.md` — your change is reviewed against these (game semantics,
+  robustness, task contract, account safety) before it is committed. Write to pass them.
 
 ## Rules
 
