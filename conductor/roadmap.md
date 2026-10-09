@@ -82,6 +82,19 @@ on its own.
   - task-author smoke-tests against fixtures; task-review's evidence names the fixture.
 - **New-bot setup.** Create a bot, skip the tutorial, record a fresh-account fixture: one
   scripted path instead of hand-run one-offs.
+- **Cleanup: the step tick budget outlived its job.** `stepTimeoutMs` was the only way to regain
+  control from an `async` step stuck on an `await`; generator steps yield at every wait, where
+  stops, the watchdog and guards already act, every wait has its own budget and every op its own
+  cap (`WALK_MAX_TICKS`). What the budget still catches is a step that keeps yielding and never
+  returns (a loop of ops that moves the bot or the inventory, so the watchdog never fires, and
+  starves `isComplete` and step choice). Yet legitimate steps keep hitting it (mining's respawn
+  wait, shop trades, smithing, long walks, each once ending `stuck`), and the fix spread budget
+  bookkeeping into ops: `ctx.stepTicksLeft()`, walkTo's `reserveTicks`, callers' `AFTER_WALK_TICKS`
+  sums. Proposed: raise the default to a generous backstop (about 10 min, far above any op's cap)
+  and delete `stepTicksLeft`/`reserveTicks`, so walks fall back to their own cap. Alternative: drop
+  the budget and make "a loop inside a step is bounded" a review-lens criterion. Touches
+  `lib/engine.ts`, `lib/task.ts`, `actions/walk.ts` and `context.ts`, the walking tasks (combat,
+  smithing, shop, firemaking, `lib/area.ts`) and their tests; re-review the tasks.
 
 ## Experiments
 
