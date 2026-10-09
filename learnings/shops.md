@@ -12,6 +12,7 @@ overstocked on that item, not that the sale failed.
   other bots). Sell to a specialist (tanner) or earn elsewhere instead. [v hosted, date unrecorded]
 - Local: the same store paid 20 GP for one Shortbow (not overstocked for it). Stock is per server,
   so check `coins` before and after a first sale. [v 2026-10-09 conductor1 local]
+- Local: the same store paid 0 GP total for 95 Headless arrows (sold 20, then 75; coins +0 both times). [v 2026-10-09 conductor1 local]
 
 ## Shop Locations
 

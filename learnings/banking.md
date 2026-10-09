@@ -91,7 +91,7 @@ await new Promise(r => setTimeout(r, 500));
 
 | Bank | Coordinates | Notes |
 |------|-------------|-------|
-| Varrock West | (3185, 3436) | Close to GE |
+| Varrock West | (3185, 3436) | Close to GE. Deposit and withdraw verified via the `bank` task with area {x:3185,z:3436,radius:6}. `bot.openBank` found no banker/booth (`no_bank_found`) from (3169, 3436), 16 tiles west, so walk to the booth first; the nearest working distance is untested. [v 2026-10-09 conductor1 local] |
 | Draynor | (3092, 3243) | Ground floor |
 | Al Kharid | (3269, 3167) | Requires toll or quest |
 ... others
@@ -126,4 +126,4 @@ async function bankTrip(itemPattern, bankCoords, returnCoords) {
 3. **Recover explicitly**: If movement fails at the south gate `(3253, 3266)`,
    inspect its current options, call `openDoor(gate)` when `Open` is present,
    then retry `walkTo`
-4. **Banking works at Varrock West**: (3185, 3436) confirmed working
+4. **Banking works at Varrock West**: (3185, 3436) confirmed working (see the table above)
