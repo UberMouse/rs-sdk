@@ -2,11 +2,18 @@
 //
 //   bun conductor/tools/client.ts <bot>             # visible window: watch it play
 //   bun conductor/tools/client.ts <bot> --headless  # no window, still screenshot-able
+//   --fps=<n>  frame cap (default 15 windowed, 10 headless)
+//   --gpu      use GPU acceleration (off by default, see below)
 //
 // Unlike the lite runner this client draws the game, so `conductor/tools/screenshot.ts`
 // works against it. Scripts attach exactly as they do to the lite client. Leave it
 // running; it exits non-zero if the page leaves the game for too long or the
 // browser is closed.
+//
+// GPU is off by default: on a VMware guest a GPU-accelerated windowed client filled
+// vmwgfx graphics memory (6-11G, booked to Xorg, invisible to process meters) and
+// stalled every other window's redraws behind its buffer churn. Software rendering
+// plus a frame cap costs a little CPU instead.
 import puppeteer from 'puppeteer';
 import { existsSync } from 'node:fs';
 import { botClientUrl, loadBotEnv } from '../lib/env';
@@ -14,10 +21,17 @@ import { botClientUrl, loadBotEnv } from '../lib/env';
 const args = process.argv.slice(2);
 const name = args.find(a => !a.startsWith('-'));
 if (!name) {
-    console.error('usage: bun conductor/tools/client.ts <bot> [--headless]');
+    console.error('usage: bun conductor/tools/client.ts <bot> [--headless] [--fps=<n>] [--gpu]');
     process.exit(2);
 }
 const headless = args.includes('--headless');
+const gpu = args.includes('--gpu');
+const fpsArg = args.find(a => a.startsWith('--fps='));
+const fps = fpsArg ? Number(fpsArg.slice('--fps='.length)) : headless ? 10 : 15;
+if (!Number.isInteger(fps) || fps < 1) {
+    console.error(`bad ${fpsArg}: expected a positive integer`);
+    process.exit(2);
+}
 const env = loadBotEnv(name);
 
 const CHROME_CANDIDATES = [
@@ -45,13 +59,15 @@ const browser = await puppeteer.launch({
         '--disable-background-timer-throttling',
         '--window-size=1100,780',
         `--user-data-dir=${process.env.HOME}/.cache/rs-sdk-conductor/chrome-${env.username}`,
+        ...(gpu ? [] : ['--disable-gpu']),
     ],
     protocolTimeout: 120_000,
 });
 const page = (await browser.pages())[0] ?? (await browser.newPage());
 page.on('pageerror', e => console.error(`[client:${env.username}] page error: ${e instanceof Error ? e.message : String(e)}`));
-await page.goto(botClientUrl(env), { waitUntil: 'networkidle2', timeout: 60_000 });
-console.log(`[client:${env.username}] ${headless ? 'headless' : 'windowed'} browser client loaded`);
+// bot.ejs applies ?fps= via client.setTargetedFramerate once in game.
+await page.goto(`${botClientUrl(env)}&fps=${fps}`, { waitUntil: 'networkidle2', timeout: 60_000 });
+console.log(`[client:${env.username}] ${headless ? 'headless' : 'windowed'} browser client loaded (gpu ${gpu ? 'on' : 'off'}, ${fps} fps)`);
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 const inGame = () => page.evaluate(() => !!(window as any).gameClient?.ingame).catch(() => false);

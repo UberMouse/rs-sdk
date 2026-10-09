@@ -26,6 +26,8 @@ whose XP, position and inventory stop changing.
 conductor/local/up.sh                              # gateway :7780 + engine :8888, builds on first run
 bun conductor/tools/client.ts conductor1           # Chrome window running the bot: watch it play
 bun conductor/tools/client.ts conductor1 --headless
+#   GPU is off by default (--gpu to opt in) and frames are capped (--fps=<n>, default 15/10):
+#   on a VMware guest a GPU-accelerated window filled vmwgfx memory and stalled the desktop.
 bun conductor/tools/screenshot.ts conductor1       # PNG of the game canvas (path on stdout)
 ```
 
