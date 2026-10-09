@@ -58,9 +58,10 @@ test(
             lightOnce(sdk, bot, async () => {
                 const r = await runLive(sdk, ctx => burn(ctx, LOGS));
                 if (r.ok) return { xpGained: r.xpGained };
-                // The failures a good kit on open ground can see: a refused tile, or (rarely at level 1)
-                // a light whose rolls all fail within the wait.
-                expect(['cant-light-here', 'timeout'], r.message).toContain(r.reason);
+                // The one failure a good kit on open ground can see is a refused tile. A timeout is a
+                // failure here, not a retry: the server dropped the logs on the tile before the first roll
+                // and may still light them, so another burn would start from a changed world.
+                expect(r.reason, `burn failed (not a refused tile): ${r.message}`).toBe('cant-light-here');
                 return { refused: r.message };
             }),
         );
@@ -78,8 +79,7 @@ test(
         );
         expect(viaOp.xpGained).toBeGreaterThan(0);
         expect(viaOp.xpGained).toBe(viaBot.xpGained);
-        for (const m of viaOp.refusals)
-            expect(["You can't light a fire here.", 'Timed out waiting for fire']).toContain(m);
+        for (const m of viaOp.refusals) expect(m).toBe("You can't light a fire here.");
     },
     itestTimeout({ extraMs: 2 * (LIGHT_ATTEMPTS * LIGHT_WAIT_MS + BODY_SLACK_MS) }),
 );

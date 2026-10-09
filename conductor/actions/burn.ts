@@ -32,7 +32,10 @@ const xpOf = (s: BotWorldState) => findSkill(s, 'Firemaking')?.experience ?? 0;
  * Lights the first inventory item matching `logs` with a tinderbox and waits for Firemaking XP. The
  * server drops the logs on the bot's tile to light them, and once the fire catches steps the bot off
  * it onto a free neighbour. `cant-light-here` means the tile refused a fire (one already burns or
- * stands there, or the spot forbids it): step to another tile and retry.
+ * stands there, or the spot forbids it): step to another tile and retry. On `timeout`, and when the op is
+ * cancelled, the logs are on the bot's tile and not in the inventory: the server drops them before the
+ * first roll and keeps relighting (light_logs_inv in skill_firemaking/scripts/firemaking.rs2), so they may still catch.
+ * Look at the ground before burning again.
  */
 export function* burn(ctx: ActionContext, logs: RegExp): Op<BurnResult> {
     const s = ctx.state();

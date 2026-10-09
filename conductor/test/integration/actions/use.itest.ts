@@ -6,8 +6,8 @@ import { type FixtureBot, itestTimeout, withFixtureBot } from '../harness';
 import { runLive } from './live';
 
 // Lumbridge castle courtyard, beside the south fountain at (3221,3210): no other integration test
-// stands on x 3220..3223, z 3212, and neither use changes anything on the ground.
-const spot = () => ({ x: 3220 + Math.floor(Math.random() * 4), z: 3212 });
+// stands on x 3220..3222, z 3212 (equip uses x 3223..3224), and neither use changes anything on the ground.
+const spot = () => ({ x: 3220 + Math.floor(Math.random() * 3), z: 3212 });
 const FOUNTAIN = { x: 3221, z: 3210 };
 const FEATHER = 314;
 const ARROW_SHAFT = 52;

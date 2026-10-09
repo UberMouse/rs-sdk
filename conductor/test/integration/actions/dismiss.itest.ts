@@ -78,11 +78,12 @@ test(
     async () => {
         await fixture(async ({ sdk, bot }) => {
             // The burn op leaves the level-up to the dialog guard, and none runs here, so it stays open. A
-            // refused tile, or a light whose rolls all fail within the wait, is tried again a step aside.
+            // refused tile is tried again a step aside. A timeout fails the test: the logs are then on the
+            // ground and may still light, so a retry would not start from the world the test set up.
             for (let attempt = 0; attempt < LIGHT_ATTEMPTS && !leveled(sdk.getState()!); attempt++) {
                 const lit = await runLive(sdk, ctx => burn(ctx, LOGS));
                 if (lit.ok) break;
-                expect(['cant-light-here', 'timeout'], lit.message).toContain(lit.reason);
+                expect(lit.reason, `burn failed (not a refused tile): ${lit.message}`).toBe('cant-light-here');
                 await sidestep(sdk, bot);
             }
             expect(leveled(sdk.getState()!), 'no fire was lit').toBe(true);
