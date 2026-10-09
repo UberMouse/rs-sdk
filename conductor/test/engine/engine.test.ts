@@ -288,12 +288,16 @@ describe('wall-clock limits on a generator step', () => {
                 return undefined;
             },
         });
-        const r = await runTask([step('grind', grind)], [], { driver, events, stepTimeoutMs: 10, stepGraceMs: 40 });
+        const r = await runTask([step('grind', grind)], [], { driver, events, stepTimeoutMs: 10, stepGraceMs: 200 });
         expect(r.result.status).toBe('stuck');
-        expect(r.result.reason).toBe('step "grind" ran over 0.05s of wall time');
+        expect(r.result.reason).toBe('step "grind" ran over 0.21s of wall time');
         // The interpreter ran the finally before the result, rather than the op running on after it.
         expect(events.map(e => e.type)).toEqual(['start', 'step', 'sent', 'screenshot', 'result']);
+        // The op is not left running: no further calls or sends after the result.
+        const commands = () => driver.commands.filter(c => c.type === 'send' || c.type === 'call').length;
+        const atResult = commands();
         await sleep(60);
+        expect(commands()).toBe(atResult);
         expect(r.sends).toEqual(['cleanup']);
         expect(abandoned(r.events)).toEqual([]);
     });

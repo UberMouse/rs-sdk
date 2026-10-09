@@ -12,7 +12,7 @@ import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import type { Op, Outcome } from '../core/op';
-import type { GuardName } from './interrupts';
+import type { AllowableGuard } from './interrupts';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -84,8 +84,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     params: S;
     /** A fresh `ctx.memory` for each run; its return type types `ctx.memory`. Default `{}`, untyped. */
     memory?(): M;
-    /** Guards this task handles itself (e.g. `dialog` for a task that drives dialogs); off for the whole run. */
-    allow?: readonly GuardName[];
+    /**
+     * Guards this task handles itself (e.g. `dialog` for a task that drives dialogs); off for the
+     * whole run. The critical guards, `death` and `wilderness`, cannot be allowed.
+     */
+    allow?: readonly AllowableGuard[];
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null | Promise<string | null>;
     steps: Step<z.infer<S>, M>[];

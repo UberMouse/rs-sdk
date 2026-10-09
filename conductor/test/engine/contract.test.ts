@@ -7,7 +7,7 @@ import type { TimelineDriver } from '../../core/drivers/timeline';
 import { log, type Op, send, ticks, wait } from '../../core/op';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { timeline } from '../core/states';
+import { timeline, worldState } from '../core/states';
 import { runDef, runTask } from './harness';
 
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
@@ -191,6 +191,17 @@ describe('allow', () => {
         expect(guarded.result.stepRuns['interrupt:dialog']).toBeGreaterThan(0);
     });
 
+    test('the critical guards cannot be allowed', () => {
+        defineTask({
+            name: 'critical',
+            description: 'allow',
+            params: z.object({}),
+            // @ts-expect-error death is critical: `allow` only takes the guards a task may handle itself.
+            allow: ['death'],
+            steps: [],
+        });
+    });
+
     test("allow: ['dialog'] leaves a dialog open between steps to the task's own steps", async () => {
         const steps = [answer, finishAt(5), idleStep];
         const allowed = await runTask(steps, dialogAt(0, 1), { allow: ['dialog'] });
@@ -275,5 +286,70 @@ describe('guard episodes', () => {
         );
         expect(r.result.reason).toBe('wait: met at tick 30');
         expect(count(r.legacy, 'dismiss')).toBe(8);
+    });
+});
+
+const noFood = (spec: (t: number) => { hp?: number; inCombat?: boolean; dead?: boolean }) =>
+    timeline(20, t => ({ food: 0, ...spec(t) }));
+
+describe('low HP with nothing to eat', () => {
+    test('still losing HP fails the run, out of combat too', async () => {
+        const r = await runTask(
+            [idleStep],
+            noFood(t => ({ hp: 4 - Math.min(3, Math.floor(t / 4)) })),
+        );
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^interrupt:low-hp: hp \d\/10 at \(\d+,\d+\), no food$/);
+        expect(calls(r, 'bot.eatFood')).toBe(0);
+    });
+
+    test('flat HP out of combat waits for regeneration, then gives up after the cap', async () => {
+        const r = await runTask(
+            [idleStep],
+            noFood(() => ({ hp: 4 })),
+            // 500 ticks of waiting is longer than the default watchdog.
+            { stuckAfterMs: 10 * 60 * 60_000 },
+        );
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218) not regenerating after 500 ticks');
+    });
+
+    test('regenerating HP ends the wait without failing', async () => {
+        const r = await runTask(
+            [finishAt(30), idleStep],
+            noFood(t => ({ hp: t < 8 ? 4 : 10 })),
+        );
+        expect(r.result.reason).toBe('finish: at tick 30');
+    });
+
+    test('in combat fails at once', async () => {
+        const r = await runTask(
+            [idleStep],
+            // Out of combat only on the first tick (the engine refuses to start in combat), so the guard
+            // spends one regeneration slice before it sees the fight.
+            noFood(t => ({ hp: 4, inCombat: t >= 1 })),
+        );
+        expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218), no food');
+        expect(r.driver.state().tick).toBeLessThanOrEqual(5);
+    });
+
+    test('a death during the wait between steps ends the run at once, under a legacy task', async () => {
+        // The legacy step takes one tick; the guard then waits in slices of five. Dying at tick 8
+        // falls inside a slice: only the guards on during that wait see it before the slice ends.
+        const r = await runTask(
+            [legacyIdle],
+            noFood(t => ({ hp: 4, dead: t >= 8 })),
+        );
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^interrupt:death: /);
+        expect(r.driver.state().tick).toBeLessThanOrEqual(9);
+    });
+
+    test('a death message from before the run started is not this run', async () => {
+        const stale = { type: 0, text: 'Oh dear, you are dead!', sender: '', tick: 2, fromSelf: false };
+        const states = Array.from({ length: 10 }, (_, i) => ({ ...worldState(5 + i), gameMessages: [stale] }));
+        const r = await runTask([finishAt(8), idleStep], states);
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: at tick 8');
     });
 });

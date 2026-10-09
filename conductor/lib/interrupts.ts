@@ -20,12 +20,14 @@ const DEATH_REASON_MESSAGES = 3;
 const MAX_EATS_PER_EPISODE = 8;
 /** Ticks waited per slice while regenerating HP with nothing to eat. */
 const REGEN_SLICE_TICKS = 5;
-/** Ticks of regeneration waiting per low-HP episode (~5 minutes at 0.6s per tick) before giving up. */
+/** Ticks of regeneration waiting per low-HP episode before giving up. */
 const REGEN_CAP_TICKS = 500;
 /** Handler runs a dialog may stay open through within one episode before the run gives up. */
 const DIALOG_STUCK_LIMIT = 5;
 
 export type GuardName = 'death' | 'wilderness' | 'low-hp' | 'dialog';
+/** The guards a task may turn off: death and the Wilderness protect the account and are always on. */
+export type AllowableGuard = Exclude<GuardName, 'death' | 'wilderness'>;
 
 /** What a guard knows of the run besides the state it is checking. */
 export interface GuardRun {

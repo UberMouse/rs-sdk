@@ -302,7 +302,8 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
 
     // Each guard's episode state, from when it first runs until its `when` is next checked false.
     const episodes = new Map<GuardName, object>();
-    const guards: Guard[] = GUARDS.filter(g => !def.allow?.includes(g.name)).map(g => ({
+    const allowed: readonly GuardName[] = def.allow ?? [];
+    const guards: Guard[] = GUARDS.filter(g => !allowed.includes(g.name)).map(g => ({
         name: guardLabel(g.name),
         policy: g.policy,
         critical: g.critical,

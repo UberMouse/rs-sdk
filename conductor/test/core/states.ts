@@ -12,6 +12,8 @@ export interface StateSpec {
     food?: number;
     /** The death message arrives on this state's tick. */
     dead?: boolean;
+    /** The bot is fighting something. */
+    inCombat?: boolean;
 }
 
 const shrimps = (slot: number): InventoryItem => ({
@@ -24,7 +26,7 @@ const shrimps = (slot: number): InventoryItem => ({
 
 export function worldState(
     tick: number,
-    { hp = 10, dialog = false, z = 3218, xp = 0, level = 1, food = 0, dead = false }: StateSpec = {},
+    { hp = 10, dialog = false, z = 3218, xp = 0, level = 1, food = 0, dead = false, inCombat = false }: StateSpec = {},
 ): BotWorldState {
     return {
         tick,
@@ -43,7 +45,7 @@ export function worldState(
             runWeight: 0,
             animId: -1,
             spotanimId: -1,
-            combat: { inCombat: false, targetIndex: -1, targetType: 'none', lastDamageTick: -1 },
+            combat: { inCombat, targetIndex: -1, targetType: 'none', lastDamageTick: -1 },
             isDead: hp <= 0,
             lifeId: 0,
             respawnCount: 0,

@@ -5,7 +5,7 @@ import type { BotSDK } from '../../../sdk/index';
 import type { BotWorldState, InventoryItem } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { executeTask } from '../../lib/engine';
-import type { GuardName } from '../../lib/interrupts';
+import type { AllowableGuard } from '../../lib/interrupts';
 import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Sinks, type Step } from '../../lib/task';
 
@@ -14,7 +14,7 @@ export interface RunOptions {
     stuckAfterMs?: number;
     stepTimeoutMs?: number;
     stepGraceMs?: number;
-    allow?: GuardName[];
+    allow?: AllowableGuard[];
     driver?: TimelineDriver;
     /** The run's events land here, so a test can interleave its own records with them. */
     events?: Record<string, unknown>[];
