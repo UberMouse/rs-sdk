@@ -215,8 +215,9 @@ function* performRemaining(ctx: Ctx, stepStart: number): Op<Ending | null> {
 }
 
 /**
- * Walks to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named `npc`, as bot.openShop does
- * before trading: bot.walkTo opens doors on the way, which the client's pathing of an open does not.
+ * Stopgap until openShop walks: walks to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named
+ * `npc`, as bot.openShop does before trading: bot.walkTo opens doors on the way, which the client's
+ * pathing of an open does not.
  */
 function* walkToKeeper(ctx: Ctx): Op<void> {
     const name = exactName(ctx.params.npc);
@@ -224,7 +225,10 @@ function* walkToKeeper(ctx: Ctx): Op<void> {
         .state()
         .nearbyNpcs.filter(n => name.test(n.name))
         .sort((a, b) => a.distance - b.distance)[0];
-    if (!keeper) return;
+    if (!keeper) {
+        yield* log(`no ${ctx.params.npc} in view to walk to; the next open tries again from here`);
+        return;
+    }
     const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(keeper.x, keeper.z, KEEPER_WALK_TOLERANCE));
     yield* log(`walk to ${keeper.name} (${keeper.x},${keeper.z}) to open the shop: ${r.message}`);
 }
@@ -309,7 +313,7 @@ export default defineTask({
                     yield* log(`open shop failed (${trip.reason}): ${trip.message}`);
                     if (openFails.add() >= FAIL_LIMIT)
                         return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
-                    // openShop does not walk: a shopkeeper behind a door is out of the client's reach.
+                    // Stopgap until openShop walks: a shopkeeper behind a door is out of the client's reach.
                     if (trip.reason === 'cant-reach') yield* walkToKeeper(ctx);
                     return;
                 }
