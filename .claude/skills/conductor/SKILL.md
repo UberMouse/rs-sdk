@@ -52,7 +52,7 @@ Agents (all dispatched in the background):
 | `bot` | the bot's name. Set once |
 | `client` | `"windowed"` / `"headless"` / `"lite"`: how the game client is being run |
 | `baseline` | set once at run start: `{ at, totalLevel }` from `progress.ts` |
-| `journal` | **absolute** path to `.durable-state/journal.jsonl`. One line per finished dispatch: `{at, kind: "run"\|"author"\|"review"\|"curate"\|"retro", objective, command?, result?, verdict, commit?}` |
+| `journal` | **absolute** path to `.durable-state/journal.jsonl`. One line per finished dispatch: `{at, kind: "run"\|"author"\|"review"\|"curate"\|"retro", objective, task?, command?, result?, verdict, commit?}`. Append with `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (`--help`), which stamps the real UTC time; never type `at` by hand |
 | `tasks` | the objective queue (generic `tasks` field). Each: `{id, title, status, task?, params?, until?, attempts}`; `title` is the objective in game terms ("Woodcutting 30 for willows") |
 | `runsSinceRetro` | task runs since the last retrospective |
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
