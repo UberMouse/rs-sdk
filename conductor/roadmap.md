@@ -103,6 +103,14 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - Engine/lib: `Counter` has no read method (tasks read with `add(0)`); add `value()` (shop review).
 - Engine/lib: export a `TICK_MS` constant (400 ms, `learnings/local-server.md`). combat.ts was
   authored with `MS_PER_TICK = 600` after the page was corrected; one reviewer caught it.
+  pickup.ts repeated it (`TICK_MS = 600`, four lenses caught it); it now uses wall-clock time.
+- Lib: pickup and fletching copy the same `attacked` step (fail on any `inCombat`); extract a
+  shared step into `conductor/lib` (next to `returnToAreaStep`) (code-quality Q4, contract T1).
+- SDK: `bot.fletchLogs` clicks the product's make-1 button, so the fletching task cuts one log per
+  call (~4 s/log against 0.8 s); add a quantity option (Make 10 / Make X with the count dialog)
+  and let the task batch (game-semantics G5).
+- Knowledge: the headless-arrow recipe (Feathers on Arrow shafts) the fletching task uses is not
+  in `learnings/fletching.md`; give it to the knowledge-curator (contract T6).
 - Engine: a smoke test never exercises failure branches (woodcutting "area depleted", shop
   `shop_not_open` reopen); give tasks a test hook or use the snapshot fixtures item.
 - Tooling: `conductor/tools/journal.ts` that appends a journal line stamped with the real UTC
