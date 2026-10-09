@@ -2,6 +2,7 @@
 // world does by itself, these what the bot does to it.
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import { ITEM_COMPONENT, NOTE_COMPONENT } from '../actions/bank';
+import { SMITHING_INTERFACE } from '../actions/dismiss';
 import type { Effect } from '../core/drivers/timeline';
 import { type BankContents, type ShopContents, world } from './world';
 
@@ -164,3 +165,65 @@ export const shopReact =
             return s => (s.shop.isOpen ? s : world(s).shop(lines, buys).build());
         return shopWorld(action, state);
     };
+
+/** What one smithing action takes from the inventory and gives back, with the Smithing XP it pays. */
+export interface SmithyWork {
+    takes: { name: string; count: number }[];
+    gives: { name: string; id: number };
+    xp: number;
+}
+
+/**
+ * A furnace and an anvil as the game runs them: a bar used on an anvil opens the smithing interface, the
+ * furnace's Smelt option opens the smelting menu (`menu`, its option labels), a click in either closes
+ * it and makes one `work` (its inputs leave the inventory, the product and the XP arrive), and a
+ * closeModal takes either away, all from the next tick. Unlike the other worlds it counts what it made
+ * and lays that over every scripted state, so a script needs no inventory or XP changes. A fresh one per
+ * run: it keeps its count across sends. With `work` null a click closes what it answers and makes
+ * nothing (the game ignoring it). Falls back to `consume`.
+ */
+export function smithyReact(work: SmithyWork | null, menu: string[] = []) {
+    let open: 'anvil' | 'menu' | null = null;
+    let made = 0;
+    let projecting = false;
+    const project: Effect = s => {
+        let w = world(s);
+        if (open === 'anvil') w = w.modal(SMITHING_INTERFACE);
+        if (open === 'menu') w = w.dialog({ options: menu });
+        if (!work || made === 0) return w.build();
+        for (const t of work.takes) {
+            const item = s.inventory.find(i => i.name.toLowerCase() === t.name.toLowerCase());
+            if (item) w = w.inv(t.name, Math.max(0, heldOf(s, item.id) - t.count * made), { id: item.id });
+        }
+        w = w.inv(work.gives.name, heldOf(s, work.gives.id) + made, { id: work.gives.id });
+        const skill = s.skills.find(k => k.name === 'Smithing');
+        return w.skill('Smithing', skill?.baseLevel ?? 1, (skill?.experience ?? 0) + work.xp * made).build();
+    };
+    return (action: BotAction, state: BotWorldState): Effect | undefined => {
+        switch (action.type) {
+            case 'useItemOnLoc':
+                if (/ on anvil$/i.test(action.reason)) open = 'anvil';
+                break;
+            case 'interactLoc':
+                if (/^smelt /i.test(action.reason)) open = 'menu';
+                break;
+            case 'clickComponentWithOption':
+            case 'clickDialogOption': {
+                const answered = action.type === 'clickComponentWithOption' ? 'anvil' : 'menu';
+                if (open !== answered) return undefined;
+                open = null;
+                made++;
+                break;
+            }
+            case 'closeModal':
+                open = null;
+                break;
+            default:
+                return consume(action, state);
+        }
+        // One projection over every later state; the sends after the first only move the count.
+        if (projecting) return undefined;
+        projecting = true;
+        return project;
+    };
+}
