@@ -3,10 +3,11 @@ import { Items } from '../../../../sdk/test/utils/save-generator';
 import type { BotWorldState } from '../../../../sdk/types';
 import { withFixtureBot } from '../harness';
 
-// The field east of the Lumbridge General Store. Other runs leave logs around, so the test counts logs
-// on its own tile relative to what it found. x 3226..3230 is disjoint from dismissBlockingUI.itest.ts's
-// 3231..3235 so a parallel run never drops onto the same tile.
-const FIELD = { x: 3226 + Math.floor(Math.random() * 5), z: 3236 + Math.floor(Math.random() * 9) };
+// Open ground north-east of Lumbridge, every tile walkable when probed. Other runs leave logs around,
+// so the test counts logs on its own tile relative to what it found. x 3254..3258 is disjoint from
+// dismissBlockingUI.itest.ts's 3248..3252 and clear of the firemaking smoke test's area (x 3224..3236,
+// z 3234..3246), so a parallel run never drops onto or lights beside the same tiles.
+const FIELD = { x: 3254 + Math.floor(Math.random() * 5), z: 3258 + Math.floor(Math.random() * 5) };
 const LOGS = /^logs$/i;
 
 const countLogs = (items: { name: string }[]) => items.filter(i => LOGS.test(i.name)).length;

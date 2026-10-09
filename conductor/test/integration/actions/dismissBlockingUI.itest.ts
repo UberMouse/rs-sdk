@@ -3,10 +3,11 @@ import { Items } from '../../../../sdk/test/utils/save-generator';
 import type { BotWorldState } from '../../../../sdk/types';
 import { itestTimeout, levelXp, withFixtureBot } from '../harness';
 
-// Open ground east of the Lumbridge General Store (the firemaking task's verified spot). A recently
-// lit tile can refuse another fire (wiki/skills/firemaking.md), so each run picks a random tile; x
-// 3231..3235 is disjoint from dropItem.itest.ts's 3226..3230 so the two can run in parallel.
-const FIELD = { x: 3231 + Math.floor(Math.random() * 5), z: 3236 + Math.floor(Math.random() * 9) };
+// Open ground north-east of Lumbridge, every tile walkable and fire-friendly when probed. It is kept
+// clear of the firemaking smoke test's area (x 3224..3236, z 3234..3246), whose fires would otherwise
+// block tiles here, and disjoint from dropItem.itest.ts's x 3254..3258. A recently lit tile can refuse
+// another fire (wiki/skills/firemaking.md), so each run picks a random tile.
+const FIELD = { x: 3248 + Math.floor(Math.random() * 5), z: 3258 + Math.floor(Math.random() * 5) };
 const LIGHT_ATTEMPTS = 5;
 const LIGHT_WAIT_MS = 30_000;
 /** Time for the dialog checks, the drop and the sidestep walks around the light attempts. */

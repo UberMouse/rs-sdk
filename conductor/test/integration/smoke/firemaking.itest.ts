@@ -6,9 +6,8 @@ import { itestTimeout, runTask, withFixtureBot } from '../harness';
 const FIELD = { x: 3230, z: 3240 };
 const LOGS = 3;
 // A recently lit tile can refuse another fire (wiki/skills/firemaking.md), so back-to-back runs on the
-// exact centre can fail. Start on a random tile inside the area instead. This range overlaps the
-// action tests' tiles, which is harmless: dropItem counts only logs on its own tile and
-// dismissBlockingUI retries a refused light on another tile.
+// exact centre can fail. Start on a random tile inside the area instead. No other integration test
+// uses this area (the action tests moved to x 3248..3258, z 3258..3262), so their fires cannot block it.
 const START = { x: FIELD.x - 4 + Math.floor(Math.random() * 9), z: FIELD.z - 4 + Math.floor(Math.random() * 9) };
 
 test(
