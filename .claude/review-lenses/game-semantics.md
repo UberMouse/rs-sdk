@@ -4,7 +4,7 @@ Does the code's model of the game match how the game and the SDK actually behave
 
 ## Criteria
 
-- **G1 Dispatch is not effect.** A `sdk.send*` success (or an `ActionResult` with phase
+- **G1 Dispatch is not effect.** A `send` success (or an `ActionResult` with phase
   `dispatch`) only means the client wrote a packet. Every action whose outcome matters is
   followed by a wait on an observed effect — XP, inventory, position, dialog, message, or
   `state.opFeedback.opRejectedCount` — not by a fixed sleep or by trusting the result.
@@ -18,14 +18,14 @@ Does the code's model of the game match how the game and the SDK actually behave
 - **G4 Modals and dialogs.** Inventory, equipment and interaction packets are not sent while a
   bank, shop or other modal is open (the server drops them silently); the interface guard closes
   leftover informational modals, never a shop or bank. Skill dialogs are driven by
-  option text (`clickDialogByText`, `bot.fletchLogs(...)`), never by assumed option order. A task
+  option text (as `fletch` picks its product), never by assumed option order. A task
   that opens a dialog on purpose sets `allow: ['dialog']` so the dialog guard doesn't close it
   (a skill make menu an op answers itself, like `fletch`'s, needs none: the guard leaves it), and
   one that leaves an informational interface open on purpose (one bot.dismissBlockingUI would
   close) between steps or inside a wait sets `allow: ['interface']`. A main modal an op opens and
   owns (`OP_OWNED_INTERFACES` in `actions/dismiss.ts`, like `smith`'s anvil interface) needs none:
   the guard leaves it, and the op closes it on every path that leaves it open.
-- **G5 Game time.** Waits are in ticks (`wait`/`ticks` ops; `waitForTicks` in legacy code) and
+- **G5 Game time.** Waits are in ticks (`wait`/`ticks` ops) and
   sized to the action (a tree can take many ticks; a respawn longer). Timeouts exist and are not so short that
   slow-but-normal actions fail. Tick length is in `learnings/local-server.md` (400 ms locally);
   ms-per-tick constants of 600 are wrong here. Level, XP and respawn data live in

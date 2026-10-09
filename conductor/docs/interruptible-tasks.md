@@ -258,6 +258,8 @@ Each phase leaves `run-task.ts` working and every task runnable.
      shop, smithing).
    - `walkTo` last.
    - Then remove `call`, `lib/threat.ts` waits and `bot`/`sdk` from `TaskContext`.
+   - As built (Task 14): done. No task, op or engine path reaches `bot` or `sdk`; `call`, `async
+     run`, the wall-clock step grace and `abandoned-step-error` are gone.
 4. **Recording + replay.** Measure state size, add the recorder and `replay.ts`, and have
    task-runner's failure diagnosis use replay.
 5. **Reactive sim (later).**
@@ -269,9 +271,10 @@ Each phase leaves `run-task.ts` working and every task runnable.
 
 - **Drift from upstream `bot.*`**: ported ops miss upstream fixes. Mitigation: recorded shas +
   `upstream-drift.ts` after each sync, parity tests.
-- **`walkTo` port size**: door handling, partial paths, stairs; keep it behind `call` until its
-  integration coverage (door-handling, lumbridge-stairs, long-distance-navigation, karamja-ferry
-  scenarios) is ported.
+- **`walkTo` port size**: door handling, partial paths, stairs. As built (Task 13) the op opens
+  doors and gates and handles partial paths and long walks, but climbs no stairs or ladders and
+  takes no ferry; with `call` gone, a task that needs a level change or the Karamja ferry needs
+  those ported as ops first.
 - **Guard policy mistakes** (abort vs suspend) change game behaviour, e.g. whether a level-up
   dialog stops skilling. Decide per guard from observed behaviour, record it in `learnings/`.
 - **Agent adoption**: task-author agents must learn the generator style; the type-level removal

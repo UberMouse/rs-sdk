@@ -20,10 +20,10 @@ you never commit, and you only touch the bot you were given.
   guards (below), the refusal to start while in combat, closing a modal an earlier run left open
   (an op's interface, a bank, a shop, a skill menu) before the first step, `--until` stop conditions, the progress
   watchdog, auto-screenshots, the RESULT line. Don't re-implement them in a task.
-- `conductor/core/op.ts` — the commands a step yields (`send`, `wait`, `ticks`, `scan`, `call`,
-  `log`, `screenshot`, `uninterruptible`) and `Cancelled`; `conductor/actions/*.ts` — the ops.
-- `CLAUDE.md` and `sdk/API.md` — the bot API, mainly to read what a legacy `bot.*` method does
-  before porting it as an op.
+- `conductor/core/op.ts` — the commands a step yields (`send`, `wait`, `ticks`, `scan`, `log`,
+  `screenshot`, `uninterruptible`) and `Cancelled`; `conductor/actions/*.ts` — the ops.
+- `CLAUDE.md` and `sdk/API.md` — the SDK's bot API, to read what an upstream `bot.*` method does
+  before porting it as an op. A task never calls it: `TaskContext` has no `bot` or `sdk`.
 - `learnings/` and `wiki/` — where things are and how the game behaves
   (`.claude/skills/knowledge/SKILL.md` says what is where; `wiki/items|npcs|shops` are
   generated game data). On the local server, read `learnings/local-server.md` before coding any
@@ -56,23 +56,20 @@ you never commit, and you only touch the bot you were given.
   filter targets.
 - The game is not buggy; the SDK may be. If an SDK method misbehaves, find a workaround first,
   then file it: `bun sdk/bug-report.ts "<what, and the workaround>"`.
-- A new task, or a changed task in scope of the legacy scope rule (`.claude/review-lenses/common.md`),
-  ships with unit tests and an integration smoke (see Tests). Without them it is not done.
+- A new task ships with unit tests and an integration smoke, and so does a new or rewritten step in
+  a changed task (see Tests). Without them it is not done.
 
 ## The pattern
 
 A task is `defineTask({ name, description, params (zod from 'zod/v4'), memory?, allow?, guards?,
 preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
 `when()` passes runs; a step returns nothing to keep going, `{ fail }` or `{ done }` to end the
-run. New and changed tasks are generator steps over ops. Every catalog task except woodcutting is
-still legacy `async` code that is being ported: recognise it. What counts as a narrow edit (made in
-the legacy style) and what needs the new style is the legacy scope rule in
-`.claude/review-lenses/common.md`; write new tasks, new steps, ports and substantial rewrites in the
-new style, porting the actions they use as ops.
+run. Every step is a generator over ops, or a plain function that only decides; an action no op
+covers yet is ported as one first.
 
 ### Step shapes
 
-`run` has three shapes; the engine tells them apart by what it returns.
+`run` has two shapes; the engine tells them apart by what it returns.
 
 - **Generator, `*run(ctx)`**: the normal shape. Everything it does goes through `yield*` of ops
   (`send`, `wait`, `ticks`, `log`, or an op from `conductor/actions`). Every wait is a point where
@@ -81,12 +78,10 @@ new style, porting the actions they use as ops.
 - **Plain, `run(ctx)` returning an `Outcome`**: for a step that only decides, with no I/O
   (woodcutting's `stop-full` returns `{ done }` or `{ fail }` from the state). A generator that
   never yields trips oxlint `require-yield`; use this shape, not a lint suppression.
-- **`async run(ctx)`**: legacy, being removed. One opaque promise: guards and stops act only
-  between steps, and a timeout abandons it still running. Don't write new ones.
 
-Never `await` in a new step, or in a ported or substantially rewritten one: a generator waits with
-`yield*`, and an awaited SDK call is exactly what guards and cancellation cannot see. A narrow edit
-to a legacy step keeps its own style (scope rule: `.claude/review-lenses/common.md`).
+There is no `async run`: the types refuse it, and a step that returns a promise anyway (cast, or
+plain JS) ends the run as an error. Never `await` in a step: a generator waits with `yield*`, which
+is where guards and cancellation act.
 
 ### Ops
 
@@ -177,8 +172,7 @@ sequence that must not be cut mid-way (a bank withdraw, a trade) in it.
   stuck fight. It is opt-in. A task may declare its own `TaskGuard` (a `name` distinct from the
   shared ones, `policy`, pure `when(state, run)`, `episode()` state, `run`); its limits bound one
   episode, not the run.
-- **Do not** wait with `waitUnlessThreatened` (`lib/threat.ts`, kept for legacy tasks) or write
-  threat checks in a step: the guards do it.
+- **Do not** write threat checks in a step or an op: the guards do it.
 
 ### Ticks, not wall clock
 
@@ -205,13 +199,6 @@ never moves the bot.
 - Order the steps so urgent states (full inventory, out of area) come before the grinding step;
   only the last `when` is `() => true`.
 
-### Calling an action that has no op yet
-
-An action with no op (`bot.talkTo` has none yet) is ported to one, as above. When you are not porting
-it now, `const talked = yield* call('bot.talkTo', () => ctx.bot.talkTo(npc))` is the stopgap: it runs
-the legacy action under the step's bounds, the guards wait for it to settle, and you check
-`talked.success` as you would an op's `ok`.
-
 ### Walking
 
 `yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
@@ -234,10 +221,10 @@ than it started (`timedOutAdvancing`): it is progress, not a failure, as shop's 
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.
 
-## Tests (required in scope of the legacy scope rule)
+## Tests
 
-The scope rule is in `.claude/review-lenses/common.md`: the unit tests below are for new tasks,
-new steps, ports and substantial rewrites; any changed task still needs a passing integration smoke.
+The unit tests below are for new tasks and for new or rewritten steps (contract T8 in
+`.claude/review-lenses/contract.md`); any changed task still needs a passing integration smoke.
 
 `bun test conductor` runs the unit tests with no server, in well under 10 seconds.
 

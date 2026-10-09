@@ -12,22 +12,15 @@ the loop that runs it is `conductor/lib/engine.ts`, which interprets generator s
 (`conductor/core/`) under the shared guards in `conductor/lib/interrupts.ts` (death, wilderness,
 low HP, dialogs, leftover modals), the task's own guards, `--until` stop conditions, the progress
 watchdog, step timeouts, auto-screenshots and the RESULT line. Steps drive the game through ops
-in `conductor/actions/`; legacy tasks still use the SDK's `sdk/actions.ts` (`ctx.bot.*`) and
-`sdk/index.ts` (`ctx.sdk.*`), which `CLAUDE.md` and `sdk/API.md` describe. The pattern is
-written up in `.claude/agents/task-author.md`. "New or changed" below means a step, op or task
+in `conductor/actions/`, most ported from the SDK's `sdk/actions.ts` (`CLAUDE.md` and `sdk/API.md`
+describe it); a task cannot reach the SDK itself (`TaskContext` has no `bot` or `sdk`). The pattern
+is written up in `.claude/agents/task-author.md`. "New or changed" below means a step, op or task
 the change adds or edits.
-
-**Scope rule for legacy code.** Untouched legacy (`async`) steps are not reviewed against the
-generator-step criteria. A narrow edit to a legacy step is judged in its own style: contract T4,
-T7 and the unit-test half of T8 apply only to new tasks, new steps, ports and substantial rewrites
-(a step's logic rewritten, or a new behaviour added to it). Do not ask for a port of a narrow
-edit. The integration smoke (T8) must still pass for any changed task, and every other criterion
-applies to the edited lines as usual.
 
 ## How to review
 
-- Read every changed file in full, then the code it calls (the SDK methods, `conductor/lib`)
-  and the reference task `conductor/tasks/woodcutting.ts`. Never judge from the diff alone.
+- Read every changed file in full, then the code it calls (the ops, `conductor/lib`, and for an
+  op the `sdk/actions.ts` method it ports) and the reference task `conductor/tasks/woodcutting.ts`. Never judge from the diff alone.
 - Walk your lens **item by item**: every numbered criterion is a separate check against every
   changed step, preflight and helper.
 - The game is not buggy. When code assumes the game misbehaves, the assumption is the suspect.

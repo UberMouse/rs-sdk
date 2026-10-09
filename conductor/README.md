@@ -29,10 +29,10 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 
 - A step's `run` is a generator (`*run`) that `yield*`s ops from `conductor/actions`
   (`chop`, `interactLoc`) and the commands in `conductor/core/op.ts` (`send`, `wait`, `ticks`,
-  `log`, `call`, ...). It never touches the SDK itself: the interpreter (`core/interpret.ts`)
-  executes each command against a driver, so the same step runs against the live game (the
-  `LiveDriver`) or a scripted timeline in a unit test. A step that only decides is a plain
-  function returning an outcome; legacy `async` steps still exist while tasks are ported.
+  `log`, ...). It never touches the SDK itself (its context has no `bot` or `sdk`): the
+  interpreter (`core/interpret.ts`) executes each command against a driver, so the same step runs
+  against the live game (the `LiveDriver`) or a scripted timeline in a unit test. A step that only
+  decides is a plain function returning an outcome.
 - Waits are game ticks (400 ms here), not wall clock. Every wait is a point where the engine can
   act: it runs the **guards** (`lib/interrupts.ts`: death, wilderness, low HP, dialog,
   leftover-interface, plus a task's own such as `underAttackGuard`), applies `--until` stops, the
@@ -53,8 +53,8 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 | Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/` | `bun test conductor` (no server) |
 | Integration: ops and one smoke run per task against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
 
-A new task (or a port or substantial rewrite; the legacy scope rule is in
-`.claude/review-lenses/common.md`) has both: unit tests for its success, failure and guard
+A new task (or a new or rewritten step in one; contract T8 in
+`.claude/review-lenses/contract.md`) has both: unit tests for its success, failure and guard
 scenarios, and a smoke test. Any changed task needs its smoke test to pass. `bun conductor/tools/capture-state.ts <bot> --name <fixture>` records a fixture from a
 (throwaway) bot's live state.
 

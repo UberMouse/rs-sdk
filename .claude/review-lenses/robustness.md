@@ -24,8 +24,7 @@ Does every run end, end for the right reason, and say why?
   a random event NPC, another player taking the resource, a respawn delay, the bot being
   attacked, a door closing behind it. Dialogs, low HP and leftover modals are the shared
   guards' (`allow` only for a task that drives them on purpose); being attacked while skilling is
-  `guards: [underAttackGuard]`. Threat checks or `waitUnlessThreatened` in a step or op duplicate
-  them (T9).
+  `guards: [underAttackGuard]`. Threat checks in a step or op duplicate them (T9).
 - **R6 Honest outcomes.** `{ done }` is returned only when the objective is met; failure reasons
   name the cause and the evidence (what was tried, what came back), so the conductor can tell a
   world problem from a script problem.

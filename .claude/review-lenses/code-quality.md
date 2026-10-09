@@ -10,10 +10,10 @@ belongs to the other lenses; this one judges the code as code.
   optional, `find` results). `ctx.memory` is typed by the task's `memory` factory and read without
   a cast or a narrowing of `unknown`. Params types come from the zod schema
   (`z.infer`), not a hand-written copy. Unions over loose strings where the set is closed.
-- **Q2 Async hygiene.** Every promise is awaited or deliberately handled: no floating
-  `ctx.bot.*` / `ctx.sdk.*` calls, no `async` callbacks in `forEach`, timers from
-  `setTimeout`/`Promise.race` cleared, nothing left running after the step returns. In a step in
-  scope of the legacy scope rule (`common.md`) the answer is not `await` at all but `yield*` of an op (contract T7);
+- **Q2 Async hygiene.** Every promise is awaited or deliberately handled: no floating promises,
+  no `async` callbacks in `forEach`, timers from `setTimeout`/`Promise.race` cleared, nothing left
+  running after the step returns. In a step or op the answer is not `await` at all but `yield*` of
+  an op (contract T7);
   `Date.now()` and timers in task logic are robustness R9. (Throwing for expected game outcomes is robustness R7, not this.)
 - **Q3 Simplicity.** No dead code, unreachable branches or unused params/imports; no
   over-nesting a guard clause would flatten; standard array methods over manual index loops
