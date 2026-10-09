@@ -73,10 +73,11 @@ survival) is described in the project memory; this file is the human-readable ch
 - [ ] **Save endpoints (opt-in)** — `pages/saves.ts`, routed from the management server's
       `fetch` fallback in `src/web/index.ts` (`startManagementWeb`): `GET /save/:name` returns
       the current save (live `save(false)` without a logout, in-flight logout save, GE
-      checkpoint, or `.sav`) with `X-Save-Source` / `X-Save-Path` / `X-Engine-Web-Port`
-      (404 body: `{path, webPort}`); `POST /kick/:name` logs a player out server-side. 403
-      unless `SAVE_ENDPOINTS=true` (set by `conductor/local/up.sh` only) and the caller is
-      loopback. Used by `conductor/lib/saves.ts`.
+      checkpoint, or `.sav`) with `X-Save-Source` / `X-Save-Path` / `X-Save-Sha1` /
+      `X-Engine-Web-Port` (404 body: `{path, webPort}`); `POST /kick/:name` logs a player out
+      server-side. 403 unless `SAVE_ENDPOINTS=true` (set by `conductor/local/up.sh` only) and
+      the caller is loopback and not a browser (no `Origin`/`Sec-Fetch-Site`, loopback `Host`).
+      Used by `conductor/lib/saves.ts`.
       Verify: `grep -n "handleSaveRequest" src/web/index.ts`
 - [ ] **Login server** — `LoginServer.ts`: `sdk_auth` message handler (gateway auth path,
       username normalized to match engine); `LoginThread.ts`: **no auto-grant of dev

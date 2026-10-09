@@ -73,7 +73,8 @@ list_bots();
 
 ### `disconnect_bot`
 
-Disconnect a connected bot.
+Forget a bot this session has used. Refused while an `execute_code` call is running on it; each
+call releases its bot when it ends anyway.
 
 ```typescript
 disconnect_bot({ name: "mybot" });

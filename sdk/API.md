@@ -170,7 +170,7 @@
 | `async isBotConnected(): Promise<boolean>` | Check if bot is currently connected to gateway. |
 | `getState(): BotWorldState \| null` | Get current game state snapshot. |
 | `getStateReceivedAt(): number` | Get timestamp when state was last received (ms since epoch) |
-| `getStateAge(): number` | Get age of current state in milliseconds |
+| `getStateAge(): number` | Age of the current state in milliseconds. 0 when there is none yet (a fresh attach starts empty), so check getState() for null before trusting a small age. |
 | `getChat(opts: { limit?: number; types?: readonly number[]; includeSelf?: boolean } = {}): GameMessage[]` | Read recent chat messages. Returns player chat (public + PMs) by default, newest last. Reads from the SDK's accumulated history — up to 500 messages retained since connect — so old lines survive both system spam (level-ups, combat) and the client's own 100-deep ring eviction. |
 | `getNewChat(opts: { types?: readonly number[]; includeSelf?: boolean } = {}): GameMessage[]` | Read only chat messages that have arrived since the last call (cursor-based, newest last). Repeat polls never re-show the same message — no need to hand-roll a baseline. The first call returns everything seen since connect. Excludes your own messages by default. |
 | `getChatFrom(name: string, opts: { limit?: number } = {}): GameMessage[]` | Read recent chat from a specific sender (case-insensitive, substring match on name), newest last, from the accumulated history. Handy for "what did my partner say?" without regex-matching the sender field yourself. |

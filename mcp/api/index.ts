@@ -3,6 +3,7 @@
 
 import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
 import { BotActions } from '../../sdk/actions';
+import { bindListenersToCaller } from '../console-capture';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -98,6 +99,8 @@ class BotManager {
       showChat,                  // Show other players' chat (default: true; opt out with SHOW_CHAT=false)
     });
 
+    // A console.log in a listener the user's code registers (waitForCondition) reaches its capture.
+    bindListenersToCaller(sdk);
     const bot = new BotActions(sdk);
 
     // Connect with retry to handle race conditions
@@ -165,6 +168,12 @@ class BotManager {
     const connection = this.connections.get(name);
     if (!connection) {
       throw new Error(`Bot "${name}" is not connected`);
+    }
+    // While a call holds (or is attaching) the bot, its entry must stay: release() finds the SDK
+    // to disconnect through it, and an attach retrying under a removed entry would be orphaned,
+    // holding the controller lease with nothing left to release it.
+    if (this.attaching.has(name) || (this.holders.get(name) ?? 0) > 0) {
+      throw new Error(`Bot "${name}" is in use by a running execute_code call; it is released when that call ends`);
     }
 
     console.error(`[MCP] Disconnecting bot "${name}"...`);

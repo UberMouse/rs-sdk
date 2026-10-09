@@ -11,13 +11,12 @@ import type { BotSDK } from '../../sdk/index';
 import { waitForLiveClient } from '../../sdk/runner';
 import { MAX_XP } from '../lib/xp';
 import { connectSdk, disconnectQuietly, loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
-import { errMessage, fail } from '../lib/util';
+import { errMessage, fail, parseCli } from '../lib/util';
 
-const args = process.argv.slice(2);
-const name = args.find(a => !a.startsWith('-'));
-if (!name) {
-    fail('usage: bun conductor/tools/progress.ts <bot> [--json] [--no-record]', 2);
-}
+const usage = 'usage: bun conductor/tools/progress.ts <bot> [--json] [--no-record]';
+const { values: flags, positionals } = parseCli({ json: { type: 'boolean' }, 'no-record': { type: 'boolean' } }, usage);
+const [name] = positionals;
+if (!name || positionals.length > 1) fail(usage, 2);
 
 interface Snapshot {
     t: number;
@@ -59,7 +58,7 @@ for (const line of existsSync(file) ? readFileSync(file, 'utf8').split('\n').fil
 if (badLines) console.error(`progress: skipped ${badLines} unparseable line(s) in ${file}`);
 const first = history[0];
 const prev = history[history.length - 1];
-if (!args.includes('--no-record')) {
+if (!flags['no-record']) {
     mkdirSync(dirname(file), { recursive: true });
     appendFileSync(file, JSON.stringify(snap) + '\n');
 }
@@ -69,7 +68,7 @@ const totalLevel = skills.reduce((n, [, s]) => n + s.level, 0);
 const maxedXp = skills.reduce((n, [, s]) => n + Math.min(s.xp, MAX_XP), 0);
 const pct = (100 * maxedXp) / (MAX_XP * skills.length);
 
-if (args.includes('--json')) {
+if (flags.json) {
     console.log(
         JSON.stringify(
             { totalLevel, maxTotal: 99 * skills.length, percentToMax: pct, snapshot: snap, first, previous: prev },

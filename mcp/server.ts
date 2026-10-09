@@ -116,7 +116,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'disconnect_bot',
-        description: 'Disconnect a connected bot',
+        description: 'Forget a bot this session has used (refused while an execute_code call is running on it; each call releases the bot when it ends anyway)',
         inputSchema: {
           type: 'object',
           properties: {
@@ -353,7 +353,7 @@ function errorResponse(message: string) {
 // Start server
 async function main() {
   console.error('[MCP Server] Starting RS-Agent MCP server v2.0...');
-  console.error('[MCP Server] Bots auto-connect on the first execute_code call.');
+  console.error('[MCP Server] Each execute_code call attaches to its bot for the call and releases it afterwards.');
 
   // Warm the pathfinder before any live session exists: init is fully
   // synchronous (tens of seconds on slow hosts), and paying it lazily inside

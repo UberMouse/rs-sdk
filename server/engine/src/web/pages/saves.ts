@@ -43,16 +43,17 @@ function exportSave(name: string): Response {
     let bytes: Uint8Array | undefined;
     let source: SaveSource;
     const player = World.getPlayerByUsername(name);
+    const loggingOut = World.logoutRequests.get(name);
     if (player) {
         // No closeModal(): the export must not disturb the bot. Items parked in temp invs behind
         // an open interface (a trade or duel offer) are therefore not in it.
         bytes = player.save(false);
         source = 'live';
-    } else if (World.logoutRequests.has(name)) {
-        bytes = World.logoutRequests.get(name)!.save;
+    } else if (loggingOut) {
+        bytes = loggingOut.save;
         source = 'logout';
-    } else if ((bytes = playerSaveStore()?.saved(name))) {
-        // PlayerLoading.load prefers the GE checkpoint over the .sav.
+    } else if ((bytes = playerSaveStore()?.saved(name)) !== undefined) {
+        // PlayerLoading.load prefers the GE checkpoint over the .sav. Read only for an offline player.
         source = 'checkpoint';
     } else if (fs.existsSync(file)) {
         bytes = fs.readFileSync(file);
@@ -90,6 +91,18 @@ async function kick(name: string): Promise<Response> {
 }
 
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+
+/**
+ * A loopback address is not enough: a web page open in the user's browser also connects from one
+ * (a no-cors POST /kick needs no preflight; DNS rebinding can read /save). Tools fetch without an
+ * Origin or Sec-Fetch-Site header and by a loopback Host, so refuse anything a browser marks.
+ */
+function fromBrowser(req: Request): boolean {
+    if (req.headers.has('origin') || req.headers.has('sec-fetch-site')) return true;
+    const host = req.headers.get('host')?.toLowerCase().replace(/:\d+$/, '');
+    return !host || !LOOPBACK_HOSTS.has(host);
+}
 
 /** Routes /save/:name and /kick/:name; undefined for any other path. clientIp is the caller's address. */
 export async function handleSaveRequest(req: Request, url: URL, clientIp: string | undefined): Promise<Response | undefined> {
@@ -99,6 +112,7 @@ export async function handleSaveRequest(req: Request, url: URL, clientIp: string
         return json({ error: 'save endpoints are off; start the engine with SAVE_ENDPOINTS=true' }, 403);
     }
     if (!clientIp || !LOOPBACK.has(clientIp)) return json({ error: 'save endpoints answer loopback clients only' }, 403);
+    if (fromBrowser(req)) return json({ error: 'save endpoints answer local tools only, not browsers' }, 403);
     const [, route, raw] = match;
     let decoded: string;
     try {

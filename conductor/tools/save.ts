@@ -13,9 +13,9 @@
 // restore rolls the bot back. A label is the part of a snapshot's filename after its timestamp,
 // matched exactly (the newest match wins). Restoring the bot's newest snapshot needs no flag;
 // skipping past a newer snapshot, or restoring a library save (lib:<name>) or a file over an
-// existing save, needs --force (worker accounts load scenarios with load.ts instead). If the bot
-// is in the world it is logged out server-side first, refused while a script or task controls it
-// unless --takeover. The replaced save is kept as a `pre-restore` snapshot. Restart the bot's
+// existing save, needs --force (worker accounts load scenarios with load.ts instead). Refused
+// while a script or task is attached to the bot, in the world or not (it would resume on the
+// restored save), unless --takeover; a bot in the world is then logged out server-side first. The replaced save is kept as a `pre-restore` snapshot. Restart the bot's
 // client afterwards. Local server only, with the Grand Exchange off (conductor/docs/parallel-bots.md).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -23,6 +23,7 @@ import { isLocalServer } from '../../sdk/runner';
 import { loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
+    checkpointRefusal,
     exportSave,
     inWorld,
     isBackupLabel,
@@ -31,6 +32,7 @@ import {
     listLibrary,
     logOut,
     readLibrarySave,
+    requireNoController,
     SAVE_NAME,
     saveStatus,
     verifySave,
@@ -53,7 +55,7 @@ const { values: flags, positionals } = parseCli(
     usage,
 );
 const [cmd, name, arg] = positionals;
-if (!cmd || !name) fail(usage, 2);
+if (!cmd || !name || positionals.length > (cmd === 'list' ? 2 : 3)) fail(usage, 2);
 const env = loadBotEnvOrFail(name);
 if (!isLocalServer(env.server)) fail(`save.ts only works against the local server; ${name} points at ${env.server}`, 2);
 const dir = join(REPO_ROOT, 'conductor/runs', name, 'saves');
@@ -169,17 +171,14 @@ try {
             // Every refusal comes before the logout, so a refused restore leaves the bot as it was.
             verifySave(pick.bytes);
             const status = await saveStatus(env);
-            if (status.source === 'checkpoint') {
-                fail(
-                    `${name} has a Grand Exchange checkpoint that would win over any restore; retire data/market.sqlite (conductor/docs/parallel-bots.md)`,
-                );
-            }
+            if (status.source === 'checkpoint') fail(checkpointRefusal(name, 'restoring'));
             if (status.source !== 'none' && pick.needsForce && !flags.force) {
                 fail(
                     `not restoring ${pick.from} over ${name}'s save: ${pick.needsForce}. Pass --force to restore anyway`,
                 );
             }
-            if (inWorld(status)) await logOut(env, { takeover: flags.takeover });
+            if (!flags.takeover) await requireNoController(env, 'restoring');
+            if (inWorld(status)) await logOut(env, { takeover: true }); // controllers checked above
             const { path, backup } = await writeSave(env, pick.bytes, { backupDir: dir, label: 'restore' });
             console.log(
                 `restored ${pick.from} -> ${path}${backup ? ` (previous save: ${backup})` : ''}; restart ${name}'s client`,

@@ -43,7 +43,9 @@ import { resolveInterfaceOption, shortestNameMatch, type InterfaceOptionSelector
  */
 // Player trade interface components (see server/webclient/src/bot/types.ts
 // for the full trademain/tradeconfirm component map).
-const TRADE_SIDE_INV_ID = 3322;     // tradeside:inv - INV_BUTTON = Offer 1/5/10/All/X
+/** How long disconnect() waits for the socket's close event before letting go of it anyway. */
+const DISCONNECT_CLOSE_WAIT_MS = 3000;
+const TRADE_SIDE_INV_ID = 3322;    // tradeside:inv - INV_BUTTON = Offer 1/5/10/All/X
 const TRADE_MAIN_INV_ID = 3415;     // trademain:inv - INV_BUTTON = Remove 1/5/10/All/X
 const TRADE_MAIN_ACCEPT_ID = 3420;  // trademain:accept
 const TRADE_CONFIRM_ACCEPT_ID = 3546; // tradeconfirm:accept
@@ -286,7 +288,10 @@ export class BotSDK {
                 reject(new Error('Disconnected while connecting'));
                 return;
             }
-            this.ws = new WebSocket(url);
+            // Handlers act on `ws`, and touch shared state only while it is still the current
+            // socket: a late close from a socket disconnect() gave up on must not clobber a newer one.
+            const ws = new WebSocket(url);
+            this.ws = ws;
 
             // One deadline for the whole handshake - socket open AND the
             // gateway's sdk_connected/sdk_error answer. The old timer was
@@ -299,10 +304,16 @@ export class BotSDK {
             let handshakeDone = false;
             const deadline = setTimeout(() => {
                 reject(new Error(`Gateway handshake timed out after ${this.config.connectTimeout}ms`));
-                this.ws?.close();
+                ws.close();
             }, this.config.connectTimeout);
 
-            this.ws.onopen = () => {
+            ws.onopen = () => {
+                // A socket disconnect() gave up on can still open late: it must not authenticate
+                // (and take the controller lease) for a connection nobody holds.
+                if (this.ws !== ws) {
+                    ws.close();
+                    return;
+                }
                 this.send({
                     type: 'sdk_connect',
                     username: this.config.botUsername,
@@ -315,11 +326,11 @@ export class BotSDK {
                 });
             };
 
-            this.ws.onmessage = (event) => {
-                this.handleMessage(event.data);
+            ws.onmessage = (event) => {
+                if (this.ws === ws) this.handleMessage(event.data);
             };
 
-            this.ws.onclose = () => {
+            ws.onclose = () => {
                 console.warn(`[LOGOUT DEBUG] SDK WebSocket closed - autoReconnect=${this.config.autoReconnect}, intentionalDisconnect=${this.intentionalDisconnect}`);
                 // A close before the handshake completed must settle the
                 // pending connect() - otherwise its awaiters hang forever
@@ -328,15 +339,9 @@ export class BotSDK {
                     clearTimeout(deadline);
                     reject(new Error('Connection closed before the gateway handshake completed'));
                 }
+                if (this.ws !== ws) return; // disconnect() already let go of this socket
                 this.connectPromise = null;
-                this.ws = null;
-                this.authenticated = false;
-
-                for (const [actionId, pending] of this.pendingActions) {
-                    clearTimeout(pending.timeout);
-                    pending.reject(new ActionDispatchError('Connection closed', 'disconnected'));
-                }
-                this.pendingActions.clear();
+                this.dropSocket();
 
                 if (this.config.autoReconnect && !this.intentionalDisconnect) {
                     console.warn('[LOGOUT DEBUG] SDK scheduling auto-reconnect');
@@ -346,19 +351,24 @@ export class BotSDK {
                 }
             };
 
-            this.ws.onerror = (error) => {
+            ws.onerror = (error) => {
                 console.warn('[LOGOUT DEBUG] SDK WebSocket error event');
                 clearTimeout(deadline);
                 reject(new Error('WebSocket error'));
             };
 
             const checkConnected = (event: MessageEvent) => {
+                if (this.ws !== ws) {
+                    ws.removeEventListener('message', checkConnected);
+                    ws.close();
+                    return;
+                }
                 try {
                     const msg = JSON.parse(event.data);
                     if (msg.type === 'sdk_connected') {
                         handshakeDone = true;
                         clearTimeout(deadline);
-                        this.ws?.removeEventListener('message', checkConnected);
+                        ws.removeEventListener('message', checkConnected);
                         this.reconnectAttempt = 0;
                         this.leaseRefusedSince = null;
                         this.authenticated = true;
@@ -391,7 +401,7 @@ export class BotSDK {
                         // Handle authentication errors during connection
                         handshakeDone = true;
                         clearTimeout(deadline);
-                        this.ws?.removeEventListener('message', checkConnected);
+                        ws.removeEventListener('message', checkConnected);
                         const errorMessage = msg.error || 'Authentication failed';
                         console.error(`[BotSDK] Connection error: ${errorMessage}`);
                         // A reconnect can be refused by our own previous session while the
@@ -404,11 +414,11 @@ export class BotSDK {
                         }
                         if (!staleSelf) this.intentionalDisconnect = true;
                         reject(new Error(errorMessage));
-                        this.ws?.close();
+                        ws.close();
                     }
                 } catch {}
             };
-            this.ws.addEventListener('message', checkConnected);
+            ws.addEventListener('message', checkConnected);
         })).catch(error => {
             // Re-probe on the next attempt: a direct port that stopped answering
             // falls back to the relay instead of failing every reconnect.
@@ -456,6 +466,17 @@ export class BotSDK {
         }, delay);
     }
 
+    /** Forget the current socket: unauthenticated, and its in-flight actions fail. */
+    private dropSocket(): void {
+        this.ws = null;
+        this.authenticated = false;
+        for (const pending of this.pendingActions.values()) {
+            clearTimeout(pending.timeout);
+            pending.reject(new ActionDispatchError('Connection closed', 'disconnected'));
+        }
+        this.pendingActions.clear();
+    }
+
     /** Disconnect from the gateway. */
     async disconnect(): Promise<void> {
         this.intentionalDisconnect = true;
@@ -465,17 +486,22 @@ export class BotSDK {
             this.reconnectTimer = null;
         }
 
-        if (this.ws) {
-            // Wait for websocket to actually close
+        const ws = this.ws;
+        if (ws) {
+            // Wait for the socket to close, but not forever: Bun never fires 'close' for a socket
+            // closed while still connecting to a host that drops packets.
             await new Promise<void>((resolve) => {
-                if (this.ws!.readyState === WebSocket.CLOSED) {
+                if (ws.readyState === WebSocket.CLOSED) {
                     resolve();
                     return;
                 }
-                this.ws!.addEventListener('close', () => resolve(), { once: true });
-                this.ws!.close();
+                const timer = setTimeout(resolve, DISCONNECT_CLOSE_WAIT_MS);
+                ws.addEventListener('close', () => { clearTimeout(timer); resolve(); }, { once: true });
+                ws.close();
             });
-            this.ws = null;
+            // onclose already cleaned up unless the wait ran out; then let go of the socket here
+            // (its handlers ignore it from now on).
+            if (this.ws === ws) this.dropSocket();
         }
         this.connectPromise = null;
         this.reconnectAttempt = 0;
@@ -749,7 +775,10 @@ export class BotSDK {
         return this.stateReceivedAt;
     }
 
-    /** Get age of current state in milliseconds */
+    /**
+     * Age of the current state in milliseconds. 0 when there is none yet (a fresh attach starts
+     * empty), so check getState() for null before trusting a small age.
+     */
     getStateAge(): number {
         if (this.stateReceivedAt === 0) return 0;
         return Date.now() - this.stateReceivedAt;

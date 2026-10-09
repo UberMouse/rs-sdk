@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { BotSDK, deriveGatewayUrl } from '../../sdk/index';
 import { loadEnvFile, webOriginFor } from '../../sdk/runner';
+import { errMessage, fail } from './util';
 
 export const REPO_ROOT = resolve(import.meta.dir, '../..');
 
@@ -31,8 +32,7 @@ export function loadBotEnvOrFail(name: string): BotEnv {
     try {
         return loadBotEnv(name);
     } catch (e) {
-        console.error(e instanceof Error ? e.message : String(e));
-        process.exit(2);
+        fail(errMessage(e), 2);
     }
 }
 

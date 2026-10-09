@@ -82,7 +82,9 @@ file exists. Now:
 `server/engine/src/web/pages/saves.ts`, routed from `startManagementWeb`'s fallback. Served only
 when the engine runs with `SAVE_ENDPOINTS=true`, which `up.sh` sets (403 otherwise), so a
 deployed server never exposes them, and only to loopback clients (the management port listens on
-every interface). Names are validated (1–12 of `[a-z0-9_ ]`, not only `_`/spaces; 400 otherwise).
+every interface) that are not browsers: a request with an `Origin` or `Sec-Fetch-Site` header, or
+a `Host` other than `localhost`/`127.0.0.1`/`[::1]`, is refused, so a web page open on the same
+machine can't kick a player or (by DNS rebinding) read a save. Names are validated (1–12 of `[a-z0-9_ ]`, not only `_`/spaces; 400 otherwise).
 
 | Endpoint | Behaviour |
 |---|---|
@@ -194,7 +196,8 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
   - a library save or a file over an existing save needs `--force`: nothing shows it came from
     this account (workers use `load.ts`).
 
-  Then it kicks the bot (refused while a controller is attached, unless `--takeover`), and
+  It refuses while a controller is attached, online or offline (a task waiting for its client
+  would resume on the restored save), unless `--takeover`. Then it kicks a bot in the world, and
   `writeSave` keeps the replaced save as `pre-restore` and writes.
 - **list** also lists the library.
 
@@ -216,15 +219,20 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
   the idle timeout). On a first connect it is fatal, and `connect()` rejects with the gateway's
   message. `connect()` claims its attempt before its first await, so concurrent calls share one
   socket, and a fresh attach drops the state cached from an earlier session, so callers wait
-  for the bot's current state.
+  for the bot's current state (`getStateAge()` is 0 until it arrives: check `getState()`).
+  `disconnect()` waits at most 3 s for the socket to close (Bun never reports the close of a
+  socket still connecting to a host that drops packets), and a socket it lets go of can't touch
+  the SDK's state or authenticate if it opens late.
 - **MCP:** `execute_code` acquires the bot's control connection for the call and releases it
   when it ends, so an idle MCP session holds no lease. Concurrent calls on one bot share one
   attach (reference-counted; the last one out disconnects, which also stops any background
   reconnect; an acquire waits for a release still closing). A failed attach disconnects its SDK
-  so nothing reconnects unseen. A call against a bot that a task or script is driving is
-  refused. Console output is routed per call with AsyncLocalStorage: only the user's code is
-  captured, overlapping calls keep their own output, and anything else goes to stderr (stdout is
-  the JSON-RPC channel).
+  so nothing reconnects unseen. `disconnect_bot` is refused while a call holds or is attaching
+  the bot (removing its entry would orphan the connection). A call against a bot that a task or
+  script is driving is refused. Console output is routed per call with AsyncLocalStorage: only
+  the user's code is captured (with the SDK listeners it registers, such as `waitForCondition`
+  predicates), overlapping calls keep their own output, and anything else goes to stderr (stdout
+  is the JSON-RPC channel; every console method that writes to stdout is routed).
 - **Scripts:** `bun bots/<bot>/*.ts` scripts connect without takeover, so they are refused while
   a task runs.
 - **Tests:** `server/gateway/lease.test.ts` runs the real gateway (refusal, observer, takeover,

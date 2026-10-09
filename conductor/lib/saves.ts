@@ -151,39 +151,47 @@ export async function exportSave(env: BotEnv): Promise<ExistingSave> {
 }
 
 /**
+ * Throw while a script or task controls the bot, and when the gateway can't say. A controller can
+ * be attached to an offline bot too, waiting for its client: it would resume on whatever save the
+ * bot logs in with, so a write is refused as much as a logout. `doing` names what is refused.
+ */
+export async function requireNoController(env: BotEnv, doing: string): Promise<void> {
+    let controllers: number;
+    try {
+        controllers = await controllerCount(env);
+    } catch (e) {
+        throw new Error(`could not check ${env.username} for a running controller (${errMessage(e)}); not ${doing}`, {
+            cause: e,
+        });
+    }
+    if (controllers > 0) {
+        throw new Error(
+            `${env.username} is controlled by ${controllers} connection(s) (a running task or script); not ${doing} under it. Wait for it to finish, or pass --takeover if that run is yours`,
+        );
+    }
+}
+
+/** Why a GE checkpoint blocks `doing`: the engine loads the checkpoint instead of the .sav. */
+export const checkpointRefusal = (name: string, doing: string) =>
+    `${name} has a Grand Exchange checkpoint that the engine loads instead of its .sav; not ${doing}. Retire data/market.sqlite (conductor/docs/parallel-bots.md)`;
+
+/**
  * Log an in-world bot out server-side. Refuses (throws) while a script or task controls it, since
  * that would pull the bot from under it, unless `takeover`; and when the gateway can't say.
  */
 export async function logOut(env: BotEnv, { takeover = false } = {}): Promise<void> {
-    if (!takeover) {
-        let controllers: number;
-        try {
-            controllers = await controllerCount(env);
-        } catch (e) {
-            throw new Error(
-                `could not check ${env.username} for a running controller (${errMessage(e)}); not logging it out`,
-                {
-                    cause: e,
-                },
-            );
-        }
-        if (controllers > 0) {
-            throw new Error(
-                `${env.username} is controlled by ${controllers} connection(s) (a running task or script); logging it out would pull the bot from under it. Wait for it to finish, or pass --takeover if that run is yours`,
-            );
-        }
-    }
+    if (!takeover) await requireNoController(env, 'logging it out');
     if (!(await kick(env))) throw new Error(`${env.username} did not log out (in combat, or still busy); try again`);
 }
 
-/** The labels writeSave is called with; its backups are `pre-<label>`, a prefix reserved for them. */
-const WRITE_LABELS = ['restore', 'load', 'write'] as const;
-type WriteLabel = (typeof WRITE_LABELS)[number];
-const backupLabel = (label: WriteLabel) => `pre-${label}`;
-/** Is this snapshot label one of writeSave's backups? */
-export const isBackupLabel = (label: string) => WRITE_LABELS.some(l => backupLabel(l) === label);
 /** `pre-` labels are reserved for writeSave's backups; a user snapshot can't take one. */
 export const RESERVED_LABEL_PREFIX = 'pre-';
+/** The labels writeSave is called with; its backups are `pre-<label>`. */
+const WRITE_LABELS = ['restore', 'load', 'write'] as const;
+type WriteLabel = (typeof WRITE_LABELS)[number];
+const backupLabel = (label: WriteLabel) => `${RESERVED_LABEL_PREFIX}${label}`;
+/** Is this snapshot label one of writeSave's backups? */
+export const isBackupLabel = (label: string) => WRITE_LABELS.some(l => backupLabel(l) === label);
 
 /**
  * Log the player out server-side and wait until its save is on disk (POST /kick). Returns false
@@ -235,11 +243,7 @@ export async function writeSave(
     const before = await saveStatus(env);
     if (inWorld(before))
         throw new Error(`${env.username} is in the world (${before.source}); kick it before writing its save`);
-    if (before.source === 'checkpoint') {
-        throw new Error(
-            `${env.username} has a Grand Exchange checkpoint that the engine loads instead of the .sav; retire data/market.sqlite (conductor/docs/parallel-bots.md)`,
-        );
-    }
+    if (before.source === 'checkpoint') throw new Error(checkpointRefusal(env.username, 'writing its save'));
     let backup: string | undefined;
     if (before.source !== 'none') {
         const file = `${fileStamp()}-${backupLabel(label)}.sav`;

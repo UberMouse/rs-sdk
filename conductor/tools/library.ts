@@ -6,8 +6,8 @@
 //
 // generate builds a save from a spec with sdk/test/utils/save-generator (levels, inventory, worn,
 // bank, position, varps) instead of playing the scenario into existence; --preset takes one of its
-// TestPresets. Snapshots of live bots go in with `save.ts snapshot <bot> <name> --library`. Load an
-// entry into a worker with `load.ts <worker> lib:<name>`. An existing entry is replaced only with
+// TestPresets. Snapshots of live bots go in with `save.ts snapshot <bot> <name> --library --purpose
+// "..."`. Load an entry into a worker with `load.ts <worker> lib:<name>`. An existing entry is replaced only with
 // --replace: other agents' tests depend on them.
 import { join } from 'node:path';
 import { z } from 'zod/v4';
@@ -49,6 +49,7 @@ const { values: flags, positionals } = parseCli(
     usage,
 );
 const [cmd, name] = positionals;
+if (positionals.length > (cmd === 'list' ? 1 : 2)) fail(usage, 2);
 
 /** The spec from --preset or --spec, and how to record it as the entry's source. */
 function readSpec(): { spec: SaveConfig; recorded: unknown } {

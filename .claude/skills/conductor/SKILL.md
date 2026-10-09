@@ -217,8 +217,11 @@ report, and they are reviewed and committed with the task.
    `conductor/roadmap.md`.
 3. Make sure the stack is up (`conductor/local/up.sh`) and a client is attached
    (`bun sdk/cli.ts <bot>` shows a fresh tick); start the client per `client` if not.
-4. Per `inFlight`: a runner or author that died across the boundary may have left the bot
+4. A run whose state predates this file's current rules: when `invariants` differ from the list
+   above, rewrite them from it (the hook prints the stored ones on every resume); when `workers`
+   is missing or null, set up the pool per §Workers and record it before the next author brief.
+5. Per `inFlight`: a runner or author that died across the boundary may have left the bot
    mid-action — check state before re-dispatching. With `openGate` set, run `task-review` on the
    uncommitted change. Uncommitted `learnings/`/`wiki/` or roadmap edits from a dead curator or
    retrospective: review and commit or revert them.
-5. Continue the loop.
+6. Continue the loop.

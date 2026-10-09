@@ -73,11 +73,13 @@ export function formatLogArg(a: unknown): string {
 }
 
 /**
- * Per-call routing of console.log/warn for an MCP server whose stdout is the JSON-RPC channel.
+ * Per-call routing of console output for an MCP server whose stdout is the JSON-RPC channel.
  * installConsoleRouting() patches console once: inside runCaptured(capture, fn) output goes to that
  * call's capture (AsyncLocalStorage follows the call through awaits and timers, so overlapping
  * calls never see each other's output); everywhere else it goes to stderr, never stdout. Patching
  * once replaces per-call save-and-restore, which overlapping calls undid in the wrong order.
+ * Every method Bun writes to stdout is patched, not just log: info, debug, dir, dirxml, table,
+ * trace, count and group too (error, assert and the timers already write to stderr).
  */
 const current = new AsyncLocalStorage<ConsoleCapture>();
 let installed = false;
@@ -86,18 +88,50 @@ export function installConsoleRouting(): void {
   if (installed) return;
   installed = true;
   const stderr = console.error.bind(console);
-  console.log = (...args: unknown[]) => {
+  const route = (prefix: string, args: unknown[]) => {
     const capture = current.getStore();
-    if (capture) capture.push(args.map(formatLogArg).join(' '));
+    if (capture) capture.push(prefix + args.map(formatLogArg).join(' '));
     else stderr(...args);
   };
-  console.warn = (...args: unknown[]) => {
-    const capture = current.getStore();
-    if (capture) capture.push('[warn] ' + args.map(formatLogArg).join(' '));
-    else stderr(...args);
+  console.log = console.info = console.debug = console.dirxml = (...args: unknown[]) => route('', args);
+  console.warn = (...args: unknown[]) => route('[warn] ', args);
+  console.dir = console.table = (data: unknown) => route('', [data]);
+  console.group = console.groupCollapsed = (...args: unknown[]) => {
+    if (args.length) route('', args);
+  };
+  console.trace = (...args: unknown[]) => {
+    const stack = (new Error().stack ?? '').split('\n').slice(2).join('\n');
+    route('', [`Trace: ${args.map(formatLogArg).join(' ')}\n${stack}`]);
+  };
+  const counts = new Map<string, number>();
+  console.count = (label = 'default') => {
+    const n = (counts.get(label) ?? 0) + 1;
+    counts.set(label, n);
+    route('', [`${label}: ${n}`]);
+  };
+  console.countReset = (label = 'default') => {
+    counts.delete(label);
   };
 }
 
 export function runCaptured<T>(capture: ConsoleCapture, fn: () => T): T {
   return current.run(capture, fn);
+}
+
+/** The SDK's subscription methods; structural, so this module needs no SDK import. */
+interface Subscribable {
+  onStateUpdate(listener: (...args: any[]) => void): () => void;
+  onConnectionStateChange(listener: (...args: any[]) => void): () => void;
+}
+
+/**
+ * Run the SDK's listeners in the context that registered them. The SDK calls them from its
+ * websocket message handler, which carries no context, so without this a console.log inside a
+ * waitForCondition predicate or an onStateUpdate listener would miss its execute_code capture.
+ */
+export function bindListenersToCaller(sdk: Subscribable): void {
+  const onStateUpdate = sdk.onStateUpdate.bind(sdk);
+  sdk.onStateUpdate = listener => onStateUpdate(AsyncLocalStorage.bind(listener));
+  const onConnectionStateChange = sdk.onConnectionStateChange.bind(sdk);
+  sdk.onConnectionStateChange = listener => onConnectionStateChange(AsyncLocalStorage.bind(listener));
 }
