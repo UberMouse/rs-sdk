@@ -14,20 +14,25 @@ export type InteractResult = { ok: true } | { ok: false; reason: 'no-option' | '
  * caller waits for the effect.
  */
 export function* interactLoc(loc: NearbyLoc, option: number | RegExp): Op<InteractResult> {
-    const match = loc.optionsWithIndex.find(o =>
-        typeof option === 'number' ? o.opIndex === option : option.test(o.text),
-    );
-    // An index is sent even when the loc doesn't publish it, as bot.interactLoc does.
-    if (!match && typeof option !== 'number')
-        return { ok: false, reason: 'no-option', message: `no ${option} option on ${loc.name}` };
-    const optionIndex = match?.opIndex ?? Number(option);
+    let optionIndex: number;
+    let label: string;
+    if (typeof option === 'number') {
+        // An index is sent even when the loc doesn't publish it, as bot.interactLoc does.
+        optionIndex = option;
+        label = loc.optionsWithIndex.find(o => o.opIndex === option)?.text ?? `op ${option}`;
+    } else {
+        const match = loc.optionsWithIndex.find(o => option.test(o.text));
+        if (!match) return { ok: false, reason: 'no-option', message: `no ${option} option on ${loc.name}` };
+        optionIndex = match.opIndex;
+        label = match.text;
+    }
     const sent = yield* send({
         type: 'interactLoc',
         x: loc.x,
         z: loc.z,
         locId: loc.id,
         optionIndex,
-        reason: `${match?.text ?? `op ${optionIndex}`} ${loc.name}`,
+        reason: `${label} ${loc.name}`,
     });
     return sent.success ? { ok: true } : { ok: false, reason: 'send-failed', message: sent.message };
 }

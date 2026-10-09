@@ -3,20 +3,18 @@
 // (a level-up as the log lands) to the dialog guard, which clears them inside the wait.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
-import { TICK_MS } from '../lib/util';
+import { countItems, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
 
 /** bot.chopTree's 30s wait for logs or the tree gone, in ticks. */
 export const CHOP_WAIT_TICKS = Math.ceil(30_000 / TICK_MS);
-const CHOP = /chop/i;
+/** The option that chops a tree ("Chop down"). */
+export const CHOP_OPTION = /chop/i;
 
 export type ChopResult =
     | { ok: true }
     | { ok: false; reason: 'felled-by-other' | 'timeout' | 'send-failed'; message: string };
-
-const count = (s: BotWorldState, item: RegExp) =>
-    s.inventory.filter(i => item.test(i.name)).reduce((n, i) => n + i.count, 0);
 
 /**
  * Chops `tree` and waits until `logs` are gained or the tree is gone. Success needs logs gained: a tree
@@ -25,14 +23,14 @@ const count = (s: BotWorldState, item: RegExp) =>
  * logged in, tree out of the loaded scene).
  */
 export function* chop(ctx: ActionContext, tree: NearbyLoc, logs: RegExp): Op<ChopResult> {
-    const before = count(ctx.state(), logs);
-    const sent = yield* interactLoc(tree, CHOP);
+    const before = countItems(ctx.state(), logs);
+    const sent = yield* interactLoc(tree, CHOP_OPTION);
     if (!sent.ok) return { ok: false, reason: 'send-failed', message: sent.message };
-    const gained = (s: BotWorldState) => count(s, logs) > before;
+    const gained = (s: BotWorldState) => countItems(s, logs) > before;
     const gone = (s: BotWorldState) => !s.nearbyLocs.some(l => l.x === tree.x && l.z === tree.z && l.id === tree.id);
-    const w = yield* wait(`chop ${tree.name}`, s => gained(s) || gone(s), CHOP_WAIT_TICKS);
-    if (gained(w.state)) return { ok: true };
-    if (w.kind === 'timeout')
+    const waited = yield* wait(`chop ${tree.name}`, s => gained(s) || gone(s), CHOP_WAIT_TICKS);
+    if (gained(waited.state)) return { ok: true };
+    if (waited.kind === 'timeout')
         return { ok: false, reason: 'timeout', message: `timed out waiting for logs from ${tree.name}` };
     return { ok: false, reason: 'felled-by-other', message: `${tree.name} was felled by someone else` };
 }

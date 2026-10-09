@@ -36,6 +36,11 @@ export function xpGainedSince(state: BotWorldState, xpBefore: Record<string, num
 /** Inventory slots in the backpack. */
 export const INVENTORY_SLOTS = 28;
 
+/** How many items matching `pattern` the inventory holds, counting a stack as its size. */
+export function countItems(state: BotWorldState, pattern: RegExp): number {
+    return state.inventory.filter(i => pattern.test(i.name)).reduce((n, i) => n + i.count, 0);
+}
+
 /** Straight-line distance in tiles between two world points. */
 export function distance(a: { x: number; z: number }, b: { x: number; z: number }): number {
     return Math.hypot(a.x - b.x, a.z - b.z);

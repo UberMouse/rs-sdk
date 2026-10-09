@@ -1,12 +1,12 @@
 import { expect, test } from 'bun:test';
 import { Items } from '../../../../sdk/test/utils/save-generator';
 import type { BotWorldState } from '../../../../sdk/types';
-import { CHOP_WAIT_TICKS, chop } from '../../../actions/chop';
+import { CHOP_OPTION, CHOP_WAIT_TICKS, chop } from '../../../actions/chop';
 import { LiveDriver } from '../../../core/drivers/live';
 import { interpret } from '../../../core/interpret';
 import { TICK_STALL_MS } from '../../../lib/engine';
 import type { Sinks } from '../../../lib/task';
-import { TICK_MS } from '../../../lib/util';
+import { countItems, TICK_MS } from '../../../lib/util';
 import { itestTimeout, withFixtureBot } from '../harness';
 
 // Normal trees north of Lumbridge castle, as captured in conductor/test/fixtures/lumbridge.json. None
@@ -26,10 +26,9 @@ const SINKS: Sinks = { event: () => {}, print: () => {}, screenshot: async () =>
 
 const standing = (s: BotWorldState) =>
     s.nearbyLocs
-        .filter(l => /^tree$/i.test(l.name) && l.options.some(o => /^chop/i.test(o)))
+        .filter(l => /^tree$/i.test(l.name) && l.options.some(o => CHOP_OPTION.test(o)))
         .filter(l => TREES.some(t => t.x === l.x && t.z === l.z))
         .sort((a, b) => a.distance - b.distance);
-const logsHeld = (s: BotWorldState) => s.inventory.filter(i => LOGS.test(i.name)).length;
 
 test(
     'chop fells a tree and gains its log',
@@ -40,7 +39,7 @@ test(
             async ({ sdk }) => {
                 const ready = await sdk.waitForCondition(s => standing(s).length > 0, RESPAWN_WAIT_MS);
                 const tree = standing(ready)[0]!;
-                expect(logsHeld(ready)).toBe(0);
+                expect(countItems(ready, LOGS)).toBe(0);
 
                 const driver = new LiveDriver(sdk, SINKS, TICK_STALL_MS);
                 try {
@@ -49,7 +48,7 @@ test(
                 } finally {
                     driver.close();
                 }
-                expect(logsHeld(sdk.getState()!)).toBe(1);
+                expect(countItems(sdk.getState()!, LOGS)).toBe(1);
             },
         );
     },
