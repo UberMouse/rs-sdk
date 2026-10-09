@@ -12,6 +12,7 @@ import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
+import type { Pathfinder } from '../actions/paths';
 import type { Op, Outcome } from '../core/op';
 import type { AllowableGuard, TaskGuard } from './interrupts';
 
@@ -59,6 +60,8 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     distanceTo(x: number, z: number): number;
     /** Where the bot stood at the start of the previous loop (the engine sets it); null without a player. */
     previousPos: { x: number; z: number } | null;
+    /** Where the walkTo op gets its routes (ActionContext); unset, the SDK's collision data. */
+    readonly pathfinder?: Pathfinder;
 }
 
 export interface Step<P = unknown, M extends object = UntypedMemory> {

@@ -2,11 +2,13 @@
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../sdk/types';
+import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
 import { executeTask } from '../lib/engine';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
+import { straightPaths } from './paths';
 import { consume } from './react';
 
 /** The engine's own grace is 30s, so a task that never finishes would stall a unit test; a simulation needs milliseconds. */
@@ -23,6 +25,8 @@ export interface SimulateOptions {
     react?: TimelineOptions['react'];
     /** What `scan` returns. */
     scan?: (radius?: number) => NearbyLoc[];
+    /** Routes for the walkTo op; default `straightPaths()`, open ground. */
+    pathfinder?: Pathfinder;
     /** Fakes for the legacy `bot.*` methods a step calls through `call` (anything else throws). */
     bot?: Partial<BotActions>;
     stops?: StopCondition[];
@@ -87,6 +91,7 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         rawParams: opts.params ?? {},
         stops: opts.stops ?? [],
         stepGraceMs: opts.stepGraceMs ?? SIMULATE_STEP_GRACE_MS,
+        pathfinder: opts.pathfinder ?? straightPaths(),
     });
     return {
         result,

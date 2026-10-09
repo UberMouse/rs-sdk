@@ -39,6 +39,42 @@ export function consume(action: BotAction, state: BotWorldState): Effect | undef
     return takeOne(item.id, item.slot);
 }
 
+type Tile = { x: number; z: number };
+type React = (action: BotAction, state: BotWorldState) => Effect | undefined;
+
+/** Tiles the bot runs a tick, as the server moves a running player. */
+const RUN_TILES = 2;
+
+/**
+ * The bot walks as the server runs it: from where it stood at the send, RUN_TILES a tick (a diagonal
+ * step while both axes differ) to a walk's destination, and stays there; a newer walk takes over from
+ * where the bot then stands. `blocked(from, to, state)` refuses a step (a wall, a shut door), which
+ * ends that tick's movement. Everything else falls back to `fallback` (default `consume`).
+ */
+export function walking(
+    fallback: React = consume,
+    blocked: (from: Tile, to: Tile, state: BotWorldState) => boolean = () => false,
+): React {
+    let latest = 0;
+    return (action, state) => {
+        if (action.type !== 'walkTo') return fallback(action, state);
+        const p = state.player;
+        if (!p) return undefined;
+        const walk = ++latest;
+        let at: Tile = { x: p.worldX, z: p.worldZ };
+        return s => {
+            // A newer walk replaced this one: retire.
+            if (walk !== latest) return s;
+            for (let i = 0; i < RUN_TILES; i++) {
+                const next = { x: at.x + Math.sign(action.x - at.x), z: at.z + Math.sign(action.z - at.z) };
+                if ((next.x === at.x && next.z === at.z) || blocked(at, next, s)) break;
+                at = next;
+            }
+            return world(s).player({ at }).build();
+        };
+    };
+}
+
 /**
  * A bank scripted world: a close leaves the bank closed, deposits and withdrawals move items between
  * the inventory and the bank (a stack by its size, the rest a slot each), and the note toggle flips

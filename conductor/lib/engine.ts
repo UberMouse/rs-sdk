@@ -13,6 +13,7 @@ import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
 import { type Driver, type Guard, guardsUnder, interpret, type Interpretation, TickStall } from '../core/interpret';
 import type { ActionContext } from '../actions/context';
+import type { Pathfinder } from '../actions/paths';
 import { leftoverModal } from '../actions/dismiss';
 import { closeModalUntil } from '../actions/modal';
 import { call, type Command, log, type Op } from '../core/op';
@@ -68,6 +69,8 @@ export interface ExecuteOptions {
     sinks: Sinks;
     /** Wall-clock milliseconds for the watchdog, `minutes:` stops and progress lines. Default `driver.now()`. */
     now?: () => number;
+    /** Routes for the walkTo op (TaskContext.pathfinder); default the SDK's collision data. */
+    pathfinder?: Pathfinder;
     /** For legacy steps and the guards, which still act through BotActions and the SDK. */
     bot: BotActions;
     sdk: BotSDK;
@@ -204,6 +207,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             }
             return mapCounter(counts, name);
         },
+        ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
         inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {
             const p = driver.state().player;
