@@ -105,7 +105,10 @@ After filing the bug, keep working on your goal!
 
 This fork adds a conductor system (overview: `conductor/README.md`). A Claude Code session
 running the `conductor` skill picks objectives and dispatches subagents (`.claude/agents/`) that
-run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
+run, write, review and learn from deterministic bot tasks in `conductor/tasks/`. A task's steps
+are generators that act only through the ops in `conductor/actions/`, never the SDK; the engine
+runs them and handles death, low HP, dialogs and stops at every wait (design:
+`conductor/docs/interruptible-tasks.md`).
 
 - Local stack: `conductor/local/up.sh` (gateway `:7780`, engine `:8888`); create bots with
   `--local`. One shared server runs from the main checkout, where its database and player saves
@@ -118,7 +121,9 @@ run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
   `screenshot.ts`, `stats.ts` (XP/hr per method), `progress.ts` (distance to max), `save.ts`
   (snapshot a live bot's save without a logout; restore it), `load.ts` (load a library save
   into a worker account), `library.ts` (the scenario saves in `conductor/saves/`). Design:
-  `conductor/docs/parallel-bots.md`.
+  `conductor/docs/parallel-bots.md`. Every task run is recorded next to its log; `replay.ts
+  <run>.ticks.ndjson.gz` re-runs the current code on it and shows the first decision that
+  differs. `capture-state.ts` saves a bot's live state as a unit-test fixture.
 
 Rules for every agent working in this repo:
 
@@ -135,13 +140,17 @@ Rules for every agent working in this repo:
   players: a worker can hold a copy of the main account's items.
 - **Task code is reviewed before it is committed**, with the `task-review` skill. Write to its
   lenses in `.claude/review-lenses/`.
+- **Task code is tested.** A new or changed task has unit tests on scripted worlds
+  (`bun test conductor`, no server needed) and a smoke test in `conductor/test/integration/smoke/`
+  (`bun run test:integration <filter>`, needs the local stack). What each must cover:
+  `conductor/README.md` (Tests) and `.claude/agents/task-author.md`.
 - **Game knowledge goes in the knowledge base** per the `knowledge` skill, not in task code
   comments or agent prompts.
 - **Long runs keep state on disk** in `.durable-state/` (the `durable-state` skill), so they
   survive compaction and resumes.
 - **`conductor/` code is formatted and linted**: oxfmt (`.oxfmtrc.json`) and oxlint
-  (`.oxlintrc.json`, warnings denied). Finish code edits with `bun run verify:conductor`
-  (`bun run fmt` formats in place). A Claude Code hook formats and lints each edited file, and the
+  (`.oxlintrc.json`, warnings denied). Finish code edits with `bun run verify:conductor` and
+  `bun test conductor` (`bun run fmt` formats in place). A Claude Code hook formats and lints each edited file, and the
   git pre-commit hook (`.githooks/`, enabled by `bun install`) refuses staged files that fail.
 
 ## Session Workflow
@@ -420,10 +429,10 @@ conductor/             # see conductor/README.md
 
 **Wrong target** - Use more specific regex patterns: `/^tree$/i` not `/tree/i` (which matches "tree stump").
 
-**Everything succeeds and nothing happens** - The two silent failure modes. A
+**Everything succeeds and nothing happens** - The two failure modes that return success. A
 `send*` returning success only means the client wrote bytes; it is not an ack.
 
-- **The client never sent anything.** The client pathfinds before every interaction, and when it can't route it returns `cant_reach` without writing a packet - so the server never replies "I can't reach that!" either. Check `reachable` on the target before using it. `find*` already prefers reachable matches; pass `{reachable: true}` to get `null` instead of an unreachable one.
+- **The op went out without a route.** The client pathfinds before every interaction, and when it can't route it still sends the op (approach ops like stairs trigger from tiles no route reaches, and the server owns the reach check). The result is a success with `data.routed: false`, and the console warns `[bot] cant_reach`. The bot doesn't move, and unless the target is in reach the server's only answer is the game message "I can't reach that!". Check `reachable` on the target before using it. `find*` already prefers reachable matches; pass `{reachable: true}` to get `null` instead of an unreachable one.
 - **The server discarded the op.** A refused op (mid-action, stunned, target gone or out of view, bad option) gets `UNSET_MAP_FLAG` and nothing else - no message, no error. A blocking modal is worse: the op is accepted and the trigger never runs. Check `state.opFeedback.opRejectedCount` around a send, and gate loops on an observed effect rather than on a timer.
 
 Start small and build up!
