@@ -50,6 +50,10 @@ bun conductor/tools/client.ts conductor1 --headless
 bun conductor/tools/screenshot.ts conductor1       # PNG of the game canvas (path on stdout)
 ```
 
+Run the stack from the main checkout: its `server/engine` holds the database and player saves
+(all gitignored). Worktrees share that server; `save.ts` finds the saves through
+`RS_ENGINE_DIR=<main checkout>/server/engine`.
+
 On NixOS, `conductor/local/migrate-sqlite.ts` stands in for `bun run sqlite:migrate` (Prisma has
 no engines for NixOS); `up.sh` runs it.
 

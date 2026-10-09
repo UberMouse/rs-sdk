@@ -108,7 +108,9 @@ running the `conductor` skill picks objectives and dispatches subagents (`.claud
 run, write, review and learn from deterministic bot tasks in `conductor/tasks/`.
 
 - Local stack: `conductor/local/up.sh` (gateway `:7780`, engine `:8888`); create bots with
-  `--local`.
+  `--local`. One shared server runs from the main checkout, where its database and player saves
+  live; worktrees use it as is and set `RS_ENGINE_DIR=<main checkout>/server/engine` for
+  `save.ts`.
 - Tasks: `bun conductor/run-task.ts --list` for the catalog;
   `bun conductor/run-task.ts {username} <task> --params '<json>' --until minutes:1` to run one.
   The last line is always `RESULT <json>`.

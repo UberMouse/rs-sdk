@@ -48,7 +48,10 @@ if (!isLocalServer(env.server)) {
     process.exit(2);
 }
 
-const saveFile = join(REPO_ROOT, 'server/engine/data/players/main', `${env.username.toLowerCase()}.sav`);
+// The engine may run from another checkout than this one (one shared local server, many
+// worktrees); RS_ENGINE_DIR points at the server/engine directory it runs from.
+const engineDir = process.env.RS_ENGINE_DIR ?? join(REPO_ROOT, 'server/engine');
+const saveFile = join(engineDir, 'data/players/main', `${env.username.toLowerCase()}.sav`);
 const dir = join(REPO_ROOT, 'conductor/runs', name, 'saves');
 
 /** Server-side truth: is the player still in the world loop? null when the engine is down. */
