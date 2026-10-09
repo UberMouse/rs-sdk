@@ -47,6 +47,12 @@ server/engine/data/market.sqlite*
 # account password, so it stays untracked (the template's has placeholders).
 !bots/*/
 bots/*/bot.env
+
+# conductor run artifacts (screenshots, run logs)
+conductor/runs/
+
+# per-worktree run state (.claude/skills/durable-state)
+.durable-state/
 !bots/_template/bot.env
 # nix-direnv cache for the dev shell
 .direnv/
