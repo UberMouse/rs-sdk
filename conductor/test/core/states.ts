@@ -1,12 +1,13 @@
-// Minimal well-typed world states for core tests; only tick, HP and dialog vary.
+// Minimal well-typed world states for core tests; only tick, HP, dialog and z vary.
 import type { BotWorldState } from '../../../sdk/types';
 
 export interface StateSpec {
     hp?: number;
     dialog?: boolean;
+    z?: number;
 }
 
-export function worldState(tick: number, { hp = 10, dialog = false }: StateSpec = {}): BotWorldState {
+export function worldState(tick: number, { hp = 10, dialog = false, z = 3218 }: StateSpec = {}): BotWorldState {
     return {
         tick,
         inGame: true,
@@ -18,7 +19,7 @@ export function worldState(tick: number, { hp = 10, dialog = false }: StateSpec 
             x: 0,
             z: 0,
             worldX: 3222,
-            worldZ: 3218,
+            worldZ: z,
             level: 0,
             runEnergy: 100,
             runWeight: 0,

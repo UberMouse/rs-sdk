@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'bun:test';
-import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../../sdk/types';
+import type { ActionResult, BotWorldState, NearbyLoc } from '../../../sdk/types';
 import { TimelineDriver } from '../../core/drivers/timeline';
-import { CLEANUP_TICKS, type Guard, type GuardOutcome, interpret } from '../../core/interpret';
+import { type Guard, interpret, MAX_SUSPENDS_PER_WAIT } from '../../core/interpret';
 import {
     call,
-    Cancelled,
+    type Command,
     log,
     type Op,
     scan,
@@ -16,137 +16,17 @@ import {
     type WaitResult,
 } from '../../core/op';
 import { TICK_MS } from '../../lib/util';
+import { act, busy, death, dialog, gateAt, guardLogs, lowHp, slowDialog, trace } from './fixtures';
 import { timeline, worldState } from './states';
 
-const act = (reason: string): BotAction => ({ type: 'none', reason });
-
-/** The driver's command log as short strings, for order assertions. */
-const trace = (d: TimelineDriver): string[] =>
-    d.commands.map(c => {
-        switch (c.type) {
-            case 'send':
-                return `send ${c.action.reason}`;
-            case 'log':
-                return `log ${c.msg}`;
-            case 'call':
-                return `call ${c.label}`;
-            default:
-                return c.type;
-        }
-    });
-
-const guardLogs = (d: TimelineDriver): Record<string, unknown>[] =>
-    d.commands.flatMap(c => (c.type === 'log' && c.msg.startsWith('guard ') ? [{ msg: c.msg, ...c.data }] : []));
-
-/** A promise that onTick settles at `tick`, so a call stays pending across ticks. */
-function gateAt<T>(tick: number, value: T) {
-    let release!: (v: T) => void;
-    const promise = new Promise<T>(r => {
-        release = r;
-    });
-    const onTick = (s: BotWorldState): string | null => {
-        if (s.tick === tick) release(value);
-        return null;
-    };
-    return { promise, onTick };
-}
-
-// --- guards
-
-const lowHp: Guard = {
-    name: 'low-hp',
-    policy: 'abort',
-    when: s => (s.player?.hp ?? 0) < 5,
-    *run() {
-        yield* send(act('eat'));
-    },
-};
-
-const death: Guard = {
-    name: 'death',
+/** A critical guard with nothing to do in game returns its outcome directly. */
+const wilderness: Guard = {
+    name: 'wilderness',
     policy: 'abort',
     critical: true,
-    when: s => (s.player?.hp ?? 0) <= 0,
-    *run(): Op<GuardOutcome> {
-        yield* log('died');
-        return { fail: 'died' };
-    },
+    when: s => (s.player?.worldZ ?? 0) > 3520,
+    run: s => ({ fail: `in the Wilderness at z ${s.player?.worldZ}` }),
 };
-
-const dialog: Guard = {
-    name: 'dialog',
-    policy: 'suspend',
-    when: s => s.dialog.isOpen,
-    *run() {
-        yield* send(act('continue'));
-    },
-};
-
-// --- ops under test
-
-/** Sends, then waits for something that never comes; its finally sends a cleanup. */
-function* busy(): Op<string> {
-    try {
-        yield* send(act('chop'));
-        yield* wait('logs', () => false, 50);
-        return 'unreachable';
-    } finally {
-        yield* send(act('cleanup'));
-    }
-}
-
-/** `busy`, wrapped in a finally that itself waits. */
-function* busyThenWaitsInFinally(): Op<string> {
-    try {
-        return yield* busy();
-    } finally {
-        yield* ticks(2);
-        yield* log('cleaned');
-    }
-}
-
-/** Waits forever; its finally sends `cleanup`, then runs `more`. */
-function* waitsThenCleansUp(more: () => Op<void>): Op<void> {
-    try {
-        yield* wait('forever', () => false, 1000);
-    } finally {
-        yield* send(act('cleanup'));
-        yield* more();
-    }
-}
-
-function* waitsTooLong(): Op<void> {
-    yield* wait('never', () => false, 1000);
-    yield* send(act('after'));
-}
-
-// oxlint-disable-next-line require-yield -- throws before its first command, the case under test
-function* throws(): Op<void> {
-    throw new Error('oops');
-}
-
-/** A catch-all that swallows Cancelled, which ops must not do. */
-function* swallowsCancel(): Op<string> {
-    try {
-        yield* wait('forever', () => false, 100);
-        return 'waited';
-    } catch {
-        return 'caught';
-    }
-}
-
-/** A catch that handles its own errors and rethrows Cancelled, as ops must. */
-function* rethrowsCancel(): Op<string> {
-    try {
-        yield* wait('forever', () => false, 100);
-        return 'waited';
-    } catch (e) {
-        if (e instanceof Cancelled) throw e;
-        return 'caught';
-    } finally {
-        yield* send(act('cleanup'));
-    }
-}
 
 function* sendsTwo(): Op<ActionResult[]> {
     const a = yield* send(act('a'));
@@ -195,34 +75,22 @@ function* readsTicks(): Op<number[]> {
     return [a.tick, b.tick];
 }
 
-function* waitsForTick5(): Op<WaitResult> {
+function* busyThenWaitsInFinally(): Op<string> {
+    try {
+        return yield* busy();
+    } finally {
+        yield* ticks(2);
+        yield* log('cleaned');
+    }
+}
+
+function* waitsForTick(n: number, budget = 20): Op<WaitResult> {
     yield* send(act('start'));
-    return yield* wait('tick 5', s => s.tick >= 5, 20);
+    return yield* wait(`tick ${n}`, s => s.tick >= n, budget);
 }
 
-function* inner(): Op<void> {
-    try {
-        yield* wait('forever', () => false, 100);
-    } finally {
-        yield* send(act('inner cleanup'));
-    }
-}
-
-function* middle(): Op<void> {
-    try {
-        yield* inner();
-        yield* send(act('after inner'));
-    } finally {
-        yield* send(act('middle cleanup'));
-    }
-}
-
-function* outer(): Op<void> {
-    try {
-        yield* middle();
-    } finally {
-        yield* send(act('outer cleanup'));
-    }
+function* threeInstantWaits(): Op<void> {
+    for (let i = 0; i < 3; i++) yield* wait('now', () => true, 0);
 }
 
 function* withdraw(): Op<void> {
@@ -249,7 +117,20 @@ function* nestedCriticalThenWait(): Op<void> {
     yield* wait('after', () => false, 10);
 }
 
-// --- tests
+function* criticalThenWaitForTick5(): Op<WaitResult> {
+    yield* uninterruptible(ticks(3));
+    return yield* wait('tick 5', s => s.tick >= 5, 10);
+}
+
+function* forgesCritical(): Op<string> {
+    try {
+        // Only op.ts can make a marker; this forgery is the case under test.
+        yield { type: 'critical' } as unknown as Command;
+        return 'accepted';
+    } catch (e) {
+        return (e as Error).message;
+    }
+}
 
 describe('commands', () => {
     test('send threads the driver result back into the op', async () => {
@@ -335,7 +216,7 @@ describe('wait', () => {
     });
 });
 
-describe('guards', () => {
+describe('abort guards', () => {
     test("abort runs the op's finally (including a cleanup send), then the guard's op", async () => {
         const d = new TimelineDriver(timeline(10, t => ({ hp: t === 2 ? 3 : 10 })));
         const r = await interpret(busyThenWaitsInFinally(), { driver: d, guards: [lowHp] });
@@ -358,6 +239,13 @@ describe('guards', () => {
         const d = new TimelineDriver(timeline(5, t => ({ hp: t >= 1 ? 0 : 10 })));
         const r = await interpret(busy(), { driver: d, guards: [death] });
         expect(r).toEqual({ kind: 'aborted', by: 'death', outcome: { fail: 'died' } });
+    });
+
+    test('a guard can return its outcome without an op', async () => {
+        const d = new TimelineDriver(timeline(3, t => ({ z: t >= 1 ? 3600 : 3218 })));
+        const r = await interpret(busy(), { driver: d, guards: [wilderness] });
+        expect(r).toEqual({ kind: 'aborted', by: 'wilderness', outcome: { fail: 'in the Wilderness at z 3600' } });
+        expect(trace(d)).toEqual(['send chop', 'log guard wilderness (abort)', 'send cleanup']);
     });
 
     test('the first guard in priority order wins when several hold', async () => {
@@ -384,10 +272,12 @@ describe('guards', () => {
         ]);
         expect(trace(d)).not.toContain('send regenerated');
     });
+});
 
-    test('suspend runs the guard op, then the same wait resumes; at most once per tick', async () => {
+describe('suspend guards', () => {
+    test('the guard op runs, then the same wait resumes; at most once per tick', async () => {
         const d = new TimelineDriver(timeline(10, t => ({ dialog: t === 2 || t === 3 })));
-        const r = await interpret(waitsForTick5(), { driver: d, guards: [dialog] });
+        const r = await interpret(waitsForTick(5), { driver: d, guards: [dialog] });
         expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'met', state: { tick: 5 } });
         // The handler doesn't close the dialog, so it runs again on tick 3 rather than looping on tick 2.
         expect(trace(d)).toEqual([
@@ -400,17 +290,46 @@ describe('guards', () => {
         expect(guardLogs(d).map(g => g.tick)).toEqual([2, 3]);
     });
 
+    test('once per tick holds across waits, and across interpret calls sharing firedAt', async () => {
+        // A 0-tick handler leaves the dialog visible until the next tick.
+        const d = new TimelineDriver(timeline(3, t => ({ dialog: t === 0 })));
+        const firedAt = new Map<string, number>();
+        await interpret(threeInstantWaits(), { driver: d, guards: [dialog], firedAt });
+        await interpret(threeInstantWaits(), { driver: d, guards: [dialog], firedAt });
+        expect(trace(d)).toEqual(['log guard dialog (suspend)', 'send continue']);
+    });
+
+    test('after a handler that waits, the wait sees until before the guard fires again', async () => {
+        // The dialog never closes; each handler run takes a tick.
+        const d = new TimelineDriver(timeline(10, () => ({ dialog: true })));
+        const r = await interpret(waitsForTick(2, 5), { driver: d, guards: [slowDialog(1)] });
+        expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'met', state: { tick: 2 } });
+        expect(guardLogs(d).map(g => g.tick)).toEqual([0, 1]);
+    });
+
+    test("ticks a handler takes count against the wait's budget", async () => {
+        const d = new TimelineDriver(timeline(10, () => ({ dialog: true })));
+        const r = await interpret(waitsForTick(99, 3), { driver: d, guards: [slowDialog(1)] });
+        expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'timeout', state: { tick: 3 } });
+        expect(guardLogs(d).map(g => g.tick)).toEqual([0, 1, 2]);
+    });
+
+    test(`a guard still holding after ${MAX_SUSPENDS_PER_WAIT} handler runs in one wait fails the run`, async () => {
+        const d = new TimelineDriver(timeline(20, () => ({ dialog: true })));
+        const r = await interpret(busy(), { driver: d, guards: [dialog] });
+        expect(r).toEqual({
+            kind: 'aborted',
+            by: 'dialog',
+            outcome: { fail: `dialog still holds after ${MAX_SUSPENDS_PER_WAIT} handler runs in wait "logs"` },
+        });
+        expect(guardLogs(d)).toHaveLength(MAX_SUSPENDS_PER_WAIT);
+        expect(trace(d).at(-1)).toBe('send cleanup');
+    });
+
     test('guards are off inside a suspend handler and checked again once the wait resumes', async () => {
         // Dialog on tick 1; HP low from tick 2, while the handler waits.
         const d = new TimelineDriver(timeline(10, t => ({ dialog: t === 1, hp: t >= 2 ? 3 : 10 })));
-        const slowDialog: Guard = {
-            ...dialog,
-            *run() {
-                yield* ticks(2);
-                yield* send(act('continue'));
-            },
-        };
-        const r = await interpret(busy(), { driver: d, guards: [slowDialog, lowHp] });
+        const r = await interpret(busy(), { driver: d, guards: [slowDialog(2), lowHp] });
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(guardLogs(d)).toEqual([
             { msg: 'guard dialog (suspend)', tick: 1 },
@@ -420,79 +339,10 @@ describe('guards', () => {
 
     test('a suspend guard returning fail ends the run as aborted after the op cleans up', async () => {
         const d = new TimelineDriver(timeline(5, t => ({ dialog: t === 1 })));
-        const stuck: Guard = {
-            ...dialog,
-            *run(): Op<GuardOutcome> {
-                yield* send(act('continue'));
-                return { fail: 'dialog stuck' };
-            },
-        };
+        const stuck: Guard = { ...dialog, run: () => ({ fail: 'dialog stuck' }) };
         const r = await interpret(busy(), { driver: d, guards: [stuck] });
         expect(r).toEqual({ kind: 'aborted', by: 'dialog', outcome: { fail: 'dialog stuck' } });
-        expect(trace(d)).toEqual(['send chop', 'log guard dialog (suspend)', 'send continue', 'send cleanup']);
-    });
-});
-
-describe('cancellation', () => {
-    test('onTick returning a reason cancels the op and runs its finally', async () => {
-        const seen: number[] = [];
-        const onTick = (s: BotWorldState) => {
-            seen.push(s.tick);
-            return s.tick === 3 ? 'minutes:1 reached' : null;
-        };
-        const d = new TimelineDriver(timeline(10));
-        const r = await interpret(busy(), { driver: d, onTick });
-        expect(r).toEqual({ kind: 'cancelled', reason: 'minutes:1 reached' });
-        expect(trace(d)).toEqual(['send chop', 'send cleanup']);
-        expect(seen).toEqual([0, 1, 2, 3]);
-    });
-
-    test('onTick is checked before guards', async () => {
-        const d = new TimelineDriver(timeline(5, () => ({ hp: 3 })));
-        const r = await interpret(busy(), { driver: d, guards: [lowHp], onTick: () => 'stop' });
-        expect(r.kind).toBe('cancelled');
-        expect(trace(d)).not.toContain('send eat');
-    });
-
-    test('nested yield* ops are cancelled through the whole stack, innermost finally first', async () => {
-        const d = new TimelineDriver(timeline(10));
-        const r = await interpret(outer(), { driver: d, onTick: s => (s.tick === 2 ? 'stop' : null) });
-        expect(r.kind).toBe('cancelled');
-        expect(trace(d)).toEqual(['send inner cleanup', 'send middle cleanup', 'send outer cleanup']);
-    });
-
-    test('a finally that waits past the cleanup cap is abandoned and logged', async () => {
-        const d = new TimelineDriver(timeline(5, t => ({ hp: t === 1 ? 3 : 10 })));
-        const r = await interpret(waitsThenCleansUp(waitsTooLong), { driver: d, guards: [lowHp] });
-        expect(r).toEqual({ kind: 'aborted', by: 'low-hp', outcome: undefined });
-        expect(trace(d)).toEqual([
-            'log guard low-hp (abort)',
-            'send cleanup',
-            `log cleanup abandoned: wait "never" past the ${CLEANUP_TICKS}-tick cap`,
-            'send eat',
-        ]);
-        expect(d.ticksElapsed).toBe(1 + CLEANUP_TICKS);
-    });
-
-    test('a finally that throws is logged and the guard still acts', async () => {
-        const d = new TimelineDriver(timeline(5, t => ({ hp: t === 1 ? 3 : 10 })));
-        const r = await interpret(waitsThenCleansUp(throws), { driver: d, guards: [lowHp] });
-        expect(r.kind === 'aborted' && r.by).toBe('low-hp');
-        expect(trace(d)).toEqual(['log guard low-hp (abort)', 'send cleanup', 'log cleanup threw: oops', 'send eat']);
-    });
-
-    test('an op that swallows Cancelled is logged, and the cancellation still stands', async () => {
-        const d = new TimelineDriver(timeline(5));
-        const r = await interpret(swallowsCancel(), { driver: d, onTick: s => (s.tick === 1 ? 'stop' : null) });
-        expect(r).toEqual({ kind: 'cancelled', reason: 'stop' });
-        expect(trace(d)).toEqual(['log cleanup: the op caught Cancelled and returned instead of rethrowing it']);
-    });
-
-    test('an op that rethrows Cancelled from its catch cleans up quietly', async () => {
-        const d = new TimelineDriver(timeline(5));
-        const r = await interpret(rethrowsCancel(), { driver: d, onTick: s => (s.tick === 1 ? 'stop' : null) });
-        expect(r).toEqual({ kind: 'cancelled', reason: 'stop' });
-        expect(trace(d)).toEqual(['send cleanup']);
+        expect(trace(d)).toEqual(['send chop', 'log guard dialog (suspend)', 'send cleanup']);
     });
 });
 
@@ -504,12 +354,19 @@ describe('uninterruptible', () => {
         expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 3 }]);
     });
 
-    test('lets critical guards through, cancelling the section', async () => {
+    test('blocks a non-critical suspend guard until the section ends', async () => {
+        const d = new TimelineDriver(timeline(10, t => ({ dialog: t >= 1 && t <= 3 })));
+        const r = await interpret(criticalThenWaitForTick5(), { driver: d, guards: [dialog] });
+        expect(r.kind === 'returned' && r.value).toMatchObject({ kind: 'met', state: { tick: 5 } });
+        expect(guardLogs(d)).toEqual([{ msg: 'guard dialog (suspend)', tick: 3 }]);
+    });
+
+    test('lets critical guards through: the section cleans up, then the guard runs', async () => {
         const d = new TimelineDriver(timeline(10, t => ({ hp: t >= 2 ? 0 : 10 })));
         const r = await interpret(uninterruptible(withdraw()), { driver: d, guards: [lowHp, death] });
         expect(r).toEqual({ kind: 'aborted', by: 'death', outcome: { fail: 'died' } });
+        expect(trace(d)).toEqual(['log guard death (abort)', 'send close bank', 'log died']);
         expect(guardLogs(d)).toEqual([{ msg: 'guard death (abort)', tick: 2 }]);
-        expect(trace(d)).toContain('send close bank');
     });
 
     test('nests: leaving an inner section keeps the outer one in force', async () => {
@@ -518,9 +375,37 @@ describe('uninterruptible', () => {
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 4 }]);
     });
+
+    test('a forged critical marker is refused with an error thrown into the op', async () => {
+        const r = await interpret(forgesCritical(), { driver: new TimelineDriver(timeline(2)) });
+        expect(r).toEqual({ kind: 'returned', value: 'forged critical marker' });
+    });
 });
 
 describe('call', () => {
+    test('an instant call consumes no tick; a slow one consumes ticks until it settles', async () => {
+        const instant = new TimelineDriver(timeline(10));
+        expect(
+            await interpret(
+                call('instant', async () => 1),
+                { driver: instant },
+            ),
+        ).toEqual({
+            kind: 'returned',
+            value: 1,
+        });
+        expect(instant.ticksElapsed).toBe(0);
+
+        const slow = new TimelineDriver(timeline(10));
+        const gate = gateAt(3, 'arrived');
+        const r = await interpret(
+            call('slow', () => gate.promise),
+            { driver: slow, onTick: gate.onTick },
+        );
+        expect(r).toEqual({ kind: 'returned', value: 'arrived' });
+        expect(slow.ticksElapsed).toBe(3);
+    });
+
     test('a guard firing during a call acts once the call settles, and is logged', async () => {
         const d = new TimelineDriver(timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })));
         // The call settles only after tick 2, when the guard fires, has been checked.
@@ -541,14 +426,31 @@ describe('call', () => {
         expect(r.kind === 'aborted' && r.by).toBe('low-hp');
         expect(trace(d)).toEqual([
             'call legacy walk',
+            'log guard low-hp waits for call "legacy walk" to settle',
             'log settled',
             'log guard low-hp (abort)',
             'send cleanup',
             'send eat',
         ]);
-        expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 2, during: 'legacy walk' }]);
+        expect(guardLogs(d)).toEqual([{ msg: 'guard low-hp (abort)', tick: 2, during: 'call "legacy walk"' }]);
         // Once the guard fires the interpreter stops taking ticks and only waits for the call.
         expect(d.ticksElapsed).toBe(2);
+    });
+
+    test('a call that fails after an abort guard fired is logged', async () => {
+        const d = new TimelineDriver(timeline(10, t => ({ hp: t >= 2 ? 3 : 10 })));
+        const gate = gateAt(2, 'arrived');
+        const failingWalk = async () => {
+            await gate.promise;
+            throw new Error('walk failed');
+        };
+        const r = await interpret(call('legacy walk', failingWalk), {
+            driver: d,
+            guards: [lowHp],
+            onTick: gate.onTick,
+        });
+        expect(r.kind === 'aborted' && r.by).toBe('low-hp');
+        expect(trace(d)).toContain('log call "legacy walk" failed after guard low-hp: walk failed');
     });
 
     test('after a suspend guard during a call, the op gets the call result', async () => {
@@ -559,7 +461,12 @@ describe('call', () => {
             { driver: d, guards: [dialog], onTick: gate.onTick },
         );
         expect(r).toEqual({ kind: 'returned', value: 'arrived' });
-        expect(trace(d)).toEqual(['call legacy walk', 'log guard dialog (suspend)', 'send continue']);
+        expect(trace(d)).toEqual([
+            'call legacy walk',
+            'log guard dialog waits for call "legacy walk" to settle',
+            'log guard dialog (suspend)',
+            'send continue',
+        ]);
     });
 });
 

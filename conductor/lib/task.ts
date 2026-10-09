@@ -10,9 +10,10 @@ import type { z } from 'zod/v4';
 import type { BotActions } from '../../sdk/actions';
 import type { BotSDK } from '../../sdk/index';
 import type { BotWorldState } from '../../sdk/types';
+import type { Outcome } from '../core/op';
 
 /** What a step may report. Returning nothing means "keep looping". */
-export type Outcome = void | { done: string } | { fail: string };
+export type { Outcome };
 
 /** A named run-scoped number in ctx.memory, for "N failures in a row" style limits. */
 export interface Counter {
