@@ -124,12 +124,15 @@ passes its `ctx` as the `ActionContext`.
   low-HP guard's eat is refused server-side, and the interface guard leaves a bank alone by design.
   Never `yield* openBank(...)` in one step and `closeBank` in another. Run the work inside
   `yield* withBank(ctx, body)`, where `body` is an `Op` (`withBank(ctx, performAll(ctx))`): it opens,
-  runs `body`, and closes in a `finally`, so an abort closes the bank first, under the interpreter's
-  bounded cleanup (`CLEANUP_TICKS` 10, `CLEANUP_COMMANDS` 20), before the guard's own work runs. It
-  returns `{ ok: true, value, closed }` (`closed` is the close attempt's result; a task that needs the
-  bank shut should fail on `!closed.ok`) or the failed open's `{ ok: false, reason, message }`. Make
-  the body resumable (record progress in typed memory), as the aborted step runs again from the top.
-  The same shape applies to any open/close pair (shop).
+  runs `body`, and closes in a `finally`, so an abort closes the bank first, before the guard's own
+  work runs. That close is sized to the interpreter's bounded cleanup (`CLEANUP_TICKS` 10,
+  `CLEANUP_COMMANDS` 20): a close, then a second if the first shows no effect within
+  `CLEANUP_CLOSE_WAIT_TICKS`, and for an open sent but not yet confirmed, a wait of that many ticks
+  for it to land first. A bank that ignores both closes, or an open landing later than that, stays
+  open. It returns `{ ok: true, value, closed }` (`closed` is the normal path's close result; a task
+  that needs the bank shut should fail on `!closed.ok`) or the failed open's
+  `{ ok: false, reason, message }`. Make the body resumable (record progress in typed memory), as the
+  aborted step runs again from the top. The same shape applies to any open/close pair (shop).
 - **Each op gets tests**: a unit test in `conductor/test/actions/<op>.test.ts` (scripted timeline
   through `interpret`; see `chop.test.ts`) and an integration test in
   `conductor/test/integration/actions/<op>.itest.ts` against the real engine (see `chop.itest.ts`).

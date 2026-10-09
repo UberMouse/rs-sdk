@@ -7,8 +7,9 @@ import { defineTask, type TaskContext } from '../lib/task';
 import { exactName } from '../lib/util';
 
 /**
- * Consecutive failed opens before the task fails. Three timed-out opens are 30 s of nothing changing,
- * inside the engine's default stuck window (90 s), so the failure is reported instead of the watchdog.
+ * Consecutive failed opens before the task fails. Three timed-out opens, each with withBank's wait for
+ * a late open, are under 35 s of nothing changing, inside the engine's default stuck window (90 s), so
+ * the failure is reported instead of the watchdog.
  */
 const OPEN_FAIL_LIMIT = 3;
 /** Walks to a far bank outlast the engine's default step timeout. */

@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
 import {
     BANK_TRANSFER_WAIT_TICKS,
+    CLEANUP_CLOSE_WAIT_TICKS,
     CLOSE_BANK_WAIT_TICKS,
     closeBank,
     deposit,
@@ -13,8 +14,8 @@ import {
     withBank,
     withdraw,
 } from '../../actions/bank';
-import { TimelineDriver } from '../../core/drivers/timeline';
-import { type Guard, interpret } from '../../core/interpret';
+import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
+import { CLEANUP_TICKS, type Guard, interpret } from '../../core/interpret';
 import { send } from '../../core/op';
 import { bankWorld } from '../react';
 import { BANK_INTERFACE, type World, world } from '../world';
@@ -32,6 +33,20 @@ const cantReach = () => ({ success: false, message: 'no route', reason: 'cant_re
 const got = (w: World, n: number) => w.inv('Bones', n).tick(1).build();
 const asDriver = (states: BotWorldState[]) => new TimelineDriver(states, { react: bankWorld });
 const sendsOf = (d: TimelineDriver) => d.commands.flatMap(c => (c.type === 'send' ? [c.action.reason] : []));
+const logsOf = (d: TimelineDriver) => d.commands.flatMap(c => (c.type === 'log' ? [c.msg] : []));
+const hurt = (w: World) => w.player({ hp: 3 });
+/** Fires below 5 HP: aborts the op, then sends a marker 'eat' (the eat it stands for needs the bank shut). */
+const lowHp: Guard = {
+    name: 'low-hp',
+    policy: 'abort',
+    when: s => (s.player?.hp ?? 10) < 5,
+    *run() {
+        yield* send({ type: 'none', reason: 'eat' });
+        return { fail: 'ate' };
+    },
+};
+/** The bank world, but a deposit never lands: its wait is still running when an abort comes. */
+const ignoresDeposits: TimelineOptions['react'] = (a, s) => (a.type === 'bankDeposit' ? undefined : bankWorld(a, s));
 
 describe('openBank', () => {
     test('uses the booth Bank option and succeeds once the bank is open', async () => {
@@ -436,34 +451,78 @@ describe('withBank', () => {
         expect(sendsOf(driver)).toEqual([]);
     });
 
-    test('an abort mid-bank closes the bank first, then the guard runs', async () => {
-        // HP drops while the deposit is waiting on its effect. The guard's work (an eat, here a marker
-        // send) must come after the close, as the open bank hides the inventory it would eat from.
-        const hurt = carrying.player({ hp: 3 });
-        const guard: Guard = {
-            name: 'low-hp',
-            policy: 'abort',
-            when: s => (s.player?.hp ?? 10) < 5,
-            *run() {
-                yield* send({ type: 'none', reason: 'eat' });
-                return { fail: 'ate' };
+    test('an abort while the deposit is still waiting closes the bank first, then the guard runs', async () => {
+        // The deposit never lands, so HP drops while its wait is mid-flight: only withBank's finally can
+        // close the bank. The guard's work (an eat, here a marker send) must come after the close, as the
+        // open bank hides the inventory it would eat from.
+        const driver = new TimelineDriver(
+            [carrying.build(), carrying.tick(1).build(), hurt(carrying).tick(2).build()],
+            {
+                react: ignoresDeposits,
             },
-        };
-        const driver = asDriver([carrying.build(), carrying.tick(1).build(), hurt.tick(2).build()]);
-        const r = await interpret(withBank(driver, deposit(driver, LOGS)), { driver, guards: [guard] });
+        );
+        const r = await interpret(withBank(driver, deposit(driver, LOGS)), { driver, guards: [lowHp] });
         expect(r).toEqual({ kind: 'aborted', by: 'low-hp', outcome: { fail: 'ate' } });
         expect(sendsOf(driver)).toEqual(['deposit Logs', 'close bank', 'eat']);
         expect(driver.state().bank.isOpen).toBe(false);
+        expect(driver.state().inventory.some(i => i.name === 'Logs')).toBe(true);
     });
 
-    test('a stop that cancels the step closes the bank too', async () => {
-        const driver = asDriver([carrying.build()]);
+    test('a stop while the deposit is still waiting closes the bank too', async () => {
+        const driver = new TimelineDriver([carrying.build()], { react: ignoresDeposits });
         const r = await interpret(withBank(driver, deposit(driver, LOGS)), {
             driver,
             onTick: s => (s.tick >= 2 ? 'time up' : null),
         });
         expect(r).toEqual({ kind: 'cancelled', reason: 'time up' });
         expect(sendsOf(driver)).toEqual(['deposit Logs', 'close bank']);
+        expect(driver.state().bank.isOpen).toBe(false);
+    });
+
+    test('cancelled, a first close with no effect is sent again and lands inside the cleanup cap', async () => {
+        expect(2 * CLEANUP_CLOSE_WAIT_TICKS + 1).toBeLessThanOrEqual(CLEANUP_TICKS);
+        let closes = 0;
+        const sentAt: [string, number][] = [];
+        const driver: TimelineDriver = new TimelineDriver(
+            [carrying.build(), carrying.tick(1).build(), hurt(carrying).tick(2).build()],
+            {
+                react: (a, s) =>
+                    a.type === 'bankDeposit' || (a.type === 'closeModal' && ++closes === 1)
+                        ? undefined
+                        : bankWorld(a, s),
+                respond: a => {
+                    sentAt.push([a.reason, driver.state().tick]);
+                    return undefined;
+                },
+            },
+        );
+        const r = await interpret(withBank(driver, deposit(driver, LOGS)), { driver, guards: [lowHp] });
+        expect(r).toMatchObject({ kind: 'aborted', by: 'low-hp' });
+        expect(sentAt).toEqual([
+            ['deposit Logs', 0],
+            ['close bank', 2],
+            ['close bank (second attempt)', 2 + CLEANUP_CLOSE_WAIT_TICKS],
+            ['eat', 3 + CLEANUP_CLOSE_WAIT_TICKS],
+        ]);
+        expect(driver.state().bank.isOpen).toBe(false);
+        expect(logsOf(driver).filter(m => m.startsWith('cleanup'))).toEqual([]);
+    });
+
+    test('cancelled mid-open, a bank that opens late is closed before the guard runs', async () => {
+        const states = idle.series(6, (w, i) => (i >= 3 ? hurt(w).bank([]) : i >= 1 ? hurt(w) : w));
+        const driver = asDriver(states);
+        const r = await interpret(withBank(driver, deposit(driver, LOGS)), { driver, guards: [lowHp] });
+        expect(r).toMatchObject({ kind: 'aborted', by: 'low-hp' });
+        expect(sendsOf(driver)).toEqual(['Bank Bank booth', 'close bank', 'eat']);
+        expect(driver.state().bank.isOpen).toBe(false);
+    });
+
+    test('cancelled mid-open with no bank showing, one close is still sent', async () => {
+        const driver = asDriver([idle.build(), hurt(idle).tick(1).build()]);
+        const r = await interpret(withBank(driver, deposit(driver, LOGS)), { driver, guards: [lowHp] });
+        expect(r).toMatchObject({ kind: 'aborted', by: 'low-hp' });
+        expect(sendsOf(driver)).toEqual(['Bank Bank booth', 'close bank (open not confirmed)', 'eat']);
+        expect(driver.state().tick).toBe(1 + CLEANUP_CLOSE_WAIT_TICKS);
     });
 
     test('a body that throws still closes the bank, and the error propagates', async () => {
@@ -477,11 +536,13 @@ describe('withBank', () => {
     });
 
     test('an open that timed out but landed late is still closed', async () => {
-        const late = idle.series(OPEN_BANK_WAIT_TICKS + 3, (w, i) => (i > OPEN_BANK_WAIT_TICKS ? w.bank([]) : w));
+        // The bank shows two ticks after openBank gave up, inside the wait for a late open.
+        const late = idle.series(OPEN_BANK_WAIT_TICKS + 3, (w, i) => (i > OPEN_BANK_WAIT_TICKS + 1 ? w.bank([]) : w));
         const driver = asDriver(late);
         const body = (function* () {})();
         const r = await interpret(withBank(driver, body), { driver });
         expect(r).toMatchObject({ kind: 'returned', value: { ok: false, reason: 'timeout' } });
-        expect(sendsOf(driver)).toEqual(['Bank Bank booth']);
+        expect(sendsOf(driver)).toEqual(['Bank Bank booth', 'close bank']);
+        expect(driver.state().bank.isOpen).toBe(false);
     });
 });

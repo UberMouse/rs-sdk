@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
-import { CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank';
+import { CLEANUP_CLOSE_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
@@ -13,6 +13,8 @@ const AREA = { x: 3185, z: 3436, radius: 6 };
 const BOOTH = { x: 3185, z: 3433 };
 const OPEN = 'Bank Bank booth';
 const CLOSE = 'close bank';
+/** The close withBank sends after an open that timed out, in case it lands late. */
+const CLOSE_UNCONFIRMED = 'close bank (open not confirmed)';
 const BANK_CONTENTS = [
     { name: 'Bones', count: 5 },
     { name: 'Copper ore', count: 20 },
@@ -154,9 +156,10 @@ describe('bank: failures', () => {
             timeline: carrying.series(1),
         });
         expect(r.result.reason).toBe('operate: cannot open bank (timeout): Timeout waiting for bank interface to open');
-        expect(r.sends).toEqual([OPEN, OPEN, OPEN]);
+        // Each timed-out open waits a while for a late open, then sends a close anyway.
+        expect(r.sends).toEqual([OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED, OPEN, CLOSE_UNCONFIRMED]);
         const ticks = r.driver.state().tick;
-        expect(ticks).toBe(3 * OPEN_BANK_WAIT_TICKS);
+        expect(ticks).toBe(3 * (OPEN_BANK_WAIT_TICKS + CLEANUP_CLOSE_WAIT_TICKS));
         expect(ticks * TICK_MS).toBeLessThan(DEFAULT_STUCK_AFTER_MS);
     });
 
