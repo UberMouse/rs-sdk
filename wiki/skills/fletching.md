@@ -8,6 +8,7 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 |---|---|---|---|---|---|
 | Arrow shafts (knife on normal logs), logs chopped nearby | (3224, 3202) knife spawn | 1-17 | 15 shafts per log, ~12 logs/min | ~139k (local, includes early levels) | 2026-10-09 conductor1 local |
 | Headless arrows (feathers on shafts) | anywhere | 17-27 | 1 feather + 1 shaft each, 95 in ~40 s | ~328k (local, includes feather XP) | 2026-10-09 conductor1 local |
+| Longbow (u), knife on normal logs | (3224, 3202) knife spawn | 27-34 | one per call, ~2.4 s per log, 16 in 1 min | ~240k (local, 4000 XP in 1 min, not a stats.ts figure) | 2026-10-09 conductor1 local |
 
 ## Bow Making
 
