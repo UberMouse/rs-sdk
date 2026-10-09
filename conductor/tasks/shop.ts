@@ -1,12 +1,20 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
+import { buy, closeShop, sell, withShop } from '../actions/shop';
+import { call, log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
+import { countItems, exactName } from '../lib/util';
 
 const COINS = /^coins$/i;
 const WALK_TOLERANCE = 3;
 /** Farther than this from `at` and the shopkeeper is probably not loaded or reachable. */
 const AT_REACH = 8;
+/**
+ * Consecutive failures of a kind (walks, stale closes, opens, mid-trade closes) before the task fails.
+ * Three timed-out opens, each with withShop's wait for a late open, are about 35 s of nothing changing,
+ * inside the engine's default stuck window (90 s), so the failure is reported instead of the watchdog.
+ */
 const FAIL_LIMIT = 3;
 /** Walks to a far shop outlast the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 300_000;
@@ -39,70 +47,126 @@ const Params = z.object({
 });
 
 type ShopParams = z.infer<typeof Params>;
-type Ctx = TaskContext<ShopParams>;
+interface ShopMemory {
+    /** How many of the task's trades (see `tradesOf`) have gone through, in order. */
+    tradesMade: number;
+    /** Coins gained by selling and lost to buying over the finished trades. */
+    coinsReceived: number;
+    coinsSpent: number;
+    /**
+     * The trade under way: its index, and the coins and the item's count the inventory held before its
+     * first send. An abort can land after packets did, so a resumed step counts what moved since then and
+     * trades only the rest, and settles the coins against the same start.
+     *
+     * The baseline is the inventory count, so it is approximate when a guard's eat consumes the very item
+     * being traded between the abort and the resume: a sale looks that much further along and
+     * under-delivers by the eaten amount; a purchase of food looks that much less along and over-buys by
+     * it (the inventory still ends at the requested count). Neither exceeds the trade's amount.
+     */
+    inFlight: { tradeIndex: number; coins: number; held: number } | null;
+}
+type Ctx = TaskContext<ShopParams, ShopMemory>;
 type SellTrade = { kind: 'sell' } & ShopParams['sell'][number];
 type BuyTrade = { kind: 'buy' } & ShopParams['buy'][number];
 type Trade = SellTrade | BuyTrade;
-
-const exactName = (name: string) => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-const countOf = (state: BotWorldState, pattern: RegExp) =>
-    state.inventory.filter(i => pattern.test(i.name)).reduce((n, i) => n + i.count, 0);
+/** How the trades in the shop ended, if they did not all go through. */
+type Ending = { kind: 'fail'; message: string } | { kind: 'closed'; what: string; message: string };
 
 /** Sells first, then buys, so a run funds its own purchases. */
-const tradesOf = (ctx: Ctx): Trade[] => [
-    ...ctx.params.sell.map(t => ({ kind: 'sell' as const, ...t })),
-    ...ctx.params.buy.map(t => ({ kind: 'buy' as const, ...t })),
+const tradesOf = (params: ShopParams): Trade[] => [
+    ...params.sell.map(t => ({ kind: 'sell' as const, ...t })),
+    ...params.buy.map(t => ({ kind: 'buy' as const, ...t })),
 ];
 
 /** The next trade to make, or undefined when all are made. */
-const nextTrade = (ctx: Ctx): Trade | undefined => tradesOf(ctx)[ctx.counter('tradesMade').add(0)];
+const nextTrade = (ctx: Ctx): Trade | undefined => tradesOf(ctx.params)[ctx.memory.tradesMade];
 
-/** Prefix of a trade failure message meaning the shop modal closed mid-trade. */
-const CLOSED = 'shop_not_open';
-
-/** Closes the shop (best effort) so a failed run does not leave a modal hiding the inventory. */
-const failClosing = async (ctx: Ctx, msg: string) => {
-    await ctx.bot.closeShop();
-    return { fail: msg };
-};
-
-/** Returns a failure message (prefixed CLOSED when the modal closed), or null when the sale went through. */
-const sellOne = async (ctx: Ctx, t: SellTrade): Promise<string | null> => {
+/** The reason the shop's current (opening) price rules the trade out, or null. */
+function priceRefusal(state: BotWorldState, t: Trade): string | null {
     const pattern = exactName(t.item);
-    const quoted = ctx.state().shop.playerItems.find(i => pattern.test(i.name));
-    if (t.minUnitPrice !== undefined) {
+    if (t.kind === 'sell') {
+        if (t.minUnitPrice === undefined) return null;
+        const quoted = state.shop.playerItems.find(i => pattern.test(i.name));
         if (!quoted) return `shop does not quote ${t.item}, cannot check minUnitPrice ${t.minUnitPrice}`;
         if (quoted.sellPrice < t.minUnitPrice)
             return `shop pays ${quoted.sellPrice} gp each for ${t.item}, below minUnitPrice ${t.minUnitPrice}`;
+        return null;
     }
-    const coinsBefore = countOf(ctx.state(), COINS);
-    const r = await ctx.bot.sellToShop(pattern, t.count ?? 'all');
-    const gained = countOf(ctx.state(), COINS) - coinsBefore;
-    if (gained > 0) ctx.counter('coinsReceived').add(gained);
-    ctx.log(`sold ${t.item}: ${r.message}; coins +${gained}`);
-    if (r.success) return null;
-    if (r.reason === 'shop_not_open') return `${CLOSED}: ${r.message}`;
-    return `sell ${t.item} failed (${r.reason ?? 'unknown'}): ${r.message}; coins received so far ${ctx.counter('coinsReceived').add(0)}`;
-};
+    if (t.maxUnitPrice === undefined) return null;
+    const quoted = state.shop.shopItems.find(i => pattern.test(i.name));
+    if (!quoted) return `shop does not stock ${t.item}, cannot check maxUnitPrice ${t.maxUnitPrice}`;
+    if (quoted.buyPrice > t.maxUnitPrice)
+        return `shop asks ${quoted.buyPrice} gp each for ${t.item}, above maxUnitPrice ${t.maxUnitPrice}`;
+    return null;
+}
 
-/** Returns a failure message (prefixed CLOSED when the modal closed), or null when the purchase went through. */
-const buyOne = async (ctx: Ctx, t: BuyTrade): Promise<string | null> => {
+/** Makes the next trade with the shop open; null when it went through. */
+function* performTrade(ctx: Ctx, t: Trade): Op<Ending | null> {
     const pattern = exactName(t.item);
-    const quoted = ctx.state().shop.shopItems.find(i => pattern.test(i.name));
-    if (t.maxUnitPrice !== undefined) {
-        if (!quoted) return `shop does not stock ${t.item}, cannot check maxUnitPrice ${t.maxUnitPrice}`;
-        if (quoted.buyPrice > t.maxUnitPrice)
-            return `shop asks ${quoted.buyPrice} gp each for ${t.item}, above maxUnitPrice ${t.maxUnitPrice}`;
+    const at = ctx.memory.tradesMade;
+    const resumed = ctx.memory.inFlight?.tradeIndex === at ? ctx.memory.inFlight : null;
+    let start: NonNullable<ShopMemory['inFlight']>;
+    if (resumed) {
+        start = resumed;
+    } else {
+        // Only a trade's first run checks the price: after packets landed the shop's prices have moved.
+        const refusal = priceRefusal(ctx.state(), t);
+        if (refusal) return { kind: 'fail', message: refusal };
+        start = { tradeIndex: at, coins: countItems(ctx.state(), COINS), held: countItems(ctx.state(), pattern) };
+        ctx.memory.inFlight = start;
     }
-    const coinsBefore = countOf(ctx.state(), COINS);
-    const r = await ctx.bot.buyFromShop(pattern, t.count);
-    const after = countOf(ctx.state(), COINS);
-    if (coinsBefore > after) ctx.counter('coinsSpent').add(coinsBefore - after);
-    ctx.log(`bought ${t.item}: ${r.message}; coins ${coinsBefore} -> ${after}`);
-    if (r.success) return null;
-    if (r.reason === 'shop_not_open') return `${CLOSED}: ${r.message}`;
-    return `buy ${t.item} x${t.count} failed (${r.reason ?? 'unknown'}, got ${r.amountBought ?? 0}): ${r.message}; ${after} coins left`;
-};
+    const held = countItems(ctx.state(), pattern);
+    const moved = Math.max(0, t.kind === 'sell' ? start.held - held : held - start.held);
+
+    // A resumed trade whose packets all landed is done; otherwise only the rest is asked for.
+    const remaining = t.kind === 'sell' && t.count === undefined ? 'all' : (t.count ?? 0) - moved;
+    const landed = resumed !== null && (remaining === 'all' ? held === 0 : remaining <= 0);
+    let failure: { reason: string; message: string; got: number } | null = null;
+    if (landed) {
+        const verb = t.kind === 'sell' ? 'sold' : 'bought';
+        yield* log(`${t.kind} ${t.item}: ${moved} already ${verb} before the step was cut off`);
+    } else if (t.kind === 'sell') {
+        const r = yield* sell(ctx, pattern, remaining);
+        const gained = countItems(ctx.state(), COINS) - start.coins;
+        yield* log(`sold ${t.item}: ${r.message}; coins +${gained}`);
+        if (!r.ok) failure = { reason: r.reason, message: r.message, got: r.amountSold };
+    } else {
+        // A purchase always has a count, so `remaining` is the number left to buy.
+        const r = yield* buy(ctx, pattern, remaining === 'all' ? t.count : remaining);
+        yield* log(`bought ${t.item}: ${r.message}; coins ${start.coins} -> ${countItems(ctx.state(), COINS)}`);
+        if (!r.ok) failure = { reason: r.reason, message: r.message, got: r.amountBought };
+    }
+
+    // The shop modal closed under the trade (an interrupt, an attack): the step reopens it and resumes,
+    // so the coins are settled once the trade ends for good, against the same start.
+    if (failure?.reason === 'shop-not-open')
+        return { kind: 'closed', what: `${t.kind} ${t.item}`, message: `${failure.reason}: ${failure.message}` };
+
+    const coins = countItems(ctx.state(), COINS);
+    if (t.kind === 'sell') ctx.memory.coinsReceived += Math.max(0, coins - start.coins);
+    else ctx.memory.coinsSpent += Math.max(0, start.coins - coins);
+    if (failure && t.kind === 'sell') {
+        const message = `sell ${t.item} failed (${failure.reason}): ${failure.message}; coins received so far ${ctx.memory.coinsReceived}`;
+        return { kind: 'fail', message };
+    }
+    if (failure) {
+        const message = `buy ${t.item} x${t.count} failed (${failure.reason}, got ${failure.got}): ${failure.message}; ${coins} coins left`;
+        return { kind: 'fail', message };
+    }
+    ctx.memory.tradesMade++;
+    ctx.memory.inFlight = null;
+    ctx.streak('reopenFails').reset();
+    return null;
+}
+
+/** The trades still to make, in order, with the shop open; the first that does not go through ends them. */
+function* performRemaining(ctx: Ctx): Op<Ending | null> {
+    for (let t = nextTrade(ctx); t; t = nextTrade(ctx)) {
+        const ending = yield* performTrade(ctx, t);
+        if (ending) return ending;
+    }
+    return null;
+}
 
 export default defineTask({
     name: 'shop',
@@ -113,17 +177,18 @@ export default defineTask({
         'Fails (no looping) if the shop has no stock, coins run out, or it will not buy an item; the reason reports coins received. ' +
         'E.g. npc "Bob" at (3232,3203); shops and their npcs are in learnings/shops.md.',
     params: Params,
+    memory: (): ShopMemory => ({ tradesMade: 0, coinsReceived: 0, coinsSpent: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
 
     preflight(ctx) {
-        const { sell, buy, at } = ctx.params;
-        if (sell.length + buy.length === 0) return 'nothing to sell or buy';
+        const { sell: sells, buy: buys, at } = ctx.params;
+        if (sells.length + buys.length === 0) return 'nothing to sell or buy';
         if (at && isInWilderness(0, at.x, at.z)) return `shop location (${at.x},${at.z}) is in the Wilderness`;
         const s = ctx.state();
-        if (sell.length === 0 && countOf(s, COINS) === 0) return 'cannot buy: no coins in inventory';
+        if (sells.length === 0 && countItems(s, COINS) === 0) return 'cannot buy: no coins in inventory';
         const requested = new Map<string, { entries: number; all: boolean; total: number }>();
-        for (const t of sell) {
-            const have = countOf(s, exactName(t.item));
+        for (const t of sells) {
+            const have = countItems(s, exactName(t.item));
             if (have === 0) return `cannot sell ${t.item}: not in inventory`;
             const key = t.item.toLowerCase();
             const acc = requested.get(key) ?? { entries: 0, all: false, total: 0 };
@@ -140,13 +205,14 @@ export default defineTask({
 
     steps: [
         {
-            // bot.openShop accepts any open shop, so never trade with one this run did not open.
+            // openShop accepts any open shop, so never trade with one this run did not open: between
+            // steps a shop is open only when it was left so (a close that failed, or one from before).
             name: 'close-stale-shop',
-            when: ctx => ctx.state().shop.isOpen && ctx.memory.shopOpened !== true,
-            async run(ctx) {
-                const r = await ctx.bot.closeShop();
-                const fails = ctx.counter('staleCloseFails');
-                if (r.success) return fails.reset();
+            when: ctx => ctx.state().shop.isOpen,
+            *run(ctx) {
+                const r = yield* closeShop(ctx);
+                const fails = ctx.streak('staleCloseFails');
+                if (r.ok) return fails.reset();
                 if (fails.add() >= FAIL_LIMIT) return { fail: `cannot close a shop left open: ${r.message}` };
             },
         },
@@ -156,67 +222,55 @@ export default defineTask({
                 const { at } = ctx.params;
                 return !!at && !ctx.state().shop.isOpen && !!nextTrade(ctx) && ctx.distanceTo(at.x, at.z) > AT_REACH;
             },
-            async run(ctx) {
+            *run(ctx) {
                 const { at } = ctx.params;
                 // Narrowing only: when() guarantees it.
                 if (!at) return;
-                const r = await ctx.bot.walkTo(at.x, at.z, WALK_TOLERANCE);
-                const fails = ctx.counter('walkFails');
+                const r = yield* call('bot.walkTo', () => ctx.bot.walkTo(at.x, at.z, WALK_TOLERANCE));
+                const fails = ctx.streak('walkFails');
                 if (r.success) return fails.reset();
                 if (fails.add() >= FAIL_LIMIT) return { fail: `cannot walk to shop (${at.x},${at.z}): ${r.message}` };
             },
         },
         {
-            name: 'open-shop',
-            when: ctx => !!nextTrade(ctx) && !ctx.state().shop.isOpen,
-            async run(ctx) {
-                const r = await ctx.bot.openShop(exactName(ctx.params.npc));
-                const fails = ctx.counter('openFails');
-                if (r.success) {
-                    ctx.memory.shopOpened = true;
-                    return fails.reset();
-                }
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `cannot open shop via "${ctx.params.npc}": ${r.message}` };
-            },
-        },
-        {
+            // Open, every remaining trade and the close are one step, so whatever cancels it (a guard, a
+            // stop, the step budget) closes the shop on the way out: an open shop hides the inventory the
+            // low-HP guard would eat from. An aborted step resumes at the first trade not yet made, less
+            // what of it already landed (`inFlight`). It stands for the legacy `open-shop`, `trade` and
+            // `finish`'s close, so their failures carry this step's name as the prefix.
             name: 'trade',
             when: ctx => !!nextTrade(ctx),
-            async run(ctx) {
-                const t = nextTrade(ctx);
-                // Narrowing only: when() guarantees it.
-                if (!t) return;
-                const failure = t.kind === 'sell' ? await sellOne(ctx, t) : await buyOne(ctx, t);
-                const reopens = ctx.counter('reopenFails');
-                if (failure?.startsWith(CLOSED)) {
-                    // The modal closed mid-trade (interrupt, attack): let open-shop reopen it.
-                    ctx.memory.shopOpened = false;
-                    if (reopens.add() >= FAIL_LIMIT)
-                        return failClosing(
-                            ctx,
-                            `shop closed ${FAIL_LIMIT} times during ${t.kind} ${t.item}; last: ${failure}`,
-                        );
+            *run(ctx) {
+                const trip = yield* withShop(ctx, exactName(ctx.params.npc), performRemaining(ctx));
+                const openFails = ctx.streak('openFails');
+                if (!trip.ok) {
+                    yield* log(`open shop failed (${trip.reason}): ${trip.message}`);
+                    if (openFails.add() >= FAIL_LIMIT)
+                        return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
                     return;
                 }
-                if (failure) return failClosing(ctx, failure);
-                reopens.reset();
-                ctx.counter('tradesMade').add();
+                openFails.reset();
+                const ending = trip.value;
+                if (!trip.closed.ok) yield* log(`could not close the shop: ${trip.closed.message}`);
+                if (ending?.kind === 'closed') {
+                    const reopens = ctx.streak('reopenFails');
+                    if (reopens.add() >= FAIL_LIMIT)
+                        return {
+                            fail: `shop closed ${FAIL_LIMIT} times during ${ending.what}; last: ${ending.message}`,
+                        };
+                    return;
+                }
+                if (ending) return { fail: ending.message };
+                // The shop modal hides the inventory, so a shop that stays open is a failure.
+                if (!trip.closed.ok) return { fail: `trades done but cannot close shop: ${trip.closed.message}` };
             },
         },
         {
             name: 'finish',
             when: ctx => !nextTrade(ctx),
-            async run(ctx) {
-                // The shop modal hides the inventory, so close it before ending.
-                if (ctx.state().shop.isOpen) {
-                    const c = await ctx.bot.closeShop();
-                    if (!c.success) return { fail: `trades done but cannot close shop: ${c.message}` };
-                }
-                return {
-                    done: `all ${tradesOf(ctx).length} trades made; coins received ${ctx.counter('coinsReceived').add(0)}, spent ${ctx.counter('coinsSpent').add(0)}`,
-                };
-            },
+            run: ctx => ({
+                done: `all ${tradesOf(ctx.params).length} trades made; coins received ${ctx.memory.coinsReceived}, spent ${ctx.memory.coinsSpent}`,
+            }),
         },
     ],
 });
