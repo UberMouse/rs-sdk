@@ -14,7 +14,9 @@ Decisions (2026-10-09):
 - **Test worlds: scripted tick timelines + replay of recorded runs first**, a reactive rule-based
   sim later and only for mechanics where timelines get painful (walking, depletion).
 - **Integration suite: the headless lite client, gated locally** (`bun run test:integration`)
-  before committing changes to `conductor/core` or `conductor/actions`.
+  before committing changes to `conductor/core` or `conductor/actions`. (As built: not built as a
+  gate. `task-author.md` and the `task-review` skill require a passing smoke for a changed task,
+  but nothing requires the integration run before a core or actions commit.)
 
 ## Where things stand
 
@@ -96,7 +98,7 @@ type Command =
   | { type: 'wait'; until: (s: BotWorldState) => boolean;
       ticks: number; label: string }                          // -> WaitResult
   | { type: 'scan'; radius?: number }                         // -> NearbyLoc[] (async extended scan)
-  | { type: 'call'; label: string; run: () => Promise<unknown> } // legacy bot.* escape hatch, migration only
+  | { type: 'call'; label: string; run: () => Promise<unknown> } // legacy bot.* escape hatch, migration only (as built: removed in Task 14)
   | { type: 'log' | 'screenshot'; ... };
 
 type WaitResult = { kind: 'met' | 'timeout'; state: BotWorldState };
@@ -111,15 +113,15 @@ function* ticks(n: number): Op<BotWorldState> { ... }
   engine's watchdog and `minutes:` stops, via an injected `now()`.
 - **Reads go through the snapshot** passed in the op's context (`ctx.state()`), never
   `sdk.get*()`; the extended scan is a command.
-- **Interpreter** (`interpret(op, driver, guards)`) runs one op: forwards `send`/`scan`/`call`
-  to the driver; for `wait`, re-checks on every tick, in order: guards → the wait's own
+- **Interpreter** (`interpret(op, driver, guards)`) runs one op: forwards `send`/`scan`
+  (and, in the original design, `call`; removed in Task 14) to the driver; for `wait`, re-checks on every tick, in order: guards → the wait's own
   predicate → its tick budget. When a guard fires:
   - `abort`: `op.return()` (its `finally` may yield cleanup sends, run uninterruptibly with a
     small tick cap), then the guard's own op runs, then the engine re-selects a step.
   - `suspend`: the guard's op runs, then the same wait resumes (for level-up dialogs).
-- `uninterruptible(op)` marks a critical section (mid-withdraw, mid-trade) that guards only
+- `uninterruptible(op)` marks a short critical section that cannot be resumed, which guards only
   preempt for `death`/`wilderness`.
-- A `call` (opaque Promise) can only be raced: a guard firing during one waits for it to settle
+- (As built: removed in Task 14; no `call` exists.) A `call` (opaque Promise) could only be raced: a guard firing during one waits for it to settle
   (bounded) and is logged. It exists only so tasks can move to generators before their actions
   are ported; the goal is zero `call`s.
 
@@ -146,8 +148,9 @@ Generator ops ported from `sdk/actions.ts`, only what tasks need, in rough order
 - Side effects inside waits become explicit loops (`burnLogs`' dialog click becomes
   `while (!xp) { const w = yield* wait(...); if (dialogOpen(w.state)) yield* send(click) }`).
 - Each op file header records `ported from sdk/actions.ts <method> @ <upstream sha>`;
-  `bun conductor/tools/upstream-drift.ts` lists upstream commits to `sdk/actions*.ts` since each
-  recorded sha, so upstream fixes get considered for porting after each sync.
+  `bun conductor/tools/upstream-drift.ts` was to list upstream commits to `sdk/actions*.ts` since
+  each recorded sha. Not built (not assigned by the spec); the op headers record the upstream sha
+  for a manual `git log <sha>..HEAD -- sdk/actions*.ts`.
 
 ### Task contract (`conductor/lib/task.ts`)
 
@@ -189,7 +192,8 @@ defineTask({
 
 ### Tests
 
-`conductor/test/` with `bun:test`; added to `bun run test` and `verify:conductor`.
+`conductor/test/` with `bun:test`; added to `bun run test`. (As built: not in `verify:conductor`,
+which is format, lint and `tsc` only; run `bun test conductor` separately.)
 
 - **State builders** (`conductor/test/world.ts`): `player({ at, hp })`, `inv('Logs', 3)`,
   `loc('Tree', x, z)`, `npc(...)`, `dialog(...)`, `ticks(n)`, built over a real captured base
@@ -283,7 +287,8 @@ buffered.
   connected` → `runScript` SDK → `fn` → kill runner, remove the bot dir.
 - One atomic test per `conductor/actions` op (sdk/test/PRINCIPLES.md style: minimal inventory,
   exit on the observed effect), parity tests against `bot.X` while both exist, one short smoke
-  per task at its verified spot, and an upstream-contract set.
+  per task at its verified spot, and an upstream-contract set (not built: only the per-op and
+  per-task files exist).
 - `bun run test:integration [filter] [-j N]`: parallel (lite clients are cheap), table of
   pass/fail + time. Gate: the task-review skill and the conductor's commit rule require a green
   run for changes to `conductor/core` or `conductor/actions` (a git hook can't, it needs the
@@ -333,7 +338,7 @@ Each phase leaves `run-task.ts` working and every task runnable.
 ## Risks
 
 - **Drift from upstream `bot.*`**: ported ops miss upstream fixes. Mitigation: recorded shas +
-  `upstream-drift.ts` after each sync, parity tests.
+  `upstream-drift.ts` after each sync (not built; manual log of the upstream path, see above), parity tests.
 - **`walkTo` port size**: door handling, partial paths, stairs. As built (Task 13) the op opens
   doors and gates and handles partial paths and long walks, but climbs no stairs or ladders and
   takes no ferry; with `call` gone, a task that needs a level change or the Karamja ferry needs

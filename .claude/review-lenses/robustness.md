@@ -32,8 +32,9 @@ Does every run end, end for the right reason, and say why?
   awaited promises can't reject unhandled; `ctx.state()` is not called where state may be absent without handling it.
 - **R8 Cancellation.** A `catch` in an op or a task step starts with `rethrowIfCancelled(e)`
   (or rethrows `Cancelled`): swallowing it leaves a step the engine cancelled still running.
-  Cleanup that must run when a step is cancelled (closing a bank) is in `finally`; a multi-tick
-  sequence that must not be cut mid-way is inside `uninterruptible`.
+  Cleanup that must run when a step is cancelled (closing a bank) is in `finally`. Modal work
+  (bank, shop) goes through `withModal` (`withBank`/`withShop`) and resumes from typed memory
+  after a cut; `uninterruptible` is only for a short sequence that cannot be resumed.
 - **R9 Game time.** Budgets and give-up limits are ticks (`state.tick`, `wait`/`ticks`), as
   named constants. `Date.now()`, `setTimeout` or a sleep in task, action or core logic is wrong:
   it neither follows game time nor replays in a unit test. (Only the contract's `stepTimeoutMs`

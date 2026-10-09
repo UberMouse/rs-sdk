@@ -4,10 +4,12 @@ The full `bun run test:integration` (default `-j 3`) after the interruptible-tas
 (Task 14: no task reaches `bot` or `sdk`, no `call` command, no legacy `async` steps). Every catalog
 task is generator steps over the ops in `conductor/actions/`; later runs are compared against this.
 
-- Date: 2026-10-10, two consecutive full runs (both tables below)
+- Date: 2026-10-10, two consecutive full runs (both tables below); `replay/woodcutting.itest.ts`
+  (Task 15) was added afterwards and is timed from a third full run on the final cleanup commits
+  (25 files, all pass), so its first two columns are empty
 - Engine: the shared server running from the main checkout (`RS_ENGINE_DIR=/home/taylorl/code/rs-sdk/server/engine`), commit unknown (a worktree-isolated session cannot run git against the main checkout)
 - Local XP rate 25x, 400 ms ticks (`learnings/local-server.md`)
-- 24 files, 40 tests; each test spawns its own fresh fixture bot on the headless lite client
+- 25 files, 41 tests; each test spawns its own fresh fixture bot on the headless lite client
 
 | file                       | run 1 | s    | run 2 | s    | covers |
 | -------------------------- | ----- | ---- | ----- | ---- | ------ |
@@ -26,6 +28,7 @@ task is generator steps over the ops in `conductor/actions/`; later runs are com
 | actions/smith.itest.ts     | pass  | 46.4 | pass  | 46.4 | `smith` forges a bronze dagger as `bot.smithAtAnvil` does; under the guards the anvil interface is left to the op; cancelled with it open, it closes it; `smelt` makes a bronze bar; a bar the menu lacks is `no-product`, menu closed |
 | actions/use.itest.ts       | pass  | 6.4  | pass  | 7.2  | `useItemOnLoc` fills a bucket at a fountain; `useItemOnItem` makes headless arrows |
 | actions/walk.itest.ts      | pass  | 82.0 | pass  | 76.4 | `walkTo` opens the Lumbridge castle doors on its route; Lumbridge to Varrock West bank, a timed-out walk carrying on |
+| replay/woodcutting.itest.ts | -    | -    | -     | -    | a recorded woodcutting run (Lumbridge trees) replays with no divergence against the code that ran it; third full run: pass, 4.7 s |
 | smoke/bank.itest.ts        | pass  | 6.1  | pass  | 6.0  | bank task deposits an item and withdraws a banked one (Varrock West) |
 | smoke/combat.itest.ts      | pass  | 2.8  | pass  | 4.4  | combat task kills chickens to the Attack XP target (Lumbridge coop) |
 | smoke/firemaking.itest.ts  | pass  | 25.6 | pass  | 20.8 | firemaking task burns every log given (field east of the general store) |

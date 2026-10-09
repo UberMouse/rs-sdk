@@ -162,8 +162,11 @@ death, low HP, dialogs or leftover modals itself. The shared ones are `GUARDS` i
 
 `abort` cancels the running step (its `finally` runs), runs the guard, and the loop chooses a step
 again; `suspend` runs inside the wait, which then continues (the ticks it took count against the
-wait's budget). `critical` guards also fire inside `uninterruptible(op)` sections, so wrap a
-sequence that must not be cut mid-way (a bank withdraw, a trade) in it.
+wait's budget). `critical` guards also fire inside `uninterruptible(op)` sections. Modal work
+(bank, shop) does not use it: it goes through `withBank`/`withShop` (`withModal`), which close the
+interface in `finally`, and a cut-off step resumes from typed `memory` (an `inFlight` baseline), as
+the bank and shop tasks do. Reserve `uninterruptible` for a short sequence that cannot be resumed
+because stopping half way leaves the world in a state no later step can finish or undo.
 
 - **`allow: ['dialog' | 'interface']`** when the task drives one on purpose (it talks to an NPC,
   opens a book). `death` and `wilderness` cannot be allowed.
@@ -261,8 +264,9 @@ Pitfalls earlier authors hit:
 
 - The engine refuses to start a run in combat, so a combat timeline must start out of it
   (`attackedFrom` in the woodcutting tests begins at tick 3).
-- Each simulate fake (eat, dismiss, drop) takes one tick and does not change the world: put the
-  resulting HP, item or inventory change in the timeline yourself.
+- The default `react` (`consume`) removes an eaten or dropped item from the inventory the next
+  tick, but never changes HP, XP or anything else: put the HP an eat restores in the timeline
+  yourself.
 - Guard logs reach `r.events`, not `driver.commands`; filter `guard ...` messages out when
   asserting what the task logged.
 - `series(n, (w, i) => ...)` starts at tick 0, so `i` is the tick.
