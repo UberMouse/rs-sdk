@@ -1,12 +1,16 @@
 # Conductor
 
-An Opus conductor session picks goals and tasks for a bot; subagents run and write the tasks;
-the tasks themselves are deterministic programs that grind without an LLM in the loop.
+An Opus conductor session works a bot toward a maxed account over many runs. It picks
+objectives and methods; subagents run tasks, write and review them, and keep the knowledge base
+current; the tasks themselves are deterministic programs that grind without an LLM in the loop.
 
 ```
 conductor (Claude Code session, .claude/skills/conductor)
- ├─ task-runner agent  (.claude/agents/task-runner.md)  runs one task, diagnoses failures
- └─ task-author agent  (.claude/agents/task-author.md)  writes/fixes tasks, conductor reviews + commits
+ ├─ task-runner          runs one task, diagnoses failures (world vs script)
+ ├─ knowledge-curator    after every run: folds what it taught into learnings/ + wiki/
+ ├─ task-author          writes/fixes tasks, smoke-tests them
+ │    └─ task-review     4 lens reviewers + verifier -> fix -> commit or revert
+ └─ retrospective        every 10 runs: outcomes + agent transcripts -> roadmap, proposals
        │
        ▼
  bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>   →  RESULT <json>
@@ -19,6 +23,18 @@ conductor (Claude Code session, .claude/skills/conductor)
 The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first step whose
 `when()` passes runs; shared interrupts (death, blocking dialogs) go first; a watchdog ends runs
 whose XP, position and inventory stop changing.
+
+## How it learns
+
+| Loop | Where it lives |
+|---|---|
+| Game knowledge: spots, requirements, hazards, gear, SDK gotchas | `learnings/`, `wiki/skills/`, `wiki/quests/` (rules: `.claude/skills/knowledge`) |
+| Which method is best | `bun conductor/tools/stats.ts <bot>` over every run; explore/exploit in the conductor loop |
+| How far from max, how fast | `bun conductor/tools/progress.ts <bot>` |
+| What to do next | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups) |
+| Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |
+| How the agents themselves work | the retrospective reads transcripts via `.claude/skills/session-forensics` |
+| Undo a bad experiment | `bun conductor/tools/save.ts snapshot\|restore <bot> <label> --logout` |
 
 ## Local stack
 
@@ -41,5 +57,6 @@ bun conductor/run-task.ts --list
 bun conductor/run-task.ts conductor1 woodcutting --params '{"area":{"x":3195,"z":3220}}' --until minutes:1
 ```
 
-Run artifacts (NDJSON logs, screenshots) land in `conductor/runs/<bot>/` (gitignored). Conductor
-run state lives in `.durable-state/` (gitignored, see `.claude/skills/durable-state`).
+Run artifacts (NDJSON logs, screenshots, progress snapshots, save snapshots) land in
+`conductor/runs/<bot>/` (gitignored). Conductor run state lives in `.durable-state/`
+(gitignored, see `.claude/skills/durable-state`).

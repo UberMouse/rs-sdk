@@ -31,5 +31,6 @@ RESULT <the RESULT json, verbatim>
 Cause: world | script | unclear
 Diagnosis: <2-5 sentences: what the bot was doing, what went wrong, evidence (screenshot paths, log lines)>
 Suggested next step: <one line for the conductor>
-Game knowledge: <anything worth adding to the bot's lab_log, or "none">
+Game knowledge: <facts about the game this run showed (places, requirements, hazards, behaviour) for the knowledge-curator, or "none">
+Account facts: <changes to this account worth noting in bots/<bot>/lab_log.md (gear, bank, quests), or "none">
 ```
