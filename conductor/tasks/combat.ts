@@ -1,24 +1,34 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyNpc } from '../../sdk/types';
+import type { ActionResult, BotWorldState, NearbyNpc } from '../../sdk/types';
+import { ATTACK_OPTION, attack } from '../actions/attack';
+import { eat } from '../actions/eat';
+import { equip } from '../actions/equip';
+import { pickup } from '../actions/pickup';
+import { call, log, type Op, rethrowIfCancelled, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
-import { defineTask, type TaskContext } from '../lib/task';
-import { isLowHp } from '../lib/threat';
-import { errMessage } from '../lib/util';
+import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { errMessage, TICK_MS } from '../lib/util';
 
 const SKILLS = ['Attack', 'Strength', 'Defence'] as const;
 
 /** An NPC may be this many levels above the bot's combat level before the task refuses to fight it. */
 const DEFAULT_MAX_LEVEL_GAP = 5;
 const DEFAULT_EAT_BELOW = 0.6;
-/** Wall-clock time one fight may last before it counts as stuck (a chicken dies in a handful of ticks). */
-const FIGHT_TIMEOUT_MS = 90_000;
-const FIGHT_SLICE_MS = 6_000;
-const STYLE_WAIT_MS = 3_000;
+/** How long one fight may last before it counts as stuck (90 s; a chicken dies in a handful of ticks). */
+const FIGHT_TIMEOUT_TICKS = Math.ceil(90_000 / TICK_MS);
+/** Each wait for the kill is this long (6 s); the fight timeout is checked between them. */
+const FIGHT_SLICE_TICKS = Math.ceil(6_000 / TICK_MS);
+/** How long the combat tab gets to show a style change (3 s). */
+const STYLE_WAIT_TICKS = Math.ceil(3_000 / TICK_MS);
 const STYLE_LIST_WAIT_TICKS = 3;
-const BURY_WAIT_MS = 5_000;
+/** How long a bone gets to leave the inventory after Bury (5 s). */
+const BURY_WAIT_TICKS = Math.ceil(5_000 / TICK_MS);
 const NO_TARGET_LIMIT = 20;
 const NO_TARGET_WAIT_TICKS = 3;
 const ATTACK_FAIL_LIMIT = 6;
+const ATTACK_RETRY_TICKS = 1;
+/** bot.attack walks to an NPC further than this first (through doors and gates), to within this. */
+const ATTACK_WALK_BEYOND = 2;
 const STYLE_FAIL_LIMIT = 3;
 const EQUIP_FAIL_LIMIT = 3;
 const BURY_FAIL_LIMIT = 3;
@@ -52,11 +62,18 @@ const Params = z.object({
 });
 
 type CombatParams = z.infer<typeof Params>;
-type Ctx = TaskContext<CombatParams>;
+interface CombatMemory {
+    /** The tick the fight being waited out was first seen, until the bot is out of combat. */
+    fightStartedAtTick: number | null;
+    /** Ground items (`lootKey`) a pickup failed on, so the loop does not retry them forever. */
+    lootSkipped: Set<string>;
+}
+type Ctx = TaskContext<CombatParams, CombatMemory>;
 
 const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 const BONES_NAME = 'Bones';
 const BONES = new RegExp(`^${BONES_NAME}$`, 'i');
+const BURY_OPTION = /^bury$/i;
 const isBones = (i: { name: string }) => BONES.test(i.name);
 const countBones = (s: BotWorldState) => s.inventory.filter(isBones).length;
 
@@ -81,43 +98,28 @@ function levelLimit(s: BotWorldState, p: CombatParams) {
 const foodInInventory = (s: BotWorldState, p: CombatParams) =>
     s.inventory.find(i => p.food.some(f => sameName(f, i.name)));
 
-/** HP is under the configured eat threshold. */
-const belowEatThreshold = (s: BotWorldState, p: CombatParams) =>
-    !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow;
-
-/** Wait for `pred`; false when the wait times out, any other failure is rethrown. */
-async function waitOrTimeout(ctx: Ctx, pred: (s: BotWorldState) => boolean, ms: number): Promise<boolean> {
-    try {
-        await ctx.sdk.waitForCondition(pred, ms);
-        return true;
-    } catch (e) {
-        if (/timed out/i.test(errMessage(e))) return false;
-        throw e;
-    }
-}
+/**
+ * HP is under the configured eat threshold and there is configured food: the eat step's case. Below
+ * half HP the low-HP guard (lib/interrupts.ts) fires first, at any wait and between steps, and eats
+ * any Eat item; this step tops HP up from there to `eatBelow`, so with `eatBelow` at or under one half
+ * it seldom runs.
+ */
+const wantsToEat = (s: BotWorldState, p: CombatParams) =>
+    !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow && !!foodInInventory(s, p);
 
 const matches = (npc: NearbyNpc, p: CombatParams) => sameName(npc.name, p.target);
 
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
-const skippedLoot = (ctx: Ctx): Set<string> => {
-    const existing = ctx.memory.lootSkipped;
-    if (existing instanceof Set) return existing;
-    const created = new Set<string>();
-    ctx.memory.lootSkipped = created;
-    return created;
-};
-
 /** Reachable wanted ground items near the fight spot, nearest first. */
 function wantedGroundItems(ctx: Ctx) {
     const names = ctx.params.buryBones ? [...ctx.params.loot, BONES_NAME] : ctx.params.loot;
     if (names.length === 0 || ctx.inventoryFull()) return [];
-    const skip = skippedLoot(ctx);
-    return ctx.sdk
-        .getGroundItems()
-        .filter(i => names.some(n => sameName(n, i.name)))
+    return ctx
+        .state()
+        .groundItems.filter(i => names.some(n => sameName(n, i.name)))
         .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inArea(ctx.params.area, i))
-        .filter(i => !skip.has(lootKey(i)))
+        .filter(i => !ctx.memory.lootSkipped.has(lootKey(i)))
         .sort((a, b) => a.distance - b.distance);
 }
 
@@ -129,31 +131,45 @@ function pickTarget(state: BotWorldState, p: CombatParams) {
             matches(n, p) &&
             n.reachable !== false &&
             !n.inCombat &&
-            n.options.some(o => /attack/i.test(o)) &&
+            n.options.some(o => ATTACK_OPTION.test(o)) &&
             inArea(p.area, n),
     );
     const target = candidates.filter(n => n.combatLevel <= limit).sort((a, b) => a.distance - b.distance)[0];
     return { target, tooStrong: candidates.find(n => n.combatLevel > limit), limit };
 }
 
-/** Wait one slice for the kill, waking early when HP needs the eat/low-HP steps. */
-async function waitForKill(ctx: Ctx) {
-    const startedAt = typeof ctx.memory.fightStartedAt === 'number' ? ctx.memory.fightStartedAt : Date.now();
-    ctx.memory.fightStartedAt = startedAt;
-    if (Date.now() - startedAt > FIGHT_TIMEOUT_MS) {
+/**
+ * Wait one slice for the kill, waking early for the eat step. The guards stay on: the low-HP guard
+ * cancels the wait and eats, death ends the run, and the fight's clock survives into the next slice.
+ */
+function* waitForKill(ctx: Ctx): Op<Outcome> {
+    const now = ctx.state().tick;
+    const startedAt = ctx.memory.fightStartedAtTick ?? now;
+    ctx.memory.fightStartedAtTick = startedAt;
+    if (now - startedAt > FIGHT_TIMEOUT_TICKS) {
         const p = ctx.state().player;
-        return { fail: `fight lasted over ${FIGHT_TIMEOUT_MS / 1000}s at (${p?.worldX},${p?.worldZ})` };
+        const seconds = Math.round((FIGHT_TIMEOUT_TICKS * TICK_MS) / 1000);
+        return { fail: `fight lasted over ${seconds}s at (${p?.worldX},${p?.worldZ})` };
     }
-    await waitOrTimeout(
-        ctx,
-        s =>
-            !s.player?.combat.inCombat ||
-            isLowHp(s) ||
-            (belowEatThreshold(s, ctx.params) && !!foodInInventory(s, ctx.params)),
-        FIGHT_SLICE_MS,
-    );
+    const w = yield* wait('kill', s => !s.player?.combat.inCombat || wantsToEat(s, ctx.params), FIGHT_SLICE_TICKS);
     // The fight being timed is over; a later fight starts a fresh clock.
-    if (!ctx.state().player?.combat.inCombat) delete ctx.memory.fightStartedAt;
+    if (!w.state.player?.combat.inCombat) ctx.memory.fightStartedAtTick = null;
+}
+
+/** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
+function* walkAndAttack(ctx: Ctx, npc: NearbyNpc): Op<{ ok: true } | { ok: false; message: string }> {
+    if (npc.distance > ATTACK_WALK_BEYOND) {
+        let walked: ActionResult;
+        try {
+            // No walkTo op yet; it opens doors and gates on the way, which the client's pathing does not.
+            walked = yield* call('bot.walkTo', () => ctx.bot.walkTo(npc.x, npc.z, ATTACK_WALK_BEYOND));
+        } catch (e) {
+            rethrowIfCancelled(e);
+            walked = { success: false, message: errMessage(e) };
+        }
+        if (!walked.success) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
+    }
+    return yield* attack(ctx, npc);
 }
 
 export default defineTask({
@@ -168,6 +184,7 @@ export default defineTask({
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
+    memory: (): CombatMemory => ({ fightStartedAtTick: null, lootSkipped: new Set() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
 
     preflight(ctx) {
@@ -192,16 +209,18 @@ export default defineTask({
                 const s = ctx.state();
                 const { weapon, shield } = ctx.params;
                 const pending = (n?: string) => !!n && !worn(s, n) && carried(s, n);
-                const need = pending(weapon) || pending(shield);
-                if (!need) ctx.counter('equipFails').reset();
-                return need;
+                return pending(weapon) || pending(shield);
             },
-            async run(ctx) {
-                const s = ctx.state();
+            *run(ctx) {
+                const equipFails = ctx.streak('equipFails');
                 for (const n of [ctx.params.weapon, ctx.params.shield]) {
-                    if (!n || worn(s, n) || !carried(s, n)) continue;
-                    const r = await ctx.bot.equipItem(n);
-                    if (!r.success && ctx.counter('equipFails').add() >= EQUIP_FAIL_LIMIT)
+                    // Fresh state per item: equipping the weapon may have moved the shield's slot.
+                    const s = ctx.state();
+                    if (!n || worn(s, n)) continue;
+                    const item = s.inventory.find(i => sameName(i.name, n));
+                    if (!item) continue;
+                    const r = yield* equip(ctx, item);
+                    if (!r.ok && equipFails.add() >= EQUIP_FAIL_LIMIT)
                         return { fail: `cannot equip ${n}: ${r.message}` };
                 }
             },
@@ -212,29 +231,39 @@ export default defineTask({
                 const s = ctx.state();
                 const style = styleFor(s, ctx.params.skill);
                 // No style for `skill` (wrong weapon, or a style list not loaded yet) also runs the step.
-                const need = style ? s.combatStyle?.currentStyle !== style.index : !!s.combatStyle;
-                if (!need) ctx.counter('styleFails').reset();
-                return need;
+                return style ? s.combatStyle?.currentStyle !== style.index : !!s.combatStyle;
             },
-            async run(ctx) {
-                const cs = ctx.state().combatStyle;
-                const style = styleFor(ctx.state(), ctx.params.skill);
+            *run(ctx) {
+                const s = ctx.state();
+                const cs = s.combatStyle;
+                const style = styleFor(s, ctx.params.skill);
+                const styleFails = ctx.streak('styleFails');
                 if (!style) {
                     if (cs?.known && cs.styles.length > 0)
                         return {
                             fail: `no combat style trains ${ctx.params.skill} with ${ctx.params.weapon ?? 'current weapon'}`,
                         };
                     // The client has not published a real style list yet (login, or lagging the equip step).
-                    if (ctx.counter('styleFails').add() >= STYLE_FAIL_LIMIT)
-                        return { fail: 'combat style list never loaded' };
-                    await ctx.sdk.waitForTicks(STYLE_LIST_WAIT_TICKS);
+                    if (styleFails.add() >= STYLE_FAIL_LIMIT) return { fail: 'combat style list never loaded' };
+                    yield* ticks(STYLE_LIST_WAIT_TICKS);
                     return;
                 }
-                // No bot.* method for this; the effect is checked below.
-                await ctx.sdk.sendSetCombatStyle(style.index);
-                if (await waitOrTimeout(ctx, s => s.combatStyle?.currentStyle === style.index, STYLE_WAIT_MS)) {
-                    ctx.log(`combat style ${style.name} (${style.type}) for ${ctx.params.skill}`);
-                } else if (ctx.counter('styleFails').add() >= STYLE_FAIL_LIMIT) {
+                // No op sets the combat style: one send, and the effect is checked on the combat tab below.
+                const sent = yield* send({
+                    type: 'setCombatStyle',
+                    style: style.index,
+                    reason: `combat style ${style.name}`,
+                });
+                const set = sent.success
+                    ? yield* wait(
+                          `combat style ${style.name}`,
+                          st => st.combatStyle?.currentStyle === style.index,
+                          STYLE_WAIT_TICKS,
+                      )
+                    : null;
+                if (set?.kind === 'met') {
+                    yield* log(`combat style ${style.name} (${style.type}) for ${ctx.params.skill}`);
+                } else if (styleFails.add() >= STYLE_FAIL_LIMIT) {
                     return { fail: `could not set combat style ${style.name} for ${ctx.params.skill}` };
                 }
             },
@@ -242,97 +271,99 @@ export default defineTask({
         returnToAreaStep<CombatParams>(params => params.area),
         {
             name: 'eat',
-            when: ctx => {
-                const s = ctx.state();
-                const need = belowEatThreshold(s, ctx.params) && !!foodInInventory(s, ctx.params);
-                if (!need) ctx.counter('eatFails').reset();
-                return need;
-            },
-            async run(ctx) {
+            when: ctx => wantsToEat(ctx.state(), ctx.params),
+            *run(ctx) {
                 const food = foodInInventory(ctx.state(), ctx.params);
                 if (!food) return;
-                const r = await ctx.bot.eatFood(food);
-                if (r.success) {
-                    ctx.counter('eatFails').reset();
+                const eatFails = ctx.streak('eatFails');
+                const r = yield* eat(ctx, food);
+                if (r.ok) {
+                    eatFails.reset();
                     return;
                 }
-                if (ctx.counter('eatFails').add() >= EAT_FAIL_LIMIT)
-                    return { fail: `could not eat ${food.name}: ${r.message}` };
+                if (eatFails.add() >= EAT_FAIL_LIMIT) return { fail: `could not eat ${food.name}: ${r.message}` };
             },
         },
         {
             name: 'bury-bones',
             when: ctx => ctx.params.buryBones && countBones(ctx.state()) > 0,
-            async run(ctx) {
-                const bones = ctx.state().inventory.find(isBones);
-                const opt = bones?.optionsWithIndex.find(o => /^bury$/i.test(o.text));
+            *run(ctx) {
+                const s = ctx.state();
+                const bones = s.inventory.find(isBones);
+                const opt = bones?.optionsWithIndex.find(o => BURY_OPTION.test(o.text));
                 if (!bones || !opt) return { fail: 'bones have no Bury option' };
-                await ctx.bot.dismissBlockingUI();
-                const before = countBones(ctx.state());
-                // No bot.* method for this; the effect is checked below.
-                await ctx.sdk.sendUseItem(bones.slot, opt.opIndex);
-                if (!(await waitOrTimeout(ctx, s => countBones(s) < before, BURY_WAIT_MS))) {
-                    if (ctx.counter('buryFails').add() >= BURY_FAIL_LIMIT) return { fail: 'bones did not bury' };
+                const before = countBones(s);
+                const buryFails = ctx.streak('buryFails');
+                // No op buries: one send, and the effect (one bone fewer) is checked below.
+                const sent = yield* send({
+                    type: 'useInventoryItem',
+                    slot: bones.slot,
+                    optionIndex: opt.opIndex,
+                    reason: `${opt.text} ${bones.name}`,
+                });
+                const buried = sent.success
+                    ? yield* wait('bury bones', st => countBones(st) < before, BURY_WAIT_TICKS)
+                    : null;
+                if (buried?.kind !== 'met') {
+                    if (buryFails.add() >= BURY_FAIL_LIMIT) return { fail: 'bones did not bury' };
                     return;
                 }
-                ctx.counter('buryFails').reset();
+                buryFails.reset();
             },
         },
         {
             name: 'loot',
             // Never walk off to loot while something is hitting the bot.
             when: ctx => !ctx.state().player?.combat.inCombat && wantedGroundItems(ctx).length > 0,
-            async run(ctx) {
+            *run(ctx) {
                 const item = wantedGroundItems(ctx)[0];
                 if (!item) return;
-                const r = await ctx.bot.pickupItem(item);
-                if (r.success) {
-                    ctx.counter('lootFails').reset();
+                const lootFails = ctx.streak('lootFails');
+                const r = yield* pickup(ctx, item);
+                if (r.ok) {
+                    lootFails.reset();
                     return;
                 }
-                // Remember items that could not be taken so the loop does not retry them forever.
-                skippedLoot(ctx).add(lootKey(item));
-                ctx.log(`loot ${item.name} failed: ${r.message}`);
-                if (ctx.counter('lootFails').add() >= LOOT_FAIL_LIMIT)
-                    return { fail: `looting keeps failing (last: ${r.message})` };
+                ctx.memory.lootSkipped.add(lootKey(item));
+                yield* log(`loot ${item.name} failed: ${r.message}`);
+                if (lootFails.add() >= LOOT_FAIL_LIMIT) return { fail: `looting keeps failing (last: ${r.message})` };
             },
         },
         {
             name: 'fight',
             when: () => true,
-            async run(ctx) {
+            *run(ctx) {
                 const state = ctx.state();
                 const p = state.player;
-                if (!p) return;
-                if (p.combat.inCombat) return waitForKill(ctx);
-                delete ctx.memory.fightStartedAt;
+                if (!p) {
+                    yield* ticks(1);
+                    return;
+                }
+                if (p.combat.inCombat) return yield* waitForKill(ctx);
+                ctx.memory.fightStartedAtTick = null;
 
                 const { target, tooStrong, limit } = pickTarget(state, ctx.params);
+                const noTarget = ctx.streak('noTarget');
                 if (!target) {
                     if (tooStrong)
                         return { fail: `${tooStrong.name} is level ${tooStrong.combatLevel}, above limit ${limit}` };
-                    if (ctx.counter('noTarget').add() >= NO_TARGET_LIMIT)
+                    if (noTarget.add() >= NO_TARGET_LIMIT)
                         return { fail: `no free reachable ${ctx.params.target} in the area` };
-                    await ctx.sdk.waitForTicks(NO_TARGET_WAIT_TICKS);
+                    yield* ticks(NO_TARGET_WAIT_TICKS);
                     return;
                 }
-                ctx.counter('noTarget').reset();
+                noTarget.reset();
 
-                let result: Awaited<ReturnType<typeof ctx.bot.attack>>;
-                try {
-                    result = await ctx.bot.attack(target);
-                } catch (e) {
-                    result = { success: false, message: errMessage(e) };
-                }
-                if (result.success) {
-                    ctx.counter('attackFails').reset();
+                const attackFails = ctx.streak('attackFails');
+                const result = yield* walkAndAttack(ctx, target);
+                if (result.ok) {
+                    attackFails.reset();
                     return;
                 }
-                ctx.log(`attack ${target.name} failed: ${result.message}`);
-                if (result.reason === 'died') return { fail: result.message };
-                if (ctx.counter('attackFails').add() >= ATTACK_FAIL_LIMIT)
+                yield* log(`attack ${target.name} failed: ${result.message}`);
+                if (attackFails.add() >= ATTACK_FAIL_LIMIT)
                     return { fail: `${ATTACK_FAIL_LIMIT} attacks in a row failed (last: ${result.message})` };
-                await ctx.sdk.waitForTicks(1);
+                yield* ticks(ATTACK_RETRY_TICKS);
             },
         },
     ],
