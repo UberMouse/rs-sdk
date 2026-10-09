@@ -1,14 +1,13 @@
-// Ported from conductor/tasks/mining.ts mineRock @ f3acdf010: bot.* has no mining method (bot.interactLoc
-// is the nearest upstream and wraps a walk and an animation wait the task never used).
-// Unlike the task's mineRock it takes the ore pattern from the caller, interacts by the loc's published
-// Mine option, and leaves threats and dialogs (a level-up as the ore lands) to the guards.
+// bot.* has no mining method, and bot.interactLoc wraps a walk and an animation wait that mining doesn't need.
+// Takes the ore pattern from the caller, interacts by the loc's published Mine option, and leaves
+// threats and dialogs (a level-up as the ore lands) to the guards.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
 
-/** The old mining task's 30s wait for ore or the rock gone, in ticks. */
+/** How long to wait for ore or the rock vanishing (30 s). */
 export const MINE_WAIT_TICKS = Math.ceil(30_000 / TICK_MS);
 /** The option that mines a rock; a mined-out rock keeps it (plainrock1/2), so it never tells a live rock apart. */
 export const MINE_OPTION = /^mine$/i;

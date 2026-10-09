@@ -213,8 +213,18 @@ describe('mining: no rock', () => {
             params: { rock: ['copper', 'mithril'] },
             timeline: mined.skill('Mining', 55, 0).series(1),
         });
-        expect(r.result.reason).toBe('mine: no reachable copper/mithril rock nearby for 270s');
-        expect(r.driver.state().tick).toBe(675);
+        expect(r.result.reason).toBe('mine: no reachable copper/mithril rock nearby for 190s');
+        expect(r.driver.state().tick).toBe(475);
+    });
+
+    test('the slowest rock (adamantite) gives up with the area-depleted reason, not a step overrun', async () => {
+        const r = await simulate(mining, {
+            params: { rock: 'adamantite', area: { x: 3222, z: 3218, radius: 5 } },
+            timeline: mined.skill('Mining', 70, 0).series(1),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('mine: area depleted: no reachable adamantite rock in radius 5 for 350s');
+        expect(r.driver.state().tick).toBe(875);
     });
 
     test('rocks that cannot be reached or mined do not count', async () => {

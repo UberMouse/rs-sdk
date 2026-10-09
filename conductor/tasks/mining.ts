@@ -59,19 +59,16 @@ function pickaxeLevel(name: string): number {
     return PICKAXE_LEVELS[PICKAXE.exec(name)?.[1]?.toLowerCase() ?? ''] ?? Infinity;
 }
 
-/**
- * The wait for a respawn was sized for the live server's 600 ms ticks (respawn ticks x 600 ms); in game
- * ticks that is this many per respawn tick, so a 400 ms server waits the same wall-clock time.
- */
-const GIVE_UP_PER_RESPAWN_TICK = 1.5;
-/** Minimum no-rock wait before failing (2 min), and the margin added to the slowest listed rock's respawn (30 s). */
+/** Minimum no-rock wait before failing (2 min); a rock respawns in at most its listed ticks (mining.rs2 only scales them down by player count). */
 const MIN_GIVE_UP_TICKS = 300;
+/** Added to the slowest listed rock's respawn so a rock that appears just late is still seen (30 s). */
 const GIVE_UP_MARGIN_TICKS = 75;
+/** Each respawn wait is this long, so a step stays far inside the step budget however long the give-up is. */
+const RESPAWN_CHUNK_TICKS = 100;
 /** Runite respawns in ~24 min, longer than the progress watchdog can be stretched to, so it is refused. */
 const REFUSED_ROCKS: readonly RockName[] = ['runite'];
 /** How long the no-rock wait lasts for a rock that respawns in `ticks`. */
-const giveUpTicksFor = (ticks: number) =>
-    Math.max(MIN_GIVE_UP_TICKS, Math.ceil(ticks * GIVE_UP_PER_RESPAWN_TICK) + GIVE_UP_MARGIN_TICKS);
+const giveUpTicksFor = (ticks: number) => Math.max(MIN_GIVE_UP_TICKS, ticks + GIVE_UP_MARGIN_TICKS);
 /** Consecutive failed attempts before the task fails. */
 const MINE_FAIL_LIMIT = 8;
 const STUCK_SLACK_MS = 30_000;
@@ -146,7 +143,8 @@ function minable(params: MiningParams): (loc: NearbyLoc) => boolean {
 }
 
 /** No minable rock: mined-out rocks count as none, so stay put (returnToAreaStep keeps us inside) and wait, until the give-up. */
-function* waitForRespawn(ctx: Ctx, d: Derived): Op<Outcome> {
+function* waitForRespawn(ctx: Ctx): Op<Outcome> {
+    const d = derive(ctx.params);
     const now = ctx.state().tick;
     const label = d.rocks.join('/');
     if (ctx.memory.noRockSinceTick === null) {
@@ -156,8 +154,8 @@ function* waitForRespawn(ctx: Ctx, d: Derived): Op<Outcome> {
     const since = ctx.memory.noRockSinceTick;
     const left = Math.max(0, since + d.giveUpTicks - now);
     const isMinable = minable(ctx.params);
-    const respawn = yield* wait('rock respawn', s => s.nearbyLocs.some(isMinable), left);
-    if (respawn.kind === 'met') return;
+    const respawn = yield* wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS));
+    if (respawn.kind === 'met' || respawn.state.tick - since < d.giveUpTicks) return;
     const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
     const { area } = ctx.params;
     return {
@@ -176,8 +174,8 @@ export default defineTask({
         '"stop" ends the run done ("inventory full: N ores") holding them, e.g. to smelt. Ores held before the run count toward the full load, ' +
         'and "drop" discards all held ore of the listed types, not only what the run mined. Needs a pickaxe ' +
         "(inventory or worn, usable at the base Mining level; Bob's Brilliant Axes in Lumbridge sells a bronze one) and the level for every listed rock. " +
-        'When every listed rock in reach is mined out it waits for respawns, up to max(2 min, slowest listed rock respawn + 30 s) ' +
-        '(mithril ~4.5 min, adamantite ~8.5 min), then fails: with `area` "area depleted: no reachable <rock> rock in radius N for Ns", ' +
+        'When every listed rock in reach is mined out it waits for respawns, up to max(300 ticks, slowest listed rock respawn ticks + 75 ticks) ' +
+        '(2 min for rocks up to coal, mithril 190 s, adamantite 350 s), then fails: with `area` "area depleted: no reachable <rock> rock in radius N for Ns", ' +
         'without it "no reachable <rock> rock nearby for Ns". With `area` it stays within `radius` of that centre; without it, it mines ' +
         'wherever the bot stands. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
     params: Params,
@@ -243,7 +241,7 @@ export default defineTask({
                     .state()
                     .nearbyLocs.filter(minable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
-                if (!rock) return yield* waitForRespawn(ctx, d);
+                if (!rock) return yield* waitForRespawn(ctx);
                 ctx.memory.noRockSinceTick = null;
                 const mined = yield* mine(ctx, rock, d.orePattern);
                 const mineFails = ctx.streak('mineFails');
