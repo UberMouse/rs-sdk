@@ -71,7 +71,7 @@ const viaOp: Path = async sdk => {
     const rest = await runLive(sdk, ctx => deposit(ctx, LOGS));
     note(rest.ok, rest.amountDeposited);
     const three = await runLive(sdk, ctx => withdraw(ctx, BONES, 3));
-    note(three.ok, three.ok ? three.amountWithdrawn : 0);
+    note(three.ok, three.amountWithdrawn);
     const more = await runLive(sdk, ctx => withdraw(ctx, BONES, 9));
     note(more.ok, more.amountWithdrawn);
     const all = await runLive(sdk, ctx => withdraw(ctx, BONES, 'all'));

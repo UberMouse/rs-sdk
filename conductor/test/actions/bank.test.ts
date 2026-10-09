@@ -5,6 +5,8 @@ import {
     CLOSE_BANK_WAIT_TICKS,
     closeBank,
     deposit,
+    ITEM_COMPONENT,
+    NOTE_COMPONENT,
     NOTE_TOGGLE_WAIT_TICKS,
     OPEN_BANK_WAIT_TICKS,
     openBank,
@@ -345,7 +347,7 @@ describe('withdraw', () => {
         );
         expect(result).toMatchObject({ ok: true, amountWithdrawn: 3 });
         expect(sends.map(s => s.type)).toEqual(['clickComponent', 'bankWithdraw']);
-        expect(sends[0]).toMatchObject({ componentId: 5386 });
+        expect(sends[0]).toMatchObject({ componentId: NOTE_COMPONENT });
     });
 
     test('an item withdrawal turns note mode back off first', async () => {
@@ -353,7 +355,7 @@ describe('withdraw', () => {
         const { sends } = await runOp([noted.build(), opened.tick(1).build(), got(opened, 1)], ctx =>
             withdraw(ctx, /bones/i),
         );
-        expect(sends[0]).toMatchObject({ type: 'clickComponent', componentId: 5387 });
+        expect(sends[0]).toMatchObject({ type: 'clickComponent', componentId: ITEM_COMPONENT });
     });
 
     test('a toggle that never registers is a timeout, and a refused one send-failed', async () => {

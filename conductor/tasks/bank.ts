@@ -137,7 +137,6 @@ export default defineTask({
                 const { area } = ctx.params;
                 // Narrowing only: when() guarantees it.
                 if (!area) return;
-                // No walkTo op yet.
                 const failure = yield* call('walkToArea', () => walkToArea(ctx, area));
                 if (failure) return { fail: failure };
             },

@@ -1,12 +1,9 @@
 // How a scripted world answers the bot's sends (TimelineOptions.react): the timeline says what the
 // world does by itself, these what the bot does to it.
 import type { BotAction, BotWorldState } from '../../sdk/types';
+import { ITEM_COMPONENT, NOTE_COMPONENT } from '../actions/bank';
 import type { Effect } from '../core/drivers/timeline';
-import { world } from './world';
-
-/** bank_main's note and item toggles (sdk/actions.ts withdrawItem). */
-const NOTE_COMPONENT = 5386;
-const ITEM_COMPONENT = 5387;
+import { type BankContents, world } from './world';
 
 /**
  * One fewer of item `id`, taken from `slot` when it holds it; other slots keep their places, as in the
@@ -84,13 +81,12 @@ export function bankWorld(action: BotAction, state: BotWorldState): Effect | und
 
 /** `s` holding `held` of `item` in the inventory and `banked` in the bank (the bank keeps its other slots). */
 function restock(s: BotWorldState, item: { id: number; name: string }, held: number, banked: number): BotWorldState {
-    const bank = s.bank.items.filter(b => b.id !== item.id).map(b => ({ name: b.name, count: b.count, id: b.id }));
+    const bank: BankContents = s.bank.items
+        .filter(b => b.id !== item.id)
+        .map(b => ({ name: b.name, count: b.count, id: b.id }));
     if (banked > 0) bank.push({ name: item.name, count: banked, id: item.id });
     return world(s).inv(item.name, held, { id: item.id }).bank(bank, s.bank.noteMode).build();
 }
-
-/** What a bank holds when a test's bot opens it. */
-export type BankContents = { name: string; count: number; id?: number }[];
 
 /**
  * `bankWorld` plus a bank that opens, holding `contents`, when the bot uses a bank booth or banker.

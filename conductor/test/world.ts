@@ -297,7 +297,7 @@ export class World {
      * Opens the bank (the client publishes bank_main as the main modal) holding `items`, one slot
      * each in order, or closes it with `false`. Withdrawals arrive as notes while `noteMode` is on.
      */
-    bank(items: { name: string; count: number; id?: number }[] | false, noteMode = false): World {
+    bank(items: BankContents | false, noteMode = false): World {
         if (!items) return this.with({ bank: { isOpen: false, items: [], noteMode } }).modal(false);
         const bank = {
             isOpen: true,
@@ -386,6 +386,9 @@ export class World {
 }
 
 export const world = World.of;
+
+/** What a bank holds, one slot each in order; an `id` overrides the one looked up by name. */
+export type BankContents = { name: string; count: number; id?: number }[];
 
 /** What a legacy one-line state names; see `worldState`. */
 export interface StateSpec {

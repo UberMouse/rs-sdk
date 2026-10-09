@@ -34,8 +34,8 @@ export const BANK_TRANSFER_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 export const NOTE_TOGGLE_WAIT_TICKS = Math.ceil(3000 / TICK_MS);
 
 /** bank_main:com_93 (withdraw as notes) and bank_main:com_94 (withdraw as items). */
-const NOTE_COMPONENT = 5386;
-const ITEM_COMPONENT = 5387;
+export const NOTE_COMPONENT = 5386;
+export const ITEM_COMPONENT = 5387;
 const CANT_REACH = /can't reach|cannot reach/i;
 
 type Failure<R extends string> = { ok: false; reason: R; message: string };
@@ -241,32 +241,32 @@ export function* deposit(
     if (!s.bank.isOpen) return { ok: false, reason: 'bank-not-open', amountDeposited: 0, message: 'Bank is not open' };
 
     if (dispatch === -1 && item instanceof RegExp) {
-        const ids = [...new Set(s.inventory.filter(i => item.test(i.name)).map(i => i.id))];
-        if (ids.length > 1) {
+        // The first slot of each distinct matching item id: a deposit of all of one id moves every slot.
+        const firstOfEach = s.inventory.filter(
+            (i, n, inv) => item.test(i.name) && inv.findIndex(j => j.id === i.id) === n,
+        );
+        if (firstOfEach.length > 1) {
             let total = 0;
-            const names: string[] = [];
             const failures: string[] = [];
-            let last: DepositResult | null = null;
-            for (const id of ids) {
-                const slotItem = s.inventory.find(i => i.id === id);
-                if (!slotItem) continue;
+            let lastFailure: Extract<DepositResult, { ok: false }> | null = null;
+            for (const slotItem of firstOfEach) {
                 const one = yield* depositSlot(s, slotItem, -1);
                 s = one.state;
                 total += one.result.amountDeposited;
-                names.push(slotItem.name);
                 if (!one.result.ok) {
                     failures.push(`${slotItem.name}: ${one.result.message}`);
-                    last = one.result;
+                    lastFailure = one.result;
                 }
             }
-            if (last && !last.ok)
+            const names = firstOfEach.map(i => i.name).join(', ');
+            if (lastFailure)
                 return {
                     ok: false,
-                    reason: last.reason,
+                    reason: lastFailure.reason,
                     amountDeposited: total,
-                    message: `Deposited ${total} across ${names.join(', ')}; failed: ${failures.join('; ')}`,
+                    message: `Deposited ${total} across ${names}; failed: ${failures.join('; ')}`,
                 };
-            return { ok: true, amountDeposited: total, message: `Deposited ${total} across ${names.join(', ')}` };
+            return { ok: true, amountDeposited: total, message: `Deposited ${total} across ${names}` };
         }
     }
 
@@ -280,6 +280,10 @@ export function* deposit(
         };
     return (yield* depositSlot(s, slotItem, dispatch)).result;
 }
+
+/** A withdraw target as a message names it: a bank item by name, a pattern or slot as written. */
+const targetLabel = (item: RegExp | BankItem | number) =>
+    typeof item === 'number' || item instanceof RegExp ? String(item) : item.name;
 
 /**
  * Withdraws `amount` of a bank item (a bank item, a bank slot, or the shortest-named match of a
@@ -311,7 +315,7 @@ export function* withdraw(
             ok: false,
             reason: 'item-not-found',
             amountWithdrawn: 0,
-            message: `Bank item not found: ${typeof item === 'object' && !(item instanceof RegExp) ? item.name : item}`,
+            message: `Bank item not found: ${targetLabel(item)}`,
         };
     const { id: itemId, name: itemName } = bankItem;
     const asNote = opts.asNote ?? false;
