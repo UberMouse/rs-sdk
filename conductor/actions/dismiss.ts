@@ -35,15 +35,32 @@ export const closableInterface = (s: BotWorldState): boolean =>
     !s.ge?.isOpen &&
     !NEVER_CLOSE_INTERFACES.has(s.interface.interfaceId);
 
-/** A skill dialog's quantity buttons; every product in it has a Make X, Make 10 and Make 5. */
-const MAKE_BUTTON = /^make\s+(x|\d+)$/i;
+/**
+ * A skill menu's quantity button: "<verb> X" or "<verb> <n>" once colour tags are stripped. The
+ * skill_multi menus label them "Make X", "Make 10", "Make 5 @lre@Leather bodies"; the furnace's are
+ * "Smelt X @lre@Bronze", "Smelt 10 @lre@Bronze" (server/content: interface_chat/interfaces/skill_multi*.if,
+ * skill_smithing/interfaces/smelting.if). A dialog's published state carries no interface id, so the
+ * labels are all there is to go by.
+ */
+const QUANTITY_BUTTON = /^[a-z]+\s+(x|\d+)\b/i;
+const X_BUTTON = /^[a-z]+\s+x\b/i;
+const COLOUR_TAG = /@[a-z0-9]+@/gi;
+
+/** Fewest quantity buttons that make a menu: a Make X/10/5 trio. No NPC choice offers three "<verb> X/<n>" lines. */
+const MENU_MIN_QUANTITY_BUTTONS = 3;
 
 /**
- * A skill's make menu (knife on logs): only an op that opened one on purpose answers it, so the
- * dialog guard and `dismiss` leave it alone.
+ * A skill's make or smelt menu (knife on logs, ore on a furnace): a chat modal with a row of quantity
+ * buttons per product, which only an op that opened one on purpose answers, so the dialog guard and
+ * `dismiss` leave it alone. Needs a "<verb> X" button and at least MENU_MIN_QUANTITY_BUTTONS in all,
+ * so a level-up (one option) or an NPC choice cannot match.
  */
-export const isSkillMenu = (d: DialogState): boolean =>
-    d.isOpen && d.options.some(o => MAKE_BUTTON.test(o.text.trim()));
+export const isSkillMenu = (d: DialogState): boolean => {
+    if (!d.isOpen) return false;
+    const buttons = d.options.map(o => o.text.replace(COLOUR_TAG, '').replaceAll('\\n', '').trim());
+    const quantity = buttons.filter(b => QUANTITY_BUTTON.test(b));
+    return quantity.length >= MENU_MIN_QUANTITY_BUTTONS && quantity.some(b => X_BUTTON.test(b));
+};
 
 /** Clicks or closes per call, as bot.dismissBlockingUI's maxAttempts. */
 export const DISMISS_MAX_ACTIONS = 10;

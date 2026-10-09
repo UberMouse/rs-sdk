@@ -132,7 +132,7 @@ death, low HP, dialogs or leftover modals itself. The shared ones are `GUARDS` i
 | `death` | abort, critical | ends the run `failed` if the bot died during it |
 | `wilderness` | abort, critical | ends the run if the bot is on the surface in the Wilderness |
 | `low-hp` | abort | eats; with no food it fails if in combat or still losing HP, else waits to regenerate |
-| `dialog` | suspend | clears level-up and "click to continue" dialogs (`dismiss`); never answers a choice or a skill make menu; the wait carries on |
+| `dialog` | suspend | clears level-up and "click to continue" dialogs (`dismiss`); never answers a choice or a skill make or smelt menu (quantity buttons "Make X", "Smelt 10 ..."); the wait carries on |
 | `interface` | suspend | closes a leftover informational modal (book, scroll) that would block loc/NPC interaction; never a shop, bank, Grand Exchange or trade screen |
 
 `abort` cancels the running step (its `finally` runs), runs the guard, and the loop chooses a step

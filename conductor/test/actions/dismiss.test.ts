@@ -161,6 +161,41 @@ describe('isSkillMenu', () => {
         ).toBe(false);
         expect(isSkillMenu({ ...menu.dialog, isOpen: false })).toBe(false);
     });
+
+    test('the fletching menu with its published labels, and the furnace menu with its colour tags', () => {
+        const fletching = world()
+            .dialog({ options: ['Make X', 'Make 10', 'Make 5', '\\n\\n\\n\\n15 Arrow Shafts'] })
+            .build();
+        expect(isSkillMenu(fletching.dialog)).toBe(true);
+        const furnace = world()
+            .dialog({
+                options: ['Smelt X @lre@Bronze', 'Smelt 10 @lre@Bronze', 'Smelt 5 @lre@Bronze', 'Smelt 1 @lre@Bronze'],
+            })
+            .build();
+        expect(isSkillMenu(furnace.dialog)).toBe(true);
+        const leather = world()
+            .dialog({
+                options: [
+                    'Make X',
+                    'Make 10 @lre@Leather bodies',
+                    'Make 5 @lre@Leather bodies',
+                    'Make @lre@Leather body',
+                ],
+            })
+            .build();
+        expect(isSkillMenu(leather.dialog)).toBe(true);
+    });
+
+    test('an NPC choice that happens to start with a verb is not a menu', () => {
+        const choice = world()
+            .dialog({ options: ['Buy 10 arrows', 'Buy 5 arrows', 'Sell 5 arrows', 'Nothing'] })
+            .build();
+        expect(isSkillMenu(choice.dialog)).toBe(false);
+        const two = world()
+            .dialog({ options: ['Make X', 'Make 10'] })
+            .build();
+        expect(isSkillMenu(two.dialog)).toBe(false);
+    });
 });
 
 describe('closableInterface', () => {
