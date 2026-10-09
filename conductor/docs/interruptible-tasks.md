@@ -213,6 +213,68 @@ Risk: full `BotWorldState` per tick may be large. Measure first; record a trimme
 (player, inventory, equipment, skills, dialog/interfaces, combat, nearby within ~15 tiles, new
 messages) delta-encoded against the previous tick if needed.
 
+*As built (Task 15):*
+
+**Measured (2026-10-10).** A 2-minute woodcutting run (fixture bot at the Lumbridge trees,
+Woodcutting 1, run through `run-task` with `--until minutes:2`), with a second, observe-mode SDK
+connection capturing every state publication: 341 publications in 2.01 minutes, 303 distinct
+ticks (about 1.1 publications a tick: some ticks publish a second revision). Sizes are the
+publications' JSON, gzipped as one stream:
+
+| Encoding | Per publication | Per minute | Per minute, gzipped |
+|---|---|---|---|
+| Full `BotWorldState` | 19.9 KiB | 3.3 MiB | 150 KiB |
+| `trimState` projection (15 tiles, last 10 messages) | 17.6 KiB | 2.9 MiB | 129 KiB |
+| Full, top-level keys changed since the last publication | 7.0 KiB | 1.2 MiB | 49.5 KiB |
+| Projection, same delta | 6.6 KiB | 1.1 MiB | 45.8 KiB |
+
+Where a state's bytes go: `nearbyLocs` 8.5 KB, `nearbyNpcs` 4.5 KB, `gameMessages` 3.4 KB,
+`skills` 1.2 KB, the rest under 1 KB each. The projection saves little because the client already
+publishes about 15 tiles (the farthest loc was at 15). The delta, written in gzip members of
+256 KiB (so the writer stays synchronous; one stream would be 7% smaller): 53.4 KiB a minute.
+The recorder as built, on a fresh run of the same kind: **96.5 KB for 2.01 minutes, 47 KiB a
+minute (about 2.8 MB an hour)**, 1.0 MiB a minute before gzip; 333 publications, 31 commands and
+their 31 results. Replaying it took 0.3 s.
+
+**What is recorded.** Full states, no projection: the delta already makes them small, and a
+projection would have to prove the code reads nothing it drops. `conductor/core/drivers/recording.ts`
+has the format: an NDJSON header (task, bot, runId, logFile, params, stops: everything
+`executeTask` was given) and then, in the order the run's code could observe them:
+
+- `p`: a state publication, as the top-level keys that changed (lossless).
+- `c` / `r`: a command as issued (send, scan or screenshot, with the tick it was issued on) and
+  its result (the `ActionResult`, the scanned locs, the screenshot path) or error.
+- `e`: a tick request refused (the client stalled or disconnected).
+- `end`: the run's result.
+
+**Determinism.** Between two driver calls only a macrotask can change what task code sees: a
+publication, a command settling, the stall timer. Each record therefore carries `n`, the
+`state()`/`nextTick()`/`now()` calls the code made since the previous record, and `w`, the
+`now()` values it read (so `minutes:` stops and the watchdog replay exactly).
+`ReplayDriver` (`core/drivers/replay.ts`) delivers each event at the same call it reached the
+live code, or, when the code was waiting for it, once the code goes idle (`setImmediate`, as a
+websocket message arrives), and answers each command from its `r` record. A unit round trip over
+a fake game that ticks on a timer and answers sends a macrotask later reproduces the whole
+`TaskResult`, duration included. The real run above replays with no divergence, as do the
+recordings of every smoke test in the integration suite (all nine tasks) and a 1.5-minute combat
+run (24 commands, 13 level-up dialogs, 47.7 KiB a minute). `test/integration/replay/` keeps one
+such check in the suite.
+
+**Divergences** (`replay.ts` prints the first, with the tick and both sides): `different` (another
+command where the recording sent one), `extra` (a command where it sent none), `missing` (it sent
+one the replay never does: blocked while it waits, the replay runs on up to 25 ticks to tell a
+late command, `tick`, from a missing one), `tick` (the same command on another tick) and `outcome`
+(the same commands, another result). A recording without a result (a killed run) replays to its
+end.
+
+**Always on.** `run-task` records every run, next to its log, as
+`conductor/runs/<bot>/<runId>.ticks.ndjson.gz`: at under 3 MB an hour of play it costs less than
+the conductor's other output, and the failed run worth replaying is the one nobody planned to
+record. Best effort: a failure to create or write the file prints one warning and turns recording
+off; the run and its `RESULT` are unchanged. The file is closed (synchronously) at the end of the
+run and in run-task's SIGINT/SIGTERM handler; a SIGKILLed run loses at most the last 256 KiB
+buffered.
+
 ### Integration suite (`conductor/test/integration/`)
 
 - `withFixtureBot(save, fn)`: unique name → `createSaveData` (from `sdk/test/utils/save-generator`)
@@ -262,6 +324,7 @@ Each phase leaves `run-task.ts` working and every task runnable.
      run`, the wall-clock step grace and `abandoned-step-error` are gone.
 4. **Recording + replay.** Measure state size, add the recorder and `replay.ts`, and have
    task-runner's failure diagnosis use replay.
+   - As built (Task 15): done; see Replay above.
 5. **Reactive sim (later).**
    - Rules for the mechanics where timelines get painful: walking along `findPath` with real
      collision, resource depletion/respawn, skilling yields.

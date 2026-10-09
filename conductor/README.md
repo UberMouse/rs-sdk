@@ -41,6 +41,9 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
   threat, dialog or timeout handling of their own.
 - A step returns nothing to loop, `{ fail }` or `{ done }`; the run ends in one `TaskResult`
   printed as the `RESULT` line.
+- Every run is recorded next to its log (`conductor/runs/<bot>/<runId>.ticks.ndjson.gz`, about
+  50 KiB a minute): what the code observed and every command it sent. `bun conductor/tools/replay.ts
+  <file>` re-runs the current task code on it and prints the first command that differs.
 
 `conductor/tasks/woodcutting.ts` is the reference task; the design and its rationale are in
 [`docs/interruptible-tasks.md`](docs/interruptible-tasks.md), and the authoring rules in
@@ -51,7 +54,7 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 | Layer | Where | Run |
 |---|---|---|
 | Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/` | `bun test conductor` (no server) |
-| Integration: ops and one smoke run per task against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
+| Integration: ops, one smoke run per task and the replay of a recorded run, against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
 
 A new task (or a new or rewritten step in one; contract T8 in
 `.claude/review-lenses/contract.md`) has both: unit tests for its success, failure and guard
@@ -73,6 +76,7 @@ scenarios, and a smoke test. Any changed task needs its smoke test to pass. `bun
 | Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |
 | How the agents themselves work | the retrospective reads transcripts via `.claude/skills/session-forensics` |
 | Undo a bad experiment | `bun conductor/tools/save.ts snapshot\|restore <bot> <label> --logout` |
+| Would changed code decide differently on a past run | `bun conductor/tools/replay.ts conductor/runs/<bot>/<runId>.ticks.ndjson.gz [--task-dir <dir>]` |
 
 ## Local stack
 

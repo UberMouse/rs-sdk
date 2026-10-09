@@ -18,6 +18,7 @@ other scripts on the bot, or try a different task; deciding is the conductor's j
 4. Otherwise diagnose:
    - Read every path in `screenshots` (they are PNGs of the game; look at them).
    - Read the run's `logFile` (NDJSON: start, step changes, logs, progress, result).
+   - Replay the run's recording against the current code (see Replay below).
    - `bun sdk/cli.ts <bot>` for the current world state.
    - Take one more screenshot if useful: `bun conductor/tools/screenshot.ts <bot>`.
    - `learnings/` and `wiki/` for what the game expects (locations, requirements). On the
@@ -25,6 +26,21 @@ other scripts on the bot, or try a different task; deciding is the conductor's j
      numbers are expected, not a fluke.
    - Decide whether the cause is the **world** (missing item, level, location, death) or the
      **script** (wrong target, a step that never succeeds, a loop with no progress), and why.
+
+## Replay
+
+Every run is recorded next to its `logFile`: the same path with `.ticks.ndjson.gz` in place of
+`.ndjson`. When diagnosing a failed run, replay it against the current code:
+
+```bash
+bun conductor/tools/replay.ts conductor/runs/<bot>/<runId>.ticks.ndjson.gz
+```
+
+`no divergence` means the code in the checkout makes the same decisions on that run, so the
+failure is reproducible from the recording and the cause is in what it decided; a divergence
+means the code changed since the run, and the line names the first command that would now differ.
+After a fix (the conductor's or a task author's, not yours), the same command confirms the
+decision now changes at the tick intended and not before. Quote its output in the Diagnosis.
 
 ## Report
 
