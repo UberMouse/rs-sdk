@@ -41,4 +41,5 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 - Lumbridge trees capacity: at ~50+ WC (bronze axe, 25x XP) a bot cuts every normal tree within radius 12 of (3195, 3220) to a stump (stumps are not choppable). Respawns (48-80 s) keep a bot that waits for them at about the same XP/hr (~289k, WC 51-58 over 5 min); a bot that does not wait fails with "chop: no reachable tree nearby". [v 2026-10-09 conductor1 local]
 - Lumbridge trees at WC 62-63 (bronze axe): ~10 logs/min over a 1 min run (6250 XP), so a 28-slot inventory fills in ~3 min. [v 2026-10-09 conductor1 local]
 - Lumbridge trees at WC 65-67 (bronze axe): ~12 chops/min over 3 min (5000 XP/min), with several respawn waits; the 28-slot inventory fills in ~2.3 min. [v 2026-10-09 conductor1 local]
+- Normal trees north of Lumbridge castle at (3212, 3232), (3217, 3231), (3225, 3232) and (3235, 3230), outside the Lumbridge trees grove; the `chop` op's integration test fells one per run there (WC 60, bronze axe, spawned at (3220, 3228)). [v 2026-10-10 integration-tests local]
 - Logs near a bank (Seers, Draynor) are ideal for training since you can bank or burn them quickly.
