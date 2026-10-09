@@ -179,7 +179,7 @@ function getSessionStatus(session: BotSession): SessionStatus {
 /**
  * SDK Session - represents an SDK client connected to control/observe a bot.
  *
- * Controller lease (rs-sdk; was "last controller wins"):
+ * Controller lease:
  * - A 'control' mode client is refused while another controller is attached, so two
  *   scripts never drive one bot at once (one silently cutting into the other's action)
  * - A 'control' client that sends `takeover: true` disconnects the existing controller

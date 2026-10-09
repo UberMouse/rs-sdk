@@ -91,12 +91,14 @@ Leave the change uncommitted; report per finding: fixed / couldn't (why), and th
 ```
 
 The worker is the author's: it stays assigned to this change until the review commits or
-reverts (the conductor's `workers` state). The save is the `replay` path from the `LOADED` line
-the author's smoke tests ran from (a copy of exactly what was loaded, so the fix is retested from
-the same state even when the author started from a moving `bot:` source). Many findings may go
-to two fix agents **in parallel only when their files are disjoint**; a fix that spans both
-sets (a shared helper used on both sides) makes them sequential. Two parallel fix agents need
-two workers (ask the conductor for a second free one): never let two drive the same bot.
+reverts (the conductor's `workers` state, and `openGate.worker`). The save is the `replay` path
+from the `LOADED` line the author's smoke tests ran from (a copy of exactly what was loaded, so
+the fix is retested from the same state even when the author started from a moving `bot:`
+source); it is also in `openGate.replay`, and `conductor/runs/<worker>/loaded.json` holds the
+worker's latest load. Many findings may go to two fix agents **in parallel only when their files
+are disjoint** and the review was given a second free worker; otherwise, or when a fix spans both
+sets (a shared helper used on both sides), they run one after the other. Never let two drive the
+same bot.
 
 ## 4. Round 2
 

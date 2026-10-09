@@ -12,12 +12,23 @@ type Socket = { send(data: string): void; close(): void };
 
 let server: Server | null = null;
 
-/** A fake gateway that answers the n-th sdk_connect (1-based) with `answer(n, msg, ws)`. */
-function fakeGateway(answer: (n: number, msg: Record<string, unknown>, ws: Socket) => void): () => number {
+/**
+ * A fake gateway that answers the n-th sdk_connect (1-based) with `answer(n, msg, ws)`. Its
+ * /status/<bot> (the SDK's auto-launch check) answers the first request after `statusDelayMs`.
+ */
+function fakeGateway(
+    answer: (n: number, msg: Record<string, unknown>, ws: Socket) => void,
+    { statusDelayMs = 0, onClose }: { statusDelayMs?: number; onClose?: (ws: Socket) => void } = {},
+): () => number {
     let connects = 0;
+    let statusRequests = 0;
     server = Bun.serve({
         port: 0,
-        fetch(req, srv) {
+        async fetch(req, srv) {
+            if (new URL(req.url).pathname.startsWith('/status/')) {
+                if (++statusRequests === 1) await Bun.sleep(statusDelayMs);
+                return Response.json({ status: 'active', inGame: true, stateAge: 0, controllers: [], observers: [], player: null });
+            }
             if (srv.upgrade(req)) return;
             return new Response('not a websocket', { status: 400 });
         },
@@ -25,6 +36,9 @@ function fakeGateway(answer: (n: number, msg: Record<string, unknown>, ws: Socke
             message(ws, raw) {
                 const msg = JSON.parse(String(raw));
                 if (msg.type === 'sdk_connect') answer(++connects, msg, ws);
+            },
+            close(ws) {
+                onClose?.(ws);
             },
         },
     });
@@ -151,5 +165,76 @@ describe('controller lease', () => {
         await taking.connect();
         await taking.disconnect();
         expect(seen).toEqual([false, true]);
+    });
+});
+
+describe('connection ownership', () => {
+    test('an attempt superseded by disconnect() and a newer connect() never opens its socket', async () => {
+        // A lease like the real gateway's: the first authenticated socket holds it until it closes.
+        let holder: Socket | null = null;
+        const sockets = new Set<Socket>();
+        fakeGateway(
+            (_n, _msg, ws) => {
+                sockets.add(ws);
+                if (holder && holder !== ws) {
+                    ws.send(busy);
+                    ws.close();
+                    return;
+                }
+                holder = ws;
+                ws.send(ok);
+            },
+            {
+                statusDelayMs: 300, // holds the first attempt in its pre-socket await
+                onClose: ws => {
+                    sockets.delete(ws);
+                    if (holder === ws) holder = null;
+                },
+            },
+        );
+        const sdk = new BotSDK({
+            botUsername: 'testbot',
+            password: 'x',
+            gatewayUrl: `ws://localhost:${server!.port}`,
+            readyTimeout: 0,
+            autoLaunchBrowser: 'auto',
+            autoReconnect: true,
+            reconnectBaseDelay: 20,
+        });
+        const first = sdk.connect();
+        await Bun.sleep(30);
+        await sdk.disconnect();
+        await expect(first).rejects.toThrow(/Disconnected while connecting/);
+        await sdk.connect();
+        await Bun.sleep(500); // the first attempt's status check comes back
+        expect(sdk.isAuthenticated()).toBe(true);
+        expect(sockets.size).toBe(1);
+        await sdk.disconnect();
+        await until(() => holder === null && sockets.size === 0);
+    });
+
+    test('a connect() joining an attempt resolves only once the gateway accepts it', async () => {
+        fakeGateway((_n, _msg, ws) => setTimeout(() => ws.send(ok), 200));
+        const sdk = makeSDK();
+        try {
+            const first = sdk.connect();
+            await Bun.sleep(50); // the socket is open, the handshake is not done
+            await sdk.connect();
+            expect(sdk.isAuthenticated()).toBe(true);
+            await first;
+        } finally {
+            await sdk.disconnect();
+        }
+    });
+
+    test('disconnect() settles a connect() still waiting on the handshake', async () => {
+        fakeGateway(() => {}); // never answers
+        const sdk = makeSDK();
+        const pending = sdk.connect();
+        await Bun.sleep(50);
+        const started = Date.now();
+        await sdk.disconnect();
+        await expect(pending).rejects.toThrow(/Disconnected while connecting/);
+        expect(Date.now() - started).toBeLessThan(1000); // not the 2s handshake deadline
     });
 });

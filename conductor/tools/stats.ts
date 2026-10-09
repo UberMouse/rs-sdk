@@ -13,10 +13,8 @@ const { values, positionals } = parseCli(
     { task: { type: 'string' }, since: { type: 'string' }, json: { type: 'boolean' } },
     usage,
 );
-const bot = positionals[0];
-if (!bot) {
-    fail(usage, 2);
-}
+const [bot] = positionals;
+if (!bot || positionals.length > 1) fail(usage, 2);
 const taskFilter = values.task;
 const since = values.since === undefined ? 0 : Date.parse(values.since);
 if (Number.isNaN(since)) {

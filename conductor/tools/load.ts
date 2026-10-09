@@ -7,14 +7,15 @@
 //             path/to/x.sav   a save file
 //
 // Only loads into accounts whose bots/<worker>/bot.env has WORKER=true. --create makes the account
-// (create-bot.ts --local) and marks it, refusing a name the server already has a save for. Refused
-// while a script or task is attached to the worker, in the world or not, unless --takeover; a worker
-// in the world is then logged out first, and the save it had is kept in conductor/runs/<worker>/saves/. --client then starts the worker's
-// lite client (lib/client.ts; only clients started this way are stopped on the next load) and waits
-// for it to connect. Keeps a copy of what it loaded as conductor/runs/<worker>/saves/<stamp>-loaded.sav
-// (`replay`: pass that path to load.ts to retest from the same state, even for a bot: source), writes
-// conductor/runs/<worker>/loaded.json and prints one `LOADED <json>` line. Local server only, with the
-// Grand Exchange off.
+// (create-bot.ts --local) and marks it, refusing a name the server already has a save for.
+// Refused while a script or task is attached to the worker, in the world or not, unless
+// --takeover; a worker in the world is then logged out first, and the save it had is kept in
+// conductor/runs/<worker>/saves/. --client then starts the worker's lite client (lib/client.ts;
+// only clients started this way are stopped on the next load) and waits for it to connect. Keeps
+// a copy of what it loaded as conductor/runs/<worker>/saves/<stamp>-loaded.sav (`replay`: pass
+// that path to load.ts to retest from the same state, even for a bot: source), writes
+// conductor/runs/<worker>/loaded.json and prints one `LOADED <json>` line. Local server only,
+// with the Grand Exchange off.
 import { appendFileSync, existsSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { isLocalServer } from '../../sdk/runner';
@@ -22,12 +23,9 @@ import { startLiteClient, stopLiteClient } from '../lib/client';
 import { loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
-    checkpointRefusal,
     exportSave,
-    inWorld,
-    logOut,
+    prepareForWrite,
     readLibrarySave,
-    requireNoController,
     saveStatus,
     sha1,
     verifySave,
@@ -108,9 +106,7 @@ try {
 
     // Log out before stopping the client: a failed logout (combat) then leaves the worker attended.
     // Every refusal comes before the worker is touched.
-    if (status.source === 'checkpoint') fail(checkpointRefusal(worker, 'loading'));
-    if (!flags.takeover) await requireNoController(env, 'loading');
-    if (inWorld(status)) await logOut(env, { takeover: true }); // controllers checked above
+    await prepareForWrite(env, status, 'loading', flags.takeover);
     await stopLiteClient(worker);
     const runDir = join(REPO_ROOT, 'conductor/runs', worker);
     const { path, backup } = await writeSave(env, bytes, {

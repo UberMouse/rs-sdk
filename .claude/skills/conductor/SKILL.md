@@ -58,7 +58,7 @@ Agents (all dispatched in the background):
 | `tasks` | the objective queue (generic `tasks` field). Each: `{id, title, status, task?, params?, until?, attempts}`; `title` is the objective in game terms ("Woodcutting 30 for willows") |
 | `runsSinceRetro` | task runs since the last retrospective |
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
-| `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId}` from a task-author's return until `task-review` commits or reverts |
+| `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId, worker, replay}` from a task-author's return until `task-review` commits or reverts; `worker` and `replay` (the `LOADED` line's replay path) are what its fix authors test on |
 | `workers` | the worker pool: `{ <worker>: <task id or agent it is assigned to> \| null }`. Assign a free worker in each task-author brief. It stays assigned through that change's `task-review` (its fix authors reuse it) and is set back to `null` when the review commits or reverts. A second fix agent running in parallel gets another free worker, recorded here too |
 
 Seed `invariants` with the list below on the first write.
@@ -113,8 +113,10 @@ Seed `invariants` with the list below on the first write.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
    knowledge skill's rules (current truth, provenance tags, no narration, nothing in generated
    wiki dirs). Commit: `knowledge: <what was learned>`. Revert any edit that breaks the rules.
-7. **On a task-author's report**: set `openGate`, then run the `task-review` skill
-   (`.claude/skills/task-review/SKILL.md`). It ends in a commit or a revert; clear the gate.
+7. **On a task-author's report**: set `openGate` (with the author's worker and the `replay` path
+   from its `LOADED` line), then run the `task-review` skill (`.claude/skills/task-review/SKILL.md`),
+   handing it that worker and replay, plus a second free worker if parallel fixes should be
+   possible. It ends in a commit or a revert; clear the gate.
 8. **Retrospective** when `runsSinceRetro >= 10`, or an objective has failed 3 times: dispatch
    `retrospective`. It reads the game outcomes and the agents' transcripts
    (`.claude/skills/session-forensics`). On its report: review the roadmap diff and commit
@@ -132,7 +134,9 @@ Seed `invariants` with the list below on the first write.
 - Unsafe end state (RESULT `inCombat` true, or `hp` below half) — handle it before anything
   else and never leave the bot idle there. The catalog has no combat or retreat task yet: queue
   a retreat/eat objective (a task-author dispatch for one if none exists), or when nothing is
-  running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended. Low HP
+  running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended
+  (the snapshot is written either way; combat delays a logout, so on exit 1 "still in the world"
+  rerun it until the logout goes through). Low HP
   with no food, out of combat, already waits for regeneration (bounded) rather than failing, so
   a `failed` low-HP reason means the wait ran out or the bot is under attack.
 - Death or item loss in an experiment — `save.ts restore <bot> <label>` with the snapshot taken
@@ -216,12 +220,18 @@ report, and they are reviewed and committed with the task.
 2. Read this file in full, then `state.json`, the last 20 lines of `journal`, and
    `conductor/roadmap.md`.
 3. Make sure the stack is up (`conductor/local/up.sh`) and a client is attached
-   (`bun sdk/cli.ts <bot>` shows a fresh tick); start the client per `client` if not.
+   (`bun sdk/cli.ts <bot>` shows a fresh tick); start the client per `client` if not. `up.sh`
+   leaves an engine or gateway that is already up alone, so check the engine runs this code:
+   `bun conductor/tools/save.ts snapshot <bot> resume` reads the save through the engine (and is a
+   useful snapshot). If it says the engine has no save endpoint, or has them off, stop and tell the
+   user: the stack is shared with other sessions, so its restart is coordinated, never done by one
+   run.
 4. A run whose state predates this file's current rules: when `invariants` differ from the list
    above, rewrite them from it (the hook prints the stored ones on every resume); when `workers`
    is missing or null, set up the pool per §Workers and record it before the next author brief.
 5. Per `inFlight`: a runner or author that died across the boundary may have left the bot
    mid-action — check state before re-dispatching. With `openGate` set, run `task-review` on the
-   uncommitted change. Uncommitted `learnings/`/`wiki/` or roadmap edits from a dead curator or
+   uncommitted change, with its `worker` and `replay` (an older gate without them: the worker
+   assigned in `workers`, and `conductor/runs/<worker>/loaded.json` for the replay). Uncommitted `learnings/`/`wiki/` or roadmap edits from a dead curator or
    retrospective: review and commit or revert them.
 6. Continue the loop.

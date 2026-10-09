@@ -81,15 +81,20 @@ async function managementFetch(env: BotEnv, path: string, init: RequestInit = {}
     const isJson = res.headers.get('content-type')?.includes('json') === true;
     if (res.status === 404 && !isJson) {
         throw new Error(
-            `the engine at ${managementOrigin(env)} has no ${path.split('/')[1]} endpoint; restart it from a checkout that has it`,
+            `the engine at ${managementOrigin(env)} has no ${path.split('/')[1]} endpoint: it runs code older than these tools. ${SHARED_RESTART}`,
         );
     }
     if (res.status === 403) {
         const body: unknown = isJson ? await res.json() : await res.text();
-        throw new Error(`${url}: ${JSON.stringify(body)}`);
+        const off = JSON.stringify(body).includes('SAVE_ENDPOINTS');
+        throw new Error(`${url}: ${JSON.stringify(body)}${off ? `. ${SHARED_RESTART}` : ''}`);
     }
     return { res, isJson };
 }
+
+/** What an engine without (working) save endpoints means: other sessions share it, so don't restart it alone. */
+const SHARED_RESTART =
+    'The local stack is shared with other sessions: report it to the user rather than restarting the engine yourself (conductor/docs/parallel-bots.md)';
 
 const SAVE_SOURCES = ['live', 'logout', 'checkpoint', 'file'] as const;
 export type SaveSource = (typeof SAVE_SOURCES)[number];
@@ -182,6 +187,17 @@ export const checkpointRefusal = (name: string, doing: string) =>
 export async function logOut(env: BotEnv, { takeover = false } = {}): Promise<void> {
     if (!takeover) await requireNoController(env, 'logging it out');
     if (!(await kick(env))) throw new Error(`${env.username} did not log out (in combat, or still busy); try again`);
+}
+
+/**
+ * Clear the way to write a player's save, refusing before anything is touched: a GE checkpoint
+ * (it would win over the write), or a controller attached in the world or out of it (unless
+ * `takeover`). Then log a bot in the world out. `doing` names the write in the refusals.
+ */
+export async function prepareForWrite(env: BotEnv, status: SaveStatus, doing: string, takeover = false) {
+    if (status.source === 'checkpoint') throw new Error(checkpointRefusal(env.username, doing));
+    if (!takeover) await requireNoController(env, doing);
+    if (inWorld(status)) await logOut(env, { takeover: true }); // controllers checked above
 }
 
 /** `pre-` labels are reserved for writeSave's backups; a user snapshot can't take one. */
@@ -423,7 +439,13 @@ function libraryPaths(name: string): { sav: string; json: string } {
 }
 
 function readEntry(jsonPath: string): LibraryEntry {
-    const parsed = LibraryEntrySchema.safeParse(JSON.parse(readFileSync(jsonPath, 'utf8')));
+    let json: unknown;
+    try {
+        json = JSON.parse(readFileSync(jsonPath, 'utf8'));
+    } catch (e) {
+        throw new Error(`${jsonPath} is not valid JSON: ${errMessage(e)}`, { cause: e });
+    }
+    const parsed = LibraryEntrySchema.safeParse(json);
     if (!parsed.success) throw new Error(`${jsonPath} is not a valid library entry: ${parsed.error.message}`);
     return parsed.data;
 }

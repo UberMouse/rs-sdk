@@ -141,7 +141,7 @@ let env: BotEnv;
 try {
     env = loadBotEnv(botName);
 } catch (e) {
-    bail(errMessage(e));
+    bail(errMessage(e), 2); // a usage error, as in the other tools
 }
 
 // The gateway's controller lease refuses a second controller by itself; this pre-check fails

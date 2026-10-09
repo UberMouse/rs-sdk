@@ -9,21 +9,23 @@
 // conductor/runs/<bot>/saves/; --library also files it as conductor/saves/<label>.sav + .json
 // (--replace to overwrite an existing library save). --logout first logs the bot out server-side
 // (so it cannot die unattended), refused while a script or task controls it unless --takeover.
+// The snapshot is written even when the logout fails (combat delays it): then it is the live save,
+// and the tool exits 1 saying the bot is still in the world.
 //
 // restore rolls the bot back. A label is the part of a snapshot's filename after its timestamp,
 // matched exactly (the newest match wins). Restoring the bot's newest snapshot needs no flag;
 // skipping past a newer snapshot, or restoring a library save (lib:<name>) or a file over an
 // existing save, needs --force (worker accounts load scenarios with load.ts instead). Refused
 // while a script or task is attached to the bot, in the world or not (it would resume on the
-// restored save), unless --takeover; a bot in the world is then logged out server-side first. The replaced save is kept as a `pre-restore` snapshot. Restart the bot's
-// client afterwards. Local server only, with the Grand Exchange off (conductor/docs/parallel-bots.md).
+// restored save), unless --takeover; a bot in the world is then logged out server-side first.
+// The replaced save is kept as a `pre-restore` snapshot. Restart the bot's client afterwards.
+// Local server only, with the Grand Exchange off (conductor/docs/parallel-bots.md).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { isLocalServer } from '../../sdk/runner';
 import { loadBotEnvOrFail, REPO_ROOT } from '../lib/env';
 import {
     atomicWrite,
-    checkpointRefusal,
     exportSave,
     inWorld,
     isBackupLabel,
@@ -31,8 +33,8 @@ import {
     RESERVED_LABEL_PREFIX,
     listLibrary,
     logOut,
+    prepareForWrite,
     readLibrarySave,
-    requireNoController,
     SAVE_NAME,
     saveStatus,
     verifySave,
@@ -145,7 +147,11 @@ try {
             }
             const purpose = flags.purpose?.trim();
             if (flags.library && !purpose) fail('--library needs --purpose "<what the save is for>"', 2);
-            if (flags.logout && inWorld(await saveStatus(env))) await logOut(env, { takeover: flags.takeover });
+            // A failed logout must not cost the snapshot: it is the safety net for a bot in trouble.
+            let logoutError: unknown;
+            if (flags.logout && inWorld(await saveStatus(env))) {
+                await logOut(env, { takeover: flags.takeover }).catch((e: unknown) => (logoutError = e));
+            }
             const save = await exportSave(env);
             const out = join(dir, `${fileStamp()}-${arg}.sav`);
             atomicWrite(out, save.bytes);
@@ -157,6 +163,9 @@ try {
                     replace: flags.replace,
                 });
                 console.log(`library: ${join(LIBRARY_DIR, `${entry.name}.sav`)}`);
+            }
+            if (logoutError !== undefined) {
+                fail(`snapshot written, but ${name} is still in the world: ${errMessage(logoutError)}`);
             }
             break;
         }
@@ -171,14 +180,12 @@ try {
             // Every refusal comes before the logout, so a refused restore leaves the bot as it was.
             verifySave(pick.bytes);
             const status = await saveStatus(env);
-            if (status.source === 'checkpoint') fail(checkpointRefusal(name, 'restoring'));
             if (status.source !== 'none' && pick.needsForce && !flags.force) {
                 fail(
                     `not restoring ${pick.from} over ${name}'s save: ${pick.needsForce}. Pass --force to restore anyway`,
                 );
             }
-            if (!flags.takeover) await requireNoController(env, 'restoring');
-            if (inWorld(status)) await logOut(env, { takeover: true }); // controllers checked above
+            await prepareForWrite(env, status, 'restoring', flags.takeover);
             const { path, backup } = await writeSave(env, pick.bytes, { backupDir: dir, label: 'restore' });
             console.log(
                 `restored ${pick.from} -> ${path}${backup ? ` (previous save: ${backup})` : ''}; restart ${name}'s client`,

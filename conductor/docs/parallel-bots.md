@@ -185,7 +185,8 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 ### `save.ts`
 
 - **snapshot** exports the live save, with no logout. `--logout` still logs the bot out first
-  (the conductor's unsafe-exit step relies on it). `--library --purpose` also files the save in
+  (the conductor's unsafe-exit step relies on it); when combat keeps the bot in the world past
+  the kick's 30 s, it still writes the snapshot (the live save) and exits 1 saying so. `--library --purpose` also files the save in
   the library (`--replace` to overwrite an entry). Flags given where they mean nothing are
   usage errors.
 - **restore** checks everything before it touches the bot (the save's magic, version and CRC,
@@ -222,7 +223,10 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
   for the bot's current state (`getStateAge()` is 0 until it arrives: check `getState()`).
   `disconnect()` waits at most 3 s for the socket to close (Bun never reports the close of a
   socket still connecting to a host that drops packets), and a socket it lets go of can't touch
-  the SDK's state or authenticate if it opens late.
+  the SDK's state or authenticate if it opens late. It also settles a `connect()` in flight
+  (rejecting it), and an attempt superseded by a disconnect or a newer attempt never opens its
+  socket. `connect()` resolves only once the gateway has accepted the session, never on a socket
+  that is merely open.
 - **MCP:** `execute_code` acquires the bot's control connection for the call and releases it
   when it ends, so an idle MCP session holds no lease. Concurrent calls on one bot share one
   attach (reference-counted; the last one out disconnects, which also stops any background
@@ -280,6 +284,6 @@ Rules on a worker (conductor skill, `task-author.md`; the first two also in `CLA
 | Worker pool, `load.ts` | done; tested: live fork into a worker with a backup, kick of an online worker, refusal to load into a non-worker, a failed `--create` leaves nothing behind |
 | Gateway lease, SDK `takeover`, MCP release | done; `server/gateway/lease.test.ts` and `sdk/test/controller-lease.test.ts` pass; MCP release not exercised against a live MCP client |
 | Conductor skill, `task-author.md`, task-review fix brief, `CLAUDE.md`, READMEs, learnings | done |
-| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed; round 2 (whole branch again): 32 confirmed, all fixed; round 3: 22 confirmed (1 B in a round-2 MCP fix), all fixed |
+| Branch review | round 1: 7 reviewers + 2 verifiers, 34 findings confirmed, all fixed; round 2 (whole branch again): 32 confirmed, all fixed; round 3: 22 confirmed (1 B in a round-2 MCP fix), all fixed; round 4: 20 confirmed (SDK disconnect could hang on a black-holed host), all fixed; round 5 (mcp/ out of scope from here): 14 confirmed, all C or D, all fixed |
 | Shared server running this code | needs a merge to main, then an engine (`up.sh` sets `SAVE_ENDPOINTS=true`) and gateway restart, coordinated with other sessions using the shared stack |
 | Automatic library saves at milestones; per-task failure-branch saves | open (roadmap) |

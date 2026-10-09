@@ -41,11 +41,12 @@ import { resolveInterfaceOption, shortestNameMatch, type InterfaceOptionSelector
  * result into null instead, so callers get "nothing usable" rather than a
  * target whose interaction would fail with a silent `cant_reach`.
  */
-// Player trade interface components (see server/webclient/src/bot/types.ts
-// for the full trademain/tradeconfirm component map).
 /** How long disconnect() waits for the socket's close event before letting go of it anyway. */
 const DISCONNECT_CLOSE_WAIT_MS = 3000;
-const TRADE_SIDE_INV_ID = 3322;    // tradeside:inv - INV_BUTTON = Offer 1/5/10/All/X
+
+// Player trade interface components (see server/webclient/src/bot/types.ts
+// for the full trademain/tradeconfirm component map).
+const TRADE_SIDE_INV_ID = 3322;     // tradeside:inv - INV_BUTTON = Offer 1/5/10/All/X
 const TRADE_MAIN_INV_ID = 3415;     // trademain:inv - INV_BUTTON = Remove 1/5/10/All/X
 const TRADE_MAIN_ACCEPT_ID = 3420;  // trademain:accept
 const TRADE_CONFIRM_ACCEPT_ID = 3546; // tradeconfirm:accept
@@ -202,6 +203,14 @@ export class BotSDK {
     private leaseRefusedSince: number | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private intentionalDisconnect = false;
+    /**
+     * Bumped by every connect attempt and by disconnect(). An attempt whose number is no longer
+     * current was superseded: it must not open a socket (it would take the controller lease for a
+     * connection nobody holds). intentionalDisconnect can't say this, as each attempt resets it.
+     */
+    private attemptSeq = 0;
+    /** Settles the connect() in flight, so disconnect() never leaves its awaiters waiting. */
+    private abortAttempt: ((error: Error) => void) | null = null;
 
     constructor(config: SDKConfig) {
         this.config = {
@@ -233,17 +242,18 @@ export class BotSDK {
 
     /** Connect to the gateway WebSocket. */
     async connect(): Promise<void> {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            return;
-        }
-
+        // An attempt in flight first: its socket can be open before the gateway has accepted it.
         if (this.connectPromise) {
             return this.connectPromise;
+        }
+        if (this.isAuthenticated()) {
+            return;
         }
 
         // Claimed before the first await, so a second connect() joins this attempt instead of
         // opening a second socket (which would orphan one, still holding the controller lease).
-        const attempt: Promise<void> = this.openConnection().catch(error => {
+        const aborted = new Promise<never>((_, reject) => { this.abortAttempt = reject; });
+        const attempt: Promise<void> = Promise.race([this.openConnection(), aborted]).catch(error => {
             if (this.connectPromise === attempt) this.connectPromise = null;
             throw error;
         });
@@ -253,6 +263,7 @@ export class BotSDK {
 
     private async openConnection(): Promise<void> {
         this.intentionalDisconnect = false;
+        const seq = ++this.attemptSeq;
 
         const isReconnect = this.connectionState === 'reconnecting';
         if (!isReconnect) {
@@ -284,7 +295,7 @@ export class BotSDK {
 
         const configuredUrl = this.config.gatewayUrl || `ws://${this.config.host}:${this.config.port}`;
         return preferDirectGateway(configuredUrl).then(url => new Promise<void>((resolve, reject) => {
-            if (this.intentionalDisconnect) {
+            if (seq !== this.attemptSeq) {
                 reject(new Error('Disconnected while connecting'));
                 return;
             }
@@ -480,6 +491,9 @@ export class BotSDK {
     /** Disconnect from the gateway. */
     async disconnect(): Promise<void> {
         this.intentionalDisconnect = true;
+        this.attemptSeq++;
+        this.abortAttempt?.(new Error('Disconnected while connecting'));
+        this.abortAttempt = null;
 
         if (this.reconnectTimer) {
             clearTimeout(this.reconnectTimer);
@@ -739,7 +753,8 @@ export class BotSDK {
 
     /** Wait for WebSocket connection to be established. */
     async waitForConnection(timeout: number = 60000): Promise<void> {
-        if (this.isConnected()) {
+        // Authenticated, not just open: a reconnect's socket is open before the gateway accepts it.
+        if (this.isAuthenticated()) {
             return;
         }
 
