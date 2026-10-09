@@ -32,6 +32,8 @@ const TASK_MARGIN_MS = 2 * 60_000;
 const TASK_FALLBACK_TIMEOUT_MS = 10 * 60_000;
 /** Teardown after the task: client stop (SIGINT, then SIGKILL) plus a little slack. */
 const TEARDOWN_MS = STOP_GRACE_MS + 10_000;
+/** Covers what itestTimeout's stages omit (SDK connect, the extra client stop after a failed start), so bun's timeout never fires before the harness's and hides its output tail. */
+const TIMEOUT_MARGIN_MS = 30_000;
 /** Variables loadBotEnv exports from the last bot's bot.env; children read their own bot.env. */
 const BOT_ENV_KEYS = ['BOT_USERNAME', 'PASSWORD', 'SERVER', 'GATEWAY_URL', 'SHOW_CHAT', 'TELEMETRY'];
 
@@ -56,13 +58,15 @@ export function itestTimeout(opts: { taskMinutes: number }): number {
         STATE_READY_TIMEOUT_MS +
         taskTimeoutMs([`minutes:${opts.taskMinutes}`]) +
         TASK_TERM_GRACE_MS +
-        TEARDOWN_MS
+        TEARDOWN_MS +
+        TIMEOUT_MARGIN_MS
     );
 }
 
 // Everything this process spawned that is still alive, and the fixture dirs it created. A dying
-// parent (exit, SIGINT, SIGTERM) kills them, so a crashed or interrupted run leaves no client or
-// task controlling a bot. Handlers are registered once per process, on first spawn.
+// parent (exit, SIGINT, SIGTERM) SIGKILLs them at once (no graceful client stop, no task RESULT) and
+// removes the fixture dirs, so a crashed or interrupted run leaves no client or task controlling a
+// bot; a SIGKILLed client leaves its bot logged in until the server times the session out. Handlers are registered once per process, on first spawn.
 const liveChildren = new Set<ChildProcess>();
 const liveFixtures = new Set<string>();
 let cleanupInstalled = false;

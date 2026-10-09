@@ -11,7 +11,7 @@ const DEFAULT_JOBS = 3;
 const ROOT = 'conductor/test/integration';
 /** A test file that has not finished by now is killed and reported as failed. */
 const FILE_TIMEOUT_MS = 10 * 60_000;
-/** After SIGTERM a `bun test` child runs its fixture cleanup; SIGKILL if it takes longer. */
+/** A `bun test` child SIGKILLs its own children and exits at once on SIGTERM; this is only a backstop. */
 const KILL_GRACE_MS = 20_000;
 
 let filter = '';
@@ -86,8 +86,9 @@ function runFile(file: string): Promise<Outcome> {
     });
 }
 
-// Forward SIGINT/SIGTERM so the children run their fixture cleanup (stop lite clients, kill tasks),
-// wait for them, and exit non-zero.
+// Forward SIGINT/SIGTERM to the test processes. Each one's handler (harness.ts) SIGKILLs its lite
+// clients and run-task children immediately and removes its fixture dirs; there is no graceful stop,
+// so the killed bots stay logged in until the server times them out. Wait, then exit non-zero.
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
         if (aborting) return;
