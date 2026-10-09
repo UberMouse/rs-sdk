@@ -1,22 +1,21 @@
 // Integration harness: a fresh bot spawned from a generated save, driven through the real local
 // stack (engine + gateway + headless lite client). Each test gets its own never-used account, so
-// tests run in parallel and leave no state behind that another test reads.
-//
-// writeFixtureSave / startLiteClient mirror conductor/lib/saves.ts writeSave and
-// conductor/lib/client.ts startLiteClient on the parallel-bots branch; switch to those once it
-// lands.
-import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
+// tests run in parallel and leave no state behind that another test reads. Saves are written
+// through the engine's management port (conductor/lib/saves.ts writeSave), so the engine says
+// which file it reads; clients start through conductor/lib/client.ts.
+import { spawn, type ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { appendFileSync, mkdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { BotActions } from '../../../sdk/actions';
 import type { BotSDK } from '../../../sdk/index';
 import { crc32 } from 'node:zlib';
 import { createSaveData, Skills, type SaveConfig } from '../../../sdk/test/utils/save-generator';
+import { type LiteClient, startLiteClient } from '../../lib/client';
 import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT, type BotEnv } from '../../lib/env';
+import { writeSave } from '../../lib/saves';
 import { distance } from '../../lib/util';
 
-const LITE_READY = /Gateway connected, registering as/;
 const LITE_START_TIMEOUT_MS = 60_000;
 const STATE_READY_TIMEOUT_MS = 30_000;
 /** The spawn tile and the tile the engine logs the bot in at may differ by a step. */
@@ -35,7 +34,7 @@ const TASK_FALLBACK_TIMEOUT_MS = 10 * 60_000;
 const TEARDOWN_MS = STOP_GRACE_MS + 10_000;
 /** Covers what itestTimeout's stages omit (SDK connect, the extra client stop after a failed start), so bun's timeout never fires before the harness's and hides its output tail. */
 const TIMEOUT_MARGIN_MS = 30_000;
-/** Variables loadBotEnv exports from the last bot's bot.env; children read their own bot.env. */
+/** Variables loadBotEnv exports (sdk/runner.ts loadEnvFile) from the last bot's bot.env; children read their own bot.env. */
 const BOT_ENV_KEYS = ['BOT_USERNAME', 'PASSWORD', 'SERVER', 'GATEWAY_URL', 'SHOW_CHAT', 'TELEMETRY'];
 
 /** Task run time from the `minutes:N` stops (the earliest ends the run), if any. */
@@ -106,20 +105,6 @@ function childEnv(): NodeJS.ProcessEnv {
     return env;
 }
 
-/**
- * The engine directory whose data/players the running server reads. RS_ENGINE_DIR wins; otherwise
- * the main checkout (git's common dir), because one shared server runs from there for every
- * worktree.
- */
-export function engineDir(): string {
-    if (process.env.RS_ENGINE_DIR) return process.env.RS_ENGINE_DIR;
-    const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], {
-        cwd: REPO_ROOT,
-        encoding: 'utf8',
-    }).trim();
-    return join(dirname(common), 'server/engine');
-}
-
 /** A fresh account name that has never been online. */
 export function freshBotName(): string {
     const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -178,15 +163,10 @@ function patchSkillXp(save: Uint8Array, config: SaveConfig, xp: Record<string, n
     return out;
 }
 
-/** Write a generated save where the running engine loads it (atomic tmp + rename). */
-export function writeFixtureSave(username: string, config: SaveConfig, xp?: Record<string, number>): string {
-    const file = join(engineDir(), 'data/players/main', `${username.toLowerCase()}.sav`);
-    mkdirSync(dirname(file), { recursive: true });
-    const tmp = `${file}.tmp-${process.pid}`;
+/** Write a generated save where the running engine loads it (writeSave asks the engine which file); returns its path. */
+export async function writeFixtureSave(env: BotEnv, config: SaveConfig, xp?: Record<string, number>): Promise<string> {
     const bytes = createSaveData(config);
-    writeFileSync(tmp, xp ? patchSkillXp(bytes, config, xp) : bytes);
-    renameSync(tmp, file);
-    return file;
+    return (await writeSave(env, xp ? patchSkillXp(bytes, config, xp) : bytes)).path;
 }
 
 /** bots/<name>/bot.env for the local stack, as `create-bot.ts --local --no-chat` writes it. */
@@ -208,87 +188,12 @@ function writeBotEnv(name: string): void {
     );
 }
 
-export interface LiteClient {
-    pid: number;
-    /** Combined stdout/stderr of the client: conductor/runs/<bot>/lite-client.log. */
-    log: string;
-    /** SIGINT, then SIGKILL after 5s; resolves once the process is gone. */
-    stop(): Promise<void>;
-}
-
 function logTail(file: string): string {
     try {
         return readFileSync(file, 'utf8').split('\n').slice(-LOG_TAIL_LINES).join('\n');
     } catch {
         return '(no log)';
     }
-}
-
-/**
- * Spawn the headless lite client for `botName`; resolves once it has registered with the gateway.
- * The child stays attached to this process (no detach/unref) and is SIGKILLed if this process
- * exits or is signalled, so a crashed test run cannot orphan it.
- */
-export function startLiteClient(botName: string, opts: { timeoutMs?: number } = {}): Promise<LiteClient> {
-    const timeoutMs = opts.timeoutMs ?? LITE_START_TIMEOUT_MS;
-    const log = join(REPO_ROOT, 'conductor/runs', botName, 'lite-client.log');
-    mkdirSync(dirname(log), { recursive: true });
-    writeFileSync(log, '');
-    const proc = spawn(process.execPath, ['src/lite/runner.ts', botName], {
-        cwd: join(REPO_ROOT, 'server/webclient'),
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: childEnv(),
-    });
-    track(proc);
-    let gone = false;
-    const exited = new Promise<void>(resolve => {
-        const onGone = () => {
-            gone = true;
-            resolve();
-        };
-        proc.once('exit', onGone);
-        proc.once('error', onGone);
-    });
-    const client: LiteClient = {
-        pid: proc.pid ?? -1,
-        log,
-        async stop() {
-            if (gone) return;
-            proc.kill('SIGINT');
-            const timer = setTimeout(() => proc.kill('SIGKILL'), STOP_GRACE_MS);
-            await exited;
-            clearTimeout(timer);
-        },
-    };
-    return new Promise((resolve, reject) => {
-        let seen = '';
-        let settled = false;
-        // Stop the process before rejecting: the caller never receives `client`, so cannot stop it.
-        const fail = async (message: string) => {
-            if (settled) return;
-            settled = true;
-            clearTimeout(timer);
-            await client.stop();
-            reject(new Error(`${message}; ${log}:\n${logTail(log)}`));
-        };
-        const timer = setTimeout(
-            () => void fail(`lite client for ${botName} not ready after ${timeoutMs}ms`),
-            timeoutMs,
-        );
-        const onData = (chunk: Buffer) => {
-            appendFileSync(log, chunk);
-            seen += chunk.toString();
-            if (!settled && LITE_READY.test(seen)) {
-                settled = true;
-                clearTimeout(timer);
-                resolve(client);
-            }
-        };
-        proc.stdout?.on('data', onData);
-        proc.stderr?.on('data', onData);
-        proc.once('error', e => void fail(`lite client for ${botName} failed to spawn (${e.message})`));
-        proc.once('exit', code => void fail(`lite client for ${botName} exited (${code}) before it was ready`));
-    });
 }
 
 /** What every fixture has; `connect: false` tests get only this (they drive the bot via runTask). */
@@ -304,10 +209,11 @@ export interface FixtureBot extends FixtureBase {
     bot: BotActions;
 }
 
-/** Remove the lite client log (and its directory if that leaves it empty) after a passing run. */
+/** Remove the lite client's log and pid file (and its directory if that leaves it empty) after a passing run. */
 function removeLiteLog(botName: string): void {
     const log = join(REPO_ROOT, 'conductor/runs', botName, 'lite-client.log');
     rmSync(log, { force: true });
+    rmSync(join(dirname(log), 'lite-client.pid'), { force: true });
     try {
         rmdirSync(dirname(log));
     } catch {
@@ -339,7 +245,6 @@ export async function withFixtureBot<T>(
     opts: { connect?: boolean; xp?: Record<string, number> } = {},
 ): Promise<T> {
     const name = freshBotName();
-    writeFixtureSave(name, save, opts.xp);
     liveFixtures.add(name);
     installCleanup();
     writeBotEnv(name);
@@ -347,8 +252,10 @@ export async function withFixtureBot<T>(
     let sdk: BotSDK | undefined;
     let failed = false;
     try {
-        client = await startLiteClient(name);
         const env = loadBotEnv(name);
+        const savePath = await writeFixtureSave(env, save, opts.xp);
+        // Attached: the process's exit (killAll's process.exit included) SIGKILLs it.
+        client = await startLiteClient(name, { timeoutMs: LITE_START_TIMEOUT_MS, attached: true });
         // Observe-only connections still see state, so the spawn check never takes control.
         const connected = await connectSdk(env, opts.connect === false ? 'observe' : 'control');
         sdk = connected;
@@ -357,8 +264,7 @@ export async function withFixtureBot<T>(
         if (save.position && p && distance({ x: p.worldX, z: p.worldZ }, save.position) > SPAWN_TOLERANCE) {
             throw new Error(
                 `${name} logged in at (${p.worldX},${p.worldZ}), not the fixture position ` +
-                    `(${save.position.x},${save.position.z}): the save was not loaded. Is ${engineDir()} the ` +
-                    'engine directory the running server uses? Set RS_ENGINE_DIR.',
+                    `(${save.position.x},${save.position.z}): the save written to ${savePath} was not loaded.`,
             );
         }
         // "Ready" only means a position and some entities: the inventory snapshot can arrive later.
