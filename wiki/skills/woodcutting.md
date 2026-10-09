@@ -6,7 +6,7 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 
 | Axe | Level | How to Obtain |
 |-----|-------|--------------|
-| Bronze | 1 | Free spawn near Lumbridge windmill, Bob's Axes |
+| Bronze | 1 | Bob's Axes (16 gp), Bandit Duty Free, Jiminua's Jungle Store, Obli's General Store; ground spawns at Camelot (floor 1), west Karamja and m41_58 |
 | Iron | 1 | Bob's Axes, Smithing |
 | Steel | 6 | Bob's Axes, Tree Spirit drops, Smithing |
 | Black | 6 | Black Demon / KBD drops, player trade |
@@ -18,7 +18,7 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 
 | Tree | Level | Log Type | Locations |
 |------|-------|----------|-----------|
-| Normal | 1 | Logs | Draynor, south of Seers, Feldip Hills |
+| Normal | 1 | Logs | Lumbridge, Draynor, south of Seers, Feldip Hills |
 | Oak | 15 | Oak logs | East of Draynor bank, south of Seers bank |
 | Willow | 30 | Willow logs | SW of Draynor bank, NW of Seers bank |
 | Maple | 45 | Maple logs | North and south of Seers bank |
