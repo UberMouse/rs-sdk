@@ -167,7 +167,10 @@ Report per your instructions: RESULT verbatim, cause, diagnosis, suggested next 
 
 Chain the steps of one plan into one dispatch (withdraw -> chop -> burn, bank -> shop -> walk)
 whenever each step's params are known up front: a runner per short step is mostly overhead.
-Split only where the next step depends on judging the previous result.
+Split only where the next step depends on judging the previous result. Before writing a chain,
+read the inventory (`bun sdk/cli.ts <bot>`) and walk it through each step: leftovers from an
+earlier plan (2 Oak logs once failed a fletching preflight that works one log type at a time)
+and a full inventory before a gathering step both need a bank or burn step first.
 
 **task-author**
 ```
