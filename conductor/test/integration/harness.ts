@@ -294,7 +294,7 @@ export async function withFixtureBot<T>(
 }
 
 export interface TaskRun {
-    /** The parsed `RESULT <json>` line (a TaskResult). */
+    /** The parsed `RESULT <json>` line (a TaskResult; a PlanResult from runPlan). */
     result: Record<string, any>;
     stdout: string;
     stderr: string;
@@ -308,23 +308,14 @@ function outputTail(stdout: string, stderr: string): string {
 }
 
 /**
- * Run `bun conductor/run-task.ts` as a subprocess against `bot` and parse its RESULT line. After
- * `timeoutMs` (default: the earliest `minutes:N` stop plus a margin, else 10 minutes) it sends
- * SIGTERM (run-task prints its own RESULT then), SIGKILL after a grace period, and rejects with
- * the output tail once the process is gone.
+ * Run `bun conductor/run-task.ts <args>` as a subprocess and parse its RESULT line; `what` names the
+ * run in the failure messages (a task, or `--plan <file>`). After `timeoutMs` it sends SIGTERM
+ * (run-task prints its own RESULT then), SIGKILL after a grace period, and rejects with the output
+ * tail once the process is gone.
  */
-export function runTask(
-    bot: string,
-    task: string,
-    params: unknown,
-    until: string[],
-    opts: { timeoutMs?: number } = {},
-): Promise<TaskRun> {
-    const timeoutMs = opts.timeoutMs ?? taskTimeoutMs(until);
-    const args = ['conductor/run-task.ts', bot, task, '--params', JSON.stringify(params)];
-    for (const u of until) args.push('--until', u);
+function runConductor(what: string, args: string[], timeoutMs: number): Promise<TaskRun> {
     return new Promise((resolve, reject) => {
-        const proc = spawn(process.execPath, args, {
+        const proc = spawn(process.execPath, ['conductor/run-task.ts', ...args], {
             cwd: REPO_ROOT,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: childEnv(),
@@ -353,7 +344,7 @@ export function runTask(
         proc.once('close', exitCode =>
             settle(() => {
                 if (timedOut) {
-                    reject(new Error(`run-task ${task} timed out after ${timeoutMs}ms\n${outputTail(stdout, stderr)}`));
+                    reject(new Error(`run-task ${what} timed out after ${timeoutMs}ms\n${outputTail(stdout, stderr)}`));
                     return;
                 }
                 const line = stdout.split('\n').findLast(l => l.startsWith('RESULT '));
@@ -376,4 +367,41 @@ export function runTask(
             }),
         );
     });
+}
+
+const untilArgs = (until: string[]) => until.flatMap(u => ['--until', u]);
+
+/**
+ * Run catalog task `task` on `bot` through run-task.ts and parse its RESULT. `timeoutMs` defaults to
+ * the earliest `minutes:N` stop plus a margin, else 10 minutes.
+ */
+export function runTask(
+    bot: string,
+    task: string,
+    params: unknown,
+    until: string[],
+    opts: { timeoutMs?: number } = {},
+): Promise<TaskRun> {
+    return runConductor(
+        task,
+        [bot, task, '--params', JSON.stringify(params), ...untilArgs(until)],
+        opts.timeoutMs ?? taskTimeoutMs(until),
+    );
+}
+
+/**
+ * Run the plan in `file` (relative to the repo root) on `bot` through `run-task.ts --plan`, as runTask
+ * runs a task; its RESULT is a PlanResult, and `minutes:N` counts from the plan's start.
+ */
+export function runPlan(
+    bot: string,
+    file: string,
+    until: string[],
+    opts: { timeoutMs?: number } = {},
+): Promise<TaskRun> {
+    return runConductor(
+        `--plan ${file}`,
+        [bot, '--plan', file, ...untilArgs(until)],
+        opts.timeoutMs ?? taskTimeoutMs(until),
+    );
 }
