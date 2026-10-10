@@ -1,0 +1,137 @@
+{
+    "name": "fm-logs-lumbridge-ne",
+    "purpose": "Fresh account at open ground NE of Lumbridge (3256,3260) with tinderbox + 10 Logs; firemaking regression, area {x:3256,z:3260,radius:6}.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3256,
+                "z": 3260
+            },
+            "skills": {
+                "Hitpoints": 10
+            },
+            "inventory": [
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "af2fb4119506430079c74749bae6857fe79ed2b7",
+    "createdAt": "2026-10-10T02:32:13.075Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3256,
+            "z": 3260,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

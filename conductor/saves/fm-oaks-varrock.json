@@ -1,0 +1,285 @@
+{
+    "name": "fm-oaks-varrock",
+    "purpose": "Firemaking 15, Woodcutting 46, HP 10, tinderbox + 26 Oak logs at the Varrock oaks (3190,3458). Firemaking with area {x:3190,z:3458,radius:6}: a narrow cobble path that fits few fires.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3190,
+                "z": 3458
+            },
+            "skills": {
+                "Firemaking": 15,
+                "Woodcutting": 46,
+                "Hitpoints": 10
+            },
+            "inventory": [
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "a74f9c08737c6de344b593fa34b797840df3566f",
+    "createdAt": "2026-10-10T02:28:33.319Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3190,
+            "z": 3458,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10,
+            "Woodcutting": 46,
+            "Firemaking": 15
+        },
+        "inventory": [
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
