@@ -116,7 +116,10 @@ runs them and handles death, low HP, dialogs and stops at every wait (design:
   Grand Exchange is off locally, so a `.sav` file is the whole saved state of an offline player.
 - Tasks: `bun conductor/run-task.ts --list` for the catalog;
   `bun conductor/run-task.ts {username} <task> --params '<json>' --until minutes:1` to run one.
-  The last line is always `RESULT <json>`.
+  Plans compose tasks into one looping run: `bun conductor/run-task.ts {username} --plan <file>
+  --until minutes:1` (promoted plans in `conductor/plans/`, drafts in
+  `conductor/runs/<bot>/plans/`; design: `conductor/docs/plans.md`). The last line is always
+  `RESULT <json>`.
 - Tools in `conductor/tools/`: `client.ts` (watchable client, GPU off by default),
   `screenshot.ts`, `stats.ts` (XP/hr per method), `progress.ts` (distance to max), `save.ts`
   (snapshot a live bot's save without a logout; restore it), `load.ts` (load a library save

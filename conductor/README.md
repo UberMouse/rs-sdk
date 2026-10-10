@@ -6,16 +6,18 @@ current; the tasks themselves are deterministic programs that grind without an L
 
 ```
 conductor (Claude Code session, .claude/skills/conductor)
- ├─ task-runner          runs one task, diagnoses failures (world vs script)
- ├─ knowledge-curator    after every run: folds what it taught into learnings/ + wiki/
+ ├─ task-runner          owns a goal: writes and runs plans, debugs them (world vs script)
+ ├─ knowledge-curator    once per goal: folds what it taught into learnings/ + wiki/
  ├─ task-author          writes/fixes tasks, smoke-tests them
  │    └─ task-review     5 lens reviewers + verifier -> fix -> commit or revert
  └─ retrospective        every 10 runs: outcomes + agent transcripts -> roadmap, proposals
        │
        ▼
+ bun conductor/run-task.ts <bot> --plan <file> --until <stop>              →  RESULT <json>
  bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>   →  RESULT <json>
        │
        ▼
+ conductor/plans/*.ts   definePlan({ name, phases: [phase(task, params, { when, until, onFail })] })
  conductor/tasks/*.ts   defineTask({ params, memory, guards, preflight, steps: [{ name, when, *run }] })
  conductor/lib/engine   first valid step runs · guards · stop conditions · watchdog · screenshots
  conductor/actions      ops a step composes: chop, interactLoc, ...
@@ -133,3 +135,28 @@ bun conductor/run-task.ts conductor1 woodcutting --params '{"area":{"x":3195,"z"
 Run artifacts (NDJSON logs, screenshots, progress snapshots, save snapshots) land in
 `conductor/runs/<bot>/` (gitignored). Conductor run state lives in `.durable-state/`
 (gitignored, see `.claude/skills/durable-state`).
+
+## Plans
+
+A plan composes catalog tasks into one run that loops: chop -> burn -> chop, mine -> bank ->
+smelt. It is an ordered list of phases (`conductor/lib/plan.ts`: `definePlan`, `phase`), each a
+whole task run with params and pure predicates over a view of the world (`when`, `until`); every
+time a phase ends, the first phase whose `when` holds runs next, so a plan resumes on any
+inventory. The reference is `conductor/plans/chop-burn.ts`.
+
+```bash
+bun conductor/run-task.ts conductor1 --plan conductor/plans/chop-burn.ts --until minutes:5
+```
+
+`--until` counts from the plan's start. The RESULT is a task result with `task: "plan:<name>"`,
+per-phase totals (`phases`) and the last phase runs (`recent`); the plan logs to
+`conductor/runs/<bot>/<stamp>-plan-<name>.ndjson` beside a copy of its source, and each phase run
+has its own log and recording, so `replay.ts` works per phase. `stats.ts` counts a plan once as
+`plan:<name>` (`--phases` adds its phase runs).
+
+A task-runner owns a goal and writes the plans for it as drafts in
+`conductor/runs/<bot>/plans/<name>.ts`; the conductor promotes the ones that worked into
+`conductor/plans/` and commits them with the runs' results. Plans import only
+`@conductor/lib/plan` and `@conductor/tasks/<task>`, so promotion is a move. Design and
+rationale: [`docs/plans.md`](docs/plans.md); the plan smoke test is
+`bun run test:integration plan`.

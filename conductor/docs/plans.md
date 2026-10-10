@@ -1,7 +1,9 @@
 # Plans: composing catalog tasks
 
 Design for running several catalog tasks as one dispatch that loops: chop -> burn -> chop,
-fish -> cook -> thieve, mine -> bank -> smelt -> smith, fight -> bank -> fight. Not built yet.
+fish -> cook -> thieve, mine -> bank -> smelt -> smith, fight -> bank -> fight. Built per
+[`plans-spec.md`](plans-spec.md): `conductor/lib/plan.ts`, `run-task.ts --plan`, the promoted
+`conductor/plans/chop-burn.ts`, and the goal-owning task-runner (`.claude/agents/task-runner.md`).
 
 Decisions (2026-10-10):
 
