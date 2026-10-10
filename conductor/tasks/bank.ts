@@ -6,7 +6,7 @@ import { log, type Op } from '../core/op';
 import { type Area, AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { type BankSite, bankArea, nearestBank } from '../lib/banks';
 import { defineTask, type TaskContext } from '../lib/task';
-import { countItems, exactName } from '../lib/util';
+import { countItems, exactName, INVENTORY_SLOTS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Consecutive failed opens before the task fails. */
@@ -34,7 +34,7 @@ const Params = z.object({
     depositAllExcept: z.array(z.string().min(1)).optional(),
     /**
      * Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`,
-     * unless `upTo`: then it withdraws the lesser of `count` and what the open bank lists (a same-trip deposit of the item counts), and none held is skipped.
+     * unless `upTo`: then it withdraws the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; stackability is not visible, so only an item already stacked, more than one in a slot, needs no slot), and none held or no room is skipped.
      */
     withdraw: z
         .array(
@@ -97,6 +97,21 @@ function recordOrMoved(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: strin
     return Math.max(0, op.kind === 'deposit' ? inFlight.heldBefore - held : held - inFlight.heldBefore);
 }
 
+/** Records an `upTo` entry that came up short for the done reason: `<item> <got>/<count>`, or `<item> skipped (<why>)` when none of it was got. */
+function noteUpToShort(ctx: Ctx, op: { item: string; count: number }, got: number, why: string): void {
+    ctx.memory.upToShort.push(got > 0 ? `${op.item} ${got}/${op.count}` : `${op.item} skipped (${why})`);
+}
+
+/**
+ * How many of an item the inventory can take: its free slots, or unlimited when the item is already a
+ * stack there (a slot holding more than one is stackable; a single one may not be, so it still needs a slot).
+ */
+function inventoryRoom(ctx: Ctx, pattern: RegExp): number {
+    const inv = ctx.state().inventory;
+    if (inv.some(i => pattern.test(i.name) && i.count > 1)) return Infinity;
+    return Math.max(0, INVENTORY_SLOTS - inv.length);
+}
+
 /** Returns a failure message, or null when the operation went through. */
 function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     if (op.kind === 'deposit') {
@@ -140,17 +155,21 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
                 ? `withdraw ${op.item} x${op.count} (up to): ${moved} already withdrawn, the bank holds no more`
                 : `withdraw ${op.item} x${want} (up to): skipped, the bank holds none`,
         );
-        ctx.memory.upToShort.push(
-            moved > 0 ? `${op.item} ${moved}/${op.count}` : `${op.item} skipped (bank held none)`,
-        );
+        noteUpToShort(ctx, op, moved, 'bank held none');
         return null;
     }
     if (have < want && !op.upTo) return `bank holds ${have} ${op.item}, need ${want}`;
-    const amount = Math.min(want, have);
+    const room = op.upTo ? inventoryRoom(ctx, pattern) : Infinity;
+    const amount = Math.min(want, have, room);
+    if (amount === 0) {
+        yield* log(`withdraw ${op.item} x${want} (up to): skipped, no free inventory slot`);
+        noteUpToShort(ctx, op, moved, 'no free inventory slot');
+        return null;
+    }
     const r = yield* withdraw(ctx, pattern, amount);
     yield* log(`withdraw ${op.item} x${amount}: ${r.message}`);
     if (r.ok) {
-        if (moved + amount < op.count) ctx.memory.upToShort.push(`${op.item} ${moved + amount}/${op.count}`);
+        if (moved + amount < op.count) noteUpToShort(ctx, op, moved + amount, '');
         return null;
     }
     return `withdraw ${op.item} x${amount} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
@@ -204,7 +223,7 @@ export default defineTask({
         'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the nearest of Varrock West/East, Falador West/East and Edgeville by straight-line distance, ' +
         'never Draynor (dark wizards) or Al Kharid (toll); fails if the walk cannot get there, and refuses off the surface without an area). ' +
         'The no-area walk can be long (Lumbridge to Varrock East is ~80 tiles, and an NPC attacks unarmed low-level bots on that road, learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
-        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count and what the bank holds, and none held is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
+        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count, what the bank holds and what the inventory can take (free slots; an item already stacked in the inventory needs none), and none held or no room is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null, upToShort: [] }),

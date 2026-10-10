@@ -350,6 +350,32 @@ describe('bank: failures', () => {
         expect(r.result.reason).toBe('finish: all 1 bank operations made');
     });
 
+    test('upTo takes only what fits the free inventory slots and names the short entry', async () => {
+        const nearlyFull = standing.inv('Logs', 25);
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Copper ore', count: 8, upTo: true }] },
+            timeline: nearlyFull.series(1),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(sentAs(r, 'withdraw Copper ore')).toMatchObject([{ amount: 3 }]);
+        expect(r.result.reason).toBe('finish: all 1 bank operations made; up to: Copper ore 3/8');
+    });
+
+    test('upTo with a full inventory skips the entry and says why', async () => {
+        const full = standing.inv('Logs', 28);
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Copper ore', count: 2, upTo: true }] },
+            timeline: full.series(1),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([OPEN, CLOSE]);
+        expect(r.result.reason).toBe(
+            'finish: all 1 bank operations made; up to: Copper ore skipped (no free inventory slot)',
+        );
+    });
+
     test('upTo with enough in the bank withdraws exactly count', async () => {
         const r = await simulate(bank, {
             params: { withdraw: [{ item: 'Copper ore', count: 3, upTo: true }] },
