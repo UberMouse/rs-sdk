@@ -50,12 +50,12 @@ import { NpcStat } from '#/engine/entity/NpcStat.js';
 import Obj from '#/engine/entity/Obj.js';
 import Player from '#/engine/entity/Player.js';
 import { PlayerLoading } from '#/engine/entity/PlayerLoading.js';
-import { EntityQueueState, PlayerQueueType } from '#/engine/entity/PlayerQueueRequest.js';
+import { PlayerQueueType } from '#/engine/entity/PlayerQueueRequest.js';
 import { PlayerStat, PlayerStatEnabled, PlayerStatNameMap } from '#/engine/entity/PlayerStat.js';
 import { PlayerTelemetryEvent } from '#/engine/entity/tracking/PlayerTelemetry.js';
 import { SessionLog } from '#/engine/entity/tracking/SessionLog.js';
 import { WealthTransactionEvent, WealthEvent } from '#/engine/entity/tracking/WealthEvent.js';
-import GameMap, { changeLocCollision, changeNpcCollision, changePlayerCollision } from '#/engine/GameMap.js';
+import GameMap, { changeLocCollision, changeNpcCollision, changeBlockCollision, changePlayerOccCollision } from '#/engine/GameMap.js';
 import { Inventory } from '#/engine/Inventory.js';
 import ScriptPointer from '#/engine/script/ScriptPointer.js';
 import ScriptProvider from '#/engine/script/ScriptProvider.js';
@@ -75,6 +75,7 @@ import ClientSocket from '#/server/ClientSocket.js';
 import { FriendsServerOpcodes } from '#/server/friend/FriendServer.js';
 import { FriendThreadMessage } from '#/server/friend/FriendThread.js';
 import { LoggerEventType } from '#/server/logger/LoggerEventType.js';
+import { cycleWorldFeed } from '#/web/worldfeed.js';
 import { filteredEventTypes, groupedEventTypes } from '#/server/logger/WealthEventType.js';
 import { type GenericLoginThreadResponse, isPlayerLoginResponse, isPlayerLogoutResponse } from '#/server/login/index.d.js';
 import {
@@ -104,6 +105,7 @@ import VarBitType from '#/cache/config/VarBitType.js';
 import FriendlistLoaded from '#/network/game/server/model/FriendlistLoaded.js';
 import HashTable from '#/datastruct/HashTable.js';
 import Midi from '#/cache/midi/Midi.js';
+import { WorldQueue } from '#/engine/WorldQueue.js';
 
 const priv = forge.pki.privateKeyFromPem(fs.readFileSync('data/config/private.pem', 'ascii'));
 
@@ -169,7 +171,7 @@ class World {
     // zones
     readonly zonesTracking: Set<Zone> = new Set();
     readonly locObjTracker: LinkList<LocObjEvent> = new LinkList();
-    readonly queue: LinkList<EntityQueueState> = new LinkList();
+    readonly queue: LinkList<WorldQueue> = new LinkList();
     readonly npcEventQueue: LinkList<NpcEventRequest> = new LinkList();
     readonly objDelayedQueue: LinkList<ObjDelayedRequest> = new LinkList();
 
@@ -200,6 +202,13 @@ class World {
 
     loginAddressAttempts: TTLCache<string, number> = new TTLCache({ ttl: 60000 });
     loginDeviceAttempts: TTLCache<string, number> = new TTLCache({ ttl: 15000 });
+    // rs-sdk: logins refused for an old client revision, by safe username. The gateway reads this
+    // (management /outdated-client) to tell that bot's SDK scripts to update their checkout.
+    outdatedClients: TTLCache<string, { revision: number; at: number }> = new TTLCache({ ttl: 30 * 60_000, max: 10_000 });
+    // each record costs an RSA decode (~0.3 ms) on the tick thread; a fleet of old clients
+    // retrying after an upgrade would otherwise pay it for every attempt
+    private outdatedDecodeTick: number = -1;
+    private outdatedDecodes: number = 0;
 
     constructor() {
         this.loginThread.on('message', msg => {
@@ -448,6 +457,9 @@ class World {
             // - flush packets
             this.processClientsOut();
 
+            // rs-sdk: live world feed for spectator viewers (reads the info masks before cleanup)
+            cycleWorldFeed();
+
             // cleanup
             // - reset zones
             // - reset players
@@ -606,8 +618,7 @@ class World {
 
         // - world queue
         for (const request of this.queue.all()) {
-            const delay = request.delay--;
-            if (delay > 0) {
+            if (this.currentTick < request.executionTick) {
                 continue;
             }
 
@@ -742,7 +753,7 @@ class World {
                 npc.turn();
             } catch (err) {
                 console.error(err);
-                this.removeNpc(npc, -1);
+                this.removeNpc(npc, 0);
             }
         }
         this.cycleStats[WorldStat.NPC] = Date.now() - start;
@@ -780,11 +791,16 @@ class World {
                 }
                 // - engine queue
                 player.processEngineQueue();
-                // Update target facing
+                // Face the interaction target -- both halves, the same tick the op set the target (the op ran
+                // in processClientsIn) and before processInteraction can clear it: the FACE_ENTITY mask, plus
+                // the serverside faceAngle toward a pathing target (for new observers).
                 player.setFaceEntity();
+                player.reorientEntity();
                 // - interactions
                 // - movement
                 player.processInteraction();
+                // After movement: face a loc/obj target if we walked over and held still (needs stepsTaken).
+                player.reorient();
                 if (!player.busy() && !player.delayed && !player.loggingOut) player.recoverItems();
                 if (Environment.GE_ENABLED) tickExchange(player);
 
@@ -931,6 +947,7 @@ class World {
 
                     if (other instanceof NetworkPlayer && player instanceof NetworkPlayer) {
                         other.client = player.client;
+                        other.client.player = other;
                         other.session = other.client.uuid;
                         other.client.send(Uint8Array.from([15]));
                     }
@@ -1054,21 +1071,30 @@ class World {
 
                 const remote = player.client.remoteAddress;
                 if (remote.indexOf('.') !== -1) {
-                    // IPv4 - last octet determines the bucket
+                    // IPv4
                     const octets = remote.split('.');
-                    const bucket = (parseInt(octets[0]) << 24) | (parseInt(octets[1]) << 16) | (parseInt(octets[2]) << 8) | parseInt(octets[3]);
+                    const bucket = ((parseInt(octets[0]) << 24) | (parseInt(octets[1]) << 16) | (parseInt(octets[2]) << 8) | parseInt(octets[3])) >>> 0;
                     this.playerLoop.add(BigInt(bucket), player);
                 } else if (remote.indexOf(':') !== -1) {
-                    // IPv6 - site prefix determines the bucket.
-                    // Compressed addresses (e.g. "2a01:4f8::2") can yield an empty hextet ->
-                    // parseInt('') = NaN -> BigInt(NaN) THROWS, aborting processLogins for every
-                    // queued player this tick (and forever after, since newPlayers is only
-                    // cleared at the end). Fall back to bucket 0 for unparseable prefixes.
-                    const hextets = remote.split(':');
-                    const bucket = parseInt(hextets[2], 16) % 256;
-                    this.playerLoop.add(BigInt(Number.isNaN(bucket) ? 0 : bucket), player);
+                    // IPv6
+                    const hextets = remote.split('%', 1)[0].split(':');
+                    let omitted = 8 - hextets.filter(Boolean).length;
+                    let key = 0n;
+                    for (const hextet of hextets) {
+                        if (hextet) {
+                            // rs-sdk: a non-hex hextet (bad proxy header) is NaN, and BigInt(NaN)
+                            // THROWS - aborting processLogins for every queued player this tick and
+                            // forever after. Treat it as 0 instead.
+                            const value = parseInt(hextet, 16);
+                            key = (key << 16n) | BigInt(Number.isNaN(value) ? 0 : value & 0xffff);
+                        } else if (omitted) {
+                            key <<= BigInt(omitted * 16);
+                            omitted = 0;
+                        }
+                    }
+                    this.playerLoop.add(key, player);
                 } else {
-                    // unknown address format - still must enter the player loop or they become
+                    // rs-sdk: unknown address format - still must enter the player loop or they become
                     // a zombie (in world, but never processed and never sent another packet)
                     this.playerLoop.add(0n, player);
                 }
@@ -1142,7 +1168,7 @@ class World {
 
         // TODO: benchmark this?
         for (const player of this.playerLoop.all()) {
-            player.reorient();
+            // facing (reorientEntity/reorient) runs in the player's turn (processPlayers), not here.
             player.buildArea.rebuildNormal(); // set origin before compute player is why this is above.
 
             const appearance = player.masks & PlayerInfoProt.APPEARANCE ? player.generateAppearance() : (player.appearanceBuf ?? player.generateAppearance());
@@ -1195,7 +1221,7 @@ class World {
         }
 
         for (const npc of this.npcs) {
-            npc.reorient();
+            // facing (reorientEntity/reorient) runs in Npc.turn(), not here.
             rsbuf.computeNpc(
                 npc.x,
                 npc.level,
@@ -1421,7 +1447,7 @@ class World {
     }
 
     enqueueScript(script: ScriptState, delay: number = 0): void {
-        this.queue.addTail(new EntityQueueState(script, delay + 1));
+        this.queue.addTail(new WorldQueue(script, this.currentTick + delay + 1));
     }
 
     getInventory(inv: number): Inventory | null {
@@ -1459,7 +1485,7 @@ class World {
                 break;
             case BlockWalk.ALL:
                 changeNpcCollision(npc.width, npc.x, npc.z, npc.level, true);
-                changePlayerCollision(npc.width, npc.x, npc.z, npc.level, true);
+                changeBlockCollision(npc.width, npc.x, npc.z, npc.level, true);
                 break;
         }
 
@@ -1479,6 +1505,10 @@ class World {
     }
 
     removeNpc(npc: Npc, duration: number): void {
+        if (!npc.isActive) {
+            return;
+        }
+
         const zone = this.gameMap.getZone(npc.x, npc.z, npc.level);
         const adjustedDuration = this.scaleByPlayerCount(duration);
         zone.leave(npc);
@@ -1490,7 +1520,7 @@ class World {
                 break;
             case BlockWalk.ALL:
                 changeNpcCollision(npc.width, npc.x, npc.z, npc.level, false);
-                changePlayerCollision(npc.width, npc.x, npc.z, npc.level, false);
+                changeBlockCollision(npc.width, npc.x, npc.z, npc.level, false);
                 break;
         }
 
@@ -1794,6 +1824,7 @@ class World {
         delete this.players[player.slot];
         player.unlink();
         changeNpcCollision(player.width, player.x, player.z, player.level, false);
+        changePlayerOccCollision(player.width, player.x, player.z, player.level, false);
         player.cleanup();
 
         player.isActive = false;
@@ -2078,6 +2109,38 @@ class World {
                 console.error(err);
             }
         });
+    }
+
+    // rs-sdk: an old client's login block is laid out like ours (274 and 289 differ only in the
+    // revision), so read its username: the gateway can then tell that bot's scripts to update.
+    private noteOutdatedClient(revision: number): void {
+        if (this.outdatedDecodeTick !== this.currentTick) {
+            this.outdatedDecodeTick = this.currentTick;
+            this.outdatedDecodes = 0;
+        }
+        if (++this.outdatedDecodes > 8) {
+            return; // still refused; a later retry gets recorded
+        }
+
+        try {
+            World.loginBuf.pos += 1 + 9 * 4; // info, archive crcs
+            World.loginBuf.rsadec(priv);
+            if (World.loginBuf.g1() !== 10) {
+                return;
+            }
+            World.loginBuf.pos += 4 * 4 + 4; // isaac seed, uid
+            const username = World.loginBuf.gjstr();
+            if (username.length < 1 || username.length > 12) {
+                return;
+            }
+            const name = toSafeName(username);
+            if (!this.outdatedClients.has(name)) {
+                printInfo(`Refused login for ${name}: client revision ${revision}, server ${Environment.engine.revision}`);
+            }
+            this.outdatedClients.set(name, { revision, at: Date.now() });
+        } catch {
+            // unreadable login block: nothing to record
+        }
     }
 
     rebootTimer(duration: number): void {
@@ -2442,6 +2505,7 @@ class World {
                 rev = World.loginBuf.g2();
             }
             if (rev !== Environment.engine.revision) {
+                this.noteOutdatedClient(rev);
                 client.send(Uint8Array.from([6]));
                 client.close();
                 return;
@@ -2483,6 +2547,7 @@ class World {
             const uid = World.loginBuf.g4s();
             const username = World.loginBuf.gjstr();
             const password = World.loginBuf.gjstr();
+            this.outdatedClients.delete(toSafeName(username));
 
             if (Environment.node.production && Environment.node.rateLimitDeviceLogin > 0) {
                 const last = this.loginDeviceAttempts.get(`${uid}@${client.remoteAddress}`);

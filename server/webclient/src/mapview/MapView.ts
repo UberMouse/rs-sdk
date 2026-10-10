@@ -20,6 +20,15 @@ export class MapView extends GameShell {
     static shouldDrawMultimap: boolean = false;
     static shouldDrawFreemap: boolean = false;
     static shouldDrawPlayers: boolean = true;
+
+    // custom: the unified map stacks three regions north of each other in mapsquare rows, without
+    // overlap: overworld (raw 42-62, incl. Ape Atoll), underground (raw 142-161 -> 63-82) and the
+    // high-z misc areas (raw 69-77 -> 83-91). Rows outside every band are not drawn.
+    static readonly MAP_BANDS: readonly { from: number; to: number; offset: number }[] = [
+        { from: 42, to: 62, offset: 0 },
+        { from: 142, to: 161, offset: -79 },
+        { from: 69, to: 77, offset: 14 }
+    ];
     static shouldDrawHistory: boolean = true; // heatmap on by default; fetched lazily on first frame
 
     // custom: long-term anonymous movement traces ('H'), pre-rendered into a sparse
@@ -60,13 +69,14 @@ export class MapView extends GameShell {
     pinchMidX: number = 0;
     pinchMidY: number = 0;
 
-    // custom: unified map — overworld (mz 44-62) + underground (62-79, overlaps OW last row) + misc (80-86)
+    // custom: unified map - mapsquare columns 29-56 and the bands in MAP_BANDS (unified rows 42-91),
+    // plus one padding square on every side: the loaders skip edge squares, which they blend against
     mapStartX: number = 50 << 6;
     mapStartZ: number = 50 << 6;
-    mapWidth: number = 28 << 6;
-    mapHeight: number = 44 << 6;
+    mapWidth: number = 30 << 6;
+    mapHeight: number = 52 << 6;
     mapOriginX: number = 28 << 6;
-    mapOriginZ: number = 44 << 6;
+    mapOriginZ: number = 41 << 6;
     focusX: number = this.mapStartX - this.mapOriginX;
     focusZ: number = this.mapOriginZ + this.mapHeight - this.mapStartZ;
 
@@ -150,7 +160,7 @@ export class MapView extends GameShell {
     activeMapFunctionCount: number = 0;
 
     overview: Pix32 | null = null;
-    overviewHeight: number = 200;
+    overviewHeight: number = 180;
     overviewWidth: number = ((this.overviewHeight * this.mapWidth) / this.mapHeight) | 0;
     overviewX: number = 635 - this.overviewWidth - 5;
     overviewY: number = 503 - this.overviewHeight - 20;
@@ -205,7 +215,7 @@ export class MapView extends GameShell {
         'Spinning Wheel',
         'Food Shop',
         'Cookery Shop',
-        '???',
+        'Mini-Game',
         'Water Source',
         'Cooking Range',
         'Skirt Shop',
@@ -215,7 +225,8 @@ export class MapView extends GameShell {
         'Chainmail Shop',
         'Silver Shop',
         'Fur Trader',
-        'Spice Shop'
+        'Spice Shop',
+        'Agility Training'
     ];
 
     constructor() {
@@ -227,6 +238,7 @@ export class MapView extends GameShell {
     override async maininit(): Promise<void> {
         // custom:
         this.keyHeight = this.sHei - this.keyY - 20;
+        this.overviewWidth = ((this.overviewHeight * this.mapWidth) / this.mapHeight) | 0;
         this.overviewX = this.sWid - this.overviewWidth - 5;
         this.overviewY = this.sHei - this.overviewHeight - 20;
         this.fullredraw = true;
@@ -950,10 +962,8 @@ export class MapView extends GameShell {
     loadUnderlay(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -972,10 +982,8 @@ export class MapView extends GameShell {
     loadOverlay(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -1005,10 +1013,8 @@ export class MapView extends GameShell {
     loadLoc(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -1054,10 +1060,8 @@ export class MapView extends GameShell {
     loadObj(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -1077,10 +1081,8 @@ export class MapView extends GameShell {
     loadNpc(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -1100,10 +1102,8 @@ export class MapView extends GameShell {
     loadMulti(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -1123,10 +1123,8 @@ export class MapView extends GameShell {
     loadFree(data: Packet): void {
         while (data.available > 0) {
             const mx: number = data.g1() * 64 - this.mapOriginX;
-            let rawMz: number = data.g1();
-            if (rawMz >= 144) rawMz -= 82;
-            else if (rawMz >= 70 && rawMz <= 76) rawMz += 10;
-            const mz: number = rawMz * 64 - this.mapOriginZ;
+            const unifiedMz: number = MapView.unifiedSquareZ(data.g1());
+            const mz: number = unifiedMz === -1 ? -1 : unifiedMz * 64 - this.mapOriginZ;
 
             if (mx > 0 && mz > 0 && mx + 64 < this.mapWidth && mz + 64 < this.mapHeight) {
                 for (let x: number = 0; x < 64; x++) {
@@ -2013,10 +2011,18 @@ export class MapView extends GameShell {
 
     // custom: remap z-coordinates into the unified map space
     remapZ(z: number): number {
-        const mz: number = (z >> 6);
-        if (mz >= 144) return z - (82 << 6);
-        if (mz >= 70 && mz <= 76) return z + (10 << 6);
-        return z;
+        const mz: number = MapView.unifiedSquareZ(z >> 6);
+        return mz === -1 ? -1 : (mz << 6) | (z & 63);
+    }
+
+    // custom: raw mapsquare row -> unified row, or -1 for rows outside every band
+    static unifiedSquareZ(mz: number): number {
+        for (const band of MapView.MAP_BANDS) {
+            if (mz >= band.from && mz <= band.to) {
+                return mz + band.offset;
+            }
+        }
+        return -1;
     }
 
     // custom: fetch player positions from server
@@ -2344,6 +2350,7 @@ export class MapView extends GameShell {
 
                     const prevZ: number = this.remapZ(prev.z);
                     const currZ: number = this.remapZ(curr.z);
+                    if (prevZ === -1 || currZ === -1) continue;
                     const prevMapX: number = prev.x - this.mapOriginX;
                     const prevMapY: number = this.mapOriginZ + this.mapHeight - prevZ;
                     const currMapX: number = curr.x - this.mapOriginX;

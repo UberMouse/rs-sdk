@@ -32,7 +32,7 @@ const INVENTORY_INTERFACE_ID = 3214;
 const EQUIPMENT_INTERFACE_ID = 1688;
 const BANK_MAIN_ID = 5292;
 const BANK_INV_ID = 5382;
-const BANK_SIDE_INV_ID = 2006; // bank_side:inv on this 274 build
+const BANK_SIDE_INV_ID = 2006; // bank_side:inv on this 289 build
 const SHOP_MAIN_ID = 3824;
 
 const READBIT = (() => {
@@ -774,6 +774,15 @@ export interface SayOutcome {
 export function say(c: LiteClient, message: string): SayOutcome {
     if (!c.isInGame() || !c.localPlayer) {
         return { ok: false, truncated: false, filtered: false, finalText: '' };
+    }
+
+    // Mirrors Client.say: ::commands go out as CLIENT_CHEAT, never as public chat.
+    if (message.startsWith('::')) {
+        const cheat = message.substring(2);
+        c.writeOpcode(ClientProt.CLIENT_CHEAT);
+        c.out.p1(cheat.length + 1);
+        c.out.pjstr(cheat);
+        return { ok: true, truncated: false, filtered: false, finalText: message };
     }
 
     const cap = c.getMaxMessageLength();
