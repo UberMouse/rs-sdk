@@ -412,6 +412,8 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     let lastTickAt = now();
     let lastReportAt = now();
     let idleLoops = 0;
+    /** Calls of `opts.externalStop` so far: the one that fires is recorded, for the replay to fire on. */
+    let externalChecks = 0;
 
     /**
      * Watchdog, stops (the task's, then the external one) and progress lines. Runs between steps and
@@ -440,11 +442,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
         const stop = checkStops(stops, s, xpBefore, t - startedAt);
         if (stop) return { status: 'done', reason: stop };
-        const external = opts.externalStop?.(s) ?? null;
-        if (external !== null) {
-            // The recorder writes this as the record a replay stops at (core/drivers/recording.ts).
-            emit({ type: 'external-stop', reason: external, tick: s.tick });
-            return { status: 'done', reason: external };
+        if (opts.externalStop) {
+            const check = ++externalChecks;
+            const external = opts.externalStop(s) ?? null;
+            if (external !== null) {
+                // The recorder writes this as the record a replay stops at (core/drivers/recording.ts).
+                emit({ type: 'external-stop', reason: external, tick: s.tick, check });
+                return { status: 'done', reason: external };
+            }
         }
         if (t - lastReportAt >= progressEveryMs) {
             lastReportAt = t;

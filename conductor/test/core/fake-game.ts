@@ -215,6 +215,7 @@ export async function recordRun(
         out?: RecordingOut;
         warn?: (msg: string) => void;
         externalStop?: ExecuteOptions['externalStop'];
+        partOf?: string;
     } = {},
 ): Promise<{ result: TaskResult; recording: Recording | null; recorder: Recorder }> {
     const chunks: Uint8Array[] = [];
@@ -222,7 +223,7 @@ export async function recordRun(
     const stops = opts.stops ?? [{ kind: 'xp', skill: 'Woodcutting', amount: 5 * CHOP_XP }];
     const recorder = new Recorder(
         out,
-        { task: def.name, ...RUN, params: {}, stops },
+        { task: def.name, ...RUN, params: {}, stops, ...(opts.partOf !== undefined && { partOf: opts.partOf }) },
         opts.warn ??
             (msg => {
                 throw new Error(`unexpected recorder warning: ${msg}`);
@@ -242,6 +243,7 @@ export async function recordRun(
             rawParams: {},
             stops,
             ...(opts.externalStop && { externalStop: opts.externalStop }),
+            ...(opts.partOf !== undefined && { partOf: opts.partOf }),
         });
     } finally {
         driver.close();

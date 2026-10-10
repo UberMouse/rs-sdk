@@ -39,6 +39,8 @@ export interface RunInputs {
     params: unknown;
     stops: StopCondition[];
     progressEveryMs?: number;
+    /** The plan's runId, for a phase run (ExecuteOptions.partOf). */
+    partOf?: string;
 }
 
 /** A command as the driver (or the screenshot sink) received it. */
@@ -67,11 +69,12 @@ export type Rec =
     /** The run's result. */
     | ({ k: 'end'; status: string; reason: string } & Timing)
     /**
-     * An external stop (ExecuteOptions.externalStop) ended the run on a check at `tick`. Untimed: it is
-     * no driver event, so the replay drops it from the stream and the records around it line up as in a
-     * recording without it.
+     * An external stop (ExecuteOptions.externalStop) ended the run on its `check`th call, on the state
+     * of `tick`. Untimed: it is no driver event, so the replay drops it from the stream and the records
+     * around it line up as in a recording without it. `n`/`w` are `never` rather than left out, so
+     * code reading them off any record still type-checks.
      */
-    | { k: 'stop'; tick: number; reason: string; n?: never; w?: never };
+    | { k: 'stop'; tick: number; check: number; reason: string; n?: never; w?: never };
 
 /** Encodes each state as the top-level keys that differ from the previous one. */
 class StateEncoder {
@@ -227,7 +230,14 @@ export class Recorder {
         return {
             event: e => {
                 if (e.type === 'external-stop')
-                    this.guard(() => this.line({ k: 'stop', tick: Number(e.tick), reason: String(e.reason) }));
+                    this.guard(() =>
+                        this.line({
+                            k: 'stop',
+                            tick: Number(e.tick),
+                            check: Number(e.check),
+                            reason: String(e.reason),
+                        }),
+                    );
                 if (e.type === 'result')
                     this.guard(() => this.write({ k: 'end', status: String(e.status), reason: String(e.reason) }));
                 sinks.event(e);

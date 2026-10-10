@@ -68,6 +68,7 @@ describe('replay of a recorded run', () => {
         expect(report.divergence).toBeNull();
         // The whole result, duration included: the replay reads the recorded clock too.
         expect(report.replayed).toEqual(result);
+        expect('partOf' in report.replayed).toBe(false);
         expect(report.matched).toBe(recording.records.filter(r => r.k === 'c').length);
         expect(report.recorded).toEqual({ status: result.status, reason: result.reason });
     });
@@ -80,11 +81,17 @@ describe('replay of a recorded run', () => {
         expect(report.replayed).toEqual(result);
     });
 
-    test('a run an external stop ended replays to the same end, from its stop record', async () => {
-        const { result, recording } = await recordRun(chopper(), new FakeGame(), { externalStop: untilTwoLogs });
-        expect(result).toMatchObject({ status: 'done', reason: 'until: 2 logs' });
+    test('a phase run an external stop ended replays to the same end and result, from its stop record', async () => {
+        const { result, recording } = await recordRun(chopper(), new FakeGame(), {
+            externalStop: untilTwoLogs,
+            partOf: 'plan-run-1',
+        });
+        expect(result).toMatchObject({ status: 'done', reason: 'until: 2 logs', partOf: 'plan-run-1' });
+        expect(recording!.header.run.partOf).toBe('plan-run-1');
         const stops = recording!.records.flatMap(r => (r.k === 'stop' ? [r] : []));
-        expect(stops).toEqual([{ k: 'stop', tick: expect.any(Number), reason: 'until: 2 logs' }]);
+        expect(stops).toEqual([
+            { k: 'stop', tick: expect.any(Number), check: expect.any(Number), reason: 'until: 2 logs' },
+        ]);
         const stopTick = stops[0]!.tick;
         expect(logsAt(recording!, stopTick)).toBe(2);
 

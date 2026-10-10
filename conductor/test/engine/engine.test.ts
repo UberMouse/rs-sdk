@@ -433,7 +433,9 @@ describe('an external stop', () => {
         expect(r.result.reason).toBe('phase until met');
         expect(r.sends).toEqual(['start', 'cleanup']);
         expect(r.result.durationMs).toBe(5 * TICK_MS);
-        expect(externalStops(r.events)).toEqual([{ type: 'external-stop', reason: 'phase until met', tick: 5 }]);
+        expect(externalStops(r.events)).toEqual([
+            { type: 'external-stop', reason: 'phase until met', tick: 5, check: expect.any(Number) },
+        ]);
     });
 
     test('firing between steps ends the run before the next step', async () => {
@@ -446,6 +448,63 @@ describe('an external stop', () => {
         expect(r.result.reason).toBe('plan stop');
         expect(r.result.stepRuns).toEqual({ decide: 3 });
         expect(externalStops(r.events)).toHaveLength(1);
+    });
+
+    test('one that throws mid-wait ends the run as an error, after the step cleans up', async () => {
+        const r = await runTask(
+            [step('idle', idle)],
+            timeline(30, t => ({ z: 3200 + t })),
+            {
+                externalStop: s => {
+                    if (s.tick >= 5) throw new Error('plan predicate broke');
+                    return null;
+                },
+            },
+        );
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('threw: plan predicate broke');
+        expect(r.sends).toEqual(['start', 'cleanup']);
+    });
+
+    test('one that throws between steps ends the run as an error before the next step', async () => {
+        let runs = 0;
+        const decide = step('decide', () => {
+            runs++;
+        });
+        const r = await runTask([decide], timeline(10), {
+            externalStop: () => {
+                if (runs >= 2) throw new Error('plan predicate broke');
+                return null;
+            },
+        });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('threw: plan predicate broke');
+        expect(r.result.stepRuns).toEqual({ decide: 2 });
+    });
+
+    test('one that already holds at the start ends the run done after preflight, with no step run', async () => {
+        const order: string[] = [];
+        const def = defineTask({
+            name: 'test',
+            description: 'engine test',
+            params: z.object({}),
+            preflight: () => {
+                order.push('preflight');
+                return null;
+            },
+            steps: [step('idle', idle)],
+        });
+        const r = await runDef(def, timeline(5), {
+            externalStop: () => {
+                order.push('externalStop');
+                return 'already there';
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('already there');
+        expect(r.result.stepRuns).toEqual({});
+        expect(r.sends).toEqual([]);
+        expect(order).toEqual(['preflight', 'externalStop']);
     });
 
     test("the task's own stops are checked first", async () => {

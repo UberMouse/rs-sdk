@@ -27,9 +27,11 @@ export async function replayRun(
 ): Promise<ReplayReport> {
     const { run } = recording.header;
     const driver = new ReplayDriver(recording);
-    // A run an external stop ended (a plan phase's `until`) stops again on the same tick, rather than
-    // running on past the end of its recording.
+    // A run an external stop ended (a plan phase's `until`) stops again on the same call of its
+    // externalStop, rather than running on past the end of its recording. Until a divergence the
+    // replay makes the same checks in the same order, so the calls line up one for one.
     const stop = recording.records.find(r => r.k === 'stop');
+    let externalChecks = 0;
     let replayed: TaskResult;
     try {
         replayed = await executeTask(def, {
@@ -41,7 +43,8 @@ export async function replayRun(
             rawParams: run.params,
             stops: run.stops,
             ...(run.progressEveryMs !== undefined && { progressEveryMs: run.progressEveryMs }),
-            ...(stop && { externalStop: s => (s.tick >= stop.tick ? stop.reason : null) }),
+            ...(run.partOf !== undefined && { partOf: run.partOf }),
+            ...(stop && { externalStop: () => (++externalChecks >= stop.check ? stop.reason : null) }),
         });
     } finally {
         driver.close();
