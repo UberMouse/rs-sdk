@@ -11,9 +11,11 @@ mkdir -p "$LOGS"
 
 listening() { ss -ltn "sport = :$1" | grep -q LISTEN; }
 
-if [[ ! -d "$ROOT/node_modules" ]]; then (cd "$ROOT" && bun install); fi
+# Always install: a merge that bumps a dependency (e.g. the runescript compiler) otherwise leaves
+# a stale node_modules that fails the content pack. A no-op install takes milliseconds.
+(cd "$ROOT" && bun install)
 for d in gateway webclient engine; do
-  [[ -d "$ROOT/server/$d/node_modules" ]] || (cd "$ROOT/server/$d" && bun install)
+  (cd "$ROOT/server/$d" && bun install)
 done
 if [[ "${1:-}" == "--rebuild" || ! -d "$ROOT/server/webclient/out/bot" ]]; then
   echo "building webclient..."
