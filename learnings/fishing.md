@@ -72,11 +72,11 @@ while (true) {
 
 | Location            | Coordinates      | Spot Type    | Notes                                                                                                                                     |
 | ------------------- | ---------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Draynor Village** | **(3087, 3230)** | **Net/Bait** | **USE THIS for level 1.** Shrimp/anchovies. Dark wizards at (3084, 3236)/(3085, 3238) — stay south of z≈3232 if you are low combat level! |
-| Al Kharid river     | (3267, 3148)     | Lure/Bait    | Fly fishing (level 20+). 10gp toll gate to reach. Watch for a lvl 14 scorpion.                                                            |
+| **Draynor Village** | **(3087, 3230)** | **Net/Bait** | **USE THIS for level 1.** Shrimp/anchovies. Spots (npc 327) spawn (3085,3230), (3086,3227) and hop among (3086,3227), (3086,3228), (3085,3230), (3085,3231), up to ~530 ticks between hops (map/content data); the southern tiles (3086,3227 r2) net-fished fine, Fishing 1->13 in 1 min and a 27-fish full-inventory run [v 2026-10-10 conductor2w1 local]. Dark wizards at (3084, 3236)/(3085, 3238) — stay south of z≈3232 if you are low combat level! |
+| Al Kharid river | (3267, 3148), (3276, 3140) | Net/Bait | Spots `0_51_49_saltfish` (npc 330), from map data; behind the 10gp Lumbridge/Al Kharid toll gate; bank (3269, 3167), range (3271, 3180) nearby. Watch for a lvl 14 scorpion. Not walked by a bot. [map data 2026-10-10] |
 | Barbarian Village   | (3110, 3434)     | Lure/Bait    | Fly fishing (level 20+). Second spot at (3104, 3424).                                                                                     |
 
-**COMMON MISTAKE**: Lumbridge area (3238, 3251) has NO level-1 fishing spots. Use Draynor!
+**COMMON MISTAKE**: Lumbridge area (3238, 3251) has NO level-1 fishing spots; the two spots there (River Lum, npc 329, both at (3238, 3252)) are Lure/Bait (level 20+). Use Draynor! [map data 2026-10-10, not fished by a bot]
 
 **COMMON MISTAKE**: Lumbridge Swamp **(3239, 3147)** has NO fishing spots _at all_ — not net, not lure/bait. Verified against map spawn data: nearest spot is 28 tiles east at (3267, 3148) across the toll gate. Do not walk here to fish.
 

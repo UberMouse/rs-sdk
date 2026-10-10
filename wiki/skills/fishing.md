@@ -47,6 +47,12 @@ Levels and XP checked against `server/content/scripts/skill_fishing/scripts/fish
 | Catherby | All types | Yes |
 | Fishing Guild | All types | Yes |
 
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Draynor south | (3086, 3227) r2 | 1 | Net/Bait, small net; dark wizards hit the northern tiles. More spots/map data: `learnings/fishing.md` | Fishing 1->13 in 1 min | 2026-10-10 conductor2w1 local |
+
 ## Fishing Guild
 
 - **Location:** North of Ardougne
