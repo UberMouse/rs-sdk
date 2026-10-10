@@ -40,3 +40,25 @@ export function loadResults(botName: string): { results: TimedResult[]; skipped:
     }
     return { results: results.sort((a, b) => a.t - b.t), skipped };
 }
+
+export interface ResultFilter {
+    /** Only results logged at or after this time (ms since the epoch). */
+    since?: number;
+    /** Only this task's results; a plan's is `plan:<name>`. */
+    task?: string;
+    /** Include the phase runs of plans (results with `partOf`). */
+    phases?: boolean;
+}
+
+/**
+ * The results a reader counts. A plan's result already adds up its phases' runs, so by default its
+ * phase runs (`partOf`) are left out and the plan counts once, as `plan:<name>`.
+ */
+export function selectResults(results: TimedResult[], f: ResultFilter = {}): TimedResult[] {
+    return results.filter(
+        r =>
+            (f.phases || r.partOf === undefined) &&
+            (f.since === undefined || r.t >= f.since) &&
+            (f.task === undefined || r.task === f.task),
+    );
+}

@@ -414,10 +414,17 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             // Set by the external stop, which must not throw: a throw would end the phase as the
             // engine's generic error rather than the plan's, which names the predicate.
             const ext: { planEnd: End | null; error: string | null } = { planEnd: null, error: null };
+            /**
+             * The phase's latest clock read. The engine reads the clock at the top of each check and
+             * then calls externalStop, which uses that read rather than one of its own. The CLI's clock
+             * reads through the phase's driver, so its recording holds every read, and the replay's
+             * externalStop reads none: an extra read here would put the replay out of step with it.
+             */
+            let checkedAt = startedAt;
+            const phaseNow = () => (checkedAt = now());
             const externalStop = (state: BotWorldState): string | null => {
-                // First, so the default `now` reads this state's tick.
                 const st = observe(state);
-                const planStop = checkStops(stops, st, xpBefore, now() - startedAt);
+                const planStop = checkStops(stops, st, xpBefore, checkedAt - startedAt);
                 if (planStop) {
                     ext.planEnd = { status: 'done', reason: planStop };
                     return planStop;
@@ -464,7 +471,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     partOf: runId,
                     externalStop,
                     // One clock for the plan's stops and the phase's watchdog and durations.
-                    now,
+                    now: phaseNow,
                     ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
                 });
             } finally {

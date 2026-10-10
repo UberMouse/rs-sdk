@@ -14,6 +14,9 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    // A plan imports `@conductor/lib/plan` and `@conductor/tasks/<task>` alike from conductor/plans/
+    // and from a draft under conductor/runs/<bot>/plans/, so promoting it is a move (conductor/docs/plans.md).
+    "paths": { "@conductor/*": ["./conductor/*"] },
 
     // Best practices
     "strict": true,

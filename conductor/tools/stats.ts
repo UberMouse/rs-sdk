@@ -1,16 +1,19 @@
 // What each task + params variant has actually produced, from every run's result event.
 //
-//   bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--json]
+//   bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--phases] [--json]
+//
+// A plan counts once, as `plan:<name>` with its phases and their params as the variant; `--phases`
+// also counts each of its phase runs as a run of that task.
 //
 // The conductor uses this to pick the best method for an objective and to compare a new
 // variant (a different spot, target or mode) against the incumbent; the curator copies XP/hr
 // into the knowledge base from here, not from a single run.
-import { loadResults } from '../lib/runs';
+import { loadResults, selectResults } from '../lib/runs';
 import { canonical, fail, parseCli } from '../lib/util';
 
-const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--json]';
+const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--phases] [--json]';
 const { values, positionals } = parseCli(
-    { task: { type: 'string' }, since: { type: 'string' }, json: { type: 'boolean' } },
+    { task: { type: 'string' }, since: { type: 'string' }, phases: { type: 'boolean' }, json: { type: 'boolean' } },
     usage,
 );
 const [bot] = positionals;
@@ -36,7 +39,11 @@ interface Variant {
 const { results: allResults, skipped } = loadResults(bot);
 if (skipped)
     console.error(`stats: skipped ${skipped} unparseable or malformed result line(s) in conductor/runs/${bot}`);
-const results = allResults.filter(r => r.t >= since && (!taskFilter || r.task === taskFilter));
+const results = selectResults(allResults, {
+    since,
+    ...(taskFilter && { task: taskFilter }),
+    ...(values.phases && { phases: true }),
+});
 const variants = new Map<string, Variant>();
 for (const r of results) {
     const params = canonical(r.params);
