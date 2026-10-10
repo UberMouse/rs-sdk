@@ -7,9 +7,11 @@ description: Run this session as the conductor for an rs-sdk bot working toward 
 
 You are the conductor for one bot, working toward a maxed account over many runs. You
 **decide and review**; subagents **do**. Bot programs are deterministic catalog tasks under
-`conductor/tasks/` that grind without an LLM in the loop; your tokens go on choosing what to
-run next, judging what came back, and making sure every run leaves the system smarter: better
-knowledge, better tasks, better stats.
+`conductor/tasks/` that grind without an LLM in the loop, composed into **plans** that loop
+(chop -> burn -> chop; design: `conductor/docs/plans.md`). You hand each task-runner a **goal**,
+not a command: it owns the goal, writes and runs the plans, and debugs them. Your tokens go on
+choosing goals and methods, judging what comes back, and making sure every goal leaves the system
+smarter: better knowledge, better tasks and plans, better stats.
 
 This skill keeps durable state. **Before the first write, Read
 `.claude/skills/durable-state/SKILL.md`** — this file only adds the conductor's fields.
@@ -20,8 +22,11 @@ This skill keeps durable state. **Before the first write, Read
 |---|---|
 | `bun conductor/run-task.ts --list` | the catalog: each task's name, description and JSON-schema params |
 | `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>... [--takeover]` | runs one task; refuses to start when the bot is in combat or already has a controller attached (the gateway enforces this for every script; `--takeover` pre-empts it); last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
-| `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run |
-| `bun conductor/tools/stats.ts <bot> [--task t]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons |
+| `bun conductor/run-task.ts <bot> --plan <file> --until <stop>...` | runs a plan: phases of catalog tasks chosen from the world state each time one ends. RESULT has `task: "plan:<name>"`, the plan totals, `phases` (per phase: runs, statuses, durationMs, xpGained, lastReason) and `recent` (the last 3 phase runs with their logs). The runner's tool; you read its results |
+| `conductor/plans/<name>.ts` | promoted plans, committed (reference: `chop-burn.ts`). Drafts live in `conductor/runs/<bot>/plans/` (gitignored) until you promote them |
+| `--until` | `level:<skill>:<n>`, `xp:<skill>:<n>`, `minutes:<n>`; any one ends the run (for a plan, counted from the plan's start) |
+| `bun conductor/tools/stats.ts <bot> [--task t] [--phases]` | per task + params variant: runs, outcomes, XP/hr, top failure reasons; a plan counts once as `plan:<name>`, `--phases` adds its phase runs |
+| `.durable-state/runners/<bot>.json` | a task-runner's own state for its goal (goal, constraints, budget, plans tried and their verdicts, current plan, pending decision, lessons). The runner writes it; you only read it |
 | `bun conductor/tools/progress.ts <bot>` | levels, XP to 99, % to max, change since first/previous snapshot (records a snapshot) |
 | `bun conductor/tools/save.ts snapshot <bot> <label> [--logout]` | snapshot the save as it is now, without a logout (`--logout` also logs the bot out). `restore <bot> <label>` rolls back to that snapshot (the newest one needs no flag; skipping past a newer snapshot, or restoring `lib:<name>` or a file, needs `--force`): logs the bot out itself and keeps the replaced save; restart its client after. Logging out is refused while a task or script drives the bot (`--takeover` only if that run is yours). `list <bot>` |
 | `bun conductor/tools/load.ts <worker> <save> --client` | `<save>` is `lib:<name>`, `bot:<bot>` (a live copy) or a `.sav` path. Loads it into a worker account and starts its headless lite client (no screenshots); prints `LOADED <json>`, whose `replay` path reloads exactly that state |
@@ -39,10 +44,10 @@ Agents (all dispatched in the background):
 
 | Agent | Does | Never |
 |---|---|---|
-| `task-runner` | runs one task, diagnoses a failure (world vs script) | edits anything |
+| `task-runner` | owns one goal on the main bot: writes, runs and debugs plans, journals each run, keeps its state file | edits task, engine or knowledge files; writes outside its drafts and state file |
 | `task-author` | writes or fixes a task, smoke-tests it | commits |
 | `task-reviewer` ×5 + `review-verifier` | the `task-review` skill's lens review of a change | edits anything |
-| `knowledge-curator` | folds a run's lessons into the knowledge base | drives the bot, commits |
+| `knowledge-curator` | folds a goal's lessons into the knowledge base | drives the bot, commits |
 | `retrospective` | looks across many runs, updates the roadmap | drives the bot, commits |
 
 ## Durable state (owner fields)
@@ -54,13 +59,13 @@ Agents (all dispatched in the background):
 | `bot` | the bot's name. Set once |
 | `client` | `"windowed"` / `"headless"` / `"lite"`: how the game client is being run |
 | `baseline` | set once at run start: `{ at, totalLevel }` from `progress.ts` |
-| `journal` | **absolute** path to `.durable-state/journal.jsonl`. One line per finished dispatch: `{at, kind: "run"\|"author"\|"review"\|"curate"\|"retro", objective, task?, command?, result?, verdict, commit?}`. Append with `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (`--help`), which stamps the real UTC time; never type `at` by hand |
-| `tasks` | the objective queue (generic `tasks` field). Each: `{id, title, status, task?, params?, until?, attempts}`; `title` is the objective in game terms ("Woodcutting 30 for willows") |
-| `runsSinceRetro` | task runs since the last retrospective |
+| `journal` | **absolute** path to `.durable-state/journal.jsonl`. One line per plan or task run (`kind: "run"`, written by the runner that ran it) and per other finished dispatch (`author`, `review`, `curate`, `retro`, written by you): `{at, kind, objective, task?, command?, result?, verdict, commit?}`. Append with `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (`--help`), which stamps the real UTC time; never type `at` by hand. You don't journal a runner's runs again |
+| `tasks` | the objective queue (generic `tasks` field). Each: `{id, title, status, attempts}`; `title` is the goal's end state in game terms ("Woodcutting 30 for willows"); `attempts` counts runners dispatched onto it |
+| `runsSinceRetro` | plan and task runs since the last retrospective: the journal's `kind: "run"` lines since `lastRetroAt`, recounted on every runner report (Loop step 5) |
+| `runners` | `{ <bot>: { agentId, stateFile, goal } }`: the runner that owns the bot's current goal, its agent ID (for `SendMessage`), the **absolute** path of its state file, and the objective id it works. Set on dispatch; kept while it waits on a `DECISION NEEDED` answer or a script fix; removed when the goal closes |
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
 | `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId, worker, replay}` from a task-author's return until `task-review` commits or reverts; `worker` and `replay` (the replay path of the load the author's final smoke test ran from) are what its fix authors test on |
 | `workers` | the worker pool: `{ <worker>: <task id or agent it is assigned to> \| null }`. Assign a free worker in each task-author brief. It stays assigned through that change's `task-review` (its fix authors reuse it) and is set back to `null` when the review commits or reverts. A second fix agent running in parallel gets another free worker, recorded here too |
-| `pendingCuration` | `{ <objective id>: [<one line per run whose only lesson is a re-verification>] }`; handed to one curator when that objective finishes, then cleared |
 
 Seed `invariants` with the list below on the first write.
 
@@ -77,45 +82,60 @@ Seed `invariants` with the list below on the first write.
 - Curator, reviewers and retrospective don't drive a bot and may run alongside.
 - Workers share one world with the main bot: don't send a worker to the spot the runner is
   using, and workers never trade with other accounts.
-- The conductor never plays the game, writes task code or edits knowledge pages itself: it
-  decides, dispatches, reviews diffs and commits. (Its own edits are limited to the roadmap's
-  Now, state, and small agent-prompt fixes a retrospective evidenced.)
+- The conductor never plays the game, writes task code, writes plans or edits knowledge pages
+  itself: it decides, dispatches, reviews diffs and commits. (Its own edits are limited to the
+  roadmap's Now, state, promoting a runner's draft plan, and small agent-prompt fixes a
+  retrospective evidenced.)
+- Runners get goals, not commands: end state, constraints, budget, knowledge. Goals stay a few
+  plans long (a couple of levels in one or two skills, one resource target), since a runner's
+  debugging is bounded to what a plan controls; lengthen them once runners handle these
+  reliably. One runner owns the main bot's goal at a time.
+- A runner's state file is the runner's: read it, never write it.
 - Every task-author change goes through the `task-review` skill before it is committed.
-- Every task run with news (failure, new spot/area/task, new game knowledge) is followed by a
-  `knowledge-curator` dispatch; plain re-verifications are batched per objective.
-- New or changed tasks get short runs first (`--until minutes:1`); extend only after a clean
-  `done`.
-- Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before a run that
-  risks death or items: a new area, combat, an untested task, anything `learnings/hazards.md`
-  flags.
+- One `knowledge-curator` dispatch per goal, and one per `DECISION NEEDED` report, on the
+  runner's lessons and RESULT lines.
+- New or changed tasks and new plans get short runs first (`--until minutes:1`); extend only
+  after a clean `done`. Runners do this for their drafts; say in the knowledge when a task is new.
+- Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before dispatching a
+  goal whose methods risk death or items: a new area, combat, an untested task, anything
+  `learnings/hazards.md` flags.
 
 ## Loop
 
 1. **Observe**: `bun sdk/cli.ts <bot>`, the last journal lines, the objective queue, and
    `conductor/roadmap.md` §Now.
-2. **Decide** the objective (from the queue; refill it from roadmap §Now and §Backlog), then the
-   method:
-   - Candidates: catalog tasks that serve it, with spots/targets from `wiki/skills/<skill>.md`
-     §Verified training spots and `learnings/`.
+2. **Decide** the goal (from the queue; refill it from roadmap §Now and §Backlog), then what the
+   runner gets with it:
+   - Methods to try: catalog tasks and promoted plans (`conductor/plans/`) that serve it, with
+     spots/targets from `wiki/skills/<skill>.md` §Verified training spots and `learnings/`.
    - **Exploit** the variant with the best XP/hr in `stats.ts` that is safe for the bot's level.
-   - **Explore** about one run in five: an untried variant from roadmap §Experiments or a spot
-     the knowledge base lists without stats — short runs (`minutes:2`), then compare in stats.
+   - **Explore** about one goal in five: name an untried variant from roadmap §Experiments or a
+     spot the knowledge base lists without stats for the runner to try short, then compare in
+     stats.
+   - Constraints (areas to avoid, what may be spent or sold, items not to risk) and a budget
+     (play time; failed plans in a row before it stops trying, 3 unless there is a reason).
    - Nothing in the catalog fits → dispatch `task-author` (new task), add it to the roadmap
      backlog as `authoring`.
-3. **Risk check**: the spot against `learnings/hazards.md` and the bot's combat level and HP.
-   Risky → snapshot first (Invariants).
-4. **Dispatch** a `task-runner` with the exact command; add it to `inFlight`, mark the
-   objective `in-progress`, rewrite state.
-5. **On the runner's report**:
-   1. Journal it; drop the `inFlight` entry; `runsSinceRetro += 1`.
-   2. Curate when the run has news: a failure (except one caused by the conductor's own brief),
-      a spot, area or task the knowledge base doesn't verify yet, or game knowledge in the
-      runner's report. Then dispatch `knowledge-curator` with the RESULT and the runner's
-      report (template below); it runs alongside whatever you dispatch next. A run whose only
-      lesson is "the spot still works" goes on the objective's re-verify list
-      (`pendingCuration` in state), handed to one curator when the objective finishes.
+   You don't write the plan or walk the inventory through it: the plan's `when`s carry that, and
+   the runner owns it.
+3. **Risk check**: the spots against `learnings/hazards.md` and the bot's combat level and HP.
+   Risky → snapshot first (Invariants), or rule the area out in the constraints.
+4. **Dispatch** a `task-runner` with the goal brief (template below); add it to `inFlight` and to
+   `runners` (its agent ID, `<abs worktree>/.durable-state/runners/<bot>.json`, the objective id),
+   mark the objective `in-progress`, `attempts += 1`, rewrite state.
+5. **On the runner's report** (it journaled its own runs):
+   1. Drop the `inFlight` entry. Recount `runsSinceRetro`:
+      `jq -s --arg t "<lastRetroAt>" '[.[] | select(.kind == "run" and .at > $t)] | length' <journal>`.
+   2. Dispatch `knowledge-curator` with the report's RESULT lines and lessons (template below);
+      it runs alongside whatever you dispatch next.
    3. `bun conductor/tools/progress.ts <bot>`.
-   4. Judge the result (below) and go to 1.
+   4. **`DECISION NEEDED`**: decide (roadmap, knowledge, stats; the user only when it is theirs,
+      e.g. beyond the run's standing instructions), then answer with `SendMessage` to the
+      runner's `agentId`: the choice, and any constraint or budget it changes. That resumes the
+      same runner with its context; put it back in `inFlight`. If the runner cannot be resumed,
+      dispatch a fresh one with the same brief plus the answer: it reads its state file first.
+   5. **`GOAL ...`** (a final report): promote each draft it marks `promote` (below), judge the
+      outcome (below), and go to 1.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
    knowledge skill's rules (current truth, provenance tags, no narration, nothing in generated
    wiki dirs). Commit: `knowledge: <what was learned>`. Revert any edit that breaks the rules.
@@ -123,21 +143,43 @@ Seed `invariants` with the list below on the first write.
    its report names as the one its final smoke test ran from), then run the `task-review` skill (`.claude/skills/task-review/SKILL.md`),
    handing it that worker and replay, plus a second free worker if parallel fixes should be
    possible. It ends in a commit or a revert; clear the gate.
-8. **Retrospective** when `runsSinceRetro >= 10`, or an objective has failed 3 times: dispatch
+8. **Retrospective** when `runsSinceRetro >= 10`, or a runner reports a goal unreachable: dispatch
    `retrospective`. It reads the game outcomes and the agents' transcripts
    (`.claude/skills/session-forensics`). On its report: review the roadmap diff and commit
    `roadmap: <summary>`; act on its proposals — queue objectives, dispatch authors or the
    curator, and make agent-prompt or tool fixes it names with transcript evidence (small,
    reviewed, committed as `agents: <what and why>`). Reset `runsSinceRetro`, set `lastRetroAt`.
 
-### Judging a result
+### Promoting a draft plan
 
-- `done` — check it moved the objective (levels, xp, items). Next chunk or next objective.
-- `failed` with a world reason (no axe, level too low, can't reach) — queue the prerequisite as
-  its own objective ahead of this one (buy, bank, walk, quest), or reorder.
-- `failed` / `stuck` / `error` that is the script's fault — dispatch `task-author` with the
-  RESULT, the runner's diagnosis and the screenshot paths.
-- Unsafe end state (RESULT `inCombat` true, or `hp` below half) — handle it before anything
+A draft the runner marks `promote` worked; promotion is a move into the committed plans, and git
+history is its review. The draft is untracked (`conductor/runs/` is gitignored), so `git mv`
+refuses it: move it, then add it.
+
+1. `mv conductor/runs/<bot>/plans/<name>.ts conductor/plans/<name>.ts` (a name already in
+   `conductor/plans/` is a revision of that plan: diff it first, and keep the better one).
+2. `bun run verify:conductor` (the drafts were linted, but `tsc` checks `conductor/plans/` only
+   once it is there). A failure: move it back and leave it a draft; note it for the next runner.
+3. `git add conductor/plans/<name>.ts`, then
+   `git commit -m "plans: promote <name>" -m "<each run: status, reason, XP gained, minutes, XP/hr>" -- conductor/plans/<name>.ts`.
+4. A runner still owning a goal that uses it (after a script-fault return): tell it the new path
+   when you resume it.
+
+### Judging a goal
+
+- `GOAL reached` — check it moved (levels, xp, items in `progress.ts`, the runner's state file).
+  Mark the objective `done`, remove the `runners` entry. Next goal.
+- `GOAL budget spent` — the method is slower or flakier than planned. Compare in `stats.ts`; queue
+  the goal again with a different method or budget, or move on. Remove the `runners` entry.
+- `GOAL script fault` — dispatch `task-author` with the runner's RESULT lines, diagnosis and
+  screenshot paths. Keep the `runners` entry: once the fix is committed, resume the runner with
+  `SendMessage` (the fix's commit, and that it may carry on), or dispatch a fresh runner on the
+  same goal if it cannot be resumed.
+- `GOAL unreachable` — a missing prerequisite (no axe, level too low, a quest): queue it as its
+  own objective ahead of this one, or reorder. No way forward from what it found: retrospective
+  (step 8); if it still has none, mark the objective `blocked-needs-human` and tell the user.
+- Unsafe end state (the runner's `Bot:` line or `bun sdk/cli.ts <bot>` shows the bot in combat,
+  or HP below half) — handle it before anything
   else and never leave the bot idle there. The catalog has no combat or retreat task yet: queue
   a retreat/eat objective (a task-author dispatch for one if none exists), or when nothing is
   running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended
@@ -151,26 +193,24 @@ Seed `invariants` with the list below on the first write.
 - Death or item loss in an experiment — `save.ts restore <bot> <label>` with the snapshot taken
   before it (it logs the bot out itself; `--force` only if newer snapshots exist and you mean to
   skip them), restart the client, add the hazard to the curator's next dispatch.
-- The same objective failing 3 times — retrospective (step 8); if it still has no way forward,
-  mark it `blocked-needs-human` and tell the user.
 
 ## Dispatch templates
 
 **task-runner**
 ```
-Bot: <bot>. Objective: <title>.
-Run: bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>
-  (or a chain, run in order and stopped at the first RESULT that isn't done:
-   1. bun conductor/run-task.ts ...   2. bun conductor/run-task.ts ...)
-Report per your instructions: RESULT verbatim, cause, diagnosis, suggested next step, game knowledge.
+Bot: <bot>. Objective: <title>. Journal: <abs journal path>.
+State file: .durable-state/runners/<bot>.json (read it first: it may hold this goal already).
+Goal: <end state, e.g. Fletching 40 and Firemaking 45 | 500 bronze bars banked>.
+Constraints: <areas to avoid; what may be spent or sold; items that must not be risked>.
+Budget: <play time>; stop after <n> failed plans in a row.
+Knowledge: <learnings/wiki pages and verified spots that apply; methods to try or to explore;
+  promoted plans to reuse (conductor/plans/<name>.ts)>.
+Report per your instructions: DECISION NEEDED, or GOAL with RESULT lines, plans, lessons.
 ```
 
-Chain the steps of one plan into one dispatch (withdraw -> chop -> burn, bank -> shop -> walk)
-whenever each step's params are known up front: a runner per short step is mostly overhead.
-Split only where the next step depends on judging the previous result. Before writing a chain,
-read the inventory (`bun sdk/cli.ts <bot>`) and walk it through each step: leftovers from an
-earlier plan (2 Oak logs once failed a fletching preflight that works one log type at a time)
-and a full inventory before a gathering step both need a bank or burn step first.
+A goal is a few plans' worth, such as a couple of levels in one or two skills or one resource
+target, not hours of open-ended play. One that needs errands first (withdraw a tool, buy food)
+is still one goal: the runner's plan carries the errands as phases.
 
 **task-author**
 ```
@@ -188,17 +228,17 @@ Leave the change uncommitted; report files changed and your smoke-test RESULT li
 **knowledge-curator**
 ```
 Bot: <bot>. Server: local.
-Run: <RESULT json>
-Runner report: <cause, diagnosis, game knowledge lines>
-<Author or review notes, if this run tested a change.>
-<Re-verify list, at an objective's end: one line per run (task, params, spot, done/levels).>
+Goal: <title> (<GOAL outcome | DECISION NEEDED>).
+Runs: <the report's RESULT lines, verbatim>
+Runner report: <cause, diagnosis, lessons lines>
+<Author or review notes, if these runs tested a change.>
 ```
 
 **retrospective**
 ```
 Bot: <bot>. Journal: <abs path>, entries since <lastRetroAt>.
 Transcript window: since <lastRetroAt date> (session-forensics corpus --since).
-Objectives that failed 3 times: <list or none>.
+Goals a runner reported unreachable: <list with the runner's diagnosis, or none>.
 ```
 
 ## Workers
@@ -221,7 +261,7 @@ report, and they are reviewed and committed with the task.
 
 1. `ListAgents`, and stop **every** subagent, not only the ones in `inFlight`: a review
    orchestrator's fix author is not in `inFlight` and keeps driving its bot when its parent
-   stops.
+   stops. A stopped runner's goal survives in its state file: keep its `runners` entry.
 2. Find this run's leftover tasks, and only those:
    `pgrep -af "^[^ ]*bun (run )?[^ ]*run-task\.ts (<bot>|<worker1>|<worker2>|<worker3>) "` with the main bot
    and the `workers` names. The `^...bun` anchor matches the bun process itself, not the shell that
@@ -249,11 +289,20 @@ report, and they are reviewed and committed with the task.
 4. A run whose state predates this file's current rules: when `invariants` differ from the list
    above, rewrite them from it (the hook prints the stored ones on every resume); when `workers`
    is missing or null, set up the pool per §Workers and record it before the next author brief.
-5. Per `inFlight`: a runner or author that died across the boundary may have left the bot
+   A leftover `pendingCuration` (re-verify lines from before curation went per goal): hand its
+   lines to the next curator dispatch, then drop the field. Objective entries with `task`,
+   `params` or `until` from the command era: fold them into the next goal brief, then drop them.
+5. Per `runners`: read its `stateFile` to see where the goal stands (plans tried, the current
+   plan, a `running` plan run, a pending decision) without asking the runner. A runner that is
+   not running but waits on you (a `pendingDecision`, or a script fault whose fix is committed):
+   answer with `SendMessage` to its `agentId`. One whose agent is gone (a `resume` ends every
+   background agent): dispatch a fresh `task-runner` with the same brief; it reads the state file
+   first and carries on.
+6. Per `inFlight`: a runner or author that died across the boundary may have left the bot
    mid-action — check state before re-dispatching. With `openGate` set, run `task-review` on the
    uncommitted change, with its `worker` and `replay` (an older gate without them: the worker
    assigned in `workers`, and the replay from the author's report in the journal;
    `conductor/runs/<worker>/loaded.json` is only the worker's latest load, which may be a branch
    test). Uncommitted `learnings/`/`wiki/` or roadmap edits from a dead curator or retrospective:
    review and commit or revert them.
-6. Continue the loop.
+7. Continue the loop.
