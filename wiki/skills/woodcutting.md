@@ -64,6 +64,7 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12; bronze axe, levels 1-67 (task waits for respawns once the cluster is cut down). XP is at the local 25× rate ([local-server](../../learnings/local-server.md)) | ~310k (local, stats.ts, 12 runs; 248k with onFull drop at lower levels) | 2026-10-10 conductor2 local (rev 289) |
+| Varrock oaks | (3190, 3458), radius 10 | 15 | oak trees; `woodcutting` task `onFull: stop`; bronze axe, WC 30-46 in one 189 s run filled 20 oak logs (+18,750 XP, 937.5 XP/log); no hostile NPCs reported at combat 20 | ~358k (local, stats.ts, 1 run) | 2026-10-10 conductor2 local (rev 289) |
 
 ## Notes
 
