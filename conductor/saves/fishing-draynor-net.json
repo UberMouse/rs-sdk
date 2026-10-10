@@ -1,0 +1,47 @@
+{
+    "name": "fishing-draynor-net",
+    "purpose": "Draynor southern net spot with a small fishing net, fishing 1; fishing task smoke",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3086,
+                "z": 3227
+            },
+            "skills": {
+                "Fishing": 1
+            },
+            "inventory": [
+                {
+                    "id": 303,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "daae7ee3e247c8946c3e1bb32fafe8dddad73b0f",
+    "createdAt": "2026-10-10T02:29:57.577Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3086,
+            "z": 3227,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 303,
+                "name": "net",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

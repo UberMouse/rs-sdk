@@ -1,0 +1,281 @@
+{
+    "name": "fishing-draynor-nearfull2",
+    "purpose": "Draynor southern net spot, net + 26 separate raw shrimps (27/28 slots); fishing onFull stop smoke",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3086,
+                "z": 3227
+            },
+            "skills": {
+                "Fishing": 1
+            },
+            "inventory": [
+                {
+                    "id": 303,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "57a7d686b0073ec4e50906c8f4599924dad0dce1",
+    "createdAt": "2026-10-10T02:34:50.625Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3086,
+            "z": 3227,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 303,
+                "name": "net",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
