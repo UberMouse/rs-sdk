@@ -123,3 +123,7 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - Actions: the fletch op (`conductor/actions/fletch.ts`, ported from `bot.fletchLogs`) clicks the
   product's make-1 button, so the fletching task cuts one log per call (~4 s/log against 0.8 s);
   add Make 10 / Make X to the op and let the task batch (game-semantics G5). No SDK change needed.
+- Lib: `lib/saves.ts` builds its own copy of the engine XP table (`LEVEL_XP`, tenths) and a
+  private `levelForXp`; have it use `xpForLevel`/`levelForXp` from `lib/xp.ts` (scaling tenths)
+  and drop the copy, which also gives the `lib/xp` exports a caller outside their test
+  (code-quality Q3).
