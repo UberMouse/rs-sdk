@@ -87,7 +87,8 @@ Then `EnterWorktree` with that `path`. (`EnterWorktree` with `name` branches fro
 which lags local `main` here.) The main checkout often holds a conductor run's uncommitted work:
 leave it alone; move only files that belong to this build (the design doc) into the worktree.
 
-In the worktree: `bun install` (enables `.githooks`), then the baseline:
+In the worktree: `bun install` (enables `.githooks`) and `bun install --cwd server/webclient` (the
+integration tests' lite client needs its packages; a fresh worktree has none), then the baseline:
 `bun test conductor` and `bun run verify:conductor`. Record any failure already on `main` in
 `baselineFailures` and assign it to the spec task that touches that file, or list it in the final
 report; reviewers must not chase it as the task's fault.
