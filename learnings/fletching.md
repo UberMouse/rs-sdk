@@ -3,7 +3,7 @@
 ## Getting Started (Level 1)
 
 ### Knife Location
-- Ground spawn at **(3224, 3202)**, beside Bob's Brilliant Axes, Lumbridge. `pickup` task with area `{x:3224,z:3202,radius:4}` took it in 35 s including the walk. It respawns 100 ticks (~40 s) after pickup: no `respawnrate` override for knives, engine default `ObjType.respawnrate = 100` (`server/engine/src/cache/config/ObjType.ts`). [v 2026-10-09 conductor1 local]
+- Ground spawn at **(3224, 3202)**, beside Bob's Brilliant Axes, Lumbridge. `pickup` task with area `{x:3224,z:3202,radius:4}` took it in 35 s including the walk. It respawns 100 ticks (~40 s) after pickup: no `respawnrate` override for knives, engine default `ObjType.respawnrate = 100` (`server/engine/src/cache/config/ObjType.ts`). [v 2026-10-09 conductor1 local] [v 2026-10-10 conductor2 local: `pickup` task took it in 75 s]
 - No Lumbridge shop sells a knife (General Store stock and engine `.inv` files have none). Nearest knife shops are far: Shantay Pass (6 gp), Bedabin, Yanille, Karamja, Gnome, Dal's. See the starter tools table in `learnings/shops.md`. [v 2026-10-09 conductor1 local]
 
 ### Training Method

@@ -47,6 +47,7 @@ Steal from stalls when nearby NPCs aren't looking. Located mainly in Ardougne.
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge castle Men | (3222, 3218), radius 6 | 1 | `thieving` task, npc Man, eatBelow 0.6, food Shrimps/Bread; Thieving 1-34 in 5 min with 2 food (156 gp), 34-39 in 5 min with no food (72 gp; regen step waited most of the run); ~1 in 4 attempts caught/stunned; one "Cannot reach Man" | ~91k (local, stats.ts, 2 runs, both phases pooled) | 2026-10-10 conductor2 local (rev 289) |
+| Lumbridge castle Men, no food, level 39-49 | (3222, 3218), radius 6 | 39-49 | `thieving` task, npc Man, food [], eatBelow 0.6: 6 min gave 114 pickpockets, 17 stuns, 59 regen waits, +249 gp (~41 gp/min, vs ~14 gp/min at Thieving 34-39) and Thieving 39->49 (16600 XP) | not measured (single run) | 2026-10-10 conductor2 local |
 
 ## Notes
 

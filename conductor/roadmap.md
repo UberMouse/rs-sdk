@@ -127,7 +127,6 @@ Review findings `task-review` deferred because their fix needs work outside the 
 (most findings are fixed in the same pass).
 
 
-- firemaking: wiki/skills/firemaking.md:42-43 still says the task sidesteps on a refused light; it now picks a clear east-west line and marks refused tiles bad. Record the smoke-verified spots: Varrock oaks {3190,3458,r6} (26 oaks, FM 15->53) and Lumbridge NE {3256,3260,r6} (10 Logs, FM 1->33) (contract T6)
 - crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)
 - crafting: pottery facts missing from the knowledge base: Barbarian Village wheel (3087,3409) and oven (3084,3407) are ground floor with no gate, clay mines (Varrock SE (3180,3372), Rimmington (2986,3239)), softening 1-tick post-delay, make-menu behaviour, observed XP rate (Crafting 1->16 in 64 s, 7 pots) -> wiki/skills/crafting.md (contract T6)
 - fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
