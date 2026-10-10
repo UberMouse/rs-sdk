@@ -43,7 +43,13 @@ await new Promise(r => setTimeout(r, 1500));  // Wait for result
 | Stunned | 0 GP | 0 XP |
 
 - ~52 successful pickpockets = 200+ GP and level 43
-- Stun recovery takes ~5 seconds
+- A failed pickpocket stuns for `stun_ticks` (8 ticks = 3.2 s for most NPCs, 10 for Heroes) and
+  deals `stun_damage` (Man 1, Warrior/Guard 2, Knight of Ardougne/Paladin 3, Hero 4); the NPC
+  does not attack. Success chance per attempt uses the same `stat_random` roll as Woodcutting
+  (`wiki/skills/woodcutting.md`, Chop speed) with each NPC's `success_chance`; level, XP, coins
+  and chance per NPC are in `server/content/scripts/skill_thieving/configs/pickpocking/pickpocket.dbrow`
+  (Man 1 / 3 gp, Farmer 10 / 9 gp, Warrior 25 / 18 gp, Guard 40 / 30 gp, Knight of Ardougne
+  55 / 50 gp, Paladin 70 / 80 gp, Hero 80 / 200-300 gp). [v 2026-10-10 conductor2 local; read from content]
 
 ### Handling Stuns
 

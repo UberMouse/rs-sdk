@@ -4,19 +4,51 @@ Woodcutting produces logs from trees, used in Firemaking and Fletching.
 
 ## Axes
 
-| Axe | Level | How to Obtain |
-|-----|-------|--------------|
-| Bronze | 1 | Bob's Axes (16 gp), Bandit Duty Free, Jiminua's Jungle Store, Obli's General Store; ground spawns at Camelot (floor 1), west Karamja and m41_58 |
-| Iron | 1 | Bob's Axes, Smithing |
-| Steel | 6 | Bob's Axes, Tree Spirit drops, Smithing |
-| Black | 11 | Black Demon / KBD drops, player trade |
-| Mithril | 21 | Tree Spirit drops, Smithing |
-| Adamant | 31 | Tree Spirit drops, Smithing |
-| Rune | 41 | Tree Spirit drops, Smithing |
+Woodcutting has no axe level requirement on this revision: `woodcutting_axe_checker` in
+`server/content/scripts/skill_woodcutting/scripts/woodcut.rs2` picks the best axe worn **or in the
+inventory** (rune > adamant > mithril > black > steel > iron > bronze) and checks no level (the
+level checks are commented out, "no wc req in 2004"). Only wielding needs Attack
+(`levelrequire/scripts/tier*.rs2`); a bot can chop with any axe carried in the inventory.
+[v 2026-10-10 conductor2 local; read from content]
+
+| Axe | Attack to wield | Chance vs bronze | Shop (price) | Smithing |
+|-----|-----|-----|-----|-----|
+| Bronze | 1 | 1× | Bob's Brilliant Axes, Lumbridge (16 gp); Bandit Duty Free, Jiminua's, Obli's | 1 |
+| Iron | 1 | 1.5× | Bob's (56 gp); Gulluck and Sons (56 gp); Aemad's / Jiminua's / Obli's / Armoury (72-84 gp) | 16 |
+| Steel | 5 | 2× | Bob's (200 gp, 3 in stock); Gulluck and Sons (200 gp); Armoury (300 gp) | 31 |
+| Black | 10 | 2.25× | no shop | not smithable |
+| Mithril | 20 | 2.5× | no shop | 51 |
+| Adamant | 30 | 3× | no shop | 71 |
+| Rune | 40 | 3.5× | no shop | 86 |
+
+Shop stock from `wiki/shops/` (generated); no shop in the content stocks a black, mithril,
+adamant or rune axe (`grep` of the `.inv` configs finds them only in the smithing and skill-guide
+interfaces). Smithing levels from `skill_smithing/configs/smithing/smithing.dbrow` (1 bar each).
+[v 2026-10-10 conductor2 local; read from content]
+
+## Chop speed
+
+From `woodcut.rs2` (`@get_logs`, `~woodcutting_successchance`) and the engine's `STAT_RANDOM`
+(`server/engine/src/engine/script/handlers/PlayerOps.ts`): [v 2026-10-10 conductor2 local; read from content]
+
+- One roll every 4 ticks (1.6 s at 400 ms/tick) for every axe; the first roll lands 3 ticks after
+  the first swing. The axe changes only the success chance, never the interval.
+- Success chance per roll = `min(256, floor(low*(99-L)/98) + floor(high*(L-1)/98) + 1) / 256`,
+  L = current Woodcutting level (capped at 99), `low,high` per tree and axe in
+  `configs/trees.dbrow` (`successchance`). Bronze `low,high`: normal 64,200; oak 32,100;
+  willow 16,50; maple 8,25; yew 4,12; magic 2,6. The other axes scale both numbers by about the
+  multiplier in the table above (the yew and magic rows round a point or two either way).
+- XP per log (`productexp` in tenths, ×25 locally): normal 625, oak 937.5, willow 1687.5,
+  maple 2500, yew 4375, magic 6250.
+- Per roll, oak's chance is about 2× willow's and gives about 1.1× willow's XP; maple gives about
+  0.74× willow's, yew 0.65×, magic 0.46×, at every axe tier. Per-log time (dropping, banking,
+  moving to the next tree) is not included in these ratios.
+- Normal trees fall on every log, so above about Woodcutting 50 with a bronze axe the roll
+  stops being the limit and walking to the next tree is.
 
 ## Trees
 
-Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.dbrow` and `axes/axes.obj` (axe levels: bronze/iron 1, steel 6, black 11, mithril 21, adamant 31, rune 41). [v 2026-10-09 conductor1 local]
+Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.dbrow`. [v 2026-10-09 conductor1 local]
 
 | Tree | Level | Log Type | Locations |
 |------|-------|----------|-----------|
@@ -35,7 +67,6 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 
 ## Notes
 
-- Higher-level axes chop faster.
 - Trees respawn after being cut down; higher-tier trees take longer to respawn.
 - Normal trees (no `respawnrate` in `trees.dbrow`) fall on every successful chop and respawn after 120 + random(80) game ticks (48-80 s at 400 ms/tick), scaled down slightly by player count (`server/content/scripts/skill_woodcutting/scripts/woodcut.rs2`, `general/scripts/player_count.rs2`). Other trees deplete with 1/8 chance per log.
 - Lumbridge trees capacity: at ~50+ WC (bronze axe, 25x XP) a bot cuts every normal tree within radius 12 of (3195, 3220) to a stump (stumps are not choppable). Respawns (48-80 s) keep a bot that waits for them at about the same XP/hr (~289k, WC 51-58 over 5 min); a bot that does not wait fails with "chop: no reachable tree nearby". [v 2026-10-09 conductor1 local]

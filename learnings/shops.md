@@ -20,7 +20,8 @@ overstocked on that item, not that the sale failed.
 |------|----------|-------------|----------------|
 | Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
-| Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]), Pickaxes (bronze 1gp) |
+| Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]); iron 56 gp and steel 200 gp per the stock list, nothing above steel; bronze pickaxe 1gp only |
+| Nurmof's Pickaxe Shop | Dwarven Mine, under Falador | (2998, 9844) | Every pickaxe from bronze to rune (stock list: `wiki/shops/nurmofs-pickaxe-shop.md`); not yet visited by a bot |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear |
 
 ## Starter tools: where to get each
@@ -109,7 +110,7 @@ Since general stores can be overstocked, consider:
 
 | Method | GP/Hour (approx) | Requirements |
 |--------|------------------|--------------|
-| Pickpocketing men | ~50-100 GP | Thieving 1+ |
+| Pickpocketing men, Lumbridge castle | ~3-4k GP (local: 48 and 66 GP in two 1-min `thieving` runs, Thieving 1-31; HP-10 workers ran out of HP) [v 2026-10-10 conductor2w3 local] | Thieving 1+ |
 | Mining copper/tin | Variable | Mining 1+, pickaxe |
 | Fishing shrimp | Variable | Fishing 1+, net |
 

@@ -8,7 +8,12 @@ Where the next tier of gear comes from. Item stats and full shop stock are in th
 | Item | Requirement | Where | Cost | Verified |
 |---|---|---|---|---|
 | Bronze axe, bronze pickaxe | — | starter kit after `skipTutorial()` | free | 2026-10-09 conductor1 local |
-| Axes up to adamant | Woodcutting level per `wiki/skills/woodcutting.md` | Bob's Axes, Lumbridge (see `wiki/shops/`) | see shop page | unverified |
+| Iron, steel axe | none to chop (works from the inventory); Attack 1 / 5 to wield | Bob's Brilliant Axes, Lumbridge (3232, 3203) | 56 / 200 gp | 2026-10-10 conductor2 local, read from content (not yet bought) |
+| Black, mithril, adamant, rune axe | none to chop; Attack 10/20/30/40 to wield | no shop sells them; smith mithril/adamant/rune at Smithing 51/71/86 (1 bar); black is not smithable | — | 2026-10-10 conductor2 local, read from content |
+| Iron to rune pickaxe | Mining 1/6/21/31/41 (iron/steel/mithril/adamant/rune) to use; Attack to wield | Nurmof's Pickaxe Shop, Dwarven Mine (2998, 9844); not smithable | 140 / 500 / 1,300 / 3,200 / 32,000 gp | 2026-10-10 conductor2 local, read from content (not yet visited) |
+
+How much each tier speeds up chopping and mining: `wiki/skills/woodcutting.md` (Chop speed) and
+`wiki/skills/mining.md` (Mining speed).
 
 ## Combat gear
 
