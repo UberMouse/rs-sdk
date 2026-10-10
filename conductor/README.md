@@ -7,7 +7,7 @@ current; the tasks themselves are deterministic programs that grind without an L
 ```
 conductor (Claude Code session, .claude/skills/conductor)
  ├─ task-runner          owns a goal: writes and runs plans, debugs them (world vs script)
- ├─ knowledge-curator    once per goal: folds what it taught into learnings/ + wiki/
+ ├─ knowledge-curator    once per runner report: folds what it taught into learnings/ + wiki/
  ├─ task-author          writes/fixes tasks, smoke-tests them
  │    └─ task-review     5 lens reviewers + verifier -> fix -> commit or revert
  └─ retrospective        every 10 runs: outcomes + agent transcripts -> roadmap, proposals

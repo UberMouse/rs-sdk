@@ -47,7 +47,7 @@ Agents (all dispatched in the background):
 | `task-runner` | owns one goal on the main bot: writes, runs and debugs plans, journals each run, keeps its state file | edits task, engine or knowledge files; writes outside its drafts and state file |
 | `task-author` | writes or fixes a task, smoke-tests it | commits |
 | `task-reviewer` ×5 + `review-verifier` | the `task-review` skill's lens review of a change | edits anything |
-| `knowledge-curator` | folds a goal's lessons into the knowledge base | drives the bot, commits |
+| `knowledge-curator` | folds a runner report's lessons into the knowledge base | drives the bot, commits |
 | `retrospective` | looks across many runs, updates the roadmap | drives the bot, commits |
 
 ## Durable state (owner fields)
@@ -92,8 +92,8 @@ Seed `invariants` with the list below on the first write.
   reliably. One runner owns the main bot's goal at a time.
 - A runner's state file is the runner's: read it, never write it.
 - Every task-author change goes through the `task-review` skill before it is committed.
-- One `knowledge-curator` dispatch per goal, and one per `DECISION NEEDED` report, on the
-  runner's lessons and RESULT lines.
+- One `knowledge-curator` dispatch per runner report (a `GOAL` report or a `DECISION NEEDED`
+  report), on the report's lessons and RESULT lines; never one per run.
 - New or changed tasks and new plans get short runs first (`--until minutes:1`); extend only
   after a clean `done`. Runners do this for their drafts; say in the knowledge when a task is new.
 - Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before dispatching a
@@ -180,7 +180,8 @@ refuses it: move it, then add it.
   (step 8); if it still has none, mark the objective `blocked-needs-human` and tell the user.
 - Unsafe end state (the runner's `Bot:` line or `bun sdk/cli.ts <bot>` shows the bot in combat,
   or HP below half) — handle it before anything
-  else and never leave the bot idle there. The catalog has no combat or retreat task yet: queue
+  else and never leave the bot idle there. The catalog has no retreat task yet (`combat` fights,
+  it doesn't flee): queue
   a retreat/eat objective (a task-author dispatch for one if none exists), or when nothing is
   running, log it out with `save.ts snapshot <bot> unsafe-exit --logout` so it cannot die unattended
   (the snapshot is written either way). Combat delays a logout: on exit 1 "still in the world",
@@ -199,7 +200,7 @@ refuses it: move it, then add it.
 **task-runner**
 ```
 Bot: <bot>. Objective: <title>. Journal: <abs journal path>.
-State file: .durable-state/runners/<bot>.json (read it first: it may hold this goal already).
+State file: <abs worktree>/.durable-state/runners/<bot>.json (read it first: it may hold this goal already).
 Goal: <end state, e.g. Fletching 40 and Firemaking 45 | 500 bronze bars banked>.
 Constraints: <areas to avoid; what may be spent or sold; items that must not be risked>.
 Budget: <play time>; stop after <n> failed plans in a row.
@@ -289,7 +290,7 @@ report, and they are reviewed and committed with the task.
 4. A run whose state predates this file's current rules: when `invariants` differ from the list
    above, rewrite them from it (the hook prints the stored ones on every resume); when `workers`
    is missing or null, set up the pool per §Workers and record it before the next author brief.
-   A leftover `pendingCuration` (re-verify lines from before curation went per goal): hand its
+   A leftover `pendingCuration` (re-verify lines from before curation went per runner report): hand its
    lines to the next curator dispatch, then drop the field. Objective entries with `task`,
    `params` or `until` from the command era: fold them into the next goal brief, then drop them.
 5. Per `runners`: read its `stateFile` to see where the goal stands (plans tried, the current
@@ -297,7 +298,10 @@ report, and they are reviewed and committed with the task.
    not running but waits on you (a `pendingDecision`, or a script fault whose fix is committed):
    answer with `SendMessage` to its `agentId`. One whose agent is gone (a `resume` ends every
    background agent): dispatch a fresh `task-runner` with the same brief; it reads the state file
-   first and carries on.
+   first and carries on. A `stateFile` that is missing (the runner died before its first write,
+   or the file was lost): dispatch a fresh runner on the goal from your own record (the
+   objective's `title`, the last journal lines for it, roadmap §Now), with constraints and budget
+   set afresh; it starts the goal from that brief.
 6. Per `inFlight`: a runner or author that died across the boundary may have left the bot
    mid-action — check state before re-dispatching. With `openGate` set, run `task-review` on the
    uncommitted change, with its `worker` and `replay` (an older gate without them: the worker

@@ -165,8 +165,8 @@ forever.
   the logs of the runs that used them. The task-runner writes them there (it gets the Write tool for
   that path only; it still never edits task or engine code) or reuses a promoted plan as it is.
 - **Promoted**: `conductor/plans/<name>.ts`, committed. When a runner reports a draft that worked,
-  the conductor `git mv`s it in and commits it with the runs' results in the message: git history
-  is the plan's review.
+  the conductor moves it in (`mv` + `git add`: the draft is untracked, so `git mv` refuses it) and
+  commits it with the runs' results in the message: git history is the plan's review.
 - Imports go through a tsconfig path alias, `@conductor/lib/plan` and `@conductor/tasks/<task>`
   (Bun resolves tsconfig `paths`), so a plan reads the same in either place and promotion is a
   move. A plan imports nothing else.

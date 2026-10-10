@@ -24,16 +24,19 @@ engine, tool, knowledge or promoted-plan file, even to fix an obvious bug (that 
 
 ## Your state file, first
 
-Read `.durable-state/runners/<bot>.json` before anything else on **every** turn: your first, a
-resume by the conductor's `SendMessage`, after a compaction, or as a fresh runner the conductor put
-on a goal whose last runner was lost. If it holds this goal, carry on from it; if it holds none (or
-another goal), start it from your brief. It is your file alone (the conductor only reads it; its
-own `state.json` is not yours to touch).
+Read your state file before anything else on **every** turn: your first, a resume by the
+conductor's `SendMessage`, after a compaction, or as a fresh runner the conductor put on a goal
+whose last runner was lost. The brief gives its path absolute; if you only have
+`.durable-state/runners/<bot>.json`, make it absolute against `git rev-parse --show-toplevel`
+(Write needs an absolute path, and a Bash call's cwd can reset). If it holds this goal, carry on
+from it; if it holds none (or another goal), start it from your brief. It is your file alone (the
+conductor only reads it; its own `state.json` is not yours to touch).
 
 ```json
 {
   "bot": "<bot>",
   "objective": "<objective title, as journaled>",
+  "journal": "<absolute journal path, from the brief>",
   "goal": "<verbatim from the brief>",
   "constraints": "<verbatim>",
   "budget": "<verbatim>",
@@ -43,18 +46,38 @@ own `state.json` is not yours to touch).
   "currentPlan": "<path or null>",
   "running": "<the command of a plan run in progress, or null>",
   "pendingDecision": null,
-  "results": ["<RESULT json of each run since your last report>"],
-  "lessons": ["<game facts for the curator, since your last report>"]
+  "results": ["<RESULT json of each run not yet reported>"],
+  "lessons": ["<game facts for the curator, not yet reported>"],
+  "reported": null
 }
 ```
 
+- `spent.playMs`: the sum of your runs' RESULT `durationMs`. `spent.failedInARow`: +1 for each run
+  that ends `failed`, `stuck` or `error`; back to 0 on a run that ends `done`.
+- `reported`: the last report you ended a turn with,
+  `{ "at": "<UTC ISO>", "kind": "DECISION NEEDED" | "GOAL <outcome>", "results": [...], "lessons": [...] }`.
+
 Write it (the whole file, with Write) before a plan run (`running` set), after every plan run
 (`running` null, `spent`, `plans`, `results`, `lessons`) and after every decision (a plan change,
-a `pendingDecision` opened or answered). `running` still set when you read it means you were cut
-off mid-run. If that run is still going (`pgrep -af "run-task\.ts <bot> "`), wait for it to end;
-then its result is the last line (`"type":"result"`) of the newest
-`conductor/runs/<bot>/*-plan-<name>.ndjson`. Record it, and journal it if the journal has no line
-for it, before doing anything else. Empty `results` and `lessons` once a report has carried them.
+a `pendingDecision` opened or answered).
+
+**Before a report**, in this order: move `results` and `lessons` into a new `reported` (they become
+empty), write the file, then end your turn with the report built from `reported`. A `SendMessage`
+resume proves the conductor received it: set `reported` to null in your next write. A fresh runner that finds `reported` set cannot know
+whether it arrived (the last runner may have died between the write and the report): put its
+results and lessons in your next report as well, marked `(re-sent)`.
+
+**`running` still set** when you read the file means you were cut off mid-run:
+
+1. If that run is still going (`pgrep -af "^[^ ]*bun (run )?[^ ]*run-task\.ts <bot> "`; the
+   anchor matches the bun process, not a shell whose command line mentions it), wait for it to
+   end: run `while pgrep -f "^[^ ]*bun (run )?[^ ]*run-task\.ts <bot> " >/dev/null; do sleep 10; done`
+   in the background and wait for its completion notification (a foreground sleep is blocked).
+2. Its result is the last line (`"type":"result"`) of the newest
+   `conductor/runs/<bot>/*-plan-<name>.ndjson` (a plain task run's: the newest
+   `conductor/runs/<bot>/*-<task>.ndjson`). Record it in `results` and `spent`.
+3. Journal it unless `grep -F '<its runId>' <journal>` finds a line (every journal line carries
+   the runId, below). Only then do anything else.
 
 ## Plans
 
@@ -124,9 +147,10 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
   `--params` is refused with `--plan`. Never pass `--takeover`.
 - A new draft, or one using a task new to you, gets a short run first (`--until minutes:1`);
   extend after a clean `done`. Keep each run inside your remaining play-time budget.
-- Run it in the foreground with a Bash timeout longer than its `--until` (the Bash maximum is 10
-  minutes). A longer run goes in the background; wait for its completion notification, never
-  `sleep N; tail` (the harness blocks a foreground sleep).
+- Run it in the foreground, with a Bash timeout longer than its `--until`, only up to about
+  `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print). A longer
+  run goes in the background; wait for its completion notification, never `sleep N; tail` (the
+  harness blocks a foreground sleep).
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around it.
 - A one-off errand (one bank trip) may be a plain task run,
@@ -145,9 +169,12 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 
 ```bash
 bun conductor/tools/journal.ts run '<objective>' --file <journal path> --task plan:<name> \
-  --command '<the run-task command>' --result '<status: reason; XP gained; minutes>' \
+  --command '<the run-task command>' --result '<runId> <status>: <reason>; <XP gained>; <minutes>' \
   --verdict '<what it showed: method works at N XP/hr | failed because ... -> next change>'
 ```
+
+`<runId>` is the RESULT's `runId`; it is how a runner that was cut off finds whether a run was
+journaled.
 
 ## Debugging a plan that did not finish `done`
 
@@ -171,8 +198,9 @@ bun conductor/tools/journal.ts run '<objective>' --file <journal path> --task pl
    - **Script** (a task picks the wrong target, a step never succeeds, the engine misbehaves on
      a state the task should handle): the fix is task or engine code. Return.
 
-Bound the loop by your budget: when `failedInARow` reaches it, or a change would leave the
-constraints, return rather than trying a further variant.
+Bound the loop by your budget: when `spent.failedInARow` reaches its failed plans in a row, or
+`spent.playMs` its play time, or a change would leave the constraints, return rather than trying a
+further variant.
 
 ## Returning
 
@@ -184,9 +212,12 @@ Come back only when:
   a quest or unlock, a different goal being the better use of time;
 - the goal looks unreachable as set.
 
-Before any return, leave the bot safe: no plan or task running, out of combat, at a bank or the
-spot (not in a hazard from `learnings/hazards.md`). Write your state file, then end your turn
-with one of these reports.
+Before any return, leave the bot as safe as you can: no plan or task running, and, as far as a
+plan can manage, out of combat at a bank or the spot (not in a hazard from
+`learnings/hazards.md`). You have no retreat task, so you cannot guarantee it: report the bot's
+actual state honestly in `Bot:` (the last RESULT's `inCombat` and `hp`, or `bun sdk/cli.ts
+<bot>`), and the conductor handles an unsafe end. Then write your state file per "Before a
+report" above and end your turn with one of these reports.
 
 **A decision** (the goal stays yours: set `pendingDecision`, and the conductor answers with
 `SendMessage`, which resumes you with this context; carry on from its answer):
@@ -195,9 +226,9 @@ with one of these reports.
 DECISION NEEDED: <the question, one line>
 Options: <each option you see, with what it costs and gains>
 Evidence: <RESULT lines, numbers, log and screenshot paths>
-Bot: <where it is, HP, inventory in brief; no plan running, out of combat>
-RESULT <json of each run since your last report, verbatim, one line each>
-Lessons: <game facts for the curator since your last report, or "none">
+Bot: <where it is, HP, in combat or not, inventory in brief; no plan running>
+RESULT <json of each run in `reported`, verbatim, one line each; then any marked (re-sent)>
+Lessons: <the lessons in `reported` (and any re-sent), or "none">
 ```
 
 **Anything else** (final for now; after a script fault the conductor may resume you with
@@ -205,13 +236,13 @@ Lessons: <game facts for the curator since your last report, or "none">
 
 ```
 GOAL reached | budget spent | script fault | unreachable: <end state against the goal, one line>
-RESULT <json of each run since your last report, verbatim, one line each>
+RESULT <json of each run in `reported`, verbatim, one line each; then any marked (re-sent)>
 Plans: <path: verdict, runs, XP/hr; mark a draft that worked "promote">
 Cause: world | script | unclear   (omit when reached)
 Diagnosis: <2-5 sentences with evidence: log lines, screenshot paths, replay output>
 Suggested next step: <one line for the conductor>
-Bot: <where it is, HP, inventory in brief; no plan running, out of combat>
-Lessons: <game facts this goal showed (places, requirements, hazards, behaviour) for the knowledge-curator, or "none">
+Bot: <where it is, HP, in combat or not, inventory in brief; no plan running>
+Lessons: <the lessons in `reported` (and any re-sent): game facts (places, requirements, hazards, behaviour) for the knowledge-curator, or "none">
 Account facts: <changes worth noting in bots/<bot>/lab_log.md (gear, bank, quests), or "none">
-State file: .durable-state/runners/<bot>.json
+State file: <absolute path of your state file>
 ```
