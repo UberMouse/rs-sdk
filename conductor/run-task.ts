@@ -33,12 +33,13 @@ import {
     openRunLog,
     parseRunArgs,
     type ResultBase,
+    ResultLine,
     type RunLog,
     runsDir,
     USAGE,
 } from './lib/run-cli';
 import { captureScreenshot } from './lib/screenshot';
-import type { Sinks, TaskDef, TaskResult } from './lib/task';
+import type { TaskDef, TaskResult } from './lib/task';
 import { errMessage, fileStamp } from './lib/util';
 
 const argv = process.argv.slice(2);
@@ -60,22 +61,29 @@ if (argv.includes('--list')) {
 const { args, error: usageError } = parseRunArgs(argv);
 const { bot: botName, task: taskName, params: rawParams, stops, takeover } = args;
 const startedAt = Date.now();
+/** The one RESULT line: the run's own, or a kill's or an error's in its place. */
+const resultLine = new ResultLine();
+const exitCode = () => (resultLine.printed?.status === 'done' ? 0 : 1);
 
+type LoadedPlan = { def: PlanDef; path: string };
 /** The plan being run, once its file has loaded. */
-let plan: { def: PlanDef; path: string } | null = null;
+let plan: LoadedPlan | null = null;
 
 /** Who the result of a run that never produced one is for. */
-const resultBase = (): ResultBase =>
-    plan
-        ? {
-              task: `plan:${plan.def.name}`,
-              bot: botName,
-              params: {
-                  plan: plan.def.name,
-                  phases: plan.def.phases.map(p => ({ phase: p.name, task: p.task.name, params: p.params })),
-              },
-          }
-        : { task: taskName, bot: botName, params: rawParams };
+function resultBase(): ResultBase {
+    if (plan)
+        return {
+            task: `plan:${plan.def.name}`,
+            bot: botName,
+            params: {
+                plan: plan.def.name,
+                phases: plan.def.phases.map(p => ({ phase: p.name, task: p.task.name, params: p.params })),
+            },
+        };
+    // A plan that never loaded is named by the file asked for.
+    if (args.plan !== null) return { task: `plan:${args.plan}`, bot: botName, params: {} };
+    return { task: taskName, bot: botName, params: rawParams };
+}
 
 /**
  * The result of a run that never produced one. A plan's has no phase totals (it never ran, or was
@@ -88,13 +96,13 @@ function failure(
     recent: PhaseRunRef[] = [],
 ): TaskResult | PlanResult {
     const result = errorResult(resultBase(), reason, durationMs, log);
-    return plan ? { ...result, phases: [], recent } : result;
+    return args.plan !== null ? { ...result, phases: [], recent } : result;
 }
 
 /** Print the RESULT line for a run that never produced one, and exit. */
-function bail(reason: string, exitCode = 1): never {
-    console.log(`RESULT ${JSON.stringify(failure(reason))}`);
-    process.exit(exitCode);
+function bail(reason: string, code = 1): never {
+    resultLine.print(failure(reason));
+    process.exit(code);
 }
 
 if (usageError !== undefined) {
@@ -102,54 +110,66 @@ if (usageError !== undefined) {
     bail(`usage: ${usageError}`, 2);
 }
 
-let def: TaskDef | undefined;
-if (args.plan !== null) {
-    try {
-        plan = await loadPlan(args.plan);
-    } catch (e) {
-        console.error(`run-task: ${errMessage(e)}`);
-        bail(errMessage(e), 2);
+/** What to run: a catalog task or a plan. */
+async function loadJob(): Promise<{ task: TaskDef } | { plan: LoadedPlan }> {
+    if (args.plan !== null) {
+        let loaded: LoadedPlan;
+        try {
+            loaded = await loadPlan(args.plan);
+        } catch (e) {
+            console.error(`run-task: ${errMessage(e)}`);
+            bail(errMessage(e), 2);
+        }
+        plan = loaded;
+        return { plan: loaded };
     }
-} else {
     try {
-        def = await loadTask(taskName);
+        return { task: await loadTask(taskName) };
     } catch (e) {
         const reason = `no task "${taskName}" (${errMessage(e)}). Known: ${taskNames().join(', ')}`;
         console.error(`run-task: ${reason}`);
         bail(reason, 2);
     }
 }
+const job = await loadJob();
 
 /** The task run, or the plan's running phase, until it is closed. */
 let current: LiveRun | null = null;
 /** The running phase's name. */
 let currentPhase = '';
-/** The plan's log, until its result is written. */
-let openPlanLog: RunLog | null = null;
+/** The plan's log, once open. */
+let planLog: RunLog | null = null;
+/** What the run produced, once it has. */
+let ranResult: TaskResult | undefined;
+
+/**
+ * A killed run's result, written to the logs of the run (or the plan and its running phase) unless
+ * they hold their own; a log takes one result, so the run's own, coming later, is dropped.
+ */
+function killedResult(reason: string): TaskResult | PlanResult {
+    const run = current;
+    if (args.plan === null) return run?.kill(reason, Date.now() - startedAt) ?? failure(reason);
+    const cut = run !== null && !run.ended;
+    run?.kill(reason);
+    const recent: PhaseRunRef[] = cut
+        ? [{ phase: currentPhase, runId: run.runId, logFile: run.logFile, status: 'error', reason }]
+        : [];
+    const log = planLog;
+    const killed = failure(reason, undefined, log && !log.ended ? log : null, recent);
+    log?.append({ type: 'result', ...killed });
+    return killed;
+}
 
 // Registered before runScript's own handlers so a killed run still prints its RESULT line. runScript
 // disconnects and exits within 5s; the timer covers a signal that lands before it has registered.
 const SIGNAL_EXIT_GRACE_MS = 6000;
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
-        const reason = `killed by ${signal}`;
-        let killed: TaskResult | PlanResult;
-        if (plan) {
-            // The phase's own killed result goes to its log, as a task run's does.
-            const phase = current;
-            const cut = phase !== null && !phase.ended;
-            phase?.kill(reason);
-            const recent: PhaseRunRef[] = cut
-                ? [{ phase: currentPhase, runId: phase.runId, logFile: phase.logFile, status: 'error', reason }]
-                : [];
-            const log = openPlanLog;
-            killed = failure(reason, undefined, log, recent);
-            log?.append({ type: 'result', ...killed });
-        } else {
-            killed = current?.kill(reason, Date.now() - startedAt) ?? failure(reason);
-        }
-        console.log(`RESULT ${JSON.stringify(killed)}`);
-        setTimeout(() => process.exit(1), SIGNAL_EXIT_GRACE_MS);
+        // A repeated signal, or one after the RESULT line, adds nothing.
+        if (resultLine.printed) return;
+        // A run that has its result (runScript is disconnecting) was not cut short: that is its RESULT.
+        resultLine.print(ranResult ?? killedResult(`killed by ${signal}`));
+        setTimeout(() => process.exit(exitCode()), SIGNAL_EXIT_GRACE_MS);
     });
 }
 
@@ -180,11 +200,10 @@ const dir = runsDir(botName);
 const print = (line: string) => console.log(line);
 const warn = (msg: string) => console.error(`run-task: ${msg}`);
 
-let ranResult: TaskResult | undefined;
 const run = await runScript(
     async ({ sdk }) => {
-        if (!plan) {
-            const task = def!;
+        if ('task' in job) {
+            const { task } = job;
             const live = openLiveRun(sdk, {
                 dir,
                 task: task.name,
@@ -206,32 +225,32 @@ const run = await runScript(
                     stops,
                 });
             } finally {
-                live.close();
-                current = null;
+                try {
+                    live.close();
+                } finally {
+                    current = null;
+                }
             }
             return;
         }
 
-        const runId = `${fileStamp()}-plan-${plan.def.name}`;
+        const { def, path } = job.plan;
+        const runId = `${fileStamp()}-plan-${def.name}`;
         const log = openRunLog(dir, runId);
-        openPlanLog = log;
+        planLog = log;
         // Drafts change; the run keeps the source that ran.
         const copy = join(dir, `${runId}.plan.ts`);
-        copyFileSync(plan.path, copy);
-        log.append({ type: 'source', file: plan.path, copy });
-        const planSinks: Sinks = {
-            event: event => {
-                log.append(event);
-                if (event.type === 'result') openPlanLog = null;
-            },
-            print,
-            screenshot: label => captureScreenshot(sdk, botName, undefined, label),
-        };
-        ranResult = await runPlan(plan.def, {
+        copyFileSync(path, copy);
+        log.append({ type: 'source', file: path, copy });
+        ranResult = await runPlan(def, {
             botName,
             runId,
             logFile: log.logFile,
-            sinks: planSinks,
+            sinks: {
+                event: event => log.append(event),
+                print,
+                screenshot: label => captureScreenshot(sdk, botName, undefined, label),
+            },
             stops,
             // Through the running phase's driver, so each phase's recording holds every clock read its
             // run made and replays them; the wall clock directly between phases.
@@ -242,6 +261,8 @@ const run = await runScript(
                 return s;
             },
             newPhaseRun: p => {
+                // A killed plan starts nothing more: the next phase would log a run that never was.
+                if (resultLine.printed) throw new Error('the run was killed');
                 const phase = openLiveRun(sdk, {
                     dir,
                     task: p.task.name,
@@ -260,8 +281,11 @@ const run = await runScript(
                     runId: phase.runId,
                     logFile: phase.logFile,
                     close: () => {
-                        phase.close();
-                        current = null;
+                        try {
+                            phase.close();
+                        } finally {
+                            current = null;
+                        }
                     },
                 };
             },
@@ -270,9 +294,10 @@ const run = await runScript(
     { printState: false, takeover },
 );
 
-// Connection failure or an exception outside the engine still honours the RESULT contract.
-const result =
-    ranResult ?? failure(run.error?.message ?? `${plan ? 'plan' : 'task'} did not produce a result`, run.duration);
-console.log(`RESULT ${JSON.stringify(result)}`);
+// Connection failure or an exception outside the engine still honours the RESULT contract; after a
+// kill the killed RESULT already printed stays the last line.
+resultLine.print(
+    ranResult ?? failure(run.error?.message ?? `${plan ? 'plan' : 'task'} did not produce a result`, run.duration),
+);
 // Exit explicitly, with the status's code, so nothing the run left pending keeps the process alive.
-process.exit(result.status === 'done' ? 0 : 1);
+process.exit(exitCode());

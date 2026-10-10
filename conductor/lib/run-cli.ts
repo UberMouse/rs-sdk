@@ -127,28 +127,69 @@ export const runsDir = (bot: string): string => join(REPO_ROOT, 'conductor/runs'
 export interface RunLog {
     runId: string;
     logFile: string;
-    /** Appends one event, stamped with the wall-clock time `t` that stats.ts orders results by. */
+    /**
+     * Appends one event, stamped with the wall-clock time `t` that stats.ts orders results by. A log
+     * takes one `result`, the first: a later one (the run's own after a kill wrote one) is dropped,
+     * so stats never counts a run twice.
+     */
     append(event: Record<string, unknown>): void;
+    /** It holds its result. */
+    readonly ended: boolean;
 }
 
 export function openRunLog(dir: string, runId: string): RunLog {
     const logFile = join(dir, `${runId}.ndjson`);
     mkdirSync(dir, { recursive: true });
+    let ended = false;
     return {
         runId,
         logFile,
-        append: event => appendFileSync(logFile, JSON.stringify({ t: Date.now(), ...event }) + '\n'),
+        append: event => {
+            if (event.type === 'result') {
+                if (ended) return;
+                ended = true;
+            }
+            appendFileSync(logFile, JSON.stringify({ t: Date.now(), ...event }) + '\n');
+        },
+        get ended() {
+            return ended;
+        },
     };
 }
 
 /**
+ * The process's one `RESULT` line, always its last: whichever of the run's own and a kill's comes
+ * first. A later one is dropped.
+ */
+export class ResultLine {
+    private shown: TaskResult | null = null;
+
+    constructor(private readonly out: (line: string) => void = line => console.log(line)) {}
+
+    /** The result printed, once one has been. */
+    get printed(): TaskResult | null {
+        return this.shown;
+    }
+
+    /** Prints `result` unless a result is already printed; true when it printed. */
+    print(result: TaskResult): boolean {
+        if (this.shown) return false;
+        this.shown = result;
+        this.out(`RESULT ${JSON.stringify(result)}`);
+        return true;
+    }
+}
+
+/**
  * `<fileStamp>-<task>`, at a millisecond no run of `task` in `dir` has used: two phase runs of one
- * task can open within a millisecond (the first refused at preflight), and would share a log.
+ * task can open within a millisecond (the first refused at preflight), and would share a log. The
+ * log appears on its first append, the recording when the run opens; either marks the stamp used.
  */
 function freshRunId(dir: string, task: string): string {
     for (;;) {
         const runId = `${fileStamp()}-${task}`;
-        if (!existsSync(join(dir, `${runId}.ndjson`))) return runId;
+        const logFile = join(dir, `${runId}.ndjson`);
+        if (!existsSync(logFile) && !existsSync(recordingFile(logFile))) return runId;
     }
 }
 
@@ -157,13 +198,12 @@ export interface LiveRun extends RunLog {
     driver: LiveDriver;
     sinks: Sinks;
     recorder: Recorder | null;
-    /** Its result event has been written to its log. */
-    readonly ended: boolean;
     /** Closes the driver, then the recording. */
     close(): void;
     /**
      * For a signal handler: closes the recording (synchronously, so it is whole before the process
      * exits) and returns an error result, written to the log unless the run's own result already is.
+     * The log then takes no other result.
      */
     kill(reason: string, durationMs?: number): TaskResult;
 }
@@ -185,12 +225,8 @@ export function openLiveRun(sdk: BotSDK, o: LiveRunOptions): LiveRun {
     const startedAt = Date.now();
     const log = openRunLog(o.dir, freshRunId(o.dir, o.task));
     const { runId, logFile } = log;
-    let ended = false;
     const logSinks: Sinks = {
-        event: event => {
-            log.append(event);
-            if (event.type === 'result') ended = true;
-        },
+        event: event => log.append(event),
         print: o.print,
         screenshot: label => captureScreenshot(sdk, o.bot, undefined, label),
     };
@@ -210,20 +246,25 @@ export function openLiveRun(sdk: BotSDK, o: LiveRunOptions): LiveRun {
     const sinks = recorder ? recorder.wrap(logSinks) : logSinks;
     const driver = new LiveDriver(sdk, sinks, TICK_STALL_MS, recorder ?? undefined);
     return {
-        ...log,
+        runId,
+        logFile,
+        append: log.append,
+        get ended() {
+            return log.ended;
+        },
         driver,
         sinks,
         recorder,
-        get ended() {
-            return ended;
-        },
         close() {
-            driver.close();
-            recorder?.close();
+            try {
+                driver.close();
+            } finally {
+                recorder?.close();
+            }
         },
         kill(reason, durationMs = Date.now() - startedAt) {
             recorder?.close();
-            const open = !ended;
+            const open = !log.ended;
             const result = errorResult(o, reason, durationMs, open ? log : null);
             if (open) log.append({ type: 'result', ...result });
             return result;

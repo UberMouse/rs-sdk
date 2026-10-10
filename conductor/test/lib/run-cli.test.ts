@@ -7,8 +7,18 @@ import { readRecording, recordingFile } from '../../core/drivers/recording';
 import { ReplayDriver } from '../../core/drivers/replay';
 import { definePlan, phase, runPlan } from '../../lib/plan';
 import { replayRun } from '../../lib/replay';
-import { errorResult, type LiveRun, loadPlan, openLiveRun, parseRunArgs, runsDir } from '../../lib/run-cli';
+import {
+    errorResult,
+    type LiveRun,
+    loadPlan,
+    openLiveRun,
+    openRunLog,
+    parseRunArgs,
+    ResultLine,
+    runsDir,
+} from '../../lib/run-cli';
 import type { TaskResult } from '../../lib/task';
+import * as util from '../../lib/util';
 import { chopper, FakeGame, logsOf } from '../core/fake-game';
 
 const FIXTURES = join(import.meta.dir, '../fixtures/plans');
@@ -92,13 +102,13 @@ describe('loadPlan', () => {
     });
 
     test('a module whose default export is not a plan is refused, naming the file', async () => {
-        expect(loadPlan('not-a-plan.ts', FIXTURES)).rejects.toThrow(
+        await expect(loadPlan('not-a-plan.ts', FIXTURES)).rejects.toThrow(
             'not-a-plan.ts does not default-export a plan (export default definePlan(...))',
         );
     });
 
     test('a missing file is refused, naming it', async () => {
-        expect(loadPlan('nope.ts', FIXTURES)).rejects.toThrow('no plan file nope.ts');
+        await expect(loadPlan('nope.ts', FIXTURES)).rejects.toThrow('no plan file nope.ts');
     });
 });
 
@@ -209,6 +219,11 @@ describe('a plan whose phases run on openLiveRun', () => {
             { t: expect.any(Number), type: 'result', ...r },
         ]);
         expect(readRecording(recordingFile(killed.logFile)).truncated).toBe(true);
+        // The run's own result, ending after the kill, is not logged as a second run.
+        killed.sinks.event({ type: 'result', status: 'done', reason: 'late' });
+        expect(logEvents(killed.logFile).filter(e => e.type === 'result')).toEqual([
+            { t: expect.any(Number), type: 'result', ...r },
+        ]);
         killed.close();
 
         const finished = open();
@@ -216,5 +231,66 @@ describe('a plan whose phases run on openLiveRun', () => {
         expect(finished.kill('killed by SIGINT')).toMatchObject({ runId: '', logFile: '' });
         expect(logEvents(finished.logFile).filter(e => e.type === 'result')).toHaveLength(1);
         finished.close();
+    });
+
+    test('two runs of one task opened in the same millisecond get their own logs', () => {
+        const game = new FakeGame();
+        const open = () =>
+            openLiveRun(game as unknown as BotSDK, {
+                dir,
+                task: 'chopper',
+                bot: 'tester',
+                params: {},
+                stops: [],
+                print: () => {},
+                warn: noRecorderWarnings,
+            });
+        const stamp = spyOn(util, 'fileStamp');
+        try {
+            stamp.mockReturnValueOnce('same-ms').mockReturnValueOnce('same-ms').mockReturnValueOnce('next-ms');
+            const first = open();
+            const second = open();
+            expect(first.runId).toBe('same-ms-chopper');
+            expect(second.runId).toBe('next-ms-chopper');
+            first.close();
+            second.close();
+        } finally {
+            stamp.mockRestore();
+        }
+    });
+});
+
+describe('the one RESULT', () => {
+    test('a log takes its first result and drops any later one', () => {
+        const dir = mkdtempSync(join(tmpdir(), 'run-cli-log-'));
+        try {
+            const log = openRunLog(dir, 'run-1');
+            log.append({ type: 'start' });
+            expect(log.ended).toBe(false);
+            log.append({ type: 'result', status: 'error', reason: 'killed by SIGINT' });
+            log.append({ type: 'result', status: 'done', reason: 'plan until met' });
+            log.append({ type: 'after' });
+            expect(log.ended).toBe(true);
+            expect(logEvents(log.logFile).map(e => `${e.type} ${e.reason ?? ''}`.trim())).toEqual([
+                'start',
+                'result killed by SIGINT',
+                'after',
+            ]);
+        } finally {
+            rmSync(dir, { recursive: true, force: true });
+        }
+    });
+
+    test('the process prints one RESULT line: the first, whichever it is', () => {
+        const lines: string[] = [];
+        const line = new ResultLine(l => lines.push(l));
+        const base = { task: 't', bot: 'b', params: {} };
+        const killed = errorResult(base, 'killed by SIGINT', 5);
+        expect(line.printed).toBeNull();
+        expect(line.print(killed)).toBe(true);
+        expect(line.print(errorResult(base, 'killed by SIGTERM', 6))).toBe(false);
+        expect(line.print({ ...killed, status: 'done', reason: 'ran' })).toBe(false);
+        expect(line.printed).toBe(killed);
+        expect(lines).toEqual([`RESULT ${JSON.stringify(killed)}`]);
     });
 });
