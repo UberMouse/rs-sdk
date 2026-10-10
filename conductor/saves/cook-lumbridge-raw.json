@@ -1,0 +1,251 @@
+{
+    "name": "cook-lumbridge-raw",
+    "purpose": "Fresh account (all levels 1, Hitpoints 10) at (3225,3205) in Lumbridge, a few tiles from the Range at (3230,3196); inventory: tinderbox, 20 Raw shrimps, 3 Raw anchovies (mixed foods, to test one food type only). For the cooking task.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3225,
+                "z": 3205
+            },
+            "inventory": [
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 321,
+                    "count": 1
+                },
+                {
+                    "id": 321,
+                    "count": 1
+                },
+                {
+                    "id": 321,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "21c692dd6143b85bad82c0c76811cb7d4851fc78",
+    "createdAt": "2026-10-10T01:14:55.440Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3225,
+            "z": 3205,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 321,
+                "name": "raw_anchovies",
+                "count": 1
+            },
+            {
+                "id": 321,
+                "name": "raw_anchovies",
+                "count": 1
+            },
+            {
+                "id": 321,
+                "name": "raw_anchovies",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
