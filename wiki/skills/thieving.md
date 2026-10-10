@@ -42,6 +42,12 @@ Steal from stalls when nearby NPCs aren't looking. Located mainly in Ardougne.
 | Blood rune chest | 59 | Chaos Druid Tower | 2 blood runes |
 | Ardougne castle chest | 72 | Ardougne Castle | 1,000 gp, raw shark |
 
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Lumbridge castle Men | (3222, 3218), radius 6 | 1 | `thieving` task, npc Man, eatBelow 0.6, food Shrimps/Bread; Thieving 1-34 in 5 min with 2 food (156 gp), 34-39 in 5 min with no food (72 gp; regen step waited most of the run); ~1 in 4 attempts caught/stunned; one "Cannot reach Man" | ~91k (local, stats.ts, 2 runs, both phases pooled) | 2026-10-10 conductor2 local (rev 289) |
+
 ## Notes
 
 - Lockpicks are a rare reward from pickpocketing Rogues.

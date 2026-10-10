@@ -110,7 +110,7 @@ Since general stores can be overstocked, consider:
 
 | Method | GP/Hour (approx) | Requirements |
 |--------|------------------|--------------|
-| Pickpocketing men, Lumbridge castle | ~3-4k GP (local: 48 and 66 GP in two 1-min `thieving` runs, Thieving 1-31; HP-10 workers ran out of HP) [v 2026-10-10 conductor2w3 local] | Thieving 1+ |
+| Pickpocketing men, Lumbridge castle | ~1-2k GP (local, conductor2: Thieving 1-34 in 5 min holding 2 food = 156 gp, ~31 gp/min; 34-39 in 5 min with no food = 72 gp, ~14 gp/min because the regen step waited at low HP; ~1 in 4 attempts caught) [v 2026-10-10 conductor2 local]. Earlier 1-min worker runs: 48 and 66 gp (HP-10 workers ran out of HP) | Thieving 1+ |
 | Mining copper/tin | Variable | Mining 1+, pickaxe |
 | Fishing shrimp | Variable | Fishing 1+, net |
 
