@@ -1,6 +1,7 @@
 // Chop the Lumbridge trees until the inventory is full, burn the logs in the field east of the
 // general store, and go back to chopping (spots: wiki/skills/woodcutting.md, firemaking.md).
 // Firemaking sits above woodcutting so a plan started on a full inventory of logs burns them first.
+// Needs combat 5+: Giant spiders between the spots attack lower levels (learnings/hazards.md).
 import { definePlan, phase } from '@conductor/lib/plan';
 import firemaking from '@conductor/tasks/firemaking';
 import woodcutting from '@conductor/tasks/woodcutting';

@@ -8,10 +8,17 @@ import { itestTimeout, runPlan, withFixtureBot } from '../harness';
 
 // The promoted chop-burn plan, ended by its own `until` after the second firemaking phase.
 const PLAN = 'conductor/test/fixtures/plans/chop-burn-twice.ts';
-// The woodcutting phase's area: the bot starts at the trees, so the first phase chops.
+// The woodcutting phase's area: the bot starts at the trees, so the first phase chops. Both spots are
+// the ones woodcutting.itest.ts and firemaking.itest.ts use, and parallel tests share the engine, so
+// another bot can cut these trees or light this field at the same time; MINUTES bounds such a run.
 const TREES = { x: 3195, z: 3220 };
 /** Free slots, so each chop -> burn cycle is this many logs. */
 const FREE = 3;
+/** How each phase run ends in a cycle (the tasks' result reasons). */
+const ENDED = {
+    woodcutting: new RegExp(`^stop-full: inventory full: ${FREE} logs$`),
+    firemaking: new RegExp(`^finish: no Logs left to burn \\(lit ${FREE}\\)$`),
+};
 /** Unrelated items beside the axe and the tinderbox. */
 const FILLER = INVENTORY_SLOTS - 2 - FREE;
 /**
@@ -53,7 +60,8 @@ test(
                 expect(result.xpGained.Woodcutting, detail).toBeGreaterThan(0);
                 expect(result.xpGained.Firemaking, detail).toBeGreaterThan(0);
 
-                // Each phase run the plan log names has its own log, whose result points back at the plan.
+                // Each phase run the plan log names has its own log, whose result points back at the plan
+                // and ended the cycle's way: chopping on a full inventory, burning on no logs left.
                 const planLog = resolve(REPO_ROOT, result.logFile);
                 const ends = readEvents(planLog).filter(e => e.type === 'phase-end');
                 expect(ends.length, detail).toBe(runs('firemaking') + runs('woodcutting'));
@@ -62,6 +70,7 @@ test(
                     expect(existsSync(phaseLog), phaseLog).toBe(true);
                     const phaseResult = readEvents(phaseLog).find(e => e.type === 'result');
                     expect(phaseResult?.partOf, phaseLog).toBe(result.runId);
+                    expect(phaseResult?.reason, phaseLog).toMatch(ENDED[end.phase as keyof typeof ENDED]);
                 }
             },
             { connect: false },
