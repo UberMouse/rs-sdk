@@ -216,3 +216,9 @@ console.log(`Training ${stat} with ${style.name}`);
 ```
 
 This pattern enabled balanced 60+ in all melee stats.
+
+## Ranged and Magic through the combat task
+
+- Ranged: wield the bow and the arrows (`weapon`, `ammo`), then a normal Attack; XP at the chickens was about 1000 Ranged XP (level 1 to 10) per minute with a Shortbow and Bronze arrows. Fallen arrows land in the inventory, not the quiver, and are wielded again by the task. [v 2026-10-10 conductor2w5 local]
+- Magic: a manual cast (spell on NPC) is one cast per send, with a 5-tick delay before the next (`%action_delay` in `player_magic.rs2`); the XP is paid before the hit roll, so a splash still pays. Wind Strike at the chickens: about 2900 Magic XP (level 1 to 19) in a minute, using 15-17 Air and Mind runes. The retaliating chicken also trains melee (Attack +600 with no weapon). [v 2026-10-10 conductor2w5 local]
+- Missing runes answer "You do not have enough Air Runes to cast this spell."; too low a level "Your Magic level is not high enough for this spell." The free strike/bolt/blast spells, levels and runes are in `server/content/scripts/skill_combat/configs/magic/magic_combat_spells.dbrow`; the wave spells are members-only. [v 2026-10-10 conductor2w5 local]
