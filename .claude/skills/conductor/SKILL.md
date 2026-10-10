@@ -60,6 +60,7 @@ Agents (all dispatched in the background):
 | `lastRetroAt` | ISO timestamp of the last retrospective (the run start, before the first) |
 | `openGate` | `{kind: "script-approval", doc: <abs path of the changed task file>, taskId, worker, replay}` from a task-author's return until `task-review` commits or reverts; `worker` and `replay` (the replay path of the load the author's final smoke test ran from) are what its fix authors test on |
 | `workers` | the worker pool: `{ <worker>: <task id or agent it is assigned to> \| null }`. Assign a free worker in each task-author brief. It stays assigned through that change's `task-review` (its fix authors reuse it) and is set back to `null` when the review commits or reverts. A second fix agent running in parallel gets another free worker, recorded here too |
+| `pendingCuration` | `{ <objective id>: [<one line per run whose only lesson is a re-verification>] }`; handed to one curator when that objective finishes, then cleared |
 
 Seed `invariants` with the list below on the first write.
 
@@ -80,7 +81,8 @@ Seed `invariants` with the list below on the first write.
   decides, dispatches, reviews diffs and commits. (Its own edits are limited to the roadmap's
   Now, state, and small agent-prompt fixes a retrospective evidenced.)
 - Every task-author change goes through the `task-review` skill before it is committed.
-- Every task run is followed by a `knowledge-curator` dispatch.
+- Every task run with news (failure, new spot/area/task, new game knowledge) is followed by a
+  `knowledge-curator` dispatch; plain re-verifications are batched per objective.
 - New or changed tasks get short runs first (`--until minutes:1`); extend only after a clean
   `done`.
 - Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before a run that
@@ -106,8 +108,12 @@ Seed `invariants` with the list below on the first write.
    objective `in-progress`, rewrite state.
 5. **On the runner's report**:
    1. Journal it; drop the `inFlight` entry; `runsSinceRetro += 1`.
-   2. Dispatch `knowledge-curator` with the RESULT and the runner's report (template below).
-      It runs alongside whatever you dispatch next.
+   2. Curate when the run has news: a failure (except one caused by the conductor's own brief),
+      a spot, area or task the knowledge base doesn't verify yet, or game knowledge in the
+      runner's report. Then dispatch `knowledge-curator` with the RESULT and the runner's
+      report (template below); it runs alongside whatever you dispatch next. A run whose only
+      lesson is "the spot still works" goes on the objective's re-verify list
+      (`pendingCuration` in state), handed to one curator when the objective finishes.
    3. `bun conductor/tools/progress.ts <bot>`.
    4. Judge the result (below) and go to 1.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
@@ -176,6 +182,7 @@ Bot: <bot>. Server: local.
 Run: <RESULT json>
 Runner report: <cause, diagnosis, game knowledge lines>
 <Author or review notes, if this run tested a change.>
+<Re-verify list, at an objective's end: one line per run (task, params, spot, done/levels).>
 ```
 
 **retrospective**
