@@ -324,6 +324,32 @@ describe('bank: failures', () => {
         expect(logged(r)).toEqual(['withdraw Cowhide x4 (up to): skipped, the bank holds none']);
     });
 
+    test('the done reason names upTo entries that came up short or were skipped', async () => {
+        const r = await simulate(bank, {
+            params: {
+                withdraw: [
+                    { item: 'Bones', count: 9, upTo: true },
+                    { item: 'Cowhide', count: 4, upTo: true },
+                    { item: 'Copper ore', count: 2, upTo: true },
+                ],
+            },
+            timeline: carrying.series(1),
+            react,
+        });
+        expect(r.result.reason).toBe(
+            'finish: all 3 bank operations made; up to: Bones 5/9, Cowhide skipped (bank held none)',
+        );
+    });
+
+    test('the done reason is unchanged when every upTo entry is filled', async () => {
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Bones', count: 5, upTo: true }] },
+            timeline: carrying.series(1),
+            react,
+        });
+        expect(r.result.reason).toBe('finish: all 1 bank operations made');
+    });
+
     test('upTo with enough in the bank withdraws exactly count', async () => {
         const r = await simulate(bank, {
             params: { withdraw: [{ item: 'Copper ore', count: 3, upTo: true }] },
@@ -458,6 +484,28 @@ describe('bank: guards', () => {
             expect(r.sends).toEqual(RESUMED.toSpliced(1, 0, 'withdraw Bones'));
             expect(r.result.inventoryDelta).toEqual({ Bones: 3, Shrimps: -1 });
             expect(logged(r)).toContain('withdraw Bones x3: 3 already withdrawn before the step was cut off');
+        });
+
+        test('a resumed upTo withdrawal that part landed, with the bank now empty, is done without sending again', async () => {
+            // The first withdraw moves all 5 Bones the bank holds (of 9 asked) on the tick HP drops.
+            // A reopened bank lists its contents afresh, so it is made to list none once the withdraw went.
+            let withdrew = false;
+            const emptiesAfter: TimelineOptions['react'] = (action, state) => {
+                if (action.type === 'bankWithdraw') withdrew = true;
+                return withdrew && action.type === 'interactLoc'
+                    ? bankReact([{ name: 'Copper ore', count: 20 }])(action, state)
+                    : react(action, state);
+            };
+            const r = await simulate(bank, {
+                params: { withdraw: [{ item: 'Bones', count: 9, upTo: true }] },
+                timeline: hurtOnLanding(carrying),
+                react: emptiesAfter,
+            });
+            expect(r.result.status).toBe('done');
+            expect(sentAs(r, 'withdraw Bones')).toHaveLength(1);
+            expect(r.result.inventoryDelta).toEqual({ Bones: 5, Shrimps: -1 });
+            expect(logged(r)).toContain('withdraw Bones x9 (up to): 5 already withdrawn, the bank holds no more');
+            expect(r.result.reason).toBe('finish: all 1 bank operations made; up to: Bones 5/9');
         });
 
         test('a withdrawal that partly landed asks only for the rest', async () => {

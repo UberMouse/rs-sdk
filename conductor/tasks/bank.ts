@@ -34,7 +34,7 @@ const Params = z.object({
     depositAllExcept: z.array(z.string().min(1)).optional(),
     /**
      * Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`,
-     * unless `upTo`: then it withdraws the lesser of `count` and what the bank holds, and none held is skipped.
+     * unless `upTo`: then it withdraws the lesser of `count` and what the open bank lists (a same-trip deposit of the item counts), and none held is skipped.
      */
     withdraw: z
         .array(
@@ -62,6 +62,8 @@ interface BankMemory {
     inFlight: { opIndex: number; heldBefore: number } | null;
     /** Without `area`: the bank picked at the first walk, kept so the choice cannot flip mid-walk. */
     chosen: BankSite | null;
+    /** `upTo` entries that came up short or were skipped, for the done reason. Pushed when an entry ends, so an abort never records one twice. */
+    upToShort: string[];
 }
 type Ctx = TaskContext<BankParams, BankMemory>;
 type Operation =
@@ -133,14 +135,24 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     const banked = ctx.state().bank.items.filter(i => pattern.test(i.name));
     const have = banked.reduce((n, i) => n + i.count, 0);
     if (op.upTo && have === 0) {
-        yield* log(`withdraw ${op.item} x${op.count} (up to): skipped, the bank holds none`);
+        yield* log(
+            moved > 0
+                ? `withdraw ${op.item} x${op.count} (up to): ${moved} already withdrawn, the bank holds no more`
+                : `withdraw ${op.item} x${want} (up to): skipped, the bank holds none`,
+        );
+        ctx.memory.upToShort.push(
+            moved > 0 ? `${op.item} ${moved}/${op.count}` : `${op.item} skipped (bank held none)`,
+        );
         return null;
     }
     if (have < want && !op.upTo) return `bank holds ${have} ${op.item}, need ${want}`;
     const amount = Math.min(want, have);
     const r = yield* withdraw(ctx, pattern, amount);
     yield* log(`withdraw ${op.item} x${amount}: ${r.message}`);
-    if (r.ok) return null;
+    if (r.ok) {
+        if (moved + amount < op.count) ctx.memory.upToShort.push(`${op.item} ${moved + amount}/${op.count}`);
+        return null;
+    }
     return `withdraw ${op.item} x${amount} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
 }
 
@@ -192,10 +204,10 @@ export default defineTask({
         'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the nearest of Varrock West/East, Falador West/East and Edgeville by straight-line distance, ' +
         'never Draynor (dark wizards) or Al Kharid (toll); fails if the walk cannot get there, and refuses off the surface without an area). ' +
         'The no-area walk can be long (Lumbridge to Varrock East is ~80 tiles, and an NPC attacks unarmed low-level bots on that road, learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
-        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count and what the bank holds, and none held is skipped, not a failure), close the bank; done when every operation is made. ' +
+        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count and what the bank holds, and none held is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
     params: Params,
-    memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null }),
+    memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null, upToShort: [] }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -277,7 +289,11 @@ export default defineTask({
         {
             name: 'finish',
             when: ctx => !nextOp(ctx),
-            run: ctx => ({ done: `all ${operationsOf(ctx.params).length} bank operations made` }),
+            run: ctx => {
+                const short = ctx.memory.upToShort;
+                const made = `all ${operationsOf(ctx.params).length} bank operations made`;
+                return { done: short.length > 0 ? `${made}; up to: ${short.join(', ')}` : made };
+            },
         },
     ],
 });
