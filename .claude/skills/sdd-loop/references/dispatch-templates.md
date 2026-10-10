@@ -5,6 +5,10 @@ text **inline** (the spec section and the global rules, verbatim); never make it
 file for its instructions. Every dispatch passes `model` explicitly. `<WORKTREE>` is the
 worktree's absolute path: agents inherit your cwd, but say it anyway.
 
+Every template below that runs git includes this line, because a worktree-isolated session
+refuses git commands it can't verify stay in the worktree:
+`Run each git command as its own plain Bash call from the worktree (no && chains, cd, -C or $(...) around git; a heredoc message is fine).`
+
 ## Fix modes (the Implementer template doubles as the fix agent)
 
 | Mode | Used by | `<FIX_FEEDBACK>` |
@@ -19,6 +23,7 @@ Agent(general-purpose, model=<implModel>):
   description: "Implement task <N>: <title>"
   prompt:
     You are implementing ONE task of a larger spec, in the git worktree <WORKTREE> (your cwd).
+    Run each git command as its own plain Bash call from the worktree (no && chains, cd, -C or $(...) around git; a heredoc message is fine).
     Earlier tasks are ALREADY COMMITTED on this branch: build on them.
 
     ## Task
@@ -72,6 +77,7 @@ Agent(general-purpose, model=<reviewModel>):
   prompt:
     Verify an implementation matches what was asked: exactly that, no more, no less. Worktree:
     <WORKTREE>.
+    Run each git command as its own plain Bash call from the worktree (no && chains, cd, -C or $(...) around git; a heredoc message is fine).
 
     ## What was requested
     <the spec's Task N section verbatim (acceptance criteria included) + the global rules>
@@ -110,6 +116,7 @@ Agent(general-purpose, model=<reviewModel>):
   prompt:
     Review this task's committed change for QUALITY only; a spec reviewer checks conformance in
     parallel. Worktree: <WORKTREE>. Change: `git diff <task parent>..HEAD`.
+    Run each git command as its own plain Bash call from the worktree (no && chains, cd, -C or $(...) around git; a heredoc message is fine).
 
     Read `.claude/review-lenses/common.md`, then apply `.claude/review-lenses/code-quality.md`
     item by item, plus from `.claude/review-lenses/robustness.md` and `contract.md` whatever this
@@ -139,6 +146,8 @@ Agent(general-purpose, model=opus):
   prompt:
     Run `.claude/skills/task-review/SKILL.md` end to end on a committed range, in the worktree
     <WORKTREE>. Change: `git diff <base>..HEAD -- conductor/ .claude/` (new files: <list>).
+    Run each git command as its own plain Bash call from the worktree (no && chains, cd, -C or $(...) around git; a heredoc message is fine).
+    Pass the same rule on to every agent you dispatch.
     Purpose: <one line>. Evidence: <tests/verify results, integration RESULT lines, what couldn't
     be run>. The design doc is <path>, the spec <path>: findings that contradict a decision
     recorded there are dropped, not fixed.
