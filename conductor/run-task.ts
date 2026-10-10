@@ -162,10 +162,11 @@ function killedResult(reason: string): TaskResult | PlanResult {
 
 // Registered before runScript's own handlers so a killed run still prints its RESULT line. The
 // process's exit code on a signal is runScript's: its handler (registered once connected)
-// disconnects and exits 130/143 within 5s, at once on a second signal. This timer is only the
-// backup, for a signal before runScript's handler is in place, and exits with the printed result's code.
+// disconnects and exits 130/143/129 (SIGINT/SIGTERM/SIGHUP) within 5s, at once on a second signal.
+// This timer is only the backup, for a signal before runScript's handler is in place, and exits
+// with the printed result's code.
 const SIGNAL_EXIT_GRACE_MS = 6000;
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) {
     process.on(signal, () => {
         // A repeated signal, or one after the RESULT line, adds nothing.
         if (resultLine.printed) return;
