@@ -8,6 +8,13 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
 - XP rate is 25× (`xpRate: 25` in `server/engine/src/util/WorldConfig.ts`, overridable with
   `NODE_XPRATE`): a normal log gives 625 Woodcutting XP instead of 25. A 1-minute woodcutting run
   took level 1 → 22. [v 2026-10-09 conductor1 local]
+- The level table is not the standard one: `getLevelByExp` in
+  `server/engine/src/engine/entity/Player.ts` uses `2^(level/10)` where standard RuneScape uses
+  `2^(level/7)`, so levels come far sooner. XP as the SDK reports it (`skill.experience`, no unit
+  change) at level 15 / 30 / 50 / 70 / 99 = 1,860 / 7,345 / 32,619 / 133,230 / 998,458. The
+  standard 13,363 for level 30 does not apply; a bot at 7,500 XP is level 30. Observed: WC 1,875 ->
+  7,500 XP is level 15 -> 30. `conductor/lib/xp.ts` still uses the `/7` curve (MAX_XP 13,034,431),
+  so `progress.ts` distance-to-max is overstated. [v 2026-10-10 conductor2 local; table read from engine code]
 - Tick rate is 400 ms, not 600: `server/engine/src/util/Environment.ts` defaults `NODE_TICKRATE` to
   400, and `conductor/local/up.sh` and the engine's env set nothing else. (`::speed <ms>` changes it
   until restart.) Same as hosted, so learned timings transfer. [v 2026-10-09 conductor1 local]
