@@ -160,8 +160,14 @@ Seed `invariants` with the list below on the first write.
 ```
 Bot: <bot>. Objective: <title>.
 Run: bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>
+  (or a chain, run in order and stopped at the first RESULT that isn't done:
+   1. bun conductor/run-task.ts ...   2. bun conductor/run-task.ts ...)
 Report per your instructions: RESULT verbatim, cause, diagnosis, suggested next step, game knowledge.
 ```
+
+Chain the steps of one plan into one dispatch (withdraw -> chop -> burn, bank -> shop -> walk)
+whenever each step's params are known up front: a runner per short step is mostly overhead.
+Split only where the next step depends on judging the previous result.
 
 **task-author**
 ```
