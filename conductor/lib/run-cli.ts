@@ -158,8 +158,8 @@ export function openRunLog(dir: string, runId: string): RunLog {
 }
 
 /**
- * The process's one `RESULT` line, always its last: whichever of the run's own and a kill's comes
- * first. A later one is dropped.
+ * The process's one `RESULT` line: whichever of the run's own and a kill's comes first. A later one
+ * is dropped. Keeping it the last stdout line is the caller's part (run-task.ts).
  */
 export class ResultLine {
     private shown: TaskResult | null = null;

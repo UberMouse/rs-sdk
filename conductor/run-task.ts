@@ -160,8 +160,10 @@ function killedResult(reason: string): TaskResult | PlanResult {
     return killed;
 }
 
-// Registered before runScript's own handlers so a killed run still prints its RESULT line. runScript
-// disconnects and exits within 5s; the timer covers a signal that lands before it has registered.
+// Registered before runScript's own handlers so a killed run still prints its RESULT line. The
+// process's exit code on a signal is runScript's: its handler (registered once connected)
+// disconnects and exits 130/143 within 5s, at once on a second signal. This timer is only the
+// backup, for a signal before runScript's handler is in place, and exits with the printed result's code.
 const SIGNAL_EXIT_GRACE_MS = 6000;
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
@@ -169,6 +171,11 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
         if (resultLine.printed) return;
         // A run that has its result (runScript is disconnecting) was not cut short: that is its RESULT.
         resultLine.print(ranResult ?? killedResult(`killed by ${signal}`));
+        // Until the process exits, the engine winds down and runScript reports the disconnect (its
+        // `── Error ──` and a stack, when the disconnect rejects the script), on stdout: send that
+        // to stderr, so the RESULT stays the last stdout line and the diagnostics survive.
+        console.log = console.error;
+        console.info = console.error;
         setTimeout(() => process.exit(exitCode()), SIGNAL_EXIT_GRACE_MS);
     });
 }
@@ -197,7 +204,10 @@ if (!takeover) {
 }
 
 const dir = runsDir(botName);
-const print = (line: string) => console.log(line);
+/** The run's console lines; none once the RESULT is printed, which must stay the last stdout line. */
+const print = (line: string) => {
+    if (!resultLine.printed) console.log(line);
+};
 const warn = (msg: string) => console.error(`run-task: ${msg}`);
 
 const run = await runScript(
@@ -294,10 +304,10 @@ const run = await runScript(
     { printState: false, takeover },
 );
 
-// Connection failure or an exception outside the engine still honours the RESULT contract; after a
-// kill the killed RESULT already printed stays the last line.
-resultLine.print(
+// Connection failure or an exception outside the engine still honours the RESULT contract.
+const printed = resultLine.print(
     ranResult ?? failure(run.error?.message ?? `${plan ? 'plan' : 'task'} did not produce a result`, run.duration),
 );
 // Exit explicitly, with the status's code, so nothing the run left pending keeps the process alive.
-process.exit(exitCode());
+// After a signal (which printed the RESULT) the exits armed on the signal path end the process.
+if (printed) process.exit(exitCode());
