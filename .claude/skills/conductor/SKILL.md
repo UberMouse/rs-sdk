@@ -200,8 +200,8 @@ Objectives that failed 3 times: <list or none>.
 
 ## Workers
 
-Set up once per run, in `setup`: a pool of worker accounts (start with 3; each needs its own
-lite client, so measure before adding more), created on first load with
+Set up once per run, in `setup`: a pool of worker accounts (start with 5, the user's cap since run 2; each
+needs its own lite client, so measure before adding more), created on first load with
 `bun conductor/tools/load.ts <bot>w<n> lib:fresh-lumbridge --create` (the name must be 12
 characters or fewer; `--create` marks the account `WORKER=true`, the only kind `load.ts` will
 overwrite, and refuses a name the server already has an account for). Record them in `workers`.
