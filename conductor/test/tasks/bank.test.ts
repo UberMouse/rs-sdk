@@ -4,6 +4,7 @@ import { CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank'
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TICK_MS } from '../../lib/util';
+import { nearestBank } from '../../lib/banks';
 import bank from '../../tasks/bank';
 import { fakePaths } from '../paths';
 import { bankReact, walking } from '../react';
@@ -126,6 +127,17 @@ describe('bank: the trip', () => {
         expect(r.result.status).toBe('done');
     });
 
+    test('a failed walk to an explicit area reports the walk failure without the no-area prefix', async () => {
+        const away = carrying.player({ at: { x: AREA.x, z: AREA.z + 40 } });
+        const r = await simulate(bank, {
+            params: { area: AREA, deposit: [{ item: 'Logs' }] },
+            timeline: away.series(1),
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
+        });
+        expect(r.result.reason).toStartWith("walk-to-bank: can't walk to area");
+        expect(r.result.reason).not.toContain('no reachable bank');
+    });
+
     test('three failed walks in a row fail the run', async () => {
         const away = carrying.player({ at: { x: AREA.x, z: AREA.z + 40 } });
         const r = await simulate(bank, {
@@ -141,11 +153,80 @@ describe('bank: the trip', () => {
     });
 });
 
+describe('bank: no area walks to the nearest bank', () => {
+    const lumbridge = world()
+        .player({ at: { x: 3222, z: 3222 } })
+        .inv('Logs', 2);
+
+    test('from Lumbridge it walks to Varrock East (never Draynor or Al Kharid), then does the trip', async () => {
+        // No booth appears on arrival here, so the trip itself ends in no-bank-found; only the walk is asserted.
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: lumbridge.series(1),
+            react: walking(react),
+        });
+        expect(r.sends[0]).toBe('walk to (3254, 3420)');
+        expect(logged(r)[0]).toBe('no area given: walking to the nearest bank, Varrock East (3254,3420)');
+        expect(r.steps[0]).toBe('walk-to-bank');
+    });
+
+    test('a bank already in view is used without walking', async () => {
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: lumbridge.loc('Bank booth', 3225, 3222, { options: ['Bank'] }).series(1),
+            react,
+        });
+        expect(r.sends).toEqual([OPEN, 'deposit Logs', CLOSE]);
+        expect(r.steps).toEqual(['operate', 'finish']);
+    });
+
+    test('an unreachable nearest bank fails with a clear reason', async () => {
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: lumbridge.series(1),
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith("walk-to-bank: no reachable bank: can't walk to area");
+    });
+
+    test('the bank picked at the first walk is kept when the bot ends up nearer another', async () => {
+        // Lumbridge (nearest: Varrock East) for the first ticks, then beside Falador East while the walk keeps failing.
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: lumbridge.series(12, (w, i) => (i < 3 ? w : w.player({ at: { x: 3014, z: 3356 } }))),
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('(3254, 3420)');
+        expect(logged(r).filter(m => m.startsWith('no area given'))).toHaveLength(1);
+    });
+
+    test('off the surface with no area and no bank in view is refused', async () => {
+        const underground = lumbridge.player({ at: { x: 3222, z: 9618 } });
+        expect((await refusal({ deposit: [{ item: 'Logs' }] }, underground)).reason).toContain(
+            'pass an explicit `area`',
+        );
+        const upstairs = lumbridge.player({ at: { x: 3222, z: 3222, level: 1 } });
+        expect((await refusal({ deposit: [{ item: 'Logs' }] }, upstairs)).reason).toContain('pass an explicit `area`');
+    });
+
+    test('the table skips Draynor and Al Kharid, and picks by distance', async () => {
+        expect(nearestBank({ x: 3092, z: 3243 })?.name).not.toBe('Draynor');
+        expect(nearestBank({ x: 3269, z: 3167 })?.name).not.toBe('Al Kharid');
+        expect(nearestBank({ x: 3190, z: 3440 })?.name).toBe('Varrock West');
+        expect(nearestBank({ x: 2950, z: 3370 })?.name).toBe('Falador West');
+    });
+});
+
 describe('bank: failures', () => {
     test('no bank in view fails after three opens in a row, well inside the stuck window', async () => {
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
-            timeline: world().inv('Logs', 1).series(1),
+            timeline: world()
+                .player({ at: { x: 3186, z: 3436 } })
+                .inv('Logs', 1)
+                .series(1),
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe(

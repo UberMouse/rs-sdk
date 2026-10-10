@@ -3,7 +3,8 @@ import { deposit, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from '../actions/ba
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { type Area, AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { type BankSite, bankArea, nearestBank } from '../lib/banks';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -25,7 +26,7 @@ export const SILENT_STREAK_TICKS = [
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
-    /** Walk here first (a bank, e.g. Varrock West (3185,3436)). Omit to use the nearest bank to where the bot stands. */
+    /** Walk here first (a bank, e.g. Varrock West (3185,3436)). Omit to walk to the nearest bank in `lib/banks.ts`. */
     area: AreaSchema.optional(),
     /** Inventory items to deposit, by exact name. Omit `count` to deposit all of that item. */
     deposit: z.array(z.object({ item: z.string().min(1), count: z.number().int().positive().optional() })).default([]),
@@ -52,6 +53,8 @@ interface BankMemory {
      * while the bank is open and noted withdrawals change it by name, so the inventory count is kept.
      */
     inFlight: { opIndex: number; heldBefore: number } | null;
+    /** Without `area`: the bank picked at the first walk, kept so the choice cannot flip mid-walk. */
+    chosen: BankSite | null;
 }
 type Ctx = TaskContext<BankParams, BankMemory>;
 type Operation =
@@ -140,14 +143,47 @@ function* performRemaining(ctx: Ctx): Op<string | null> {
     return null;
 }
 
+/** First z of the dungeon and underground map bands; the surface is below it. */
+const UNDERGROUND_Z = 6400;
+
+/** A booth or banker already in view: openBank uses it, no walk. */
+const bankInView = (ctx: Ctx): boolean => {
+    const s = ctx.state();
+    return s.nearbyLocs.some(l => /^bank booth$/i.test(l.name)) || s.nearbyNpcs.some(n => /banker/i.test(n.name));
+};
+
+/** True when the player is off the surface (another level, or a dungeon band), where the bank table's coordinates mean nothing. */
+const offSurface = (ctx: Ctx): boolean => {
+    const p = ctx.state().player;
+    return !!p && (p.level !== 0 || p.worldZ >= UNDERGROUND_Z);
+};
+
+/** The bank to walk to without an `area`: the one already chosen, else the nearest to the bot; undefined (no walk) with a bank in view, off the surface or no player. */
+function chosenSiteOf(ctx: Ctx): BankSite | undefined {
+    if (ctx.memory.chosen) return ctx.memory.chosen;
+    if (bankInView(ctx) || offSurface(ctx)) return undefined;
+    const p = ctx.state().player;
+    return p ? nearestBank({ x: p.worldX, z: p.worldZ }) : undefined;
+}
+
+/** Where to bank: the `area` param, else the nearest bank (see `chosenSiteOf`). */
+function bankAreaOf(ctx: Ctx): Area | undefined {
+    const { area } = ctx.params;
+    if (area) return area;
+    const site = chosenSiteOf(ctx);
+    return site && bankArea(site);
+}
+
 export default defineTask({
     name: 'bank',
     description:
-        'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = nearest to the bot), open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
+        'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the nearest of Varrock West/East, Falador West/East and Edgeville by straight-line distance, ' +
+        'never Draynor (dark wizards) or Al Kharid (toll); fails if the walk cannot get there, and refuses off the surface without an area). ' +
+        'The no-area walk can be long (Lumbridge to Varrock East is ~80 tiles, and an NPC attacks unarmed low-level bots on that road, learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
         'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count}]), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked, or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
     params: Params,
-    memory: (): BankMemory => ({ opsMade: 0, inFlight: null }),
+    memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -157,6 +193,8 @@ export default defineTask({
             return 'nothing to deposit or withdraw';
         const refused = refuseArea(area);
         if (refused) return refused;
+        if (!area && !bankInView(ctx) && offSurface(ctx))
+            return 'not on the surface and no bank in view: pass an explicit `area` for the bank to walk to';
         const s = ctx.state();
         const requested = new Map<string, { entries: number; all: boolean; total: number }>();
         for (const t of deposits) {
@@ -177,20 +215,27 @@ export default defineTask({
 
     steps: [
         {
-            // openBank accepts any open bank; the run walks only while it is closed.
+            // openBank accepts any open bank; the run walks only while it is closed and the bank (area, or the nearest one) is far.
             name: 'walk-to-bank',
             when: ctx => {
-                const { area } = ctx.params;
+                const area = bankAreaOf(ctx);
                 return (
                     !!area && !ctx.state().bank.isOpen && !!nextOp(ctx) && ctx.distanceTo(area.x, area.z) > area.radius
                 );
             },
             *run(ctx) {
-                const { area } = ctx.params;
+                const area = bankAreaOf(ctx);
                 // Narrowing only: when() guarantees it.
                 if (!area) return;
+                if (!ctx.params.area && !ctx.memory.chosen) {
+                    const site = chosenSiteOf(ctx);
+                    if (site) {
+                        ctx.memory.chosen = site;
+                        yield* log(`no area given: walking to the nearest bank, ${site.name} (${area.x},${area.z})`);
+                    }
+                }
                 const failure = yield* walkToArea(ctx, area);
-                if (failure) return { fail: failure };
+                if (failure) return { fail: ctx.params.area ? failure : `no reachable bank: ${failure}` };
             },
         },
         {

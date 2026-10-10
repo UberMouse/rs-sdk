@@ -38,3 +38,21 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+test(
+    'bank task with no area walks to the nearest bank and deposits',
+    async () => {
+        await withFixtureBot(
+            // 30 tiles from Varrock East's booths, none in view: only the bank table can find it.
+            { position: { x: 3240, z: 3445 }, inventory: [{ id: Items.LOGS, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(name, 'bank', { deposit: [{ item: 'Logs' }] }, ['minutes:3']);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta.Logs, detail).toBe(-1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
