@@ -105,7 +105,8 @@ export interface ExecuteOptions {
 
 type End = { status: TaskStatus; reason: string };
 
-function inventoryCounts(s: BotWorldState): Record<string, number> {
+/** Item name -> count held, a stack counted as its size. */
+export function inventoryCounts(s: BotWorldState): Record<string, number> {
     const out: Record<string, number> = {};
     for (const i of s.inventory) out[i.name] = (out[i.name] ?? 0) + i.count;
     return out;

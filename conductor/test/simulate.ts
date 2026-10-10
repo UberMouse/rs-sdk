@@ -4,6 +4,7 @@ import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
 import { executeTask, type ExecuteOptions } from '../lib/engine';
+import { type PlanDef, type PlanResult, runPlan } from '../lib/plan';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 import { straightPaths } from './paths';
@@ -78,4 +79,69 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         printed,
         driver,
     };
+}
+
+export interface SimulatePlanOptions {
+    /** The world, one state per tick, carried on across the phase runs (see TimelineDriver). */
+    timeline: BotWorldState[];
+    respond?: SimulateOptions['respond'];
+    /** What a send changes in the world; default `consume`. */
+    react?: TimelineOptions['react'];
+    /** The plan's `--until`. */
+    stops?: StopCondition[];
+    maxIdlePhases?: number;
+}
+
+/** One phase run of a simulated plan: its own log, and the result it ended with. */
+export interface SimulatedPhaseRun {
+    phase: string;
+    runId: string;
+    events: Record<string, unknown>[];
+    result: TaskResult;
+}
+
+export interface PlanSimulation {
+    result: PlanResult;
+    /** The plan's own log. */
+    events: Record<string, unknown>[];
+    runs: SimulatedPhaseRun[];
+    printed: string[];
+    driver: TimelineDriver;
+}
+
+/** Runs `plan` on one scripted world: each phase run picks up the timeline where the last left it. */
+export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Promise<PlanSimulation> {
+    const { timeline, respond, react = consume } = opts;
+    const driver = new TimelineDriver(timeline, { respond, react });
+    const events: Record<string, unknown>[] = [];
+    const printed: string[] = [];
+    const logs: { phase: string; runId: string; events: Record<string, unknown>[] }[] = [];
+    const sinksInto = (log: Record<string, unknown>[]): Sinks => ({
+        event: e => log.push(e),
+        print: line => printed.push(line),
+        screenshot: async label => `/shots/${label}.png`,
+    });
+    const result = await runPlan(plan, {
+        botName: 'tester',
+        runId: 'plan-1',
+        logFile: '/logs/plan-1.ndjson',
+        sinks: sinksInto(events),
+        stops: opts.stops ?? [],
+        pathfinder: straightPaths(),
+        state: () => driver.state(),
+        newPhaseRun: (phase, index) => {
+            const runId = `phase-${index}-${phase.name}`;
+            const log: Record<string, unknown>[] = [];
+            logs.push({ phase: phase.name, runId, events: log });
+            return { driver, sinks: sinksInto(log), runId, logFile: `/logs/${runId}.ndjson` };
+        },
+        ...(opts.maxIdlePhases !== undefined && { maxIdlePhases: opts.maxIdlePhases }),
+    });
+    const runs = logs.map(r => {
+        const end = r.events.find(e => e.type === 'result');
+        if (!end) throw new Error(`phase run ${r.runId} wrote no result`);
+        const { type: _type, ...fields } = end;
+        return { ...r, result: fields as unknown as TaskResult };
+    });
+    return { result, events, runs, printed, driver };
 }

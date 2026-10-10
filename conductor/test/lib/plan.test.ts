@@ -1,0 +1,671 @@
+import { describe, expect, test } from 'bun:test';
+import { z } from 'zod/v4';
+import type { BotAction, BotWorldState } from '../../../sdk/types';
+import type { Effect } from '../../core/drivers/timeline';
+import { send, wait } from '../../core/op';
+import { definePlan, isPlan, type Phase, phase, type PlanDef, type Predicate } from '../../lib/plan';
+import { defineTask, type Outcome } from '../../lib/task';
+import { countItems, TICK_MS } from '../../lib/util';
+import woodcutting from '../../tasks/woodcutting';
+import { act } from '../core/fixtures';
+import { type PlanSimulation, simulatePlan, type SimulatePlanOptions } from '../simulate';
+import { world } from '../world';
+
+const LOGS = /^Logs$/;
+const logs = (s: BotWorldState) => countItems(s, LOGS);
+
+/** 24 slots of Bones leave 4 free, so a producer fills the inventory in 4 sends. */
+const BASE = world().skill('Woodcutting', 1, 0).skill('Firemaking', 1, 0).inv('Bones', 24);
+
+const gainXp = (s: BotWorldState, skill: string, xp: number): BotWorldState => ({
+    ...s,
+    skills: s.skills.map(k => (k.name === skill ? { ...k, experience: k.experience + xp } : k)),
+});
+
+/** The test world's answer to the fake tasks' sends: a chop adds a log, a burn takes one, each with XP. */
+function plant(action: BotAction): Effect | undefined {
+    switch (action.reason) {
+        case 'chop':
+            return s =>
+                gainXp(
+                    world(s)
+                        .inv('Logs', logs(s) + 1)
+                        .build(),
+                    'Woodcutting',
+                    25,
+                );
+        case 'burn':
+            return s =>
+                gainXp(
+                    world(s)
+                        .inv('Logs', logs(s) - 1)
+                        .build(),
+                    'Firemaking',
+                    40,
+                );
+        case 'train':
+            return s => gainXp(s, 'Woodcutting', 10);
+    }
+    return undefined;
+}
+
+/** A producer: a log a send until the inventory is full. */
+const chop = defineTask({
+    name: 'chop',
+    description: 'plan test producer',
+    params: z.object({ tree: z.enum(['tree', 'oak']).default('tree') }),
+    steps: [
+        { name: 'full', when: ctx => ctx.inventoryFull(), run: () => ({ done: 'inventory full' }) },
+        {
+            name: 'chop',
+            when: () => true,
+            *run(ctx) {
+                const n = logs(ctx.state());
+                yield* send(act('chop'));
+                const w = yield* wait('a log', s => logs(s) > n, 5);
+                if (w.kind === 'timeout') return { fail: 'no log' };
+            },
+        },
+    ],
+});
+
+/** A consumer: a log a send until none are left. */
+const burn = defineTask({
+    name: 'burn',
+    description: 'plan test consumer',
+    params: z.object({}),
+    steps: [
+        { name: 'out', when: ctx => logs(ctx.state()) === 0, run: () => ({ done: 'no logs left' }) },
+        {
+            name: 'burn',
+            when: () => true,
+            *run(ctx) {
+                const n = logs(ctx.state());
+                yield* send(act('burn'));
+                const w = yield* wait('a fire', s => logs(s) < n, 5);
+                if (w.kind === 'timeout') return { fail: 'no fire' };
+            },
+        },
+    ],
+});
+
+/** Gains 10 Woodcutting XP and ends. */
+const train = defineTask({
+    name: 'train',
+    description: 'plan test progress',
+    params: z.object({}),
+    steps: [
+        {
+            name: 'train',
+            when: () => true,
+            *run(ctx) {
+                const xp = ctx.state().skills[0]!.experience;
+                yield* send(act('train'));
+                yield* wait('xp', s => s.skills[0]!.experience > xp, 5);
+                return { done: 'trained' };
+            },
+        },
+    ],
+});
+
+/** Waits for nothing: only an external stop (or the watchdog) ends it. */
+const watch = defineTask({
+    name: 'watch',
+    description: 'plan test open-ended',
+    params: z.object({}),
+    steps: [
+        {
+            name: 'watch',
+            when: () => true,
+            *run() {
+                yield* send(act('watch'));
+                yield* wait('never', () => false, 1000);
+            },
+        },
+    ],
+});
+
+/** A task named `name` whose runs end with `outcomes` in turn, the last repeating; it changes nothing. */
+function scripted(name: string, outcomes: Outcome[]) {
+    let run = 0;
+    return defineTask({
+        name,
+        description: 'plan test scripted outcome',
+        params: z.object({}),
+        steps: [{ name: 'try', when: () => true, run: () => outcomes[Math.min(run++, outcomes.length - 1)] }],
+    });
+}
+
+const plan = (phases: Phase[], until?: Predicate): PlanDef => definePlan({ name: 'test-plan', phases, until });
+
+const sim = (def: PlanDef, opts: Partial<SimulatePlanOptions> = {}) =>
+    simulatePlan(def, { timeline: [BASE.build()], react: plant, ...opts });
+
+/** The phases selection chose, in order (null for "none applies"). */
+const selected = (r: PlanSimulation) => r.events.filter(e => e.type === 'select').map(e => e.phase);
+
+/** The tick the first phase run's external stop fired at. */
+const stoppedAt = (r: PlanSimulation) => r.runs[0]!.events.find(e => e.type === 'external-stop')?.tick;
+
+/** Burns a full inventory of logs, else chops: the consumer above the producer. */
+const chopBurn = (until?: Predicate) =>
+    plan([phase(burn, {}, { when: v => v.full && v.inv('Logs') > 0 }), phase(chop, {})], until);
+
+/** Burns any logs held, else chops. */
+const burnAny = (until: Predicate) => plan([phase(burn, {}, { when: v => v.inv('logs') > 0 }), phase(chop, {})], until);
+
+describe('phase and definePlan', () => {
+    test('phase names itself after its task and allows 3 failures unless told otherwise', () => {
+        const p = phase(chop, {});
+        expect(p.name).toBe('chop');
+        expect(p.maxFails).toBe(3);
+        const named = phase(chop, { tree: 'oak' }, { name: 'oaks', maxFails: 1, onFail: 'continue' });
+        expect(named).toMatchObject({ name: 'oaks', maxFails: 1, onFail: 'continue', params: { tree: 'oak' } });
+    });
+
+    test("phase type-checks params against the task's schema", () => {
+        const ok = phase(woodcutting, { tree: 'oak', onFull: 'stop', area: { x: 3195, z: 3220, radius: 12 } });
+        // @ts-expect-error: woodcutting has no maple tree
+        const bad = phase(woodcutting, { tree: 'maple' });
+        expect(ok.task).toBe(woodcutting);
+        expect(bad.params).toEqual({ tree: 'maple' });
+    });
+
+    test('definePlan refuses no phases, a bad name and a phase name used twice', () => {
+        expect(() => definePlan({ name: 'empty', phases: [] })).toThrow('has no phases');
+        expect(() => definePlan({ name: 'Chop Burn', phases: [phase(chop, {})] })).toThrow('must match');
+        expect(() => definePlan({ name: 'twice', phases: [phase(chop, {}), phase(chop, { tree: 'oak' })] })).toThrow(
+            'used twice: chop',
+        );
+        expect(() =>
+            definePlan({ name: 'twice', phases: [phase(chop, {}), phase(chop, { tree: 'oak' }, { name: 'oaks' })] }),
+        ).not.toThrow();
+    });
+
+    test('isPlan recognises only what definePlan returned', () => {
+        const def = { name: 'p', phases: [phase(chop, {})] };
+        expect(isPlan(definePlan(def))).toBe(true);
+        expect(isPlan(def)).toBe(false);
+        expect(isPlan(null)).toBe(false);
+    });
+});
+
+describe('selection', () => {
+    test('the first phase whose when holds runs; a phase without a when always applies', async () => {
+        const holding = await sim(
+            burnAny(v => v.runs('chop') > 0),
+            { timeline: [BASE.inv('Logs', 2).build()] },
+        );
+        expect(selected(holding)).toEqual(['burn', 'chop']);
+        const empty = await sim(burnAny(v => v.runs('burn') > 0));
+        expect(selected(empty)).toEqual(['chop', 'burn']);
+    });
+
+    test('a phase whose until already holds is passed over', async () => {
+        const r = await sim(
+            plan([phase(chop, {}, { until: v => v.inv('Bones') >= 24 }), phase(train, {})], v => v.runs('train') > 0),
+        );
+        expect(selected(r)).toEqual(['train']);
+        expect(r.result.status).toBe('done');
+    });
+
+    test('no applicable phase fails the plan, logging what the selection saw', async () => {
+        const r = await sim(plan([phase(burn, {}, { when: v => v.inv('Logs') > 0 })]));
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('no phase applies');
+        expect(r.runs).toEqual([]);
+        expect(r.events.find(e => e.type === 'select')).toEqual({
+            type: 'select',
+            phase: null,
+            inventory: { Bones: 24 },
+            free: 4,
+            bank: null,
+        });
+    });
+});
+
+describe('a producer and a consumer', () => {
+    test('cycle chop -> burn twice, each phase run a part of the plan', async () => {
+        const r = await sim(chopBurn(v => v.runs('burn') >= 2));
+        expect(selected(r)).toEqual(['chop', 'burn', 'chop', 'burn']);
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('plan until met');
+        expect(r.runs.map(x => x.result.reason)).toEqual([
+            'full: inventory full',
+            'out: no logs left',
+            'full: inventory full',
+            'out: no logs left',
+        ]);
+        expect(r.runs.map(x => x.result.partOf)).toEqual(['plan-1', 'plan-1', 'plan-1', 'plan-1']);
+        expect(r.result.xpGained).toEqual({ Woodcutting: 200, Firemaking: 320 });
+    });
+});
+
+describe('until', () => {
+    test("a phase's until ends that phase done, and the plan goes on", async () => {
+        const r = await sim(
+            plan(
+                [
+                    phase(burn, {}, { when: v => v.inv('Logs') >= 2 }),
+                    phase(chop, {}, { until: v => v.inv('Logs') >= 2 }),
+                ],
+                v => v.runs('burn') > 0,
+            ),
+        );
+        expect(selected(r)).toEqual(['chop', 'burn']);
+        expect(r.runs[0]!.result).toMatchObject({ status: 'done', reason: 'until met', inventoryDelta: { Logs: 2 } });
+        expect(r.result.reason).toBe('plan until met');
+    });
+
+    // Copper ore arrives at tick 5, in a fight from tick 3 to tick 8.
+    const fight = BASE.series(20, (w, i) => {
+        const fighting = i >= 3 && i < 9 ? w.player({ inCombat: true }) : w;
+        return i >= 5 ? fighting.inv('Copper ore', 1) : fighting;
+    });
+    test("a phase's until that holds in a fight waits for the fight to end", async () => {
+        const r = await sim(
+            plan([phase(watch, {}, { until: v => v.inv('Copper ore') > 0 })], v => v.runs('watch') > 0),
+            {
+                timeline: fight,
+            },
+        );
+        expect(stoppedAt(r)).toBe(9);
+        expect(r.runs[0]!.result.reason).toBe('until met');
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met', inCombat: false });
+    });
+
+    test("the plan's until waits out a fight too", async () => {
+        const r = await sim(
+            plan([phase(watch, {})], v => v.inv('Copper ore') > 0),
+            { timeline: fight },
+        );
+        expect(stoppedAt(r)).toBe(9);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+    });
+
+    test("the plan's stops do not wait for a fight", async () => {
+        // 0.02 min is 1200ms: tick 3, the fight's first.
+        const r = await sim(plan([phase(watch, {})]), {
+            timeline: fight,
+            stops: [{ kind: 'minutes', minutes: 0.02 }],
+        });
+        expect(stoppedAt(r)).toBe(3);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'reached 0.02 min', inCombat: true });
+    });
+});
+
+describe("the plan's until and stops", () => {
+    test("the plan's until ends the running phase and the plan done", async () => {
+        const r = await sim(chopBurn(v => v.inv('Logs') >= 2));
+        expect(r.runs).toHaveLength(1);
+        expect(r.runs[0]!.result.reason).toBe('plan until met');
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met', inventoryDelta: { Logs: 2 } });
+    });
+
+    test('an xp stop counts from the XP the plan started with, across phases', async () => {
+        const r = await sim(chopBurn(), { stops: [{ kind: 'xp', skill: 'woodcutting', amount: 150 }] });
+        expect(selected(r)).toEqual(['chop', 'burn', 'chop']);
+        expect(r.runs[2]!.result.xpGained).toEqual({ Woodcutting: 50 });
+        expect(r.result).toMatchObject({
+            status: 'done',
+            reason: 'reached +150 woodcutting xp',
+            xpGained: { Woodcutting: 150, Firemaking: 160 },
+        });
+    });
+
+    test("a minutes stop counts from the plan's start, across phases", async () => {
+        const r = await sim(chopBurn(), { stops: [{ kind: 'minutes', minutes: 1 }] });
+        expect(r.result).toMatchObject({ status: 'done', reason: 'reached 1 min', durationMs: 60_000 });
+        expect(r.runs.length).toBeGreaterThan(4);
+        expect(r.runs.at(-1)!.result.reason).toBe('reached 1 min');
+        expect(r.runs.at(-1)!.result.durationMs).toBeLessThan(60_000);
+        // Compact however many runs: one entry per phase, the last few runs.
+        expect(r.result.phases).toHaveLength(2);
+        expect(r.result.recent.map(x => x.runId)).toEqual(r.runs.slice(-3).map(x => x.runId));
+    });
+
+    test('an unknown skill in a stop ends the plan error before any phase runs', async () => {
+        const r = await sim(chopBurn(), { stops: [{ kind: 'xp', skill: 'woodcuting', amount: 1 }] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('unknown skill "woodcuting"');
+        expect(r.runs).toEqual([]);
+    });
+});
+
+describe('onFail', () => {
+    test("'fail' (the default) ends the plan with the phase's status and reason", async () => {
+        const r = await sim(plan([phase(scripted('broken', [{ fail: 'broke' }]), {})]));
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'broken: try: broke' });
+        expect(r.result.screenshots).toEqual(['/shots/broken-failed.png']);
+    });
+
+    test('a stuck phase ends the plan stuck', async () => {
+        const stall = defineTask({ ...watch, name: 'stall', stuckAfterMs: 2000 });
+        const r = await sim(plan([phase(stall, {})]));
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toStartWith('stall: no XP, position, HP or inventory change');
+    });
+
+    test("'continue' skips the failed phase once, so the phase below gets the turn", async () => {
+        const r = await sim(
+            plan(
+                [phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue' }), phase(train, {})],
+                v => v.runs('train') >= 2,
+            ),
+        );
+        expect(selected(r)).toEqual(['primary', 'train', 'primary', 'train']);
+        expect(r.result.status).toBe('done');
+    });
+
+    test('the function form decides from the result', async () => {
+        const seen: string[] = [];
+        const r = await sim(
+            plan([
+                phase(
+                    scripted('primary', [{ fail: 'retry later' }, { fail: 'fatal' }]),
+                    {},
+                    {
+                        onFail: res => {
+                            seen.push(`${res.status} ${res.reason}`);
+                            return res.reason.includes('retry') ? 'continue' : 'fail';
+                        },
+                    },
+                ),
+                phase(train, {}),
+            ]),
+        );
+        expect(seen).toEqual(['failed try: retry later', 'failed try: fatal']);
+        expect(selected(r)).toEqual(['primary', 'train', 'primary']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'primary: try: fatal' });
+    });
+
+    test('more than maxFails failures in a row fail the plan', async () => {
+        const r = await sim(
+            plan([
+                phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue', maxFails: 1 }),
+                phase(train, {}),
+            ]),
+        );
+        expect(selected(r)).toEqual(['primary', 'train', 'primary']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'primary failed 2 times in a row: try: busy' });
+    });
+
+    test('a done run clears the failure count', async () => {
+        const outcomes: Outcome[] = [{ fail: 'busy' }, { done: 'did it' }, { fail: 'busy' }];
+        const r = await sim(
+            plan([phase(scripted('primary', outcomes), {}, { onFail: 'continue', maxFails: 1 }), phase(train, {})]),
+        );
+        expect(selected(r)).toEqual(['primary', 'train', 'primary', 'primary', 'train', 'primary']);
+        expect(r.result.reason).toBe('primary failed 2 times in a row: try: busy');
+    });
+
+    test('an error phase ends the plan error, whatever its onFail', async () => {
+        const thrower = defineTask({
+            name: 'thrower',
+            description: 'plan test',
+            params: z.object({}),
+            steps: [
+                {
+                    name: 'boom',
+                    when: () => true,
+                    run: () => {
+                        throw new Error('bug');
+                    },
+                },
+            ],
+        });
+        const r = await sim(plan([phase(thrower, {}, { onFail: 'continue' })]));
+        expect(r.result).toMatchObject({ status: 'error', reason: 'thrower: boom threw: bug' });
+    });
+});
+
+describe('rails', () => {
+    const noop = scripted('noop', [{ done: 'nothing to do' }]);
+    const handBack = [phase(noop, {}, { name: 'a', when: v => v.last?.phase !== 'a' }), phase(noop, {}, { name: 'b' })];
+
+    test('phases that change nothing fail the plan after maxIdlePhases in a row', async () => {
+        const r = await sim(plan(handBack));
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'phases make no progress: a, b, a' });
+        const longer = await sim(plan(handBack), { maxIdlePhases: 5 });
+        expect(longer.result.reason).toBe('phases make no progress: a, b, a, b, a');
+    });
+
+    test('a phase that makes progress resets the idle count', async () => {
+        const r = await sim(
+            plan(
+                [phase(noop, {}, { when: v => v.last?.phase !== 'noop' }), phase(train, {})],
+                v => v.runs('train') >= 4,
+            ),
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns).toEqual({ noop: 4, train: 4 });
+    });
+
+    test("every phase's params are checked before the first phase runs", async () => {
+        const r = await sim(
+            plan([
+                phase(chop, {}),
+                // A plan file type-checks this; a draft run before it is checked must still fail fast.
+                phase(chop, { tree: 'maple' } as never, { name: 'second' }),
+            ]),
+        );
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toStartWith('phase "second" has invalid params: tree:');
+        expect(r.runs).toEqual([]);
+        expect(r.driver.commands).toEqual([]);
+    });
+
+    test('a throwing when ends the plan error, naming the phase and the predicate', async () => {
+        const r = await sim(plan([phase(chop, {}, { when: v => v.level('Woodcuting') > 1 })]));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toStartWith('phase "chop" when threw: unknown skill "Woodcuting"');
+    });
+
+    test("a phase's until that throws mid-phase stops the phase and ends the plan error", async () => {
+        const r = await sim(
+            plan([
+                phase(
+                    chop,
+                    {},
+                    {
+                        until: v => {
+                            if (v.inv('Logs') >= 2) throw new Error('boom');
+                            return false;
+                        },
+                    },
+                ),
+            ]),
+        );
+        expect(r.runs).toHaveLength(1);
+        expect(r.result).toMatchObject({ status: 'error', reason: 'phase "chop" until threw: boom' });
+    });
+
+    test("the plan's until that throws ends the plan error", async () => {
+        const r = await sim(plan([phase(chop, {})], v => v.runs('chop ') > 0));
+        expect(r.result).toMatchObject({
+            status: 'error',
+            reason: 'plan until threw: no phase "chop " in plan "test-plan"',
+        });
+    });
+
+    test('an onFail that throws ends the plan error', async () => {
+        const r = await sim(
+            plan([
+                phase(
+                    scripted('broken', [{ fail: 'broke' }]),
+                    {},
+                    {
+                        onFail: () => {
+                            throw new Error('boom');
+                        },
+                    },
+                ),
+            ]),
+        );
+        expect(r.result).toMatchObject({ status: 'error', reason: 'phase "broken" onFail threw: boom' });
+    });
+});
+
+describe('the view', () => {
+    test('v.bank remembers the bank as last seen open in an earlier phase', async () => {
+        // The bank is open at ticks 2 and 3, while the first phase runs.
+        const timeline = BASE.series(8, (w, i) =>
+            i === 2 || i === 3 ? w.bank([{ name: 'Copper ore', count: 10 }]) : w,
+        );
+        const seen: (number | undefined)[] = [];
+        const r = await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push(v.bank('copper ore'));
+                                return v.bank(/ ore$/) === 10;
+                            },
+                        },
+                    ),
+                    phase(watch, {}, { until: v => v.state.tick >= 6 }),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline },
+        );
+        expect(selected(r)).toEqual(['watch', 'train']);
+        expect(seen).toEqual([undefined, 10]);
+        expect(r.result.status).toBe('done');
+    });
+
+    test('inv matches a name exactly, ignoring case, or a pattern; free and full count slots', async () => {
+        const views: { inv: number[]; free: number; full: boolean }[] = [];
+        await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                views.push({
+                                    inv: [v.inv('bones'), v.inv('Bone'), v.inv(/^bon/i)],
+                                    free: v.free,
+                                    full: v.full,
+                                });
+                                return true;
+                            },
+                        },
+                    ),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline: [BASE.inv('Logs', 4).build()] },
+        );
+        expect(views).toEqual([{ inv: [24, 0, 24], free: 0, full: true }]);
+    });
+
+    test('runs and last describe the finished phase runs', async () => {
+        const seen: unknown[] = [];
+        await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push([v.runs('train'), v.last]);
+                                return true;
+                            },
+                        },
+                    ),
+                ],
+                v => v.runs('train') >= 2,
+            ),
+        );
+        expect(seen).toEqual([
+            [0, null],
+            [1, { phase: 'train', status: 'done', reason: 'train: trained' }],
+        ]);
+    });
+});
+
+describe('the result and the plan log', () => {
+    test('totals run from the first state to the last, by phase, with a compact summary', async () => {
+        const r = await sim(chopBurn(v => v.runs('chop') >= 2));
+        const ticks = r.driver.state().tick;
+        expect(r.result).toEqual({
+            task: 'plan:test-plan',
+            bot: 'tester',
+            runId: 'plan-1',
+            status: 'done',
+            reason: 'plan until met',
+            params: {
+                plan: 'test-plan',
+                phases: [
+                    { phase: 'burn', task: 'burn', params: {} },
+                    { phase: 'chop', task: 'chop', params: { tree: 'tree' } },
+                ],
+            },
+            durationMs: ticks * TICK_MS,
+            loops: 3,
+            stepRuns: { burn: 1, chop: 2 },
+            lastStep: 'chop',
+            xpGained: { Woodcutting: 200, Firemaking: 160 },
+            levelsGained: {},
+            inventoryDelta: { Logs: 4 },
+            finalPos: { x: 3222, z: 3218, level: 0 },
+            hp: { current: 10, max: 10 },
+            inCombat: false,
+            screenshots: [],
+            logFile: '/logs/plan-1.ndjson',
+            phases: [
+                {
+                    phase: 'burn',
+                    task: 'burn',
+                    runs: 1,
+                    statuses: { done: 1 },
+                    durationMs: r.runs[1]!.result.durationMs,
+                    xpGained: { Firemaking: 160 },
+                    lastReason: 'out: no logs left',
+                },
+                {
+                    phase: 'chop',
+                    task: 'chop',
+                    runs: 2,
+                    statuses: { done: 2 },
+                    durationMs: r.runs[0]!.result.durationMs + r.runs[2]!.result.durationMs,
+                    xpGained: { Woodcutting: 200 },
+                    lastReason: 'full: inventory full',
+                },
+            ],
+            recent: r.runs.map(x => ({
+                phase: x.phase,
+                runId: x.runId,
+                logFile: `/logs/${x.runId}.ndjson`,
+                status: 'done',
+                reason: x.result.reason,
+            })),
+        });
+    });
+
+    test('the plan log has start, a select and phase-end per run, and the result', async () => {
+        const r = await sim(plan([phase(train, {})], v => v.runs('train') >= 2));
+        expect(r.events.map(e => e.type)).toEqual(['start', 'select', 'phase-end', 'select', 'phase-end', 'result']);
+        expect(r.events[0]).toEqual({
+            type: 'start',
+            plan: 'test-plan',
+            bot: 'tester',
+            phases: [{ phase: 'train', task: 'train', params: {} }],
+            stops: [],
+        });
+        expect(r.events[2]).toEqual({
+            type: 'phase-end',
+            phase: 'train',
+            runId: 'phase-0-train',
+            status: 'done',
+            reason: 'train: trained',
+        });
+        expect(r.events.at(-1)).toEqual({ type: 'result', ...r.result });
+    });
+});
