@@ -28,7 +28,7 @@ const standing = world()
 const carrying = standing.inv('Logs', 2).inv('Bronze axe', 1).inv('Shrimps', 1);
 /** What the task logged, guards' reports left out. */
 const logged = (r: Simulation) =>
-    r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
+    r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [String(e.msg)] : []));
 /** A bank that opens but whose items never move. */
 const opensOnly: TimelineOptions['react'] = (action, state) =>
     action.type === 'interactLoc' || action.type === 'closeModal' ? react(action, state) : undefined;
@@ -300,6 +300,37 @@ describe('bank: failures', () => {
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('operate: bank holds 5 Bones, need 9');
         expect(r.sends).toEqual([OPEN, CLOSE]);
+    });
+
+    test('upTo withdraws what the bank holds when it holds fewer than count, and is done', async () => {
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Bones', count: 9, upTo: true }] },
+            timeline: carrying.series(1),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.inventoryDelta).toEqual({ Bones: 5 });
+        expect(sentAs(r, 'withdraw Bones')).toMatchObject([{ amount: 5 }]);
+    });
+
+    test('upTo with none in the bank skips the entry and is done', async () => {
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Cowhide', count: 4, upTo: true }] },
+            timeline: carrying.series(1),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([OPEN, CLOSE]);
+        expect(logged(r)).toEqual(['withdraw Cowhide x4 (up to): skipped, the bank holds none']);
+    });
+
+    test('upTo with enough in the bank withdraws exactly count', async () => {
+        const r = await simulate(bank, {
+            params: { withdraw: [{ item: 'Copper ore', count: 3, upTo: true }] },
+            timeline: carrying.series(1),
+            react,
+        });
+        expect(r.result.inventoryDelta).toEqual({ 'Copper ore': 3 });
     });
 
     test('a withdrawal that does not land fails the run with what arrived', async () => {

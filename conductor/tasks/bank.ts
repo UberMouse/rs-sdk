@@ -32,8 +32,15 @@ const Params = z.object({
     deposit: z.array(z.object({ item: z.string().min(1), count: z.number().int().positive().optional() })).default([]),
     /** Deposit every inventory item whose exact name is not listed here (tools stay). Runs after `deposit`. Worn gear is untouched. */
     depositAllExcept: z.array(z.string().min(1)).optional(),
-    /** Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`. */
-    withdraw: z.array(z.object({ item: z.string().min(1), count: z.number().int().positive() })).default([]),
+    /**
+     * Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`,
+     * unless `upTo`: then it withdraws the lesser of `count` and what the bank holds, and none held is skipped.
+     */
+    withdraw: z
+        .array(
+            z.object({ item: z.string().min(1), count: z.number().int().positive(), upTo: z.boolean().default(false) }),
+        )
+        .default([]),
 });
 
 type BankParams = z.infer<typeof Params>;
@@ -60,7 +67,7 @@ type Ctx = TaskContext<BankParams, BankMemory>;
 type Operation =
     | { kind: 'deposit'; item: string; count?: number }
     | { kind: 'depositAllExcept'; keep: string[] }
-    | { kind: 'withdraw'; item: string; count: number };
+    | { kind: 'withdraw'; item: string; count: number; upTo: boolean };
 
 /** Deposits first, then withdrawals, so freed slots can be refilled in one trip. */
 const operationsOf = (params: BankParams): Operation[] => [
@@ -125,11 +132,16 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     const pattern = exactName(op.item);
     const banked = ctx.state().bank.items.filter(i => pattern.test(i.name));
     const have = banked.reduce((n, i) => n + i.count, 0);
-    if (have < want) return `bank holds ${have} ${op.item}, need ${want}`;
-    const r = yield* withdraw(ctx, pattern, want);
-    yield* log(`withdraw ${op.item} x${want}: ${r.message}`);
+    if (op.upTo && have === 0) {
+        yield* log(`withdraw ${op.item} x${op.count} (up to): skipped, the bank holds none`);
+        return null;
+    }
+    if (have < want && !op.upTo) return `bank holds ${have} ${op.item}, need ${want}`;
+    const amount = Math.min(want, have);
+    const r = yield* withdraw(ctx, pattern, amount);
+    yield* log(`withdraw ${op.item} x${amount}: ${r.message}`);
     if (r.ok) return null;
-    return `withdraw ${op.item} x${want} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
+    return `withdraw ${op.item} x${amount} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;
 }
 
 /** The operations still to make, in order, with the bank open; the first failure message ends them. */
@@ -180,8 +192,8 @@ export default defineTask({
         'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the nearest of Varrock West/East, Falador West/East and Edgeville by straight-line distance, ' +
         'never Draynor (dark wizards) or Al Kharid (toll); fails if the walk cannot get there, and refuses off the surface without an area). ' +
         'The no-area walk can be long (Lumbridge to Varrock East is ~80 tiles, and an NPC attacks unarmed low-level bots on that road, learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
-        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count}]), close the bank; done when every operation is made. ' +
-        'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked, or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
+        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count and what the bank holds, and none held is skipped, not a failure), close the bank; done when every operation is made. ' +
+        'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge on this server (learnings/banking.md).',
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
