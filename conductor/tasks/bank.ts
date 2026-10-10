@@ -97,8 +97,11 @@ function recordOrMoved(ctx: Ctx, op: { kind: 'deposit' | 'withdraw'; item: strin
     return Math.max(0, op.kind === 'deposit' ? inFlight.heldBefore - held : held - inFlight.heldBefore);
 }
 
-/** Records an `upTo` entry that came up short for the done reason: `<item> <got>/<count>`, or `<item> skipped (<why>)` when none of it was got. */
-function noteUpToShort(ctx: Ctx, op: { item: string; count: number }, got: number, why: string): void {
+/**
+ * Records an `upTo` entry that came up short for the done reason: `<item> <got>/<count>`, or `<item> skipped (<why>)`
+ * when none of it was got (`why` is read only then, so a caller that got some omits it).
+ */
+function noteUpToShort(ctx: Ctx, op: { item: string; count: number }, got: number, why?: string): void {
     ctx.memory.upToShort.push(got > 0 ? `${op.item} ${got}/${op.count}` : `${op.item} skipped (${why})`);
 }
 
@@ -169,7 +172,7 @@ function* perform(ctx: Ctx, op: Operation): Op<string | null> {
     const r = yield* withdraw(ctx, pattern, amount);
     yield* log(`withdraw ${op.item} x${amount}: ${r.message}`);
     if (r.ok) {
-        if (moved + amount < op.count) noteUpToShort(ctx, op, moved + amount, '');
+        if (moved + amount < op.count) noteUpToShort(ctx, op, moved + amount);
         return null;
     }
     return `withdraw ${op.item} x${amount} failed (${r.reason}, got ${r.amountWithdrawn}): ${r.message}`;

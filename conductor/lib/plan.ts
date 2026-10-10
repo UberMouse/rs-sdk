@@ -101,18 +101,35 @@ export interface PlanParams {
     phases: { phase: string; task: string; params: unknown }[];
 }
 
+/** A phase with its params parsed against its task's schema. */
+interface ParsedPhase {
+    phase: Phase;
+    result: ReturnType<AnyTaskDef['params']['safeParse']>;
+}
+
+/** Each phase's params parsed against its task's schema, in plan order: the one parse a plan run reads. */
+function parsePhases(def: PlanDef): ParsedPhase[] {
+    return def.phases.map(p => ({ phase: p, result: p.task.params.safeParse(p.params ?? {}) }));
+}
+
+/** A plan result's params from its parsed phases. */
+function paramsOf(def: PlanDef, parsed: ParsedPhase[]): PlanParams {
+    return {
+        plan: def.name,
+        phases: parsed.map(({ phase: p, result: r }) => ({
+            phase: p.name,
+            task: p.task.name,
+            params: r.success ? r.data : p.params,
+        })),
+    };
+}
+
 /**
  * The params a plan result carries, parsed against each task's schema (raw where they don't parse),
  * so the plan keys one stats variant whether it ran, failed its params check or was never run.
  */
 export function planParams(def: PlanDef): PlanParams {
-    return {
-        plan: def.name,
-        phases: def.phases.map(p => {
-            const r = p.task.params.safeParse(p.params ?? {});
-            return { phase: p.name, task: p.task.name, params: r.success ? r.data : p.params };
-        }),
-    };
+    return paramsOf(def, parsePhases(def));
 }
 
 /** Checks the plan's shape and brands it, so the CLI can tell a plan module's default export. */
@@ -292,7 +309,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const screenshots: string[] = [];
     let loops = 0;
     let last: PlanView['last'] = null;
-    const params = planParams(def);
+    const parsed = parsePhases(def);
+    const params = paramsOf(def, parsed);
     /**
      * The phase run in progress, from its start until it is added to its summary: the one a kill
      * cuts short. `result` is its own, once it has one (a kill can come while it is closing).
@@ -449,8 +467,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     );
 
     // Rails before acting: a typo fails the plan now, not after an hour of its first phase.
-    for (const p of def.phases) {
-        const r = p.task.params.safeParse(p.params ?? {});
+    for (const { phase: p, result: r } of parsed) {
         if (!r.success)
             return finish(
                 'error',
@@ -501,7 +518,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 if (until && ask(p, 'until', () => until(v))) return 'until holds';
                 return 'chosen';
             };
-            const entry = entries.find(({ phase: p }) => (checks[p.name] = answer(p)) === 'chosen');
+            let entry: (typeof entries)[number] | undefined;
+            for (const e of entries) {
+                checks[e.phase.name] = answer(e.phase);
+                if (checks[e.phase.name] === 'chosen') {
+                    entry = e;
+                    break;
+                }
+            }
             skip = null;
             emit({
                 type: 'select',
