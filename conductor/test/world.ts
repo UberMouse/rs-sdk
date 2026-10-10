@@ -7,6 +7,7 @@
 // tools/capture-state.ts) or nothing for a bare state with the player at Lumbridge.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { PLAYER_TARGET_OFFSET } from '../lib/interrupts';
 import { Items } from '../../sdk/test/utils/save-generator';
 import type { BotWorldState, CombatStyleOption, DialogOption, GroundItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 
@@ -124,6 +125,9 @@ export interface NpcOptions extends EntityOptions {
     index?: number;
     combatLevel?: number;
     inCombat?: boolean;
+    healthPercent?: number;
+    /** Faces a player (target index PLAYER_TARGET_OFFSET + 1), as an NPC attacking the bot does. */
+    attacking?: boolean;
 }
 
 export interface LocOptions extends EntityOptions {
@@ -170,6 +174,8 @@ export class World {
         hp?: number;
         maxHp?: number;
         inCombat?: boolean;
+        combatLevel?: number;
+        lastDamageTick?: number;
     }): World {
         const cur = this.s.player;
         if (!cur) throw new Error('world: the base state has no player');
@@ -182,7 +188,12 @@ export class World {
             worldX: p.at?.x ?? cur.worldX,
             worldZ: p.at?.z ?? cur.worldZ,
             level: p.at?.level ?? cur.level,
-            combat: { ...cur.combat, inCombat: p.inCombat ?? cur.combat.inCombat },
+            combatLevel: p.combatLevel ?? cur.combatLevel,
+            combat: {
+                ...cur.combat,
+                inCombat: p.inCombat ?? cur.combat.inCombat,
+                lastDamageTick: p.lastDamageTick ?? cur.combat.lastDamageTick,
+            },
         };
         const from = { x: player.worldX, z: player.worldZ };
         const measure = <T extends { x: number; z: number; distance: number }>(xs: T[]) =>
@@ -261,9 +272,9 @@ export class World {
             distance: tiles(this.at, { x, z }),
             hp: null,
             maxHp: null,
-            healthPercent: null,
-            targetIndex: -1,
-            inCombat: opts.inCombat ?? false,
+            healthPercent: opts.healthPercent ?? null,
+            targetIndex: opts.attacking ? PLAYER_TARGET_OFFSET + 1 : -1,
+            inCombat: opts.inCombat ?? opts.attacking ?? false,
             lastCombatTick: null,
             animId: -1,
             spotanimId: -1,
@@ -272,6 +283,11 @@ export class World {
             reachable: opts.reachable ?? true,
         };
         return this.with({ nearbyNpcs: [...this.s.nearbyNpcs, npc] });
+    }
+
+    /** An NPC one tile east of the player, wherever the player stands. */
+    npcBeside(name: string, opts: NpcOptions = {}): World {
+        return this.npc(name, this.at.x + 1, this.at.z, opts);
     }
 
     ground(name: string, x: number, z: number, count = 1, opts: EntityOptions = {}): World {
@@ -405,12 +421,12 @@ export class World {
     }
 
     /** What the player wears; `items` replace it. Ids looked up by name as for `inv`. */
-    equipment(...items: { name: string; id?: number }[]): World {
+    equipment(...items: { name: string; id?: number; count?: number }[]): World {
         const equipment = items.map((it, slot) => ({
             slot,
             id: itemId(it.name, it.id),
             name: cap(it.name.toLowerCase()),
-            count: 1,
+            count: it.count ?? 1,
             optionsWithIndex: [],
         }));
         return this.with({ equipment });
@@ -426,6 +442,18 @@ export class World {
 }
 
 export const world = World.of;
+
+/**
+ * A fight scenario for `series`: from tick 3 (the engine refuses to start a run in combat) until tick
+ * `until`, a Goblin of `foeLevel` stands next to the bot and fights it (`foe` adds its options, such
+ * as `healthPercent`).
+ */
+export const attackedFrom = (w: World, i: number, until = Infinity, foeLevel = 2, foe: NpcOptions = {}): World =>
+    i >= 3 && i < until
+        ? w
+              .player({ inCombat: true })
+              .npcBeside('Goblin', { attacking: true, inCombat: true, combatLevel: foeLevel, ...foe })
+        : w;
 
 /** What a bank holds, one slot each in order; an `id` overrides the one looked up by name. */
 export type BankContents = { name: string; count: number; id?: number }[];

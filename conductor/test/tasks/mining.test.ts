@@ -3,7 +3,7 @@ import type { StopCondition } from '../../lib/stop';
 import mining from '../../tasks/mining';
 import { fakePaths } from '../paths';
 import { simulate, type Simulation } from '../simulate';
-import { type World, world } from '../world';
+import { attackedFrom, type World, world } from '../world';
 
 const ROCK = { x: 3224, z: 3220 };
 const COPPER = 2090;
@@ -23,8 +23,6 @@ const xp = (amount: number): StopCondition[] => [{ kind: 'xp', skill: 'Mining', 
 const logged = (r: Simulation) =>
     r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
 const MINE = 'Mine Rocks';
-/** In combat from tick 3 (the engine refuses to start a run in combat) until tick `until`. */
-const attackedFrom = (w: World, i: number, until = Infinity) => w.player({ inCombat: i >= 3 && i < until });
 
 describe('mining: mining', () => {
     test('mines the nearest rock of the listed type, and again after each ore', async () => {
@@ -308,7 +306,9 @@ describe('mining: under attack', () => {
             timeline: quarry.autoRetaliate(false).series(10, (w, i) => attackedFrom(w, i)),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('interrupt:under-attack: attacked with auto-retaliate off at (3222,3218)');
+        expect(r.result.reason).toBe(
+            'interrupt:under-attack: attacked by Goblin (level 2) with auto-retaliate off at (3222,3218)',
+        );
         expect(r.sends).toEqual([MINE]);
     });
 
@@ -324,12 +324,131 @@ describe('mining: under attack', () => {
         expect(r.result.stepRuns).toEqual({ mine: 2, 'interrupt:under-attack': 7 });
     });
 
-    test('a fight auto-retaliate does not end within the limit fails the run', async () => {
+    test('a long winnable fight that makes progress is waited out with no tick cap, then the task resumes', async () => {
         const r = await simulate(mining, {
             params: PARAMS,
-            timeline: quarry.autoRetaliate(true).series(10, (w, i) => attackedFrom(w, i)),
+            timeline: quarry
+                .autoRetaliate(true)
+                .series(200, (w, i) =>
+                    ore(attackedFrom(w, i, 120, 2, { healthPercent: 100 - Math.floor(i / 30) * 10 }), i >= 125 ? 1 : 0),
+                ),
+            stops: xp(25),
         });
-        expect(r.result.reason).toBe('interrupt:under-attack: under attack for 40 ticks at (3222,3218)');
+        expect(r.result.reason).toBe('reached +25 Mining xp');
+        expect(r.result.stepRuns['interrupt:under-attack']).toBe(117);
+    });
+
+    test("an attacker above the bot's combat level fails the run, naming it", async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry.autoRetaliate(true).series(10, (w, i) => attackedFrom(w, i, Infinity, 5)),
+        });
+        expect(r.result.reason).toBe(
+            "interrupt:under-attack: attacked by Goblin (level 5), above the bot's combat level 3, at (3222,3218)",
+        );
+    });
+
+    test('only facing a target is not an attack', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry.autoRetaliate(true).series(10, (w, i) => w.player({ inCombat: i >= 3 })),
+        });
+        expect(r.result.stepRuns['interrupt:under-attack']).toBeUndefined();
+    });
+
+    test('a hit from an attacker the state does not name is waited out for 40 ticks at most', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry
+                .autoRetaliate(true)
+                .series(60, (w, i) => w.player({ inCombat: i >= 3, lastDamageTick: i >= 3 ? i : -1 })),
+        });
+        expect(r.result.reason).toBe(
+            'interrupt:under-attack: under attack by an unknown attacker for 40 ticks at (3222,3218)',
+        );
         expect(r.driver.state().tick).toBe(43);
+    });
+
+    test('a foe flipping between named and unnamed with flat hp still fails', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry.autoRetaliate(true).series(120, (w, i) => {
+                if (i < 3) return w;
+                const named = Math.floor(i / 5) % 2 === 0;
+                const hit = w.player({ inCombat: true, lastDamageTick: named ? Math.floor(i / 5) * 5 - 1 : i });
+                return named ? hit.npcBeside('Goblin', { attacking: true, combatLevel: 2 }) : hit;
+            }),
+        });
+        expect(r.result.reason).toMatch(/^interrupt:under-attack: (fight with Goblin|under attack by an unknown)/);
+        expect(r.driver.state().tick).toBeLessThan(70);
+    });
+
+    test('a named foe missing for single ticks while hits land is waited out, not read as unknown', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry.autoRetaliate(true).series(130, (w, i) => {
+                if (i < 3 || i >= 120) return w;
+                const hit = w.player({ inCombat: true, lastDamageTick: i - (i % 4), hp: 10 });
+                return i % 10 === 0
+                    ? hit
+                    : hit.npcBeside('Goblin', { attacking: true, combatLevel: 2, healthPercent: 100 - i });
+            }),
+        });
+        expect(r.result.reason ?? '').not.toContain('unknown attacker');
+        expect(r.result.reason ?? '').not.toContain('under-attack');
+    });
+
+    test('a hit from an unknown attacker that costs 3 hp fails at once', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry
+                .autoRetaliate(true)
+                .series(30, (w, i) =>
+                    w.player({ inCombat: i >= 3, lastDamageTick: i >= 3 ? i : -1, hp: i >= 6 ? 7 : 10 }),
+                ),
+        });
+        expect(r.result.reason).toBe(
+            'interrupt:under-attack: attacked by an unknown attacker at (3222,3218): hp 7/10, down from 10',
+        );
+    });
+
+    test('a fight where neither side loses hp for 60 ticks fails, naming the attacker', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry
+                .autoRetaliate(true)
+                .series(100, (w, i) => attackedFrom(w, i, Infinity, 2, { healthPercent: 100 })),
+        });
+        expect(r.result.reason).toBe(
+            'interrupt:under-attack: fight with Goblin (level 2) not finished: no hp change for 60 ticks at (3222,3218)',
+        );
+        expect(r.driver.state().tick).toBe(63);
+    });
+
+    test("low hp during a named fight is the low-HP guard's: it eats, then the fight is waited out", async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry
+                .inv('Shrimps', 1)
+                .autoRetaliate(true)
+                .series(30, (w, i) =>
+                    attackedFrom(w, i, 15, 2, { healthPercent: 100 - i * 3 }).player({ hp: i === 3 ? 4 : 10 }),
+                ),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+        expect(r.result.stepRuns['interrupt:under-attack']).toBeGreaterThan(0);
+    });
+
+    test('low hp during a named fight with no food fails in the low-HP guard', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry
+                .autoRetaliate(true)
+                .series(30, (w, i) =>
+                    attackedFrom(w, i, Infinity, 2, { healthPercent: 100 - i * 3 }).player({ hp: i >= 3 ? 4 : 10 }),
+                ),
+        });
+        expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218), no food');
     });
 });

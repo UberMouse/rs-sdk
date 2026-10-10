@@ -97,7 +97,7 @@ export default defineTask({
         'Chop trees of one type; when the inventory is full, `onFull` "drop" (default) drops the logs and keeps chopping, ' +
         '"stop" ends the run done ("inventory full: N logs") holding them, e.g. to feed fletching/firemaking. Needs an axe and the level for the tree. ' +
         'When every tree in reach is a stump it waits up to 2 min for respawns, then fails "area depleted". ' +
-        'In combat it pauses chopping and fails after 40 ticks of combat, or at once if auto-retaliate is off. ' +
+        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown. ' +
         'With `area` it stays within `radius` of that centre; without it, it chops wherever the bot stands. ' +
         'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
         'Draynor willows (3087,3235, dark wizards nearby). Refuses areas reaching the Wilderness.',

@@ -26,8 +26,18 @@ const REGEN_SLICE_TICKS = 5;
 const REGEN_CAP_TICKS = 500;
 /** The run fails on the dialog guard's Nth run within one episode that does not clear the dialog. */
 const DIALOG_STUCK_LIMIT = 6;
-/** Ticks one fight may last while the bot only waits for auto-retaliate to win it. */
-const COMBAT_TICK_LIMIT = 40;
+/** Ticks one fight with an attacker the state does not name may last while the bot waits for auto-retaliate. */
+const UNKNOWN_ATTACKER_TICK_LIMIT = 40;
+/** The unknown-attacker wait fails once the bot lost this much hp. */
+const UNKNOWN_ATTACKER_HP_LOSS = 3;
+/** A named fight fails when neither the bot's hp nor the attacker's health percent changed for this many ticks. */
+const NO_PROGRESS_TICKS = 60;
+/** A hit this many ticks old still counts as an ongoing attack. */
+const RECENT_HIT_TICKS = 10;
+/** An NPC farther than this (tiles) is not the one fighting the bot. */
+const ATTACKER_REACH = 2;
+/** The client packs a player as an NPC's target (faceEntity) as index + 32768. */
+export const PLAYER_TARGET_OFFSET = 32768;
 /** The run fails on the interface guard's Nth close within one episode that leaves the interface open. */
 const INTERFACE_STUCK_LIMIT = 3;
 
@@ -197,26 +207,100 @@ export const GUARDS: readonly TaskGuard<object, GuardName>[] = [
 ];
 
 /**
- * For a skilling task whose interaction (a chop, a mine) would cancel auto-retaliate: while something
- * fights the bot, it touches nothing and lets auto-retaliate win. It fails at once when auto-retaliate
- * is off, and when one fight lasts COMBAT_TICK_LIMIT ticks. Not in GUARDS: a task opts in with
- * `guards: [underAttackGuard]`.
+ * The NPCs that may be fighting the bot: within melee-ish reach and facing a player (the client packs
+ * a player target as index + 32768). An NPC the bot only faces, such as a fishing spot or a pickpocket
+ * victim, is never in this list. The bot's own index is not published and an NPC's `inCombat` is true
+ * whenever it has any face target, so an NPC within reach facing another player (one fighting someone
+ * else) cannot be told from the real attacker: it is treated as the attacker.
  */
-export const underAttackGuard: TaskGuard<{ since: number | null }> = {
+function attackers(s: BotWorldState): BotWorldState['nearbyNpcs'] {
+    return s.nearbyNpcs.filter(n => n.targetIndex >= PLAYER_TARGET_OFFSET && n.distance <= ATTACKER_REACH);
+}
+
+/** The highest combat level among `npcs`, or undefined with none. */
+function strongest(npcs: BotWorldState['nearbyNpcs']): BotWorldState['nearbyNpcs'][number] | undefined {
+    return [...npcs].sort((a, b) => b.combatLevel - a.combatLevel)[0];
+}
+
+/** Took a hit (a 0 splat counts) within RECENT_HIT_TICKS. */
+const recentlyHit = (s: BotWorldState): boolean => {
+    const at = s.player?.combat.lastDamageTick ?? -1;
+    return at >= 0 && s.tick - at <= RECENT_HIT_TICKS;
+};
+
+/** In combat, and something attacks the bot: an attacker next to it, or a hit taken lately. */
+const isAttacked = (s: BotWorldState): boolean =>
+    !!s.player?.combat.inCombat && (attackers(s).length > 0 || recentlyHit(s));
+
+interface UnderAttackEpisode {
+    /** The bot's highest hp this episode: the baseline for the unknown-attacker hp-loss check. */
+    startHp: number | null;
+    /** The tick the current run of consecutive unnamed-attacker ticks began; null while a foe is named. */
+    unknownSince: number | null;
+    /**
+     * What was last seen and the tick any of it last changed, across named/unnamed flips: the bot's hp,
+     * the named foe's healthPercent (kept while no foe is named) and lastDamageTick (a 0 splat; it counts
+     * as progress only while a foe is named, as an unnamed attacker's hits must not extend its 40 ticks).
+     */
+    last: { hp: number; foePercent: number | null; damageTick: number; tick: number } | null;
+}
+
+/**
+ * For a skilling task whose interaction (a chop, a mine, a fish) would cancel auto-retaliate: while
+ * something attacks the bot it touches nothing and lets auto-retaliate finish the fight.
+ *
+ * "Attacked" (`isAttacked`) is not `combat.inCombat` alone: that is also true while the bot merely
+ * faces its own target (a fishing spot). It needs an attacker next to the bot, or a hit taken within
+ * RECENT_HIT_TICKS, on top of inCombat.
+ *
+ * A named attacker is waited out with no total tick cap, when winnable: auto-retaliate on and the
+ * attacker's combat level no higher than the bot's; otherwise the run fails at once, naming it. The
+ * wait is bounded by progress instead: it fails when neither the bot's hp nor the attacker's health
+ * percent changed for NO_PROGRESS_TICKS. Low HP is not handled here: the shared low-HP guard runs
+ * before task guards and eats, or fails with no food in combat, so this guard never sees it.
+ * When the attacker cannot be told from state (a hit with no attacker next to the bot: a player, a
+ * ranged attacker) the fight is waited out for at most UNKNOWN_ATTACKER_TICK_LIMIT consecutive such ticks (a tick naming a foe restarts the count), and fails at
+ * once if the bot lost UNKNOWN_ATTACKER_HP_LOSS hp meanwhile.
+ * Not in GUARDS: a task opts in with `guards: [underAttackGuard]`.
+ */
+export const underAttackGuard: TaskGuard<UnderAttackEpisode> = {
     name: 'under-attack',
     policy: 'abort',
-    episode: () => ({ since: null }),
-    when: s => !!s.player?.combat.inCombat,
+    episode: () => ({ startHp: null, unknownSince: null, last: null }),
+    when: isAttacked,
     *run(_fired, _run, episode) {
         // The aborted step's cleanup may have taken ticks since the guard fired: decide on the state now.
         const s = yield* ticks(0);
         const p = s.player;
-        if (!p?.combat.inCombat) return;
+        if (!p || !isAttacked(s)) return;
+        const foe = strongest(attackers(s));
+        const who = foe ? `${foe.name} (level ${foe.combatLevel})` : 'an unknown attacker';
         const at = `(${p.worldX},${p.worldZ})`;
-        if (s.autoRetaliateEnabled === false) return { fail: `attacked with auto-retaliate off at ${at}` };
-        episode.since ??= s.tick;
-        if (s.tick - episode.since >= COMBAT_TICK_LIMIT)
-            return { fail: `under attack for ${COMBAT_TICK_LIMIT} ticks at ${at}` };
+        if (s.autoRetaliateEnabled === false) return { fail: `attacked by ${who} with auto-retaliate off at ${at}` };
+        if (foe && foe.combatLevel > p.combatLevel)
+            return { fail: `attacked by ${who}, above the bot's combat level ${p.combatLevel}, at ${at}` };
+        const damageTick = p.combat.lastDamageTick;
+        const prev = episode.last;
+        const changed =
+            !prev ||
+            prev.hp !== p.hp ||
+            (foe !== undefined && (prev.foePercent !== foe.healthPercent || prev.damageTick !== damageTick));
+        const last = changed
+            ? { hp: p.hp, foePercent: foe ? foe.healthPercent : (prev?.foePercent ?? null), damageTick, tick: s.tick }
+            : { ...prev, damageTick, foePercent: foe ? foe.healthPercent : prev.foePercent };
+        episode.last = last;
+        episode.startHp = Math.max(episode.startHp ?? p.hp, p.hp);
+        const stalled = s.tick - last.tick;
+        episode.unknownSince = foe ? null : (episode.unknownSince ?? s.tick);
+        if (foe) {
+            if (stalled >= NO_PROGRESS_TICKS)
+                return { fail: `fight with ${who} not finished: no hp change for ${NO_PROGRESS_TICKS} ticks at ${at}` };
+        } else {
+            if (episode.startHp - p.hp >= UNKNOWN_ATTACKER_HP_LOSS)
+                return { fail: `attacked by ${who} at ${at}: hp ${p.hp}/${p.maxHp}, down from ${episode.startHp}` };
+            if (s.tick - (episode.unknownSince ?? s.tick) >= UNKNOWN_ATTACKER_TICK_LIMIT)
+                return { fail: `under attack by ${who} for ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks at ${at}` };
+        }
         yield* ticks(1);
     },
 };

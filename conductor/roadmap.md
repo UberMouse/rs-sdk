@@ -41,14 +41,10 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
 - `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
   `smithing`, `cooking` — in catalog (bank no-area fix in flight).
 - `fishing` (small net at Draynor (3087,3229) works) and `thieving` (men, Lumbridge) — in review.
-- **Attack-in-transit hazard (blocks fishing/mining runs)**: `underAttackGuard` aborts after
-  COMBAT_TICK_LIMIT=40 ticks, which fails any walk/skilling run where a weak monster (lvl-2 goblin
-  near the Lumbridge general store, dark wizards at Draynor) keeps hitting a low-level bot. Two
-  runs failed this way (journal 01:18 mining, 01:32 fishing smoke). Fix options for task-author:
-  (a) guard fights back when HP is healthy and the attacker is low level, instead of aborting;
-  (b) walk routes avoid the known hazard tiles (`learnings/hazards.md`); (c) raise the limit while
-  the bot is walking, since walking out of range ends the fight. Needs a decision before more
-  skilling runs near Draynor. — idea
+- **Attack-in-transit hazard (fixed)**: `underAttackGuard` now fights a winnable attacker (named by
+  state: in combat, facing a player, within 2 tiles) to the end and resumes, bounded by progress
+  (no hp change for 60 ticks) instead of a tick cap; it fails at once for an attacker above the bot's
+  level or with auto-retaliate off. Tasks opt in with `guards: [underAttackGuard]`.
 - `crafting` (leather/needle, cheap) — idea
 - Tier-1 skills still at 1 (Ranged, Magic, Herblore*, Agility, Runecraft*, Crafting): one small task
   each (* gated, see Unlocks). Magic/Ranged can piggyback on `combat` with a `skill` param — idea
@@ -124,6 +120,8 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
+
+- fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
 - combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
   the run ends with `inCombat: true` and the next run is refused ("in combat ... handle the
   attacker first", `executeTask` in engine.ts). The task can't fix this: no stop hook, and `isComplete` runs
