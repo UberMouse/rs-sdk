@@ -44,7 +44,7 @@ Levels and XP (`rock_level`, `rock_exp` in tenths) from `server/content/scripts/
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
-| SE Varrock mine, copper | (3285, 3365) | 1-31 | bronze pickaxe (Bob's, 1 gp), drop ores; radius 10 | ~164k (local) | 2026-10-09 conductor1 local |
+| SE Varrock mine, copper | (3285, 3365) | 1-31 | bronze pickaxe (Bob's, 1 gp), drop ores; radius 10; copper+tin together also took Mining 1-30 in ~141s at combat 20 | ~164k (local) | 2026-10-10 conductor2 local |
 | SE Varrock mine, copper+tin | (3285, 3365) | 31-44 | bronze pickaxe, drop ores, ~10 ores/min | ~267k (local) | 2026-10-09 conductor1 local |
 
 Copper, tin and iron rocks all lie within 1-4 tiles of the centre; no attackers. See `learnings/mining.md` for identifying rocks.

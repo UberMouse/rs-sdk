@@ -47,7 +47,7 @@ const isIdle = animation === -1;
 
 | Location | Coordinates | Notes |
 |----------|-------------|-------|
-| SE Varrock mine | (3285, 3365) | Copper, tin, iron rocks within 1-4 tiles of the centre; nothing attacked a combat-27 bot; `bot.walkTo` from Lumbridge works. [v 2026-10-09 conductor1 local] |
+| SE Varrock mine | (3285, 3365) | Copper, tin, iron rocks within 1-4 tiles of the centre; nothing attacked a combat-27 bot or a combat-20 bot; `bot.walkTo` from Lumbridge works (the task's return-to-area step walked from the chicken coop in under 30s). [v 2026-10-10 conductor2 local] |
 | Al Kharid mine | (3295, 3287) | Iron, coal, gold, silver, mithril, tin. Scorpions! |
 | Lumbridge Swamp mine | - | Interactions fail silently, avoid |
 
