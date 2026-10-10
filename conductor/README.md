@@ -17,7 +17,7 @@ conductor (Claude Code session, .claude/skills/conductor)
  bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>   →  RESULT <json>
        │
        ▼
- conductor/plans/*.ts   definePlan({ name, phases: [phase(task, params, { when, until, onFail })] })
+ conductor/plans/*.ts   definePlan({ name, requires?, phases: [phase(task, params, { when, until, onFail })] })
  conductor/tasks/*.ts   defineTask({ params, memory, guards, preflight, steps: [{ name, when, *run }] })
  conductor/lib/engine   first valid step runs · guards · stop conditions · watchdog · screenshots
  conductor/actions      ops a step composes: chop, interactLoc, ...
@@ -142,7 +142,7 @@ A plan composes catalog tasks into one run that loops: chop -> burn -> chop, min
 smelt. It is an ordered list of phases (`conductor/lib/plan.ts`: `definePlan`, `phase`), each a
 whole task run with params and pure predicates over a view of the world (`when`, `until`); every
 time a phase ends, the first phase whose `when` holds runs next, so a plan resumes on any
-inventory. The reference is `conductor/plans/chop-burn.ts`.
+inventory. A plan's `requires` names what it needs throughout (chop-burn: combat level 5+); one that stops holding ends it `failed`. The reference is `conductor/plans/chop-burn.ts`.
 
 ```bash
 bun conductor/run-task.ts conductor1 --plan conductor/plans/chop-burn.ts --until minutes:5

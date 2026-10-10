@@ -53,7 +53,7 @@ conductor only reads it; its own `state.json` is not yours to touch).
 ```
 
 - `spent.playMs`: the sum of your runs' RESULT `durationMs`. `spent.failedInARow`: +1 for each run
-  that ends `failed`, `stuck` or `error`; back to 0 on a run that ends `done`.
+  that ends `failed`, `stuck` or `error` (a RESULT with an empty `runId` never ran: not counted); back to 0 on a run that ends `done`.
 - `reported`: the last report you ended a turn with,
   `{ "at": "<UTC ISO>", "kind": "DECISION NEEDED" | "GOAL <outcome>", "results": [...], "lessons": [...] }`.
 
@@ -74,10 +74,18 @@ results and lessons in your next report as well, marked `(re-sent)`.
    end: run `while pgrep -f "^[^ ]*bun (run )?[^ ]*run-task\.ts <bot> " >/dev/null; do sleep 10; done`
    in the background and wait for its completion notification (a foreground sleep is blocked).
 2. Its result is the last line (`"type":"result"`) of the newest
-   `conductor/runs/<bot>/*-plan-<name>.ndjson` (a plain task run's: the newest
-   `conductor/runs/<bot>/*-<task>.ndjson`). Record it in `results` and `spent`.
+   `conductor/runs/<bot>/*Z-plan-<name>.ndjson` (a plain task run's: the newest
+   `conductor/runs/<bot>/*Z-<task>.ndjson`; log names are `<stamp>Z-<task>.ndjson` and
+   `<stamp>Z-plan-<name>.ndjson`, so the `Z-` anchor keeps a task lookup from matching a plan
+   log). A log with no `"type":"result"` line (the run was killed hard) is an `error` result,
+   reason `no result: run cut off`, counted like any error.
 3. Journal it unless `grep -F '<its runId>' <journal>` finds a line (every journal line carries
-   the runId, below). Only then do anything else.
+   the runId, below). A result with an empty `runId` never ran (a usage or connection failure
+   before a log opened): don't journal it (an empty `grep -F ''` matches every line) and don't
+   count it in `spent`; fix its cause.
+4. Then set `running` to null and update `spent` (`playMs`, `failedInARow`), `plans` (runs,
+   verdict) and `results` exactly as after any finished run, and write the file. Only then do
+   anything else.
 
 ## Plans
 
@@ -85,7 +93,7 @@ A plan is an ordered list of phases, each one catalog task with params. Every ti
 the first phase whose `when` holds runs next, so a plan chooses from the world state, not from a
 position in a list: it resumes correctly on any inventory. Put **consumers above producers** so
 the inventory drains before it refills. Design: `conductor/docs/plans.md`. The reference is
-`conductor/plans/chop-burn.ts` (promoted, smoke-tested; its route needs combat 5+):
+`conductor/plans/chop-burn.ts` (promoted, smoke-tested):
 
 ```ts
 import { definePlan, phase } from '@conductor/lib/plan';
@@ -94,6 +102,7 @@ import woodcutting from '@conductor/tasks/woodcutting';
 
 export default definePlan({
     name: 'chop-burn',
+    requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
         phase(
             firemaking,
@@ -105,8 +114,10 @@ export default definePlan({
 });
 ```
 
-- `definePlan({ name, description?, phases, until? })`: `name` matches `[a-z0-9-]+`; the plan's
-  `until(v)` ends the whole plan `done`. Without one, a plan runs until `--until`, a failure or a
+- `definePlan({ name, description?, phases, until?, requires? })`: `name` matches `[a-z0-9-]+`;
+  the plan's `until(v)` ends the whole plan `done`; `requires: { '<what>': v => ... }` names what
+  the plan needs throughout (chop-burn: `'combat level 5+'`), checked before every phase choice,
+  and one that fails ends the plan `failed` with `plan requires <what>`. Without an `until`, a plan runs until `--until`, a failure or a
   rail.
 - `phase(task, params, { name?, when?, until?, onFail?, maxFails? })`: `task` is the task module's
   default export; `params` are its params (`bun conductor/run-task.ts --list` shows each schema,
@@ -124,8 +135,9 @@ export default definePlan({
   (`until: v => v.runs('burn') > 0`).
 - A plan imports `@conductor/lib/plan` and `@conductor/tasks/<task>` and nothing else.
 
-What ends a plan: no phase applies (`failed`, `no phase applies`; its log shows what each `when`
-read), a phase failing with `onFail: 'fail'` or `maxFails` times in a row, a predicate throwing
+What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
+<reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
+requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase failing with `onFail: 'fail'` or `maxFails` times in a row, a predicate throwing
 (`error`), a phase ending `error`, and the idle rail (3 phases in a row with no XP, each ending
 where it started or in a state already seen: `phases make no progress`). Every phase's params
 are parsed before the plan acts, so a typo fails it in the first second. An `until` that holds
@@ -174,7 +186,8 @@ bun conductor/tools/journal.ts run '<objective>' --file <journal path> --task pl
 ```
 
 `<runId>` is the RESULT's `runId`; it is how a runner that was cut off finds whether a run was
-journaled.
+journaled. A RESULT with an empty `runId` never ran (a usage or connection failure before a log
+opened): journal nothing, count nothing in `spent`, and fix its cause.
 
 ## Debugging a plan that did not finish `done`
 
