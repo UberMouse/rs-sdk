@@ -17,7 +17,7 @@ import type { ActionContext } from './context';
  * what bot.dismissBlockingUI does. Ids from server/content/pack/interface.pack.
  */
 export const NEVER_CLOSE_INTERFACES: ReadonlySet<number> = new Set([
-    10984, // grand_exchange: a deliberate offer/draft session
+    40000, // grand_exchange: a deliberate offer/draft session
     3323, // trademain: closing declines a player trade
     3443, // tradeconfirm: the second trade screen, same risk
     6412, // duel_confirm: same risk for duels
