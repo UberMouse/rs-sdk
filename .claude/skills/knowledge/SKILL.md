@@ -19,7 +19,7 @@ read it at any time.
 | `learnings/<topic>.md` | how-to: SDK patterns, procedures, gotchas (existing pages: banking, combat, dialogs, fishing, mining, shops, walking, woodcutting, …) | agents |
 | `learnings/equipment.md` | where to get the next gear tier for combat and tools: shop, drop, spawn, cost, requirement | agents |
 | `learnings/hazards.md` | dangerous NPCs and areas, with coordinates and the combat level at which they stop being a problem | agents |
-| `learnings/local-server.md` | facts true only of the local server (XP rate, tick rate, spawn behaviour) | agents |
+| `learnings/local-server.md` | facts true only of the local server (XP rate, level table, tick rate, spawn behaviour) | agents |
 
 Where a fact goes:
 - **Where to train skill X / what resource is where** → `wiki/skills/<skill>.md`, section

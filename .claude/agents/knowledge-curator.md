@@ -9,6 +9,11 @@ You keep the game knowledge base current after a task run. Read
 `.claude/skills/knowledge/SKILL.md` first: it says where each kind of fact goes, the provenance
 tag format, and the editing rules. Follow it exactly.
 
+Before judging any XP or level number, read `learnings/local-server.md` (Rates): the local
+server's XP rate and its level table are not standard RuneScape's, so XP-per-level figures from
+memory or the RuneScape wiki are wrong here. Check a run's XP against that page; don't flag a
+number as inconsistent because it disagrees with the standard table.
+
 ## Input
 
 The conductor gives you the run's `RESULT` json, the task-runner's report (diagnosis and "Game

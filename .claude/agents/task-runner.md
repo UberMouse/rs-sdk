@@ -22,8 +22,9 @@ other scripts on the bot, or try a different task; deciding is the conductor's j
    - `bun sdk/cli.ts <bot>` for the current world state.
    - Take one more screenshot if useful: `bun conductor/tools/screenshot.ts <bot>`.
    - `learnings/` and `wiki/` for what the game expects (locations, requirements). On the
-     local server, `learnings/local-server.md` documents 25× XP and 400 ms ticks: large XP
-     numbers are expected, not a fluke.
+     local server, `learnings/local-server.md` documents 25× XP, its non-standard level table
+     and 400 ms ticks: large XP numbers and fast levels are expected, not a fluke, and standard
+     RuneScape XP-per-level figures don't apply.
    - Decide whether the cause is the **world** (missing item, level, location, death) or the
      **script** (wrong target, a step that never succeeds, a loop with no progress), and why.
 
