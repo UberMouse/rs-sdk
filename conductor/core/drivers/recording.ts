@@ -65,7 +65,13 @@ export type Rec =
     /** A tick request rejected: the client stalled (`stall`) or disconnected. */
     | ({ k: 'e'; msg: string; stall?: boolean } & Timing)
     /** The run's result. */
-    | ({ k: 'end'; status: string; reason: string } & Timing);
+    | ({ k: 'end'; status: string; reason: string } & Timing)
+    /**
+     * An external stop (ExecuteOptions.externalStop) ended the run on a check at `tick`. Untimed: it is
+     * no driver event, so the replay drops it from the stream and the records around it line up as in a
+     * recording without it.
+     */
+    | { k: 'stop'; tick: number; reason: string; n?: never; w?: never };
 
 /** Encodes each state as the top-level keys that differ from the previous one. */
 class StateEncoder {
@@ -213,12 +219,15 @@ export class Recorder {
     }
 
     /**
-     * `sinks` with screenshots recorded as commands and the run's result as the closing record, so
-     * the replay can return each screenshot's path and compare outcomes.
+     * `sinks` with screenshots recorded as commands, an external stop as a `stop` record and the run's
+     * result as the closing record, so the replay can return each screenshot's path, stop where the
+     * run was stopped and compare outcomes.
      */
     wrap(sinks: Sinks): Sinks {
         return {
             event: e => {
+                if (e.type === 'external-stop')
+                    this.guard(() => this.line({ k: 'stop', tick: Number(e.tick), reason: String(e.reason) }));
                 if (e.type === 'result')
                     this.guard(() => this.write({ k: 'end', status: String(e.status), reason: String(e.reason) }));
                 sinks.event(e);

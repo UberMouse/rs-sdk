@@ -7,7 +7,7 @@ import type { ActionResult, BotWorldState, ConnectionState, NearbyLoc } from '..
 import { LiveDriver } from '../../core/drivers/live';
 import { parseRecording, Recorder, type Recording, type RecordingOut } from '../../core/drivers/recording';
 import { scan, send, ticks, wait } from '../../core/op';
-import { executeTask } from '../../lib/engine';
+import { executeTask, type ExecuteOptions } from '../../lib/engine';
 import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Sinks, type TaskResult } from '../../lib/task';
 import { countItems, findSkill } from '../../lib/util';
@@ -209,7 +209,13 @@ export const RUN = { bot: 'tester', runId: 'run-1', logFile: '/logs/run-1.ndjson
 export async function recordRun(
     def: ReturnType<typeof chopper>,
     game: FakeGame,
-    opts: { stops?: StopCondition[]; stallMs?: number; out?: RecordingOut; warn?: (msg: string) => void } = {},
+    opts: {
+        stops?: StopCondition[];
+        stallMs?: number;
+        out?: RecordingOut;
+        warn?: (msg: string) => void;
+        externalStop?: ExecuteOptions['externalStop'];
+    } = {},
 ): Promise<{ result: TaskResult; recording: Recording | null; recorder: Recorder }> {
     const chunks: Uint8Array[] = [];
     const out: RecordingOut = opts.out ?? { write: b => chunks.push(b), close: () => {} };
@@ -228,7 +234,15 @@ export async function recordRun(
     game.start();
     let result: TaskResult;
     try {
-        result = await executeTask(def, { driver, sinks, ...RUN, botName: RUN.bot, rawParams: {}, stops });
+        result = await executeTask(def, {
+            driver,
+            sinks,
+            ...RUN,
+            botName: RUN.bot,
+            rawParams: {},
+            stops,
+            ...(opts.externalStop && { externalStop: opts.externalStop }),
+        });
     } finally {
         driver.close();
         recorder.close();

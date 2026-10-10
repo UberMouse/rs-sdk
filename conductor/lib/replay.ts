@@ -27,6 +27,9 @@ export async function replayRun(
 ): Promise<ReplayReport> {
     const { run } = recording.header;
     const driver = new ReplayDriver(recording);
+    // A run an external stop ended (a plan phase's `until`) stops again on the same tick, rather than
+    // running on past the end of its recording.
+    const stop = recording.records.find(r => r.k === 'stop');
     let replayed: TaskResult;
     try {
         replayed = await executeTask(def, {
@@ -38,6 +41,7 @@ export async function replayRun(
             rawParams: run.params,
             stops: run.stops,
             ...(run.progressEveryMs !== undefined && { progressEveryMs: run.progressEveryMs }),
+            ...(stop && { externalStop: s => (s.tick >= stop.tick ? stop.reason : null) }),
         });
     } finally {
         driver.close();

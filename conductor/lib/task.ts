@@ -127,6 +127,8 @@ export interface TaskResult {
     task: string;
     bot: string;
     runId: string;
+    /** The runId of the plan this run was a phase of; absent for a run of its own. */
+    partOf?: string;
     status: TaskStatus;
     reason: string;
     params: unknown;

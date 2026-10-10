@@ -417,6 +417,61 @@ describe('onTick during a generator step', () => {
     });
 });
 
+const externalStops = (events: Record<string, unknown>[]) => events.filter(e => e.type === 'external-stop');
+
+describe('an external stop', () => {
+    test('firing mid-wait cancels the step, runs its finally, and ends the run done with its reason', async () => {
+        // Moving every tick, so only the external stop can end it.
+        const r = await runTask(
+            [step('idle', idle)],
+            timeline(30, t => ({ z: 3200 + t })),
+            {
+                externalStop: s => (s.tick >= 5 ? 'phase until met' : null),
+            },
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('phase until met');
+        expect(r.sends).toEqual(['start', 'cleanup']);
+        expect(r.result.durationMs).toBe(5 * TICK_MS);
+        expect(externalStops(r.events)).toEqual([{ type: 'external-stop', reason: 'phase until met', tick: 5 }]);
+    });
+
+    test('firing between steps ends the run before the next step', async () => {
+        let runs = 0;
+        const decide = step('decide', () => {
+            runs++;
+        });
+        const r = await runTask([decide], timeline(10), { externalStop: () => (runs >= 3 ? 'plan stop' : null) });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('plan stop');
+        expect(r.result.stepRuns).toEqual({ decide: 3 });
+        expect(externalStops(r.events)).toHaveLength(1);
+    });
+
+    test("the task's own stops are checked first", async () => {
+        const r = await runTask(
+            [step('idle', idle)],
+            timeline(30, t => ({ xp: t >= 5 ? 20 : 0 })),
+            {
+                stops: [{ kind: 'xp', skill: 'Woodcutting', amount: 10 }],
+                externalStop: s => (s.tick >= 5 ? 'phase until met' : null),
+            },
+        );
+        expect(r.result.reason).toBe('reached +10 Woodcutting xp');
+        expect(externalStops(r.events)).toEqual([]);
+    });
+});
+
+describe('partOf', () => {
+    test("is in the result only when given: the plan's runId", async () => {
+        const decide = step('decide', () => ({ done: 'decided' }));
+        const phase = await runTask([decide], timeline(5), { partOf: 'plan-run-7' });
+        expect(phase.result.partOf).toBe('plan-run-7');
+        const alone = await runTask([decide], timeline(5));
+        expect('partOf' in alone.result).toBe(false);
+    });
+});
+
 describe('decision-only steps', () => {
     test('a plain run that returns an outcome ends the run, counted and logged like any step', async () => {
         const r = await runTask([step('decide', () => ({ done: 'decided' }))], timeline(5));

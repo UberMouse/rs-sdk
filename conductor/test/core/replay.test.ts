@@ -56,6 +56,9 @@ async function recorded(opts: FakeGameOptions = {}, variant: ChopperVariant = {}
 
 const CHOP = 'send interactLoc (Chop down Tree)';
 
+/** A phase's `until`, as a plan hands it to the engine. */
+const untilTwoLogs = (s: BotWorldState) => (logsOf(s) >= 2 ? 'until: 2 logs' : null);
+
 describe('replay of a recorded run', () => {
     test('unchanged code replays with no divergence, to the same result', async () => {
         const { result, recording } = await recorded({ revisions: true, refuseChop: n => n === 2 }, { scans: true });
@@ -75,6 +78,25 @@ describe('replay of a recorded run', () => {
         const report = await replayRun(recording!, chopper());
         expect(report.divergence).toBeNull();
         expect(report.replayed).toEqual(result);
+    });
+
+    test('a run an external stop ended replays to the same end, from its stop record', async () => {
+        const { result, recording } = await recordRun(chopper(), new FakeGame(), { externalStop: untilTwoLogs });
+        expect(result).toMatchObject({ status: 'done', reason: 'until: 2 logs' });
+        const stops = recording!.records.flatMap(r => (r.k === 'stop' ? [r] : []));
+        expect(stops).toEqual([{ k: 'stop', tick: expect.any(Number), reason: 'until: 2 logs' }]);
+        const stopTick = stops[0]!.tick;
+        expect(logsAt(recording!, stopTick)).toBe(2);
+
+        const report = await replayRun(recording!, chopper());
+        expect(report.divergence).toBeNull();
+        expect(report.replayed).toEqual(result);
+
+        // Without the record the replay runs on past the recorded end and chops again.
+        const unstopped = { ...recording!, records: recording!.records.filter(r => r.k !== 'stop') };
+        const ran = await replayRun(unstopped, chopper());
+        expect(ran.divergence).toMatchObject({ kind: 'extra' });
+        expect(ran.divergence?.expected).toBe('no command; the run ended (done: until: 2 logs)');
     });
 
     test('a changed decision is reported where the recorded run decided otherwise', async () => {

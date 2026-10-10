@@ -3,7 +3,7 @@ import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../sd
 import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
-import { executeTask } from '../lib/engine';
+import { executeTask, type ExecuteOptions } from '../lib/engine';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 import { straightPaths } from './paths';
@@ -27,6 +27,9 @@ export interface SimulateOptions {
     driver?: TimelineDriver;
     /** The run's events land here, so a test can interleave its own records with them. */
     events?: Record<string, unknown>[];
+    /** Passed to executeTask as they are (ExecuteOptions). */
+    externalStop?: ExecuteOptions['externalStop'];
+    partOf?: string;
 }
 
 export interface Simulation {
@@ -63,6 +66,8 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         rawParams: opts.params ?? {},
         stops: opts.stops ?? [],
         pathfinder: opts.pathfinder ?? straightPaths(),
+        ...(opts.externalStop && { externalStop: opts.externalStop }),
+        ...(opts.partOf !== undefined && { partOf: opts.partOf }),
     });
     return {
         result,

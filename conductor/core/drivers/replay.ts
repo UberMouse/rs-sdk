@@ -105,7 +105,8 @@ export class ReplayDriver implements Driver {
     private scheduled = false;
 
     constructor(recording: Recording) {
-        this.records = recording.records;
+        // An external stop is no driver event; replayRun stops the run there itself.
+        this.records = recording.records.filter(r => r.k !== 'stop');
         this.clock = recording.header.at;
     }
 

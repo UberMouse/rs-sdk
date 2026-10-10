@@ -94,6 +94,13 @@ export interface ExecuteOptions {
     stops: StopCondition[];
     /** Print a progress line this often. Default DEFAULT_PROGRESS_EVERY_MS. */
     progressEveryMs?: number;
+    /**
+     * A stop from outside the task (a plan's `until` and its own stops), checked after `stops` at the
+     * same points. A non-null return ends the run `done` with it as the reason.
+     */
+    externalStop?: (s: BotWorldState) => string | null;
+    /** The runId of the plan this run is a phase of; copied into the result. */
+    partOf?: string;
 }
 
 type End = { status: TaskStatus; reason: string };
@@ -315,6 +322,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             task: def.name,
             bot: botName,
             runId,
+            ...(opts.partOf !== undefined && { partOf: opts.partOf }),
             status,
             reason,
             params: ctx.params ?? opts.rawParams,
@@ -406,9 +414,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     let idleLoops = 0;
 
     /**
-     * Watchdog, stops and progress lines. Runs between steps and on every check of a generator
-     * step's waits, often several times a tick: everything here compares against the last change,
-     * so a repeat call on the same state changes nothing.
+     * Watchdog, stops (the task's, then the external one) and progress lines. Runs between steps and
+     * on every check of a generator step's waits, often several times a tick: everything here
+     * compares against the last change, so a repeat call on the same state changes nothing. A stop
+     * ends the run, so the external one fires (and is emitted) at most once.
      */
     const checkRun = (s: BotWorldState): End | null => {
         const t = now();
@@ -431,6 +440,12 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
         const stop = checkStops(stops, s, xpBefore, t - startedAt);
         if (stop) return { status: 'done', reason: stop };
+        const external = opts.externalStop?.(s) ?? null;
+        if (external !== null) {
+            // The recorder writes this as the record a replay stops at (core/drivers/recording.ts).
+            emit({ type: 'external-stop', reason: external, tick: s.tick });
+            return { status: 'done', reason: external };
+        }
         if (t - lastReportAt >= progressEveryMs) {
             lastReportAt = t;
             const gained = Object.entries(xpGainedSince(s, xpBefore))
