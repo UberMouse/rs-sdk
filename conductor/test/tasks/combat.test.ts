@@ -488,3 +488,304 @@ describe('combat: the step budget', () => {
         expect(stepBudgetTicks(combat.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(WALK_MAX_TICKS + AFTER_WALK_TICKS);
     });
 });
+
+const BOW_STYLES = [
+    { index: 0, name: 'Accurate', type: 'Accurate', trainsSkills: ['Ranged'], damageType: 'Ranged' },
+    { index: 1, name: 'Rapid', type: 'Rapid', trainsSkills: ['Ranged'], damageType: 'Ranged' },
+    { index: 2, name: 'Longrange', type: 'Longrange', trainsSkills: ['Ranged', 'Defence'], damageType: 'Ranged' },
+];
+const ARROW = 'Bronze arrow';
+const BOW_PARAMS = { ...PARAMS, skill: 'Ranged', weapon: 'Shortbow', ammo: ARROW };
+const wield = { options: [{ text: 'Wield', opIndex: 2 }] };
+/** The archer with no chicken around. */
+const archerAlone = (arrows: number, carriedArrows = 0) => {
+    let w = base
+        .skill('Ranged', 1, 0)
+        .combatStyle(0, BOW_STYLES)
+        .equipment({ name: 'Shortbow' }, ...(arrows > 0 ? [{ name: ARROW, count: arrows }] : []));
+    if (carriedArrows > 0) w = w.inv(ARROW, carriedArrows, wield);
+    return w;
+};
+const archer = (arrows: number, carriedArrows = 0) => {
+    let w = chickenAt(base.skill('Ranged', 1, 0).combatStyle(0, BOW_STYLES)).equipment(
+        { name: 'Shortbow' },
+        ...(arrows > 0 ? [{ name: ARROW, count: arrows }] : []),
+    );
+    if (carriedArrows > 0) w = w.inv(ARROW, carriedArrows, wield);
+    return w;
+};
+const shot = (w: World, n = 20, killAt = 6, fightAt = 2) =>
+    w.series(n, (f, i) =>
+        i >= killAt ? f.fighting(false).skill('Ranged', 1, 100) : i >= fightAt ? f.fighting(CHICKEN) : f,
+    );
+
+describe('combat: Ranged', () => {
+    test('wields the bow and the arrows, then attacks as for melee', async () => {
+        const carrying = chickenAt(base.skill('Ranged', 1, 0).combatStyle(0, BOW_STYLES))
+            .inv('Shortbow', 1, wield)
+            .inv(ARROW, 200, wield);
+        const bowWorn = chickenAt(base.skill('Ranged', 1, 0).combatStyle(0, BOW_STYLES))
+            .equipment({ name: 'Shortbow' })
+            .inv(ARROW, 200, wield);
+        const r = await simulate(combat, {
+            params: BOW_PARAMS,
+            timeline: [carrying.build(), bowWorn.build(), ...shot(archer(200), 20, 9, 5).slice(2)],
+            stops: xp(100, 'Ranged'),
+        });
+        expect(r.result.reason).toBe('reached +100 Ranged xp');
+        expect(r.sends).toEqual(['Wield Shortbow', `Wield ${ARROW}`, ATTACK]);
+        expect(r.steps).toEqual(['equip', 'fight']);
+    });
+
+    test('sets the ranged style that trains Ranged', async () => {
+        const r = await simulate(combat, {
+            params: BOW_PARAMS,
+            timeline: shot(archer(50).combatStyle(2, BOW_STYLES)).map((s, i) =>
+                i >= 1 ? world(s).combatStyle(0, BOW_STYLES).build() : s,
+            ),
+            stops: xp(100, 'Ranged'),
+        });
+        expect(r.sends).toEqual(['combat style Accurate', ATTACK]);
+    });
+
+    test('with no arrows left the run fails, naming the ammo', async () => {
+        const r = await simulate(combat, {
+            params: BOW_PARAMS,
+            timeline: [archer(1).build(), ...shot(archer(0), 20, 99)],
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`out-of-ammo: out of ${ARROW}`);
+    });
+
+    test('the last arrow fired mid-fight waits for the kill, then loots the fallen arrows', async () => {
+        const r = await simulate(combat, {
+            params: { ...BOW_PARAMS, loot: [ARROW] },
+            timeline: [
+                ...shot(archer(1)).slice(0, 4),
+                ...shot(archer(0).ground(ARROW, COOP.x + 2, COOP.z, 1, { id: 882 })).slice(4),
+            ],
+        });
+        // The fight is waited out and the arrow taken before the run gives up on the ammo.
+        expect(r.steps.indexOf('loot')).toBeGreaterThan(-1);
+        expect(r.steps.indexOf('loot')).toBeLessThan(r.steps.indexOf('out-of-ammo'));
+        expect(r.sends).toContain(`take ${ARROW}`);
+    });
+
+    test('out of arrows in a fight that does not end fails as out of ammo after a short grace, not the fight timeout', async () => {
+        const r = await simulate(combat, {
+            params: { ...BOW_PARAMS, loot: [ARROW] },
+            timeline: [...shot(archer(1), 4, 999).slice(0, 4), ...shot(archer(0), 120, 999).slice(4)],
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`fight: out of ${ARROW}`);
+    });
+
+    test('the last arrow fired mid-fight fails the run when arrows are not on the loot list', async () => {
+        const r = await simulate(combat, {
+            params: BOW_PARAMS,
+            timeline: [...shot(archer(1)).slice(0, 4), ...shot(archer(0)).slice(4)],
+        });
+        expect(r.result.reason).toBe(`out-of-ammo: out of ${ARROW}`);
+    });
+
+    test('arrows on the ground are looted before giving up, then wielded again', async () => {
+        const empty = archerAlone(0);
+        const fallen = empty.ground(ARROW, COOP.x + 2, COOP.z, 3, { id: 882 });
+        const r = await simulate(combat, {
+            params: { ...BOW_PARAMS, loot: [ARROW] },
+            // The last arrow is gone on tick 1, the idle wait ends on tick 3, the pickup lands on tick 4, the wield on 5.
+            timeline: [
+                archerAlone(1).build(),
+                ...[1, 2, 3].map(t => fallen.tick(t).build()),
+                archerAlone(0, 3).tick(4).build(),
+                ...archerAlone(3).series(40, (w, i) => w.tick(5 + i)),
+            ],
+        });
+        expect(r.sends.slice(0, 2)).toEqual([`take ${ARROW}`, `Wield ${ARROW}`]);
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
+    });
+
+    test('carried arrows are wielded on top of a worn stack', async () => {
+        const r = await simulate(combat, {
+            params: BOW_PARAMS,
+            timeline: [archer(10, 5).build(), ...shot(archer(15)).slice(1)],
+            stops: xp(100, 'Ranged'),
+        });
+        expect(r.sends).toEqual([`Wield ${ARROW}`, ATTACK]);
+    });
+
+    test('is refused without a bow or arrows named, or not held', async () => {
+        const w = archer(50);
+        expect(await refusal(w, { ...PARAMS, skill: 'Ranged', ammo: ARROW })).toBe(
+            'preflight: Ranged needs `weapon` (a bow) and `ammo`',
+        );
+        expect(await refusal(w, { ...PARAMS, skill: 'Ranged', weapon: 'Shortbow' })).toBe(
+            'preflight: Ranged needs `weapon` (a bow) and `ammo`',
+        );
+        expect(await refusal(archer(0), BOW_PARAMS)).toBe(`preflight: ${ARROW} is neither worn nor in the inventory`);
+    });
+});
+
+const SPELL = 'Wind Strike';
+const MAGIC_PARAMS = { ...PARAMS, skill: 'Magic', spell: SPELL };
+const CAST = `cast ${SPELL} on Chicken`;
+const NO_AIR = 'You do not have enough Air Runes to cast this spell.';
+/** A mage with the runes, a chicken to cast at, and the Magic skill. */
+const deserted = base.skill('Magic', 1, 0).inv('Air rune', 20).inv('Mind rune', 20);
+const mage = chickenAt(deserted);
+
+describe('combat: Magic', () => {
+    test('casts at the chicken, waits out the delay and casts again until it dies', async () => {
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            // Each cast pays Magic xp a tick later; the chicken, fighting the bot, dies with the second.
+            timeline: mage.series(30, (w, i) =>
+                i >= 7
+                    ? deserted.tick(w.build().tick).skill('Magic', 1, 110)
+                    : w.skill('Magic', 1, i >= 1 ? 55 : 0).fighting(i >= 2 && CHICKEN),
+            ),
+            stops: xp(110, 'Magic'),
+        });
+        expect(r.result.reason).toBe('reached +110 Magic xp');
+        expect(r.sends).toEqual([CAST, CAST]);
+        expect(r.steps.every(s => s === 'cast')).toBe(true);
+        expect(
+            r.driver.commands.flatMap(c => (c.type === 'send' && c.action.type === 'spellOnNpc' ? [c.action] : []))[0],
+        ).toMatchObject({
+            npcIndex: CHICKEN,
+            spellComponent: 1152,
+        });
+    });
+
+    test('does not set a combat style, whatever the weapon', async () => {
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: mage.combatStyle(2).series(30, (w, i) => (i >= 1 ? w.skill('Magic', 1, 55) : w)),
+            stops: xp(55, 'Magic'),
+        });
+        expect(r.sends).toEqual([CAST]);
+    });
+
+    test('runes that run out fail the run with the server message', async () => {
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: [mage.build(), mage.tick(2).message(NO_AIR).build()],
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`cast: out of runes for ${SPELL}: ${NO_AIR}`);
+        expect(r.sends).toEqual([CAST]);
+    });
+
+    test('a Magic level that is too low fails the run', async () => {
+        const msg = 'Your Magic level is not high enough for this spell.';
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: [mage.build(), mage.tick(2).message(msg).build()],
+        });
+        expect(r.result.reason).toBe(`cast: ${msg}`);
+    });
+
+    test('six failed casts in a row fail the run, a success in between resets the count', async () => {
+        const stuck = await simulate(combat, { params: MAGIC_PARAMS, timeline: mage.series(1) });
+        expect(stuck.result.reason).toBe(
+            `cast: 6 casts in a row failed (last: Timeout waiting for ${SPELL} on Chicken)`,
+        );
+        expect(stuck.sends).toEqual(Array<string>(6).fill(CAST));
+        expect(logged(stuck)).toEqual(
+            Array<string>(6).fill(`cast ${SPELL} on Chicken failed: Timeout waiting for ${SPELL} on Chicken`),
+        );
+    });
+
+    test('a target that never dies is given up on after forty casts', async () => {
+        let magic = 0;
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: mage.series(3, (w, i) => (i >= 2 ? w.fighting(CHICKEN) : w)),
+            react: a => {
+                if (a.type !== 'spellOnNpc') return undefined;
+                magic += 55;
+                const total = magic;
+                return s => ({
+                    ...s,
+                    skills: s.skills.map(k => (k.name === 'Magic' ? { ...k, experience: total } : k)),
+                });
+            },
+        });
+        expect(r.result.reason).toBe('cast: 40 casts did not kill Chicken at (3232,3295)');
+    });
+
+    test('is refused without a spell, below its level, or without its runes', async () => {
+        expect(await refusal(mage, { ...PARAMS, skill: 'Magic' })).toBe(
+            'preflight: Magic needs `spell` (e.g. "Wind Strike")',
+        );
+        expect(await refusal(mage, { ...MAGIC_PARAMS, spell: 'Fire Strike' })).toBe(
+            'preflight: Fire Strike needs Magic 13, the bot has 1',
+        );
+        const lvl = chickenAt(base.skill('Magic', 13, 0).inv('Air rune', 5).inv('Mind rune', 5));
+        expect(await refusal(lvl, { ...MAGIC_PARAMS, spell: 'Fire Strike' })).toBe(
+            'preflight: Fire Strike needs 3 Fire rune, the bot has 0',
+        );
+        expect(await refusal(chickenAt(base.skill('Magic', 1, 0).inv('Air rune', 5)), MAGIC_PARAMS)).toBe(
+            'preflight: Wind Strike needs 1 Mind rune, the bot has 0',
+        );
+    });
+
+    test('a staff stands in for its rune, so the runes are not required', async () => {
+        const staffed = chickenAt(
+            base.skill('Magic', 1, 0).equipment({ name: 'Staff of air', id: 1381 }).inv('Mind rune', 5),
+        );
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: staffed.series(30, (w, i) => (i >= 1 ? w.skill('Magic', 1, 55) : w)),
+            stops: xp(55, 'Magic'),
+        });
+        expect(r.result.reason).toBe('reached +55 Magic xp');
+    });
+
+    test('a staff covers only its own element: Staff of air with no Mind runes is refused', async () => {
+        const w = chickenAt(base.skill('Magic', 1, 0).equipment({ name: 'Staff of air', id: 1381 }).inv('Air rune', 5));
+        expect(await refusal(w, MAGIC_PARAMS)).toBe('preflight: Wind Strike needs 1 Mind rune, the bot has 0');
+    });
+
+    test('a Staff of fire does not stand in for the Air rune of Wind Strike', async () => {
+        const w = chickenAt(
+            base.skill('Magic', 1, 0).equipment({ name: 'Staff of fire', id: 1387 }).inv('Mind rune', 5),
+        );
+        expect(await refusal(w, MAGIC_PARAMS)).toBe('preflight: Wind Strike needs 1 Air rune, the bot has 0');
+    });
+
+    test('a carried (not worn) staff covers nothing', async () => {
+        const w = chickenAt(base.skill('Magic', 1, 0).inv('Staff of air', 1, { id: 1381 }).inv('Mind rune', 5));
+        expect(await refusal(w, MAGIC_PARAMS)).toBe('preflight: Wind Strike needs 1 Air rune, the bot has 0');
+    });
+
+    test('the cast count restarts when the counted NPC is gone, so a respawn reusing its index is not accumulated', async () => {
+        let magic = 0;
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            // The chicken vanishes for a tick every 10 ticks (dies and respawns under the same index).
+            timeline: mage
+                .series(1000, (w, i) => w.fighting(i >= 2 && CHICKEN))
+                .map((s, i) => (i % 10 === 9 ? { ...s, nearbyNpcs: [] } : s)),
+            react: a => {
+                if (a.type !== 'spellOnNpc') return undefined;
+                magic += 55;
+                const total = magic;
+                return s => ({
+                    ...s,
+                    skills: s.skills.map(k => (k.name === 'Magic' ? { ...k, experience: total } : k)),
+                });
+            },
+            stops: xp(55 * 60, 'Magic'),
+        });
+        expect(r.result.reason).toBe(`reached +${55 * 60} Magic xp`);
+    });
+
+    test('with no chicken in the area it fails after twenty looks', async () => {
+        const r = await simulate(combat, {
+            params: MAGIC_PARAMS,
+            timeline: base.skill('Magic', 1, 0).inv('Air rune', 5).inv('Mind rune', 5).series(1),
+        });
+        expect(r.result.reason).toBe('cast: no free reachable Chicken in the area');
+    });
+});

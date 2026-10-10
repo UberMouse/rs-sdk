@@ -1,0 +1,89 @@
+{
+    "name": "ranged-magic-chickens",
+    "purpose": "Fresh account (all skills 1, HP 10) at the Lumbridge chicken coop (3231,3295) with Shortbow, 200 Bronze arrows, 300 Air + 300 Mind runes, 5 Shrimps and a Bronze sword in the inventory, nothing worn. Tests combat task Ranged and Magic modes.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3231,
+                "z": 3295
+            },
+            "inventory": [
+                {
+                    "id": 841,
+                    "count": 1
+                },
+                {
+                    "id": 882,
+                    "count": 200
+                },
+                {
+                    "id": 556,
+                    "count": 300
+                },
+                {
+                    "id": 558,
+                    "count": 300
+                },
+                {
+                    "id": 315,
+                    "count": 5
+                },
+                {
+                    "id": 1277,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "35be5d00b368a1d7eaa5de9785bcd0b3977ca491",
+    "createdAt": "2026-10-10T02:28:14.897Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3231,
+            "z": 3295,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 841,
+                "name": "shortbow",
+                "count": 1
+            },
+            {
+                "id": 882,
+                "name": "bronze_arrow",
+                "count": 200
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 300
+            },
+            {
+                "id": 558,
+                "name": "mindrune",
+                "count": 300
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 5
+            },
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
