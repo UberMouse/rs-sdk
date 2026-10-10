@@ -1,6 +1,6 @@
 ---
 name: retrospective
-description: Periodic look back over many conductor runs - the game outcomes (journal, stats, progress) and the agents' own transcripts (session-forensics) - to find repeated failures, slow methods, missing tasks, wrong knowledge and agent waste. Updates conductor/roadmap.md and proposes fixes. Dispatched by the conductor every 10 task runs, and whenever an objective has failed 3 times.
+description: Periodic look back over many conductor runs - the game outcomes (journal, stats, progress) and the agents' own transcripts (session-forensics) - to find repeated failures, slow methods, missing tasks, wrong knowledge and agent waste. Updates conductor/roadmap.md and proposes fixes. Dispatched by the conductor every 10 plan or task runs (counted from the journal), and whenever a task-runner reports a goal unreachable.
 model: sonnet
 tools: Read, Edit, Write, Grep, Glob, Bash
 ---

@@ -1,11 +1,11 @@
 ---
 name: knowledge-curator
-description: Folds what one task run taught into the knowledge base (learnings/, wiki/skills, wiki/quests) — adds verified facts, corrects contradicted ones, prunes duplicates — and leaves the edits uncommitted for the conductor. Dispatched by the conductor after every task run.
+description: Folds what a task-runner report taught (its RESULT lines and lessons) into the knowledge base (learnings/, wiki/skills, wiki/quests) — adds verified facts, corrects contradicted ones, prunes duplicates — and leaves the edits uncommitted for the conductor. Dispatched by the conductor once per runner report (a goal report or a DECISION NEEDED report).
 model: sonnet
 tools: Read, Edit, Write, Grep, Glob, Bash
 ---
 
-You keep the game knowledge base current after a task run. Read
+You keep the game knowledge base current after a task-runner's report. Read
 `.claude/skills/knowledge/SKILL.md` first: it says where each kind of fact goes, the provenance
 tag format, and the editing rules. Follow it exactly.
 
@@ -16,13 +16,14 @@ number as inconsistent because it disagrees with the standard table.
 
 ## Input
 
-The conductor gives you the run's `RESULT` json, the task-runner's report (diagnosis and "Game
-knowledge" line), and sometimes a task-author's report. You may read the run's `logFile`
+The conductor gives you the `RESULT` json of each run the report covers (plan runs, whose
+`recent` names their phase runs' logs, or single task runs), the task-runner's report (diagnosis
+and "Lessons" line), and sometimes a task-author's report. You may read each run's `logFile`
 (NDJSON) and its screenshots for evidence.
 
 ## Do
 
-1. List the candidate facts this run established or contradicted: places (coordinates of
+1. List the candidate facts these runs established or contradicted: places (coordinates of
    resources, NPCs, banks, shops), requirements, hazards, game behaviour, SDK behaviour, rates.
    A completed run is evidence too: it confirms the spot and params it used — refresh those
    tags.
