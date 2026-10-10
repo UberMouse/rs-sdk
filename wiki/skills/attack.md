@@ -29,4 +29,4 @@ Use the **Accurate** fighting style to gain Attack XP. Grants 4 XP per damage de
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
-| Lumbridge chickens | (3231, 3295), radius 8 | 1-4+ | `combat` task with Attack style; same spot and gear as [strength](strength.md#verified-training-spots) | ~18k Attack (local, 1 min run, not stats.ts) | 2026-10-09 conductor1 local |
+| Lumbridge chickens | (3231, 3295), radius 8 | 1-4+ | `combat` task with Attack style; same spot and gear as [strength](strength.md#verified-training-spots) | ~18k Attack (local, 1 min run, not stats.ts) | 2026-10-10 conductor2 local (rev 289; Attack 6->15 in 92 s, 16 kills, 4 bones buried: Prayer 1->5) |
