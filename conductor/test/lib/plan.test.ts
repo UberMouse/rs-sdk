@@ -3,9 +3,20 @@ import { z } from 'zod/v4';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { send, wait } from '../../core/op';
-import { definePlan, isPlan, type Phase, phase, type PlanDef, type Predicate } from '../../lib/plan';
+import {
+    definePlan,
+    isPlan,
+    type Phase,
+    phase,
+    type PhaseRun,
+    type PlanDef,
+    planParams,
+    type PlanResult,
+    type Predicate,
+} from '../../lib/plan';
 import { defineTask, type Outcome } from '../../lib/task';
 import { countItems, TICK_MS } from '../../lib/util';
+import chopBurnPlan from '../../plans/chop-burn';
 import woodcutting from '../../tasks/woodcutting';
 import { act } from '../core/fixtures';
 import { type PlanSimulation, simulatePlan, type SimulatePlanOptions } from '../simulate';
@@ -213,6 +224,40 @@ const failsUntil = (maxFails?: number) =>
 /** Burns any logs held, else chops. */
 const burnAny = (until: Predicate) => plan([phase(burn, {}, { when: v => v.inv('logs') > 0 }), phase(chop, {})], until);
 
+/** A one-phase plan of `train` with `requires`. */
+const needs = (requires: Record<string, Predicate>, until?: Predicate) =>
+    definePlan({ name: 'test-plan', phases: [phase(train, {})], requires, until });
+
+/** simulatePlan options that call `onTick` with the plan's kill function after each tick of phase run `runId`. */
+const killable = (runId: string, onTick: (kill: (reason: string) => PlanResult) => void) => {
+    let kill: ((reason: string) => PlanResult) | null = null;
+    return {
+        onKillable: (k: (reason: string) => PlanResult) => {
+            kill = k;
+        },
+        phaseRun: (run: PhaseRun): PhaseRun => {
+            if (run.runId !== runId) return run;
+            const d = run.driver;
+            return {
+                ...run,
+                driver: {
+                    state: () => d.state(),
+                    nextTick: async () => {
+                        const s = await d.nextTick();
+                        onTick(kill!);
+                        return s;
+                    },
+                    send: a => d.send(a),
+                    scan: r => d.scan(r),
+                    log: (m, x) => d.log(m, x),
+                    screenshot: l => d.screenshot(l),
+                    now: () => d.now(),
+                },
+            };
+        },
+    };
+};
+
 describe('phase and definePlan', () => {
     test('phase names itself after its task, and leaves maxFails to the runner unless told', () => {
         const p = phase(chop, {});
@@ -276,10 +321,63 @@ describe('selection', () => {
         expect(r.events.find(e => e.type === 'select')).toEqual({
             type: 'select',
             phase: null,
+            checks: { burn: 'when false' },
+            last: null,
             inventory: { Bones: 24 },
             free: 4,
             bank: null,
         });
+    });
+
+    test('no applicable phase after a skipped failure names the last run, and the log what each phase answered', async () => {
+        const r = await sim(
+            plan([
+                phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue' }),
+                phase(burn, {}, { when: v => v.inv('Logs') > 0 }),
+            ]),
+        );
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'no phase applies (last: primary failed: try: busy)',
+        });
+        const selects = r.events.filter(e => e.type === 'select');
+        expect(selects.map(e => e.checks)).toEqual([
+            { primary: 'chosen' },
+            { primary: 'skipped: failed last', burn: 'when false' },
+        ]);
+        expect(selects.map(e => e.last)).toEqual([null, { phase: 'primary', status: 'failed', reason: 'try: busy' }]);
+    });
+});
+
+describe('requires', () => {
+    test('a requirement that does not hold fails the plan naming it, before any phase', async () => {
+        const r = await sim(needs({ 'woodcutting 5+': v => v.level('Woodcutting') >= 5 }));
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'plan requires woodcutting 5+' });
+        expect(r.runs).toEqual([]);
+        expect(r.events.map(e => e.type)).toEqual(['start', 'result']);
+        expect(r.events[0]!.requires).toEqual(['woodcutting 5+']);
+    });
+
+    test('requirements are checked before every phase choice', async () => {
+        const r = await sim(needs({ 'fewer than 2 trains': v => v.runs('train') < 2 }, v => v.runs('train') >= 3));
+        expect(selected(r)).toEqual(['train', 'train']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'plan requires fewer than 2 trains' });
+    });
+
+    test('a requirement that throws ends the plan error, naming it', async () => {
+        const r = await sim(needs({ 'mining 5+': v => v.level('Mining') >= 5 }));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toStartWith('plan requires "mining 5+" threw: unknown skill "Mining"');
+    });
+
+    test('chop-burn requires combat 5, against the Giant spiders on its walk', async () => {
+        const low = await sim(chopBurnPlan);
+        expect(low.result).toMatchObject({ status: 'failed', reason: 'plan requires combat level 5+' });
+        expect(low.runs).toEqual([]);
+        // Combat 12, as the plan smoke test's bot: past the gate, a phase runs (here refused: no axe).
+        const able = await sim(chopBurnPlan, { timeline: [BASE.player({ combatLevel: 12 }).build()] });
+        expect(able.runs.length).toBeGreaterThan(0);
+        expect(able.result.reason).not.toContain('requires');
     });
 });
 
@@ -831,6 +929,7 @@ describe('the result and the plan log', () => {
             plan: 'test-plan',
             bot: 'tester',
             phases: [{ phase: 'train', task: 'train', params: {} }],
+            requires: [],
             stops: [],
         });
         expect(r.events[2]).toEqual({
@@ -841,5 +940,88 @@ describe('the result and the plan log', () => {
             reason: 'train: trained',
         });
         expect(r.events.at(-1)).toEqual({ type: 'result', ...r.result });
+    });
+
+    test("planParams gives each phase's parsed params, raw where they don't parse, as a run's result does", async () => {
+        const def = plan([phase(chop, {}), phase(train, {})]);
+        expect(planParams(def)).toEqual({
+            plan: 'test-plan',
+            phases: [
+                { phase: 'chop', task: 'chop', params: { tree: 'tree' } },
+                { phase: 'train', task: 'train', params: {} },
+            ],
+        });
+        expect((await sim(def)).result.params).toEqual(planParams(def));
+        // @ts-expect-error: chop has no maple tree
+        const bad = plan([phase(chop, { tree: 'maple' })]);
+        expect(planParams(bad).phases[0]!.params).toEqual({ tree: 'maple' });
+        expect((await sim(bad)).result.params).toEqual(planParams(bad));
+    });
+});
+
+describe('a kill', () => {
+    test("mid-phase adds up the plan so far, the cut phase run counted as error, and leaves the plan's own totals", async () => {
+        let killed: PlanResult | null = null;
+        const r = await sim(
+            chopBurn(v => v.runs('burn') >= 1),
+            killable('phase-1-burn', kill => {
+                killed ??= kill('killed by SIGTERM');
+            }),
+        );
+        expect(killed).toMatchObject({
+            task: 'plan:test-plan',
+            runId: 'plan-1',
+            status: 'error',
+            reason: 'killed by SIGTERM',
+            params: planParams(chopBurn()),
+            stepRuns: { chop: 1, burn: 1 },
+            lastStep: 'burn',
+            xpGained: { Woodcutting: 100 },
+        });
+        expect(killed!.phases).toMatchObject([
+            { phase: 'burn', runs: 1, statuses: { error: 1 }, lastReason: 'killed by SIGTERM' },
+            { phase: 'chop', runs: 1, statuses: { done: 1 } },
+        ]);
+        expect(killed!.recent.map(x => [x.runId, x.status])).toEqual([
+            ['phase-0-chop', 'done'],
+            ['phase-1-burn', 'error'],
+        ]);
+        // The kill's copies leave the plan's own summaries alone.
+        expect(r.result.phases.find(p => p.phase === 'burn')!.statuses).toEqual({ done: 1 });
+    });
+
+    test('before any phase run has no phase totals', async () => {
+        let killed: PlanResult | null = null;
+        await sim(
+            plan([phase(train, {})], v => v.runs('train') >= 1),
+            {
+                onKillable: kill => {
+                    killed = kill('killed by SIGINT');
+                },
+            },
+        );
+        expect(killed).toMatchObject({ status: 'error', reason: 'killed by SIGINT', stepRuns: {}, recent: [] });
+        expect(killed!.phases.map(p => p.runs)).toEqual([0]);
+    });
+
+    test('while a phase run closes counts that run with its own result', async () => {
+        let killed: PlanResult | null = null;
+        let kill: ((reason: string) => PlanResult) | null = null;
+        await sim(
+            chopBurn(v => v.runs('burn') >= 1),
+            {
+                onKillable: k => {
+                    kill = k;
+                },
+                phaseRun: run => ({
+                    ...run,
+                    close: () => {
+                        killed ??= kill!('killed by SIGHUP');
+                    },
+                }),
+            },
+        );
+        expect(killed!.recent).toMatchObject([{ phase: 'chop', status: 'done' }]);
+        expect(killed!.phases.find(p => p.phase === 'chop')!.statuses).toEqual({ done: 1 });
     });
 });

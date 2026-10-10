@@ -58,13 +58,8 @@ export interface Phase {
     maxFails?: number;
 }
 
-export interface PhaseOptions {
-    name?: string;
-    when?: Predicate;
-    until?: Predicate;
-    onFail?: OnFail;
-    maxFails?: number;
-}
+/** A phase's optional fields, as `phase()` takes them. */
+export type PhaseOptions = Partial<Pick<Phase, 'name' | 'when' | 'until' | 'onFail' | 'maxFails'>>;
 
 export const DEFAULT_MAX_FAILS = 3;
 export const DEFAULT_MAX_IDLE_PHASES = 3;
@@ -92,6 +87,32 @@ export interface PlanDef {
     phases: Phase[];
     /** Ends the whole plan `done`. Without it a plan runs until a stop or a failure. */
     until?: Predicate;
+    /**
+     * What the plan needs throughout, each keyed by what it needs (`'combat level 5+'`): checked
+     * before every phase choice, and one that does not hold ends the plan `failed` with
+     * `plan requires <key>`. A `when` on every phase would refuse the same, but as `no phase applies`.
+     */
+    requires?: Record<string, Predicate>;
+}
+
+/** A plan result's `params`: each phase's task and params. */
+export interface PlanParams {
+    plan: string;
+    phases: { phase: string; task: string; params: unknown }[];
+}
+
+/**
+ * The params a plan result carries, parsed against each task's schema (raw where they don't parse),
+ * so the plan keys one stats variant whether it ran, failed its params check or was never run.
+ */
+export function planParams(def: PlanDef): PlanParams {
+    return {
+        plan: def.name,
+        phases: def.phases.map(p => {
+            const r = p.task.params.safeParse(p.params ?? {});
+            return { phase: p.name, task: p.task.name, params: r.success ? r.data : p.params };
+        }),
+    };
 }
 
 /** Checks the plan's shape and brands it, so the CLI can tell a plan module's default export. */
@@ -139,6 +160,12 @@ export interface RunPlanOptions {
     newPhaseRun(phase: Phase, index: number): PhaseRun;
     /** Phases in a row that change nothing before the plan fails. Default DEFAULT_MAX_IDLE_PHASES. */
     maxIdlePhases?: number;
+    /**
+     * Called once, before the plan acts, with a function that adds up the plan so far as a result
+     * ending `error` with `reason`, the phase run in progress counted as one that ended so: for a
+     * plan killed from outside, which never returns its own. The function emits nothing.
+     */
+    onKillable?(killed: (reason: string) => PlanResult): void;
 }
 
 /** One phase's runs in a plan, added up. */
@@ -174,6 +201,23 @@ export interface PlanResult extends TaskResult {
 }
 
 type End = { status: TaskStatus; reason: string };
+
+/** Adds one phase run, ended as `ref` says, to its phase's summary and to `recent`. */
+function tally(
+    summary: PhaseSummary,
+    recent: PhaseRunRef[],
+    ref: PhaseRunRef,
+    durationMs: number,
+    xpGained: Record<string, number>,
+): void {
+    summary.runs++;
+    summary.statuses[ref.status] = (summary.statuses[ref.status] ?? 0) + 1;
+    summary.durationMs += durationMs;
+    for (const [skill, xp] of Object.entries(xpGained)) summary.xpGained[skill] = (summary.xpGained[skill] ?? 0) + xp;
+    summary.lastReason = ref.reason;
+    recent.push(ref);
+    if (recent.length > RECENT_RUNS) recent.shift();
+}
 
 /** A plan predicate threw: the plan ends `error` with this message. */
 class PredicateError extends Error {
@@ -248,15 +292,18 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const screenshots: string[] = [];
     let loops = 0;
     let last: PlanView['last'] = null;
-    const parsed = new Map<Phase, unknown>();
-    const planParams = () => ({
-        plan: def.name,
-        phases: def.phases.map(p => ({
-            phase: p.name,
-            task: p.task.name,
-            params: parsed.has(p) ? parsed.get(p) : p.params,
-        })),
-    });
+    const params = planParams(def);
+    /**
+     * The phase run in progress, from its start until it is added to its summary: the one a kill
+     * cuts short. `result` is its own, once it has one (a kill can come while it is closing).
+     */
+    let inFlight: {
+        phase: string;
+        run: PhaseRun;
+        startedAt: number;
+        xpAtStart: Record<string, number>;
+        result: TaskResult | null;
+    } | null = null;
 
     const view = (s: BotWorldState): PlanView => {
         const known = bankCounts;
@@ -304,7 +351,16 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         }
     };
 
-    const finish = (status: TaskStatus, reason: string): PlanResult => {
+    /** The plan's result from its runs so far (by default the ones added up) and the world now. */
+    const build = (
+        status: TaskStatus,
+        reason: string,
+        runs: { phases: PhaseSummary[]; recent: PhaseRunRef[]; lastStep: string | null } = {
+            phases: [...summaries.values()],
+            recent,
+            lastStep: last?.phase ?? null,
+        },
+    ): PlanResult => {
         const s = stateOrNull() ?? seen ?? first;
         const levelsGained: Record<string, { from: number; to: number }> = {};
         for (const k of s.skills) {
@@ -319,18 +375,18 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         }
         const p = s.player;
         const stepRuns: Record<string, number> = {};
-        for (const sum of summaries.values()) if (sum.runs) stepRuns[sum.phase] = sum.runs;
-        const result: PlanResult = {
+        for (const sum of runs.phases) if (sum.runs) stepRuns[sum.phase] = sum.runs;
+        return {
             task: `plan:${def.name}`,
             bot: botName,
             runId,
             status,
             reason,
-            params: planParams(),
+            params,
             durationMs: now() - startedAt,
             loops,
             stepRuns,
-            lastStep: last?.phase ?? null,
+            lastStep: runs.lastStep,
             xpGained: xpGainedSince(s, xpBefore),
             levelsGained,
             inventoryDelta,
@@ -339,15 +395,55 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             inCombat: p ? p.combat.inCombat : null,
             screenshots,
             logFile,
-            phases: [...summaries.values()],
-            recent,
+            phases: runs.phases,
+            recent: runs.recent,
         };
+    };
+
+    const finish = (status: TaskStatus, reason: string): PlanResult => {
+        const result = build(status, reason);
         emit({ type: 'result', ...result });
         say(`${status}: ${reason}`);
         return result;
     };
 
-    emit({ type: 'start', plan: def.name, bot: botName, phases: planParams().phases, stops });
+    // Copies, so a kill's result leaves the plan's own totals as they were.
+    opts.onKillable?.(reason => {
+        const phases = entries.map(({ summary }) => ({
+            ...summary,
+            statuses: { ...summary.statuses },
+            xpGained: { ...summary.xpGained },
+        }));
+        const runs = [...recent];
+        const f = inFlight;
+        if (!f) return build('error', reason, { phases, recent: runs, lastStep: last?.phase ?? null });
+        const own = f.result;
+        const summary = phases.find(p => p.phase === f.phase);
+        if (summary)
+            tally(
+                summary,
+                runs,
+                {
+                    phase: f.phase,
+                    runId: f.run.runId,
+                    logFile: f.run.logFile,
+                    status: own?.status ?? 'error',
+                    reason: own?.reason ?? reason,
+                },
+                own?.durationMs ?? now() - f.startedAt,
+                own?.xpGained ?? xpGainedSince(stateOrNull() ?? seen ?? first, f.xpAtStart),
+            );
+        return build('error', reason, { phases, recent: runs, lastStep: f.phase });
+    });
+
+    emit({
+        type: 'start',
+        plan: def.name,
+        bot: botName,
+        phases: params.phases,
+        requires: Object.keys(def.requires ?? {}),
+        stops,
+    });
     say(
         `start: ${def.phases.map(p => p.name).join(', ')}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`,
     );
@@ -360,7 +456,6 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 'error',
                 `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
             );
-        parsed.set(p, r.data);
     }
     try {
         validateStops(stops, first);
@@ -388,26 +483,40 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     try {
         for (;;) {
             const s = observe(opts.state());
-            const stop = checkStops(stops, s, xpBefore, now() - startedAt);
+            const selectedAt = now();
+            const stop = checkStops(stops, s, xpBefore, selectedAt - startedAt);
             if (stop) return finish('done', stop);
             const v = view(s);
             // No fight to wait out here: no phase is running, and none is started.
             if (planUntil && ask(null, 'until', () => planUntil(v))) return finish('done', PLAN_UNTIL);
+            for (const [need, holds] of Object.entries(def.requires ?? {}))
+                if (!ask(null, `requires "${need}"`, () => holds(v))) return finish('failed', `plan requires ${need}`);
 
-            const entry = entries.find(({ phase: p }) => {
+            /** What each phase's predicates answered, in plan order up to the one chosen. */
+            const checks: Record<string, string> = {};
+            const answer = (p: Phase): string => {
                 const { when, until } = p;
-                if (p.name === skip) return false;
-                return (!when || ask(p, 'when', () => when(v))) && !(until && ask(p, 'until', () => until(v)));
-            });
+                if (p.name === skip) return 'skipped: failed last';
+                if (when && !ask(p, 'when', () => when(v))) return 'when false';
+                if (until && ask(p, 'until', () => until(v))) return 'until holds';
+                return 'chosen';
+            };
+            const entry = entries.find(({ phase: p }) => (checks[p.name] = answer(p)) === 'chosen');
             skip = null;
             emit({
                 type: 'select',
                 phase: entry?.phase.name ?? null,
+                checks,
+                last,
                 inventory: inventoryCounts(s),
                 free: v.free,
                 bank: bankCounts ? Object.fromEntries(bankCounts) : null,
             });
-            if (!entry) return finish('failed', 'no phase applies');
+            if (!entry)
+                return finish(
+                    'failed',
+                    `no phase applies${last ? ` (last: ${last.phase} ${last.status}: ${last.reason})` : ''}`,
+                );
             const { phase: chosen, summary } = entry;
             const signature = idleSignature(s);
 
@@ -449,6 +558,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             say(`phase ${index + 1}: ${chosen.name}`);
             running = chosen;
             const run = opts.newPhaseRun(chosen, index);
+            const flight = {
+                phase: chosen.name,
+                run,
+                startedAt: selectedAt,
+                xpAtStart: Object.fromEntries(s.skills.map(k => [k.name, k.experience])),
+                result: null as TaskResult | null,
+            };
+            inFlight = flight;
             /** Never throws: a failed close is logged, so it can't replace the run's outcome or its error. */
             const close = async () => {
                 try {
@@ -474,25 +591,26 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     now: phaseNow,
                     ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
                 });
+                flight.result = result;
             } finally {
                 await close();
             }
             running = null;
 
-            summary.runs++;
-            summary.statuses[result.status] = (summary.statuses[result.status] ?? 0) + 1;
-            summary.durationMs += result.durationMs;
-            for (const [skill, xp] of Object.entries(result.xpGained))
-                summary.xpGained[skill] = (summary.xpGained[skill] ?? 0) + xp;
-            summary.lastReason = result.reason;
-            recent.push({
-                phase: chosen.name,
-                runId: run.runId,
-                logFile: run.logFile,
-                status: result.status,
-                reason: result.reason,
-            });
-            if (recent.length > RECENT_RUNS) recent.shift();
+            tally(
+                summary,
+                recent,
+                {
+                    phase: chosen.name,
+                    runId: run.runId,
+                    logFile: run.logFile,
+                    status: result.status,
+                    reason: result.reason,
+                },
+                result.durationMs,
+                result.xpGained,
+            );
+            inFlight = null;
             screenshots.push(...result.screenshots);
             last = { phase: chosen.name, status: result.status, reason: result.reason };
             emit({

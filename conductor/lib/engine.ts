@@ -449,7 +449,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         if (stop) return { status: 'done', reason: stop };
         if (opts.externalStop) {
             const check = ++externalChecks;
-            const external = opts.externalStop(s) ?? null;
+            const external = opts.externalStop(s);
             if (external !== null) {
                 // The recorder writes this as the record a replay stops at (core/drivers/recording.ts).
                 emit({ type: 'external-stop', reason: external, tick: s.tick, check });

@@ -9,8 +9,9 @@
 //
 // The last stdout line is always `RESULT <json>` (a TaskResult; a PlanResult for a plan). Exit 0 for
 // status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first).
-// Refuses to start when another controller already drives the bot, unless --takeover. A game client must already be attached
-// (conductor/tools/client.ts or the lite runner).
+//
+// Refuses to start when another controller already drives the bot, unless --takeover. A game
+// client must already be attached (conductor/tools/client.ts or the lite runner).
 //
 // Every run is recorded next to its log, as <runId>.ticks.ndjson.gz, for conductor/tools/replay.ts:
 // about 47 KiB a minute of play, 2.8 MB an hour, so always on (sizes in conductor/docs/interruptible-tasks.md).
@@ -24,7 +25,7 @@ import { runScript } from '../sdk/runner';
 import { loadTask, taskNames } from './lib/catalog';
 import { executeTask } from './lib/engine';
 import { controllerCount, loadBotEnv, type BotEnv } from './lib/env';
-import { type PhaseRunRef, type PlanDef, type PlanResult, runPlan } from './lib/plan';
+import { type PlanDef, planParams, type PlanResult, runPlan } from './lib/plan';
 import {
     errorResult,
     type LiveRun,
@@ -71,32 +72,23 @@ let plan: LoadedPlan | null = null;
 
 /** Who the result of a run that never produced one is for. */
 function resultBase(): ResultBase {
-    if (plan)
-        return {
-            task: `plan:${plan.def.name}`,
-            bot: botName,
-            params: {
-                plan: plan.def.name,
-                phases: plan.def.phases.map(p => ({ phase: p.name, task: p.task.name, params: p.params })),
-            },
-        };
+    if (plan) return { task: `plan:${plan.def.name}`, bot: botName, params: planParams(plan.def) };
     // A plan that never loaded is named by the file asked for.
     if (args.plan !== null) return { task: `plan:${args.plan}`, bot: botName, params: {} };
     return { task: taskName, bot: botName, params: rawParams };
 }
 
 /**
- * The result of a run that never produced one. A plan's has no phase totals (it never ran, or was
- * killed before it could add them up); `recent` names the phase run that was killed, if any.
+ * The result of a run that never produced one. A plan's has no phase totals: it never got as far as
+ * running one (a killed plan that did adds up its own, through `killPlan`).
  */
 function failure(
     reason: string,
     durationMs = Date.now() - startedAt,
     log: { runId: string; logFile: string } | null = null,
-    recent: PhaseRunRef[] = [],
 ): TaskResult | PlanResult {
     const result = errorResult(resultBase(), reason, durationMs, log);
-    return args.plan !== null ? { ...result, phases: [], recent } : result;
+    return args.plan !== null ? { ...result, phases: [], recent: [] } : result;
 }
 
 /** Print the RESULT line for a run that never produced one, and exit. */
@@ -135,27 +127,24 @@ const job = await loadJob();
 
 /** The task run, or the plan's running phase, until it is closed. */
 let current: LiveRun | null = null;
-/** The running phase's name. */
-let currentPhase = '';
 /** The plan's log, once open. */
 let planLog: RunLog | null = null;
+/** The running plan's totals so far as a killed result (RunPlanOptions.onKillable), once it has started. */
+let killPlan: ((reason: string) => PlanResult) | null = null;
 /** What the run produced, once it has. */
 let ranResult: TaskResult | undefined;
 
 /**
  * A killed run's result, written to the logs of the run (or the plan and its running phase) unless
- * they hold their own; a log takes one result, so the run's own, coming later, is dropped.
+ * they hold their own; a log takes one result, so the run's own, coming later, is dropped. A plan's
+ * carries its totals so far, the cut phase run counted as `error`, so stats keeps its XP and runs.
  */
 function killedResult(reason: string): TaskResult | PlanResult {
     const run = current;
     if (args.plan === null) return run?.kill(reason, Date.now() - startedAt) ?? failure(reason);
-    const cut = run !== null && !run.ended;
     run?.kill(reason);
-    const recent: PhaseRunRef[] = cut
-        ? [{ phase: currentPhase, runId: run.runId, logFile: run.logFile, status: 'error', reason }]
-        : [];
     const log = planLog;
-    const killed = failure(reason, undefined, log && !log.ended ? log : null, recent);
+    const killed = killPlan?.(reason) ?? failure(reason, undefined, log && !log.ended ? log : null);
     log?.append({ type: 'result', ...killed });
     return killed;
 }
@@ -263,6 +252,9 @@ const run = await runScript(
                 screenshot: label => captureScreenshot(sdk, botName, undefined, label),
             },
             stops,
+            onKillable: killed => {
+                killPlan = killed;
+            },
             // Through the running phase's driver, so each phase's recording holds every clock read its
             // run made and replays them; the wall clock directly between phases.
             now: () => current?.driver.now() ?? Date.now(),
@@ -285,7 +277,6 @@ const run = await runScript(
                     warn,
                 });
                 current = phase;
-                currentPhase = p.name;
                 return {
                     driver: phase.driver,
                     sinks: phase.sinks,

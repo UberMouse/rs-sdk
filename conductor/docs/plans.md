@@ -52,7 +52,9 @@ A plan is an ordered list of **phases**. A phase is one catalog task with params
 The runner does what the engine does with steps, one level up:
 
 1. Check each phase's `when` in order; the first that holds runs. None holds: the plan ends
-   `failed` (`no phase applies`), and its log shows the `v` values every `when` read.
+   `failed` (`no phase applies (last: <phase> <status>: <reason>)`, the last part once a phase has
+   run), and the plan log's `select` event shows what each phase's `when` and `until` answered,
+   the last phase run, and the inventory, free slots and known bank counts.
 2. Run it as a normal `executeTask`: its own preflight, memory, guards, watchdog, step budget and
    leftover-modal close.
 3. It ends `done` (by itself or by its `until`): back to 1. It ends `failed` or `stuck`: apply its
@@ -73,6 +75,7 @@ import woodcutting from '@conductor/tasks/woodcutting';
 
 export default definePlan({
     name: 'chop-burn',
+    requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
         phase(firemaking, { logs: 'Logs', area: { x: 3230, z: 3240, radius: 6 } }, {
             when: v => v.full && v.inv('Logs') > 0,
@@ -83,9 +86,15 @@ export default definePlan({
 ```
 
 - `phase(task, params, opts?)` takes the task's default export, so `params` is type-checked against
-  `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail? }`; `name` defaults to the
-  task's name and must be unique in the plan when a task appears twice (two bank phases).
-- `definePlan({ name, phases, until? })`. The plan's own `until(v)` ends the whole plan `done`.
+  `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails? }`; `name`
+  defaults to the task's name and must be unique in the plan when a task appears twice (two bank
+  phases).
+- `definePlan({ name, description?, phases, until?, requires? })`. The plan's own `until(v)` ends
+  the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
+  (`'combat level 5+'` above: the walk between the spots passes Giant spiders that attack lower
+  levels): each is checked before every phase choice, and one that does not hold ends the plan
+  `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
+  `no phase applies`.
 
 ### The view (`v`)
 
@@ -122,10 +131,13 @@ forever.
 
 ## The runner's safety rails
 
-- **No progress.** A phase that ends with XP, inventory and position all unchanged counts as idle; 3
-  idle phases in a row fail the plan (`phases make no progress: <names>`). It catches two phases
-  handing the turn back and forth (woodcutting `onFull: 'stop'` on an inventory full of something
-  else ends at once; so does a consumer with nothing to consume).
+- **No progress.** A phase run is idle when it ends with total XP, inventory and position as they
+  were when it started, or in an end state another phase run already reached since XP last rose; 3
+  idle phases in a row fail the plan (`phases make no progress (...): <names>`). It catches two
+  phases handing the turn back and forth (woodcutting `onFull: 'stop'` on an inventory full of
+  something else ends at once; so does a consumer with nothing to consume), and two that undo each
+  other (deposit then withdraw, walk there then back), each changing the state but the plan going
+  nowhere.
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
 - **Predicate errors.** A `when` or `until` that throws ends the plan `error`, naming the phase.
@@ -143,21 +155,31 @@ forever.
   `checkRun` beside the task's stops. The runner passes one closure that checks the plan stops and
   the phase's `until` and remembers which fired, so the engine needs no new result field to say why
   a phase stopped.
-- Recording: when an external stop fires, the recording gets a `{ k: 'stop', reason }` record at
-  that tick and `ReplayDriver` applies it there, so a phase cut short by `until` still replays
-  without running past its recording.
+- Recording: when an external stop fires, the recording gets a `{ k: 'stop', tick, check, reason }`
+  record: the stop fired on the `check`th externalStop call, on the state of `tick`. The replay
+  gives the engine an externalStop that returns the recorded reason on that same call, so a phase
+  cut short by `until` still replays to the same end without running past its recording.
 
 ## Results, logs and stats
 
 - Each phase writes its own NDJSON log and `.ticks.ndjson.gz` recording as a task run does today,
   so `replay.ts` works per phase unchanged.
-- The plan writes `conductor/runs/<bot>/<runId>-plan-<name>.ndjson`: the plan source path, each
-  phase start with the `v` values its `when` read, each phase result.
+- The plan writes `conductor/runs/<bot>/<runId>-plan-<name>.ndjson`: the plan source path, a
+  `select` event per phase choice (the phase chosen, what each phase's `when` and `until` answered,
+  the last phase run, inventory, free slots and known bank counts), each phase run's end
+  (`phase-end`), and the plan's result.
 - The last stdout line stays `RESULT <json>`: a `TaskResult` with `task: "plan:<name>"`, the plan's
-  totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and one extra
-  field `phases: [{ phase, runId, status, reason, durationMs, xpGained }]`. The task-runner, the
-  journal and `stats.ts` read it as they read any task's result; `params` holds each phase's task and
-  params, so `stats.ts` keys a plan as one method and its XP/hour compares with single tasks.
+  totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and two
+  extra fields: `phases`, one entry per phase `{ phase, task, runs, statuses, durationMs, xpGained,
+  lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`.
+  The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
+  holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
+  keys a plan as one method and its XP/hour compares with single tasks.
+- A plan killed by a signal (SIGINT, SIGTERM, SIGHUP) ends `error`, `killed by <signal>`, with its
+  totals so far in the RESULT and the plan log, the cut phase run counted as `error`; so stats keeps
+  its XP and runs although its phase runs (`partOf`) count only with `--phases`. A hard kill
+  (SIGKILL, a crash) leaves the plan log without a result: stats then counts none of the plan, and
+  its finished phase runs only with `--phases`.
 
 ## Where plans live
 

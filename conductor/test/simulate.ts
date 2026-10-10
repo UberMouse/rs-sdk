@@ -4,7 +4,7 @@ import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
 import { executeTask, type ExecuteOptions } from '../lib/engine';
-import { type PhaseRun, type PlanDef, type PlanResult, runPlan } from '../lib/plan';
+import { type PhaseRun, type PlanDef, type PlanResult, runPlan, type RunPlanOptions } from '../lib/plan';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 import { straightPaths } from './paths';
@@ -96,6 +96,8 @@ export interface SimulatePlanOptions {
     now?: () => number;
     /** Changes each phase run before the runner gets it (a close of its own, sinks that fail). */
     phaseRun?: (run: PhaseRun) => PhaseRun;
+    /** RunPlanOptions.onKillable. */
+    onKillable?: RunPlanOptions['onKillable'];
 }
 
 /** One phase run of a simulated plan: its own log, and the result it ended with. */
@@ -146,6 +148,7 @@ export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Pr
         },
         ...(opts.maxIdlePhases !== undefined && { maxIdlePhases: opts.maxIdlePhases }),
         ...(opts.now && { now: opts.now }),
+        ...(opts.onKillable && { onKillable: opts.onKillable }),
     });
     const runs = logs.map(r => ({
         ...r,
