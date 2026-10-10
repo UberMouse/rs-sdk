@@ -8,20 +8,20 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-09T08:41Z (run 1 paused): total level 310 (WC 70, FM 54, Mining 46, Fletching 35,
-HP 22, Def 21, Str 19, Att 17, Prayer 16, rest 1). conductor1 logged out at the SE Varrock mine
-(snapshot `pause-1`); bank at Varrock West holds 16 longbows, 2 knives, an uncut ruby, 309 shafts.
-Catalog: `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
-`smithing`. All nine were ported to generator steps (`conductor/docs/interruptible-tasks.md`) and
-reviewed with `task-review` on 2026-10-10, each with unit tests and an integration smoke test;
-that supersedes run 1's unfinished reviews of `bank`, `smithing` and `mining`. No conductor run
-has used them since the port: watch the first runs of each.
+State at 2026-10-10T01:33Z (conductor run 2, fresh account `conductor2`, rev 289 server): total level
+174 (Mining 51, WC 30, HP 19, Att 16, Str 16, Prayer 15, Def 15, rest 1). Armed (bronze sword,
+wooden shield). Bank at Varrock West holds the junk deposited at 01:32; inventory keeps axe,
+pickaxe, tinderbox, net, shrimps, bread. Catalog: the nine run-1 tasks plus `cooking` (committed);
+`fishing` and `thieving` are in review, the `bank` no-area fix (new `lib/banks.ts`) is in flight.
+Level table is the engine's /10 curve, not the standard one (`lib/xp.ts` fixed).
 
-- Loop woodcutting (~300k XP/hr) -> firemaking (~810k XP/hr) for logs/XP; both are the fastest
-  methods the account has. Combat is the slowest (Attack 41k/hr, Strength 45k/hr, HP 13k/hr).
-- Next unlocks of total level are the 13 skills still at 1: each costs one small task and gives
-  ~30-50 levels in minutes at 25x. Author in the order of the Backlog below.
-- Settle combat gear (Defence 4, no armour, no food) before any area above chickens.
+- Measured on 289: WC 332k/h (trees), Mining iron 541k/h (copper/tin 159k/h), combat on chickens
+  Att 55k/h, Str 83k/h, Def 108k/h. Iron at SE Varrock is the best XP the account has.
+- Pending, decided elsewhere: the axe/pickaxe tier-upgrade plan (research agent running, accounting
+  for 25x XP and cost/time per tier). Do not start tier purchases from here.
+- Next: finish review of `fishing`/`thieving`, then run them (thieving gives money + level cheaply),
+  `cooking` on the fishing catch, then the unauthored level-1 skills (Backlog order).
+- Mining past ~60 needs a better rock than iron: see Backlog (coal/mithril need smithing context).
 
 ## Unlocks
 
@@ -39,10 +39,19 @@ Tasks the catalog needs, roughly in the order the account needs them. Each line:
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
 - `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
-  `smithing` — in catalog.
-- `fishing` (shrimps/sardines, Lumbridge/Draynor; needs a net, 1 shop call) then `cooking` on a
-  range (consumes the catch, gives food for `combat`'s `food` param) — idea
-- `crafting` (leather/needle, cheap) and `thieving` (men/farmers; HP 17 now survives stuns) — idea
+  `smithing`, `cooking` — in catalog (bank no-area fix in flight).
+- `fishing` (small net at Draynor (3087,3229) works) and `thieving` (men, Lumbridge) — in review.
+- **Attack-in-transit hazard (blocks fishing/mining runs)**: `underAttackGuard` aborts after
+  COMBAT_TICK_LIMIT=40 ticks, which fails any walk/skilling run where a weak monster (lvl-2 goblin
+  near the Lumbridge general store, dark wizards at Draynor) keeps hitting a low-level bot. Two
+  runs failed this way (journal 01:18 mining, 01:32 fishing smoke). Fix options for task-author:
+  (a) guard fights back when HP is healthy and the attacker is low level, instead of aborting;
+  (b) walk routes avoid the known hazard tiles (`learnings/hazards.md`); (c) raise the limit while
+  the bot is walking, since walking out of range ends the fight. Needs a decision before more
+  skilling runs near Draynor. — idea
+- `crafting` (leather/needle, cheap) — idea
+- Tier-1 skills still at 1 (Ranged, Magic, Herblore*, Agility, Runecraft*, Crafting): one small task
+  each (* gated, see Unlocks). Magic/Ranged can piggyback on `combat` with a `skill` param — idea
 - `agility` course (Draynor rooftop, Gnome course) — idea, check Unlocks/wiki first
 - `woodcutting` bank mode (keep logs for Firemaking/Fletching and money) — idea
 - `combat` upgrades: eat real food, rotate styles, a better target than chickens (see Experiments) — idea
@@ -101,6 +110,10 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
   99 would be ~100x slower than gathering. Hypothesis: a higher-HP, higher-XP target (cows,
   Lumbridge goblins, Al Kharid warriors) and a better weapon give 3-5x. Variants: chicken vs cow
   vs goblin, bronze vs iron sword. Also compare XP per style (Controlled spreads XP). Status: untested.
+- Mining rock: measured copper/tin 159k/h vs iron 541k/h at SE Varrock (3.4x). Next: coal/other
+  rocks at Mining 50+; compare once the pickaxe-tier plan lands. Status: iron done, rest untested.
+- Combat target: chickens Def 108k/h, Str 83k/h, Att 55k/h (rev 289, level 15 bot). Still untested
+  vs cows/goblins (see above); try now that the bot is armed.
 - Firemaking spot/log type: 812k/h measured with normal logs at (3230,3240); compare oak logs
   (higher XP per log) once WC can supply them. Status: untested.
 - Woodcutting: normal trees 304k/h at Lumbridge vs willows/oaks (higher XP per log, safe spot
@@ -127,3 +140,5 @@ Review findings `task-review` deferred because their fix needs work outside the 
   private `levelForXp`; have it use `xpForLevel`/`levelForXp` from `lib/xp.ts` (scaling tenths)
   and drop the copy, which also gives the `lib/xp` exports a caller outside their test
   (code-quality Q3).
+- Lib: thieving copies combat's `foodInInventory`/`wantsToEat` (`tasks/combat.ts`); move both to
+  a shared `lib/food.ts` taking `{ food, eatBelow }` and have both tasks import it (contract T5).
