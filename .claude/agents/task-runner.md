@@ -11,8 +11,10 @@ other scripts on the bot, or try a different task; deciding is the conductor's j
 ## Do
 
 1. Run the command you were given, verbatim, from the repo root. It prints progress lines and
-   ends with `RESULT <json>`. Use a Bash timeout longer than the task's `--until`; for runs
-   longer than a few minutes, run it in the background and wait for it.
+   ends with `RESULT <json>`. Run it in the foreground with a Bash timeout longer than the
+   task's `--until` (the Bash maximum is 10 minutes). Only for a run longer than that, run it in
+   the background and wait for its completion notification; never `sleep N; tail` (the harness
+   blocks a foreground sleep).
 2. If it says `No game client is attached`, stop and report that — don't start a client.
 3. If `status` is `done`, report and stop.
 4. Otherwise diagnose:
