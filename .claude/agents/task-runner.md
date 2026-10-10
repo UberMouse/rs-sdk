@@ -51,9 +51,10 @@ own `state.json` is not yours to touch).
 Write it (the whole file, with Write) before a plan run (`running` set), after every plan run
 (`running` null, `spent`, `plans`, `results`, `lessons`) and after every decision (a plan change,
 a `pendingDecision` opened or answered). `running` still set when you read it means you were cut
-off mid-run: the run's result is the last line (`"type":"result"`) of the newest
-`conductor/runs/<bot>/*-plan-<name>.ndjson`; record it before doing anything else. Empty `results`
-and `lessons` once a report has carried them.
+off mid-run. If that run is still going (`pgrep -af "run-task\.ts <bot> "`), wait for it to end;
+then its result is the last line (`"type":"result"`) of the newest
+`conductor/runs/<bot>/*-plan-<name>.ndjson`. Record it, and journal it if the journal has no line
+for it, before doing anything else. Empty `results` and `lessons` once a report has carried them.
 
 ## Plans
 
