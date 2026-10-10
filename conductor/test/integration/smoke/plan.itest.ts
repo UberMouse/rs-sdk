@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { Items } from '../../../../sdk/test/utils/save-generator';
 import { REPO_ROOT } from '../../../lib/env';
+import { INVENTORY_SLOTS } from '../../../lib/util';
 import { itestTimeout, runPlan, withFixtureBot } from '../harness';
 
 // The promoted chop-burn plan, ended by its own `until` after the second firemaking phase.
@@ -11,7 +12,13 @@ const PLAN = 'conductor/test/fixtures/plans/chop-burn-twice.ts';
 const TREES = { x: 3195, z: 3220 };
 /** Free slots, so each chop -> burn cycle is this many logs. */
 const FREE = 3;
-const FILLER = 28 - 2 - FREE;
+/** Unrelated items beside the axe and the tinderbox. */
+const FILLER = INVENTORY_SLOTS - 2 - FREE;
+/**
+ * Combat ~12: the Giant spiders on the walk between the two spots attack a combat-3 bot, which can fail
+ * a woodcutting phase and with it the plan, and leave one above combat 4 alone (learnings/hazards.md).
+ */
+const COMBAT = { Attack: 10, Strength: 10, Defence: 10, Hitpoints: 12 };
 /** A backstop: two cycles take well under this, and the plan's `until` ends the run first. */
 const MINUTES = 5;
 
@@ -27,7 +34,7 @@ test(
         await withFixtureBot(
             {
                 position: TREES,
-                skills: { Woodcutting: 1, Firemaking: 1 },
+                skills: { Woodcutting: 1, Firemaking: 1, ...COMBAT },
                 inventory: [
                     { id: Items.BRONZE_AXE, count: 1 },
                     { id: Items.TINDERBOX, count: 1 },
