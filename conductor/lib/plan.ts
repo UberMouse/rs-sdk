@@ -10,7 +10,7 @@ import type { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
-import { executeTask, inventoryCounts } from './engine';
+import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { checkStops, describeStop, type StopCondition, validateStops } from './stop';
 import type { Sinks, TaskDef, TaskResult, TaskStatus } from './task';
 import { countItems, errMessage, exactName, findSkill, INVENTORY_SLOTS, TICK_MS, xpGainedSince } from './util';
@@ -27,6 +27,7 @@ export interface PlanView {
     bank(item: string | RegExp): number | undefined;
     /** Base level; throws on an unknown skill. */
     level(skill: string): number;
+    /** Hit points; `{ current: 0, max: 0 }` in a state with no player (the client is not in game). */
     hp: { current: number; max: number };
     /** Finished runs of that phase in this plan; throws on a name the plan has no phase for. */
     runs(phase: string): number;
@@ -53,7 +54,7 @@ export interface Phase {
     until?: Predicate;
     /** What a `failed` or `stuck` run means for the plan; default 'fail'. */
     onFail?: OnFail;
-    /** Consecutive failures of this phase tolerated under 'continue'; one more fails the plan. Default 3. */
+    /** Consecutive failures of this phase that fail the plan even under 'continue'. Default DEFAULT_MAX_FAILS. */
     maxFails?: number;
 }
 
@@ -82,7 +83,7 @@ export function phase<S extends z.ZodType, M extends object>(
     params: z.input<S>,
     opts: PhaseOptions = {},
 ): Phase {
-    return { ...opts, name: opts.name ?? task.name, task, params, maxFails: opts.maxFails ?? DEFAULT_MAX_FAILS };
+    return { ...opts, name: opts.name ?? task.name, task, params };
 }
 
 export interface PlanDef {
@@ -181,13 +182,12 @@ class PredicateError extends Error {
 
 const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
 
-/** What the idle rail compares: total XP, inventory and position. */
-function progressSignature(s: BotWorldState): string {
-    const xp = s.skills.reduce((n, k) => n + k.experience, 0);
-    const p = s.player;
-    const inv = s.inventory.map(i => `${i.id}x${i.count}`).join(',');
-    return `${xp}|${p?.worldX},${p?.worldZ},${p?.level}|${inv}`;
-}
+/**
+ * What the idle rail compares: total XP, inventory and position. Not HP: a phase that only waited
+ * while HP regenerated (or only lost some) has made no progress.
+ */
+const idleSignature = (s: BotWorldState) => progressSignature(s, { hp: false });
+const totalXp = (s: BotWorldState) => s.skills.reduce((n, k) => n + k.experience, 0);
 
 export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanResult> {
     const { botName, runId, logFile, sinks, stops } = opts;
@@ -230,12 +230,20 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     }
     const invBefore = inventoryCounts(first);
 
-    const summaries = new Map<string, PhaseSummary>(
-        def.phases.map(p => [
-            p.name,
-            { phase: p.name, task: p.task.name, runs: 0, statuses: {}, durationMs: 0, xpGained: {}, lastReason: null },
-        ]),
-    );
+    /** Each phase with its running summary, in plan order. */
+    const entries = def.phases.map(p => ({
+        phase: p,
+        summary: {
+            phase: p.name,
+            task: p.task.name,
+            runs: 0,
+            statuses: {},
+            durationMs: 0,
+            xpGained: {},
+            lastReason: null,
+        } as PhaseSummary,
+    }));
+    const summaries = new Map(entries.map(e => [e.phase.name, e.summary]));
     const recent: PhaseRunRef[] = [];
     const screenshots: string[] = [];
     let loops = 0;
@@ -366,6 +374,16 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     let skip: string | null = null;
     /** The phases of the current run of idle phases, in order. */
     let idle: string[] = [];
+    /**
+     * End states (idleSignature) of the phase runs since XP last rose. A run that ends in one of them,
+     * or where it started, is idle: that catches phases that undo each other (deposit then withdraw,
+     * walk there then back), each changing the state but the plan going nowhere.
+     */
+    const endsSinceXp = new Set<string>();
+    let xpMark = totalXp(first);
+    /** The phase whose run is in progress, named when the run throws. */
+    let running: Phase | null = null;
+    const planUntil = def.until;
 
     try {
         for (;;) {
@@ -374,24 +392,24 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             if (stop) return finish('done', stop);
             const v = view(s);
             // No fight to wait out here: no phase is running, and none is started.
-            if (def.until && ask(null, 'until', () => def.until!(v))) return finish('done', PLAN_UNTIL);
+            if (planUntil && ask(null, 'until', () => planUntil(v))) return finish('done', PLAN_UNTIL);
 
-            const chosen = def.phases.find(
-                p =>
-                    p.name !== skip &&
-                    (!p.when || ask(p, 'when', () => p.when!(v))) &&
-                    !(p.until && ask(p, 'until', () => p.until!(v))),
-            );
+            const entry = entries.find(({ phase: p }) => {
+                const { when, until } = p;
+                if (p.name === skip) return false;
+                return (!when || ask(p, 'when', () => when(v))) && !(until && ask(p, 'until', () => until(v)));
+            });
             skip = null;
             emit({
                 type: 'select',
-                phase: chosen?.name ?? null,
+                phase: entry?.phase.name ?? null,
                 inventory: inventoryCounts(s),
                 free: v.free,
                 bank: bankCounts ? Object.fromEntries(bankCounts) : null,
             });
-            if (!chosen) return finish('failed', 'no phase applies');
-            const signature = progressSignature(s);
+            if (!entry) return finish('failed', 'no phase applies');
+            const { phase: chosen, summary } = entry;
+            const signature = idleSignature(s);
 
             // Set by the external stop, which must not throw: a throw would end the phase as the
             // engine's generic error rather than the plan's, which names the predicate.
@@ -406,11 +424,12 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 }
                 try {
                     const pv = view(st);
-                    const planUntil = !!def.until && ask(null, 'until', () => def.until!(pv));
-                    const phaseUntil = !planUntil && !!chosen.until && ask(chosen, 'until', () => chosen.until!(pv));
+                    const phaseUntil = chosen.until;
+                    const planHolds = !!planUntil && ask(null, 'until', () => planUntil(pv));
+                    const phaseHolds = !planHolds && !!phaseUntil && ask(chosen, 'until', () => phaseUntil(pv));
                     // Cutting a fight short would leave the next phase refused in combat: wait it out.
-                    if ((!planUntil && !phaseUntil) || st.player?.combat.inCombat) return null;
-                    if (!planUntil) return PHASE_UNTIL;
+                    if ((!planHolds && !phaseHolds) || st.player?.combat.inCombat) return null;
+                    if (!planHolds) return PHASE_UNTIL;
                     ext.planEnd = { status: 'done', reason: PLAN_UNTIL };
                     return PLAN_UNTIL;
                 } catch (e) {
@@ -421,7 +440,17 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
             const index = loops++;
             say(`phase ${index + 1}: ${chosen.name}`);
+            running = chosen;
             const run = opts.newPhaseRun(chosen, index);
+            /** Never throws: a failed close is logged, so it can't replace the run's outcome or its error. */
+            const close = async () => {
+                try {
+                    await run.close?.();
+                } catch (e) {
+                    emit({ type: 'close-error', phase: chosen.name, runId: run.runId, message: errMessage(e) });
+                    say(`phase ${chosen.name}: closing run ${run.runId} threw: ${errMessage(e)}`);
+                }
+            };
             let result: TaskResult;
             try {
                 result = await executeTask(chosen.task, {
@@ -434,14 +463,15 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     stops: [],
                     partOf: runId,
                     externalStop,
-                    ...(opts.now && { now: opts.now }),
+                    // One clock for the plan's stops and the phase's watchdog and durations.
+                    now,
                     ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
                 });
             } finally {
-                await run.close?.();
+                await close();
             }
+            running = null;
 
-            const summary = summaries.get(chosen.name)!;
             summary.runs++;
             summary.statuses[result.status] = (summary.statuses[result.status] ?? 0) + 1;
             summary.durationMs += result.durationMs;
@@ -477,18 +507,30 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 const onFail = chosen.onFail ?? 'fail';
                 const decision = typeof onFail === 'function' ? ask(chosen, 'onFail', () => onFail(result)) : onFail;
                 if (decision !== 'continue') return finish(result.status, `${chosen.name}: ${result.reason}`);
-                if (n > (chosen.maxFails ?? DEFAULT_MAX_FAILS))
+                if (n >= (chosen.maxFails ?? DEFAULT_MAX_FAILS))
                     return finish('failed', `${chosen.name} failed ${n} times in a row: ${result.reason}`);
                 skip = chosen.name;
             }
 
             const after = stateOrNull();
-            idle = after && progressSignature(after) === signature ? [...idle, chosen.name] : [];
-            if (idle.length >= maxIdlePhases) return finish('failed', `phases make no progress: ${idle.join(', ')}`);
+            if (after && totalXp(after) > xpMark) {
+                xpMark = totalXp(after);
+                endsSinceXp.clear();
+            }
+            const end = after && idleSignature(after);
+            const isIdle = end !== null && (end === signature || endsSinceXp.has(end));
+            if (end !== null) endsSinceXp.add(end);
+            idle = isIdle ? [...idle, chosen.name] : [];
+            if (idle.length >= maxIdlePhases)
+                return finish(
+                    'failed',
+                    `phases make no progress (no XP, and each ended where it started or in a state seen since): ${idle.join(', ')}`,
+                );
         }
     } catch (e) {
         if (e instanceof PredicateError) return finish('error', e.message);
         emit({ type: 'exception', message: errMessage(e), stack: e instanceof Error ? e.stack : undefined });
+        if (running) return finish('error', `phase "${running.name}" threw: ${errMessage(e)}`);
         return finish('error', `plan threw: ${errMessage(e)}`);
     }
 }

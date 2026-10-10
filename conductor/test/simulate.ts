@@ -4,7 +4,7 @@ import type { Pathfinder } from '../actions/paths';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
 import { executeTask, type ExecuteOptions } from '../lib/engine';
-import { type PlanDef, type PlanResult, runPlan } from '../lib/plan';
+import { type PhaseRun, type PlanDef, type PlanResult, runPlan } from '../lib/plan';
 import type { StopCondition } from '../lib/stop';
 import type { Sinks, TaskResult } from '../lib/task';
 import { straightPaths } from './paths';
@@ -83,13 +83,19 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
 
 export interface SimulatePlanOptions {
     /** The world, one state per tick, carried on across the phase runs (see TimelineDriver). */
-    timeline: BotWorldState[];
+    timeline?: BotWorldState[];
     respond?: SimulateOptions['respond'];
     /** What a send changes in the world; default `consume`. */
     react?: TimelineOptions['react'];
+    /** A driver of your own in place of `timeline`, `respond` and `react`. */
+    driver?: TimelineDriver;
     /** The plan's `--until`. */
     stops?: StopCondition[];
     maxIdlePhases?: number;
+    /** The plan's clock (RunPlanOptions.now); default the runner's own. */
+    now?: () => number;
+    /** Changes each phase run before the runner gets it (a close of its own, sinks that fail). */
+    phaseRun?: (run: PhaseRun) => PhaseRun;
 }
 
 /** One phase run of a simulated plan: its own log, and the result it ended with. */
@@ -97,7 +103,8 @@ export interface SimulatedPhaseRun {
     phase: string;
     runId: string;
     events: Record<string, unknown>[];
-    result: TaskResult;
+    /** Throws for a run that wrote no result (it threw). */
+    readonly result: TaskResult;
 }
 
 export interface PlanSimulation {
@@ -112,7 +119,8 @@ export interface PlanSimulation {
 /** Runs `plan` on one scripted world: each phase run picks up the timeline where the last left it. */
 export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Promise<PlanSimulation> {
     const { timeline, respond, react = consume } = opts;
-    const driver = new TimelineDriver(timeline, { respond, react });
+    if (!opts.driver && !timeline?.length) throw new Error('simulatePlan needs a timeline or a driver');
+    const driver = opts.driver ?? new TimelineDriver(timeline ?? [], { respond, react });
     const events: Record<string, unknown>[] = [];
     const printed: string[] = [];
     const logs: { phase: string; runId: string; events: Record<string, unknown>[] }[] = [];
@@ -133,15 +141,20 @@ export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Pr
             const runId = `phase-${index}-${phase.name}`;
             const log: Record<string, unknown>[] = [];
             logs.push({ phase: phase.name, runId, events: log });
-            return { driver, sinks: sinksInto(log), runId, logFile: `/logs/${runId}.ndjson` };
+            const run: PhaseRun = { driver, sinks: sinksInto(log), runId, logFile: `/logs/${runId}.ndjson` };
+            return opts.phaseRun ? opts.phaseRun(run) : run;
         },
         ...(opts.maxIdlePhases !== undefined && { maxIdlePhases: opts.maxIdlePhases }),
+        ...(opts.now && { now: opts.now }),
     });
-    const runs = logs.map(r => {
-        const end = r.events.find(e => e.type === 'result');
-        if (!end) throw new Error(`phase run ${r.runId} wrote no result`);
-        const { type: _type, ...fields } = end;
-        return { ...r, result: fields as unknown as TaskResult };
-    });
+    const runs = logs.map(r => ({
+        ...r,
+        get result(): TaskResult {
+            const end = r.events.find(e => e.type === 'result');
+            if (!end) throw new Error(`phase run ${r.runId} wrote no result`);
+            const { type: _type, ...fields } = end;
+            return fields as unknown as TaskResult;
+        },
+    }));
     return { result, events, runs, printed, driver };
 }

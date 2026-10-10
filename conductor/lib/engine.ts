@@ -112,12 +112,16 @@ export function inventoryCounts(s: BotWorldState): Record<string, number> {
     return out;
 }
 
-/** What the watchdog compares: any change in XP, position, inventory counts or HP (regeneration) counts as progress. */
-function progressSignature(s: BotWorldState): string {
+/**
+ * What the watchdog compares: any change in XP, position, inventory counts or HP (regeneration) counts as
+ * progress. `hp: false` leaves HP out, for comparisons where regeneration is not progress (a plan's idle rail).
+ */
+export function progressSignature(s: BotWorldState, { hp = true }: { hp?: boolean } = {}): string {
     const xp = s.skills.reduce((n, k) => n + k.experience, 0);
     const p = s.player;
     const inv = s.inventory.map(i => `${i.id}x${i.count}`).join(',');
-    return `${xp}|${p?.worldX},${p?.worldZ},${p?.level}|${inv}|${p?.hp}`;
+    const base = `${xp}|${p?.worldX},${p?.worldZ},${p?.level}|${inv}`;
+    return hp ? `${base}|${p?.hp}` : base;
 }
 
 const posOf = (s: BotWorldState) => (s.player ? { x: s.player.worldX, z: s.player.worldZ } : null);

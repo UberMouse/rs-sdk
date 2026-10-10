@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
-import type { Effect } from '../../core/drivers/timeline';
+import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { send, wait } from '../../core/op';
 import { definePlan, isPlan, type Phase, phase, type PlanDef, type Predicate } from '../../lib/plan';
 import { defineTask, type Outcome } from '../../lib/task';
@@ -9,7 +9,7 @@ import { countItems, TICK_MS } from '../../lib/util';
 import woodcutting from '../../tasks/woodcutting';
 import { act } from '../core/fixtures';
 import { type PlanSimulation, simulatePlan, type SimulatePlanOptions } from '../simulate';
-import { world } from '../world';
+import { LUMBRIDGE, world } from '../world';
 
 const LOGS = /^Logs$/;
 const logs = (s: BotWorldState) => countItems(s, LOGS);
@@ -45,9 +45,62 @@ function plant(action: BotAction): Effect | undefined {
                 );
         case 'train':
             return s => gainXp(s, 'Woodcutting', 10);
+        case 'move east':
+        case 'move west':
+            return s =>
+                world(s)
+                    .player({ at: { x: SPOTS[action.reason === 'move east' ? 'east' : 'west'], z: LUMBRIDGE.z } })
+                    .build();
+        case 'rest':
+            return s =>
+                world(s)
+                    .player({ hp: (s.player?.hp ?? 0) - 1 })
+                    .build();
     }
     return undefined;
 }
+
+/** Where `move` goes: west is where the bot starts. */
+const SPOTS = { east: LUMBRIDGE.x + 8, west: LUMBRIDGE.x };
+
+/** Walks to a spot, gaining nothing. */
+const move = defineTask({
+    name: 'move',
+    description: 'plan test walk',
+    params: z.object({ to: z.enum(['east', 'west']) }),
+    steps: [
+        {
+            name: 'move',
+            when: () => true,
+            *run(ctx) {
+                const x = SPOTS[ctx.params.to];
+                if (ctx.state().player?.worldX === x) return { done: 'there' };
+                yield* send(act(`move ${ctx.params.to}`));
+                yield* wait('arrived', s => s.player?.worldX === x, 5);
+                return { done: 'arrived' };
+            },
+        },
+    ],
+});
+
+/** Loses a hit point and ends: an HP change and nothing else. */
+const rest = defineTask({
+    name: 'rest',
+    description: 'plan test hp only',
+    params: z.object({}),
+    steps: [
+        {
+            name: 'rest',
+            when: () => true,
+            *run(ctx) {
+                const hp = ctx.state().player?.hp;
+                yield* send(act('rest'));
+                yield* wait('hp', s => s.player?.hp !== hp, 5);
+                return { done: 'rested' };
+            },
+        },
+    ],
+});
 
 /** A producer: a log a send until the inventory is full. */
 const chop = defineTask({
@@ -141,6 +194,8 @@ const plan = (phases: Phase[], until?: Predicate): PlanDef => definePlan({ name:
 const sim = (def: PlanDef, opts: Partial<SimulatePlanOptions> = {}) =>
     simulatePlan(def, { timeline: [BASE.build()], react: plant, ...opts });
 
+const NO_PROGRESS = 'phases make no progress (no XP, and each ended where it started or in a state seen since)';
+
 /** The phases selection chose, in order (null for "none applies"). */
 const selected = (r: PlanSimulation) => r.events.filter(e => e.type === 'select').map(e => e.phase);
 
@@ -151,14 +206,18 @@ const stoppedAt = (r: PlanSimulation) => r.runs[0]!.events.find(e => e.type === 
 const chopBurn = (until?: Predicate) =>
     plan([phase(burn, {}, { when: v => v.full && v.inv('Logs') > 0 }), phase(chop, {})], until);
 
+/** A phase that always fails, under 'continue', above one that always trains. */
+const failsUntil = (maxFails?: number) =>
+    sim(plan([phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue', maxFails }), phase(train, {})]));
+
 /** Burns any logs held, else chops. */
 const burnAny = (until: Predicate) => plan([phase(burn, {}, { when: v => v.inv('logs') > 0 }), phase(chop, {})], until);
 
 describe('phase and definePlan', () => {
-    test('phase names itself after its task and allows 3 failures unless told otherwise', () => {
+    test('phase names itself after its task, and leaves maxFails to the runner unless told', () => {
         const p = phase(chop, {});
         expect(p.name).toBe('chop');
-        expect(p.maxFails).toBe(3);
+        expect(p.maxFails).toBeUndefined();
         const named = phase(chop, { tree: 'oak' }, { name: 'oaks', maxFails: 1, onFail: 'continue' });
         expect(named).toMatchObject({ name: 'oaks', maxFails: 1, onFail: 'continue', params: { tree: 'oak' } });
     });
@@ -324,6 +383,19 @@ describe("the plan's until and stops", () => {
         expect(r.result.recent.map(x => x.runId)).toEqual(r.runs.slice(-3).map(x => x.runId));
     });
 
+    test("an injected clock is the plan's and every phase run's", async () => {
+        const driver = new TimelineDriver([BASE.build()], { react: plant });
+        // 1000ms a tick where the default reads TICK_MS (400): 0.05 min is tick 3, not tick 8.
+        const r = await sim(plan([phase(watch, {})]), {
+            driver,
+            now: () => driver.state().tick * 1000,
+            stops: [{ kind: 'minutes', minutes: 0.05 }],
+        });
+        expect(stoppedAt(r)).toBe(3);
+        expect(r.runs[0]!.result.durationMs).toBe(3000);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'reached 0.05 min', durationMs: 3000 });
+    });
+
     test('an unknown skill in a stop ends the plan error before any phase runs', async () => {
         const r = await sim(chopBurn(), { stops: [{ kind: 'xp', skill: 'woodcuting', amount: 1 }] });
         expect(r.result.status).toBe('error');
@@ -379,21 +451,23 @@ describe('onFail', () => {
         expect(r.result).toMatchObject({ status: 'failed', reason: 'primary: try: fatal' });
     });
 
-    test('more than maxFails failures in a row fail the plan', async () => {
-        const r = await sim(
-            plan([
-                phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue', maxFails: 1 }),
-                phase(train, {}),
-            ]),
-        );
-        expect(selected(r)).toEqual(['primary', 'train', 'primary']);
-        expect(r.result).toMatchObject({ status: 'failed', reason: 'primary failed 2 times in a row: try: busy' });
+    test('maxFails failures in a row (default 3) fail the plan', async () => {
+        const byDefault = await failsUntil();
+        expect(selected(byDefault)).toEqual(['primary', 'train', 'primary', 'train', 'primary']);
+        expect(byDefault.result).toMatchObject({
+            status: 'failed',
+            reason: 'primary failed 3 times in a row: try: busy',
+        });
+        const two = await failsUntil(2);
+        expect(selected(two)).toEqual(['primary', 'train', 'primary']);
+        expect(two.result.reason).toBe('primary failed 2 times in a row: try: busy');
     });
 
     test('a done run clears the failure count', async () => {
+        // Without the reset the second failure (the 4th run) would end the plan.
         const outcomes: Outcome[] = [{ fail: 'busy' }, { done: 'did it' }, { fail: 'busy' }];
         const r = await sim(
-            plan([phase(scripted('primary', outcomes), {}, { onFail: 'continue', maxFails: 1 }), phase(train, {})]),
+            plan([phase(scripted('primary', outcomes), {}, { onFail: 'continue', maxFails: 2 }), phase(train, {})]),
         );
         expect(selected(r)).toEqual(['primary', 'train', 'primary', 'primary', 'train', 'primary']);
         expect(r.result.reason).toBe('primary failed 2 times in a row: try: busy');
@@ -425,9 +499,28 @@ describe('rails', () => {
 
     test('phases that change nothing fail the plan after maxIdlePhases in a row', async () => {
         const r = await sim(plan(handBack));
-        expect(r.result).toMatchObject({ status: 'failed', reason: 'phases make no progress: a, b, a' });
+        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: a, b, a` });
         const longer = await sim(plan(handBack), { maxIdlePhases: 5 });
-        expect(longer.result.reason).toBe('phases make no progress: a, b, a, b, a');
+        expect(longer.result.reason).toBe(`${NO_PROGRESS}: a, b, a, b, a`);
+    });
+
+    test('phases that undo each other without gaining XP are idle once their end states repeat', async () => {
+        const r = await sim(
+            plan([
+                phase(move, { to: 'east' }, { name: 'east', when: v => v.last?.phase !== 'east' }),
+                phase(move, { to: 'west' }, { name: 'west' }),
+            ]),
+        );
+        // Each run moves the bot; from the third on, each ends where an earlier one did.
+        expect(selected(r)).toEqual(['east', 'west', 'east', 'west', 'east']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: east, west, east` });
+    });
+
+    test('a phase that only changes HP is idle', async () => {
+        const r = await sim(plan([phase(rest, {})]));
+        expect(r.runs.map(x => x.result.reason)).toEqual(['rest: rested', 'rest: rested', 'rest: rested']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: rest, rest, rest` });
+        expect(r.result.hp).toEqual({ current: 7, max: 10 });
     });
 
     test('a phase that makes progress resets the idle count', async () => {
@@ -506,6 +599,52 @@ describe('rails', () => {
     });
 });
 
+describe('phase runs', () => {
+    test('a close that throws is logged, and the run still counts', async () => {
+        const closed: string[] = [];
+        const r = await sim(
+            plan([phase(train, {})], v => v.runs('train') >= 2),
+            {
+                phaseRun: run => ({
+                    ...run,
+                    close: () => {
+                        closed.push(run.runId);
+                        throw new Error('close broke');
+                    },
+                }),
+            },
+        );
+        expect(closed).toEqual(['phase-0-train', 'phase-1-train']);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met', stepRuns: { train: 2 } });
+        expect(r.result.recent.map(x => x.status)).toEqual(['done', 'done']);
+        expect(r.events.filter(e => e.type === 'close-error')).toEqual(
+            closed.map(runId => ({ type: 'close-error', phase: 'train', runId, message: 'close broke' })),
+        );
+    });
+
+    test("a phase run that throws is still closed, and the plan's reason is its error, not the close's", async () => {
+        const closed: string[] = [];
+        const r = await sim(plan([phase(train, {})]), {
+            phaseRun: run => ({
+                ...run,
+                sinks: {
+                    ...run.sinks,
+                    event: e => {
+                        if (e.type === 'start') throw new Error('log broke');
+                        run.sinks.event(e);
+                    },
+                },
+                close: () => {
+                    closed.push(run.runId);
+                    throw new Error('close broke');
+                },
+            }),
+        });
+        expect(closed).toEqual(['phase-0-train']);
+        expect(r.result).toMatchObject({ status: 'error', reason: 'phase "train" threw: log broke' });
+    });
+});
+
 describe('the view', () => {
     test('v.bank remembers the bank as last seen open in an earlier phase', async () => {
         // The bank is open at ticks 2 and 3, while the first phase runs.
@@ -535,6 +674,41 @@ describe('the view', () => {
         expect(selected(r)).toEqual(['watch', 'train']);
         expect(seen).toEqual([undefined, 10]);
         expect(r.result.status).toBe('done');
+    });
+
+    test('a later look at the bank replaces what was remembered: an item no longer listed reads 0', async () => {
+        const timeline = BASE.series(8, (w, i) => {
+            if (i === 2)
+                return w.bank([
+                    { name: 'Copper ore', count: 10 },
+                    { name: 'Tin ore', count: 4 },
+                ]);
+            return i === 5 ? w.bank([{ name: 'Tin ore', count: 4 }]) : w;
+        });
+        const seen: (number | undefined)[][] = [];
+        await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push([v.bank('Copper ore'), v.bank('Tin ore')]);
+                                return v.runs('watch') > 0;
+                            },
+                        },
+                    ),
+                    phase(watch, {}, { until: v => v.state.tick >= 7 }),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline },
+        );
+        expect(seen).toEqual([
+            [undefined, undefined],
+            [0, 4],
+        ]);
     });
 
     test('inv matches a name exactly, ignoring case, or a pattern; free and full count slots', async () => {
