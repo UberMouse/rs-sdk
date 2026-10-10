@@ -31,7 +31,7 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
-| Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12; bronze axe, levels 1-67 (task waits for respawns once the cluster is cut down). XP is at the local 25× rate ([local-server](../../learnings/local-server.md)) | ~310k (local, stats.ts, 12 runs; 248k with onFull drop at lower levels) | 2026-10-09 conductor1 local |
+| Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12; bronze axe, levels 1-67 (task waits for respawns once the cluster is cut down). XP is at the local 25× rate ([local-server](../../learnings/local-server.md)) | ~310k (local, stats.ts, 12 runs; 248k with onFull drop at lower levels) | 2026-10-10 conductor2 local (rev 289) |
 
 ## Notes
 
