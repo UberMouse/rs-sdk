@@ -8,20 +8,28 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-10T01:33Z (conductor run 2, fresh account `conductor2`, rev 289 server): total level
-174 (Mining 51, WC 30, HP 19, Att 16, Str 16, Prayer 15, Def 15, rest 1). Armed (bronze sword,
-wooden shield). Bank at Varrock West holds the junk deposited at 01:32; inventory keeps axe,
-pickaxe, tinderbox, net, shrimps, bread. Catalog: the nine run-1 tasks plus `cooking` (committed);
-`fishing` and `thieving` are in review, the `bank` no-area fix (new `lib/banks.ts`) is in flight.
-Level table is the engine's /10 curve, not the standard one (`lib/xp.ts` fixed).
+State at 2026-10-10T02:50Z (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 290
+(WC 62, Mining 51, FM 47, Thieving 39, HP 19, Att 16, Str 16, Prayer 15, Def 15, rest 1). Ranged,
+Magic, Cooking, Fletching, Fishing, Crafting, Smithing, Herblore, Agility, Runecraft are all level 1.
+Holds a steel axe (bought 200 gp from Bob; ~780k/h on Varrock oaks vs bronze 358k/h), bronze
+pickaxe, tinderbox, net, Knife, 19 Logs, little cash (~230 gp from thieving). Inventory is full of
+logs; bank at Varrock West holds the junk. Committed: the nine run-1 tasks plus `cooking`,
+`fishing`, `thieving`, the `bank` no-area fix, the winnable-attacker guard, and combat Ranged/Magic.
+In review or authoring: `crafting` (pottery, in review), `firemaking` clear-line burn (in review),
+`agility` and stairs/ladders in `walkTo` (authoring).
 
-- Measured on 289: WC 332k/h (trees), Mining iron 541k/h (copper/tin 159k/h), combat on chickens
-  Att 55k/h, Str 83k/h, Def 108k/h. Iron at SE Varrock is the best XP the account has.
-- Pending, decided elsewhere: the axe/pickaxe tier-upgrade plan (research agent running, accounting
-  for 25x XP and cost/time per tier). Do not start tier purchases from here.
-- Next: finish review of `fishing`/`thieving`, then run them (thieving gives money + level cheaply),
-  `cooking` on the fishing catch, then the unauthored level-1 skills (Backlog order).
-- Mining past ~60 needs a better rock than iron: see Backlog (coal/mithril need smithing context).
+- Measured on 289: WC oaks 590k/h bronze -> ~780k/h steel; Mining iron 541k/h, copper/tin 159k/h;
+  FM 689k-1.16M/h; Thieving men 91k/h (31 gp/min with food, 14 without); combat on chickens
+  Att 55k/h, Str 83k/h, Def 108k/h. Melee is 5-10x slower than gathering: do not grind it yet.
+- Immediate: clear the inventory (drop or bank the 19 Logs and any stray Oak logs), then the
+  Fletching/Fishing/Cooking chain: fletching arrow shafts on Logs, net shrimps at Draynor, cook them.
+  The last chain failed at fletching preflight on 2 stray Oak logs (see Experiments, Review follow-ups).
+- Then: crafting pottery and agility when committed (cheap level-1 skills: each lifts total level
+  fast), Ranged/Magic via `combat` skill param, firemaking line burn to FM 60+.
+- Tool tiers (decided): thieve for money -> adamant pickaxe; Mining past 60 needs coal/mithril.
+  Skip tiers when cheaper (user standing instruction: 25x XP makes the cheaper tier enough).
+- Chains: put one inventory-clean step (bank/drop) before any task that is picky about inventory
+  contents; do not leave leftovers from a skipped step.
 
 ## Unlocks
 
@@ -38,21 +46,18 @@ requirements before planning it.
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
-- `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat`, `bank`, `shop`,
-  `smithing`, `cooking` — in catalog (bank no-area fix in flight).
-- `fishing` (small net at Draynor (3087,3229) works) and `thieving` (men, Lumbridge) — in review.
-- **Attack-in-transit hazard (fixed)**: `underAttackGuard` now fights a winnable attacker (named by
-  state: in combat, facing a player, within 2 tiles) to the end and resumes, bounded by progress
-  (no hp change for 60 ticks) instead of a tick cap; it fails at once for an attacker above the bot's
-  level or with auto-retaliate off. Tasks opt in with `guards: [underAttackGuard]`.
-- `crafting` (leather/needle, cheap) — idea
-- Tier-1 skills still at 1 (Ranged, Magic, Herblore*, Agility, Runecraft*, Crafting): one small task
-  each (* gated, see Unlocks). Magic/Ranged can piggyback on `combat` with a `skill` param — idea
-- `agility` course (Draynor rooftop, Gnome course) — idea, check Unlocks/wiki first
-- `woodcutting` bank mode (keep logs for Firemaking/Fletching and money) — idea
-- `combat` upgrades: eat real food, rotate styles, a better target than chickens (see Experiments) — idea
-- money making to fund gear and supplies — idea
-- quest tasks for the Unlocks table (Rune Mysteries, Druidic Ritual) — idea
+- In catalog: `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat` (melee,
+  Ranged, Magic), `bank` (no-area walk), `shop`, `smithing`, `cooking`, `fishing`, `thieving`.
+- **Attack-in-transit hazard (fixed)**: `underAttackGuard` fights a winnable attacker to the end,
+  bounded by progress; it fails at once for a stronger one. Tasks opt in with `guards: [underAttackGuard]`.
+- In review: `crafting` (pottery at Barbarian Village), `firemaking` east-west line burn.
+- Authoring: `agility` (Gnome course save exists), stairs/ladders in `walkTo` (`actions/climb.ts`,
+  `lib/connectors.ts`; unblocks multi-floor routes, Draynor rooftop, upstairs banks).
+- Next ideas, in order: `fletching` Make 10/Make X batching (see follow-ups); fletching tolerance
+  for mixed logs; `woodcutting` bank mode (logs for FM/fletching and money); `smithing` from mined
+  iron/coal; Herblore/Runecraft after their quests (Unlocks);
+  quest tasks (Rune Mysteries, Druidic Ritual); money making for the adamant pickaxe;
+  `combat` upgrades (eat real food, better target than chickens).
 
 ## Framework
 
@@ -102,18 +107,19 @@ on its own.
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
-- Combat XP/hr: chickens give Attack 41k/h, Strength 45k/h vs 300-800k/h for WC/FM, so melee to
-  99 would be ~100x slower than gathering. Hypothesis: a higher-HP, higher-XP target (cows,
-  Lumbridge goblins, Al Kharid warriors) and a better weapon give 3-5x. Variants: chicken vs cow
-  vs goblin, bronze vs iron sword. Also compare XP per style (Controlled spreads XP). Status: untested.
-- Mining rock: measured copper/tin 159k/h vs iron 541k/h at SE Varrock (3.4x). Next: coal/other
-  rocks at Mining 50+; compare once the pickaxe-tier plan lands. Status: iron done, rest untested.
-- Combat target: chickens Def 108k/h, Str 83k/h, Att 55k/h (rev 289, level 15 bot). Still untested
-  vs cows/goblins (see above); try now that the bot is armed.
-- Firemaking spot/log type: 812k/h measured with normal logs at (3230,3240); compare oak logs
-  (higher XP per log) once WC can supply them. Status: untested.
-- Woodcutting: normal trees 304k/h at Lumbridge vs willows/oaks (higher XP per log, safe spot
-  needed for HP 17). Status: untested.
+- Combat target: chickens Def 108k/h, Str 83k/h, Att 55k/h vs 300k-1M/h for gathering. Hypothesis:
+  cows/goblins and a better weapon give 3-5x. Variants: chicken vs cow vs goblin, bronze vs iron
+  sword, style. Status: untested; low priority until cheap skills are lifted.
+- Mining rock: iron 541k/h vs copper/tin 159k/h done. Next: coal at Mining 50+ with the adamant
+  pickaxe plan. Status: iron done, rest untested.
+- Woodcutting: steel axe on oaks ~780k/h (done); next compare willows/yews at WC 60+ and an
+  oak -> bank loop vs drop. Status: axe done, trees untested.
+- Firemaking: oak logs 1.16M/h at Varrock (short run), normal logs 689k/h; the clear-line burn
+  (in review) should stop the "can't light a fire here" failures. Compare line vs sidestep. Status: pending review.
+- Tool tier skipping: the 25x XP shortens every tier; test whether steel axe -> mithril directly
+  beats stepping through each (cost vs time). Status: steel done.
+- Chain robustness: does a clean-inventory pre-step (bank/drop) vs tolerant tasks (select the
+  wanted log by name) cut chain failures? Status: one failure observed (fletching, 2 stray Oak logs).
 
 ## Review follow-ups
 
@@ -121,6 +127,8 @@ Review findings `task-review` deferred because their fix needs work outside the 
 (most findings are fixed in the same pass).
 
 
+- crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)
+- crafting: pottery facts missing from the knowledge base: Barbarian Village wheel (3087,3409) and oven (3084,3407) are ground floor with no gate, clay mines (Varrock SE (3180,3372), Rimmington (2986,3239)), softening 1-tick post-delay, make-menu behaviour, observed XP rate (Crafting 1->16 in 64 s, 7 pots) -> wiki/skills/crafting.md (contract T6)
 - fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
 - combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
   the run ends with `inCombat: true` and the next run is refused ("in combat ... handle the
