@@ -164,10 +164,11 @@ forever.
 
 - Each phase writes its own NDJSON log and `.ticks.ndjson.gz` recording as a task run does today,
   so `replay.ts` works per phase unchanged.
-- The plan writes `conductor/runs/<bot>/<runId>-plan-<name>.ndjson`: the plan source path, a
-  `select` event per phase choice (the phase chosen, what each phase's `when` and `until` answered,
-  the last phase run, inventory, free slots and known bank counts), each phase run's end
-  (`phase-end`), and the plan's result.
+- The plan writes `conductor/runs/<bot>/<runId>-plan-<name>.ndjson`: the plan source path with the
+  CLI's `pid` and Claude Code `session` (`source`), a `select` event per phase choice (the phase
+  chosen, what each phase's `when` and `until` answered, the last phase run, inventory, free slots
+  and known bank counts), each phase run's start (`phase-start`, naming its log) and end
+  (`phase-end`), and the plan's result. The plan viewer ([`plan-view.md`](plan-view.md)) reads it.
 - The last stdout line stays `RESULT <json>`: a `TaskResult` with `task: "plan:<name>"`, the plan's
   totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and two
   extra fields: `phases`, one entry per phase `{ phase, task, runs, statuses, durationMs, xpGained,

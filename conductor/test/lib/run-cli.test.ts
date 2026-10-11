@@ -8,6 +8,7 @@ import { ReplayDriver } from '../../core/drivers/replay';
 import { definePlan, phase, runPlan } from '../../lib/plan';
 import { replayRun } from '../../lib/replay';
 import {
+    conductorSession,
     errorResult,
     type LiveRun,
     loadPlan,
@@ -16,6 +17,7 @@ import {
     parseRunArgs,
     ResultLine,
     runsDir,
+    sourceEvent,
 } from '../../lib/run-cli';
 import type { TaskResult } from '../../lib/task';
 import * as util from '../../lib/util';
@@ -292,5 +294,32 @@ describe('the one RESULT', () => {
         expect(line.print({ ...killed, status: 'done', reason: 'ran' })).toBe(false);
         expect(line.printed).toBe(killed);
         expect(lines).toEqual([`RESULT ${JSON.stringify(killed)}`]);
+    });
+});
+
+describe('conductorSession', () => {
+    const root = mkdtempSync(join(tmpdir(), 'session-'));
+    afterAll(() => rmSync(root, { recursive: true, force: true }));
+
+    test("the CLI's own session wins, then the durable state's, else null", () => {
+        expect(conductorSession({}, root)).toBeNull();
+        mkdirSync(join(root, '.durable-state'), { recursive: true });
+        writeFileSync(join(root, '.durable-state/state.json'), JSON.stringify({ sessionId: 'from-state' }));
+        expect(conductorSession({}, root)).toBe('from-state');
+        expect(conductorSession({ CLAUDE_CODE_SESSION_ID: 'from-env' }, root)).toBe('from-env');
+        writeFileSync(join(root, '.durable-state/state.json'), '{not json');
+        expect(conductorSession({}, root)).toBeNull();
+        writeFileSync(join(root, '.durable-state/state.json'), JSON.stringify({ sessionId: '' }));
+        expect(conductorSession({}, root)).toBeNull();
+    });
+
+    test("a plan log's source event names the plan, its copy, this process and its session", () => {
+        expect(sourceEvent('plans/p.ts', 'runs/x.plan.ts', { CLAUDE_CODE_SESSION_ID: 's' }, root)).toEqual({
+            type: 'source',
+            file: 'plans/p.ts',
+            copy: 'runs/x.plan.ts',
+            pid: process.pid,
+            session: 's',
+        });
     });
 });

@@ -1,0 +1,6 @@
+{"t":1791678201143,"type":"start","task":"fill","bot":"conductor2","params":{"container":"Bucket","area":{"x":3038,"z":3353,"radius":6}},"stops":[]}
+{"t":1791678201143,"type":"step","step":"return-to-area"}
+{"t":1791678231200,"type":"progress","stepRuns":{"return-to-area":1},"gained":""}
+{"t":1791678231533,"type":"step","step":"fill"}
+{"t":1791678235149,"type":"step","step":"finish"}
+{"t":1791678235150,"type":"result","task":"fill","bot":"conductor2","runId":"2026-10-11T00-23-21-142Z-fill","partOf":"2026-10-11T00-21-22-727Z-plan-pottery-craft","status":"done","reason":"finish: no empty Bucket left; 4 full","params":{"container":"Bucket","area":{"x":3038,"z":3353,"radius":6}},"durationMs":34008,"loops":6,"stepRuns":{"return-to-area":1,"fill":4,"finish":1},"lastStep":"finish","xpGained":{},"levelsGained":{},"inventoryDelta":{"Bucket":-4,"Bucket of water":4},"finalPos":{"x":3038,"z":3352,"level":0},"hp":{"current":22,"max":22},"inCombat":false,"screenshots":[],"logFile":"/home/taylorl/code/rs-sdk/conductor/runs/conductor2/2026-10-11T00-23-21-142Z-fill.ndjson"}

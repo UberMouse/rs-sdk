@@ -582,6 +582,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             say(`phase ${index + 1}: ${chosen.name}`);
             running = chosen;
             const run = opts.newPhaseRun(chosen, index);
+            // Names the phase's own log while it runs; phase-end alone would leave a live viewer guessing.
+            emit({ type: 'phase-start', phase: chosen.name, index, runId: run.runId, logFile: run.logFile });
             const flight = {
                 phase: chosen.name,
                 run,

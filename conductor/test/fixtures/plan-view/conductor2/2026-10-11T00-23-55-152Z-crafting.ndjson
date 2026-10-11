@@ -1,0 +1,13 @@
+{"t":1791678235153,"type":"start","task":"crafting","bot":"conductor2","params":{"product":"pot","fire":true,"area":{"x":3086,"z":3408,"radius":6}},"stops":[]}
+{"t":1791678235153,"type":"step","step":"return-to-area"}
+{"t":1791678265539,"type":"progress","stepRuns":{"return-to-area":1},"gained":""}
+{"t":1791678281928,"type":"step","step":"soften"}
+{"t":1791678286746,"type":"step","step":"shape"}
+{"t":1791678289490,"type":"log","msg":"guard interrupt:dialog (suspend)","data":{"tick":4950}}
+{"t":1791678292697,"type":"log","msg":"guard interrupt:dialog (suspend)","data":{"tick":4958}}
+{"t":1791678295552,"type":"progress","stepRuns":{"return-to-area":1,"soften":4,"shape":3,"interrupt:dialog":2},"gained":"Crafting +315"}
+{"t":1791678295951,"type":"log","msg":"guard interrupt:dialog (suspend)","data":{"tick":4966}}
+{"t":1791678299895,"type":"log","msg":"guard interrupt:dialog (suspend)","data":{"tick":4976}}
+{"t":1791678301510,"type":"step","step":"fire"}
+{"t":1791678305117,"type":"external-stop","reason":"until met","tick":4989,"check":326}
+{"t":1791678305120,"type":"result","task":"crafting","bot":"conductor2","runId":"2026-10-11T00-23-55-152Z-crafting","partOf":"2026-10-11T00-21-22-727Z-plan-pottery-craft","status":"done","reason":"until met","params":{"product":"pot","fire":true,"area":{"x":3086,"z":3408,"radius":6}},"durationMs":69968,"loops":10,"stepRuns":{"return-to-area":1,"soften":4,"shape":4,"interrupt:dialog":4,"fire":1},"lastStep":"fire","xpGained":{"Crafting":787},"levelsGained":{"Crafting":{"from":1,"to":8}},"inventoryDelta":{"Bucket of water":-4,"Clay":-4,"Bucket":4,"Pot":1,"Unfired pot":3},"finalPos":{"x":3085,"z":3408,"level":0},"hp":{"current":22,"max":22},"inCombat":false,"screenshots":[],"logFile":"/home/taylorl/code/rs-sdk/conductor/runs/conductor2/2026-10-11T00-23-55-152Z-crafting.ndjson"}

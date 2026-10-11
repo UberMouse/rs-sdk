@@ -7,7 +7,7 @@ import type { BotSDK } from '../../sdk/index';
 import { LiveDriver } from '../core/drivers/live';
 import { Recorder, recordingFile } from '../core/drivers/recording';
 import { TICK_STALL_MS } from './engine';
-import { REPO_ROOT } from './env';
+import { readDurableState, REPO_ROOT } from './env';
 import { isPlan, type PlanDef } from './plan';
 import { captureScreenshot } from './screenshot';
 import { parseStop, type StopCondition } from './stop';
@@ -119,6 +119,29 @@ export function errorResult(
         screenshots: [],
         logFile: log?.logFile ?? '',
     };
+}
+
+/**
+ * The Claude Code session a run belongs to, so a plan viewer can group a conductor's plans: the
+ * session running the CLI (task-runners are subagents and share the conductor's), else the
+ * `sessionId` of the worktree's durable state, else null (a plan run by hand outside a session).
+ */
+export function conductorSession(
+    env: Record<string, string | undefined> = process.env,
+    root: string = REPO_ROOT,
+): string | null {
+    return env.CLAUDE_CODE_SESSION_ID || readDurableState(root)?.sessionId || null;
+}
+
+/** A plan log's `source` event: the plan file as given, the copy that ran, and who ran it. */
+export function sourceEvent(
+    file: string,
+    copy: string,
+    env: Record<string, string | undefined> = process.env,
+    root: string = REPO_ROOT,
+): Record<string, unknown> {
+    // The pid tells a viewer a plan still running from one hard-killed without a result.
+    return { type: 'source', file, copy, pid: process.pid, session: conductorSession(env, root) };
 }
 
 /** Where a bot's run logs, recordings and plan copies go. */

@@ -1,0 +1,9 @@
+{"t":1791678085549,"type":"start","task":"shop","bot":"conductor2","params":{"npc":"Shop keeper","at":{"x":2947,"z":3217},"buy":[{"item":"Bucket","count":2,"maxUnitPrice":3},{"item":"Jug","count":2,"maxUnitPrice":3}]},"stops":[]}
+{"t":1791678085549,"type":"step","step":"walk-to-shop"}
+{"t":1791678115614,"type":"progress","stepRuns":{"walk-to-shop":1},"gained":""}
+{"t":1791678145967,"type":"progress","stepRuns":{"walk-to-shop":1},"gained":""}
+{"t":1791678153904,"type":"step","step":"trade"}
+{"t":1791678156319,"type":"log","msg":"bought Bucket: Bought Bucket x2; coins 24 -> 20"}
+{"t":1791678157940,"type":"log","msg":"bought Jug: Bought Jug x2; coins 20 -> 18"}
+{"t":1791678158348,"type":"step","step":"finish"}
+{"t":1791678158351,"type":"result","task":"shop","bot":"conductor2","runId":"2026-10-11T00-21-25-548Z-shop","partOf":"2026-10-11T00-21-22-727Z-plan-pottery-craft","status":"done","reason":"finish: all 2 trades made; coins received 0, spent 6","params":{"npc":"Shop keeper","at":{"x":2947,"z":3217},"sell":[],"buy":[{"item":"Bucket","count":2,"maxUnitPrice":3},{"item":"Jug","count":2,"maxUnitPrice":3}]},"durationMs":72802,"loops":3,"stepRuns":{"walk-to-shop":1,"trade":1,"finish":1},"lastStep":"finish","xpGained":{},"levelsGained":{},"inventoryDelta":{"Coins":-6,"Bucket":2,"Jug":2},"finalPos":{"x":2947,"z":3215,"level":0},"hp":{"current":22,"max":22},"inCombat":false,"screenshots":[],"logFile":"/home/taylorl/code/rs-sdk/conductor/runs/conductor2/2026-10-11T00-21-25-548Z-shop.ndjson"}

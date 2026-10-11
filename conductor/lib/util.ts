@@ -94,13 +94,8 @@ export function mapCounter(counts: Map<string, number>, key: string): Counter {
     };
 }
 
-/** Filename-safe UTC timestamp: the ISO string with `:` and `.` replaced by `-`. */
-export function fileStamp(): string {
-    return new Date().toISOString().replace(/[:.]/g, '-');
-}
-
-/** Matches the `fileStamp()` prefix, including its trailing `-`, of a filename. */
-export const FILE_STAMP_PREFIX = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-/;
+// The stamp format lives in its own module so the plan viewer's page can bundle it without Node.
+export { FILE_STAMP_PREFIX, fileStamp } from './stamp';
 
 /** A pattern for exactly this item name (case-insensitive), for names that come in as task params. */
 export function exactName(name: string): RegExp {

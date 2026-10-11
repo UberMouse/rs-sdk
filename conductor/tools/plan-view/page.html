@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Plan Viewer</title>
+        <link
+            rel="icon"
+            href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect x=%221%22 y=%223%22 width=%229%22 height=%223%22 rx=%221%22 fill=%22%232a78d6%22/%3E%3Crect x=%225%22 y=%2210%22 width=%2210%22 height=%223%22 rx=%221%22 fill=%22%230ca30c%22/%3E%3C/svg%3E"
+        />
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <body>
+        <header class="bar">
+            <h1>Plan viewer</h1>
+            <label class="field">
+                <span>Bot</span>
+                <select id="bot"></select>
+            </label>
+            <button id="follow" class="toggle" type="button" aria-pressed="true">
+                <span class="dot" aria-hidden="true"></span>Follow live
+            </button>
+            <span id="conn" class="muted"></span>
+        </header>
+        <div class="layout">
+            <nav id="sessions" class="sidebar" aria-label="Plan runs by session"></nav>
+            <main id="main">
+                <p class="empty">Loading…</p>
+            </main>
+        </div>
+        <div id="tip" class="tip" role="tooltip" hidden></div>
+        <script type="module" src="./app.ts"></script>
+    </body>
+</html>

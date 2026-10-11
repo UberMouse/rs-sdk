@@ -154,6 +154,11 @@ per-phase totals (`phases`) and the last phase runs (`recent`); the plan logs to
 has its own log and recording, so `replay.ts` works per phase. `stats.ts` counts a plan once as
 `plan:<name>` (`--phases` adds its phase runs).
 
+`bun conductor/tools/plan-view.ts` serves a page (http://127.0.0.1:7790/) that follows the plan a
+bot is running (its phases and their `when` answers, a timeline of phase runs, the open run's
+steps, the live bot and the plan source) and shows past plans by conductor session. It is
+read-only and observes the bot without taking control: [`docs/plan-view.md`](docs/plan-view.md).
+
 A task-runner owns a goal and writes the plans for it as drafts in
 `conductor/runs/<bot>/plans/<name>.ts`; the conductor promotes the ones that worked into
 `conductor/plans/` and commits them with the runs' results. Plans import only

@@ -37,6 +37,7 @@ import {
     ResultLine,
     type RunLog,
     runsDir,
+    sourceEvent,
     USAGE,
 } from './lib/run-cli';
 import { captureScreenshot } from './lib/screenshot';
@@ -241,7 +242,7 @@ const run = await runScript(
         // Drafts change; the run keeps the source that ran.
         const copy = join(dir, `${runId}.plan.ts`);
         copyFileSync(path, copy);
-        log.append({ type: 'source', file: path, copy });
+        log.append(sourceEvent(path, copy));
         ranResult = await runPlan(def, {
             botName,
             runId,

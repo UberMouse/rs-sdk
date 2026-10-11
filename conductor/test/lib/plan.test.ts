@@ -921,9 +921,18 @@ describe('the result and the plan log', () => {
         });
     });
 
-    test('the plan log has start, a select and phase-end per run, and the result', async () => {
+    test('the plan log has start, a select, phase-start and phase-end per run, and the result', async () => {
         const r = await sim(plan([phase(train, {})], v => v.runs('train') >= 2));
-        expect(r.events.map(e => e.type)).toEqual(['start', 'select', 'phase-end', 'select', 'phase-end', 'result']);
+        expect(r.events.map(e => e.type)).toEqual([
+            'start',
+            'select',
+            'phase-start',
+            'phase-end',
+            'select',
+            'phase-start',
+            'phase-end',
+            'result',
+        ]);
         expect(r.events[0]).toEqual({
             type: 'start',
             plan: 'test-plan',
@@ -933,6 +942,14 @@ describe('the result and the plan log', () => {
             stops: [],
         });
         expect(r.events[2]).toEqual({
+            type: 'phase-start',
+            phase: 'train',
+            index: 0,
+            runId: 'phase-0-train',
+            logFile: '/logs/phase-0-train.ndjson',
+        });
+        expect(r.events[5]).toMatchObject({ type: 'phase-start', index: 1, runId: 'phase-1-train' });
+        expect(r.events[3]).toEqual({
             type: 'phase-end',
             phase: 'train',
             runId: 'phase-0-train',

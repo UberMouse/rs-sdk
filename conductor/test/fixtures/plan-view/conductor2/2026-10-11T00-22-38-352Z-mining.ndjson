@@ -1,0 +1,6 @@
+{"t":1791678158353,"type":"start","task":"mining","bot":"conductor2","params":{"rock":"clay","onFull":"stop","area":{"x":2986,"z":3239,"radius":6}},"stops":[]}
+{"t":1791678158355,"type":"step","step":"return-to-area"}
+{"t":1791678168292,"type":"step","step":"mine"}
+{"t":1791678188694,"type":"progress","stepRuns":{"return-to-area":1,"mine":5},"gained":"Mining +500"}
+{"t":1791678201138,"type":"external-stop","reason":"until met","tick":4729,"check":149}
+{"t":1791678201140,"type":"result","task":"mining","bot":"conductor2","runId":"2026-10-11T00-22-38-352Z-mining","partOf":"2026-10-11T00-21-22-727Z-plan-pottery-craft","status":"done","reason":"until met","params":{"rock":"clay","area":{"x":2986,"z":3239,"radius":6},"onFull":"stop"},"durationMs":42787,"loops":9,"stepRuns":{"return-to-area":1,"mine":8},"lastStep":"mine","xpGained":{"Mining":1000},"levelsGained":{},"inventoryDelta":{"Clay":8},"finalPos":{"x":2986,"z":3240,"level":0},"hp":{"current":22,"max":22},"inCombat":false,"screenshots":[],"logFile":"/home/taylorl/code/rs-sdk/conductor/runs/conductor2/2026-10-11T00-22-38-352Z-mining.ndjson"}
