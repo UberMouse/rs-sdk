@@ -57,7 +57,8 @@ export interface LocReach extends LocSize {
 
 /**
  * The collision queries stand tiles need. Production is wiki/world/collision.ts: `walkable` is
- * collisionPaths' and `reached` is the engine's reachedLoc (GameMap.ts:450) over the same data.
+ * collisionPaths' on tiles in an allocated zone, and `reached` is the engine's reachedLoc
+ * (GameMap.ts:450) over the same data.
  */
 export interface SiteCollision {
     walkable: Pathfinder['walkable'];
@@ -188,8 +189,9 @@ const mean = (tiles: Tile[], axis: 'x' | 'z'): number => tiles.reduce((s, t) => 
  * (bankbooth has no forceapproach), the bankers' side included, so the side matters. It is taken as
  * the direction from the locs' mean to the bankers' mean, not as the distance to the nearest banker:
  * past the end of a long row with one banker behind its middle, a tile is further from that banker
- * than any tile in front of the row. Without locs: the walkable tile nearest the centre in the bbox grown by one tile, as an npc
- * op is used from an adjacent tile and a fishing spot's own tiles are water.
+ * than any tile in front of the row. Without locs: the walkable tile nearest the centre in the bbox
+ * grown by one tile, as an npc op is used from an adjacent tile and a fishing spot's own tiles are
+ * water.
  */
 function standTile(
     features: readonly Feature[],
