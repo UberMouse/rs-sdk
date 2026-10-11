@@ -1,7 +1,7 @@
-// What the plan viewer shows, folded from a plan's NDJSON log and the logs of its phase runs
-// (event shapes: conductor/docs/plans.md, "Results, logs and stats"). Pure and free of Node imports:
-// the server folds whole logs with it, and the page folds the events the server streams with the
-// same functions, so a live view and a reload agree.
+// What the plan viewer shows, folded from a plan's NDJSON log and the logs of its phase runs, or from
+// the log of a task run on its own (event shapes: conductor/docs/plans.md, "Results, logs and stats").
+// Pure and free of Node imports: the server folds whole logs with it, and the page folds the events
+// the server streams with the same functions, so a live view and a reload agree.
 import type { PlanParams, PlanResult } from '../../lib/plan';
 import type { TaskResult, TaskStatus } from '../../lib/task';
 import { stampTime } from '../../lib/stamp';
@@ -12,7 +12,10 @@ export { stampTime };
 export type LogEvent = Record<string, unknown> & { t: number; type: string };
 
 /** Running: a result is still to come. Killed: no result and its process is gone. */
-export type PlanState = 'running' | 'ended' | 'killed';
+export type RunState = 'running' | 'ended' | 'killed';
+
+/** A plan's log, or the log of a task run on its own (not a phase of a plan). */
+export type RunKind = 'plan' | 'task';
 
 /** One phase choice: what each phase answered, and the inventory and bank it was made on. */
 export interface Selection {
@@ -26,7 +29,7 @@ export interface Selection {
     bank: Record<string, number> | null;
 }
 
-/** One phase run as the plan log tells it. */
+/** One phase run as the plan log tells it; a task run's one entry is the run itself. */
 export interface PhaseRunEntry {
     /** Counts the plan's phase runs from 0. */
     index: number;
@@ -39,22 +42,27 @@ export interface PhaseRunEntry {
     /** Null while it runs. */
     status: TaskStatus | null;
     reason: string | null;
-    /** The selection that started it, an index into `PlanRun.selections`. */
+    /** The selection that started it, an index into `Run.selections`; -1 for a task run's. */
     selection: number;
 }
 
-export interface PlanRun {
+/**
+ * A plan run, or a task run on its own folded as a plan of one phase: the task, run once, its own
+ * log the phase run's (so the page shows both with one set of panels).
+ */
+export interface Run {
+    kind: RunKind;
     runId: string;
     bot: string;
-    /** The plan's name; from the runId until the start event. */
-    plan: string;
+    /** The plan's or task's name; from the runId until the start event. */
+    name: string;
     startedAt: number;
     endedAt: number | null;
-    state: PlanState;
+    state: RunState;
     /** The Claude Code session that ran it (conductorSession); null for logs without one. */
     session: string | null;
     pid: number | null;
-    /** The plan file as given, and the copy of it that ran. */
+    /** A plan's file as given, and the copy of it that ran; null for a task run. */
     sourceFile: string | null;
     sourceCopy: string | null;
     phases: PlanParams['phases'];
@@ -62,20 +70,24 @@ export interface PlanRun {
     stops: unknown[];
     selections: Selection[];
     runs: PhaseRunEntry[];
-    /** The result event, with the time it was logged. */
-    result: (PlanResult & { t: number }) | null;
+    /** The result event, with the time it was logged; a task run's has no phase totals. */
+    result: (TaskResult & Partial<Pick<PlanResult, 'phases' | 'recent'>> & { t: number }) | null;
+    /** The plan a task log names itself a phase of (its result's partOf); null for a plan or a run of its own. */
+    partOf: string | null;
     /** close-error and exception events, in order. */
     errors: { t: number; message: string }[];
 }
 
-/** `<stamp>-plan-<name>` -> `<name>`. */
-export const planNameOf = (runId: string): string => /-plan-([a-z0-9-]+)$/.exec(runId)?.[1] ?? runId;
+/** `<stamp>-plan-<name>` -> `<name>`, `<stamp>-<task>` -> `<task>`. */
+export const nameOf = (kind: RunKind, runId: string): string =>
+    (kind === 'plan' ? /-plan-([a-z0-9-]+)$/ : /Z-([a-z0-9-]+)$/).exec(runId)?.[1] ?? runId;
 
-export function newPlanRun(runId: string, bot: string): PlanRun {
+export function newRun(kind: RunKind, runId: string, bot: string): Run {
     return {
+        kind,
         runId,
         bot,
-        plan: planNameOf(runId),
+        name: nameOf(kind, runId),
         startedAt: stampTime(runId) ?? 0,
         endedAt: null,
         state: 'running',
@@ -89,6 +101,7 @@ export function newPlanRun(runId: string, bot: string): PlanRun {
         selections: [],
         runs: [],
         result: null,
+        partOf: null,
         errors: [],
     };
 }
@@ -140,13 +153,13 @@ function resultOf<R extends TaskResult>(e: LogEvent): R & { t: number } {
 }
 
 /** The phase run in progress: started and not yet ended. */
-export const openRun = (run: PlanRun): PhaseRunEntry | null => {
+export const openRun = (run: Run): PhaseRunEntry | null => {
     const r = run.runs.at(-1);
     return r && r.endedAt === null ? r : null;
 };
 
 /** Folds one plan-log event into `run`, in place. Unknown events and malformed fields are ignored. */
-export function applyPlanEvent(run: PlanRun, e: LogEvent): void {
+export function applyPlanEvent(run: Run, e: LogEvent): void {
     switch (e.type) {
         case 'source':
             run.sourceFile = str(e.file);
@@ -155,7 +168,7 @@ export function applyPlanEvent(run: PlanRun, e: LogEvent): void {
             run.session = str(e.session);
             return;
         case 'start':
-            run.plan = str(e.plan) ?? run.plan;
+            run.name = str(e.plan) ?? run.name;
             run.startedAt = e.t;
             run.phases = phasesOf(e.phases);
             run.requires = Array.isArray(e.requires) ? e.requires.filter(x => typeof x === 'string') : [];
@@ -226,9 +239,63 @@ export function applyPlanEvent(run: PlanRun, e: LogEvent): void {
     }
 }
 
-export function foldPlan(runId: string, bot: string, events: LogEvent[]): PlanRun {
-    const run = newPlanRun(runId, bot);
-    for (const e of events) applyPlanEvent(run, e);
+/**
+ * Folds one event of a task run's own log into `run`, in place: its start opens the one phase run,
+ * its result ends it. The steps and lines are the phase log's to fold (applyPhaseEvent).
+ */
+export function applyTaskEvent(run: Run, e: LogEvent): void {
+    switch (e.type) {
+        case 'source':
+            run.pid = num(e.pid);
+            run.session = str(e.session);
+            return;
+        case 'start':
+            run.name = str(e.task) ?? run.name;
+            run.startedAt = e.t;
+            run.phases = [{ phase: run.name, task: run.name, params: e.params ?? null }];
+            run.stops = Array.isArray(e.stops) ? e.stops : [];
+            run.runs = [
+                {
+                    index: 0,
+                    phase: run.name,
+                    runId: run.runId,
+                    logFile: null,
+                    startedAt: e.t,
+                    endedAt: null,
+                    status: null,
+                    reason: null,
+                    selection: -1,
+                },
+            ];
+            return;
+        case 'close-error':
+        case 'exception':
+            run.errors.push({ t: e.t, message: str(e.message) ?? JSON.stringify(e) });
+            return;
+        case 'result': {
+            run.result = resultOf<TaskResult>(e);
+            run.partOf = str(e.partOf);
+            run.endedAt = e.t;
+            run.state = 'ended';
+            const r = run.runs[0];
+            if (r) {
+                r.logFile = str(e.logFile);
+                r.endedAt = e.t;
+                r.status = run.result.status;
+                r.reason = run.result.reason;
+            }
+            return;
+        }
+    }
+}
+
+/** Folds one event of a run's log, plan or task, into `run`, in place. */
+export const applyRunEvent = (run: Run, e: LogEvent): void =>
+    run.kind === 'plan' ? applyPlanEvent(run, e) : applyTaskEvent(run, e);
+
+export function foldRun(kind: RunKind, runId: string, bot: string, events: LogEvent[]): Run {
+    const run = newRun(kind, runId, bot);
+    for (const e of events) applyRunEvent(run, e);
     return run;
 }
 
@@ -312,14 +379,15 @@ export function foldPhase(runId: string, events: LogEvent[]): PhaseLog {
     return log;
 }
 
-/** A plan run as the session list shows it. */
-export interface PlanSummary {
+/** A run, plan or task, as the session list shows it. */
+export interface RunSummary {
+    kind: RunKind;
     runId: string;
     bot: string;
-    plan: string;
+    name: string;
     startedAt: number;
     endedAt: number | null;
-    state: PlanState;
+    state: RunState;
     status: TaskStatus | null;
     reason: string | null;
     session: string | null;
@@ -327,12 +395,13 @@ export interface PlanSummary {
     xpGained: number;
 }
 
-export function summarize(run: PlanRun): PlanSummary {
+export function summarize(run: Run): RunSummary {
     const xp = run.result?.xpGained ?? {};
     return {
+        kind: run.kind,
         runId: run.runId,
         bot: run.bot,
-        plan: run.plan,
+        name: run.name,
         startedAt: run.startedAt,
         endedAt: run.endedAt,
         state: run.state,
@@ -344,7 +413,7 @@ export function summarize(run: PlanRun): PlanSummary {
     };
 }
 
-/** Plan runs grouped by the session that ran them; untagged runs by local day. */
+/** Runs grouped by the session that ran them; untagged runs by local day. */
 export interface SessionGroup {
     /** The session id, or `untagged:<YYYY-MM-DD>`. */
     key: string;
@@ -353,7 +422,7 @@ export interface SessionGroup {
     lastAt: number;
     bots: string[];
     /** Newest first. */
-    plans: PlanSummary[];
+    runs: RunSummary[];
 }
 
 const localDay = (t: number) => {
@@ -361,34 +430,37 @@ const localDay = (t: number) => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-/** Newest session first, by its latest plan's start; a running plan's session sorts as current. */
-export function groupSessions(plans: PlanSummary[]): SessionGroup[] {
+/** Newest session first, by its latest run's start; a running run's session sorts as current. */
+export function groupSessions(runs: RunSummary[]): SessionGroup[] {
     const groups = new Map<string, SessionGroup>();
-    for (const p of plans) {
+    for (const p of runs) {
         const key = p.session ?? `untagged:${localDay(p.startedAt)}`;
         let g = groups.get(key);
         if (!g) {
-            g = { key, session: p.session, firstAt: p.startedAt, lastAt: p.startedAt, bots: [], plans: [] };
+            g = { key, session: p.session, firstAt: p.startedAt, lastAt: p.startedAt, bots: [], runs: [] };
             groups.set(key, g);
         }
         g.firstAt = Math.min(g.firstAt, p.startedAt);
         g.lastAt = Math.max(g.lastAt, p.endedAt ?? p.startedAt);
         if (!g.bots.includes(p.bot)) g.bots.push(p.bot);
-        g.plans.push(p);
+        g.runs.push(p);
     }
     const out = [...groups.values()];
     for (const g of out) {
-        g.plans.sort((a, b) => b.startedAt - a.startedAt);
+        g.runs.sort((a, b) => b.startedAt - a.startedAt);
         g.bots.sort();
     }
-    const running = (g: SessionGroup) => g.plans.some(p => p.state === 'running');
+    const running = (g: SessionGroup) => g.runs.some(p => p.state === 'running');
     return out.sort((a, b) => Number(running(b)) - Number(running(a)) || b.lastAt - a.lastAt);
 }
 
-/** The plan a follower shows for a bot: the newest, which is the running one when one runs. */
-export function followed(plans: PlanSummary[], bot: string): PlanSummary | null {
-    let best: PlanSummary | null = null;
-    for (const p of plans) {
+/**
+ * The run a follower shows for a bot, plan or task: the newest, which is the running one when one
+ * runs (a bot has one controller, so one run at a time).
+ */
+export function followed(runs: RunSummary[], bot: string): RunSummary | null {
+    let best: RunSummary | null = null;
+    for (const p of runs) {
         if (p.bot !== bot) continue;
         // RunIds start with a fixed-width UTC stamp: the greatest is the newest.
         if (!best || p.runId > best.runId) best = p;

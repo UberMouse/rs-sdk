@@ -127,7 +127,8 @@ runs them and handles death, low HP, dialogs and stops at every wait (design:
   `conductor/docs/parallel-bots.md`. Every task run is recorded next to its log; `replay.ts
   <run>.ticks.ndjson.gz` re-runs the current code on it and shows the first decision that
   differs. `capture-state.ts` saves a bot's live state as a unit-test fixture. `plan-view.ts` serves a
-  page that follows the plan a bot is running and its past plans by session (read-only).
+  page that follows the plan or task a bot is running, shows its past runs by session, and the bot
+  in a live 3D world (read-only).
 
 Rules for every agent working in this repo:
 

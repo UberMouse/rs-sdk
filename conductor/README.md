@@ -156,8 +156,10 @@ has its own log and recording, so `replay.ts` works per phase. `stats.ts` counts
 
 `bun conductor/tools/plan-view.ts` serves a page (http://127.0.0.1:7790/) that follows the plan a
 bot is running (its phases and their `when` answers, a timeline of phase runs, the open run's
-steps, the live bot and the plan source) and shows past plans by conductor session. It is
-read-only and observes the bot without taking control: [`docs/plan-view.md`](docs/plan-view.md).
+steps, the live bot and the plan source), or a task run on its own, and shows past runs by
+conductor session. Its World panel shows the bot in a live 3D view of the game (rs-world, over the
+engine's world feed, which `local/up.sh` turns on). It is read-only and observes the bot without
+taking control: [`docs/plan-view.md`](docs/plan-view.md).
 
 A task-runner owns a goal and writes the plans for it as drafts in
 `conductor/runs/<bot>/plans/<name>.ts`; the conductor promotes the ones that worked into

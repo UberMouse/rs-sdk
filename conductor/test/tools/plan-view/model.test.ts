@@ -3,15 +3,17 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
     applyPlanEvent,
+    applyRunEvent,
     foldPhase,
-    foldPlan,
+    foldRun,
     followed,
     groupSessions,
     type LogEvent,
-    newPlanRun,
+    nameOf,
+    newRun,
     openRun,
     PHASE_LINES,
-    type PlanSummary,
+    type RunSummary,
     stampTime,
     summarize,
 } from '../../../tools/plan-view/model';
@@ -24,10 +26,10 @@ const events = (runId: string): LogEvent[] =>
         .split('\n')
         .map(l => JSON.parse(l) as LogEvent);
 
-describe('foldPlan', () => {
+describe('foldRun, a plan', () => {
     test('a finished plan log from before phase-start: runs named at phase-end, the result ending it', () => {
-        const run = foldPlan(PLAN, 'conductor2', events(PLAN));
-        expect(run.plan).toBe('pottery-craft');
+        const run = foldRun('plan', PLAN, 'conductor2', events(PLAN));
+        expect(run.name).toBe('pottery-craft');
         expect(run.state).toBe('ended');
         expect(run.phases.map(p => p.phase)).toEqual([
             'bank-pottery',
@@ -60,8 +62,8 @@ describe('foldPlan', () => {
     });
 
     test('phase-start names the run while it is open; source carries pid and session', () => {
-        const run = newPlanRun('2026-10-11T01-00-00-000Z-plan-p', 'b');
-        expect(run.plan).toBe('p');
+        const run = newRun('plan', '2026-10-11T01-00-00-000Z-plan-p', 'b');
+        expect(run.name).toBe('p');
         expect(run.startedAt).toBe(Date.parse('2026-10-11T01:00:00.000Z'));
         const apply = (e: Record<string, unknown>) => applyPlanEvent(run, { t: 10, ...e } as LogEvent);
         apply({ type: 'source', file: 'f.ts', copy: 'c.plan.ts', pid: 42, session: 's1' });
@@ -77,7 +79,7 @@ describe('foldPlan', () => {
     });
 
     test('a kill ends the phase in progress as the result counts it', () => {
-        const run = newPlanRun('x-plan-p', 'b');
+        const run = newRun('plan', 'x-plan-p', 'b');
         const apply = (e: Record<string, unknown>) => applyPlanEvent(run, { t: 5, ...e } as LogEvent);
         apply({ type: 'select', phase: 'a', checks: {}, last: null, inventory: {}, free: 1, bank: null });
         apply({ type: 'phase-start', phase: 'a', index: 0, runId: 'r-a', logFile: 'l' });
@@ -92,7 +94,7 @@ describe('foldPlan', () => {
     });
 
     test('malformed phases, last and result fields are dropped or defaulted, not trusted', () => {
-        const run = newPlanRun('x-plan-p', 'b');
+        const run = newRun('plan', 'x-plan-p', 'b');
         const apply = (e: Record<string, unknown>) => applyPlanEvent(run, { t: 1, ...e } as LogEvent);
         apply({ type: 'start', phases: [{ phase: 'a', task: 'chop' }, 'junk', { phase: 3 }] });
         expect(run.phases).toEqual([{ phase: 'a', task: 'chop', params: null }]);
@@ -103,12 +105,48 @@ describe('foldPlan', () => {
     });
 
     test('a select with no phase starts no run; malformed events are ignored', () => {
-        const run = newPlanRun('x-plan-p', 'b');
+        const run = newRun('plan', 'x-plan-p', 'b');
         applyPlanEvent(run, { t: 1, type: 'select', phase: null, checks: 'nope' } as unknown as LogEvent);
         applyPlanEvent(run, { t: 2, type: 'phase-end', phase: 'a' } as LogEvent);
         applyPlanEvent(run, { t: 3, type: 'who-knows' } as LogEvent);
         expect(run.runs).toEqual([]);
         expect(run.selections[0]).toMatchObject({ phase: null, checks: {}, free: 0 });
+    });
+});
+
+describe('task runs', () => {
+    test("a task log folds as a run of one phase, the log's own; its result names the plan it was part of", () => {
+        const id = '2026-10-11T00-22-38-352Z-mining';
+        const run = foldRun('task', id, 'conductor2', events(id));
+        expect(run).toMatchObject({ kind: 'task', name: 'mining', state: 'ended', partOf: PLAN, selections: [] });
+        expect(run.phases.map(p => [p.phase, p.task])).toEqual([['mining', 'mining']]);
+        expect(run.runs).toHaveLength(1);
+        expect(run.runs[0]).toMatchObject({ index: 0, phase: 'mining', runId: id, status: 'done', selection: -1 });
+        expect(run.runs[0]!.endedAt).toBe(run.result!.t);
+        expect(summarize(run)).toMatchObject({ kind: 'task', name: 'mining', phaseRuns: 1, status: 'done' });
+    });
+
+    test('a task run of its own: source carries pid and session; it runs until its result', () => {
+        const run = newRun('task', '2026-10-11T01-00-00-000Z-woodcutting', 'b');
+        expect(run.name).toBe('woodcutting');
+        const apply = (e: Record<string, unknown>) => applyRunEvent(run, { t: 10, ...e } as LogEvent);
+        apply({ type: 'source', pid: 42, session: 's1' });
+        apply({ type: 'start', task: 'woodcutting', bot: 'b', params: { tree: 'oak' }, stops: [{ kind: 'minutes' }] });
+        expect(openRun(run)).toMatchObject({ runId: run.runId, phase: 'woodcutting', startedAt: 10 });
+        expect(run).toMatchObject({ pid: 42, session: 's1', state: 'running', stops: [{ kind: 'minutes' }] });
+        expect(run.phases[0]!.params).toEqual({ tree: 'oak' });
+        apply({ type: 'step', step: 'chop' });
+        apply({ type: 'result', status: 'failed', reason: 'chop: no tree', xpGained: { Woodcutting: 25 } });
+        expect(openRun(run)).toBeNull();
+        expect(run).toMatchObject({ state: 'ended', partOf: null, endedAt: 10 });
+        expect(run.runs[0]).toMatchObject({ status: 'failed', reason: 'chop: no tree' });
+        expect(summarize(run).xpGained).toBe(25);
+    });
+
+    test('nameOf reads the plan or task name from a runId', () => {
+        expect(nameOf('plan', PLAN)).toBe('pottery-craft');
+        expect(nameOf('task', '2026-10-11T00-23-21-142Z-fill')).toBe('fill');
+        expect(nameOf('task', '2026-10-11T00-23-21-142Z-fish-cook')).toBe('fish-cook');
     });
 });
 
@@ -135,9 +173,10 @@ describe('foldPhase', () => {
     });
 });
 
-const row = (p: Partial<PlanSummary> & Pick<PlanSummary, 'runId' | 'startedAt'>): PlanSummary => ({
+const row = (p: Partial<RunSummary> & Pick<RunSummary, 'runId' | 'startedAt'>): RunSummary => ({
     bot: 'b',
-    plan: 'p',
+    kind: 'plan',
+    name: 'p',
     endedAt: p.startedAt + 1,
     state: 'ended',
     status: 'done',
@@ -160,7 +199,7 @@ describe('sessions', () => {
         ]);
         expect(groups.map(g => g.key)).toEqual(['s2', 'untagged:2026-10-12', 'untagged:2026-10-11', 's1']);
         const s1 = groups.at(-1)!;
-        expect(s1.plans.map(p => p.runId)).toEqual(['b', 'a']);
+        expect(s1.runs.map(p => p.runId)).toEqual(['b', 'a']);
         expect(s1.bots).toEqual(['main', 'w1']);
         expect(s1).toMatchObject({ firstAt: day, lastAt: day + 101 });
     });
@@ -176,9 +215,10 @@ describe('sessions', () => {
     });
 
     test('summarize totals XP and reads the result', () => {
-        const s = summarize(foldPlan(PLAN, 'conductor2', events(PLAN)));
+        const s = summarize(foldRun('plan', PLAN, 'conductor2', events(PLAN)));
         expect(s).toMatchObject({
-            plan: 'pottery-craft',
+            kind: 'plan',
+            name: 'pottery-craft',
             status: 'failed',
             phaseRuns: 6,
             xpGained: 1787,

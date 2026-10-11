@@ -216,6 +216,7 @@ const run = await runScript(
             });
             current = live;
             try {
+                live.append(sourceEvent(null));
                 ranResult = await executeTask(task, {
                     driver: live.driver,
                     sinks: live.sinks,
@@ -242,7 +243,7 @@ const run = await runScript(
         // Drafts change; the run keeps the source that ran.
         const copy = join(dir, `${runId}.plan.ts`);
         copyFileSync(path, copy);
-        log.append(sourceEvent(path, copy));
+        log.append(sourceEvent({ file: path, copy }));
         ranResult = await runPlan(def, {
             botName,
             runId,

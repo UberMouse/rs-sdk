@@ -1,36 +1,50 @@
-// The plan viewer's side of the disk: which checkouts have run logs, the plan runs in them with
-// whether each still runs, and tails of the logs that grow. Read-only.
+// The plan viewer's side of the disk: which checkouts have run logs, the runs in them (plans, and
+// task runs on their own) with whether each still runs, and tails of the logs that grow. Read-only.
 import { execFileSync } from 'node:child_process';
 import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { readDurableState, REPO_ROOT } from '../../lib/env';
 import {
     foldPhase,
-    foldPlan,
+    foldRun,
     type LogEvent,
     openRun,
     type PhaseLog,
     type PhaseRunEntry,
-    type PlanRun,
-    type PlanSummary,
+    type Run,
+    type RunKind,
+    type RunSummary,
     stampTime,
     summarize,
 } from './model';
 
 const PLAN_LOG = /^(.+-plan-[a-z0-9-]+)\.ndjson$/;
+/** A task run's log, `<fileStamp>-<task>.ndjson`: a phase of a plan's, or a run of its own. */
+const TASK_LOG = /^(\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d-\d{3}Z-[a-z0-9-]+)\.ndjson$/;
+
 /** A runId the API takes: a log's basename, nothing that climbs out of a runs directory. */
 export const RUN_ID = /^[\w-]+$/;
 export const BOT_NAME = /^[A-Za-z0-9_-]{1,32}$/;
+/** An integration test's throwaway bot: `it` and ten random characters (conductor/test/integration/harness.ts). */
+export const isTestBot = (bot: string): boolean => /^it[a-z0-9]{10}$/.test(bot);
 /**
- * A plan log from before the CLI stamped its pid counts as running while it or its open phase's
- * log or recording changed this recently. Phase logs write a progress event at least this often.
+ * A log from before the CLI stamped its pid counts as running while it (or a plan's open phase's
+ * log) or its recording changed this recently. Task logs write a progress event at least this often.
  */
 export const LOG_STALE_MS = 5 * 60_000;
 /**
- * A plan's process starts before its log does; a pid whose process started later than this after
+ * A run's process starts before its log does; a pid whose process started later than this after
  * it was reused. Wide, because /proc's start time moves with wall-clock steps (NTP, a VM resume).
  */
 const PID_START_SLACK_MS = 60_000;
+
+/** What a log file in a runs directory holds, and its runId; null for anything else. */
+export function logOf(file: string): { kind: RunKind; runId: string } | null {
+    const plan = PLAN_LOG.exec(file);
+    if (plan) return { kind: 'plan', runId: plan[1]! };
+    const task = TASK_LOG.exec(file);
+    return task ? { kind: 'task', runId: task[1]! } : null;
+}
 
 /** Every checkout of this repo (the main one and its worktrees) with a conductor/runs directory. */
 export function findRoots(): string[] {
@@ -140,9 +154,9 @@ export class Tail {
     }
 }
 
-/** A plan run on disk: its folded log and where it lives. */
-export interface PlanOnDisk {
-    run: PlanRun;
+/** A run on disk: its folded log and where it lives. */
+export interface RunOnDisk {
+    run: Run;
     dir: string;
     file: string;
 }
@@ -156,11 +170,11 @@ export interface SessionOwner {
 }
 
 export class RunsStore {
-    private cache = new Map<string, { mtimeMs: number; size: number; run: PlanRun }>();
+    private cache = new Map<string, { mtimeMs: number; size: number; run: Run }>();
 
     constructor(readonly roots: string[]) {}
 
-    /** Each bot's run directories, across the roots. */
+    /** Each bot's run directories, across the roots: those with a plan or task log. */
     botDirs(): Map<string, string[]> {
         const bots = new Map<string, string[]>();
         for (const root of this.roots) {
@@ -168,17 +182,17 @@ export class RunsStore {
             for (const bot of listDir(runs)) {
                 if (!BOT_NAME.test(bot)) continue;
                 const dir = join(runs, bot);
-                if (!listDir(dir).some(f => PLAN_LOG.test(f))) continue;
+                if (!listDir(dir).some(f => logOf(f))) continue;
                 bots.set(bot, [...(bots.get(bot) ?? []), dir]);
             }
         }
         return bots;
     }
 
-    /** Folds a plan log, re-reading it only when it changed, and decides whether it still runs. */
-    private load(bot: string, dir: string, file: string): PlanOnDisk | null {
-        const m = PLAN_LOG.exec(file);
-        if (!m) return null;
+    /** Folds a run's log, re-reading it only when it changed, and decides whether it still runs. */
+    private load(bot: string, dir: string, file: string): RunOnDisk | null {
+        const log = logOf(file);
+        if (!log) return null;
         const path = join(dir, file);
         let st;
         try {
@@ -194,45 +208,64 @@ export class RunsStore {
             } catch {
                 return null; // removed since the stat
             }
-            const run = foldPlan(m[1]!, bot, parseLines(text));
+            const run = foldRun(log.kind, log.runId, bot, parseLines(text));
             hit = { mtimeMs: st.mtimeMs, size: st.size, run };
             this.cache.set(path, hit);
         }
         const run = hit.run;
-        if (!run.result) run.state = this.alive(run, dir, st.mtimeMs) ? 'running' : 'killed';
+        if (!run.result) run.state = this.alive(run, dir, path, st.mtimeMs) ? 'running' : 'killed';
         return { run, dir, file: path };
     }
 
-    private alive(run: PlanRun, dir: string, logMtime: number): boolean {
+    private alive(run: Run, dir: string, file: string, logMtime: number): boolean {
         if (run.pid !== null) {
             if (!pidAlive(run.pid)) return false;
-            // A pid alive under a process that started after the plan is another process's.
+            // A pid alive under a process that started after the run is another process's.
             const started = processStartedAt(run.pid);
             return started === null || started <= run.startedAt + PID_START_SLACK_MS;
         }
-        let latest = logMtime;
+        // A task run's log is its phase's; a plan's open phase has a log of its own.
         const open = openRun(run);
-        const phase = open && this.phaseFile(run, open, dir);
+        const phase = run.kind === 'task' ? file : open && this.phaseFile(run, open, dir);
+        let latest = logMtime;
         if (phase) latest = Math.max(latest, mtime(phase), mtime(phase.replace(/\.ndjson$/, '.ticks.ndjson.gz')));
         return Date.now() - latest < LOG_STALE_MS;
     }
 
-    /** Every plan run of `bot`, or of every bot, newest first. */
-    plans(bot?: string): PlanSummary[] {
-        const out: PlanSummary[] = [];
+    /**
+     * Every run of `bot`, or of every bot, newest first: its plans, and its task runs that are not a
+     * phase of one. A task log is a phase when its result names the plan (partOf) or a plan log names
+     * it (phase-start, phase-end, the result's recent runs, or the open phase of a log from before
+     * phase-start). The task logs are read before the plan logs: runPlan logs phase-start before the
+     * phase's own log exists, so a phase log read is always named by the plan log read after it.
+     */
+    runs(bot?: string): RunSummary[] {
+        const out: RunSummary[] = [];
         const listed = new Set<string>();
         const seen = new Set<string>();
         for (const [b, dirs] of this.botDirs()) {
             if (bot && b !== bot) continue;
+            const tasks: RunOnDisk[] = [];
+            const plans: RunOnDisk[] = [];
             for (const dir of dirs) {
                 listed.add(dir);
-                for (const f of listDir(dir)) {
-                    const p = this.load(b, dir, f);
-                    if (!p) continue;
-                    seen.add(p.file);
-                    out.push(summarize(p.run));
+                const logs = listDir(dir).flatMap(f => {
+                    const log = logOf(f);
+                    return log ? [{ f, kind: log.kind }] : [];
+                });
+                // Task logs first (see above).
+                logs.sort((x, y) => Number(x.kind === 'plan') - Number(y.kind === 'plan'));
+                for (const { f, kind } of logs) {
+                    const r = this.load(b, dir, f);
+                    if (!r) continue;
+                    seen.add(r.file);
+                    (kind === 'task' ? tasks : plans).push(r);
                 }
             }
+            const phases = new Set<string>();
+            for (const p of plans) for (const id of this.phaseRunIds(p)) phases.add(id);
+            for (const p of plans) out.push(summarize(p.run));
+            for (const t of tasks) if (!t.run.partOf && !phases.has(t.run.runId)) out.push(summarize(t.run));
         }
         // Forget the folds of logs gone: from anywhere on a full listing, else from the directories listed.
         for (const path of this.cache.keys())
@@ -241,17 +274,29 @@ export class RunsStore {
         return out.sort((a, b) => (a.runId < b.runId ? 1 : a.runId > b.runId ? -1 : 0));
     }
 
-    plan(bot: string, runId: string): PlanOnDisk | null {
+    /** The runIds of the task logs a plan's log names as its phases. */
+    private phaseRunIds(p: RunOnDisk): string[] {
+        const ids = p.run.runs.flatMap(r => (r.runId ? [r.runId] : []));
+        for (const r of p.run.result?.recent ?? []) ids.push(r.runId);
+        const open = openRun(p.run);
+        const file = open && !open.runId ? this.phaseFile(p.run, open, p.dir) : null;
+        if (file) ids.push(basename(file, '.ndjson'));
+        return ids;
+    }
+
+    /** A plan run, or a task run (of its own or a phase), by its runId. */
+    run(bot: string, runId: string): RunOnDisk | null {
         if (!RUN_ID.test(runId)) return null;
         for (const dir of this.botDirs().get(bot) ?? []) {
-            const p = this.load(bot, dir, `${runId}.ndjson`);
-            if (p) return p;
+            const r = this.load(bot, dir, `${runId}.ndjson`);
+            if (r) return r;
         }
         return null;
     }
 
-    /** The copy of the plan's source that ran, beside its log. */
-    source(p: PlanOnDisk): string | null {
+    /** The copy of a plan's source that ran, beside its log; null for a task run. */
+    source(p: RunOnDisk): string | null {
+        if (p.run.kind !== 'plan') return null;
         const copy = join(p.dir, `${p.run.runId}.plan.ts`);
         try {
             return readFileSync(copy, 'utf8');
@@ -264,7 +309,7 @@ export class RunsStore {
      * A phase run's log. Plan logs from before phase-start name a run only when it ends, so the
      * open one is the first log of its task stamped at or after its selection.
      */
-    phaseFile(run: PlanRun, entry: PhaseRunEntry, dir: string): string | null {
+    phaseFile(run: Run, entry: PhaseRunEntry, dir: string): string | null {
         if (entry.runId) {
             const f = join(dir, `${entry.runId}.ndjson`);
             return existsSync(f) ? f : null;

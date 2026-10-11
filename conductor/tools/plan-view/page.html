@@ -23,10 +23,24 @@
             <span id="conn" class="muted"></span>
         </header>
         <div class="layout">
-            <nav id="sessions" class="sidebar" aria-label="Plan runs by session"></nav>
-            <main id="main">
-                <p class="empty">Loading…</p>
-            </main>
+            <nav id="sessions" class="sidebar" aria-label="Runs by session"></nav>
+            <div class="content">
+                <!-- Outside #main, which re-renders: moving an iframe in the DOM reloads it. -->
+                <section id="world" class="card world" aria-labelledby="world-h">
+                    <div class="world-head">
+                        <h2 id="world-h" class="flush">World</h2>
+                        <span id="world-status" class="muted"></span>
+                        <a id="world-tab" target="_blank" rel="noopener" hidden>Open in a new tab</a>
+                        <button id="world-toggle" type="button" class="toggle" aria-pressed="false">
+                            <span class="dot" aria-hidden="true"></span>3D view
+                        </button>
+                    </div>
+                    <div id="world-frame" class="world-frame" hidden></div>
+                </section>
+                <main id="main">
+                    <p class="empty">Loading…</p>
+                </main>
+            </div>
         </div>
         <div id="tip" class="tip" role="tooltip" hidden></div>
         <script type="module" src="./app.ts"></script>

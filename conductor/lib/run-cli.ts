@@ -133,15 +133,17 @@ export function conductorSession(
     return env.CLAUDE_CODE_SESSION_ID || readDurableState(root)?.sessionId || null;
 }
 
-/** A plan log's `source` event: the plan file as given, the copy that ran, and who ran it. */
+/**
+ * The `source` event a run's log opens with: who ran it, and for a plan, the plan file as given and
+ * the copy that ran. A task run of its own logs one too; a plan's phase runs don't (the plan's has it).
+ */
 export function sourceEvent(
-    file: string,
-    copy: string,
+    plan: { file: string; copy: string } | null,
     env: Record<string, string | undefined> = process.env,
     root: string = REPO_ROOT,
 ): Record<string, unknown> {
-    // The pid tells a viewer a plan still running from one hard-killed without a result.
-    return { type: 'source', file, copy, pid: process.pid, session: conductorSession(env, root) };
+    // The pid tells a viewer a run still going from one hard-killed without a result.
+    return { type: 'source', ...plan, pid: process.pid, session: conductorSession(env, root) };
 }
 
 /** Where a bot's run logs, recordings and plan copies go. */

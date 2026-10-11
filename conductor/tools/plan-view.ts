@@ -1,8 +1,9 @@
-// A web page that follows the plan a bot is running, and shows its past plans by conductor session.
+// A web page that follows the plan or task a bot is running, shows its past runs by conductor
+// session, and the bot in a live 3D view of the world (rs-world over the engine's world feed).
 //
 //   bun conductor/tools/plan-view.ts [--port 7790] [--host 127.0.0.1] [--root <checkout>]...
 //
-// Reads the plan and phase logs under conductor/runs/ of this checkout and every worktree of it
+// Reads the plan and task logs under conductor/runs/ of this checkout and every worktree of it
 // (or only the --root checkouts given), and watches each viewed bot in observe mode, which never
 // takes control. Design: conductor/docs/plan-view.md.
 import { existsSync } from 'node:fs';

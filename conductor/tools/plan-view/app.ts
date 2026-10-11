@@ -1,17 +1,20 @@
-// The plan viewer page: follows a bot's newest plan over /api/live, or shows a past one picked from
-// the session list. Folds the streamed log events with the server's own model functions.
+// The plan viewer page: follows a bot's newest run (a plan, or a task run of its own) over /api/live,
+// or shows a past one picked from the session list, and the bot in a live 3D world (rs-world). Folds
+// the streamed log events with the server's own model functions.
 import {
     applyPhaseEvent,
-    applyPlanEvent,
+    applyRunEvent,
     type BotSnapshot,
     type PhaseLog,
     type PhaseRunEntry,
-    type PlanRun,
-    type PlanSummary,
+    type Run,
+    type RunSummary,
+    type Selection,
     type SessionGroup,
 } from './model';
 import type { TaskStatus } from '../../lib/task';
-import type { BotInfo, LiveEvents, PlanReply, SessionsReply } from './server';
+import type { BotInfo, LiveEvents, RunReply, SessionsReply } from './server';
+import type { WorldInfo } from './world';
 
 // ---- state ----
 
@@ -20,12 +23,12 @@ let follow = true;
 let es: EventSource | null = null;
 let connected = false;
 let sessions: SessionsReply | null = null;
-/** The bot's newest plan, kept current by the stream. */
-let live: PlanReply | null = null;
-/** The newest plan's open (or last) phase log, kept current by the stream. */
+/** The bot's newest run, kept current by the stream. */
+let live: RunReply | null = null;
+/** The newest run's open (or last) phase log, kept current by the stream; a task run's own log. */
 let livePhase: PhaseLog | null = null;
 /** What the main panel shows: `live` when following. */
-let viewing: PlanReply | null = null;
+let viewing: RunReply | null = null;
 /** A phase run picked on the timeline or table; null shows the open (or last) one. */
 let picked: number | null = null;
 /** Phase logs fetched for runs not followed live, by runId. */
@@ -112,10 +115,10 @@ function badge(st: Status, label?: string): HTMLElement {
         label ?? m.label,
     );
 }
-const planStatus = (p: { state: PlanRun['state']; status: TaskStatus | null }): Status =>
+const runStatus = (p: { state: Run['state']; status: TaskStatus | null }): Status =>
     p.state === 'running' ? 'running' : p.state === 'killed' ? 'killed' : (p.status ?? 'killed');
-const runStatus = (r: PhaseRunEntry, plan: PlanRun): Status =>
-    r.status ?? (plan.state === 'running' ? 'running' : 'killed');
+const phaseRunStatus = (r: PhaseRunEntry, run: Run): Status =>
+    r.status ?? (run.state === 'running' ? 'running' : 'killed');
 
 // ---- data ----
 
@@ -161,20 +164,20 @@ function connect(name: string) {
         connected = false;
         schedule();
     });
-    on('plans', d => {
+    on('runs', d => {
         sessions = d;
     });
-    on('plan', d => {
+    on('run', d => {
         live = d;
         livePhase = null;
-        // A page reloaded on the live plan's link holds a fetched copy: take the live one instead.
+        // A page reloaded on the live run's link holds a fetched copy: take the live one instead.
         if (follow || viewing?.run.runId === d.run.runId) show(d);
     });
-    on('plan-events', d => {
+    on('run-events', d => {
         if (live?.run.runId !== d.runId) return;
-        for (const e of d.events) applyPlanEvent(live.run, e);
+        for (const e of d.events) applyRunEvent(live.run, e);
     });
-    on('plan-state', d => {
+    on('run-state', d => {
         if (live?.run.runId === d.runId) live.run.state = d.state;
     });
     on('phase', d => {
@@ -191,7 +194,7 @@ function connect(name: string) {
     });
 }
 
-function show(reply: PlanReply) {
+function show(reply: RunReply) {
     if (viewing?.run.runId !== reply.run.runId) {
         picked = null;
         sourcePhase = null;
@@ -200,13 +203,13 @@ function show(reply: PlanReply) {
     writeHash();
 }
 
-async function openPlan(runId: string) {
+async function pickListed(runId: string) {
     if (!bot) return;
     follow = runId === live?.run.runId && follow;
     if (live?.run.runId === runId) show(live);
     else {
         try {
-            show(await getJson<PlanReply>(`/api/plan?${q({ bot, runId })}`));
+            show(await getJson<RunReply>(`/api/run?${q({ bot, runId })}`));
         } catch (e) {
             console.error(e);
         }
@@ -232,10 +235,10 @@ function pickRun(index: number | null) {
 const REREAD_MS = 2000;
 
 /** The phase run the panel shows: the one picked, else the latest. */
-const shownEntry = (run: PlanRun): PhaseRunEntry | undefined => (picked !== null ? run.runs[picked] : run.runs.at(-1));
+const shownEntry = (run: Run): PhaseRunEntry | undefined => (picked !== null ? run.runs[picked] : run.runs.at(-1));
 
 /** Where a phase run's log comes from: the live stream when it is that run's, else its runId to fetch. */
-function logSource(entry: PhaseRunEntry, run: PlanRun): { live: PhaseLog } | { runId: string } | null {
+function logSource(entry: PhaseRunEntry, run: Run): { live: PhaseLog } | { runId: string } | null {
     const runId = entry.runId ?? (entry.endedAt === null && viewing?.run === run ? viewing.openPhase : null);
     const isLive = viewing === live && entry.index === run.runs.length - 1;
     if (isLive && livePhase && (!runId || runId === livePhase.runId)) return { live: livePhase };
@@ -243,7 +246,7 @@ function logSource(entry: PhaseRunEntry, run: PlanRun): { live: PhaseLog } | { r
 }
 
 /** The shown run's log, as far as it is known; reads only. */
-function phaseLogFor(entry: PhaseRunEntry, run: PlanRun): PhaseLog | null {
+function phaseLogFor(entry: PhaseRunEntry, run: Run): PhaseLog | null {
     const src = logSource(entry, run);
     if (!src) return null;
     return 'live' in src ? src.live : (phaseLogs.get(src.runId)?.log ?? null);
@@ -293,6 +296,8 @@ function render() {
     $('conn').textContent = connected ? '' : 'reconnecting…';
     renderSessions();
     renderMain();
+    // Its status reads the bot snapshot; the iframe stays put unless its source changes.
+    renderWorld();
 }
 
 function renderSessions() {
@@ -302,7 +307,7 @@ function renderSessions() {
     // Until the first groups render, open the newest; after that, whatever the viewer left open.
     const first = !nav.querySelector('details');
     if (!groups.length) {
-        nav.replaceChildren(h('p', { class: 'muted' }, sessions ? 'No plan runs for this bot.' : 'Loading…'));
+        nav.replaceChildren(h('p', { class: 'muted' }, sessions ? 'No runs for this bot.' : 'Loading…'));
         return;
     }
     nav.replaceChildren(
@@ -311,7 +316,7 @@ function renderSessions() {
 }
 const hasViewing = (g: SessionGroup) => {
     const runId = viewing?.run.runId;
-    return !!runId && g.plans.some(p => p.runId === runId);
+    return !!runId && g.runs.some(p => p.runId === runId);
 };
 
 function sessionGroup(g: SessionGroup, isOpen: boolean): HTMLElement {
@@ -319,7 +324,7 @@ function sessionGroup(g: SessionGroup, isOpen: boolean): HTMLElement {
     const title = g.session
         ? `Session ${g.session.slice(0, 8)}${owner ? ` · conductor${owner.bot ? ` (${owner.bot})` : ''}` : ''}`
         : `Untagged · ${g.key.slice('untagged:'.length)}`;
-    const sub = `${dayClock(g.firstAt)} – ${clock(g.lastAt)} · ${g.plans.length} plan${g.plans.length === 1 ? '' : 's'}`;
+    const sub = `${dayClock(g.firstAt)} – ${clock(g.lastAt)} · ${g.runs.length} run${g.runs.length === 1 ? '' : 's'}`;
     return h(
         'details',
         { class: 'session', 'data-key': g.key, open: isOpen },
@@ -330,12 +335,12 @@ function sessionGroup(g: SessionGroup, isOpen: boolean): HTMLElement {
             h('span', { class: 'sub' }, sub),
             owner?.goal ? h('span', { class: 'sub' }, owner.goal) : null,
         ),
-        g.plans.map(planItem),
+        g.runs.map(runItem),
     );
 }
 
-function planItem(p: PlanSummary): HTMLElement {
-    const st = planStatus(p);
+function runItem(p: RunSummary): HTMLElement {
+    const st = runStatus(p);
     const m = STATUS[st];
     const current = viewing?.run.runId === p.runId;
     return h(
@@ -345,13 +350,14 @@ function planItem(p: PlanSummary): HTMLElement {
             type: 'button',
             'aria-current': current ? 'true' : null,
             title: p.reason ?? m.label,
-            onclick: () => void openPlan(p.runId),
+            onclick: () => void pickListed(p.runId),
         },
         h('span', { class: `st ${m.cls}`, 'aria-label': m.label }, h('span', { class: 'ic' }, m.icon)),
         h(
             'span',
             { class: 'name' },
-            p.plan,
+            p.kind === 'task' ? h('span', { class: 'kind' }, 'task') : null,
+            p.name,
             p.runId === live?.run.runId && follow ? h('span', { class: 'muted' }, ' · live') : null,
         ),
         h('span', { class: 'when' }, clock(p.startedAt), ' · ', dur((p.endedAt ?? Date.now()) - p.startedAt)),
@@ -364,17 +370,25 @@ function renderMain() {
     const linesScroll = main.querySelector('.lines');
     const stick = linesScroll ? linesScroll.scrollTop + linesScroll.clientHeight >= linesScroll.scrollHeight - 4 : true;
     if (!viewing) {
-        main.replaceChildren(
-            h('p', { class: 'empty' }, bot ? 'No plan runs for this bot yet.' : 'No bots with plan logs.'),
-        );
+        main.replaceChildren(h('p', { class: 'empty' }, bot ? 'No runs for this bot yet.' : 'No bots with run logs.'));
         return;
     }
     const run = viewing.run;
+    // A task run of its own is one phase run: no timeline, phases or source to show.
     main.replaceChildren(
-        planHeader(run),
-        timeline(run),
-        h('div', { class: 'cols' }, h('div', { class: 'stack' }, phaseTable(run), phasePanel(run)), botPanel()),
-        sourcePanel(viewing),
+        ...(run.kind === 'plan'
+            ? [
+                  runHeader(run),
+                  timeline(run),
+                  h(
+                      'div',
+                      { class: 'cols' },
+                      h('div', { class: 'stack' }, phaseTable(run), phasePanel(run)),
+                      botPanel(),
+                  ),
+                  sourcePanel(viewing),
+              ]
+            : [runHeader(run), h('div', { class: 'cols' }, phasePanel(run), botPanel())]),
     );
     const src = main.querySelector('.source');
     const key = `${run.runId}:${sourcePhase}`;
@@ -387,8 +401,8 @@ function renderMain() {
     if (lines && stick) lines.scrollTop = lines.scrollHeight;
 }
 
-function planHeader(run: PlanRun): HTMLElement {
-    const st = planStatus({ state: run.state, status: run.result?.status ?? null });
+function runHeader(run: Run): HTMLElement {
+    const st = runStatus({ state: run.state, status: run.result?.status ?? null });
     const end = run.endedAt ?? Date.now();
     const r = run.result;
     const stops = run.stops
@@ -404,10 +418,11 @@ function planHeader(run: PlanRun): HTMLElement {
         h(
             'div',
             { class: 'plan-head' },
-            h('span', { class: 'pname' }, run.plan),
+            run.kind === 'task' ? h('span', { class: 'kind' }, 'task') : null,
+            h('span', { class: 'pname' }, run.name),
             badge(st),
             !follow && live && live.run.runId !== run.runId
-                ? h('button', { type: 'button', onclick: () => setFollow(true) }, `Back to live: ${live.run.plan}`)
+                ? h('button', { type: 'button', onclick: () => setFollow(true) }, `Back to live: ${live.run.name}`)
                 : null,
         ),
         h(
@@ -416,7 +431,7 @@ function planHeader(run: PlanRun): HTMLElement {
             h('span', {}, 'bot ', h('b', {}, run.bot)),
             h('span', {}, 'started ', h('b', {}, dayClock(run.startedAt))),
             h('span', {}, run.state === 'running' ? 'running for ' : 'took ', h('b', {}, dur(end - run.startedAt))),
-            h('span', {}, 'phase runs ', h('b', {}, run.runs.length)),
+            run.kind === 'plan' ? h('span', {}, 'phase runs ', h('b', {}, run.runs.length)) : null,
             stops ? h('span', {}, 'until ', h('b', {}, stops)) : null,
             run.requires.length ? h('span', {}, 'requires ', h('b', {}, run.requires.join(', '))) : null,
             run.session ? h('span', {}, 'session ', h('b', { class: 'mono' }, run.session.slice(0, 8))) : null,
@@ -466,7 +481,7 @@ function planHeader(run: PlanRun): HTMLElement {
                     'div',
                     { class: 'result' },
                     badge('killed'),
-                    ' The plan log has no result and its process is gone: hard-killed or crashed.',
+                    ` The ${run.kind} log has no result and its process is gone: hard-killed or crashed.`,
                 )
               : null,
         run.errors.length
@@ -493,7 +508,7 @@ function niceStep(spanMs: number): number {
     return TICK_STEPS_MS.find(st => spanMs / st <= 8) ?? TICK_STEPS_MS.at(-1)!;
 }
 
-function timeline(run: PlanRun): HTMLElement {
+function timeline(run: Run): HTMLElement {
     const lanes = run.phases.length ? run.phases.map(p => p.phase) : [...new Set(run.runs.map(r => r.phase))];
     const t0 = run.startedAt;
     const t1 = Math.max(run.endedAt ?? Date.now(), t0 + 1000);
@@ -507,7 +522,7 @@ function timeline(run: PlanRun): HTMLElement {
 
     const svg = s(
         'svg',
-        { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `Phase runs of ${run.plan} over time` },
+        { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `Phase runs of ${run.name} over time` },
         ticks.map(t =>
             s(
                 'g',
@@ -531,7 +546,7 @@ function timeline(run: PlanRun): HTMLElement {
         run.runs.map(r => {
             const lane = lanes.indexOf(r.phase);
             if (lane < 0) return null;
-            const st = runStatus(r, run);
+            const st = phaseRunStatus(r, run);
             const x0 = x(r.startedAt);
             const w = Math.max(4, x(r.endedAt ?? t1) - x0);
             const y = lane * LANE + 5;
@@ -556,7 +571,7 @@ function timeline(run: PlanRun): HTMLElement {
             ? s('line', { class: 'now', x1: x(t1), x2: x(t1), y1: 0, y2: lanes.length * LANE })
             : null,
     );
-    const used = new Set(run.runs.map(r => runStatus(r, run)));
+    const used = new Set(run.runs.map(r => phaseRunStatus(r, run)));
     return h(
         'section',
         { class: 'card timeline' },
@@ -572,7 +587,7 @@ function timeline(run: PlanRun): HTMLElement {
 
 // ---- phase table ----
 
-function phaseTable(run: PlanRun): HTMLElement {
+function phaseTable(run: Run): HTMLElement {
     const lastSel = run.selections.at(-1);
     const open = run.runs.at(-1);
     const current = open && open.endedAt === null ? open.phase : null;
@@ -580,7 +595,7 @@ function phaseTable(run: PlanRun): HTMLElement {
         const mine = run.runs.filter(r => r.phase === p.phase);
         const counts = new Map<Status, number>();
         for (const r of mine) {
-            const st = runStatus(r, run);
+            const st = phaseRunStatus(r, run);
             counts.set(st, (counts.get(st) ?? 0) + 1);
         }
         const summary = run.result?.phases?.find(x => x.phase === p.phase);
@@ -677,7 +692,7 @@ function highlight(phase: string) {
 
 // ---- phase run panel ----
 
-function phasePanel(run: PlanRun): HTMLElement {
+function phasePanel(run: Run): HTMLElement {
     const entry = shownEntry(run);
     if (!entry)
         return h(
@@ -688,7 +703,7 @@ function phasePanel(run: PlanRun): HTMLElement {
         );
     const log = phaseLogFor(entry, run);
     const sel = run.selections[entry.selection];
-    const st = runStatus(entry, run);
+    const st = phaseRunStatus(entry, run);
     const steps = Object.entries(log?.stepRuns ?? {}).sort((a, b) => b[1] - a[1]);
     return h(
         'section',
@@ -696,8 +711,12 @@ function phasePanel(run: PlanRun): HTMLElement {
         h(
             'div',
             { class: 'plan-head' },
-            h('h2', { class: 'flush' }, `Phase run ${entry.index + 1} of ${run.runs.length}`),
-            h('b', {}, entry.phase),
+            run.kind === 'plan'
+                ? [
+                      h('h2', { class: 'flush' }, `Phase run ${entry.index + 1} of ${run.runs.length}`),
+                      h('b', {}, entry.phase),
+                  ]
+                : h('h2', { class: 'flush' }, 'Task run'),
             badge(st),
             picked !== null ? h('button', { type: 'button', onclick: () => pickRun(null) }, 'Show latest') : null,
         ),
@@ -717,33 +736,7 @@ function phasePanel(run: PlanRun): HTMLElement {
             h(
                 'div',
                 {},
-                h('div', { class: 'sub-h' }, 'Chosen at this selection'),
-                sel
-                    ? h(
-                          'div',
-                          {},
-                          h(
-                              'div',
-                              { class: 'chips' },
-                              Object.entries(sel.checks).map(([k, v]) =>
-                                  h('span', { class: 'chip' }, k, h('b', { class: v === 'chosen' ? '' : 'muted' }, v)),
-                              ),
-                          ),
-                          sel.last
-                              ? h(
-                                    'div',
-                                    { class: 'sub-h' },
-                                    `after ${sel.last.phase} ${sel.last.status}: ${sel.last.reason}`,
-                                )
-                              : null,
-                          h('div', { class: 'sub-h' }, `Inventory (${sel.free} free)`),
-                          countChips(sel.inventory),
-                          h('div', { class: 'sub-h' }, 'Bank as last seen'),
-                          sel.bank
-                              ? countChips(sel.bank)
-                              : h('span', { class: 'muted' }, 'not seen open yet in this plan'),
-                      )
-                    : h('span', { class: 'muted' }, 'no selection recorded'),
+                run.kind === 'task' ? taskParams(run, log) : selectionPanel(sel),
                 h('div', { class: 'sub-h' }, 'Steps entered'),
                 steps.length
                     ? h(
@@ -756,7 +749,7 @@ function phasePanel(run: PlanRun): HTMLElement {
             h(
                 'div',
                 {},
-                h('div', { class: 'sub-h' }, 'Phase log'),
+                h('div', { class: 'sub-h' }, run.kind === 'plan' ? 'Phase log' : 'Log'),
                 log && log.lines.length
                     ? h(
                           'pre',
@@ -774,6 +767,37 @@ function phasePanel(run: PlanRun): HTMLElement {
             ),
         ),
     );
+}
+
+/** A task run's params: what it was started with, where a phase shows the selection that chose it. */
+function taskParams(run: Run, log: PhaseLog | null): Child[] {
+    return [
+        h('div', { class: 'sub-h' }, 'Params'),
+        h('pre', { class: 'params-json' }, JSON.stringify(run.phases[0]?.params ?? log?.params ?? null, null, 2)),
+    ];
+}
+
+/** The selection that started a phase run: each phase's answer, the inventory and the bank it saw. */
+function selectionPanel(sel: Selection | undefined): Child[] {
+    const head = h('div', { class: 'sub-h' }, 'Chosen at this selection');
+    if (!sel) return [head, h('span', { class: 'muted' }, 'no selection recorded')];
+    return [
+        head,
+        h(
+            'div',
+            { class: 'chips' },
+            Object.entries(sel.checks).map(([k, v]) =>
+                h('span', { class: 'chip' }, k, h('b', { class: v === 'chosen' ? '' : 'muted' }, v)),
+            ),
+        ),
+        sel.last
+            ? h('div', { class: 'sub-h' }, `after ${sel.last.phase} ${sel.last.status}: ${sel.last.reason}`)
+            : null,
+        h('div', { class: 'sub-h' }, `Inventory (${sel.free} free)`),
+        countChips(sel.inventory),
+        h('div', { class: 'sub-h' }, 'Bank as last seen'),
+        sel.bank ? countChips(sel.bank) : h('span', { class: 'muted' }, 'not seen open yet in this plan'),
+    ];
 }
 
 function countChips(counts: Record<string, number>): HTMLElement {
@@ -879,7 +903,7 @@ function botPanel(): HTMLElement {
 
 // ---- source ----
 
-function sourcePanel(reply: PlanReply): HTMLElement {
+function sourcePanel(reply: RunReply): HTMLElement {
     if (!reply.source)
         return h(
             'section',
@@ -926,6 +950,101 @@ function tint(line: string): Child[] {
     return out;
 }
 
+// ---- world ----
+
+/** Whether the 3D view is open; remembered per browser. */
+const WORLD_OPEN_KEY = 'plan-view:world-open';
+/** How often a feed that is not on is asked about again: an engine restart turns it on. */
+const WORLD_RECHECK_MS = 15_000;
+let worldOpen = true;
+/** The world panel's bot, and what /api/world says of it. */
+let worldBot: string | null = null;
+let world: WorldInfo | null = null;
+let worldError: string | null = null;
+let worldTimer: ReturnType<typeof setTimeout> | null = null;
+
+function readWorldOpen(): boolean {
+    try {
+        return localStorage.getItem(WORLD_OPEN_KEY) !== 'false';
+    } catch {
+        return true;
+    }
+}
+function setWorldOpen(open: boolean) {
+    worldOpen = open;
+    try {
+        localStorage.setItem(WORLD_OPEN_KEY, String(open));
+    } catch {
+        // storage blocked: open for this page only
+    }
+    renderWorld();
+}
+
+/** rs-world, served by the viewer, streaming the engine's feed and following the bot. */
+const worldSrc = (w: WorldInfo) => `/rs-world/?${q({ live: w.feed, follow: w.follow })}`;
+
+async function loadWorld(name: string) {
+    if (worldTimer) clearTimeout(worldTimer);
+    worldTimer = null;
+    if (worldBot !== name) {
+        worldBot = name;
+        world = null;
+        worldError = null;
+        renderWorld();
+    }
+    try {
+        const w = await getJson<WorldInfo>(`/api/world?${q({ bot: name })}`);
+        if (worldBot !== name) return;
+        world = w;
+        worldError = null;
+    } catch (e) {
+        if (worldBot !== name) return;
+        worldError = String(e);
+    }
+    if (world?.status !== 'on') worldTimer = setTimeout(() => void loadWorld(name), WORLD_RECHECK_MS);
+    renderWorld();
+}
+
+/** The world panel's one line: what it follows, or why it shows nothing. */
+function worldStatus(isolated: boolean): string {
+    if (!worldBot) return '';
+    if (worldError) return `Can't tell where ${worldBot} is: ${worldError}`;
+    if (!world) return 'Asking the engine for its world feed…';
+    if (world.status !== 'on') return `No 3D view: ${world.message ?? world.status}`;
+    if (!isolated)
+        return 'No 3D view: this page is not cross-origin isolated. Open the viewer at http://localhost or 127.0.0.1.';
+    // The bot panel's observer knows whether a game client plays the bot now.
+    if (botSnap && botSnap.status !== 'live')
+        return `Not in the game now (${botSnap.status}): the view follows ${world.follow} once a client logs in`;
+    return `Following ${world.follow} over ${world.feed}`;
+}
+
+function renderWorld() {
+    const toggle = $<HTMLButtonElement>('world-toggle');
+    const status = $('world-status');
+    const tab = $<HTMLAnchorElement>('world-tab');
+    const frame = $('world-frame');
+    toggle.setAttribute('aria-pressed', String(worldOpen));
+    // rs-world shares memory with its workers, which only a cross-origin isolated page may: the
+    // server sends the headers, but a browser isolates only a secure context (https or localhost).
+    const isolated = window.crossOriginIsolated;
+    /** The world to show: its feed is on and the page can run rs-world. */
+    const ready = world?.status === 'on' && isolated ? world : null;
+    status.textContent = worldStatus(isolated);
+    tab.hidden = !ready;
+    if (world) tab.href = worldSrc(world);
+    if (!worldOpen || !ready) {
+        // Unloading it stops the renderer and closes its feed connection.
+        frame.replaceChildren();
+        frame.hidden = true;
+        return;
+    }
+    frame.hidden = false;
+    const src = worldSrc(ready);
+    if (frame.querySelector('iframe')?.dataset.src === src) return;
+    frame.replaceChildren(h('iframe', { src, 'data-src': src, title: `${ready.follow} in the game world (rs-world)` }));
+}
+
 // ---- tooltip ----
 
 function initTip() {
@@ -949,9 +1068,18 @@ function initTip() {
 
 // ---- boot ----
 
+const botOption = (b: BotInfo) =>
+    h(
+        'option',
+        { value: b.bot, selected: b.bot === bot },
+        `${b.bot}${b.latest?.state === 'running' ? ' ▶' : ''} (${b.runs})`,
+    );
+
 async function init() {
     initTip();
     $('follow').addEventListener('click', () => setFollow(!follow));
+    worldOpen = readWorldOpen();
+    $('world-toggle').addEventListener('click', () => setWorldOpen(!worldOpen));
     const select = $<HTMLSelectElement>('bot');
     let bots: BotInfo[] = [];
     try {
@@ -961,21 +1089,20 @@ async function init() {
         return;
     }
     const hash = readHash();
-    bot = bots.find(b => b.bot === hash.bot)?.bot ?? bots[0]?.bot ?? null;
+    // Integration tests' throwaway bots go last, apart, so they don't bury the real ones.
+    const real = bots.filter(b => !b.test);
+    const tests = bots.filter(b => b.test);
+    bot = bots.find(b => b.bot === hash.bot)?.bot ?? real[0]?.bot ?? bots[0]?.bot ?? null;
     select.replaceChildren(
-        ...bots.map(b =>
-            h(
-                'option',
-                { value: b.bot, selected: b.bot === bot },
-                `${b.bot}${b.latest?.state === 'running' ? ' ▶' : ''} (${b.plans})`,
-            ),
-        ),
+        ...real.map(botOption),
+        ...(tests.length ? [h('optgroup', { label: 'Integration test bots' }, tests.map(botOption))] : []),
     );
     select.addEventListener('change', () => {
         bot = select.value;
         follow = true;
         viewing = null;
         connect(bot);
+        void loadWorld(bot);
         writeHash();
         schedule();
     });
@@ -983,16 +1110,17 @@ async function init() {
         schedule();
         return;
     }
+    void loadWorld(bot);
     if (hash.run) {
         follow = false;
         try {
-            show(await getJson<PlanReply>(`/api/plan?${q({ bot, runId: hash.run })}`));
+            show(await getJson<RunReply>(`/api/run?${q({ bot, runId: hash.run })}`));
         } catch {
             follow = true;
         }
     }
     connect(bot);
-    // Durations and the timeline's "now" move while a plan runs.
+    // Durations and the timeline's "now" move while a run runs.
     setInterval(() => {
         if (viewing?.run.state === 'running') schedule();
     }, 1000);

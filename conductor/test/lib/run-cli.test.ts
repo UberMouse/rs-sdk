@@ -314,10 +314,20 @@ describe('conductorSession', () => {
     });
 
     test("a plan log's source event names the plan, its copy, this process and its session", () => {
-        expect(sourceEvent('plans/p.ts', 'runs/x.plan.ts', { CLAUDE_CODE_SESSION_ID: 's' }, root)).toEqual({
+        expect(
+            sourceEvent({ file: 'plans/p.ts', copy: 'runs/x.plan.ts' }, { CLAUDE_CODE_SESSION_ID: 's' }, root),
+        ).toEqual({
             type: 'source',
             file: 'plans/p.ts',
             copy: 'runs/x.plan.ts',
+            pid: process.pid,
+            session: 's',
+        });
+    });
+
+    test("a task run's source event names only this process and its session", () => {
+        expect(sourceEvent(null, { CLAUDE_CODE_SESSION_ID: 's' }, root)).toEqual({
+            type: 'source',
             pid: process.pid,
             session: 's',
         });
