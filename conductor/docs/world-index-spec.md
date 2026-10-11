@@ -608,7 +608,10 @@ Note: `oploc` and `aploc` both count; one placement often has both, and rules de
   (real data; see Task 5)
 
 A placement's config name and its config's `category` are matched against the trigger index and
-the dbrows. Each rule returns `{ kind, subtype } | null`. Two rules matching one placement is a build
+the dbrows. Each rule returns `{ kind, subtype, ops } | null` (`ops`: the op slots whose triggers made the match). A
+config may have several kinds when they come from **different ops** (`duel_fadli`: op3 bank, op4
+shop), so `classifier` returns `Classified[]` and a placement becomes one feature per kind. Two
+rules matching through the **same** op is a build
 error (it means a rule is too broad); no rule matching means "not a feature" (scenery).
 
 **Rules (in this order; each a small named function in `classify.ts`):**
@@ -617,12 +620,13 @@ error (it means a rule is too broad); no rule matching means "not a feature" (sc
 |---|---|---|
 | `tree` | loc listed in a `woodcutting_trees` row's `tree` column | row name minus `_tree_table`/`_table` (`yew`, `normal`, `oak`) |
 | `rock` | loc in a `mining_table` row's `rock` column | `ore_name` |
-| `fishing-spot` | npc whose name or category has an `opnpc` trigger under `skill_fishing/` | category (`saltfish`, `freshfish`, `memberfish`, `rarefish`, ...) |
-| `bank` | loc or npc with an op trigger whose body contains `@openbank` (directly, or via a label in the same file that does), or `category=bank_teller` npc | `booth`, `chest` or `banker` by source and name |
-| `shop` | loc or npc with an op trigger whose body calls `~openshop(<inv>, ...)` | `<inv>` (the shop inventory; join with `wiki/shops/`) |
-| `furnace`, `anvil`, `range`, `fire`, `spinning-wheel`, `pottery-wheel`, `pottery-oven`, `sand-pit`, `water-source`, `altar`, `rc-altar`, `rc-ruins` | loc whose category is `smithing_furnace`, `anvil`, `cooking_oven`, `cooking_fire`, `spinning_wheel`, `potters_wheel`, `pottery_oven`, `sand_pit`, `watersource`, `prayer_altar`, `rc_altar`, `rc_ruins` | `''` (`rc-altar`/`rc-ruins`: the rune, from the loc name) |
-| `stall` | loc with an `oploc` trigger under `skill_thieving/` whose name ends `_stall_stealing` or `_market` | loc name |
-| `thieving-chest` | other locs with an `oploc` trigger under `skill_thieving/` | loc name |
+| `fishing-spot` | npc (or loc) whose name or category has an op trigger under `skill_fishing/scripts/fishing_spots/` (not `fishing_guild.rs2`'s shop and quest npcs) | category (`saltfish`, `freshfish`, `memberfish`, `rarefish`, ...), else the config name |
+| `bank` | loc or npc with an op trigger that reaches `@openbank` (its body, or a label/proc it calls, one level deep; label and proc names are global), or `category=bank_teller` npc | `booth`, `chest` or `banker` by source and name |
+| `shop` | loc or npc with an op trigger that reaches `~openshop(<inv>, ...)` or `~openshop_activenpc` (the npc's `param=owned_shop`, as `wiki/generate-shops.ts` reads it) | the shop inv (`owned_shop`, else the first explicit inv) |
+| `tanner` | npc with an op trigger that reaches the tanning interface (`[label,tan_leather_choices]`) | `''` |
+| `furnace`, `anvil`, `range`, `fire`, `spinning-wheel`, `pottery-wheel`, `pottery-oven`, `sand-pit`, `water-source`, `altar`, `rc-altar`, `rc-ruins` | loc whose category is `smithing_furnace`, `anvil`, `cooking_oven`, `cooking_fire`, `spinning_wheel`, `potters_wheel`, `pottery_oven`, `sand_pit`, `watersource`, `prayer_altar`, `rc_altar`, `rc_ruins` | `''` (`rc-altar`/`rc-ruins`: the rune, from the loc's `param=rune_type` via `runecraft_table`, as `runecraft.rs2 ~get_runecraft_data` does) |
+| `stall` | loc with an `oploc` trigger under `skill_thieving/scripts/stalls/` | loc name |
+| `thieving-chest` | loc with an `oploc` trigger under `skill_thieving/scripts/chest/` (not the locked doors in `doors/`) | loc name |
 | `pickpocket` | npc (or category) with an `opnpc` trigger under `skill_thieving/` | npc config |
 | `connector` | loc with an op trigger under `ladders+stairs/` | `''` |
 | `npc` | any other npc whose config has an `Attack` op and combat stats (reuse `hasCombatStats` from `wiki/generate-npcs.ts:680`) | npc config |
@@ -725,10 +729,12 @@ For the `@openbank` "via a label" case: build, per file, the set of labels whose
 
 - [ ] `parseTriggers` indexes `op`/`ap` loc/npc triggers (ops 1-5 and `u`), names and categories,
       bodies to the next header; labels/procs/queues are not triggers; tested.
-- [ ] `classifier` implements every row of the rule table, in order; two matching rules throw
-      naming both; no rule returns `null`. One scripted test per rule (positive) plus the scenery
-      negative.
-- [ ] `@openbank` is detected directly and one label deep within the same file; tested.
+- [ ] `classifier` returns `Classified[]`: one entry per kind matched through distinct ops
+      (`duel_fadli` -> bank and shop, tested on real data); two rules matching through the same
+      op throw naming both; scenery returns `[]`. One scripted test per rule (positive) plus the
+      scenery negative.
+- [ ] `@openbank` (and the shop/tanner targets) are detected directly and one label/proc call
+      deep; tested.
 - [ ] A real-data test (`classify.real.test.ts`) classifies, from the real configs/dbrows/
       triggers: `bankbooth` bank, `bankboothclosed` and `loc_2214` not banks, `yewtree` tree/yew,
       a `mining_table` iron rock rock/iron, `banker1` bank/banker, `duel_fadli` bank,
