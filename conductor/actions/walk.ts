@@ -17,6 +17,9 @@
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
 // - A route that crosses the Wilderness (the surface one, or the Edgeville dungeon's) to a destination
 //   outside it is `no-path`, never walked: upstream walks whatever the pathfinder returns.
+// - On a raised section of an agility course, or inside the Gnome Stronghold's fence with a destination outside
+//   it, the ground pathfinder has no route out, so the walk first crosses the course's obstacles forward to the
+//   ground, or walks to the gate and passes it outward (leaveEnclosure); upstream fails `no-path`.
 // - A destination on another plane (a level above or below, or underground at z >= 6400) is reached through the
 //   level connectors of lib/connectors.ts (staircases, ladders), used with the climb op; upstream has none
 //   and fails `no-path`. The walk keeps one tick budget across the legs and the climbs.
@@ -27,12 +30,18 @@ import { TICK_MS } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
 import { CLIMB_MAX_TICKS, climb } from './climb';
 import type { ActionContext } from './context';
+import { courseSectionOf, leaveCourse } from './course';
+import { GATE_ATTEMPT_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
 import { interactLoc } from './interact';
 import { messageCursor, messageSince } from './messages';
 import { collisionPaths, type DoorInfo, type PathResult, type Pathfinder, type Waypoint } from './paths';
 
 /** bot.walkTo's default tolerance, in tiles (Chebyshev, the game's metric). */
 export const WALK_TOLERANCE = 3;
+/** Open clicks of the outward pass of the Gnome Stronghold gate (no dialog starts from inside, so one rarely repeats). */
+const GATE_OUT_ATTEMPTS = 2;
+/** The worst case of that pass, in ticks, which a walk keeps back for it. */
+export const GATE_OUT_TICKS = GATE_OUT_ATTEMPTS * GATE_ATTEMPT_TICKS;
 /** Route queries before the walk gives up (upstream MAX_ITERATIONS). */
 const MAX_ROUTES = 50;
 /** Blocking-door opens a walk tries when it is stuck (upstream MAX_DOOR_RETRIES). */
@@ -198,11 +207,88 @@ export function* walkTo(
     const p = ctx.state().player;
     // The inner walk reports a missing player or bad coordinates.
     if (!p || !Number.isFinite(x) || !Number.isFinite(z)) return yield* walkOnPlane(ctx, x, z, tolerance, opts);
+    const left = yield* leaveEnclosure(ctx, x, z, opts);
+    if (left) return left;
     const sameSide = z >= UNDERGROUND_Z === p.worldZ >= UNDERGROUND_Z;
     const level = opts.level ?? (sameSide ? p.level : 0);
     if (planeOf(level, x, z) === planeOf(p.level, p.worldX, p.worldZ))
         return yield* walkOnPlane(ctx, x, z, tolerance, opts);
     return yield* walkAcrossPlanes(ctx, { level, x, z }, tolerance, opts);
+}
+
+/**
+ * Gets the bot out of where the ground pathfinder has no route from, before a walk to (x, z) starts, and
+ * returns nothing when there is nothing to do (every ordinary walk) or when the bot is out. A failure is
+ * `stuck` (`timeout`, advancing, when the walk to the gate ran out of ticks nearer it).
+ */
+function* leaveEnclosure(ctx: ActionContext, x: number, z: number, opts: WalkOptions): Op<WalkResult | undefined> {
+    const early = yield* leaveCourseSection(ctx, x, z, opts);
+    if (early) return early;
+    return yield* leaveGnomeStronghold(ctx, x, z, opts);
+}
+
+/** On a raised obstacle section of an agility course (a run that ended mid-course): crosses its obstacles on to the ground (course.ts `leaveCourse`). */
+function* leaveCourseSection(ctx: ActionContext, x: number, z: number, opts: WalkOptions): Op<WalkResult | undefined> {
+    if (!courseSectionOf(ctx.state())) return undefined;
+    const r = yield* leaveCourse(ctx, opts.reserveTicks ?? WALK_RESERVE_TICKS);
+    if (r.ok) return undefined;
+    return {
+        ok: false,
+        reason: r.reason === 'no-time' ? 'no-time' : 'stuck',
+        message: `Could not leave the agility course to walk to (${x}, ${z}): ${r.message}`,
+    };
+}
+
+/**
+ * Inside the Gnome Stronghold's fence with a destination outside it: walks to the gate's inside stand tile and
+ * passes the gate outward (gate.ts `passGate`); the fence is closed all round, so the pathfinder finds no route
+ * out. The inward direction is the travel task's `gnome-gate` step.
+ */
+function* leaveGnomeStronghold(
+    ctx: ActionContext,
+    x: number,
+    z: number,
+    opts: WalkOptions,
+): Op<WalkResult | undefined> {
+    const reserve = opts.reserveTicks ?? WALK_RESERVE_TICKS;
+    const p = ctx.state().player;
+    const g = GNOME_GATE;
+    const b = g.bounds;
+    if (!p || p.level !== 0 || z >= UNDERGROUND_Z) return undefined;
+    // The bounds box first: the fence fill (cached) is only worth asking about near the Stronghold.
+    const inBox = (px: number, pz: number) => px >= b.minX && px <= b.maxX && pz >= b.minZ && pz <= b.maxZ;
+    if (!inBox(p.worldX, p.worldZ)) return undefined;
+    const paths = ctx.pathfinder ?? collisionPaths;
+    if (!insideFence(paths, g, p.worldX, p.worldZ)) return undefined;
+    // A destination tile blocked by a tree, booth or loc is outside the fill, so a tile next to the fill counts too.
+    if (inBox(x, z) && nearFill(paths, g, x, z)) return undefined;
+
+    const what = `the Gnome Stronghold gate to walk to (${x}, ${z})`;
+    const stand = g.innerStand;
+    const before = chebyshev(posOf(p), stand);
+    const walked = yield* walkOnPlane(ctx, stand.x, stand.z, GATE_STAND_TOLERANCE, {
+        maxTicks: opts.maxTicks,
+        reserveTicks: reserve + GATE_OUT_TICKS,
+    });
+    if (!walked.ok) {
+        const now = ctx.state().player;
+        const nearer = !!now && chebyshev(posOf(now), stand) < before;
+        return failedLeg(walked, nearer, `walking to ${what}: `);
+    }
+    const left = ctx.stepTicksLeft?.();
+    if (left !== undefined && left < GATE_OUT_TICKS + reserve)
+        return { ok: false, reason: 'no-time', message: `No time to pass ${what}: ${left} ticks left` };
+    const through = yield* passGate(ctx, g, 'out', GATE_OUT_ATTEMPTS);
+    if (!through.ok) return { ok: false, reason: 'stuck', message: `Could not pass ${what}: ${through.message}` };
+    yield* log('walk: passed the Gnome Stronghold gate outward');
+    return undefined;
+}
+
+/** The tile is in the gate's fence fill or within one tile (Chebyshev) of it. */
+function nearFill(paths: Pathfinder, g: typeof GNOME_GATE, x: number, z: number): boolean {
+    for (let dx = -1; dx <= 1; dx++)
+        for (let dz = -1; dz <= 1; dz++) if (insideFence(paths, g, x + dx, z + dz)) return true;
+    return false;
 }
 
 /**

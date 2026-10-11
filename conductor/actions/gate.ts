@@ -7,8 +7,11 @@
 // answering "Sorry, I'm a bit busy." ends it, and the next Open passes. This op clicks that choice
 // (the dialog guard clears the "continue" pages and leaves the choice) and clicks Open again, up to
 // GATE_ATTEMPTS times. Femi's dialog is the one this op opens on purpose, so it is answered here.
+// Outward ('out', from the inside stand tile north of the gate) the gate walks the bot south through it;
+// Femi's dialog never starts from the inside, so `attempts` (fewer than GATE_ATTEMPTS) bounds the Open
+// clicks and the bot has passed once its z is at or below `exitZ`.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
-import { type Op, scan, send, wait } from '../core/op';
+import { type Op, scan, send, ticks, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
@@ -21,8 +24,14 @@ export const GATE_ATTEMPTS = 3;
 export const GATE_DIALOG_TICKS = Math.ceil(12_000 / TICK_MS);
 /** Ticks after answering Femi for the rest of his chat to end, or the bot to pass. */
 export const GATE_SETTLE_TICKS = Math.ceil(8000 / TICK_MS);
-/** The worst case of one pass, in ticks. Walks and steps reserve this. */
-export const GATE_MAX_TICKS = GATE_ATTEMPTS * (1 + GATE_DIALOG_TICKS + 1 + GATE_SETTLE_TICKS);
+/** The worst case of one Open attempt, in ticks: the click, the wait for the dialog, the answer, the settle. */
+export const GATE_ATTEMPT_TICKS = 1 + GATE_DIALOG_TICKS + 1 + GATE_SETTLE_TICKS;
+/** The worst case of one inward pass, in ticks. Walks and steps reserve this. */
+export const GATE_MAX_TICKS = GATE_ATTEMPTS * GATE_ATTEMPT_TICKS;
+/** How close (Chebyshev) to a stand tile a walk to the gate may end before the gate is opened. */
+export const GATE_STAND_TOLERANCE = 2;
+/** Ticks to wait for the gate to show an Open option again: another player's pass leaves it open for a moment. */
+export const GATE_REAPPEAR_TICKS = 8;
 /** How far from the gate's origin tile a loc may be found (a multi-tile loc reports one of its tiles). */
 const LOC_SLACK = 3;
 const OPEN = /^open$/i;
@@ -33,10 +42,14 @@ export interface GateSpec {
     loc: { x: number; z: number };
     /** The loc's width in tiles, east from `loc.x`. */
     width: number;
-    /** The tile south of the gate to stand on before opening it. */
+    /** The tile south of the gate (outside), where an inward pass starts. */
     stand: { x: number; z: number };
-    /** The bot has passed once its z is this or more, within `loc.x - 1 .. loc.x + width`. */
+    /** The bot has passed inward once its z is this or more, within `loc.x - 1 .. loc.x + width`. */
     throughZ: number;
+    /** The tile north of the gate (inside) where an outward pass starts. */
+    innerStand: { x: number; z: number };
+    /** The bot has passed outward once its z is this or less, within `loc.x - 1 .. loc.x + width`. */
+    exitZ: number;
     /** A tile inside the fence the gate leads into, and the box the fence interior is searched in. */
     inside: { x: number; z: number };
     bounds: { minX: number; maxX: number; minZ: number; maxZ: number };
@@ -50,6 +63,9 @@ export const GNOME_GATE: GateSpec = {
     width: 5,
     stand: { x: 2461, z: 3381 },
     throughZ: 3385,
+    // gnome_gate.rs2: leaving, the gate walks the bot to (loc.x + 2, loc.z + 2) and forces it 3 tiles south.
+    innerStand: { x: 2461, z: 3385 },
+    exitZ: 3382,
     inside: { x: 2474, z: 3436 },
     bounds: { minX: 2340, maxX: 2540, minZ: 3330, maxZ: 3540 },
     decline: /busy/i,
@@ -64,9 +80,10 @@ export type GateResult =
       };
 
 const clean = (text: string) => text.replaceAll('\\n', '').replace(/@\w+@/g, '').trim();
-const passed = (s: BotWorldState, g: GateSpec) =>
+export type GateDirection = 'in' | 'out';
+const passed = (s: BotWorldState, g: GateSpec, dir: GateDirection) =>
     !!s.player &&
-    s.player.worldZ >= g.throughZ &&
+    (dir === 'in' ? s.player.worldZ >= g.throughZ : s.player.worldZ <= g.exitZ) &&
     s.player.worldX >= g.loc.x - 1 &&
     s.player.worldX <= g.loc.x + g.width;
 const gap = (l: NearbyLoc, g: GateSpec) => Math.max(Math.abs(l.x - g.loc.x), Math.abs(l.z - g.loc.z));
@@ -77,14 +94,24 @@ const findGate = (locs: readonly NearbyLoc[], g: GateSpec) =>
 
 /**
  * Opens the gate and walks through it, answering Femi's boxes dialog by declining. `ok` once the bot
- * stands north of the gate. The bot should stand near the gate's south side (walkTo there first); the
- * client's own pathing covers the last tiles. A bot already through is `ok` at once.
+ * stands north of the gate (`dir` 'in', from its south side) or south of it ('out', from the north side, where Femi's
+ * dialog never starts; `attempts` bounds the Open clicks). The bot should stand near the gate's side (walkTo
+ * there first); the client's own pathing covers the last tiles. A bot already through is `ok` at once.
  */
-export function* passGate(ctx: ActionContext, g: GateSpec): Op<GateResult> {
+export function* passGate(
+    ctx: ActionContext,
+    g: GateSpec,
+    dir: GateDirection = 'in',
+    attempts = GATE_ATTEMPTS,
+): Op<GateResult> {
     const first = ctx.state();
-    if (passed(first, g)) return { ok: true };
+    if (passed(first, g, dir)) return { ok: true };
     let loc = findGate(first.nearbyLocs, g);
     if (!loc) loc = findGate(yield* scan(), g);
+    if (!loc) {
+        yield* ticks(GATE_REAPPEAR_TICKS);
+        loc = findGate(yield* scan(), g);
+    }
     if (!loc) return { ok: false, reason: 'no-loc', message: `No openable gate at (${g.loc.x}, ${g.loc.z}) in sight` };
 
     const cursor = messageCursor(first);
@@ -92,15 +119,15 @@ export function* passGate(ctx: ActionContext, g: GateSpec): Op<GateResult> {
     const choiceOpen = (s: BotWorldState) =>
         s.dialog.isOpen && s.dialog.options.some(o => g.decline.test(clean(o.text)));
     let declined = false;
-    for (let attempt = 0; attempt < GATE_ATTEMPTS; attempt++) {
+    for (let attempt = 0; attempt < attempts; attempt++) {
         const sent = yield* interactLoc(loc, OPEN);
         if (!sent.ok) return { ok: false, reason: 'send-failed', message: sent.message };
         const w = yield* wait(
             `pass gate (${g.loc.x},${g.loc.z})`,
-            s => passed(s, g) || refused(s) || choiceOpen(s),
+            s => passed(s, g, dir) || refused(s) || choiceOpen(s),
             GATE_DIALOG_TICKS,
         );
-        if (passed(w.state, g)) return { ok: true };
+        if (passed(w.state, g, dir)) return { ok: true };
         if (refused(w.state))
             return { ok: false, reason: 'cant-reach', message: `Cannot reach the gate at (${g.loc.x}, ${g.loc.z})` };
         const choice = w.state.dialog.options.find(o => g.decline.test(clean(o.text)));
@@ -124,15 +151,15 @@ export function* passGate(ctx: ActionContext, g: GateSpec): Op<GateResult> {
         // The rest of his chat is "continue" pages the dialog guard clears during this wait.
         const done = yield* wait(
             `gate dialog end (${g.loc.x},${g.loc.z})`,
-            s => passed(s, g) || !s.dialog.isOpen,
+            s => passed(s, g, dir) || !s.dialog.isOpen,
             GATE_SETTLE_TICKS,
         );
-        if (passed(done.state, g)) return { ok: true };
+        if (passed(done.state, g, dir)) return { ok: true };
     }
     return {
         ok: false,
         reason: 'timeout',
-        message: `Gate at (${g.loc.x}, ${g.loc.z}) did not let the bot through after ${GATE_ATTEMPTS} tries${declined ? ' (Femi declined)' : ''}`,
+        message: `Gate at (${g.loc.x}, ${g.loc.z}) did not let the bot through after ${attempts} tries${declined ? ' (Femi declined)' : ''}`,
     };
 }
 

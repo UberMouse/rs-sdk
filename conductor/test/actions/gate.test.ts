@@ -11,6 +11,8 @@ const THROUGH = { x: 2461, z: 3385 };
 const south = world()
     .player({ at: SOUTH })
     .loc('Gate', 2459, 3383, { options: ['Open'] });
+const NORTH = { x: 2461, z: 3385 };
+const OUT = { x: 2461, z: 3382 };
 const states = (w = south, n = 3) => Array.from({ length: n }, (_, i) => ({ ...w.build(), tick: i }));
 const at =
     (to: { x: number; z: number }): Effect =>
@@ -65,6 +67,28 @@ describe('passGate', () => {
         const r = await runOp(states(south, GATE_ATTEMPTS * (GATE_DIALOG_TICKS + 2)), ctx => passGate(ctx, GNOME_GATE));
         expect(r.result).toMatchObject({ ok: false, reason: 'timeout' });
         expect(r.sends.filter(isOpen)).toHaveLength(GATE_ATTEMPTS);
+    });
+
+    test('outward, one Open click from the inside stand tile passes at z <= exitZ (no Femi)', async () => {
+        const w = south.player({ at: NORTH });
+        const r = await runOp(states(w), ctx => passGate(ctx, GNOME_GATE, 'out'), {
+            react: a => (isOpen(a) ? at(OUT) : undefined),
+        });
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends.map(s => s.type)).toEqual(['interactLoc']);
+    });
+
+    test('outward, a bot already south of the gate sends nothing', async () => {
+        const r = await runOp(states(south), ctx => passGate(ctx, GNOME_GATE, 'out'));
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends).toEqual([]);
+    });
+
+    test('outward, a gate that stays shut times out after `attempts` Open clicks', async () => {
+        const w = south.player({ at: NORTH });
+        const r = await runOp(states(w, 2 * (GATE_DIALOG_TICKS + 2)), ctx => passGate(ctx, GNOME_GATE, 'out', 2));
+        expect(r.result).toMatchObject({ ok: false, reason: 'timeout' });
+        expect(r.sends.filter(isOpen)).toHaveLength(2);
     });
 
     test('no gate in sight is no-loc', async () => {

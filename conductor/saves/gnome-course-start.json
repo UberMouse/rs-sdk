@@ -1,0 +1,66 @@
+{
+    "name": "gnome-course-start",
+    "purpose": "Combat ~40 (Atk/Str/Def 40, HP 45, bronze sword wielded), 25 shrimps, Agility 1, at the Gnome Stronghold course start (2474,3436). Tests walking off the course mid-lap and out of the Stronghold gate (travel to Varrock East).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2474,
+                "z": 3436
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 40,
+                "Defence": 40,
+                "Hitpoints": 45
+            },
+            "inventory": [
+                {
+                    "id": 315,
+                    "count": 25
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1277,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "01e23fe07a3ba7172428dec6b3c0bf7dc54205fe",
+    "createdAt": "2026-10-11T04:15:51.396Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2474,
+            "z": 3436,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 40,
+            "Hitpoints": 45
+        },
+        "inventory": [
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 25
+            }
+        ],
+        "worn": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
