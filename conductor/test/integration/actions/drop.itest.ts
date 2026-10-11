@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 import type { BotSDK } from '../../../../sdk/index';
 import { Items } from '../../../../sdk/test/utils/save-generator';
 import type { BotWorldState } from '../../../../sdk/types';
-import { drop } from '../../../actions/drop';
+import { DROP_ORES_PER_TICK, drop, dropOres } from '../../../actions/drop';
 import { withFixtureBot } from '../harness';
 import { runLive } from './live';
 
@@ -88,6 +88,25 @@ test(
                 async () => fromOp(await runLive(sdk, ctx => drop(ctx, LOGS))),
             );
             expect(results).toEqual(EXPECTED);
+        });
+    },
+    TIMEOUT_MS,
+);
+
+test(
+    'dropOres sends at most the per-tick cap of drops for matching items and they leave the inventory',
+    async () => {
+        const four = [1, 2, 3, 4].map(() => ({ id: Items.LOGS, count: 1 }));
+        await withFixtureBot({ position: field(), inventory: four }, async ({ sdk }) => {
+            expect(countLogs(sdk.getInventory())).toBe(4);
+            const sent = await runLive(sdk, ctx => dropOres(ctx, LOGS));
+            expect(sent).toBe(DROP_ORES_PER_TICK);
+            await sdk.waitForCondition(() => countLogs(sdk.getInventory()) === 4 - sent, 5000);
+            expect(countLogs(sdk.getInventory())).toBe(1);
+            const rest = await runLive(sdk, ctx => dropOres(ctx, LOGS));
+            expect(rest).toBe(1);
+            await sdk.waitForCondition(() => countLogs(sdk.getInventory()) === 0, 5000);
+            expect(countLogs(sdk.getInventory())).toBe(0);
         });
     },
     TIMEOUT_MS,

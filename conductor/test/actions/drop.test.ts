@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
-import { DROP_WAIT_TICKS, drop } from '../../actions/drop';
+import { DROP_ORES_PER_TICK, DROP_WAIT_TICKS, drop, dropOres } from '../../actions/drop';
 import { consume } from '../react';
 import { world } from '../world';
 import { refuse, runOp } from './harness';
@@ -62,5 +62,26 @@ describe('drop', () => {
         const refused = await runOp(mixed.series(1), ctx => drop(ctx, LOGS), { respond: refuse });
         expect(refused.result).toEqual({ ok: false, reason: 'send-failed', slotsDropped: 0, message: 'not connected' });
         expect(refused.driver.ticksElapsed).toBe(0);
+    });
+});
+
+describe('dropOres', () => {
+    test('sends a drop for each matching slot without waiting, up to the per-tick cap', async () => {
+        const many = axe.inv('Logs', 5);
+        const { result, sends, driver } = await runOp(many.series(1), ctx => dropOres(ctx, LOGS));
+        expect(result).toBe(DROP_ORES_PER_TICK);
+        expect(sends).toEqual([dropOf(1), dropOf(2), dropOf(3)]);
+        expect(driver.ticksElapsed).toBe(0);
+    });
+
+    test('nothing matching sends nothing', async () => {
+        const { result, sends } = await runOp(axe.series(1), ctx => dropOres(ctx, LOGS));
+        expect(result).toBe(0);
+        expect(sends).toEqual([]);
+    });
+
+    test('stops at the first refused send', async () => {
+        const { result } = await runOp(mixed.series(1), ctx => dropOres(ctx, LOGS), { respond: refuse });
+        expect(result).toBe(0);
     });
 });

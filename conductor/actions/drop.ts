@@ -68,3 +68,28 @@ export function* drop(ctx: ActionContext, item: RegExp, amount: number | 'all' =
         message: `Dropped ${first.name} x${slotsDropped} slot${slotsDropped === 1 ? '' : 's'} of ${wanted}`,
     };
 }
+
+/** Most ore slots `dropOres` sends in one tick: a backlog is dropped over a few loops, not one burst. */
+export const DROP_ORES_PER_TICK = 3;
+
+// Not ported: sdk/actions.ts has no multi-drop method; closest upstream is dropItem @ 4c2069cc0.
+/**
+ * Sends a drop for up to `max` inventory slots matching `item` and does not wait for them to leave.
+ * A drop clears the bot's pending interaction
+ * (OpHeldHandler `clearPendingAction`) but the packets of one tick run in order, so a drop sent in the
+ * same tick before a loc click costs no swing: the caller sends its click after this. Returns how many
+ * drops were sent; stops at the first refused send (the inventory still shows what is left).
+ */
+export function* dropOres(ctx: ActionContext, item: RegExp, max: number = DROP_ORES_PER_TICK): Op<number> {
+    const slots = ctx
+        .state()
+        .inventory.filter(i => item.test(i.name))
+        .slice(0, max);
+    let sent = 0;
+    for (const slot of slots) {
+        const r = yield* send({ type: 'dropItem', slot: slot.slot, reason: `drop ${slot.name}` });
+        if (!r.success) break;
+        sent++;
+    }
+    return sent;
+}

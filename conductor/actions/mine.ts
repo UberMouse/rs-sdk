@@ -20,16 +20,24 @@ export type MineResult =
 /**
  * Mines `rock` and waits until `ore` is gained or the rock is gone. Success needs ore gained: a rock
  * that changes with none gained was mined out by another player, and ore already carried doesn't count.
+ * Ore the caller sent to be dropped just before (`dropOres`) may still be in the inventory when this
+ * starts: ore gained is a count above the lowest one seen since, so the drop landing is not a gain.
  * `no-option` and `send-failed` mean nothing reached the game: no Mine option, or the client refused
  * the send (not logged in, rock out of the loaded scene). A level or pickaxe the rock needs is not
  * checked here (the game only says so in chat and nothing changes, so it ends as `timeout`): tasks
  * refuse that in preflight.
  */
 export function* mine(ctx: ActionContext, rock: NearbyLoc, ore: RegExp): Op<MineResult> {
-    const before = countItems(ctx.state(), ore);
+    // Lowest count seen so far: a pending drop shrinks the count first, and the replacement ore is the gain.
+    let low = countItems(ctx.state(), ore);
     const sent = yield* interactLoc(rock, MINE_OPTION);
     if (!sent.ok) return { ok: false, reason: sent.reason, message: sent.message };
-    const gained = (s: BotWorldState) => countItems(s, ore) > before;
+    // Also tracks the lowest count; safe to call repeatedly on the same state.
+    const gained = (s: BotWorldState) => {
+        const held = countItems(s, ore);
+        low = Math.min(low, held);
+        return held > low;
+    };
     const gone = (s: BotWorldState) => !s.nearbyLocs.some(l => l.x === rock.x && l.z === rock.z && l.id === rock.id);
     const waited = yield* wait(`mine rock (${rock.x},${rock.z})`, s => gained(s) || gone(s), MINE_WAIT_TICKS);
     if (gained(waited.state)) return { ok: true };

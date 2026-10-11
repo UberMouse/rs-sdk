@@ -34,11 +34,11 @@ describe('mining: mining', () => {
         });
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('reached +50 Mining xp');
-        expect(r.sends).toEqual([MINE, MINE]);
+        expect(r.sends).toEqual([MINE, 'drop Copper ore', MINE]);
         // The tin rock is nearer but not listed.
         const targets = r.driver.commands.flatMap(c => (c.type === 'send' && 'x' in c.action ? [c.action.x] : []));
         expect(targets).toEqual([ROCK.x + 3, ROCK.x + 3]);
-        expect(r.result.inventoryDelta).toEqual({ 'Copper ore': 2 });
+        expect(r.result.inventoryDelta).toEqual({ 'Copper ore': 1 });
         expect(logged(r)).toEqual([]);
     });
 
@@ -125,6 +125,43 @@ describe('mining: mining', () => {
         expect(r.result.reason).toBe('reached +25 Mining xp');
         expect(r.sends).toEqual([MINE, 'continue dialog']);
         expect(logged(r)).toEqual([]);
+    });
+});
+
+/** `n` ore in the inventory with `total` ores' worth of xp. */
+const held = (n: number, total: number) => quarry.inv('Copper ore', n).skill('Mining', 1, 25 * total);
+
+describe('mining: drop as you go', () => {
+    test('the ore just mined is dropped before the next click, and the next ore still counts', async () => {
+        // First ore at tick 4; the drop lands at tick 6; the second ore at tick 12.
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: quarry.series(30, (w, i) =>
+                i >= 12 ? held(1, 2) : i >= 6 ? held(0, 1) : i >= 4 ? held(1, 1) : w,
+            ),
+            stops: xp(50),
+        });
+        expect(r.sends).toEqual([MINE, 'drop Copper ore', MINE]);
+        expect(r.result.reason).toBe('reached +50 Mining xp');
+        expect(r.result.stepRuns.mine).toBe(2);
+    });
+
+    test('onFull stop keeps the ore: nothing is dropped', async () => {
+        const r = await simulate(mining, {
+            params: { ...PARAMS, onFull: 'stop' },
+            timeline: quarry.series(20, (w, i) => (i >= 4 ? held(1, 1) : w)),
+            stops: xp(25),
+        });
+        expect(r.sends).toEqual([MINE]);
+    });
+
+    test('with no rock to mine the held ore is still dropped while waiting for a respawn', async () => {
+        const r = await simulate(mining, {
+            params: PARAMS,
+            timeline: mined.series(10, (w, i) => (i >= 6 ? quarry.tick(i) : w.inv('Copper ore', 1))),
+            stops: xp(25),
+        });
+        expect(r.sends[0]).toBe('drop Copper ore');
     });
 });
 

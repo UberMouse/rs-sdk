@@ -62,6 +62,20 @@ describe('mine', () => {
         expect(result.ok === false && result.reason).toBe('rock-gone');
     });
 
+    test('ore sent to be dropped just before leaves the count first; the ore that replaces it is a gain', async () => {
+        const carrying = quarry.inv('Copper ore', 1);
+        const { result } = await run(
+            carrying.series(20, (w, i) => (i >= 10 ? carrying.tick(i) : i >= 3 ? quarry.tick(i) : w)),
+        );
+        expect(result).toEqual({ ok: true });
+    });
+
+    test('a drop that never lands leaves the count flat, which is no gain', async () => {
+        const carrying = quarry.inv('Copper ore', 1);
+        const { result } = await run(carrying.series(1));
+        expect(result.ok === false && result.reason).toBe('timeout');
+    });
+
     test('nothing within the wait is a timeout, after its tick budget', async () => {
         const { result, driver } = await run(quarry.series(1));
         expect(result).toEqual({ ok: false, reason: 'timeout', message: 'timed out waiting for ore from rock' });

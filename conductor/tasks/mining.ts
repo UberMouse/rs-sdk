@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import type { NearbyLoc } from '../../sdk/types';
-import { drop } from '../actions/drop';
+import { drop, dropOres } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
 import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
@@ -175,9 +175,10 @@ export default defineTask({
     description:
         'Mine one or more rock types (`rock`, required: clay, copper, tin, iron, silver, coal, gold, mithril, adamantite, or a list; ' +
         'runite is refused, its ~24 min respawn outlasts the progress watchdog); the nearest minable rock of any listed type is mined. ' +
-        'When the inventory is full, `onFull` "drop" (default) drops the ores and keeps mining (for cheap ores; use "stop" for valuable ones), ' +
-        '"stop" ends the run done ("inventory full: N ores") holding them, e.g. to smelt. Ores held before the run count toward the full load, ' +
-        'and "drop" discards all held ore of the listed types, not only what the run mined. Needs a pickaxe ' +
+        '`onFull` "drop" (default) drops each ore as it is mined and also drops ore held before the run (nothing accumulates; the full-inventory ' +
+        'drop-ores step is a backstop; a full inventory of other items fails the run; for cheap ores, use "stop" for valuable ones). It discards all held ore ' +
+        'of the listed types, not only what the run mined. "stop" ends the run done ("inventory full: N ores") holding the ore, e.g. to smelt; ' +
+        'ore held before the run counts toward the full load. Needs a pickaxe ' +
         "(inventory or worn, usable at the base Mining level; Bob's Brilliant Axes in Lumbridge sells a bronze one) and the level for every listed rock. " +
         'When every listed rock in reach is mined out it waits for respawns, up to max(300 ticks, slowest listed rock respawn ticks + 75 ticks) ' +
         '(2 min for rocks up to coal, mithril 190 s, adamantite 350 s), then fails: with `area` "area depleted: no reachable <rock> rock in radius N for Ns", ' +
@@ -246,6 +247,9 @@ export default defineTask({
                     .state()
                     .nearbyLocs.filter(minable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
+                // Drop as you go: the drop is sent in the same tick as the next click and costs no swing, so
+                // the inventory rarely fills. This also drops ore held from before the run.
+                if (ctx.params.onFull === 'drop') yield* dropOres(ctx, d.orePattern);
                 if (!rock) return yield* waitForRespawn(ctx);
                 ctx.memory.noRockSinceTick = null;
                 const mined = yield* mine(ctx, rock, d.orePattern);
