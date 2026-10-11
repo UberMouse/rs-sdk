@@ -77,6 +77,10 @@ if (dist > 5) {
 
 - Pot (3232, 3238) -> Varrock East bank (3254, 3420) walked cleanly on every trip of the lure-cook-bank plan (3 trips per run), no hazards met. [v 2026-10-11 conductor2 local]
 
+### Varrock East bank to the Gnome Stronghold course
+
+- Varrock East bank (3254, 3420) -> course start (2474, 3436): `travel` to {x:2474, z:3436}, tolerance 3, no waypoints. 250 s; the task's `gnome-gate` step opens the Stronghold gate itself (a few dialogs, suspended by the dialog guard). Arrived (2473, 3436) with HP 19/23 at combat 25; no food eaten, no combat logged, the travel log records no damage event. White-wolf trouble is not confirmed or ruled out by one trip (HP was 19/23 on arrival, cause not logged). [v 2026-10-11 conductor2 local]
+
 ### Smithing loop legs (avoid the Varrock stone circle)
 
 - Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).
