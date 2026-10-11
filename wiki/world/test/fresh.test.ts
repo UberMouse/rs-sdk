@@ -5,7 +5,6 @@ import { join } from 'path';
 import { contentHash, serializeWorld, type GitRun } from '../build';
 import { loadFreshWorld } from '../load';
 import { removeStalePages } from '../render';
-import { ROOT } from '../paths';
 import { WORLD_FORMAT, type World } from '../types';
 
 const tmp = mkdtempSync(join(tmpdir(), 'fresh-test-'));
@@ -40,17 +39,32 @@ describe('contentHash', () => {
     });
 
     test('digests an untracked file by its path and bytes', () => {
-        const rel = 'wiki/world/test/.fresh-untracked.tmp';
-        const file = join(ROOT, rel);
-        const run = fakeGit({ status: '?? x', untracked: rel });
-        try {
-            writeFileSync(file, 'one');
-            const one = contentHash(run);
-            writeFileSync(file, 'two');
-            expect(contentHash(run)).not.toBe(one);
-        } finally {
-            rmSync(file, { force: true });
-        }
+        const file = join(tmp, 'untracked.tmp');
+        const run = fakeGit({ status: '?? x', untracked: file });
+        writeFileSync(file, 'one');
+        const one = contentHash(run);
+        writeFileSync(file, 'two');
+        expect(contentHash(run)).not.toBe(one);
+    });
+
+    test('reads the NUL-separated list of ls-files -z, non-ASCII names included', () => {
+        const a = join(tmp, 'caf\u00e9.tmp');
+        const b = join(tmp, 'b.tmp');
+        writeFileSync(a, 'a');
+        writeFileSync(b, 'b');
+        const both = contentHash(fakeGit({ status: '?? x', untracked: `${a}\0${b}\0` }));
+        writeFileSync(a, 'changed');
+        expect(contentHash(fakeGit({ status: '?? x', untracked: `${a}\0${b}\0` }))).not.toBe(both);
+    });
+
+    test('names a symlink or folder without reading it', () => {
+        const dir = join(tmp, 'a-folder');
+        mkdirSync(dir);
+        const link = join(tmp, 'a-link');
+        symlinkSync(join(tmp, 'nowhere'), link);
+        expect(contentHash(fakeGit({ status: '?? x', untracked: `${dir}\0${link}\0` }))).toMatch(
+            /-dirty-[0-9a-f]{12}$/,
+        );
     });
 
     test('refuses a log that names no commit', () => {
