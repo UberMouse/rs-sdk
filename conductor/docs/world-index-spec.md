@@ -1,0 +1,961 @@
+# World Index Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans (or the repo's `sdd-loop`
+> skill) to implement this plan task-by-task.
+
+**Goal:** Build `wiki/world/`, a staged generator that turns the game data into `wiki/world.json`
+(every feature, site and area, with correct names, exact tiles and access) and the markdown pages
+agents read, per [`world-index.md`](world-index.md).
+
+**Architecture:** Pure parsers (`wiki/world/sources/`) read the map files, packs, configs, dbrows and
+script triggers. A rule table classifies placements into features; clustering turns features into
+sites; a curated area file names them. `build.ts` runs the stages and writes `world.json`; `render/`
+writes markdown from it. Phase 1 is fully specified below; phases 2-3 are outlined at task level and
+get their own detailed plan once phase 1 lands (their inputs are phase 1's outputs).
+
+**Tech Stack:** Bun + TypeScript, `bun:test`, oxfmt/oxlint, the SDK's offline collision data
+(`conductor/actions/paths.ts` `collisionPaths`).
+
+**Facts the code relies on** (checked 2026-10-11):
+
+- `server/content/maps/m{mx}_{mz}.jm2`: sections `==== MAP ====`, `==== LOC ====`, `==== NPC ====`,
+  `==== OBJ ====`. MAP lines `level x z: h30 u48 f2 o5` (tokens; `f<n>` is the tile flag byte).
+  LOC lines `level x z: id shape [rotation]`. NPC lines `level x z: id`. World tile:
+  `x = 64*mx + localX`, `z = 64*mz + localZ`.
+- Bridge (`server/engine/src/engine/GameMap.ts:28,264`): if the **level-1** tile at (x, z) has flag
+  bit `0x2`, every **loc** on that column is one level lower; locs that end below 0 are dropped.
+  NPC spawns are **not** adjusted (`loadNpcs` takes no land data).
+- `pack/{loc,npc,obj}.pack`: lines `id=configname`.
+- Configs: `[name]` then `key=value` lines, in `scripts/**/configs/*.{loc,npc,obj}` and
+  `scripts/_unpack/<rev>/all.*` (the non-`_unpack` definition wins; see
+  `wiki/generate-npcs.ts:708-800` for the existing precedence).
+- dbrows: `[row]`, `table=<t>`, repeated `data=<column>,<v1>[,<v2>...]`
+  (`skill_woodcutting/configs/trees.dbrow`, `skill_mining/configs/mine.dbrow`).
+- Triggers: `[oploc1,name]`, `[oplocu,_category]`, `[opnpc3,_category]`, `[apnpc1,name]`; a leading
+  `_` names a category (`category=` in the config). The body runs to the next line starting `[`.
+- `maps/free2play.csv` and `maps/multiway.csv`: `level_mx_mz_lx_lz` zone keys (lx, lz multiples of
+  8), `//` comments. `maps/labels.txt`: `=Name/With/Slashes,x,z,type` (type 0 small, 1 town,
+  2 region).
+- The worktree has no `node_modules` until `bun install`.
+
+---
+
+## Phase 1: extract, classify, place
+
+### Task 1: Scaffolding
+
+**Files:**
+- Create: `wiki/world/tsconfig.json`, `wiki/world/types.ts`, `wiki/world/paths.ts`
+- Modify: `package.json` (scripts `test`, `fmt`, `fmt:check`, `lint`, `verify:conductor`; add `world`)
+
+**Step 1:** `bun install` at the worktree root. Expected: `node_modules/` exists, githooks enabled.
+
+**Step 2:** `wiki/world/tsconfig.json`:
+
+```json
+{
+    "extends": "../../tsconfig.json",
+    "include": ["./**/*.ts"]
+}
+```
+
+**Step 3:** `wiki/world/paths.ts`:
+
+```ts
+import { join } from 'path';
+
+export const ROOT = join(import.meta.dir, '..', '..');
+export const CONTENT = join(ROOT, 'server', 'content');
+export const MAPS = join(CONTENT, 'maps');
+export const SCRIPTS = join(CONTENT, 'scripts');
+export const PACK = join(CONTENT, 'pack');
+export const WIKI = join(ROOT, 'wiki');
+```
+
+**Step 4:** `wiki/world/types.ts`:
+
+```ts
+export interface Tile {
+    level: number;
+    x: number;
+    z: number;
+}
+
+export interface Placement {
+    source: 'loc' | 'npc';
+    id: number;
+    config: string;
+    tile: Tile;
+    /** Locs only. */
+    shape?: number;
+    rotation?: number;
+}
+
+export type FeatureKind =
+    | 'tree' | 'rock' | 'fishing-spot'
+    | 'bank' | 'shop'
+    | 'furnace' | 'anvil' | 'range' | 'fire' | 'spinning-wheel' | 'pottery-wheel' | 'pottery-oven'
+    | 'sand-pit' | 'water-source' | 'altar' | 'rc-altar' | 'rc-ruins'
+    | 'stall' | 'thieving-chest' | 'pickpocket'
+    | 'npc' | 'connector';
+
+export interface Feature extends Placement {
+    kind: FeatureKind;
+    /** `yew`, `iron`, `freshfish`, a shop name, an npc config; `''` when the kind has none. */
+    subtype: string;
+    /** The in-game name. */
+    name: string;
+}
+
+export interface Rect {
+    x1: number;
+    z1: number;
+    x2: number;
+    z2: number;
+    /** Omitted: every level. */
+    level?: number;
+}
+
+export interface Area {
+    id: string;
+    name: string;
+    parent?: string;
+    rects: Rect[];
+    requires?: string[];
+    notes?: string;
+}
+
+export interface Site {
+    id: string;
+    kind: FeatureKind;
+    /** Area ids from the root to the deepest containing area; empty when none contains it. */
+    areaPath: string[];
+    centre: Tile;
+    bbox: Rect;
+    stand: Tile | null;
+    counts: Record<string, number>;
+    /** Indexes into World.features. */
+    features: number[];
+    f2p: boolean;
+    multiway: boolean;
+    wildernessLevel: number;
+}
+
+export interface World {
+    generatedFrom: string;
+    areas: Area[];
+    features: Feature[];
+    sites: Site[];
+}
+```
+
+**Step 5:** In `package.json`, append `wiki/world` to the `test` script's path list; change
+`fmt`/`fmt:check` globs to `'{conductor,wiki/world}/**/*.ts'`; `lint` to
+`oxlint --deny-warnings conductor wiki/world`; `verify:conductor` to also run
+`tsc --noEmit -p wiki/world`; add `"world": "bun wiki/world/build.ts"`.
+
+**Step 6:** Run `bun run verify:conductor`. Expected: PASS (no world code yet besides types).
+
+**Step 7:** Commit `feat(world): scaffolding for the world index generator`.
+
+---
+
+### Task 2: Map parser with the bridge rule
+
+**Files:**
+- Create: `wiki/world/sources/maps.ts`, `wiki/world/test/maps.test.ts`
+
+**Step 1: Failing test** (`wiki/world/test/maps.test.ts`):
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { parseMapSquare } from '../sources/maps';
+
+const square = `==== MAP ====
+1 5 6: h16 o5 f2
+1 7 7: h16
+==== LOC ====
+1 5 6: 2213 10 1
+1 7 7: 2213 10
+0 1 2: 1276 10 3
+==== NPC ====
+1 5 6: 494
+0 3 4: 1036
+`;
+
+describe('parseMapSquare', () => {
+    const { locs, npcs } = parseMapSquare(54, 54, square);
+
+    test('world coordinates from the square and local tile', () => {
+        expect(locs).toContainEqual({ id: 1276, shape: 10, rotation: 3, tile: { level: 0, x: 3457, z: 3458 } });
+        expect(npcs).toContainEqual({ id: 1036, tile: { level: 0, x: 3459, z: 3460 } });
+    });
+
+    test('a loc on a bridged column drops one level; one on an unbridged column does not', () => {
+        expect(locs).toContainEqual({ id: 2213, shape: 10, rotation: 1, tile: { level: 0, x: 3461, z: 3462 } });
+        expect(locs).toContainEqual({ id: 2213, shape: 10, rotation: 0, tile: { level: 1, x: 3463, z: 3463 } });
+    });
+
+    test('npc spawns keep their level on a bridged column (GameMap.loadNpcs)', () => {
+        expect(npcs).toContainEqual({ id: 494, tile: { level: 1, x: 3461, z: 3462 } });
+    });
+});
+```
+
+**Step 2:** `bun test wiki/world/test/maps.test.ts`. Expected: FAIL, cannot find `../sources/maps`.
+
+**Step 3: Implement** `wiki/world/sources/maps.ts`:
+
+```ts
+// Reads server/content/maps/m{mx}_{mz}.jm2. The bridge rule mirrors GameMap.loadLocations: a loc whose
+// column has the LINK_BELOW flag (0x2) on its level-1 tile sits one level lower; npc spawns do not move.
+import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
+import { MAPS } from '../paths';
+import type { Tile } from '../types';
+
+const LINK_BELOW = 0x2;
+
+export interface MapLoc {
+    id: number;
+    shape: number;
+    rotation: number;
+    tile: Tile;
+}
+
+export interface MapNpc {
+    id: number;
+    tile: Tile;
+}
+
+export function parseMapSquare(mx: number, mz: number, text: string): { locs: MapLoc[]; npcs: MapNpc[] } {
+    const bridged = new Set<number>(); // localX * 64 + localZ
+    const rawLocs: MapLoc[] = [];
+    const npcs: MapNpc[] = [];
+    let section = '';
+    for (const line of text.split('\n')) {
+        const header = line.match(/^==== (\w+) ====/);
+        if (header) {
+            section = header[1];
+            continue;
+        }
+        const m = line.match(/^(\d+) (\d+) (\d+):\s*(.*)$/);
+        if (!m) continue;
+        const [level, lx, lz] = [Number(m[1]), Number(m[2]), Number(m[3])];
+        const rest = m[4].trim().split(/\s+/);
+        const tile = { level, x: mx * 64 + lx, z: mz * 64 + lz };
+        if (section === 'MAP' && level === 1) {
+            const flag = rest.find((t) => t.startsWith('f'));
+            if (flag && (Number(flag.slice(1)) & LINK_BELOW) !== 0) bridged.add(lx * 64 + lz);
+        } else if (section === 'LOC') {
+            rawLocs.push({ id: Number(rest[0]), shape: Number(rest[1] ?? 10), rotation: Number(rest[2] ?? 0), tile });
+        } else if (section === 'NPC') {
+            npcs.push({ id: Number(rest[0]), tile });
+        }
+    }
+    const locs: MapLoc[] = [];
+    for (const loc of rawLocs) {
+        const local = (loc.tile.x - mx * 64) * 64 + (loc.tile.z - mz * 64);
+        const level = bridged.has(local) ? loc.tile.level - 1 : loc.tile.level;
+        if (level < 0) continue;
+        locs.push({ ...loc, tile: { ...loc.tile, level } });
+    }
+    return { locs, npcs };
+}
+
+export function readAllMapSquares(dir = MAPS): { locs: MapLoc[]; npcs: MapNpc[] } {
+    const locs: MapLoc[] = [];
+    const npcs: MapNpc[] = [];
+    for (const file of readdirSync(dir).sort()) {
+        const m = file.match(/^m(\d+)_(\d+)\.jm2$/);
+        if (!m) continue;
+        const parsed = parseMapSquare(Number(m[1]), Number(m[2]), readFileSync(join(dir, file), 'utf8'));
+        locs.push(...parsed.locs);
+        npcs.push(...parsed.npcs);
+    }
+    return { locs, npcs };
+}
+```
+
+**Step 4:** Run the test. Expected: PASS.
+
+**Step 5:** Commit `feat(world): map square parser with the bridge rule`.
+
+---
+
+### Task 3: Packs, configs, dbrows
+
+**Files:**
+- Create: `wiki/world/sources/packs.ts`, `wiki/world/sources/configs.ts`, `wiki/world/sources/dbrows.ts`
+- Test: `wiki/world/test/sources.test.ts`
+
+**Step 1: Failing tests:**
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { parseConfigs } from '../sources/configs';
+import { parseDbrows } from '../sources/dbrows';
+import { parsePack } from '../sources/packs';
+
+describe('parsePack', () => {
+    test('id=name lines both ways', () => {
+        const p = parsePack('2213=bankbooth\n2214=loc_2214\n');
+        expect(p.name.get(2213)).toBe('bankbooth');
+        expect(p.id.get('loc_2214')).toBe(2214);
+    });
+});
+
+describe('parseConfigs', () => {
+    test('repeated keys collect; the block runs to the next header', () => {
+        const c = parseConfigs('[bankbooth]\nname=Bank booth\nop1=Use\nop2=Use-quickly\n\n[x]\nname=X\n');
+        expect(c.get('bankbooth')).toEqual({ name: ['Bank booth'], op1: ['Use'], op2: ['Use-quickly'] });
+        expect(c.get('x')?.name).toEqual(['X']);
+    });
+});
+
+describe('parseDbrows', () => {
+    test('rows keep their table and each data line', () => {
+        const rows = parseDbrows('[yew_tree_table]\ntable=woodcutting_trees\ndata=tree,yewtree\ndata=levelrequired,60\ndata=successchance,bronze_axe,4,12\n');
+        expect(rows).toEqual([
+            {
+                row: 'yew_tree_table',
+                table: 'woodcutting_trees',
+                data: { tree: [['yewtree']], levelrequired: [['60']], successchance: [['bronze_axe', '4', '12']] },
+            },
+        ]);
+    });
+});
+```
+
+**Step 2:** Run. Expected: FAIL (modules missing).
+
+**Step 3: Implement.**
+
+`sources/packs.ts`:
+
+```ts
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { PACK } from '../paths';
+
+export interface Pack {
+    name: Map<number, string>;
+    id: Map<string, number>;
+}
+
+export function parsePack(text: string): Pack {
+    const name = new Map<number, string>();
+    const id = new Map<string, number>();
+    for (const line of text.split('\n')) {
+        const eq = line.indexOf('=');
+        if (eq < 1) continue;
+        const n = Number(line.slice(0, eq));
+        const s = line.slice(eq + 1).trim();
+        name.set(n, s);
+        id.set(s, n);
+    }
+    return { name, id };
+}
+
+export const readPack = (kind: 'loc' | 'npc' | 'obj'): Pack => parsePack(readFileSync(join(PACK, `${kind}.pack`), 'utf8'));
+```
+
+`sources/configs.ts`:
+
+```ts
+// INI-style configs (.loc/.npc/.obj): `[name]` then `key=value`. A key may repeat (data=, param=).
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { Glob } from 'bun';
+import { SCRIPTS } from '../paths';
+
+export type Config = Record<string, string[]>;
+
+export function parseConfigs(text: string): Map<string, Config> {
+    const out = new Map<string, Config>();
+    let cur: Config | undefined;
+    for (const raw of text.split('\n')) {
+        const line = raw.trim();
+        const header = line.match(/^\[([^\]]+)\]$/);
+        if (header) {
+            cur = {};
+            out.set(header[1], cur);
+            continue;
+        }
+        if (!cur || !line || line.startsWith('//')) continue;
+        const eq = line.indexOf('=');
+        if (eq < 1) continue;
+        (cur[line.slice(0, eq)] ??= []).push(line.slice(eq + 1));
+    }
+    return out;
+}
+
+/** Every config of a kind: the `_unpack` dumps first, then the hand-written configs override them. */
+export function readConfigs(ext: 'loc' | 'npc' | 'obj'): Map<string, Config> {
+    const files = [...new Glob(`**/*.${ext}`).scanSync(SCRIPTS)].sort();
+    const unpacked = files.filter((f) => f.startsWith('_unpack/'));
+    const written = files.filter((f) => !f.startsWith('_unpack/') && !f.startsWith('_test/'));
+    const out = new Map<string, Config>();
+    for (const f of [...unpacked, ...written])
+        for (const [k, v] of parseConfigs(readFileSync(join(SCRIPTS, f), 'utf8'))) out.set(k, v);
+    return out;
+}
+
+export const first = (c: Config | undefined, key: string): string | undefined => c?.[key]?.[0];
+```
+
+Before relying on `readConfigs`, check that "hand-written overrides the dump" matches
+`wiki/generate-npcs.ts:708-800`; if that generator merges keys instead of replacing blocks, copy its
+rule and add a test for it.
+
+`sources/dbrows.ts`:
+
+```ts
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { Glob } from 'bun';
+import { SCRIPTS } from '../paths';
+
+export interface DbRow {
+    row: string;
+    table: string;
+    data: Record<string, string[][]>;
+}
+
+export function parseDbrows(text: string): DbRow[] {
+    const rows: DbRow[] = [];
+    let cur: DbRow | undefined;
+    for (const raw of text.split('\n')) {
+        const line = raw.trim();
+        const header = line.match(/^\[([^\]]+)\]$/);
+        if (header) {
+            cur = { row: header[1], table: '', data: {} };
+            rows.push(cur);
+        } else if (cur && line.startsWith('table=')) {
+            cur.table = line.slice(6);
+        } else if (cur && line.startsWith('data=')) {
+            const [col, ...vals] = line.slice(5).split(',');
+            (cur.data[col] ??= []).push(vals);
+        }
+    }
+    return rows;
+}
+
+export function readDbrows(): DbRow[] {
+    return [...new Glob('**/*.dbrow').scanSync(SCRIPTS)]
+        .filter((f) => !f.startsWith('_test/'))
+        .sort()
+        .flatMap((f) => parseDbrows(readFileSync(join(SCRIPTS, f), 'utf8')));
+}
+```
+
+**Step 4:** Run. Expected: PASS.
+
+**Step 5:** Commit `feat(world): pack, config and dbrow parsers`.
+
+---
+
+### Task 4: Trigger index
+
+What makes a loc or NPC usable is the script trigger on it. Index every op trigger with its
+script path and body, so classification rules can ask "which script handles `[oplocu,_anvil]`" and
+"does this body reach `@openbank`".
+
+**Files:**
+- Create: `wiki/world/sources/triggers.ts`
+- Test: `wiki/world/test/triggers.test.ts`
+
+**Step 1: Failing test:**
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { parseTriggers } from '../sources/triggers';
+
+const rs2 = `[oploc1,bankbooth]
+def_npc $n = npc_find(coord, _bank_teller, 1);
+@openbank;
+
+[oploc2,bankbooth] @openbank;
+[opnpc3,_bank_teller]
+@openbank;
+[label,openbank]
+if_openmain(bank_main);
+`;
+
+describe('parseTriggers', () => {
+    const t = parseTriggers('interface_bank/scripts/bank_booth.rs2', rs2);
+
+    test('op triggers on names and categories, with bodies', () => {
+        expect(t.map((x) => [x.on, x.op, x.target, x.category])).toEqual([
+            ['loc', '1', 'bankbooth', false],
+            ['loc', '2', 'bankbooth', false],
+            ['npc', '3', 'bank_teller', true],
+        ]);
+        expect(t[0].body).toContain('@openbank');
+        expect(t[1].body).toContain('@openbank');
+    });
+
+    test('labels and procs are not op triggers', () => {
+        expect(t.some((x) => x.target === 'openbank')).toBe(false);
+    });
+});
+```
+
+**Step 2:** Run. Expected: FAIL.
+
+**Step 3: Implement** `sources/triggers.ts`:
+
+```ts
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { Glob } from 'bun';
+import { SCRIPTS } from '../paths';
+
+export interface Trigger {
+    file: string;
+    on: 'loc' | 'npc';
+    /** '1'-'5', or 'u' for use-item-on. */
+    op: string;
+    /** Config or category name, without the category's leading underscore. */
+    target: string;
+    category: boolean;
+    /** The header line's tail and every line up to the next `[` header. */
+    body: string;
+}
+
+const HEADER = /^\[(?:op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\](.*)$/;
+
+export function parseTriggers(file: string, text: string): Trigger[] {
+    const out: Trigger[] = [];
+    let cur: Trigger | undefined;
+    for (const line of text.split('\n')) {
+        if (line.startsWith('[')) {
+            const m = line.match(HEADER);
+            cur = m ? { file, on: m[1] as 'loc' | 'npc', op: m[2], category: m[3] === '_', target: m[4], body: m[5] } : undefined;
+            if (cur) out.push(cur);
+        } else if (cur) {
+            cur.body += '\n' + line;
+        }
+    }
+    return out;
+}
+
+export function readTriggers(): Trigger[] {
+    return [...new Glob('**/*.rs2').scanSync(SCRIPTS)]
+        .filter((f) => !f.startsWith('_test/') && !f.startsWith('_unpack/'))
+        .sort()
+        .flatMap((f) => parseTriggers(f, readFileSync(join(SCRIPTS, f), 'utf8')));
+}
+```
+
+Note: `oploc` and `aploc` both count; one placement often has both, and rules dedupe by target.
+
+**Step 4:** Run. Expected: PASS.
+
+**Step 5:** Commit `feat(world): index of loc and npc op triggers`.
+
+---
+
+### Task 5: Classification rules
+
+**Files:**
+- Create: `wiki/world/classify.ts`
+- Test: `wiki/world/test/classify.test.ts` (scripted inputs) and `wiki/world/test/classify.real.test.ts`
+  (real data; see Task 9)
+
+A placement's config name and its config's `category` are matched against the trigger index and
+the dbrows. Each rule returns `{ kind, subtype } | null`. Two rules matching one placement is a build
+error (it means a rule is too broad); no rule matching means "not a feature" (scenery).
+
+**Rules (in this order; each a small named function in `classify.ts`):**
+
+| Kind | Matches | Subtype |
+|---|---|---|
+| `tree` | loc listed in a `woodcutting_trees` row's `tree` column | row name minus `_tree_table`/`_table` (`yew`, `normal`, `oak`) |
+| `rock` | loc in a `mining_table` row's `rock` column | `ore_name` |
+| `fishing-spot` | npc whose name or category has an `opnpc` trigger under `skill_fishing/` | category (`saltfish`, `freshfish`, `memberfish`, `rarefish`, ...) |
+| `bank` | loc or npc with an op trigger whose body contains `@openbank` (directly, or via a label in the same file that does), or `category=bank_teller` npc | `booth`, `chest` or `banker` by source and name |
+| `shop` | loc or npc with an op trigger whose body calls `~openshop(<inv>, ...)` | `<inv>` (the shop inventory; join with `wiki/shops/`) |
+| `furnace`, `anvil`, `range`, `fire`, `spinning-wheel`, `pottery-wheel`, `pottery-oven`, `sand-pit`, `water-source`, `altar`, `rc-altar`, `rc-ruins` | loc whose category is `smithing_furnace`, `anvil`, `cooking_oven`, `cooking_fire`, `spinning_wheel`, `potters_wheel`, `pottery_oven`, `sand_pit`, `watersource`, `prayer_altar`, `rc_altar`, `rc_ruins` | `''` (`rc-altar`/`rc-ruins`: the rune, from the loc name) |
+| `stall` | loc with an `oploc` trigger under `skill_thieving/` whose name ends `_stall_stealing` or `_market` | loc name |
+| `thieving-chest` | other locs with an `oploc` trigger under `skill_thieving/` | loc name |
+| `pickpocket` | npc (or category) with an `opnpc` trigger under `skill_thieving/` | npc config |
+| `connector` | loc with an op trigger under `ladders+stairs/` | `''` |
+| `npc` | any other npc whose config has an `Attack` op and combat stats (reuse `hasCombatStats` from `wiki/generate-npcs.ts:680`) | npc config |
+
+Check the `cooking_oven` category is the range category (grep `skill_cooking/scripts` for
+`_cooking_oven`), and find the tanner: grep for the tanning interface trigger; add a `tanner` kind
+only if a trigger exists, otherwise leave it for the shop rule.
+
+**Step 1: Failing test** (scripted, no game data):
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { classifier } from '../classify';
+import type { Trigger } from '../sources/triggers';
+
+const trig = (file: string, on: 'loc' | 'npc', target: string, body = '', category = false): Trigger => ({ file, on, op: '1', target, category, body });
+
+const c = classifier({
+    locConfigs: new Map([
+        ['yewtree', { name: ['Yew'] }],
+        ['bankbooth', { name: ['Bank booth'] }],
+        ['furnace1', { name: ['Furnace'], category: ['smithing_furnace'] }],
+        ['tree_stump', { name: ['Tree stump'] }],
+    ]),
+    npcConfigs: new Map([
+        ['banker1', { name: ['Banker'], category: ['bank_teller'] }],
+        ['fishspot', { name: ['Fishing spot'], category: ['saltfish'] }],
+    ]),
+    dbrows: [{ row: 'yew_tree_table', table: 'woodcutting_trees', data: { tree: [['yewtree']] } }],
+    triggers: [
+        trig('interface_bank/scripts/bank_booth.rs2', 'loc', 'bankbooth', '\n@openbank;'),
+        trig('skill_fishing/scripts/fish.rs2', 'npc', 'saltfish', '', true),
+    ],
+});
+
+describe('classifier', () => {
+    test('a tree from its dbrow', () => expect(c('loc', 'yewtree')).toEqual({ kind: 'tree', subtype: 'yew', name: 'Yew' }));
+    test('a booth whose op reaches @openbank', () => expect(c('loc', 'bankbooth')?.kind).toBe('bank'));
+    test('a banker by category', () => expect(c('npc', 'banker1')).toEqual({ kind: 'bank', subtype: 'banker', name: 'Banker' }));
+    test('a furnace by category', () => expect(c('loc', 'furnace1')?.kind).toBe('furnace'));
+    test('a fishing spot by category trigger', () => expect(c('npc', 'fishspot')).toEqual({ kind: 'fishing-spot', subtype: 'saltfish', name: 'Fishing spot' }));
+    test('scenery is not a feature', () => expect(c('loc', 'tree_stump')).toBeNull());
+});
+```
+
+**Step 2:** Run. Expected: FAIL.
+
+**Step 3: Implement** `classify.ts`. Shape:
+
+```ts
+import type { Config } from './sources/configs';
+import { first } from './sources/configs';
+import type { DbRow } from './sources/dbrows';
+import type { Trigger } from './sources/triggers';
+import type { FeatureKind } from './types';
+
+export interface ClassifyInput {
+    locConfigs: Map<string, Config>;
+    npcConfigs: Map<string, Config>;
+    dbrows: DbRow[];
+    triggers: Trigger[];
+}
+
+export interface Classified {
+    kind: FeatureKind;
+    subtype: string;
+    name: string;
+}
+
+type Rule = (on: 'loc' | 'npc', config: string, cfg: Config) => Omit<Classified, 'name'> | null;
+
+export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: string) => Classified | null {
+    // Precompute lookups once: dbrow loc -> row, triggers by (on, target), label bodies per file.
+    // ...one function per row of the rule table above...
+    const rules: [string, Rule][] = [/* ['tree', treeRule], ['rock', rockRule], ... */];
+    const cache = new Map<string, Classified | null>();
+    return (on, config) => {
+        const key = `${on}:${config}`;
+        if (cache.has(key)) return cache.get(key)!;
+        const cfg = (on === 'loc' ? input.locConfigs : input.npcConfigs).get(config) ?? {};
+        const hits = rules.map(([n, r]) => [n, r(on, config, cfg)] as const).filter(([, r]) => r);
+        if (hits.length > 1) throw new Error(`${key} matches rules ${hits.map(([n]) => n).join(', ')}`);
+        const hit = hits[0]?.[1];
+        const out = hit ? { ...hit, name: first(cfg, 'name') ?? config } : null;
+        cache.set(key, out);
+        return out;
+    };
+}
+```
+
+For the `@openbank` "via a label" case: build, per file, the set of labels whose body contains
+`@openbank`; a trigger body containing `@<thatlabel>` counts (one level deep is enough for
+`bank_booth.rs2`, `banker.rs2`, `fadli.rs2`, `misc_banker.rs2`, `gundai.rs2`, `shantay*.rs2`).
+
+**Step 4:** Run. Expected: PASS. Add a test per rule you implemented beyond the six above.
+
+**Step 5:** Commit `feat(world): classify placements by the triggers and dbrows that use them`.
+
+---
+
+### Task 6: Zones (F2P, multiway, Wilderness)
+
+**Files:**
+- Create: `wiki/world/sources/zones.ts`; Test: `wiki/world/test/zones.test.ts`
+
+**Step 1: Failing test:**
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { parseZoneCsv, wildernessLevel, zoneKey } from '../sources/zones';
+
+describe('zones', () => {
+    test('a tile maps to its 8x8 zone key', () => expect(zoneKey({ level: 0, x: 3209, z: 3220 })).toBe('0_50_50_8_16'));
+    test('csv keys, comments skipped', () => {
+        const z = parseZoneCsv('// haunted mine\n0_43_69_0_0\n');
+        expect(z.has('0_43_69_0_0')).toBe(true);
+        expect(z.size).toBe(1);
+    });
+    test('wilderness level', () => {
+        expect(wildernessLevel({ level: 0, x: 3100, z: 3519 })).toBe(0);
+        expect(wildernessLevel({ level: 0, x: 3100, z: 3520 })).toBe(1);
+        expect(wildernessLevel({ level: 0, x: 3100, z: 3903 })).toBe(48);
+    });
+});
+```
+
+The Wilderness formula: confirm against the engine before coding. Grep
+`server/content/scripts` for the wilderness level proc (`~wilderness_level` or
+`inzone(...3520...)`) and `conductor/lib/wilderness.ts`; use the same bounds (x range included) and
+formula, and adjust the test's expectations to match it. Underground Wilderness (z + 6400) counts.
+
+**Step 3: Implement** `zoneKey = (t) => \`${t.level}_${t.x >> 6}_${t.z >> 6}_${t.x & 56}_${t.z & 56}\``
+(`& 56` = the zone origin, multiple of 8, within the square), `parseZoneCsv`, `readZones()` returning
+`{ f2p, multiway }`, and `wildernessLevel` per the engine.
+
+**Step 4:** Run. Expected: PASS. **Step 5:** Commit `feat(world): f2p, multiway and wilderness zones`.
+
+---
+
+### Task 7: Areas: resolver, seed draft, curation
+
+**Files:**
+- Create: `wiki/world/areas.ts` (curated data), `wiki/world/area-resolve.ts`,
+  `wiki/world/tools/seed-areas.ts`
+- Test: `wiki/world/test/area-resolve.test.ts`
+
+**Step 1: Failing test** for the resolver (deepest, then smallest, containing area wins; level
+filter; underground rects are ordinary rects at z + 6400):
+
+```ts
+import { describe, expect, test } from 'bun:test';
+import { areaResolver } from '../area-resolve';
+import type { Area } from '../types';
+
+const areas: Area[] = [
+    { id: 'misthalin', name: 'Misthalin', rects: [{ x1: 3072, z1: 3136, x2: 3391, z2: 3519 }] },
+    { id: 'varrock', name: 'Varrock', parent: 'misthalin', rects: [{ x1: 3172, z1: 3372, x2: 3295, z2: 3505 }] },
+    { id: 'varrock-west-bank', name: 'Varrock West bank', parent: 'varrock', rects: [{ x1: 3180, z1: 3433, x2: 3191, z2: 3447, level: 0 }] },
+];
+
+describe('areaResolver', () => {
+    const resolve = areaResolver(areas);
+    test('deepest containing area, as a path', () => expect(resolve({ level: 0, x: 3186, z: 3440 })).toEqual(['misthalin', 'varrock', 'varrock-west-bank']));
+    test('a level-restricted rect does not hold other levels', () => expect(resolve({ level: 1, x: 3186, z: 3440 })).toEqual(['misthalin', 'varrock']));
+    test('outside every area', () => expect(resolve({ level: 0, x: 10, z: 10 })).toEqual([]));
+    test('a child rect outside its parent is a build error', () =>
+        expect(() => areaResolver([...areas, { id: 'bad', name: 'Bad', parent: 'varrock', rects: [{ x1: 0, z1: 0, x2: 5, z2: 5 }] }])).toThrow(/bad/));
+});
+```
+
+**Step 2:** Run, FAIL. **Step 3:** Implement `areaResolver(areas)`: validates ids unique, parents
+exist, each child rect inside the union of its parent's rects; returns a function giving the path
+of the deepest area containing the tile (ties: smallest total rect area).
+
+**Step 4:** `tools/seed-areas.ts`: prints a draft `areas.ts` from `maps/labels.txt`: type-2 labels
+become region areas, types 1 and 0 town/place areas with a 48x48 / 24x24 rect around the label,
+parented to the nearest region. The draft is a starting point only.
+
+**Step 5: Curate** `wiki/world/areas.ts` from the seed. Required before Task 9 can pass:
+- Every site of kind `bank`, `shop`, `tree`, `rock`, `fishing-spot`, any service kind, `stall`,
+  `pickpocket` lies in an area (Task 9's coverage report lists the ones that don't).
+- Each bank site gets its own leaf area with its common name (`Varrock West bank`, `Draynor bank`,
+  `Falador East bank`, `Ardougne North bank`, `Zanaris bank`, `Mage Arena bank`, `Duel Arena
+  bank chest`, ...). Use the 25 bank sites in `world-index.md` "Why" as the checklist.
+- Mines, fishing spots and tree groups that agents name (`Varrock West mine`, `Varrock East mine`,
+  `Al Kharid mine`, `Dwarven Mine`, `Barbarian Village fishing`, `Draynor willows`, ...) get leaf
+  areas; check `learnings/` and `wiki/skills/` for names already in use and match them.
+- Underground areas are their own top-level areas at z + 6400, with `notes` naming the surface
+  entrance.
+- Use `bun conductor/tools/screenshot.ts` on a worker only if a name cannot be settled from the
+  data; most can from `labels.txt`, shop names and NPC names.
+
+**Step 6:** Run the resolver test and `bun run verify:conductor`. Commit
+`feat(world): curated areas and their resolver`.
+
+---
+
+### Task 8: Sites: clustering, stand tiles, flags
+
+**Files:**
+- Create: `wiki/world/place.ts`; Test: `wiki/world/test/place.test.ts`
+
+**Clustering:** features of the same `kind` on the same level, single-linkage within a per-kind
+radius (`bank` 10, `shop` 6, `tree` 8, `rock` 8, `fishing-spot` 8, service kinds 4, `stall` 6,
+`pickpocket` 8, `npc` 6, `connector` 0 = every connector its own site), and split by area path (a
+site never spans two leaf areas). Site id: `${kind}:${leafAreaId || 'unnamed'}:${n}` with `n` the
+index within that area by (x, z) order, so ids are stable across runs.
+
+**Stand tile:** for each loc in the site, the 4-neighbour tiles that are `collisionPaths.walkable`
+and that `collisionPaths.canStep` toward the loc's tile accepts; for a bank, prefer tiles on the side
+away from the site's bankers (largest distance to the nearest banker); otherwise the candidate
+nearest the site centre. NPC-only sites: the walkable tile nearest the centre within the bbox.
+`null` if none (logged).
+
+**Step 1: Failing tests** (synthetic features; stub the pathfinder with an interface
+`{ walkable, canStep }` passed in, so tests need no collision data):
+- two booths 1 tile apart and a banker 2 tiles away form one `bank` site with counts
+  `{ booth: 2, banker: 1 }`;
+- two trees 20 tiles apart form two sites;
+- features in two different leaf areas never share a site;
+- the stand tile of a booth row is on the side opposite the bankers;
+- ids are stable when input order changes.
+
+**Step 2:** Run, FAIL. **Step 3:** Implement `buildSites(features, resolve, zones, pathfinder)`.
+**Step 4:** PASS. **Step 5:** Commit `feat(world): cluster features into sites with stand tiles`.
+
+---
+
+### Task 9: Build pipeline, world.json, real-data facts and coverage
+
+**Files:**
+- Create: `wiki/world/build.ts`, `wiki/world/load.ts` (reads `wiki/world.json` typed)
+- Test: `wiki/world/test/world.real.test.ts`
+- Generated: `wiki/world.json`
+
+**`build.ts`:** `readAllMapSquares` -> packs -> configs -> dbrows -> triggers -> `classifier` ->
+features (one per classified placement; drop `npc`-kind spawns with no combat stats) ->
+`buildSites` -> write `wiki/world.json`, then print a report:
+- counts per kind;
+- **coverage**: sites of the required kinds (Task 7 Step 5) outside every area; exit 1 if any;
+- `npc` sites outside every area (warning only);
+- placements whose config is missing from the pack (warning).
+
+Write `world.json` deterministically: features sorted by (kind, x, z, level, config); sites by id;
+two-space JSON, one feature per line (custom serializer) so diffs stay readable. Record the git hash
+of `server/content` in `generatedFrom`.
+
+**Real-data facts** (`world.real.test.ts`, runs `build` in memory once, `beforeAll`):
+
+```ts
+test('Varrock West bank: 6 booths, 6 bankers, level 0', ...);
+test('Lumbridge has no bank site', ...);            // no bank site with an area path containing 'lumbridge'
+test('Canifis bank is one site on level 0 with 4 booths and 2 bankers', ...);
+test('both Gnome Stronghold banks are on level 1', ...);
+test('25 bank sites, Shantay chest excluded or flagged', ...);  // match the list in world-index.md
+test('closed and private booths are not banks', ...); // bankboothclosed, loc_2214
+test('every banks.ts stand tile is within 2 tiles of a generated bank stand tile', ...); // conductor/lib/banks.ts
+test('yew trees exist and every tree site has a subtype from trees.dbrow', ...);
+test('Varrock East mine has tin, copper rocks and no iron', ...);   // confirm against learnings/mining.md
+test('every shop page in wiki/shops has at least one shop site', ...);
+```
+
+Fill in each body against the data; if a fact fails, find out whether the fact or the code is wrong
+before changing either (the game is the source of truth; see CLAUDE.md).
+
+**Step:** `bun run world` until the coverage report is clean (curating `areas.ts` as needed), then
+`bun test wiki/world`, `bun run verify:conductor`. Commit `feat(world): build world.json` (code,
+`areas.ts` changes and `wiki/world.json` together).
+
+---
+
+### Task 10: Render places, resources and services pages
+
+**Files:**
+- Create: `wiki/world/render/places.ts`, `render/resources.ts`, `render/services.ts`,
+  `render/common.ts`; `wiki/world/render.ts` (entry)
+- Test: `wiki/world/test/render.test.ts` (snapshot of each page kind for a tiny synthetic World)
+- Generated: `wiki/places/**`, `wiki/resources/**`, `wiki/services/**`
+
+Page shapes (all tables sorted for stable output; coordinates as `(x, z)` with ` L<n>` when level >
+0, matching the shop pages):
+
+- `places/<area-id>.md`: area name, breadcrumb of parents, notes, requirements; a table per kind of
+  sites in it (and in its child areas, grouped by child): site, centre, counts, F2P, multiway,
+  Wilderness level; child area links.
+- `resources/<kind>/<subtype>.md` (trees, rocks, fishing spots, stalls, pickpocket): the dbrow facts
+  (level, xp, product, respawn; success chances per tool for trees and rocks) then every site:
+  area, centre, stand tile, count, F2P, multiway, Wilderness.
+- `services/<kind>.md` (bank, furnace, anvil, range, ...): every site with area, centre, stand tile,
+  counts, F2P.
+- `wiki/world/README.md` (generated header + hand-written body): what each folder holds, that pages
+  are generated, and where corrections go (`areas.ts`, `gates.ts`, the rule table).
+
+`build.ts` calls the renderer after writing `world.json`. A `--check` flag regenerates into memory
+and exits 1 if any generated file differs from the working tree (the freshness check); add it to
+`verify:conductor`.
+
+Commit `feat(world): render places, resources and services pages`.
+
+---
+
+### Task 11: NPC and shop pages use sites
+
+**Files:**
+- Modify: `wiki/generate-npcs.ts` (remove `MAP_SQUARE_AREAS`, `getAreaFromMapSquare`,
+  `parseMapSpawns`' use for locations; the Locations table reads `wiki/world.json`),
+  `wiki/generate-shops.ts` (shop coordinates from shop sites)
+- Regenerated: `wiki/npcs/**`, `wiki/shops/**`
+
+Locations table becomes: `| Area | Centre | Spawns | F2P |` with one row per site of that npc (any
+kind: bankers appear under their bank site, fishing spots under theirs), area = the leaf area name
+with its town in parentheses. NPCs with spawns but no site (non-combat, unclassified npcs) still
+need locations: give `build.ts` a plain `spawns` index (npc config -> tiles) clustered at radius 6
+with areas resolved, written to `world.json` as `npcSpawns`, and render from that.
+
+Check: `wiki/npcs/banker.md` lists 16 sites with correct names (Draynor, not Edgeville area);
+`wiki/npcs/fadli.md` and `gundai.md` now have locations; shop pages' coordinates unchanged or
+corrected. Diff the regenerated pages and read a sample of 20 before committing.
+
+Commit `fix(wiki): npc and shop locations from world sites, with correct area names`.
+
+---
+
+### Task 12: Knowledge-base wiring
+
+**Files:**
+- Modify: `.claude/skills/knowledge/SKILL.md` (generated folders now include `places/`,
+  `resources/`, `services/`, `world.json`; corrections go to `wiki/world/areas.ts` or the rule
+  table), `CLAUDE.md` (the "These folders are the knowledge base" paragraph), `wiki/README.md` if
+  present.
+- Modify: `learnings/banking.md` table to link `wiki/services/bank.md` instead of repeating
+  coordinates (keep the verified-in-game notes, per the knowledge skill's one-fact-one-place rule).
+
+Commit `docs(knowledge): world index pages are generated; where corrections go`.
+
+**Phase 1 review:** run the `task-review` skill over the branch (lenses: code-quality, contract,
+robustness) and fix findings per memory `review-fix-all-bands` before starting phase 2.
+
+---
+
+## Phase 2: reachability and travel (outline; detail in a follow-up plan)
+
+1. **Connector extraction** (`sources/connectors.ts`): parse `ladders+stairs/scripts/*.rs2`
+   `case <level>_<mx>_<mz>_<x>_<z> : p_telejump(<coord>)` into (loc tile -> landing); match to
+   `connector` features; stand tile per `connectors.ts` rules. Test: every row of
+   `conductor/lib/connectors.ts` is reproduced (loc and landing exact, stand within 1 tile).
+2. **Gates and transports** (`wiki/world/gates.ts`, curated): door/gate loc tile + requirement;
+   transports with endpoints, requirement, gp. Seed by grepping door scripts for quest varp checks
+   and `p_telejump` after a payment; the curated list confirms each.
+3. **Graph + flood fill** (`reach.ts`): typed-array tile graph over `collisionPaths`
+   (`walkable`/`canStep`), connector and gate edges; multi-label BFS keeping minimal requirement
+   sets per tile (antichain). Tests on synthetic grids (door, gated door, connector, two gates with
+   overlapping requirements) and real facts (Al Kharid needs toll or members route; Zanaris needs
+   `quest:lost-city`; Entrana by boat only).
+4. **Access on sites** (`reach` field), members from `free2play.csv`; unreached-content report by
+   area.
+5. **Path lengths** (`paths.ts` helper): BFS distance site stand -> nearest sink (bank/processor) per
+   requirement set, cached.
+6. **Conductor views**: `conductor/lib/connectors.ts` imports generated connectors (keeps its
+   tests); `conductor/lib/banks.ts` derives `BANKS` from bank sites (F2P, surface, reach `{}`) with
+   the curated `auto: false` exclusions kept. Both run through `task-review`.
+
+## Phase 3: rate model and methods (outline; detail in a follow-up plan)
+
+1. **Formula ports** (`wiki/world/model/`): `statRandom(level, low, high)` from the engine's
+   `stat_random` command implementation; woodcutting (swing ticks, `successchance`, deplete 1/8,
+   respawn), mining, fishing (`success_low/high` structs), thieving; each function cites its script
+   file and line; tests against hand-worked values.
+2. **Resource cap**: items/hr capped by k features x respawn.
+3. **Trip model**: inventory / rate + round-trip path ticks (walk and run) + banking overhead;
+   modes drop / bank / process-then-bank.
+4. **Method enumeration** per skill (gathering, processing, thieving) -> `methods[]` in `world.json`
+   with rates over levels 1-99 per tool tier.
+5. **Hazards**: aggressive NPC sites in range of the site and path (aggression + level vs player
+   combat level), Wilderness, multiway, gating.
+6. **Combat**: port the engine's accuracy and max-hit formulas; player profile (levels + gear
+   bonuses); kills/hr from density vs respawn; gp/hr from drop tables at item value.
+7. **Calibration**: key `conductor/tools/stats.ts` measurements to method ids; report >25% gaps.
+8. **Outputs**: `wiki/training/<skill>.md`; `wiki/world/query.ts` `bestMethods(skill, level,
+   { f2p, quests, gear, maxHazard })` with tests.
