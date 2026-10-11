@@ -27,6 +27,17 @@ describe('AREAS', () => {
         expect(resolve({ level: 0, x: 3277, z: 3227 })).toEqual(['kharidian-desert', 'toll-gate']);
     });
 
+    test('the Ranging Guild is the diamond inside its barricade; Hemenster is the contest town west of it', () => {
+        const guild = ['kandarin', 'ranging-guild'];
+        expect(resolve({ level: 0, x: 2678, z: 3434 })).toEqual(guild); // the leatherworker
+        expect(resolve({ level: 0, x: 2652, z: 3428 })).toEqual(guild); // the west watchtower
+        expect(resolve({ level: 2, x: 2668, z: 3444 })).toEqual(guild); // the north one, on top
+        expect(resolve({ level: 0, x: 2658, z: 3438 })).toEqual(['kandarin']); // the guild door
+        expect(resolve({ level: 0, x: 2652, z: 3426 })).toEqual(['kandarin']); // past the south-west fence
+        expect(resolve({ level: 0, x: 2639, z: 3424 })).toEqual(['kandarin', 'hemenster']); // steel arrowtips chest
+        expect(resolve({ level: 0, x: 2651, z: 3442 })).toEqual(['kandarin', 'hemenster']); // chicken pen
+    });
+
     test('underground areas are their own top-level areas at z + 6400', () => {
         expect(resolve({ level: 0, x: 3043, z: 9745 })).toEqual(['dwarven-mine', 'mining-guild']);
         expect(resolve({ level: 0, x: 3043, z: 3345 })).toEqual(['asgarnia']);

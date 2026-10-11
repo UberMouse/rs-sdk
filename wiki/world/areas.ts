@@ -16,7 +16,24 @@
 // - Instanced planes (z 4400-5000) and underground areas (z + 6400) are their own top-level areas,
 //   named from their scripts and npcs. A note says when a name is descriptive rather than read from
 //   the data, and names the way in where the connectors or scripts show it.
-import type { Area } from './types';
+import type { Area, Rect } from './types';
+
+/**
+ * Rects filling the diamond |x - cx| + |z - cz| <= r, for a fence built on the diagonals: bands of
+ * three rows, each as wide as its row nearest the centre, so a band reaches at most two tiles past
+ * the diamond at its ends (onto the fence, for a fence two tiles thick).
+ */
+function diamond(cx: number, cz: number, r: number): Rect[] {
+    const rects: Rect[] = [{ x1: cx - r, z1: cz - 1, x2: cx + r, z2: cz + 1 }];
+    for (let near = 2; near < r; near += 3) {
+        const [half, far] = [r - near, Math.min(near + 2, r)];
+        rects.push(
+            { x1: cx - half, z1: cz + near, x2: cx + half, z2: cz + far },
+            { x1: cx - half, z1: cz - far, x2: cx + half, z2: cz - near },
+        );
+    }
+    return rects;
+}
 
 export const AREAS: readonly Area[] = [
     // Asgarnia. Its border with Misthalin runs at x 3064/3065 (Port Sarim and the Monastery west,
@@ -267,7 +284,16 @@ export const AREAS: readonly Area[] = [
         parent: 'kandarin',
         rects: [{ x1: 2753, z1: 3596, x2: 2776, z2: 3619 }],
     },
-    { id: 'hemenster', name: 'Hemenster', parent: 'kandarin', rects: [{ x1: 2643, z1: 3426, x2: 2666, z2: 3449 }] },
+    {
+        id: 'hemenster',
+        name: 'Hemenster',
+        parent: 'kandarin',
+        rects: [
+            { x1: 2624, z1: 3402, x2: 2650, z2: 3456 },
+            { x1: 2651, z1: 3439, x2: 2660, z2: 3456 },
+        ],
+        notes: 'The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to the guild fence: Morris at its gate (2643, 3440), the contest spots west of the fence at x 2642 and Grandpa Jack (2650, 3452) (quests/quest_fishingcompo). The world map label sits at the guild door.',
+    },
     {
         id: 'keep-le-faye',
         name: 'Keep Le Faye',
@@ -300,6 +326,13 @@ export const AREAS: readonly Area[] = [
         name: 'Port Khazard',
         parent: 'kandarin',
         rects: [{ x1: 2635, z1: 3165, x2: 2682, z2: 3212 }],
+    },
+    {
+        id: 'ranging-guild',
+        name: 'Ranging Guild',
+        parent: 'kandarin',
+        rects: diamond(2668, 3428, 17),
+        notes: "The grounds inside the guild's wooden barricade (wood_wall_barricadel in map square m41_53), a diamond whose inside is |x - 2668| + |z - 3428| <= 17 with a watchtower at each tip. The guild door (2658, 3438) is in its north-west side and needs 40 Ranged (minigames/game_ranging/scripts/ranging_guild_door.rs2).",
     },
     { id: 'rellekka', name: 'Rellekka', parent: 'kandarin', rects: [{ x1: 2648, z1: 3657, x2: 2695, z2: 3704 }] },
     {

@@ -182,6 +182,19 @@ describe('rules', () => {
         expect(one('loc', 'chest', {}, { triggers: escaped })?.kind).toBe('bank');
     });
 
+    test('a call named in string text does not count; one interpolated into a string does', () => {
+        const said = (body: string) => one('loc', 'chest', {}, { triggers: [trig('a.rs2', 'loc', 'chest', body)] });
+        expect(said('\nmes("Ask ~openshop(a, 1, 1, 1) or @openbank.");')).toBeNull();
+        expect(said('\nmes("You can now mine @dbl@Iron."); ~x("\\"@openbank");')).toBeNull();
+        const callables = [label('~bank_name', '\n@openbank;')];
+        const triggers = [trig('a.rs2', 'loc', 'chest', '\nmes("Welcome to <~bank_name(a)>!");')];
+        expect(one('loc', 'chest', {}, { triggers, callables })?.kind).toBe('bank');
+        // A string argument keeps its place, so the bare name after it is still bound to $l.
+        const menu = [label('@menu', '(string $s, label $l)\njump($l);'), label('@open_it', '\n@openbank;')];
+        const viaMenu = [trig('a.rs2', 'loc', 'chest', '\n@menu("Yes, (please), open it", open_it);')];
+        expect(one('loc', 'chest', {}, { triggers: viaMenu, callables: menu })?.kind).toBe('bank');
+    });
+
     test('two dbrows listing one tree throw, naming both rows', () => {
         const dbrows = [
             { row: 'a_tree_table', table: 'woodcutting_trees', data: { tree: [['oak']] } },

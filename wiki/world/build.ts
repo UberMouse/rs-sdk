@@ -169,7 +169,7 @@ const git = (args: string[]): string => {
 
 /**
  * The last commit that touched server/content, with `-dirty` when server/content has uncommitted
- * changes, so the hash moves only when the game data does. It names the content commit and nothing
+ * changes, so the hash moves only when server/content does, committed or not. It names the content commit and nothing
  * more: it misses an edit to this builder or to areas.ts, so whether world.json is fresh is answered
  * by rebuilding and comparing the bytes, not by this hash.
  */
@@ -200,7 +200,9 @@ export function formatReport(report: BuildReport): string[] {
     const sample = report.npcUncovered.slice(0, NPC_SAMPLE);
     if (report.npcUncovered.length)
         lines.push(
-            `warning: ${report.npcUncovered.length} npc sites outside every area, the first ${sample.length}:`,
+            `warning: ${report.npcUncovered.length} npc site${report.npcUncovered.length === 1 ? '' : 's'} outside every area${
+                report.npcUncovered.length > sample.length ? `, the first ${sample.length}` : ''
+            }:`,
             ...sample.map(id => `  ${id}`),
         );
     if (Object.keys(report.unpacked).length)

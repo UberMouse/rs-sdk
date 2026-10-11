@@ -75,20 +75,42 @@ const params = (cfg: Config): Map<string, string> =>
 const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k => COMBAT_PARAMS.has(k));
 
 /**
- * A body without its `//` comments (a `//` inside a "string" is text), so commented-out calls don't
- * count. Inside a string a backslash escapes the next character, so `\"` does not end it.
+ * A body as code only: its `//` comments dropped (a `//` inside a "string" is text) and its string
+ * text blanked, so neither a commented-out call nor dialogue ("ask ~foo", the `@dbl@` colour tags of
+ * levelup/scripts/levelup_unlocks_mining.rs2) counts as a call. A string's `<...>` is an
+ * interpolation, which is code (`"<~pluralise(...)>"` calls a proc), so it stays. Inside a string a
+ * backslash escapes the next character, so `\"` does not end it. Blanking keeps the quotes and every
+ * column, so argsAt still splits a call's arguments where they are; a string argument is never bound
+ * (only bare names are), so its text is not needed.
  */
-function withoutComments(body: string): string {
+function codeOf(body: string): string {
     return body
         .split('\n')
         .map(line => {
+            let out = '';
             let quoted = false;
+            let interpolated = false;
             for (let i = 0; i < line.length; i++) {
-                if (quoted && line[i] === '\\') i++;
-                else if (line[i] === '"') quoted = !quoted;
-                else if (!quoted && line.startsWith('//', i)) return line.slice(0, i);
+                const ch = line[i]!;
+                if (!quoted) {
+                    if (line.startsWith('//', i)) break;
+                    if (ch === '"') quoted = true;
+                    out += ch;
+                } else if (interpolated) {
+                    if (ch === '>') interpolated = false;
+                    out += ch;
+                } else if (ch === '\\') {
+                    out += i + 1 < line.length ? '  ' : ' ';
+                    i++;
+                } else if (ch === '"') {
+                    quoted = false;
+                    out += ch;
+                } else if (ch === '<') {
+                    interpolated = true;
+                    out += ch;
+                } else out += ' ';
             }
-            return line;
+            return out;
         })
         .join('\n');
 }
@@ -189,7 +211,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         else byTarget.set(key, [t]);
     }
     const callables = new Map(
-        (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: withoutComments(c.body) }]),
+        (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: codeOf(c.body) }]),
     );
 
     /** The triggers on a config, by its name or its category. */
@@ -221,7 +243,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const reach = (raw: string): Reached[] => {
         const cached = reached.get(raw);
         if (cached) return cached;
-        const out: Reached[] = [{ body: withoutComments(raw), banking: true }];
+        const out: Reached[] = [{ body: codeOf(raw), banking: true }];
         const seen = new Set<string>();
         for (let i = 0; i < out.length; i++) {
             const { body, banking } = out[i]!;
@@ -236,7 +258,10 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
                 const callee = callables.get(call);
                 if (!callee) continue;
                 const bound = new Map(
-                    callee.params.flatMap((p, j) => (BARE_NAME.test(args[j] ?? '') ? [[p, args[j]!]] : [])),
+                    callee.params.flatMap((p, j) => {
+                        const a = args[j] ?? '';
+                        return BARE_NAME.test(a) ? [[p, a]] : [];
+                    }),
                 );
                 const banks = banking && !BANK_SIDE_EFFECTS.has(call);
                 const key = `${call}(${callee.params.map(p => bound.get(p) ?? '').join(',')})${banks ? '' : '!'}`;

@@ -129,7 +129,7 @@ describe('formatReport', () => {
         expect(lines.slice(2)).toEqual([
             'ERROR coverage: 1 sites outside every area:',
             '  tree:unnamed:0',
-            'warning: 1 npc sites outside every area, the first 1:',
+            'warning: 1 npc site outside every area:',
             '  npc:unnamed:0',
             'warning: placements with no config in the pack: loc 9 2',
         ]);
