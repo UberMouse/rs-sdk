@@ -485,8 +485,12 @@ export function readDbrows(): DbRow[] {
       locs that would go below level 0, keeps npc levels; tests pin all three plus world coords.
 - [ ] `parsePack`, `parseConfigs` (repeated keys collected, `//` comments skipped), `parseDbrows`
       tested as specified.
-- [ ] `readConfigs` precedence matches `wiki/generate-npcs.ts`'s (hand-written configs override
-      `_unpack` dumps), with a test for that rule.
+- [ ] `readConfigs` reads the `_unpack` dumps and the hand-written configs and **throws on a
+      duplicate config name**, as the engine packer does (`PackShared.ts`, `Duplicate config
+      found`); tested. (**Assumption**, settled in review: the packer refuses duplicates, so no
+      precedence rule is needed; the earlier "hand-written overrides" wording is superseded.)
+- [ ] `parseDbrows` splits `data=` values on commas outside double quotes and strips the quotes
+      (42 real lines are quoted); tested.
 - [ ] A real-data test reads every map square and finds the Canifis booths (`bankbooth`, id
       2213, near (3513, 3480)) on level 0.
 - [ ] Out of scope: classification, clustering, any output file.
