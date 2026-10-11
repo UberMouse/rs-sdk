@@ -923,7 +923,7 @@ Includes Task 3b Step 5 (curating `areas.ts` until coverage is clean).
 features (one per classified placement; drop `npc`-kind spawns with no combat stats) ->
 `buildSites` -> write `wiki/world.json`, then print a report:
 - counts per kind;
-- **coverage**: sites of the required kinds (Task 7 Step 5) outside every area; exit 1 if any;
+- **coverage**: sites of the required kinds (Task 3b Step 5) outside every area; exit 1 if any;
 - `npc` sites outside every area (warning only);
 - placements whose config is missing from the pack (warning).
 
