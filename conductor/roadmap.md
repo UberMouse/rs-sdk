@@ -8,35 +8,38 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-11 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 469 / 1881,
-1.55% of max XP. WC 66, FM 55, Mining 51, Thieving 49, Cooking 44, Fishing 40, Crafting 35,
-Fletching 30, Str 25, HP 22, Att 16, Prayer 15, Def 15. Ranged, Magic, Smithing, Herblore, Agility,
-Runecraft are level 1. Goals done this window: Fletching 30 / Fishing 40 / Cooking 44 (plans
-`chop-fletch`, `fish-cook-bank`) and Crafting 35 by pottery (plan `pottery-craft`). In flight: a
-task-runner on guard thieving for money (draft `runs/conductor2/plans/guard-thieve.ts`, Guards
-unlock at Thieving 40).
-Holds a steel axe, bronze pickaxe, net, Knife, tinderbox; cooked food is banked at Draynor.
+State at 2026-10-11 ~03:20 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 575 / 1881,
+3.77% of max XP. Thieving 82, Mining 69, WC 66, FM 55, Cooking 53, Fishing 48, Smithing 39, Crafting 35,
+Fletching 30, Str 25, HP 22, Att 16, Prayer 15, Def 15. Ranged, Magic, Herblore, Agility, Runecraft are
+level 1. Holds an Adamant pickaxe (bought 3,200 gp at Nurmof), Hammer, bronze sword + wooden shield;
+~4,200 gp in the Falador East bank; cooked fish banked at Draynor. In flight: a task-runner on Fishing 60 +
+Cooking 60 (150+ cooked fish banked, for later combat); a task-runner for Smithing is finished (39).
 
-- Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching` (named logs, Make 10),
-  `mining`, `combat` (melee/Ranged/Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
-  `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` across levels.
-  Plans in `conductor/plans/`: chop-burn, chop-fletch, fish-cook-bank, pottery-craft.
-- Measured: WC oaks steel ~780k/h; Mining iron 541k/h; FM 690k-1.16M/h; Thieving men 91k/h with food,
-  166k/h without (+41 gp/min); Crafting pottery ~65k/h (Crafting 1->35 in ~12 min); cooking at the
-  Lumbridge Cooking pot 345k/h; fishing net ~95k/h; fletching shafts 70k/h (slow: Make 10 helps
-  only past Fletching ~30). Melee is 5-10x slower than gathering: do not grind it yet.
-- Next, in order (each is a goal for a task-runner; level-1 skills first, each lifts total level fast):
-  1. Agility 1 -> 40+ on the Gnome course (~2.2k XP/lap at 25x). Needs the bot at the Stronghold
-     (task has no travel; the runner plans a walk or a `walkTo` step first).
-  2. Smithing 1 -> 40+: mine iron/coal (Mining 541k/h) -> smelt -> smith, with banking in a plan.
-  3. Ranged and Magic 1 -> 30+ via `combat` (cows/goblins with bow+arrows from fletching, strike spells).
-  4. Money for the adamant pickaxe (guard thieving, in flight), then Mining 60+ (coal/mithril).
-  5. Quests that unlock Herblore (Druidic Ritual) and Runecraft (Rune Mysteries; tower ladder works,
-     tower-room entry is deferred, see Review follow-ups).
-  6. Raise the leaders cheaply: WC willows/yews at 60+, FM line burn on logs for FM 70+, Cooking/Fishing
-     on better food (trout/salmon need lure/bait fishing).
+- Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching`, `mining`, `combat`
+  (melee/Ranged/Magic), `bank`, `shop`, `smithing` (smelt + anvil), `cooking`, `fishing`, `thieving`,
+  `crafting` (pottery), `fill`, `agility` (Gnome course), `travel` (waypoints, gates, `flee`), `walkTo`
+  across levels. Promoted plans in `conductor/plans/`: chop-burn, chop-fletch, fish-cook-bank,
+  pottery-craft, iron-smith (guard-thieve, fish-cook, mine-ore are drafts in `runs/conductor2/plans/`).
+- Measured (XP/hr): Thieving Falador guards with food 1.27M (plan guard-thieve, ~520 gp/min; without
+  food 373k-482k), Mining iron SE Varrock adamant ~875k, WC oaks steel ~780k, FM 690k-1.16M, cooking pot
+  345k, Smithing 131-140k (iron smelt, ~50% fail; kiteshields), Crafting pottery ~65k, Fishing net
+  95-200k, Fletching shafts 70k. Melee 5-10x slower than gathering: do not grind it yet.
+- Next, in order (each a goal for a task-runner; level-1 skills first, each lifts total level fast):
+  1. Agility 1 -> 40+ on the Gnome course (~2.2k XP/lap). `travel` now reaches the Stronghold
+     (Lumbridge -> course 270 s, wolves cost ~8 HP: carry 10+ food; fish are banked at Draynor).
+  2. Ranged and Magic 1 -> 30+ via `combat` (cows/goblins; bow + arrows from fletching, strike spells).
+     Cooked food stock is the Fishing/Cooking runner's purpose.
+  3. Cheap big levels: Thieving 82 -> 99 (~680k XP, ~35 min at guard-thieve rates; check whether
+     Paladins/Heroes need a new spot or food) and Mining 69 -> 99 (873k XP, ~1 h; coal/mithril at 70+).
+  4. Smithing 39 -> 60+: iron kiteshield loop is slow (140k/h). Try coal + steel bars (needs the coal
+     mine) or sell nothing; compare in Experiments. Bank the products (they have no use yet).
+  5. Quests that unlock Herblore (Druidic Ritual) and Runecraft (Rune Mysteries).
+  6. Raise the leaders cheaply: WC willows/yews at 60+, FM on logs for FM 70+, better food fishing.
 - Standing rules: bank leftovers and superseded tools between goals (task-runner rule); bank cooked
-  food each loop; user instruction: skip tool tiers when the 25x XP makes the cheaper one enough.
+  food each loop; always use food when thieving (user); skip tool tiers when 25x XP makes the cheaper
+  one enough; never walk through the Varrock stone circle (3223,3373) (dark wizards killed the bot):
+  use `travel` waypoints (Varrock W -> SE mine via (3260,3400); Falador -> Varrock W via (3035,3385),
+  (3100,3420)).
 
 ## Unlocks
 
@@ -56,16 +59,22 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
 - In catalog: `woodcutting`, `pickup`, `firemaking` (line burn with wall-edge check), `fletching`,
   `mining`, `combat` (melee, Ranged, Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
   `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` stairs/ladders.
-- In review: firemaking wall-edge fix (user report: thin walls), cooking reach fix (walk to a tile that
-  reaches the range). Both are uncommitted in the working tree; the main bot runs the working tree.
-- **Attack-in-transit hazard (fixed)**: `underAttackGuard` fights a winnable attacker to the end. A
-  Bear (lvl 21) roams the Lumbridge-Draynor road and failed two fishing walks; kill it once or route around.
-- Next ideas, in order: `agility` travel to the Stronghold (or a walkTo preflight inside the task) and
-  a second course for Agility 40+; `woodcutting` bank mode (logs for FM/fletching, money);
-  `smithing` plan from mined iron/coal (mine -> bank -> smelt -> smith); `crafting` beyond pottery
-  (leather, jewellery with gems/gold); quest tasks (Druidic Ritual, Rune Mysteries);
-  `combat` upgrades (eat real food from the bank, better target than chickens); `prayer` (bury bones);
-  `fishing` lure/bait for trout/salmon.
+- In review / landed: firemaking wall-edge fix (bb9c4f533), cooking reach fix (25143a7db), travel +
+  `passGate` (0d241f745), death ends a plan / idle rail / travel flee (ba9df8a92): all committed.
+- **Flee with no food (in progress: task-author in a worktree)**: `travel` with `flee: true` in combat at low HP and no food fails at once
+  in `lowHpGuard` (`interrupts.ts`: `if (p?.combat.inCombat || hpFell) return { fail: ... no food }`),
+  which leaves the bot standing in the fight. Fix: in flee mode skip the no-food fail (walking on is
+  the only way out; keep failing only when HP is 0 / dead), or let a task opt out via `allow: ['low-hp']`
+  while fleeing. Add a unit test on a scripted world (in combat, hp 4, no food, flee: keeps walking).
+- **Run-task auto-journal + plan nudge (idea)**: runners still journal in batches and chain plain runs
+  after four prompt fixes; make it structural (see the retrospective #4 proposals): `run-task.ts
+  --objective <title> --journal <path>` appends the mechanical journal line itself, and the RESULT
+  carries a `hint` after the 2nd plain run in a row on a bot since its last plan run.
+- Next ideas, in order: `thieving` higher tier (Paladin/Hero at 70-80+) if guards stop paying;
+  `mining` coal/mithril mode; `woodcutting` bank mode; `smithing` steel/coal plan; `crafting` beyond
+  pottery (leather, gems); `agility` second course for 40+; quest tasks (Druidic Ritual, Rune Mysteries);
+  `combat` upgrades (real food from the bank, better target than chickens); `prayer`; `fishing`
+  lure/bait for trout/salmon.
 - Done: `fletching` Make 10 batching and mixed-log tolerance; gates for stairs/ladders.
 
 ## Framework
@@ -116,21 +125,26 @@ on its own.
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
-- Skill speed ranking at the current levels (XP/hr): WC 780k, Mining iron 541k, Cooking 345k,
-  Thieving 166k, Crafting pottery 65k-310k (varies with water/clay trips), Fishing 95k, Fletching 70k.
-  Hypothesis: Agility (Gnome ~2.2k XP/lap) beats all of these at level 1. Status: measure on the first run.
+- Skill speed ranking at the current levels (XP/hr): Thieving guards 1.27M (with food), Mining iron adamant
+  875k, WC oaks 780k, Cooking pot 345k, Smithing 140k, Fishing 95-200k, Crafting 65k, Fletching 70k.
+  Hypothesis: Agility (Gnome ~2.2k XP/lap) beats the slow ones at level 1. Status: measure on the first run.
 - Fletching: arrow shafts are the slowest gain. Hypothesis: shortbow/longbow (u) on oaks is 2-4x
   XP/log. Variants: shafts vs oak longbow (u) at Fletching 30+. Status: untested.
 - Crafting past 35: pottery caps near Crafting 40 for useful XP; compare leather/gem cutting. Status: untested.
 - Combat target: chickens Def 108k/h, Str 83k/h, Att 55k/h vs 300k-1M/h for gathering. Hypothesis:
   cows/goblins and a better weapon give 3-5x. Status: untested; run after Ranged/Magic.
-- Mining rock: iron 541k/h vs copper/tin 159k/h done. Next: coal at Mining 50+ with the adamant
-  pickaxe. Status: iron done.
+- Mining rock: iron with the adamant pickaxe ~875k/h vs bronze 541k (different start level). Next: coal
+  and mithril at 55-70+. Status: iron done.
 - Woodcutting: oaks steel ~780k/h done; next willows/yews at WC 60+ and an oak -> bank loop vs drop.
 - Firemaking: line burn: 26 logs Lumbridge field 5 lines 91.6s -> 9 lines 79.6s once wall edges are
   checked (author result). Compare against sidestep at the FM 60+ rate. Status: pending review.
 - Cooking at the Lumbridge Cooking pot beats the range (west-side unreachable); done (345k/h).
 - Tool tier skipping: steel axe done; test steel -> mithril directly beats stepping.
+- Smithing method: iron kiteshield loop 140k/h (bars 50% smelt fail) vs smelt-only 131k/h. Variants: ring of
+  forging, steel bars (coal), smithing bigger items per bar (platebody 5 bars). Status: untested.
+- Runner process: plan-first from loop 1 and run to goal in the background. Metric: plain runs per goal
+  and idle minutes between a RESULT and the next run (journal `at` gaps). Status: after the checklist
+  restructure (retro #4) and `--objective` auto-journal; measure on the next three runners.
 - Chain robustness: plans (`when` predicates on inventory) replaced numbered chains; one failure
   mode left: plan `when` bugs (pottery-craft craft-bowl matched an unfired pot). Status: watch.
 
@@ -165,3 +179,5 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - Actions: `clean` (dialog text strip) in `actions/gate.ts` duplicates `actions/climb.ts`; export one shared helper (touches climb.ts, out of the travel review's scope) (code-quality Q3).
 - Lib: thieving copies combat's `foodInInventory`/`wantsToEat` (`tasks/combat.ts`); move both to
   a shared `lib/food.ts` taking `{ food, eatBelow }` and have both tasks import it (contract T5).
+- Brief accuracy: the conductor's dispatch told a runner "Falador has a furnace, an anvil" (false: no
+  Falador anvil, `learnings/smithing.md:48`) and cost it ~25 turns; briefs state only facts a page confirms.
