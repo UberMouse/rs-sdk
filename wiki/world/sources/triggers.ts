@@ -50,9 +50,9 @@ function blocks(file: string, text: string): Block[] {
     return out;
 }
 
-// `op` and `ap` (approach) both count: one subject often has both an op and an ap trigger, and both are kept (`opsOf` in classify.ts
-// collapses them to the op slot). A
-// leading `_` names a category (`[apnpc3,_bank_teller]`); `t` (spell on) ops are not uses.
+// `op` and `ap` (approach) both count: one subject often has both, and both are kept (`opsOf` in
+// classify.ts collapses them to the op slot). A leading `_` names a category (`[apnpc3,_bank_teller]`);
+// `t` (spell on) ops are not uses.
 const OP = /^\[(?:op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
 
 export function parseTriggers(file: string, text: string): Trigger[] {

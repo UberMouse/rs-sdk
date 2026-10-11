@@ -140,6 +140,8 @@ describe('rules', () => {
         expect(one('loc', 'chest', {}, { triggers: [trig('a.rs2', 'loc', 'chest', '\n@old;')], callables })).toBeNull();
         const quoted = [trig('a.rs2', 'loc', 'chest', '\n~openshop(a, 1, 1, 1, "http://x");')];
         expect(one('loc', 'chest', {}, { triggers: quoted })?.kind).toBe('shop');
+        const escaped = [trig('a.rs2', 'loc', 'chest', '\nmes("see \\"http://x\\""); @openbank;')];
+        expect(one('loc', 'chest', {}, { triggers: escaped })?.kind).toBe('bank');
     });
 
     test('two dbrows listing one tree throw, naming both rows', () => {

@@ -73,14 +73,18 @@ const params = (cfg: Config): Map<string, string> =>
 // The same predicate as hasCombatStats in wiki/generate-npcs.ts, which can't be imported (it runs main).
 const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k => COMBAT_PARAMS.has(k));
 
-/** A body without its `//` comments (a `//` inside a "string" is text), so commented-out calls don't count. */
+/**
+ * A body without its `//` comments (a `//` inside a "string" is text), so commented-out calls don't
+ * count. Inside a string a backslash escapes the next character, so `\"` does not end it.
+ */
 function withoutComments(body: string): string {
     return body
         .split('\n')
         .map(line => {
             let quoted = false;
             for (let i = 0; i < line.length; i++) {
-                if (line[i] === '"') quoted = !quoted;
+                if (quoted && line[i] === '\\') i++;
+                else if (line[i] === '"') quoted = !quoted;
                 else if (!quoted && line.startsWith('//', i)) return line.slice(0, i);
             }
             return line;
