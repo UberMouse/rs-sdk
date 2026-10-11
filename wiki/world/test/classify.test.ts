@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { classifier } from '../classify';
+import { classifier, type Classified } from '../classify';
 import type { Config } from '../sources/configs';
 import type { Callable, Trigger } from '../sources/triggers';
 
@@ -126,6 +126,42 @@ describe('rules', () => {
         const triggers = [trig('shop/scripts/shop.rs2', 'npc', 'shop_keeper', ' ~openshop_activenpc;', true)];
         const cfg = { category: ['shop_keeper'], param: ['owned_shop,generalshop1'] };
         expect(one('npc', 'shopkeeper1', cfg, { triggers })).toMatchObject({ kind: 'shop', subtype: 'generalshop1' });
+    });
+
+    test('an explicit ~openshop inv wins over the npc owned_shop param', () => {
+        const triggers = [trig('a.rs2', 'npc', 'zaff', '\n~openshop(b, 550, 1000, 20, "Zaff");')];
+        expect(one('npc', 'zaff', { param: ['owned_shop,a'] }, { triggers })?.subtype).toBe('b');
+    });
+
+    test('a call inside a // comment does not count; one in a string does not end the line', () => {
+        const commented = [trig('a.rs2', 'loc', 'chest', '\n// @openbank;\n~x; // ~openshop(a, 1, 1, 1, "S");')];
+        expect(one('loc', 'chest', {}, { triggers: commented })).toBeNull();
+        const callables = [label('@old', '\n// @openbank;')];
+        expect(one('loc', 'chest', {}, { triggers: [trig('a.rs2', 'loc', 'chest', '\n@old;')], callables })).toBeNull();
+        const quoted = [trig('a.rs2', 'loc', 'chest', '\n~openshop(a, 1, 1, 1, "http://x");')];
+        expect(one('loc', 'chest', {}, { triggers: quoted })?.kind).toBe('shop');
+    });
+
+    test('two dbrows listing one tree throw, naming both rows', () => {
+        const dbrows = [
+            { row: 'a_tree_table', table: 'woodcutting_trees', data: { tree: [['oak']] } },
+            { row: 'b_tree_table', table: 'woodcutting_trees', data: { tree: [['oak']] } },
+        ];
+        expect(() => classify('loc', 'oak', {}, { dbrows })).toThrow(/a_tree_table.*b_tree_table/);
+    });
+
+    test('a cached result cannot be mutated by a caller', () => {
+        const triggers = [trig('a.rs2', 'loc', 'chest', '\n@openbank;')];
+        const run = classifier({
+            locConfigs: new Map([['chest', {}]]),
+            npcConfigs: new Map(),
+            dbrows: [],
+            triggers,
+        });
+        const out = run('loc', 'chest');
+        expect(() => (out as Classified[]).push({ kind: 'tree', subtype: '', name: '' })).toThrow();
+        expect(() => ((out[0] as Classified).kind = 'tree')).toThrow();
+        expect(run('loc', 'chest')).toHaveLength(1);
     });
 
     test('a tanner opens the tanning interface, one label deep', () => {

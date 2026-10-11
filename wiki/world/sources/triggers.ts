@@ -36,8 +36,11 @@ function blocks(file: string, text: string): Block[] {
     const out: Block[] = [];
     let cur: Block | undefined;
     for (const line of text.split('\n')) {
-        if (line.startsWith('[')) {
-            const end = line.indexOf(']');
+        const end = line.startsWith('[') ? line.indexOf(']') : -1;
+        if (line.startsWith('[') && end < 0) {
+            // An unterminated `[` line is no header, and it ends the block before it.
+            cur = undefined;
+        } else if (end >= 0) {
             cur = { file, header: line.slice(0, end + 1), body: line.slice(end + 1) };
             out.push(cur);
         } else if (cur) {
@@ -47,7 +50,8 @@ function blocks(file: string, text: string): Block[] {
     return out;
 }
 
-// `op` and `ap` (approach) both count: one subject often has both, and rules dedupe by target. A
+// `op` and `ap` (approach) both count: one subject often has both an op and an ap trigger, and both are kept (`opsOf` in classify.ts
+// collapses them to the op slot). A
 // leading `_` names a category (`[apnpc3,_bank_teller]`); `t` (spell on) ops are not uses.
 const OP = /^\[(?:op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
 

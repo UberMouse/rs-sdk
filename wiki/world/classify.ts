@@ -73,6 +73,21 @@ const params = (cfg: Config): Map<string, string> =>
 // The same predicate as hasCombatStats in wiki/generate-npcs.ts, which can't be imported (it runs main).
 const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k => COMBAT_PARAMS.has(k));
 
+/** A body without its `//` comments (a `//` inside a "string" is text), so commented-out calls don't count. */
+function withoutComments(body: string): string {
+    return body
+        .split('\n')
+        .map(line => {
+            let quoted = false;
+            for (let i = 0; i < line.length; i++) {
+                if (line[i] === '"') quoted = !quoted;
+                else if (!quoted && line.startsWith('//', i)) return line.slice(0, i);
+            }
+            return line;
+        })
+        .join('\n');
+}
+
 const OPS = ['op1', 'op2', 'op3', 'op4', 'op5'];
 
 const opsOf = (triggers: Trigger[]): string[] => [...new Set(triggers.map(t => t.op))].sort();
@@ -103,11 +118,15 @@ const npc: Rule = (on, config, cfg) =>
  * op of its own (`duel_fadli`: Bank on op3, Buy on op4); otherwise two matches throw, since that
  * means a rule is too broad.
  */
-export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: string) => Classified[] {
+export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: string) => readonly Classified[] {
     const dbrowIndex = (table: string, column: string): Map<string, DbRow> => {
         const out = new Map<string, DbRow>();
         for (const row of input.dbrows.filter(r => r.table === table)) {
-            for (const [v] of row.data[column] ?? []) out.set(v!, row);
+            for (const [v] of row.data[column] ?? []) {
+                const prior = out.get(v!);
+                if (prior) throw new Error(`${table}.${column} lists ${v} in both ${prior.row} and ${row.row}`);
+                out.set(v!, row);
+            }
         }
         return out;
     };
@@ -118,7 +137,9 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const byTarget = new Map<string, Trigger[]>();
     for (const t of input.triggers) {
         const key = `${t.on}:${t.category ? '_' : ''}${t.target}`;
-        byTarget.set(key, [...(byTarget.get(key) ?? []), t]);
+        const list = byTarget.get(key);
+        if (list) list.push(t);
+        else byTarget.set(key, [t]);
     }
     const callables = new Map((input.callables ?? []).map(c => [c.call, c.body]));
 
@@ -139,10 +160,16 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         triggersOn(on, config, cfg).filter(t => t.file.startsWith(dir));
 
     /** A body and the bodies of the labels and procs it calls (one call deep). */
-    const reach = (body: string): string[] => [
-        body,
-        ...[...body.matchAll(/[@~][a-z0-9_]+/g)].flatMap(([call]) => callables.get(call) ?? []),
-    ];
+    const reach = (raw: string): string[] => {
+        const body = withoutComments(raw);
+        return [
+            body,
+            ...[...body.matchAll(/[@~][a-z0-9_]+/g)].flatMap(([call]) => {
+                const callee = callables.get(call);
+                return callee === undefined ? [] : [withoutComments(callee)];
+            }),
+        ];
+    };
     const reaching = (on: 'loc' | 'npc', config: string, cfg: Config, re: RegExp): Trigger[] =>
         triggersOn(on, config, cfg).filter(t => reach(t.body).some(b => re.test(b)));
 
@@ -176,7 +203,8 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     };
 
     // A shop opens through ~openshop(<inv>, ...) or, for most shopkeepers, ~openshop_activenpc, which
-    // opens the npc's owned_shop param (shop/scripts/shop.rs2). The subtype is the inv either way.
+    // opens the npc's owned_shop param (shop/scripts/shop.rs2). The subtype is the inv either way; an
+    // explicit call names its inv, so it wins over owned_shop, which is right only when none is named.
     const shop: Rule = (on, config, cfg) => {
         const ts = reaching(on, config, cfg, /~openshop(\(|_activenpc\b)/);
         if (!ts.length) return null;
@@ -185,7 +213,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
             .flatMap(t => reach(t.body))
             .map(b => b.match(/~openshop\(([a-z0-9_]+)/)?.[1])
             .find(Boolean);
-        return { kind: 'shop', subtype: owned ?? explicit ?? '', ops: opsOf(ts) };
+        return { kind: 'shop', subtype: explicit ?? owned ?? '', ops: opsOf(ts) };
     };
 
     // The tanning interface opens from areas/area_alkharid/scripts/tanner.rs2 [label,tan_leather_choices].
@@ -229,7 +257,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         ['connector', byDir('connector', 'loc', 'ladders+stairs/', false)],
     ];
 
-    const cache = new Map<string, Classified[]>();
+    const cache = new Map<string, readonly Classified[]>();
     return (on, config) => {
         const key = `${on}:${config}`;
         const cached = cache.get(key);
@@ -251,6 +279,9 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
             subtype,
             name: first(cfg, 'name') ?? config,
         }));
+        // Frozen: later calls get this same array, so a caller must not be able to change it.
+        out.forEach(Object.freeze);
+        Object.freeze(out);
         cache.set(key, out);
         return out;
     };

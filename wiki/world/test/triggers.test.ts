@@ -49,4 +49,20 @@ describe('parseTriggers', () => {
             ['loc', 'u', 'anvil', true],
         ]);
     });
+
+    test('a header with a trailing comment, or CRLF line endings, still parses', () => {
+        const u = parseTriggers('f.rs2', '[opnpc3,man] // Man\r\n@x;\r\n[oploc1,door]\r\n@y;\r\n');
+        expect(u.map(x => [x.on, x.op, x.target])).toEqual([
+            ['npc', '3', 'man'],
+            ['loc', '1', 'door'],
+        ]);
+        expect(u[0]!.body).toContain('@x;');
+    });
+
+    test('a `[` line with no `]` is no header and ends the block before it', () => {
+        const u = parseTriggers('f.rs2', '[opnpc1,man]\n@a;\n[opnpc2,man\n@b;\n[opnpc3,man]\n@c;\n');
+        expect(u.map(x => x.op)).toEqual(['1', '3']);
+        expect(u[0]!.body).toContain('@a;');
+        expect(u[0]!.body).not.toContain('@b;');
+    });
 });
