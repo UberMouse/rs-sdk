@@ -96,12 +96,50 @@ describe('rules', () => {
         expect(one('npc', 'master_fisher', {}, { triggers: guild })).toBeNull();
     });
 
-    test('@openbank one label deep counts; two labels deep does not', () => {
+    test('@openbank counts however many labels deep', () => {
         const callables = [label('@talk_to_banker', '\n@openbank;'), label('@greet', '\n@talk_to_banker;')];
-        const deep = (body: string) =>
+        const via = (body: string) =>
             one('npc', 'fadli', { name: ['Fadli'] }, { triggers: [trig('a.rs2', 'npc', 'fadli', body)], callables });
-        expect(deep('\n@talk_to_banker;')).toMatchObject({ kind: 'bank', subtype: 'banker' });
-        expect(deep('\n@greet;')).toBeNull();
+        expect(via('\n@talk_to_banker;')).toMatchObject({ kind: 'bank', subtype: 'banker' });
+        expect(via('\n@greet;')).toMatchObject({ kind: 'bank', subtype: 'banker' });
+    });
+
+    test('a label passed by name to a menu label runs through its jump($param)', () => {
+        // The shape of @multi2 in interface_chat/scripts/chat.rs2 and the tutorial banker's menu.
+        const callables = [
+            label('@multi2', '(string $s1, label $l1, string $s2, label $l2)\nif ($c = 1) jump($l1);\njump($l2);'),
+            label('@open_it', '\n@openbank;'),
+            label('@no_thanks', '\n~chatplayer("No thanks.");'),
+        ];
+        const menu = (body: string) =>
+            one('npc', 'banker', {}, { triggers: [trig('a.rs2', 'npc', 'banker', body)], callables });
+        expect(menu('\n@multi2("Yes.", open_it, "No.", no_thanks);')?.kind).toBe('bank');
+        expect(menu('\n@multi2("Yes.", no_thanks, "No.", no_thanks);')).toBeNull();
+        // Only a bare name is bound: an expression argument leaves the parameter unbound.
+        expect(menu('\n@multi2("Yes.", calc(1 + 1), "No.", no_thanks);')).toBeNull();
+        expect(menu('\njump(open_it);')?.kind).toBe('bank');
+    });
+
+    test('a cycle of calls ends, with or without arguments', () => {
+        const callables = [
+            label('@a', '\n@b;'),
+            label('@b', '\n@a;'),
+            label('@loop', '(label $next)\n@loop($next);\n@loop(b);'),
+        ];
+        const triggers = [trig('a.rs2', 'loc', 'thing', '\n@a;\n@loop(a);')];
+        expect(one('loc', 'thing', {}, { triggers, callables })).toBeNull();
+    });
+
+    test('@openbank below a bank side effect does not make a bank; another path to it does', () => {
+        const callables = [
+            label('@shantay_ill_pay_the_fine', '\n@fetch_coins;'),
+            label('@fetch_coins', '\n@openbank;'),
+            label('@bank_service', '\n@fetch_coins;'),
+        ];
+        const via = (body: string) =>
+            classify('npc', 'shantay', {}, { triggers: [trig('a.rs2', 'npc', 'shantay', body)], callables });
+        expect(via('\n@shantay_ill_pay_the_fine;')).toEqual([]);
+        expect(via('\n@shantay_ill_pay_the_fine;\n@bank_service;')).toMatchObject([{ kind: 'bank' }]);
     });
 
     test('@openbank does not match a longer label name', () => {
@@ -274,5 +312,109 @@ describe('rules', () => {
         const dbrows = [{ row: 'yew_tree_table', table: 'woodcutting_trees', data: { tree: [['yewtree']] } }];
         const cfg = { category: ['anvil'] };
         expect(() => classify('loc', 'yewtree', cfg, { dbrows })).toThrow('loc:yewtree matches rules tree, station');
+    });
+});
+
+/** A classifier over several configs of one type. */
+const among = (on: 'loc' | 'npc', configs: [string, Config][], triggers: Trigger[], callables: Callable[] = []) =>
+    classifier({
+        locConfigs: on === 'loc' ? new Map(configs) : new Map(),
+        npcConfigs: on === 'npc' ? new Map(configs) : new Map(),
+        dbrows: [],
+        triggers,
+        callables,
+    });
+
+/** A shop on op1 that `op` turns into a bank booth. */
+const shopTurningBank = (op: string): Trigger[] => [
+    trig('a.rs2', 'loc', 'rock', '\n~openshop(rocks, 1, 1, 1, "Rocks");', false, '1'),
+    trig('a.rs2', 'loc', 'rock', '\nloc_change(booth, 10);', false, op),
+    trig('a.rs2', 'loc', 'booth', '\n@openbank;', false, '2'),
+];
+
+describe('type changes', () => {
+    // The Duel Arena chests (minigames/game_duelarena/scripts/misc_locs.rs2, general_use/scripts/chests.rs2).
+    const chests = among(
+        'loc',
+        [
+            ['closed', { name: ['Closed chest'] }],
+            ['open', { name: ['Open chest'] }],
+        ],
+        [
+            trig('a.rs2', 'loc', 'closed', '\n~open_chest(open);', false, '1'),
+            trig('a.rs2', 'loc', 'open', '\n@openbank;', false, '2'),
+            trig('a.rs2', 'loc', 'open', '\n~open_chest(closed);', false, '3'),
+        ],
+        [label('~open_chest', '(loc $other_chest)\nloc_change($other_chest, 300);')],
+    );
+
+    test('a loc takes the kinds of the loc its op loc_changes it into, keeping its own name', () =>
+        expect(chests('loc', 'closed')).toEqual([{ kind: 'bank', subtype: 'chest', name: 'Closed chest' }]));
+
+    test('a change back to the config ends the walk', () =>
+        expect(chests('loc', 'open')).toEqual([{ kind: 'bank', subtype: 'chest', name: 'Open chest' }]));
+
+    test('an npc takes the kinds of the npc its op npc_changetypes it into', () => {
+        const run = among(
+            'npc',
+            [
+                ['afflicted', { name: ['Razmire'] }],
+                ['keeper', { name: ['Razmire'] }],
+            ],
+            [
+                trig('a.rs2', 'npc', 'afflicted', '\nnpc_changetype(keeper, 200);'),
+                trig('a.rs2', 'npc', 'keeper', '\n~openshop(store, 400, 1300, 30, "Store");', false, '3'),
+            ],
+        );
+        expect(run('npc', 'afflicted')).toEqual([{ kind: 'shop', subtype: 'store', name: 'Razmire' }]);
+    });
+
+    test('a changed-into kind arrives through the op that makes the change, for the clash rule', () => {
+        const configs: [string, Config][] = [
+            ['rock', {}],
+            ['booth', { name: ['Bank booth'] }],
+        ];
+        expect(among('loc', configs, shopTurningBank('3'))('loc', 'rock').map(x => x.kind)).toEqual(['shop', 'bank']);
+        expect(() => among('loc', configs, shopTurningBank('1'))('loc', 'rock')).toThrow(
+            'loc:rock matches rules shop, bank via booth through op 1',
+        );
+    });
+
+    test('a kind the config already has adds nothing through a change', () => {
+        const dir = 'skill_thieving/scripts/chest/trapped_chest.rs2';
+        const run = among(
+            'loc',
+            [
+                ['chest_10_coins', {}],
+                ['looted', {}],
+            ],
+            [
+                trig(dir, 'loc', 'chest_10_coins', '\nloc_change(looted, 50);'),
+                trig(dir, 'loc', 'looted', '\nmes("Empty.");'),
+            ],
+        );
+        expect(run('loc', 'chest_10_coins')).toMatchObject([{ kind: 'thieving-chest', subtype: 'chest_10_coins' }]);
+    });
+
+    test('turning into a monster does not make an npc an `npc`', () => {
+        const run = among(
+            'npc',
+            [
+                ['villager', { op1: ['Talk-to'] }],
+                ['monster', { op2: ['Attack'], param: ['attackbonus,40'] }],
+            ],
+            [trig('a.rs2', 'npc', 'villager', '\nnpc_changetype(monster, 100);')],
+        );
+        expect(run('npc', 'villager')).toEqual([]);
+        expect(run('npc', 'monster')).toMatchObject([{ kind: 'npc' }]);
+    });
+
+    test('a change into a config of the other type, or into an unknown one, is ignored', () => {
+        const run = among(
+            'loc',
+            [['lever', {}]],
+            [trig('a.rs2', 'loc', 'lever', '\nnpc_changetype(lever, 1);\nloc_change(nowhere, 1);')],
+        );
+        expect(run('loc', 'lever')).toEqual([]);
     });
 });

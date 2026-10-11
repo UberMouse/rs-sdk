@@ -23,7 +23,7 @@ const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, coll
 const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 let squares: ReturnType<typeof readAllMapSquares> | undefined;
-/** Every placement in the map files, read once: the closed booths and Razmire are not features. */
+/** Every placement in the map files, read once: the closed booths are not features. */
 const mapSquares = (): ReturnType<typeof readAllMapSquares> => (squares ??= readAllMapSquares());
 
 const sitesOf = (kind: Site['kind']): Site[] => world.sites.filter(s => s.kind === kind);
@@ -105,6 +105,20 @@ describe('banks', () => {
         const [shantay] = inLeaf('bank', 'shantay-pass-bank-chest');
         expect(shantay!.counts).toEqual({ chest: 1 });
         expect(featuresOf(shantay!).map(f => f.config)).toEqual(['thbankchest']);
+        // Shantay and his prison door reach @openbank only to pay the jail fine (classify.ts
+        // BANK_SIDE_EFFECTS), so neither is a bank.
+        const shantays = world.features.filter(f => f.config === 'shantay' || f.config === 'shantay_prisondoor');
+        expect(shantays.map(f => `${f.config} ${f.kind}`)).toEqual(['shantay shop']);
+    });
+
+    test('the Duel Arena bank is Fadli and the two closed chests; the tutorial bank has its bankers', () => {
+        // The closed chests open into bank chests (minigames/game_duelarena/scripts/misc_locs.rs2).
+        const [duel] = inLeaf('bank', 'duel-arena-bank');
+        expect(duel!.counts).toEqual({ banker: 1, chest: 2 });
+        expect(featuresOf(duel!).map(f => f.config)).toEqual(['loc_3193', 'loc_3193', 'duel_fadli']);
+        // noobbanker's Talk-to menu opens the bank (tutorial/scripts/npcs/tut_banker.rs2).
+        const [tutorial] = inLeaf('bank', 'tutorial-island-bank');
+        expect(tutorial!.counts).toEqual({ banker: 2, booth: 2 });
     });
 
     test('closed and private booths are not banks', () => {
@@ -168,22 +182,18 @@ describe('resources and shops', () => {
     /** Inventories no script opens: no `~openshop(<inv>, ...)` anywhere in server/content/scripts. */
     const UNOPENED = ['fishrestaurant', 'foodshop', 'furstall', 'silvershop', 'spiceshop'];
     /**
-     * Second inventories of a shopkeeper who opens another on members worlds or at another quest stage
-     * (rommik.rs2, dommik.rs2, zaff.rs2, regicidegeneralshopkeeper.rs2): the site records the first
-     * ~openshop classify.ts reaches, so the page's inventory is not a site's subtype.
+     * Second inventories of a shopkeeper who opens another on members worlds, at another quest stage
+     * or by another menu choice (rommik.rs2, dommik.rs2, zaff.rs2, regicidegeneralshopkeeper.rs2,
+     * razmire_keelgan.rs2): the site records the first ~openshop classify.ts reaches, so the page's
+     * inventory is not a site's subtype.
      */
     const SECOND: Record<string, string> = {
         'craftingshop-free': 'rommik',
         'craftingshop2-free': 'dommik',
+        razmirebuildingstore: 'razmire_keelgan_afflicted',
         'regicide-general-shop': 'regicidegeneralshopkeeper',
         staffshop: 'zaff',
     };
-    /**
-     * Razmire is placed as razmire_keelgan_afflicted, which only talks; npc_changetype makes it
-     * razmire_keelgan, whose ops open these (quest_mortton/scripts/razmire_keelgan.rs2). The build
-     * classifies placed configs.
-     */
-    const TYPE_CHANGED = ['razmirebuildingstore', 'razmiregeneralstore'];
 
     test('every shop page in wiki/shops has a shop site, but for pages the data explains', () => {
         const shops = sitesOf('shop').flatMap(featuresOf);
@@ -200,7 +210,7 @@ describe('resources and shops', () => {
                 const owners = [...owner.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]!.toLowerCase());
                 return !owners.some(o => names.has(o)) && !invs.has(norm(slug));
             });
-        expect(missing.sort()).toEqual([...UNOPENED, ...Object.keys(SECOND), ...TYPE_CHANGED].sort());
+        expect(missing.sort()).toEqual([...UNOPENED, ...Object.keys(SECOND)].sort());
     });
 
     test('the pages without a site are explained by the data', () => {
@@ -212,9 +222,5 @@ describe('resources and shops', () => {
             expect(shopSubtypesOf(npc)).not.toEqual([]);
             expect(shopSubtypesOf(npc)).not.toContain(inv);
         }
-        const npcs = readPack('npc');
-        const placed = new Set(mapSquares().npcs.map(n => npcs.name.get(n.id)));
-        expect([placed.has('razmire_keelgan'), placed.has('razmire_keelgan_afflicted')]).toEqual([false, true]);
-        for (const inv of TYPE_CHANGED) expect(bodies).toMatch(opens(inv));
     });
 });

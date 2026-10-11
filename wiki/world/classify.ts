@@ -1,5 +1,6 @@
 // What a loc or npc config is for, read from the game data that uses it: the dbrows that list it
-// and the script triggers on it (or on its category). A config no rule claims is scenery.
+// and the script triggers on it (or on its category), and what those triggers change it into. A
+// config no rule claims is scenery.
 import type { Config } from './sources/configs';
 import { first } from './sources/configs';
 import type { DbRow } from './sources/dbrows';
@@ -11,7 +12,7 @@ export interface ClassifyInput {
     npcConfigs: Map<string, Config>;
     dbrows: DbRow[];
     triggers: Trigger[];
-    /** The labels and procs trigger bodies call, followed one call deep. Omitted: none. */
+    /** The labels and procs trigger bodies call, followed through every call. Omitted: none. */
     callables?: Callable[];
 }
 
@@ -92,6 +93,48 @@ function withoutComments(body: string): string {
         .join('\n');
 }
 
+/** A callable's parameter names, from the `(type $name, ...)` list that starts its body. */
+const paramsOf = (body: string): string[] =>
+    [...(body.match(/^\(([^)]*)\)/)?.[1] ?? '').matchAll(/\$([a-z0-9_]+)/g)].map(m => m[1]!);
+
+/** The arguments of the call whose `(` is at `body[open]`, split at top-level commas; [] when none. */
+function argsAt(body: string, open: number): string[] {
+    if (body[open] !== '(') return [];
+    const args: string[] = [];
+    let depth = 0;
+    let quoted = false;
+    let start = open + 1;
+    for (let i = open; i < body.length; i++) {
+        const ch = body[i];
+        if (quoted) {
+            if (ch === '\\') i++;
+            else if (ch === '"') quoted = false;
+        } else if (ch === '"') quoted = true;
+        else if (ch === '(') depth++;
+        else if (ch === ')' && --depth === 0) {
+            args.push(body.slice(start, i).trim());
+            break;
+        } else if (ch === ',' && depth === 1) {
+            args.push(body.slice(start, i).trim());
+            start = i + 1;
+        }
+    }
+    return args.length === 1 && args[0] === '' ? [] : args;
+}
+
+const BARE_NAME = /^[a-z0-9_]+$/;
+
+// Labels whose @openbank serves another flow, not banking: Shantay's jail fine is paid through the
+// bank ("you'll need access to your bank", areas/area_alkharid/scripts/shantay.rs2
+// [label,shantay_ill_pay_the_fine]), which his Talk-to and his prison door both reach.
+const BANK_SIDE_EFFECTS: ReadonlySet<string> = new Set(['@shantay_ill_pay_the_fine']);
+
+interface Reached {
+    body: string;
+    /** False below a BANK_SIDE_EFFECTS label: an @openbank here is not a bank service. */
+    banking: boolean;
+}
+
 const OPS = ['op1', 'op2', 'op3', 'op4', 'op5'];
 
 const opsOf = (triggers: Trigger[]): string[] => [...new Set(triggers.map(t => t.op))].sort();
@@ -145,7 +188,9 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         if (list) list.push(t);
         else byTarget.set(key, [t]);
     }
-    const callables = new Map((input.callables ?? []).map(c => [c.call, c.body]));
+    const callables = new Map(
+        (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: withoutComments(c.body) }]),
+    );
 
     /** The triggers on a config, by its name or its category. */
     const triggersOn = (on: 'loc' | 'npc', config: string, cfg: Config): Trigger[] => {
@@ -163,19 +208,52 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const under = (dir: string) => (on: 'loc' | 'npc', config: string, cfg: Config) =>
         triggersOn(on, config, cfg).filter(t => t.file.startsWith(dir));
 
-    /** A body and the bodies of the labels and procs it calls (one call deep). */
-    const reach = (raw: string): string[] => {
-        const body = withoutComments(raw);
-        return [
-            body,
-            ...[...body.matchAll(/[@~][a-z0-9_]+/g)].flatMap(([call]) => {
+    const reached = new Map<string, Reached[]>();
+    /**
+     * A body and the bodies of every label and proc it calls, transitively, nearest first. A call's
+     * bare-name arguments replace its callee's `$params`, as a label passed by name is how a dialogue
+     * menu goes on: `@multi2("Yes.", tut_open_bank, ...)` runs `jump($label1)` (interface_chat/scripts/
+     * chat.rs2), and `~open_chest(duel_chestopen)` runs `loc_change($other_chest, 300)` (general_use/
+     * scripts/chests.rs2). `jump(<label>)` is a call. Each callee is followed once per argument list
+     * (and once more if also reached below a bank side effect); only bare names are bound, so the
+     * lists are finite and a cycle ends.
+     */
+    const reach = (raw: string): Reached[] => {
+        const cached = reached.get(raw);
+        if (cached) return cached;
+        const out: Reached[] = [{ body: withoutComments(raw), banking: true }];
+        const seen = new Set<string>();
+        for (let i = 0; i < out.length; i++) {
+            const { body, banking } = out[i]!;
+            const calls = [
+                ...[...body.matchAll(/[@~][a-z0-9_]+/g)].map(m => ({
+                    call: m[0],
+                    args: argsAt(body, m.index + m[0].length),
+                })),
+                ...[...body.matchAll(/\bjump\(([a-z0-9_]+)\)/g)].map(m => ({ call: `@${m[1]}`, args: [] })),
+            ];
+            for (const { call, args } of calls) {
                 const callee = callables.get(call);
-                return callee === undefined ? [] : [withoutComments(callee)];
-            }),
-        ];
+                if (!callee) continue;
+                const bound = new Map(
+                    callee.params.flatMap((p, j) => (BARE_NAME.test(args[j] ?? '') ? [[p, args[j]!]] : [])),
+                );
+                const banks = banking && !BANK_SIDE_EFFECTS.has(call);
+                const key = `${call}(${callee.params.map(p => bound.get(p) ?? '').join(',')})${banks ? '' : '!'}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push({
+                    body: callee.body.replace(/\$([a-z0-9_]+)/g, (m, p: string) => bound.get(p) ?? m),
+                    banking: banks,
+                });
+            }
+        }
+        reached.set(raw, out);
+        return out;
     };
-    const reaching = (on: 'loc' | 'npc', config: string, cfg: Config, re: RegExp): Trigger[] =>
-        triggersOn(on, config, cfg).filter(t => reach(t.body).some(b => re.test(b)));
+    /** The triggers on a config whose reach has a body matching `re`; `banking`: only bank-service bodies. */
+    const reaching = (on: 'loc' | 'npc', config: string, cfg: Config, re: RegExp, banking = false): Trigger[] =>
+        triggersOn(on, config, cfg).filter(t => reach(t.body).some(r => (r.banking || !banking) && re.test(r.body)));
 
     const tree: Rule = (on, config, cfg) => {
         const row = on === 'loc' ? trees.get(config) : undefined;
@@ -198,7 +276,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     };
 
     const bank: Rule = (on, config, cfg) => {
-        const ts = reaching(on, config, cfg, /@openbank\b/);
+        const ts = reaching(on, config, cfg, /@openbank\b/, true);
         const teller = on === 'npc' && first(cfg, 'category') === 'bank_teller';
         if (!ts.length && !teller) return null;
         const ops = ts.length ? opsOf(ts) : usableOps(on, config, cfg);
@@ -215,7 +293,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         const owned = on === 'npc' ? params(cfg).get('owned_shop') : undefined;
         const explicit = ts
             .flatMap(t => reach(t.body))
-            .map(b => b.match(/~openshop\(([a-z0-9_]+)/)?.[1])
+            .map(({ body }) => body.match(/~openshop\(([a-z0-9_]+)/)?.[1])
             .find(Boolean);
         return { kind: 'shop', subtype: explicit ?? owned ?? '', ops: opsOf(ts) };
     };
@@ -261,22 +339,69 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         ['connector', byDir('connector', 'loc', 'ladders+stairs/', false)],
     ];
 
+    const configsOf = (on: 'loc' | 'npc'): Map<string, Config> => (on === 'loc' ? input.locConfigs : input.npcConfigs);
+    const ruleHits = (on: 'loc' | 'npc', config: string): (readonly [string, Match])[] => {
+        const cfg = configsOf(on).get(config) ?? {};
+        return rules.flatMap(([n, r]) => {
+            const hit = r(on, config, cfg);
+            return hit ? [[n, hit] as const] : [];
+        });
+    };
+
+    // A loc's op can loc_change it and an npc's can npc_changetype it; the first argument names the
+    // config it becomes, as in general_use/scripts/chests.rs2 and quest_mortton/scripts/razmire_keelgan.rs2.
+    const CHANGE = { loc: /\bloc_change\(\s*([a-z0-9_]+)\s*,/g, npc: /\bnpc_changetype\(\s*([a-z0-9_]+)\s*,/g };
+    /** The configs a config's triggers change it into, each with the ops that do it, by name. */
+    const changesOf = (on: 'loc' | 'npc', config: string): Map<string, string[]> => {
+        const out = new Map<string, Set<string>>();
+        for (const t of triggersOn(on, config, configsOf(on).get(config) ?? {}))
+            for (const { body } of reach(t.body))
+                for (const [, into] of body.matchAll(CHANGE[on]))
+                    if (into !== config && configsOf(on).has(into!))
+                        out.set(into!, (out.get(into!) ?? new Set()).add(t.op));
+        return new Map([...out].sort(([a], [b]) => (a < b ? -1 : 1)).map(([into, ops]) => [into, [...ops].sort()]));
+    };
+
+    /**
+     * The rule hits of the configs this one changes into, followed through their own changes. The op
+     * that makes the change is how the player reaches the other type's use, so a hit takes that op
+     * (and not the other type's) for the own-op clash rule: the Duel Arena's closed chest is a bank
+     * through its op1 Open, which turns it into duel_chestopen (minigames/game_duelarena/scripts/
+     * misc_locs.rs2). The visited set holds this config, so a change back to it ends the walk.
+     */
+    const changedHits = (on: 'loc' | 'npc', config: string): (readonly [string, Match])[] =>
+        [...changesOf(on, config)].flatMap(([changed, ops]) => {
+            const seen = new Set([config]);
+            const out: (readonly [string, Match])[] = [];
+            const walk = (into: string): void => {
+                if (seen.has(into)) return;
+                seen.add(into);
+                for (const [n, m] of ruleHits(on, into)) out.push([`${n} via ${into}`, { ...m, ops }]);
+                for (const next of changesOf(on, into).keys()) walk(next);
+            };
+            walk(changed);
+            return out;
+        });
+
     const cache = new Map<string, readonly Classified[]>();
     return (on, config) => {
         const key = `${on}:${config}`;
         const cached = cache.get(key);
         if (cached) return cached;
-        const cfg = (on === 'loc' ? input.locConfigs : input.npcConfigs).get(config) ?? {};
-        const hits = rules.flatMap(([n, r]) => {
-            const hit = r(on, config, cfg);
-            return hit ? [[n, hit] as const] : [];
-        });
+        const cfg = configsOf(on).get(config) ?? {};
+        // A kind the config already has is the use it changes back and forth for (a trapped chest's
+        // search turns it into the looted loc_2572, also a thieving chest: skill_thieving/scripts/
+        // chest/trapped_chest.rs2), so a changed-into hit adds only kinds not yet found.
+        const hits = [...ruleHits(on, config)];
+        for (const hit of changedHits(on, config)) if (!hits.some(([, h]) => h.kind === hit[1].kind)) hits.push(hit);
         hits.forEach(([a, x], i) => {
             for (const [b, y] of hits.slice(i + 1)) {
                 const op = clash(x.ops, y.ops);
                 if (op !== undefined) throw new Error(`${key} matches rules ${a}, ${b} through op ${op}`);
             }
         });
+        // Only the config's own Attack op and stats make it an `npc`: one that turns into a monster
+        // is not one to train on until it has.
         const fallback = hits.length ? null : npc(on, config, cfg);
         const out = [...hits.map(([, h]) => h), ...(fallback ? [fallback] : [])].map(({ kind, subtype }) => ({
             kind,

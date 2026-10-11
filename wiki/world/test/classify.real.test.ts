@@ -46,6 +46,24 @@ describe('classifier on the real game data', () => {
         expect(c('npc', 'werewolftanner')[0]?.kind).toBe('tanner');
     });
 
+    test('uses reached through menus, deep labels and type changes', () => {
+        // loc_3193's op1 Open is ~open_chest(duel_chestopen), a loc_change into the open chest whose
+        // op2 Bank goes to @openbank (minigames/game_duelarena/scripts/misc_locs.rs2).
+        expect(c('loc', 'loc_3193')).toEqual([{ kind: 'bank', subtype: 'chest', name: 'Closed chest' }]);
+        // @noobbanker's @multi2 passes tut_open_bank, which goes to @openbank (tutorial/scripts/npcs/tut_banker.rs2).
+        expect(c('npc', 'noobbanker')).toEqual([{ kind: 'bank', subtype: 'banker', name: 'Banker' }]);
+        // Its @multi2 passes tan_leather_choices (minigames/game_ranging/scripts/leatherworker.rs2).
+        expect(c('npc', 'ranging_guild_leatherworker')).toMatchObject([{ kind: 'tanner' }]);
+        // Talk-to reaches @razmire_talk's store menu, the general store first
+        // (quests/quest_mortton/scripts/razmire_keelgan.rs2).
+        expect(c('npc', 'razmire_keelgan_afflicted')).toMatchObject([{ kind: 'shop', subtype: 'razmiregeneralstore' }]);
+    });
+
+    test('the Shantay jail fine opens the bank, but makes neither Shantay nor his prison door a bank', () => {
+        expect(c('npc', 'shantay')).toEqual([{ kind: 'shop', subtype: 'shantayshop', name: 'Shantay' }]);
+        expect(c('loc', 'shantay_prisondoor')).toEqual([]);
+    });
+
     test('every loc and npc config classifies without two rules clashing; only Fadli has two kinds', () => {
         const errors: string[] = [];
         const multi: string[] = [];
