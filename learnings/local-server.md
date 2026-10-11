@@ -45,3 +45,5 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
   shield, shortbow, 25 bronze arrows, runes (25 air, 15 mind, 6 water, 4 earth, 2 body). [v 2026-10-09 conductor1 local]
 
 - Skill make menus (fletching) take Make 10 batches at one log per 2 ticks; a level-up dialog stops the batch, and at 25x XP early levels come every log or two, so batching pays from the mid levels. See `learnings/fletching.md`. [v 2026-10-11 conductor2w4 local]
+
+- Death: the bot kept its 3 most valuable items (Adamant pickaxe, bronze sword, wooden shield) and lost the rest (5 anchovies); it reappeared near (3226, 3330) at full hp, observed after a death at the Varrock stone circle (3223, 3373), not the Lumbridge spawn. [v 2026-10-11 conductor2 local]
