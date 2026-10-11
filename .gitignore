@@ -5,6 +5,7 @@ runs/
 screenshots/
 public-bot/
 public-client/
+bots/
 
 server.json
 .env
