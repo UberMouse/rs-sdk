@@ -185,7 +185,10 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 - Run it in the foreground, with a Bash timeout longer than its `--until`, only up to about
   `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print). A longer
   run goes in the background; wait for its completion notification, never `sleep N; tail` (the
-  harness blocks a foreground sleep).
+  harness blocks a foreground sleep) and never a `pgrep` loop of your own. Any `pgrep -f` for a
+  run keeps the `^[^ ]*bun (run )?` anchor shown below: an unanchored `"run-task.ts <bot> "` also
+  matches the shell running the loop, so the loop never ends (a runner hung on one for minutes
+  after its run had finished, 2026-10-11).
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around it.
 - Work toward the goal runs as a plan, its first loop included. A plain task run,
