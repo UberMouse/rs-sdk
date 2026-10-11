@@ -285,8 +285,9 @@ const meanTile = (tiles: Tile[]): Tile => ({
  * - A shop no site records is "not placed", with the reason in the data (world.real.test.ts pins
  *   these pages): no script opens the inventory, or one does but classify.ts gives its shopkeeper the
  *   first shop its script opens (members worlds, a quest stage, a menu choice). Where that script is
- *   the shopkeeper's own op trigger, the shopkeeper's shop sites follow, as they are this shop's too;
- *   a call in a label (razmire_keelgan.rs2) names no npc, so only the file is given.
+ *   reached from the shopkeeper's own op trigger, the shopkeeper's shop sites follow, as they are
+ *   this shop's too; a call reached only through a dialogue choice's label argument
+ *   (razmire_keelgan.rs2) names no npc, so only the file is given.
  */
 function shopLocator(world: World): (inv: string, pagePath: string) => string {
     const areas = areasOf(world);
