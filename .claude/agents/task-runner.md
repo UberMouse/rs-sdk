@@ -28,11 +28,12 @@ script walked the bot under attack and it died, 2026-10-11).
 
 ## Every run
 
-1. A goal's first work is a plan draft, run once with `--until minutes:1`. Never a second plain
-   task run in a row (one errand between plans at most).
-2. After a clean `done`, run the plan **to the goal**: `--until <goal stop> --until
-   minutes:<budget left>`. Never re-run a working plan on short timers.
-3. Every `run-task.ts` command, a 1-minute test included, runs in the background
+1. A goal's first work is a plan draft. Never a second plain task run in a row (one errand between
+   plans at most).
+2. Run every plan **to the goal**, its first run included: `--until <goal stop> --until
+   minutes:<budget left>`. No `minutes:1` test runs: a plan stops itself on `failed` or `stuck`,
+   and a short timer only ends a working plan mid-errand (the user, 2026-10-11).
+3. Every `run-task.ts` command runs in the background
    (`run_in_background`); then end your turn and wait for its completion notification. No
    foreground run, no `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
    receive the conductor's messages (the user had to kill a run to get a correction through,
@@ -209,8 +210,7 @@ then journals the run itself when it ends.
 
 - `--until` applies to the plan (`minutes:` from its start, `xp:<skill>:<n>`, `level:<skill>:<n>`);
   `--params` is refused with `--plan`. Never pass `--takeover`.
-- A new draft, or one using a task new to you, gets a short run first (`--until minutes:1`).
-  After a clean `done`, run it **to the goal**: the goal as a stop (`--until level:Smithing:30`,
+- Run a plan **to the goal** from its first run: the goal as a stop (`--until level:Smithing:30`,
   or a plan `until` on the bank) plus your remaining play budget as the cap (`--until
   minutes:<left>`; the first stop met ends the run). Never re-run a working plan on short
   `minutes:` timers: each stop and restart is wasted travel and setup (a runner ran a working

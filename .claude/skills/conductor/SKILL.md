@@ -94,8 +94,9 @@ Seed `invariants` with the list below on the first write.
 - Every task-author change goes through the `task-review` skill before it is committed.
 - One `knowledge-curator` dispatch per runner report (a `GOAL` report or a `DECISION NEEDED`
   report), on the report's lessons and RESULT lines; never one per run.
-- New or changed tasks and new plans get short runs first (`--until minutes:1`); extend only
-  after a clean `done`. Runners do this for their drafts; say in the knowledge when a task is new.
+- New or changed tasks are smoke-tested by their author on a worker before review. Runners run
+  plans to the goal from the first run, never as `minutes:1` tests (a plan stops itself on
+  `failed` or `stuck`); say in the knowledge when a task is new, so the runner watches its log.
 - Snapshot the save (`save.ts snapshot <bot> <label>`; no logout needed) before dispatching a
   goal whose methods risk death or items: a new area, combat, an untested task, anything
   `learnings/hazards.md` flags.
