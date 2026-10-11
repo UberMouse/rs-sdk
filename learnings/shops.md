@@ -19,6 +19,7 @@ overstocked on that item, not that the sale failed.
 | Shop | Location | Coordinates | What They Sell |
 |------|----------|-------------|----------------|
 | Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
+| Every general store (Lumbridge, Rimmington (2947, 3217), Falador, Varrock, Edgeville) | various | - | Stock only 2 Buckets and 2 Jugs each (as the `wiki/shops/` pages list): a 14-bucket buy fills 2, so buy at several shops. [v 2026-10-11 conductor2 local] |
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
 | Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]); iron 56 gp and steel 200 gp per the stock list, nothing above steel; bronze pickaxe 1gp only |
 | Nurmof's Pickaxe Shop | Dwarven Mine, under Falador | (2998, 9844) | Every pickaxe from bronze to rune (stock list: `wiki/shops/nurmofs-pickaxe-shop.md`); visited by a bot: Iron pickaxe 140 gp bought, reached via the Falador mine stairs (`learnings/walking.md`) [v 2026-10-11 conductor2w1 local] |
