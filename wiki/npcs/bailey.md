@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He smells of fish... |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Gnome Stronghold | m43_51 | (2763, 3276) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2763, 3276) | 1 | no |
 
 ## Interactions
 

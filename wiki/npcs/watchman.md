@@ -22,11 +22,12 @@
 | Range Defence | 16 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_48 | m39_48 | (2544, 3112) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2547, 3116) L1 | 2 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2547, 3112) L1 | 2 | no |
 
 ## Drops
 

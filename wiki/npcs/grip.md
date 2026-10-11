@@ -6,7 +6,7 @@
 | **Hitpoints** | 25 |
 | **Description** | Looks like he's been in the wars... |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2774, 3192) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2774, 3192) | 1 | no |
 
 ## Drops
 

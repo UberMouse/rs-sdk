@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Trained to deal with all sorts of injuries. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_51 | m52_51 | (3362, 3273) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3362, 3273) | 1 | no |
 
 ## Interactions
 

@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A lycanthrope shopkeeper. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_54 | m54_54 | (3475, 3497) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Canifis (Morytania)](../places/canifis.md) | (3475, 3497) | 1 | no |
 
 ## Interactions
 

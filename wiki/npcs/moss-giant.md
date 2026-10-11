@@ -24,14 +24,36 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Catherby | m42_50 | (2691, 3215) |
-| m39_153 | m39_153 | (2528, 9843) |
-| m39_53 | m39_53 | (2549, 3408) |
-| m49_154 | m49_154 | (3157, 9905) |
-| m49_59 | m49_59 | (3139, 3818) |
-| Rimmington | m44_50 | (2827, 3246) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9528) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9544) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2640, 9583) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2642, 9518) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2645, 9488) | 3 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9535) | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9554) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2651, 9564) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2653, 9574) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2654, 9587) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9548) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2663, 9556) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2670, 9544) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2673, 9592) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9544) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9594) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2682, 9573) | 1 | no |
+| [Crandor](../places/crandor.md) | (2831, 3244) | 3 | yes |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3158, 9903) | 2 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3165, 9879) | 2 | yes |
+| [Kandarin](../places/kandarin.md) | (2553, 3406) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2695, 3211) | 5 | no |
+| [Wilderness](../places/wilderness.md) | (3139, 3818) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3141, 3826) | 1 | yes |
 
 ## Drops
 
@@ -70,4 +92,5 @@ Always drops: Big bones
 
 ## Notes
 
+- Has 3 visual variants (mossgiant, mossgiant2, mossgiant3).
 - Will flee from combat when attacked.

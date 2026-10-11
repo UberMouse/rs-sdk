@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2893, 3541) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3541) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 1 | no |
 
 ## Interactions
 

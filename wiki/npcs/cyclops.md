@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2622, 3277) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2622, 3277) | 1 | no |
 
 ## Drops
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 60 |
 | **Description** | Khazard's strongest ogre warrior. |
 | **Aggressive** | Yes |
-| **Movement** | Wander |
+| **Movement** | Wander (range 15) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2608, 3165) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2608, 3165) | 1 | no |
 
 ## Drops
 

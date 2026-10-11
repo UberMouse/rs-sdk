@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Jatix](../npcs/jatix.md) |
 | **Location** | Taverley |
-| **Coordinates** | (2899, 3427) |
+| **Coordinates** | (2899, 3427) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

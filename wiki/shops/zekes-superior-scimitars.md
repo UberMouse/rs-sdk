@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Zeke](../npcs/zeke.md) |
 | **Location** | Al Kharid |
-| **Coordinates** | (3288, 3190) |
+| **Coordinates** | (3288, 3190) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -24,10 +24,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_56 | m44_56 | (2854, 3600) |
-| m45_57 | m45_57 | (2902, 3696) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2851, 3598) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2894, 3698) | 5 | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2863, 3600) | 5 | no |
 
 ## Drops
 
@@ -35,7 +36,7 @@ Always drops: Big bones
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 10 visual variants (death_troll_thrower1, death_troll_thrower2, death_troll_thrower3, death_troll_thrower4, death_troll_thrower5, troll_thrower1, troll_thrower2, troll_thrower3, troll_thrower4, troll_thrower5).
+- Associated with the **Troll** quest.
+- Has 10 visual variants (troll_thrower1, troll_thrower2, troll_thrower3, troll_thrower4, troll_thrower5, death_troll_thrower1, death_troll_thrower2, death_troll_thrower3, death_troll_thrower4, death_troll_thrower5).
 - Will attack nearby players on sight.
 - Category: Troll Thrower.

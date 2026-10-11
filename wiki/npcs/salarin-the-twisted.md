@@ -6,14 +6,14 @@
 | **Hitpoints** | 70 |
 | **Description** | A crazy evil druid |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 100 ticks |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_148 | m40_148 | (2613, 9523) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2613, 9523) | 1 | no |
 
 ## Drops
 

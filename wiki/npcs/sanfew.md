@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_53 | m45_53 | (2897, 3426) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2897, 3426) L1 | 1 | no |
 
 ## Interactions
 

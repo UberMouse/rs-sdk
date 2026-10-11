@@ -5,8 +5,15 @@
  * Run: bun wiki/generate-npcs.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } from 'fs';
-import { join, basename, dirname, relative } from 'path';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, relative } from 'path';
+import { hasCombatParams } from './world/classify';
+import { loadFreshWorld } from './world/load';
+import { centreOf } from './world/place';
+import { removeStalePages } from './world/stale';
+import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
+import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
+import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
 const WIKI_DIR = join(import.meta.dir);
@@ -37,13 +44,11 @@ interface NpcConfig {
     hasPatrol: boolean;
 }
 
-interface SpawnLocation {
-    mapX: number;
-    mapZ: number;
-    globalX: number;
-    globalZ: number;
-    level: number;
-    mapSquare: string; // e.g. "m50_50"
+interface LocationRow {
+    areaPath: string[]; // area ids, root first; empty outside every area
+    centre: Tile;
+    spawns: number;
+    f2p: boolean;
 }
 
 interface DropEntry {
@@ -70,7 +75,7 @@ interface DropTable {
 interface NpcPage {
     displayName: string;
     variants: NpcConfig[];
-    spawns: SpawnLocation[];
+    locations: LocationRow[];
     drops: DropEntry[];
     alwaysDropItem: string | null; // from death_drop param
     alwaysDropExtra: AlwaysDrop[]; // additional always-drops (cow hide, raw chicken, etc)
@@ -113,67 +118,6 @@ const SOURCE_PATH_AREAS: Record<string, string> = {
     'area_yanille': 'Yanille',
     'areas_heroes_guild': "Heroes' Guild",
     'monastery': 'Monastery',
-};
-
-const MAP_SQUARE_AREAS: Record<string, string> = {
-    'm50_50': 'Lumbridge',
-    'm49_50': 'Lumbridge (west)',
-    'm51_50': 'Lumbridge (east)',
-    'm50_49': 'Al Kharid',
-    'm51_49': 'Al Kharid',
-    'm49_49': 'Al Kharid (south)',
-    'm48_50': 'Edgeville area',
-    'm48_51': 'Edgeville area',
-    'm49_51': 'Barbarian Village',
-    'm49_52': 'Barbarian Village',
-    'm50_51': 'Varrock (south)',
-    'm50_52': 'Varrock',
-    'm51_51': 'Varrock (east)',
-    'm51_52': 'Varrock (east)',
-    'm50_53': 'Varrock (north)',
-    'm45_50': 'Falador (south)',
-    'm46_50': 'Falador',
-    'm46_51': 'Falador (north)',
-    'm47_50': 'Falador (east)',
-    'm45_51': 'Falador (west)',
-    'm44_50': 'Rimmington',
-    'm44_49': 'Karamja',
-    'm45_49': 'Karamja',
-    'm43_49': 'Karamja (west)',
-    'm44_48': 'Brimhaven',
-    'm47_51': 'Taverley',
-    'm47_52': 'Taverley (north)',
-    'm41_50': "Seers' Village area",
-    'm42_50': 'Catherby',
-    'm40_50': 'Ardougne',
-    'm40_49': 'Ardougne (south)',
-    'm39_50': 'Ardougne (west)',
-    'm40_48': 'Ardougne area',
-    'm39_49': 'West Ardougne',
-    'm41_49': 'Yanille area',
-    'm41_48': 'Yanille',
-    'm48_52': 'Wilderness (low)',
-    'm48_53': 'Wilderness',
-    'm48_54': 'Wilderness',
-    'm49_53': 'Wilderness',
-    'm49_54': 'Wilderness',
-    'm50_54': 'Wilderness',
-    'm50_55': 'Wilderness (deep)',
-    'm51_53': 'Wilderness',
-    'm51_54': 'Wilderness',
-    'm46_52': 'Camelot area',
-    'm43_50': 'Gnome Stronghold',
-    'm43_51': 'Gnome Stronghold',
-    'm42_49': 'Fight Arena area',
-    'm52_50': 'Canifis area',
-    'm53_50': 'Canifis',
-    'm53_51': 'Morytania',
-    'm44_51': 'Entrana',
-    'm45_48': 'Shilo Village area',
-    'm46_48': 'Shilo Village area',
-    'm43_48': 'Feldip Hills',
-    'm48_49': 'Desert',
-    'm49_48': 'Desert',
 };
 
 // ─── Parser: INI Config ──────────────────────────────────────────────────────
@@ -317,54 +261,67 @@ function parsePackFile(content: string): { idToName: Map<number, string>; nameTo
     return { idToName, nameToId };
 }
 
-// ─── Parser: Map Spawns ──────────────────────────────────────────────────────
+// ─── Locations from the World Index ──────────────────────────────────────────
 
-function parseMapSpawns(
-    mapsDir: string,
-    npcIdToName: Map<number, string>
-): Map<string, SpawnLocation[]> {
-    const spawns = new Map<string, SpawnLocation[]>();
-    const mapFiles = readdirSync(mapsDir).filter(f => f.endsWith('.jm2'));
-
-    for (const file of mapFiles) {
-        const match = file.match(/^m(\d+)_(\d+)\.jm2$/);
-        if (!match) continue;
-        const mapX = parseInt(match[1]);
-        const mapZ = parseInt(match[2]);
-        const mapSquare = `m${mapX}_${mapZ}`;
-
-        const content = readFileSync(join(mapsDir, file), 'utf-8');
-        const npcSectionStart = content.indexOf('==== NPC ====');
-        if (npcSectionStart === -1) continue;
-
-        const afterNpc = content.slice(npcSectionStart + '==== NPC ===='.length);
-        // NPC section goes until the next ==== or end of file
-        const nextSection = afterNpc.indexOf('====');
-        const npcBlock = nextSection === -1 ? afterNpc : afterNpc.slice(0, nextSection);
-
-        for (const line of npcBlock.split('\n')) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-            // Format: level localX localZ: npcID
-            const m = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+):\s*(\d+)$/);
-            if (!m) continue;
-            const level = parseInt(m[1]);
-            const localX = parseInt(m[2]);
-            const localZ = parseInt(m[3]);
-            const npcId = parseInt(m[4]);
-
-            const configName = npcIdToName.get(npcId);
-            if (!configName) continue;
-
-            const globalX = mapX * 64 + localX;
-            const globalZ = mapZ * 64 + localZ;
-
-            if (!spawns.has(configName)) spawns.set(configName, []);
-            spawns.get(configName)!.push({ mapX, mapZ, globalX, globalZ, level, mapSquare });
-        }
+/**
+ * Where a page's npc configs stand, from the world index. One source per config, so no spawn is
+ * listed twice:
+ * - A config some feature kind takes (a banker, shopkeeper, fishing spot, pickpocket target or
+ *   monster) is listed by the sites of that kind holding its spawns, one row per site, so bankers
+ *   read as their bank. A config of two kinds (Fadli is a bank and a shop) is listed under the kind
+ *   the world pages list first (KINDS: bank, shop, ..., pickpocket, npc), as its two sites hold the
+ *   same spawns. The row's centre is the mean of this page's spawns in the site, not the site's own
+ *   centre, which other npcs and locs pull aside; its F2P is the site's.
+ * - Any other config is listed by its own spawn clusters (npcSpawns), one row per cluster.
+ */
+function npcLocator(world: World): (configs: string[]) => LocationRow[] {
+    const siteOf = new Map<number, Site>();
+    for (const site of world.sites) {
+        for (const i of site.features) siteOf.set(i, site);
     }
 
-    return spawns;
+    // config -> kind -> site -> the config's spawn tiles in it
+    const bySite = new Map<string, Map<FeatureKind, Map<Site, Tile[]>>>();
+    world.features.forEach((f, i) => {
+        if (f.source !== 'npc') return;
+        const site = siteOf.get(i);
+        if (!site) throw new Error(`world.json: feature ${i} (${f.config}) is in no site`);
+        if (!bySite.has(f.config)) bySite.set(f.config, new Map());
+        const kinds = bySite.get(f.config)!;
+        if (!kinds.has(f.kind)) kinds.set(f.kind, new Map());
+        const sites = kinds.get(f.kind)!;
+        if (!sites.has(site)) sites.set(site, []);
+        sites.get(site)!.push(f.tile);
+    });
+
+    const clusters = new Map<string, NpcSpawn[]>();
+    for (const c of world.npcSpawns) {
+        if (!clusters.has(c.config)) clusters.set(c.config, []);
+        clusters.get(c.config)!.push(c);
+    }
+
+    return configs => {
+        const rows: LocationRow[] = [];
+        const inSites = new Map<Site, Tile[]>();
+        for (const config of configs) {
+            const kinds = bySite.get(config);
+            if (!kinds) {
+                for (const c of clusters.get(config) || []) {
+                    rows.push({ areaPath: c.areaPath, centre: c.centre, spawns: c.count, f2p: c.f2p });
+                }
+                continue;
+            }
+            const kind = KINDS.map(([k]) => k).find(k => kinds.has(k))!;
+            for (const [site, tiles] of kinds.get(kind)!) {
+                inSites.set(site, [...(inSites.get(site) || []), ...tiles]);
+            }
+        }
+        for (const [site, tiles] of inSites) {
+            const centre = centreOf(tiles);
+            rows.push({ areaPath: site.areaPath, centre, spawns: tiles.length, f2p: site.f2p });
+        }
+        return rows;
+    };
 }
 
 // ─── Parser: Drop Tables ─────────────────────────────────────────────────────
@@ -643,10 +600,6 @@ function getAreaFromSourcePath(sourcePath: string): string | null {
     return SOURCE_PATH_AREAS[dirName] || null;
 }
 
-function getAreaFromMapSquare(mapSquare: string): string {
-    return MAP_SQUARE_AREAS[mapSquare] || mapSquare;
-}
-
 // ─── Movement Description ────────────────────────────────────────────────────
 
 function getMovementDesc(config: NpcConfig): string {
@@ -678,10 +631,7 @@ function isCombatNpc(config: NpcConfig): boolean {
 // ─── Check if NPC has Combat Stats ───────────────────────────────────────────
 
 function hasCombatStats(config: NpcConfig): boolean {
-    return config.params.has('attackbonus') || config.params.has('strengthbonus') ||
-        config.params.has('stabdefence') || config.params.has('slashdefence') ||
-        config.params.has('crushdefence') || config.params.has('magicdefence') ||
-        config.params.has('rangedefence');
+    return hasCombatParams(config.params.keys());
 }
 
 // ─── Main Pipeline ───────────────────────────────────────────────────────────
@@ -694,10 +644,11 @@ function main() {
 
     console.log('Step 1: Parsing data sources...');
 
-    // 1a: NPC pack (ID map)
-    const npcPackContent = readFileSync(join(CONTENT_DIR, 'pack', 'npc.pack'), 'utf-8');
-    const npcPack = parsePackFile(npcPackContent);
-    console.log(`  npc.pack: ${npcPack.idToName.size} entries`);
+    // 1a: Where every npc stands, from the world index (wiki/world.json)
+    const world = loadFreshWorld();
+    const locate = npcLocator(world);
+    const areas = areasOf(world);
+    console.log(`  world.json: ${world.sites.length} sites, ${world.npcSpawns.length} npc spawn clusters`);
 
     // 1b: Obj pack (ID map)
     const objPackContent = readFileSync(join(CONTENT_DIR, 'pack', 'obj.pack'), 'utf-8');
@@ -781,11 +732,7 @@ function main() {
     }
     console.log(`  Obj display names: ${objNames.size}`);
 
-    // 1g: NPC spawns from map files
-    const spawns = parseMapSpawns(join(CONTENT_DIR, 'maps'), npcPack.idToName);
-    console.log(`  Map spawns: ${spawns.size} NPCs with spawn data`);
-
-    // 1h: Drop tables
+    // 1g: Drop tables
     const dropTables = parseDropTables(join(CONTENT_DIR, 'scripts', 'drop tables', 'scripts'));
     console.log(`  Drop tables: ${dropTables.size} tables parsed`);
 
@@ -848,7 +795,7 @@ function main() {
             pagesByName.set(displayName, {
                 displayName,
                 variants: [],
-                spawns: [],
+                locations: [],
                 drops: [],
                 alwaysDropItem: null,
                 alwaysDropExtra: [],
@@ -861,22 +808,13 @@ function main() {
     }
     console.log(`  Deduplicated to ${pagesByName.size} unique NPC pages`);
 
-    // ─── Step 4: Resolve drops and spawns ────────────────────────────────
+    // ─── Step 4: Resolve drops and locations ─────────────────────────────
 
-    console.log('\nStep 4: Resolving drops and spawns...');
+    console.log('\nStep 4: Resolving drops and locations...');
 
     for (const [displayName, page] of pagesByName) {
-        // Collect spawns from all variants
-        const seenMapSquares = new Set<string>();
-        for (const variant of page.variants) {
-            const variantSpawns = spawns.get(variant.configName) || [];
-            for (const spawn of variantSpawns) {
-                if (!seenMapSquares.has(`${spawn.mapSquare}_${spawn.level}`)) {
-                    seenMapSquares.add(`${spawn.mapSquare}_${spawn.level}`);
-                    page.spawns.push(spawn);
-                }
-            }
-        }
+        // Locations of all variants
+        page.locations = locate(page.variants.map(v => v.configName));
 
         // Resolve death_drop (always drop item)
         // Count all variants - those without explicit death_drop default to "bones" for combat NPCs
@@ -952,7 +890,7 @@ function main() {
         const fileName = `${slug}.md`;
         const filePath = join(NPC_DIR, fileName);
 
-        const md = generateNpcMarkdown(page, objNames);
+        const md = generateNpcMarkdown(page, objNames, areas, `wiki/npcs/${fileName}`);
         writeFileSync(filePath, md);
 
         pageIndex.push({ name: displayName, file: fileName });
@@ -960,6 +898,11 @@ function main() {
     }
 
     console.log(`  Generated ${generated} NPC pages`);
+
+    // Every page here is generated, so one not written now is for an npc
+    // whose name has changed or gone: it would keep stale data.
+    const written = new Set(pageIndex.map(p => p.file));
+    for (const file of removeStalePages(NPC_DIR, written)) console.log(`  Removed stale ${file}`);
 
     // ─── Step 6: Update README ───────────────────────────────────────────
 
@@ -971,7 +914,7 @@ function main() {
 
 // ─── Generate Markdown for One NPC Page ──────────────────────────────────────
 
-function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>): string {
+function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas: Areas, pagePath: string): string {
     const primary = page.variants[0];
     const combat = isCombatNpc(primary);
     const lines: string[] = [];
@@ -1060,35 +1003,21 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>): stri
         lines.push('');
     }
 
-    // Locations section
-    if (page.spawns.length > 0) {
-        lines.push(page.spawns.length > 1 ? '## Locations' : '## Location');
+    // Locations section: one row per site or spawn cluster (npcLocator), with the
+    // leaf area linked to its place page and its town in parentheses.
+    if (page.locations.length > 0) {
+        lines.push(page.locations.length > 1 ? '## Locations' : '## Location');
         lines.push('');
-        lines.push('| Area | Map | Coordinate samples |');
-        lines.push('|------|-----|--------------------|');
+        lines.push('| Area | Centre | Spawns | F2P |');
+        lines.push('|------|--------|--------|-----|');
 
-        // Group spawns by area while retaining useful exact coordinates. Limit
-        // samples so very common NPCs do not produce enormous generated pages.
-        const byArea = new Map<string, { squares: Set<string>; coordinates: Set<string> }>();
-        for (const spawn of page.spawns) {
-            const area = getAreaFromMapSquare(spawn.mapSquare);
-            if (!byArea.has(area)) {
-                byArea.set(area, { squares: new Set(), coordinates: new Set() });
-            }
-            const group = byArea.get(area)!;
-            group.squares.add(spawn.mapSquare);
-            const floor = spawn.level > 0 ? ` L${spawn.level}` : '';
-            group.coordinates.add(`(${spawn.globalX}, ${spawn.globalZ})${floor}`);
-        }
-
-        // Sort by area name
-        const sortedAreas = [...byArea.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-        for (const [area, group] of sortedAreas) {
-            const squareList = [...group.squares].sort().join(', ');
-            const allCoordinates = [...group.coordinates].sort();
-            const coordinateList = allCoordinates.slice(0, 12).join(', ');
-            const overflow = allCoordinates.length > 12 ? `, +${allCoordinates.length - 12} more` : '';
-            lines.push(`| ${area} | ${squareList} | ${coordinateList}${overflow} |`);
+        const rows = [...page.locations].sort((a, b) =>
+            cmp(areas.label(a.areaPath), areas.label(b.areaPath)) ||
+            a.centre.level - b.centre.level || a.centre.x - b.centre.x || a.centre.z - b.centre.z
+        );
+        for (const row of rows) {
+            const area = areaCell(pagePath, areas, row.areaPath);
+            lines.push(`| ${area} | ${coord(row.centre)} | ${row.spawns} | ${row.f2p ? 'yes' : 'no'} |`);
         }
         lines.push('');
     } else if (primary.hasPatrol || primary.defaultmode === 'patrol') {

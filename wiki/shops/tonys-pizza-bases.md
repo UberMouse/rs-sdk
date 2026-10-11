@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fat tony](../npcs/fat-tony.md) |
 | **Location** | Wilderness |
-| **Coordinates** | (3036, 3707) |
+| **Coordinates** | (3036, 3707) in [Wilderness](../places/wilderness.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

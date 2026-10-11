@@ -24,11 +24,16 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_47 | m39_47 | (2505, 3032) |
-| m40_147 | m40_147 | (2568, 9432) |
-| m40_46 | m40_46 | (2615, 2987) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2568, 9432) | 1 | no |
+| - | (2577, 9440) | 3 | no |
+| - | (2614, 9451) | 2 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2505, 3032) | 1 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2512, 3022) | 1 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2615, 2987) | 1 | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2518, 3041) | 1 | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2528, 3044) | 1 | no |
 
 ## Drops
 

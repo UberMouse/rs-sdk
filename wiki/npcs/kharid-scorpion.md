@@ -6,15 +6,15 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks vicious! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_55 | m39_55 | (2552, 3570) |
-| m44_153 | m44_153 | (2877, 9796) |
-| m47_54 | m47_54 | (3058, 3488) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2552, 3570) | 1 | no |
+| [Monastery (Asgarnia)](../places/monastery.md) | (3058, 3488) L1 | 1 | yes |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2877, 9796) | 1 | no |
 
 ## Interactions
 

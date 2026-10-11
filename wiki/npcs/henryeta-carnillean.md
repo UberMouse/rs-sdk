@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Ceril Carnilleans' wife. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2571, 3269) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2571, 3269) | 1 | no |
 
 ## Drops
 

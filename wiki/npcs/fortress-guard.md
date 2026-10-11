@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_54 | m47_54 | (3008, 3517) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3015, 3515) | 6 | yes |
 
 ## Drops
 

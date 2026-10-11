@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Format and lint check for staged conductor TypeScript. Enabled by `bun install`
+# Format and lint check for staged conductor and wiki/world TypeScript. Enabled by `bun install`
 # (package.json "prepare" sets core.hooksPath to .githooks).
 #
 # Checks the working-tree copy of each staged file, so a partially staged file is judged on
@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-mapfile -t files < <(git diff --cached --name-only --diff-filter=ACMR -- 'conductor/*.ts')
+mapfile -t files < <(git diff --cached --name-only --diff-filter=ACMR -- 'conductor/*.ts' 'wiki/world/*.ts')
 [[ ${#files[@]} -gt 0 ]] || exit 0
 
 if [[ ! -x node_modules/.bin/oxfmt || ! -x node_modules/.bin/oxlint ]]; then

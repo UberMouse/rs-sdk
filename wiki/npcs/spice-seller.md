@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Has a very exotic aroma about him. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_51 | m41_51 | (2658, 3296) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2658, 3296) | 1 | no |
 
 ## Interactions
 

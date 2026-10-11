@@ -22,11 +22,13 @@
 | Range Defence | 200 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_56 | m45_56 | (2906, 3623) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2902, 3604) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3623) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2921, 3611) | 5 | no |
 
 ## Drops
 

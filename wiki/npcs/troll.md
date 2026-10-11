@@ -6,7 +6,7 @@
 | **Hitpoints** | 90 |
 | **Description** | A hideously deformed creature. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Combat Stats
 

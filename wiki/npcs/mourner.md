@@ -10,12 +10,27 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_51 | m39_51 | (2524, 3292), (2551, 3324) L1 |
-| m39_52 | m39_52 | (2543, 3329) |
-| m40_51 | m40_51 | (2561, 3303) |
-| m40_52 | m40_52 | (2582, 3329) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2561, 3304) | 2 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2582, 3329) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2526, 3279) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2530, 3274) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2536, 3273) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2548, 3287) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2553, 3325) | 11 | no |
+| [Kandarin](../places/kandarin.md) | (2559, 3304) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2551, 3326) L1 | 2 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2501, 3315) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3294) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3325) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2518, 3320) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2524, 3300) | 4 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2535, 3296) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2536, 3291) | 2 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2543, 3309) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2543, 3326) | 6 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2546, 3330) | 1 | no |
 
 ## Interactions
 

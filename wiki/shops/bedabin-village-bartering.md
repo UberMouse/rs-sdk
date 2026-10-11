@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Bedabin Nomad](../npcs/bedabin-nomad.md) |
 | **Location** | Desert |
-| **Coordinates** | (3159, 3042), (3160, 3039), (3163, 3035), (3169, 3030), (3172, 3031), (3173, 3035), +2 more |
+| **Coordinates** | (3169, 3037) in [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

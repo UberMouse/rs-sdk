@@ -4,15 +4,15 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | The Fremennik tribes' chieftain. |
+| **Description** | The Fremennik tribe's chieftain. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2659, 3669) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2659, 3669) | 1 | no |
 
 ## Interactions
 

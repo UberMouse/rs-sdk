@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Davon](../npcs/davon.md) |
 | **Location** | Brimhaven |
-| **Coordinates** | (2803, 3152) |
+| **Coordinates** | (2803, 3152) in [Karamja](../places/karamja.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

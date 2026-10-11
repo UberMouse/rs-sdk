@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | 'Battle scarred'. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_51 | m52_51 | (3372, 3279) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3372, 3279) | 1 | no |
 
 ## Interactions
 

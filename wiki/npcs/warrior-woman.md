@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2584, 3305) |
-| m40_52 | m40_52 | (2569, 3387) |
-| m41_51 | m41_51 | (2629, 3295) |
-| Wilderness | m50_54 | (3202, 3487) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3295) | 3 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2631, 3297) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2572, 3386) | 4 | no |
+| [Varrock Palace (Varrock)](../places/palace.md) | (3204, 3487) | 2 | yes |
 
 ## Drops
 

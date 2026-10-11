@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He looks very scared. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Gnome Stronghold | m43_51 | (2764, 3288) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2764, 3288) L1 | 1 | no |
 
 ## Interactions
 

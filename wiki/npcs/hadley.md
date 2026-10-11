@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_53 | m39_53 | (2516, 3428) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2516, 3428) | 1 | no |
 
 ## Interactions
 

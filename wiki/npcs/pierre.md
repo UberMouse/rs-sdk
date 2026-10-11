@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_55 | m42_55 | (2750, 3576) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2750, 3576) | 1 | no |
 
 ## Interactions
 

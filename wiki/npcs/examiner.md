@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Upon examining the examiner you examine it is indeed an examiner! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_52 | m52_52 | (3360, 3343) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3363, 3341) | 3 | no |
 
 ## Interactions
 

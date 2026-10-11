@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Bob](../npcs/bob.md) |
 | **Location** | Lumbridge |
-| **Coordinates** | (3232, 3203) |
+| **Coordinates** | (3232, 3203) in [Lumbridge (Misthalin)](../places/lumbridge.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -6,14 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | He has a colourful personality. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 1) |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (south) | m45_50 | (2933, 3219) |
-| Varrock (east) | m51_52 | (3274, 3390) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2933, 3219) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3274, 3390) | 1 | yes |
 
 ## Interactions
 
@@ -28,4 +28,4 @@ DeVinci has no drops.
 ## Notes
 
 - Associated with the **Biohazard** quest.
-- Has 2 visual variants (Artist1, Artist2).
+- Has 2 visual variants (artist1, artist2).

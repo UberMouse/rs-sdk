@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_47 | m40_47 | (2577, 3021) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2577, 3021) | 1 | no |
 
 ## Drops
 

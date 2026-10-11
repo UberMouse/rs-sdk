@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Barman](../npcs/barman.md) |
 | **Location** | Tree Gnome Stronghold |
-| **Coordinates** | (2417, 3498) L1, (2482, 3487) L1, (2482, 3489) L1 |
+| **Coordinates** | (2417, 3498) L1 in [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md); (2482, 3488) L1 in [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

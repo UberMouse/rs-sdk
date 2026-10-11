@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_149 | m39_149 | (2515, 9581) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2515, 9581) | 1 | no |
 
 ## Interactions
 

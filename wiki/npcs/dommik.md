@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m51_49 | (3322, 3194) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3322, 3194) | 1 | yes |
 
 ## Interactions
 

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_151 | m40_151 | (2566, 9683) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9683) | 1 | no |
 
 ## Drops
 

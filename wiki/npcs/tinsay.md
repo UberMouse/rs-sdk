@@ -6,14 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | A more than slightly eccentric looking priest. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_46 | m43_46 | (2764, 2976) |
-| m43_47 | m43_47 | (2790, 3054) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Cairn Isle (Karamja)](../places/cairn-isle.md) | (2764, 2976) | 1 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2790, 3054) | 1 | no |
 
 ## Interactions
 

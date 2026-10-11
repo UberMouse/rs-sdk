@@ -6,7 +6,7 @@
 | **Hitpoints** | 10 |
 | **Description** | A citizen of Burthorpe. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2926, 3536) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Chaos Temple (Asgarnia)](../places/asgarnia-chaos-temple.md) | (2926, 3536) | 1 | no |
 
 ## Drops
 

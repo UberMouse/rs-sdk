@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_151 | m45_151 | (2933, 9693) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2933, 9693) | 1 | no |
 
 ## Drops
 

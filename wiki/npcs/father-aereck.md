@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge | m50_50 | (3244, 3206) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3206) | 1 | yes |
 
 ## Interactions
 

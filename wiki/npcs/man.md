@@ -24,35 +24,65 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m51_49 | (3277, 3187) |
-| Ardougne area | m40_48 | (2568, 3081) |
-| Camelot area | m46_52 | (2967, 3373) |
-| Edgeville area | m48_51 | (3100, 3279) |
-| Falador | m46_50 | (2967, 3210) L1 |
-| Falador (east) | m47_50 | (3017, 3238) |
-| Falador (north) | m46_51 | (2959, 3307) |
-| Karamja | m45_49 | (2889, 3173) |
-| Lumbridge | m50_50 | (3206, 3219) L1, (3207, 3227) |
-| Lumbridge (east) | m51_50 | (3293, 3205) |
-| m38_51 | m38_51 | (2465, 3307) |
-| m39_51 | m39_51 | (2509, 3325) |
-| m40_51 | m40_51 | (2614, 3318) |
-| m40_52 | m40_52 | (2567, 3384) |
-| m40_53 | m40_53 | (2603, 3421) |
-| m42_54 | m42_54 | (2694, 3497) |
-| m43_53 | m43_53 | (2803, 3431) |
-| m44_53 | m44_53 | (2816, 3442) |
-| m46_49 | m46_49 | (2948, 3146) |
-| m46_53 | m46_53 | (2955, 3451) |
-| m46_54 | m46_54 | (3006, 3458) |
-| m46_58 | m46_58 | (2974, 3742) |
-| m54_54 | m54_54 | (3479, 3498), (3498, 3472) L1 |
-| Varrock | m50_52 | (3234, 3385) L1 |
-| Varrock (east) | m51_51 | (3295, 3285) |
-| Varrock (north) | m50_53 | (3223, 3398), (3231, 3399) L1 |
-| Wilderness | m48_54, m49_53, m51_54 | (3093, 3512), (3154, 3428), (3283, 3501) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3277, 3187) | 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3284, 3199) | 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3294, 3196) | 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3298, 3203) | 3 | yes |
+| [Al Kharid mine (Kharidian Desert)](../places/al-kharid-mine.md) | (3295, 3285) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2955, 3451) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2987, 3426) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3006, 3458) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3017, 3238) | 1 | yes |
+| [Canifis (Morytania)](../places/canifis.md) | (3474, 3474) | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3482, 3493) | 3 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3483, 3478) | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3492, 3474) | 3 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3500, 3492) | 3 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3511, 3482) | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3498, 3472) L1 | 1 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | (2804, 3430) | 2 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | (2816, 3442) | 1 | no |
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3100, 3279) | 1 | yes |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2614, 3318) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2621, 3293) | 1 | no |
+| [Edgeville (Misthalin)](../places/edgeville.md) | (3098, 3509) | 5 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2959, 3307) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2967, 3373) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2981, 3378) | 1 | yes |
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2603, 3421) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2474, 3300) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2520, 3279) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2524, 3270) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2567, 3384) | 1 | no |
+| [Karamja](../places/karamja.md) | (2889, 3173) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2948, 3146) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3207, 3227) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3219, 3219) | 2 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3223, 3238) | 3 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3231, 3207) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3235, 3219) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3206, 3219) L1 | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3095, 3512) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3154, 3428) | 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2967, 3210) L1 | 1 | yes |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2695, 3492) | 3 | no |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2713, 3480) | 1 | no |
+| [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2974, 3742) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3194, 3396) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3223, 3398) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3406) | 2 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3245, 3395) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3261, 3402) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3283, 3501) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3231, 3399) L1 | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3234, 3385) L1 | 1 | yes |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3325) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2537, 3305) | 2 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2539, 3307) | 2 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2568, 3081) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2596, 3105) | 2 | no |
 
 ## Drops
 

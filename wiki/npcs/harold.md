@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2905, 3539) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2905, 3539) L1 | 1 | no |
 
 ## Interactions
 

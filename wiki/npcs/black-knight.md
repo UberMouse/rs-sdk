@@ -24,16 +24,40 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3101, 3220) |
-| m45_151 | m45_151 | (2891, 9701) |
-| m45_153 | m45_153 | (2930, 9822) |
-| m47_49 | m47_49 | (3019, 3182) |
-| m47_54 | m47_54 | (3014, 3516) L2, (3015, 3515) L1, (3022, 3513) |
-| m47_60 | m47_60 | (3023, 3849) |
-| m51_58 | m51_58 | (3310, 3769) |
-| Wilderness | m50_54, m51_54 | (3226, 3515), (3277, 3505) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3019, 3182) | 1 | yes |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3026, 3515) | 5 | yes |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3015, 3515) L1 | 1 | yes |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3023, 3513) L1 | 3 | yes |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3014, 3516) L2 | 1 | yes |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3023, 3514) L2 | 1 | yes |
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3101, 3220) | 1 | yes |
+| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3028, 3508) | 1 | yes |
+| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3031, 3502) | 3 | yes |
+| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3026, 3507) L2 | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3226, 3515) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3234, 3518) | 1 | yes |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2891, 9701) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2892, 9710) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9675) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2899, 9709) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2900, 9701) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2902, 9689) | 3 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2907, 9676) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2907, 9711) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2917, 9680) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2917, 9695) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2918, 9703) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2923, 9710) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2930, 9822) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2939, 9812) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2943, 9801) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3277, 3505) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3033, 3852) | 5 | yes |
+| [Wilderness](../places/wilderness.md) | (3054, 3852) | 3 | yes |
+| [Wilderness](../places/wilderness.md) | (3057, 3842) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3312, 3769) | 2 | yes |
 
 ## Drops
 

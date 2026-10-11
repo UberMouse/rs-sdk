@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 1 |
+| **Combat Level** | None |
 | **Hitpoints** | N/A |
 | **Description** | It's a tree gnome chef. |
 | **Aggressive** | No |
@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_54 | m38_54 | (2449, 3501) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2449, 3501) L1 | 1 | no |
 
 ## Interactions
 

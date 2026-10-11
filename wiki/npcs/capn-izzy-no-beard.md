@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Entrance clerk for the Brimhaven Agility Arena. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2807, 3190) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2807, 3190) | 1 | no |
 
 ## Interactions
 

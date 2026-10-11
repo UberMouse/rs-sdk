@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | There's a sadness in his eyes. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_52 | m40_52 | (2600, 3358) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2600, 3358) | 1 | no |
 
 ## Interactions
 

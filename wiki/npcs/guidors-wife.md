@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Varrock (east) | m51_52 | (3281, 3383) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3281, 3383) | 1 | yes |
 
 ## Interactions
 

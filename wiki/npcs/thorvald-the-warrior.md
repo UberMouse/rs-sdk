@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A Fremennik hero. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2666, 3693) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2666, 3693) | 1 | no |
 
 ## Interactions
 

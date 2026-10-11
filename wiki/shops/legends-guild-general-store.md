@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fionella](../npcs/fionella.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2725, 3378) L1 |
+| **Coordinates** | (2725, 3378) L1 in [Legends' Guild (Kandarin)](../places/legends-guild.md) |
 | **Type** | General Store |
 
 ## Stock

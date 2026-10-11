@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Silver merchant](../npcs/silver-merchant.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2658, 3316) |
+| **Coordinates** | (2658, 3316) in [East Ardougne (Kandarin)](../places/east-ardougne.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

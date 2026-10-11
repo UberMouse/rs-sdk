@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He's making a break for it! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Interactions
 

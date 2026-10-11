@@ -24,12 +24,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Fight Arena area | m42_49 | (2723, 3159) |
-| m43_47 | m43_47 | (2771, 3014) |
-| m44_47 | m44_47 | (2842, 3017) |
-| m45_46 | m45_46 | (2918, 2987) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2727, 3160) | 9 | no |
+| [Karamja](../places/karamja.md) | (2772, 3016) | 2 | no |
+| [Karamja](../places/karamja.md) | (2777, 3068) | 1 | no |
+| [Karamja](../places/karamja.md) | (2842, 3017) | 1 | no |
+| [Karamja](../places/karamja.md) | (2866, 3061) | 1 | no |
+| [Karamja](../places/karamja.md) | (2868, 3054) | 1 | no |
+| [Karamja](../places/karamja.md) | (2918, 2987) | 1 | no |
+| [Karamja](../places/karamja.md) | (2939, 2994) | 4 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2801, 3067) | 1 | no |
 
 ## Drops
 
@@ -50,7 +55,7 @@ Always drops: Bones
 | Coins (x15) | 25/138 |
 | Snape grass | 20/138 |
 | Limpwurt root | 12/138 |
-| Coins (x28) | 12/138 |
+| Tbwt Cleaning Cloth | 12/138 |
 | Nature rune (x3) | 8/138 |
 | Coins (x62) | 5/138 |
 | Gold ore | 5/138 |

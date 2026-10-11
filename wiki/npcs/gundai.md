@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_73 | m39_73 | (2534, 4714) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | (2534, 4714) | 1 | no |
 
 ## Interactions
 

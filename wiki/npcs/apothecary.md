@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m49_53 | (3195, 3404) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3195, 3404) | 1 | yes |
 
 ## Interactions
 

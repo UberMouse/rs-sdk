@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fairy shop keeper](../npcs/fairy-shop-keeper.md), [Fairy shop assistant](../npcs/fairy-shop-assistant.md) |
 | **Location** | Zanaris |
-| **Coordinates** | Fairy shop keeper: (3146, 9567); Fairy shop assistant: (3144, 9567) |
+| **Coordinates** | (3145, 9567) in [Zanaris](../places/zanaris.md) |
 | **Type** | General Store |
 
 ## Stock

@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | She seems like a nice sort of person. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (east) | m47_50 | (3012, 3259) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3012, 3259) | 1 | yes |
 
 ## Interactions
 

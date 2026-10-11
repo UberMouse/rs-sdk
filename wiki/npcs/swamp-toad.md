@@ -6,14 +6,15 @@
 | **Hitpoints** | N/A |
 | **Description** | A green skinned croaker, loves the swamp. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_46 | m39_46 | (2523, 2977) |
-| m40_46 | m40_46 | (2595, 2964) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2526, 2979) | 5 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2547, 2985) | 4 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2598, 2966) | 8 | no |
 
 ## Drops
 

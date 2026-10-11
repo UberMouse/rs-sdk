@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_155 | m48_155 | (3118, 9974) |
-| m48_156 | m48_156 | (3116, 9992) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3120, 9974) | 4 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3122, 9992) | 7 | no |
 
 ## Drops
 

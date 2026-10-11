@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He runs the museum. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 4) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Varrock (north) | m50_53 | (3255, 3445) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3255, 3445) | 1 | yes |
 
 ## Interactions
 

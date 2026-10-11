@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_54 | m37_54 | (2395, 3495) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2396, 3495) | 2 | no |
 
 ## Interactions
 

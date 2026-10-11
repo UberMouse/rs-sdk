@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_52 | (3186, 3385) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3186, 3385) | 1 | yes |
 
 ## Interactions
 

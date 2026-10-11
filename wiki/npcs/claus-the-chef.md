@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | The Carnillean family chef. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_151 | m40_151 | (2566, 9670) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9670) | 1 | no |
 
 ## Interactions
 

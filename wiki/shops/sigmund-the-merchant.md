@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Sigmund The Merchant](../npcs/sigmund-the-merchant.md) |
 | **Location** | Quests |
-| **Coordinates** | (2641, 3680) |
+| **Coordinates** | (2641, 3680) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | General Store |
 
 ## Stock

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m33_71 | m33_71 | (2155, 4566) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2155, 4566) L1 | 1 | no |
 
 ## Interactions
 

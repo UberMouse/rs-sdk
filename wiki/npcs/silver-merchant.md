@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_51 | m41_51 | (2658, 3316) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2658, 3316) | 1 | no |
 
 ## Interactions
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 30-255 |
 | **Description** | Your challenge awaits! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Combat Stats
 

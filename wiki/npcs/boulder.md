@@ -10,10 +10,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_149 | m37_149 | (2396, 9595) |
-| m37_73 | m37_73 | (2373, 4692) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2396, 9595) | 1 | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2373, 4692) | 1 | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2386, 4689) | 1 | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2392, 4678) | 1 | no |
 
 ## Interactions
 

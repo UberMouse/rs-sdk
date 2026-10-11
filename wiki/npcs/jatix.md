@@ -4,15 +4,15 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | He runs the Herblore Shop |
+| **Description** | He runs the Herblore Shop. |
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_53 | m45_53 | (2899, 3427) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2899, 3427) | 1 | no |
 
 ## Interactions
 

@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_51 | m41_51 | (2666, 3295) |
-| m41_57 | m41_57 | (2640, 3675) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2666, 3295) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2640, 3675) | 1 | no |
 
 ## Interactions
 

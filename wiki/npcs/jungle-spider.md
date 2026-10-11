@@ -2,12 +2,12 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 44 |
-| **Hitpoints** | 50 |
+| **Combat Level** | 1-44 |
+| **Hitpoints** | 35-50 |
 | **Description** | A barely visible deadly jungle spider. |
-| **Aggressive** | No |
-| **Movement** | Wander (range 10) |
-| **Respawn** | 60 ticks |
+| **Aggressive** | Yes |
+| **Movement** | Wander (range 3) |
+| **Respawn** | 50-60 ticks |
 
 ## Combat Stats
 
@@ -24,17 +24,37 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Brimhaven | m44_48 | (2855, 3085) |
-| Feldip Hills | m43_48 | (2777, 3116) |
-| Gnome Stronghold | m43_50 | (2767, 3204) |
-| m43_46 | m43_46 | (2810, 2981) |
-| m43_47 | m43_47 | (2780, 3029) |
-| m44_47 | m44_47 | (2844, 3061) |
-| m45_46 | m45_46 | (2883, 2996) |
-| m45_47 | m45_47 | (2914, 3046) |
-| Yanille | m41_48 | (2667, 3090) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2703, 2781) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2704, 2769) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2714, 2781) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2716, 2722) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2721, 2729) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2722, 2790) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2732, 2714) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2738, 2722) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2742, 2708) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2752, 2708) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2756, 2716) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2772, 2706) | 3 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2788, 2713) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2676, 3090) | 18 | no |
+| [Kandarin](../places/kandarin.md) | (2678, 3112) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2768, 3210) | 1 | no |
+| [Karamja](../places/karamja.md) | (2767, 3204) | 1 | no |
+| [Karamja](../places/karamja.md) | (2777, 3116) | 1 | no |
+| [Karamja](../places/karamja.md) | (2780, 3030) | 2 | no |
+| [Karamja](../places/karamja.md) | (2797, 3111) | 5 | no |
+| [Karamja](../places/karamja.md) | (2810, 2984) | 2 | no |
+| [Karamja](../places/karamja.md) | (2813, 2998) | 2 | no |
+| [Karamja](../places/karamja.md) | (2847, 3062) | 2 | no |
+| [Karamja](../places/karamja.md) | (2853, 3054) | 1 | no |
+| [Karamja](../places/karamja.md) | (2861, 3085) | 13 | no |
+| [Karamja](../places/karamja.md) | (2890, 3001) | 10 | no |
+| [Karamja](../places/karamja.md) | (2891, 2947) | 3 | no |
+| [Karamja](../places/karamja.md) | (2924, 3047) | 12 | no |
+| [Karamja](../places/karamja.md) | (2932, 3032) | 2 | no |
 
 ## Drops
 
@@ -42,4 +62,5 @@ Jungle spider has no drops.
 
 ## Notes
 
+- Has 3 visual variants (jungle_spider, mm_jungle_spider, npc_1524).
 - Will flee from combat when attacked.

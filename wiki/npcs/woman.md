@@ -24,23 +24,56 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2566, 3084) |
-| Camelot area | m46_52 | (2970, 3389) |
-| Edgeville area | m48_51 | (3097, 3269) L1 |
-| Falador | m46_50 | (2967, 3213) L1 |
-| Falador (east) | m47_50 | (3011, 3236) |
-| Lumbridge | m50_50 | (3217, 3205) |
-| m38_51 | m38_51 | (2453, 3307) |
-| m39_51 | m39_51 | (2511, 3322) |
-| m40_51 | m40_51 | (2573, 3322) L1, (2612, 3316) |
-| m41_52 | m41_52 | (2647, 3357) |
-| m42_54 | m42_54 | (2691, 3496) |
-| m44_53 | m44_53 | (2817, 3443) |
-| m54_54 | m54_54 | (3497, 3474), (3499, 3474) L1 |
-| Varrock (north) | m50_53 | (3223, 3401) |
-| Wilderness | m51_54 | (3279, 3496) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3011, 3236) | 1 | yes |
+| [Canifis (Morytania)](../places/canifis.md) | (3484, 3492) | 2 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3497, 3474) | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3505, 3491) | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3479, 3498) L1 | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3490, 3472) L1 | 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3499, 3474) L1 | 1 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | (2817, 3443) | 1 | no |
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3097, 3269) L1 | 1 | yes |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2612, 3316) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3322) L1 | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2621, 3293) L1 | 1 | no |
+| [Falador (Asgarnia)](../places/falador.md) | (2970, 3389) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2463, 3317) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2468, 3290) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2475, 3325) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2479, 3303) | 9 | no |
+| [Kandarin](../places/kandarin.md) | (2479, 3311) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2482, 3286) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2482, 3296) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2485, 3315) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2489, 3295) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2519, 3277) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2523, 3276) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2524, 3269) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2543, 3278) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2548, 3309) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2553, 3275) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3307) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3314) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2647, 3357) | 1 | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3205) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3231, 3240) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3235, 3206) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3211) | 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2967, 3213) L1 | 1 | yes |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2695, 3495) | 5 | no |
+| [Underground Pass entrance (Kandarin)](../places/underground-pass-entrance.md) | (2453, 3307) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3223, 3401) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3279, 3499) | 2 | yes |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3320) | 4 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3315) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2525, 3309) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2526, 3304) | 2 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2527, 3307) | 3 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2537, 3324) | 1 | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2542, 3304) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2566, 3084) | 1 | no |
 
 ## Drops
 

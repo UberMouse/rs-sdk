@@ -4,6 +4,7 @@
 |---|---|
 | **Owner** | Unknown |
 | **Location** | Unpack |
+| **Coordinates** | not placed: razmire_keelgan.rs2 opens it, but no shop site records it |
 | **Type** | Specialty Shop |
 
 ## Stock

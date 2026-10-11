@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m51_54 | (3298, 3514) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Lumber Yard (Misthalin)](../places/lumber-yard.md) | (3298, 3514) | 1 | yes |
+| [Lumber Yard (Misthalin)](../places/lumber-yard.md) | (3307, 3505) | 5 | yes |
 
 ## Interactions
 

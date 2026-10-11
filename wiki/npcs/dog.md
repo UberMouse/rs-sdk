@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Taverley | m47_51 | (3018, 3291) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3470, 9805) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (3018, 3291) | 1 | yes |
 
 ## Drops
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Nurmof](../npcs/nurmof.md) |
 | **Location** | Falador |
-| **Coordinates** | (2998, 9844) |
+| **Coordinates** | (2998, 9844) in [Dwarven Mine](../places/dwarven-mine.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

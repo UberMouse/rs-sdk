@@ -2,11 +2,11 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 49 |
+| **Combat Level** | 53 |
 | **Hitpoints** | 70 |
 | **Description** | He's got icicles in his beard. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats
@@ -24,14 +24,20 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_54 | m43_54 | (2804, 3507) |
-| m44_54 | m44_54 | (2817, 3514) |
-| m45_155 | m45_155 | (2880, 9927) |
-| m46_60 | m46_60 | (2947, 3895) |
-| m46_61 | m46_61 | (2947, 3921) |
-| m47_149 | m47_149 | (3054, 9564) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2885, 9933) | 3 | no |
+| - | (2886, 9957) | 4 | no |
+| [Asgarnia](../places/asgarnia.md) | (2824, 3510) | 1 | no |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3056, 9566) | 2 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3065, 9571) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2804, 3507) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2811, 3506) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2817, 3514) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (2949, 3927) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (2953, 3896) | 5 | yes |
+| [Wilderness](../places/wilderness.md) | (2955, 3945) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (2978, 3956) | 1 | no |
 
 ## Drops
 

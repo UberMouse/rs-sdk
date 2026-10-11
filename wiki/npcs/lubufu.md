@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A crotchety old fisherman who doesn't like young whippersnappers. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2770, 3169) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2770, 3169) | 1 | no |
 
 ## Interactions
 

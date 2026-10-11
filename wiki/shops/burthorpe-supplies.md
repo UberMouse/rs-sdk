@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Wistan](../npcs/wistan.md) |
 | **Location** | Quests |
-| **Coordinates** | (2928, 3546) |
+| **Coordinates** | (2928, 3546) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | General Store |
 
 ## Stock

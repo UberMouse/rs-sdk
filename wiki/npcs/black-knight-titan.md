@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_73 | m43_73 | (2791, 4722) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2791, 4722) | 1 | no |
 
 ## Drops
 

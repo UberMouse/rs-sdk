@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | One of the king's knights. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m50_54 | (3204, 3473) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock Palace (Varrock)](../places/palace.md) | (3204, 3473) | 1 | yes |
 
 ## Interactions
 

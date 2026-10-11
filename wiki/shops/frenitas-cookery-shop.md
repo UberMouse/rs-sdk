@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Frenita](../npcs/frenita.md) |
 | **Location** | Yanille |
-| **Coordinates** | (2566, 3098) |
+| **Coordinates** | (2566, 3098) in [Yanille (Kandarin)](../places/yanille.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Camelot area | m46_52 | (2977, 3342) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Falador (Asgarnia)](../places/falador.md) | (2977, 3342) | 1 | yes |
 
 ## Interactions
 

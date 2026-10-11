@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_52 | m52_52 | (3376, 3377) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Misthalin](../places/misthalin.md) | (3376, 3377) | 1 | no |
 
 ## Interactions
 

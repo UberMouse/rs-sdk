@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3100, 3258) |
-| m47_150 | m47_150 | (3046, 9640) L3 |
-| Rimmington | m44_50 | (2854, 3235) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3046, 9640) L3 | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2854, 3235) | 1 | yes |
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3100, 3258) | 1 | yes |
 
 ## Interactions
 

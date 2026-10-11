@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2646, 3660) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2646, 3660) | 1 | no |
 
 ## Interactions
 

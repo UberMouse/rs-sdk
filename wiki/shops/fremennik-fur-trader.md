@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fur trader](../npcs/fur-trader.md) |
 | **Location** | Quests |
-| **Coordinates** | (2640, 3675) |
+| **Coordinates** | (2640, 3675) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

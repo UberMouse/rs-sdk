@@ -24,13 +24,20 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_161 | m47_161 | (3042, 10317) |
-| m48_153 | m48_153 | (3099, 9832) |
-| m48_60 | m48_60 | (3094, 3849) |
-| m51_57 | m51_57 | (3300, 3649) |
-| West Ardougne | m39_49 | (2507, 3149) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3045, 10313) | 6 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | 2 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | 1 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | 9 | yes |
+| [Kandarin](../places/kandarin.md) | (2507, 3149) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2547, 3146) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (3094, 3849) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3104, 3875) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3110, 3854) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3117, 3854) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3300, 3649) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3308, 3661) | 1 | yes |
 
 ## Drops
 

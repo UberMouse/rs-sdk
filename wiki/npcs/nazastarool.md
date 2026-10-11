@@ -5,7 +5,7 @@
 | **Combat Level** | 68-93 |
 | **Hitpoints** | 70-80 |
 | **Description** | A giant zombie of huge strength and devastating power. |
-| **Aggressive** | No |
+| **Aggressive** | Yes |
 | **Movement** | Wander |
 
 ## Drops
@@ -16,3 +16,4 @@ Nazastarool has no drops.
 
 - Associated with the **Zombiequeen** quest.
 - Has 3 visual variants (zq_mainzombie1, zq_mainzombie2, zq_mainzombie3).
+- Will attack nearby players on sight.

@@ -24,13 +24,21 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2586, 3088) L2, (2586, 3089) L1, (2588, 3090) |
-| Desert | m48_49 | (3107, 3157) L1, (3107, 3158) |
-| Lumbridge (west) | m49_50 | (3148, 3200) |
-| m31_73 | m31_73 | (2010, 4710) |
-| m48_149 | m48_149 | (3109, 9558) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2010, 4712) | 2 | no |
+| - | (3109, 9558) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3111, 3167) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3148, 3200) | 1 | yes |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2589, 3084) | 1 | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2593, 3084) L1 | 1 | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2588, 3087) L2 | 2 | no |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3109, 3158) | 2 | yes |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L1 | 2 | yes |
+| [Yanille (Kandarin)](../places/yanille.md) | (2588, 3090) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2586, 3089) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2595, 3090) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2593, 3090) L2 | 1 | no |
 
 ## Drops
 

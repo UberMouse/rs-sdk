@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Feldip Hills | m43_48 | (2767, 3122) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2767, 3122) | 1 | no |
 
 ## Interactions
 

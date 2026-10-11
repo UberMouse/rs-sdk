@@ -22,11 +22,14 @@
 | Range Defence | 0 |
 | Attack Style | Stab |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_48 | m39_48 | (2540, 3090) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2546, 3116) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3117) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3090) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2547, 3113) | 2 | no |
 
 ## Drops
 

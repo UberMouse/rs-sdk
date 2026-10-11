@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_149 | m48_149 | (3103, 9571) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3103, 9571) | 1 | yes |
 
 ## Interactions
 

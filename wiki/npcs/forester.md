@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_54 | m41_54 | (2648, 3469) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [McGrubor's Wood (Kandarin)](../places/mcgrubors-wood.md) | (2650, 3469) | 4 | no |
 
 ## Drops
 

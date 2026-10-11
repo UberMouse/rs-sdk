@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Alfonse the waiter](../npcs/alfonse-the-waiter.md) |
 | **Location** | Brimhaven |
-| **Coordinates** | (2793, 3188) |
+| **Coordinates** | (2793, 3188) in [Brimhaven (Karamja)](../places/brimhaven.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

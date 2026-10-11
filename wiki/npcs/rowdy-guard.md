@@ -23,10 +23,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_147 | m51_147 | (3268, 9417) |
-| m51_47 | m51_47 | (3280, 3026) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3280, 3026) | 1 | no |
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3287, 3030) | 1 | no |
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3296, 3026) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3268, 9417) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3277, 9452) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3286, 9466) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3287, 9414) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3298, 9432) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3317, 9441) | 1 | no |
 
 ## Drops
 

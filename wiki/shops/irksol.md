@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Irksol](../npcs/irksol.md) |
 | **Location** | Zanaris |
-| **Coordinates** | (3247, 9589) |
+| **Coordinates** | (3247, 9589) in [Zanaris](../places/zanaris.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

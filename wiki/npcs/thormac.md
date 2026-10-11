@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_53 | m42_53 | (2702, 3405) L3 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2702, 3405) L3 | 1 | no |
 
 ## Interactions
 

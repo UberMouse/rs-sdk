@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Chamber guardian](../npcs/chamber-guardian.md) |
 | **Location** | Mage Arena |
-| **Coordinates** | (2508, 4696) |
+| **Coordinates** | (2508, 4696) in [Mage Arena chamber](../places/mage-arena-chamber.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -24,10 +24,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2601, 3269) |
-| m42_152 | m42_152 | (2710, 9753) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2719, 9748) | 20 | no |
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2605, 3270) | 3 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2601, 3269) | 1 | no |
 
 ## Drops
 

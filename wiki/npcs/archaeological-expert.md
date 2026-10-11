@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_52 | m52_52 | (3355, 3333) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3355, 3333) | 1 | no |
 
 ## Interactions
 

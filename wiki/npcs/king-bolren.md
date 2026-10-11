@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | It's a gnome.  He looks important. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| West Ardougne | m39_49 | (2542, 3169) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2542, 3169) | 1 | no |
 
 ## Interactions
 

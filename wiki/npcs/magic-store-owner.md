@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2595, 3087) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3087) L1 | 1 | no |
 
 ## Interactions
 

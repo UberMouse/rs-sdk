@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Bow and Arrow salesman](../npcs/bow-and-arrow-salesman.md) |
 | **Location** | Minigames |
-| **Coordinates** | (2673, 3434) |
+| **Coordinates** | (2673, 3434) in [Ranging Guild (Kandarin)](../places/ranging-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

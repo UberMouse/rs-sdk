@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A dwarf smith, quite handy with a hammer. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m46_53 | m46_53 | (2952, 3451) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2952, 3451) | 1 | yes |
 
 ## Interactions
 

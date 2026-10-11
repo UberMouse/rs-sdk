@@ -11,10 +11,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m35_49 | m35_49 | (2294, 3185) |
-| m36_51 | m36_51 | (2311, 3271) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Arandar (Tirannwn)](../places/arandar.md) | (2338, 3276) | 3 | no |
+| [Tirannwn](../places/tirannwn.md) | (2295, 3186) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2316, 3269) | 3 | no |
 
 ## Drops
 

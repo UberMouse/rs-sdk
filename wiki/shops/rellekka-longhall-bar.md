@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Thora the Barkeep](../npcs/thora-the-barkeep.md) |
 | **Location** | Quests |
-| **Coordinates** | (2662, 3673) |
+| **Coordinates** | (2662, 3673) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

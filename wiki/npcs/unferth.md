@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2918, 3558) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2918, 3558) | 1 | no |
 
 ## Drops
 

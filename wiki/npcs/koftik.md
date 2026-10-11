@@ -10,12 +10,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m31_73 | m31_73 | (2012, 4713) L1 |
-| m38_150 | m38_150 | (2443, 9607) |
-| m38_151 | m38_151 | (2449, 9716) |
-| m38_51 | m38_51 | (2436, 3315) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2012, 4713) L1 | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2443, 9607) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2449, 9716) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2479, 9679) | 1 | no |
+| [Underground Pass entrance (Kandarin)](../places/underground-pass-entrance.md) | (2436, 3315) | 1 | no |
 
 ## Interactions
 

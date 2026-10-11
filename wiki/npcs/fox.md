@@ -6,7 +6,7 @@
 | **Hitpoints** | 30 |
 | **Description** | Foxy. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 6) |
 
 ## Combat Stats
 
@@ -21,11 +21,12 @@
 | Range Defence | 30 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_56 | m42_56 | (2725, 3602) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2725, 3602) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2738, 3597) | 1 | no |
 
 ## Drops
 

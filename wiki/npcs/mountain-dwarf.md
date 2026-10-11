@@ -6,13 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | He looks short and grumpy. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_54 | m44_54 | (2820, 3487) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2877, 3483) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2821, 3487) | 2 | no |
 
 ## Interactions
 

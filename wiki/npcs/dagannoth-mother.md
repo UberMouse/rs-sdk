@@ -6,7 +6,7 @@
 | **Hitpoints** | 120 |
 | **Description** | A horror from the ocean depths... |
 | **Aggressive** | No |
-| **Movement** | Wander (range 65) |
+| **Movement** | Wander (range 6) |
 
 ## Combat Stats
 

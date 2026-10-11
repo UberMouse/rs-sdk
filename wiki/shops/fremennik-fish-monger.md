@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fish monger](../npcs/fish-monger.md) |
 | **Location** | Quests |
-| **Coordinates** | (2646, 3675) |
+| **Coordinates** | (2646, 3675) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

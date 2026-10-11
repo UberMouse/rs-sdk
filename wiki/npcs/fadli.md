@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks kinda bored. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_51 | m52_51 | (3383, 3269) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | (3383, 3269) | 1 | no |
 
 ## Interactions
 

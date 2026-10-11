@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_54 | m38_54 | (2482, 3510) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2482, 3510) L1 | 1 | no |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_52 | m44_52 | (2851, 3349) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Entrana](../places/entrana.md) | (2851, 3349) | 1 | no |
 
 ## Interactions
 

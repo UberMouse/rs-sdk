@@ -6,7 +6,7 @@
 | **Hitpoints** | 3 |
 | **Description** | Yep, definitely a chicken. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats
@@ -24,23 +24,32 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_51, m49_52 | (3185, 3277), (3196, 3352) |
-| Camelot area | m46_52 | (2966, 3346) |
-| m34_49 | m34_49 | (2184, 3152) |
-| m36_71 | m36_71 | (2312, 4560) |
-| m39_55 | m39_55 | (2553, 3562) |
-| m41_53 | m41_53 | (2650, 3441) |
-| m41_57 | m41_57 | (2679, 3665) |
-| m42_51 | m42_51 | (2691, 3273) |
-| m42_55 | m42_55 | (2735, 3559) |
-| m43_47 | m43_47 | (2780, 3064) |
-| m44_52 | m44_52 | (2846, 3374) |
-| m44_55 | m44_55 | (2816, 3561) |
-| m48_149 | m48_149 | (3109, 9569) |
-| Taverley | m47_51 | (3015, 3287) |
-| Varrock (south) | m50_51 | (3225, 3300) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3109, 9569) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3017, 3289) | 6 | yes |
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2553, 3563) | 3 | no |
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3197, 3353) | 5 | yes |
+| [Entrana](../places/entrana.md) | (2851, 3371) | 6 | no |
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2651, 3442) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2692, 3274) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2818, 3561) | 2 | no |
+| [Karamja](../places/karamja.md) | (2780, 3064) | 1 | no |
+| [Karamja](../places/karamja.md) | (2808, 3067) | 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2514, 3863) | 4 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2542, 3893) | 4 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2601, 3876) | 3 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2606, 3867) | 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2614, 3898) | 3 | no |
+| [Misthalin](../places/misthalin.md) | (3188, 3278) | 5 | yes |
+| [Misthalin](../places/misthalin.md) | (3230, 3299) | 9 | yes |
+| [Regicide camp](../places/regicide-camp.md) | (2313, 4561) | 2 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2680, 3665) | 2 | no |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2736, 3560) | 3 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2788, 3061) | 1 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2805, 3064) | 1 | no |
+| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2185, 3153) | 2 | no |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2966, 3346) | 1 | yes |
 
 ## Drops
 
@@ -55,4 +64,5 @@ Always drops: Raw chicken
 
 ## Notes
 
+- Has 3 visual variants (chicken, misc_chicken, misc_chicken_brown).
 - Category: Chicken.

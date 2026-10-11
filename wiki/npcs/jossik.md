@@ -6,14 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | Apparently he keeps a lighthouse. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_56 | m39_56 | (2509, 3639) L1 |
-| m39_72 | m39_72 | (2518, 4633) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2518, 4633) | 1 | no |
+| [Lighthouse (Kandarin)](../places/lighthouse.md) | (2509, 3639) L1 | 1 | no |
 
 ## Interactions
 

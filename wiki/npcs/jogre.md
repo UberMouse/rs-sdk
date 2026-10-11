@@ -24,12 +24,26 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2622, 3272) |
-| m44_148 | m44_148 | (2826, 9518) |
-| m45_46 | m45_46 | (2896, 2945) |
-| m45_47 | m45_47 | (2916, 3055) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2826, 9518) | 1 | no |
+| - | (2834, 9499) | 1 | no |
+| - | (2834, 9513) | 1 | no |
+| - | (2836, 9522) | 1 | no |
+| - | (2838, 9490) | 1 | no |
+| - | (2848, 9483) | 1 | no |
+| - | (2849, 9517) | 1 | no |
+| - | (2857, 9501) | 1 | no |
+| - | (2861, 9517) | 3 | no |
+| - | (2863, 9493) | 1 | no |
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2622, 3272) | 1 | no |
+| [Karamja](../places/karamja.md) | (2896, 2945) | 1 | no |
+| [Karamja](../places/karamja.md) | (2903, 2945) | 1 | no |
+| [Karamja](../places/karamja.md) | (2916, 3062) | 1 | no |
+| [Karamja](../places/karamja.md) | (2921, 2959) | 3 | no |
+| [Karamja](../places/karamja.md) | (2923, 2985) | 1 | no |
+| [Karamja](../places/karamja.md) | (2926, 3053) | 7 | no |
+| [Karamja](../places/karamja.md) | (2931, 2987) | 1 | no |
 
 ## Drops
 

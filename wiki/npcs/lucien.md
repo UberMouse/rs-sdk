@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2573, 3321) |
-| Wilderness | m49_54 | (3176, 3476) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3321) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3176, 3476) | 1 | yes |
 
 ## Drops
 

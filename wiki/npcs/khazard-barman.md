@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A tough looking barman. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2566, 3140) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2566, 3140) | 1 | no |
 
 ## Interactions
 

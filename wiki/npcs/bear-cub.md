@@ -9,11 +9,14 @@
 | **Movement** | Wander (range 12) |
 | **Respawn** | 100 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_56 | m42_56 | (2689, 3612) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2690, 3613) | 2 | no |
+| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2692, 3611) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2721, 3643) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2721, 3644) | 2 | no |
 
 ## Drops
 

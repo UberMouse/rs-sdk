@@ -6,14 +6,14 @@
 | **Hitpoints** | 44 |
 | **Description** | He looks totally insane! |
 | **Aggressive** | Yes |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 | **Respawn** | 60 ticks |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_150 | m45_150 | (2929, 9649) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2929, 9649) | 1 | yes |
 
 ## Drops
 

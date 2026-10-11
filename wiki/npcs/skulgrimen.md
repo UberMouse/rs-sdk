@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Sells and makes weapons and armour. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2663, 3694) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2663, 3694) | 1 | no |
 
 ## Interactions
 

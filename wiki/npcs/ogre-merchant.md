@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_47 | m39_47 | (2528, 3048) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2528, 3048) | 1 | no |
 
 ## Drops
 

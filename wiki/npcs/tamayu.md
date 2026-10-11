@@ -6,15 +6,16 @@
 | **Hitpoints** | N/A |
 | **Description** | A hunter who long ago succumbed to blood lust. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_71 | m39_71 | (2523, 4567) |
-| m43_47 | m43_47 | (2800, 3057) |
-| m44_47 | m44_47 | (2844, 3042) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2844, 3042) | 1 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2800, 3057) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2523, 4567) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2541, 4565) | 1 | no |
 
 ## Interactions
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Yrsa](../npcs/yrsa.md) |
 | **Location** | Quests |
-| **Coordinates** | (2625, 3675) |
+| **Coordinates** | (2625, 3675) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

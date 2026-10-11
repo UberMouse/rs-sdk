@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2803, 3152) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2803, 3152) | 1 | no |
 
 ## Interactions
 

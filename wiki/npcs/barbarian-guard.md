@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_55 | m39_55 | (2544, 3567) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2544, 3569) | 2 | no |
 
 ## Drops
 

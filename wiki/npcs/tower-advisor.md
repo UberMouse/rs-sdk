@@ -8,11 +8,14 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_53 | m41_53 | (2667, 3430) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2666, 3427) L2 | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2667, 3430) L2 | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3426) L2 | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2670, 3429) L2 | 1 | no |
 
 ## Interactions
 

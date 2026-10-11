@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_73 | m39_73 | (2508, 4696) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Mage Arena chamber](../places/mage-arena-chamber.md) | (2508, 4696) | 1 | no |
 
 ## Interactions
 

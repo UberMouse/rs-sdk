@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m35_74 | m35_74 | (2270, 4759) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2270, 4759) | 1 | no |
 
 ## Interactions
 

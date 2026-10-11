@@ -6,21 +6,25 @@
 | **Hitpoints** | 17 |
 | **Description** | Known for his lightfingered qualities. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander (range 8) |
 | **Respawn** | 50 ticks |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_52 | (3184, 3385) |
-| Falador (east) | m47_50 | (3014, 3232) |
-| Karamja (west) | m43_49 | (2785, 3179) |
-| m40_150 | m40_150 | (2564, 9609) |
-| m47_49 | m47_49 | (3014, 3195) |
-| m50_152 | m50_152 | (3237, 9769) |
-| Varrock | m50_52 | (3230, 3391) |
-| Wilderness | m51_54 | (3285, 3501) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3238, 9767) | 2 | yes |
+| - | (3247, 9771) | 4 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3195) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3015, 3232) | 2 | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2785, 3179) | 1 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3177) | 1 | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2565, 9607) | 2 | no |
+| [Karamja](../places/karamja.md) | (2803, 3179) | 1 | no |
+| [Karamja](../places/karamja.md) | (2812, 3159) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3184, 3388) | 3 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3230, 3391) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3285, 3501) | 1 | yes |
 
 ## Drops
 

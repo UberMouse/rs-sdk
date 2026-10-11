@@ -8,11 +8,14 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_147 | m39_147 | (2530, 9465) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2500, 9451) | 1 | no |
+| - | (2503, 9415) | 1 | no |
+| - | (2515, 9452) | 1 | no |
+| - | (2530, 9465) | 1 | no |
 
 ## Drops
 

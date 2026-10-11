@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Camelot area | m46_52 | (2960, 3336) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2960, 3336) L2 | 1 | yes |
 
 ## Interactions
 

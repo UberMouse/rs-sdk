@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Gem merchant](../npcs/gem-merchant.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2669, 3303) |
+| **Coordinates** | (2669, 3303) in [East Ardougne (Kandarin)](../places/east-ardougne.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

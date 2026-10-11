@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_46 | m44_46 | (2857, 2963) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Shilo Village (Karamja)](../places/shilo-village.md) | (2857, 2963) | 1 | no |
 
 ## Interactions
 

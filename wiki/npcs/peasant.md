@@ -10,10 +10,18 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_73 | m41_73 | (2637, 4722) |
-| m43_73 | m43_73 | (2765, 4722) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2637, 4722) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2648, 4718) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2649, 4703) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2660, 4721) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2661, 4698) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2765, 4722) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2776, 4718) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2777, 4703) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2788, 4721) | 1 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2789, 4698) | 1 | no |
 
 ## Interactions
 

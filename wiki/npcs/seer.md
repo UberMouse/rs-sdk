@@ -10,9 +10,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_54 | m42_54 | (2702, 3475), (2705, 3473) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2702, 3475) | 1 | no |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2714, 3471) | 1 | no |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2716, 3485) | 1 | no |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2705, 3473) L1 | 1 | no |
 
 ## Interactions
 

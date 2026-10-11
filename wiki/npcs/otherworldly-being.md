@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m49_149 | m49_149 | (3149, 9545) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Zanaris](../places/zanaris.md) | (3153, 9544) | 6 | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_154 | m41_154 | (2656, 9875) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2656, 9875) | 1 | no |
 
 ## Interactions
 

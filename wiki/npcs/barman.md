@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_54 | m37_54 | (2417, 3498) L1 |
-| m38_54 | m38_54 | (2482, 3487) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2417, 3498) L1 | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2482, 3488) L1 | 2 | no |
 
 ## Drops
 

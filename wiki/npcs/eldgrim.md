@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He's only as think as you drunk he is! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2658, 3674) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2658, 3674) | 1 | no |
 
 ## Interactions
 

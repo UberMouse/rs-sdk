@@ -24,11 +24,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m46_152 | m46_152 | (2955, 9775) |
-| m46_153 | m46_153 | (2955, 9795) |
-| m49_61 | m49_61 | (3187, 3959) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (2956, 9778) | 2 | no |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2960, 9791) | 4 | no |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2966, 9775) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (3191, 3960) | 9 | no |
 
 ## Drops
 

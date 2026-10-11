@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A wise old witch doctor. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Feldip Hills | m43_48 | (2809, 3086) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2809, 3086) | 1 | no |
 
 ## Interactions
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 56 |
 | **Description** | The shadowy remains of a long departed soul. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 9) |
 | **Respawn** | 50 ticks |
 
 ## Drops

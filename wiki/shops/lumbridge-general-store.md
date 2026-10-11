@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Lumbridge |
-| **Coordinates** | Shop keeper: (3209, 3247); Shop assistant: (3212, 3247) |
+| **Coordinates** | (3211, 3247) in [Lumbridge (Misthalin)](../places/lumbridge.md) |
 | **Type** | General Store |
 
 ## Stock

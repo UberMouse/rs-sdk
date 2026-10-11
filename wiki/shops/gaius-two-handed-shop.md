@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Gaius](../npcs/gaius.md) |
 | **Location** | Taverley |
-| **Coordinates** | (2885, 3449) |
+| **Coordinates** | (2885, 3449) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -6,13 +6,13 @@
 | **Hitpoints** | 16 |
 | **Description** | He guards the mines. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_54 | m40_54 | (2571, 3463) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2571, 3463) | 1 | no |
 
 ## Interactions
 

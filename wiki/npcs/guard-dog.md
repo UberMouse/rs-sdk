@@ -11,11 +11,23 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2784, 3191) |
-| m41_51 | m41_51 | (2624, 3319) |
-| m41_54 | m41_54 | (2625, 3502) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2785, 3194) | 3 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2624, 3319) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2624, 3327) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2641, 3315) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2646, 3325) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2625, 3502) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2628, 3484) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2631, 3472) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2636, 3503) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2659, 3478) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2665, 3471) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2666, 3506) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2669, 3488) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2674, 3504) | 1 | no |
+| [McGrubor's Wood (Kandarin)](../places/mcgrubors-wood.md) | (2645, 3488) | 1 | no |
 
 ## Drops
 

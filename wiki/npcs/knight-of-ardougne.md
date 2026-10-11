@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2582, 3297) |
-| m41_51 | m41_51 | (2652, 3318) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2582, 3297) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2661, 3307) | 4 | no |
 
 ## Drops
 

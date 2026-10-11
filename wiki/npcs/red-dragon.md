@@ -24,11 +24,16 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m49_59 | m49_59 | (3190, 3834) |
-| m49_60 | m49_60 | (3181, 3850) |
-| m50_59 | m50_59 | (3213, 3819) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2697, 9506) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2706, 9507) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2709, 9521) | 3 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2723, 9517) | 1 | no |
+| [Red Dragon Isle (Wilderness)](../places/red-dragon-isle.md) | (3190, 3834) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (3181, 3850) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (3213, 3819) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (3223, 3830) | 1 | no |
 
 ## Drops
 

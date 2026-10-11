@@ -6,32 +6,20 @@
 | **Hitpoints** | 20 |
 | **Description** | The boss! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
-| **Respawn** | 10 ticks |
+| **Movement** | Stationary |
 
-## Combat Stats
+## Locations
 
-| Stat | Value |
-|------|-------|
-| Attack Bonus | 0 |
-| Strength Bonus | 0 |
-| Stab Defence | 0 |
-| Slash Defence | 1 |
-| Crush Defence | 1 |
-| Magic Defence | 0 |
-| Range Defence | 0 |
-| Attack Style | Crush |
-
-## Location
-
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m46_47 | m46_47 | (2999, 3043) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2603, 4582) | 1 | no |
+| [Ship Yard (Karamja)](../places/ship-yard.md) | (2999, 3043) | 1 | no |
 
 ## Drops
 
-Always drops: Bones
+Foreman has no drops.
 
 ## Notes
 
-- Associated with the **Grandtree** quest.
+- Associated with the **Mm** quest.
+- Has 2 visual variants (mm_foreman_cutscene, grandtree_foreman).

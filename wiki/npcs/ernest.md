@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness (low) | m48_52 | (3110, 3366) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3366) L2 | 1 | yes |
 
 ## Drops
 
@@ -21,4 +21,4 @@ Ernest has no drops.
 ## Notes
 
 - Associated with the **Haunted** quest.
-- Has 2 visual variants (ernest, ernest_the_chicken).
+- Has 2 visual variants (ernest, questchicken).

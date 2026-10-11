@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Pretty barmaid. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_77 | m34_77 | (2201, 4942) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe Games Room](../places/burthorpe-games-room.md) | (2201, 4942) | 1 | no |
 
 ## Interactions
 

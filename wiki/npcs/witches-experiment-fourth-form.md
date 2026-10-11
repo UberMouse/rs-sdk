@@ -6,7 +6,7 @@
 | **Hitpoints** | 51 |
 | **Description** | Looks unnatural. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Drops
 

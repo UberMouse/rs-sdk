@@ -11,11 +11,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_150 | m40_150 | (2573, 9630) |
-| m40_151 | m40_151 | (2577, 9692) |
-| m40_153 | m40_153 | (2580, 9804) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2577, 9692) | 1 | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2573, 9630) | 1 | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2586, 9657) | 11 | no |
+| [Goblin cave](../places/goblin-cave.md) | (2587, 9804) | 4 | no |
+| [Goblin cave](../places/goblin-cave.md) | (2601, 9801) | 1 | no |
 
 ## Drops
 

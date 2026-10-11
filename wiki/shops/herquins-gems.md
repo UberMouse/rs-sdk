@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Herquin](../npcs/herquin.md) |
 | **Location** | Falador |
-| **Coordinates** | (2944, 3334) |
+| **Coordinates** | (2944, 3334) in [Falador (Asgarnia)](../places/falador.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

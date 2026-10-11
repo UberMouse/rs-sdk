@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| West Ardougne | m39_49 | (2527, 3161) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2527, 3161) L1 | 1 | no |
 
 ## Interactions
 

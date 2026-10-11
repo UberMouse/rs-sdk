@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (north) | m46_51 | (2973, 3312) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Falador (Asgarnia)](../places/falador.md) | (2973, 3312) | 1 | yes |
 
 ## Interactions
 

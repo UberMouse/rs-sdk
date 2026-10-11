@@ -6,7 +6,7 @@
 | **Hitpoints** | 22 |
 | **Description** | The living dead. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 6) |
 
 ## Drops
 

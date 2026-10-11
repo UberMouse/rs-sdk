@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | The Longhall barkeep |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2662, 3673) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2662, 3673) | 1 | no |
 
 ## Interactions
 

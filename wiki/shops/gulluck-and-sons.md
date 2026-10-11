@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Gulluck](../npcs/gulluck.md) |
 | **Location** | Tree Gnome Stronghold |
-| **Coordinates** | (2468, 3487) L2 |
+| **Coordinates** | (2468, 3487) L2 in [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -6,13 +6,22 @@
 | **Hitpoints** | N/A |
 | **Description** | A student busily digging. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_53 | m52_53 | (3356, 3406) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3358, 3420) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3360, 3409) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3364, 3410) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3370, 3416) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3373, 3412) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3348, 3424) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3349, 3410) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3359, 3401) | 3 | no |
+| [Misthalin](../places/misthalin.md) | (3367, 3432) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3373, 3432) | 1 | no |
 
 ## Interactions
 

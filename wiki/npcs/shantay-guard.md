@@ -22,11 +22,12 @@
 | Range Defence | 15 |
 | Attack Style | Stab |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_48 | m51_48 | (3299, 3124) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3303, 3118) | 1 | yes |
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3125) | 3 | yes |
 
 ## Drops
 

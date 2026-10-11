@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m51_54 | (3306, 3512) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Lumber Yard (Misthalin)](../places/lumber-yard.md) | (3306, 3512) L1 | 1 | yes |
 
 ## Interactions
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Wayne](../npcs/wayne.md) |
 | **Location** | Falador |
-| **Coordinates** | (2973, 3312) |
+| **Coordinates** | (2973, 3312) in [Falador (Asgarnia)](../places/falador.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

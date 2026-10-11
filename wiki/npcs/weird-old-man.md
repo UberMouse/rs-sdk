@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m50_48 | m50_48 | (3227, 3106) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kharidian Desert](../places/kharidian-desert.md) | (3227, 3106) | 1 | no |
 
 ## Interactions
 

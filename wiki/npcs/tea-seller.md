@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He seems to sell tea. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m51_53 | (3271, 3411) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3271, 3411) | 1 | yes |
 
 ## Interactions
 

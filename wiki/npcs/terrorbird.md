@@ -11,11 +11,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_53 | m37_53 | (2375, 3432) |
-| m38_53 | m38_53 | (2436, 3434) |
-| West Ardougne | m39_49 | (2498, 3141) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2375, 3436) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2501, 3141) | 2 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2380, 3434) | 6 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2436, 3434) | 1 | no |
 
 ## Drops
 

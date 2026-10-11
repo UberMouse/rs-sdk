@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Canifis area | m52_50 | (3361, 3242) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3361, 3242) | 1 | no |
 
 ## Interactions
 

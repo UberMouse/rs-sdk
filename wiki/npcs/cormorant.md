@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 26 |
+| **Combat Level** | None |
 | **Hitpoints** | 32 |
 | **Description** | A sea bird. |
 | **Aggressive** | No |
@@ -23,10 +23,10 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_71 | m39_71 | (2547, 4580) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2547, 4580) | 1 | no |
 
 ## Drops
 
-Always drops: Bones
+Cormorant has no drops.

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_54 | m45_54 | (2894, 3510) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | (2894, 3510) L1 | 1 | no |
 
 ## Interactions
 

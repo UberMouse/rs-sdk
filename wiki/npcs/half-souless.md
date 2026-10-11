@@ -8,11 +8,15 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m33_73 | m33_73 | (2120, 4708) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2124, 4717) L1 | 5 | no |
+| - | (2133, 4702) L1 | 8 | no |
+| - | (2136, 4718) L1 | 1 | no |
+| - | (2137, 4725) L1 | 1 | no |
+| - | (2145, 4721) L1 | 1 | no |
 
 ## Drops
 

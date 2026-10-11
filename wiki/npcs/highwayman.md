@@ -6,7 +6,7 @@
 | **Hitpoints** | 13 |
 | **Description** | He holds up passers by. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 12) |
+| **Movement** | Wander (range 8) |
 
 ## Combat Stats
 
@@ -23,12 +23,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_51 | (3110, 3295) |
-| Falador (north) | m46_51 | (3007, 3273) |
-| m42_55 | m42_55 | (2735, 3521) |
-| Taverley | m47_51 | (3009, 3280) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3007, 3273) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3009, 3280) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2735, 3521) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2749, 3521) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3110, 3295) | 1 | yes |
 
 ## Drops
 

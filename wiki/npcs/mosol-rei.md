@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_46 | m45_46 | (2883, 2951) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2883, 2951) | 1 | no |
 
 ## Interactions
 

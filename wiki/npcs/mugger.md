@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_52 | (3175, 3361) |
-| m46_149 | m46_149 | (2993, 9545) |
-| m47_49 | m47_49 | (3018, 3185) |
-| Varrock | m50_52 | (3249, 3391) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3018, 3185) | 1 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2996, 9547) | 4 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3249, 3391) | 1 | yes |
+| [Varrock West mine (Misthalin)](../places/varrock-west-mine.md) | (3175, 3361) | 1 | yes |
 
 ## Drops
 

@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Every innkeepers best friend! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2660, 3673) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2660, 3673) | 1 | no |
 
 ## Interactions
 

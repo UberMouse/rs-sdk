@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2629, 3693) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2581, 3847) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2629, 3693) | 1 | no |
 
 ## Interactions
 
@@ -27,4 +28,5 @@ Sailor has no drops.
 ## Notes
 
 - Associated with the **Viking** quest.
+- Has 2 visual variants (viking_sailor, misc_sailor).
 - Category: Viking Citizen.

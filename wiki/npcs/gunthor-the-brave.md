@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m48_53 | (3081, 3444) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3081, 3444) | 1 | yes |
 
 ## Drops
 

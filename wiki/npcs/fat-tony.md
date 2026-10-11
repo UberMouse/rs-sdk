@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_57 | m47_57 | (3036, 3707) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Wilderness](../places/wilderness.md) | (3036, 3707) | 1 | yes |
 
 ## Interactions
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 30-90 |
 | **Description** | Defender of the north tower. |
 | **Aggressive** | Yes |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander |
 
 ## Combat Stats
 

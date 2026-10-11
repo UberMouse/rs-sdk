@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Pretty barmaid. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_54 | m42_54 | (2738, 3472) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2738, 3472) L1 | 1 | no |
 
 ## Interactions
 

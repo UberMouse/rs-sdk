@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Scavvo](../npcs/scavvo.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3191, 3351) L1 |
+| **Coordinates** | (3191, 3351) L1 in [Champions' Guild (Misthalin)](../places/champions-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

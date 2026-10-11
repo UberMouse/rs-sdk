@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_47 | m51_47 | (3270, 3029) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kharidian Desert](../places/kharidian-desert.md) | (3270, 3029) | 1 | no |
 
 ## Drops
 

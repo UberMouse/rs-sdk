@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m51_49 | (3276, 3193) |
-| Falador (west) | m45_51 | (2934, 3284) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3276, 3193) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2934, 3284) L1 | 1 | yes |
 
 ## Interactions
 

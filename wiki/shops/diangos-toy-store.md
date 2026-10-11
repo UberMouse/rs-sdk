@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Diango](../npcs/diango.md) |
 | **Location** | Draynor Village |
-| **Coordinates** | (3079, 3250) |
+| **Coordinates** | (3079, 3250) in [Draynor Market (Draynor Village)](../places/draynor-market.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

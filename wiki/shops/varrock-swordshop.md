@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Varrock |
-| **Coordinates** | Shop keeper: (3203, 3397); Shop assistant: (3205, 3399) |
+| **Coordinates** | (3204, 3398) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

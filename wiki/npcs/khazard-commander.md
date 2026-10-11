@@ -6,14 +6,15 @@
 | **Hitpoints** | 22 |
 | **Description** | It's one of General Khazard's commanders. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 300 ticks |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (west) | m39_50 | (2503, 3255) L1, (2509, 3254) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2509, 3254) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2503, 3255) L1 | 1 | no |
 
 ## Drops
 

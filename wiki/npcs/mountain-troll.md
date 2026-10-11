@@ -24,13 +24,25 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_157 | m44_157 | (2829, 10079) L1, (2855, 10054) L2 |
-| m44_56 | m44_56 | (2852, 3591) |
-| m44_57 | m44_57 | (2856, 3683) |
-| m45_156 | m45_156 | (2921, 10032) |
-| m45_56 | m45_56 | (2916, 3631) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2779, 10140) | 7 | no |
+| - | (2829, 10084) L1 | 6 | no |
+| - | (2836, 10077) L1 | 1 | no |
+| - | (2839, 10101) L1 | 1 | no |
+| - | (2836, 10074) L2 | 1 | no |
+| - | (2836, 10085) L2 | 2 | no |
+| - | (2837, 10097) L2 | 2 | no |
+| - | (2852, 10107) L2 | 1 | no |
+| - | (2853, 10053) L2 | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2851, 3678) | 5 | no |
+| [Asgarnia](../places/asgarnia.md) | (2852, 3591) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2907, 3642) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2917, 3633) | 2 | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2869, 3591) | 14 | no |
+| [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2843, 3675) | 1 | no |
+| [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2844, 3683) | 2 | no |
+| [Troll caves](../places/troll-caves.md) | (2923, 10031) | 4 | no |
 
 ## Drops
 
@@ -221,7 +233,7 @@ Always drops: Big bones
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 8 visual variants (death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7, troll_melee1).
+- Associated with the **Troll** quest.
+- Has 8 visual variants (troll_melee1, death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7).
 - Will flee from combat when attacked.
 - Category: Mountain Troll.

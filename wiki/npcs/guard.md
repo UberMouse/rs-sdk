@@ -24,23 +24,62 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Camelot area | m46_52 | (2950, 3379) |
-| Falador (north) | m46_51 | (3006, 3321) |
-| m39_52 | m39_52 | (2510, 3378) |
-| m40_51 | m40_51 | (2570, 3275) |
-| m41_51 | m41_51 | (2651, 3307) |
-| m41_52 | m41_52 | (2635, 3339) |
-| m41_53 | m41_53 | (2655, 3426) |
-| m41_57 | m41_57 | (2657, 3663) |
-| m42_55 | m42_55 | (2739, 3577) |
-| m44_157 | m44_157 | (2850, 10092) |
-| m45_55 | m45_55 | (2896, 3566) |
-| m46_53 | m46_53 | (2964, 3396) |
-| Varrock | m50_52 | (3205, 3379) |
-| Varrock (north) | m50_53 | (3263, 3407) |
-| Wilderness | m48_54, m49_53, m50_54, m51_53 | (3085, 3518), (3173, 3429), (3175, 3403) L1, (3201, 3495) L1, (3204, 3496), (3271, 3428) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2850, 10086) | 1 | no |
+| - | (2850, 10089) | 1 | no |
+| - | (2850, 10092) | 1 | no |
+| - | (2855, 10082) | 1 | no |
+| - | (2855, 10089) | 1 | no |
+| - | (2857, 10075) | 1 | no |
+| - | (2858, 10076) | 1 | no |
+| - | (2861, 10080) | 1 | no |
+| - | (2864, 10085) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2966, 3397) | 3 | yes |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2896, 3566) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3556) | 2 | no |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2510, 3378) | 1 | no |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2513, 3372) | 3 | no |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2522, 3368) | 2 | no |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2524, 3362) | 1 | no |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2525, 3380) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2570, 3275) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2636, 3339) | 3 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2660, 3308) | 7 | no |
+| [Falador (Asgarnia)](../places/falador.md) | (2952, 3381) | 2 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2965, 3381) | 3 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3006, 3322) | 3 | yes |
+| [Kandarin](../places/kandarin.md) | (2511, 3383) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2517, 3356) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2523, 3383) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2531, 3368) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2739, 3577) | 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2505, 3856) L1 | 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2505, 3864) L1 | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3089, 3518) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3112, 3514) | 4 | yes |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2655, 3428) | 2 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2659, 3438) | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2663, 3425) | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2668, 3415) | 2 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2671, 3439) | 3 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2675, 3428) | 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2682, 3430) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2657, 3663) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2660, 3663) | 1 | no |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2741, 3562) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3174, 3427) | 3 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3180, 3401) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3204, 3496) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3209, 3379) | 3 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3212, 3463) | 6 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3243, 3501) | 2 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3263, 3407) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3274, 3427) | 4 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3175, 3403) L1 | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3175, 3414) L1 | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3203, 3497) L1 | 2 | yes |
+| [Varrock Palace (Varrock)](../places/palace.md) | (3205, 3493) L1 | 2 | yes |
 
 ## Drops
 
@@ -74,7 +113,7 @@ Always drops: Bones
 
 ## Notes
 
-- Has 23 visual variants (guard1, guard2, viking_longhall_guard1, viking_longhall_guard2, death_guard1, death_guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, murderguard, guard_carnillean, bioguard1, ranging_guild_guard, lathastrainer1, lathastrainer2, lathastrainer3, ardougne_guard).
+- Has 24 visual variants (guard1, guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, murderguard, death_guard1, death_guard2, viking_longhall_guard1, viking_longhall_guard2, bioguard1, guard_carnillean, ranging_guild_guard, ardougne_guard, misc_ulby_doorguard, lathastrainer1, lathastrainer2, lathastrainer3).
 - Can be pickpocketed for Thieving experience.
 - Category: Guard.
 - Can drop medium clue scrolls.

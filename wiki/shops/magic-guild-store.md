@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Magic Store owner](../npcs/magic-store-owner.md) |
 | **Location** | Yanille |
-| **Coordinates** | (2595, 3087) L1 |
+| **Coordinates** | (2595, 3087) L1 in [Wizards' Guild (Yanille)](../places/wizards-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

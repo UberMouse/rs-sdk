@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Aubury](../npcs/aubury.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3253, 3402) |
+| **Coordinates** | (3253, 3402) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

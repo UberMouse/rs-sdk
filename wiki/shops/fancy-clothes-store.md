@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fancy dress shop owner](../npcs/fancy-dress-shop-owner.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3281, 3398) |
+| **Coordinates** | (3281, 3398) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

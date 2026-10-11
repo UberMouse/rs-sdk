@@ -24,10 +24,15 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_55 | m39_55 | (2534, 3568) |
-| Wilderness | m48_53 | (3076, 3414), (3096, 3428) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2548, 3565) | 4 | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3417) | 6 | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3440) | 5 | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3432) | 1 | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3428) L2 | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2534, 3568) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2544, 3577) | 1 | no |
 
 ## Drops
 

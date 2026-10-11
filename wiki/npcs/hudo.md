@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | It's another jolly tree gnome. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_54 | m38_54 | (2448, 3509) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2448, 3509) L1 | 1 | no |
 
 ## Interactions
 

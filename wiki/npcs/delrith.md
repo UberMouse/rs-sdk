@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Varrock | m50_52 | (3229, 3369) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Misthalin](../places/misthalin.md) | (3229, 3369) | 1 | yes |
 
 ## Drops
 

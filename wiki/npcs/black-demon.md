@@ -6,7 +6,7 @@
 | **Hitpoints** | 157 |
 | **Description** | A big, scary, jet-black demon. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander (range 6) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats
@@ -24,10 +24,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_152 | m44_152 | (2854, 9776) |
-| m48_155 | m48_155 | (3084, 9957) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2707, 9483) | 4 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3088, 9959) | 3 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2857, 9779) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2863, 9769) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2869, 9776) | 1 | no |
 
 ## Drops
 

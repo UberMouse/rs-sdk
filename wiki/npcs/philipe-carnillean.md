@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | The newest member of the Carnillean family. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2565, 3273) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2565, 3273) | 1 | no |
 
 ## Interactions
 

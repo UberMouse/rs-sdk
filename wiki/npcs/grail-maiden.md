@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_73 | m41_73 | (2631, 4677) |
-| m43_73 | m43_73 | (2760, 4688) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2635, 4684) | 6 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2765, 4686) | 4 | no |
 
 ## Interactions
 

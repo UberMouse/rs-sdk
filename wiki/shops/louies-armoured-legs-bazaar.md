@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Louie legs](../npcs/louie-legs.md) |
 | **Location** | Al Kharid |
-| **Coordinates** | (3316, 3175) |
+| **Coordinates** | (3316, 3175) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

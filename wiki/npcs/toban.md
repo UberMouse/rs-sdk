@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_47 | m40_47 | (2576, 3027) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2576, 3027) | 1 | no |
 
 ## Interactions
 

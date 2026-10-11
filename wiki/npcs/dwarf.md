@@ -24,20 +24,42 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_54 | m39_54 | (2554, 3465) |
-| m40_47 | m40_47 | (2596, 3056) |
-| m40_54 | m40_54 | (2564, 3456) |
-| m44_154 | m44_154 | (2860, 9874) |
-| m45_151 | m45_151 | (2930, 9699) |
-| m46_153 | m46_153 | (2984, 9807) |
-| m46_53 | m46_53 | (2998, 3445) |
-| m47_152 | m47_152 | (3045, 9758) |
-| m47_153 | m47_153 | (3010, 9813) |
-| m47_53 | m47_53 | (3008, 3436) |
-| m47_54 | m47_54 | (3009, 3458) |
-| Taverley (north) | m47_52 | (3012, 3337) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2998, 3445) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2999, 3453) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3458) | 3 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3027, 3457) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3029, 3445) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2984, 9807) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2993, 9828) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2997, 9843) | 3 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2998, 9807) | 2 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2999, 9817) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2999, 9827) | 3 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3003, 9798) | 2 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3018, 9815) | 8 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3018, 9835) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3020, 9849) | 4 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3026, 9831) | 2 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3036, 9846) | 2 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3046, 9758) | 2 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3050, 9822) | 7 | yes |
+| [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3008, 3436) | 1 | yes |
+| [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3018, 3436) | 2 | yes |
+| [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3018, 3448) | 4 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3012, 3337) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3019, 3333) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3019, 3338) | 3 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3025, 3347) | 1 | yes |
+| [Feldip Hills](../places/feldip-hills.md) | (2596, 3056) | 1 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2605, 3057) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3467) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2568, 3456) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9701) | 2 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2865, 9876) | 8 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2600, 3062) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2608, 3061) | 1 | no |
 
 ## Drops
 
@@ -66,4 +88,4 @@ Always drops: Bones
 
 ## Notes
 
-- Has 6 visual variants (dwarf_normal, dwarf_mountain, dwarf_mountain2, mguild_dwarf1, mcannonguard, dwarven_shopkeeper).
+- Has 6 visual variants (dwarf_normal, dwarf_mountain, dwarf_tunnel, guilddwarf, mcannonguard, dwarven_shopkeeper).

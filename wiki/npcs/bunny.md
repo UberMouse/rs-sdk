@@ -2,11 +2,12 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | None |
+| **Combat Level** | 2 |
 | **Hitpoints** | 5 |
 | **Description** | Hoppity, hoppity. |
 | **Aggressive** | No |
 | **Movement** | Wander (range 5) |
+| **Respawn** | 50 ticks |
 
 ## Combat Stats
 
@@ -23,15 +24,15 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_56 | m42_56 | (2738, 3635) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2738, 3636) | 8 | no |
 
 ## Drops
 
-Always drops: Raw rabbit
+Always drops: Bones
 
-Bunny has no drops.
+Always drops: Raw rabbit
 
 ## Notes
 

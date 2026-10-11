@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_56 | m42_56 | (2739, 3605) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2741, 3605) | 2 | no |
 
 ## Drops
 

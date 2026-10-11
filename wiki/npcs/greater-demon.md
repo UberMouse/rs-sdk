@@ -24,12 +24,23 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_147 | m40_147 | (2586, 9458) |
-| m44_152 | m44_152 | (2861, 9747) |
-| m47_160 | m47_160 | (3028, 10250) |
-| m51_60 | m51_60 | (3282, 3880) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2586, 9458) | 1 | no |
+| - | (2615, 9424) | 4 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2631, 9505) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2633, 9480) L2 | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2633, 9491) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2640, 9504) L2 | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2646, 9476) L2 | 1 | no |
+| [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3282, 3880) | 1 | yes |
+| [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3287, 3894) | 1 | yes |
+| [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3296, 3872) | 1 | yes |
+| [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3304, 3886) | 1 | yes |
+| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3028, 10250) | 1 | no |
+| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3030, 10259) | 1 | no |
+| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3035, 10245) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2862, 9749) | 2 | no |
 
 ## Drops
 

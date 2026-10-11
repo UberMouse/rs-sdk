@@ -6,13 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | So where are the butcher and the candlestick maker? |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_51 | m41_51 | (2654, 3311) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2654, 3311) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2669, 3310) | 1 | no |
 
 ## Interactions
 

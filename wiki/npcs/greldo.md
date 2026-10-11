@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_54 | m47_54 | (3030, 3505) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3030, 3505) | 1 | yes |
 
 ## Drops
 

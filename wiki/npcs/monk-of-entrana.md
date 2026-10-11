@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (east) | m47_50 | (3045, 3236) |
-| m44_52 | m44_52 | (2830, 3335) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2835, 3335) | 3 | no |
+| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | 3 | yes |
 
 ## Interactions
 

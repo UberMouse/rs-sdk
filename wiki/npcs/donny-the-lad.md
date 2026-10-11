@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_57 | m47_57 | (3038, 3695) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3038, 3695) | 1 | yes |
 
 ## Drops
 

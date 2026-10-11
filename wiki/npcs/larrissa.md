@@ -6,14 +6,14 @@
 | **Hitpoints** | N/A |
 | **Description** | A fremennik girl. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_71 | m38_71 | (2445, 4599) |
-| m39_56 | m39_56 | (2508, 3635) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Horror from the Deep area](../places/horror-from-the-deep.md) | (2445, 4599) | 1 | no |
+| [Lighthouse (Kandarin)](../places/lighthouse.md) | (2508, 3635) | 1 | no |
 
 ## Interactions
 

@@ -10,9 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2569, 3272), (2573, 3269) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2569, 3272) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3269) L1 | 1 | no |
 
 ## Interactions
 

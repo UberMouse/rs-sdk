@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2594, 3089) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Yanille (Kandarin)](../places/yanille.md) | (2594, 3089) | 1 | no |
 
 ## Interactions
 

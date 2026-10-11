@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Commander of the Imperial Guard. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2896, 3528) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2896, 3528) | 1 | no |
 
 ## Interactions
 

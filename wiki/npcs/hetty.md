@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador | m46_50 | (2968, 3206) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2968, 3206) | 1 | yes |
 
 ## Interactions
 

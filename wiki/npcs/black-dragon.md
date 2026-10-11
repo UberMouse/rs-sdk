@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_153 | m44_153 | (2829, 9826) |
-| m47_160 | m47_160 | (3048, 10266) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3051, 10268) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2832, 9825) | 2 | no |
 
 ## Drops
 

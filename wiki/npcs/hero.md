@@ -22,11 +22,12 @@
 | Range Defence | 79 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_51 | m41_51 | (2630, 3288) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2630, 3288) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2657, 3311) | 2 | no |
 
 ## Drops
 

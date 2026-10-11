@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fidelio](../npcs/fidelio.md) |
 | **Location** | Canifis |
-| **Coordinates** | (3475, 3497) |
+| **Coordinates** | (3475, 3497) in [Canifis (Morytania)](../places/canifis.md) |
 | **Type** | General Store |
 
 ## Stock

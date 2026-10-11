@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | The imposing Chief of Tai Bwo Wannai. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Feldip Hills | m43_48 | (2780, 3087) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2780, 3087) L1 | 1 | no |
 
 ## Interactions
 

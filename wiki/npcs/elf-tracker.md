@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m35_49 | m35_49 | (2257, 3149) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tirannwn](../places/tirannwn.md) | (2257, 3149) | 1 | no |
 
 ## Interactions
 

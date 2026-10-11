@@ -8,11 +8,17 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_150 | m37_150 | (2392, 9653) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Underground Pass](../places/underground-pass.md) | (2380, 9659) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2382, 9654) | 2 | no |
+| [Underground Pass](../places/underground-pass.md) | (2385, 9658) | 2 | no |
+| [Underground Pass](../places/underground-pass.md) | (2387, 9653) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2389, 9658) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2392, 9653) | 1 | no |
+| [Underground Pass](../places/underground-pass.md) | (2393, 9659) | 2 | no |
 
 ## Interactions
 

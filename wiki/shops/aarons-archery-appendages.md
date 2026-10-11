@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Armour salesman](../npcs/armour-salesman.md) |
 | **Location** | Minigames |
-| **Coordinates** | (2667, 3436) |
+| **Coordinates** | (2667, 3436) in [Ranging Guild (Kandarin)](../places/ranging-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

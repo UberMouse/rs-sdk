@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | He's in control of the whole mining camp. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_47 | m51_47 | (3291, 3032) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3291, 3032) L1 | 1 | no |
 
 ## Interactions
 

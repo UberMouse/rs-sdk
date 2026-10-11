@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Responsible for the food and equipment of the troops. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_49 | m34_49 | (2194, 3140) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tirannwn](../places/tirannwn.md) | (2194, 3140) | 1 | no |
 
 ## Interactions
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Rufus](../npcs/rufus.md) |
 | **Location** | Canifis |
-| **Coordinates** | (3507, 3496) |
+| **Coordinates** | (3507, 3496) in [Canifis (Morytania)](../places/canifis.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

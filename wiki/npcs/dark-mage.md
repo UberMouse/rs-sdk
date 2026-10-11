@@ -2,17 +2,17 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 13 |
+| **Combat Level** | None |
 | **Hitpoints** | N/A |
 | **Description** | A dark magic user. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_51 | m38_51 | (2457, 3309) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2457, 3309) | 1 | no |
 
 ## Interactions
 

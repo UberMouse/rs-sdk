@@ -6,7 +6,7 @@
 | **Hitpoints** | 52 |
 | **Description** | The Knight seems to be watching something. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -24,10 +24,27 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Camelot area | m46_52 | (2956, 3337), (2957, 3341) L2, (2958, 3341) L1, (2960, 3338) L3 |
-| m45_54 | m45_54 | (2921, 3514) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2921, 3514) | 1 | no |
+| [Falador (Asgarnia)](../places/falador.md) | (2976, 3339) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2980, 3345) | 4 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2983, 3332) | 2 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2996, 3342) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2969, 3329) L1 | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2974, 3337) L1 | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2983, 3334) L1 | 3 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L1 | 2 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2971, 3328) L2 | 3 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L2 | 4 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2982, 3352) L3 | 1 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2959, 3338) | 2 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2972, 3345) | 1 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2961, 3351) L1 | 1 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2963, 3338) L1 | 3 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2957, 3341) L2 | 1 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2964, 3352) L2 | 1 | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2962, 3339) L3 | 2 | yes |
 
 ## Drops
 

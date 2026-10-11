@@ -6,14 +6,14 @@
 | **Hitpoints** | 40 |
 | **Description** | A crazy evil necromancer. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 500 ticks |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Seers' Village area | m41_50 | (2671, 3240) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | 1 | no |
 
 ## Drops
 

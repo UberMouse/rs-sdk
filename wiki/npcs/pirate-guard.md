@@ -22,11 +22,14 @@
 | Range Defence | 0 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2761, 3191) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2761, 3191) | 1 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2775, 3193) | 3 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2802, 3195) | 1 | no |
+| [Karamja](../places/karamja.md) | (2777, 3198) | 2 | no |
 
 ## Drops
 

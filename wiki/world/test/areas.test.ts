@@ -1,0 +1,73 @@
+import { describe, expect, test } from 'bun:test';
+import { areaResolver } from '../area-resolve';
+import { AREAS } from '../areas';
+
+describe('AREAS', () => {
+    test('pass the resolver validation', () => expect(() => areaResolver(AREAS)).not.toThrow());
+
+    const resolve = areaResolver(AREAS);
+
+    test('towns and their banks resolve under their kingdom', () => {
+        expect(resolve({ level: 0, x: 3222, z: 3218 })).toEqual(['misthalin', 'lumbridge']);
+        expect(resolve({ level: 0, x: 3094, z: 3491 })).toEqual(['misthalin', 'edgeville', 'edgeville-bank']);
+        expect(resolve({ level: 0, x: 2989, z: 3355 })).toEqual(['asgarnia', 'falador']);
+        expect(resolve({ level: 0, x: 2947, z: 3368 })).toEqual(['asgarnia', 'falador', 'falador-west-bank']);
+    });
+
+    test('the Wilderness starts at z 3520 east of x 2943, as the engine has it (sources/zones.ts)', () => {
+        expect(resolve({ level: 0, x: 3100, z: 3520 })).toEqual(['wilderness']);
+        expect(resolve({ level: 0, x: 3100, z: 3519 })).toEqual(['misthalin']);
+        expect(resolve({ level: 0, x: 2944, z: 3600 })).toEqual(['wilderness']);
+        expect(resolve({ level: 0, x: 2943, z: 3600 })).toEqual(['asgarnia']);
+    });
+
+    test('Al Kharid is in the desert, past the fence', () => {
+        expect(resolve({ level: 0, x: 3269, z: 3167 })).toEqual(['kharidian-desert', 'al-kharid', 'al-kharid-bank']);
+        expect(resolve({ level: 0, x: 3267, z: 3227 })).toEqual(['misthalin']);
+        expect(resolve({ level: 0, x: 3277, z: 3227 })).toEqual(['kharidian-desert', 'toll-gate']);
+    });
+
+    test('the Ranging Guild is the diamond inside its barricade; Hemenster is the contest town west of it', () => {
+        const guild = ['kandarin', 'ranging-guild'];
+        expect(resolve({ level: 0, x: 2678, z: 3434 })).toEqual(guild); // the leatherworker
+        expect(resolve({ level: 0, x: 2652, z: 3428 })).toEqual(guild); // the west watchtower
+        expect(resolve({ level: 2, x: 2668, z: 3444 })).toEqual(guild); // the north one, on top
+        expect(resolve({ level: 0, x: 2668, z: 3445 })).toEqual(guild); // the north tip
+        expect(resolve({ level: 0, x: 2668, z: 3411 })).toEqual(guild); // the south tip
+        expect(resolve({ level: 0, x: 2667, z: 3445 })).toEqual(['kandarin']); // beside the north tip
+        expect(resolve({ level: 0, x: 2658, z: 3438 })).toEqual(['kandarin']); // the guild door
+        expect(resolve({ level: 0, x: 2652, z: 3426 })).toEqual(['kandarin']); // past the south-west fence
+        expect(resolve({ level: 0, x: 2639, z: 3424 })).toEqual(['kandarin', 'hemenster']); // steel arrowtips chest
+        expect(resolve({ level: 0, x: 2651, z: 3442 })).toEqual(['kandarin', 'hemenster']); // chicken pen
+    });
+
+    test("Rellekka's market and Port Khazard's general store are in their towns", () => {
+        const rellekka = ['kandarin', 'rellekka'];
+        expect(resolve({ level: 0, x: 2625, z: 3675 })).toEqual(rellekka); // Yrsa's clothes shop
+        expect(resolve({ level: 0, x: 2642, z: 3677 })).toEqual(rellekka); // the market
+        expect(resolve({ level: 0, x: 2640, z: 3651 })).toEqual(rellekka); // inside the south palisade
+        expect(resolve({ level: 0, x: 2612, z: 3644 })).toEqual(['kandarin']); // outside it
+        // East of x 2654 the palisade's inside is the town's too: Lensa, Pontak and Sigli stand there.
+        expect(resolve({ level: 0, x: 2655, z: 3652 })).toEqual(rellekka); // Lensa
+        expect(resolve({ level: 0, x: 2666, z: 3652 })).toEqual(rellekka); // Pontak
+        expect(resolve({ level: 0, x: 2660, z: 3653 })).toEqual(rellekka); // Sigli
+        expect(resolve({ level: 0, x: 2662, z: 3640 })).toEqual(['kandarin', 'fremennik-province']); // outside the gate
+        expect(resolve({ level: 0, x: 2695, z: 3650 })).toEqual(['kandarin', 'fremennik-province']); // east of it
+        expect(resolve({ level: 0, x: 2655, z: 3152 })).toEqual(['kandarin', 'port-khazard']); // general store
+        expect(resolve({ level: 0, x: 2632, z: 3163 })).toEqual(['kandarin', 'port-khazard']); // a range
+        expect(resolve({ level: 0, x: 2630, z: 3143 })).toEqual(['kandarin']); // the mine
+    });
+
+    test("Rimmington's south shore is the mainland's, not Karamja's", () => {
+        expect(resolve({ level: 0, x: 2946, z: 3205 })).toEqual(['asgarnia', 'rimmington']); // Rommik
+        expect(resolve({ level: 0, x: 2967, z: 3203 })).toEqual(['asgarnia', 'rimmington']); // a fire
+        expect(resolve({ level: 0, x: 2937, z: 3201 })).toEqual(['asgarnia']); // the shore west of the town
+        expect(resolve({ level: 0, x: 2924, z: 3178 })).toEqual(['karamja']); // Musa Point's fishing spots
+        expect(resolve({ level: 0, x: 2777, z: 3198 })).toEqual(['karamja']); // east of Brimhaven
+    });
+
+    test('underground areas are their own top-level areas at z + 6400', () => {
+        expect(resolve({ level: 0, x: 3043, z: 9745 })).toEqual(['dwarven-mine', 'mining-guild']);
+        expect(resolve({ level: 0, x: 3043, z: 3345 })).toEqual(['asgarnia']);
+    });
+});

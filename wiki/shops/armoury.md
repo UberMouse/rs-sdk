@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md) |
 | **Location** | Combat Training Camp |
-| **Coordinates** | (2514, 3385) |
+| **Coordinates** | (2514, 3385) in [Kandarin](../places/kandarin.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

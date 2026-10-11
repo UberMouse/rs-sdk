@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (east) | m47_50 | (3028, 3221) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3028, 3221) | 1 | yes |
 
 ## Interactions
 

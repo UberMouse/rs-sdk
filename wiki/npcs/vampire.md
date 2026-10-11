@@ -6,14 +6,25 @@
 | **Hitpoints** | 40-50 |
 | **Description** | Where did that come from? |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 50 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m56_54 | m56_54 | (3585, 3478) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Morytania](../places/morytania.md) | (3586, 3496) | 1 | no |
+| [Morytania](../places/morytania.md) | (3590, 3479) | 4 | no |
+| [Morytania](../places/morytania.md) | (3593, 3458) | 1 | no |
+| [Morytania](../places/morytania.md) | (3593, 3508) | 1 | no |
+| [Morytania](../places/morytania.md) | (3595, 3491) | 1 | no |
+| [Morytania](../places/morytania.md) | (3607, 3466) | 1 | no |
+| [Morytania](../places/morytania.md) | (3617, 3477) | 1 | no |
+| [Morytania](../places/morytania.md) | (3618, 3514) | 1 | no |
+| [Morytania](../places/morytania.md) | (3631, 3499) | 1 | no |
+| [Morytania](../places/morytania.md) | (3632, 3459) | 1 | no |
+| [Morytania](../places/morytania.md) | (3634, 3473) | 3 | no |
+| [Morytania](../places/morytania.md) | (3646, 3467) | 1 | no |
 
 ## Drops
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Helemos](../npcs/helemos.md) |
 | **Location** | Heroes' Guild |
-| **Coordinates** | (2894, 3510) L1 |
+| **Coordinates** | (2894, 3510) L1 in [Heroes' Guild (Asgarnia)](../places/heros-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

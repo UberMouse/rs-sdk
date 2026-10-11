@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Horvik](../npcs/horvik.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3229, 3438) |
+| **Coordinates** | (3229, 3438) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

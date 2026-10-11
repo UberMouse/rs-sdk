@@ -6,7 +6,7 @@
 | **Hitpoints** | 87 |
 | **Description** | One of the Guardians of Iban. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander (range 6) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m33_71 | m33_71 | (2132, 4554) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2132, 4554) L1 | 1 | no |
 
 ## Drops
 

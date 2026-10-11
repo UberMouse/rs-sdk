@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_53 | m41_53 | (2669, 3418) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3418) | 1 | no |
 
 ## Interactions
 

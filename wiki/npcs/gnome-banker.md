@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_53 | m38_53 | (2443, 3423) L1 |
-| m38_54 | m38_54 | (2439, 3487) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Gnome Stronghold south bank (Tree Gnome Stronghold)](../places/gnome-stronghold-bank.md) | (2445, 3425) L1 | 5 | no |
+| [Grand Tree bank (Tree Gnome Stronghold)](../places/grand-tree-bank.md) | (2444, 3484) L1 | 4 | no |
 
 ## Interactions
 

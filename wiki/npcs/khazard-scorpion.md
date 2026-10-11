@@ -6,7 +6,7 @@
 | **Hitpoints** | 40 |
 | **Description** | A large angry scorpion. |
 | **Aggressive** | Yes |
-| **Movement** | Wander |
+| **Movement** | Wander (range 15) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2608, 3159) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2608, 3159) | 1 | no |
 
 ## Drops
 

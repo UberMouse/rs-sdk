@@ -6,7 +6,7 @@
 | **Hitpoints** | 16 |
 | **Description** | A funny little man who lives in a tree. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 15) |
+| **Movement** | Wander (range 13) |
 
 ## Interactions
 

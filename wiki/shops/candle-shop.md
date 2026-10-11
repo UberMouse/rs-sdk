@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Candle maker](../npcs/candle-maker.md) |
 | **Location** | Catherby |
-| **Coordinates** | (2800, 3439) |
+| **Coordinates** | (2800, 3439) in [Catherby (Kandarin)](../places/catherby.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

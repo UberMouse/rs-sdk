@@ -8,11 +8,22 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_51 | m38_51 | (2468, 3304) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2468, 3304) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2469, 3309) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2475, 3298) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2476, 3313) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2476, 3317) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2478, 3291) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2481, 3289) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2487, 3308) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2490, 3289) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2490, 3313) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2491, 3300) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2492, 3312) | 1 | no |
 
 ## Interactions
 

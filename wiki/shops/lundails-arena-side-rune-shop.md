@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Lundail](../npcs/lundail.md) |
 | **Location** | Mage Arena |
-| **Coordinates** | (2534, 4719) |
+| **Coordinates** | (2534, 4719) in [Mage Arena chamber](../places/mage-arena-chamber.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Frincos](../npcs/frincos.md) |
 | **Location** | Entrana |
-| **Coordinates** | (2808, 3342) |
+| **Coordinates** | (2808, 3342) in [Kandarin](../places/kandarin.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

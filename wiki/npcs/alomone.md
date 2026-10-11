@@ -6,7 +6,7 @@
 | **Hitpoints** | 25 |
 | **Description** | Leader of the Hazeel cult. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 2) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_151 | m40_151 | (2609, 9670) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2609, 9670) | 1 | no |
 
 ## Drops
 

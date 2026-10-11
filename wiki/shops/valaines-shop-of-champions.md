@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Valaine](../npcs/valaine.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3193, 3361) L1 |
+| **Coordinates** | (3193, 3361) L1 in [Champions' Guild (Misthalin)](../places/champions-guild.md) |
 | **Type** | General Store |
 
 ## Stock

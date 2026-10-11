@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Ranael](../npcs/ranael.md) |
 | **Location** | Al Kharid |
-| **Coordinates** | (3316, 3164) |
+| **Coordinates** | (3316, 3164) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

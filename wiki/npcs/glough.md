@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | A rough looking gnome. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_54 | m38_54 | (2478, 3463) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2478, 3463) L1 | 1 | no |
 
 ## Interactions
 

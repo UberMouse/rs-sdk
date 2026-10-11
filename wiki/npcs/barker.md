@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Has a distinguished air about him. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_54 | m54_54 | (3499, 3506) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Canifis (Morytania)](../places/canifis.md) | (3499, 3506) | 1 | no |
 
 ## Interactions
 

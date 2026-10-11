@@ -6,8 +6,8 @@
 | **Hitpoints** | 120 |
 | **Description** | Rawr! A dragon! |
 | **Aggressive** | No |
-| **Movement** | Wander |
-| **Respawn** | 100 ticks |
+| **Movement** | Wander (range 32) |
+| **Respawn** | 15 ticks |
 
 ## Combat Stats
 
@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_150 | m44_150 | (2852, 9637) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2852, 9637) | 1 | yes |
 
 ## Drops
 

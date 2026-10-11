@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_48 | m51_48 | (3304, 3123) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3123) | 1 | yes |
 
 ## Interactions
 

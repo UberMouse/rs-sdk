@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Harry](../npcs/harry.md) |
 | **Location** | Catherby |
-| **Coordinates** | (2834, 3445) |
+| **Coordinates** | (2834, 3445) in [Kandarin](../places/kandarin.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

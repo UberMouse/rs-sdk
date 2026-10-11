@@ -6,13 +6,13 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks like he's having fun! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2655, 3673) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2655, 3673) | 1 | no |
 
 ## Interactions
 
