@@ -34,7 +34,10 @@ script walked the bot under attack and it died, 2026-10-11).
    minutes:<budget left>`. No `minutes:1` test runs: a plan stops itself on `failed` or `stuck`,
    and a short timer only ends a working plan mid-errand (the user, 2026-10-11).
 3. Every `run-task.ts` command runs in the background
-   (`run_in_background`); then end your turn and wait for its completion notification. No
+   (`run_in_background`), as the bare command: no trailing `&`, `nohup` or `> file` (the harness
+   captures the output; an `&` inside detaches the run, the background command ends at once and no
+   notification ever comes for the run, 2026-10-11). Then end your turn and wait for its completion
+   notification. No
    foreground run, no foreground `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
    receive the conductor's messages (the user had to kill a run to get a correction through,
    2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
