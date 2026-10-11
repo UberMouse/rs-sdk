@@ -6,7 +6,7 @@
 | **Hitpoints** | 69 |
 | **Description** | A rare jungle wolf - specific to the Kharazi jungle. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 6) |
+| **Movement** | Wander |
 | **Respawn** | 180 ticks |
 
 ## Locations

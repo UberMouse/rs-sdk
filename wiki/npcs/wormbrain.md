@@ -6,7 +6,7 @@
 | **Hitpoints** | 5 |
 | **Description** | A badly behaved goblin. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

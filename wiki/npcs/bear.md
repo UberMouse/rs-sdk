@@ -6,7 +6,7 @@
 | **Hitpoints** | 25-27 |
 | **Description** | Eek! A bear! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 13) |
+| **Movement** | Wander (range 4) |
 | **Respawn** | 100 ticks |
 
 ## Locations

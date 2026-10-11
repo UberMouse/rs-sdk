@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Tough looking combat type. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

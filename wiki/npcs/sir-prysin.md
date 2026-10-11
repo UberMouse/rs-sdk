@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | One of the king's knights. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

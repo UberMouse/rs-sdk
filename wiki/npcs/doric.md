@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A dwarf smith, quite handy with a hammer. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

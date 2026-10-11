@@ -6,7 +6,7 @@
 | **Hitpoints** | 65 |
 | **Description** | A military man. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 4) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

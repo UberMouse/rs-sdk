@@ -6,7 +6,7 @@
 | **Hitpoints** | 22 |
 | **Description** | It's one of General Khazard's commanders. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 300 ticks |
 
 ## Locations

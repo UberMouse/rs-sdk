@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He looks very scared. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander |
 
 ## Location
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | He runs the Herblore Shop |
+| **Description** | He runs the Herblore Shop. |
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 

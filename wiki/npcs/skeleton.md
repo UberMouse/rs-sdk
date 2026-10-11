@@ -2,12 +2,12 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 13-45 |
-| **Hitpoints** | 17-59 |
+| **Combat Level** | 13-142 |
+| **Hitpoints** | 17-110 |
 | **Description** | Could do with gaining a few pounds. |
-| **Aggressive** | No |
-| **Movement** | Wander (range 3) |
-| **Respawn** | 70-140 ticks |
+| **Aggressive** | Yes |
+| **Movement** | Wander (range 8) |
+| **Respawn** | 70-200 ticks |
 
 ## Combat Stats
 
@@ -35,6 +35,7 @@
 | m40_154 | m40_154 | (2586, 9884) |
 | m41_153 | m41_153 | (2658, 9820) |
 | m41_154 | m41_154 | (2664, 9877) |
+| m42_142 | m42_142 | (2704, 9109) |
 | m44_149 | m44_149 | (2848, 9581) |
 | m44_150 | m44_150 | (2830, 9657) |
 | m45_153 | m45_153 | (2882, 9826) |
@@ -87,5 +88,5 @@ Always drops: Bones
 
 ## Notes
 
-- Has 6 visual variants (skeleton_unagressive, skeleton_unarmed, skeleton_armed, giantskeleton, dragonslayer_skeleton, skull_skeleton).
+- Has 7 visual variants (skeleton_unarmed, skeleton_unagressive, skeleton_armed, giantskeleton, mm_skeleton, dragonslayer_skeleton, skull_skeleton).
 - Will flee from combat when attacked.

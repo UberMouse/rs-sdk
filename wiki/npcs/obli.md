@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | An intelligent looking shop owner. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

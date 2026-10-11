@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A friendly not-so little pet. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 30000) |
 
 ## Interactions
 

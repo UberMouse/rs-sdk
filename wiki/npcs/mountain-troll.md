@@ -26,11 +26,12 @@
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
-| m44_157 | m44_157 | (2829, 10079) L1, (2855, 10054) L2 |
+| m43_158 | m43_158 | (2769, 10149) |
+| m44_157 | m44_157 | (2827, 10081) L1, (2836, 10082) L2 |
 | m44_56 | m44_56 | (2852, 3591) |
 | m44_57 | m44_57 | (2856, 3683) |
-| m45_156 | m45_156 | (2921, 10032) |
-| m45_56 | m45_56 | (2916, 3631) |
+| m45_156 | m45_156 | (2921, 10027) |
+| m45_56 | m45_56 | (2904, 3642) |
 
 ## Drops
 
@@ -221,7 +222,7 @@ Always drops: Big bones
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 8 visual variants (death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7, troll_melee1).
+- Associated with the **Troll** quest.
+- Has 8 visual variants (troll_melee1, death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7).
 - Will flee from combat when attacked.
 - Category: Mountain Troll.

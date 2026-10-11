@@ -29,6 +29,7 @@
 | Camelot area | m46_52 | (2950, 3379) |
 | Falador (north) | m46_51 | (3006, 3321) |
 | m39_52 | m39_52 | (2510, 3378) |
+| m39_60 | m39_60 | (2505, 3856) L1 |
 | m40_51 | m40_51 | (2570, 3275) |
 | m41_51 | m41_51 | (2651, 3307) |
 | m41_52 | m41_52 | (2635, 3339) |
@@ -74,7 +75,7 @@ Always drops: Bones
 
 ## Notes
 
-- Has 23 visual variants (guard1, guard2, viking_longhall_guard1, viking_longhall_guard2, death_guard1, death_guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, murderguard, guard_carnillean, bioguard1, ranging_guild_guard, lathastrainer1, lathastrainer2, lathastrainer3, ardougne_guard).
+- Has 24 visual variants (guard1, guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, murderguard, death_guard1, death_guard2, viking_longhall_guard1, viking_longhall_guard2, bioguard1, guard_carnillean, ranging_guild_guard, ardougne_guard, misc_ulby_doorguard, lathastrainer1, lathastrainer2, lathastrainer3).
 - Can be pickpocketed for Thieving experience.
 - Category: Guard.
 - Can drop medium clue scrolls.

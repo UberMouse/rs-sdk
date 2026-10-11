@@ -2,11 +2,11 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | None |
+| **Combat Level** | 1 |
 | **Hitpoints** | N/A |
 | **Description** | Pretty shabbily dressed for a clothes shop owner. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 4) |
 
 ## Location
 
@@ -28,4 +28,5 @@ Yrsa has no drops.
 ## Notes
 
 - Associated with the **Viking** quest.
+- Has 2 visual variants (viking_clothing_shopkeeper, misc_woman_3).
 - Category: Shop Keeper.

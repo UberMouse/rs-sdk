@@ -6,7 +6,7 @@
 | **Hitpoints** | 32 |
 | **Description** | I wonder who he's guarding? |
 | **Aggressive** | Yes |
-| **Movement** | Wander (range 11) |
+| **Movement** | Wander |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats

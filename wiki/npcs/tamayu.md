@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A hunter who long ago succumbed to blood lust. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 

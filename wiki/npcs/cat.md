@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A fully grown feline. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 30000) |
 
 ## Interactions
 

@@ -2,11 +2,11 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 13 |
+| **Combat Level** | None |
 | **Hitpoints** | N/A |
 | **Description** | A dark magic user. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | 42 |
 | **Hitpoints** | 45 |
-| **Description** | A vicious attaking camel. |
+| **Description** | A vicious attacking camel. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 700 ticks |
 
 ## Locations

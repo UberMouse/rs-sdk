@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He's in control of the whole mining camp. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 

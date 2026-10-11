@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | She looks concerned. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

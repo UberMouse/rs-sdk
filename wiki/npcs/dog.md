@@ -8,10 +8,11 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
+| m54_153 | m54_153 | (3469, 9806) |
 | Taverley | m47_51 | (3018, 3291) |
 
 ## Drops

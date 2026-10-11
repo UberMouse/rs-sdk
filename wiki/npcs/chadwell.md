@@ -1,4 +1,4 @@
-# chadwell
+# Chadwell
 
 | Detail | |
 |---|---|
@@ -19,10 +19,11 @@
 | Option | Action |
 |--------|--------|
 | Talk-to | Talk-to |
+| Trade | Trade |
 
 ## Drops
 
-chadwell has no drops.
+Chadwell has no drops.
 
 ## Notes
 

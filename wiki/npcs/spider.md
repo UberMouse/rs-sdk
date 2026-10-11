@@ -7,7 +7,7 @@
 | **Description** | Incey wincey. |
 | **Aggressive** | Yes |
 | **Movement** | Wander (range 8) |
-| **Respawn** | 70 ticks |
+| **Respawn** | 4-70 ticks |
 
 ## Combat Stats
 
@@ -30,6 +30,13 @@
 | Lumbridge (west) | m49_50 | (3165, 3247) |
 | m36_154 | m36_154 | (2329, 9898) |
 | m40_147 | m40_147 | (2565, 9443) |
+| m41_71 | m41_71 | (2671, 4558), (2677, 4576) L1 |
+| m42_142 | m42_142 | (2694, 9104) |
+| m42_143 | m42_143 | (2697, 9171) |
+| m42_43 | m42_43 | (2734, 2792) L1, (2749, 2768) L2 |
+| m43_142 | m43_142 | (2761, 9094) |
+| m43_143 | m43_143 | (2761, 9189) |
+| m43_43 | m43_43 | (2752, 2798) L2, (2753, 2799), (2767, 2765) L1 |
 | m45_148 | m45_148 | (2920, 9486) |
 | m45_150 | m45_150 | (2929, 9659) |
 | m45_153 | m45_153 | (2891, 9834) |
@@ -50,4 +57,4 @@ Spider has no drops.
 
 ## Notes
 
-- Has 3 visual variants (spider, upass_little_spider, spider_that_spawns_vampyres).
+- Has 5 visual variants (spider, mm_warehouse_spider, mm_cutscene_spider, upass_little_spider, vampire_spider).

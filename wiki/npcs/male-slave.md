@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | It looks like he's been here a long time. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Locations
 

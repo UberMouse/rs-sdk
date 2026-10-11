@@ -50,7 +50,7 @@ Always drops: Bones
 | Coins (x15) | 25/138 |
 | Snape grass | 20/138 |
 | Limpwurt root | 12/138 |
-| Coins (x28) | 12/138 |
+| Tbwt Cleaning Cloth | 12/138 |
 | Nature rune (x3) | 8/138 |
 | Coins (x62) | 5/138 |
 | Gold ore | 5/138 |

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He runs the museum. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 4) |
 
 ## Location
 

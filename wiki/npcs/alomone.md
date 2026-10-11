@@ -6,7 +6,7 @@
 | **Hitpoints** | 25 |
 | **Description** | Leader of the Hazeel cult. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 2) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

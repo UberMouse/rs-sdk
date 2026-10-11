@@ -6,7 +6,7 @@
 | **Hitpoints** | 10-40 |
 | **Description** | An evil human cleric. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 12) |
+| **Movement** | Wander (range 7) |
 | **Respawn** | 100-500 ticks |
 
 ## Locations

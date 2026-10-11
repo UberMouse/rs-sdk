@@ -6,8 +6,8 @@
 | **Hitpoints** | 120 |
 | **Description** | Rawr! A dragon! |
 | **Aggressive** | No |
-| **Movement** | Wander |
-| **Respawn** | 100 ticks |
+| **Movement** | Wander (range 32) |
+| **Respawn** | 15 ticks |
 
 ## Combat Stats
 

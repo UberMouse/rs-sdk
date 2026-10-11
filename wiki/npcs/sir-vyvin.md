@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | An elderly White Knight. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 8) |
+| **Movement** | Wander (range 10) |
 
 ## Location
 

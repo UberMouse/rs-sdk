@@ -6,7 +6,7 @@
 | **Hitpoints** | 25 |
 | **Description** | Looks like he's been in the wars... |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

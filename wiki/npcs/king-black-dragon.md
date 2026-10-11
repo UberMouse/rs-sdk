@@ -6,7 +6,7 @@
 | **Hitpoints** | 240 |
 | **Description** | The biggest meanest dragon around. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 20) |
+| **Movement** | Wander (range 30) |
 | **Respawn** | 150 ticks |
 
 ## Combat Stats

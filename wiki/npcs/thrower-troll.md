@@ -35,7 +35,7 @@ Always drops: Big bones
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 10 visual variants (death_troll_thrower1, death_troll_thrower2, death_troll_thrower3, death_troll_thrower4, death_troll_thrower5, troll_thrower1, troll_thrower2, troll_thrower3, troll_thrower4, troll_thrower5).
+- Associated with the **Troll** quest.
+- Has 10 visual variants (troll_thrower1, troll_thrower2, troll_thrower3, troll_thrower4, troll_thrower5, death_troll_thrower1, death_troll_thrower2, death_troll_thrower3, death_troll_thrower4, death_troll_thrower5).
 - Will attack nearby players on sight.
 - Category: Troll Thrower.

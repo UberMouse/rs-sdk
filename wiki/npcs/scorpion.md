@@ -2,12 +2,12 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 14 |
-| **Hitpoints** | 17 |
+| **Combat Level** | 14-38 |
+| **Hitpoints** | 15-17 |
 | **Description** | An extremely vicious scorpion. |
-| **Aggressive** | No |
+| **Aggressive** | Yes |
 | **Movement** | Wander (range 12) |
-| **Respawn** | 50 ticks |
+| **Respawn** | 50-100 ticks |
 
 ## Combat Stats
 
@@ -30,7 +30,10 @@
 | Karamja | m44_49 | (2843, 3156) |
 | m40_51 | m40_51 | (2602, 3267) |
 | m41_153 | m41_153 | (2637, 9809) |
+| m43_42 | m43_42 | (2762, 2749) |
+| m43_43 | m43_43 | (2752, 2762) |
 | m43_46 | m43_46 | (2765, 2978) |
+| m45_42 | m45_42 | (2894, 2715) |
 | m47_152 | m47_152 | (3038, 9771) |
 | m47_153 | m47_153 | (3039, 9802) |
 | m47_55 | m47_55 | (3025, 3568) |
@@ -44,4 +47,5 @@ Scorpion has no drops.
 
 ## Notes
 
+- Has 2 visual variants (scorpion, mm_jungle_scorpion).
 - Will flee from combat when attacked.

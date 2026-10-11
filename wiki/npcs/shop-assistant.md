@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | Needs a haircut. |
+| **Description** | Helps sell stuff. |
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 
@@ -33,5 +33,5 @@ Shop assistant has no drops.
 
 ## Notes
 
-- Has 8 visual variants (generalassistant7, generalassistant2, swordshop2, generalassistant6, generalassistant5, generalassistant1, generalassistant3, generalassistant4).
+- Has 8 visual variants (generalassistant1, generalassistant5, generalassistant4, generalassistant6, generalassistant7, generalassistant2, swordshop2, generalassistant3).
 - Category: Shop Keeper.

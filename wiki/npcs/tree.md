@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | 250 |
-| **Description** | It's bark is worse than its swipe. |
+| **Description** | Its bark is worse than its swipe. |
 | **Aggressive** | Yes |
 | **Movement** | Stationary |
 

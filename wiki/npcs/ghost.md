@@ -2,8 +2,8 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 19-24 |
-| **Hitpoints** | 20-25 |
+| **Combat Level** | 19-99 |
+| **Hitpoints** | 20-200 |
 | **Description** | Eeek! A ghost! |
 | **Aggressive** | No |
 | **Movement** | Wander (range 8) |
@@ -43,5 +43,5 @@ Ghost has no drops.
 
 ## Notes
 
-- Has 4 visual variants (ghost, house_ghost, dragonslayer_ghost, zamorakghost).
+- Has 6 visual variants (ghost, house_ghost, zamorakghost, hauntedmine_boss_ghost_faded, hauntedmine_suprise_ghost, dragonslayer_ghost).
 - Will flee from combat when attacked.

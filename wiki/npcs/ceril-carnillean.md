@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Head of the Carnillean household. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Locations
 

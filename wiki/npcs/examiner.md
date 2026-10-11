@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Upon examining the examiner you examine it is indeed an examiner! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

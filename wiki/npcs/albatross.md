@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 26 |
+| **Combat Level** | None |
 | **Hitpoints** | 32 |
 | **Description** | A sea bird. |
 | **Aggressive** | No |
@@ -29,4 +29,4 @@
 
 ## Drops
 
-Always drops: Bones
+Albatross has no drops.

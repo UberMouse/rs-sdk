@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A local villager of Mort'ton. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Stationary (indoors) |
 
 ## Interactions
 

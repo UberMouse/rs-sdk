@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks like he's having fun! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 

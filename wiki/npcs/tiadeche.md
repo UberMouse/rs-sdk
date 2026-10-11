@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A rather depressed looking fisherman. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 

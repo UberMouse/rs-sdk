@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A fremennik girl. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 

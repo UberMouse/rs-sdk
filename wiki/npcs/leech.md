@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | 52 |
 | **Hitpoints** | 45 |
-| **Description** | Yuk! Its all slimey! |
+| **Description** | Yuck! It's all slimey! |
 | **Aggressive** | No |
 | **Movement** | Wander (range 10) |
 | **Respawn** | 50 ticks |

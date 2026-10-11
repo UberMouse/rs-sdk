@@ -31,5 +31,5 @@ Always drops: Wolf bones
 
 ## Notes
 
-- Has 3 visual variants (wolf, pack_wolf_whiter, viking_wolf).
+- Has 3 visual variants (wolf, pack_wolf, viking_wolf).
 - Will flee from combat when attacked.

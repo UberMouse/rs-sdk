@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | The Carnillean family chef. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

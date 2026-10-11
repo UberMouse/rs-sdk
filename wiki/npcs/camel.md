@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Oh, it's a camel. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Locations
 

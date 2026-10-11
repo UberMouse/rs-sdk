@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He smells funny. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 

@@ -29,6 +29,8 @@
 | Catherby | m42_50 | (2691, 3215) |
 | m39_153 | m39_153 | (2528, 9843) |
 | m39_53 | m39_53 | (2549, 3408) |
+| m41_148 | m41_148 | (2636, 9528) |
+| m41_149 | m41_149 | (2636, 9544) |
 | m49_154 | m49_154 | (3157, 9905) |
 | m49_59 | m49_59 | (3139, 3818) |
 | Rimmington | m44_50 | (2827, 3246) |
@@ -70,4 +72,5 @@ Always drops: Big bones
 
 ## Notes
 
+- Has 3 visual variants (mossgiant, mossgiant2, mossgiant3).
 - Will flee from combat when attacked.

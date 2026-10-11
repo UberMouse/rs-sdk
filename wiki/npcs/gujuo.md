@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A dark, charismatic jungle native. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Interactions
 

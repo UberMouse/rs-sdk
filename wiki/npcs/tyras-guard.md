@@ -6,7 +6,7 @@
 | **Hitpoints** | 110 |
 | **Description** | One of King Tyras's men. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

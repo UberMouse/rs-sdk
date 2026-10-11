@@ -6,7 +6,7 @@
 | **Hitpoints** | 90 |
 | **Description** | I don't think insect repellent will work... |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 10) |
 
 ## Combat Stats
 

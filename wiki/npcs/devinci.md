@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He has a colourful personality. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 1) |
 
 ## Locations
 
@@ -28,4 +28,4 @@ DeVinci has no drops.
 ## Notes
 
 - Associated with the **Biohazard** quest.
-- Has 2 visual variants (Artist1, Artist2).
+- Has 2 visual variants (artist1, artist2).

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A crotchety old fisherman who doesn't like young whippersnappers. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 

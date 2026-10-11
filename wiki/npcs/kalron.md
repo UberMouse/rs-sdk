@@ -6,7 +6,7 @@
 | **Hitpoints** | 3 |
 | **Description** | He looks lost. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

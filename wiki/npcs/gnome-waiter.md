@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 1 |
+| **Combat Level** | None |
 | **Hitpoints** | N/A |
 | **Description** | He can serve you gnome food. |
 | **Aggressive** | No |

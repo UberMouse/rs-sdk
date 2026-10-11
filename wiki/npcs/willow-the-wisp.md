@@ -6,16 +6,16 @@
 | **Hitpoints** | N/A |
 | **Description** | Mysterious swamp lights... |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
-| m34_49 | m34_49 | (2192, 3188) |
-| m34_50 | m34_50 | (2180, 3236) |
-| m35_49 | m35_49 | (2282, 3140) |
-| m35_50 | m35_50 | (2248, 3225) |
+| m34_49 | m34_49 | (2194, 3189) |
+| m34_50 | m34_50 | (2178, 3238) |
+| m35_49 | m35_49 | (2281, 3142) |
+| m35_50 | m35_50 | (2247, 3226) |
 | m53_52 | m53_52 | (3409, 3369) |
 | m53_53 | m53_53 | (3418, 3420) |
 | m54_54 | m54_54 | (3459, 3457) |
@@ -27,4 +27,4 @@ Willow the wisp has no drops.
 ## Notes
 
 - Associated with the **Regicide** quest.
-- Has 2 visual variants (regicide_willothewisp2, willowthewisp).
+- Has 3 visual variants (regicide_willothewisp1, regicide_willothewisp2, willothewisp).

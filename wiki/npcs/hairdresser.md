@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Anyone fancy a trim? |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks vicious! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Locations
 

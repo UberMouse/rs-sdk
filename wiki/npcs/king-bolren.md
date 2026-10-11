@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | It's a gnome.  He looks important. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

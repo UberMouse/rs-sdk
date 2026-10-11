@@ -6,7 +6,7 @@
 | **Hitpoints** | 40 |
 | **Description** | A crazy evil necromancer. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 500 ticks |
 
 ## Location

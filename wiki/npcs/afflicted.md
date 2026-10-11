@@ -6,7 +6,7 @@
 | **Hitpoints** | 24-30 |
 | **Description** | A local villager of Mort'ton. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 25 ticks |
 
 ## Location

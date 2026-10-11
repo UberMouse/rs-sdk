@@ -6,7 +6,7 @@
 | **Hitpoints** | 20 |
 | **Description** | A dark magic user. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 500 ticks |
 
 ## Locations

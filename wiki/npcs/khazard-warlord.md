@@ -6,7 +6,7 @@
 | **Hitpoints** | 170 |
 | **Description** | He looks real nasty, smells bad too. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 8) |
+| **Movement** | Wander (range 9) |
 | **Respawn** | 300 ticks |
 
 ## Location

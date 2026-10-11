@@ -32,6 +32,8 @@
 | m35_49 | m35_49 | (2240, 3164) |
 | m35_50 | m35_50 | (2279, 3219) |
 | m36_71 | m36_71 | (2304, 4587) |
+| m39_60 | m39_60 | (2545, 3869) |
+| m40_60 | m40_60 | (2560, 3869) |
 
 ## Drops
 
@@ -42,5 +44,5 @@ Always drops: Raw rabbit
 ## Notes
 
 - Associated with the **Regicide** quest.
-- Has 3 visual variants (regicide_rabbit, regicide_bunny1, regicide_bunny2).
+- Has 4 visual variants (regicide_rabbit, regicide_bunny1, regicide_bunny2, misc_rabbit).
 - Category: Rabbit.

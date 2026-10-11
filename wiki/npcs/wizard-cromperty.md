@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | The hat is a dead give away. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 4) |
 
 ## Location
 

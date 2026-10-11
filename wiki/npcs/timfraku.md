@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | The imposing Chief of Tai Bwo Wannai. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 

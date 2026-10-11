@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He's drunk. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 1) |
 
 ## Locations
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Could do with losing a few pounds. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

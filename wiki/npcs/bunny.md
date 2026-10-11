@@ -2,11 +2,12 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | None |
+| **Combat Level** | 2 |
 | **Hitpoints** | 5 |
 | **Description** | Hoppity, hoppity. |
 | **Aggressive** | No |
 | **Movement** | Wander (range 5) |
+| **Respawn** | 50 ticks |
 
 ## Combat Stats
 
@@ -29,9 +30,9 @@
 
 ## Drops
 
-Always drops: Raw rabbit
+Always drops: Bones
 
-Bunny has no drops.
+Always drops: Raw rabbit
 
 ## Notes
 

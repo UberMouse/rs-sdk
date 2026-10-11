@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Small but powerful. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

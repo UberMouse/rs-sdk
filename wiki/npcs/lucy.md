@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Pretty barmaid. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | This person is working on the site. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Locations
 

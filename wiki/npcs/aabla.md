@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Trained to deal with all sorts of injuries. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

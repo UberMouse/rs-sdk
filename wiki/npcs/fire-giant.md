@@ -27,6 +27,8 @@
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
 | m40_154 | m40_154 | (2562, 9886) |
+| m41_148 | m41_148 | (2655, 9480) |
+| m41_149 | m41_149 | (2628, 9543) L2 |
 | m47_161 | m47_161 | (3046, 10341) |
 
 ## Drops
@@ -59,4 +61,5 @@ Always drops: Big bones
 
 ## Notes
 
+- Has 6 visual variants (firegiant, firegiant_big, firegiant_big2, firegiant_big3, firegiant2, firegiant3).
 - Will flee from combat when attacked.

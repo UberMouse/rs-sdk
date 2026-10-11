@@ -6,7 +6,7 @@
 | **Hitpoints** | 40-50 |
 | **Description** | Where did that come from? |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 50 ticks |
 
 ## Location

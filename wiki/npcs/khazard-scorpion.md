@@ -6,7 +6,7 @@
 | **Hitpoints** | 40 |
 | **Description** | A large angry scorpion. |
 | **Aggressive** | Yes |
-| **Movement** | Wander |
+| **Movement** | Wander (range 15) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

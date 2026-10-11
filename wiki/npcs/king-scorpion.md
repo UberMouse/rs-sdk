@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 32 |
+| **Combat Level** | 1-32 |
 | **Hitpoints** | 30 |
 | **Description** | Wow! Scorpions shouldn't grow that big. |
 | **Aggressive** | No |
@@ -37,4 +37,5 @@ King Scorpion has no drops.
 
 ## Notes
 
+- Has 2 visual variants (kingscorpion, npc_1523).
 - Will flee from combat when attacked.

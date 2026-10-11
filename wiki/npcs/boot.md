@@ -6,7 +6,7 @@
 | **Hitpoints** | 16 |
 | **Description** | A short angry guy. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Combat Stats
 

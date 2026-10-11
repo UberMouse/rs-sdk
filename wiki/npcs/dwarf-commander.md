@@ -6,7 +6,7 @@
 | **Hitpoints** | 16 |
 | **Description** | He guards the mines. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

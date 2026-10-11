@@ -6,7 +6,7 @@
 | **Hitpoints** | 40 |
 | **Description** | A jungle version of the chicken, but more vicious. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 50 ticks |
 
 ## Locations

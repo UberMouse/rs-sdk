@@ -9,10 +9,12 @@
 | **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
-## Location
+## Locations
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
+| m40_47 | m40_47 | (2604, 3058) |
+| m40_71 | m40_71 | (2585, 4570) |
 | m46_47 | m46_47 | (2953, 3056) |
 
 ## Drops

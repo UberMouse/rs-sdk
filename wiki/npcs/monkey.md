@@ -28,3 +28,7 @@
 ## Drops
 
 Monkey has no drops.
+
+## Notes
+
+- Has 3 visual variants (monkey, mm_zoo_monkey, mm_freed_zoo_monkey).

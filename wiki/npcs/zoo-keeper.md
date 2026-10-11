@@ -6,7 +6,7 @@
 | **Hitpoints** | 20 |
 | **Description** | Enjoys locking up animals in small pens. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

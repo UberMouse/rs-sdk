@@ -27,4 +27,4 @@ Holgart has no drops.
 
 ## Notes
 
-- Has 3 visual variants (holgartsunkboat, holgartplatform, holgartland).
+- Has 3 visual variants (holgartland, holgartsunkboat, holgartplatform).

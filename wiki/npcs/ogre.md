@@ -4,20 +4,20 @@
 |---|---|
 | **Combat Level** | 53-63 |
 | **Hitpoints** | 60 |
-| **Description** | A large dim looking humanoid. |
+| **Description** | Big, ugly, and smelly. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 | **Respawn** | 60-100 ticks |
 
 ## Combat Stats
 
 | Stat | Value |
 |------|-------|
-| Attack Bonus | 22 |
-| Strength Bonus | 20 |
-| Stab Defence | 0 |
-| Slash Defence | 0 |
-| Crush Defence | 0 |
+| Attack Bonus | 8 |
+| Strength Bonus | 6 |
+| Stab Defence | 19 |
+| Slash Defence | 23 |
+| Crush Defence | 24 |
 | Magic Defence | 0 |
 | Range Defence | 0 |
 | Attack Style | Crush |
@@ -44,5 +44,5 @@ Always drops: Big bones
 
 ## Notes
 
-- Has 3 visual variants (ogre, ogre2, lathastrainingogre).
+- Has 3 visual variants (lathastrainingogre, ogre, ogre2).
 - Will flee from combat when attacked.

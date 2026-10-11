@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A more than slightly eccentric looking priest. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 

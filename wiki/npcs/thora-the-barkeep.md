@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | The Longhall barkeep |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

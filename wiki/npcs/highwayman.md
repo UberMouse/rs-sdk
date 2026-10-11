@@ -6,7 +6,7 @@
 | **Hitpoints** | 13 |
 | **Description** | He holds up passers by. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 12) |
+| **Movement** | Wander (range 8) |
 
 ## Combat Stats
 

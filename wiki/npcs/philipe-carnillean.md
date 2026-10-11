@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | The newest member of the Carnillean family. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

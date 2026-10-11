@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | There's a sadness in his eyes. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

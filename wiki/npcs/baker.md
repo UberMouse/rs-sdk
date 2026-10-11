@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | So where are the butcher and the candlestick maker? |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

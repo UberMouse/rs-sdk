@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Commander of the Imperial Guard. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 

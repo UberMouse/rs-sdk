@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A religious man... And occasional drunk. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

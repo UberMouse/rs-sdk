@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Responsible for the food and equipment of the troops. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 

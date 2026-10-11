@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A Fremennik hero. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 20 |
 | **Description** | Looks kind of obsessive... |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 700 ticks |
 
 ## Combat Stats

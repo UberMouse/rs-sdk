@@ -6,7 +6,7 @@
 | **Hitpoints** | 52 |
 | **Description** | The Knight seems to be watching something. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

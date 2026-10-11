@@ -6,7 +6,7 @@
 | **Hitpoints** | 10 |
 | **Description** | A citizen of Burthorpe. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Stationary (indoors) |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats

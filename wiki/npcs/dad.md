@@ -6,7 +6,7 @@
 | **Hitpoints** | 120 |
 | **Description** | An unusually large troll. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 7) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

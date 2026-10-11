@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A strange little man. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Apparently he keeps a lighthouse. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Locations
 

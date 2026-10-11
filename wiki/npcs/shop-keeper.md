@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | Clearly takes pride in his appearance. |
+| **Description** | Sells stuff. |
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 
@@ -35,5 +35,5 @@ Shop keeper has no drops.
 
 ## Notes
 
-- Has 10 visual variants (generalshopkeeper7, lathas_shopkeeper, khazard_shopkeeper, generalshopkeeper2, swordshop1, generalshopkeeper6, generalshopkeeper5, generalshopkeeper1, generalshopkeeper3, generalshopkeeper4).
+- Has 10 visual variants (generalshopkeeper1, khazard_shopkeeper, generalshopkeeper5, generalshopkeeper4, generalshopkeeper6, generalshopkeeper7, generalshopkeeper2, swordshop1, lathas_shopkeeper, generalshopkeeper3).
 - Category: Shop Keeper.

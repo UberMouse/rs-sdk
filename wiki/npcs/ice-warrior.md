@@ -6,7 +6,7 @@
 | **Hitpoints** | 59 |
 | **Description** | A cold hearted elemental warrior. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats

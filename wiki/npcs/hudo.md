@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | It's another jolly tree gnome. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

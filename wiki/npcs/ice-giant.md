@@ -2,11 +2,11 @@
 
 | Detail | |
 |---|---|
-| **Combat Level** | 49 |
+| **Combat Level** | 53 |
 | **Hitpoints** | 70 |
 | **Description** | He's got icicles in his beard. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks very holy. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

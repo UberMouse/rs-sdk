@@ -37,5 +37,5 @@ Always drops: Bones
 ## Notes
 
 - Associated with the **Death** quest.
-- Has 5 visual variants (death_archer1, death_archer2, death_archer_trapped, ardougne_archer, archeradventurerpg).
+- Has 5 visual variants (death_archer1, death_archer2, death_archer_trapped, archeradventurerpg, ardougne_archer).
 - Category: Death Archer.

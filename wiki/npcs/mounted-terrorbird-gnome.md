@@ -38,4 +38,4 @@ Always drops: Bones
 
 ## Notes
 
-- Has 2 visual variants (terrorbird_mounted, terrorbird_mountedspear).
+- Has 2 visual variants (terrorbird2, terrorbird3).

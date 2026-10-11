@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | Varrocks' resident monarch. |
+| **Description** | Varrock's resident monarch. |
 | **Aggressive** | No |
 | **Movement** | Wander |
 

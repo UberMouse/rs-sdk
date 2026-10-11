@@ -6,7 +6,7 @@
 | **Hitpoints** | 157 |
 | **Description** | A big, scary, jet-black demon. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander (range 6) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats
@@ -26,6 +26,7 @@
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
+| m42_148 | m42_148 | (2700, 9489) |
 | m44_152 | m44_152 | (2854, 9776) |
 | m48_155 | m48_155 | (3084, 9957) |
 

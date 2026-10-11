@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Smithy for Burthorpe. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Stationary (indoors) |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 42 |
 | **Description** | Distinctly heroic. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

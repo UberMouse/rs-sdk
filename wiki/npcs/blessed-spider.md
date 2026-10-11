@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | 39 |
 | **Hitpoints** | 32 |
-| **Description** | It's one of Ibans' pets. |
+| **Description** | It's one of Iban's pets. |
 | **Aggressive** | No |
 | **Movement** | Wander (range 10) |
 | **Respawn** | 600 ticks |

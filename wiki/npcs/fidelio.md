@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A lycanthrope shopkeeper. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

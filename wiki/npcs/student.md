@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A student busily digging. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

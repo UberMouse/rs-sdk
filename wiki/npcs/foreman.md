@@ -6,32 +6,20 @@
 | **Hitpoints** | 20 |
 | **Description** | The boss! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
-| **Respawn** | 10 ticks |
+| **Movement** | Stationary |
 
-## Combat Stats
-
-| Stat | Value |
-|------|-------|
-| Attack Bonus | 0 |
-| Strength Bonus | 0 |
-| Stab Defence | 0 |
-| Slash Defence | 1 |
-| Crush Defence | 1 |
-| Magic Defence | 0 |
-| Range Defence | 0 |
-| Attack Style | Crush |
-
-## Location
+## Locations
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
+| m40_71 | m40_71 | (2603, 4582) |
 | m46_47 | m46_47 | (2999, 3043) |
 
 ## Drops
 
-Always drops: Bones
+Foreman has no drops.
 
 ## Notes
 
-- Associated with the **Grandtree** quest.
+- Associated with the **Mm** quest.
+- Has 2 visual variants (mm_foreman_cutscene, grandtree_foreman).

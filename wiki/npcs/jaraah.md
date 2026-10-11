@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Has the messy job of putting players back together again. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

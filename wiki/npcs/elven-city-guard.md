@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | An elven city guard. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 1) |
 
 ## Locations
 

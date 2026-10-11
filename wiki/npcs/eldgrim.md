@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He's only as think as you drunk he is! |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 

@@ -6,7 +6,7 @@
 | **Hitpoints** | 255 |
 | **Description** | I don't think insect repellent will work... |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 20) |
 
 ## Combat Stats
 
@@ -61,5 +61,5 @@ Always drops: Bones
 
 ## Notes
 
-- Has 3 visual variants (kalphite_queen, kalphite_queen_form_swap, kalphite_flyingqueen).
+- Has 3 visual variants (kalphite_queen, kalphite_queen_dead, kalphite_flyingqueen).
 - Can drop hard clue scrolls.

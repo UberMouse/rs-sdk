@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | An elvan warrier. |
+| **Description** | An elven warrier. |
 | **Aggressive** | No |
 | **Movement** | Wander |
 

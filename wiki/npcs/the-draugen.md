@@ -6,7 +6,7 @@
 | **Hitpoints** | 60 |
 | **Description** | A fearful spirit of the drowned. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Combat Stats
 

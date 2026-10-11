@@ -6,7 +6,7 @@
 | **Hitpoints** | 20 |
 | **Description** | Jeremy's father Sir Servil. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander |
 
 ## Location
 

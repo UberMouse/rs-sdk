@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Wow! She's made a statement with that hair! |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

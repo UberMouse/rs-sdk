@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Sells and makes weapons and armour. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 1) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

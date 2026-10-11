@@ -6,7 +6,7 @@
 | **Hitpoints** | 44 |
 | **Description** | He looks totally insane! |
 | **Aggressive** | Yes |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 | **Respawn** | 60 ticks |
 
 ## Location

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A rough looking gnome. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

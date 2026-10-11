@@ -6,7 +6,7 @@
 | **Hitpoints** | 100 |
 | **Description** | A huge beast, resembling in some ways a lion, but mostly a twisted nightmare. |
 | **Aggressive** | Yes |
-| **Movement** | Wander (range 12) |
+| **Movement** | Wander (range 32) |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats

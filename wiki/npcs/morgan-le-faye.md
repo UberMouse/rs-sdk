@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | An evil and powerful sorceress. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 1) |
 
 ## Interactions
 

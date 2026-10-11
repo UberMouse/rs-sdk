@@ -6,7 +6,7 @@
 | **Hitpoints** | 105 |
 | **Description** | He looks pretty handy with that bow. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 8) |
 | **Respawn** | 60 ticks |
 
 ## Combat Stats
@@ -36,5 +36,5 @@ Always drops: Bones
 ## Notes
 
 - Associated with the **Regicide** quest.
-- Has 3 visual variants (regicide_darkelf, regicide_darkelf2, regicide_arandar_gate_guard).
+- Has 3 visual variants (regicide_darkelf, regicide_darkelf2, elf_overpass_guard).
 - Category: Elf Warrior.

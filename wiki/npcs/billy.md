@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Billy is a baahd goat. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander |
 
 ## Location
 

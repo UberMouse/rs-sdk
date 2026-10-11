@@ -6,7 +6,7 @@
 | **Hitpoints** | 17 |
 | **Description** | Known for his lightfingered qualities. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 7) |
+| **Movement** | Wander (range 8) |
 | **Respawn** | 50 ticks |
 
 ## Locations

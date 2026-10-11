@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Looks kinda bored. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

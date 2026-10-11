@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He smells of fish... |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

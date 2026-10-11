@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | 'Battle scarred'. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

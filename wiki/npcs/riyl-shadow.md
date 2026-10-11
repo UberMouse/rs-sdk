@@ -6,7 +6,7 @@
 | **Hitpoints** | 76 |
 | **Description** | A shadowy sort of entity, kind of creepy looking. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 9) |
 | **Respawn** | 50 ticks |
 
 ## Location

@@ -18,6 +18,7 @@
 | Edgeville area | m48_50 | (3088, 3242) |
 | m40_52 | m40_52 | (2614, 3330) |
 | m40_53 | m40_53 | (2584, 3418) |
+| m40_60 | m40_60 | (2621, 3895) |
 | m41_51 | m41_51 | (2657, 3283) |
 | m42_52 | m42_52 | (2731, 3377) L2 |
 | m42_54 | m42_54 | (2722, 3496) |
@@ -42,5 +43,5 @@ Banker has no drops.
 
 ## Notes
 
-- Has 7 visual variants (banker1, banker2, kharidbanker1, kharidbanker2, fairy_banker, shilobanker, werewolfbanker).
+- Has 8 visual variants (banker1, banker2, kharidbanker1, kharidbanker2, fairy_banker, shilobanker, werewolfbanker, misc_banker).
 - Category: Bank Teller.

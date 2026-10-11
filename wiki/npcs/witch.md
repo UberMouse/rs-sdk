@@ -6,7 +6,7 @@
 | **Hitpoints** | 10 |
 | **Description** | The hat's a dead give away. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

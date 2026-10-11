@@ -12,6 +12,7 @@
 
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
+| m43_60 | m43_60 | (2798, 3842) |
 | m44_157 | m44_157 | (2856, 10056) L1 |
 | m44_56 | m44_56 | (2832, 3597) |
 | m45_57 | m45_57 | (2885, 3670) |
@@ -22,5 +23,5 @@ Mountain Goat has no drops.
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 3 visual variants (mountain_goat2, troll_mountain_goat, troll_mountain_goat_smaller).
+- Associated with the **Troll** quest.
+- Has 3 visual variants (troll_mountain_goat, troll_mountain_goat_smaller, mountain_goat2).

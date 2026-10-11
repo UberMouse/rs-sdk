@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A cart driver, it looks like he's quite experienced. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

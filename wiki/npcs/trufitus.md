@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A wise old witch doctor. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

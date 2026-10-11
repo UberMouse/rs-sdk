@@ -6,7 +6,7 @@
 | **Hitpoints** | 70 |
 | **Description** | A crazy evil druid |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 100 ticks |
 
 ## Location

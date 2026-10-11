@@ -6,7 +6,7 @@
 | **Hitpoints** | 30 |
 | **Description** | Foxy. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 6) |
 
 ## Combat Stats
 

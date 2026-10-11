@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Has a faint smell of chemicals about him. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

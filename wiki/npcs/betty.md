@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | She seems like a nice sort of person. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

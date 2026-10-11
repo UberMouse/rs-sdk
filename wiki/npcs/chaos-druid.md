@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | 13 |
 | **Hitpoints** | 20 |
-| **Description** | A crazy evil druid. |
+| **Description** | A crazy, evil druid. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 50 ticks |
 
 ## Locations

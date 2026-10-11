@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | I could get a beer from her. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 4) |
+| **Movement** | Stationary (indoors) |
 
 ## Locations
 

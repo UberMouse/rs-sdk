@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Seems a jolly chap. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 5) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

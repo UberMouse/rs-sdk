@@ -6,7 +6,7 @@
 | **Hitpoints** | 60 |
 | **Description** | Khazard's strongest ogre warrior. |
 | **Aggressive** | Yes |
-| **Movement** | Wander |
+| **Movement** | Wander (range 15) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats

@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | I could get a beer from him. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 1) |
 
 ## Locations
 
@@ -33,4 +33,4 @@ Bartender has no drops.
 
 ## Notes
 
-- Has 8 visual variants (donkey_bartender, dragon_bartender, flyinghorse_bartender, deadmans_bartender, bluemoon_bartender, jollyboar_bartender, foresters_bartender, rustyanchor_bartender).
+- Has 8 visual variants (donkey_bartender, deadmans_bartender, foresters_bartender, flyinghorse_bartender, bluemoon_bartender, jollyboar_bartender, rustyanchor_bartender, dragon_bartender).

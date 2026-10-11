@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A green skinned croaker, loves the swamp. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Locations
 

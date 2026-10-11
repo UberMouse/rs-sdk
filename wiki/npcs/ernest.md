@@ -21,4 +21,4 @@ Ernest has no drops.
 ## Notes
 
 - Associated with the **Haunted** quest.
-- Has 2 visual variants (ernest, ernest_the_chicken).
+- Has 2 visual variants (ernest, questchicken).

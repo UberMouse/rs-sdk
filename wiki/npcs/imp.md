@@ -6,7 +6,7 @@
 | **Hitpoints** | 8-9 |
 | **Description** | A cheeky little imp. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 27) |
+| **Movement** | Wander (range 25) |
 | **Respawn** | 100 ticks |
 
 ## Combat Stats
@@ -80,5 +80,5 @@ Always drops: Ashes
 
 ## Notes
 
-- Has 2 visual variants (imp, imp_grayzag).
+- Has 2 visual variants (imp, summonedimp).
 - Does not chase players.

@@ -41,7 +41,7 @@
 Always drops: Bones
 
 Always drops: Raw beef
-Always drops: Cow hide
+Always drops: Cowhide
 
 ## Notes
 

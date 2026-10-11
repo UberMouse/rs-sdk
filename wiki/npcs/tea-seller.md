@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He seems to sell tea. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander (range 3) |
 
 ## Location
 

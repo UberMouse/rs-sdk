@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He likes to paaaarty! |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 
 ## Location
 

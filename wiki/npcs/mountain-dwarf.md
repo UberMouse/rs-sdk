@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He looks short and grumpy. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 

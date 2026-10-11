@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | 3-5 |
 | **Hitpoints** | 5-15 |
-| **Description** | An Ardougne Monk. |
+| **Description** | A holy man. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 | **Respawn** | 50 ticks |
 
 ## Locations
@@ -24,4 +24,4 @@ Always drops: Bones
 
 ## Notes
 
-- Has 4 visual variants (monk_ardougne, monkadventurerpg, entrana_monk, monk).
+- Has 4 visual variants (monk, entrana_monk, monkadventurerpg, monk_ardougne).

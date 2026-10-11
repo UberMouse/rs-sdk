@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Entrance clerk for the Brimhaven Agility Arena. |
 | **Aggressive** | No |
-| **Movement** | Stationary (indoors) |
+| **Movement** | Wander (range 1) |
 
 ## Location
 

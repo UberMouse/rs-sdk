@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | Has a very exotic aroma about him. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Location
 

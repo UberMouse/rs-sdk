@@ -6,7 +6,7 @@
 | **Hitpoints** | 12 |
 | **Description** | He grows the crops in this area. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 20) |
+| **Movement** | Wander (range 14) |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats
@@ -27,6 +27,7 @@
 | Area | Map | Coordinate samples |
 |------|-----|--------------------|
 | Barbarian Village | m49_51 | (3154, 3293) |
+| m39_60 | m39_60 | (2538, 3852) |
 | m41_52 | m41_52 | (2645, 3367) |
 | Taverley | m47_51 | (3035, 3296) |
 | Varrock | m50_52 | (3240, 3345) |
@@ -58,4 +59,5 @@ Always drops: Bones
 
 ## Notes
 
+- Has 2 visual variants (farmer1, misc_farmer).
 - Can be pickpocketed for Thieving experience.

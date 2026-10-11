@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | He's ready for a bet. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Locations
 

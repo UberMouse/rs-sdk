@@ -6,7 +6,7 @@
 | **Hitpoints** | 22 |
 | **Description** | It's one of General Khazard's warriors. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 8) |
+| **Movement** | Wander (range 9) |
 
 ## Combat Stats
 

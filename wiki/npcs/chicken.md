@@ -6,7 +6,7 @@
 | **Hitpoints** | 3 |
 | **Description** | Yep, definitely a chicken. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 5) |
 | **Respawn** | 50 ticks |
 
 ## Combat Stats
@@ -31,6 +31,8 @@
 | m34_49 | m34_49 | (2184, 3152) |
 | m36_71 | m36_71 | (2312, 4560) |
 | m39_55 | m39_55 | (2553, 3562) |
+| m39_60 | m39_60 | (2512, 3862) |
+| m40_60 | m40_60 | (2602, 3877) |
 | m41_53 | m41_53 | (2650, 3441) |
 | m41_57 | m41_57 | (2679, 3665) |
 | m42_51 | m42_51 | (2691, 3273) |
@@ -55,4 +57,5 @@ Always drops: Raw chicken
 
 ## Notes
 
+- Has 3 visual variants (chicken, misc_chicken, misc_chicken_brown).
 - Category: Chicken.

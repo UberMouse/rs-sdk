@@ -14,7 +14,7 @@
 | [Bronze warhammer](../items/bronze-warhammer.md) | 5 | 61 gp | 32 gp |
 | [Iron warhammer](../items/iron-warhammer.md) | 4 | 224 gp | 121 gp |
 | [Steel warhammer](../items/steel-warhammer.md) | 3 | 832 gp | 448 gp |
-| [Black warhammer](../items/black-warhammer.md) | 3 | 832 gp | 448 gp |
+| [Black warhammer](../items/black-warhammer.md) | 3 | 1274 gp | 686 gp |
 | [Mithril warhammer](../items/mithril-warhammer.md) | 2 | 2158 gp | 1162 gp |
 | [Adamnt warhammer](../items/adamnt-warhammer.md) | 1 | 5356 gp | 2884 gp |
 | [Rune warhammer](../items/rune-warhammer.md) | 0 | 53950 gp | 29050 gp |

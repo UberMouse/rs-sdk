@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | 9 |
 | **Hitpoints** | 30 |
-| **Description** | It's one of Ibans' pet vermin. |
+| **Description** | It's one of Iban's pet vermin. |
 | **Aggressive** | No |
 | **Movement** | Wander (range 6) |
 | **Respawn** | 600 ticks |
