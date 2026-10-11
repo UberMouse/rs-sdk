@@ -1,7 +1,13 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
 import { isSkillMenu } from '../../actions/dismiss';
-import { FLETCH_CLOSE_TICKS, FLETCH_MAKE_TICKS, FLETCH_MENU_TICKS, fletch } from '../../actions/fletch';
+import {
+    FLETCH_CLOSE_TICKS,
+    FLETCH_MAKE_TICKS,
+    FLETCH_MENU_TICKS,
+    FLETCH_STALL_TICKS,
+    fletch,
+} from '../../actions/fletch';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { type Guard, interpret } from '../../core/interpret';
 import type { Step } from '../../lib/task';
@@ -23,6 +29,8 @@ const MENU = ['15 Arrow Shafts', 'Short Bow', 'Long Bow'].flatMap(p => [
 ]);
 const kit = world().skill('Fletching', 1, 0).inv('Knife', 1).inv('Logs', 2).tick(1);
 const menu = (w: World) => w.dialog({ options: MENU });
+/** The same menu without its Make 10 buttons. */
+const noTen = (w: World) => w.dialog({ options: MENU.filter(o => o !== 'Make 10') });
 /** One log cut into 15 shafts, 75 xp. */
 const cut = (w: World) => w.inv('Logs', 1).inv('Arrow shaft', 1, { id: SHAFTS }).skill('Fletching', 1, 75);
 const useKnife: BotAction = { type: 'useItemOnItem', sourceSlot: 0, targetSlot: 1, reason: 'use Knife on Logs' };
@@ -103,6 +111,66 @@ describe('fletch', () => {
     });
 });
 
+describe('fletch batches', () => {
+    const big = world().skill('Fletching', 1, 0).inv('Knife', 1).inv('Logs', 12).tick(1);
+    /** Make menu from tick 2, one log cut every 2 ticks from tick 5, `n` of them at most. */
+    const run = (n: number, extra: (w: World, i: number) => World = w => w) =>
+        Array.from({ length: 40 }, (_, k) => {
+            const i = k + 1;
+            const done = i < 5 ? 0 : Math.min(Math.floor((i - 5) / 2) + 1, n);
+            const w = big
+                .tick(i)
+                .inv('Logs', 12 - done)
+                .skill('Fletching', 1, 75 * done);
+            return extra(i === 2 || i === 3 ? menu(w) : w, i).build();
+        });
+
+    test('Make 10 clicks the button before the product and waits until ten logs are cut', async () => {
+        const { result, sends, driver } = await runOp(run(10), ctx => fletch(ctx, LOGS, 'arrow shaft', 10));
+        expect(result).toEqual({ ok: true, xpGained: 750, product: '15 Arrow Shafts' });
+        expect(sends).toEqual([useKnife, choose(1, '15 Arrow Shafts x10')]);
+        // Tick 5 the first log, tick 23 the tenth.
+        expect(driver.state().tick).toBe(23);
+    });
+
+    test('Make 5 and the second product group (short bow) pick their own buttons', async () => {
+        const five = await runOp(run(5), ctx => fletch(ctx, LOGS, 'arrow shaft', 5));
+        expect(five.sends[1]).toEqual(choose(2, '15 Arrow Shafts x5'));
+        const bow = await runOp(run(10), ctx => fletch(ctx, LOGS, 'short bow', 10));
+        expect(bow.sends[1]).toEqual(choose(5, 'Short Bow x10'));
+    });
+
+    test('a batch that stops early ends after FLETCH_STALL_TICKS with the xp so far', async () => {
+        const { result, driver } = await runOp(run(3), ctx => fletch(ctx, LOGS, 'arrow shaft', 10));
+        expect(result).toEqual({ ok: true, xpGained: 225, product: '15 Arrow Shafts' });
+        expect(driver.state().tick).toBe(9 + FLETCH_STALL_TICKS);
+    });
+
+    test('a level-up ends the batch at once', async () => {
+        const { result, driver } = await runOp(
+            run(10, (w, i) => (i >= 7 ? w.skill('Fletching', 2, 200) : w)),
+            ctx => fletch(ctx, LOGS, 'arrow shaft', 10),
+        );
+        expect(result).toMatchObject({ ok: true });
+        expect(driver.state().tick).toBe(7);
+    });
+
+    test('the batch is capped by the logs held', async () => {
+        const few = Array.from({ length: 30 }, (_, k) => {
+            const i = k + 1;
+            const done = i < 5 ? 0 : Math.min(Math.floor((i - 5) / 2) + 1, 2);
+            const w = kit
+                .tick(i)
+                .inv('Logs', 2 - done)
+                .skill('Fletching', 1, 75 * done);
+            return (i === 2 || i === 3 ? menu(w) : w).build();
+        });
+        const { result, driver } = await runOp(few, ctx => fletch(ctx, LOGS, 'arrow shaft', 10));
+        expect(result).toMatchObject({ ok: true, xpGained: 150 });
+        expect(driver.state().tick).toBe(7);
+    });
+});
+
 const closeMenu: BotAction = { type: 'closeModal', reason: 'close make menu' };
 /** A closeModal takes an open dialog away from the next tick on, as the server's does, then is spent. */
 const react: TimelineOptions['react'] = action =>
@@ -120,6 +188,20 @@ describe('fletch owns its make menu', () => {
     test('no-product closes the menu it opened before returning', async () => {
         const { result, sends, driver } = await runOp(openFrom(2), ctx => fletch(ctx, LOGS, 'crossbow'), { react });
         expect(result).toMatchObject({ ok: false, reason: 'no-product' });
+        expect(sends).toEqual([useKnife, closeMenu]);
+        expect(isSkillMenu(driver.state().dialog)).toBe(false);
+    });
+
+    test('a batch whose Make button the group lacks is no-product, and the menu is closed', async () => {
+        const timeline = [0, 1, 2, 3, 4, 5].map(i => (i >= 2 ? noTen(kit.tick(i)) : kit.tick(i)).build());
+        const { result, sends, driver } = await runOp(timeline, ctx => fletch(ctx, LOGS, 'arrow shaft', 10), {
+            react,
+        });
+        expect(result).toEqual({
+            ok: false,
+            reason: 'no-product',
+            message: 'No "Make 10" button for "15 Arrow Shafts"',
+        });
         expect(sends).toEqual([useKnife, closeMenu]);
         expect(isSkillMenu(driver.state().dialog)).toBe(false);
     });

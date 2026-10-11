@@ -43,3 +43,5 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
   (3222, 3222) with a starter kit in the inventory, nothing equipped: bronze axe, bronze pickaxe,
   tinderbox, small fishing net, shrimps, bread, bucket, pot, bronze dagger, bronze sword, wooden
   shield, shortbow, 25 bronze arrows, runes (25 air, 15 mind, 6 water, 4 earth, 2 body). [v 2026-10-09 conductor1 local]
+
+- Skill make menus (fletching) take Make 10 batches at one log per 2 ticks; a level-up dialog stops the batch, and at 25x XP early levels come every log or two, so batching pays from the mid levels. See `learnings/fletching.md`. [v 2026-10-11 conductor2w4 local]

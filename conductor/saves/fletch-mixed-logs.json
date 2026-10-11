@@ -1,0 +1,254 @@
+{
+    "name": "fletch-mixed-logs",
+    "purpose": "Fletching 1 at Lumbridge (3222,3222), Knife, 20 Logs, 3 Oak logs (mixed log types). Fletching task: batch and mixed-logs smoke.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3222
+            },
+            "skills": {
+                "Fletching": 1
+            },
+            "inventory": [
+                {
+                    "id": 946,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                },
+                {
+                    "id": 1521,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "6fedd86cadd94ddc0fa15c4bd7b6a5a2358c1f1c",
+    "createdAt": "2026-10-10T23:54:46.353Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3222,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            },
+            {
+                "id": 1521,
+                "name": "oak_logs",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

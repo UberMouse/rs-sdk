@@ -14,8 +14,9 @@ const MENU = ['15 Arrow Shafts', 'Short Bow', 'Long Bow'].flatMap(p => [
 ]);
 const USE = 'use Knife on Logs';
 const MAKE = 'fletch 15 Arrow Shafts';
+const MAKE10 = 'fletch 15 Arrow Shafts x10';
 const MEMBERS = "You need to be on a members' world to gain experience in Fletching.";
-const PARAMS = { product: 'arrow shaft', logs: 'Logs' };
+const PARAMS = { product: 'arrow shaft', logs: 'Logs', batch: 1 as const };
 const kit = world().skill('Fletching', 1, 0).inv('Knife', 1).inv('Logs', 2);
 const menu = (w: World) => w.dialog({ options: MENU });
 /** `n` batches done: `logs` left, a slot of shafts per batch, 75 xp each. */
@@ -194,11 +195,9 @@ describe('fletching: preflight', () => {
         );
     });
 
-    test('refuses a different log type in the inventory', async () => {
+    test('other log types in the inventory are not a refusal', async () => {
         const mixed = kit.inv('Oak logs', 1, { id: 1521 });
-        expect(await refusal(mixed)).toBe(
-            'preflight: inventory also holds other logs than "Logs"; the task works one log type at a time',
-        );
+        expect(await refusal(mixed)).not.toStartWith('preflight');
     });
 
     test('attachFeathers needs the arrow shaft product and feathers', async () => {
@@ -251,5 +250,105 @@ describe('fletching: guards', () => {
         expect(r.result.reason).toBe('finish: no Logs left to fletch');
         expect(r.sends).toEqual([USE, MAKE, 'continue dialog']);
         expect(logged(r)).toEqual([]);
+    });
+});
+
+describe('fletching: mixed logs', () => {
+    test('uses the knife on the named logs only and finishes when they are gone, oak untouched', async () => {
+        // The Oak logs sit in slot 1, ahead of the Logs: a first-log-of-any-type pick would use them.
+        const oakFirst = world()
+            .skill('Fletching', 1, 0)
+            .inv('Knife', 1)
+            .inv('Oak logs', 1, { id: 1521 })
+            .inv('Logs', 2);
+        const r = await simulate(fletching, { params: PARAMS, timeline: build(batches(2, oakFirst)) });
+        expect(r.result.reason).toBe('finish: no Logs left to fletch');
+        expect(r.sends).toEqual([USE, MAKE, USE, MAKE]);
+        const used = r.driver.commands.flatMap(c =>
+            c.type === 'send' && c.action.type === 'useItemOnItem' ? [c.action.targetSlot] : [],
+        );
+        expect(used).toHaveLength(2);
+        expect(used).not.toContain(1);
+        expect(r.result.inventoryDelta['Oak logs']).toBeUndefined();
+    });
+
+    test('with only other logs held, the named type is a preflight refusal', async () => {
+        const oakOnly = kit.inv('Logs', 0).inv('Oak logs', 2, { id: 1521 });
+        expect(await refusal(oakOnly)).toBe('preflight: no "Logs" in inventory');
+    });
+});
+
+describe('fletching: batches', () => {
+    const BATCH = { ...PARAMS, batch: 10 as const };
+    const five = kit.inv('Logs', 12);
+    /** Ticks 1-2 menu, then one log cut every 2 ticks from tick 4; `stop` ticks of progress at most. */
+    const cutting = (stop: number, level?: (w: World, i: number) => World) =>
+        five.series(60, (w, i) => {
+            const n = i < 4 ? 0 : Math.min(Math.floor((i - 4) / 2) + 1, stop);
+            const state = i === 1 || i === 2 ? menu(w) : w;
+            const cutW = state
+                .inv('Logs', 12 - n)
+                .inv('Arrow shaft', n, { id: SHAFT })
+                .skill('Fletching', 1, 75 * n);
+            return level ? level(cutW, i) : cutW;
+        });
+
+    test('one Make 10 click cuts ten logs; the batch is waited out and the rest is cut next', async () => {
+        const r = await simulate(fletching, {
+            params: BATCH,
+            timeline: cutting(10),
+            stops: [{ kind: 'xp', skill: 'Fletching', amount: 750 }],
+        });
+        expect(r.sends.slice(0, 2)).toEqual([USE, MAKE10]);
+        expect(r.result.xpGained).toEqual({ Fletching: 750 });
+        expect(r.result.inventoryDelta.Logs).toBe(-10);
+    });
+
+    test('a batch that stops early without a level-up ends after the stall and the next one resumes', async () => {
+        const r = await simulate(fletching, {
+            params: BATCH,
+            timeline: cutting(3),
+            stops: [{ kind: 'xp', skill: 'Fletching', amount: 225 }],
+        });
+        expect(r.sends.slice(0, 2)).toEqual([USE, MAKE10]);
+        expect(r.result.xpGained).toEqual({ Fletching: 225 });
+        expect(r.sends.filter(s => s === USE).length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('low HP mid-batch aborts it and eats, then the next cut step finishes the remaining logs', async () => {
+        const r = await simulate(fletching, {
+            params: BATCH,
+            // Menu at 1-2, the first log cut at 4, HP low at 5 (mid-batch); the eat takes tick 6, the second
+            // click's menu is open at 8-9 and the last log is cut at 11.
+            timeline: kit
+                .inv('Logs', 2)
+                .inv('Shrimps', 1)
+                .series(30, (w, i) => {
+                    const hurt = w.player({ hp: i === 5 ? 4 : 10 });
+                    if (i >= 11) return made(hurt, 2, 0);
+                    if (i >= 4) return [8, 9].includes(i) ? menu(made(hurt, 1, 1)) : made(hurt, 1, 1);
+                    return i === 1 || i === 2 ? menu(hurt) : hurt;
+                }),
+        });
+        expect(r.result.reason).toBe('finish: no Logs left to fletch');
+        expect(r.sends).toEqual([USE, MAKE10, 'Eat Shrimps', USE, MAKE10]);
+    });
+
+    test('a level-up ends the batch at once and the dialog is cleared', async () => {
+        const r = await simulate(fletching, {
+            params: BATCH,
+            timeline: cutting(2, (w, i) =>
+                i >= 6 ? w.skill('Fletching', 2, 200).dialog({ options: ['Click here to continue'] }) : w,
+            ),
+            stops: [{ kind: 'xp', skill: 'Fletching', amount: 150 }],
+        });
+        expect(r.sends.slice(0, 2)).toEqual([USE, MAKE10]);
+    });
+
+    test('with fewer logs than the batch, it ends when the logs are gone', async () => {
+        const r = await simulate(fletching, { params: BATCH, timeline: build(batches(2)) });
+        expect(r.result.reason).toBe('finish: no Logs left to fletch');
+        // One click covers both logs: the second is cut while the batch is waited out.
+        expect(r.sends).toEqual([USE, MAKE10]);
     });
 });

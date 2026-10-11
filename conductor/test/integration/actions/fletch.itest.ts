@@ -83,3 +83,17 @@ test(
     },
     itestTimeout({ extraMs: BODY_MS }),
 );
+
+test(
+    'fletch with batch 10 cuts ten logs from one menu click',
+    async () => {
+        // Level 60: no level-up ends the batch early.
+        await withFixtureBot({ ...kit(12), skills: { Fletching: 60 } }, async ({ sdk }) => {
+            const r = await runLive(sdk, ctx => fletch(ctx, LOGS, 'arrow shaft', 10));
+            expect(r.ok, JSON.stringify(r)).toBe(true);
+            expect(shafts(sdk)).toBe(150);
+            expect(countItems(sdk.getState()!, LOGS)).toBe(2);
+        });
+    },
+    itestTimeout({ extraMs: BODY_MS }),
+);

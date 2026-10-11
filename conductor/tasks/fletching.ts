@@ -33,14 +33,14 @@ const Params = z.object({
     product: z.string().min(1),
     /** Exact item name of the logs to cut. */
     logs: z.string().default('Logs'),
+    /** Logs per make-menu click (10, 5 or 1); a level-up or interruption ends a batch early and the next cut step resumes. */
+    batch: z.union([z.literal(1), z.literal(5), z.literal(10)]).default(10),
     /** After the logs are cut, attach Feathers to the Arrow shafts (needs product "arrow shaft"). */
     attachFeathers: z.boolean().default(false),
 });
 
 type FletchParams = z.infer<typeof Params>;
 type Ctx = TaskContext<FletchParams>;
-
-const isAnyLogs = (name: string) => /logs$/i.test(name);
 
 /** The dialog label for a product: "shortbow (u)" -> "short bow", "longbow" -> "long bow". */
 const normalizeProduct = (product: string) =>
@@ -73,7 +73,8 @@ export default defineTask({
         'until no `logs` (exact item name, default "Logs") are left. With attachFeathers and product "arrow shaft", ' +
         'then uses Feathers on the Arrow shafts to make Headless arrows (needs Feathers in the inventory). Members world only. Needs a knife (no nearby shop sells one: ' +
         'ground spawn near (3224,3202), or Shantay Pass shop), the logs and the Fletching level. Works anywhere; ' +
-        'the run fails if something attacks the bot. Inventory must not hold other log types than `logs`.',
+        'the run fails if something attacks the bot. Other log types in the inventory are left alone. ' +
+        'Cuts `batch` logs (10 default, 5 or 1) per make-menu click, ~0.8 s per log.',
     params: Params,
 
     preflight(ctx) {
@@ -81,8 +82,6 @@ export default defineTask({
         if (!s.inventory.some(i => KNIFE.test(i.name))) return 'no knife in inventory';
         const wanted = exactName(ctx.params.logs);
         if (countItems(s, wanted) === 0) return `no "${ctx.params.logs}" in inventory`;
-        if (s.inventory.some(i => isAnyLogs(i.name) && !wanted.test(i.name)))
-            return `inventory also holds other logs than "${ctx.params.logs}"; the task works one log type at a time`;
         const need = requiredLevel(normalizeProduct(ctx.params.product), ctx.params.logs);
         if ('error' in need) return need.error;
         const skill = findSkill(s, 'Fletching');
@@ -111,7 +110,12 @@ export default defineTask({
             *run(ctx) {
                 if (!ctx.state().inventory.some(i => KNIFE.test(i.name))) return { fail: 'no knife in inventory' };
                 const fails = ctx.streak('fletchFails');
-                const cut = yield* fletch(ctx, exactName(ctx.params.logs), normalizeProduct(ctx.params.product));
+                const cut = yield* fletch(
+                    ctx,
+                    exactName(ctx.params.logs),
+                    normalizeProduct(ctx.params.product),
+                    ctx.params.batch,
+                );
                 if (cut.ok) {
                     fails.reset();
                     return;

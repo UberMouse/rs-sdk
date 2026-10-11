@@ -7,6 +7,7 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Arrow shafts (knife on normal logs), logs chopped nearby | (3224, 3202) knife spawn | 1-17 | 15 shafts per log, ~12 logs/min | ~139k (local, includes early levels) | 2026-10-09 conductor1 local |
+| Arrow shafts, Make 10 batches (`fletching` task) | anywhere | 60+ (no level-up breaks) | 15 shafts per log, ~0.8 s per log (20 logs in 26.4 s vs 48.0 s with Make 1) | ~200k (local; 75 XP per log at ~45 logs/min, 20-log runs, not a stats.ts figure) | 2026-10-11 conductor2w4 local |
 | Headless arrows (feathers on shafts) | anywhere | 17-27 | 1 feather + 1 shaft each, 95 in ~40 s | ~328k (local, includes feather XP) | 2026-10-09 conductor1 local |
 | Longbow (u), knife on normal logs | (3224, 3202) knife spawn | 27-34 | one per call, ~2.4 s per log, 16 in 1 min | ~240k (local, 4000 XP in 1 min, not a stats.ts figure) | 2026-10-09 conductor1 local |
 
@@ -35,7 +36,7 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 
 ## Arrow Making
 
-1. Use a knife on normal logs → Arrow shafts (15 per log) [v 2026-10-09 conductor1 local]
+1. Use a knife on normal logs → Arrow shafts (15 per log); 600 shafts (40 logs) take Fletching 1->30 (7500 XP), and shafts stack [v 2026-10-11 conductor2 local]
 2. Use feathers on arrow shafts → Headless arrows
 3. Use arrowheads on headless arrows → Finished arrows
 
