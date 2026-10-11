@@ -139,8 +139,8 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Mining | 99 | iron power-mine, drop each ore (02b861cd5), Al Kharid | 1.155M (92-97) | stand tile reaching 2-3 rocks (in progress) |
 | Fishing | 79 | Lumbridge lure, cook + bank (plan lure-cook-bank) | ~1.1M | drop vs cook; better spot at 80+ |
 | Cooking | 83 | Lumbridge pot, inside lure-cook-bank | 345k (alone) | a range next to a bank; cook while fishing |
-| Woodcutting | 66 | oaks, steel axe | 780k | willows/yews, better axe, stand tile among trees |
-| Firemaking | 55 | line burn, Lumbridge field | 690k-1.16M | logs tier; fewer walk-backs |
+| Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | only 5 trees (respawn waits); better axe; burn line next to the trees (12-tile walk); yews/maples at 80+ |
+| Firemaking | 78 | willow logs line burn inside willow-burn | 768k | 2nd burn line costs a walk-back; maple/yew logs |
 | Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
 | Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
 | Ranged | 40 | Shortbow, Lumbridge chickens | ~86k (13-40) | better bow/arrows, higher-HP targets |
