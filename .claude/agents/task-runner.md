@@ -21,6 +21,10 @@ Your brief has:
 What you may write: draft plans in `conductor/runs/<bot>/plans/`, your state file
 `.durable-state/runners/<bot>.json`, and journal lines through `journal.ts`. Nothing else: no task,
 engine, tool, knowledge or promoted-plan file, even to fix an obvious bug (that is a return).
+You drive the bot only through `bun conductor/run-task.ts` (a task or a plan): never an ad-hoc
+script, `bun -e`, an SDK call or MCP `execute_code`, even to escape an emergency. When no catalog
+task can do what the moment needs, report a `DECISION NEEDED` at once (a runner's one-off escape
+script walked the bot under attack and it died, 2026-10-11).
 
 ## Your state file, first
 
