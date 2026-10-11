@@ -19,7 +19,7 @@ Mining is used to extract ores and metals from rocks. Requires a pickaxe (availa
   There is no black or dragon pickaxe, and pickaxes cannot be smithed (no pickaxe row in
   `skill_smithing/configs/smithing/smithing.dbrow`). [v 2026-10-10 conductor2 local; read from content]
 - Nurmof's Pickaxe Shop, Dwarven Mine under Falador, (2998, 9844), is the only shop above bronze;
-  stock 5 iron / 4 steel / 3 mithril / 2 adamant / 1 rune (`wiki/shops/nurmofs-pickaxe-shop.md`, generated). Not yet visited by a bot.
+  stock 5 iron / 4 steel / 3 mithril / 2 adamant / 1 rune (`wiki/shops/nurmofs-pickaxe-shop.md`, generated). Visited 2026-10-11: Iron pickaxe 140 gp, Bronze pickaxe 1 gp (conductor2w1 local).
 
 ## Mining speed
 
