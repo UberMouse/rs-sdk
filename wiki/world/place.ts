@@ -185,7 +185,7 @@ function locCandidates(
 const mean = (tiles: Tile[], axis: 'x' | 'z'): number => tiles.reduce((s, t) => s + t[axis], 0) / tiles.length;
 
 /** The rounded mean tile of tiles on one level. */
-const centreOf = (tiles: Tile[]): Tile => ({
+export const centreOf = (tiles: Tile[]): Tile => ({
     level: tiles[0]!.level,
     x: Math.round(mean(tiles, 'x')),
     z: Math.round(mean(tiles, 'z')),

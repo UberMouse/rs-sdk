@@ -5,7 +5,8 @@
 // new bank or mine can't go unnamed. `--check` writes nothing: it exits 1 when world.json or a page
 // differs from what the game data and this code generate now, so a hand edit or a stale page fails
 // verify:conductor.
-import { relative } from 'path';
+import { readFileSync } from 'fs';
+import { join, relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
 import { classifier } from './classify';
@@ -181,16 +182,33 @@ const git = (args: string[]): string => {
     return run.stdout.toString().trim();
 };
 
+/** Runs git in the repo and returns its trimmed stdout; contentHash takes one so a test can stub it. */
+export type GitRun = (args: string[]) => string;
+
 /**
- * The last commit that touched server/content, with `-dirty` when server/content has uncommitted
- * changes, so the hash moves only when server/content does, committed or not. It names the content commit and nothing
- * more: it misses an edit to this builder or to areas.ts, so whether world.json is fresh is answered
- * by rebuilding and comparing the bytes, not by this hash.
+ * The last commit that touched server/content, so the hash moves only when server/content does.
+ * When server/content has uncommitted changes it is `<sha>-dirty-<digest>`: the digest is the first
+ * 12 hex of the sha1 over `git diff HEAD --binary -- server/content` and each untracked file there
+ * (its path and bytes), so a further uncommitted edit moves the hash again and a stale world.json
+ * is not mistaken for a fresh one. It names the content and nothing more: it misses an edit to this
+ * builder or to areas.ts, so whether world.json is fresh is answered by rebuilding and comparing
+ * the bytes, not by this hash.
  */
-export function contentHash(): string {
-    const hash = git(['log', '-1', '--format=%H', '--', 'server/content']);
+export function contentHash(run: GitRun = git): string {
+    const hash = run(['log', '-1', '--format=%H', '--', 'server/content']);
     if (!/^[0-9a-f]{40}$/.test(hash)) throw new Error(`git log on server/content gave no commit: ${hash}`);
-    return git(['status', '--porcelain', '--', 'server/content']) ? `${hash}-dirty` : hash;
+    if (!run(['status', '--porcelain', '--', 'server/content'])) return hash;
+    const digest = new Bun.CryptoHasher('sha1');
+    digest.update(run(['diff', 'HEAD', '--binary', '--', 'server/content']));
+    const untracked = run(['ls-files', '--others', '--exclude-standard', '--', 'server/content'])
+        .split('\n')
+        .filter(Boolean)
+        .sort(cmp);
+    for (const file of untracked) {
+        digest.update(`\0${file}\0`);
+        digest.update(readFileSync(join(ROOT, file)));
+    }
+    return `${hash}-dirty-${digest.digest('hex').slice(0, 12)}`;
 }
 
 const counts = (r: Partial<Record<string, number>>): string =>

@@ -5,10 +5,11 @@
  * Run: bun wiki/generate-npcs.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync, unlinkSync } from 'fs';
-import { join, basename, dirname, relative } from 'path';
-import { contentHash } from './world/build';
-import { loadWorld } from './world/load';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, relative } from 'path';
+import { loadFreshWorld } from './world/load';
+import { centreOf } from './world/place';
+import { removeStalePages } from './world/render';
 import { areaCell, areasOf, cmp, coord, KINDS, type Areas } from './world/render/common';
 import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
 
@@ -261,19 +262,6 @@ function parsePackFile(content: string): { idToName: Map<number, string>; nameTo
 // ─── Locations from the World Index ──────────────────────────────────────────
 
 /**
- * wiki/world.json, refusing one that is missing, of another format (loadWorld) or built from other
- * game data than server/content holds now: its locations would be stale. `bun run world` rebuilds it.
- */
-function loadFreshWorld(): World {
-    const world = loadWorld();
-    const hash = contentHash();
-    if (world.generatedFrom !== hash) {
-        throw new Error(`wiki/world.json was built from server/content at ${world.generatedFrom}, which is now at ${hash}: regenerate it with bun run world`);
-    }
-    return world;
-}
-
-/**
  * Where a page's npc configs stand, from the world index. One source per config, so no spawn is
  * listed twice:
  * - A config some feature kind takes (a banker, shopkeeper, fishing spot, pickpocket target or
@@ -327,11 +315,7 @@ function npcLocator(world: World): (configs: string[]) => LocationRow[] {
             }
         }
         for (const [site, tiles] of inSites) {
-            const centre = {
-                level: tiles[0].level,
-                x: Math.round(tiles.reduce((sum, t) => sum + t.x, 0) / tiles.length),
-                z: Math.round(tiles.reduce((sum, t) => sum + t.z, 0) / tiles.length),
-            };
+            const centre = centreOf(tiles);
             rows.push({ areaPath: site.areaPath, centre, spawns: tiles.length, f2p: site.f2p });
         }
         return rows;
@@ -919,10 +903,7 @@ function main() {
     // Every page here is generated, so one not written now is for an npc
     // whose name has changed or gone: it would keep stale data.
     const written = new Set(pageIndex.map(p => p.file));
-    for (const file of readdirSync(NPC_DIR).filter(f => f.endsWith('.md') && !written.has(f)).sort()) {
-        unlinkSync(join(NPC_DIR, file));
-        console.log(`  Removed stale ${file}`);
-    }
+    for (const file of removeStalePages(NPC_DIR, written)) console.log(`  Removed stale ${file}`);
 
     // ─── Step 6: Update README ───────────────────────────────────────────
 

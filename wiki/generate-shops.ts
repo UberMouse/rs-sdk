@@ -5,10 +5,11 @@
  * Run: bun wiki/generate-shops.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { basename, join, relative } from 'path';
-import { contentHash } from './world/build';
-import { loadWorld } from './world/load';
+import { loadFreshWorld } from './world/load';
+import { centreOf } from './world/place';
+import { removeStalePages } from './world/render';
 import { areaCell, areasOf, cmp, coord } from './world/render/common';
 import { readCallables, readTriggers } from './world/sources/triggers';
 import type { Site, Tile, World } from './world/types';
@@ -207,19 +208,6 @@ interface ObjInfo {
 
 // ─── Coordinates from the World Index ────────────────────────────────────────
 
-/**
- * wiki/world.json, refusing one that is missing, of another format (loadWorld) or built from other
- * game data than server/content holds now: its coordinates would be stale. `bun run world` rebuilds it.
- */
-function loadFreshWorld(): World {
-    const world = loadWorld();
-    const hash = contentHash();
-    if (world.generatedFrom !== hash) {
-        throw new Error(`wiki/world.json was built from server/content at ${world.generatedFrom}, which is now at ${hash}: regenerate it with bun run world`);
-    }
-    return world;
-}
-
 // A `~openshop(<inv>, ...)` call (shop/scripts/shop.rs2 [proc,openshop]).
 const OPENSHOP = /~openshop\(\s*([a-z0-9_]+)\s*,/g;
 
@@ -271,12 +259,6 @@ function readOpeners(): Map<string, Openers> {
     return openers;
 }
 
-const meanTile = (tiles: Tile[]): Tile => ({
-    level: tiles[0].level,
-    x: Math.round(tiles.reduce((sum, t) => sum + t.x, 0) / tiles.length),
-    z: Math.round(tiles.reduce((sum, t) => sum + t.z, 0) / tiles.length),
-});
-
 /**
  * The Coordinates a shop page shows, from the world index:
  * - Each shop site holding a feature that opens the page's inventory (the shop feature's subtype):
@@ -296,14 +278,19 @@ function shopLocator(world: World): (inv: string, pagePath: string) => string {
     for (const site of world.sites) {
         for (const i of site.features) siteOf.set(i, site);
     }
-    const shops = world.features.flatMap((f, i) => (f.kind === 'shop' ? [{ f, site: siteOf.get(i)! }] : []));
+    const shops = world.features.flatMap((f, i) => {
+        if (f.kind !== 'shop') return [];
+        const site = siteOf.get(i);
+        if (!site) throw new Error(`world.json: feature ${i} (${f.config}) is in no site`);
+        return [{ f, site }];
+    });
 
     // "(x, z) in [Area (Town)](link)" per site, the sites in label order.
     const placed = (fs: typeof shops, pagePath: string): string[] => {
         const bySite = new Map<Site, Tile[]>();
         for (const { f, site } of fs) bySite.set(site, [...(bySite.get(site) || []), f.tile]);
         return [...bySite]
-            .map(([site, tiles]) => ({ site, centre: meanTile(tiles) }))
+            .map(([site, tiles]) => ({ site, centre: centreOf(tiles) }))
             .sort((a, b) =>
                 cmp(areas.label(a.site.areaPath), areas.label(b.site.areaPath)) ||
                 a.centre.level - b.centre.level || a.centre.x - b.centre.x || a.centre.z - b.centre.z
@@ -395,6 +382,8 @@ function slugify(name: string): string {
 // ─── Main Pipeline ───────────────────────────────────────────────────────────
 
 function main() {
+    // First, so a stale world.json fails before any parsing.
+    const world = loadFreshWorld();
     console.log('Shop Wiki Generator');
     console.log('===================\n');
 
@@ -483,7 +472,6 @@ function main() {
 
     console.log('\nStep 3b: Loading shop sites from wiki/world.json...');
 
-    const world = loadFreshWorld();
     const locate = shopLocator(world);
     console.log(`  world.json: ${world.sites.filter(s => s.kind === 'shop').length} shop sites`);
 
@@ -540,10 +528,7 @@ function main() {
     // Every page here is generated, so one not written now is for a shop
     // whose title has changed or gone: it would keep stale data.
     const written = new Set(pageIndex.map(p => p.file));
-    for (const file of readdirSync(SHOP_DIR).filter(f => f.endsWith('.md') && !written.has(f)).sort()) {
-        unlinkSync(join(SHOP_DIR, file));
-        console.log(`  Removed stale ${file}`);
-    }
+    for (const file of removeStalePages(SHOP_DIR, written)) console.log(`  Removed stale ${file}`);
 
     // ─── Step 6: Update README ──────────────────────────────────────────
 
