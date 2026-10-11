@@ -33,7 +33,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 |---|---|---|---|---|---|---|---|
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2988, 3275) | (2988, 3276) | 1 | yes | yes | - |
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:18` | (2931, 3227) | (2931, 3228) | 4 | yes | no | - |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:28` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:29` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - |
 | [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | 2 | yes | yes | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:61` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:80` | (2764, 3427) | (2764, 3427) | 3 | no | no | - |

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | Unknown |
 | **Location** | Rimmington |
-| **Coordinates** | not placed: rommik.rs2 opens it from Rommik, whose shop site records another of their shops; Rommik at (2946, 3205) in [Karamja](../places/karamja.md) |
+| **Coordinates** | not placed: rommik.rs2 opens it from Rommik, whose shop site records another of their shops; Rommik at (2946, 3205) in [Rimmington (Asgarnia)](../places/rimmington.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

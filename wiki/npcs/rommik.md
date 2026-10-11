@@ -12,7 +12,7 @@
 
 | Area | Centre | Spawns | F2P |
 |------|--------|--------|-----|
-| [Karamja](../places/karamja.md) | (2946, 3205) | 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2946, 3205) | 1 | yes |
 
 ## Interactions
 

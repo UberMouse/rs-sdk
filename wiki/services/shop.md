@@ -23,7 +23,8 @@
 | [Falador (Asgarnia)](../places/falador.md) | `shop:falador:2` | (2973, 3312) | (2973, 3312) | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes |
 | [Falador (Asgarnia)](../places/falador.md) | `shop:falador:3` | (2979, 3383) | (2979, 3383) | Cassies' Shield Shop. (shieldshop) 1 | yes |
 | [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `shop:heros-guild:0` | (2894, 3510) L1 | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2948, 3216) | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2946, 3205) | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:1` | (2948, 3216) | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes |
 | [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:0` | (2201, 4942) | (2201, 4942) | The Toad and Chicken (death_pub) 1 | no |
 | [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:1` | (2207, 4958) | (2207, 4958) | The Toad and Chicken (death_pub) 1 | no |
 | [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:0` | (2993, 9828) | (2993, 9828) | Dwarven shopping store (generaldwarf) 1 | yes |
@@ -71,7 +72,6 @@
 | [Karamja](../places/karamja.md) | `shop:karamja:3` | (2824, 2959) | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no |
 | [Karamja](../places/karamja.md) | `shop:karamja:4` | (2902, 3148) | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes |
 | [Karamja](../places/karamja.md) | `shop:karamja:5` | (2925, 3143) | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes |
-| [Karamja](../places/karamja.md) | `shop:karamja:6` | (2946, 3205) | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes |
 | [Brimhaven (Karamja)](../places/brimhaven.md) | `shop:brimhaven:0` | (2793, 3188) | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no |
 | [Shilo Village (Karamja)](../places/shilo-village.md) | `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no |
 | [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | `shop:tai-bwo-wannai:0` | (2800, 3057) | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no |

@@ -34,8 +34,9 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:11` | (2905, 3372) | (2905, 3372) | 19 | no | no | - |
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2988, 3275) | (2988, 3276) | 14 | yes | yes | - |
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:16` | (2922, 3406) | (2922, 3407) | 13 | no | no | - |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:24` | (2990, 3193) | (2990, 3193) | 17 | yes | no | - |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:26` | (3023, 3172) | (3023, 3172) | 3 | yes | no | - |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:25` | (2996, 3191) | (2995, 3190) | 13 | yes | no | - |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:27` | (3023, 3172) | (3023, 3172) | 3 | yes | no | - |
+| [Rimmington (Asgarnia)](../../places/rimmington.md) | `tree:rimmington:1` | (2975, 3200) | (2975, 3201) | 9 | yes | no | - |
 | [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2843, 3375) | (2844, 3378) | 16 | no | no | - |
 | [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:13` | (2606, 3057) | (2606, 3057) | 3 | no | no | - |
 | [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:15` | (2649, 2955) | (2649, 2956) | 4 | no | no | - |
@@ -67,7 +68,6 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 5 | no | no | - |
 | [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | 11 | no | no | - |
 | [Yanille (Kandarin)](../../places/yanille.md) | `tree:yanille:5` | (2604, 3066) | (2606, 3068) | 2 | no | no | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:21` | (2961, 3195) | (2960, 3195) | 5 | yes | no | - |
 | [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | 7 | yes | no | - |
 | [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | 2 | yes | no | - |
 | [Misthalin](../../places/misthalin.md) | `tree:misthalin:23` | (3219, 3303) | (3220, 3304) | 3 | yes | no | - |

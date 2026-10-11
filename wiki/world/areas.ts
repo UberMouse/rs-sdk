@@ -49,6 +49,8 @@ export const AREAS: readonly Area[] = [
         rects: [
             { x1: 2968, z1: 3090, x2: 3064, z2: 3467 },
             { x1: 2851, z1: 3206, x2: 2967, z2: 3467 },
+            // The shore below Rimmington, down to the sea Karamja lies across (see Karamja).
+            { x1: 2932, z1: 3190, x2: 2967, z2: 3205 },
             { x1: 2823, z1: 3468, x2: 3064, z2: 3519 },
             { x1: 2823, z1: 3520, x2: 2943, z2: 3708 },
         ],
@@ -143,7 +145,8 @@ export const AREAS: readonly Area[] = [
     },
     { id: 'monastery', name: 'Monastery', parent: 'asgarnia', rects: [{ x1: 3040, z1: 3465, x2: 3063, z2: 3488 }] },
     { id: 'port-sarim', name: 'Port Sarim', parent: 'asgarnia', rects: [{ x1: 3023, z1: 3197, x2: 3064, z2: 3244 }] },
-    { id: 'rimmington', name: 'Rimmington', parent: 'asgarnia', rects: [{ x1: 2945, z1: 3206, x2: 2990, z2: 3250 }] },
+    // Down to the shore at z 3190, where Rommik's Crafty Supplies (his spawn at (2946, 3205)) stands.
+    { id: 'rimmington', name: 'Rimmington', parent: 'asgarnia', rects: [{ x1: 2945, z1: 3190, x2: 2990, z2: 3250 }] },
     {
         id: 'rimmington-mine',
         name: 'Rimmington mine',
@@ -474,11 +477,15 @@ export const AREAS: readonly Area[] = [
     },
 
     // Karamja, with the shipyard on its south-east coast, and the Monkey Madness islands south of it.
+    // Its north coast reaches z ~3205 by Brimhaven but only z ~3180 at Musa Point (x 2925); east of
+    // x 2931, z 3190-3205 is sea and then the mainland shore below Rimmington (the collision data's
+    // coastline runs from (2924, 3206) to (2966, 3190)), which is Asgarnia's.
     {
         id: 'karamja',
         name: 'Karamja',
         rects: [
-            { x1: 2736, z1: 2880, x2: 2967, z2: 3205 },
+            { x1: 2736, z1: 2880, x2: 2967, z2: 3189 },
+            { x1: 2736, z1: 3190, x2: 2931, z2: 3205 },
             { x1: 2968, z1: 2880, x2: 3017, z2: 3089 },
         ],
     },

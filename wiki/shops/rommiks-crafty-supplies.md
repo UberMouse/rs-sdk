@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Rommik](../npcs/rommik.md) |
 | **Location** | Rimmington |
-| **Coordinates** | (2946, 3205) in [Karamja](../places/karamja.md) |
+| **Coordinates** | (2946, 3205) in [Rimmington (Asgarnia)](../places/rimmington.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

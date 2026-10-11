@@ -128,20 +128,21 @@
 | `tree:asgarnia:19` | (2926, 3566) | [normal](../resources/tree/normal.md) 3 | no | no | - |
 | `tree:asgarnia:20` | (2925, 3540) | [normal](../resources/tree/normal.md) 1 | no | no | - |
 | `tree:asgarnia:21` | (2931, 3552) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:asgarnia:22` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:asgarnia:23` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:asgarnia:24` | (2990, 3193) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 17 | yes | no | - |
-| `tree:asgarnia:25` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - |
-| `tree:asgarnia:26` | (3023, 3172) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - |
-| `tree:asgarnia:27` | (3019, 3194) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:asgarnia:28` | (3048, 3321) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - |
-| `tree:asgarnia:29` | (3028, 3370) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:asgarnia:30` | (3035, 3507) | [normal](../resources/tree/normal.md) 4 | yes | no | - |
-| `tree:asgarnia:31` | (3051, 3396) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:asgarnia:32` | (3056, 3369) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:asgarnia:33` | (3055, 3386) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:asgarnia:34` | (3064, 3341) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:asgarnia:35` | (3064, 3351) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| `tree:asgarnia:22` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| `tree:asgarnia:23` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| `tree:asgarnia:24` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
+| `tree:asgarnia:25` | (2996, 3191) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - |
+| `tree:asgarnia:26` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - |
+| `tree:asgarnia:27` | (3023, 3172) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - |
+| `tree:asgarnia:28` | (3019, 3194) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| `tree:asgarnia:29` | (3048, 3321) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - |
+| `tree:asgarnia:30` | (3028, 3370) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| `tree:asgarnia:31` | (3035, 3507) | [normal](../resources/tree/normal.md) 4 | yes | no | - |
+| `tree:asgarnia:32` | (3051, 3396) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| `tree:asgarnia:33` | (3056, 3369) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| `tree:asgarnia:34` | (3055, 3386) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| `tree:asgarnia:35` | (3064, 3341) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| `tree:asgarnia:36` | (3064, 3351) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
 
 ## Rocks
 
@@ -292,7 +293,7 @@
 | [Melzar's Maze](melzars-maze.md) | tree 2, npc 6, connector 27 |
 | [Monastery](monastery.md) | water-source 2, tree 1, connector 2 |
 | [Port Sarim](port-sarim.md) | connector 17 |
-| [Rimmington](rimmington.md) | shop 1, range 1, water-source 1, tree 5, rock 1, pickpocket 1, connector 4 |
+| [Rimmington](rimmington.md) | shop 2, range 1, fire 1, water-source 1, tree 5, rock 1, pickpocket 1, npc 1, connector 4 |
 | [Taverley](taverley.md) | tree 2, connector 1 |
 | [Troll Stronghold](troll-stronghold.md) | npc 2 |
 | [Trollheim](trollheim.md) | - |

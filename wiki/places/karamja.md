@@ -11,7 +11,6 @@
 | `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - |
 | `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - |
 | `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - |
-| `shop:karamja:6` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -31,8 +30,7 @@
 |---|---|---|---|---|---|
 | `fire:karamja:0` | (2790, 3048) | Fire 2 | no | no | - |
 | `fire:karamja:1` | (2791, 3199) | Fireplace 1 | no | no | - |
-| `fire:karamja:2` | (2967, 3203) | Fireplace 1 | yes | no | - |
-| `fire:karamja:3` | (2969, 2975) | Fire 1 | no | no | - |
+| `fire:karamja:2` | (2969, 2975) | Fire 1 | no | no | - |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
@@ -61,12 +59,10 @@
 | `tree:karamja:14` | (2916, 2916) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
 | `tree:karamja:15` | (2923, 2903) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
 | `tree:karamja:16` | (2936, 2940) | [jungle](../resources/tree/jungle.md) 42 | no | no | - |
-| `tree:karamja:17` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:karamja:18` | (2942, 3148) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:karamja:19` | (2949, 2912) | [jungle](../resources/tree/jungle.md) 4 | no | no | - |
-| `tree:karamja:20` | (2948, 2927) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
-| `tree:karamja:21` | (2961, 3195) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 5 | yes | no | - |
-| `tree:karamja:22` | (2956, 2897) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
+| `tree:karamja:17` | (2942, 3148) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
+| `tree:karamja:18` | (2949, 2912) | [jungle](../resources/tree/jungle.md) 4 | no | no | - |
+| `tree:karamja:19` | (2948, 2927) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
+| `tree:karamja:20` | (2956, 2897) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
 
 ## Rocks
 
@@ -156,11 +152,10 @@
 | `npc:karamja:55` | (2938, 2992) | Jogre 1, Tribesman 4 | no | no | - |
 | `npc:karamja:56` | (2932, 3032) | Jungle spider 2 | no | no | - |
 | `npc:karamja:57` | (2939, 2914) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:58` | (2957, 3203) | Rat 4 | yes | no | - |
-| `npc:karamja:59` | (2955, 3029) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:60` | (2957, 3055) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:61` | (2969, 3042) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:62` | (2976, 3064) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:58` | (2955, 3029) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:59` | (2957, 3055) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:60` | (2969, 3042) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:61` | (2976, 3064) | Shipyard worker 1 | no | no | - |
 
 ## Ladders and stairs
 

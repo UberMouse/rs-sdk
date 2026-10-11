@@ -120,7 +120,6 @@
 | [Kandarin](../places/kandarin.md) | (2720, 3583) | 1 | no |
 | [Kandarin](../places/kandarin.md) | (2728, 3575) | 4 | no |
 | [Karamja](../places/karamja.md) | (2809, 3169) | 2 | no |
-| [Karamja](../places/karamja.md) | (2957, 3203) | 4 | yes |
 | [Kharidian Desert](../places/kharidian-desert.md) | (3319, 3250) | 1 | yes |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3194, 3204) | 3 | yes |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3206, 3205) | 8 | yes |
@@ -134,6 +133,7 @@
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2933, 3241) L1 | 2 | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2924, 3243) L2 | 2 | yes |
 | [Misthalin](../places/misthalin.md) | (3151, 3414) | 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2957, 3203) | 4 | yes |
 | [Ruins (Wilderness)](../places/ruins.md) | (2957, 3704) | 5 | yes |
 | [Ruins (Wilderness)](../places/ruins.md) | (2970, 3689) | 4 | yes |
 | [Ruins (Wilderness)](../places/ruins.md) | (2974, 3705) | 1 | yes |

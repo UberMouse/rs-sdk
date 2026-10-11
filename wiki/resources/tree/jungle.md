@@ -38,7 +38,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Karamja](../../places/karamja.md) | `tree:karamja:14` | (2916, 2916) | (2916, 2916) | 1 | no | no | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:15` | (2923, 2903) | (2923, 2903) | 1 | no | no | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:16` | (2936, 2940) | (2936, 2940) | 42 | no | no | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:19` | (2949, 2912) | (2947, 2912) | 4 | no | no | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:20` | (2948, 2927) | (2947, 2927) | 2 | no | no | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:22` | (2956, 2897) | (2956, 2897) | 1 | no | no | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:18` | (2949, 2912) | (2947, 2912) | 4 | no | no | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:19` | (2948, 2927) | (2947, 2927) | 2 | no | no | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:20` | (2956, 2897) | (2956, 2897) | 1 | no | no | - |
 | [Kharazi Jungle (Karamja)](../../places/kharazi-jungle.md) | `tree:kharazi-jungle:0` | (2852, 2925) | (2852, 2925) | 1 | no | no | - |

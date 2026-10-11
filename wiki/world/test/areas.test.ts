@@ -58,6 +58,14 @@ describe('AREAS', () => {
         expect(resolve({ level: 0, x: 2630, z: 3143 })).toEqual(['kandarin']); // the mine
     });
 
+    test("Rimmington's south shore is the mainland's, not Karamja's", () => {
+        expect(resolve({ level: 0, x: 2946, z: 3205 })).toEqual(['asgarnia', 'rimmington']); // Rommik
+        expect(resolve({ level: 0, x: 2967, z: 3203 })).toEqual(['asgarnia', 'rimmington']); // a fire
+        expect(resolve({ level: 0, x: 2937, z: 3201 })).toEqual(['asgarnia']); // the shore west of the town
+        expect(resolve({ level: 0, x: 2924, z: 3178 })).toEqual(['karamja']); // Musa Point's fishing spots
+        expect(resolve({ level: 0, x: 2777, z: 3198 })).toEqual(['karamja']); // east of Brimhaven
+    });
+
     test('underground areas are their own top-level areas at z + 6400', () => {
         expect(resolve({ level: 0, x: 3043, z: 9745 })).toEqual(['dwarven-mine', 'mining-guild']);
         expect(resolve({ level: 0, x: 3043, z: 3345 })).toEqual(['asgarnia']);

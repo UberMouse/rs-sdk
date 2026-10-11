@@ -22,6 +22,7 @@
 | [Burthorpe (Asgarnia)](../places/burthorpe.md) | `fire:burthorpe:0` | (2893, 3532) | (2893, 3532) | Fire 1 | no |
 | [Burthorpe (Asgarnia)](../places/burthorpe.md) | `fire:burthorpe:1` | (2909, 3529) | (2908, 3529) | Fireplace 1 | no |
 | [Goblin Village (Asgarnia)](../places/goblin-village.md) | `fire:goblin-village:0` | (2956, 3505) | (2956, 3505) | Fire 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `fire:rimmington:0` | (2967, 3203) | (2966, 3203) | Fireplace 1 | yes |
 | [Clock Tower dungeon](../places/clock-tower-dungeon.md) | `fire:clock-tower-dungeon:0` | (2588, 9613) | (2588, 9613) | Fire 1 | no |
 | [Dungeon north of Ardougne](../places/dungeon-north-of-ardougne.md) | `fire:dungeon-north-of-ardougne:0` | (2585, 9742) | (2585, 9742) | Fire 1 | no |
 | [Dwarven Mine](../places/dwarven-mine.md) | `fire:dwarven-mine:0` | (2999, 9812) | (2999, 9812) | Fire 3 | yes |
@@ -78,8 +79,7 @@
 | [Yanille (Kandarin)](../places/yanille.md) | `fire:yanille:1` | (2570, 3082) | (2569, 3082) | Fireplace 1 | no |
 | [Karamja](../places/karamja.md) | `fire:karamja:0` | (2790, 3048) | (2790, 3047) | Fire 2 | no |
 | [Karamja](../places/karamja.md) | `fire:karamja:1` | (2791, 3199) | (2790, 3199) | Fireplace 1 | no |
-| [Karamja](../places/karamja.md) | `fire:karamja:2` | (2967, 3203) | (2966, 3203) | Fireplace 1 | yes |
-| [Karamja](../places/karamja.md) | `fire:karamja:3` | (2969, 2975) | (2969, 2975) | Fire 1 | no |
+| [Karamja](../places/karamja.md) | `fire:karamja:2` | (2969, 2975) | (2969, 2975) | Fire 1 | no |
 | [Brimhaven (Karamja)](../places/brimhaven.md) | `fire:brimhaven:0` | (2800, 3184) | (2799, 3184) | Fireplace 1 | no |
 | [Kharidian Desert](../places/kharidian-desert.md) | `fire:kharidian-desert:0` | (3321, 3137) | (3320, 3137) | Fireplace 1 | yes |
 | [Miscellania and Etceteria](../places/miscellania.md) | `fire:miscellania:0` | (2498, 3859) | (2498, 3858) | Fireplace 1 | no |
