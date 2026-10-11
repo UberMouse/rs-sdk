@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { COOK_WAIT_TICKS } from '../../actions/cook';
 import cooking from '../../tasks/cooking';
+import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { fakePaths } from '../paths';
 import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
@@ -102,17 +103,13 @@ describe('cooking: failures', () => {
         const w = world().skill('Cooking', 1, 0).inv('Raw shrimps', 3);
         const r = await simulate(cooking, { params: { food: 'Raw shrimps', dropBurnt: false }, timeline: w.series(5) });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('cook: no reachable Range, Fire, Fireplace or Cooking pot in sight (pass `area`)');
+        expect(r.result.reason).toBe('cook: no Range, Fire, Fireplace or Cooking pot in sight (pass `area`)');
     });
 
-    test('only the quest-gated Cooking range, or an unreachable Range, around fails', async () => {
-        const w = world()
-            .skill('Cooking', 1, 0)
-            .inv('Raw shrimps', 3)
-            .loc('Cooking range', 3212, 3215)
-            .loc('Range', 3230, 3196, { reachable: false });
+    test('only the quest-gated Cooking range around fails', async () => {
+        const w = world().skill('Cooking', 1, 0).inv('Raw shrimps', 3).loc('Cooking range', 3212, 3215);
         const r = await simulate(cooking, { params: { food: 'Raw shrimps', dropBurnt: false }, timeline: w.series(5) });
-        expect(r.result.reason).toContain('no reachable Range');
+        expect(r.result.reason).toBe('cook: no Range, Fire, Fireplace or Cooking pot in sight (pass `area`)');
     });
 
     test('a source outside the area does not count', async () => {
@@ -120,9 +117,7 @@ describe('cooking: failures', () => {
             params: { ...PARAMS, area: { x: 3200, z: 3200, radius: 3 } },
             timeline: kit.player({ at: { x: 3200, z: 3200 } }).series(5),
         });
-        expect(r.result.reason).toBe(
-            'cook: no reachable Range, Fire, Fireplace or Cooking pot within 3 tiles of (3200,3200)',
-        );
+        expect(r.result.reason).toBe('cook: no Range, Fire, Fireplace or Cooking pot within 3 tiles of (3200,3200)');
     });
 
     test('a level the game refuses fails at once with its text', async () => {
@@ -182,7 +177,7 @@ describe('cooking: Wilderness sources', () => {
             timeline: edge.series(3),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('cook: no reachable Range, Fire, Fireplace or Cooking pot in sight (pass `area`)');
+        expect(r.result.reason).toBe('cook: no Range, Fire, Fireplace or Cooking pot in sight (pass `area`)');
         expect(r.sends).toEqual([]);
     });
 });
@@ -222,6 +217,135 @@ describe('cooking: walking to the source', () => {
         });
         expect(r.steps[0]).toBe('return-to-area');
         expect(r.result.status).toBe('done');
+    });
+});
+
+/**
+ * The Range at (3230,3196) is open from its east side only: it reads reachable once the bot stands at
+ * x >= `eastOf` (never, with Infinity). Wraps `walking` so every walk's new position updates the reading.
+ */
+const reachFromEast = (eastOf: number) => {
+    const walk = walking();
+    const judge = (s: BotWorldState): BotWorldState => {
+        const x = s.player?.worldX ?? 0;
+        return { ...s, nearbyLocs: s.nearbyLocs.map(l => ({ ...l, reachable: x >= eastOf })) };
+    };
+    return (action: BotAction, state: BotWorldState) => {
+        const effect = walk(action, state);
+        return effect && ((s: BotWorldState) => judge(effect(s)));
+    };
+};
+const west = world()
+    .player({ at: { x: 3225, z: 3196 } })
+    .skill('Cooking', 1, 0)
+    .inv('Raw shrimps', 3)
+    .loc('Range', RANGE.x, RANGE.z, { reachable: false });
+const straight = (blocked?: (x: number, z: number) => boolean) =>
+    fakePaths(
+        (from, to) => ({ success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] }),
+        [],
+        blocked,
+    );
+
+describe('cooking: a source reachable from one side only', () => {
+    test('walks round to a tile that reaches it, then cooks', async () => {
+        const pathfinder = straight();
+        const r = await simulate(cooking, {
+            params: PARAMS,
+            pathfinder,
+            react: reachFromEast(3231),
+            timeline: west.series(80, (w, i) => (i >= 40 ? after(w, 3) : w)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toStartWith('finish: no Raw shrimps left');
+        const walks = pathfinder.queries.map(q => `${q.to.x},${q.to.z}`);
+        // The tiles west of the Range come first (nearer the bot) and fail; an east tile ends it.
+        expect(walks[0]).toBe('3229,3196');
+        expect(walks.at(-1)).toMatch(/^3231,/);
+        expect(r.sends.at(-1)).toBe(COOK);
+        expect(r.sends.indexOf(COOK)).toBeGreaterThan(r.sends.findLastIndex(x => x.startsWith('walk to')));
+    });
+
+    test('a walk that ends where a reachable-looking source no longer reaches approaches it', async () => {
+        const pathfinder = straight();
+        const r = await simulate(cooking, {
+            params: PARAMS,
+            pathfinder,
+            react: reachFromEast(3231),
+            timeline: west
+                .loc('Range', RANGE.x, RANGE.z, { reachable: true })
+                .series(80, (w, i) => (i >= 40 ? after(w, 3) : w)),
+        });
+        expect(r.result.status).toBe('done');
+        const walks = pathfinder.queries.map(q => `${q.to.x},${q.to.z}`);
+        // The first walk closes in on the Range and ends west of it; the approach then walks to a ring tile.
+        expect(walks.length).toBeGreaterThan(1);
+        expect(walks.slice(1).some(w => /^32(29|31),/.test(w))).toBe(true);
+    });
+
+    test('never walks to a tile outside the area or a blocked one', async () => {
+        const pathfinder = straight((x, z) => x === 3229 && z === 3196);
+        await simulate(cooking, {
+            params: { ...PARAMS, area: { ...RANGE, radius: 2 } },
+            pathfinder,
+            react: reachFromEast(3231),
+            timeline: west.player({ at: { x: 3228, z: 3196 } }).series(80, (w, i) => (i >= 40 ? after(w, 3) : w)),
+        });
+        const walks = pathfinder.queries.map(q => [q.to.x, q.to.z] as [number, number]);
+        expect(walks.length).toBeGreaterThan(0);
+        for (const [x, z] of walks) {
+            expect(Math.max(Math.abs(x - RANGE.x), Math.abs(z - RANGE.z))).toBeLessThanOrEqual(2);
+            expect([x, z]).not.toEqual([3229, 3196]);
+        }
+    });
+
+    test('fails clearly when no tile around it reaches it', async () => {
+        const r = await simulate(cooking, {
+            params: PARAMS,
+            // Only the Range's east neighbour is open ground, and it does not reach it either.
+            pathfinder: straight((x, z) => !(x === 3231 && z === 3196)),
+            react: reachFromEast(Infinity),
+            timeline: west.series(80),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'cook: Range at (3230,3196) is in sight but cannot be reached from the tiles around it inside the area (tried 1)',
+        );
+        expect(r.sends.filter(x => x === COOK)).toEqual([]);
+    });
+
+    test('an unreachable source alone is not a cook failure that counts', async () => {
+        // Many tiles to try (only the last ring's east side reaches): far more than COOK_FAIL_LIMIT walks, and none
+        // ends the run `4 cooks in a row failed`; the cooks that follow end it done.
+        const pathfinder = straight();
+        const r = await simulate(cooking, {
+            params: PARAMS,
+            pathfinder,
+            react: reachFromEast(3232),
+            timeline: west.series(160, (w, i) => (i >= 130 ? after(w, 3) : w)),
+        });
+        expect(pathfinder.queries.length).toBeGreaterThan(4);
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toStartWith('finish: no Raw shrimps left');
+        expect(r.sends).toContain(COOK);
+    });
+
+    test('a different source starts the tiles tried afresh', async () => {
+        const next = world()
+            .player({ at: { x: 3225, z: 3196 } })
+            .skill('Cooking', 1, 0)
+            .inv('Raw shrimps', 3)
+            .loc('Range', RANGE.x - 2, RANGE.z, { reachable: false });
+        const pathfinder = straight();
+        await simulate(cooking, {
+            params: PARAMS,
+            pathfinder,
+            react: reachFromEast(Infinity),
+            timeline: west.series(60, (w, i) => (i >= 20 ? next : w)),
+        });
+        const walks = pathfinder.queries.map(q => `${q.to.x},${q.to.z}`);
+        // The tiles beside the first Range were spent; the second one's ring shares some, and they are tried again.
+        expect(new Set(walks).size).toBeLessThan(walks.length);
     });
 });
 

@@ -1,0 +1,129 @@
+{
+    "name": "cook-range-west",
+    "purpose": "Cooking 20 account at (3225,3196), WEST of the Lumbridge Range (3230,3196) (the side the main bot came from; the range is reachable only from its east side); inventory 10 Raw shrimps. Cooking task: walk round to the range's reachable side.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3225,
+                "z": 3196
+            },
+            "skills": {
+                "Cooking": 20
+            },
+            "inventory": [
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                },
+                {
+                    "id": 317,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "c9275578e1ecb22e7d344c7a006d8c9253e03267",
+    "createdAt": "2026-10-11T00:19:04.164Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3225,
+            "z": 3196,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10,
+            "Cooking": 20
+        },
+        "inventory": [
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

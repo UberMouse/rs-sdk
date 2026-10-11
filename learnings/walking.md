@@ -11,6 +11,10 @@ const result = await bot.walkTo(3222, 3218);  // Walk to Lumbridge
 if (!result.success) console.warn(result.reason, result.message);
 ```
 
+## A target in view can be unreachable from where you stand
+
+`reachable` on a loc or NPC is judged from the player's current tile, so the same target flips as you move. A Range open on one side only reads `false` from the other: the Lumbridge Range at (3230,3196) is reachable from its east (x 3231) and from (3230,3195) but not from the west tiles (3229,3195..3197), though the west tile is adjacent. `walkTo(x, z, tolerance)` aimed at such a loc does not help: the pathfinder stops next to it on the near side. Instead stand on tiles around the loc, one at a time, and re-read `reachable` after each (the cooking task's `approach`). [v 2026-10-11 conductor2w3 local]
+
 ## Long Distance Walking
 
 `walkTo()` supports long routes. Use waypoints when you intentionally need a

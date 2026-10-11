@@ -16,8 +16,8 @@ if (raw && range) {
 
 | Location | Coordinates | Loc name | Notes |
 |----------|-------------|----------|-------|
-| **Lumbridge Cooking pot** | **(3232, 3238)**, area `{x:3232,z:3238,radius:5}` | `Cooking pot` | **USE THIS.** No quest needed, by the Lumbridge general store. 7 shrimps in 16 s; Cooking 1->22 in 1 min from held raw shrimps. [v 2026-10-11 conductor2 local] |
-| Lumbridge (near Bob's Axes) | (3230, 3196) | `Range` | No quest needed, but coming from the west the bot stops at (3229, 3196) and cooking fails "no reachable Range". [v 2026-10-11 conductor2 local] |
+| **Lumbridge Cooking pot** | **(3232, 3238)**, area radius 6 (see `wiki/skills/cooking.md`) | `Cooking pot` | **USE THIS.** No quest needed, by the Lumbridge general store. 7 shrimps in 16 s; Cooking 1->22 in 1 min from held raw shrimps. [v 2026-10-11 conductor2 local] |
+| Lumbridge (near Bob's Axes) | (3230, 3196) | `Range` | No quest needed. Open on one side only: see the Lumbridge Range row in `wiki/skills/cooking.md` for which tiles reach it (the cooking task walks round to them). [v 2026-10-11 conductor2w3 local] |
 | Lumbridge Castle kitchen | (3212, 3215) | `Cooking range` | **REQUIRES Cook's Assistant quest completion.** The Cook stands next to it at (3209, 3215). |
 | Al Kharid (Karim's kebab shop) | (3271, 3180) | `Range` | No quest needed, but 10gp toll gate to get there. |
 
