@@ -133,10 +133,11 @@ new defect). Then:
 
 ## 5. Commit
 
-The full `bun run test:integration` runs once, by you, just before the commit, and only when the
-change touches `conductor/lib/` or `conductor/actions/` (shared by every task); the author's run
-before review counts when no fix touched those since. A review once took 76 minutes for a
-140-line change, with every fix author re-running the full suite (2026-10-11).
+A review never runs the full `bun run test:integration`: it is too slow for the loop (a review
+once took 76 minutes for a 140-line change, with every fix author re-running it, 2026-10-11, and
+the user ruled it out). Before the commit, `bun test conductor`, `bun run verify:conductor`, and
+the integration tests named after the touched files (`bun run test:integration <name>`) are the
+gate.
 
 Before you commit and report, make sure nothing you started is still running (a test or smoke
 run in the background, a subagent): wait for it or stop it. An orchestrator that reports with
