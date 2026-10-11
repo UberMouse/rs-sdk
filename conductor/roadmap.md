@@ -8,33 +8,38 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-11 ~03:20 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 575 / 1881,
-3.77% of max XP. Thieving 82, Mining 69, WC 66, FM 55, Cooking 53, Fishing 48, Smithing 39, Crafting 35,
-Fletching 30, Str 25, HP 22, Att 16, Prayer 15, Def 15. Ranged, Magic, Herblore, Agility, Runecraft are
-level 1. Holds an Adamant pickaxe (bought 3,200 gp at Nurmof), Hammer, bronze sword + wooden shield;
-~4,200 gp in the Falador East bank; cooked fish banked at Draynor. In flight: a task-runner on Fishing 60 +
-Cooking 60 (150+ cooked fish banked, for later combat); a task-runner for Smithing is finished (39).
+State at 2026-10-11 ~05:45 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 771 / 1881,
+6.87% of max XP. Cooking 83, Thieving 82, Fishing 79, Mining 69, WC 66, FM 55, Magic 41, Agility 41,
+Ranged 40, Smithing 39, HP 36, Crafting 35, Fletching 30, Str 25, Att 18, Prayer 15, Def 15. Herblore and
+Runecraft are level 1. Done this run: Fishing/Cooking 60 (overshot to 79/83), Agility 40, Ranged 40 and
+Magic 41 (Lumbridge chickens). In flight: a task-runner on Thieving 99 (plan guard-thieve).
 
 - Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching`, `mining`, `combat`
   (melee/Ranged/Magic), `bank`, `shop`, `smithing` (smelt + anvil), `cooking`, `fishing`, `thieving`,
   `crafting` (pottery), `fill`, `agility` (Gnome course), `travel` (waypoints, gates, `flee`), `walkTo`
   across levels. Promoted plans in `conductor/plans/`: chop-burn, chop-fletch, fish-cook-bank,
-  pottery-craft, iron-smith (guard-thieve, fish-cook, mine-ore are drafts in `runs/conductor2/plans/`).
-- Measured (XP/hr): Thieving Falador guards with food 1.27M (plan guard-thieve, ~520 gp/min; without
-  food 373k-482k), Mining iron SE Varrock adamant ~875k, WC oaks steel ~780k, FM 690k-1.16M, cooking pot
-  345k, Smithing 131-140k (iron smelt, ~50% fail; kiteshields), Crafting pottery ~65k, Fishing net
-  95-200k, Fletching shafts 70k. Melee 5-10x slower than gathering: do not grind it yet.
-- Next, in order (each a goal for a task-runner; level-1 skills first, each lifts total level fast):
-  1. Agility 1 -> 40+ on the Gnome course (~2.2k XP/lap). `travel` now reaches the Stronghold
-     (Lumbridge -> course 270 s, wolves cost ~8 HP: carry 10+ food; fish are banked at Draynor).
-  2. Ranged and Magic 1 -> 30+ via `combat` (cows/goblins; bow + arrows from fletching, strike spells).
-     Cooked food stock is the Fishing/Cooking runner's purpose.
-  3. Cheap big levels: Thieving 82 -> 99 (~680k XP, ~35 min at guard-thieve rates; check whether
-     Paladins/Heroes need a new spot or food) and Mining 69 -> 99 (873k XP, ~1 h; coal/mithril at 70+).
-  4. Smithing 39 -> 60+: iron kiteshield loop is slow (140k/h). Try coal + steel bars (needs the coal
-     mine) or sell nothing; compare in Experiments. Bank the products (they have no use yet).
-  5. Quests that unlock Herblore (Druidic Ritual) and Runecraft (Rune Mysteries).
-  6. Raise the leaders cheaply: WC willows/yews at 60+, FM on logs for FM 70+, better food fishing.
+  lure-cook-bank, pottery-craft, iron-smith, gnome-agility, guard-thieve, ranged-magic-chickens
+  (mine-ore and fish-cook are drafts in `runs/conductor2/plans/`).
+- The bank is ONE account-wide bank: any booth reaches the same items. Bank at the nearest booth; never
+  walk to another town to fetch coins or items.
+- Measured (XP/hr): Thieving Falador guards with food 1.27M (~520 gp/min; without food 373k-482k),
+  Mining iron SE Varrock adamant ~875k, WC oaks steel ~780k, FM 690k-1.16M, cooking pot 345k, Fishing
+  lure at the Lumbridge river ~1.1M (19k XP/min; net 95-200k), Agility Gnome ~2.2k XP/lap, Smithing
+  131-140k, Crafting pottery ~65k, Fletching shafts 70k. Melee is 5-10x slower than gathering.
+- Failure lessons this run (plan/brief faults, not task code): size fishing areas to cover hopped
+  spots; do not order training before the purchases it needs (buy runes/arrows first); briefs state only
+  confirmed facts (banks are account-wide); runners start every run in the background.
+- Next, in order:
+  1. Thieving 82 -> 99 (in flight, ~680k XP). Watch Paladin/Hero need and food stock.
+  2. Mining 69 -> 99 (873k XP, ~1 h; coal/mithril at 70+): feeds Smithing.
+  3. Herblore (Druidic Ritual) and Runecraft (Rune Mysteries) quests: each level-1 skill is a cheap,
+     fast total-level gain once unlocked. Check quest pages for requirements first.
+  4. Melee Att/Str/Def to 40-50 with the banked cooked fish (Fishing/Cooking food stock): try cows or
+     goblins vs chickens (Experiments); lifts HP too, and Prayer via bones.
+  5. Smithing 39 -> 60+ with coal + steel bars after Mining; Fletching/Crafting past 35 (oak longbows,
+     leather/gems, see Experiments).
+  6. Raise the leaders: WC willows/yews, FM on logs 70+, Fishing/Cooking to 99 via lure/bait.
+  7. Magic/Ranged past 41 (stronger spells, better bow) once melee has a target tier.
 - Standing rules: bank leftovers and superseded tools between goals (task-runner rule); bank cooked
   food each loop; always use food when thieving (user); skip tool tiers when 25x XP makes the cheaper
   one enough; never walk through the Varrock stone circle (3223,3373) (dark wizards killed the bot):
