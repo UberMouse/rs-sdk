@@ -159,8 +159,10 @@ export default definePlan({
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
 requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase failing with `onFail: 'fail'` or `maxFails` times in a row, a predicate throwing
-(`error`), a phase ending `error`, and the idle rail (3 phases in a row with no XP, each ending
-where it started or in a state already seen: `phases make no progress`). Every phase's params
+(`error`), a phase ending `error`, a death (`failed`, `<phase>: died ...`, also one seen between two phases; whatever `onFail` says), and the idle rail (3 phases in a row with no XP, each ending
+where it started or in a state already seen: the plan ends `done` with `nothing left to do: ...` when
+they all ended `done` (also at the first instant repeat of a done phase), and `failed` with `phases
+make no progress` when any failed or stalled). Every phase's params
 are parsed before the plan acts, so a typo fails it in the first second. An `until` that holds
 in combat waits for the fight to end.
 
@@ -220,8 +222,8 @@ First, two cases that come before any diagnosis:
   after a death: the conductor decides whether to restore the save.
 - **The run ended with the bot in combat or attacked** (`inCombat`, an `under-attack` reason, hp
   falling in `bun sdk/cli.ts`): the bot is still being hit while you read logs. Resolve it first:
-  `combat` against a weaker attacker if food is held, or `travel` away from it (it can start in
-  combat when told to), and report a `DECISION NEEDED` at once if neither fits. A bot once died
+  `combat` against a weaker attacker if food is held, or `travel` away from it with `"flee": true` (the one task that starts
+  in combat), and report a `DECISION NEEDED` at once if neither fits. A bot once died
   standing under attack while its runner diagnosed the failed run (2026-10-11, Varrock stone circle).
 
 Then:
