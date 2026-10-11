@@ -8,11 +8,13 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-11 ~05:45 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 771 / 1881,
-6.87% of max XP. Cooking 83, Thieving 82, Fishing 79, Mining 69, WC 66, FM 55, Magic 41, Agility 41,
-Ranged 40, Smithing 39, HP 36, Crafting 35, Fletching 30, Str 25, Att 18, Prayer 15, Def 15. Herblore and
-Runecraft are level 1. Done this run: Fishing/Cooking 60 (overshot to 79/83), Agility 40, Ranged 40 and
-Magic 41 (Lumbridge chickens). In flight: a task-runner on Thieving 99 (plan guard-thieve).
+State at 2026-10-11 ~08:30 (conductor run 2 paused, account `conductor2`, rev 289, 25x XP): total level
+927 / 1881, 17.2% of max XP. Thieving 99, Mining 99, Cooking 83, WC 80, Fishing 79, FM 78, HP 46, Magic 41,
+Agility 41, Att/Str/Def/Ranged 40, Smithing 39, Crafting 35, Fletching 30, Prayer 15; Herblore and Runecraft 1.
+Logged out at the Draynor willows (snapshot `session-end`); ~1,200 coins held, ~18k banked. Nothing in flight.
+Next: run `conductor/plans/rune-mysteries.ts` on conductor2 (unlocks Runecraft; the `talk` task is new),
+then Druidic Ritual (`talk` with `use`, untested live), then Smithing 60 by the banked-iron route (Max route
+row, ~250k predicted). Read §Max route first: explore goals fill its empty and wide rows.
 
 - Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching`, `mining`, `combat`
   (melee/Ranged/Magic), `bank`, `shop`, `smithing` (smelt + anvil), `cooking`, `fishing`, `thieving`,
