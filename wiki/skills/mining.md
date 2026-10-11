@@ -55,10 +55,10 @@ From `skill_mining/scripts/mining.rs2` and the engine's `STAT_RANDOM`
 | 40 | Gold | 65 | Dwarven Mine, Coal Trucks, Barbarian Village, Mining Guild |
 | 40 | Gems | 65 | Shilo Village (requires Shilo Village quest) |
 | 55 | Mithril | 80 | North Brimhaven, Crafting Guild |
-| 70 | Adamantite | 95 | Al Kharid, Fight Arena, West Lumbridge Swamp, Mining Guild |
-| 85 | Runite | 125 | Al Kharid, West Lumbridge Swamp, Grand Tree, Desert Mining Camp |
+| 70 | Adamantite | 95 | Al Kharid mine, Lumbridge Swamp mine (the east swamp, (3240, 3164)), Dwarven Mine, Edgeville Dungeon, Heroes' Guild mine, Grand Tree tunnels, Desert Mining Camp, Crandor, Karamja (2848, 3033), Haunted Mine, Tirannwn, Wilderness |
+| 85 | Runite | 125 | Heroes' Guild mine (2939, 9891), Lava Maze dungeon (3046, 10265), Wilderness (3060, 3885) |
 
-Levels and XP (`rock_level`, `rock_exp` in tenths) from `server/content/scripts/skill_mining/configs/mine.dbrow`; pickaxe levels from `pickaxes.obj` (`levelrequire`, iron is 0 = no requirement). Locations column is unverified. [v 2026-10-09 conductor1 local]
+Levels and XP (`rock_level`, `rock_exp` in tenths) from `server/content/scripts/skill_mining/configs/mine.dbrow`; pickaxe levels from `pickaxes.obj` (`levelrequire`, iron is 0 = no requirement). [v 2026-10-09 conductor1 local] The adamantite and runite locations are every rock site of those ores in `wiki/world.json` (map data): the swamp has no rocks in its west and no runite. The other rows' locations are unverified.
 
 ## Mining Guild
 
