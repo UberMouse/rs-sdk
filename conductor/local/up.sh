@@ -44,7 +44,9 @@ if listening 8888; then echo "engine already up"; else
     exit 1
   fi
   # SAVE_ENDPOINTS: GET /save and POST /kick on the management port, for save.ts and load.ts.
-  (cd "$ROOT/server/engine" && GE_ENABLED=false SAVE_ENDPOINTS=true nohup bun run src/app.ts > "$LOGS/engine.log" 2>&1 &)
+  # WORLD_FEED: ws://localhost:8888/worldfeed, the read-only live world the plan viewer's 3D panel
+  # (rs-world) streams. See conductor/docs/plan-view.md.
+  (cd "$ROOT/server/engine" && GE_ENABLED=false SAVE_ENDPOINTS=true WORLD_FEED=true nohup bun run src/app.ts > "$LOGS/engine.log" 2>&1 &)
   echo "engine starting (log: $LOGS/engine.log)"
 fi
 
@@ -53,7 +55,7 @@ for _ in $(seq 1 90); do
   sleep 1
 done
 if listening 7780 && listening 8888; then
-  echo "up: game http://localhost:8888  gateway ws://localhost:7780"
+  echo "up: game http://localhost:8888  gateway ws://localhost:7780  world feed ws://localhost:8888/worldfeed"
 else
   echo "stack did not come up; see $LOGS" >&2
   exit 1
