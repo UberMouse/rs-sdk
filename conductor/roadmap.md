@@ -126,6 +126,36 @@ on its own.
   `lib/engine.ts`, `lib/task.ts`, `actions/walk.ts` and `context.ts`, the walking tasks (combat,
   smithing, shop, firemaking, `lib/area.ts`) and their tests; re-review the tasks.
 
+## Max route
+
+The plan to max as fast as possible, filled in while exploring (conductor skill: Explore, then
+Execute). One row per skill: the fastest **measured** method so far (local, 25x XP), its rate and
+band, and what is left between it and tick-perfect. Explore goals target the empty or wide rows.
+First drafts are assumed suboptimal; a rate here is a floor, not the route's final number.
+
+| Skill | Lvl | Best measured method | XP/h | Gap to close / next |
+|---|---|---|---|---|
+| Thieving | 99 | Falador guards, food (plan guard-thieve) | 2.2M (82-99) | done; Paladin/Hero untested |
+| Mining | 99 | iron power-mine, drop each ore (02b861cd5), Al Kharid | 1.155M (92-97) | stand tile reaching 2-3 rocks (in progress) |
+| Fishing | 79 | Lumbridge lure, cook + bank (plan lure-cook-bank) | ~1.1M | drop vs cook; better spot at 80+ |
+| Cooking | 83 | Lumbridge pot, inside lure-cook-bank | 345k (alone) | a range next to a bank; cook while fishing |
+| Woodcutting | 66 | oaks, steel axe | 780k | willows/yews, better axe, stand tile among trees |
+| Firemaking | 55 | line burn, Lumbridge field | 690k-1.16M | logs tier; fewer walk-backs |
+| Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
+| Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
+| Ranged | 40 | Shortbow, Lumbridge chickens | ~86k (13-40) | better bow/arrows, higher-HP targets |
+| Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | steel bars (coal, Mining 99 now), more bars per item |
+| Hitpoints | 36 | from combat | - | follows melee/ranged |
+| Crafting | 35 | pottery | 65k | leather, gems, glass |
+| Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
+| Attack/Strength/Defence | 18/25/15 | chickens | 55-108k | cows + steel scimitar (in flight) |
+| Prayer | 15 | bones from combat | - | no method measured |
+| Herblore | 1 | locked: Druidic Ritual | - | quest |
+| Runecraft | 1 | locked: Rune Mysteries | - | quest |
+
+Route-wide: banks are one account-wide bank; the Al Kharid toll gate is not yet paid by the walk ops
+(author in flight), so routes there detour north.
+
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.

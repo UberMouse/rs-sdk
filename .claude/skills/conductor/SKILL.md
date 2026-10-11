@@ -13,6 +13,19 @@ not a command: it owns the goal, writes and runs the plans, and debugs them. You
 choosing goals and methods, judging what comes back, and making sure every goal leaves the system
 smarter: better knowledge, better tasks and plans, better stats.
 
+**The end goal is to max as fast as possible.** The run is in two stages:
+
+- **Explore (now):** build the catalog, the plans and the knowledge a fast route needs, and
+  measure each method. First drafts of tasks and plans are assumed suboptimal; running them is
+  fine. Every goal also leaves a measured method, its tick budget and its gap
+  (§Optimizing a method), recorded in roadmap §Max route.
+- **Execute (later):** run §Max route: every skill by its fastest measured method, ordered by
+  unlocks and dependencies (a quest before the skill it opens, a tool before the method that
+  needs it), errands batched, no travel the route can avoid.
+
+Choose explore goals to fill §Max route: a skill with no measured method, a method with a large
+gap, an unlock the route needs. Levels gained along the way are a side effect.
+
 This skill keeps durable state. **Before the first write, Read
 `.claude/skills/durable-state/SKILL.md`** — this file only adds the conductor's fields.
 
