@@ -1,0 +1,183 @@
+{
+    "name": "water-fill-lumbridge",
+    "purpose": "Combat 15 account, bronze sword wielded, in the Lumbridge castle courtyard (3220,3212) beside the south fountain (3221,3210); inventory 10 empty Buckets, 2 Jugs, 2 Bowls. Fill task smoke.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3220,
+                "z": 3212
+            },
+            "skills": {
+                "Attack": 15,
+                "Strength": 15,
+                "Defence": 15,
+                "Hitpoints": 15
+            },
+            "inventory": [
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1935,
+                    "count": 1
+                },
+                {
+                    "id": 1935,
+                    "count": 1
+                },
+                {
+                    "id": 1923,
+                    "count": 1
+                },
+                {
+                    "id": 1923,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1277,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "3a4c79b4e15e0110a6128de828946f900881af29",
+    "createdAt": "2026-10-10T02:51:38.547Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3220,
+            "z": 3212,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 15,
+            "Defence": 15,
+            "Strength": 15,
+            "Hitpoints": 15
+        },
+        "inventory": [
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1935,
+                "name": "jug_empty",
+                "count": 1
+            },
+            {
+                "id": 1935,
+                "name": "jug_empty",
+                "count": 1
+            },
+            {
+                "id": 1923,
+                "name": "bowl_empty",
+                "count": 1
+            },
+            {
+                "id": 1923,
+                "name": "bowl_empty",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

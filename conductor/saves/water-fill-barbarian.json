@@ -1,0 +1,93 @@
+{
+    "name": "water-fill-barbarian",
+    "purpose": "Combat 15 account, bronze sword wielded, at the Barbarian Village potter's wheel (3090,3409) with 4 empty Buckets. Fill task: walking to a distant water source (area param).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3090,
+                "z": 3409
+            },
+            "skills": {
+                "Attack": 15,
+                "Strength": 15,
+                "Defence": 15,
+                "Hitpoints": 15
+            },
+            "inventory": [
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1277,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "aad84738e6a1f9081b5a200f477d8aaaa585d71b",
+    "createdAt": "2026-10-10T02:53:19.125Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3090,
+            "z": 3409,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 15,
+            "Defence": 15,
+            "Strength": 15,
+            "Hitpoints": 15
+        },
+        "inventory": [
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
