@@ -51,7 +51,7 @@ Levels and XP checked against `server/content/scripts/skill_fishing/scripts/fish
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
-| Draynor south | (3086, 3227) r2 | 1 | Net/Bait, small net; dark wizards hit the northern tiles. More spots/map data: `learnings/fishing.md` | Fishing 1->13 in 1 min | 2026-10-10 conductor2w1 local |
+| Draynor south | (3086, 3227) r2 | 1 | Net/Bait, small net; dark wizards hit the northern tiles. More spots/map data: `learnings/fishing.md` | Fishing 1->13 in 1 min; 1->34 in ~4 min, 34->40 in 1 min (`fish-cook` plan trips, not stats.ts) | 2026-10-11 conductor2 local |
 
 ## Fishing Guild
 
