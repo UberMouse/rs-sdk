@@ -154,6 +154,61 @@ describe('guards during a generator step', () => {
         });
     });
 
+    describe('low HP with no food', () => {
+        const hurt = timeline(20, t => ({ hp: 4, food: 0, inCombat: t >= 3, xp: t >= 8 ? 25 : 0 }));
+        const steps = [step('chop', chop)];
+        const walker = defineTask({
+            name: 'test',
+            description: 'engine test',
+            params: z.object({ keep: z.boolean() }),
+            keepGoingWithoutFood: p => p.keep,
+            startInCombat: () => true,
+            steps,
+        });
+
+        test('fails the run by default', async () => {
+            const r = await runTask(steps, hurt);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toStartWith('interrupt:low-hp: hp 4/10');
+        });
+
+        test('does not for a task whose keepGoingWithoutFood holds for its params, and only then', async () => {
+            const fighting = timeline(20, t => ({ hp: 4, food: 0, inCombat: true, xp: t >= 8 ? 25 : 0 }));
+            const kept = await runDef(walker, fighting, { params: { keep: true } });
+            expect(kept.result.status).toBe('done');
+            expect(kept.result.stepRuns['interrupt:low-hp']).toBeUndefined();
+            const failed = await runDef(walker, hurt, { params: { keep: false } });
+            expect(failed.result.reason).toStartWith('interrupt:low-hp');
+        });
+
+        test('such a task out of combat still rests to regenerate', async () => {
+            const resting = timeline(30, t => ({ hp: t >= 6 ? 10 : 4, food: 0, xp: t >= 12 ? 25 : 0 }));
+            const r = await runDef(walker, resting, { params: { keep: true } });
+            expect(r.result.status).toBe('done');
+            expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+        });
+
+        test('such a task hit out of combat (ranged, flickering flag) keeps going too', async () => {
+            const shot = timeline(20, t => ({
+                hp: 4,
+                food: 0,
+                inCombat: false,
+                lastDamageTick: t,
+                xp: t >= 8 ? 25 : 0,
+            }));
+            const r = await runDef(walker, shot, { params: { keep: true } });
+            expect(r.result.status).toBe('done');
+            expect(r.result.stepRuns['interrupt:low-hp']).toBeUndefined();
+        });
+
+        test('such a task still eats held food at low HP', async () => {
+            const fed = timeline(20, t => ({ hp: t === 3 || t === 4 ? 4 : 10, food: 2, xp: t >= 10 ? 25 : 0 }));
+            const r = await runDef(walker, fed, { params: { keep: true } });
+            expect(r.result.status).toBe('done');
+            expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+        });
+    });
+
     test('a respawn since the run started ends the run with the death guard', async () => {
         const base = timeline(10, t => ({ dead: t === 3 }));
         const states = base.map(s => ({ ...s, player: { ...s.player!, respawnCount: s.tick >= 3 ? 1 : 0 } }));

@@ -105,6 +105,13 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * `flee`) opts in here, per its params; every other task keeps the refusal.
      */
     startInCombat?(params: z.infer<S>): boolean;
+    /**
+     * The low-hp guard eats held food as always, but in combat at low HP with none held it does not
+     * end the run: for a task whose way of surviving low HP is to keep going (travel with `flee` walks
+     * out of the fight). Out of combat the guard still rests to regenerate. Every other task keeps the
+     * guard's fail. `death` still ends the run.
+     */
+    keepGoingWithoutFood?(params: z.infer<S>): boolean;
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];

@@ -77,7 +77,7 @@ const waypointsLeft = (ctx: Ctx) => ctx.params.waypoints.slice(ctx.memory.nextWa
 const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'bad-coordinates'];
 
 // No underAttackGuard on purpose: the bot outwalks an aggressive monster, which a fight guard would turn
-// into a failed run. With no food, low HP and an attacker the shared low-hp guard fails the run.
+// into a failed run. Without `flee`, no food, low HP and an attacker fail the run in the shared low-hp guard.
 export default defineTask({
     name: 'travel',
     description:
@@ -89,13 +89,15 @@ export default defineTask({
         'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold crosses White Wolf Mountain, ' +
         'where wolves attack and cost HP; it eats at low HP, and with no food the low-hp guard fails the run. ' +
         'With `flee: true` it also starts while in combat (the way out of a fight no other task will start in), walks on ' +
-        'without stopping for the attack, eats held food at low HP, and is done only once out of combat at `to`. Fleeing needs food too: in combat at low HP with none held, the low-hp guard fails the run at once. ' +
+        'without stopping for the attack, eats held food at low HP, and is done only once out of combat at `to`. In combat at low HP with no food held it keeps walking (the low-hp guard does not end a flee run; out of combat it still rests to regenerate); death still ends it. ' +
         'Fails where the route breaks: no path, a locked gate, or three failed walks in a row.',
     params: Params,
     memory: (): TravelMemory => ({ nextWaypoint: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
     startInCombat: params => params.flee,
+    // Walking away is the answer to low HP when fleeing: in combat with no food the low-hp guard must not end the run.
+    keepGoingWithoutFood: params => params.flee,
 
     preflight(ctx) {
         const { to, waypoints } = ctx.params;

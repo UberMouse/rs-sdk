@@ -475,6 +475,8 @@ export interface StateSpec {
     dead?: boolean;
     /** The bot is fighting something. */
     inCombat?: boolean;
+    /** Tick of the last damage taken. */
+    lastDamageTick?: number;
     /** This main modal is open. */
     interfaceId?: number;
 }
@@ -491,12 +493,13 @@ export function worldState(
         food = 0,
         dead = false,
         inCombat = false,
+        lastDamageTick,
         interfaceId,
     }: StateSpec = {},
 ): BotWorldState {
     let w = world()
         .tick(tick)
-        .player({ at: { x: LUMBRIDGE.x, z }, hp, inCombat })
+        .player({ at: { x: LUMBRIDGE.x, z }, hp, inCombat, lastDamageTick })
         .skill('Woodcutting', level, xp);
     if (food > 0) w = w.inv('Shrimps', food);
     if (dialog) w = w.dialog();

@@ -76,3 +76,33 @@ test(
     },
     itestTimeout({ taskMinutes: 3, extraMs: ATTACKED_WAIT_MS }),
 );
+
+test(
+    'travel flees an attacker at low HP with no food',
+    async () => {
+        // No food, and the wizards wear the bot below half its HP before the run starts: the low-hp guard
+        // must not end a flee run while it is under fire. The setup depends on their hits landing, so a bot that
+        // never gets hurt that way (or dies first) leaves nothing to test and the test returns early.
+        await withFixtureBot({ position: STONE_CIRCLE, skills: { Hitpoints: 30 } }, async ({ name, sdk }) => {
+            const hurt = await sdk
+                .waitForCondition(
+                    s => !!s.player?.combat.inCombat && s.player.hp > 0 && s.player.hp < s.player.maxHp / 2,
+                    ATTACKED_WAIT_MS * 2,
+                )
+                .catch(() => null);
+            if (!hurt?.player || hurt.player.hp <= 0) {
+                console.warn('travel low-HP flee: the bot was not hurt (or died) in time; nothing to test');
+                return;
+            }
+            await disconnectQuietly(sdk);
+            const run = await runTask(name, 'travel', { to: FLEE_TO, flee: true }, ['minutes:3']);
+            const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+            // The run ends done on arrival or at its minute limit (once out of the fight the guard rests to
+            // regenerate, slow at Hitpoints 30); either way it must not fail with the low-hp guard's reason.
+            expect(run.result.reason ?? '', detail).not.toContain('low-hp');
+            expect(run.result.status, detail).toBe('done');
+            expect(run.result.stepRuns.walk, detail).toBeGreaterThan(0);
+        });
+    },
+    itestTimeout({ taskMinutes: 3, extraMs: ATTACKED_WAIT_MS * 2 }),
+);

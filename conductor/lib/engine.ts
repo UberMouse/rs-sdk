@@ -13,7 +13,7 @@ import { eat } from '../actions/eat';
 import { closeModalUntil } from '../actions/modal';
 import { type Command, log, type Op } from '../core/op';
 import { sleep } from './env';
-import { findFood, guardLabel, GUARDS } from './interrupts';
+import { findFood, guardLabel, GUARDS, lowHpGuard, underFire } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import {
     type Outcome,
@@ -390,11 +390,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const episodes = new Map<string, object>();
     const allowed: readonly string[] = def.allow ?? [];
     const enabled = [...GUARDS.filter(g => !allowed.includes(g.name)), ...(def.guards ?? [])];
+    // In a fight (or just hit) at low HP with no food (where the guard would fail the run) a task that keeps going holds the guard
+    // off; out of combat the guard still waits for HP to regenerate. `when` is pure, so food is read here.
+    const goesOnWithoutFood = !!def.keepGoingWithoutFood?.(ctx.params);
     const guards: Guard[] = enabled.map(g => ({
         name: guardLabel(g.name),
         policy: g.policy,
         critical: g.critical,
-        when: s => g.when(s, ctx),
+        when: s => g.when(s, ctx) && !(goesOnWithoutFood && g.name === lowHpGuard.name && underFire(s) && !findFood(s)),
         cleared: () => episodes.delete(g.name),
         run: s => {
             const label = guardLabel(g.name);

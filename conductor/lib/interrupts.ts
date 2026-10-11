@@ -111,6 +111,11 @@ export const wildernessGuard: TaskGuard<object, GuardName> = {
     run: s => ({ fail: `in the Wilderness at (${s.player?.worldX},${s.player?.worldZ})` }),
 };
 
+/** The bot is in combat or took a hit lately: resting for HP here would not be quiet. */
+export function underFire(s: BotWorldState): boolean {
+    return !!s.player?.combat.inCombat || recentlyHit(s);
+}
+
 interface LowHpEpisode {
     /** HP when the guard last ran, to tell whether the bot is still losing HP. */
     lastHp: number | null;
@@ -223,7 +228,7 @@ function strongest(npcs: BotWorldState['nearbyNpcs']): BotWorldState['nearbyNpcs
 }
 
 /** Took a hit (a 0 splat counts) within RECENT_HIT_TICKS. */
-const recentlyHit = (s: BotWorldState): boolean => {
+export const recentlyHit = (s: BotWorldState): boolean => {
     const at = s.player?.combat.lastDamageTick ?? -1;
     return at >= 0 && s.tick - at <= RECENT_HIT_TICKS;
 };

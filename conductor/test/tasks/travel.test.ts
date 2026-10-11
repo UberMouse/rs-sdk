@@ -310,13 +310,37 @@ describe('travel: flee', () => {
         expect(r.result.reason).toBe('fight-at-destination: still in combat at (3300,3250) after fleeing there');
     });
 
-    test('fleeing with low HP, an attacker and no food fails in the low-hp guard', async () => {
+    test('fleeing with low HP, an attacker and no food keeps walking and arrives', async () => {
         const r = await simulate(travel, {
             params: { to, flee: true },
-            timeline: base.series(30, w => w.player({ inCombat: true, hp: 4 })),
+            timeline: base.series(60, (w, i) => w.player({ inCombat: i < 8, hp: i < 8 ? 4 : 10 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.finalPos).toMatchObject({ x: 3298, z: 3250 });
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeUndefined();
+    });
+
+    test('fleeing at low HP with no food, out of combat, still rests to regenerate', async () => {
+        const r = await simulate(travel, {
+            params: { to, flee: true },
+            timeline: base.series(80, (w, i) => w.player({ inCombat: i === 0, hp: i < 6 ? 4 : 10 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+    });
+
+    test('fleeing at low HP with no food still ends on a death', async () => {
+        const r = await simulate(travel, {
+            params: { to, flee: true },
+            timeline: base.series(60, (w, i) => {
+                const hurt = w.player({ inCombat: i < 20, hp: 4 });
+                return i === 4 ? hurt.message('Oh dear, you are dead!') : hurt;
+            }),
             react: walking(),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toEndWith('no food');
+        expect(r.result.reason).toStartWith('interrupt:death: died');
     });
 });
