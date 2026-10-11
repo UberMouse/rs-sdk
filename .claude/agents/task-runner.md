@@ -35,17 +35,26 @@ script walked the bot under attack and it died, 2026-10-11).
    and a short timer only ends a working plan mid-errand (the user, 2026-10-11).
 3. Every `run-task.ts` command runs in the background
    (`run_in_background`); then end your turn and wait for its completion notification. No
-   foreground run, no `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
+   foreground run, no foreground `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
    receive the conductor's messages (the user had to kill a run to get a correction through,
    2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
    the anchored `pgrep` match below; it prints its RESULT on SIGTERM), then act on it.
-4. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
+4. **Check in on a plan's first run** (a new draft, or one you changed): right after starting it,
+   start a check-in in the background too, and end your turn:
+   `sleep 120; tail -n 30 $(ls -t conductor/runs/<bot>/*-plan-<name>.ndjson | head -1); ls -t
+   conductor/runs/<bot>/*.ndjson | head -3; bun sdk/cli.ts <bot> | head -40`.
+   When it reports, judge whether the plan does what you meant: the phase it chose, the bot's
+   position and inventory, steps that repeat or stall, the tail of the newest phase log, and
+   `bun conductor/tools/screenshot.ts <bot>` if a rendering client is attached. Fine: start another
+   check-in, until every phase has run once. Wrong: stop the run (item 3), fix the draft, run it
+   again. A plan once ran training before its shopping was done, which a 2-minute look shows.
+5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`.
-5. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
+6. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
    first (Debugging, below).
 
-The sections below say how; these five are what runners most often skip.
+The sections below say how; these six are what runners most often skip.
 
 ## Your state file, first
 
