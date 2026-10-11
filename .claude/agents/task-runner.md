@@ -114,7 +114,12 @@ results and lessons in your next report as well, marked `(re-sent)`.
 A plan is an ordered list of phases, each one catalog task with params. Every time a phase ends,
 the first phase whose `when` holds runs next, so a plan chooses from the world state, not from a
 position in a list: it resumes correctly on any inventory. Put **consumers above producers** so
-the inventory drains before it refills. Design: `conductor/docs/plans.md`. The reference is
+the inventory drains before it refills. Gate errand and training phases on what the inventory
+**holds**, not on `runs()` counts: a training phase waits until everything it and its sibling
+phases need is held, so every errand in one town happens on one visit (a plan whose ranged phase
+ran once the arrows were bought never bought the runes, from the same town, 2026-10-11). Banks
+are one account-wide bank (`bank.inv`, `scope=perm`): bank at the booth nearest the route, never
+at a "bank holding" an item. Design: `conductor/docs/plans.md`. The reference is
 `conductor/plans/chop-burn.ts` (promoted, smoke-tested):
 
 ```ts
