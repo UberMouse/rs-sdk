@@ -72,7 +72,7 @@ on its own.
   - Run `bun test conductor` inside `verify:conductor`, and require a green
     `bun run test:integration` before committing changes to `conductor/core` or `conductor/actions`.
   - A reactive simulator (the plan's "sim later") beyond `test/react.ts`'s scripted reactions.
-  - walkTo has no stairs, ladders or ferries: a route across levels fails `no-path`.
+  - walkTo crosses levels only through the curated table in `lib/connectors.ts` (Lumbridge castle, Falador -> Dwarven Mine, Wizards' Tower); no ferries, and a connector outside the table fails `no-connector`.
   - Recordings (about 2.8 MB per bot-hour) and integration leftovers (`conductor/runs/it*`, and
     one `it*` account and save per integration test in the shared engine) are never cleaned up.
 - **Task → agent decisions.** Tasks can only end with a RESULT. Add a way for a task to raise a
@@ -126,6 +126,8 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
+- walkTo: the Wizards' Tower stairs/ladder room (x 3103..3107, z 3159..3163) is entered by a diagonal elf door (3107,3162) that `sdk/collision-data.json` lacks, so `collisionPaths` finds no route in from outside and `walkTo` into the tower ends `no-path` (connectors work from inside the room); needs diagonal-door support in the SDK collision data or in `walkOnPlane` (game G3)
+- walkTo: connector `hazard` is only logged (`walk: WARNING at ...`); add an opt-in `WalkOptions` gate (e.g. a combat floor on the Falador mine stairs: scorpions hunt combat 28 and under) that returns a distinct reason, and make the shop task use it before walking into the Dwarven Mine; touches tasks outside the walk change (safety S1)
 - crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)
 - fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
 - combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so

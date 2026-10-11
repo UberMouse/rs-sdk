@@ -101,7 +101,7 @@ export const deathGuard: TaskGuard<object, GuardName> = {
     },
 };
 
-/** Ends the run if the bot is on the surface in the Wilderness (PvP, death drops items). */
+/** Ends the run if the bot is in the Wilderness, on the surface or in the Edgeville dungeon (PvP, death drops items). */
 export const wildernessGuard: TaskGuard<object, GuardName> = {
     name: 'wilderness',
     policy: 'abort',

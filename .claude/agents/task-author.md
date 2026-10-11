@@ -87,7 +87,7 @@ is where guards and cancellation act.
 
 Ops live in `conductor/actions/`: `chop`, `mine`, `attack`, `interactLoc`, `eat`, `drop`, `pickup`, `equip`,
 `useItemOnItem` / `useItemOnLoc` (`use.ts`), `burn`, `fletch`, `smith` / `smelt` / `closeSmithing` (`smith.ts`),
-`dismiss`, `walkTo` (`walk.ts`: routes, doors and gates on the way; see below), and the bank ops `openBank`,
+`dismiss`, `walkTo` (`walk.ts`: routes, doors, gates and stairs or ladders on the way; see below), `climb` (`climb.ts`: one staircase or ladder of `lib/connectors.ts`, which `walkTo` uses), and the bank ops `openBank`,
 `deposit`, `withdraw`, `closeBank` and `withBank` (`bank.ts`), the shop ops `openShop`, `buy`, `sell`,
 `closeShop` and `withShop` (`shop.ts`), with `context.ts` and
 `messages.ts` (game messages since a cursor). Call one with `yield* chop(ctx, tree, logs)`; a step
@@ -205,10 +205,13 @@ never moves the bot.
 ### Walking
 
 `yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
-(Chebyshev, default 3) on the bot's level, opening the doors and gates on its route. It does not
-climb stairs or ladders, and it refuses (`no-path`) a route that crosses the Wilderness to a
-destination outside it (`lib/wilderness.ts`). Its result's `reason` says why it stopped short (`no-path`, `dead-end`,
-`stuck`, `gave-up`, `timeout`, `no-time`, ...); `message` is what to put in a fail reason. One walk
+(Chebyshev, default 3), opening the doors and gates on its route. It changes plane (a floor, an
+underground area) through the curated connectors of `conductor/lib/connectors.ts`: pass the destination's
+`opts.level` (default: the bot's own level, or 0 across the surface/underground divide), and add a
+connector to that table for a staircase or ladder it lacks. It refuses (`no-path`) a route that crosses
+the Wilderness to a destination outside it (`lib/wilderness.ts`). Its result's `reason` says why it
+stopped short (`no-path`, `no-connector`, `climb-failed`, `dead-end`, `stuck`, `gave-up`, `timeout`,
+`no-time`, ...); `message` is what to put in a fail reason. One walk
 takes at most `WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it
 stands and the next walk carries on from there, so a step that walks far must be one the task runs
 again (a `when` that still holds). A walk also never outlasts its step: it caps itself to
@@ -219,7 +222,8 @@ more work (an op, a wait) passes `{ reserveTicks: <that work's worst case> }` as
 smithing reserves `OP_MAX_TICKS` for the smelt or smith after its walk. For "stay near here" use
 `lib/area.ts`: `returnToAreaStep` (a generator step) and `walkToArea` (an op that counts failed
 walks per run). A task counting its own failed walks skips one that ran out of ticks nearer the goal
-than it started (`timedOutAdvancing`): it is progress, not a failure, as shop's walk step does.
+than it started (`timedOutAdvancing`): it is progress, not a failure, as shop's walk step does. A
+`timeout` with `advancing: true` (a walk across planes that climbed or closed in) is progress too.
 
 `yield* log(msg)` records an event a runner will want (a failure with its message, a decision),
 not one per loop.

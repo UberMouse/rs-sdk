@@ -15,12 +15,17 @@
 //   again carries on from there. Inside a task step the budget is also capped to the step's ticks left
 //   less `reserveTicks`, so a step that walks never overruns its own budget; with none left it is `no-time`.
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
-// - A route that crosses the surface Wilderness to a destination outside it is `no-path`, never walked:
-//   upstream walks whatever the pathfinder returns.
+// - A route that crosses the Wilderness (the surface one, or the Edgeville dungeon's) to a destination
+//   outside it is `no-path`, never walked: upstream walks whatever the pathfinder returns.
+// - A destination on another plane (a level above or below, or underground at z >= 6400) is reached through the
+//   level connectors of lib/connectors.ts (staircases, ladders), used with the climb op; upstream has none
+//   and fails `no-path`. The walk keeps one tick budget across the legs and the climbs.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { log, type Op, send, wait } from '../core/op';
+import { chebyshev, MAX_HOPS, planConnectors, planeOf, UNDERGROUND_Z } from '../lib/connectors';
 import { TICK_MS } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
+import { CLIMB_MAX_TICKS, climb } from './climb';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
 import { messageCursor, messageSince } from './messages';
@@ -84,15 +89,26 @@ export type WalkResult =
               | 'bad-coordinates'
               | 'no-player'
               | 'no-path'
+              | 'no-connector'
+              | 'climb-failed'
               | 'dead-end'
               | 'stuck'
               | 'gave-up'
               | 'timeout'
               | 'no-time';
           message: string;
+          /** A `timeout` of a walk across planes that was still on its way (see timedOutAdvancing). */
+          advancing?: boolean;
       };
 
 export interface WalkOptions {
+    /**
+     * The destination's level. Default: the bot's own level (so a bot on an upper floor walking to a tile
+     * outside its building says `level: 0`), or level 0 when the destination is on the other side of the
+     * surface/underground divide (z >= 6400). A destination on another plane than the bot is reached by
+     * staircase or ladder (lib/connectors.ts).
+     */
+    level?: number;
     /** The most ticks the walk may take; default WALK_MAX_TICKS. */
     maxTicks?: number;
     /**
@@ -106,10 +122,11 @@ export interface WalkOptions {
 /**
  * A walk that ended `timeout` nearer its destination than it started (`before` and `after` are the
  * distances): it ran out of ticks still closing in, and walking again carries on, so a caller counting
- * failed walks does not count it.
+ * failed walks does not count it. A walk across planes (to a staircase, then a floor above) cannot be
+ * judged by distance, so it says itself (`advancing`).
  */
 export const timedOutAdvancing = (r: WalkResult, before: number, after: number): boolean =>
-    !r.ok && r.reason === 'timeout' && after < before;
+    !r.ok && r.reason === 'timeout' && (after < before || r.advancing === true);
 
 /**
  * The tick budget of a walk whose first route is `tiles` long (a partial one to the destination),
@@ -137,12 +154,11 @@ interface Walk {
     doorRetries: number;
 }
 
-const dist = (a: Point, b: Point) => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 const posOf = (p: { worldX: number; worldZ: number }): Point => ({ x: p.worldX, z: p.worldZ });
 const tileKey = (p: Point) => `${p.x},${p.z}`;
 const doorKey = (d: DoorInfo) => `${d.level},${d.x},${d.z}`;
 const hasOpen = (l: NearbyLoc) => l.optionsWithIndex.some(o => OPEN.test(o.text));
-const adjacent = (a: Point, b: Point) => dist(a, b) === 1;
+const adjacent = (a: Point, b: Point) => chebyshev(a, b) === 1;
 /** A route's last waypoint; undefined for a failed or empty route. */
 const lastWaypoint = (p: PathResult) => (p.success ? p.waypoints.at(-1) : undefined);
 /** A tile's own offset and its four cardinal neighbours'. */
@@ -164,15 +180,133 @@ function* pause(w: Walk, n: number): Op<void> {
 }
 
 /**
+ * Walks to within `tolerance` tiles of (x, z), opening the doors and gates on the way. On the bot's own
+ * plane that is `walkOnPlane`. When the destination is on another (`opts.level`, or across the
+ * surface/underground divide at z >= 6400) the walk goes to the staircase or ladder of lib/connectors.ts
+ * that leads there, climbs it (`climb`) and goes on from where it lands, one connector after another.
+ * `no-connector` is no chain of connectors leading there; `climb-failed` is a climb that did not change
+ * the plane (the loc missing, refused or out of reach). The one tick budget covers the legs and the
+ * climbs, and a `timeout` in the middle (`advancing`) is carried on by walking again.
+ */
+export function* walkTo(
+    ctx: ActionContext,
+    x: number,
+    z: number,
+    tolerance = WALK_TOLERANCE,
+    opts: WalkOptions = {},
+): Op<WalkResult> {
+    const p = ctx.state().player;
+    // The inner walk reports a missing player or bad coordinates.
+    if (!p || !Number.isFinite(x) || !Number.isFinite(z)) return yield* walkOnPlane(ctx, x, z, tolerance, opts);
+    const sameSide = z >= UNDERGROUND_Z === p.worldZ >= UNDERGROUND_Z;
+    const level = opts.level ?? (sameSide ? p.level : 0);
+    if (planeOf(level, x, z) === planeOf(p.level, p.worldX, p.worldZ))
+        return yield* walkOnPlane(ctx, x, z, tolerance, opts);
+    return yield* walkAcrossPlanes(ctx, { level, x, z }, tolerance, opts);
+}
+
+/**
+ * The ticks a walk may take: `opts.maxTicks` (default WALK_MAX_TICKS) and the step's ticks left less the
+ * ticks it still needs after the walk. `noTime` is the `no-time` result when none is left (nothing to send).
+ */
+function walkBudget(
+    ctx: ActionContext,
+    opts: WalkOptions,
+    what: string,
+): { maxTicks: number; reserve: number; noTime?: WalkResult } {
+    const left = ctx.stepTicksLeft?.();
+    const reserve = opts.reserveTicks ?? WALK_RESERVE_TICKS;
+    const maxTicks = Math.min(opts.maxTicks ?? WALK_MAX_TICKS, left === undefined ? Infinity : left - reserve);
+    if (maxTicks > 0) return { maxTicks, reserve };
+    const noTime: WalkResult = {
+        ok: false,
+        reason: 'no-time',
+        message: `No time to walk to ${what}: the step has ${left} ticks left and needs ${reserve} after the walk`,
+    };
+    return { maxTicks, reserve, noTime };
+}
+
+/**
+ * A failed leg of a walk across planes, as that walk's failure. A `timeout` (or a `no-time`, the budget
+ * spent) of a walk that `progressed` is an advancing `timeout`: walking again carries on. Without progress
+ * the leg's own result stands, so a caller's failure count bounds a walk that goes nowhere.
+ */
+function failedLeg(r: Extract<WalkResult, { ok: false }>, progressed: boolean, prefix = ''): WalkResult {
+    const message = prefix + r.message;
+    if (progressed && (r.reason === 'timeout' || r.reason === 'no-time'))
+        return { ok: false, reason: 'timeout', advancing: true, message };
+    return { ...r, message };
+}
+
+/** Walks to a destination on another plane: connector by connector, within one tick budget. */
+function* walkAcrossPlanes(
+    ctx: ActionContext,
+    dest: { level: number; x: number; z: number },
+    tolerance: number,
+    opts: WalkOptions,
+): Op<WalkResult> {
+    const start = ctx.state();
+    const what = `(${dest.x}, ${dest.z}) on level ${dest.level}`;
+    const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, what);
+    if (noTime) return noTime;
+    const deadline = start.tick + maxTicks;
+    for (let hop = 0; hop <= MAX_HOPS; hop++) {
+        const s = ctx.state();
+        const p = s.player;
+        if (!p) return { ok: false, reason: 'no-player', message: 'No player state' };
+        if (s.tick >= deadline)
+            return {
+                ok: false,
+                reason: 'timeout',
+                advancing: true,
+                message: `Walk to ${what} ran out of its ${maxTicks} ticks at (${p.worldX}, ${p.worldZ}) level ${p.level}`,
+            };
+        const here = { level: p.level, x: p.worldX, z: p.worldZ };
+        if (planeOf(here.level, here.x, here.z) === planeOf(dest.level, dest.x, dest.z)) {
+            const last = yield* walkOnPlane(ctx, dest.x, dest.z, tolerance, {
+                maxTicks: deadline - s.tick,
+                reserveTicks: reserve,
+            });
+            return last.ok ? last : failedLeg(last, hop > 0);
+        }
+
+        const c = planConnectors(here, dest)?.[0];
+        if (!c)
+            return {
+                ok: false,
+                reason: 'no-connector',
+                message: `No connector from level ${here.level} (${here.x}, ${here.z}) to ${what}`,
+            };
+        const at = `${c.name} at (${c.stand.x}, ${c.stand.z})`;
+        // The stand tile exactly: a tile beside it can be across a wall (the Falador stairs are in a house).
+        const walked = yield* walkOnPlane(ctx, c.stand.x, c.stand.z, 0, {
+            maxTicks: deadline - s.tick,
+            reserveTicks: reserve + CLIMB_MAX_TICKS,
+        });
+        if (!walked.ok) {
+            const now = ctx.state().player;
+            const nearer = !!now && chebyshev(posOf(now), c.stand) < chebyshev(here, c.stand);
+            return failedLeg(walked, hop > 0 || nearer, `walking to the ${at}: `);
+        }
+        if (c.hazard) yield* log(`walk: WARNING at the ${c.name}: ${c.hazard}`);
+        const climbed = yield* climb(ctx, c);
+        if (!climbed.ok) return { ok: false, reason: 'climb-failed', message: `${at}: ${climbed.message}` };
+        yield* log(`walk: climbed ${c.direction} the ${c.name}`);
+    }
+    return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_HOPS} connectors` };
+}
+
+/**
  * Walks to within `tolerance` tiles of (x, z) on the bot's level, along routes from the pathfinder, one
  * waypoint at a time, opening the doors and gates on the way. A route that stops short is walked once
  * (doors open and the map loads along it); stopping at the same tile again is `dead-end`. `stuck` is
  * no closer after three routes and no door to open; `no-path` is no route at all; `gave-up` is 50 routes
  * without arriving; `timeout` is the tick budget spent (walkBudgetTicks, capped to the step's ticks left
  * less `reserveTicks`), wherever the bot then stands; `no-time` is a step with no ticks left to walk in,
- * nothing sent. A route through the Wilderness to a destination outside it is `no-path` too, unless the walk starts in it.
+ * nothing sent. A route through the Wilderness (surface or Edgeville dungeon) to a destination outside it is
+ * `no-path` too, unless the walk starts in it.
  */
-export function* walkTo(
+function* walkOnPlane(
     ctx: ActionContext,
     x: number,
     z: number,
@@ -189,18 +323,11 @@ export function* walkTo(
     if (!start.player) return { ok: false, reason: 'no-player', message: 'No player state' };
     const target = { x, z };
     let pos = posOf(start.player);
-    if (dist(pos, target) <= tolerance) return { ok: true, message: 'Already at destination' };
+    if (chebyshev(pos, target) <= tolerance) return { ok: true, message: 'Already at destination' };
 
     // The step's budget caps the walk's, keeping back what the step does after it.
-    const left = ctx.stepTicksLeft?.();
-    const reserve = opts.reserveTicks ?? WALK_RESERVE_TICKS;
-    const maxTicks = Math.min(opts.maxTicks ?? WALK_MAX_TICKS, left === undefined ? Infinity : left - reserve);
-    if (maxTicks <= 0)
-        return {
-            ok: false,
-            reason: 'no-time',
-            message: `No time to walk to (${x}, ${z}): the step has ${left} ticks left and needs ${reserve} after the walk`,
-        };
+    const { maxTicks, noTime } = walkBudget(ctx, opts, `(${x}, ${z})`);
+    if (noTime) return noTime;
     const w: Walk = {
         ctx,
         paths: ctx.pathfinder ?? collisionPaths,
@@ -227,7 +354,7 @@ export function* walkTo(
     let lastPartialEnd: Point | null = null;
     // Progress is closing on the destination, not distance walked: an oscillating route moves every
     // time without getting closer.
-    let bestRemaining = dist(pos, target);
+    let bestRemaining = chebyshev(pos, target);
     // A walk to a destination outside the Wilderness never takes a route through it (PvP, items lost on death),
     // unless it starts inside: its first waypoints are then in the Wilderness too, and refusing them would
     // keep a bot there from ever walking out (the critical Wilderness guard ends task runs; this is for
@@ -270,10 +397,10 @@ export function* walkTo(
         }
 
         // A partial route is worth walking once; a re-query from its end that ends there again loops.
-        const partial = path.reachedDestination === false && dist(end, target) > tolerance;
+        const partial = path.reachedDestination === false && chebyshev(end, target) > tolerance;
         if (partial && lastPartialEnd && end.x === lastPartialEnd.x && end.z === lastPartialEnd.z) {
             if (!(yield* tryOpenDoor(w))) {
-                const short = Math.round(dist(end, target));
+                const short = Math.round(chebyshev(end, target));
                 return {
                     ok: false,
                     reason: 'dead-end',
@@ -291,14 +418,14 @@ export function* walkTo(
         let stuckInARow = 0;
         for (const wp of waypoints) {
             if (outOfTime(w)) return timedOut();
-            if (shut.size > 0 && nearDoor(shut, wp) && dist(pos, wp) <= DOOR_REACH)
+            if (shut.size > 0 && nearDoor(shut, wp) && chebyshev(pos, wp) <= DOOR_REACH)
                 yield* openDoorBy(w, doors, shut, wp);
 
             // Intermediate waypoints only need passing near; the last must honour the caller's
             // tolerance, or a tolerance under 2 could never be met.
             const last = wp === end;
             const leg = yield* walkLeg(w, wp, last ? Math.min(WAYPOINT_PASS, tolerance) : WAYPOINT_PASS, pos);
-            if (dist(leg.pos, target) <= tolerance) return { ok: true, message: 'Arrived' };
+            if (chebyshev(leg.pos, target) <= tolerance) return { ok: true, message: 'Arrived' };
             if (leg.status === 'stuck') {
                 if (++stuckInARow >= STUCK_WAYPOINTS) {
                     yield* tryOpenDoor(w);
@@ -310,7 +437,7 @@ export function* walkTo(
             }
         }
 
-        const remaining = dist(pos, target);
+        const remaining = chebyshev(pos, target);
         if (remaining < bestRemaining) {
             bestRemaining = remaining;
             poorProgress = 0;
@@ -336,10 +463,10 @@ function routeTiles(from: Point, waypoints: readonly Waypoint[], target: Point):
     let tiles = 0;
     let at = from;
     for (const wp of waypoints) {
-        tiles += dist(at, wp);
+        tiles += chebyshev(at, wp);
         at = wp;
     }
-    return tiles + dist(at, target);
+    return tiles + chebyshev(at, target);
 }
 
 /** A door on the route is on the waypoint's tile or a cardinal neighbour of it. */
@@ -496,7 +623,7 @@ function* walkLeg(
     const p = moved.state.player;
     if (!p) return { status: 'stuck', pos: from };
     const now = posOf(p);
-    if (dist(now, wp) <= tolerance) return { status: 'arrived', pos: now };
+    if (chebyshev(now, wp) <= tolerance) return { status: 'arrived', pos: now };
     // Every leg that did not arrive has stopped (or run out of ticks), so little movement is stuck.
     if (Math.hypot(now.x - from.x, now.z - from.z) < STUCK_MOVE_TILES) return { status: 'stuck', pos: now };
     return { status: 'progress', pos: now };
@@ -513,12 +640,15 @@ function* awaitLeg(w: Walk, to: Point, tolerance: number): Op<{ arrived: boolean
     const start = w.ctx.state();
     if (!start.player) return { arrived: false, state: start };
     let last = posOf(start.player);
-    const legTicks = Math.max(MIN_LEG_TICKS, Math.ceil(Math.ceil(dist(last, to) / RUN_TILES_PER_TICK) * LEG_SLACK));
+    const legTicks = Math.max(
+        MIN_LEG_TICKS,
+        Math.ceil(Math.ceil(chebyshev(last, to) / RUN_TILES_PER_TICK) * LEG_SLACK),
+    );
     let lastMoveTick = start.tick;
     for (;;) {
         const s = (yield* wait(`walk to (${to.x}, ${to.z})`, () => false, allowed(w, 1))).state;
         const p = s.player;
-        if (p && dist(posOf(p), to) <= tolerance) return { arrived: true, state: s };
+        if (p && chebyshev(posOf(p), to) <= tolerance) return { arrived: true, state: s };
         if (p && (p.worldX !== last.x || p.worldZ !== last.z)) {
             last = posOf(p);
             lastMoveTick = s.tick;
