@@ -89,6 +89,8 @@ await new Promise(r => setTimeout(r, 500));
 
 ## Bank Locations (THERE IS NOT BANK IN LUMBRIDGE in 2004scape)
 
+Checked against the map data: `server/content/maps/m50_50.jm2` (Lumbridge, castle included) has no `bankbooth` (2213), `bankboothclosed` or `banker1/2` on any level, so the top-floor castle bank (added to the real game in 2007) does not exist here. [map data 2026-10-11]
+
 | Bank | Coordinates | Notes |
 |------|-------------|-------|
 | Varrock West | (3185, 3436) | Close to GE. Deposit and withdraw verified via the `bank` task with area {x:3185,z:3436,radius:6}. `bot.openBank` found no banker/booth (`no_bank_found`) from (3169, 3436), 16 tiles west, so walk to the booth first; the nearest working distance is untested. [v 2026-10-09 conductor1 local] |
