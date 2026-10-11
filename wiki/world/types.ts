@@ -20,6 +20,7 @@ export type FeatureKind =
     | 'fishing-spot'
     | 'bank'
     | 'shop'
+    | 'tanner'
     | 'furnace'
     | 'anvil'
     | 'range'
