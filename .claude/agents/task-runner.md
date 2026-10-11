@@ -188,8 +188,12 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
   harness blocks a foreground sleep).
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around it.
-- A one-off errand (one bank trip) may be a plain task run,
-  `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ...`; journal it the same way.
+- Work toward the goal runs as a plan, its first loop included. A plain task run,
+  `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ...`, is only for one errand
+  outside any loop (buy a tool, walk to the plan's start), at most one between plans; journal it
+  the same way. Two plain runs in a row, or a task you have run before toward this goal, mean the
+  work repeats: write the plan. A runner once chained smithing, travel, smithing, bank and travel
+  as plain runs instead of one smelt -> smith -> bank plan (2026-10-11).
 - The last stdout line is `RESULT <json>`, a plan's with `task: "plan:<name>"`, the plan totals,
   `phases` (per phase: `runs`, `statuses`, `durationMs`, `xpGained`, `lastReason`) and `recent`
   (the last 3 phase runs: `runId`, `logFile`, `status`, `reason`). Its `logFile` is the plan's
