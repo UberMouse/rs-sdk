@@ -1,0 +1,55 @@
+{
+    "name": "mining-iron-99",
+    "purpose": "Mining 99 adamant pickaxe, combat 69 so bears (hunt <=42) and scorpions (<=28) ignore it, for the iron layout A/B of the mining task (stand mode); starts at (2972,3244) by the Rimmington iron",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2972,
+                "z": 3244
+            },
+            "skills": {
+                "Mining": 99,
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 60
+            },
+            "inventory": [
+                {
+                    "id": 1271,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "6b4cd480e83d28b9b61f377a172628f2e208bc82",
+    "createdAt": "2026-10-11T07:28:53.784Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2972,
+            "z": 3244,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 60,
+            "Mining": 99
+        },
+        "inventory": [
+            {
+                "id": 1271,
+                "name": "adamant_pickaxe",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "name": "mining-iron-99-ardougne",
+    "purpose": "Mining 99 adamant pickaxe, combat 69 so bears (hunt <=42) and scorpions (<=28) ignore it, for the iron layout A/B of the mining task (stand mode); starts at (2690,3326) south of the Ardougne-Legends iron V (stand 2692,3329)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2690,
+                "z": 3326
+            },
+            "skills": {
+                "Mining": 99,
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 60
+            },
+            "inventory": [
+                {
+                    "id": 1271,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "a2e2cb8ee89fc1c2e8a74831d2bed0825764cd36",
+    "createdAt": "2026-10-11T07:28:54.348Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2690,
+            "z": 3326,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 60,
+            "Mining": 99
+        },
+        "inventory": [
+            {
+                "id": 1271,
+                "name": "adamant_pickaxe",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
