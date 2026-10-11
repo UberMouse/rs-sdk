@@ -314,6 +314,11 @@ you can't name), reach it on your worker with `run-task.ts` runs and file it wit
 `bun conductor/tools/save.ts snapshot <worker> <name> --library --purpose "..."`. Never replace
 an existing library save (`--replace`) unless the brief says so; other agents' tests use them.
 
+A test spot with aggressive NPCs (bears, scorpions, `learnings/hazards.md`): don't carry food
+for it. Generate the test save with Attack, Strength and Defence high enough to put the combat
+level above the NPC's hunt threshold (twice its level for `huntmode=cowardly`). Then nothing
+attacks, and the numbers measure the method alone (the user, 2026-10-11).
+
 `bun conductor/run-task.ts <worker> <name> --params '<json>' --until minutes:1`. Iterate until the
 RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the `logFile` and
 use `bun sdk/cli.ts <worker>`. The lite client `load.ts --client` starts has no pixels, so runs on
