@@ -609,9 +609,11 @@ Note: `oploc` and `aploc` both count; one placement often has both, and rules de
 
 A placement's config name and its config's `category` are matched against the trigger index and
 the dbrows. Each rule returns `{ kind, subtype, ops } | null` (`ops`: the op slots whose triggers made the match). A
-config may have several kinds when they come from **different ops** (`duel_fadli`: op3 bank, op4
-shop), so `classifier` returns `Classified[]` and a placement becomes one feature per kind. Two
-rules matching through the **same** op is a build
+config may have several kinds when **each has an op of its own** (`duel_fadli`: op3 bank, op4
+shop; its op1 dialogue offers both, and a shared dialogue op is allowed), so `classifier` returns
+`Classified[]` and a placement becomes one feature per kind. Data matches (dbrow, category) report
+the ops of the config's triggers, else `'*'`, which clashes with everything. Two rules where either
+has no op of its own is a build
 error (it means a rule is too broad); no rule matching means "not a feature" (scenery).
 
 **Rules (in this order; each a small named function in `classify.ts`):**
@@ -729,9 +731,9 @@ For the `@openbank` "via a label" case: build, per file, the set of labels whose
 
 - [ ] `parseTriggers` indexes `op`/`ap` loc/npc triggers (ops 1-5 and `u`), names and categories,
       bodies to the next header; labels/procs/queues are not triggers; tested.
-- [ ] `classifier` returns `Classified[]`: one entry per kind matched through distinct ops
-      (`duel_fadli` -> bank and shop, tested on real data); two rules matching through the same
-      op throw naming both; scenery returns `[]`. One scripted test per rule (positive) plus the
+- [ ] `classifier` returns `Classified[]`: kinds coexist when each has an op of its own
+      (`duel_fadli` -> bank and shop, tested on real data, and the only multi-kind config); two
+      rules where either has no op of its own throw naming both; scenery returns `[]`. One scripted test per rule (positive) plus the
       scenery negative.
 - [ ] `@openbank` (and the shop/tanner targets) are detected directly and one label/proc call
       deep; tested.
