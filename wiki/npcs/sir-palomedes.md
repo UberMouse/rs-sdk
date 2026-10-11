@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_54 | m43_54 | (2754, 3509) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | (2754, 3509) | 1 | no |
 
 ## Interactions
 

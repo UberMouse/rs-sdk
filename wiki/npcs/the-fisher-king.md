@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_73 | m43_73 | (2762, 4688) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2762, 4688) L1 | 1 | no |
 
 ## Interactions
 

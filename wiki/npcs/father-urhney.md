@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m50_49 | (3235, 3153) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Lumbridge Swamp mine (Lumbridge Swamp)](../places/lumbridge-swamp-mine.md) | (3235, 3153) | 1 | yes |
 
 ## Interactions
 

@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 1) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2616, 3168) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2602, 3154) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2616, 3168) | 1 | no |
 
 ## Interactions
 

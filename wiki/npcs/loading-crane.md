@@ -8,11 +8,13 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_69 | m43_69 | (2782, 4458) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2782, 4458) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2787, 4449) | 2 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2793, 4458) | 1 | no |
 
 ## Drops
 

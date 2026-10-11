@@ -24,20 +24,32 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge | m50_50 | (3200, 3238) |
-| Lumbridge (west) | m49_50 | (3165, 3249) |
-| m37_52 | m37_52 | (2369, 3374) |
-| m39_46 | m39_46 | (2517, 2976) |
-| m40_150 | m40_150 | (2602, 9640) |
-| m41_152 | m41_152 | (2648, 9761) |
-| m46_57 | m46_57 | (2985, 3677) |
-| m48_154 | m48_154 | (3096, 9878) |
-| m49_60 | m49_60 | (3162, 3882) |
-| m50_154 | m50_154 | (3219, 9886) |
-| Wilderness | m49_54 | (3145, 3481) |
-| Wilderness (low) | m48_52 | (3075, 3366) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2651, 9763) | 2 | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2606, 9640) | 15 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3097, 9878) | 2 | yes |
+| [Feldip Hills](../places/feldip-hills.md) | (2517, 2976) | 1 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2550, 2981) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2378, 3366) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2379, 3378) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2387, 3370) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2394, 3365) | 1 | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3170, 3248) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3234) | 2 | yes |
+| [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3170, 3245) | 1 | yes |
+| [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3202, 3239) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3075, 3366) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3135, 3340) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3147, 3480) | 3 | yes |
+| [Misthalin](../places/misthalin.md) | (3166, 3246) | 3 | yes |
+| [Tirannwn](../places/tirannwn.md) | (2371, 3377) | 2 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2407, 3385) | 4 | no |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3218, 9888) | 3 | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3220, 9886) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (2989, 3685) | 5 | yes |
+| [Wilderness](../places/wilderness.md) | (3168, 3886) | 11 | yes |
+| [Wilderness](../places/wilderness.md) | (3181, 3887) | 1 | yes |
 
 ## Drops
 

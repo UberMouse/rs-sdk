@@ -24,10 +24,20 @@ const world: World = {
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 0, z1: 0, x2: 9, z2: 9 }] }],
     features: [tree(1, 2), tree(3, 4)],
     sites: [],
+    npcSpawns: [
+        {
+            config: 'man',
+            areaPath: ['town'],
+            centre: { level: 0, x: 5, z: 5 },
+            bbox: { x1: 4, z1: 5, x2: 6, z2: 5, level: 0 },
+            count: 2,
+            f2p: true,
+        },
+    ],
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature or site per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site or npc spawn cluster per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -40,7 +50,10 @@ describe('serializeWorld', () => {
                 `    ${JSON.stringify(tree(1, 2))},`,
                 `    ${JSON.stringify(tree(3, 4))}`,
                 '  ],',
-                '  "sites": []',
+                '  "sites": [],',
+                '  "npcSpawns": [',
+                '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true}',
+                '  ]',
                 '}',
                 '',
             ].join('\n'),
@@ -72,6 +85,10 @@ describe('serializeWorld', () => {
             expect(loadWorld(file)).toEqual(world);
             writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
+            // A format-1 file written before npcSpawns, with its format bumped by hand, is still refused.
+            const { npcSpawns: _, ...before } = world;
+            writeFileSync(file, JSON.stringify(before));
+            expect(() => loadWorld(file)).toThrow(/needs generatedFrom, areas, features, sites and npcSpawns/);
         } finally {
             rmSync(dir, { recursive: true });
         }

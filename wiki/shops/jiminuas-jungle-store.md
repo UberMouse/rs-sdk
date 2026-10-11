@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Jiminua](../npcs/jiminua.md) |
 | **Location** | Karamja |
-| **Coordinates** | (2767, 3122) |
+| **Coordinates** | (2767, 3122) in [Karamja](../places/karamja.md) |
 | **Type** | General Store |
 
 ## Stock

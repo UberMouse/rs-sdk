@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Gnome Stronghold | m43_50 | (2772, 3225) |
-| m46_49 | m46_49 | (2953, 3147) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2772, 3228) | 3 | no |
+| [Karamja](../places/karamja.md) | (2954, 3147) | 2 | yes |
 
 ## Interactions
 

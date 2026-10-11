@@ -21,11 +21,12 @@
 | Range Defence | 0 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge (east) | m51_50 | (3267, 3226) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Misthalin](../places/misthalin.md) | (3267, 3228) | 2 | yes |
+| [Toll gate (Kharidian Desert)](../places/toll-gate.md) | (3268, 3228) | 2 | yes |
 
 ## Interactions
 

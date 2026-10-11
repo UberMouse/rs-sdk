@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_43 | m43_43 | (2775, 2798) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2775, 2798) | 1 | no |
 
 ## Interactions
 

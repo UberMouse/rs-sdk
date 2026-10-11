@@ -4,6 +4,7 @@
 |---|---|
 | **Owner** | Unknown |
 | **Location** | Varrock |
+| **Coordinates** | (3203, 3433) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

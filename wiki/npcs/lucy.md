@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_54 | m42_54 | (2737, 3461) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2737, 3461) L1 | 1 | no |
 
 ## Interactions
 

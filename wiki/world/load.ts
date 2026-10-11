@@ -11,8 +11,8 @@ export function loadWorld(file: string = WORLD_JSON): World {
         throw new Error(
             `${file} has format ${world.format ?? 'none'}, this code reads format ${WORLD_FORMAT}: regenerate it with bun run world`,
         );
-    const lists = [world.areas, world.features, world.sites];
+    const lists = [world.areas, world.features, world.sites, world.npcSpawns];
     if (typeof world.generatedFrom !== 'string' || !lists.every(Array.isArray))
-        throw new Error(`${file} is not a world.json: it needs generatedFrom, areas, features and sites`);
+        throw new Error(`${file} is not a world.json: it needs generatedFrom, areas, features, sites and npcSpawns`);
     return world as World;
 }

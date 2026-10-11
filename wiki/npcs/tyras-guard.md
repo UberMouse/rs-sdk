@@ -24,10 +24,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_49 | m34_49 | (2188, 3171) |
-| m36_71 | m36_71 | (2312, 4556) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Regicide camp](../places/regicide-camp.md) | (2314, 4556) | 3 | no |
+| [Tirannwn](../places/tirannwn.md) | (2181, 3184) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2188, 3171) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2192, 3150) | 1 | no |
+| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2185, 3144) | 1 | no |
+| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2186, 3151) | 3 | no |
 
 ## Drops
 

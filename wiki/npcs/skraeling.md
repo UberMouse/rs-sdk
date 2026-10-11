@@ -23,10 +23,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_60 | m39_60 | (2513, 3866) |
-| m40_60 | m40_60 | (2605, 3877) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2514, 3865) | 2 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2604, 3877) | 2 | no |
 
 ## Interactions
 

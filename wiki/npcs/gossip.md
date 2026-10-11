@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_55 | m42_55 | (2735, 3560) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2735, 3560) | 1 | no |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2742, 3555) | 1 | no |
 
 ## Interactions
 

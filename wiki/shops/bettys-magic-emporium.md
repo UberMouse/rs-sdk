@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Betty](../npcs/betty.md) |
 | **Location** | Port Sarim |
-| **Coordinates** | (3012, 3259) |
+| **Coordinates** | (3012, 3259) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

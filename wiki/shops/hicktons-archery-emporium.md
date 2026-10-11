@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Hickton](../npcs/hickton.md) |
 | **Location** | Catherby |
-| **Coordinates** | (2822, 3442) |
+| **Coordinates** | (2822, 3442) in [Catherby (Kandarin)](../places/catherby.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

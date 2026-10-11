@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3128, 3244) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3128, 3244) | 1 | yes |
 
 ## Interactions
 

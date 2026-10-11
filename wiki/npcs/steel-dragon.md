@@ -22,11 +22,14 @@
 | Range Defence | 90 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_147 | m42_147 | (2702, 9447) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2702, 9447) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2712, 9435) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2723, 9458) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2726, 9445) | 1 | no |
 
 ## Drops
 

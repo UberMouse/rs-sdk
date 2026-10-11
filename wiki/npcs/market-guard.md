@@ -22,11 +22,12 @@
 | Range Defence | 50 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_57 | m41_57 | (2635, 3676) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2635, 3676) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2646, 3677) | 4 | no |
 
 ## Drops
 

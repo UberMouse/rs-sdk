@@ -21,11 +21,13 @@
 | Range Defence | 50 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_148 | m54_148 | (3463, 9481) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3466, 9483) L2 | 5 | no |
+| - | (3477, 9501) L2 | 1 | no |
+| - | (3494, 9491) L2 | 1 | no |
 
 ## Drops
 

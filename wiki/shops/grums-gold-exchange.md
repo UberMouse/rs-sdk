@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Grum](../npcs/grum.md) |
 | **Location** | Port Sarim |
-| **Coordinates** | (3013, 3248) |
+| **Coordinates** | (3013, 3248) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -11,11 +11,23 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_148 | m41_148 | (2634, 9512) L2, (2641, 9488) |
-| m41_149 | m41_149 | (2632, 9541) L2 |
-| m42_148 | m42_148 | (2696, 9492) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2641, 9488) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2644, 9516) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9493) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2670, 9481) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2697, 9492) | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2699, 9499) | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2716, 9479) | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2747, 9486) | 2 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2632, 9541) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2635, 9473) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2637, 9509) L2 | 3 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2638, 9575) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2639, 9592) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2641, 9559) L2 | 1 | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2657, 9474) L2 | 1 | no |
 
 ## Drops
 

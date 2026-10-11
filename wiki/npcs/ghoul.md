@@ -9,11 +9,12 @@
 | **Movement** | Wander (range 3) |
 | **Respawn** | 35 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m53_54 | m53_54 | (3412, 3512) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Morytania](../places/morytania.md) | (3416, 3514) | 11 | no |
+| [Morytania](../places/morytania.md) | (3429, 3463) | 10 | no |
 
 ## Drops
 

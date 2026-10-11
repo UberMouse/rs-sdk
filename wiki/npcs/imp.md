@@ -24,20 +24,53 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2595, 3131) |
-| Camelot area | m46_52 | (2947, 3329) |
-| Edgeville area | m48_50 | (3073, 3250) |
-| Falador (south) | m45_50 | (2941, 3236) |
-| Karamja | m44_49 | (2832, 3170) |
-| Lumbridge | m50_50 | (3217, 3226) |
-| Seers' Village area | m41_50 | (2625, 3203) |
-| Taverley | m47_51 | (3009, 3307) |
-| Varrock | m50_52 | (3205, 3355) |
-| Varrock (east) | m51_51 | (3299, 3273) |
-| Varrock (south) | m50_51 | (3214, 3281) |
-| Wilderness | m48_54, m49_53, m50_54 | (3073, 3498), (3177, 3405), (3213, 3502) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3205, 3355) | 1 | yes |
+| [Edgeville (Misthalin)](../places/edgeville.md) | (3078, 3499) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2947, 3329) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2951, 3360) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3009, 3307) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (3013, 3314) | 2 | yes |
+| [Kandarin](../places/kandarin.md) | (2595, 3131) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2597, 3120) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2606, 3126) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2608, 3134) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2614, 3116) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2616, 3126) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2621, 3133) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2622, 3118) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2625, 3203) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2625, 3217) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2629, 3233) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2630, 3210) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2632, 3202) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2633, 3222) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2633, 3243) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2639, 3230) | 1 | no |
+| [Karamja](../places/karamja.md) | (2832, 3170) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2832, 3177) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2837, 3184) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2841, 3163) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2849, 3186) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2850, 3165) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2858, 3178) | 2 | yes |
+| [Kharidian Desert](../places/kharidian-desert.md) | (3299, 3273) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3226) | 1 | yes |
+| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2941, 3236) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3073, 3250) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3073, 3498) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3078, 3461) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3134, 3487) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3214, 3281) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3234, 3506) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3240, 3307) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3261, 3514) | 1 | yes |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | (2639, 3206) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3177, 3405) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3213, 3502) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3390) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3246, 3458) | 1 | yes |
 
 ## Drops
 

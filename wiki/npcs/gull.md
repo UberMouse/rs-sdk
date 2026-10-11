@@ -23,18 +23,35 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Brimhaven | m44_48 | (2818, 3133) |
-| m29_75 | m29_75 | (1884, 4815) |
-| m30_75 | m30_75 | (1940, 4831) |
-| m31_75 | m31_75 | (2020, 4816) |
-| m39_71 | m39_71 | (2553, 4576) |
-| m40_60 | m40_60 | (2580, 3892) |
-| m40_71 | m40_71 | (2608, 4576) |
-| m41_57 | m41_57 | (2624, 3702) |
-| m42_58 | m42_58 | (2694, 3752) |
-| m46_47 | m46_47 | (2974, 3068) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (1884, 4815) | 1 | no |
+| - | (1888, 4831) | 1 | no |
+| - | (1889, 4818) | 1 | no |
+| - | (1893, 4832) | 1 | no |
+| - | (1896, 4819) | 1 | no |
+| - | (1940, 4831) | 1 | no |
+| - | (1944, 4814) | 1 | no |
+| - | (1948, 4833) | 1 | no |
+| - | (1965, 4816) | 1 | no |
+| - | (2014, 4818) | 1 | no |
+| - | (2016, 4832) | 2 | no |
+| - | (2020, 4816) | 1 | no |
+| - | (2023, 4820) | 1 | no |
+| - | (2608, 4576) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2703, 3758) | 6 | no |
+| [Karamja](../places/karamja.md) | (2826, 3133) | 4 | no |
+| [Karamja](../places/karamja.md) | (2974, 3068) | 1 | no |
+| [Karamja](../places/karamja.md) | (2977, 3052) | 1 | no |
+| [Karamja](../places/karamja.md) | (2990, 3025) | 1 | no |
+| [Karamja](../places/karamja.md) | (2990, 3037) | 2 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2582, 3892) | 3 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2602, 3901) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2624, 3702) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2631, 3703) | 5 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2633, 3709) | 4 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2635, 3697) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2553, 4576) | 1 | no |
 
 ## Drops
 

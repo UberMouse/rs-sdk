@@ -24,10 +24,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_61 | m48_61 | (3076, 3916) |
-| m51_61 | m51_61 | (3276, 3930), (3281, 3934) L3, (3286, 3939) L2, (3288, 3931) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3284, 3931) | 10 | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3289, 3931) L1 | 2 | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3290, 3933) L2 | 6 | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3282, 3936) L3 | 2 | no |
+| [Wilderness](../places/wilderness.md) | (3078, 3913) | 2 | no |
 
 ## Drops
 

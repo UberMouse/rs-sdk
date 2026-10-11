@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m36_153 | m36_153 | (2315, 9806) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2315, 9806) | 1 | no |
 
 ## Interactions
 

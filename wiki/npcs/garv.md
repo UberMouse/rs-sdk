@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2776, 3186) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2776, 3186) | 1 | no |
 
 ## Interactions
 

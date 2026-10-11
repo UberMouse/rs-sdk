@@ -10,42 +10,61 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m51_49 | (3267, 3148) |
-| Edgeville area | m48_50 | (3085, 3230) |
-| Gnome Stronghold | m43_51 | (2789, 3273) |
-| Karamja | m45_49 | (2923, 3179) |
-| Karamja (west) | m43_49 | (2768, 3165) |
-| Lumbridge | m50_50 | (3238, 3252) |
-| m33_51 | m33_51 | (2165, 3266) |
-| m34_50 | m34_50 | (2210, 3237) |
-| m35_50 | m35_50 | (2264, 3258) |
-| m37_53 | m37_53 | (2382, 3414) |
-| m38_49 | m38_49 | (2461, 3150) |
-| m39_53 | m39_53 | (2508, 3421) |
-| m39_71 | m39_71 | (2515, 4591) |
-| m40_52 | m40_52 | (2561, 3374) |
-| m40_53 | m40_53 | (2599, 3419) |
-| m40_60 | m40_60 | (2572, 3860) |
-| m41_53 | m41_53 | (2630, 3435) |
-| m41_57 | m41_57 | (2633, 3687) |
-| m41_73 | m41_73 | (2668, 4710) |
-| m42_42 | m42_42 | (2694, 2706) |
-| m42_55 | m42_55 | (2714, 3532) |
-| m43_42 | m43_42 | (2780, 2741) |
-| m43_47 | m43_47 | (2791, 3019) |
-| m44_46 | m44_46 | (2855, 2973) |
-| m44_52 | m44_52 | (2840, 3356) |
-| m44_53 | m44_53 | (2836, 3431) |
-| m45_152 | m45_152 | (2889, 9766) |
-| m46_49 | m46_49 | (2986, 3176) |
-| m47_57 | m47_57 | (3050, 3704) |
-| m53_53 | m53_53 | (3424, 3409) |
-| m54_53 | m54_53 | (3479, 3434) |
-| Morytania | m53_51 | (3437, 3272) |
-| Shilo Village area | m45_48 | (2899, 3119) |
-| Wilderness | m48_53 | (3104, 3424) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid river (Al Kharid)](../places/al-kharid-river.md) | (3267, 3148) | 1 | yes |
+| [Al Kharid river (Al Kharid)](../places/al-kharid-river.md) | (3276, 3140) | 1 | yes |
+| [Ape Atoll](../places/ape-atoll.md) | (2694, 2706) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2780, 2741) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2856, 3424) | 3 | no |
+| [Asgarnia](../places/asgarnia.md) | (2876, 3342) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2877, 3331) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2986, 3176) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2996, 3158) | 1 | yes |
+| [Barbarian Village fishing (Barbarian Village)](../places/barbarian-village-fishing.md) | (3104, 3424) | 1 | yes |
+| [Barbarian Village fishing (Barbarian Village)](../places/barbarian-village-fishing.md) | (3110, 3434) | 1 | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2768, 3165) | 1 | no |
+| [Draynor fishing (Draynor Village)](../places/draynor-fishing.md) | (3086, 3229) | 2 | yes |
+| [Entrana](../places/entrana.md) | (2844, 3358) | 4 | no |
+| [Fisher Realm](../places/fisher-realm.md) | (2673, 4707) | 3 | no |
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2605, 3418) | 17 | no |
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2627, 3415) | 1 | no |
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2630, 3435) | 1 | no |
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2632, 3425) | 1 | no |
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2637, 3444) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2466, 3152) | 5 | no |
+| [Kandarin](../places/kandarin.md) | (2508, 3421) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2532, 3409) | 5 | no |
+| [Kandarin](../places/kandarin.md) | (2564, 3372) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2716, 3531) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2792, 3277) | 4 | no |
+| [Kandarin](../places/kandarin.md) | (2841, 3430) | 4 | no |
+| [Karamja](../places/karamja.md) | (2791, 3019) | 1 | no |
+| [Karamja](../places/karamja.md) | (2801, 3010) | 1 | no |
+| [Karamja](../places/karamja.md) | (2807, 3021) | 1 | no |
+| [Karamja](../places/karamja.md) | (2899, 3119) | 1 | no |
+| [Karamja](../places/karamja.md) | (2912, 3119) | 1 | no |
+| [Karamja](../places/karamja.md) | (2925, 3180) | 6 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3238, 3252) | 2 | yes |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2577, 3854) | 4 | no |
+| [Morytania](../places/morytania.md) | (3430, 3411) | 6 | no |
+| [Morytania](../places/morytania.md) | (3441, 3274) | 6 | no |
+| [Morytania](../places/morytania.md) | (3481, 3434) | 3 | no |
+| [Morytania](../places/morytania.md) | (3487, 3447) | 2 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2637, 3694) | 7 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2647, 3710) | 4 | no |
+| [Shilo Village (Karamja)](../places/shilo-village.md) | (2855, 2974) | 3 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2515, 4591) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2528, 4591) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2890, 9766) | 3 | no |
+| [Tirannwn](../places/tirannwn.md) | (2165, 3267) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2165, 3286) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2212, 3235) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2215, 3248) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2225, 3243) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2272, 3249) | 5 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2386, 3417) | 7 | no |
+| [Wilderness](../places/wilderness.md) | (3050, 3704) | 1 | yes |
 
 ## Interactions
 

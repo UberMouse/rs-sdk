@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Rimmington |
-| **Coordinates** | Shop keeper: (2947, 3216); Shop assistant: (2948, 3216) |
+| **Coordinates** | (2948, 3216) in [Rimmington (Asgarnia)](../places/rimmington.md) |
 | **Type** | General Store |
 
 ## Stock

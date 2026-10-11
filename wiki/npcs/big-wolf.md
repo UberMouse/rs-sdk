@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_54 | m44_54 | (2840, 3497) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2840, 3497) | 1 | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m48_53 | (3076, 3429) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3076, 3429) | 1 | yes |
 
 ## Interactions
 

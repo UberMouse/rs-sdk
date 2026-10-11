@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_54 | m54_54 | (3503, 3477) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Canifis (Morytania)](../places/canifis.md) | (3503, 3477) | 1 | no |
 
 ## Interactions
 

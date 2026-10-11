@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Karamja |
-| **Coordinates** | Shop keeper: (2902, 3146); Shop assistant: (2902, 3150) |
+| **Coordinates** | (2902, 3148) in [Karamja](../places/karamja.md) |
 | **Type** | General Store |
 
 ## Stock

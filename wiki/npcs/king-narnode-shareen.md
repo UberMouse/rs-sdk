@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_154 | m38_154 | (2464, 9897) |
-| m38_54 | m38_54 | (2466, 3497) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2466, 3497) | 1 | no |
+| [Grand Tree tunnels](../places/grand-tree-tunnels.md) | (2464, 9897) | 1 | no |
 
 ## Interactions
 

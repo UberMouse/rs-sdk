@@ -24,16 +24,26 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_49 | m34_49 | (2206, 3198) |
-| m34_50 | m34_50 | (2187, 3225) |
-| m34_51 | m34_51 | (2182, 3281) |
-| m35_49 | m35_49 | (2240, 3164) |
-| m35_50 | m35_50 | (2279, 3219) |
-| m36_71 | m36_71 | (2304, 4587) |
-| m39_60 | m39_60 | (2545, 3869) |
-| m40_60 | m40_60 | (2560, 3869) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Isafdar (Tirannwn)](../places/isafdar.md) | (2239, 3165) | 6 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2552, 3869) | 5 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2588, 3874) | 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2592, 3867) | 1 | no |
+| [Regicide camp](../places/regicide-camp.md) | (2307, 4584) | 11 | no |
+| [Regicide camp](../places/regicide-camp.md) | (2335, 4604) | 3 | no |
+| [Regicide camp](../places/regicide-camp.md) | (2363, 4575) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2185, 3279) | 9 | no |
+| [Tirannwn](../places/tirannwn.md) | (2189, 3223) | 6 | no |
+| [Tirannwn](../places/tirannwn.md) | (2207, 3196) | 3 | no |
+| [Tirannwn](../places/tirannwn.md) | (2230, 3238) | 7 | no |
+| [Tirannwn](../places/tirannwn.md) | (2243, 3161) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2265, 3141) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2273, 3182) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2277, 3161) | 3 | no |
+| [Tirannwn](../places/tirannwn.md) | (2279, 3219) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2296, 3176) | 5 | no |
+| [Tirannwn](../places/tirannwn.md) | (2296, 3250) | 3 | no |
 
 ## Drops
 

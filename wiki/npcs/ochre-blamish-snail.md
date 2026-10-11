@@ -24,13 +24,29 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m53_52 | m53_52 | (3430, 3375) |
-| m53_53 | m53_53 | (3422, 3406) |
-| m54_52 | m54_52 | (3477, 3368) |
-| m54_53 | m54_53 | (3456, 3418) |
-| Morytania | m53_51 | (3425, 3278) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Mort Myre Swamp (Morytania)](../places/mort-myre-swamp.md) | (3425, 3403) | 2 | no |
+| [Mort Myre Swamp (Morytania)](../places/mort-myre-swamp.md) | (3426, 3376) | 2 | no |
+| [Mort Myre Swamp (Morytania)](../places/mort-myre-swamp.md) | (3439, 3398) | 1 | no |
+| [Mort Myre Swamp (Morytania)](../places/mort-myre-swamp.md) | (3446, 3405) | 1 | no |
+| [Morytania](../places/morytania.md) | (3411, 3387) | 1 | no |
+| [Morytania](../places/morytania.md) | (3424, 3427) | 1 | no |
+| [Morytania](../places/morytania.md) | (3426, 3277) | 3 | no |
+| [Morytania](../places/morytania.md) | (3431, 3309) | 1 | no |
+| [Morytania](../places/morytania.md) | (3438, 3312) | 1 | no |
+| [Morytania](../places/morytania.md) | (3441, 3353) | 1 | no |
+| [Morytania](../places/morytania.md) | (3445, 3284) | 1 | no |
+| [Morytania](../places/morytania.md) | (3447, 3268) | 2 | no |
+| [Morytania](../places/morytania.md) | (3452, 3308) | 2 | no |
+| [Morytania](../places/morytania.md) | (3456, 3418) | 1 | no |
+| [Morytania](../places/morytania.md) | (3463, 3357) | 1 | no |
+| [Morytania](../places/morytania.md) | (3470, 3410) | 5 | no |
+| [Morytania](../places/morytania.md) | (3473, 3348) | 1 | no |
+| [Morytania](../places/morytania.md) | (3478, 3366) | 3 | no |
+| [Morytania](../places/morytania.md) | (3484, 3442) | 3 | no |
+| [Morytania](../places/morytania.md) | (3502, 3421) | 3 | no |
+| [The Hollows (Morytania)](../places/the-hollows.md) | (3495, 3388) | 2 | no |
 
 ## Drops
 

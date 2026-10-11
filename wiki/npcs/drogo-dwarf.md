@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_153 | m47_153 | (3036, 9846) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (3036, 9846) | 1 | yes |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_60 | m39_60 | (2541, 3896) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2541, 3896) | 1 | no |
 
 ## Interactions
 

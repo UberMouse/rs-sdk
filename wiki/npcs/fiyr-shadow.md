@@ -9,11 +9,12 @@
 | **Movement** | Wander (range 9) |
 | **Respawn** | 50 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_151 | m54_151 | (3458, 9702) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3461, 9700) | 2 | no |
+| - | (3461, 9715) | 6 | no |
 
 ## Drops
 

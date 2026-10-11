@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m49_53 | (3150, 3407) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Misthalin](../places/misthalin.md) | (3150, 3407) | 1 | yes |
 
 ## Interactions
 

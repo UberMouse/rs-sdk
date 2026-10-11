@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2641, 3171), (2655, 3152) |
+| **Coordinates** | (2641, 3171) in [Port Khazard (Kandarin)](../places/port-khazard.md); (2655, 3152) in [Port Khazard (Kandarin)](../places/port-khazard.md) |
 | **Type** | General Store |
 
 ## Stock

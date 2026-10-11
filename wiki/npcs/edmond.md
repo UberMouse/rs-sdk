@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_151 | m39_151 | (2535, 9719) |
-| m40_52 | m40_52 | (2568, 3334) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2535, 9719) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2568, 3334) | 1 | no |
 
 ## Interactions
 

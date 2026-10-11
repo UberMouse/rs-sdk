@@ -4,6 +4,7 @@
 |---|---|
 | **Owner** | Unknown |
 | **Location** | Port Sarim |
+| **Coordinates** | not placed: no script opens this inventory |
 | **Type** | Specialty Shop |
 
 ## Stock

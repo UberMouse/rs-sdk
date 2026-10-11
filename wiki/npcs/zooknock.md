@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_142 | m43_142 | (2804, 9145) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2804, 9145) | 1 | no |
 
 ## Interactions
 

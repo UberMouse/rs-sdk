@@ -23,10 +23,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_69 | m42_69 | (2713, 4438) |
-| m43_71 | m43_71 | (2769, 4593) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2722, 4443) | 6 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2737, 4437) | 2 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2771, 4592) | 3 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2784, 4594) | 3 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2792, 4597) | 1 | no |
 
 ## Interactions
 

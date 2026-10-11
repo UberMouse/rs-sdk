@@ -24,10 +24,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_71 | m39_71 | (2524, 4567) |
-| Shilo Village area | m45_48 | (2906, 3095) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2906, 3095) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2524, 4567) | 1 | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2540, 4566) | 1 | no |
 
 ## Drops
 

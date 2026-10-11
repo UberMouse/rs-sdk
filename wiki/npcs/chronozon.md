@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_155 | m48_155 | (3087, 9937) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3087, 9937) | 1 | no |
 
 ## Drops
 

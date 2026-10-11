@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m49_47 | m49_47 | (3171, 3025) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kharidian Desert](../places/kharidian-desert.md) | (3171, 3025) | 1 | no |
 
 ## Interactions
 

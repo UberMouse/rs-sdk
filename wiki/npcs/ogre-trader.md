@@ -8,11 +8,13 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 2) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_47 | m39_47 | (2518, 3035) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2506, 3020) | 1 | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2518, 3035) | 1 | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2525, 3043) | 1 | no |
 
 ## Drops
 

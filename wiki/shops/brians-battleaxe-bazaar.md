@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Brian](../npcs/brian.md) |
 | **Location** | Port Sarim |
-| **Coordinates** | (3028, 3250) |
+| **Coordinates** | (3028, 3250) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -11,10 +11,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_57 | m42_57 | (2708, 3672) |
-| m50_57 | m50_57 | (3209, 3672) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2708, 3672) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2730, 3659) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (3216, 3677) | 8 | yes |
+| [Wilderness](../places/wilderness.md) | (3241, 3670) | 4 | yes |
 
 ## Drops
 

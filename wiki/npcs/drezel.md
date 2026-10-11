@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m53_154 | m53_154 | (3440, 9895) |
-| m53_54 | m53_54 | (3417, 3489) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3440, 9895) | 1 | no |
+| [Temple (Morytania)](../places/temple.md) | (3417, 3489) L2 | 1 | no |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m50_149 | m50_149 | (3232, 9556) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Zanaris](../places/zanaris.md) | (3235, 9556) | 4 | no |
 
 ## Interactions
 

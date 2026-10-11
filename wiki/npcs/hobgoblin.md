@@ -10,20 +10,39 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Entrana | m44_51 | (2818, 3291) |
-| Falador (west) | m45_51 | (2905, 3295) |
-| m38_52 | m38_52 | (2445, 3362) |
-| m39_149 | m39_149 | (2513, 9569) |
-| m40_150 | m40_150 | (2566, 9632) |
-| m41_58 | m41_58 | (2656, 3720) |
-| m42_151 | m42_151 | (2694, 9687) |
-| m43_47 | m43_47 | (2787, 3013) |
-| m47_149 | m47_149 | (3010, 9578) |
-| m48_154 | m48_154 | (3122, 9874) |
-| m48_58 | m48_58 | (3075, 3748) |
-| m54_153 | m54_153 | (3469, 9797) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2515, 9570) | 5 | no |
+| - | (2521, 9561) | 2 | no |
+| - | (2531, 9556) | 2 | no |
+| - | (3469, 9796) | 1 | no |
+| - | (3469, 9797) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3291) | 3 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2909, 3294) | 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | (2919, 3268) | 2 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9578) | 3 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9594) | 3 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3019, 9591) | 1 | yes |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2566, 9632) | 1 | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2573, 9626) | 1 | no |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2911, 3280) | 4 | yes |
+| [Crandor](../places/crandor.md) | (2821, 3287) | 3 | yes |
+| [Crandor](../places/crandor.md) | (2824, 3298) | 1 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3118, 9871) | 1 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3124, 9875) | 2 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3126, 9878) | 2 | yes |
+| [Kandarin](../places/kandarin.md) | (2445, 3358) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2446, 3362) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2449, 3330) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2656, 3720) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2659, 3729) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2672, 3728) | 2 | no |
+| [Karamja](../places/karamja.md) | (2791, 3013) | 3 | no |
+| [Wilderness](../places/wilderness.md) | (3085, 3742) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3086, 3761) | 22 | yes |
+| [Wilderness](../places/wilderness.md) | (3094, 3746) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3106, 3761) | 2 | yes |
+| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2697, 9689) | 4 | no |
 
 ## Drops
 

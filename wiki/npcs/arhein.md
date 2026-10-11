@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_53 | m43_53 | (2803, 3430) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Catherby (Kandarin)](../places/catherby.md) | (2803, 3430) | 1 | no |
 
 ## Interactions
 

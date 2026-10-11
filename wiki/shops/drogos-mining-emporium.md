@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Drogo dwarf](../npcs/drogo-dwarf.md) |
 | **Location** | Falador |
-| **Coordinates** | (3036, 9846) |
+| **Coordinates** | (3036, 9846) in [Dwarven Mine](../places/dwarven-mine.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

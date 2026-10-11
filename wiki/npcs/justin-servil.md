@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2601, 3168) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2601, 3168) | 1 | no |
 
 ## Interactions
 

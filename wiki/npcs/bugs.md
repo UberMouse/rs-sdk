@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_146 | m41_146 | (2640, 9391) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rantz's cave](../places/rantzs-cave.md) | (2640, 9391) | 1 | no |
 
 ## Interactions
 

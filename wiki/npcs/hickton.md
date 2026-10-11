@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_53 | m44_53 | (2822, 3442) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Catherby (Kandarin)](../places/catherby.md) | (2822, 3442) | 1 | no |
 
 ## Interactions
 

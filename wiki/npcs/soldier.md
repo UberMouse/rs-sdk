@@ -24,13 +24,30 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2567, 3109) L1 |
-| m39_48 | m39_48 | (2533, 3086) L1, (2540, 3102) |
-| m44_56 | m44_56 | (2840, 3589) |
-| m45_55 | m45_55 | (2891, 3537) |
-| m45_73 | m45_73 | (2924, 4702) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2840, 3589) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2885, 3531) | 2 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2892, 3532) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3533) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3538) | 10 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2894, 3532) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 2 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3539) | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2909, 3542) | 2 | no |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | (2924, 4702) | 1 | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3073) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3102) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2545, 3090) | 5 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3096) L1 | 6 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2537, 3078) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2551, 3109) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2556, 3073) L1 | 2 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2570, 3109) L1 | 2 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2600, 3109) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2610, 3107) L1 | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2615, 3074) L1 | 3 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2619, 3097) L1 | 2 | no |
 
 ## Drops
 

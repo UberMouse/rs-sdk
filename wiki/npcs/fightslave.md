@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 1) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2595, 3142) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2595, 3142) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2616, 3162) | 2 | no |
 
 ## Interactions
 

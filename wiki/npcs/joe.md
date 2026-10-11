@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2587, 3142) |
-| Edgeville area | m48_50 | (3123, 3245) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3123, 3245) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2587, 3142) | 1 | no |
 
 ## Interactions
 

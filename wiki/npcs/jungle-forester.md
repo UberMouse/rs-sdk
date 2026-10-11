@@ -10,11 +10,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_46 | m43_46 | (2764, 2944) |
-| m44_45 | m44_45 | (2824, 2940) |
-| m45_46 | m45_46 | (2935, 2945) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Karamja](../places/karamja.md) | (2759, 2944) | 1 | no |
+| [Karamja](../places/karamja.md) | (2764, 2944) | 1 | no |
+| [Karamja](../places/karamja.md) | (2792, 2944) | 1 | no |
+| [Karamja](../places/karamja.md) | (2798, 2944) | 1 | no |
+| [Karamja](../places/karamja.md) | (2817, 2940) | 1 | no |
+| [Karamja](../places/karamja.md) | (2824, 2940) | 1 | no |
+| [Karamja](../places/karamja.md) | (2863, 2941) | 1 | no |
+| [Karamja](../places/karamja.md) | (2872, 2941) | 1 | no |
+| [Karamja](../places/karamja.md) | (2935, 2945) | 1 | no |
 
 ## Interactions
 

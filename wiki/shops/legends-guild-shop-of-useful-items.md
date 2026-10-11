@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Siegfried Erkle](../npcs/siegfried-erkle.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2725, 3381) L2 |
+| **Coordinates** | (2725, 3381) L2 in [Legends' Guild (Kandarin)](../places/legends-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

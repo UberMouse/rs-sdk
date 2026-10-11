@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Thessalia](../npcs/thessalia.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3204, 3417) |
+| **Coordinates** | (3204, 3417) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -24,12 +24,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_152 | m45_152 | (2915, 9760) |
-| m47_161 | m47_161 | (3029, 10313) |
-| m47_58 | m47_58 | (3019, 3760) |
-| m50_59 | m50_59 | (3233, 3783) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3032, 10311) | 4 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2915, 9760) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9759) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9769) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9786) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (3021, 3761) | 4 | yes |
+| [Wilderness](../places/wilderness.md) | (3233, 3783) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3241, 3796) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3253, 3782) | 1 | yes |
 
 ## Drops
 

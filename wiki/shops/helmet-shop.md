@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Peksa](../npcs/peksa.md) |
 | **Location** | Barbarian Village |
-| **Coordinates** | (3076, 3429) |
+| **Coordinates** | (3076, 3429) in [Barbarian Village (Misthalin)](../places/barbarian-village.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

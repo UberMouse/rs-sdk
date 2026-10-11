@@ -10,12 +10,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m29_75 | m29_75 | (1885, 4825) |
-| m30_75 | m30_75 | (1947, 4827) |
-| m31_75 | m31_75 | (2013, 4825) |
-| Yanille area | m41_49 | (2668, 3162) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (1885, 4825) | 1 | no |
+| - | (1947, 4827) | 1 | no |
+| - | (2013, 4825) | 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | (2668, 3162) | 1 | no |
 
 ## Interactions
 

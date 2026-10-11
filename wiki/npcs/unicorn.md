@@ -11,18 +11,24 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge (west) | m49_50 | (3140, 3209) |
-| m37_150 | m37_150 | (2397, 9603) |
-| m40_47 | m40_47 | (2571, 3058) |
-| m41_51 | m41_51 | (2629, 3266) |
-| m42_53 | m42_53 | (2700, 3423) |
-| m42_56 | m42_56 | (2741, 3605) |
-| m43_54 | m43_54 | (2783, 3466) |
-| m44_52 | m44_52 | (2838, 3370) |
-| Varrock (east) | m51_52 | (3283, 3355) |
-| Wilderness | m48_53 | (3084, 3454) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3090, 3450) | 1 | yes |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2632, 3266) | 2 | no |
+| [Entrana](../places/entrana.md) | (2838, 3370) | 1 | no |
+| [Entrana](../places/entrana.md) | (2850, 3378) | 1 | no |
+| [Entrana](../places/entrana.md) | (2862, 3377) | 2 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2571, 3058) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2700, 3423) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2700, 3442) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2741, 3605) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2783, 3466) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2791, 3460) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3084, 3454) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3140, 3209) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3285, 3352) | 2 | yes |
+| [Underground Pass](../places/underground-pass.md) | (2397, 9603) | 1 | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2579, 3066) | 1 | no |
 
 ## Drops
 

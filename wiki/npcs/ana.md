@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_147 | m51_147 | (3302, 9466) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3302, 9466) | 1 | no |
 
 ## Interactions
 

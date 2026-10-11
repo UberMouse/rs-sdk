@@ -11,11 +11,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_60 | m39_60 | (2499, 3893) |
-| m40_51 | m40_51 | (2592, 3269) |
-| m40_61 | m40_61 | (2579, 3908) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2586, 3914) | 16 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2594, 3270) | 3 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2502, 3896) | 8 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2586, 3909) | 10 | no |
 
 ## Drops
 

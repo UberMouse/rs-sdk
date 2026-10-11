@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_48 | m39_48 | (2535, 3091) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3091) | 1 | no |
 
 ## Drops
 

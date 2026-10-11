@@ -9,11 +9,12 @@
 | **Movement** | Wander (range 3) |
 | **Respawn** | 100 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_147 | m51_147 | (3273, 9420) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3273, 9420) | 1 | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3288, 9446) | 1 | no |
 
 ## Drops
 

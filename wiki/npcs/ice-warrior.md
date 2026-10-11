@@ -24,14 +24,33 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_154 | m44_154 | (2822, 9901) |
-| m44_155 | m44_155 | (2834, 9940) |
-| m44_54 | m44_54 | (2847, 3514) |
-| m46_60 | m46_60 | (2945, 3866) |
-| m46_61 | m46_61 | (2947, 3934) |
-| m47_149 | m47_149 | (3044, 9581) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2834, 9940) | 1 | no |
+| - | (2836, 9953) | 1 | no |
+| - | (2844, 9944) | 1 | no |
+| - | (2866, 9950) | 6 | no |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3046, 9580) | 3 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3049, 9590) | 1 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3053, 9576) | 1 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3055, 9567) | 2 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3059, 9582) | 4 | yes |
+| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2849, 3513) | 2 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2822, 9901) | 1 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2836, 9905) | 1 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2838, 9917) | 1 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2847, 9919) | 1 | no |
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2848, 9912) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (2945, 3866) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (2946, 3857) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (2951, 3925) | 7 | no |
+| [Wilderness](../places/wilderness.md) | (2953, 3858) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (2955, 3880) | 9 | yes |
+| [Wilderness](../places/wilderness.md) | (2958, 3866) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (2967, 3946) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (2971, 3938) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (2978, 3948) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (2984, 3933) | 1 | no |
 
 ## Drops
 

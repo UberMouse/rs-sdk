@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Ogre trader](../npcs/ogre-trader.md) |
 | **Location** | Yanille |
-| **Coordinates** | (2518, 3035) |
+| **Coordinates** | (2518, 3035) in [Gutanoth (Feldip Hills)](../places/gutanoth.md) |
 | **Type** | General Store |
 
 ## Stock

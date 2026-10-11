@@ -11,12 +11,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_148 | m40_148 | (2611, 9483) |
-| m40_52 | m40_52 | (2561, 3355) |
-| m45_153 | m45_153 | (2929, 9848) |
-| m48_155 | m48_155 | (3104, 9942) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2613, 9485) | 7 | no |
+| - | (2614, 9522) | 4 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3110, 9936) | 11 | no |
+| [Kandarin](../places/kandarin.md) | (2562, 3356) | 4 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2934, 9849) | 6 | no |
 
 ## Drops
 

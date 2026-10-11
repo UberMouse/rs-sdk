@@ -10,18 +10,25 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_51 | (3194, 3267) |
-| Falador (west) | m45_51 | (2923, 3325) |
-| Lumbridge | m50_50 | (3202, 3262) |
-| Lumbridge (west) | m49_50 | (3193, 3262) |
-| m41_52 | m41_52 | (2650, 3366) |
-| m41_73 | m41_73 | (2650, 4711) |
-| m47_54 | m47_54 | (3050, 3518) |
-| m49_149 | m49_149 | (3178, 9576) |
-| Varrock | m50_52 | (3230, 3346) |
-| Varrock (south) | m50_51 | (3202, 3271) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2925, 3324) | 3 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3052, 3518) | 3 | yes |
+| [Fisher Realm](../places/fisher-realm.md) | (2655, 4711) | 10 | no |
+| [Kandarin](../places/kandarin.md) | (2653, 3367) | 10 | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3196, 3259) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3206, 3260) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3200, 3266) | 12 | yes |
+| [Misthalin](../places/misthalin.md) | (3210, 3274) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3236, 3346) | 4 | yes |
+| [Misthalin](../places/misthalin.md) | (3236, 3346) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3246, 3343) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3246, 3350) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3253, 3355) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3262, 3348) | 1 | yes |
+| [Zanaris](../places/zanaris.md) | (3181, 9574) | 2 | no |
+| [Zanaris](../places/zanaris.md) | (3184, 9552) | 2 | no |
+| [Zanaris](../places/zanaris.md) | (3191, 9552) | 1 | no |
 
 ## Drops
 

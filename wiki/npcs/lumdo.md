@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_42 | m43_42 | (2803, 2707) |
-| m45_42 | m45_42 | (2891, 2724) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2803, 2707) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2891, 2724) | 1 | no |
 
 ## Interactions
 

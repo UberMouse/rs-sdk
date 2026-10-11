@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { buildSites, locSizes, type LocReach, type SiteCollision } from '../place';
+import { buildSites, locSizes, spawnClusters, type LocReach, type SiteCollision } from '../place';
 import type { Config } from '../sources/configs';
 import type { Zones } from '../sources/zones';
 import { zoneKey } from '../sources/zones';
@@ -218,6 +218,69 @@ describe('buildSites: access flags', () => {
     test('outside every zone list and the Wilderness', () => {
         const [site] = build([loc('tree', 'oak', 100, 100)]);
         expect([site!.f2p, site!.multiway, site!.wildernessLevel]).toEqual([false, false, 0]);
+    });
+});
+
+const spawn = (config: string, x: number, z: number, level = 0) => ({ config, tile: { level, x, z } });
+const clusters = (ss: ReturnType<typeof spawn>[], resolve: (t: Tile) => string[] = oneArea, zones = noZones) =>
+    spawnClusters(ss, resolve, zones);
+
+describe('spawnClusters', () => {
+    test('spawns of a config within 6 tiles, chained, are one cluster with their mean, box and count', () => {
+        // 100 -> 106 -> 112: each pair 6 apart, the ends 12 apart, as single linkage joins them.
+        expect(clusters([spawn('man', 100, 100), spawn('man', 106, 101), spawn('man', 112, 100)])).toEqual([
+            {
+                config: 'man',
+                areaPath: ['misthalin', 'lumbridge'],
+                centre: { level: 0, x: 106, z: 100 },
+                bbox: { x1: 100, z1: 100, x2: 112, z2: 101, level: 0 },
+                count: 3,
+                f2p: false,
+            },
+        ]);
+    });
+
+    test('7 tiles apart, on another level, of another config or in another area are apart', () => {
+        const out = clusters(
+            [
+                spawn('man', 100, 100),
+                spawn('man', 93, 100),
+                spawn('man', 100, 100, 1),
+                spawn('woman', 100, 100),
+                spawn('man', 101, 100),
+            ],
+            splitAt101,
+        );
+        expect(
+            out.map(c => `${c.config} ${c.areaPath.at(-1)} ${c.centre.x},${c.centre.z} L${c.centre.level} ${c.count}`),
+        ).toEqual([
+            'man west-bank 93,100 L0 1',
+            'man west-bank 100,100 L0 1',
+            'man west-bank 100,100 L1 1',
+            'man east-bank 101,100 L0 1',
+            'woman west-bank 100,100 L0 1',
+        ]);
+    });
+
+    test('two spawns on one tile count twice; the order of the input does not matter', () => {
+        const ss = [spawn('cow', 3, 3), spawn('cow', 3, 3), spawn('chicken', 50, 50), spawn('cow', 20, 3)];
+        const out = clusters(ss);
+        expect(out.map(c => [c.config, c.count])).toEqual([
+            ['chicken', 1],
+            ['cow', 2],
+            ['cow', 1],
+        ]);
+        expect(clusters(ss.toReversed())).toEqual(out);
+    });
+
+    test('a cluster is F2P when one of its spawns is in a free zone', () => {
+        const zones: Zones = { f2p: new Set([zoneKey({ level: 0, x: 3104, z: 3600 })]), multiway: new Set() };
+        const out = clusters(
+            [spawn('man', 3100, 3600), spawn('man', 3104, 3600), spawn('man', 3200, 3600)],
+            oneArea,
+            zones,
+        );
+        expect(out.map(c => c.f2p)).toEqual([true, false]);
     });
 });
 

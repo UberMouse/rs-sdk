@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_148 | m40_148 | (2588, 9489) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2588, 9489) | 1 | no |
 
 ## Interactions
 

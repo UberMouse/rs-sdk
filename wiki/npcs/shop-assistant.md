@@ -10,15 +10,16 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Al Kharid | m51_49 | (3316, 3182) |
-| Camelot area | m46_52 | (2955, 3389) |
-| Falador | m46_50 | (2948, 3216) |
-| Karamja | m45_49 | (2902, 3150) |
-| Lumbridge | m50_50 | (3212, 3247) |
-| Varrock (north) | m50_53 | (3217, 3411) |
-| Wilderness | m48_54 | (3081, 3511) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3316, 3182) | 1 | yes |
+| [Edgeville (Misthalin)](../places/edgeville.md) | (3081, 3511) | 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2955, 3389) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2902, 3150) | 1 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3212, 3247) | 1 | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2948, 3216) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3205, 3399) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3217, 3411) | 1 | yes |
 
 ## Interactions
 

@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Varrock | m50_52 | (3208, 3391) |
-| Varrock (north) | m50_53 | (3235, 3401) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3208, 3391) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3235, 3401) | 1 | yes |
 
 ## Drops
 

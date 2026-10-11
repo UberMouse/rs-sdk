@@ -24,10 +24,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_155 | m48_155 | (3123, 9929) |
-| m49_55 | m49_55 | (3160, 3568) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3130, 9929) | 9 | no |
+| [Wilderness](../places/wilderness.md) | (3160, 3568) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3169, 3578) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3172, 3561) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3175, 3572) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3179, 3564) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3184, 3580) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3189, 3563) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3190, 3570) | 1 | yes |
 
 ## Drops
 

@@ -24,14 +24,25 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_158 | m43_158 | (2769, 10149) |
-| m44_157 | m44_157 | (2827, 10081) L1, (2836, 10082) L2 |
-| m44_56 | m44_56 | (2852, 3591) |
-| m44_57 | m44_57 | (2856, 3683) |
-| m45_156 | m45_156 | (2921, 10027) |
-| m45_56 | m45_56 | (2904, 3642) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2779, 10140) | 7 | no |
+| - | (2829, 10084) L1 | 6 | no |
+| - | (2836, 10077) L1 | 1 | no |
+| - | (2839, 10101) L1 | 1 | no |
+| - | (2836, 10074) L2 | 1 | no |
+| - | (2836, 10085) L2 | 2 | no |
+| - | (2837, 10097) L2 | 2 | no |
+| - | (2852, 10107) L2 | 1 | no |
+| - | (2853, 10053) L2 | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2851, 3678) | 5 | no |
+| [Asgarnia](../places/asgarnia.md) | (2852, 3591) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2907, 3642) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2917, 3633) | 2 | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2869, 3591) | 14 | no |
+| [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2843, 3675) | 1 | no |
+| [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2844, 3683) | 2 | no |
+| [Troll caves](../places/troll-caves.md) | (2923, 10031) | 4 | no |
 
 ## Drops
 

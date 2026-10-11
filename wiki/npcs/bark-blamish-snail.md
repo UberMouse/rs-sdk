@@ -24,11 +24,15 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m53_52 | m53_52 | (3439, 3354) |
-| m54_53 | m54_53 | (3495, 3418) |
-| Morytania | m53_51 | (3430, 3310) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Morytania](../places/morytania.md) | (3430, 3311) | 2 | no |
+| [Morytania](../places/morytania.md) | (3439, 3312) | 1 | no |
+| [Morytania](../places/morytania.md) | (3439, 3354) | 1 | no |
+| [Morytania](../places/morytania.md) | (3448, 3268) | 1 | no |
+| [Morytania](../places/morytania.md) | (3450, 3308) | 1 | no |
+| [Morytania](../places/morytania.md) | (3497, 3419) | 2 | no |
+| [Morytania](../places/morytania.md) | (3508, 3434) | 2 | no |
 
 ## Drops
 

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Dwarf](../npcs/dwarf.md) |
 | **Location** | Falador |
-| **Coordinates** | (2993, 9828) |
+| **Coordinates** | (2993, 9828) in [Dwarven Mine](../places/dwarven-mine.md) |
 | **Type** | General Store |
 
 ## Stock

@@ -24,17 +24,30 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne area | m40_48 | (2580, 3117) |
-| Barbarian Village | m49_51, m49_52 | (3154, 3325), (3156, 3342) |
-| Falador (west) | m45_51 | (2917, 3289) |
-| Lumbridge | m50_50 | (3254, 3258) |
-| m41_52 | m41_52 | (2657, 3341) |
-| m42_55 | m42_55 | (2733, 3561) |
-| m50_149 | m50_149 | (3203, 9562) |
-| Taverley | m47_51 | (3027, 3307) |
-| Varrock (south) | m50_51 | (3243, 3295) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2933, 3272) | 3 | yes |
+| [Asgarnia](../places/asgarnia.md) | (3032, 3306) | 7 | yes |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2922, 3283) | 7 | yes |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2664, 3342) | 5 | no |
+| [Kandarin](../places/kandarin.md) | (2583, 3119) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2666, 3351) | 5 | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3258, 3259) | 3 | yes |
+| [Misthalin](../places/misthalin.md) | (3154, 3325) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3160, 3318) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3173, 3323) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3182, 3329) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3197, 3320) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3197, 3331) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3245, 3289) | 3 | yes |
+| [Misthalin](../places/misthalin.md) | (3255, 3278) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3259, 3292) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3261, 3270) | 1 | yes |
+| [River Lum (Misthalin)](../places/river-lum.md) | (3156, 3342) | 1 | yes |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2733, 3561) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2604, 3114) | 1 | no |
+| [Zanaris](../places/zanaris.md) | (3206, 9565) | 2 | no |
+| [Zanaris](../places/zanaris.md) | (3207, 9577) | 1 | no |
 
 ## Drops
 

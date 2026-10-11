@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m38_49 | m38_49 | (2438, 3186) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2438, 3186) | 1 | no |
+| [Observatory (Kandarin)](../places/observatory.md) | (2439, 3160) | 1 | no |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| West Ardougne | m39_49 | (2524, 3169) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2524, 3169) | 1 | no |
 
 ## Interactions
 

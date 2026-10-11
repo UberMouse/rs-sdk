@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_56 | m44_56 | (2864, 3588) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2864, 3588) | 1 | no |
 
 ## Drops
 

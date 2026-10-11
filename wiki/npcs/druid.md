@@ -11,10 +11,21 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_53 | m45_53 | (2883, 3431), (2898, 3432) L1 |
-| m45_54 | m45_54 | (2919, 3486) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2885, 3418) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2890, 3437) | 7 | no |
+| [Asgarnia](../places/asgarnia.md) | (2896, 3419) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2897, 3429) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3441) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2914, 3448) | 2 | no |
+| [Asgarnia](../places/asgarnia.md) | (2919, 3486) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2928, 3490) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2898, 3432) L1 | 1 | no |
+| [Druids' Circle (Asgarnia)](../places/druids-circle.md) | (2928, 3481) | 3 | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2889, 3448) | 1 | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2901, 3449) | 2 | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2906, 3451) L1 | 1 | no |
 
 ## Drops
 

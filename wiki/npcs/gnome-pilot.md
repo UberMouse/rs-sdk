@@ -10,14 +10,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge (east) | m51_50 | (3284, 3212) |
-| m38_54 | m38_54 | (2464, 3501) L3 |
-| m44_54 | m44_54 | (2847, 3499) |
-| m45_47 | m45_47 | (2918, 3057) |
-| m46_46 | m46_46 | (2970, 2973) |
-| Wilderness | m51_53 | (3321, 3431) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3284, 3212) | 1 | yes |
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2464, 3501) L3 | 1 | no |
+| [Karamja](../places/karamja.md) | (2918, 3057) | 1 | no |
+| [Karamja](../places/karamja.md) | (2970, 2973) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3321, 3431) | 1 | no |
+| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2847, 3499) | 1 | no |
 
 ## Interactions
 

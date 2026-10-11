@@ -10,16 +10,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (east) | m47_50 | (3045, 3257) |
-| Karamja (west) | m43_49 | (2797, 3155) |
-| m39_48 | m39_48 | (2556, 3078) |
-| m40_51 | m40_51 | (2575, 3320) |
-| m42_54 | m42_54 | (2690, 3493) |
-| m45_73 | m45_73 | (2940, 4678) |
-| Varrock (north) | m50_53 | (3226, 3399) |
-| Wilderness | m51_53, m51_54 | (3268, 3393), (3277, 3488) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3045, 3257) | 1 | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2797, 3155) | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2575, 3320) | 1 | no |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2690, 3493) | 1 | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3226, 3399) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3268, 3393) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3277, 3488) | 1 | yes |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | (2940, 4678) | 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2556, 3078) | 1 | no |
 
 ## Interactions
 

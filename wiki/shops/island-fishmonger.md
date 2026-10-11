@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fishmonger](../npcs/fishmonger.md) |
 | **Location** | Area Miscellania |
-| **Coordinates** | (2518, 3866) |
+| **Coordinates** | (2518, 3866) in [Miscellania and Etceteria](../places/miscellania.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

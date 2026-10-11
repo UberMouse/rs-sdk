@@ -24,10 +24,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_152 | m45_152 | (2895, 9765) |
-| m45_153 | m45_153 | (2892, 9799) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9766) | 3 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2904, 9802) | 4 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2914, 9799) | 2 | no |
 
 ## Drops
 

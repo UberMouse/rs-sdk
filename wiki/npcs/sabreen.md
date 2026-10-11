@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_51 | m52_51 | (3368, 3278) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3368, 3278) | 1 | no |
 
 ## Interactions
 

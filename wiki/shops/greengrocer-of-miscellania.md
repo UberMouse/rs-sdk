@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Greengrocer](../npcs/greengrocer.md) |
 | **Location** | Area Miscellania |
-| **Coordinates** | (2516, 3864) |
+| **Coordinates** | (2516, 3864) in [Miscellania and Etceteria](../places/miscellania.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

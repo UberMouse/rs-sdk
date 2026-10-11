@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Skulgrimen](../npcs/skulgrimen.md) |
 | **Location** | Quests |
-| **Coordinates** | (2663, 3694) |
+| **Coordinates** | (2663, 3694) in [Rellekka (Kandarin)](../places/rellekka.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

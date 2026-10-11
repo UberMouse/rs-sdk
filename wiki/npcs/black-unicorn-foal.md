@@ -9,11 +9,12 @@
 | **Movement** | Wander (range 17) |
 | **Respawn** | 40 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_57 | m42_57 | (2707, 3670) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2709, 3671) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2730, 3660) | 2 | no |
 
 ## Drops
 

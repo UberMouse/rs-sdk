@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (south) | m45_50 | (2935, 3219) |
-| Varrock (east) | m51_52 | (3270, 3391) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2935, 3219) | 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3270, 3391) | 1 | yes |
 
 ## Interactions
 

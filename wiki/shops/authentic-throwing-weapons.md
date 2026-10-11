@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Tribal Weapon Salesman](../npcs/tribal-weapon-salesman.md) |
 | **Location** | Minigames |
-| **Coordinates** | (2661, 3419) |
+| **Coordinates** | (2661, 3419) in [Ranging Guild (Kandarin)](../places/ranging-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Desert | m48_49 | (3112, 3162) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3112, 3162) L1 | 1 | yes |
 
 ## Interactions
 

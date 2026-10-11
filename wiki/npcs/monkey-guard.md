@@ -24,9 +24,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_43 | m43_43 | (2788, 2778), (2790, 2790) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2798, 2783) | 9 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2794, 2791) L1 | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2797, 2780) L1 | 1 | no |
 
 ## Drops
 

@@ -9,11 +9,12 @@
 | **Movement** | Wander (range 8) |
 | **Respawn** | 70 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_145 | m43_145 | (2796, 9304) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2804, 9300) | 7 | no |
+| - | (2808, 9308) | 1 | no |
 
 ## Drops
 

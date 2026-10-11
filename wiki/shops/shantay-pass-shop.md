@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shantay](../npcs/shantay.md) |
 | **Location** | Desert |
-| **Coordinates** | (3304, 3123) |
+| **Coordinates** | (3304, 3123) in [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

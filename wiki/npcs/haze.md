@@ -21,11 +21,13 @@
 | Range Defence | 5 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_71 | m43_71 | (2786, 4571) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2789, 4569) | 2 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2791, 4560) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2802, 4594) | 6 | no |
 
 ## Drops
 

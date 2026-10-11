@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_157 | m44_157 | (2827, 10064) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2827, 10064) L1 | 1 | no |
 
 ## Interactions
 

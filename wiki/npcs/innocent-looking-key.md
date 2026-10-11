@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_69 | m43_69 | (2788, 4455) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2788, 4455) | 1 | no |
 
 ## Interactions
 

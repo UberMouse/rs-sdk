@@ -24,11 +24,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m36_154 | m36_154 | (2347, 9916) |
-| m37_151 | m37_151 | (2395, 9683) |
-| m38_151 | m38_151 | (2432, 9723) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2354, 9907) | 31 | no |
+| [Underground Pass](../places/underground-pass.md) | (2399, 9682) | 4 | no |
+| [Underground Pass](../places/underground-pass.md) | (2435, 9723) | 8 | no |
+| [Underground Pass](../places/underground-pass.md) | (2436, 9690) | 9 | no |
 
 ## Drops
 

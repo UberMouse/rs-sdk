@@ -24,11 +24,12 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_55 | m39_55 | (2548, 3558) |
-| Varrock (north) | m50_53 | (3225, 3395) |
-| Wilderness | m48_53 | (3075, 3420) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2549, 3561) | 2 | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | 2 | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | 3 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | 1 | yes |
 
 ## Drops
 

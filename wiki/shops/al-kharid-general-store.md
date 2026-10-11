@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Al Kharid |
-| **Coordinates** | Shop keeper: (3316, 3184); Shop assistant: (3316, 3182) |
+| **Coordinates** | (3316, 3183) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
 | **Type** | General Store |
 
 ## Stock

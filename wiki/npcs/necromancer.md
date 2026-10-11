@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Seers' Village area | m41_50 | (2671, 3240) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | 1 | no |
 
 ## Drops
 

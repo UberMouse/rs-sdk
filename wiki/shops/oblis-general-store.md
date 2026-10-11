@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Obli](../npcs/obli.md) |
 | **Location** | Shilo Village |
-| **Coordinates** | (2824, 2959) |
+| **Coordinates** | (2824, 2959) in [Karamja](../places/karamja.md) |
 | **Type** | General Store |
 
 ## Stock

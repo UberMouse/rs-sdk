@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 5) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_51 | m40_51 | (2595, 3277) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2605, 3277) | 2 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2595, 3277) | 1 | no |
 
 ## Interactions
 

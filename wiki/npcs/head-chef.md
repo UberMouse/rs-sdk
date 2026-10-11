@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness | m49_53 | (3143, 3444) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | (3143, 3444) | 1 | yes |
 
 ## Interactions
 

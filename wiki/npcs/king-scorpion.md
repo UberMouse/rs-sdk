@@ -24,12 +24,19 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Entrana | m44_51 | (2842, 3298) |
-| m47_152 | m47_152 | (3040, 9775) |
-| m47_59 | m47_59 | (3070, 3829) |
-| m48_60 | m48_60 | (3075, 3848) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2855, 3303) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2842, 3298) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2844, 3291) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2851, 3298) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2859, 3283) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2861, 3295) | 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3044, 9773) | 2 | yes |
+| [Lava Maze (Wilderness)](../places/lava-maze.md) | (3070, 3836) | 1 | yes |
+| [Lava Maze (Wilderness)](../places/lava-maze.md) | (3075, 3848) | 1 | yes |
+| [Lava Maze (Wilderness)](../places/lava-maze.md) | (3090, 3841) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3070, 3829) | 1 | yes |
 
 ## Drops
 

@@ -23,10 +23,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (west) | m39_50 | (2502, 3242) |
-| m38_51 | m38_51 | (2454, 3301) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Battlefield (Kandarin)](../places/battlefield.md) | (2523, 3237) | 19 | no |
+| [Kandarin](../places/kandarin.md) | (2456, 3300) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2502, 3242) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2516, 3246) | 6 | no |
+| [Kandarin](../places/kandarin.md) | (2518, 3255) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2537, 3245) | 12 | no |
 
 ## Drops
 

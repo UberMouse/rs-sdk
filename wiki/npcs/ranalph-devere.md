@@ -22,11 +22,13 @@
 | Range Defence | 38 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_73 | m37_73 | (2408, 4698) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2408, 4698) | 1 | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2417, 4699) | 1 | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2426, 4699) | 2 | no |
 
 ## Drops
 

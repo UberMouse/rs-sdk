@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_150 | m40_150 | (2569, 9606) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2569, 9606) | 1 | no |
 
 ## Drops
 

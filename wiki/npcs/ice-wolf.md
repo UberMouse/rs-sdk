@@ -9,11 +9,16 @@
 | **Movement** | Wander (range 6) |
 | **Respawn** | 100 ticks |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_60 | m43_60 | (2761, 3863) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2761, 3863) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2764, 3858) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2769, 3854) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2769, 3861) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2792, 3850) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2801, 3848) | 1 | no |
 
 ## Drops
 

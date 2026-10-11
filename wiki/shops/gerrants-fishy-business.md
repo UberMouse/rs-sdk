@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Gerrant](../npcs/gerrant.md) |
 | **Location** | Port Sarim |
-| **Coordinates** | (3013, 3225) |
+| **Coordinates** | (3013, 3225) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Heckel Funch](../npcs/heckel-funch.md) |
 | **Location** | Tree Gnome Stronghold |
-| **Coordinates** | (2493, 3488) L1 |
+| **Coordinates** | (2493, 3488) L1 in [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

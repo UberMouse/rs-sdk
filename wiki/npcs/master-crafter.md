@@ -8,11 +8,13 @@
 | **Aggressive** | No |
 | **Movement** | Stationary (indoors) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Falador (west) | m45_51 | (2931, 3280) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2937, 3290) | 1 | yes |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2931, 3280) | 1 | yes |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2932, 3287) | 1 | yes |
 
 ## Interactions
 

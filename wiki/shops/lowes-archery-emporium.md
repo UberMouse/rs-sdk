@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Lowe](../npcs/lowe.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3232, 3423) |
+| **Coordinates** | (3232, 3423) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

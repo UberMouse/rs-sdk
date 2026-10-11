@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_77 | m34_77 | (2207, 4958) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe Games Room](../places/burthorpe-games-room.md) | (2207, 4958) | 1 | no |
 
 ## Interactions
 

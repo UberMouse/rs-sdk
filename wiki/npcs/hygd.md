@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_55 | m45_55 | (2926, 3536) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Chaos Temple (Asgarnia)](../places/asgarnia-chaos-temple.md) | (2926, 3536) | 1 | no |
 
 ## Drops
 

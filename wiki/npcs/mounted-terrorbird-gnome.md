@@ -24,13 +24,25 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (west) | m39_50 | (2500, 3226) |
-| m37_53 | m37_53 | (2381, 3428) |
-| m38_52 | m38_52 | (2432, 3387) |
-| m38_53 | m38_53 | (2437, 3442) |
-| m38_54 | m38_54 | (2463, 3456) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Battlefield (Kandarin)](../places/battlefield.md) | (2524, 3234) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2453, 3363) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2463, 3375) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2500, 3226) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2532, 3217) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2537, 3236) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2381, 3428) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2392, 3405) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2413, 3397) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2415, 3408) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2432, 3387) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2437, 3442) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2442, 3388) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2449, 3421) | 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3394) | 2 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2466, 3456) | 2 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2480, 3406) | 1 | no |
 
 ## Drops
 

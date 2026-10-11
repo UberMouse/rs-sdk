@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Flynn](../npcs/flynn.md) |
 | **Location** | Falador |
-| **Coordinates** | (2951, 3386) |
+| **Coordinates** | (2951, 3386) in [Falador (Asgarnia)](../places/falador.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

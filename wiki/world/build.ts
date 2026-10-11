@@ -1,5 +1,6 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
-// sites named by the curated areas, then a report, and renders the pages (render.ts). `bun run world`
+// sites named by the curated areas, and every npc spawn clustered per config (npcSpawns, which the npc
+// pages read), then a report, and renders the pages (render.ts). `bun run world`
 // writes them and exits 1 when a site that agents choose from (COVERED) lies outside every area, so a
 // new bank or mine can't go unnamed. `--check` writes nothing: it exits 1 when world.json or a page
 // differs from what the game data and this code generate now, so a hand edit or a stale page fails
@@ -11,7 +12,7 @@ import { classifier } from './classify';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { cmp } from './render/common';
-import { buildSites, locSizes, type SiteCollision } from './place';
+import { buildSites, locSizes, spawnClusters, type SiteCollision } from './place';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
@@ -124,13 +125,22 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     features.sort(byWritten);
 
     const log: string[] = [];
-    const sites: Site[] = buildSites(features, areaResolver(areas), readZones(), collision, {
+    const resolve = areaResolver(areas);
+    const zones = readZones();
+    const sites: Site[] = buildSites(features, resolve, zones, collision, {
         size: locSizes(locConfigs),
         log: line => log.push(line),
     }).sort((a, b) => cmp(a.id, b.id));
+    // Every placed npc, classified or not, so an npc page can say where any npc stands. A spawn with no
+    // config is in `unpacked` already.
+    const spawns = map.npcs.flatMap(n => {
+        const config = packs.npc.name.get(n.id);
+        return config === undefined ? [] : [{ config, tile: n.tile }];
+    });
+    const npcSpawns = spawnClusters(spawns, resolve, zones);
 
     return {
-        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites },
+        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites, npcSpawns },
         report: {
             features: tally(features, f => f.kind),
             sites: tally(sites, s => s.kind),
@@ -147,8 +157,9 @@ const jsonList = (key: string, xs: readonly unknown[]): string =>
     `  "${key}": [` + (xs.length ? `\n${xs.map(x => `    ${JSON.stringify(x)}`).join(',\n')}\n  ]` : ']');
 
 /**
- * Two-space JSON with one area, feature or site per line, so a diff shows which ones changed. Keys
- * keep the order the objects were built in, and undefined fields are left out as JSON.stringify does.
+ * Two-space JSON with one area, feature, site or npc spawn cluster per line, so a diff shows which
+ * ones changed. Keys keep the order the objects were built in, and undefined fields are left out as
+ * JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
     return [
@@ -157,7 +168,8 @@ export function serializeWorld(world: World): string {
         `  "generatedFrom": ${JSON.stringify(world.generatedFrom)},`,
         jsonList('areas', world.areas) + ',',
         jsonList('features', world.features) + ',',
-        jsonList('sites', world.sites),
+        jsonList('sites', world.sites) + ',',
+        jsonList('npcSpawns', world.npcSpawns),
         '}',
         '',
     ].join('\n');

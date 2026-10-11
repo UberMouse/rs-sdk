@@ -21,11 +21,12 @@
 | Range Defence | 4 |
 | Attack Style | Stab |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_57 | m47_57 | (3036, 3672) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Wilderness](../places/wilderness.md) | (3037, 3671) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3038, 3661) | 2 | yes |
 
 ## Drops
 

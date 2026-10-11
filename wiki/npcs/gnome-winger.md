@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_54 | m37_54 | (2393, 3483) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3483) | 1 | no |
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3493) | 1 | no |
 
 ## Interactions
 

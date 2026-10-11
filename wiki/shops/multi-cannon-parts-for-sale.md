@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Nulodion](../npcs/nulodion.md) |
 | **Location** | Quests |
-| **Coordinates** | (3011, 3453) |
+| **Coordinates** | (3011, 3453) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

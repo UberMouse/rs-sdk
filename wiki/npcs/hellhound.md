@@ -11,10 +11,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_151 | m42_151 | (2734, 9688) |
-| m44_153 | m44_153 | (2856, 9847) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2860, 9841) | 4 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2864, 9851) | 1 | no |
+| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2734, 9691) | 2 | no |
 
 ## Drops
 

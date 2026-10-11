@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_60 | m40_60 | (2581, 3847) |
-| m41_57 | m41_57 | (2629, 3693) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2581, 3847) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2629, 3693) | 1 | no |
 
 ## Interactions
 

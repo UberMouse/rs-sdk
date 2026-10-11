@@ -22,11 +22,13 @@
 | Range Defence | 51 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_154 | m41_154 | (2638, 9899) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2636, 9910) | 1 | no |
+| - | (2638, 9899) | 1 | no |
+| - | (2648, 9906) | 3 | no |
 
 ## Drops
 

@@ -24,11 +24,23 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge (west) | m49_50 | (3145, 3202) |
-| m40_57 | m40_57 | (2619, 3671) |
-| m41_57 | m41_57 | (2625, 3664) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Misthalin](../places/misthalin.md) | (3145, 3202) | 1 | yes |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2619, 3671) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2622, 3654) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2625, 3664) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2630, 3676) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2634, 3651) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2643, 3674) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2650, 3652) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2655, 3691) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2666, 3678) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3658) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3670) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3710) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3695) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2685, 3653) | 1 | no |
 
 ## Drops
 

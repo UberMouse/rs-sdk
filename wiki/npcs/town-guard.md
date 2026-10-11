@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_56 | m41_56 | (2660, 3646) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2660, 3646) | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2664, 3646) | 1 | no |
 
 ## Drops
 

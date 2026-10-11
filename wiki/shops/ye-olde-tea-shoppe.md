@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Tea seller](../npcs/tea-seller.md) |
 | **Location** | Varrock |
-| **Coordinates** | (3271, 3411) |
+| **Coordinates** | (3271, 3411) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

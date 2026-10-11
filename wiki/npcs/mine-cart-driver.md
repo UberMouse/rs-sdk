@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m51_47 | m51_47 | (3287, 3022) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3287, 3022) | 1 | no |
 
 ## Interactions
 

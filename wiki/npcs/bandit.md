@@ -21,11 +21,14 @@
 | Range Defence | 0 |
 | Attack Style | Stab |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_57 | m47_57 | (3029, 3701) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3032, 3695) | 1 | yes |
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3034, 3684) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3031, 3703) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3040, 3703) | 1 | yes |
 
 ## Drops
 

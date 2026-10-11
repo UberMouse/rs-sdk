@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m45_54 | m45_54 | (2904, 3463) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Taverley (Asgarnia)](../places/taverley.md) | (2904, 3463) | 1 | no |
 
 ## Drops
 

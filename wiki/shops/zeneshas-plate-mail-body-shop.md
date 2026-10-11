@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Zenesha](../npcs/zenesha.md) |
 | **Location** | East Ardougne |
-| **Coordinates** | (2653, 3295) |
+| **Coordinates** | (2653, 3295) in [East Ardougne (Kandarin)](../places/east-ardougne.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

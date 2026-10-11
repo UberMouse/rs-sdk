@@ -22,11 +22,14 @@
 | Range Defence | 0 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_159 | m43_159 | (2775, 10224) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2773, 10222) | 5 | no |
+| - | (2786, 10199) | 4 | no |
+| - | (2786, 10232) | 4 | no |
+| - | (2795, 10219) | 8 | no |
 
 ## Drops
 

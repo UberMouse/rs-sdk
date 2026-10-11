@@ -10,11 +10,21 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Gnome Stronghold | m43_51 | (2768, 3274), (2781, 3290) L1 |
-| m41_57 | m41_57 | (2641, 3699) |
-| m43_73 | m43_73 | (2802, 4706) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2802, 4706) | 1 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2768, 3285) | 1 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2778, 3278) | 1 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2778, 3288) | 2 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2778, 3289) | 2 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2766, 3285) L1 | 1 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2771, 3282) L1 | 1 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2783, 3287) L1 | 2 | no |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2784, 3277) L1 | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2770, 3274) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2794, 3279) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2787, 3280) L1 | 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2641, 3699) | 1 | no |
 
 ## Interactions
 

@@ -10,10 +10,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_70 | m42_70 | (2727, 4509) |
-| m43_69 | m43_69 | (2781, 4462) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2697, 4498) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2715, 4516) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2727, 4509) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2739, 4528) | 1 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2786, 4458) | 3 | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2788, 4447) | 4 | no |
 
 ## Drops
 

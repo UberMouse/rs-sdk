@@ -24,14 +24,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_51 | (3154, 3293) |
-| m39_60 | m39_60 | (2538, 3852) |
-| m41_52 | m41_52 | (2645, 3367) |
-| Taverley | m47_51 | (3035, 3296) |
-| Varrock | m50_52 | (3240, 3345) |
-| Varrock (south) | m50_51 | (3227, 3290) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3035, 3296) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2648, 3361) | 3 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2538, 3852) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3154, 3293) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3165, 3324) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3227, 3290) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3233, 3308) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3240, 3345) | 1 | yes |
+| [Misthalin](../places/misthalin.md) | (3262, 3325) | 1 | yes |
 
 ## Drops
 

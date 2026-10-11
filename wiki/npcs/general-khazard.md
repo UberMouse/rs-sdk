@@ -10,9 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Ardougne (south) | m40_49 | (2606, 3154), (2610, 3143) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2606, 3154) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2610, 3143) L2 | 1 | no |
 
 ## Drops
 

@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 3) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| West Ardougne | m39_49 | (2504, 3191) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2504, 3191) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2514, 3159) | 1 | no |
 
 ## Interactions
 

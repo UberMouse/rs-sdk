@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Shop keeper](../npcs/shop-keeper.md), [Shop assistant](../npcs/shop-assistant.md) |
 | **Location** | Edgeville |
-| **Coordinates** | Shop keeper: (3080, 3511); Shop assistant: (3081, 3511) |
+| **Coordinates** | (3081, 3511) in [Edgeville (Misthalin)](../places/edgeville.md) |
 | **Type** | General Store |
 
 ## Stock

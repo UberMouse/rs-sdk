@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_153 | m54_153 | (3508, 9837) L3 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (3508, 9837) L3 | 1 | no |
 
 ## Interactions
 

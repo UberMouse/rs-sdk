@@ -11,12 +11,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_49 | m34_49 | (2217, 3171) |
-| m34_50 | m34_50 | (2199, 3222) |
-| m35_49 | m35_49 | (2291, 3156) |
-| m36_71 | m36_71 | (2345, 4579) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Regicide camp](../places/regicide-camp.md) | (2345, 4579) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2197, 3218) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2200, 3220) | 2 | no |
+| [Tirannwn](../places/tirannwn.md) | (2217, 3171) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2291, 3156) | 1 | no |
+| [Tirannwn](../places/tirannwn.md) | (2292, 3153) | 1 | no |
 
 ## Drops
 

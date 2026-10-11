@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Bolkoy](../npcs/bolkoy.md) |
 | **Location** | Tree Gnome Stronghold |
-| **Coordinates** | (2527, 3161) L1 |
+| **Coordinates** | (2527, 3161) L1 in [Kandarin](../places/kandarin.md) |
 | **Type** | General Store |
 
 ## Stock

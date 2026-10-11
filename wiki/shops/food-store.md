@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Wydin](../npcs/wydin.md) |
 | **Location** | Port Sarim |
-| **Coordinates** | (3014, 3204) |
+| **Coordinates** | (3014, 3204) in [Asgarnia](../places/asgarnia.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

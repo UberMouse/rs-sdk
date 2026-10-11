@@ -36,6 +36,15 @@ const shopSubtypesOf = (npc: string): string[] =>
         .flatMap(featuresOf)
         .filter(f => f.config === npc)
         .map(f => f.subtype);
+const spawnsOf = (config: string) => world.npcSpawns.filter(s => s.config === config);
+/** The place-page ids the Locations rows of an npc page link, in page order. */
+const pagePlaces = (page: string): string[] =>
+    [
+        ...readFileSync(join(WIKI, 'npcs', page), 'utf8')
+            .split('\n## ')
+            .find(s => /^Locations?\n/.test(s))!
+            .matchAll(/^\| \[[^\]]+\]\(\.\.\/places\/([a-z0-9-]+)\.md\) \|/gm),
+    ].map(m => m[1]!);
 /** A script opening `inv` as a shop. */
 const opens = (inv: string): RegExp => new RegExp(`~openshop\\(\\s*${inv}\\s*,`);
 
@@ -222,5 +231,108 @@ describe('resources and shops', () => {
             expect(shopSubtypesOf(npc)).not.toEqual([]);
             expect(shopSubtypesOf(npc)).not.toContain(inv);
         }
+    });
+
+    test('a shop page names its sites, and only the pages the data explains say not placed', () => {
+        const dir = join(WIKI, 'shops');
+        const pages = readdirSync(dir).filter(f => f.endsWith('.md') && f !== 'README.md');
+        const notPlaced = pages.filter(f => {
+            const row = readFileSync(join(dir, f), 'utf8').match(/^\| \*\*Coordinates\*\* \| (.*) \|$/m)?.[1];
+            expect(row).toBeDefined();
+            if (row!.startsWith('not placed: ')) return true;
+            // `(x, z) in [Area](../places/<id>.md)` per site, `; `-separated.
+            expect(row).toMatch(/^\(\d+, \d+\)( L\d)? in \[[^\]]+\]\(\.\.\/places\/[a-z0-9-]+\.md\)(; |$)/);
+            return false;
+        });
+        expect(notPlaced.map(f => f.replace(/\.md$/, '')).sort()).toEqual([...UNOPENED, ...Object.keys(SECOND)].sort());
+    });
+});
+
+describe('npc locations', () => {
+    const BANKER_CONFIGS = new Set([
+        'banker1',
+        'banker2',
+        'fairy_banker',
+        'kharidbanker1',
+        'kharidbanker2',
+        'misc_banker',
+        'shilobanker',
+        'werewolfbanker',
+    ]);
+    /** The 18 banks the configs of wiki/npcs/banker.md stand in: the old page named Draynor's "Edgeville area". */
+    const BANKER_BANKS = [
+        'al-kharid-bank',
+        'ardougne-north-bank',
+        'ardougne-south-bank',
+        'canifis-bank',
+        'catherby-bank',
+        'draynor-bank',
+        'edgeville-bank',
+        'falador-east-bank',
+        'falador-west-bank',
+        'fishing-guild-bank',
+        'legends-guild-bank',
+        'miscellania-bank',
+        'seers-village-bank',
+        'shilo-village-bank',
+        'varrock-east-bank',
+        'varrock-west-bank',
+        'yanille-bank',
+        'zanaris-bank',
+    ];
+    const npcPack = readPack('npc');
+
+    test('npcSpawns holds every placed npc once, in clusters of one config, level and leaf area', () => {
+        const placed = mapSquares().npcs.filter(n => npcPack.name.has(n.id));
+        expect(world.npcSpawns.reduce((sum, s) => sum + s.count, 0)).toBe(placed.length);
+        for (const s of world.npcSpawns) {
+            expect(s.centre.level).toBe(s.bbox.level!);
+            expect(s.count).toBeGreaterThan(0);
+        }
+    });
+
+    test("every banker of the Banker page is in a bank site, 18 of them, each its bank's", () => {
+        const bankers = world.features
+            .map((f, i) => ({ f, i }))
+            .filter(({ f }) => f.source === 'npc' && BANKER_CONFIGS.has(f.config));
+        const placed = mapSquares().npcs.filter(n => BANKER_CONFIGS.has(npcPack.name.get(n.id) ?? ''));
+        expect(bankers.length).toBe(placed.length);
+        expect(bankers.every(({ f }) => f.kind === 'bank')).toBe(true);
+        const leaves = sitesOf('bank')
+            .filter(s => s.features.some(i => BANKER_CONFIGS.has(world.features[i]!.config)))
+            .map(s => s.areaPath.at(-1));
+        expect(leaves.sort()).toEqual(BANKER_BANKS);
+    });
+
+    test('wiki/npcs/banker.md lists those 18 banks, and Fadli and Gundai their own', () => {
+        expect(pagePlaces('banker.md').sort()).toEqual(BANKER_BANKS);
+        expect(pagePlaces('fadli.md')).toEqual(['duel-arena-bank']);
+        expect(pagePlaces('gundai.md')).toEqual(['mage-arena-bank']);
+    });
+
+    test('Fadli and Gundai stand in their banks: one placement each, in a bank site', () => {
+        for (const [config, leaf] of [
+            ['duel_fadli', 'duel-arena-bank'],
+            ['magearena_banker', 'mage-arena-bank'],
+        ] as const) {
+            expect(spawnsOf(config).map(s => [s.areaPath.at(-1), s.count])).toEqual([[leaf, 1]]);
+            const bank = sitesOf('bank').filter(s => s.features.some(i => world.features[i]!.config === config));
+            expect(bank.map(s => s.areaPath.at(-1))).toEqual([leaf]);
+        }
+    });
+
+    test('an npc no kind takes still has a place: Sigli the Huntsman in Rellekka', () => {
+        expect(world.features.some(f => f.config === 'viking_sigli')).toBe(false);
+        expect(spawnsOf('viking_sigli')).toEqual([
+            {
+                config: 'viking_sigli',
+                areaPath: ['kandarin', 'rellekka'],
+                centre: { level: 0, x: 2660, z: 3653 },
+                bbox: { x1: 2660, z1: 3653, x2: 2660, z2: 3653, level: 0 },
+                count: 1,
+                f2p: false,
+            },
+        ]);
+        expect(pagePlaces('sigli-the-huntsman.md')).toEqual(['rellekka']);
     });
 });

@@ -10,12 +10,23 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m52_152 | m52_152 | (3352, 9757) |
-| m52_153 | m52_153 | (3352, 9821) |
-| m52_52 | m52_52 | (3356, 3385) |
-| m52_53 | m52_53 | (3347, 3412) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3354, 3408) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3360, 3416) | 2 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3364, 3408) | 2 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3364, 3426) | 3 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3373, 3418) | 1 | no |
+| [Dig Site (Misthalin)](../places/dig-site.md) | (3374, 3430) | 1 | no |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | (3352, 9757) | 1 | no |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | (3352, 9821) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3347, 3412) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3348, 3428) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3350, 3401) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3356, 3385) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3359, 3396) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3370, 3387) | 1 | no |
+| [Misthalin](../places/misthalin.md) | (3372, 3401) | 1 | no |
 
 ## Interactions
 

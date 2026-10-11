@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Tiadeche](../npcs/tiadeche.md) |
 | **Location** | Quests |
-| **Coordinates** | (2781, 3057) |
+| **Coordinates** | (2781, 3057) in [Karamja](../places/karamja.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

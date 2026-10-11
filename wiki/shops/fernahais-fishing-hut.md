@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Fernahei](../npcs/fernahei.md) |
 | **Location** | Shilo Village |
-| **Coordinates** | (2870, 2972) |
+| **Coordinates** | (2870, 2972) in [Shilo Village (Karamja)](../places/shilo-village.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

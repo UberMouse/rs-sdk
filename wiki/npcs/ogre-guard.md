@@ -22,11 +22,14 @@
 | Range Defence | 0 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_47 | m39_47 | (2549, 3029) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2502, 3012) | 2 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2528, 3019) | 2 | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2550, 3030) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2506, 3062) | 2 | no |
 
 ## Drops
 

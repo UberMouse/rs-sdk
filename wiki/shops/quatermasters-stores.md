@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Quartermaster](../npcs/quartermaster.md) |
 | **Location** | Quests |
-| **Coordinates** | (2194, 3140) |
+| **Coordinates** | (2194, 3140) in [Tirannwn](../places/tirannwn.md) |
 | **Type** | General Store |
 
 ## Stock

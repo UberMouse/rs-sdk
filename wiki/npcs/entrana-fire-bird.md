@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_52 | m44_52 | (2847, 3386) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Entrana](../places/entrana.md) | (2847, 3386) | 1 | no |
 
 ## Drops
 

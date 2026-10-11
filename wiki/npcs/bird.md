@@ -11,13 +11,40 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_42 | m42_42 | (2718, 2726) |
-| m42_43 | m42_43 | (2694, 2761) |
-| m43_42 | m43_42 | (2760, 2711) |
-| m43_43 | m43_43 | (2753, 2754) |
-| m45_42 | m45_42 | (2891, 2723) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2694, 2761) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2696, 2709) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2698, 2788) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2713, 2697) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2718, 2726) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2723, 2805) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2737, 2695) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2741, 2712) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2753, 2754) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2756, 2811) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2760, 2711) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2764, 2694) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2768, 2757) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2771, 2737) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2773, 2704) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2779, 2743) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2779, 2809) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2783, 2709) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2787, 2694) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2787, 2752) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2794, 2705) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2795, 2739) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2797, 2810) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2798, 2716) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2807, 2714) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2810, 2736) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2813, 2757) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2891, 2723) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2900, 2739) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2902, 2701) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2906, 2709) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2939, 2718) | 1 | no |
 
 ## Drops
 

@@ -10,12 +10,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_60 | m43_60 | (2798, 3842) |
-| m44_157 | m44_157 | (2856, 10056) L1 |
-| m44_56 | m44_56 | (2832, 3597) |
-| m45_57 | m45_57 | (2885, 3670) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2857, 10057) L1 | 2 | no |
+| - | (2858, 10056) L1 | 3 | no |
+| [Asgarnia](../places/asgarnia.md) | (2832, 3597) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (2856, 3610) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2802, 3842) | 3 | no |
+| [Kandarin](../places/kandarin.md) | (2804, 3843) | 1 | no |
+| [Trollheim (Asgarnia)](../places/trollheim.md) | (2889, 3674) | 3 | no |
+| [Trollheim (Asgarnia)](../places/trollheim.md) | (2892, 3685) | 1 | no |
+| [Trollheim (Asgarnia)](../places/trollheim.md) | (2900, 3671) | 1 | no |
 
 ## Drops
 

@@ -24,11 +24,18 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge (west) | m49_50 | (3145, 3200) |
-| m40_51 | m40_51 | (2572, 3284) L2 |
-| m45_55 | m45_55 | (2892, 3558) L1, (2897, 3549) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3549) | 2 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3559) L1 | 2 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3569) L1 | 1 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3558) L1 | 2 | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3569) L1 | 2 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3284) L2 | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3309) L2 | 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3287) L2 | 2 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3306) L2 | 2 | no |
+| [Misthalin](../places/misthalin.md) | (3145, 3200) | 1 | yes |
 
 ## Drops
 

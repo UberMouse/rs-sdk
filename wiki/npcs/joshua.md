@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m41_53 | m41_53 | (2629, 3415) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2629, 3415) | 1 | no |
 
 ## Interactions
 

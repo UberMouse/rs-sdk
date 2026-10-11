@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_53 | m54_53 | (3508, 3440) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Morytania](../places/morytania.md) | (3508, 3440) | 1 | no |
 
 ## Interactions
 

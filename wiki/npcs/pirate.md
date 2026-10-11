@@ -24,12 +24,17 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2763, 3186) |
-| m46_149 | m46_149 | (2984, 9575) |
-| m47_49 | m47_49 | (3014, 3191) |
-| m47_61 | m47_61 | (3039, 3950) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | 1 | no |
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | 1 | no |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | 2 | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | 7 | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | 1 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2795, 3185) | 6 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3162) | 9 | no |
+| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | (3041, 3954) | 12 | no |
 
 ## Drops
 

@@ -24,38 +24,75 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Entrana | m44_51 | (2834, 3305) |
-| Falador (south) | m45_50 | (2926, 3255) L2 |
-| m37_150 | m37_150 | (2371, 9611) |
-| m39_153 | m39_153 | (2538, 9816) |
-| m40_147 | m40_147 | (2576, 9436) |
-| m40_148 | m40_148 | (2562, 9506) |
-| m40_154 | m40_154 | (2586, 9884) |
-| m41_153 | m41_153 | (2658, 9820) |
-| m41_154 | m41_154 | (2664, 9877) |
-| m42_142 | m42_142 | (2704, 9109) |
-| m44_149 | m44_149 | (2848, 9581) |
-| m44_150 | m44_150 | (2830, 9657) |
-| m45_153 | m45_153 | (2882, 9826) |
-| m46_161 | m46_161 | (2994, 10346) |
-| m46_58 | m46_58 | (2977, 3753) |
-| m46_61 | m46_61 | (2982, 3947) |
-| m47_56 | m47_56 | (3008, 3595) |
-| m48_154 | m48_154 | (3114, 9910) |
-| m48_155 | m48_155 | (3101, 9956) |
-| m48_55 | m48_55 | (3072, 3531) |
-| m49_154 | m49_154 | (3138, 9874) |
-| m49_59 | m49_59 | (3143, 3802) |
-| m50_154 | m50_154 | (3248, 9914) |
-| m50_58 | m50_58 | (3211, 3741) |
-| m51_154 | m51_154 | (3270, 9914) |
-| m51_58 | m51_58 | (3264, 3727) |
-| m52_152 | m52_152 | (3369, 9749) |
-| m52_153 | m52_153 | (3369, 9813) |
-| Rimmington | m44_50 | (2820, 3259) |
-| Wilderness (low) | m48_52 | (3110, 3367) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2565, 9507) | 6 | no |
+| - | (2576, 9436) | 1 | no |
+| - | (2579, 9461) | 1 | no |
+| - | (2588, 9884) | 3 | no |
+| - | (2590, 9437) | 1 | no |
+| - | (2651, 9890) | 9 | no |
+| - | (2658, 9820) | 1 | no |
+| - | (2664, 9877) | 1 | no |
+| - | (2668, 9826) | 4 | no |
+| - | (2708, 9108) | 4 | no |
+| - | (2713, 9133) | 4 | no |
+| - | (2738, 9122) | 5 | no |
+| - | (2743, 9103) | 4 | no |
+| - | (2838, 9645) | 14 | yes |
+| - | (3001, 10352) | 8 | no |
+| [Bone Yard (Wilderness)](../places/bone-yard.md) | (3243, 3743) | 2 | yes |
+| [Bone Yard (Wilderness)](../places/bone-yard.md) | (3252, 3737) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2820, 3259) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2850, 3248) | 3 | yes |
+| [Crandor](../places/crandor.md) | (2851, 3258) | 2 | yes |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | (3378, 9751) | 10 | no |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | (3378, 9815) | 10 | no |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3367) | 1 | yes |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2530, 9844) | 2 | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9817) | 3 | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2543, 9847) | 1 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3095, 9894) | 3 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3097, 9909) | 3 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3107, 9954) | 7 | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9910) | 1 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3121, 9908) | 1 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3132, 9909) | 5 | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3140, 9872) | 6 | yes |
+| [Kandarin](../places/kandarin.md) | (2824, 3237) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2832, 3234) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2834, 3305) | 1 | yes |
+| [Kandarin](../places/kandarin.md) | (2840, 3238) | 1 | yes |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2848, 9581) | 1 | yes |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2859, 9573) | 4 | yes |
+| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2928, 3253) L2 | 6 | yes |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2884, 9836) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2885, 9820) | 6 | no |
+| [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2977, 3753) | 1 | yes |
+| [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2980, 3763) | 1 | yes |
+| [Underground Pass](../places/underground-pass.md) | (2376, 9608) | 5 | no |
+| [Underground Pass](../places/underground-pass.md) | (2401, 9608) | 5 | no |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3211, 9907) | 2 | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3251, 9915) | 3 | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3274, 9912) | 4 | yes |
+| [Wilderness](../places/wilderness.md) | (2982, 3947) | 1 | no |
+| [Wilderness](../places/wilderness.md) | (2991, 3943) | 2 | no |
+| [Wilderness](../places/wilderness.md) | (3017, 3593) | 13 | yes |
+| [Wilderness](../places/wilderness.md) | (3073, 3532) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3081, 3551) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3096, 3559) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3104, 3568) | 5 | yes |
+| [Wilderness](../places/wilderness.md) | (3106, 3548) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3107, 3528) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3115, 3535) | 2 | yes |
+| [Wilderness](../places/wilderness.md) | (3116, 3524) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3143, 3802) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3145, 3779) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3179, 3786) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3219, 3742) | 4 | yes |
+| [Wilderness](../places/wilderness.md) | (3228, 3739) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3261, 3736) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3271, 3728) | 5 | yes |
 
 ## Drops
 

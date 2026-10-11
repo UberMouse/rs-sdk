@@ -22,11 +22,15 @@
 | Range Defence | 20 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m48_59 | m48_59 | (3078, 3810) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Wilderness](../places/wilderness.md) | (3078, 3810) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3092, 3810) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3098, 3821) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3107, 3812) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3118, 3820) | 1 | yes |
 
 ## Drops
 

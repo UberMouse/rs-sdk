@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Canifis | m53_50 | (3444, 3258) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Morytania](../places/morytania.md) | (3444, 3258) | 1 | no |
 
 ## Interactions
 

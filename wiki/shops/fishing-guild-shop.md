@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Roachey](../npcs/roachey.md) |
 | **Location** | Skill Fishing |
-| **Coordinates** | (2596, 3400) |
+| **Coordinates** | (2596, 3400) in [Fishing Guild (Kandarin)](../places/fishing-guild.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

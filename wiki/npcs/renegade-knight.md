@@ -24,9 +24,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_53 | m43_53 | (2766, 3397), (2766, 3406) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2769, 3398) | 3 | no |
+| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2770, 3402) L1 | 5 | no |
 
 ## Drops
 

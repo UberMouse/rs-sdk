@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Barbarian Village | m49_52 | (3191, 3362) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3191, 3362) | 1 | yes |
 
 ## Interactions
 

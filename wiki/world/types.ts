@@ -81,8 +81,24 @@ export interface Site {
     wildernessLevel: number;
 }
 
+/**
+ * Where one npc config spawns: its map placements clustered as sites are (one level, one leaf area,
+ * single-linkage within the `npc` radius), but per config and whatever the config classifies as, so
+ * an npc no feature kind takes still has a place.
+ */
+export interface NpcSpawn {
+    config: string;
+    /** Area ids from the root to the deepest containing area; empty when none contains it. */
+    areaPath: string[];
+    centre: Tile;
+    bbox: Rect;
+    /** Placements in the cluster. */
+    count: number;
+    f2p: boolean;
+}
+
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 1;
+export const WORLD_FORMAT = 2;
 
 export interface World {
     /** WORLD_FORMAT when written. */
@@ -91,4 +107,5 @@ export interface World {
     areas: Area[];
     features: Feature[];
     sites: Site[];
+    npcSpawns: NpcSpawn[];
 }

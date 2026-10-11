@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_154 | m37_154 | (2415, 9910) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2415, 9910) | 1 | no |
 
 ## Interactions
 

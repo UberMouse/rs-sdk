@@ -4,6 +4,7 @@
 |---|---|
 | **Owner** | Unknown |
 | **Location** | Unpack |
+| **Coordinates** | (3489, 3296) in [Mort'ton (Morytania)](../places/mortton.md) |
 | **Type** | General Store |
 
 ## Stock

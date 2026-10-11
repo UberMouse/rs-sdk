@@ -11,23 +11,53 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Brimhaven | m44_48 | (2820, 3082) |
-| Feldip Hills | m43_48 | (2772, 3093) |
-| Fight Arena area | m42_49 | (2733, 3165) |
-| Gnome Stronghold | m43_50 | (2772, 3209) |
-| Karamja | m44_49, m45_49 | (2819, 3194), (2881, 3157) |
-| Karamja (west) | m43_49 | (2754, 3171) |
-| m40_51 | m40_51 | (2610, 3275) |
-| m42_42 | m42_42 | (2716, 2719) |
-| m42_43 | m42_43 | (2701, 2762) |
-| m43_42 | m43_42 | (2755, 2708) |
-| m43_43 | m43_43 | (2789, 2758) |
-| m44_47 | m44_47 | (2825, 3030) |
-| m45_42 | m45_42 | (2911, 2718) |
-| m45_45 | m45_45 | (2880, 2922) |
-| m45_46 | m45_46 | (2924, 2979) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2819, 3194) | 1 | yes |
+| [Ape Atoll](../places/ape-atoll.md) | (2701, 2762) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2702, 2780) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2703, 2769) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2715, 2782) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2716, 2719) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2726, 2712) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2726, 2789) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2731, 2724) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2740, 2721) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2742, 2707) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2755, 2708) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2770, 2709) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2784, 2714) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2789, 2758) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2809, 2754) | 1 | no |
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2613, 3275) | 5 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3180) | 1 | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2786, 3174) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2911, 2718) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2913, 2726) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2921, 2727) | 1 | no |
+| [Crash Island](../places/crash-island.md) | (2924, 2716) | 2 | no |
+| [Kandarin](../places/kandarin.md) | (2733, 3165) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2734, 3147) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2772, 3209) | 1 | no |
+| [Karamja](../places/karamja.md) | (2739, 3169) | 1 | no |
+| [Karamja](../places/karamja.md) | (2749, 3151) | 1 | no |
+| [Karamja](../places/karamja.md) | (2753, 3169) | 2 | no |
+| [Karamja](../places/karamja.md) | (2774, 3091) | 2 | no |
+| [Karamja](../places/karamja.md) | (2785, 3103) | 2 | no |
+| [Karamja](../places/karamja.md) | (2804, 3116) | 1 | no |
+| [Karamja](../places/karamja.md) | (2811, 3112) | 1 | no |
+| [Karamja](../places/karamja.md) | (2823, 3080) | 3 | no |
+| [Karamja](../places/karamja.md) | (2825, 3030) | 1 | no |
+| [Karamja](../places/karamja.md) | (2830, 3016) | 3 | no |
+| [Karamja](../places/karamja.md) | (2835, 3074) | 1 | no |
+| [Karamja](../places/karamja.md) | (2837, 3043) | 3 | no |
+| [Karamja](../places/karamja.md) | (2847, 3042) | 1 | no |
+| [Karamja](../places/karamja.md) | (2875, 3164) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2880, 3154) | 2 | yes |
+| [Karamja](../places/karamja.md) | (2882, 2921) | 3 | no |
+| [Karamja](../places/karamja.md) | (2889, 3146) | 1 | yes |
+| [Karamja](../places/karamja.md) | (2912, 2916) | 3 | no |
+| [Karamja](../places/karamja.md) | (2932, 2979) | 8 | no |
 
 ## Drops
 

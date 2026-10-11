@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m39_51 | m39_51 | (2540, 3305) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2540, 3305) | 1 | no |
 
 ## Interactions
 

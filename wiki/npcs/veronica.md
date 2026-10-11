@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Wilderness (low) | m48_52 | (3110, 3330) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3330) | 1 | yes |
 
 ## Interactions
 

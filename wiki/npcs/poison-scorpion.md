@@ -24,10 +24,13 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Catherby | m42_50 | (2715, 3218) |
-| m45_152 | m45_152 | (2929, 9752) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2720, 3218) | 5 | no |
+| [Kandarin](../places/kandarin.md) | (2731, 3225) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2932, 9755) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9772) | 2 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2941, 9779) | 1 | no |
 
 ## Drops
 

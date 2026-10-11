@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Oziach](../npcs/oziach.md) |
 | **Location** | Edgeville |
-| **Coordinates** | (3069, 3517) |
+| **Coordinates** | (3069, 3517) in [Misthalin](../places/misthalin.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

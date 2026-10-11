@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Wander (range 3) |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_52 | m42_52 | (2724, 3368) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2724, 3368) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2724, 3378) | 1 | no |
 
 ## Interactions
 

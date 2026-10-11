@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m47_54 | m47_54 | (3058, 3484) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Monastery (Asgarnia)](../places/monastery.md) | (3058, 3484) | 1 | yes |
 
 ## Interactions
 

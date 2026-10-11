@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Cassie](../npcs/cassie.md) |
 | **Location** | Falador |
-| **Coordinates** | (2979, 3383) |
+| **Coordinates** | (2979, 3383) in [Falador (Asgarnia)](../places/falador.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

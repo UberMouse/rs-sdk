@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Arhein](../npcs/arhein.md) |
 | **Location** | Catherby |
-| **Coordinates** | (2803, 3430) |
+| **Coordinates** | (2803, 3430) in [Catherby (Kandarin)](../places/catherby.md) |
 | **Type** | General Store |
 
 ## Stock

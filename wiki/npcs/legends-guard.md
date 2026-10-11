@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Patrol |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_52 | m42_52 | (2726, 3349) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Kandarin](../places/kandarin.md) | (2726, 3349) | 1 | no |
+| [Kandarin](../places/kandarin.md) | (2731, 3348) | 1 | no |
 
 ## Interactions
 

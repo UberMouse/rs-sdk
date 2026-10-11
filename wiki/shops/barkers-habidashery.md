@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Barker](../npcs/barker.md) |
 | **Location** | Canifis |
-| **Coordinates** | (3499, 3506) |
+| **Coordinates** | (3499, 3506) in [Canifis (Morytania)](../places/canifis.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

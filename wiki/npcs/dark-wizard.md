@@ -24,12 +24,14 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3084, 3236) |
-| m45_52 | m45_52 | (2905, 3335), (2906, 3333) L1, (2906, 3336) L2 |
-| m46_55 | m46_55 | (2981, 3562) |
-| Varrock | m50_52 | (3225, 3374) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3334) | 7 | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L1 | 4 | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L2 | 4 | no |
+| [Draynor willows (Draynor Village)](../places/draynor-willows.md) | (3085, 3237) | 2 | yes |
+| [Misthalin](../places/misthalin.md) | (3227, 3369) | 11 | yes |
+| [Wilderness](../places/wilderness.md) | (2982, 3568) | 8 | yes |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m46_54 | m46_54 | (2958, 3511) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Goblin Village (Asgarnia)](../places/goblin-village.md) | (2958, 3511) | 1 | yes |
 
 ## Interactions
 

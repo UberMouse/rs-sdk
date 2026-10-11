@@ -21,11 +21,13 @@
 | Range Defence | 200 |
 | Attack Style | Slash |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m44_157 | m44_157 | (2831, 10086) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2822, 10073) L2 | 1 | no |
+| - | (2829, 10100) L2 | 1 | no |
+| - | (2831, 10086) L2 | 1 | no |
 
 ## Drops
 

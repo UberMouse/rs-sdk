@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_53 | m40_53 | (2611, 3393) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2611, 3393) | 1 | no |
 
 ## Interactions
 

@@ -11,10 +11,21 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_43 | m42_43 | (2713, 2753) |
-| m43_43 | m43_43 | (2752, 2782), (2768, 2794) L1, (2774, 2768) L2 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2713, 2758) | 6 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2729, 2758) | 6 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2759, 2756) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2759, 2791) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2765, 2781) | 10 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2772, 2755) | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2785, 2768) | 3 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2789, 2754) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2771, 2797) L1 | 2 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2774, 2768) L2 | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2774, 2777) L2 | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2780, 2791) L2 | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2787, 2793) L2 | 1 | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3079, 3250) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3079, 3250) | 1 | yes |
 
 ## Interactions
 

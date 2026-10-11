@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_71 | m40_71 | (2603, 4582) |
-| m46_47 | m46_47 | (2999, 3043) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2603, 4582) | 1 | no |
+| [Ship Yard (Karamja)](../places/ship-yard.md) | (2999, 3043) | 1 | no |
 
 ## Drops
 

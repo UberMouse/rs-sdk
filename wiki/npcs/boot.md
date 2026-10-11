@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m46_153 | m46_153 | (2965, 9811) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (2965, 9811) | 1 | yes |
 
 ## Interactions
 

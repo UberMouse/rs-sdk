@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m42_52 | m42_52 | (2725, 3378) L1 |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Legends' Guild (Kandarin)](../places/legends-guild.md) | (2725, 3378) L1 | 1 | no |
 
 ## Interactions
 

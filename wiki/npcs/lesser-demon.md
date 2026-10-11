@@ -24,19 +24,24 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Desert | m48_49 | (3110, 3157) L2 |
-| Entrana | m44_51 | (2832, 3278) |
-| m37_73 | m37_73 | (2412, 4677) |
-| m41_154 | m41_154 | (2630, 9867) |
-| m44_149 | m44_149 | (2831, 9562) |
-| m44_150 | m44_150 | (2835, 9602) |
-| m45_150 | m45_150 | (2936, 9650) |
-| m45_153 | m45_153 | (2926, 9802) |
-| m47_60 | m47_60 | (3014, 3848) |
-| m48_60 | m48_60 | (3091, 3861) |
-| m51_60 | m51_60 | (3311, 3845) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2630, 9867) | 1 | no |
+| - | (2632, 9877) | 2 | no |
+| - | (2837, 9605) | 3 | yes |
+| - | (2837, 9623) | 1 | yes |
+| - | (2845, 9612) | 1 | yes |
+| - | (2936, 9650) | 1 | yes |
+| [Crandor](../places/crandor.md) | (2835, 3279) | 2 | yes |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2838, 9559) | 6 | yes |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4681) | 3 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9802) | 5 | no |
+| [Wilderness](../places/wilderness.md) | (3016, 3849) | 4 | yes |
+| [Wilderness](../places/wilderness.md) | (3091, 3861) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3094, 3869) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3311, 3845) | 1 | yes |
+| [Wilderness](../places/wilderness.md) | (3324, 3856) | 1 | yes |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L2 | 1 | yes |
 
 ## Drops
 

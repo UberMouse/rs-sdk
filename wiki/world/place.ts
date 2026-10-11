@@ -1,11 +1,12 @@
 // Groups features into sites, the unit an agent chooses: same-kind features on one level and in one
 // leaf area, linked within a per-kind radius. Each site gets a stand tile, a tile a player can use
 // its locs from, decided by the engine's own reach test over the collision data (see SiteCollision).
+// Every npc config's spawns are clustered the same way, per config (spawnClusters).
 import type { Pathfinder } from '../../conductor/actions/paths';
 import type { Config } from './sources/configs';
 import { first } from './sources/configs';
 import { isF2p, isMultiway, wildernessLevel, type Zones } from './sources/zones';
-import type { Feature, FeatureKind, Rect, Site, Tile } from './types';
+import type { Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
 
 /**
  * How far apart (in tiles, Chebyshev as the engine's CoordGrid.distanceTo, CoordGrid.ts:60) two
@@ -111,7 +112,7 @@ const byFeature = (a: Feature, b: Feature): number =>
  * grid of `radius`-sized cells: two tiles within the radius sit in the same or adjacent cells, so each
  * feature is compared with its 3x3 cells only.
  */
-function cluster(features: readonly Feature[], members: number[], radius: number): number[][] {
+function cluster(features: readonly { tile: Tile }[], members: number[], radius: number): number[][] {
     if (radius === 0) return members.map(i => [i]);
     const parent = members.map((_, k) => k);
     const root = (k: number): number => {
@@ -182,6 +183,28 @@ function locCandidates(
 }
 
 const mean = (tiles: Tile[], axis: 'x' | 'z'): number => tiles.reduce((s, t) => s + t[axis], 0) / tiles.length;
+
+/** The rounded mean tile of tiles on one level. */
+const centreOf = (tiles: Tile[]): Tile => ({
+    level: tiles[0]!.level,
+    x: Math.round(mean(tiles, 'x')),
+    z: Math.round(mean(tiles, 'z')),
+});
+
+/** The box around tiles on one level. */
+const bboxOf = (tiles: Tile[]): Rect => {
+    const level = tiles[0]!.level;
+    return tiles.reduce(
+        (b, t) => ({
+            x1: Math.min(b.x1, t.x),
+            z1: Math.min(b.z1, t.z),
+            x2: Math.max(b.x2, t.x),
+            z2: Math.max(b.z2, t.z),
+            level,
+        }),
+        { x1: Infinity, z1: Infinity, x2: -Infinity, z2: -Infinity, level },
+    );
+};
 
 /**
  * A site's stand tile. With locs: a tile that reaches one of them, nearest the centre; at a bank,
@@ -283,18 +306,8 @@ export function buildSites(
             const { kind } = fs[0]!;
             const areaPath = paths[members[0]!]!;
             const id = `${kind}:${areaPath.at(-1) ?? 'unnamed'}:${n}`;
-            const level = tiles[0]!.level;
-            const centre = { level, x: Math.round(mean(tiles, 'x')), z: Math.round(mean(tiles, 'z')) };
-            const bbox = tiles.reduce(
-                (b, t) => ({
-                    x1: Math.min(b.x1, t.x),
-                    z1: Math.min(b.z1, t.z),
-                    x2: Math.max(b.x2, t.x),
-                    z2: Math.max(b.z2, t.z),
-                    level,
-                }),
-                { x1: Infinity, z1: Infinity, x2: -Infinity, z2: -Infinity, level },
-            );
+            const centre = centreOf(tiles);
+            const bbox = bboxOf(tiles);
             const stand = standTile(features, members, kind, centre, bbox, collision, size);
             if (!stand) log(`place: site ${id} has no stand tile`);
             sites.push({
@@ -313,4 +326,44 @@ export function buildSites(
         });
     }
     return sites;
+}
+
+const byTile = (a: Tile, b: Tile): number => a.x - b.x || a.z - b.z || a.level - b.level;
+
+/**
+ * Clusters each npc config's spawns as buildSites clusters a kind's features: per config, level and
+ * leaf area, single-linkage within the `npc` radius. Two spawns on one tile are two placements and
+ * count twice. Clusters come out sorted by config, then by their first tile (x, z, level), which no
+ * two clusters of one config share.
+ */
+export function spawnClusters(
+    spawns: readonly { config: string; tile: Tile }[],
+    resolve: (t: Tile) => string[],
+    zones: Zones,
+): NpcSpawn[] {
+    const paths = spawns.map(s => resolve(s.tile));
+    const groups = new Map<string, number[]>();
+    spawns.forEach((s, i) => {
+        const key = `${s.config}\0${paths[i]!.at(-1) ?? ''}\0${s.tile.level}`;
+        const g = groups.get(key);
+        if (g) g.push(i);
+        else groups.set(key, [i]);
+    });
+    const out: { first: Tile; spawn: NpcSpawn }[] = [];
+    for (const members of groups.values())
+        for (const c of cluster(spawns, members, SITE_RADIUS.npc)) {
+            const tiles = c.map(i => spawns[i]!.tile).sort(byTile);
+            out.push({
+                first: tiles[0]!,
+                spawn: {
+                    config: spawns[c[0]!]!.config,
+                    areaPath: paths[c[0]!]!,
+                    centre: centreOf(tiles),
+                    bbox: bboxOf(tiles),
+                    count: c.length,
+                    f2p: tiles.some(t => isF2p(zones, t)),
+                },
+            });
+        }
+    return out.sort((a, b) => cmp(a.spawn.config, b.spawn.config) || byTile(a.first, b.first)).map(o => o.spawn);
 }

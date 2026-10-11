@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m49_47 | m49_47 | (3159, 3042) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | (3169, 3037) | 8 | no |
 
 ## Interactions
 

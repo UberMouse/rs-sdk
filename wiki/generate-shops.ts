@@ -5,8 +5,13 @@
  * Run: bun wiki/generate-shops.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, relative } from 'path';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
+import { basename, join, relative } from 'path';
+import { contentHash } from './world/build';
+import { loadWorld } from './world/load';
+import { areaCell, areasOf, cmp, coord } from './world/render/common';
+import { readCallables, readTriggers } from './world/sources/triggers';
+import type { Site, Tile, World } from './world/types';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
 const WIKI_DIR = join(import.meta.dir);
@@ -200,71 +205,123 @@ interface ObjInfo {
     cost: number;
 }
 
-// ─── Parser: Pack File + Map Spawns (mirrors generate-npcs.ts) ───────────────
+// ─── Coordinates from the World Index ────────────────────────────────────────
 
-interface SpawnLocation {
-    globalX: number;
-    globalZ: number;
-    level: number;
-}
-
-function parseNpcPackIdToName(content: string): Map<number, string> {
-    const idToName = new Map<number, string>();
-    for (const line of content.split('\n')) {
-        const eqIdx = line.indexOf('=');
-        if (eqIdx === -1) continue;
-        const id = parseInt(line.slice(0, eqIdx));
-        const name = line.slice(eqIdx + 1).trim();
-        if (!isNaN(id) && name) idToName.set(id, name);
+/**
+ * wiki/world.json, refusing one that is missing, of another format (loadWorld) or built from other
+ * game data than server/content holds now: its coordinates would be stale. `bun run world` rebuilds it.
+ */
+function loadFreshWorld(): World {
+    const world = loadWorld();
+    const hash = contentHash();
+    if (world.generatedFrom !== hash) {
+        throw new Error(`wiki/world.json was built from server/content at ${world.generatedFrom}, which is now at ${hash}: regenerate it with bun run world`);
     }
-    return idToName;
+    return world;
 }
 
-function parseMapSpawns(
-    mapsDir: string,
-    npcIdToName: Map<number, string>
-): Map<string, SpawnLocation[]> {
-    const spawns = new Map<string, SpawnLocation[]>();
-    const mapFiles = readdirSync(mapsDir).filter(f => f.endsWith('.jm2'));
+// A `~openshop(<inv>, ...)` call (shop/scripts/shop.rs2 [proc,openshop]).
+const OPENSHOP = /~openshop\(\s*([a-z0-9_]+)\s*,/g;
 
-    for (const file of mapFiles) {
-        const match = file.match(/^m(\d+)_(\d+)\.jm2$/);
-        if (!match) continue;
-        const mapX = parseInt(match[1]);
-        const mapZ = parseInt(match[2]);
+interface Openers {
+    files: Set<string>; // script file names making the call
+    npcs: Set<string>; // npc configs whose own op trigger reaches the call
+}
 
-        const content = readFileSync(join(mapsDir, file), 'utf-8');
-        const npcSectionStart = content.indexOf('==== NPC ====');
-        if (npcSectionStart === -1) continue;
+/** A script body without its `//` comments, so a commented-out call is no call. */
+const code = (body: string): string => body.split('\n').map(line => line.replace(/\/\/.*/, '')).join('\n');
 
-        const afterNpc = content.slice(npcSectionStart + '==== NPC ===='.length);
-        const nextSection = afterNpc.indexOf('====');
-        const npcBlock = nextSection === -1 ? afterNpc : afterNpc.slice(0, nextSection);
+/**
+ * Who opens each inventory by an explicit ~openshop call: the files making the call, and the npcs
+ * whose op trigger reaches it through the procs and labels it calls (`~name`, `@name`, `jump(name)`).
+ * A label reached only as a dialogue choice's argument is not followed (classify.ts binds those).
+ */
+function readOpeners(): Map<string, Openers> {
+    const openers = new Map<string, Openers>();
+    const opener = (inv: string): Openers => {
+        if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set() });
+        return openers.get(inv)!;
+    };
+    const invsIn = (body: string): string[] => [...code(body).matchAll(OPENSHOP)].map(m => m[1]);
+    const callsIn = (body: string): string[] => [
+        ...[...code(body).matchAll(/[@~][a-z0-9_]+/g)].map(m => m[0]),
+        ...[...code(body).matchAll(/\bjump\(([a-z0-9_]+)\)/g)].map(m => `@${m[1]}`),
+    ];
 
-        for (const line of npcBlock.split('\n')) {
-            const trimmed = line.trim();
-            if (!trimmed) continue;
-            // Format: level localX localZ: npcID
-            const m = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+):\s*(\d+)$/);
-            if (!m) continue;
-            const level = parseInt(m[1]);
-            const localX = parseInt(m[2]);
-            const localZ = parseInt(m[3]);
-            const npcId = parseInt(m[4]);
-
-            const configName = npcIdToName.get(npcId);
-            if (!configName) continue;
-
-            if (!spawns.has(configName)) spawns.set(configName, []);
-            spawns.get(configName)!.push({
-                globalX: mapX * 64 + localX,
-                globalZ: mapZ * 64 + localZ,
-                level,
-            });
+    const callables = readCallables();
+    const callable = new Map(callables.map(c => [c.call, c.body]));
+    for (const c of callables) {
+        for (const inv of invsIn(c.body)) opener(inv).files.add(basename(c.file));
+    }
+    for (const t of readTriggers()) {
+        for (const inv of invsIn(t.body)) opener(inv).files.add(basename(t.file));
+        if (t.on !== 'npc' || t.category) continue;
+        const bodies = [t.body];
+        const seen = new Set<string>();
+        for (let i = 0; i < bodies.length; i++) {
+            for (const inv of invsIn(bodies[i])) opener(inv).npcs.add(t.target);
+            for (const call of callsIn(bodies[i])) {
+                const body = callable.get(call);
+                if (body === undefined || seen.has(call)) continue;
+                seen.add(call);
+                bodies.push(body);
+            }
         }
     }
+    return openers;
+}
 
-    return spawns;
+const meanTile = (tiles: Tile[]): Tile => ({
+    level: tiles[0].level,
+    x: Math.round(tiles.reduce((sum, t) => sum + t.x, 0) / tiles.length),
+    z: Math.round(tiles.reduce((sum, t) => sum + t.z, 0) / tiles.length),
+});
+
+/**
+ * The Coordinates a shop page shows, from the world index:
+ * - Each shop site holding a feature that opens the page's inventory (the shop feature's subtype):
+ *   the mean tile of those features there, which is the shopkeeper's spawn when one keeps it, and the
+ *   site's area linked to its place page.
+ * - A shop no site records is "not placed", with the reason in the data (world.real.test.ts pins
+ *   these pages): no script opens the inventory, or one does but classify.ts gives its shopkeeper the
+ *   first shop its script opens (members worlds, a quest stage, a menu choice). Where that script is
+ *   the shopkeeper's own op trigger, the shopkeeper's shop sites follow, as they are this shop's too;
+ *   a call in a label (razmire_keelgan.rs2) names no npc, so only the file is given.
+ */
+function shopLocator(world: World): (inv: string, pagePath: string) => string {
+    const areas = areasOf(world);
+    const openers = readOpeners();
+    const siteOf = new Map<number, Site>();
+    for (const site of world.sites) {
+        for (const i of site.features) siteOf.set(i, site);
+    }
+    const shops = world.features.flatMap((f, i) => (f.kind === 'shop' ? [{ f, site: siteOf.get(i)! }] : []));
+
+    // "(x, z) in [Area (Town)](link)" per site, the sites in label order.
+    const placed = (fs: typeof shops, pagePath: string): string[] => {
+        const bySite = new Map<Site, Tile[]>();
+        for (const { f, site } of fs) bySite.set(site, [...(bySite.get(site) || []), f.tile]);
+        return [...bySite]
+            .map(([site, tiles]) => ({ site, centre: meanTile(tiles) }))
+            .sort((a, b) =>
+                cmp(areas.label(a.site.areaPath), areas.label(b.site.areaPath)) ||
+                a.centre.level - b.centre.level || a.centre.x - b.centre.x || a.centre.z - b.centre.z
+            )
+            .map(({ site, centre }) => `${coord(centre)} in ${areaCell(pagePath, areas, site.areaPath)}`);
+    };
+
+    return (inv, pagePath) => {
+        const own = placed(shops.filter(s => s.f.subtype === inv), pagePath);
+        if (own.length > 0) return own.join('; ');
+        const o = openers.get(inv);
+        if (!o) return 'not placed: no script opens this inventory';
+        const files = [...o.files].sort().join(', ');
+        // Shop features of the npcs whose trigger opens it: none has this inventory, or it would be placed.
+        const keepers = shops.filter(s => o.npcs.has(s.f.config));
+        if (keepers.length === 0) return `not placed: ${files} opens it, but no shop site records it`;
+        const names = [...new Set(keepers.map(s => s.f.name))].sort().join(', ');
+        return `not placed: ${files} opens it from ${names}, whose shop site records another of their shops; ${names} at ${placed(keepers, pagePath).join('; ')}`;
+    };
 }
 
 function parseObjConfigsFull(content: string): Map<string, ObjInfo> {
@@ -421,15 +478,13 @@ function main() {
     }
     console.log(`  Loaded ${objData.size} items`);
 
-    // ─── Step 3b: Owner NPC spawn coordinates ───────────────────────────
+    // ─── Step 3b: Shop coordinates from the world index ─────────────────
 
-    console.log('\nStep 3b: Loading owner NPC spawn coordinates...');
+    console.log('\nStep 3b: Loading shop sites from wiki/world.json...');
 
-    const npcIdToName = parseNpcPackIdToName(
-        readFileSync(join(CONTENT_DIR, 'pack', 'npc.pack'), 'utf-8')
-    );
-    const npcSpawns = parseMapSpawns(join(CONTENT_DIR, 'maps'), npcIdToName);
-    console.log(`  Map spawns: ${npcSpawns.size} NPCs with spawn data`);
+    const world = loadFreshWorld();
+    const locate = shopLocator(world);
+    console.log(`  world.json: ${world.sites.filter(s => s.kind === 'shop').length} shop sites`);
 
     // ─── Step 4: Build shop pages ───────────────────────────────────────
 
@@ -473,13 +528,21 @@ function main() {
         const fileName = `${slug}.md`;
         const filePath = join(SHOP_DIR, fileName);
 
-        const md = generateShopMarkdown(page, objData, npcSpawns);
+        const md = generateShopMarkdown(page, objData, locate(page.shopName, `wiki/shops/${fileName}`));
         writeFileSync(filePath, md);
 
         pageIndex.push({ name: page.shopTitle, file: fileName, location: page.location });
     }
 
     console.log(`  Generated ${pageIndex.length} shop pages`);
+
+    // Every page here is generated, so one not written now is for a shop
+    // whose title has changed or gone: it would keep stale data.
+    const written = new Set(pageIndex.map(p => p.file));
+    for (const file of readdirSync(SHOP_DIR).filter(f => f.endsWith('.md') && !written.has(f)).sort()) {
+        unlinkSync(join(SHOP_DIR, file));
+        console.log(`  Removed stale ${file}`);
+    }
 
     // ─── Step 6: Update README ──────────────────────────────────────────
 
@@ -494,7 +557,7 @@ function main() {
 function generateShopMarkdown(
     page: ShopPage,
     objData: Map<string, ObjInfo>,
-    npcSpawns: Map<string, SpawnLocation[]>,
+    coordinates: string,
 ): string {
     const lines: string[] = [];
     const primaryOwner = page.owners[0];
@@ -524,25 +587,9 @@ function generateShopMarkdown(
 
     lines.push(`| **Location** | ${page.location} |`);
 
-    // Owner spawn coordinates, so agents can walk straight to the shop
-    // instead of guessing from the area name alone.
-    const coordParts: string[] = [];
-    for (const owner of page.owners) {
-        const spawns = npcSpawns.get(owner.npcConfigName);
-        if (!spawns || spawns.length === 0) continue;
-        const samples = new Set<string>();
-        for (const spawn of spawns) {
-            const floor = spawn.level > 0 ? ` L${spawn.level}` : '';
-            samples.add(`(${spawn.globalX}, ${spawn.globalZ})${floor}`);
-        }
-        const sorted = [...samples].sort();
-        const overflow = sorted.length > 6 ? `, +${sorted.length - 6} more` : '';
-        const label = page.owners.length > 1 ? `${owner.npcDisplayName}: ` : '';
-        coordParts.push(`${label}${sorted.slice(0, 6).join(', ')}${overflow}`);
-    }
-    if (coordParts.length > 0) {
-        lines.push(`| **Coordinates** | ${coordParts.join('; ')} |`);
-    }
+    // Where the shop's sites are (shopLocator), so agents can walk straight to
+    // the shop instead of guessing from the area name alone.
+    lines.push(`| **Coordinates** | ${coordinates} |`);
 
     lines.push(`| **Type** | ${page.isGeneralStore ? 'General Store' : 'Specialty Shop'} |`);
 

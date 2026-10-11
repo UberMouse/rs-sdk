@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_51 | (3098, 3268) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3098, 3268) | 1 | yes |
 
 ## Interactions
 

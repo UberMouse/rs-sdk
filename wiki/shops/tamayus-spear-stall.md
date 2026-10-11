@@ -4,7 +4,7 @@
 |---|---|
 | **Owner** | [Tamayu](../npcs/tamayu.md) |
 | **Location** | Quests |
-| **Coordinates** | (2800, 3057) |
+| **Coordinates** | (2800, 3057) in [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

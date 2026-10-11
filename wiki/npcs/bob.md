@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Lumbridge | m50_50 | (3232, 3203) |
-| m42_55 | m42_55 | (2748, 3559) |
-| m45_55 | m45_55 | (2924, 3565) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2924, 3565) | 1 | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3232, 3203) | 1 | yes |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2748, 3559) | 1 | no |
 
 ## Interactions
 

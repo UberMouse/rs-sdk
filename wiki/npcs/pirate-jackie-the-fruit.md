@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Karamja (west) | m43_49 | (2811, 3192) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3192) | 1 | no |
 
 ## Interactions
 

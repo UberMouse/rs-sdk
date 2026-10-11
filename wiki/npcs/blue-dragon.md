@@ -24,11 +24,15 @@
 
 ## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m40_147 | m40_147 | (2568, 9437) |
-| m45_153 | m45_153 | (2897, 9797) |
-| m45_154 | m45_154 | (2908, 9905) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| - | (2568, 9437) | 1 | no |
+| - | (2579, 9445) | 1 | no |
+| - | (2590, 9461) | 1 | no |
+| - | (2592, 9431) | 1 | no |
+| - | (2607, 9451) | 2 | no |
+| [Heroes' Guild mine](../places/heroes-guild-mine.md) | (2908, 9905) | 1 | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2900, 9800) | 3 | no |
 
 ## Drops
 

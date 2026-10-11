@@ -22,11 +22,13 @@
 | Range Defence | 9 |
 | Attack Style | Crush |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| Edgeville area | m48_50 | (3109, 3237) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3109, 3237) | 1 | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3120, 3238) | 1 | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3124, 3249) | 2 | yes |
 
 ## Drops
 

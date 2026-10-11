@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m34_49 | m34_49 | (2187, 3149) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2187, 3149) | 1 | no |
 
 ## Interactions
 

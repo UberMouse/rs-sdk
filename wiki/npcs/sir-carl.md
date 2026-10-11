@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m37_151 | m37_151 | (2422, 9718) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Underground Pass](../places/underground-pass.md) | (2422, 9718) | 1 | no |
 
 ## Drops
 

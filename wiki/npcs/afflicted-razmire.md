@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m54_51 | m54_51 | (3489, 3296) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Mort'ton (Morytania)](../places/mortton.md) | (3489, 3296) | 1 | no |
 
 ## Interactions
 

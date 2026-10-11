@@ -8,11 +8,12 @@
 | **Aggressive** | No |
 | **Movement** | Stationary |
 
-## Location
+## Locations
 
-| Area | Map | Coordinate samples |
-|------|-----|--------------------|
-| m43_43 | m43_43 | (2798, 2760) |
+| Area | Centre | Spawns | F2P |
+|------|--------|--------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2798, 2760) | 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2801, 2757) | 1 | no |
 
 ## Interactions
 
