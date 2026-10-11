@@ -61,3 +61,4 @@ These items boost prayer duration: Priest robes, Monk robes, Shade robes, Druid 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge chickens | (3231, 3295), radius 8 | 1-21 | `combat` task, `skill: "Defence"` (Defensive style); setup and gotchas in [strength](strength.md#verified-training-spots); ~11 kills/min; no food needed. Also gives Hitpoints and Prayer | ~69k Defence (stats.ts, 1 run of 3 min) | 2026-10-10 conductor2 local |
+| Lumbridge cows | (3253, 3290) | 15-40 | `combat` task, `skill: "Defence"`; Steel scimitar (400 gp at Zeke's, Al Kharid) + Iron kiteshield, Trout as food; pen described in [combat](../../learnings/combat.md#cow-field-details-proven-from-200-kills), area [lumbridge](../places/lumbridge.md). Also gives Hitpoints (+4,555 in this run). `plan-melee40` phase, 246 s: Defence 15->40 (+13,900) | ~203k Defence (local, one run) | 2026-10-11 conductor2 local |
