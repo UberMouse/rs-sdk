@@ -1,10 +1,14 @@
 // The world's named areas, keyed by id; wiki/world/area-resolve.ts resolves a tile to them.
 // Seeded by wiki/world/tools/seed-areas.ts from the world map labels, then curated by hand:
-// - Regions do not overlap on land: each is a few rects with its borders placed on the map (rivers,
-//   fences, the Wilderness line), so a tile in no town still names the right kingdom. The Wilderness
-//   is the engine's box (sources/zones.ts); the Kharidian Desert holds Al Kharid; Feldip Hills is the
-//   ogre land south of Kandarin, and Yanille, Castle Wars and the places the seed put under it are
-//   Kandarin's. Islands are their own regions; being smaller, they win the sea tiles they share.
+// - Each region is a few rects with its borders placed on the map (rivers, fences, the Wilderness
+//   line), so a tile in no town still names the right kingdom. The Wilderness is the engine's box
+//   (sources/zones.ts); the Kharidian Desert holds Al Kharid; Feldip Hills is the ogre land south of
+//   Kandarin, and Yanille, Castle Wars and the places the seed put under it are Kandarin's. Regions
+//   overlap only where an island region lies under a mainland region's rect: Crandor and Entrana
+//   under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under Kandarin's.
+//   The island, being smaller, wins every tile both hold, its land included (area-resolve.ts).
+// - A bank's leaf rect is its booths, bankers and chests plus one tile, so the trees, stalls and
+//   shops beside it name the town instead.
 // - Every site build.ts must place (its COVERED kinds) lies in an area; build.ts fails otherwise.
 // - Each bank site has a leaf area named as players call it, and so do the mines, fishing spots and
 //   tree groups agents name in learnings/ and wiki/skills/ (a note gives any other name in use).
@@ -76,13 +80,13 @@ export const AREAS: readonly Area[] = [
         id: 'falador-east-bank',
         name: 'Falador East bank',
         parent: 'falador',
-        rects: [{ x1: 3008, z1: 3350, x2: 3020, z2: 3358 }],
+        rects: [{ x1: 3010, z1: 3352, x2: 3016, z2: 3355 }],
     },
     {
         id: 'falador-west-bank',
         name: 'Falador West bank',
         parent: 'falador',
-        rects: [{ x1: 2940, z1: 3361, x2: 2952, z2: 3372 }],
+        rects: [{ x1: 2944, z1: 3365, x2: 2950, z2: 3368 }],
     },
     { id: 'park', name: 'Falador Park', parent: 'falador', rects: [{ x1: 2993, z1: 3367, x2: 3016, z2: 3390 }] },
     {
@@ -196,14 +200,14 @@ export const AREAS: readonly Area[] = [
         id: 'castle-wars-bank',
         name: 'Castle Wars bank chest',
         parent: 'castle-wars',
-        rects: [{ x1: 2439, z1: 3078, x2: 2449, z2: 3088 }],
+        rects: [{ x1: 2443, z1: 3082, x2: 2445, z2: 3084 }],
     },
     { id: 'catherby', name: 'Catherby', parent: 'kandarin', rects: [{ x1: 2779, z1: 3415, x2: 2832, z2: 3455 }] },
     {
         id: 'catherby-bank',
         name: 'Catherby bank',
         parent: 'catherby',
-        rects: [{ x1: 2804, z1: 3438, x2: 2814, z2: 3447 }],
+        rects: [{ x1: 2806, z1: 3441, x2: 2812, z2: 3445 }],
     },
     { id: 'coal-trucks', name: 'Coal Trucks', parent: 'kandarin', rects: [{ x1: 2588, z1: 3479, x2: 2611, z2: 3502 }] },
     {
@@ -222,13 +226,13 @@ export const AREAS: readonly Area[] = [
         id: 'ardougne-north-bank',
         name: 'Ardougne North bank',
         parent: 'east-ardougne',
-        rects: [{ x1: 2609, z1: 3326, x2: 2622, z2: 3337 }],
+        rects: [{ x1: 2613, z1: 3329, x2: 2620, z2: 3332 }],
     },
     {
         id: 'ardougne-south-bank',
         name: 'Ardougne South bank',
         parent: 'east-ardougne',
-        rects: [{ x1: 2649, z1: 3277, x2: 2661, z2: 3290 }],
+        rects: [{ x1: 2655, z1: 3279, x2: 2658, z2: 3287 }],
     },
     { id: 'zoo', name: 'Ardougne Zoo', parent: 'east-ardougne', rects: [{ x1: 2602, z1: 3261, x2: 2625, z2: 3284 }] },
     { id: 'fight-arena', name: 'Fight Arena', parent: 'kandarin', rects: [{ x1: 2582, z1: 3150, x2: 2605, z2: 3173 }] },
@@ -242,7 +246,7 @@ export const AREAS: readonly Area[] = [
         id: 'fishing-guild-bank',
         name: 'Fishing Guild bank',
         parent: 'fishing-guild',
-        rects: [{ x1: 2579, z1: 3414, x2: 2590, z2: 3426 }],
+        rects: [{ x1: 2583, z1: 3417, x2: 2586, z2: 3423 }],
     },
     {
         id: 'fishing-platform',
@@ -280,7 +284,7 @@ export const AREAS: readonly Area[] = [
         id: 'legends-guild-bank',
         name: "Legends' Guild bank",
         parent: 'legends-guild',
-        rects: [{ x1: 2727, z1: 3373, x2: 2737, z2: 3385, level: 2 }],
+        rects: [{ x1: 2730, z1: 3376, x2: 2734, z2: 3382, level: 2 }],
     },
     { id: 'lighthouse', name: 'Lighthouse', parent: 'kandarin', rects: [{ x1: 2502, z1: 3616, x2: 2525, z2: 3639 }] },
     {
@@ -308,7 +312,7 @@ export const AREAS: readonly Area[] = [
         id: 'seers-village-bank',
         name: "Seers' Village bank",
         parent: 'seers-village',
-        rects: [{ x1: 2718, z1: 3489, x2: 2732, z2: 3500 }],
+        rects: [{ x1: 2720, z1: 3493, x2: 2730, z2: 3497 }],
     },
     {
         id: 'sinclair-mansion',
@@ -344,7 +348,7 @@ export const AREAS: readonly Area[] = [
         id: 'gnome-stronghold-bank',
         name: 'Gnome Stronghold south bank',
         parent: 'tree-gnome-stronghold',
-        rects: [{ x1: 2439, z1: 3419, x2: 2452, z2: 3431, level: 1 }],
+        rects: [{ x1: 2442, z1: 3422, x2: 2449, z2: 3428, level: 1 }],
     },
     {
         id: 'grand-tree',
@@ -356,7 +360,11 @@ export const AREAS: readonly Area[] = [
         id: 'grand-tree-bank',
         name: 'Grand Tree bank',
         parent: 'tree-gnome-stronghold',
-        rects: [{ x1: 2435, z1: 3476, x2: 2454, z2: 3493, level: 1 }],
+        // Two booth rows, each a rect: the gnomes between them are the stronghold's.
+        rects: [
+            { x1: 2438, z1: 3486, x2: 2442, z2: 3490, level: 1 },
+            { x1: 2447, z1: 3479, x2: 2451, z2: 3482, level: 1 },
+        ],
     },
     {
         id: 'swamp',
@@ -394,7 +402,7 @@ export const AREAS: readonly Area[] = [
         id: 'yanille-bank',
         name: 'Yanille bank',
         parent: 'yanille',
-        rects: [{ x1: 2609, z1: 3086, x2: 2620, z2: 3099 }],
+        rects: [{ x1: 2613, z1: 3090, x2: 2616, z2: 3095 }],
     },
 
     // Karamja, with the shipyard on its south-east coast, and the Monkey Madness islands south of it.
@@ -430,7 +438,7 @@ export const AREAS: readonly Area[] = [
         id: 'shilo-village-bank',
         name: 'Shilo Village bank',
         parent: 'shilo-village',
-        rects: [{ x1: 2847, z1: 2949, x2: 2857, z2: 2960 }],
+        rects: [{ x1: 2850, z1: 2953, x2: 2854, z2: 2956 }],
     },
     { id: 'ship-yard', name: 'Ship Yard', parent: 'karamja', rects: [{ x1: 2978, z1: 3043, x2: 3001, z2: 3066 }] },
     {
@@ -504,7 +512,7 @@ export const AREAS: readonly Area[] = [
         id: 'draynor-bank',
         name: 'Draynor bank',
         parent: 'draynor-village',
-        rects: [{ x1: 3086, z1: 3239, x2: 3093, z2: 3248 }],
+        rects: [{ x1: 3087, z1: 3241, x2: 3092, z2: 3246 }],
     },
     {
         id: 'draynor-fishing',
@@ -535,7 +543,7 @@ export const AREAS: readonly Area[] = [
         id: 'edgeville-bank',
         name: 'Edgeville bank',
         parent: 'edgeville',
-        rects: [{ x1: 3090, z1: 3486, x2: 3099, z2: 3497 }],
+        rects: [{ x1: 3094, z1: 3488, x2: 3099, z2: 3494 }],
     },
     {
         id: 'exam-centre',
@@ -575,7 +583,7 @@ export const AREAS: readonly Area[] = [
         id: 'varrock-east-bank',
         name: 'Varrock East bank',
         parent: 'varrock',
-        rects: [{ x1: 3249, z1: 3413, x2: 3259, z2: 3423 }],
+        rects: [{ x1: 3251, z1: 3416, x2: 3257, z2: 3420 }],
     },
     {
         id: 'varrock-oaks',
@@ -587,7 +595,7 @@ export const AREAS: readonly Area[] = [
         id: 'varrock-west-bank',
         name: 'Varrock West bank',
         parent: 'varrock',
-        rects: [{ x1: 3180, z1: 3433, x2: 3191, z2: 3447, level: 0 }],
+        rects: [{ x1: 3185, z1: 3435, x2: 3188, z2: 3447, level: 0 }],
     },
     {
         id: 'varrock-east-mine',
@@ -633,7 +641,7 @@ export const AREAS: readonly Area[] = [
         id: 'al-kharid-bank',
         name: 'Al Kharid bank',
         parent: 'al-kharid',
-        rects: [{ x1: 3264, z1: 3160, x2: 3273, z2: 3173 }],
+        rects: [{ x1: 3266, z1: 3163, x2: 3269, z2: 3170 }],
     },
     {
         id: 'al-kharid-river',
@@ -670,7 +678,7 @@ export const AREAS: readonly Area[] = [
         id: 'duel-arena-bank',
         name: 'Duel Arena bank',
         parent: 'duel-arena',
-        rects: [{ x1: 3378, z1: 3264, x2: 3388, z2: 3274 }],
+        rects: [{ x1: 3380, z1: 3268, x2: 3384, z2: 3271 }],
         notes: 'Fadli, and the two closed bank chests beside him that open into bank chests (minigames/game_duelarena/scripts/misc_locs.rs2).',
     },
     {
@@ -683,7 +691,7 @@ export const AREAS: readonly Area[] = [
         id: 'shantay-pass-bank-chest',
         name: 'Shantay Pass bank chest',
         parent: 'shantay-pass',
-        rects: [{ x1: 3305, z1: 3116, x2: 3313, z2: 3124 }],
+        rects: [{ x1: 3308, z1: 3119, x2: 3310, z2: 3121 }],
         notes: 'Members only; opens the bank (areas/area_alkharid/scripts/shantay_chest.rs2).',
     },
     {
@@ -700,7 +708,7 @@ export const AREAS: readonly Area[] = [
         id: 'canifis-bank',
         name: 'Canifis bank',
         parent: 'canifis',
-        rects: [{ x1: 3508, z1: 3475, x2: 3517, z2: 3486 }],
+        rects: [{ x1: 3512, z1: 3478, x2: 3515, z2: 3483 }],
     },
     {
         id: 'haunted-woods',
@@ -841,14 +849,14 @@ export const AREAS: readonly Area[] = [
         id: 'miscellania-bank',
         name: 'Miscellania bank',
         parent: 'miscellania',
-        rects: [{ x1: 2616, z1: 3890, x2: 2626, z2: 3900 }],
+        rects: [{ x1: 2620, z1: 3894, x2: 2622, z2: 3896 }],
     },
     { id: 'tutorial-island', name: 'Tutorial Island', rects: [{ x1: 3053, z1: 3053, x2: 3149, z2: 3135 }] },
     {
         id: 'tutorial-island-bank',
         name: 'Tutorial Island bank',
         parent: 'tutorial-island',
-        rects: [{ x1: 3117, z1: 3119, x2: 3127, z2: 3129 }],
+        rects: [{ x1: 3119, z1: 3123, x2: 3123, z2: 3126 }],
     },
 
     // Instanced planes north of the surface (z 4400-5000, level 0), each a map square or two that scripts
@@ -967,7 +975,7 @@ export const AREAS: readonly Area[] = [
         id: 'mage-arena-bank',
         name: 'Mage Arena bank',
         parent: 'mage-arena-chamber',
-        rects: [{ x1: 2530, z1: 4710, x2: 2538, z2: 4717 }],
+        rects: [{ x1: 2533, z1: 4713, x2: 2535, z2: 4715 }],
         notes: 'Gundai.',
     },
     {
@@ -1164,6 +1172,6 @@ export const AREAS: readonly Area[] = [
         id: 'zanaris-bank',
         name: 'Zanaris bank',
         parent: 'zanaris',
-        rects: [{ x1: 3146, z1: 9573, x2: 3158, z2: 9584 }],
+        rects: [{ x1: 3149, z1: 9576, x2: 3155, z2: 9581 }],
     },
 ];

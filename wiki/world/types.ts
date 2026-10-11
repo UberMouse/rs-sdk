@@ -81,7 +81,12 @@ export interface Site {
     wildernessLevel: number;
 }
 
+/** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
+export const WORLD_FORMAT = 1;
+
 export interface World {
+    /** WORLD_FORMAT when written. */
+    format: number;
     generatedFrom: string;
     areas: Area[];
     features: Feature[];

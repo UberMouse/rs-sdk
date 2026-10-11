@@ -1,10 +1,10 @@
 // Facts about the real world, checked against one in-memory build of the game data.
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { BANKS } from '../../../conductor/lib/banks';
 import { AREAS } from '../areas';
-import { buildWorld, type BuildReport } from '../build';
+import { buildWorld } from '../build';
 import { siteCollision } from '../collision';
 import { WIKI } from '../paths';
 import { locSizes } from '../place';
@@ -13,14 +13,11 @@ import { readDbrows } from '../sources/dbrows';
 import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
 import { readCallables, readTriggers } from '../sources/triggers';
-import type { Feature, Site, World } from '../types';
+import type { Feature, Site } from '../types';
 
-let world: World;
-let report: BuildReport;
-
-beforeAll(() => {
-    ({ world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: siteCollision }));
-});
+// Built when the file loads, where no timeout applies: the build reads all the game data, 3-4s here,
+// too close to the 5s bun gives a beforeAll hook (and bun-types 1.2 declares no hook timeout).
+const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: siteCollision });
 
 /** Lower case, letters and digits only: a shop page's slug against an inventory name. */
 const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -33,6 +30,14 @@ const sitesOf = (kind: Site['kind']): Site[] => world.sites.filter(s => s.kind =
 const featuresOf = (s: Site): Feature[] => s.features.map(i => world.features[i]!);
 /** The sites of a kind whose deepest area is `leaf`. */
 const inLeaf = (kind: Site['kind'], leaf: string): Site[] => sitesOf(kind).filter(s => s.areaPath.at(-1) === leaf);
+/** The inventories the shop features of an npc config record. */
+const shopSubtypesOf = (npc: string): string[] =>
+    sitesOf('shop')
+        .flatMap(featuresOf)
+        .filter(f => f.config === npc)
+        .map(f => f.subtype);
+/** A script opening `inv` as a shop. */
+const opens = (inv: string): RegExp => new RegExp(`~openshop\\(\\s*${inv}\\s*,`);
 
 test('the build covers every site it must place', () => expect(report.uncovered).toEqual([]));
 
@@ -94,9 +99,9 @@ describe('banks', () => {
             'yanille-bank',
             'zanaris-bank',
         ]);
-        // The spec expected the Shantay chest to be no real bank, to exclude or flag. The game makes
-        // it one: [oploc1,thbankchest] in areas/area_alkharid/scripts/shantay_chest.rs2 shows a
-        // message and goes to @openbank (members only). So it stays, as its own one-chest site.
+        // The Shantay chest is a bank: [oploc1,thbankchest] in areas/area_alkharid/scripts/
+        // shantay_chest.rs2 shows a message and goes to @openbank (members only). It is a site of its
+        // own, one chest.
         const [shantay] = inLeaf('bank', 'shantay-pass-bank-chest');
         expect(shantay!.counts).toEqual({ chest: 1 });
         expect(featuresOf(shantay!).map(f => f.config)).toEqual(['thbankchest']);
@@ -112,10 +117,10 @@ describe('banks', () => {
     });
 
     test('every banks.ts stand tile reaches a booth of a generated bank site, near its stand tile', () => {
-        // The spec asked for each within 2 tiles of a generated stand. Varrock West is 4 away: the
-        // generated stand (3185, 3440) is the public-side tile nearest the booth row's centre, and
-        // banks.ts took (3185, 3436) at the row's south end. Both are right by the engine's reach
-        // test (collision.real.test.ts pins the latter), so the check is that test and a looser bound.
+        // A banks.ts stand can be 4 tiles from the generated one, both right: at Varrock West the
+        // generated stand (3185, 3440) is the public-side tile nearest the booth row's centre and
+        // banks.ts has (3185, 3436) at the row's south end. Each reaches a booth by the engine's reach
+        // test (collision.real.test.ts pins the banks.ts one), so that test is the check.
         const size = locSizes(readConfigs('loc'));
         const banks = sitesOf('bank').filter(s => s.stand && s.centre.level === 0);
         for (const b of BANKS) {
@@ -152,15 +157,14 @@ describe('resources and shops', () => {
     });
 
     test('Varrock East mine has tin, copper and iron rocks', () => {
-        // The spec said no iron. The map has iron there: ironrock1/2 at (3285-3286, 3368-3369) in
-        // server/content/maps/m51_52.jm2, as learnings/mining.md has it ("SE Varrock mine": copper,
-        // tin, iron), so the fact was wrong.
+        // ironrock1 at (3285-3286, 3368-3369) and ironrock2 at (3288, 3370) in server/content/maps/
+        // m51_52.jm2, as learnings/mining.md has it ("SE Varrock mine": copper, tin, iron).
         const counts = inLeaf('rock', 'varrock-east-mine').flatMap(s => Object.keys(s.counts));
         expect(new Set(counts)).toEqual(new Set(['copper', 'iron', 'tin']));
     });
 
-    // The spec had every shop page with a shop site. These pages have none, for reasons in the data:
-    // a page is generated for every restocking inventory, whether or not anything opens it.
+    // wiki/generate-shops.ts writes a page for every restocking inventory, whether or not anything
+    // opens it, so these pages have no shop site, each for a reason in the data.
     /** Inventories no script opens: no `~openshop(<inv>, ...)` anywhere in server/content/scripts. */
     const UNOPENED = ['fishrestaurant', 'foodshop', 'furstall', 'silvershop', 'spiceshop'];
     /**
@@ -201,14 +205,16 @@ describe('resources and shops', () => {
 
     test('the pages without a site are explained by the data', () => {
         const bodies = [...readTriggers(), ...readCallables()].map(s => s.body).join('\n');
-        for (const inv of UNOPENED) expect(bodies).not.toContain(`~openshop(${inv},`);
+        for (const inv of UNOPENED) expect(bodies).not.toMatch(opens(inv));
         for (const [page, npc] of Object.entries(SECOND)) {
-            expect(bodies).toContain(`~openshop(${page.replaceAll('-', '_')},`);
-            expect(sitesOf('shop').some(s => featuresOf(s).some(f => f.config === npc))).toBe(true);
+            const inv = page.replaceAll('-', '_');
+            expect(bodies).toMatch(opens(inv));
+            expect(shopSubtypesOf(npc)).not.toEqual([]);
+            expect(shopSubtypesOf(npc)).not.toContain(inv);
         }
         const npcs = readPack('npc');
         const placed = new Set(mapSquares().npcs.map(n => npcs.name.get(n.id)));
         expect([placed.has('razmire_keelgan'), placed.has('razmire_keelgan_afflicted')]).toEqual([false, true]);
-        for (const inv of TYPE_CHANGED) expect(bodies).toContain(`~openshop(${inv},`);
+        for (const inv of TYPE_CHANGED) expect(bodies).toMatch(opens(inv));
     });
 });

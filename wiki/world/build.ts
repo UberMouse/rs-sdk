@@ -14,7 +14,7 @@ import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
 import { readCallables, readTriggers } from './sources/triggers';
 import { readZones } from './sources/zones';
-import type { Area, Feature, FeatureKind, Site, World } from './types';
+import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
 
 /**
  * The kinds whose every site must lie in an area: what an agent picks a place by (banks, shops,
@@ -82,9 +82,12 @@ export const byWritten = (a: Feature, b: Feature): number =>
 const outside = (s: Site): boolean => s.areaPath.length === 0;
 
 const tally = <T>(xs: readonly T[], key: (x: T) => string): Record<string, number> => {
-    const out: Record<string, number> = {};
-    for (const x of [...xs].sort((a, b) => cmp(key(a), key(b)))) out[key(x)] = (out[key(x)] ?? 0) + 1;
-    return out;
+    const counted = new Map<string, number>();
+    for (const x of xs) {
+        const k = key(x);
+        counted.set(k, (counted.get(k) ?? 0) + 1);
+    }
+    return Object.fromEntries([...counted].sort(([a], [b]) => cmp(a, b)));
 };
 
 /** Reads the game data and builds the world, without writing anything. */
@@ -125,7 +128,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     }).sort((a, b) => cmp(a.id, b.id));
 
     return {
-        world: { generatedFrom, areas: [...areas], features, sites },
+        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites },
         report: {
             features: tally(features, f => f.kind),
             sites: tally(sites, s => s.kind),
@@ -148,6 +151,7 @@ const jsonList = (key: string, xs: readonly unknown[]): string =>
 export function serializeWorld(world: World): string {
     return [
         '{',
+        `  "format": ${JSON.stringify(world.format)},`,
         `  "generatedFrom": ${JSON.stringify(world.generatedFrom)},`,
         jsonList('areas', world.areas) + ',',
         jsonList('features', world.features) + ',',
@@ -157,22 +161,30 @@ export function serializeWorld(world: World): string {
     ].join('\n');
 }
 
-/** The last commit that touched server/content, so the hash moves only when the game data does. */
+const git = (args: string[]): string => {
+    const run = Bun.spawnSync(['git', ...args], { cwd: ROOT, stderr: 'pipe' });
+    if (run.exitCode !== 0) throw new Error(`git ${args.join(' ')} failed: ${run.stderr.toString().trim()}`);
+    return run.stdout.toString().trim();
+};
+
+/**
+ * The last commit that touched server/content, with `-dirty` when server/content has uncommitted
+ * changes, so the hash moves only when the game data does. It names the content commit and nothing
+ * more: it misses an edit to this builder or to areas.ts, so whether world.json is fresh is answered
+ * by rebuilding and comparing the bytes, not by this hash.
+ */
 export function contentHash(): string {
-    const git = Bun.spawnSync(['git', 'log', '-1', '--format=%H', '--', 'server/content'], {
-        cwd: ROOT,
-        stderr: 'pipe',
-    });
-    const hash = git.stdout.toString().trim();
-    if (git.exitCode !== 0 || !/^[0-9a-f]{40}$/.test(hash))
-        throw new Error(`git log on server/content failed: ${git.stderr.toString().trim() || hash}`);
-    return hash;
+    const hash = git(['log', '-1', '--format=%H', '--', 'server/content']);
+    if (!/^[0-9a-f]{40}$/.test(hash)) throw new Error(`git log on server/content gave no commit: ${hash}`);
+    return git(['status', '--porcelain', '--', 'server/content']) ? `${hash}-dirty` : hash;
 }
 
 const counts = (r: Partial<Record<string, number>>): string =>
     Object.entries(r)
         .map(([k, n]) => `${k} ${n}`)
         .join(', ');
+
+const NPC_SAMPLE = 10;
 
 export function formatReport(report: BuildReport): string[] {
     const lines = [`features: ${counts(report.features)}`, `sites: ${counts(report.sites)}`];
@@ -182,10 +194,13 @@ export function formatReport(report: BuildReport): string[] {
             : 'coverage: every site of a covered kind lies in an area',
         ...report.uncovered.map(id => `  ${id}`),
     );
+    // Monsters roam everywhere, so these are many and listing them all buries the rest: a count and
+    // the first ids (the sites are sorted by id) show whether the number moved and where.
+    const sample = report.npcUncovered.slice(0, NPC_SAMPLE);
     if (report.npcUncovered.length)
         lines.push(
-            `warning: ${report.npcUncovered.length} npc sites outside every area:`,
-            ...report.npcUncovered.map(id => `  ${id}`),
+            `warning: ${report.npcUncovered.length} npc sites outside every area, the first ${sample.length}:`,
+            ...sample.map(id => `  ${id}`),
         );
     if (Object.keys(report.unpacked).length)
         lines.push(`warning: placements with no config in the pack: ${counts(report.unpacked)}`);

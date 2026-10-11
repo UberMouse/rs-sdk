@@ -4,7 +4,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import { byWritten, formatReport, serializeWorld, type BuildReport } from '../build';
 import { loadWorld } from '../load';
-import type { Feature, World } from '../types';
+import { WORLD_FORMAT, type Feature, type World } from '../types';
 
 const tree = (x: number, z: number, config = 'tree'): Feature => ({
     source: 'loc',
@@ -19,6 +19,7 @@ const tree = (x: number, z: number, config = 'tree'): Feature => ({
 });
 
 const world: World = {
+    format: WORLD_FORMAT,
     generatedFrom: 'abc',
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 0, z1: 0, x2: 9, z2: 9 }] }],
     features: [tree(1, 2), tree(3, 4)],
@@ -30,6 +31,7 @@ describe('serializeWorld', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
+                `  "format": ${WORLD_FORMAT},`,
                 '  "generatedFrom": "abc",',
                 '  "areas": [',
                 '    {"id":"town","name":"Town","rects":[{"x1":0,"z1":0,"x2":9,"z2":9}]}',
@@ -55,7 +57,9 @@ describe('serializeWorld', () => {
             subtype: 'man',
             name: 'Man',
         };
-        const line = serializeWorld({ ...world, features: [{ ...npc, shape: undefined }] }).split('\n')[6]!;
+        const line = serializeWorld({ ...world, features: [{ ...npc, shape: undefined }] })
+            .split('\n')
+            .find(l => l.includes('"config":"man"'))!;
         expect(JSON.parse(line)).toEqual(npc);
         expect(line).not.toContain('shape');
     });
@@ -66,7 +70,7 @@ describe('serializeWorld', () => {
             const file = join(dir, 'world.json');
             writeFileSync(file, serializeWorld(world));
             expect(loadWorld(file)).toEqual(world);
-            writeFileSync(file, '{"areas":[]}');
+            writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
         } finally {
             rmSync(dir, { recursive: true });
@@ -82,6 +86,20 @@ test('byWritten orders by kind, then x, z, level and config', () => {
         'tree 1,9 tree',
         'tree 5,1 tree',
     ]);
+});
+
+test('loadWorld refuses a file of another format, or of none, and says how to regenerate it', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, serializeWorld({ ...world, format: WORLD_FORMAT + 1 }));
+        expect(() => loadWorld(file)).toThrow(`format ${WORLD_FORMAT + 1}, this code reads format ${WORLD_FORMAT}`);
+        const { format: _, ...old } = world;
+        writeFileSync(file, JSON.stringify(old));
+        expect(() => loadWorld(file)).toThrow(/format none.*regenerate it with bun run world/);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
 });
 
 describe('formatReport', () => {
@@ -111,9 +129,18 @@ describe('formatReport', () => {
         expect(lines.slice(2)).toEqual([
             'ERROR coverage: 1 sites outside every area:',
             '  tree:unnamed:0',
-            'warning: 1 npc sites outside every area:',
+            'warning: 1 npc sites outside every area, the first 1:',
             '  npc:unnamed:0',
             'warning: placements with no config in the pack: loc 9 2',
+        ]);
+    });
+
+    test('counts the npc sites outside every area and lists the first ten', () => {
+        const npcUncovered = Array.from({ length: 12 }, (_, i) => `npc:unnamed:${i}`);
+        const lines = formatReport({ ...report, npcUncovered });
+        expect(lines.slice(3)).toEqual([
+            'warning: 12 npc sites outside every area, the first 10:',
+            ...npcUncovered.slice(0, 10).map(id => `  ${id}`),
         ]);
     });
 });
