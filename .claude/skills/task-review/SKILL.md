@@ -96,7 +96,9 @@ Fix review findings in <files>, smoke-testing on worker <worker> from save <save
 For each: <file>:<line> [<lens> <criterion>, band <band>] <summary>
   Evidence: <evidence>
   Fix: <suggestion>
-Change only what these findings call for. Re-run the smoke test and `bun run verify:conductor`.
+Change only what these findings call for. Re-run `bun test` on the changed area, the integration
+tests for the files you touched (`bun run test:integration <name>`, never the full suite), and
+`bun run verify:conductor`.
 Format only your files (`bunx oxfmt <files>`, not `bun run fmt`: other agents' uncommitted
 files are in conductor/ too); a verify error in a file you didn't touch is theirs, not yours.
 Leave the change uncommitted; report per finding: fixed / couldn't (why), and the RESULT lines.
@@ -114,7 +116,9 @@ same bot.
 
 ## 4. Round 2
 
-Re-run §1–§2 for only the lenses that had fix findings, on the whole change, telling the
+Only when a fix was band A or B: a round of C fixes alone is closed by your own read of the fix
+diff and `bun test conductor`, with no second round. Otherwise re-run §1–§2 for only the lenses
+that had A or B fix findings, on the whole change, telling the
 reviewers which round-1 fixes to re-check, the round-1 findings that were dropped (so they
 aren't re-raised), and the newest smoke-test logs, which every round-2 reviewer must read (the
 post-fix log is where regressions show). Round 2 usually finds problems the fixes introduced:
@@ -128,6 +132,11 @@ new defect). Then:
   for the next task-author dispatch. For a commit range, report the A findings to the user.
 
 ## 5. Commit
+
+The full `bun run test:integration` runs once, by you, just before the commit, and only when the
+change touches `conductor/lib/` or `conductor/actions/` (shared by every task); the author's run
+before review counts when no fix touched those since. A review once took 76 minutes for a
+140-line change, with every fix author re-running the full suite (2026-10-11).
 
 Before you commit and report, make sure nothing you started is still running (a test or smoke
 run in the background, a subagent): wait for it or stop it. An orchestrator that reports with
