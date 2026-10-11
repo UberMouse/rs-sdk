@@ -1,0 +1,66 @@
+{
+    "name": "agility-gnome",
+    "purpose": "Agility 1, Attack/Strength/Defence 15, Hitpoints 19, bronze sword wielded, 5 shrimps, at the Gnome Stronghold agility course start (2474,3436). Tests the agility task.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2474,
+                "z": 3436
+            },
+            "skills": {
+                "Attack": 15,
+                "Strength": 15,
+                "Defence": 15,
+                "Hitpoints": 19
+            },
+            "inventory": [
+                {
+                    "id": 315,
+                    "count": 5
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1277,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "5ea998d6cf3b67cde0f14fb1174425bc784e724d",
+    "createdAt": "2026-10-10T02:48:32.320Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2474,
+            "z": 3436,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 15,
+            "Defence": 15,
+            "Strength": 15,
+            "Hitpoints": 19
+        },
+        "inventory": [
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 5
+            }
+        ],
+        "worn": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
