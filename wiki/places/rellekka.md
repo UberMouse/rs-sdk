@@ -102,10 +102,12 @@
 | `pickpocket:rellekka:0` | (2627, 3654) | [Sassilik](../resources/pickpocket/viking_woman4.md) 1 | no | no | - |
 | `pickpocket:rellekka:1` | (2640, 3651) | [Jennella](../resources/pickpocket/viking_woman3.md) 1 | no | no | - |
 | `pickpocket:rellekka:2` | (2642, 3677) | [Agnar](../resources/pickpocket/viking_man.md) 1 | no | no | - |
-| `pickpocket:rellekka:3` | (2667, 3702) | [Freygerd](../resources/pickpocket/viking_woman.md) 1 | no | no | - |
-| `pickpocket:rellekka:4` | (2674, 3676) | [Freidir](../resources/pickpocket/viking_man2.md) 1, [Inga](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - |
-| `pickpocket:rellekka:5` | (2676, 3665) | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - |
-| `pickpocket:rellekka:6` | (2679, 3690) | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - |
+| `pickpocket:rellekka:3` | (2655, 3652) | [Lensa](../resources/pickpocket/viking_woman2.md) 1 | no | no | - |
+| `pickpocket:rellekka:4` | (2666, 3652) | [Pontak](../resources/pickpocket/viking_man5.md) 1 | no | no | - |
+| `pickpocket:rellekka:5` | (2667, 3702) | [Freygerd](../resources/pickpocket/viking_woman.md) 1 | no | no | - |
+| `pickpocket:rellekka:6` | (2674, 3676) | [Freidir](../resources/pickpocket/viking_man2.md) 1, [Inga](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - |
+| `pickpocket:rellekka:7` | (2676, 3665) | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - |
+| `pickpocket:rellekka:8` | (2679, 3690) | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - |
 
 ## Monsters
 
@@ -125,3 +127,4 @@
 | `npc:rellekka:11` | (2668, 3710) | Warrior 1 | no | no | - |
 | `npc:rellekka:12` | (2673, 3695) | Warrior 1 | no | no | - |
 | `npc:rellekka:13` | (2680, 3663) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - |
+| `npc:rellekka:14` | (2685, 3653) | Warrior 1 | no | no | - |

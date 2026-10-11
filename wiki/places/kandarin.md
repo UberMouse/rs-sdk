@@ -481,7 +481,7 @@
 | [Fishing Guild](fishing-guild.md) | bank 1, shop 1, range 1, tree 3, fishing-spot 1, pickpocket 1, npc 8, connector 2 |
 | [Fishing Platform](fishing-platform.md) | connector 1 |
 | [Flax](flax.md) | tree 2 |
-| [Fremennik Province](fremennik-province.md) | tree 1, pickpocket 2, npc 1 |
+| [Fremennik Province](fremennik-province.md) | tree 1 |
 | [Golden Apple Tree](golden-apple-tree.md) | tree 1 |
 | [Hemenster](hemenster.md) | anvil 1, range 1, tree 3, thieving-chest 1, npc 1, connector 2 |
 | [Keep Le Faye](keep-le-faye.md) | tree 2, npc 4, connector 4 |
@@ -492,7 +492,7 @@
 | [Observatory](observatory.md) | tree 1 |
 | [Port Khazard](port-khazard.md) | shop 2, anvil 1, range 2, fire 2, tree 2, rock 1, npc 1, connector 4 |
 | [Ranging Guild](ranging-guild.md) | shop 2, tanner 1, tree 1, npc 7, connector 13 |
-| [Rellekka](rellekka.md) | shop 4, furnace 1, anvil 1, fire 8, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, sand-pit 1, tree 1, rock 1, fishing-spot 2, stall 2, thieving-chest 3, pickpocket 7, npc 14 |
+| [Rellekka](rellekka.md) | shop 4, furnace 1, anvil 1, fire 8, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, sand-pit 1, tree 1, rock 1, fishing-spot 2, stall 2, thieving-chest 3, pickpocket 9, npc 15 |
 | [Seers' Village](seers-village.md) | bank 1, anvil 1, range 1, fire 4, spinning-wheel 1, water-source 1, altar 1, tree 2, pickpocket 2, connector 10 |
 | [Sinclair Mansion](sinclair-mansion.md) | tree 1, npc 1 |
 | [Sorcerer's Tower](sorcerers-tower.md) | range 1, tree 1 |

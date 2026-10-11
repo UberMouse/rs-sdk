@@ -47,7 +47,12 @@ describe('AREAS', () => {
         expect(resolve({ level: 0, x: 2642, z: 3677 })).toEqual(rellekka); // the market
         expect(resolve({ level: 0, x: 2640, z: 3651 })).toEqual(rellekka); // inside the south palisade
         expect(resolve({ level: 0, x: 2612, z: 3644 })).toEqual(['kandarin']); // outside it
-        expect(resolve({ level: 0, x: 2655, z: 3652 })).toEqual(['kandarin', 'fremennik-province']);
+        // East of x 2654 the palisade's inside is the town's too: Lensa, Pontak and Sigli stand there.
+        expect(resolve({ level: 0, x: 2655, z: 3652 })).toEqual(rellekka); // Lensa
+        expect(resolve({ level: 0, x: 2666, z: 3652 })).toEqual(rellekka); // Pontak
+        expect(resolve({ level: 0, x: 2660, z: 3653 })).toEqual(rellekka); // Sigli
+        expect(resolve({ level: 0, x: 2662, z: 3640 })).toEqual(['kandarin', 'fremennik-province']); // outside the gate
+        expect(resolve({ level: 0, x: 2695, z: 3650 })).toEqual(['kandarin', 'fremennik-province']); // east of it
         expect(resolve({ level: 0, x: 2655, z: 3152 })).toEqual(['kandarin', 'port-khazard']); // general store
         expect(resolve({ level: 0, x: 2632, z: 3163 })).toEqual(['kandarin', 'port-khazard']); // a range
         expect(resolve({ level: 0, x: 2630, z: 3143 })).toEqual(['kandarin']); // the mine

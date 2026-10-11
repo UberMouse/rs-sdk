@@ -17,4 +17,4 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|---|
-| [Fremennik Province (Kandarin)](../../places/fremennik-province.md) | `pickpocket:fremennik-province:1` | (2666, 3652) | (2666, 3652) | 1 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `pickpocket:rellekka:4` | (2666, 3652) | (2666, 3652) | 1 | no | no | - |

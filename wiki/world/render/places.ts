@@ -21,6 +21,7 @@ import {
     wilderness,
     yesNo,
     type PageData,
+    type Part,
 } from './common';
 
 /** `bank 1, tree 12`: sites per kind, in page order. */
@@ -72,8 +73,9 @@ export function renderPlaces(world: World, data: PageData): Map<string, string> 
         if (area.requires?.length) lines.push(`Requires: ${area.requires.join(', ')}.`, '');
 
         const sites = leafSites.get(area.id) ?? [];
-        const held = new Map(sites.map(s => [s, parts(s, world, data)]));
-        const label = labeller([...held].flatMap(([s, ps]) => ps.map(p => [s.kind, p] as const)));
+        // Each site beside its parts, computed once: the labeller needs every part on the page.
+        const held = sites.map(site => ({ site, parts: parts(site, world, data) }));
+        const label = labeller(held.flatMap(({ site, parts: ps }) => ps.map(p => [site.kind, p] as const)));
         const kinds = [...new Set(sites.map(s => s.kind))].sort(byKind);
         if (!kinds.length) lines.push('No site lies in this area outside its child areas.', '');
         for (const kind of kinds) {
@@ -81,9 +83,8 @@ export function renderPlaces(world: World, data: PageData): Map<string, string> 
             const heading = SERVICE_KINDS.includes(kind)
                 ? `[${kindTitle(kind)}](${link(path, servicePath(kind))})`
                 : kindTitle(kind);
-            const counts = (s: Site): string =>
-                held
-                    .get(s)!
+            const counts = (ps: readonly Part[]): string =>
+                ps
                     .map(p =>
                         isResourceKind(kind)
                             ? `[${label(kind, p)}](${link(path, resourcePath(kind, p.key))}) ${p.n}`
@@ -95,13 +96,13 @@ export function renderPlaces(world: World, data: PageData): Map<string, string> 
                 '',
                 ...table(
                     ['Site', 'Centre', 'Counts', 'F2P', 'Multiway', 'Wilderness'],
-                    sites
-                        .filter(s => s.kind === kind)
-                        .sort((a, b) => bySiteId(a.id, b.id))
-                        .map(s => [
+                    held
+                        .filter(({ site }) => site.kind === kind)
+                        .sort((a, b) => bySiteId(a.site.id, b.site.id))
+                        .map(({ site: s, parts: ps }) => [
                             `\`${s.id}\``,
                             coord(s.centre),
-                            counts(s),
+                            counts(ps),
                             yesNo(s.f2p),
                             yesNo(s.multiway),
                             wilderness(s.wildernessLevel),

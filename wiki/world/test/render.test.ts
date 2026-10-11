@@ -664,6 +664,11 @@ describe('openshopTitles', () => {
         ]);
     });
 
+    test('a comma inside the title is part of it', () =>
+        expect([...openshopTitles(['~openshop(a, 1, 1, 1, "Bob\'s Brilliant Axes, and more");'])]).toEqual([
+            ['a', "Bob's Brilliant Axes, and more"],
+        ]));
+
     test('two titles for one inv throw', () =>
         expect(() => openshopTitles(['~openshop(a, 1, 1, 1, "A");', '~openshop(a, 1, 1, 1, "B");'])).toThrow(
             '~openshop calls give a two titles: "A" and "B"',
@@ -760,5 +765,15 @@ describe('writeFiles and drift', () => {
         symlinkSync(elsewhere, join(root, 'wiki/places'));
         expect(() => writeFiles(files, root)).toThrow('wiki/places is a symlink');
         expect(readFileSync(join(elsewhere, 'precious.md'), 'utf8')).toBe('keep');
+    });
+
+    test('writeFiles refuses a dangling symlink in place of a generated folder, creating nothing at its target', () => {
+        const root = tree();
+        const missing = join(root, 'nowhere');
+        rmSync(join(root, 'wiki/places'), { recursive: true });
+        symlinkSync(missing, join(root, 'wiki/places'));
+        expect(() => writeFiles(files, root)).toThrow('wiki/places is a symlink');
+        expect(existsSync(missing)).toBe(false);
+        expect(existsSync(join(root, 'wiki/resources/rock/old.md'))).toBe(true);
     });
 });

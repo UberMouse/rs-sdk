@@ -74,6 +74,10 @@ export const params = (cfg: Config): Map<string, string> =>
 // The same predicate as hasCombatStats in wiki/generate-npcs.ts, which can't be imported (it runs main).
 const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k => COMBAT_PARAMS.has(k));
 
+// What follows a `<` that opens an interpolation in the scripts: a proc call (`<~name(...)>`), a local
+// (`<$name>`), a varp (`<%name>`), a dot command (`<.displayname>`) or a command (`<tostring(...)>`).
+const INTERPOLATION = /^[a-z_~$%.]$/;
+
 /**
  * A body as code only: its `//` comments dropped (a `//` inside a "string" is text) and its string
  * text blanked, so neither a commented-out call nor dialogue ("ask ~foo", the `@dbl@` colour tags of
@@ -85,10 +89,6 @@ const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k 
  * the quotes and every column, so argsAt still splits a call's arguments where they are; a string
  * argument is never bound (only bare names are), so its text is not needed.
  */
-// What follows a `<` that opens an interpolation in the scripts: a proc call (`<~name(...)>`), a local
-// (`<$name>`), a varp (`<%name>`), a dot command (`<.displayname>`) or a command (`<tostring(...)>`).
-const INTERPOLATION = /^[a-z_~$%.]$/;
-
 function codeOf(body: string): string {
     return body
         .split('\n')

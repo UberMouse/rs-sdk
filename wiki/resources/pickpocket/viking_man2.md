@@ -17,4 +17,4 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|---|
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `pickpocket:rellekka:4` | (2674, 3676) | (2674, 3676) | 1 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `pickpocket:rellekka:6` | (2674, 3676) | (2674, 3676) | 1 | no | no | - |

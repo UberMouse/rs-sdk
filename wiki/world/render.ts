@@ -77,7 +77,8 @@ export function openshopTitles(bodies: readonly string[]): Map<string, string> {
             for (const m of line.matchAll(OPENSHOP)) {
                 // A call after `//` is commented out.
                 if (line.slice(0, m.index).includes('//')) continue;
-                const [, inv, literal] = m as unknown as [string, string, string];
+                const inv = m[1]!;
+                const literal = m[2]!;
                 // The interface shows the string's text: `\"` is a quote in it.
                 const title = literal.replace(/\\(.)/g, '$1');
                 const prior = titles.get(inv);

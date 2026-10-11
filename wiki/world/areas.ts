@@ -281,7 +281,12 @@ export const AREAS: readonly Area[] = [
         id: 'fremennik-province',
         name: 'Fremennik Province',
         parent: 'kandarin',
-        rects: [{ x1: 2655, z1: 3608, x2: 2702, z2: 3655 }],
+        // The land south of Rellekka's palisade, the palisade line itself (z 3644-3645) and the strip
+        // east of its south-east corner; the palisade's inside from x 2655 is Rellekka's (see there).
+        rects: [
+            { x1: 2655, z1: 3608, x2: 2702, z2: 3645 },
+            { x1: 2691, z1: 3646, x2: 2702, z2: 3655 },
+        ],
     },
     {
         id: 'golden-apple-tree',
@@ -351,8 +356,10 @@ export const AREAS: readonly Area[] = [
     // The town inside its palisade (the viking_pike_defence locs), which runs from x 2604 along
     // z 3644-3655 on the south and up x 2688-2692 on the east; rockslides bound the west, and the north
     // stops at z 3712, below the rocky ground where the rock crabs lie. The seed's square missed the
-    // market and its shops (x 2625-2647); its east edge, x 2695, is kept. The strip x 2655+,
-    // z 3644-3655 inside the palisade is left to Fremennik Province, the smaller area, as the seed had it.
+    // market and its shops (x 2625-2647); its east edge, x 2695, is kept. East of x 2654 the palisade
+    // runs along z 3644-3645 (the gate gap at x 2659-2665 between its terminator locs) and turns north
+    // through (2687, 3646), (2691, 3648) and (2690, 3655), so the town takes z 3646-3655 up to x 2690
+    // there (Lensa, Pontak and Sigli stand in it) and Fremennik Province keeps the land outside.
     {
         id: 'rellekka',
         name: 'Rellekka',
@@ -360,6 +367,7 @@ export const AREAS: readonly Area[] = [
         rects: [
             { x1: 2604, z1: 3656, x2: 2695, z2: 3712 },
             { x1: 2604, z1: 3645, x2: 2654, z2: 3655 },
+            { x1: 2655, z1: 3646, x2: 2690, z2: 3655 },
         ],
     },
     {
