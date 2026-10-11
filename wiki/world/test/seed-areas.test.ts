@@ -27,6 +27,11 @@ describe('parseLabels', () => {
 });
 
 describe('seedAreas', () => {
+    test('a label id like constructor takes the nearest region, not an inherited parents key', () => {
+        const odd = seedAreas(parseLabels('=Lumbridge,3239,3233,2\n=Constructor,3240,3234,0\n'));
+        expect(odd.find(a => a.id === 'constructor')?.parent).toBe('lumbridge');
+    });
+
     const areas = seedAreas(LABELS);
     const get = (id: string) => areas.find(a => a.id === id);
 

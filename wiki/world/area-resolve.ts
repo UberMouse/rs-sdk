@@ -10,6 +10,9 @@ const holds = (r: Rect, t: Tile): boolean =>
 
 const size = (r: Rect): number => (r.x2 - r.x1 + 1) * (r.z2 - r.z1 + 1);
 
+// Sums rect sizes, so overlapping rects of one area count twice. That only skews the smaller-wins
+// tie-break between same-depth areas that both hold a tile, where a rough size is enough; a true union
+// area would cost the rect-splitting for no better answer.
 const total = (a: Area): number => a.rects.reduce((sum, r) => sum + size(r), 0);
 
 /** The parts of `a` outside `b`, both on one level: at most four rects. */

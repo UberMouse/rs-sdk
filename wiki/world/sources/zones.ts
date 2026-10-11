@@ -18,12 +18,13 @@ export function parseCoord(s: string): Tile {
     return { level, x: (mx << 6) + lx, z: (mz << 6) + lz };
 }
 
-/** Zone keys of a csv. Like loadCsvMap, `//` lines and empty lines are skipped. */
+/** Zone keys of a csv. Like loadCsvMap, `//` lines and empty lines are skipped; loadCsvMap's
+ * `Number(field)` ignores whitespace around a field, so a line's is trimmed here. */
 export function parseZoneCsv(text: string): Set<string> {
     const out = new Set<string>();
     for (const line of text.split(/\r?\n/)) {
         if (!line.length || line.startsWith('//')) continue;
-        out.add(zoneKey(parseCoord(line)));
+        out.add(zoneKey(parseCoord(line.trim())));
     }
     return out;
 }
@@ -44,6 +45,12 @@ export const isF2p = (zones: Zones, t: Tile): boolean => zones.f2p.has(zoneKey({
 
 export const isMultiway = (zones: Zones, t: Tile): boolean => zones.multiway.has(zoneKey(t));
 
+/** An inclusive box of tiles, corner to corner, levels included. */
+export interface Box {
+    from: Tile;
+    to: Tile;
+}
+
 /**
  * The Wilderness boxes, inclusive on x, z and level as the engine's INZONE is
  * (server/engine/src/engine/script/handlers/ServerOps.ts:48). They are the coord pairs of
@@ -51,12 +58,12 @@ export const isMultiway = (zones: Zones, t: Tile): boolean => zones.multiway.has
  * by zones.real.test.ts): the surface on every level, then the Edgeville dungeon underground, level 0
  * only.
  */
-export const WILDERNESS_ZONES: readonly { from: Tile; to: Tile }[] = [
+export const WILDERNESS_ZONES: readonly Box[] = [
     { from: { level: 0, x: 2944, z: 3520 }, to: { level: 3, x: 3391, z: 6399 } },
     { from: { level: 0, x: 2944, z: 9920 }, to: { level: 0, x: 3391, z: 12799 } },
 ];
 
-const inBox = (t: Tile, { from, to }: { from: Tile; to: Tile }): boolean =>
+const inBox = (t: Tile, { from, to }: Box): boolean =>
     t.x >= from.x && t.x <= to.x && t.level >= from.level && t.level <= to.level && t.z >= from.z && t.z <= to.z;
 
 /**

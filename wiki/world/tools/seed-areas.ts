@@ -28,8 +28,10 @@ export function parseLabels(text: string): Label[] {
         });
 }
 
-/** Half the side of the square drawn around a town (type 1) or place (type 0) label. */
-const HALF: Record<number, number> = { 1: 24, 0: 12 };
+/** Half the side of the square drawn around a town (type 1) label. */
+const TOWN_HALF = 24;
+/** Half the side of the square drawn around a place (type 0) label. */
+const PLACE_HALF = 12;
 /** How far a region's rect reaches past the rects of its children. */
 const MARGIN = 16;
 /** Half the side of a region's rect when no label is nearest to it. */
@@ -82,9 +84,9 @@ export function seedAreas(labels: Label[], parents: Record<string, string | null
     const children = ided
         .filter(l => l.type !== 2)
         .map(l => {
-            const parent = l.id in parents ? parents[l.id] : nearest(l);
+            const parent = Object.hasOwn(parents, l.id) ? parents[l.id] : nearest(l);
             if (parent && !regions.some(r => r.id === parent)) throw new Error(`'${l.id}': '${parent}' is no region`);
-            const rects = [around(l, HALF[l.type]!)];
+            const rects = [around(l, l.type === 1 ? TOWN_HALF : PLACE_HALF)];
             return parent === null ? { id: l.id, name: l.name, rects } : { id: l.id, name: l.name, parent, rects };
         });
     const roots = children.filter(c => c.parent === undefined).sort(byId);

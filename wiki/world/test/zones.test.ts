@@ -13,6 +13,9 @@ describe('zones', () => {
     test('a csv line off the 8-tile grid keys the zone that holds it, as the engine does', () =>
         expect([...parseZoneCsv('1_50_50_10_17\n')]).toEqual(['1_50_50_8_16']));
 
+    test('whitespace around a csv line is ignored, as loadCsvMap ignores it', () =>
+        expect([...parseZoneCsv('0_43_69_0_0 \r\n  0_43_69_8_0\t\n')]).toEqual(['0_43_69_0_0', '0_43_69_8_0']));
+
     test('a malformed csv line throws, naming it', () =>
         expect(() => parseZoneCsv('0_43_69_0\n')).toThrow(/0_43_69_0/));
 
