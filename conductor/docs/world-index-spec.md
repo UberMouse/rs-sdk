@@ -870,11 +870,16 @@ radius (`bank` 10, `shop` 6, `tree` 8, `rock` 8, `fishing-spot` 8, service kinds
 site never spans two leaf areas). Site id: `${kind}:${leafAreaId || 'unnamed'}:${n}` with `n` the
 index within that area by (x, z) order, so ids are stable across runs.
 
-**Stand tile:** for each loc in the site, the 4-neighbour tiles that are `collisionPaths.walkable`
-and that `collisionPaths.canStep` toward the loc's tile accepts; for a bank, prefer tiles on the side
-away from the site's bankers (largest distance to the nearest banker); otherwise the candidate
-nearest the site centre. NPC-only sites: the walkable tile nearest the centre within the bbox.
-`null` if none (logged).
+**Stand tile** (as settled in Task 4): candidates are walkable tiles around each loc's rotated
+footprint from which the engine's own reach test passes (`rsmod.reached`, called as
+`GameMap.reachedLoc`/`Player.ts` do, with the loc's width, length, shape, angle and
+`forceapproach`); for a bank with bankers, prefer candidates on the side facing away from the
+bankers (side direction against the vector from the locs' mean to the bankers' mean; the original
+"largest distance to the nearest banker" picks the wrong tile on a long row); otherwise the
+candidate nearest the site centre (ties: lower x, then z). NPC-only sites (fishing spots,
+pickpocket and combat npcs, bankers without booths): the walkable tile nearest the centre within
+the bbox **grown by one tile** (an npc op is used from an adjacent tile; fishing spots stand in
+water). `null` if none (logged). `thieving-chest` radius: 6.
 
 **Step 1: Failing tests** (synthetic features; stub the pathfinder with an interface
 `{ walkable, canStep }` passed in, so tests need no collision data):
@@ -894,8 +899,9 @@ nearest the site centre. NPC-only sites: the walkable tile nearest the centre wi
       radii given, never across leaf areas; ids are stable and input-order independent.
 - [ ] Sites carry `areaPath`, `centre`, `bbox`, `stand`, `counts`, `features`, `f2p`,
       `multiway`, `wildernessLevel` (F2P/multiway: any feature tile's zone in the csv).
-- [ ] Stand tiles follow the rule given (bank: away from bankers; else nearest the centre;
-      npc-only: walkable nearest the centre in the bbox; else `null`).
+- [ ] Stand tiles follow the rule given (engine reach test for locs; bank: side away from
+      bankers; else nearest the centre; npc-only: walkable nearest the centre in the bbox grown
+      by one tile; else `null`).
 - [ ] The five tests listed pass with a stubbed pathfinder; production uses
       `conductor/actions/paths.ts` `collisionPaths`.
 - [ ] Out of scope: writing `world.json`, rendering.
