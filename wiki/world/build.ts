@@ -194,8 +194,9 @@ export function formatReport(report: BuildReport): string[] {
             : 'coverage: every site of a covered kind lies in an area',
         ...report.uncovered.map(id => `  ${id}`),
     );
-    // Monsters roam everywhere, so these are many and listing them all buries the rest: a count and
-    // the first ids (the sites are sorted by id) show whether the number moved and where.
+    // Monster spawns lie all over the map, so these run to hundreds and a full list buries the rest
+    // of the report: the count shows when it moves, and the first ids (sites sort by id) give a few
+    // to look up.
     const sample = report.npcUncovered.slice(0, NPC_SAMPLE);
     if (report.npcUncovered.length)
         lines.push(
