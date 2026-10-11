@@ -53,6 +53,15 @@ const isIdle = animation === -1;
 
 **Getting to Al Kharid mine from Lumbridge:** Pay 10gp toll at gate (3268, 3227), walk NE. Dialog sequence: continue → continue → "Yes, ok." (index 3) → continue.
 
+## Iron layouts (engine rules)
+
+Iron: [wiki/resources/rock/iron.md](../wiki/resources/rock/iron.md); sites [Varrock East](../wiki/places/varrock-east-mine.md), [Rimmington](../wiki/places/rimmington-mine.md), [Al Kharid](../wiki/places/al-kharid-mine.md). Rates per layout: `wiki/skills/mining.md` (Verified training spots).
+
+- A 1x1 rock is reached only from its 4 orthogonal neighbours, never diagonally (`Player.inOperableDistance` -> `ReachStrategy.reachRectangle1`). No tile reaches more than 3 iron rocks at the sites tested.
+- Iron respawns in 20 ticks (`mine.dbrow`), scaled down only by players online. At Mining 63+ every roll succeeds and ore-to-ore is at least 5 ticks with an adamant pickaxe.
+- With 3 reachable rocks the miner is respawn-bound at ~7.6 ticks/ore (~1.03M XP/h at 875 XP/ore), standing still or in area mode. With 4+ rocks it never waits and lands ~6.75 ticks/ore (~1.167M/h). Standing still never beat area mode. [v 2026-10-11 conductor2w1 local]
+- Clicking the next rock on the predicted roll tick gains nothing: `World.cycle` processes client input before players, so a click on the roll tick only redirects that roll (`mining_firstswing` re-arms `action_delay` only below the clock).
+
 ## Counting Ore
 
 ```typescript
