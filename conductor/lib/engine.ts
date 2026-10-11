@@ -8,7 +8,7 @@ import type { BotWorldState } from '../../sdk/types';
 import { type Driver, type Guard, guardsUnder, interpret, type Interpretation, TickStall } from '../core/interpret';
 import type { ActionContext } from '../actions/context';
 import type { Pathfinder } from '../actions/paths';
-import { dismiss, leftoverModal } from '../actions/dismiss';
+import { clearStrayChoice, dismiss, leftoverModal, strayChoice } from '../actions/dismiss';
 import { eat } from '../actions/eat';
 import { closeModalUntil } from '../actions/modal';
 import { type Command, log, type Op } from '../core/op';
@@ -46,11 +46,15 @@ export const LEFTOVER_STEP = 'close-leftover';
 /** Ticks the run-start close waits for the first of its two closes (closeModalUntil). */
 export const LEFTOVER_CLOSE_TICKS = 5;
 
+/** What a choice dialog found open at the start is called, when the task does not drive dialogs itself. */
+const STRAY_CHOICE = 'choice dialog';
+
 /**
  * Closes `what` (leftoverModal), found open before the run's first step. A modal blocks loc and NPC
  * interaction, and no guard closes an op's own interface, a bank, a shop or a skill menu, so one left by
  * a killed run or a failed close would strand every later task. Bounded by closeModalUntil: two closes,
- * LEFTOVER_CLOSE_TICKS + 1 ticks. One that stays open is logged and the run goes on.
+ * LEFTOVER_CLOSE_TICKS + 1 ticks. A stray choice dialog is declined or closed via clearStrayChoice instead.
+ * One that stays open is logged and the run goes on.
  *
  * It runs after preflight, which therefore sees the modal still open, and under the critical guards
  * only (death, the Wilderness, and any task guard marked critical): the others act through the game,
@@ -59,7 +63,12 @@ export const LEFTOVER_CLOSE_TICKS = 5;
  * later.
  */
 function* closeLeftover(ctx: ActionContext, what: string): Op<Outcome> {
-    yield* log(`${what} left open before the run: closing it`);
+    yield* log(`${what} left open before the run: clearing it`);
+    if (what === STRAY_CHOICE) {
+        const c = yield* clearStrayChoice(ctx);
+        if (!c.ok) yield* log(`${what} left open before the run did not clear: ${c.message}`);
+        return;
+    }
     const r = yield* closeModalUntil(ctx, what, s => !leftoverModal(s), LEFTOVER_CLOSE_TICKS);
     if (!r.ok) yield* log(`${what} left open before the run did not close: ${r.message}`);
 }
@@ -541,7 +550,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     };
 
     try {
-        const leftover = leftoverModal(driver.state());
+        const opening = driver.state();
+        const leftover =
+            leftoverModal(opening) ?? (strayChoice(opening) && !def.allow?.includes('dialog') ? STRAY_CHOICE : null);
         if (leftover) {
             begin(LEFTOVER_STEP);
             stepRuns[LEFTOVER_STEP] = 1;

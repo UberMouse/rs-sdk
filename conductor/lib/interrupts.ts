@@ -3,7 +3,7 @@
 // and between steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
 import type { BotWorldState } from '../../sdk/types';
 import type { ActionContext } from '../actions/context';
-import { closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
+import { clearStrayChoice, closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
 import { eat } from '../actions/eat';
 import type { GuardOutcome } from '../core/interpret';
 import { log, type Op, ticks } from '../core/op';
@@ -159,8 +159,8 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
 
 /**
  * Clears level-up and other "click to continue" dialogs. Most BotActions methods do this themselves
- * (dismissBlockingUI); ops send raw, so this guard does, through the dismiss op. It never answers a
- * choice, and does not fire on a skill make menu, which the op that opened it answers. A task that
+ * (dismissBlockingUI); ops send raw, so this guard does, through the dismiss op. It answers no
+ * choice itself (one nobody answers after DIALOG_STUCK_LIMIT runs is declined or closed, clearStrayChoice), and does not fire on a skill make menu, which the op that opened it answers. A task that
  * drives dialogs on purpose sets `allow: ['dialog']`.
  */
 export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
@@ -172,11 +172,22 @@ export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
         const r = yield* dismiss(run, { modals: false });
         if (r.ok) return;
         // A choice is left alone (and a refused send waits for nothing): wait a tick so the loop
-        // yields, and give up if nothing else closes it.
+        // yields; a stray one is cleared once the stuck limit is reached.
         if (r.reason !== 'stuck') yield* ticks(1);
         // The op's own message: a fresh state's options are empty once the dialog has closed, and only the
         // message tells a choice from a stuck page or a refused send.
-        if (++episode.stuckRuns >= DIALOG_STUCK_LIMIT) return { fail: `dialog stuck open: ${r.message}` };
+        if (++episode.stuckRuns < DIALOG_STUCK_LIMIT) return;
+        // A choice no step answered in that long is a stray one (a dialog an earlier run opened and left): decline
+        // it or close it (never an option that pays or accepts), and carry on.
+        if (r.reason === 'choice') {
+            yield* log(`dialog guard: nobody answered a choice (${r.message}): declining or closing it`);
+            const cleared = yield* clearStrayChoice(run);
+            if (cleared.ok) {
+                episode.stuckRuns = 0;
+                return;
+            }
+        }
+        return { fail: `dialog stuck open: ${r.message}` };
     },
 };
 

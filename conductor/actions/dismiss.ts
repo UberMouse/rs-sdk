@@ -3,10 +3,11 @@
 // shows another page, the modal closes) rather than for any state update, and says how it ended
 // instead of returning nothing. It can be limited to dialogs or to modals, so the dialog and
 // interface guards each clear only their own. Like upstream it never answers a dialog with more than
-// one option: a choice belongs to whoever opened it. A skill make menu it leaves alone without calling
+// one option: a choice belongs to whoever opened it (except clearStrayChoice, which declines or closes
+// one nobody owns). A skill make menu it leaves alone without calling
 // it a choice: the op that opened it answers it, and a level-up clicked away can reveal one. Nor does
 // it close the anvil's smithing interface, which upstream would: the smith op owns that one.
-import type { BotWorldState, DialogState } from '../../sdk/types';
+import type { BotAction, BotWorldState, DialogState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
@@ -64,6 +65,9 @@ const QUANTITY_BUTTON = /^[a-z]+\s+(x|\d+)\b/i;
 const X_BUTTON = /^[a-z]+\s+x\b/i;
 const COLOUR_TAG = /@[a-z0-9]+@/gi;
 
+/** A dialog or button text without its colour tags and literal "\\n" line breaks. */
+export const cleanText = (t: string): string => t.replace(COLOUR_TAG, '').replaceAll('\\n', '').trim();
+
 /** Fewest quantity buttons that make a menu: a Make X/10/5 trio. No NPC choice offers three "<verb> X/<n>" lines. */
 const MENU_MIN_QUANTITY_BUTTONS = 3;
 
@@ -75,7 +79,7 @@ const MENU_MIN_QUANTITY_BUTTONS = 3;
  */
 export const isSkillMenu = (d: DialogState): boolean => {
     if (!d.isOpen) return false;
-    const buttons = d.options.map(o => o.text.replace(COLOUR_TAG, '').replaceAll('\\n', '').trim());
+    const buttons = d.options.map(o => cleanText(o.text));
     const quantity = buttons.filter(b => QUANTITY_BUTTON.test(b));
     return quantity.length >= MENU_MIN_QUANTITY_BUTTONS && quantity.some(b => X_BUTTON.test(b));
 };
@@ -94,6 +98,54 @@ export const leftoverModal = (s: BotWorldState): string | null => {
     }
     return isSkillMenu(s.dialog) ? 'skill menu' : null;
 };
+
+/**
+ * A multi-option dialog (an NPC choice) open that is not a skill menu. At run start nothing owns it: an
+ * earlier run opened it (the Al Kharid toll guard's "Yes, ok." choice) and was cut off.
+ */
+export const strayChoice = (s: BotWorldState): boolean =>
+    s.dialog.isOpen && s.dialog.options.length > 1 && !isSkillMenu(s.dialog);
+
+/**
+ * The options a stray choice may be answered with: plain refusals only. Never one that buys, pays, accepts
+ * or asks ("Yes, ok.", "Who does my money go to?"); with none of these the dialog is closed instead.
+ */
+export const DECLINE_CHOICE = /^(no\b|nope\b|never ?mind\b|cancel\b|goodbye\b|bye\b|not now\b|maybe later\b|leave\b)/i;
+/** Ticks the decline click or close of a stray choice waits for the choice to go. */
+export const STRAY_CHOICE_WAIT_TICKS = 5;
+
+/**
+ * Gets rid of a stray choice dialog: clicks its decline option (DECLINE_CHOICE) when it has one, else (or if
+ * that leaves the choice open) closes the dialog. The "continue" pages the decline then shows are the dialog
+ * guard's. `ok` once no choice is open.
+ */
+export function* clearStrayChoice(ctx: ActionContext): Op<DismissResult> {
+    const s = ctx.state();
+    if (!strayChoice(s)) return { ok: true, actions: 0 };
+    const decline = s.dialog.options.find(o => DECLINE_CHOICE.test(cleanText(o.text)));
+    /** One click or close of the choice, then the wait for it to go: `done` if it did or the send failed, else the state it ended on. */
+    function* attempt(
+        action: BotAction,
+        label: string,
+    ): Op<{ kind: 'done'; result: DismissResult } | { kind: 'open'; state: BotWorldState }> {
+        const sent = yield* send(action);
+        if (!sent.success) return { kind: 'done', result: { ok: false, reason: 'send-failed', message: sent.message } };
+        const w = yield* wait(label, st => !strayChoice(st), STRAY_CHOICE_WAIT_TICKS);
+        return w.kind === 'met' ? { kind: 'done', result: { ok: true, actions: 1 } } : { kind: 'open', state: w.state };
+    }
+    let actions = 0;
+    if (decline) {
+        const r = yield* attempt(
+            { type: 'clickDialogOption', optionIndex: decline.index, reason: 'decline stray choice' },
+            'stray choice declined',
+        );
+        if (r.kind === 'done' && (r.result.ok || r.result.reason === 'send-failed')) return r.result;
+        actions++;
+    }
+    const r = yield* attempt({ type: 'closeModal', reason: 'close stray choice' }, 'stray choice closed');
+    if (r.kind === 'done') return r.result.ok ? { ok: true, actions: actions + 1 } : r.result;
+    return { ok: false, reason: 'stuck', message: `a choice is still open: ${optionTexts(r.state.dialog)}` };
+}
 
 /** Clicks or closes per call, as bot.dismissBlockingUI's maxAttempts. */
 export const DISMISS_MAX_ACTIONS = 10;

@@ -1,0 +1,47 @@
+{
+    "name": "toll-west-coins",
+    "purpose": "100 coins at (3262,3228) west of the Al Kharid toll gate; walkTo/travel east must pay the toll.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3262,
+                "z": 3228
+            },
+            "skills": {
+                "Hitpoints": 25
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 100
+                }
+            ]
+        }
+    },
+    "sha1": "e6e0f96e9f939c723f2545bdb28dee01d1baa1c2",
+    "createdAt": "2026-10-11T07:30:03.902Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3262,
+            "z": 3228,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

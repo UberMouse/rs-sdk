@@ -2,7 +2,10 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
 import {
+    clearStrayChoice,
     closableInterface,
+    DECLINE_CHOICE,
+    STRAY_CHOICE_WAIT_TICKS,
     DISMISS_MAX_ACTIONS,
     DISMISS_WAIT_TICKS,
     dismiss,
@@ -225,5 +228,67 @@ describe('closableInterface', () => {
     test("an op's own interface is not closable: the anvil's smithing interface is the smith op's", () => {
         for (const id of OP_OWNED_INTERFACES) expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
         expect(OP_OWNED_INTERFACES.has(SMITHING_INTERFACE)).toBe(true);
+    });
+});
+
+describe('clearStrayChoice', () => {
+    const tollChoice = ["No thank you, I'll walk around.", 'Who does my money go to?', 'Yes, ok.'];
+    const open = world().dialog({ options: tollChoice });
+    const decline: BotAction = { type: 'clickDialogOption', optionIndex: 0, reason: 'decline stray choice' };
+    const close: BotAction = { type: 'closeModal', reason: 'close stray choice' };
+
+    test('declines a choice that offers a refusal', async () => {
+        const { result, sends } = await runOp([open.build(), closed.tick(1).build()], clearStrayChoice);
+        expect(result).toEqual({ ok: true, actions: 1 });
+        expect(sends).toEqual([decline]);
+    });
+
+    test('nothing open, or a skill menu, is ok with nothing sent', async () => {
+        const menu = world().dialog({ options: ['Make X', 'Make 10', 'Make 5', 'Short Bow'] });
+        for (const s of [closed, menu]) {
+            const { result, sends } = await runOp(s.series(1), clearStrayChoice);
+            expect(result).toEqual({ ok: true, actions: 0 });
+            expect(sends).toEqual([]);
+        }
+    });
+
+    test('a decline that leaves the choice open is followed by a close', async () => {
+        const states = [...open.series(STRAY_CHOICE_WAIT_TICKS + 2), closed.tick(STRAY_CHOICE_WAIT_TICKS + 3).build()];
+        const { result, sends } = await runOp(states, clearStrayChoice);
+        expect(result).toEqual({ ok: true, actions: 2 });
+        expect(sends).toEqual([decline, close]);
+    });
+
+    test('a choice with no refusal is closed, never answered', async () => {
+        const buy = world().dialog({ options: ['Yes, ok.', 'Who does my money go to?'] });
+        const { result, sends } = await runOp([buy.build(), closed.tick(1).build()], clearStrayChoice);
+        expect(result).toEqual({ ok: true, actions: 1 });
+        expect(sends).toEqual([close]);
+    });
+
+    test('a choice that survives both is stuck, listing its options', async () => {
+        const { result, sends } = await runOp(open.series(2 * STRAY_CHOICE_WAIT_TICKS + 4), clearStrayChoice);
+        expect(result).toEqual({
+            ok: false,
+            reason: 'stuck',
+            message: `a choice is still open: ${tollChoice.join(' | ')}`,
+        });
+        expect(sends).toEqual([decline, close]);
+    });
+
+    test('a refused send is send-failed', async () => {
+        const { result } = await runOp(open.series(1), clearStrayChoice, { respond: refuse });
+        expect(result).toEqual({ ok: false, reason: 'send-failed', message: 'not connected' });
+    });
+});
+
+describe('DECLINE_CHOICE', () => {
+    test('accepts plain refusals', () => {
+        for (const t of ["No thank you, I'll walk around.", 'No', 'Not now', 'Never mind', 'Goodbye', 'Maybe later'])
+            expect(DECLINE_CHOICE.test(t)).toBe(true);
+    });
+    test('refuses answers that pay, accept or ask', () => {
+        for (const t of ['Yes, ok.', 'Who does my money go to?', 'Buy it', 'Tell me more'])
+            expect(DECLINE_CHOICE.test(t)).toBe(false);
     });
 });

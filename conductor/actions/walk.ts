@@ -33,6 +33,7 @@ import type { ActionContext } from './context';
 import { courseSectionOf, leaveCourse } from './course';
 import { GATE_ATTEMPT_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
 import { interactLoc } from './interact';
+import { canPayToll, isEastOfToll, isTollGate, payToll, TOLL_GATE_LOCS, TOLL_LEVEL, TOLL_MAX_TICKS } from './toll';
 import { messageCursor, messageSince } from './messages';
 import { collisionPaths, type DoorInfo, type PathResult, type Pathfinder, type Waypoint } from './paths';
 
@@ -196,6 +197,9 @@ function* pause(w: Walk, n: number): Op<void> {
  * `no-connector` is no chain of connectors leading there; `climb-failed` is a climb that did not change
  * the plane (the loc missing, refused or out of reach). The one tick budget covers the legs and the
  * climbs, and a `timeout` in the middle (`advancing`) is carried on by walking again.
+ *
+ * Spends coins: a route through the Al Kharid toll gate pays its toll (TOLL_FEE, 10 coins) on each crossing,
+ * automatically; with fewer coins the route goes round the gate instead.
  */
 export function* walkTo(
     ctx: ActionContext,
@@ -541,7 +545,14 @@ function* walkOnPlane(
 function route(w: Walk): PathResult {
     const p = w.ctx.state().player;
     if (!p) return { success: false, waypoints: [], error: 'No player state available' };
-    return w.paths.findPath({ x: p.worldX, z: p.worldZ, level: p.level }, w.target, [...w.avoided.values()]);
+    // Without the toll the Al Kharid gate is a wall: the route goes round it.
+    const avoid = [...w.avoided.values()];
+    if (p.level === TOLL_LEVEL && !canPayToll(w.ctx.state()))
+        for (const g of TOLL_GATE_LOCS) {
+            const door = w.paths.doorAt(TOLL_LEVEL, g.x, g.z);
+            if (door && !avoid.includes(door)) avoid.push(door);
+        }
+    return w.paths.findPath({ x: p.worldX, z: p.worldZ, level: p.level }, w.target, avoid);
 }
 
 /** Tiles from `from` along `waypoints`, and on to `target` in a line where a partial route stops short. */
@@ -636,18 +647,35 @@ const openables = (s: BotWorldState) =>
 /**
  * Opens the door at `at`: Open on it, letting the server walk the bot there; if that neither opens it
  * nor shows it locked, walks beside it first (the server's route to it may run through the door) and
- * tries once more.
+ * tries once more. The Al Kharid toll gate is paid for (10 coins, toll.ts) when the route crosses it.
  */
 function* openDoorAt(w: Walk, at: Point): Op<DoorOpen> {
     const door = w.ctx.state().nearbyLocs.find(l => l.x === at.x && l.z === at.z);
     if (!door) return 'not-found';
     const open = door.optionsWithIndex.find(o => OPEN.test(o.text));
     if (!open) return 'already-open';
+    if (isTollGate(door)) {
+        // Only to cross it: a bot already on its destination's side (just through, or the route runs beside it) pays nothing.
+        const here = w.ctx.state().player;
+        if (!here || isEastOfToll(here.worldX) === isEastOfToll(w.target.x)) return 'already-open';
+        return yield* payTollAt(w);
+    }
     const first = yield* tryOpen(w, door, open.opIndex);
     if (first === 'opened' || first === 'locked') return first;
     if (!(yield* walkBeside(w, door))) return 'cant-reach';
     const second = yield* tryOpen(w, door, open.opIndex);
     return second === 'opened' || second === 'locked' ? second : 'cant-reach';
+}
+
+/** The Al Kharid toll gate: pays and passes it (toll.ts), or is `locked` when the bot cannot pay, which routes around it. */
+function* payTollAt(w: Walk): Op<DoorOpen> {
+    const r = yield* payToll(w.ctx, { maxTicks: Math.min(TOLL_MAX_TICKS, allowed(w, TOLL_MAX_TICKS)) });
+    if (r.ok) {
+        yield* log('walk: paid the Al Kharid toll and passed the gate');
+        return 'opened';
+    }
+    yield* log(`walk: Al Kharid toll gate: ${r.message}`);
+    return r.reason === 'no-coins' ? 'locked' : 'cant-reach';
 }
 
 /** Sends Open on `door` and waits for it to open (gone, or no Open option), or the game's refusal. */

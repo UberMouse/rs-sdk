@@ -271,6 +271,13 @@ const closeLeftover = (what: string) => `close ${what}`;
 const leftoverLog = (events: Record<string, unknown>[]) =>
     events.filter(e => e.type === 'log' && typeof e.msg === 'string' && e.msg.includes('left open before the run'));
 
+const withChoice = (options: string[]) =>
+    timeline(20, t => ({ xp: t >= 8 ? 25 : 0 })).map((s, i) => (i < 20 ? world(s).dialog({ options }).build() : s));
+const gone: TimelineOptions['react'] = action =>
+    action.type === 'clickDialogOption' || action.type === 'closeModal'
+        ? s => world(s).dialog(false).build()
+        : undefined;
+
 describe('a modal left open before the run', () => {
     test('the anvil interface open at the start is closed before the first step', async () => {
         const states = timeline(20, t => ({ interfaceId: SMITHING_INTERFACE, xp: t >= 8 ? 25 : 0 }));
@@ -279,7 +286,7 @@ describe('a modal left open before the run', () => {
         expect(r.sends).toEqual([closeLeftover(`interface ${SMITHING_INTERFACE}`), 'chop', 'cleanup']);
         expect(r.result.stepRuns).toEqual({ [LEFTOVER_STEP]: 1, chop: 1 });
         expect(leftoverLog(r.events).map(e => e.msg)).toEqual([
-            `interface ${SMITHING_INTERFACE} left open before the run: closing it`,
+            `interface ${SMITHING_INTERFACE} left open before the run: clearing it`,
         ]);
     });
 
@@ -298,6 +305,49 @@ describe('a modal left open before the run', () => {
         );
         const r = await runTask([step('chop', chop)], states, { react: closes });
         expect(r.sends).toEqual([closeLeftover('skill menu'), 'chop', 'cleanup']);
+    });
+
+    describe('a choice dialog left open before the run', () => {
+        const toll = ["No thank you, I'll walk around.", 'Who does my money go to?', 'Yes, ok.'];
+        test('is declined with its refusal, never the paying option', async () => {
+            const r = await runTask([step('chop', chop)], withChoice(toll), { react: gone });
+            expect(r.result.status).toBe('done');
+            expect(r.sends).toEqual(['decline stray choice', 'chop', 'cleanup']);
+            expect(r.result.stepRuns[LEFTOVER_STEP]).toBe(1);
+        });
+
+        test('a "continue" page first, then the choice: the guard declines it after the stuck limit and the run goes on', async () => {
+            const states = timeline(60, t => ({ xp: t >= 40 ? 25 : 0 })).map((s, i) =>
+                i < 40
+                    ? world(s)
+                          .dialog({ options: i < 2 ? ['Click here to continue'] : toll })
+                          .build()
+                    : s,
+            );
+            const r = await runTask([step('chop', chop)], states, {
+                react: a =>
+                    a.type === 'clickDialogOption' && a.reason.startsWith('decline')
+                        ? s => world(s).dialog(false).build()
+                        : a.type === 'clickDialogOption'
+                          ? s => world(s).dialog({ options: toll }).build()
+                          : undefined,
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.sends.filter(x => x === 'decline stray choice')).toHaveLength(1);
+            expect(r.sends).not.toContain('pay the toll');
+        });
+
+        test('with no refusal among the options it is closed', async () => {
+            const r = await runTask([step('chop', chop)], withChoice(['Yes, ok.', 'Who does my money go to?']), {
+                react: gone,
+            });
+            expect(r.sends).toEqual(['close stray choice', 'chop', 'cleanup']);
+        });
+
+        test('a task that drives dialogs keeps it', async () => {
+            const r = await runTask([step('chop', chop)], withChoice(toll), { react: gone, allow: ['dialog'] });
+            expect(r.sends).toEqual(['chop', 'cleanup']);
+        });
     });
 
     test('one that will not close is closed twice, logged, and the run goes on', async () => {

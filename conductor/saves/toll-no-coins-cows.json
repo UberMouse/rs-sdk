@@ -1,0 +1,41 @@
+{
+    "name": "toll-no-coins-cows",
+    "purpose": "Combat 20 at the Lumbridge cows (3253,3270) with NO coins; walkTo must route round the Al Kharid toll gate (travel to the Al Kharid mine 3295,3287).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3253,
+                "z": 3270
+            },
+            "skills": {
+                "Attack": 20,
+                "Strength": 20,
+                "Defence": 20,
+                "Hitpoints": 25
+            }
+        }
+    },
+    "sha1": "deb114bbd48ab2bb9f5990829a9e3ae2176bb9e4",
+    "createdAt": "2026-10-11T07:28:28.566Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3253,
+            "z": 3270,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 20,
+            "Defence": 20,
+            "Strength": 20,
+            "Hitpoints": 25
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
