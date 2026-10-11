@@ -17,9 +17,11 @@ export interface Trigger {
     body: string;
 }
 
-export interface Label {
+/** A label or proc: a script a trigger body calls, by `@name` or `~name`. */
+export interface Callable {
     file: string;
-    name: string;
+    /** How a body calls it: `@name` for a label, `~name` for a proc. */
+    call: string;
     /** The header line's tail (its parameter list) and every line up to the next `[` header. */
     body: string;
 }
@@ -58,10 +60,10 @@ export function parseTriggers(file: string, text: string): Trigger[] {
     });
 }
 
-export function parseLabels(file: string, text: string): Label[] {
+export function parseCallables(file: string, text: string): Callable[] {
     return blocks(file, text).flatMap(b => {
-        const m = b.header.match(/^\[label,([a-z0-9_]+)\]$/);
-        return m ? [{ file, name: m[1]!, body: b.body }] : [];
+        const m = b.header.match(/^\[(label|proc),([a-z0-9_]+)\]$/);
+        return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], body: b.body }] : [];
     });
 }
 
@@ -74,4 +76,4 @@ function readScripts(): [file: string, text: string][] {
 
 export const readTriggers = (): Trigger[] => readScripts().flatMap(([f, text]) => parseTriggers(f, text));
 
-export const readLabels = (): Label[] => readScripts().flatMap(([f, text]) => parseLabels(f, text));
+export const readCallables = (): Callable[] => readScripts().flatMap(([f, text]) => parseCallables(f, text));

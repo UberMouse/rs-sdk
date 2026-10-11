@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { parseLabels, parseTriggers } from '../sources/triggers';
+import { parseCallables, parseTriggers } from '../sources/triggers';
 
 const rs2 = `[oploc1,bankbooth]
 def_npc $n = npc_find(coord, _bank_teller, 1);
@@ -33,9 +33,12 @@ describe('parseTriggers', () => {
         expect(t[2]!.body).not.toContain('if_openmain');
     });
 
-    test('labels are indexed by name with their bodies', () => {
-        expect(parseLabels('f.rs2', rs2)).toEqual([
-            { file: 'f.rs2', name: 'openbank', body: '\nif_openmain(bank_main);\n' },
+    test('labels and procs are indexed by how a body calls them', () => {
+        expect(parseCallables('f.rs2', rs2)).toEqual([
+            { file: 'f.rs2', call: '@openbank', body: '\nif_openmain(bank_main);\n' },
+        ]);
+        expect(parseCallables('f.rs2', '[proc,openshop](inv $shop)\nx;\n')).toEqual([
+            { file: 'f.rs2', call: '~openshop', body: '(inv $shop)\nx;\n' },
         ]);
     });
 
