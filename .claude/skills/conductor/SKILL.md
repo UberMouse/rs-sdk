@@ -211,7 +211,9 @@ Report per your instructions: DECISION NEEDED, or GOAL with RESULT lines, plans,
 
 A goal is a few plans' worth, such as a couple of levels in one or two skills or one resource
 target, not hours of open-ended play. One that needs errands first (withdraw a tool, buy food)
-is still one goal: the runner's plan carries the errands as phases.
+is still one goal: the runner's plan carries the errands as phases. State a resource target as
+items **banked** ("20 cooked fish in the bank"), never held: a goal that says "held" makes the
+runner carry the stock through every later trip, filling the slots its gathering needs.
 
 **task-author**
 ```
