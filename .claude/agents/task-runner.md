@@ -180,11 +180,16 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 
 - `--until` applies to the plan (`minutes:` from its start, `xp:<skill>:<n>`, `level:<skill>:<n>`);
   `--params` is refused with `--plan`. Never pass `--takeover`.
-- A new draft, or one using a task new to you, gets a short run first (`--until minutes:1`);
-  extend after a clean `done`. Keep each run inside your remaining play-time budget.
-- Run it in the foreground, with a Bash timeout longer than its `--until`, only up to about
-  `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print). A longer
-  run goes in the background; wait for its completion notification, never `sleep N; tail` (the
+- A new draft, or one using a task new to you, gets a short run first (`--until minutes:1`).
+  After a clean `done`, run it **to the goal**: the goal as a stop (`--until level:Smithing:30`,
+  or a plan `until` on the bank) plus your remaining play budget as the cap (`--until
+  minutes:<left>`; the first stop met ends the run). Never re-run a working plan on short
+  `minutes:` timers: each stop and restart is wasted travel and setup (a runner ran a working
+  plan as minutes:3, then minutes:5, 2026-10-11). Start another run only when the plan itself
+  ends: goal reached, failed, or `nothing left to do`.
+- Run it in the foreground, with a Bash timeout longer than its `--until`, only for a run of up
+  to about `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print).
+  A run to the goal goes in the background (`run_in_background`); wait for its completion notification, never `sleep N; tail` (the
   harness blocks a foreground sleep) and never a `pgrep` loop of your own. Any `pgrep -f` for a
   run keeps the `^[^ ]*bun (run )?` anchor shown below: an unanchored `"run-task.ts <bot> "` also
   matches the shell running the loop, so the loop never ends (a runner hung on one for minutes
