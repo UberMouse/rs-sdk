@@ -144,7 +144,7 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
 | Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
 | Ranged | 40 | Shortbow, Lumbridge chickens | ~86k (13-40) | better bow/arrows, higher-HP targets |
-| Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | steel bars (coal, Mining 99 now), more bars per item |
+| Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | predicted (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
 | Hitpoints | 36 | from combat | - | follows melee/ranged |
 | Crafting | 35 | pottery | 65k | leather, gems, glass |
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
