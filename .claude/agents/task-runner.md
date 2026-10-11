@@ -208,6 +208,20 @@ opened): journal nothing, count nothing in `spent`, and fix its cause.
 
 ## Debugging a plan that did not finish `done`
 
+First, two cases that come before any diagnosis:
+
+- **The bot died** (a reason starting `died`, a respawn in `bun sdk/cli.ts`, items gone): stop
+  working the goal. Record where and when, the attacker if the log names one, and the inventory
+  before and after, then return (`GOAL unreachable` or `DECISION NEEDED`). Never start another run
+  after a death: the conductor decides whether to restore the save.
+- **The run ended with the bot in combat or attacked** (`inCombat`, an `under-attack` reason, hp
+  falling in `bun sdk/cli.ts`): the bot is still being hit while you read logs. Resolve it first:
+  `combat` against a weaker attacker if food is held, or `travel` away from it (it can start in
+  combat when told to), and report a `DECISION NEEDED` at once if neither fits. A bot once died
+  standing under attack while its runner diagnosed the failed run (2026-10-11, Varrock stone circle).
+
+Then:
+
 1. Read the RESULT: which phase ended it (`recent`, `phases[].lastReason`), with what reason.
 2. Read the plan log (phase choices and what each `when` read) and the failing phase run's
    `logFile` (`recent[].logFile`), every path in `screenshots` (PNGs: look at them),
