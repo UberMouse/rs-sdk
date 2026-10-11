@@ -1,12 +1,15 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
-// sites named by the curated areas, then a report. `bun run world` writes the file and exits 1 when a
-// site that agents choose from (COVERED) lies outside every area, so a new bank or mine can't go
-// unnamed.
-import { writeFileSync } from 'fs';
+// sites named by the curated areas, then a report, and renders the pages (render.ts). `bun run world`
+// writes them and exits 1 when a site that agents choose from (COVERED) lies outside every area, so a
+// new bank or mine can't go unnamed. `--check` writes nothing: it exits 1 when world.json or a page
+// differs from what the game data and this code generate now, so a hand edit or a stale page fails
+// verify:conductor.
+import { relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
 import { classifier } from './classify';
 import { ROOT, WORLD_JSON } from './paths';
+import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { buildSites, locSizes, type SiteCollision } from './place';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
@@ -215,7 +218,29 @@ if (import.meta.main) {
     // Imported here only: it parses the collision data the SDK bundles (see collision.ts).
     const { siteCollision } = await import('./collision');
     const { world, report } = buildWorld({ generatedFrom: contentHash(), areas: AREAS, collision: siteCollision });
-    writeFileSync(WORLD_JSON, serializeWorld(world));
-    for (const line of formatReport(report)) console.log(line);
-    if (report.uncovered.length) process.exitCode = 1;
+    const files = new Map([
+        [relative(ROOT, WORLD_JSON), serializeWorld(world)],
+        ...renderWorld(world, readRenderData()),
+    ]);
+    if (process.argv.includes('--check')) {
+        const stale = drift(files);
+        if (stale.length) {
+            console.log(`${stale.length} generated files differ from a fresh build; run bun run world and commit:`);
+            for (const p of stale) console.log(`  ${p}`);
+            process.exitCode = 1;
+        } else console.log(`world: world.json and ${files.size - 1} pages are fresh`);
+        // A fresh world.json can still hold a site outside every area: `bun run world` fails on it, so
+        // the check does too.
+        if (report.uncovered.length) {
+            for (const line of formatReport(report)) console.log(line);
+            process.exitCode = 1;
+        }
+    } else {
+        const removed = writeFiles(files);
+        for (const line of formatReport(report)) console.log(line);
+        console.log(
+            `wrote world.json and ${files.size - 1} pages${removed.length ? `, removed ${removed.length} stale` : ''}`,
+        );
+        if (report.uncovered.length) process.exitCode = 1;
+    }
 }

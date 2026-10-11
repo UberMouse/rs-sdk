@@ -144,6 +144,12 @@ function argsAt(body: string, open: number): string[] {
     return args.length === 1 && args[0] === '' ? [] : args;
 }
 
+/** A tree's subtype: its woodcutting_trees row without `_tree_table` (`yew_tree_table` is `yew`). */
+export const treeSubtype = (row: DbRow): string => row.row.replace(/(_tree)?_table$/, '');
+
+/** A rock's subtype: its mining_table row's ore_name, which several rows can share (limestone). */
+export const rockSubtype = (row: DbRow): string => row.data.ore_name?.[0]?.[0] ?? '';
+
 const BARE_NAME = /^[a-z0-9_]+$/;
 
 // Labels whose @openbank serves another flow, not banking: Shantay's jail fine is paid through the
@@ -283,13 +289,13 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const tree: Rule = (on, config, cfg) => {
         const row = on === 'loc' ? trees.get(config) : undefined;
         if (!row) return null;
-        return { kind: 'tree', subtype: row.row.replace(/(_tree)?_table$/, ''), ops: usableOps(on, config, cfg) };
+        return { kind: 'tree', subtype: treeSubtype(row), ops: usableOps(on, config, cfg) };
     };
 
     const rock: Rule = (on, config, cfg) => {
         const row = on === 'loc' ? rocks.get(config) : undefined;
         if (!row) return null;
-        return { kind: 'rock', subtype: row.data.ore_name?.[0]?.[0] ?? '', ops: usableOps(on, config, cfg) };
+        return { kind: 'rock', subtype: rockSubtype(row), ops: usableOps(on, config, cfg) };
     };
 
     // Only fishing_spots/: skill_fishing/scripts/fishing_guild.rs2 also has npc triggers (its shop,
