@@ -10,8 +10,15 @@ Crafting covers a wide range of item creation: pottery, leather armour, jewelry,
 | Pie dish | 7 | 10 (+15 shaping) | Soft clay → Potter's wheel → Pottery oven |
 | Bowl | 8 | 15 (+18 shaping) | Soft clay → Potter's wheel → Pottery oven |
 
-- **Materials:** Mine clay, use water on it to soften
-- **Location:** Potter's wheel and oven in Barbarian Village
+- **Materials:** Mine clay (Mining 1: Varrock SE mine (3180, 3372), Rimmington (2986, 3239)), use a bucket, jug or bowl of water on it to soften. Bucket costs 2 gp at the Lumbridge General Store. [v 2026-10-10 conductor2w2 local]
+- **Water sources:** watersource locs (sink, sink2, mortton_sink, fountain, goldfountain) fill a Bucket, Jug, Vial or Bowl, one container per use; wells (well, desertwell) take only a Bucket (`general_use/scripts/water_sources.rs2`, `configs/water_sources.loc`). Message "You fill the <container> from the <source>.". Quest locs named Fountain/Well are not water sources ("nothing interesting happens"): `quest_priestperil/priestperil.loc:374`, `quest_upass/upass.loc:482`, `quest_haunted/quest_haunted.loc:27`.
+  - Lumbridge castle courtyard fountain (3221, 3210): 10 buckets in 8.4 s. Falador park fountain (3038, 3353): 4 buckets, a 52 s walk from the Barbarian Village wheel; Barbarian Village has no water source. [v 2026-10-11 conductor2w5 local]
+  - Unverified (task description only): Varrock sink (3146, 3451), Varrock fountains (3190, 3468), Lumbridge sink (3205, 3215), Lumbridge well (3142, 3208).
+- **Location:** Barbarian Village potter's wheel (3087, 3409) and pottery oven (3084, 3407), ground floor, no gate, no stairs. [v 2026-10-10 conductor2w2 local]
+- **Softening:** one soft clay per use, message "You now have some soft workable clay."; the container returns empty. The player is then delayed (`p_delay(1)`, pottery.rs2), so any send in that tick is silently dropped: wait for the message before the next action. [v 2026-10-10 conductor2w2 local]
+- **Wheel make menu:** one item per pick. At the oven a cracked pot is a normal outcome; the item is removed either way and XP is given only for the success (pottery.rs2). Firing needs no level.
+- **XP here:** shaping XP is the struct's `processexp` (at the wheel), firing is `productexp` (at the oven). Pot 6.3/6.3, pie dish 15 shape/10 fire, bowl 18 shape/15 fire, times 25 locally. Observed: 7 pots (shape + fire) gave 2,205 Crafting XP, level 1 -> 16, in 64 s. [v 2026-10-10 conductor2w2 local]
+- Start of that run: 4 soft clay, 3 clay, 3 buckets of water at (3090, 3409).
 
 ## Leather
 
@@ -32,7 +39,7 @@ Crafting covers a wide range of item creation: pottery, leather armour, jewelry,
 | Red d'hide body | 77 | Red dragonhide |
 | Black d'hide body | 84 | Black dragonhide |
 
-- **Materials:** Cow hide → Tannery in Al Kharid, thread + needle
+- **Materials:** Cow hide → Tannery in Al Kharid (toll gate), thread + needle
 - **Dragonhide:** Obtained from killing dragons, tanned into leather
 
 ## Gems
@@ -99,7 +106,7 @@ Smelt a gold bar with a mould at a furnace. Gems can be added for bonus stats.
 
 ## Bowstrings
 
-Spin flax on a spinning wheel to create bowstrings (level 10, 15 XP each; wool to ball of wool needs no level, 2.5 XP). Useful for Fletching.
+Spin flax on a spinning wheel (a ground-level wheel at (3081, 3430) in Barbarian Village is unverified) to create bowstrings (level 10, 15 XP each; wool to ball of wool needs no level, 2.5 XP). Useful for Fletching.
 
 ## Battlestaves (Members)
 
