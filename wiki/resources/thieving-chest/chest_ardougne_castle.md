@@ -7,9 +7,11 @@ In-game name: Chest. 2 sites with 2 placed in all; 0 of the sites in F2P.
 
 From the `trapped_chest` row `trapped_chest_chest_ardougne_castle`.
 
-| Level | XP | Respawn (ticks) | Loot |
+| Level | Base XP | Respawn (ticks) | Loot |
 |---|---|---|---|
 | 72 | 500 | 800 | Coins x1000, Raw shark, Adamantite ore, Uncut sapphire |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

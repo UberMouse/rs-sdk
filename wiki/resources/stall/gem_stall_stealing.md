@@ -7,9 +7,11 @@ In-game name: Gem stall. 1 site with 1 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_gem_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 75 | 16 | 600 | Gem merchant | Guard, Knight of Ardougne, Paladin | Uncut sapphire, Uncut emerald, Uncut ruby, Uncut diamond |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

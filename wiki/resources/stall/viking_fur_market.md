@@ -7,9 +7,11 @@ In-game name: Fur stall. 2 sites with 2 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_viking_fur_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 35 | 36 | 32 | Fur trader | Market Guard | Grey wolf fur |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

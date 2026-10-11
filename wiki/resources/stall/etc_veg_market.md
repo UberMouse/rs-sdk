@@ -7,9 +7,11 @@ In-game name: Veg stall. 1 site with 1 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_etc_veg_market`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 2 | 1 | 5 | Greengrocer | Skraeling | Potato, Cabbage, Onion, Tomato, Garlic |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

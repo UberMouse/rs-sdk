@@ -7,13 +7,15 @@ In-game name: Mineral vein, Rocks. 33 sites with 262 placed in all; 12 of the si
 
 From the `mining_table` row `coal_rock_table`.
 
-| Row | Level | XP | Ore | Respawn (ticks) | Low | High |
+| Row | Level | Base XP | Ore | Respawn (ticks) | Low | High |
 |---|---|---|---|---|---|---|
 | coal_rock_table | 30 | 50 | Coal | 100 | 16 | 100 |
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Mining level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts). The pair is the same whatever the pickaxe: mining_table has no pickaxe column.
 
-Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
 ## Sites
 

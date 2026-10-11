@@ -226,7 +226,7 @@ describe('renderWorld', () => {
 
           From the \`woodcutting_trees\` row \`yew_tree_table\`.
 
-          | Level | XP | Product | Respawn (ticks) | Depletes |
+          | Level | Base XP | Product | Respawn (ticks) | Depletes |
           |---|---|---|---|---|
           | 60 | 175 | Yew logs | 200 | 1 in 8 logs |
 
@@ -239,7 +239,9 @@ describe('renderWorld', () => {
 
           A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).
 
-          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+          Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
           ## Sites
 
@@ -264,7 +266,7 @@ describe('renderWorld', () => {
 
           From the \`woodcutting_trees\` row \`oak_tree_table\`.
 
-          | Level | XP | Product | Respawn (ticks) | Depletes |
+          | Level | Base XP | Product | Respawn (ticks) | Depletes |
           |---|---|---|---|---|
           | 15 | 37.5 | oak_logs | - | - |
 
@@ -274,7 +276,9 @@ describe('renderWorld', () => {
 
           A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).
 
-          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+          Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
           ## Sites
 
@@ -560,9 +564,11 @@ describe('in-game names and resource data', () => {
 
           From the \`pickpocket\` row \`man_row\`.
 
-          | Level | XP | Low | High | Stun (ticks) | Stun damage | Loot |
+          | Level | Base XP | Low | High | Stun (ticks) | Stun damage | Loot |
           |---|---|---|---|---|---|---|
           | 1 | 8 | 180 | 240 | 8 | 1 | Coins x3 |
+
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
           Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Thieving level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
 
@@ -581,9 +587,11 @@ describe('in-game names and resource data', () => {
           "
           From the \`stealing\` row \`bakery\`.
 
-          | Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+          | Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
           |---|---|---|---|---|---|
           | 5 | 16 | 4 | Baker | Guard | Cake, Coins x2-5, - x- |
+
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
           "
         `);
@@ -594,13 +602,15 @@ describe('in-game names and resource data', () => {
           "
           From the \`mining_table\` row \`iron_rock\`.
 
-          | Row | Level | XP | Ore | Respawn (ticks) | Low | High |
+          | Row | Level | Base XP | Ore | Respawn (ticks) | Low | High |
           |---|---|---|---|---|---|---|
           | iron_rock | 15 | 35 | Iron ore | 9 | 96 | 350 |
 
           Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Mining level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts). The pair is the same whatever the pickaxe: mining_table has no pickaxe column.
 
-          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+          Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
           "
         `);
@@ -619,9 +629,11 @@ describe('in-game names and resource data', () => {
           "
           From the \`trapped_chest\` row \`chest_10\`.
 
-          | Level | XP | Respawn (ticks) | Loot |
+          | Level | Base XP | Respawn (ticks) | Loot |
           |---|---|---|---|
           | 13 | 7.8 | 12 | Coins x10 |
+
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
           "
         `);
@@ -632,7 +644,7 @@ describe('in-game names and resource data', () => {
           "
           From the \`woodcutting_trees\` rows \`willow_tree_table\`, \`willow_table\`.
 
-          | Level | XP | Product | Respawn (ticks) | Depletes |
+          | Level | Base XP | Product | Respawn (ticks) | Depletes |
           |---|---|---|---|---|
           | - | - | - | - | - |
           | - | - | - | - | - |
@@ -652,7 +664,9 @@ describe('in-game names and resource data', () => {
 
           A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).
 
-          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+          Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+          Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
           "
         `);

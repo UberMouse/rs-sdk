@@ -7,9 +7,11 @@ In-game name: Fish stall. 2 sites with 3 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_viking_fish_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 42 | 42 | 32 | Fish monger | Market Guard | Raw lobster, Raw tuna, Raw salmon |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

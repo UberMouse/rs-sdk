@@ -69,7 +69,10 @@ const STAT_RANDOM = (skill: string): string =>
     `Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at ${skill} level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).`;
 
 const RESPAWN =
-    'Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).';
+    'Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).';
+
+const XP_RATE =
+    'Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).';
 
 const fromRows = (name: string, rows: readonly DbRow[]): string =>
     `From the \`${name}\` row${rows.length > 1 ? 's' : ''} ${rows.map(r => `\`${r.row}\``).join(', ')}.`;
@@ -87,7 +90,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 fromRows('woodcutting_trees', rows),
                 '',
                 ...table(
-                    ['Level', 'XP', 'Product', 'Respawn (ticks)', 'Depletes'],
+                    ['Level', 'Base XP', 'Product', 'Respawn (ticks)', 'Depletes'],
                     rows.map(r => {
                         // woodcut.rs2 [label,get_logs]: a respawnrate of 0 means 120 + random(80) ticks
                         // and deplete chance 0, and random(0) is always 0, so every log depletes. A row
@@ -124,6 +127,8 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 '',
                 'A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).',
                 '',
+                XP_RATE,
+                '',
                 RESPAWN,
             ];
         }
@@ -134,7 +139,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 fromRows('mining_table', rows),
                 '',
                 ...table(
-                    ['Row', 'Level', 'XP', 'Ore', 'Respawn (ticks)', 'Low', 'High'],
+                    ['Row', 'Level', 'Base XP', 'Ore', 'Respawn (ticks)', 'Low', 'High'],
                     rows.map(r => [
                         r.row,
                         value(r, 'rock_level'),
@@ -147,6 +152,8 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 ),
                 '',
                 `${STAT_RANDOM('Mining')} The pair is the same whatever the pickaxe: mining_table has no pickaxe column.`,
+                '',
+                XP_RATE,
                 '',
                 RESPAWN,
             ];
@@ -173,7 +180,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 fromRows('stealing', rows),
                 '',
                 ...table(
-                    ['Level', 'XP', 'Respawn (ticks)', 'Owner', 'Guards', 'Loot'],
+                    ['Level', 'Base XP', 'Respawn (ticks)', 'Owner', 'Guards', 'Loot'],
                     rows.map(r => [
                         value(r, 'level'),
                         xp(r, 'experience'),
@@ -183,6 +190,8 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                         f.loot(r),
                     ]),
                 ),
+                '',
+                XP_RATE,
             ];
         }
         case 'thieving-chest': {
@@ -192,9 +201,11 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 fromRows('trapped_chest', rows),
                 '',
                 ...table(
-                    ['Level', 'XP', 'Respawn (ticks)', 'Loot'],
+                    ['Level', 'Base XP', 'Respawn (ticks)', 'Loot'],
                     rows.map(r => [value(r, 'level'), xp(r, 'experience'), value(r, 'respawn_ticks'), f.loot(r)]),
                 ),
+                '',
+                XP_RATE,
             ];
         }
         case 'pickpocket': {
@@ -204,7 +215,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 fromRows('pickpocket', rows),
                 '',
                 ...table(
-                    ['Level', 'XP', 'Low', 'High', 'Stun (ticks)', 'Stun damage', 'Loot'],
+                    ['Level', 'Base XP', 'Low', 'High', 'Stun (ticks)', 'Stun damage', 'Loot'],
                     rows.map(r => [
                         value(r, 'level'),
                         xp(r, 'experience'),
@@ -215,6 +226,8 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                         f.loot(r),
                     ]),
                 ),
+                '',
+                XP_RATE,
                 '',
                 STAT_RANDOM('Thieving'),
             ];

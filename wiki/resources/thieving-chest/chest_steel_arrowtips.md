@@ -7,9 +7,11 @@ In-game name: Chest. 2 sites with 2 placed in all; 0 of the sites in F2P.
 
 From the `trapped_chest` row `trapped_chest_chest_steel_arrowtips`.
 
-| Level | XP | Respawn (ticks) | Loot |
+| Level | Base XP | Respawn (ticks) | Loot |
 |---|---|---|---|
 | 47 | 150 | 250 | Steel arrowtips x5, Coins x20 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

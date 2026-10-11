@@ -7,9 +7,11 @@ In-game name: Silk stall. 2 sites with 2 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_silk_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 20 | 24 | 16 | Silk merchant | Guard, Knight of Ardougne | Silk |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

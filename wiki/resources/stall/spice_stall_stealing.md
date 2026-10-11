@@ -7,9 +7,11 @@ In-game name: Spice stall. 1 site with 1 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_spice_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 65 | 81 | 166 | Spice seller | Guard, Knight of Ardougne, Paladin | Spice |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

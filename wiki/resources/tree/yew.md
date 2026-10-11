@@ -7,7 +7,7 @@ In-game name: Yew. 27 sites with 56 placed in all; 14 of the sites in F2P.
 
 From the `woodcutting_trees` row `yew_tree_table`.
 
-| Level | XP | Product | Respawn (ticks) | Depletes |
+| Level | Base XP | Product | Respawn (ticks) | Depletes |
 |---|---|---|---|---|
 | 60 | 175 | Yew logs | 200 | 1 in 8 logs |
 
@@ -25,7 +25,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).
 
-Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
 ## Sites
 

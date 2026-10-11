@@ -7,9 +7,11 @@ In-game name: Tea stall. 1 site with 1 placed in all; 1 of the sites in F2P.
 
 From the `stealing` row `stealing_tea_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 5 | 16 | 16 | Tea seller | - | Cup of tea |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

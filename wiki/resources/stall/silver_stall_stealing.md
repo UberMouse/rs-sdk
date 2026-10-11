@@ -7,9 +7,11 @@ In-game name: Silver stall. 1 site with 1 placed in all; 0 of the sites in F2P.
 
 From the `stealing` row `stealing_silver_stall`.
 
-| Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+| Level | Base XP | Respawn (ticks) | Owner | Guards | Loot |
 |---|---|---|---|---|---|
 | 50 | 54 | 100 | Silver merchant | Guard, Knight of Ardougne, Paladin | Silver ore |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

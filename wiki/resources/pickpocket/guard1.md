@@ -7,9 +7,11 @@ In-game name: Guard. 17 sites with 43 placed in all; 17 of the sites in F2P.
 
 From the `pickpocket` row `pickpocket_guard`.
 
-| Level | XP | Low | High | Stun (ticks) | Stun damage | Loot |
+| Level | Base XP | Low | High | Stun (ticks) | Stun damage | Loot |
 |---|---|---|---|---|---|---|
 | 40 | 46.8 | 50 | 240 | 8 | 2 | Coins x30 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Thieving level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
 

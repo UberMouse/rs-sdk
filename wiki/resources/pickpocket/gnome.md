@@ -7,9 +7,11 @@ In-game name: Gnome. 14 sites with 44 placed in all; 0 of the sites in F2P.
 
 From the `pickpocket` row `pickpocket_gnome`.
 
-| Level | XP | Low | High | Stun (ticks) | Stun damage | Loot |
+| Level | Base XP | Low | High | Stun (ticks) | Stun damage | Loot |
 |---|---|---|---|---|---|---|
 | 75 | 198.3 | 8 | 120 | 8 | 1 | King worm, Coins x300, Swamp toad, Gold ore, Earth rune, Fire orb |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Thieving level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
 

@@ -7,9 +7,11 @@ In-game name: Chest. 4 sites with 4 placed in all; 0 of the sites in F2P.
 
 From the `trapped_chest` row `trapped_chest_chest_nature_rune`.
 
-| Level | XP | Respawn (ticks) | Loot |
+| Level | Base XP | Respawn (ticks) | Loot |
 |---|---|---|---|
 | 28 | 25 | 30 | Nature rune, Coins x3 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

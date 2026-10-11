@@ -7,9 +7,11 @@ In-game name: Al-Kharid warrior. 1 site with 9 placed in all; 1 of the sites in 
 
 From the `pickpocket` row `pickpocket_warrior`.
 
-| Level | XP | Low | High | Stun (ticks) | Stun damage | Loot |
+| Level | Base XP | Low | High | Stun (ticks) | Stun damage | Loot |
 |---|---|---|---|---|---|---|
 | 25 | 26 | 100 | 240 | 8 | 2 | Coins x18 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Thieving level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
 

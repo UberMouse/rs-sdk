@@ -7,9 +7,11 @@ In-game name: Chest. 2 sites with 2 placed in all; 0 of the sites in F2P.
 
 From the `trapped_chest` row `trapped_chest_chest_50_coins`.
 
-| Level | XP | Respawn (ticks) | Loot |
+| Level | Base XP | Respawn (ticks) | Loot |
 |---|---|---|---|
 | 43 | 125 | 150 | Coins x50 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

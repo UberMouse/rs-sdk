@@ -7,9 +7,11 @@ In-game name: Chest. 1 site with 2 placed in all; 0 of the sites in F2P.
 
 From the `trapped_chest` row `trapped_chest_chest_blood_runes`.
 
-| Level | XP | Respawn (ticks) | Loot |
+| Level | Base XP | Respawn (ticks) | Loot |
 |---|---|---|---|
 | 59 | 250 | 400 | Blood rune x2, Coins x500 |
+
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

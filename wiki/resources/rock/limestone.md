@@ -7,7 +7,7 @@ In-game name: Pile of Rock. 3 sites with 26 placed in all; 0 of the sites in F2P
 
 From the `mining_table` rows `limestone_rock3`, `limestone_rock2`, `limestone_rock1`.
 
-| Row | Level | XP | Ore | Respawn (ticks) | Low | High |
+| Row | Level | Base XP | Ore | Respawn (ticks) | Low | High |
 |---|---|---|---|---|---|---|
 | limestone_rock3 | 10 | 26.5 | Limestone | 10 | 95 | 310 |
 | limestone_rock2 | 10 | 26.5 | Limestone | 20 | 95 | 310 |
@@ -15,7 +15,9 @@ From the `mining_table` rows `limestone_rock3`, `limestone_rock2`, `limestone_ro
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Mining level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts). The pair is the same whatever the pickaxe: mining_table has no pickaxe column.
 
-Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
 
 ## Sites
 
