@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:edgeville-bank:0` | (3096, 3491) | banker 4, booth 4 | yes | no | - |
+| `bank:edgeville-bank:0` | (3096, 3491) | Bank booth 4, Banker 4 | yes | no | - |

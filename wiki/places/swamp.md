@@ -16,10 +16,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:swamp:0` | (2417, 3517) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:swamp:0` | (2417, 3517) | [Gnome woman](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:swamp:0` | (2409, 3507) | d_skingnomeknight 1 | no | no | - |
+| `npc:swamp:0` | (2409, 3507) | Gnome troop 1 | no | no | - |

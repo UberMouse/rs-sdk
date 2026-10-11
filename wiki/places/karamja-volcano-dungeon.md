@@ -13,6 +13,6 @@ Below the volcano; lesser demons and deadly red spiders. Descriptive name, not s
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | bat 1, lesser_demon 6 | yes | no | - |
-| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | deadly_red_spider 5, skeleton_unarmed 1 | yes | no | - |
-| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | bat 2, skeleton_unarmed 4 | yes | no | - |
+| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - |
+| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - |
+| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - |

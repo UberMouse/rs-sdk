@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:wizards-guild:0` | (2595, 3087) L1 | magicguildshop 1 | no | no | - |
+| `shop:wizards-guild:0` | (2595, 3087) L1 | Magic Guild Store (magicguildshop) 1 | no | no | - |
 
 ## Trees
 
@@ -20,10 +20,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:wizards-guild:0` | (2588, 3087) L2 | wizard 2 | no | no | - |
-| `npc:wizards-guild:1` | (2589, 3084) | wizard 1 | no | no | - |
-| `npc:wizards-guild:2` | (2593, 3084) L1 | wizard 1 | no | no | - |
-| `npc:wizards-guild:3` | (2595, 3073) L1 | yanille_soldier 1 | no | no | - |
+| `npc:wizards-guild:0` | (2588, 3087) L2 | Wizard 2 | no | no | - |
+| `npc:wizards-guild:1` | (2589, 3084) | Wizard 1 | no | no | - |
+| `npc:wizards-guild:2` | (2593, 3084) L1 | Wizard 1 | no | no | - |
+| `npc:wizards-guild:3` | (2595, 3073) L1 | Soldier 1 | no | no | - |
 
 ## Ladders and stairs
 

@@ -7,9 +7,9 @@ Staircase up east of Falador at (3059, 3376) (learnings/walking.md); its other w
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:dwarven-mine:0` | (2993, 9828) | generaldwarf 1 | yes | no | - |
-| `shop:dwarven-mine:1` | (2998, 9844) | pickaxeshop 1 | yes | no | - |
-| `shop:dwarven-mine:2` | (3036, 9846) | miningstore 1 | yes | no | - |
+| `shop:dwarven-mine:0` | (2993, 9828) | Dwarven shopping store (generaldwarf) 1 | yes | no | - |
+| `shop:dwarven-mine:1` | (2998, 9844) | Nurmof's Pickaxe Shop. (pickaxeshop) 1 | yes | no | - |
+| `shop:dwarven-mine:2` | (3036, 9846) | Drogo's Mining Emporium. (miningstore) 1 | yes | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -37,24 +37,24 @@ Staircase up east of Falador at (3059, 3376) (learnings/walking.md); its other w
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dwarven-mine:0` | (2956, 9778) | magicaxe 2 | no | no | - |
-| `npc:dwarven-mine:1` | (2960, 9791) | magicaxe 4 | no | no | - |
-| `npc:dwarven-mine:2` | (2966, 9775) | magicaxe 1 | no | no | - |
-| `npc:dwarven-mine:3` | (2984, 9807) | dwarf_normal 1 | yes | no | - |
-| `npc:dwarven-mine:4` | (2997, 9843) | dwarf_normal 3 | yes | no | - |
-| `npc:dwarven-mine:5` | (2999, 9827) | dwarf_normal 3 | yes | no | - |
-| `npc:dwarven-mine:6` | (2998, 9807) | dwarf_normal 2 | yes | no | - |
-| `npc:dwarven-mine:7` | (2999, 9817) | dwarf_normal 1 | yes | no | - |
-| `npc:dwarven-mine:8` | (3003, 9798) | dwarf_normal 2 | yes | no | - |
-| `npc:dwarven-mine:9` | (3018, 9815) | dwarf_normal 8 | yes | no | - |
-| `npc:dwarven-mine:10` | (3020, 9849) | dwarf_normal 4 | yes | no | - |
-| `npc:dwarven-mine:11` | (3018, 9835) | dwarf_normal 1 | yes | no | - |
-| `npc:dwarven-mine:12` | (3026, 9833) | dwarf_normal 2, rat 1 | yes | no | - |
-| `npc:dwarven-mine:13` | (3033, 9827) | rat 1 | yes | no | - |
-| `npc:dwarven-mine:14` | (3036, 9846) | dwarf_normal 2 | yes | no | - |
-| `npc:dwarven-mine:15` | (3045, 9779) | kingscorpion 2, scorpion 11 | yes | no | - |
-| `npc:dwarven-mine:16` | (3041, 9801) | scorpion 2 | yes | no | - |
-| `npc:dwarven-mine:17` | (3048, 9821) | dwarf_normal 7, rat 2 | yes | no | - |
+| `npc:dwarven-mine:0` | (2956, 9778) | Magic axe 2 | no | no | - |
+| `npc:dwarven-mine:1` | (2960, 9791) | Magic axe 4 | no | no | - |
+| `npc:dwarven-mine:2` | (2966, 9775) | Magic axe 1 | no | no | - |
+| `npc:dwarven-mine:3` | (2984, 9807) | Dwarf 1 | yes | no | - |
+| `npc:dwarven-mine:4` | (2997, 9843) | Dwarf 3 | yes | no | - |
+| `npc:dwarven-mine:5` | (2999, 9827) | Dwarf 3 | yes | no | - |
+| `npc:dwarven-mine:6` | (2998, 9807) | Dwarf 2 | yes | no | - |
+| `npc:dwarven-mine:7` | (2999, 9817) | Dwarf 1 | yes | no | - |
+| `npc:dwarven-mine:8` | (3003, 9798) | Dwarf 2 | yes | no | - |
+| `npc:dwarven-mine:9` | (3018, 9815) | Dwarf 8 | yes | no | - |
+| `npc:dwarven-mine:10` | (3020, 9849) | Dwarf 4 | yes | no | - |
+| `npc:dwarven-mine:11` | (3018, 9835) | Dwarf 1 | yes | no | - |
+| `npc:dwarven-mine:12` | (3026, 9833) | Dwarf 2, Rat 1 | yes | no | - |
+| `npc:dwarven-mine:13` | (3033, 9827) | Rat 1 | yes | no | - |
+| `npc:dwarven-mine:14` | (3036, 9846) | Dwarf 2 | yes | no | - |
+| `npc:dwarven-mine:15` | (3045, 9779) | King Scorpion 2, Scorpion 11 | yes | no | - |
+| `npc:dwarven-mine:16` | (3041, 9801) | Scorpion 2 | yes | no | - |
+| `npc:dwarven-mine:17` | (3048, 9821) | Dwarf 7, Rat 2 | yes | no | - |
 
 ## Ladders and stairs
 

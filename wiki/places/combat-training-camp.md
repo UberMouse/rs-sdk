@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:combat-training-camp:0` | (2526, 3375) | lathastrainingogre 6 | no | no | - |
+| `npc:combat-training-camp:0` | (2526, 3375) | Ogre 6 | no | no | - |

@@ -14,8 +14,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ice-mountain:0` | (3026, 3507) L2 | aggressive_black_knight 1 | yes | no | - |
-| `npc:ice-mountain:1` | (3031, 3502) | aggressive_black_knight 3 | yes | no | - |
+| `npc:ice-mountain:0` | (3026, 3507) L2 | Black Knight 1 | yes | no | - |
+| `npc:ice-mountain:1` | (3031, 3502) | Black Knight 3 | yes | no | - |
 
 ## Ladders and stairs
 

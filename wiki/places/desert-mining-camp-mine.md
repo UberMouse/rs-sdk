@@ -15,12 +15,12 @@ Tourist Trap (quests/quest_desertrescue), below the Desert Mining Camp.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:desert-mining-camp-mine:0` | (3268, 9417) | rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:1` | (3277, 9452) | rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:2` | (3279, 9415) | desertminingmercenary2 2 | no | no | - |
-| `npc:desert-mining-camp-mine:3` | (3286, 9466) | rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:4` | (3287, 9415) | desertminingmercenary1 1, rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:5` | (3291, 9423) | desertminingmercenary2 1 | no | no | - |
-| `npc:desert-mining-camp-mine:6` | (3296, 9434) | desertminingmercenary2 1, rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:7` | (3299, 9467) | desertminingmercenary1 1 | no | no | - |
-| `npc:desert-mining-camp-mine:8` | (3317, 9441) | rowdymineguard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:0` | (3268, 9417) | Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:1` | (3277, 9452) | Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:2` | (3279, 9415) | Mercenary (desertminingmercenary2) 2 | no | no | - |
+| `npc:desert-mining-camp-mine:3` | (3286, 9466) | Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:4` | (3287, 9415) | Mercenary (desertminingmercenary1) 1, Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:5` | (3291, 9423) | Mercenary (desertminingmercenary2) 1 | no | no | - |
+| `npc:desert-mining-camp-mine:6` | (3296, 9434) | Mercenary (desertminingmercenary2) 1, Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp-mine:7` | (3299, 9467) | Mercenary (desertminingmercenary1) 1 | no | no | - |
+| `npc:desert-mining-camp-mine:8` | (3317, 9441) | Rowdy Guard 1 | no | no | - |

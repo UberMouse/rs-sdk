@@ -7,25 +7,35 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:port-khazard:0` | (2641, 3171) | khazardshop 1 | no | no | - |
+| `shop:port-khazard:0` | (2641, 3171) | Khazard General Store (khazardshop) 1 | no | no | - |
+| `shop:port-khazard:1` | (2655, 3152) | Khazard General Store (khazardshop) 1 | no | no | - |
 
 ## [Anvils](../services/anvil.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `anvil:port-khazard:0` | (2652, 3166) | Anvil 1 | no | no | - |
+| `anvil:port-khazard:0` | (2651, 3165) | Anvil 3 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `range:port-khazard:0` | (2636, 3170) | Range 1 | no | no | - |
+| `range:port-khazard:0` | (2632, 3163) | Range 1 | no | no | - |
+| `range:port-khazard:1` | (2636, 3170) | Range 1 | no | no | - |
+
+## [Fires](../services/fire.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `fire:port-khazard:0` | (2633, 3176) | Cooking pot 1 | no | no | - |
+| `fire:port-khazard:1` | (2662, 3155) | Fire 1 | no | no | - |
 
 ## Trees
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
 | `tree:port-khazard:0` | (2638, 3206) | [normal](../resources/tree/normal.md) 4 | no | no | - |
+| `tree:port-khazard:1` | (2647, 3159) | [normal](../resources/tree/normal.md) 2 | no | no | - |
 
 ## Rocks
 
@@ -37,7 +47,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:port-khazard:0` | (2639, 3206) | imp 1 | no | no | - |
+| `npc:port-khazard:0` | (2639, 3206) | Imp 1 | no | no | - |
 
 ## Ladders and stairs
 
@@ -45,3 +55,5 @@
 |---|---|---|---|---|---|
 | `connector:port-khazard:0` | (2650, 3165) | Ladder 1 | no | no | - |
 | `connector:port-khazard:1` | (2650, 3165) L1 | Ladder 1 | no | no | - |
+| `connector:port-khazard:2` | (2657, 3151) | Ladder 1 | no | no | - |
+| `connector:port-khazard:3` | (2657, 3151) L1 | Ladder 1 | no | no | - |

@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:cairn-isle:0` | (2767, 2979) | scorpion 2 | no | no | - |
+| `npc:cairn-isle:0` | (2767, 2979) | Scorpion 2 | no | no | - |

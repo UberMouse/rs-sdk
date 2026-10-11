@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:duel-arena:0` | (3381, 3267) | duel_rottenfruitshop 1 | no | no | - |
+| `shop:duel-arena:0` | (3381, 3267) | Shop of Distaste (duel_rottenfruitshop) 1 | no | no | - |
 
 ## [Prayer altars](../services/altar.md)
 

@@ -7,8 +7,8 @@ Below the Mage Arena; areas/area_mage_arena/scripts/chamber.rs2 places the god c
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:mage-arena-chamber:0` | (2508, 4696) | magearena_staffshop 1 | no | yes | - |
-| `shop:mage-arena-chamber:1` | (2534, 4719) | magearena_runeshop 1 | no | yes | - |
+| `shop:mage-arena-chamber:0` | (2508, 4696) | Mage Arena Staffs. (magearena_staffshop) 1 | no | yes | - |
+| `shop:mage-arena-chamber:1` | (2534, 4719) | Lundail's Arena-side Rune Shop. (magearena_runeshop) 1 | no | yes | - |
 
 ## Areas within
 

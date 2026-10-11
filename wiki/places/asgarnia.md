@@ -5,15 +5,15 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:asgarnia:0` | (2885, 3449) | 2handedshop 1 | no | no | - |
-| `shop:asgarnia:1` | (2899, 3427) | herbloreshop 1 | no | no | - |
-| `shop:asgarnia:2` | (2928, 3546) | death_generalshop 1 | no | no | - |
-| `shop:asgarnia:3` | (3011, 3453) | mcannonshop 1 | yes | no | - |
-| `shop:asgarnia:4` | (3012, 3259) | magicshop 1 | yes | no | - |
-| `shop:asgarnia:5` | (3013, 3225) | fishingshop 1 | yes | no | - |
-| `shop:asgarnia:6` | (3013, 3248) | goldshop 1 | yes | no | - |
-| `shop:asgarnia:7` | (3014, 3204) | wydinstore 1 | yes | no | - |
-| `shop:asgarnia:8` | (3028, 3250) | battleaxeshop 1 | yes | no | - |
+| `shop:asgarnia:0` | (2885, 3449) | Gaius' Two Handed Shop. (2handedshop) 1 | no | no | - |
+| `shop:asgarnia:1` | (2899, 3427) | Jatix's Herblore Shop. (herbloreshop) 1 | no | no | - |
+| `shop:asgarnia:2` | (2928, 3546) | Burthorpe Supplies (death_generalshop) 1 | no | no | - |
+| `shop:asgarnia:3` | (3011, 3453) | Multi cannon parts for sale: (mcannonshop) 1 | yes | no | - |
+| `shop:asgarnia:4` | (3012, 3259) | Betty's Magic Emporium. (magicshop) 1 | yes | no | - |
+| `shop:asgarnia:5` | (3013, 3225) | Gerrant's Fishy Business. (fishingshop) 1 | yes | no | - |
+| `shop:asgarnia:6` | (3013, 3248) | Grum's Gold Exchange. (goldshop) 1 | yes | no | - |
+| `shop:asgarnia:7` | (3014, 3204) | Food Store (wydinstore) 1 | yes | no | - |
+| `shop:asgarnia:8` | (3028, 3250) | Brian's Battleaxe Bazaar. (battleaxeshop) 1 | yes | no | - |
 
 ## [Tanners](../services/tanner.md)
 
@@ -154,59 +154,59 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:asgarnia:0` | (2856, 3424) | [memberfish](../resources/fishing-spot/memberfish.md) 2, [rarefish](../resources/fishing-spot/rarefish.md) 1 | no | no | - |
-| `fishing-spot:asgarnia:1` | (2876, 3342) | [saltfish](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
-| `fishing-spot:asgarnia:2` | (2877, 3331) | [saltfish](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
-| `fishing-spot:asgarnia:3` | (2986, 3176) | [saltfish](../resources/fishing-spot/saltfish.md) 1 | yes | no | - |
-| `fishing-spot:asgarnia:4` | (2996, 3158) | [saltfish](../resources/fishing-spot/saltfish.md) 1 | yes | no | - |
+| `fishing-spot:asgarnia:0` | (2856, 3424) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 1 | no | no | - |
+| `fishing-spot:asgarnia:1` | (2876, 3342) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
+| `fishing-spot:asgarnia:2` | (2877, 3331) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
+| `fishing-spot:asgarnia:3` | (2986, 3176) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | no | - |
+| `fishing-spot:asgarnia:4` | (2996, 3158) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:asgarnia:0` | (2955, 3451) | [man2](../resources/pickpocket/man2.md) 1 | yes | yes | - |
-| `pickpocket:asgarnia:1` | (2966, 3397) | [guard1](../resources/pickpocket/guard1.md) 3 | yes | yes | - |
-| `pickpocket:asgarnia:2` | (2987, 3426) | [man2](../resources/pickpocket/man2.md) 1 | yes | yes | - |
-| `pickpocket:asgarnia:3` | (3006, 3458) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:asgarnia:4` | (3014, 3237) | [man](../resources/pickpocket/man.md) 1, [woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
-| `pickpocket:asgarnia:5` | (3035, 3296) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:asgarnia:0` | (2955, 3451) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - |
+| `pickpocket:asgarnia:1` | (2966, 3397) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - |
+| `pickpocket:asgarnia:2` | (2987, 3426) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - |
+| `pickpocket:asgarnia:3` | (3006, 3458) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:asgarnia:4` | (3014, 3237) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
+| `pickpocket:asgarnia:5` | (3035, 3296) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:asgarnia:0` | (2824, 3510) | icegiant 1 | no | yes | - |
-| `npc:asgarnia:1` | (2851, 3678) | death_troll_melee1 1, death_troll_melee2 1, death_troll_melee3 1, death_troll_melee4 1, death_troll_melee5 1 | no | no | - |
-| `npc:asgarnia:2` | (2851, 3598) | death_troll_thrower5 1 | no | no | - |
-| `npc:asgarnia:3` | (2852, 3591) | death_troll_melee1 1 | no | no | - |
-| `npc:asgarnia:4` | (2855, 3303) | kingscorpion 1 | yes | no | - |
-| `npc:asgarnia:5` | (2894, 3698) | troll_thrower1 1, troll_thrower2 1, troll_thrower3 1, troll_thrower4 1, troll_thrower5 1 | no | yes | - |
-| `npc:asgarnia:6` | (2902, 3604) | troll_spectator7 1 | no | no | - |
-| `npc:asgarnia:7` | (2907, 3642) | death_troll_melee4 1, troll_melee1 1 | no | no | - |
-| `npc:asgarnia:8` | (2906, 3623) | troll_spectator1 1 | no | no | - |
-| `npc:asgarnia:9` | (2909, 3294) | hobgoblin_armed 1 | yes | no | - |
-| `npc:asgarnia:10` | (2911, 3612) | troll_champion 1 | no | no | - |
-| `npc:asgarnia:11` | (2916, 3523) | death_woman_outdoors2 1 | no | no | - |
-| `npc:asgarnia:12` | (2921, 3611) | troll_spectator2 1, troll_spectator3 1, troll_spectator4 1, troll_spectator5 1, troll_spectator6 1 | no | no | - |
-| `npc:asgarnia:13` | (2917, 3633) | death_troll_melee1 1, death_troll_melee2 1 | no | no | - |
-| `npc:asgarnia:14` | (2919, 3550) | death_man_outdoors1 1 | no | no | - |
-| `npc:asgarnia:15` | (2921, 3514) | death_white_knight 1 | no | no | - |
-| `npc:asgarnia:16` | (2927, 3559) | death_man_outdoors2 1 | no | no | - |
-| `npc:asgarnia:17` | (2933, 3272) | cow 3 | yes | no | - |
-| `npc:asgarnia:18` | (2930, 3566) | death_woman_indoors1 1 | no | no | - |
-| `npc:asgarnia:19` | (2954, 3483) | goblin_greenarmour 2, goblin_redarmour 3 | yes | no | - |
-| `npc:asgarnia:20` | (2963, 3514) | goblin_greenarmour 1 | yes | no | - |
-| `npc:asgarnia:21` | (3000, 3207) | goblin 12 | yes | no | - |
-| `npc:asgarnia:22` | (2998, 3445) | dwarf_normal 1 | yes | yes | - |
-| `npc:asgarnia:23` | (2999, 3453) | dwarf_normal 1 | yes | yes | - |
-| `npc:asgarnia:24` | (3007, 3273) | highwayman 1 | yes | no | - |
-| `npc:asgarnia:25` | (3009, 3280) | highwayman 1 | yes | no | - |
-| `npc:asgarnia:26` | (3014, 3458) | mcannonguard 3 | yes | no | - |
-| `npc:asgarnia:27` | (3015, 3187) | black_knight 1, mugger 1, pirate1 1, rat 5 | yes | no | - |
-| `npc:asgarnia:28` | (3017, 3290) | chicken 6, rat 2 | yes | no | - |
-| `npc:asgarnia:29` | (3032, 3306) | cow 7 | yes | no | - |
-| `npc:asgarnia:30` | (3027, 3457) | mcannonguard 1 | yes | no | - |
-| `npc:asgarnia:31` | (3029, 3445) | dwarf_normal 1 | yes | no | - |
+| `npc:asgarnia:0` | (2824, 3510) | Ice giant 1 | no | yes | - |
+| `npc:asgarnia:1` | (2851, 3678) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - |
+| `npc:asgarnia:2` | (2851, 3598) | Thrower Troll (death_troll_thrower5) 1 | no | no | - |
+| `npc:asgarnia:3` | (2852, 3591) | Mountain Troll (death_troll_melee1) 1 | no | no | - |
+| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - |
+| `npc:asgarnia:5` | (2894, 3698) | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - |
+| `npc:asgarnia:6` | (2902, 3604) | Troll Spectator (troll_spectator7) 1 | no | no | - |
+| `npc:asgarnia:7` | (2907, 3642) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (troll_melee1) 1 | no | no | - |
+| `npc:asgarnia:8` | (2906, 3623) | Troll Spectator (troll_spectator1) 1 | no | no | - |
+| `npc:asgarnia:9` | (2909, 3294) | Hobgoblin 1 | yes | no | - |
+| `npc:asgarnia:10` | (2911, 3612) | Dad 1 | no | no | - |
+| `npc:asgarnia:11` | (2916, 3523) | Ceolburg 1 | no | no | - |
+| `npc:asgarnia:12` | (2921, 3611) | Troll Spectator (troll_spectator2) 1, Troll Spectator (troll_spectator3) 1, Troll Spectator (troll_spectator4) 1, Troll Spectator (troll_spectator5) 1, Troll Spectator (troll_spectator6) 1 | no | no | - |
+| `npc:asgarnia:13` | (2917, 3633) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1 | no | no | - |
+| `npc:asgarnia:14` | (2919, 3550) | Breoca 1 | no | no | - |
+| `npc:asgarnia:15` | (2921, 3514) | White Knight 1 | no | no | - |
+| `npc:asgarnia:16` | (2927, 3559) | Ocga 1 | no | no | - |
+| `npc:asgarnia:17` | (2933, 3272) | Cow 3 | yes | no | - |
+| `npc:asgarnia:18` | (2930, 3566) | Hild 1 | no | no | - |
+| `npc:asgarnia:19` | (2954, 3483) | Goblin (goblin_greenarmour) 2, Goblin (goblin_redarmour) 3 | yes | no | - |
+| `npc:asgarnia:20` | (2963, 3514) | Goblin (goblin_greenarmour) 1 | yes | no | - |
+| `npc:asgarnia:21` | (3000, 3207) | Goblin (goblin) 12 | yes | no | - |
+| `npc:asgarnia:22` | (2998, 3445) | Dwarf (dwarf_normal) 1 | yes | yes | - |
+| `npc:asgarnia:23` | (2999, 3453) | Dwarf (dwarf_normal) 1 | yes | yes | - |
+| `npc:asgarnia:24` | (3007, 3273) | Highwayman 1 | yes | no | - |
+| `npc:asgarnia:25` | (3009, 3280) | Highwayman 1 | yes | no | - |
+| `npc:asgarnia:26` | (3014, 3458) | Dwarf (mcannonguard) 3 | yes | no | - |
+| `npc:asgarnia:27` | (3015, 3187) | Black Knight 1, Mugger 1, Pirate 1, Rat 5 | yes | no | - |
+| `npc:asgarnia:28` | (3017, 3290) | Chicken 6, Rat 2 | yes | no | - |
+| `npc:asgarnia:29` | (3032, 3306) | Cow 7 | yes | no | - |
+| `npc:asgarnia:30` | (3027, 3457) | Dwarf (mcannonguard) 1 | yes | no | - |
+| `npc:asgarnia:31` | (3029, 3445) | Dwarf (dwarf_normal) 1 | yes | no | - |
 
 ## Ladders and stairs
 

@@ -13,5 +13,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:kharazi-jungle:0` | (2837, 2918) | jungle_savage 1 | no | no | - |
-| `npc:kharazi-jungle:1` | (2845, 2928) | jungle_savage 1 | no | no | - |
+| `npc:kharazi-jungle:0` | (2837, 2918) | Jungle Savage 1 | no | no | - |
+| `npc:kharazi-jungle:1` | (2845, 2928) | Jungle Savage 1 | no | no | - |

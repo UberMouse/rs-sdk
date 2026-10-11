@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:brimhaven:0` | (2793, 3188) | karamja_fishrestaurant 1 | no | no | - |
+| `shop:brimhaven:0` | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -31,17 +31,17 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:brimhaven:0` | (2768, 3165) | [category_633](../resources/fishing-spot/category_633.md) 1 | no | no | - |
+| `fishing-spot:brimhaven:0` | (2768, 3165) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:brimhaven:0` | (2762, 3189) | pirate2 1, pirate_guard 1 | no | no | - |
-| `npc:brimhaven:1` | (2775, 3193) | grip 1, pirate_guard 3 | no | no | - |
-| `npc:brimhaven:2` | (2795, 3185) | pirate2 6 | no | no | - |
-| `npc:brimhaven:3` | (2796, 3162) | pirate2 9 | no | no | - |
-| `npc:brimhaven:4` | (2802, 3195) | pirate_guard 1 | no | no | - |
+| `npc:brimhaven:0` | (2762, 3189) | Pirate 1, Pirate Guard 1 | no | no | - |
+| `npc:brimhaven:1` | (2775, 3193) | Grip 1, Pirate Guard 3 | no | no | - |
+| `npc:brimhaven:2` | (2795, 3185) | Pirate 6 | no | no | - |
+| `npc:brimhaven:3` | (2796, 3162) | Pirate 9 | no | no | - |
+| `npc:brimhaven:4` | (2802, 3195) | Pirate Guard 1 | no | no | - |
 
 ## Ladders and stairs
 

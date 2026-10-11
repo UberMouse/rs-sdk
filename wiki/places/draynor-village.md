@@ -21,19 +21,19 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:draynor-village:0` | (3097, 3269) L1 | [woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
-| `pickpocket:draynor-village:1` | (3100, 3279) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:draynor-village:0` | (3097, 3269) L1 | [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
+| `pickpocket:draynor-village:1` | (3100, 3279) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:draynor-village:0` | (3100, 3275) | rat 2 | yes | no | - |
-| `npc:draynor-village:1` | (3101, 3220) | black_knight 1 | yes | no | - |
-| `npc:draynor-village:2` | (3109, 3237) | jailguard 1 | yes | yes | - |
-| `npc:draynor-village:3` | (3110, 3281) | goblin_armed 1 | yes | no | - |
-| `npc:draynor-village:4` | (3141, 3260) | goblin 3 | yes | no | - |
-| `npc:draynor-village:5` | (3143, 3229) | goblin 2 | yes | no | - |
+| `npc:draynor-village:0` | (3100, 3275) | Rat 2 | yes | no | - |
+| `npc:draynor-village:1` | (3101, 3220) | Black Knight 1 | yes | no | - |
+| `npc:draynor-village:2` | (3109, 3237) | Jail guard 1 | yes | yes | - |
+| `npc:draynor-village:3` | (3110, 3281) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:draynor-village:4` | (3141, 3260) | Goblin (goblin) 3 | yes | no | - |
+| `npc:draynor-village:5` | (3143, 3229) | Goblin (goblin) 2 | yes | no | - |
 
 ## Ladders and stairs
 

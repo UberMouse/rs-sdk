@@ -49,25 +49,25 @@
 | [Kandarin](../places/kandarin.md) | `fire:kandarin:13` | (2609, 3476) | (2609, 3475) | Fireplace 1 | no |
 | [Kandarin](../places/kandarin.md) | `fire:kandarin:14` | (2612, 3145) L2 | (2611, 3145) L2 | Fireplace 1 | no |
 | [Kandarin](../places/kandarin.md) | `fire:kandarin:15` | (2615, 3214) | (2614, 3214) | Fireplace 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:16` | (2624, 3674) | (2623, 3674) | Fire 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:17` | (2628, 3653) | (2627, 3653) | Fire 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:18` | (2633, 3176) | (2632, 3176) | Cooking pot 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:19` | (2641, 3651) | (2640, 3651) | Fire 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:20` | (2648, 3355) | (2647, 3355) | Cooking pot 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:21` | (2662, 3155) | (2662, 3155) | Fire 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:22` | (2727, 3161) | (2726, 3161) | Fire 4 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:23` | (2746, 3468) | (2745, 3468) | Fireplace 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:24` | (2747, 3580) | (2746, 3580) | Fireplace 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:25` | (2802, 3503) | (2802, 3503) | Fire 1 | no |
-| [Kandarin](../places/kandarin.md) | `fire:kandarin:26` | (2820, 3555) | (2820, 3555) | Fire 1 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:16` | (2648, 3355) | (2647, 3355) | Cooking pot 1 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:17` | (2727, 3161) | (2726, 3161) | Fire 4 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:18` | (2746, 3468) | (2745, 3468) | Fireplace 1 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:19` | (2747, 3580) | (2746, 3580) | Fireplace 1 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:20` | (2802, 3503) | (2802, 3503) | Fire 1 | no |
+| [Kandarin](../places/kandarin.md) | `fire:kandarin:21` | (2820, 3555) | (2820, 3555) | Fire 1 | no |
 | [Catherby (Kandarin)](../places/catherby.md) | `fire:catherby:0` | (2798, 3442) | (2798, 3441) | Cooking pot 1 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `fire:east-ardougne:0` | (2565, 3267) | (2564, 3267) | Fireplace 1 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `fire:east-ardougne:1` | (2594, 3335) | (2594, 3334) | Cooking pot 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:0` | (2658, 3671) | (2657, 3671) | Fire 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:1` | (2668, 3702) | (2667, 3702) | Fire 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:2` | (2674, 3665) | (2673, 3665) | Fire 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:3` | (2675, 3676) | (2674, 3676) | Fire 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:4` | (2681, 3690) | (2680, 3690) | Fire 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `fire:port-khazard:0` | (2633, 3176) | (2632, 3176) | Cooking pot 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `fire:port-khazard:1` | (2662, 3155) | (2662, 3155) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:0` | (2624, 3674) | (2623, 3674) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:1` | (2628, 3653) | (2627, 3653) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:2` | (2641, 3651) | (2640, 3651) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:3` | (2658, 3671) | (2657, 3671) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:4` | (2668, 3702) | (2667, 3702) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:5` | (2674, 3665) | (2673, 3665) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:6` | (2675, 3676) | (2674, 3676) | Fire 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `fire:rellekka:7` | (2681, 3690) | (2680, 3690) | Fire 1 | no |
 | [Seers' Village (Kandarin)](../places/seers-village.md) | `fire:seers-village:0` | (2694, 3498) | (2693, 3498) | Fireplace 1 | no |
 | [Seers' Village (Kandarin)](../places/seers-village.md) | `fire:seers-village:1` | (2695, 3466) | (2694, 3466) | Fireplace 1 | no |
 | [Seers' Village (Kandarin)](../places/seers-village.md) | `fire:seers-village:2` | (2711, 3476) | (2710, 3476) | Fireplace 1 | no |

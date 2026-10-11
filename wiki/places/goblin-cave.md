@@ -16,9 +16,9 @@ Goblins; descriptive name, not settled from the data.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:goblin-cave:0` | (2565, 9836) | goblin 2 | no | no | - |
-| `npc:goblin-cave:1` | (2569, 9847) | goblin 1, goblin_armed 3, goblin_helmet 1 | no | no | - |
-| `npc:goblin-cave:2` | (2585, 9804) | rat 11 | no | no | - |
-| `npc:goblin-cave:3` | (2588, 9831) | bat 2, goblin 5, goblin_armed 6, goblin_helmet 6, rat 2 | no | no | - |
-| `npc:goblin-cave:4` | (2600, 9811) | rat 2 | no | no | - |
-| `npc:goblin-cave:5` | (2611, 9814) | bat 4, rat 4 | no | no | - |
+| `npc:goblin-cave:0` | (2565, 9836) | Goblin (goblin) 2 | no | no | - |
+| `npc:goblin-cave:1` | (2569, 9847) | Goblin (goblin) 1, Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - |
+| `npc:goblin-cave:2` | (2585, 9804) | Rat 11 | no | no | - |
+| `npc:goblin-cave:3` | (2588, 9831) | Giant bat 2, Goblin (goblin) 5, Goblin (goblin_armed) 6, Goblin (goblin_helmet) 6, Rat 2 | no | no | - |
+| `npc:goblin-cave:4` | (2600, 9811) | Rat 2 | no | no | - |
+| `npc:goblin-cave:5` | (2611, 9814) | Giant bat 4, Rat 4 | no | no | - |

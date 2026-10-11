@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:catherby-bank:0` | (2809, 3443) | banker 4, booth 4 | no | no | - |
+| `bank:catherby-bank:0` | (2809, 3443) | Bank booth 4, Banker 4 | no | no | - |

@@ -15,8 +15,8 @@ From the `trapped_chest` row `trapped_chest_chest_10_coins`.
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `thieving-chest:kandarin:0` | (2630, 3655) | (2630, 3654) | 1 | no | no | - |
 | [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | 1 | no | no | - |
 | [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:4` | (2673, 3307) | (2674, 3307) | 1 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3654) | 1 | no | no | - |
 | [Wilderness](../../places/wilderness.md) | `thieving-chest:wilderness:0` | (3190, 3962) | (3189, 3961) | 3 | no | no | 56 |
 | [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | 2 | no | no | 55 |

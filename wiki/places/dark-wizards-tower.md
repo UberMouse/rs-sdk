@@ -13,9 +13,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dark-wizards-tower:0` | (2908, 3334) | bearded_dark_wizard 5, young_dark_wizard 2 | no | no | - |
-| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | bearded_dark_wizard 2, young_dark_wizard 2 | no | no | - |
-| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | bearded_dark_wizard 2, young_dark_wizard 2 | no | no | - |
+| `npc:dark-wizards-tower:0` | (2908, 3334) | Dark wizard (bearded_dark_wizard) 5, Dark wizard (young_dark_wizard) 2 | no | no | - |
+| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - |
+| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - |
 
 ## Ladders and stairs
 

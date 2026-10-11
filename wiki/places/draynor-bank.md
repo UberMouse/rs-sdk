@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:draynor-bank:0` | (3090, 3243) | banker 4, booth 3 | yes | no | - |
+| `bank:draynor-bank:0` | (3090, 3243) | Bank booth 3, Banker 4 | yes | no | - |

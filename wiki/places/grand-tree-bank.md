@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:grand-tree-bank:0` | (2445, 3484) L1 | banker 4, booth 6 | no | no | - |
+| `bank:grand-tree-bank:0` | (2445, 3484) L1 | Bank booth 6, Gnome banker 4 | no | no | - |

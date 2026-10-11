@@ -16,6 +16,6 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:graveyard-of-shadows:0` | (3165, 3667) | zombie_armed 2 | yes | no | 19 |
-| `npc:graveyard-of-shadows:1` | (3171, 3675) | zombie_armed 1 | yes | no | 20 |
-| `npc:graveyard-of-shadows:2` | (3176, 3682) | zombie_armed 1 | yes | no | 21 |
+| `npc:graveyard-of-shadows:0` | (3165, 3667) | Zombie 2 | yes | no | 19 |
+| `npc:graveyard-of-shadows:1` | (3171, 3675) | Zombie 1 | yes | no | 20 |
+| `npc:graveyard-of-shadows:2` | (3176, 3682) | Zombie 1 | yes | no | 21 |

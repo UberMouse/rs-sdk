@@ -7,7 +7,7 @@
 |---|---|---|---|---|---|
 | [Asgarnia](../places/asgarnia.md) | `spinning-wheel:asgarnia:0` | (2935, 3288) L1 | (2934, 3287) L1 | Spinning wheel 2 | yes |
 | [Falador (Asgarnia)](../places/falador.md) | `spinning-wheel:falador:0` | (2981, 3314) | (2982, 3314) | Spinning wheel 1 | yes |
-| [Kandarin](../places/kandarin.md) | `spinning-wheel:kandarin:0` | (2617, 3659) | (2617, 3660) | Spinning wheel 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `spinning-wheel:rellekka:0` | (2617, 3659) | (2617, 3660) | Spinning wheel 1 | no |
 | [Seers' Village (Kandarin)](../places/seers-village.md) | `spinning-wheel:seers-village:0` | (2711, 3471) L1 | (2712, 3471) L1 | Spinning wheel 1 | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:0` | (2475, 3398) L1 | (2476, 3398) L1 | Spinning wheel 1 | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:1` | (2487, 3401) L1 | (2486, 3401) L1 | Spinning wheel 1 | no |

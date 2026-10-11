@@ -7,65 +7,65 @@ Through Saniboch's door near Brimhaven for 875 coins (areas/area_karamja/scripts
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:brimhaven-dungeon:0` | (2750, 9534) | [loc_2630](../resources/fishing-spot/loc_2630.md) 2 | no | no | - |
+| `fishing-spot:brimhaven-dungeon:0` | (2750, 9534) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:brimhaven-dungeon:0` | (2628, 9543) L2 | firegiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:1` | (2633, 9480) L2 | greater_demon 2 | no | no | - |
-| `npc:brimhaven-dungeon:2` | (2637, 9560) L2 | firegiant 5 | no | no | - |
-| `npc:brimhaven-dungeon:3` | (2631, 9505) L2 | greater_demon 1 | no | no | - |
-| `npc:brimhaven-dungeon:4` | (2632, 9585) L2 | firegiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:5` | (2633, 9491) L2 | greater_demon 1 | no | no | - |
-| `npc:brimhaven-dungeon:6` | (2634, 9577) L2 | firegiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:7` | (2636, 9528) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:8` | (2636, 9544) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:9` | (2640, 9504) L2 | greater_demon 2 | no | no | - |
-| `npc:brimhaven-dungeon:10` | (2640, 9583) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:11` | (2645, 9488) | mossgiant 3 | no | no | - |
-| `npc:brimhaven-dungeon:12` | (2642, 9518) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:13` | (2647, 9535) | mossgiant 2 | no | no | - |
-| `npc:brimhaven-dungeon:14` | (2646, 9476) L2 | greater_demon 1 | no | no | - |
-| `npc:brimhaven-dungeon:15` | (2647, 9554) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:16` | (2651, 9564) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:17` | (2653, 9574) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:18` | (2654, 9587) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:19` | (2659, 9481) | firegiant 3 | no | no | - |
-| `npc:brimhaven-dungeon:20` | (2658, 9501) | firegiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:21` | (2659, 9548) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:22` | (2663, 9556) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:23` | (2667, 9496) | firegiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:24` | (2670, 9544) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:25` | (2673, 9592) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:26` | (2680, 9544) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:27` | (2680, 9594) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:28` | (2682, 9573) | mossgiant 1 | no | no | - |
-| `npc:brimhaven-dungeon:29` | (2697, 9504) | babyreddragon 1, red_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:30` | (2698, 9524) | babyreddragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:31` | (2707, 9483) | black_demon 4 | no | no | - |
-| `npc:brimhaven-dungeon:32` | (2702, 9447) | steel_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:33` | (2704, 9431) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:34` | (2704, 9457) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:35` | (2705, 9424) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:36` | (2709, 9521) | babyreddragon 2, red_dragon 3 | no | no | - |
-| `npc:brimhaven-dungeon:37` | (2706, 9507) | red_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:38` | (2711, 9503) | babyreddragon 2 | no | no | - |
-| `npc:brimhaven-dungeon:39` | (2712, 9435) | steel_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:40` | (2714, 9420) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:41` | (2714, 9449) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:42` | (2714, 9460) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:43` | (2722, 9424) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:44` | (2723, 9514) | babyreddragon 1, red_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:45` | (2723, 9458) | steel_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:46` | (2727, 9436) | iron_dragon 2 | no | no | - |
-| `npc:brimhaven-dungeon:47` | (2726, 9445) | steel_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:48` | (2730, 9512) | babyreddragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:49` | (2731, 9482) | bronze_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:50` | (2731, 9491) | bronze_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:51` | (2732, 9459) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:52` | (2736, 9424) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:53` | (2738, 9440) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:54` | (2739, 9450) | iron_dragon 1 | no | no | - |
-| `npc:brimhaven-dungeon:55` | (2740, 9492) | bronze_dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:0` | (2628, 9543) L2 | Fire giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:1` | (2633, 9480) L2 | Greater demon 2 | no | no | - |
+| `npc:brimhaven-dungeon:2` | (2637, 9560) L2 | Fire giant 5 | no | no | - |
+| `npc:brimhaven-dungeon:3` | (2631, 9505) L2 | Greater demon 1 | no | no | - |
+| `npc:brimhaven-dungeon:4` | (2632, 9585) L2 | Fire giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:5` | (2633, 9491) L2 | Greater demon 1 | no | no | - |
+| `npc:brimhaven-dungeon:6` | (2634, 9577) L2 | Fire giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:7` | (2636, 9528) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:8` | (2636, 9544) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:9` | (2640, 9504) L2 | Greater demon 2 | no | no | - |
+| `npc:brimhaven-dungeon:10` | (2640, 9583) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:11` | (2645, 9488) | Moss giant 3 | no | no | - |
+| `npc:brimhaven-dungeon:12` | (2642, 9518) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:13` | (2647, 9535) | Moss giant 2 | no | no | - |
+| `npc:brimhaven-dungeon:14` | (2646, 9476) L2 | Greater demon 1 | no | no | - |
+| `npc:brimhaven-dungeon:15` | (2647, 9554) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:16` | (2651, 9564) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:17` | (2653, 9574) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:18` | (2654, 9587) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:19` | (2659, 9481) | Fire giant 3 | no | no | - |
+| `npc:brimhaven-dungeon:20` | (2658, 9501) | Fire giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:21` | (2659, 9548) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:22` | (2663, 9556) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:23` | (2667, 9496) | Fire giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:24` | (2670, 9544) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:25` | (2673, 9592) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:26` | (2680, 9544) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:27` | (2680, 9594) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:28` | (2682, 9573) | Moss giant 1 | no | no | - |
+| `npc:brimhaven-dungeon:29` | (2697, 9504) | Baby red dragon 1, Red dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:30` | (2698, 9524) | Baby red dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:31` | (2707, 9483) | Black Demon 4 | no | no | - |
+| `npc:brimhaven-dungeon:32` | (2702, 9447) | Steel dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:33` | (2704, 9431) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:34` | (2704, 9457) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:35` | (2705, 9424) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:36` | (2709, 9521) | Baby red dragon 2, Red dragon 3 | no | no | - |
+| `npc:brimhaven-dungeon:37` | (2706, 9507) | Red dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:38` | (2711, 9503) | Baby red dragon 2 | no | no | - |
+| `npc:brimhaven-dungeon:39` | (2712, 9435) | Steel dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:40` | (2714, 9420) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:41` | (2714, 9449) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:42` | (2714, 9460) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:43` | (2722, 9424) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:44` | (2723, 9514) | Baby red dragon 1, Red dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:45` | (2723, 9458) | Steel dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:46` | (2727, 9436) | Iron dragon 2 | no | no | - |
+| `npc:brimhaven-dungeon:47` | (2726, 9445) | Steel dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:48` | (2730, 9512) | Baby red dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:49` | (2731, 9482) | Bronze dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:50` | (2731, 9491) | Bronze dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:51` | (2732, 9459) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:52` | (2736, 9424) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:53` | (2738, 9440) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:54` | (2739, 9450) | Iron dragon 1 | no | no | - |
+| `npc:brimhaven-dungeon:55` | (2740, 9492) | Bronze dragon 1 | no | no | - |

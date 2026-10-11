@@ -26,4 +26,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:pirates-hideout:0` | (3041, 3954) | pirate_aggressive 12 | no | no | 55 |
+| `npc:pirates-hideout:0` | (3041, 3954) | Pirate 12 | no | no | 55 |

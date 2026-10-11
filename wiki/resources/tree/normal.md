@@ -228,22 +228,21 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:67` | (2629, 3347) | (2630, 3346) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:68` | (2638, 3356) | (2637, 3356) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:69` | (2638, 3366) | (2637, 3366) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2647, 3159) | (2646, 3161) | 2 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2650, 3144) | (2650, 3144) | 3 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2741, 3353) | (2742, 3352) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:75` | (2738, 3517) | (2737, 3517) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:77` | (2748, 3480) | (2747, 3480) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2786, 3479) | (2786, 3479) | 123 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2754, 3548) | (2753, 3548) | 7 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:80` | (2766, 3772) | (2767, 3771) | 52 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:82` | (2796, 3800) | (2799, 3805) | 74 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:83` | (2816, 3338) | (2815, 3338) | 5 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:84` | (2812, 3372) | (2811, 3372) | 23 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:86` | (2818, 3534) | (2817, 3536) | 8 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:87` | (2820, 3501) | (2819, 3501) | 2 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:88` | (2840, 3448) | (2842, 3449) | 16 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:89` | (2840, 3340) | (2839, 3340) | 4 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:90` | (2846, 3463) | (2846, 3463) | 2 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2650, 3144) | (2650, 3144) | 3 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:73` | (2741, 3353) | (2742, 3352) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2738, 3517) | (2737, 3517) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:76` | (2748, 3480) | (2747, 3480) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:77` | (2786, 3479) | (2786, 3479) | 123 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2754, 3548) | (2753, 3548) | 7 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2766, 3772) | (2767, 3771) | 52 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:81` | (2796, 3800) | (2799, 3805) | 74 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:82` | (2816, 3338) | (2815, 3338) | 5 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:83` | (2812, 3372) | (2811, 3372) | 23 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:85` | (2818, 3534) | (2817, 3536) | 8 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:86` | (2820, 3501) | (2819, 3501) | 2 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:87` | (2840, 3448) | (2842, 3449) | 16 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:88` | (2840, 3340) | (2839, 3340) | 4 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:89` | (2846, 3463) | (2846, 3463) | 2 | no | yes | - |
 | [Barbarian Outpost agility course (Kandarin)](../../places/barbarian-agility-course.md) | `tree:barbarian-agility-course:0` | (2533, 3538) | (2533, 3537) | 6 | no | no | - |
 | [Barbarian Outpost (Kandarin)](../../places/barbarian-outpost.md) | `tree:barbarian-outpost:0` | (2540, 3571) | (2540, 3571) | 2 | no | no | - |
 | [Barbarian Outpost (Kandarin)](../../places/barbarian-outpost.md) | `tree:barbarian-outpost:1` | (2553, 3565) | (2550, 3567) | 2 | no | no | - |
@@ -286,6 +285,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Necromancer (Kandarin)](../../places/necromancer.md) | `tree:necromancer:0` | (2665, 3237) | (2665, 3235) | 5 | no | yes | - |
 | [Observatory (Kandarin)](../../places/observatory.md) | `tree:observatory:0` | (2436, 3148) | (2437, 3147) | 20 | no | no | - |
 | [Port Khazard (Kandarin)](../../places/port-khazard.md) | `tree:port-khazard:0` | (2638, 3206) | (2638, 3205) | 4 | no | no | - |
+| [Port Khazard (Kandarin)](../../places/port-khazard.md) | `tree:port-khazard:1` | (2647, 3159) | (2646, 3161) | 2 | no | no | - |
 | [Ranging Guild (Kandarin)](../../places/ranging-guild.md) | `tree:ranging-guild:0` | (2657, 3422) | (2656, 3423) | 1 | no | yes | - |
 | [Rellekka (Kandarin)](../../places/rellekka.md) | `tree:rellekka:0` | (2693, 3658) | (2692, 3658) | 1 | no | no | - |
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:0` | (2695, 3478) | (2695, 3477) | 5 | no | no | - |

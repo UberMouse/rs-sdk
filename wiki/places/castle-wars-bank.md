@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:castle-wars-bank:0` | (2444, 3083) | chest 1 | no | no | - |
+| `bank:castle-wars-bank:0` | (2444, 3083) | Bank chest 1 | no | no | - |

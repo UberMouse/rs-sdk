@@ -7,8 +7,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:legends-guild:0` | (2725, 3378) L1 | generallegends 1 | no | no | - |
-| `shop:legends-guild:1` | (2725, 3381) L2 | legendsguildshop 1 | no | no | - |
+| `shop:legends-guild:0` | (2725, 3378) L1 | Legends Guild General Store. (generallegends) 1 | no | no | - |
+| `shop:legends-guild:1` | (2725, 3381) L2 | Legends Guild Shop of Useful Items. (legendsguildshop) 1 | no | no | - |
 
 ## [Water sources](../services/water-source.md)
 

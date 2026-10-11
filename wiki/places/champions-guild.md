@@ -7,8 +7,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:champions-guild:0` | (3191, 3351) L1 | runiteshop 1 | yes | no | - |
-| `shop:champions-guild:1` | (3193, 3361) L1 | championshop 1 | yes | no | - |
+| `shop:champions-guild:0` | (3191, 3351) L1 | Scavvo's Rune Store. (runiteshop) 1 | yes | no | - |
+| `shop:champions-guild:1` | (3193, 3361) L1 | Valaine's Shop of Champions. (championshop) 1 | yes | no | - |
 
 ## Trees
 
@@ -21,6 +21,6 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:champions-guild:0` | (3193, 3343) | duck 2 | yes | no | - |
-| `npc:champions-guild:1` | (3197, 3353) | chicken 5 | yes | no | - |
-| `npc:champions-guild:2` | (3205, 3355) | imp 1 | yes | no | - |
+| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - |
+| `npc:champions-guild:1` | (3197, 3353) | Chicken 5 | yes | no | - |
+| `npc:champions-guild:2` | (3205, 3355) | Imp 1 | yes | no | - |

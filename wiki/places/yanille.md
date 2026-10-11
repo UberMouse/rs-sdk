@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:yanille:0` | (2566, 3098) | cookeryshop 1 | no | no | - |
+| `shop:yanille:0` | (2566, 3098) | Frenita's Cookery Shop. (cookeryshop) 1 | no | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -60,33 +60,33 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:yanille:0` | (2547, 3112) L1 | [yanille_watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - |
-| `pickpocket:yanille:1` | (2567, 3083) | [man](../resources/pickpocket/man.md) 1, [woman](../resources/pickpocket/woman.md) 1 | no | no | - |
-| `pickpocket:yanille:2` | (2596, 3105) | [man](../resources/pickpocket/man.md) 1, [man3](../resources/pickpocket/man3.md) 1 | no | no | - |
+| `pickpocket:yanille:0` | (2547, 3112) L1 | [Watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - |
+| `pickpocket:yanille:1` | (2567, 3083) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | no | no | - |
+| `pickpocket:yanille:2` | (2596, 3105) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:yanille:0` | (2535, 3096) L1 | yanille_soldier 6 | no | no | - |
-| `npc:yanille:1` | (2543, 3090) | colonel_radick 1, tower_guard 1, yanille_soldier 5 | no | no | - |
-| `npc:yanille:2` | (2537, 3078) L1 | yanille_soldier 1 | no | no | - |
-| `npc:yanille:3` | (2540, 3102) | yanille_soldier 1 | no | no | - |
-| `npc:yanille:4` | (2547, 3113) | tower_guard 2 | no | no | - |
-| `npc:yanille:5` | (2551, 3109) L1 | yanille_soldier 1 | no | no | - |
-| `npc:yanille:6` | (2556, 3073) L1 | yanille_soldier 2 | no | no | - |
-| `npc:yanille:7` | (2570, 3109) L1 | yanille_soldier 2 | no | no | - |
-| `npc:yanille:8` | (2586, 3089) L1 | wizard 1 | no | no | - |
-| `npc:yanille:9` | (2588, 3090) | wizard 1 | no | no | - |
-| `npc:yanille:10` | (2593, 3090) L2 | wizard 1 | no | no | - |
-| `npc:yanille:11` | (2595, 3090) L1 | wizard 1 | no | no | - |
-| `npc:yanille:12` | (2600, 3062) | dwarf_normal 1 | no | no | - |
-| `npc:yanille:13` | (2600, 3109) L1 | yanille_soldier 1 | no | no | - |
-| `npc:yanille:14` | (2604, 3114) | cow 1 | no | no | - |
-| `npc:yanille:15` | (2608, 3061) | dwarf_normal 1 | no | no | - |
-| `npc:yanille:16` | (2615, 3074) L1 | yanille_soldier 3 | no | no | - |
-| `npc:yanille:17` | (2610, 3107) L1 | yanille_soldier 1 | no | no | - |
-| `npc:yanille:18` | (2619, 3097) L1 | yanille_soldier 2 | no | no | - |
+| `npc:yanille:0` | (2535, 3096) L1 | Soldier 6 | no | no | - |
+| `npc:yanille:1` | (2543, 3090) | Colonel Radick 1, Soldier 5, Tower guard 1 | no | no | - |
+| `npc:yanille:2` | (2537, 3078) L1 | Soldier 1 | no | no | - |
+| `npc:yanille:3` | (2540, 3102) | Soldier 1 | no | no | - |
+| `npc:yanille:4` | (2547, 3113) | Tower guard 2 | no | no | - |
+| `npc:yanille:5` | (2551, 3109) L1 | Soldier 1 | no | no | - |
+| `npc:yanille:6` | (2556, 3073) L1 | Soldier 2 | no | no | - |
+| `npc:yanille:7` | (2570, 3109) L1 | Soldier 2 | no | no | - |
+| `npc:yanille:8` | (2586, 3089) L1 | Wizard 1 | no | no | - |
+| `npc:yanille:9` | (2588, 3090) | Wizard 1 | no | no | - |
+| `npc:yanille:10` | (2593, 3090) L2 | Wizard 1 | no | no | - |
+| `npc:yanille:11` | (2595, 3090) L1 | Wizard 1 | no | no | - |
+| `npc:yanille:12` | (2600, 3062) | Dwarf 1 | no | no | - |
+| `npc:yanille:13` | (2600, 3109) L1 | Soldier 1 | no | no | - |
+| `npc:yanille:14` | (2604, 3114) | Cow 1 | no | no | - |
+| `npc:yanille:15` | (2608, 3061) | Dwarf 1 | no | no | - |
+| `npc:yanille:16` | (2615, 3074) L1 | Soldier 3 | no | no | - |
+| `npc:yanille:17` | (2610, 3107) L1 | Soldier 1 | no | no | - |
+| `npc:yanille:18` | (2619, 3097) L1 | Soldier 2 | no | no | - |
 
 ## Ladders and stairs
 

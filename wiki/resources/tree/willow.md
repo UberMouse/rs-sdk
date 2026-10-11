@@ -49,11 +49,11 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:38` | (2565, 3447) | (2564, 3447) | 9 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:47` | (2566, 3512) | (2566, 3511) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:61` | (2687, 3491) | (2687, 3492) | 30 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:72` | (2672, 3227) | (2672, 3228) | 3 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:73` | (2708, 3513) | (2707, 3513) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2741, 3353) | (2742, 3352) | 3 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:76` | (2747, 3568) | (2746, 3568) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:81` | (2764, 3427) | (2764, 3427) | 2 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2672, 3227) | (2672, 3228) | 3 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:72` | (2708, 3513) | (2707, 3513) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:73` | (2741, 3353) | (2742, 3352) | 3 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:75` | (2747, 3568) | (2746, 3568) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:80` | (2764, 3427) | (2764, 3427) | 2 | no | no | - |
 | [Castle Wars (Kandarin)](../../places/castle-wars.md) | `tree:castle-wars:0` | (2447, 3118) | (2448, 3118) | 2 | no | no | - |
 | [Catherby (Kandarin)](../../places/catherby.md) | `tree:catherby:0` | (2787, 3442) | (2787, 3442) | 3 | no | no | - |
 | [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:0` | (2590, 3498) | (2589, 3498) | 3 | no | no | - |

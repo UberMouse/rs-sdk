@@ -19,15 +19,15 @@ Ladder up to East Ardougne at (2632, 3294) and to (2570, 3267); the Hazeel Cult 
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ardougne-sewers:0` | (2567, 9681) | clivet_hazeel_cultist 1, rat 2 | no | no | - |
-| `npc:ardougne-sewers:1` | (2576, 9689) | rat 5 | no | no | - |
-| `npc:ardougne-sewers:2` | (2601, 9710) | rat 3 | no | no | - |
-| `npc:ardougne-sewers:3` | (2606, 9678) | alomone_hazeel_cultist 1, hazeel_cultist 5, rat 5 | no | no | - |
-| `npc:ardougne-sewers:4` | (2618, 9725) | rat 3 | no | no | - |
-| `npc:ardougne-sewers:5` | (2641, 9698) | rat 1 | no | no | - |
-| `npc:ardougne-sewers:6` | (2645, 9711) | rat 1 | no | no | - |
-| `npc:ardougne-sewers:7` | (2674, 9682) | rat 2, zombie_armed 3 | no | no | - |
-| `npc:ardougne-sewers:8` | (2680, 9701) | rat 1 | no | no | - |
+| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - |
+| `npc:ardougne-sewers:1` | (2576, 9689) | Rat 5 | no | no | - |
+| `npc:ardougne-sewers:2` | (2601, 9710) | Rat 3 | no | no | - |
+| `npc:ardougne-sewers:3` | (2606, 9678) | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - |
+| `npc:ardougne-sewers:4` | (2618, 9725) | Rat 3 | no | no | - |
+| `npc:ardougne-sewers:5` | (2641, 9698) | Rat 1 | no | no | - |
+| `npc:ardougne-sewers:6` | (2645, 9711) | Rat 1 | no | no | - |
+| `npc:ardougne-sewers:7` | (2674, 9682) | Rat 2, Zombie 3 | no | no | - |
+| `npc:ardougne-sewers:8` | (2680, 9701) | Rat 1 | no | no | - |
 
 ## Ladders and stairs
 

@@ -14,10 +14,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:keep-le-faye:0` | (2759, 3401) | bat 1 | no | no | - |
-| `npc:keep-le-faye:1` | (2769, 3398) | renegade_knight 3 | no | no | - |
-| `npc:keep-le-faye:2` | (2770, 3402) L1 | renegade_knight 5 | no | no | - |
-| `npc:keep-le-faye:3` | (2769, 3403) L2 | sir_mordred 1 | no | no | - |
+| `npc:keep-le-faye:0` | (2759, 3401) | Giant bat 1 | no | no | - |
+| `npc:keep-le-faye:1` | (2769, 3398) | Renegade Knight 3 | no | no | - |
+| `npc:keep-le-faye:2` | (2770, 3402) L1 | Renegade Knight 5 | no | no | - |
+| `npc:keep-le-faye:3` | (2769, 3403) L2 | Sir Mordred 1 | no | no | - |
 
 ## Ladders and stairs
 

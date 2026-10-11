@@ -10,6 +10,7 @@ import { AREAS } from './areas';
 import { classifier } from './classify';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
+import { cmp } from './render/common';
 import { buildSites, locSizes, type SiteCollision } from './place';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
@@ -66,8 +67,6 @@ export interface BuildInput {
     areas: readonly Area[];
     collision: SiteCollision;
 }
-
-const cmp = (a: number | string, b: number | string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 /** The written order: kind, x, z, level, config, then the rest of a feature's identity. */
 export const byWritten = (a: Feature, b: Feature): number =>
@@ -222,13 +221,15 @@ if (import.meta.main) {
         [relative(ROOT, WORLD_JSON), serializeWorld(world)],
         ...renderWorld(world, readRenderData()),
     ]);
+    // Every file but world.json is a page, the README included.
+    const generated = `world.json and ${files.size - 1} pages (README.md among them)`;
     if (process.argv.includes('--check')) {
         const stale = drift(files);
         if (stale.length) {
             console.log(`${stale.length} generated files differ from a fresh build; run bun run world and commit:`);
             for (const p of stale) console.log(`  ${p}`);
             process.exitCode = 1;
-        } else console.log(`world: world.json and ${files.size - 1} pages are fresh`);
+        } else console.log(`world: ${generated} are fresh`);
         // A fresh world.json can still hold a site outside every area: `bun run world` fails on it, so
         // the check does too.
         if (report.uncovered.length) {
@@ -238,9 +239,7 @@ if (import.meta.main) {
     } else {
         const removed = writeFiles(files);
         for (const line of formatReport(report)) console.log(line);
-        console.log(
-            `wrote world.json and ${files.size - 1} pages${removed.length ? `, removed ${removed.length} stale` : ''}`,
-        );
+        console.log(`wrote ${generated}${removed.length ? `, removed ${removed.length} stale` : ''}`);
         if (report.uncovered.length) process.exitCode = 1;
     }
 }

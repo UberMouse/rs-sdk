@@ -24,17 +24,17 @@
 | [Kandarin](../places/kandarin.md) | `range:kandarin:2` | (2571, 3248) | (2571, 3249) | Range 1 | no |
 | [Kandarin](../places/kandarin.md) | `range:kandarin:3` | (2578, 3198) | (2578, 3197) | Range 1 | no |
 | [Kandarin](../places/kandarin.md) | `range:kandarin:4` | (2591, 3209) | (2592, 3209) | Range 1 | no |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:5` | (2632, 3163) | (2633, 3163) | Range 1 | no |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:6` | (2642, 3355) | (2642, 3356) | Range 1 | no |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:7` | (2733, 3582) | (2733, 3581) | Range 1 | no |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:8` | (2763, 3274) | (2763, 3275) | Range 1 | no |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:5` | (2642, 3355) | (2642, 3356) | Range 1 | no |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:6` | (2733, 3582) | (2733, 3581) | Range 1 | no |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:7` | (2763, 3274) | (2763, 3275) | Range 1 | no |
 | [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:0` | (2817, 3444) | (2817, 3443) | Range 1 | no |
 | [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:1` | (2818, 3455) | (2819, 3454) | Range 1 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:0` | (2617, 3317) | (2616, 3317) | Range 1 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:1` | (2648, 3297) | (2647, 3298) | Range 1 | no |
 | [Fishing Guild (Kandarin)](../places/fishing-guild.md) | `range:fishing-guild:0` | (2616, 3396) | (2615, 3396) | Range 1 | no |
 | [Hemenster (Kandarin)](../places/hemenster.md) | `range:hemenster:0` | (2637, 3432) | (2638, 3432) | Range 1 | no |
-| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:0` | (2636, 3170) | (2635, 3170) | Range 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:0` | (2632, 3163) | (2633, 3163) | Range 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:1` | (2636, 3170) | (2635, 3170) | Range 1 | no |
 | [Seers' Village (Kandarin)](../places/seers-village.md) | `range:seers-village:0` | (2715, 3476) | (2715, 3477) | Range 1 | no |
 | [Sorcerer's Tower (Kandarin)](../places/sorcerers-tower.md) | `range:sorcerers-tower:0` | (2706, 3404) | (2705, 3404) | Range 1 | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `range:tree-gnome-stronghold:0` | (2448, 3510) L1 | (2449, 3510) L1 | Range 1 | no |

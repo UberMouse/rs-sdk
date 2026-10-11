@@ -7,14 +7,14 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dark-knight-fortress:0` | (3022, 3624) | dark_warrior 1 | yes | yes | 14 |
-| `npc:dark-knight-fortress:1` | (3027, 3630) L1 | dark_warrior 5 | yes | yes | 15 |
-| `npc:dark-knight-fortress:2` | (3022, 3639) | dark_warrior 1 | yes | yes | 15 |
-| `npc:dark-knight-fortress:3` | (3022, 3639) L1 | dark_warrior 1 | yes | yes | 15 |
-| `npc:dark-knight-fortress:4` | (3033, 3630) | dark_warrior 4 | yes | yes | 15 |
-| `npc:dark-knight-fortress:5` | (3036, 3624) L1 | dark_warrior 1 | yes | yes | 14 |
-| `npc:dark-knight-fortress:6` | (3036, 3639) | dark_warrior 1 | yes | yes | 15 |
-| `npc:dark-knight-fortress:7` | (3036, 3639) L1 | dark_warrior 1 | yes | yes | 15 |
+| `npc:dark-knight-fortress:0` | (3022, 3624) | Dark warrior 1 | yes | yes | 14 |
+| `npc:dark-knight-fortress:1` | (3027, 3630) L1 | Dark warrior 5 | yes | yes | 15 |
+| `npc:dark-knight-fortress:2` | (3022, 3639) | Dark warrior 1 | yes | yes | 15 |
+| `npc:dark-knight-fortress:3` | (3022, 3639) L1 | Dark warrior 1 | yes | yes | 15 |
+| `npc:dark-knight-fortress:4` | (3033, 3630) | Dark warrior 4 | yes | yes | 15 |
+| `npc:dark-knight-fortress:5` | (3036, 3624) L1 | Dark warrior 1 | yes | yes | 14 |
+| `npc:dark-knight-fortress:6` | (3036, 3639) | Dark warrior 1 | yes | yes | 15 |
+| `npc:dark-knight-fortress:7` | (3036, 3639) L1 | Dark warrior 1 | yes | yes | 15 |
 
 ## Ladders and stairs
 

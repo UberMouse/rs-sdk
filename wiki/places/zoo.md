@@ -14,8 +14,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:zoo:0` | (2605, 3269) | scorpion 3, smallscorpion 3 | no | no | - |
-| `npc:zoo:1` | (2622, 3272) | jogre 1 | no | no | - |
+| `npc:zoo:0` | (2605, 3269) | Pit Scorpion 3, Scorpion 3 | no | no | - |
+| `npc:zoo:1` | (2622, 3272) | Jogre 1 | no | no | - |
 
 ## Ladders and stairs
 

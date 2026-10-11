@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:crafting-guild:0` | (2922, 3283) | cow 7 | yes | no | - |
+| `npc:crafting-guild:0` | (2922, 3283) | Cow 7 | yes | no | - |
 
 ## Ladders and stairs
 

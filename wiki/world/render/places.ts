@@ -6,19 +6,21 @@ import {
     byKind,
     bySiteId,
     cmp,
-    contents,
     coord,
     GENERATED,
+    isResourceKind,
     kindTitle,
+    labeller,
     link,
+    parts,
     placePath,
-    RESOURCE_KINDS,
     resourcePath,
     SERVICE_KINDS,
     servicePath,
     table,
     wilderness,
     yesNo,
+    type PageData,
 } from './common';
 
 /** `bank 1, tree 12`: sites per kind, in page order. */
@@ -30,15 +32,22 @@ const summary = (perKind: ReadonlyMap<FeatureKind, number> | undefined): string 
               .join(', ')
         : '-';
 
+/** Appends `x` to the list at `key`, making the list when it is the first. */
+function push<K, V>(lists: Map<K, V[]>, key: K, x: V): void {
+    const list = lists.get(key);
+    if (list) list.push(x);
+    else lists.set(key, [x]);
+}
+
 /** One page per area, keyed by repo-relative path. */
-export function renderPlaces(world: World): Map<string, string> {
+export function renderPlaces(world: World, data: PageData): Map<string, string> {
     const byId = new Map(world.areas.map(a => [a.id, a]));
     const leafSites = new Map<string, Site[]>();
     const under = new Map<string, Map<FeatureKind, number>>();
     for (const s of world.sites) {
         const leaf = s.areaPath.at(-1);
         if (leaf === undefined) continue;
-        leafSites.set(leaf, [...(leafSites.get(leaf) ?? []), s]);
+        push(leafSites, leaf, s);
         for (const id of s.areaPath) {
             const perKind = under.get(id) ?? new Map<FeatureKind, number>();
             perKind.set(s.kind, (perKind.get(s.kind) ?? 0) + 1);
@@ -46,8 +55,7 @@ export function renderPlaces(world: World): Map<string, string> {
         }
     }
     const children = new Map<string, Area[]>();
-    for (const a of world.areas)
-        if (a.parent !== undefined) children.set(a.parent, [...(children.get(a.parent) ?? []), a]);
+    for (const a of world.areas) if (a.parent !== undefined) push(children, a.parent, a);
     const ancestors = (a: Area): Area[] => {
         const parent = a.parent === undefined ? undefined : byId.get(a.parent);
         return parent ? [...ancestors(parent), parent] : [];
@@ -64,6 +72,8 @@ export function renderPlaces(world: World): Map<string, string> {
         if (area.requires?.length) lines.push(`Requires: ${area.requires.join(', ')}.`, '');
 
         const sites = leafSites.get(area.id) ?? [];
+        const held = new Map(sites.map(s => [s, parts(s, world, data)]));
+        const label = labeller([...held].flatMap(([s, ps]) => ps.map(p => [s.kind, p] as const)));
         const kinds = [...new Set(sites.map(s => s.kind))].sort(byKind);
         if (!kinds.length) lines.push('No site lies in this area outside its child areas.', '');
         for (const kind of kinds) {
@@ -71,12 +81,15 @@ export function renderPlaces(world: World): Map<string, string> {
             const heading = SERVICE_KINDS.includes(kind)
                 ? `[${kindTitle(kind)}](${link(path, servicePath(kind))})`
                 : kindTitle(kind);
-            const held = (s: Site): string =>
-                RESOURCE_KINDS.includes(kind)
-                    ? Object.entries(s.counts)
-                          .map(([sub, n]) => `[${sub}](${link(path, resourcePath(kind, sub))}) ${n}`)
-                          .join(', ')
-                    : contents(s, world.features).join(', ');
+            const counts = (s: Site): string =>
+                held
+                    .get(s)!
+                    .map(p =>
+                        isResourceKind(kind)
+                            ? `[${label(kind, p)}](${link(path, resourcePath(kind, p.key))}) ${p.n}`
+                            : `${label(kind, p)} ${p.n}`,
+                    )
+                    .join(', ');
             lines.push(
                 `## ${heading}`,
                 '',
@@ -88,7 +101,7 @@ export function renderPlaces(world: World): Map<string, string> {
                         .map(s => [
                             `\`${s.id}\``,
                             coord(s.centre),
-                            held(s),
+                            counts(s),
                             yesNo(s.f2p),
                             yesNo(s.multiway),
                             wilderness(s.wildernessLevel),

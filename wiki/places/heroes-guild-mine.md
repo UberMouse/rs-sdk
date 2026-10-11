@@ -14,10 +14,10 @@ Ladder up into the Heroes' Guild at (2892, 3507).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:heroes-guild-mine:0` | (2889, 9907) | bat 1 | no | no | - |
-| `npc:heroes-guild-mine:1` | (2896, 9911) | bat 1 | no | no | - |
-| `npc:heroes-guild-mine:2` | (2908, 9905) | blue_dragon 1 | no | no | - |
-| `npc:heroes-guild-mine:3` | (2936, 9892) | bat 3 | no | no | - |
+| `npc:heroes-guild-mine:0` | (2889, 9907) | Giant bat 1 | no | no | - |
+| `npc:heroes-guild-mine:1` | (2896, 9911) | Giant bat 1 | no | no | - |
+| `npc:heroes-guild-mine:2` | (2908, 9905) | Blue dragon 1 | no | no | - |
+| `npc:heroes-guild-mine:3` | (2936, 9892) | Giant bat 3 | no | no | - |
 
 ## Ladders and stairs
 

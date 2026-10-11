@@ -31,14 +31,14 @@ Holy Grail (quests/quest_grail): the restored realm with King Percival (m41_73) 
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:fisher-realm:0` | (2673, 4707) | [freshfish](../resources/fishing-spot/freshfish.md) 3 | no | no | - |
+| `fishing-spot:fisher-realm:0` | (2673, 4707) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:fisher-realm:0` | (2666, 4683) | duck 7, duck_female 15 | no | no | - |
-| `npc:fisher-realm:1` | (2791, 4722) | black_knight_titan 1 | no | no | - |
+| `npc:fisher-realm:0` | (2666, 4683) | Duck (duck) 7, Duck (duck_female) 15 | no | no | - |
+| `npc:fisher-realm:1` | (2791, 4722) | Black Knight Titan 1 | no | no | - |
 
 ## Ladders and stairs
 

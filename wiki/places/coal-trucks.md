@@ -22,5 +22,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:coal-trucks:0` | (2592, 3482) | bat 2 | no | no | - |
-| `npc:coal-trucks:1` | (2610, 3479) | rat 1 | no | no | - |
+| `npc:coal-trucks:0` | (2592, 3482) | Giant bat 2 | no | no | - |
+| `npc:coal-trucks:1` | (2610, 3479) | Rat 1 | no | no | - |

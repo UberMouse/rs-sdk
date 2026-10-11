@@ -63,7 +63,7 @@ const COMBAT_PARAMS = new Set([
 ]);
 
 /** `param=key,value` lines as a map. */
-const params = (cfg: Config): Map<string, string> =>
+export const params = (cfg: Config): Map<string, string> =>
     new Map(
         (cfg.param ?? []).map(p => {
             const comma = p.indexOf(',');
@@ -78,11 +78,17 @@ const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k 
  * A body as code only: its `//` comments dropped (a `//` inside a "string" is text) and its string
  * text blanked, so neither a commented-out call nor dialogue ("ask ~foo", the `@dbl@` colour tags of
  * levelup/scripts/levelup_unlocks_mining.rs2) counts as a call. A string's `<...>` is an
- * interpolation, which is code (`"<~pluralise(...)>"` calls a proc), so it stays. Inside a string a
- * backslash escapes the next character, so `\"` does not end it. Blanking keeps the quotes and every
- * column, so argsAt still splits a call's arguments where they are; a string argument is never bound
- * (only bare names are), so its text is not needed.
+ * interpolation, which is code (`"<~pluralise(...)>"` calls a proc), so it stays: INTERPOLATION says
+ * which `<` opens one, so a `<` in text (`"HP < 10"`) leaves the string, its closing quote and a `//`
+ * after it as they are. A tag (`<p,neutral>`) passes for one, which is harmless: it holds no call.
+ * Inside a string a backslash escapes the next character, so `\"` does not end it. Blanking keeps
+ * the quotes and every column, so argsAt still splits a call's arguments where they are; a string
+ * argument is never bound (only bare names are), so its text is not needed.
  */
+// What follows a `<` that opens an interpolation in the scripts: a proc call (`<~name(...)>`), a local
+// (`<$name>`), a varp (`<%name>`), a dot command (`<.displayname>`) or a command (`<tostring(...)>`).
+const INTERPOLATION = /^[a-z_~$%.]$/;
+
 function codeOf(body: string): string {
     return body
         .split('\n')
@@ -105,7 +111,7 @@ function codeOf(body: string): string {
                 } else if (ch === '"') {
                     quoted = false;
                     out += ch;
-                } else if (ch === '<') {
+                } else if (ch === '<' && INTERPOLATION.test(line[i + 1] ?? '') && line.includes('>', i)) {
                     interpolated = true;
                     out += ch;
                 } else out += ' ';

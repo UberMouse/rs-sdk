@@ -35,7 +35,7 @@ The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to t
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:hemenster:0` | (2651, 3442) | chicken 4 | no | no | - |
+| `npc:hemenster:0` | (2651, 3442) | Chicken 4 | no | no | - |
 
 ## Ladders and stairs
 

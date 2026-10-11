@@ -14,5 +14,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:river-lum:0` | (3156, 3342) | cow 1 | yes | no | - |
-| `npc:river-lum:1` | (3169, 3350) | duck 11, duck_female 11 | yes | no | - |
+| `npc:river-lum:0` | (3156, 3342) | Cow 1 | yes | no | - |
+| `npc:river-lum:1` | (3169, 3350) | Duck (duck) 11, Duck (duck_female) 11 | yes | no | - |

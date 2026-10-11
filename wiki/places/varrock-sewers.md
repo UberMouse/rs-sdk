@@ -13,22 +13,22 @@ Ladders up into Varrock at (3237, 3458) and (3230, 3504).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:varrock-sewers:0` | (3177, 9884) | deadly_red_spider 8 | yes | yes | - |
-| `npc:varrock-sewers:1` | (3186, 9892) | deadly_red_spider 1 | yes | yes | - |
-| `npc:varrock-sewers:2` | (3206, 9879) | spider 2 | yes | yes | - |
-| `npc:varrock-sewers:3` | (3211, 9890) | spider 4 | yes | yes | - |
-| `npc:varrock-sewers:4` | (3211, 9907) | skeleton_armed 2 | yes | yes | - |
-| `npc:varrock-sewers:5` | (3229, 9865) | rat 15 | yes | yes | - |
-| `npc:varrock-sewers:6` | (3220, 9886) | giantspider1 2 | yes | yes | - |
-| `npc:varrock-sewers:7` | (3228, 9905) | zombie_armed 4 | yes | yes | - |
-| `npc:varrock-sewers:8` | (3248, 9913) | ghost 3, scorpion 2, skeleton_unagressive 3 | yes | yes | - |
-| `npc:varrock-sewers:9` | (3242, 9894) | rat 2 | yes | yes | - |
-| `npc:varrock-sewers:10` | (3244, 9875) | rat 1 | yes | yes | - |
-| `npc:varrock-sewers:11` | (3244, 9886) | rat 1 | yes | yes | - |
-| `npc:varrock-sewers:12` | (3252, 9893) | rat 2 | yes | yes | - |
-| `npc:varrock-sewers:13` | (3259, 9869) | rat 2, spider 3 | yes | yes | - |
-| `npc:varrock-sewers:14` | (3275, 9869) | rat 6 | yes | yes | - |
-| `npc:varrock-sewers:15` | (3274, 9912) | skeleton_unagressive 4 | yes | yes | - |
+| `npc:varrock-sewers:0` | (3177, 9884) | Deadly red spider 8 | yes | yes | - |
+| `npc:varrock-sewers:1` | (3186, 9892) | Deadly red spider 1 | yes | yes | - |
+| `npc:varrock-sewers:2` | (3206, 9879) | Spider 2 | yes | yes | - |
+| `npc:varrock-sewers:3` | (3211, 9890) | Spider 4 | yes | yes | - |
+| `npc:varrock-sewers:4` | (3211, 9907) | Skeleton (skeleton_armed) 2 | yes | yes | - |
+| `npc:varrock-sewers:5` | (3229, 9865) | Rat 15 | yes | yes | - |
+| `npc:varrock-sewers:6` | (3220, 9886) | Giant spider 2 | yes | yes | - |
+| `npc:varrock-sewers:7` | (3228, 9905) | Zombie 4 | yes | yes | - |
+| `npc:varrock-sewers:8` | (3248, 9913) | Ghost 3, Scorpion 2, Skeleton (skeleton_unagressive) 3 | yes | yes | - |
+| `npc:varrock-sewers:9` | (3242, 9894) | Rat 2 | yes | yes | - |
+| `npc:varrock-sewers:10` | (3244, 9875) | Rat 1 | yes | yes | - |
+| `npc:varrock-sewers:11` | (3244, 9886) | Rat 1 | yes | yes | - |
+| `npc:varrock-sewers:12` | (3252, 9893) | Rat 2 | yes | yes | - |
+| `npc:varrock-sewers:13` | (3259, 9869) | Rat 2, Spider 3 | yes | yes | - |
+| `npc:varrock-sewers:14` | (3275, 9869) | Rat 6 | yes | yes | - |
+| `npc:varrock-sewers:15` | (3274, 9912) | Skeleton (skeleton_unagressive) 4 | yes | yes | - |
 
 ## Ladders and stairs
 

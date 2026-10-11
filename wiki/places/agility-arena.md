@@ -7,5 +7,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:agility-arena:0` | (2806, 3185) | pirate2 1 | no | no | - |
-| `npc:agility-arena:1` | (2811, 3198) | pirate2 1 | no | no | - |
+| `npc:agility-arena:0` | (2806, 3185) | Pirate 1 | no | no | - |
+| `npc:agility-arena:1` | (2811, 3198) | Pirate 1 | no | no | - |

@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:draynor-fishing:0` | (3086, 3229) | [saltfish](../resources/fishing-spot/saltfish.md) 2 | yes | no | - |
+| `fishing-spot:draynor-fishing:0` | (3086, 3229) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - |

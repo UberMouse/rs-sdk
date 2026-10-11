@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:rimmington:0` | (2948, 3216) | generalshop6 2 | yes | no | - |
+| `shop:rimmington:0` | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -33,7 +33,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:rimmington:0` | (2967, 3212) L1 | [man](../resources/pickpocket/man.md) 1, [woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
+| `pickpocket:rimmington:0` | (2967, 3212) L1 | [Man](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
 
 ## Ladders and stairs
 

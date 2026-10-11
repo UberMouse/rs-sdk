@@ -32,10 +32,25 @@ describe('AREAS', () => {
         expect(resolve({ level: 0, x: 2678, z: 3434 })).toEqual(guild); // the leatherworker
         expect(resolve({ level: 0, x: 2652, z: 3428 })).toEqual(guild); // the west watchtower
         expect(resolve({ level: 2, x: 2668, z: 3444 })).toEqual(guild); // the north one, on top
+        expect(resolve({ level: 0, x: 2668, z: 3445 })).toEqual(guild); // the north tip
+        expect(resolve({ level: 0, x: 2668, z: 3411 })).toEqual(guild); // the south tip
+        expect(resolve({ level: 0, x: 2667, z: 3445 })).toEqual(['kandarin']); // beside the north tip
         expect(resolve({ level: 0, x: 2658, z: 3438 })).toEqual(['kandarin']); // the guild door
         expect(resolve({ level: 0, x: 2652, z: 3426 })).toEqual(['kandarin']); // past the south-west fence
         expect(resolve({ level: 0, x: 2639, z: 3424 })).toEqual(['kandarin', 'hemenster']); // steel arrowtips chest
         expect(resolve({ level: 0, x: 2651, z: 3442 })).toEqual(['kandarin', 'hemenster']); // chicken pen
+    });
+
+    test("Rellekka's market and Port Khazard's general store are in their towns", () => {
+        const rellekka = ['kandarin', 'rellekka'];
+        expect(resolve({ level: 0, x: 2625, z: 3675 })).toEqual(rellekka); // Yrsa's clothes shop
+        expect(resolve({ level: 0, x: 2642, z: 3677 })).toEqual(rellekka); // the market
+        expect(resolve({ level: 0, x: 2640, z: 3651 })).toEqual(rellekka); // inside the south palisade
+        expect(resolve({ level: 0, x: 2612, z: 3644 })).toEqual(['kandarin']); // outside it
+        expect(resolve({ level: 0, x: 2655, z: 3652 })).toEqual(['kandarin', 'fremennik-province']);
+        expect(resolve({ level: 0, x: 2655, z: 3152 })).toEqual(['kandarin', 'port-khazard']); // general store
+        expect(resolve({ level: 0, x: 2632, z: 3163 })).toEqual(['kandarin', 'port-khazard']); // a range
+        expect(resolve({ level: 0, x: 2630, z: 3143 })).toEqual(['kandarin']); // the mine
     });
 
     test('underground areas are their own top-level areas at z + 6400', () => {

@@ -9,4 +9,4 @@ Gundai.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:mage-arena-bank:0` | (2534, 4714) | banker 1 | no | yes | - |
+| `bank:mage-arena-bank:0` | (2534, 4714) | Gundai 1 | no | yes | - |

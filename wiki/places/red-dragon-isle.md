@@ -15,4 +15,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:red-dragon-isle:0` | (3190, 3834) | red_dragon 1 | no | yes | 40 |
+| `npc:red-dragon-isle:0` | (3190, 3834) | Red dragon 1 | no | yes | 40 |

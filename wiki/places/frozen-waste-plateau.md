@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:frozen-waste-plateau:0` | (2962, 3923) | ice_spider 6 | no | no | 52 |
+| `npc:frozen-waste-plateau:0` | (2962, 3923) | Ice spider 6 | no | no | 52 |

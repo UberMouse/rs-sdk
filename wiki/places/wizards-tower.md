@@ -13,9 +13,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:wizards-tower:0` | (3110, 3157) L1 | wizard 2 | yes | yes | - |
-| `npc:wizards-tower:1` | (3109, 3158) | wizard 2 | yes | yes | - |
-| `npc:wizards-tower:2` | (3110, 3157) L2 | lesser_demon 1 | yes | yes | - |
+| `npc:wizards-tower:0` | (3110, 3157) L1 | Wizard 2 | yes | yes | - |
+| `npc:wizards-tower:1` | (3109, 3158) | Wizard 2 | yes | yes | - |
+| `npc:wizards-tower:2` | (3110, 3157) L2 | Lesser demon 1 | yes | yes | - |
 
 ## Ladders and stairs
 

@@ -14,4 +14,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:fight-arena:0` | (2593, 3163) L3 | arena_guard1 1, arena_guard2 1 | no | no | - |
+| `npc:fight-arena:0` | (2593, 3163) L3 | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - |

@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:al-kharid-bank:0` | (3268, 3167) | banker 5, booth 5 | yes | yes | - |
+| `bank:al-kharid-bank:0` | (3268, 3167) | Bank booth 5, Banker 5 | yes | yes | - |

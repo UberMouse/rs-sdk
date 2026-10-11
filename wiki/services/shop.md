@@ -5,114 +5,114 @@
 
 | Area | Site | Centre | Stand | Counts | F2P |
 |---|---|---|---|---|---|
-| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:0` | (2757, 2773) | (2757, 2773) | mm_general_shop 1, mm_magic_shop 1, mm_scimitar_shop 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:1` | (2769, 2789) | (2769, 2789) | mm_food_shop 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:2` | (2781, 2793) | (2781, 2793) | mm_crafting_shop 1 | no |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:0` | (2885, 3449) | (2885, 3449) | 2handedshop 1 | no |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:1` | (2899, 3427) | (2899, 3427) | herbloreshop 1 | no |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:2` | (2928, 3546) | (2928, 3546) | death_generalshop 1 | no |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:3` | (3011, 3453) | (3011, 3453) | mcannonshop 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:4` | (3012, 3259) | (3012, 3259) | magicshop 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:5` | (3013, 3225) | (3013, 3225) | fishingshop 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:6` | (3013, 3248) | (3013, 3248) | goldshop 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:7` | (3014, 3204) | (3014, 3204) | wydinstore 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:8` | (3028, 3250) | (3028, 3250) | battleaxeshop 1 | yes |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | `shop:burthorpe:0` | (2906, 3537) | (2906, 3537) | death_pub 1 | no |
-| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:0` | (2944, 3334) | (2944, 3334) | gemshop 1 | yes |
-| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:1` | (2954, 3387) | (2953, 3387) | generalshop4 2, maceshop 1 | yes |
-| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:2` | (2973, 3312) | (2973, 3312) | chainmailshop 1 | yes |
-| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:3` | (2979, 3383) | (2979, 3383) | shieldshop 1 | yes |
-| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `shop:heros-guild:0` | (2894, 3510) L1 | (2894, 3510) L1 | dragonaxeshop 1 | no |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2948, 3216) | (2948, 3216) | generalshop6 2 | yes |
-| [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:0` | (2201, 4942) | (2201, 4942) | death_pub 1 | no |
-| [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:1` | (2207, 4958) | (2207, 4958) | death_pub 1 | no |
-| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:0` | (2993, 9828) | (2993, 9828) | generaldwarf 1 | yes |
-| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:1` | (2998, 9844) | (2998, 9844) | pickaxeshop 1 | yes |
-| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:2` | (3036, 9846) | (3036, 9846) | miningstore 1 | yes |
-| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | `shop:gutanoth:0` | (2518, 3035) | (2518, 3036) | generalshopogre 1 | no |
-| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | `shop:gutanoth:1` | (2528, 3048) | (2528, 3048) | herbloreshopogre 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:0` | (2464, 3287) | (2464, 3287) | upassgeneralshop 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:1` | (2514, 3385) | (2514, 3385) | lathastrainingstore 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:2` | (2527, 3161) L1 | (2527, 3161) L1 | gnomeshop 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:3` | (2625, 3675) | (2625, 3675) | viking_clothes_shop 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:4` | (2642, 3677) | (2642, 3677) | viking_fishmonger 1, viking_furshop 1, viking_general_store 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:5` | (2655, 3152) | (2655, 3152) | khazardshop 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:6` | (2808, 3342) | (2808, 3342) | herbloreshop2 1 | no |
-| [Kandarin](../places/kandarin.md) | `shop:kandarin:7` | (2834, 3445) | (2834, 3445) | fishingshop2 1 | no |
-| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:0` | (2800, 3439) | (2800, 3439) | candleshop 1 | no |
-| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:1` | (2803, 3430) | (2803, 3430) | arheinstore 1 | no |
-| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:2` | (2822, 3442) | (2822, 3442) | archeryshop2 1 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:0` | (2614, 3293) | (2614, 3293) | adventurershop 2 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:1` | (2656, 3296) | (2656, 3296) | spicestall 1, topshop 1 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:2` | (2656, 3314) | (2656, 3314) | bakery 1, silverstall 1 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:3` | (2666, 3295) | (2666, 3295) | furshop 1 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:4` | (2669, 3303) | (2669, 3303) | ardougnegemstall 1 | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:5` | (2669, 3310) | (2669, 3310) | bakery 1 | no |
-| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | `shop:fishing-guild:0` | (2596, 3400) | (2596, 3400) | fishingguild 1 | no |
-| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `shop:legends-guild:0` | (2725, 3378) L1 | (2725, 3378) L1 | generallegends 1 | no |
-| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `shop:legends-guild:1` | (2725, 3381) L2 | (2725, 3381) L2 | legendsguildshop 1 | no |
-| [Lighthouse (Kandarin)](../places/lighthouse.md) | `shop:lighthouse:0` | (2509, 3639) L1 | (2509, 3639) L1 | lighthouseshop 1 | no |
-| [Port Khazard (Kandarin)](../places/port-khazard.md) | `shop:port-khazard:0` | (2641, 3171) | (2641, 3171) | khazardshop 1 | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `shop:ranging-guild:0` | (2661, 3419) | (2661, 3419) | ranging_guild_tribalshop 1 | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `shop:ranging-guild:1` | (2670, 3435) | (2670, 3435) | ranging_guild_armourshop 1, ranging_guild_bowshop 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:0` | (2662, 3673) | (2662, 3673) | viking_bar 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:1` | (2663, 3694) | (2663, 3694) | viking_weapons_shop 1 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | (2417, 3498) L1 | blurberrybar 1 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | (2449, 3505) L1 | giannerestaurant 2, gnomeshop_hudo 1 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | (2468, 3487) L2 | gnomeshop_gulluck 1 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | (2482, 3487) L1 | blurberrybar 2 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | (2482, 3510) L1 | gnomeshop_rometti 1 | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | (2493, 3488) L1 | gnomeshop_heck 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | `shop:yanille:0` | (2566, 3098) | (2566, 3098) | cookeryshop 1 | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | `shop:wizards-guild:0` | (2595, 3087) L1 | (2595, 3087) L1 | magicguildshop 1 | no |
-| [Karamja](../places/karamja.md) | `shop:karamja:0` | (2767, 3122) | (2767, 3122) | junglestore 1 | no |
-| [Karamja](../places/karamja.md) | `shop:karamja:1` | (2781, 3057) | (2781, 3057) | tbwt_tiadeche_final_inventory 1 | no |
-| [Karamja](../places/karamja.md) | `shop:karamja:2` | (2803, 3152) | (2803, 3152) | amuletshop 1 | no |
-| [Karamja](../places/karamja.md) | `shop:karamja:3` | (2824, 2959) | (2824, 2959) | shilojunglestore 1 | no |
-| [Karamja](../places/karamja.md) | `shop:karamja:4` | (2902, 3148) | (2902, 3148) | generalshop7 2 | yes |
-| [Karamja](../places/karamja.md) | `shop:karamja:5` | (2925, 3143) | (2925, 3143) | boozeshop 1 | yes |
-| [Karamja](../places/karamja.md) | `shop:karamja:6` | (2946, 3205) | (2946, 3205) | craftingshop 1 | yes |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | `shop:brimhaven:0` | (2793, 3188) | (2793, 3188) | karamja_fishrestaurant 1 | no |
-| [Shilo Village (Karamja)](../places/shilo-village.md) | `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | shilofishingshop 1 | no |
-| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | `shop:tai-bwo-wannai:0` | (2800, 3057) | (2800, 3057) | tbwt_tamayu_final_inventory 1 | no |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:0` | (3288, 3190) | (3288, 3190) | scimitarshop 1 | yes |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:1` | (3288, 3212) | (3288, 3212) | gemshop2 1 | yes |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:2` | (3316, 3164) | (3316, 3164) | skirtshop 1 | yes |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:3` | (3316, 3175) | (3316, 3175) | legsshop 1 | yes |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:4` | (3316, 3183) | (3316, 3183) | generalshop3 2 | yes |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:5` | (3322, 3194) | (3322, 3194) | craftingshop2 1 | yes |
-| [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | `shop:bedabin-camp:0` | (3169, 3037) | (3169, 3036) | bedabincampshop 8 | no |
-| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | `shop:duel-arena:0` | (3381, 3267) | (3380, 3267) | duel_rottenfruitshop 1 | no |
-| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `shop:duel-arena-bank:0` | (3383, 3269) | (3383, 3269) | duel_rottenfruitshop 1 | no |
-| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | `shop:shantay-pass:0` | (3304, 3123) | (3304, 3123) | shantayshop 1 | yes |
-| [Mage Arena chamber](../places/mage-arena-chamber.md) | `shop:mage-arena-chamber:0` | (2508, 4696) | (2508, 4696) | magearena_staffshop 1 | no |
-| [Mage Arena chamber](../places/mage-arena-chamber.md) | `shop:mage-arena-chamber:1` | (2534, 4719) | (2534, 4719) | magearena_runeshop 1 | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | `shop:miscellania:0` | (2517, 3865) | (2517, 3865) | misc_fishmonger 1, misc_greengrocer 1 | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | `shop:miscellania:1` | (2604, 3876) | (2604, 3876) | etc_fishmonger 1, etc_greengrocer 1 | no |
-| [Misthalin](../places/misthalin.md) | `shop:misthalin:0` | (3069, 3517) | (3069, 3517) | runeplateshop 1 | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `shop:barbarian-village:0` | (3076, 3429) | (3076, 3429) | helmetshop 1 | yes |
-| [Champions' Guild (Misthalin)](../places/champions-guild.md) | `shop:champions-guild:0` | (3191, 3351) L1 | (3191, 3351) L1 | runiteshop 1 | yes |
-| [Champions' Guild (Misthalin)](../places/champions-guild.md) | `shop:champions-guild:1` | (3193, 3361) L1 | (3193, 3361) L1 | championshop 1 | yes |
-| [Draynor Market (Draynor Village)](../places/draynor-market.md) | `shop:draynor-market:0` | (3079, 3250) | (3079, 3250) | aprilfoolshorseshop 1 | yes |
-| [Edgeville (Misthalin)](../places/edgeville.md) | `shop:edgeville:0` | (3081, 3511) | (3081, 3511) | generalshop5 2 | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:0` | (3211, 3247) | (3211, 3247) | generalshop1 2 | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:1` | (3232, 3203) | (3232, 3203) | axeshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:0` | (3204, 3398) | (3204, 3398) | swordshop 2 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:1` | (3203, 3433) | (3203, 3433) | memberstaffshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:2` | (3204, 3417) | (3204, 3417) | clotheshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:3` | (3218, 3413) | (3218, 3413) | generalshop2 2 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:4` | (3229, 3438) | (3229, 3438) | armourshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:5` | (3232, 3423) | (3232, 3423) | archeryshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:6` | (3253, 3402) | (3253, 3402) | runeshop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:7` | (3271, 3411) | (3271, 3411) | teashop 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:8` | (3281, 3398) | (3281, 3398) | fancyclothesstore 1 | yes |
-| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:0` | (3475, 3497) | (3475, 3497) | werewolfgeneralstore 1 | no |
-| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:1` | (3499, 3506) | (3499, 3506) | werewolfstore2 1 | no |
-| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:2` | (3507, 3496) | (3507, 3496) | werewolfstore1 1 | no |
-| [Mort'ton (Morytania)](../places/mortton.md) | `shop:mortton:0` | (3489, 3296) | (3489, 3296) | razmiregeneralstore 1 | no |
-| [Tirannwn](../places/tirannwn.md) | `shop:tirannwn:0` | (2194, 3140) | (2194, 3140) | regicide_general_shop_2 1 | no |
-| [Wilderness](../places/wilderness.md) | `shop:wilderness:0` | (3025, 3701) | (3025, 3701) | taxfree 1 | yes |
-| [Wilderness](../places/wilderness.md) | `shop:wilderness:1` | (3036, 3707) | (3036, 3707) | pizzabaseshop 1 | yes |
-| [Zanaris](../places/zanaris.md) | `shop:zanaris:0` | (3145, 9567) | (3145, 9567) | generalshop8 2 | no |
-| [Zanaris](../places/zanaris.md) | `shop:zanaris:1` | (3247, 9589) | (3247, 9589) | cheapringshop 1 | no |
-| [Zanaris](../places/zanaris.md) | `shop:zanaris:2` | (3252, 9572) | (3252, 9572) | dragonswordshop 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:0` | (2757, 2773) | (2757, 2773) | Daga's Scimitar Smithy (mm_scimitar_shop) 1, Ifaba's General Store (mm_general_shop) 1, Ifaba's General Store (mm_magic_shop) 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:1` | (2769, 2789) | (2769, 2789) | Solihib's Food Stall (mm_food_shop) 1 | no |
+| [Ape Atoll](../places/ape-atoll.md) | `shop:ape-atoll:2` | (2781, 2793) | (2781, 2793) | Hamab's Crafting Emporium (mm_crafting_shop) 1 | no |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:0` | (2885, 3449) | (2885, 3449) | Gaius' Two Handed Shop. (2handedshop) 1 | no |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:1` | (2899, 3427) | (2899, 3427) | Jatix's Herblore Shop. (herbloreshop) 1 | no |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:2` | (2928, 3546) | (2928, 3546) | Burthorpe Supplies (death_generalshop) 1 | no |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:3` | (3011, 3453) | (3011, 3453) | Multi cannon parts for sale: (mcannonshop) 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:4` | (3012, 3259) | (3012, 3259) | Betty's Magic Emporium. (magicshop) 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:5` | (3013, 3225) | (3013, 3225) | Gerrant's Fishy Business. (fishingshop) 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:6` | (3013, 3248) | (3013, 3248) | Grum's Gold Exchange. (goldshop) 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:7` | (3014, 3204) | (3014, 3204) | Food Store (wydinstore) 1 | yes |
+| [Asgarnia](../places/asgarnia.md) | `shop:asgarnia:8` | (3028, 3250) | (3028, 3250) | Brian's Battleaxe Bazaar. (battleaxeshop) 1 | yes |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | `shop:burthorpe:0` | (2906, 3537) | (2906, 3537) | The Toad and Chicken (death_pub) 1 | no |
+| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:0` | (2944, 3334) | (2944, 3334) | Herquin's Gems. (gemshop) 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:1` | (2954, 3387) | (2953, 3387) | Falador General Store (generalshop4) 2, Flynn's Mace Market. (maceshop) 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:2` | (2973, 3312) | (2973, 3312) | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes |
+| [Falador (Asgarnia)](../places/falador.md) | `shop:falador:3` | (2979, 3383) | (2979, 3383) | Cassies' Shield Shop. (shieldshop) 1 | yes |
+| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `shop:heros-guild:0` | (2894, 3510) L1 | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2948, 3216) | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes |
+| [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:0` | (2201, 4942) | (2201, 4942) | The Toad and Chicken (death_pub) 1 | no |
+| [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:1` | (2207, 4958) | (2207, 4958) | The Toad and Chicken (death_pub) 1 | no |
+| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:0` | (2993, 9828) | (2993, 9828) | Dwarven shopping store (generaldwarf) 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:1` | (2998, 9844) | (2998, 9844) | Nurmof's Pickaxe Shop. (pickaxeshop) 1 | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | `shop:dwarven-mine:2` | (3036, 9846) | (3036, 9846) | Drogo's Mining Emporium. (miningstore) 1 | yes |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | `shop:gutanoth:0` | (2518, 3035) | (2518, 3036) | Dal's General Ogre Supplies (generalshopogre) 1 | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | `shop:gutanoth:1` | (2528, 3048) | (2528, 3048) | Grud's Herblore Stall. (herbloreshopogre) 1 | no |
+| [Kandarin](../places/kandarin.md) | `shop:kandarin:0` | (2464, 3287) | (2464, 3287) | West Ardougne General Store (upassgeneralshop) 1 | no |
+| [Kandarin](../places/kandarin.md) | `shop:kandarin:1` | (2514, 3385) | (2514, 3385) | Armoury (lathastrainingstore) 1 | no |
+| [Kandarin](../places/kandarin.md) | `shop:kandarin:2` | (2527, 3161) L1 | (2527, 3161) L1 | Bolkoy's Village Shop (gnomeshop) 1 | no |
+| [Kandarin](../places/kandarin.md) | `shop:kandarin:3` | (2808, 3342) | (2808, 3342) | Frincos Fabulous Herb Store. (herbloreshop2) 1 | no |
+| [Kandarin](../places/kandarin.md) | `shop:kandarin:4` | (2834, 3445) | (2834, 3445) | Harrys Fishing Shop. (fishingshop2) 1 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:0` | (2800, 3439) | (2800, 3439) | Candle Shop (candleshop) 1 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:1` | (2803, 3430) | (2803, 3430) | Arhein Store (arheinstore) 1 | no |
+| [Catherby (Kandarin)](../places/catherby.md) | `shop:catherby:2` | (2822, 3442) | (2822, 3442) | Hicktons Archery Emporium. (archeryshop2) 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:0` | (2614, 3293) | (2614, 3293) | Aemad's Adventuring Supplies. (adventurershop) 2 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:1` | (2656, 3296) | (2656, 3296) | Ardougne Spice Stall. (spicestall) 1, Zenesha's Plate Mail Body Shop. (topshop) 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:2` | (2656, 3314) | (2656, 3314) | Ardougne Baker's Stall. (bakery) 1, Ardougne Silver Stall. (silverstall) 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:3` | (2666, 3295) | (2666, 3295) | Ardougne Fur Stall. (furshop) 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:4` | (2669, 3303) | (2669, 3303) | Ardougne Gem Stall. (ardougnegemstall) 1 | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `shop:east-ardougne:5` | (2669, 3310) | (2669, 3310) | Ardougne Baker's Stall. (bakery) 1 | no |
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | `shop:fishing-guild:0` | (2596, 3400) | (2596, 3400) | Fishing Guild Shop. (fishingguild) 1 | no |
+| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `shop:legends-guild:0` | (2725, 3378) L1 | (2725, 3378) L1 | Legends Guild General Store. (generallegends) 1 | no |
+| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `shop:legends-guild:1` | (2725, 3381) L2 | (2725, 3381) L2 | Legends Guild Shop of Useful Items. (legendsguildshop) 1 | no |
+| [Lighthouse (Kandarin)](../places/lighthouse.md) | `shop:lighthouse:0` | (2509, 3639) L1 | (2509, 3639) L1 | The Lighthouse Store (lighthouseshop) 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `shop:port-khazard:0` | (2641, 3171) | (2641, 3171) | Khazard General Store (khazardshop) 1 | no |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `shop:port-khazard:1` | (2655, 3152) | (2655, 3152) | Khazard General Store (khazardshop) 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `shop:ranging-guild:0` | (2661, 3419) | (2661, 3419) | Authentic throwing weapons. (ranging_guild_tribalshop) 1 | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `shop:ranging-guild:1` | (2670, 3435) | (2670, 3435) | Aaron's Archery Appendages. (ranging_guild_armourshop) 1, Dargaud's Bow and Arrows. (ranging_guild_bowshop) 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:0` | (2625, 3675) | (2625, 3675) | Yrsa's Accountrements (viking_clothes_shop) 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:1` | (2642, 3677) | (2642, 3677) | Fremennik Fish Monger (viking_fishmonger) 1, Fremennik Fur Trader (viking_furshop) 1, Sigmund the Merchant (viking_general_store) 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:2` | (2662, 3673) | (2662, 3673) | Rellekka Longhall Bar (viking_bar) 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `shop:rellekka:3` | (2663, 3694) | (2663, 3694) | Skulgrimen's Battle Gear (viking_weapons_shop) 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | (2417, 3498) L1 | Blurberry Bar (blurberrybar) 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | (2449, 3505) L1 | Gianne's Restaurant (giannerestaurant) 2, Grand Tree Groceries (gnomeshop_hudo) 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | (2468, 3487) L2 | Gulluck and Sons (gnomeshop_gulluck) 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | (2482, 3487) L1 | Blurberry Bar (blurberrybar) 2 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | (2482, 3510) L1 | Fine Fashions (gnomeshop_rometti) 1 | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | (2493, 3488) L1 | Funch's Fine Groceries (gnomeshop_heck) 1 | no |
+| [Yanille (Kandarin)](../places/yanille.md) | `shop:yanille:0` | (2566, 3098) | (2566, 3098) | Frenita's Cookery Shop. (cookeryshop) 1 | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | `shop:wizards-guild:0` | (2595, 3087) L1 | (2595, 3087) L1 | Magic Guild Store (magicguildshop) 1 | no |
+| [Karamja](../places/karamja.md) | `shop:karamja:0` | (2767, 3122) | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no |
+| [Karamja](../places/karamja.md) | `shop:karamja:1` | (2781, 3057) | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no |
+| [Karamja](../places/karamja.md) | `shop:karamja:2` | (2803, 3152) | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no |
+| [Karamja](../places/karamja.md) | `shop:karamja:3` | (2824, 2959) | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no |
+| [Karamja](../places/karamja.md) | `shop:karamja:4` | (2902, 3148) | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes |
+| [Karamja](../places/karamja.md) | `shop:karamja:5` | (2925, 3143) | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes |
+| [Karamja](../places/karamja.md) | `shop:karamja:6` | (2946, 3205) | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | `shop:brimhaven:0` | (2793, 3188) | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no |
+| [Shilo Village (Karamja)](../places/shilo-village.md) | `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | `shop:tai-bwo-wannai:0` | (2800, 3057) | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:0` | (3288, 3190) | (3288, 3190) | Zeke's Superior Scimitars. (scimitarshop) 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:1` | (3288, 3212) | (3288, 3212) | Gem Trader. (gemshop2) 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:2` | (3316, 3164) | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:3` | (3316, 3175) | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:4` | (3316, 3183) | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:5` | (3322, 3194) | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes |
+| [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | `shop:bedabin-camp:0` | (3169, 3037) | (3169, 3036) | Bedabin Village Bartering (bedabincampshop) 8 | no |
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | `shop:duel-arena:0` | (3381, 3267) | (3380, 3267) | Shop of Distaste (duel_rottenfruitshop) 1 | no |
+| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `shop:duel-arena-bank:0` | (3383, 3269) | (3383, 3269) | Shop of Distaste (duel_rottenfruitshop) 1 | no |
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | `shop:shantay-pass:0` | (3304, 3123) | (3304, 3123) | Shantay Pass Shop (shantayshop) 1 | yes |
+| [Mage Arena chamber](../places/mage-arena-chamber.md) | `shop:mage-arena-chamber:0` | (2508, 4696) | (2508, 4696) | Mage Arena Staffs. (magearena_staffshop) 1 | no |
+| [Mage Arena chamber](../places/mage-arena-chamber.md) | `shop:mage-arena-chamber:1` | (2534, 4719) | (2534, 4719) | Lundail's Arena-side Rune Shop. (magearena_runeshop) 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | `shop:miscellania:0` | (2517, 3865) | (2517, 3865) | Greengrocer of Miscellania (misc_greengrocer) 1, Island Fishmonger (misc_fishmonger) 1 | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | `shop:miscellania:1` | (2604, 3876) | (2604, 3876) | Etceteria Fish (etc_fishmonger) 1, Island Greengrocer (etc_greengrocer) 1 | no |
+| [Misthalin](../places/misthalin.md) | `shop:misthalin:0` | (3069, 3517) | (3069, 3517) | oziach (runeplateshop) 1 | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `shop:barbarian-village:0` | (3076, 3429) | (3076, 3429) | Helmet Shop. (helmetshop) 1 | yes |
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | `shop:champions-guild:0` | (3191, 3351) L1 | (3191, 3351) L1 | Scavvo's Rune Store. (runiteshop) 1 | yes |
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | `shop:champions-guild:1` | (3193, 3361) L1 | (3193, 3361) L1 | Valaine's Shop of Champions. (championshop) 1 | yes |
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | `shop:draynor-market:0` | (3079, 3250) | (3079, 3250) | Diango's Toy Store (aprilfoolshorseshop) 1 | yes |
+| [Edgeville (Misthalin)](../places/edgeville.md) | `shop:edgeville:0` | (3081, 3511) | (3081, 3511) | Edgeville General Store (generalshop5) 2 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:0` | (3211, 3247) | (3211, 3247) | Lumbridge General Store (generalshop1) 2 | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:1` | (3232, 3203) | (3232, 3203) | Bob's Brilliant Axes. (axeshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:0` | (3204, 3398) | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:1` | (3203, 3433) | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:2` | (3204, 3417) | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:3` | (3218, 3413) | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:4` | (3229, 3438) | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:5` | (3232, 3423) | (3232, 3423) | Lowe's Archery Emporium (archeryshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:6` | (3253, 3402) | (3253, 3402) | Aubury's Rune Shop. (runeshop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:7` | (3271, 3411) | (3271, 3411) | Ye Olde Tea Shoppe (teashop) 1 | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:8` | (3281, 3398) | (3281, 3398) | Fancy Clothes Store (fancyclothesstore) 1 | yes |
+| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:0` | (3475, 3497) | (3475, 3497) | General Store (werewolfgeneralstore) 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:1` | (3499, 3506) | (3499, 3506) | Barkers' Habidashery (werewolfstore2) 1 | no |
+| [Canifis (Morytania)](../places/canifis.md) | `shop:canifis:2` | (3507, 3496) | (3507, 3496) | Rufus' Meat Emporium (werewolfstore1) 1 | no |
+| [Mort'ton (Morytania)](../places/mortton.md) | `shop:mortton:0` | (3489, 3296) | (3489, 3296) | Razmire General Store. (razmiregeneralstore) 1 | no |
+| [Tirannwn](../places/tirannwn.md) | `shop:tirannwn:0` | (2194, 3140) | (2194, 3140) | Quartermaster's Stores (regicide_general_shop_2) 1 | no |
+| [Wilderness](../places/wilderness.md) | `shop:wilderness:0` | (3025, 3701) | (3025, 3701) | Bandit Duty Free (taxfree) 1 | yes |
+| [Wilderness](../places/wilderness.md) | `shop:wilderness:1` | (3036, 3707) | (3036, 3707) | Tony's Pizza Bases (pizzabaseshop) 1 | yes |
+| [Zanaris](../places/zanaris.md) | `shop:zanaris:0` | (3145, 9567) | (3145, 9567) | Zanaris General Store (generalshop8) 2 | no |
+| [Zanaris](../places/zanaris.md) | `shop:zanaris:1` | (3247, 9589) | (3247, 9589) | irksol (cheapringshop) 1 | no |
+| [Zanaris](../places/zanaris.md) | `shop:zanaris:2` | (3252, 9572) | (3252, 9572) | jakut (dragonswordshop) 1 | no |

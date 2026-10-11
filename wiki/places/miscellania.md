@@ -7,8 +7,8 @@ The two islands of areas/area_miscellania.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:miscellania:0` | (2517, 3865) | misc_fishmonger 1, misc_greengrocer 1 | no | no | - |
-| `shop:miscellania:1` | (2604, 3876) | etc_fishmonger 1, etc_greengrocer 1 | no | no | - |
+| `shop:miscellania:0` | (2517, 3865) | Greengrocer of Miscellania (misc_greengrocer) 1, Island Fishmonger (misc_fishmonger) 1 | no | no | - |
+| `shop:miscellania:1` | (2604, 3876) | Etceteria Fish (etc_fishmonger) 1, Island Greengrocer (etc_greengrocer) 1 | no | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -51,27 +51,27 @@ The two islands of areas/area_miscellania.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:miscellania:0` | (2577, 3854) | [rarefish](../resources/fishing-spot/rarefish.md) 4 | no | no | - |
+| `fishing-spot:miscellania:0` | (2577, 3854) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4 | no | no | - |
 
 ## Stalls
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `stall:miscellania:0` | (2516, 3863) | [misc_fish_market](../resources/stall/misc_fish_market.md) 2, [misc_veg_market](../resources/stall/misc_veg_market.md) 1 | no | no | - |
-| `stall:miscellania:1` | (2603, 3876) | [etc_fish_market](../resources/stall/etc_fish_market.md) 1, [etc_veg_market](../resources/stall/etc_veg_market.md) 1 | no | no | - |
+| `stall:miscellania:0` | (2516, 3863) | [Fish stall (misc_fish_market)](../resources/stall/misc_fish_market.md) 2, [Veg stall (misc_veg_market)](../resources/stall/misc_veg_market.md) 1 | no | no | - |
+| `stall:miscellania:1` | (2603, 3876) | [Fish stall (etc_fish_market)](../resources/stall/etc_fish_market.md) 1, [Veg stall (etc_veg_market)](../resources/stall/etc_veg_market.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:miscellania:0` | (2514, 3865) | misc_chicken 2, misc_chicken_brown 2, misc_man_4 1, misc_man_5 1, misc_man_6 1, misc_man_7 1, misc_rooster 1, misc_woman_4 1, misc_woman_5 1, misc_woman_6 1 | no | no | - |
-| `npc:miscellania:1` | (2542, 3893) | misc_chicken 4 | no | no | - |
-| `npc:miscellania:2` | (2552, 3869) | misc_rabbit 5 | no | no | - |
-| `npc:miscellania:3` | (2588, 3874) | misc_rabbit 1 | no | no | - |
-| `npc:miscellania:4` | (2592, 3867) | misc_rabbit 1 | no | no | - |
-| `npc:miscellania:5` | (2603, 3877) | etc_guard1 1, etc_guard2 1, misc_chicken 1, misc_chicken_brown 2, misc_rooster 1 | no | no | - |
-| `npc:miscellania:6` | (2606, 3867) | misc_chicken_brown 1 | no | no | - |
-| `npc:miscellania:7` | (2614, 3898) | misc_chicken 3 | no | no | - |
+| `npc:miscellania:0` | (2514, 3865) | Broddi 1, Chicken (misc_chicken) 2, Chicken (misc_chicken_brown) 2, Ragnvald 1, Rannveig 1, Rooster 1, Skraeling (misc_man_4) 1, Skraeling (misc_man_6) 1, Thora 1, Valgerd 1 | no | no | - |
+| `npc:miscellania:1` | (2542, 3893) | Chicken (misc_chicken) 4 | no | no | - |
+| `npc:miscellania:2` | (2552, 3869) | Rabbit 5 | no | no | - |
+| `npc:miscellania:3` | (2588, 3874) | Rabbit 1 | no | no | - |
+| `npc:miscellania:4` | (2592, 3867) | Rabbit 1 | no | no | - |
+| `npc:miscellania:5` | (2603, 3877) | Chicken (misc_chicken) 1, Chicken (misc_chicken_brown) 2, Rooster 1, Skraeling (etc_guard1) 1, Skraeling (etc_guard2) 1 | no | no | - |
+| `npc:miscellania:6` | (2606, 3867) | Chicken (misc_chicken_brown) 1 | no | no | - |
+| `npc:miscellania:7` | (2614, 3898) | Chicken (misc_chicken) 3 | no | no | - |
 
 ## Ladders and stairs
 

@@ -13,13 +13,13 @@ Ladders up onto White Wolf Mountain at (2823-2859, 3507-3519); descriptive name.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:white-wolf-mountain-caves:0` | (2822, 9901) | icewarrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:1` | (2836, 9905) | icewarrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:2` | (2838, 9917) | icewarrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:3` | (2847, 9919) | icewarrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:4` | (2848, 9912) | icewarrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:5` | (2865, 9876) | dwarf_mountain 8 | no | no | - |
-| `npc:white-wolf-mountain-caves:6` | (2869, 9912) | ice_spider 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:0` | (2822, 9901) | Ice warrior 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:1` | (2836, 9905) | Ice warrior 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:2` | (2838, 9917) | Ice warrior 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:3` | (2847, 9919) | Ice warrior 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:4` | (2848, 9912) | Ice warrior 1 | no | no | - |
+| `npc:white-wolf-mountain-caves:5` | (2865, 9876) | Dwarf 8 | no | no | - |
+| `npc:white-wolf-mountain-caves:6` | (2869, 9912) | Ice spider 1 | no | no | - |
 
 ## Ladders and stairs
 

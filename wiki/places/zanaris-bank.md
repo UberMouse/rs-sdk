@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:zanaris-bank:0` | (3153, 9578) | banker 4 | no | no | - |
+| `bank:zanaris-bank:0` | (3153, 9578) | Banker 4 | no | no | - |

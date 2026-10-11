@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:shilo-village-bank:0` | (2852, 2955) | banker 2 | no | no | - |
+| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - |

@@ -99,9 +99,9 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:64` | (2627, 3108) | (2628, 3108) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:65` | (2625, 3357) | (2624, 3357) | 1 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:67` | (2629, 3347) | (2630, 3346) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2786, 3479) | (2786, 3479) | 9 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:83` | (2816, 3338) | (2815, 3338) | 2 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:85` | (2810, 3349) | (2809, 3349) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:77` | (2786, 3479) | (2786, 3479) | 9 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:82` | (2816, 3338) | (2815, 3338) | 2 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:84` | (2810, 3349) | (2809, 3349) | 1 | no | no | - |
 | [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | 4 | no | no | - |
 | [Catherby (Kandarin)](../../places/catherby.md) | `tree:catherby:0` | (2787, 3442) | (2787, 3442) | 8 | no | no | - |
 | [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `tree:east-ardougne:1` | (2561, 3287) | (2561, 3287) | 1 | no | no | - |

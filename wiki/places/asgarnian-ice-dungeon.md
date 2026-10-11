@@ -15,15 +15,15 @@ Ladder up to Mudskipper Point at (3008, 3150).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:asgarnian-ice-dungeon:0` | (2995, 9575) | pirate_aggressive 7 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:1` | (2989, 9583) | pirate_aggressive 2 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:2` | (2996, 9547) | mugger 4 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:3` | (3019, 9591) | hobgoblin_armed 1 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:4` | (3046, 9580) | icewarrior 3 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:5` | (3049, 9590) | icewarrior 1 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:6` | (3055, 9567) | icegiant 2, icewarrior 2 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:7` | (3053, 9576) | icewarrior 1 | yes | no | - |
-| `npc:asgarnian-ice-dungeon:8` | (3060, 9580) | icegiant 1, icewarrior 4 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:0` | (2995, 9575) | Pirate 7 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:1` | (2989, 9583) | Pirate 2 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:2` | (2996, 9547) | Mugger 4 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:3` | (3019, 9591) | Hobgoblin 1 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:4` | (3046, 9580) | Ice warrior 3 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:5` | (3049, 9590) | Ice warrior 1 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:6` | (3055, 9567) | Ice giant 2, Ice warrior 2 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:7` | (3053, 9576) | Ice warrior 1 | yes | no | - |
+| `npc:asgarnian-ice-dungeon:8` | (3060, 9580) | Ice giant 1, Ice warrior 4 | yes | no | - |
 
 ## Ladders and stairs
 

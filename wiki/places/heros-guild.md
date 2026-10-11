@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:heros-guild:0` | (2894, 3510) L1 | dragonaxeshop 1 | no | no | - |
+| `shop:heros-guild:0` | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | no | - |
 
 ## [Prayer altars](../services/altar.md)
 

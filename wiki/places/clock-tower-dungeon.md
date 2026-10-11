@@ -13,17 +13,17 @@ Ladders up to the Clock Tower south of Ardougne, (2566-2575, 3222-3255).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:clock-tower-dungeon:0` | (2565, 9656) | goblin 3, goblin_armed 2, goblin_helmet 2 | no | no | - |
-| `npc:clock-tower-dungeon:1` | (2568, 9608) | headthief_blanket 1, rat 1, thief_blanket 2 | no | no | - |
-| `npc:clock-tower-dungeon:2` | (2567, 9623) | goblin 1, rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:3` | (2569, 9633) | goblin 1 | no | no | - |
-| `npc:clock-tower-dungeon:4` | (2587, 9622) | ogre 3, rat 14 | no | no | - |
-| `npc:clock-tower-dungeon:5` | (2580, 9600) | rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:6` | (2591, 9621) | rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:7` | (2605, 9622) | goblin 1, goblin_armed 4, rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:8` | (2608, 9643) | giantspider1 15, rat 4 | no | no | - |
-| `npc:clock-tower-dungeon:9` | (2608, 9628) | rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:10` | (2617, 9632) | rat 2 | no | no | - |
+| `npc:clock-tower-dungeon:0` | (2565, 9656) | Goblin (goblin) 3, Goblin (goblin_armed) 2, Goblin (goblin_helmet) 2 | no | no | - |
+| `npc:clock-tower-dungeon:1` | (2568, 9608) | Head Thief 1, Rat 1, Thief 2 | no | no | - |
+| `npc:clock-tower-dungeon:2` | (2567, 9623) | Goblin (goblin) 1, Rat 1 | no | no | - |
+| `npc:clock-tower-dungeon:3` | (2569, 9633) | Goblin (goblin) 1 | no | no | - |
+| `npc:clock-tower-dungeon:4` | (2587, 9622) | Ogre 3, Rat 14 | no | no | - |
+| `npc:clock-tower-dungeon:5` | (2580, 9600) | Rat 1 | no | no | - |
+| `npc:clock-tower-dungeon:6` | (2591, 9621) | Rat 1 | no | no | - |
+| `npc:clock-tower-dungeon:7` | (2605, 9622) | Goblin (goblin) 1, Goblin (goblin_armed) 4, Rat 1 | no | no | - |
+| `npc:clock-tower-dungeon:8` | (2608, 9643) | Giant spider 15, Rat 4 | no | no | - |
+| `npc:clock-tower-dungeon:9` | (2608, 9628) | Rat 1 | no | no | - |
+| `npc:clock-tower-dungeon:10` | (2617, 9632) | Rat 2 | no | no | - |
 
 ## Ladders and stairs
 

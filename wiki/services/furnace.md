@@ -7,8 +7,8 @@
 |---|---|---|---|---|---|
 | [Falador (Asgarnia)](../places/falador.md) | `furnace:falador:0` | (2975, 3368) | (2974, 3368) | Furnace 1 | yes |
 | [Entrana](../places/entrana.md) | `furnace:entrana:0` | (2834, 3351) | (2835, 3350) | Furnace 2 | no |
-| [Kandarin](../places/kandarin.md) | `furnace:kandarin:0` | (2617, 3666) | (2618, 3665) | Furnace 2 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `furnace:east-ardougne:0` | (2601, 3310) | (2600, 3310) | Furnace 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `furnace:rellekka:0` | (2617, 3666) | (2618, 3665) | Furnace 2 | no |
 | [Shilo Village (Karamja)](../places/shilo-village.md) | `furnace:shilo-village:0` | (2857, 2966) | (2857, 2965) | Furnace 2 | no |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `furnace:al-kharid:0` | (3273, 3185) | (3274, 3184) | Furnace 2 | yes |
 | [Legends' Quest cavern](../places/legends-quest-cavern.md) | `furnace:legends-quest-cavern:0` | (2426, 4726) | (2426, 4725) | Furnace 1 | no |

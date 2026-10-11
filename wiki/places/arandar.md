@@ -23,4 +23,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:arandar:0` | (2342, 3311) | deadly_red_spider 10 | no | no | - |
+| `npc:arandar:0` | (2342, 3311) | Deadly red spider 10 | no | no | - |

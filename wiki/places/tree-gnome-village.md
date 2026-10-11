@@ -14,13 +14,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:tree-gnome-village:0` | (2526, 3169) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnome](../resources/pickpocket/gnome.md) 4 | no | no | - |
+| `pickpocket:tree-gnome-village:0` | (2526, 3169) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 4 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:tree-gnome-village:0` | (2536, 3182) | spider 4 | no | no | - |
+| `npc:tree-gnome-village:0` | (2536, 3182) | Spider 4 | no | no | - |
 
 ## Ladders and stairs
 

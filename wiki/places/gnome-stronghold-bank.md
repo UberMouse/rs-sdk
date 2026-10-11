@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | banker 5, booth 4 | no | no | - |
+| `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | Bank booth 4, Gnome banker 5 | no | no | - |

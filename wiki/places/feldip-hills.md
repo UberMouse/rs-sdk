@@ -35,33 +35,33 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:feldip-hills:0` | (2504, 2965) | ogre 1 | no | no | - |
-| `npc:feldip-hills:1` | (2504, 2984) | ogre 1 | no | no | - |
-| `npc:feldip-hills:2` | (2507, 3038) | enclave_guard 2, ogre2 1, ogre_chieftan 1 | no | no | - |
-| `npc:feldip-hills:3` | (2513, 3024) | ogre 1, ogre_chieftan 1 | no | no | - |
-| `npc:feldip-hills:4` | (2520, 2973) | ogre 1 | no | no | - |
-| `npc:feldip-hills:5` | (2526, 2986) | ogre 1, rat 1 | no | no | - |
-| `npc:feldip-hills:6` | (2529, 3032) | ogre 1 | no | no | - |
-| `npc:feldip-hills:7` | (2533, 2976) | ogre 2, rat 1 | no | no | - |
-| `npc:feldip-hills:8` | (2539, 2990) | ogre 1 | no | no | - |
-| `npc:feldip-hills:9` | (2540, 3017) | ogre 2 | no | no | - |
-| `npc:feldip-hills:10` | (2542, 3031) | city_guard 3 | no | no | - |
-| `npc:feldip-hills:11` | (2547, 2990) | rat 1 | no | no | - |
-| `npc:feldip-hills:12` | (2549, 2979) | ogre 1 | no | no | - |
-| `npc:feldip-hills:13` | (2551, 3045) | ogre 3 | no | no | - |
-| `npc:feldip-hills:14` | (2552, 2958) | ogre 2 | no | no | - |
-| `npc:feldip-hills:15` | (2561, 3020) | ogre 1 | no | no | - |
-| `npc:feldip-hills:16` | (2567, 3046) | ogre 1 | no | no | - |
-| `npc:feldip-hills:17` | (2571, 2990) | ogre 2 | no | no | - |
-| `npc:feldip-hills:18` | (2575, 3027) | gorad 1, ogre2 4 | no | no | - |
-| `npc:feldip-hills:19` | (2584, 2967) | ogre 1 | no | no | - |
-| `npc:feldip-hills:20` | (2585, 2977) | ogre 1 | no | no | - |
-| `npc:feldip-hills:21` | (2592, 2965) | ogre 1 | no | no | - |
-| `npc:feldip-hills:22` | (2596, 3056) | dwarf_normal 1 | no | no | - |
-| `npc:feldip-hills:23` | (2605, 3058) | dwarf_normal 1, shipyardworker2 1 | no | no | - |
-| `npc:feldip-hills:24` | (2608, 2980) | ogre 1 | no | no | - |
-| `npc:feldip-hills:25` | (2612, 2989) | ogre 1, ogre_chieftan 1 | no | no | - |
-| `npc:feldip-hills:26` | (2614, 2998) | ogre 1 | no | no | - |
+| `npc:feldip-hills:0` | (2504, 2965) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:1` | (2504, 2984) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:2` | (2507, 3038) | Enclave guard 2, Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - |
+| `npc:feldip-hills:3` | (2513, 3024) | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - |
+| `npc:feldip-hills:4` | (2520, 2973) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:5` | (2526, 2986) | Ogre (ogre) 1, Rat 1 | no | no | - |
+| `npc:feldip-hills:6` | (2529, 3032) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:7` | (2533, 2976) | Ogre (ogre) 2, Rat 1 | no | no | - |
+| `npc:feldip-hills:8` | (2539, 2990) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:9` | (2540, 3017) | Ogre (ogre) 2 | no | no | - |
+| `npc:feldip-hills:10` | (2542, 3031) | City guard 3 | no | no | - |
+| `npc:feldip-hills:11` | (2547, 2990) | Rat 1 | no | no | - |
+| `npc:feldip-hills:12` | (2549, 2979) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:13` | (2551, 3045) | Ogre (ogre) 3 | no | no | - |
+| `npc:feldip-hills:14` | (2552, 2958) | Ogre (ogre) 2 | no | no | - |
+| `npc:feldip-hills:15` | (2561, 3020) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:16` | (2567, 3046) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:17` | (2571, 2990) | Ogre (ogre) 2 | no | no | - |
+| `npc:feldip-hills:18` | (2575, 3027) | Gorad 1, Ogre (ogre2) 4 | no | no | - |
+| `npc:feldip-hills:19` | (2584, 2967) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:20` | (2585, 2977) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:21` | (2592, 2965) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:22` | (2596, 3056) | Dwarf 1 | no | no | - |
+| `npc:feldip-hills:23` | (2605, 3058) | Dwarf 1, Shipyard worker 1 | no | no | - |
+| `npc:feldip-hills:24` | (2608, 2980) | Ogre (ogre) 1 | no | no | - |
+| `npc:feldip-hills:25` | (2612, 2989) | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - |
+| `npc:feldip-hills:26` | (2614, 2998) | Ogre (ogre) 1 | no | no | - |
 
 ## Areas within
 

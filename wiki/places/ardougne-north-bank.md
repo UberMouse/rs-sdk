@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:ardougne-north-bank:0` | (2617, 3331) | banker 3, booth 3 | no | no | - |
+| `bank:ardougne-north-bank:0` | (2617, 3331) | Bank booth 3, Banker 3 | no | no | - |

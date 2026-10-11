@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:fishing-guild:0` | (2596, 3400) | fishingguild 1 | no | no | - |
+| `shop:fishing-guild:0` | (2596, 3400) | Fishing Guild Shop. (fishingguild) 1 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -27,26 +27,26 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:fishing-guild:0` | (2605, 3418) | [memberfish](../resources/fishing-spot/memberfish.md) 6, [rarefish](../resources/fishing-spot/rarefish.md) 11 | no | no | - |
+| `fishing-spot:fishing-guild:0` | (2605, 3418) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 6, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 11 | no | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:fishing-guild:0` | (2603, 3421) | [man](../resources/pickpocket/man.md) 1 | no | no | - |
+| `pickpocket:fishing-guild:0` | (2603, 3421) | [Man](../resources/pickpocket/man.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:fishing-guild:0` | (2580, 3398) | goblin 1, goblin_armed 1 | no | no | - |
-| `npc:fishing-guild:1` | (2582, 3413) | goblin 1, goblin_armed 1 | no | no | - |
-| `npc:fishing-guild:2` | (2585, 3427) | goblin 1, goblin_armed 1 | no | no | - |
-| `npc:fishing-guild:3` | (2592, 3416) | rat 1 | no | no | - |
-| `npc:fishing-guild:4` | (2604, 3430) | duck_female 1 | no | no | - |
-| `npc:fishing-guild:5` | (2616, 3423) | duck 4, duck_female 7 | no | no | - |
-| `npc:fishing-guild:6` | (2619, 3407) | duck 4, duck_female 4 | no | no | - |
-| `npc:fishing-guild:7` | (2620, 3394) | goblin 1 | no | no | - |
+| `npc:fishing-guild:0` | (2580, 3398) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
+| `npc:fishing-guild:1` | (2582, 3413) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
+| `npc:fishing-guild:2` | (2585, 3427) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
+| `npc:fishing-guild:3` | (2592, 3416) | Rat 1 | no | no | - |
+| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - |
+| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - |
+| `npc:fishing-guild:6` | (2619, 3407) | Duck (duck) 4, Duck (duck_female) 4 | no | no | - |
+| `npc:fishing-guild:7` | (2620, 3394) | Goblin (goblin) 1 | no | no | - |
 
 ## Ladders and stairs
 

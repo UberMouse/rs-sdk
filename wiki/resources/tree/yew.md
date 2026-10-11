@@ -36,7 +36,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:28` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - |
 | [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | 2 | yes | yes | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:61` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:81` | (2764, 3427) | (2764, 3427) | 3 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:80` | (2764, 3427) | (2764, 3427) | 3 | no | no | - |
 | [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | 4 | no | no | - |
 | [Flax (Kandarin)](../../places/flax.md) | `tree:flax:0` | (2754, 3433) | (2753, 3433) | 1 | no | no | - |
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 1 | no | no | - |

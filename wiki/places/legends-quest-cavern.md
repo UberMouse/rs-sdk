@@ -13,15 +13,15 @@ Legends' Quest npcs (quests/quest_legends).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:legends-quest-cavern:0` | (2384, 4706) | san_tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:1` | (2393, 4713) | san_tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:2` | (2394, 4731) | san_tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:3` | (2395, 4721) | san_tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:4` | (2401, 4705) | irvig_senay 1 | no | no | - |
-| `npc:legends-quest-cavern:5` | (2405, 4712) | irvig_senay 1 | no | no | - |
-| `npc:legends-quest-cavern:6` | (2408, 4698) | ranalph_devere 1 | no | no | - |
-| `npc:legends-quest-cavern:7` | (2414, 4681) | lesser_demon 3 | no | no | - |
-| `npc:legends-quest-cavern:8` | (2412, 4723) | irvig_senay 1 | no | no | - |
-| `npc:legends-quest-cavern:9` | (2414, 4731) | irvig_senay 1 | no | no | - |
-| `npc:legends-quest-cavern:10` | (2417, 4699) | ranalph_devere 1 | no | no | - |
-| `npc:legends-quest-cavern:11` | (2426, 4699) | ranalph_devere 2 | no | no | - |
+| `npc:legends-quest-cavern:0` | (2384, 4706) | San Tojalon 1 | no | no | - |
+| `npc:legends-quest-cavern:1` | (2393, 4713) | San Tojalon 1 | no | no | - |
+| `npc:legends-quest-cavern:2` | (2394, 4731) | San Tojalon 1 | no | no | - |
+| `npc:legends-quest-cavern:3` | (2395, 4721) | San Tojalon 1 | no | no | - |
+| `npc:legends-quest-cavern:4` | (2401, 4705) | Irvig Senay 1 | no | no | - |
+| `npc:legends-quest-cavern:5` | (2405, 4712) | Irvig Senay 1 | no | no | - |
+| `npc:legends-quest-cavern:6` | (2408, 4698) | Ranalph Devere 1 | no | no | - |
+| `npc:legends-quest-cavern:7` | (2414, 4681) | Lesser demon 3 | no | no | - |
+| `npc:legends-quest-cavern:8` | (2412, 4723) | Irvig Senay 1 | no | no | - |
+| `npc:legends-quest-cavern:9` | (2414, 4731) | Irvig Senay 1 | no | no | - |
+| `npc:legends-quest-cavern:10` | (2417, 4699) | Ranalph Devere 1 | no | no | - |
+| `npc:legends-quest-cavern:11` | (2426, 4699) | Ranalph Devere 2 | no | no | - |

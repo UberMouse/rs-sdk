@@ -25,28 +25,28 @@ Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sou
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:edgeville-dungeon:0` | (3088, 9959) | black_demon 3 | no | no | 6 |
-| `npc:edgeville-dungeon:1` | (3089, 9944) | poisonspider 3 | no | no | 4 |
-| `npc:edgeville-dungeon:2` | (3095, 9894) | skeleton_unagressive 3 | yes | no | - |
-| `npc:edgeville-dungeon:3` | (3097, 9909) | skeleton_unagressive 3 | yes | no | - |
-| `npc:edgeville-dungeon:4` | (3097, 9878) | giantspider1 2 | yes | no | - |
-| `npc:edgeville-dungeon:5` | (3100, 9834) | giant 2 | yes | no | - |
-| `npc:edgeville-dungeon:6` | (3116, 9954) | deadly_red_spider 9, giantskeleton 7 | no | no | 5 |
-| `npc:edgeville-dungeon:7` | (3106, 9827) | giant 1 | yes | no | - |
-| `npc:edgeville-dungeon:8` | (3114, 9840) | giant 9 | yes | no | - |
-| `npc:edgeville-dungeon:9` | (3112, 9884) | rat 1 | yes | no | - |
-| `npc:edgeville-dungeon:10` | (3114, 9910) | skeleton_unarmed 1 | yes | no | - |
-| `npc:edgeville-dungeon:11` | (3122, 9992) | earthwarrior 7 | no | no | 10 |
-| `npc:edgeville-dungeon:12` | (3118, 9871) | hobgoblin_armed 1 | yes | no | - |
-| `npc:edgeville-dungeon:13` | (3120, 9974) | earthwarrior 4 | no | no | 8 |
-| `npc:edgeville-dungeon:14` | (3125, 9862) | zombie_armed 4 | yes | no | - |
-| `npc:edgeville-dungeon:15` | (3121, 9908) | skeleton_armed 1 | yes | no | - |
-| `npc:edgeville-dungeon:16` | (3125, 9879) | hobgoblin_armed 2, rat 1 | yes | no | - |
-| `npc:edgeville-dungeon:17` | (3130, 9929) | thug 9 | no | no | 2 |
-| `npc:edgeville-dungeon:18` | (3132, 9909) | skeleton_armed 1, skeleton_unarmed 4 | yes | no | - |
-| `npc:edgeville-dungeon:19` | (3140, 9872) | skeleton_armed 5, skeleton_unarmed 1 | yes | no | - |
-| `npc:edgeville-dungeon:20` | (3158, 9903) | mossgiant 2 | yes | yes | - |
-| `npc:edgeville-dungeon:21` | (3165, 9879) | mossgiant 2 | yes | yes | - |
+| `npc:edgeville-dungeon:0` | (3088, 9959) | Black Demon 3 | no | no | 6 |
+| `npc:edgeville-dungeon:1` | (3089, 9944) | Poison spider 3 | no | no | 4 |
+| `npc:edgeville-dungeon:2` | (3095, 9894) | Skeleton (skeleton_unagressive) 3 | yes | no | - |
+| `npc:edgeville-dungeon:3` | (3097, 9909) | Skeleton (skeleton_unagressive) 3 | yes | no | - |
+| `npc:edgeville-dungeon:4` | (3097, 9878) | Giant spider 2 | yes | no | - |
+| `npc:edgeville-dungeon:5` | (3100, 9834) | Giant 2 | yes | no | - |
+| `npc:edgeville-dungeon:6` | (3116, 9954) | Deadly red spider 9, Skeleton (giantskeleton) 7 | no | no | 5 |
+| `npc:edgeville-dungeon:7` | (3106, 9827) | Giant 1 | yes | no | - |
+| `npc:edgeville-dungeon:8` | (3114, 9840) | Giant 9 | yes | no | - |
+| `npc:edgeville-dungeon:9` | (3112, 9884) | Rat 1 | yes | no | - |
+| `npc:edgeville-dungeon:10` | (3114, 9910) | Skeleton (skeleton_unarmed) 1 | yes | no | - |
+| `npc:edgeville-dungeon:11` | (3122, 9992) | Earth warrior 7 | no | no | 10 |
+| `npc:edgeville-dungeon:12` | (3118, 9871) | Hobgoblin 1 | yes | no | - |
+| `npc:edgeville-dungeon:13` | (3120, 9974) | Earth warrior 4 | no | no | 8 |
+| `npc:edgeville-dungeon:14` | (3125, 9862) | Zombie 4 | yes | no | - |
+| `npc:edgeville-dungeon:15` | (3121, 9908) | Skeleton (skeleton_armed) 1 | yes | no | - |
+| `npc:edgeville-dungeon:16` | (3125, 9879) | Hobgoblin 2, Rat 1 | yes | no | - |
+| `npc:edgeville-dungeon:17` | (3130, 9929) | Thug 9 | no | no | 2 |
+| `npc:edgeville-dungeon:18` | (3132, 9909) | Skeleton (skeleton_armed) 1, Skeleton (skeleton_unarmed) 4 | yes | no | - |
+| `npc:edgeville-dungeon:19` | (3140, 9872) | Skeleton (skeleton_armed) 5, Skeleton (skeleton_unarmed) 1 | yes | no | - |
+| `npc:edgeville-dungeon:20` | (3158, 9903) | Moss giant 2 | yes | yes | - |
+| `npc:edgeville-dungeon:21` | (3165, 9879) | Moss giant 2 | yes | yes | - |
 
 ## Ladders and stairs
 

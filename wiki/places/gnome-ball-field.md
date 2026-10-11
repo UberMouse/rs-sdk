@@ -14,9 +14,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:gnome-ball-field:0` | (2392, 3476) | [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:gnome-ball-field:1` | (2406, 3476) | [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:gnome-ball-field:2` | (2410, 3496) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:gnome-ball-field:0` | (2392, 3476) | [Gnome child](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:gnome-ball-field:1` | (2406, 3476) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:gnome-ball-field:2` | (2410, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
 
 ## Ladders and stairs
 

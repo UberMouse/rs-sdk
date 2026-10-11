@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:tutorial-island-bank:0` | (3121, 3125) | banker 2, booth 2 | yes | no | - |
+| `bank:tutorial-island-bank:0` | (3121, 3125) | Bank booth 2, Banker 2 | yes | no | - |

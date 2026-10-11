@@ -21,8 +21,8 @@ Haunted Mine quest (quests/quest_hauntedmine).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:haunted-mine:0` | (2777, 4580) | rat 2 | no | no | - |
-| `npc:haunted-mine:1` | (2782, 4593) | rat 2 | no | no | - |
-| `npc:haunted-mine:2` | (2786, 4579) | rat 3 | no | no | - |
-| `npc:haunted-mine:3` | (2802, 4599) | rat 1 | no | no | - |
-| `npc:haunted-mine:4` | (2812, 4577) | rat 1 | no | no | - |
+| `npc:haunted-mine:0` | (2777, 4580) | Rat 2 | no | no | - |
+| `npc:haunted-mine:1` | (2782, 4593) | Rat 2 | no | no | - |
+| `npc:haunted-mine:2` | (2786, 4579) | Rat 3 | no | no | - |
+| `npc:haunted-mine:3` | (2802, 4599) | Rat 1 | no | no | - |
+| `npc:haunted-mine:4` | (2812, 4577) | Rat 1 | no | no | - |

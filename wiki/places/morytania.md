@@ -35,58 +35,58 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:morytania:0` | (3430, 3411) | [slimeyfish](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - |
-| `fishing-spot:morytania:1` | (3441, 3274) | [slimeyfish](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - |
-| `fishing-spot:morytania:2` | (3481, 3434) | [slimeyfish](../resources/fishing-spot/slimeyfish.md) 3 | no | no | - |
-| `fishing-spot:morytania:3` | (3487, 3447) | [slimeyfish](../resources/fishing-spot/slimeyfish.md) 2 | no | no | - |
+| `fishing-spot:morytania:0` | (3430, 3411) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - |
+| `fishing-spot:morytania:1` | (3441, 3274) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - |
+| `fishing-spot:morytania:2` | (3481, 3434) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 3 | no | no | - |
+| `fishing-spot:morytania:3` | (3487, 3447) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 2 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:morytania:0` | (3410, 3389) | mmsnailpoint_yellow 1, mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:1` | (3413, 3359) | mmsnailpoint_swamp 1, mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:2` | (3413, 3410) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:3` | (3421, 3291) | mmsnailpoint_swamp 1 | no | no | - |
-| `npc:morytania:4` | (3422, 3408) | mmsnailround_swamp 2 | no | no | - |
-| `npc:morytania:5` | (3426, 3299) | mmsnailpoint_swamp 2 | no | no | - |
-| `npc:morytania:6` | (3425, 3426) | mmsnailround_swamp 1, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:7` | (3426, 3277) | mmsnailpoint_yellow 1, mmsnailround_yellow 2 | no | no | - |
-| `npc:morytania:8` | (3428, 3312) | mmsnailpoint_swamp 1, mmsnailpoint_yellow 1, mmsnailround_orange 2, mmsnailround_swamp 2 | no | no | - |
-| `npc:morytania:9` | (3434, 3290) | mmsnailpoint_swamp 2, mmsnailround_swamp 3 | no | no | - |
-| `npc:morytania:10` | (3441, 3307) | mmsnailpoint_swamp 3, mmsnailround_orange 1, mmsnailround_swamp 1, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:11` | (3440, 3354) | mmsnailpoint_yellow 1, mmsnailround_orange 1, mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:12` | (3447, 3286) | mmsnailpoint_swamp 2, mmsnailround_swamp 2, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:13` | (3447, 3268) | mmsnailpoint_yellow 1, mmsnailround_orange 1, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:14` | (3452, 3308) | mmsnailpoint_swamp 1, mmsnailpoint_yellow 1, mmsnailround_orange 1, mmsnailround_swamp 1, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:15` | (3458, 3419) | mmsnailround_swamp 3, mmsnailround_yellow 1 | no | no | - |
-| `npc:morytania:16` | (3468, 3346) | mmsnailpoint_blue 1, mmsnailpoint_red+black 1, mmsnailpoint_yellow 1, mmsnailround_blue 1, mmsnailround_swamp 3 | no | no | - |
-| `npc:morytania:17` | (3462, 3432) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:18` | (3463, 3357) | mmsnailpoint_yellow 1 | no | no | - |
-| `npc:morytania:19` | (3471, 3410) | mmsnailpoint_swamp 5, mmsnailpoint_yellow 3, mmsnailround_yellow 2 | no | no | - |
-| `npc:morytania:20` | (3466, 3364) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:21` | (3469, 3432) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:22` | (3478, 3367) | mmsnailpoint_yellow 1, mmsnailround_swamp 1, mmsnailround_yellow 2 | no | no | - |
-| `npc:morytania:23` | (3483, 3442) | mmsnailpoint_blue 1, mmsnailpoint_red+black 1, mmsnailpoint_swamp 2, mmsnailpoint_yellow 1, mmsnailround_blue 1, mmsnailround_swamp 3, mmsnailround_yellow 2 | no | no | - |
-| `npc:morytania:24` | (3487, 3378) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:25` | (3501, 3421) | mmsnailround_orange 2, mmsnailround_swamp 4, mmsnailround_yellow 3 | no | no | - |
-| `npc:morytania:26` | (3496, 3444) | mmsnailpoint_red+black 1 | no | no | - |
-| `npc:morytania:27` | (3504, 3404) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:28` | (3508, 3434) | mmsnailround_orange 2 | no | no | - |
-| `npc:morytania:29` | (3516, 3409) | mmsnailround_swamp 1 | no | no | - |
-| `npc:morytania:30` | (3518, 3438) | mmsnailround_blue 1, mmsnailround_red+black 1 | no | no | - |
-| `npc:morytania:31` | (3565, 3503) | small_bat 1 | no | no | - |
-| `npc:morytania:32` | (3580, 3491) | small_bat 1 | no | no | - |
-| `npc:morytania:33` | (3588, 3472) | small_bat 1 | no | no | - |
-| `npc:morytania:34` | (3598, 3509) | small_bat 1 | no | no | - |
-| `npc:morytania:35` | (3599, 3486) | small_bat 1 | no | no | - |
-| `npc:morytania:36` | (3607, 3462) | small_bat 1 | no | no | - |
-| `npc:morytania:37` | (3611, 3499) | small_bat 1 | no | no | - |
-| `npc:morytania:38` | (3613, 3482) | small_bat 1 | no | no | - |
-| `npc:morytania:39` | (3627, 3511) | small_bat 1 | no | no | - |
-| `npc:morytania:40` | (3628, 3473) | small_bat 1 | no | no | - |
-| `npc:morytania:41` | (3636, 3466) | small_bat 1 | no | no | - |
-| `npc:morytania:42` | (3639, 3510) | small_bat 1 | no | no | - |
+| `npc:morytania:0` | (3410, 3389) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - |
+| `npc:morytania:1` | (3413, 3359) | Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:2` | (3413, 3410) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:3` | (3421, 3291) | Myre Blamish Snail (mmsnailpoint_swamp) 1 | no | no | - |
+| `npc:morytania:4` | (3422, 3408) | Myre Blamish Snail (mmsnailround_swamp) 2 | no | no | - |
+| `npc:morytania:5` | (3426, 3299) | Myre Blamish Snail (mmsnailpoint_swamp) 2 | no | no | - |
+| `npc:morytania:6` | (3425, 3426) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:7` | (3426, 3277) | Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - |
+| `npc:morytania:8` | (3428, 3312) | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - |
+| `npc:morytania:9` | (3434, 3290) | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3 | no | no | - |
+| `npc:morytania:10` | (3441, 3307) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 3, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:11` | (3440, 3354) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - |
+| `npc:morytania:12` | (3447, 3286) | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:13` | (3447, 3268) | Bark Blamish Snail 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:14` | (3452, 3308) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:15` | (3458, 3419) | Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:morytania:16` | (3468, 3346) | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - |
+| `npc:morytania:17` | (3462, 3432) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:18` | (3463, 3357) | Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - |
+| `npc:morytania:19` | (3471, 3410) | Myre Blamish Snail (mmsnailpoint_swamp) 5, Ochre Blamish Snail (mmsnailpoint_yellow) 3, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - |
+| `npc:morytania:20` | (3466, 3364) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:21` | (3469, 3432) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:22` | (3478, 3367) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - |
+| `npc:morytania:23` | (3483, 3442) | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - |
+| `npc:morytania:24` | (3487, 3378) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:25` | (3501, 3421) | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailround_swamp) 4, Ochre Blamish Snail (mmsnailround_yellow) 3 | no | no | - |
+| `npc:morytania:26` | (3496, 3444) | Blood Blamish Snail (mmsnailpoint_red+black) 1 | no | no | - |
+| `npc:morytania:27` | (3504, 3404) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:28` | (3508, 3434) | Bark Blamish Snail 2 | no | no | - |
+| `npc:morytania:29` | (3516, 3409) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - |
+| `npc:morytania:30` | (3518, 3438) | Blood Blamish Snail (mmsnailround_red+black) 1, Bruise Blamish Snail (mmsnailround_blue) 1 | no | no | - |
+| `npc:morytania:31` | (3565, 3503) | Bat 1 | no | no | - |
+| `npc:morytania:32` | (3580, 3491) | Bat 1 | no | no | - |
+| `npc:morytania:33` | (3588, 3472) | Bat 1 | no | no | - |
+| `npc:morytania:34` | (3598, 3509) | Bat 1 | no | no | - |
+| `npc:morytania:35` | (3599, 3486) | Bat 1 | no | no | - |
+| `npc:morytania:36` | (3607, 3462) | Bat 1 | no | no | - |
+| `npc:morytania:37` | (3611, 3499) | Bat 1 | no | no | - |
+| `npc:morytania:38` | (3613, 3482) | Bat 1 | no | no | - |
+| `npc:morytania:39` | (3627, 3511) | Bat 1 | no | no | - |
+| `npc:morytania:40` | (3628, 3473) | Bat 1 | no | no | - |
+| `npc:morytania:41` | (3636, 3466) | Bat 1 | no | no | - |
+| `npc:morytania:42` | (3639, 3510) | Bat 1 | no | no | - |
 
 ## Areas within
 

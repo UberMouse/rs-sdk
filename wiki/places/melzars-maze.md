@@ -14,12 +14,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:melzars-maze:0` | (2927, 3251) L2 | dragonslayer_skeleton 1, rat 2, skeleton_armed 5 | yes | no | - |
-| `npc:melzars-maze:1` | (2928, 3251) | rat 3 | yes | no | - |
-| `npc:melzars-maze:2` | (2927, 3252) L1 | dragonslayer_ghost 1, ghost 4 | yes | no | - |
-| `npc:melzars-maze:3` | (2930, 3243) | rat 1 | yes | no | - |
-| `npc:melzars-maze:4` | (2933, 3241) L1 | rat 2 | yes | no | - |
-| `npc:melzars-maze:5` | (2940, 3239) | imp 1, rat 1 | yes | no | - |
+| `npc:melzars-maze:0` | (2927, 3251) L2 | Rat 2, Skeleton (dragonslayer_skeleton) 1, Skeleton (skeleton_armed) 5 | yes | no | - |
+| `npc:melzars-maze:1` | (2928, 3251) | Rat 3 | yes | no | - |
+| `npc:melzars-maze:2` | (2927, 3252) L1 | Ghost (dragonslayer_ghost) 1, Ghost (ghost) 4 | yes | no | - |
+| `npc:melzars-maze:3` | (2930, 3243) | Rat 1 | yes | no | - |
+| `npc:melzars-maze:4` | (2933, 3241) L1 | Rat 2 | yes | no | - |
+| `npc:melzars-maze:5` | (2940, 3239) | Imp 1, Rat 1 | yes | no | - |
 
 ## Ladders and stairs
 

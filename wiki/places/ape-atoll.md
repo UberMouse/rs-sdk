@@ -7,9 +7,9 @@ Marim and the Monkey Madness jungle (quests/quest_mm npcs).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:ape-atoll:0` | (2757, 2773) | mm_general_shop 1, mm_magic_shop 1, mm_scimitar_shop 1 | no | yes | - |
-| `shop:ape-atoll:1` | (2769, 2789) | mm_food_shop 1 | no | yes | - |
-| `shop:ape-atoll:2` | (2781, 2793) | mm_crafting_shop 1 | no | yes | - |
+| `shop:ape-atoll:0` | (2757, 2773) | Daga's Scimitar Smithy (mm_scimitar_shop) 1, Ifaba's General Store (mm_general_shop) 1, Ifaba's General Store (mm_magic_shop) 1 | no | yes | - |
+| `shop:ape-atoll:1` | (2769, 2789) | Solihib's Food Stall (mm_food_shop) 1 | no | yes | - |
+| `shop:ape-atoll:2` | (2781, 2793) | Hamab's Crafting Emporium (mm_crafting_shop) 1 | no | yes | - |
 
 ## [Prayer altars](../services/altar.md)
 
@@ -51,51 +51,51 @@ Marim and the Monkey Madness jungle (quests/quest_mm npcs).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:ape-atoll:0` | (2694, 2706) | [memberfish](../resources/fishing-spot/memberfish.md) 1 | no | yes | - |
-| `fishing-spot:ape-atoll:1` | (2780, 2741) | [memberfish](../resources/fishing-spot/memberfish.md) 1 | no | yes | - |
+| `fishing-spot:ape-atoll:0` | (2694, 2706) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - |
+| `fishing-spot:ape-atoll:1` | (2780, 2741) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ape-atoll:0` | (2702, 2780) | mm_jungle_snake 1, mm_jungle_spider 2 | no | yes | - |
-| `npc:ape-atoll:1` | (2701, 2762) | mm_jungle_snake 1 | no | yes | - |
-| `npc:ape-atoll:2` | (2704, 2769) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:3` | (2715, 2782) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:4` | (2716, 2721) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:5` | (2721, 2729) | mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:6` | (2724, 2789) | mm_jungle_snake 2, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:7` | (2729, 2713) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:8` | (2731, 2724) | mm_jungle_snake 1 | no | yes | - |
-| `npc:ape-atoll:9` | (2734, 2792) L1 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:10` | (2739, 2722) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:11` | (2742, 2707) | mm_jungle_snake 1, mm_jungle_spider 2 | no | yes | - |
-| `npc:ape-atoll:12` | (2753, 2708) | mm_jungle_snake 1, mm_jungle_spider 2 | no | yes | - |
-| `npc:ape-atoll:13` | (2749, 2768) L2 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:14` | (2752, 2762) | mm_jungle_scorpion 1 | no | yes | - |
-| `npc:ape-atoll:15` | (2752, 2798) L2 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:16` | (2753, 2799) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:17` | (2756, 2716) | mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:18` | (2757, 2788) | mm_padulah 1 | no | yes | - |
-| `npc:ape-atoll:19` | (2761, 2770) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:20` | (2761, 2803) | mm_jungle_scorpion 1 | no | yes | - |
-| `npc:ape-atoll:21` | (2762, 2749) | mm_jungle_scorpion 1 | no | yes | - |
-| `npc:ape-atoll:22` | (2771, 2707) | mm_jungle_snake 2, mm_jungle_spider 3 | no | yes | - |
-| `npc:ape-atoll:23` | (2771, 2764) | mm_jungle_scorpion 2, mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:24` | (2767, 2765) L1 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:25` | (2767, 2794) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:26` | (2771, 2737) | mm_jungle_scorpion 2 | no | yes | - |
-| `npc:ape-atoll:27` | (2769, 2798) L1 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:28` | (2769, 2806) | mm_jungle_scorpion 1 | no | yes | - |
-| `npc:ape-atoll:29` | (2775, 2777) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:30` | (2778, 2768) L1 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:31` | (2780, 2791) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:32` | (2781, 2743) | mm_jungle_scorpion 1 | no | yes | - |
-| `npc:ape-atoll:33` | (2786, 2714) | mm_jungle_snake 1, mm_jungle_spider 1 | no | yes | - |
-| `npc:ape-atoll:34` | (2798, 2785) | mm_jungle_scorpion 3, mm_religious_guard 6, mm_religious_trapdoor_guard 3, mm_warehouse_spider 3 | no | yes | - |
-| `npc:ape-atoll:35` | (2789, 2758) | mm_jungle_snake 1 | no | yes | - |
-| `npc:ape-atoll:36` | (2793, 2790) L1 | mm_religious_guard 2, mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:37` | (2796, 2780) L1 | mm_religious_guard 1, mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:38` | (2796, 2763) | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:39` | (2806, 2787) L1 | mm_warehouse_spider 1 | no | yes | - |
-| `npc:ape-atoll:40` | (2809, 2754) | mm_jungle_snake 1 | no | yes | - |
+| `npc:ape-atoll:0` | (2702, 2780) | Jungle spider 2, Snake 1 | no | yes | - |
+| `npc:ape-atoll:1` | (2701, 2762) | Snake 1 | no | yes | - |
+| `npc:ape-atoll:2` | (2704, 2769) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:3` | (2715, 2782) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:4` | (2716, 2721) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:5` | (2721, 2729) | Jungle spider 1 | no | yes | - |
+| `npc:ape-atoll:6` | (2724, 2789) | Jungle spider 1, Snake 2 | no | yes | - |
+| `npc:ape-atoll:7` | (2729, 2713) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:8` | (2731, 2724) | Snake 1 | no | yes | - |
+| `npc:ape-atoll:9` | (2734, 2792) L1 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:10` | (2739, 2722) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:11` | (2742, 2707) | Jungle spider 2, Snake 1 | no | yes | - |
+| `npc:ape-atoll:12` | (2753, 2708) | Jungle spider 2, Snake 1 | no | yes | - |
+| `npc:ape-atoll:13` | (2749, 2768) L2 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:14` | (2752, 2762) | Scorpion 1 | no | yes | - |
+| `npc:ape-atoll:15` | (2752, 2798) L2 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:16` | (2753, 2799) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:17` | (2756, 2716) | Jungle spider 1 | no | yes | - |
+| `npc:ape-atoll:18` | (2757, 2788) | Padulah 1 | no | yes | - |
+| `npc:ape-atoll:19` | (2761, 2770) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:20` | (2761, 2803) | Scorpion 1 | no | yes | - |
+| `npc:ape-atoll:21` | (2762, 2749) | Scorpion 1 | no | yes | - |
+| `npc:ape-atoll:22` | (2771, 2707) | Jungle spider 3, Snake 2 | no | yes | - |
+| `npc:ape-atoll:23` | (2771, 2764) | Scorpion 2, Spider 1 | no | yes | - |
+| `npc:ape-atoll:24` | (2767, 2765) L1 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:25` | (2767, 2794) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:26` | (2771, 2737) | Scorpion 2 | no | yes | - |
+| `npc:ape-atoll:27` | (2769, 2798) L1 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:28` | (2769, 2806) | Scorpion 1 | no | yes | - |
+| `npc:ape-atoll:29` | (2775, 2777) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:30` | (2778, 2768) L1 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:31` | (2780, 2791) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:32` | (2781, 2743) | Scorpion 1 | no | yes | - |
+| `npc:ape-atoll:33` | (2786, 2714) | Jungle spider 1, Snake 1 | no | yes | - |
+| `npc:ape-atoll:34` | (2798, 2785) | Monkey Guard (mm_religious_guard) 6, Monkey Guard (mm_religious_trapdoor_guard) 3, Scorpion 3, Spider 3 | no | yes | - |
+| `npc:ape-atoll:35` | (2789, 2758) | Snake 1 | no | yes | - |
+| `npc:ape-atoll:36` | (2793, 2790) L1 | Monkey Guard (mm_religious_guard) 2, Spider 1 | no | yes | - |
+| `npc:ape-atoll:37` | (2796, 2780) L1 | Monkey Guard (mm_religious_guard) 1, Spider 1 | no | yes | - |
+| `npc:ape-atoll:38` | (2796, 2763) | Spider 1 | no | yes | - |
+| `npc:ape-atoll:39` | (2806, 2787) L1 | Spider 1 | no | yes | - |
+| `npc:ape-atoll:40` | (2809, 2754) | Snake 1 | no | yes | - |

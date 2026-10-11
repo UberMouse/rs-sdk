@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:seers-village-bank:0` | (2726, 3495) | banker 8, booth 6 | no | no | - |
+| `bank:seers-village-bank:0` | (2726, 3495) | Bank booth 6, Banker 8 | no | no | - |

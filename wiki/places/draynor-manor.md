@@ -25,12 +25,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:draynor-manor:0` | (3098, 3357) L1 | house_ghost 3 | yes | no | - |
-| `npc:draynor-manor:1` | (3099, 3366) | rat 1 | yes | no | - |
-| `npc:draynor-manor:2` | (3101, 3355) | rat 1 | yes | no | - |
-| `npc:draynor-manor:3` | (3108, 3358) L1 | house_ghost 1 | yes | no | - |
-| `npc:draynor-manor:4` | (3110, 3367) | skeleton_unarmed 1 | yes | no | - |
-| `npc:draynor-manor:5` | (3123, 3356) L1 | house_ghost 1 | yes | no | - |
+| `npc:draynor-manor:0` | (3098, 3357) L1 | Ghost 3 | yes | no | - |
+| `npc:draynor-manor:1` | (3099, 3366) | Rat 1 | yes | no | - |
+| `npc:draynor-manor:2` | (3101, 3355) | Rat 1 | yes | no | - |
+| `npc:draynor-manor:3` | (3108, 3358) L1 | Ghost 1 | yes | no | - |
+| `npc:draynor-manor:4` | (3110, 3367) | Skeleton 1 | yes | no | - |
+| `npc:draynor-manor:5` | (3123, 3356) L1 | Ghost 1 | yes | no | - |
 
 ## Ladders and stairs
 

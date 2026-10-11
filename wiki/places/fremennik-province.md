@@ -13,11 +13,11 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:fremennik-province:0` | (2655, 3652) | [viking_woman2](../resources/pickpocket/viking_woman2.md) 1 | no | no | - |
-| `pickpocket:fremennik-province:1` | (2666, 3652) | [viking_man5](../resources/pickpocket/viking_man5.md) 1 | no | no | - |
+| `pickpocket:fremennik-province:0` | (2655, 3652) | [Lensa](../resources/pickpocket/viking_woman2.md) 1 | no | no | - |
+| `pickpocket:fremennik-province:1` | (2666, 3652) | [Pontak](../resources/pickpocket/viking_man5.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:fremennik-province:0` | (2685, 3653) | viking_guard2 1 | no | no | - |
+| `npc:fremennik-province:0` | (2685, 3653) | Warrior 1 | no | no | - |

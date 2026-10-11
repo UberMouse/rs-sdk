@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:necromancer:0` | (2667, 3241) L1 | invrigar_the_necromancer 1 | no | yes | - |
+| `npc:necromancer:0` | (2667, 3241) L1 | Invrigar the Necromancer 1 | no | yes | - |
 
 ## Ladders and stairs
 

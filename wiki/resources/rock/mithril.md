@@ -32,7 +32,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Heroes' Guild mine](../../places/heroes-guild-mine.md) | `rock:heroes-guild-mine:0` | (2922, 9910) | (2924, 9909) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 2 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:7` | (2640, 3152) | (2640, 3152) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:10` | (2725, 3693) | (2725, 3693) | 2 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:9` | (2725, 3693) | (2725, 3693) | 2 | no | no | - |
 | [Port Khazard (Kandarin)](../../places/port-khazard.md) | `rock:port-khazard:0` | (2654, 3169) | (2654, 3168) | 1 | no | no | - |
 | [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 2 | no | no | - |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 2 | yes | no | - |

@@ -5,7 +5,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:misthalin:0` | (3069, 3517) | runeplateshop 1 | yes | no | - |
+| `shop:misthalin:0` | (3069, 3517) | oziach (runeplateshop) 1 | yes | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -112,78 +112,78 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:misthalin:0` | (3092, 3515) | [guard1](../resources/pickpocket/guard1.md) 2, [man](../resources/pickpocket/man.md) 2 | yes | no | - |
-| `pickpocket:misthalin:1` | (3112, 3514) | [guard1](../resources/pickpocket/guard1.md) 4 | yes | no | - |
-| `pickpocket:misthalin:2` | (3154, 3293) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:3` | (3154, 3428) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:misthalin:4` | (3165, 3324) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:5` | (3227, 3290) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:6` | (3233, 3308) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:7` | (3240, 3345) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:8` | (3262, 3325) | [farmer1](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:0` | (3092, 3515) | [Guard](../resources/pickpocket/guard1.md) 2, [Man](../resources/pickpocket/man.md) 2 | yes | no | - |
+| `pickpocket:misthalin:1` | (3112, 3514) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - |
+| `pickpocket:misthalin:2` | (3154, 3293) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:3` | (3154, 3428) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:misthalin:4` | (3165, 3324) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:5` | (3227, 3290) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:6` | (3233, 3308) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:7` | (3240, 3345) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| `pickpocket:misthalin:8` | (3262, 3325) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:misthalin:0` | (3073, 3250) | imp 1 | yes | no | - |
-| `npc:misthalin:1` | (3073, 3498) | imp 1 | yes | no | - |
-| `npc:misthalin:2` | (3075, 3366) | giantspider1 1 | yes | no | - |
-| `npc:misthalin:3` | (3078, 3461) | imp 1 | yes | no | - |
-| `npc:misthalin:4` | (3099, 3370) | witch1 1 | yes | no | - |
-| `npc:misthalin:5` | (3110, 3295) | highwayman 1 | yes | no | - |
-| `npc:misthalin:6` | (3111, 3167) | wizard 2 | yes | yes | - |
-| `npc:misthalin:7` | (3114, 3310) | goblin_armed 1 | yes | no | - |
-| `npc:misthalin:8` | (3118, 3432) | goblin_armed 1 | yes | yes | - |
-| `npc:misthalin:9` | (3119, 3444) | goblin_armed 1 | yes | yes | - |
-| `npc:misthalin:10` | (3121, 3422) | goblin_armed 1 | yes | yes | - |
-| `npc:misthalin:11` | (3126, 3450) | goblin_armed 1 | yes | yes | - |
-| `npc:misthalin:12` | (3134, 3487) | imp 1 | yes | no | - |
-| `npc:misthalin:13` | (3135, 3340) | giantspider1 1 | yes | no | - |
-| `npc:misthalin:14` | (3147, 3377) | duck 7, duck_female 6 | yes | no | - |
-| `npc:misthalin:15` | (3142, 3297) | goblin_armed 1 | yes | no | - |
-| `npc:misthalin:16` | (3145, 3232) | goblin 4 | yes | no | - |
-| `npc:misthalin:17` | (3145, 3260) | goblin 2 | yes | no | - |
-| `npc:misthalin:18` | (3147, 3480) | giantspider1 3 | yes | no | - |
-| `npc:misthalin:19` | (3151, 3414) | rat 1 | yes | no | - |
-| `npc:misthalin:20` | (3152, 3357) | duck_female 1 | yes | no | - |
-| `npc:misthalin:21` | (3154, 3325) | cow 1 | yes | no | - |
-| `npc:misthalin:22` | (3160, 3318) | cow 1 | yes | no | - |
-| `npc:misthalin:23` | (3162, 3277) | goblin_armed 1 | yes | no | - |
-| `npc:misthalin:24` | (3166, 3247) | giantspider1 3, spider 2 | yes | no | - |
-| `npc:misthalin:25` | (3167, 3205) | goblin_armed 1 | yes | no | - |
-| `npc:misthalin:26` | (3173, 3323) | cow 1 | yes | no | - |
-| `npc:misthalin:27` | (3182, 3329) | cow 1 | yes | no | - |
-| `npc:misthalin:28` | (3183, 3348) | duck 1 | yes | no | - |
-| `npc:misthalin:29` | (3188, 3278) | chicken 5 | yes | no | - |
-| `npc:misthalin:30` | (3195, 3340) | duck 2 | yes | no | - |
-| `npc:misthalin:31` | (3197, 3320) | cow 1 | yes | no | - |
-| `npc:misthalin:32` | (3197, 3331) | cow 1 | yes | no | - |
-| `npc:misthalin:33` | (3214, 3317) | duck 4, duck_female 2 | yes | no | - |
-| `npc:misthalin:34` | (3218, 3282) | duck 2, duck_female 2, goblin_armed 2, imp 1 | yes | no | - |
-| `npc:misthalin:35` | (3215, 3303) | duck_female 1 | yes | no | - |
-| `npc:misthalin:36` | (3227, 3369) | bearded_dark_wizard 2, young_dark_wizard 9 | yes | no | - |
-| `npc:misthalin:37` | (3224, 3262) | goblin 1 | yes | no | - |
-| `npc:misthalin:38` | (3230, 3299) | chicken 9 | yes | no | - |
-| `npc:misthalin:39` | (3226, 3515) | black_knight 1 | yes | no | - |
-| `npc:misthalin:40` | (3233, 3268) | duck 4, duck_female 2 | yes | no | - |
-| `npc:misthalin:41` | (3234, 3506) | imp 1 | yes | no | - |
-| `npc:misthalin:42` | (3234, 3518) | black_knight 1 | yes | no | - |
-| `npc:misthalin:43` | (3240, 3307) | imp 1 | yes | no | - |
-| `npc:misthalin:44` | (3245, 3289) | cow 3 | yes | no | - |
-| `npc:misthalin:45` | (3255, 3278) | cow 1 | yes | no | - |
-| `npc:misthalin:46` | (3259, 3292) | cow 2 | yes | no | - |
-| `npc:misthalin:47` | (3259, 3338) | goblin_armed 1 | yes | no | - |
-| `npc:misthalin:48` | (3261, 3270) | cow 1 | yes | no | - |
-| `npc:misthalin:49` | (3261, 3514) | imp 1 | yes | no | - |
-| `npc:misthalin:50` | (3311, 3375) | goblin_armed 1 | no | no | - |
-| `npc:misthalin:51` | (3343, 3482) | small_bat 3 | no | no | - |
-| `npc:misthalin:52` | (3352, 3494) | small_bat 2 | no | no | - |
-| `npc:misthalin:53` | (3363, 3487) | small_bat 2 | no | no | - |
-| `npc:misthalin:54` | (3370, 3497) | small_bat 1 | no | no | - |
-| `npc:misthalin:55` | (3379, 3481) | small_bat 2 | no | no | - |
-| `npc:misthalin:56` | (3388, 3483) | small_bat 2 | no | no | - |
-| `npc:misthalin:57` | (3388, 3494) | small_bat 1 | no | no | - |
+| `npc:misthalin:0` | (3073, 3250) | Imp 1 | yes | no | - |
+| `npc:misthalin:1` | (3073, 3498) | Imp 1 | yes | no | - |
+| `npc:misthalin:2` | (3075, 3366) | Giant spider 1 | yes | no | - |
+| `npc:misthalin:3` | (3078, 3461) | Imp 1 | yes | no | - |
+| `npc:misthalin:4` | (3099, 3370) | Witch 1 | yes | no | - |
+| `npc:misthalin:5` | (3110, 3295) | Highwayman 1 | yes | no | - |
+| `npc:misthalin:6` | (3111, 3167) | Wizard 2 | yes | yes | - |
+| `npc:misthalin:7` | (3114, 3310) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:misthalin:8` | (3118, 3432) | Goblin (goblin_armed) 1 | yes | yes | - |
+| `npc:misthalin:9` | (3119, 3444) | Goblin (goblin_armed) 1 | yes | yes | - |
+| `npc:misthalin:10` | (3121, 3422) | Goblin (goblin_armed) 1 | yes | yes | - |
+| `npc:misthalin:11` | (3126, 3450) | Goblin (goblin_armed) 1 | yes | yes | - |
+| `npc:misthalin:12` | (3134, 3487) | Imp 1 | yes | no | - |
+| `npc:misthalin:13` | (3135, 3340) | Giant spider 1 | yes | no | - |
+| `npc:misthalin:14` | (3147, 3377) | Duck (duck) 7, Duck (duck_female) 6 | yes | no | - |
+| `npc:misthalin:15` | (3142, 3297) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:misthalin:16` | (3145, 3232) | Goblin (goblin) 4 | yes | no | - |
+| `npc:misthalin:17` | (3145, 3260) | Goblin (goblin) 2 | yes | no | - |
+| `npc:misthalin:18` | (3147, 3480) | Giant spider 3 | yes | no | - |
+| `npc:misthalin:19` | (3151, 3414) | Rat 1 | yes | no | - |
+| `npc:misthalin:20` | (3152, 3357) | Duck (duck_female) 1 | yes | no | - |
+| `npc:misthalin:21` | (3154, 3325) | Cow 1 | yes | no | - |
+| `npc:misthalin:22` | (3160, 3318) | Cow 1 | yes | no | - |
+| `npc:misthalin:23` | (3162, 3277) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:misthalin:24` | (3166, 3247) | Giant spider 3, Spider 2 | yes | no | - |
+| `npc:misthalin:25` | (3167, 3205) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:misthalin:26` | (3173, 3323) | Cow 1 | yes | no | - |
+| `npc:misthalin:27` | (3182, 3329) | Cow 1 | yes | no | - |
+| `npc:misthalin:28` | (3183, 3348) | Duck (duck) 1 | yes | no | - |
+| `npc:misthalin:29` | (3188, 3278) | Chicken 5 | yes | no | - |
+| `npc:misthalin:30` | (3195, 3340) | Duck (duck) 2 | yes | no | - |
+| `npc:misthalin:31` | (3197, 3320) | Cow 1 | yes | no | - |
+| `npc:misthalin:32` | (3197, 3331) | Cow 1 | yes | no | - |
+| `npc:misthalin:33` | (3214, 3317) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - |
+| `npc:misthalin:34` | (3218, 3282) | Duck (duck) 2, Duck (duck_female) 2, Goblin (goblin_armed) 2, Imp 1 | yes | no | - |
+| `npc:misthalin:35` | (3215, 3303) | Duck (duck_female) 1 | yes | no | - |
+| `npc:misthalin:36` | (3227, 3369) | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 9 | yes | no | - |
+| `npc:misthalin:37` | (3224, 3262) | Goblin (goblin) 1 | yes | no | - |
+| `npc:misthalin:38` | (3230, 3299) | Chicken 9 | yes | no | - |
+| `npc:misthalin:39` | (3226, 3515) | Black Knight 1 | yes | no | - |
+| `npc:misthalin:40` | (3233, 3268) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - |
+| `npc:misthalin:41` | (3234, 3506) | Imp 1 | yes | no | - |
+| `npc:misthalin:42` | (3234, 3518) | Black Knight 1 | yes | no | - |
+| `npc:misthalin:43` | (3240, 3307) | Imp 1 | yes | no | - |
+| `npc:misthalin:44` | (3245, 3289) | Cow 3 | yes | no | - |
+| `npc:misthalin:45` | (3255, 3278) | Cow 1 | yes | no | - |
+| `npc:misthalin:46` | (3259, 3292) | Cow 2 | yes | no | - |
+| `npc:misthalin:47` | (3259, 3338) | Goblin (goblin_armed) 1 | yes | no | - |
+| `npc:misthalin:48` | (3261, 3270) | Cow 1 | yes | no | - |
+| `npc:misthalin:49` | (3261, 3514) | Imp 1 | yes | no | - |
+| `npc:misthalin:50` | (3311, 3375) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:misthalin:51` | (3343, 3482) | Bat 3 | no | no | - |
+| `npc:misthalin:52` | (3352, 3494) | Bat 2 | no | no | - |
+| `npc:misthalin:53` | (3363, 3487) | Bat 2 | no | no | - |
+| `npc:misthalin:54` | (3370, 3497) | Bat 1 | no | no | - |
+| `npc:misthalin:55` | (3379, 3481) | Bat 2 | no | no | - |
+| `npc:misthalin:56` | (3388, 3483) | Bat 2 | no | no | - |
+| `npc:misthalin:57` | (3388, 3494) | Bat 1 | no | no | - |
 
 ## Ladders and stairs
 

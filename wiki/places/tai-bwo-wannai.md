@@ -7,14 +7,14 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:tai-bwo-wannai:0` | (2800, 3057) | tbwt_tamayu_final_inventory 1 | no | no | - |
+| `shop:tai-bwo-wannai:0` | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:tai-bwo-wannai:0` | (2788, 3061) | chicken 1 | no | no | - |
-| `npc:tai-bwo-wannai:1` | (2803, 3066) | chicken 1, tribesman 1 | no | no | - |
+| `npc:tai-bwo-wannai:0` | (2788, 3061) | Chicken 1 | no | no | - |
+| `npc:tai-bwo-wannai:1` | (2803, 3066) | Chicken 1, Tribesman 1 | no | no | - |
 
 ## Ladders and stairs
 

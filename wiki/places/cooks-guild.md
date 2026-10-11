@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:cooks-guild:0` | (3126, 3431) | goblin_armed 1 | yes | yes | - |
+| `npc:cooks-guild:0` | (3126, 3431) | Goblin 1 | yes | yes | - |
 
 ## Ladders and stairs
 

@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:shilo-village:0` | (2870, 2972) | shilofishingshop 1 | no | no | - |
+| `shop:shilo-village:0` | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no | no | - |
 
 ## [Furnaces](../services/furnace.md)
 
@@ -25,13 +25,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:shilo-village:0` | (2855, 2974) | [freshfish](../resources/fishing-spot/freshfish.md) 3 | no | no | - |
+| `fishing-spot:shilo-village:0` | (2855, 2974) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:shilo-village:0` | (2870, 2954) | zqzombie_armed 1 | no | no | - |
+| `npc:shilo-village:0` | (2870, 2954) | Undead One 1 | no | no | - |
 
 ## Ladders and stairs
 

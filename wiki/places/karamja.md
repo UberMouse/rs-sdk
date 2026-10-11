@@ -5,13 +5,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:karamja:0` | (2767, 3122) | junglestore 1 | no | no | - |
-| `shop:karamja:1` | (2781, 3057) | tbwt_tiadeche_final_inventory 1 | no | no | - |
-| `shop:karamja:2` | (2803, 3152) | amuletshop 1 | no | no | - |
-| `shop:karamja:3` | (2824, 2959) | shilojunglestore 1 | no | no | - |
-| `shop:karamja:4` | (2902, 3148) | generalshop7 2 | yes | no | - |
-| `shop:karamja:5` | (2925, 3143) | boozeshop 1 | yes | no | - |
-| `shop:karamja:6` | (2946, 3205) | craftingshop 1 | yes | no | - |
+| `shop:karamja:0` | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | no | - |
+| `shop:karamja:1` | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - |
+| `shop:karamja:2` | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | no | - |
+| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - |
+| `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - |
+| `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - |
+| `shop:karamja:6` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -80,87 +80,87 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:karamja:0` | (2791, 3019) | [category_632](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:1` | (2801, 3010) | [category_632](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:2` | (2807, 3021) | [category_632](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:3` | (2899, 3119) | [category_633](../resources/fishing-spot/category_633.md) 1 | no | no | - |
-| `fishing-spot:karamja:4` | (2912, 3119) | [category_633](../resources/fishing-spot/category_633.md) 1 | no | no | - |
-| `fishing-spot:karamja:5` | (2925, 3180) | [rarefish](../resources/fishing-spot/rarefish.md) 3, [saltfish](../resources/fishing-spot/saltfish.md) 3 | yes | no | - |
+| `fishing-spot:karamja:0` | (2791, 3019) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
+| `fishing-spot:karamja:1` | (2801, 3010) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
+| `fishing-spot:karamja:2` | (2807, 3021) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
+| `fishing-spot:karamja:3` | (2899, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
+| `fishing-spot:karamja:4` | (2912, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
+| `fishing-spot:karamja:5` | (2925, 3180) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 3, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | yes | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:karamja:0` | (2889, 3173) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:karamja:1` | (2948, 3146) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:karamja:0` | (2889, 3173) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:karamja:1` | (2948, 3146) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:karamja:0` | (2767, 3204) | jungle_spider 1 | no | no | - |
-| `npc:karamja:1` | (2772, 3016) | tribesman 2 | no | no | - |
-| `npc:karamja:2` | (2776, 2905) | jungle_savage 1 | no | no | - |
-| `npc:karamja:3` | (2777, 3198) | pirate_guard 2 | no | no | - |
-| `npc:karamja:4` | (2779, 3066) | chicken 1, tribesman 1 | no | no | - |
-| `npc:karamja:5` | (2777, 3116) | jungle_spider 1 | no | no | - |
-| `npc:karamja:6` | (2780, 3030) | jungle_spider 2 | no | no | - |
-| `npc:karamja:7` | (2783, 2920) | jungle_savage 1 | no | no | - |
-| `npc:karamja:8` | (2784, 2908) | jungle_savage 1 | no | no | - |
-| `npc:karamja:9` | (2785, 2955) | scorpion 1 | no | no | - |
-| `npc:karamja:10` | (2787, 2948) | scorpion 2 | no | no | - |
-| `npc:karamja:11` | (2797, 3111) | jungle_spider 5 | no | no | - |
-| `npc:karamja:12` | (2802, 2903) | jungle_savage 1 | no | no | - |
-| `npc:karamja:13` | (2802, 2913) | jungle_savage 1 | no | no | - |
-| `npc:karamja:14` | (2809, 3169) | rat 2 | no | no | - |
-| `npc:karamja:15` | (2808, 3067) | chicken 1 | no | no | - |
-| `npc:karamja:16` | (2809, 2912) | jungle_savage 1 | no | no | - |
-| `npc:karamja:17` | (2810, 2984) | jungle_spider 2 | no | no | - |
-| `npc:karamja:18` | (2813, 2998) | jungle_spider 2 | no | no | - |
-| `npc:karamja:19` | (2821, 2927) | jungle_savage 1 | no | no | - |
-| `npc:karamja:20` | (2824, 2907) | jungle_savage 1 | no | no | - |
-| `npc:karamja:21` | (2832, 3170) | imp 1 | yes | no | - |
-| `npc:karamja:22` | (2832, 3177) | imp 1 | yes | no | - |
-| `npc:karamja:23` | (2837, 3184) | imp 1 | yes | no | - |
-| `npc:karamja:24` | (2840, 2899) | jungle_savage 1 | no | no | - |
-| `npc:karamja:25` | (2841, 3163) | imp 1 | yes | no | - |
-| `npc:karamja:26` | (2842, 3017) | tribesman 1 | no | no | - |
-| `npc:karamja:27` | (2843, 3156) | scorpion 1 | yes | no | - |
-| `npc:karamja:28` | (2847, 3062) | jungle_spider 2 | no | no | - |
-| `npc:karamja:29` | (2849, 3186) | imp 1 | yes | no | - |
-| `npc:karamja:30` | (2852, 3162) | imp 1, scorpion 1 | yes | no | - |
-| `npc:karamja:31` | (2853, 3054) | jungle_spider 1 | no | no | - |
-| `npc:karamja:32` | (2861, 3085) | jungle_spider 13 | no | no | - |
-| `npc:karamja:33` | (2859, 3179) | imp 2, scorpion 1 | yes | no | - |
-| `npc:karamja:34` | (2859, 2923) | jungle_savage 1 | no | no | - |
-| `npc:karamja:35` | (2862, 3167) | scorpion 2 | yes | no | - |
-| `npc:karamja:36` | (2862, 2904) | jungle_savage 1 | no | no | - |
-| `npc:karamja:37` | (2868, 3158) | scorpion 2 | yes | no | - |
-| `npc:karamja:38` | (2866, 3061) | tribesman 1 | no | no | - |
-| `npc:karamja:39` | (2868, 3054) | tribesman 1 | no | no | - |
-| `npc:karamja:40` | (2875, 2949) | zqzombie_armed 2 | no | no | - |
-| `npc:karamja:41` | (2877, 2959) | zqzombie_armed 1 | no | no | - |
-| `npc:karamja:42` | (2890, 3001) | jungle_spider 10 | no | no | - |
-| `npc:karamja:43` | (2887, 2914) | jungle_savage 1 | no | no | - |
-| `npc:karamja:44` | (2892, 2946) | jogre 1, jungle_spider 3 | no | no | - |
-| `npc:karamja:45` | (2901, 2907) | jungle_savage 1 | no | no | - |
-| `npc:karamja:46` | (2903, 2945) | jogre 1 | no | no | - |
-| `npc:karamja:47` | (2906, 3095) | tbwt_beast 1 | no | no | - |
-| `npc:karamja:48` | (2925, 3049) | jogre 7, jungle_spider 12 | no | no | - |
-| `npc:karamja:49` | (2916, 2914) | jungle_savage 1 | no | no | - |
-| `npc:karamja:50` | (2916, 3062) | jogre 1 | no | no | - |
-| `npc:karamja:51` | (2921, 2959) | jogre 3 | no | no | - |
-| `npc:karamja:52` | (2921, 2986) | jogre 1, tribesman 1 | no | no | - |
-| `npc:karamja:53` | (2925, 2923) | jungle_savage 1 | no | no | - |
-| `npc:karamja:54` | (2930, 2903) | jungle_savage 1 | no | no | - |
-| `npc:karamja:55` | (2938, 2992) | jogre 1, tribesman 4 | no | no | - |
-| `npc:karamja:56` | (2932, 3032) | jungle_spider 2 | no | no | - |
-| `npc:karamja:57` | (2939, 2914) | jungle_savage 1 | no | no | - |
-| `npc:karamja:58` | (2957, 3203) | rat 4 | yes | no | - |
-| `npc:karamja:59` | (2955, 3029) | shipyardworker2 1 | no | no | - |
-| `npc:karamja:60` | (2957, 3055) | shipyardworker2 1 | no | no | - |
-| `npc:karamja:61` | (2969, 3042) | shipyardworker2 1 | no | no | - |
-| `npc:karamja:62` | (2976, 3064) | shipyardworker2 1 | no | no | - |
+| `npc:karamja:0` | (2767, 3204) | Jungle spider 1 | no | no | - |
+| `npc:karamja:1` | (2772, 3016) | Tribesman 2 | no | no | - |
+| `npc:karamja:2` | (2776, 2905) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:3` | (2777, 3198) | Pirate Guard 2 | no | no | - |
+| `npc:karamja:4` | (2779, 3066) | Chicken 1, Tribesman 1 | no | no | - |
+| `npc:karamja:5` | (2777, 3116) | Jungle spider 1 | no | no | - |
+| `npc:karamja:6` | (2780, 3030) | Jungle spider 2 | no | no | - |
+| `npc:karamja:7` | (2783, 2920) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:8` | (2784, 2908) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:9` | (2785, 2955) | Scorpion 1 | no | no | - |
+| `npc:karamja:10` | (2787, 2948) | Scorpion 2 | no | no | - |
+| `npc:karamja:11` | (2797, 3111) | Jungle spider 5 | no | no | - |
+| `npc:karamja:12` | (2802, 2903) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:13` | (2802, 2913) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:14` | (2809, 3169) | Rat 2 | no | no | - |
+| `npc:karamja:15` | (2808, 3067) | Chicken 1 | no | no | - |
+| `npc:karamja:16` | (2809, 2912) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:17` | (2810, 2984) | Jungle spider 2 | no | no | - |
+| `npc:karamja:18` | (2813, 2998) | Jungle spider 2 | no | no | - |
+| `npc:karamja:19` | (2821, 2927) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:20` | (2824, 2907) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:21` | (2832, 3170) | Imp 1 | yes | no | - |
+| `npc:karamja:22` | (2832, 3177) | Imp 1 | yes | no | - |
+| `npc:karamja:23` | (2837, 3184) | Imp 1 | yes | no | - |
+| `npc:karamja:24` | (2840, 2899) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:25` | (2841, 3163) | Imp 1 | yes | no | - |
+| `npc:karamja:26` | (2842, 3017) | Tribesman 1 | no | no | - |
+| `npc:karamja:27` | (2843, 3156) | Scorpion 1 | yes | no | - |
+| `npc:karamja:28` | (2847, 3062) | Jungle spider 2 | no | no | - |
+| `npc:karamja:29` | (2849, 3186) | Imp 1 | yes | no | - |
+| `npc:karamja:30` | (2852, 3162) | Imp 1, Scorpion 1 | yes | no | - |
+| `npc:karamja:31` | (2853, 3054) | Jungle spider 1 | no | no | - |
+| `npc:karamja:32` | (2861, 3085) | Jungle spider 13 | no | no | - |
+| `npc:karamja:33` | (2859, 3179) | Imp 2, Scorpion 1 | yes | no | - |
+| `npc:karamja:34` | (2859, 2923) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:35` | (2862, 3167) | Scorpion 2 | yes | no | - |
+| `npc:karamja:36` | (2862, 2904) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:37` | (2868, 3158) | Scorpion 2 | yes | no | - |
+| `npc:karamja:38` | (2866, 3061) | Tribesman 1 | no | no | - |
+| `npc:karamja:39` | (2868, 3054) | Tribesman 1 | no | no | - |
+| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - |
+| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - |
+| `npc:karamja:42` | (2890, 3001) | Jungle spider 10 | no | no | - |
+| `npc:karamja:43` | (2887, 2914) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:44` | (2892, 2946) | Jogre 1, Jungle spider 3 | no | no | - |
+| `npc:karamja:45` | (2901, 2907) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:46` | (2903, 2945) | Jogre 1 | no | no | - |
+| `npc:karamja:47` | (2906, 3095) | The Shaikahan 1 | no | no | - |
+| `npc:karamja:48` | (2925, 3049) | Jogre 7, Jungle spider 12 | no | no | - |
+| `npc:karamja:49` | (2916, 2914) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:50` | (2916, 3062) | Jogre 1 | no | no | - |
+| `npc:karamja:51` | (2921, 2959) | Jogre 3 | no | no | - |
+| `npc:karamja:52` | (2921, 2986) | Jogre 1, Tribesman 1 | no | no | - |
+| `npc:karamja:53` | (2925, 2923) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:54` | (2930, 2903) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:55` | (2938, 2992) | Jogre 1, Tribesman 4 | no | no | - |
+| `npc:karamja:56` | (2932, 3032) | Jungle spider 2 | no | no | - |
+| `npc:karamja:57` | (2939, 2914) | Jungle Savage 1 | no | no | - |
+| `npc:karamja:58` | (2957, 3203) | Rat 4 | yes | no | - |
+| `npc:karamja:59` | (2955, 3029) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:60` | (2957, 3055) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:61` | (2969, 3042) | Shipyard worker 1 | no | no | - |
+| `npc:karamja:62` | (2976, 3064) | Shipyard worker 1 | no | no | - |
 
 ## Ladders and stairs
 

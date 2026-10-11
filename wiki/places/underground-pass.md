@@ -29,20 +29,20 @@ Entered west of West Ardougne (underground-pass-entrance); quests/quest_upass np
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:underground-pass:0` | (2385, 9627) | bat 2, blessed_giantrat 4, rat 20 | no | no | - |
-| `npc:underground-pass:1` | (2376, 9608) | skeleton_armed 3, skeleton_unarmed 2 | no | no | - |
-| `npc:underground-pass:2` | (2381, 9656) | goblin_armed 3 | no | no | - |
-| `npc:underground-pass:3` | (2395, 9683) | blessed_spider 4, ogre 2 | no | no | - |
-| `npc:underground-pass:4` | (2394, 9656) | goblin_armed 3, goblin_helmet 1 | no | no | - |
-| `npc:underground-pass:5` | (2394, 9639) | rat 1 | no | no | - |
-| `npc:underground-pass:6` | (2401, 9608) | skeleton_armed 3, skeleton_unarmed 2 | no | no | - |
-| `npc:underground-pass:7` | (2402, 9708) | zombie_armed 9 | no | no | - |
-| `npc:underground-pass:8` | (2406, 9628) | rat 3 | no | no | - |
-| `npc:underground-pass:9` | (2412, 9640) | rat 1 | no | no | - |
-| `npc:underground-pass:10` | (2421, 9633) | bat 3, rat 1 | no | no | - |
-| `npc:underground-pass:11` | (2422, 9622) | rat 1 | no | no | - |
-| `npc:underground-pass:12` | (2432, 9722) | blessed_spider 8, upass_paladin1 1, upass_paladin2 1, upass_paladin3 1 | no | no | - |
-| `npc:underground-pass:13` | (2437, 9692) | blessed_spider 9, goblin_armed 5 | no | no | - |
-| `npc:underground-pass:14` | (2455, 9680) | zombie_armed 1 | no | no | - |
-| `npc:underground-pass:15` | (2470, 9695) | bat 2 | no | no | - |
-| `npc:underground-pass:16` | (2489, 9703) | bat 4 | no | no | - |
+| `npc:underground-pass:0` | (2385, 9627) | Blessed Giant rat 4, Giant bat 2, Rat 20 | no | no | - |
+| `npc:underground-pass:1` | (2376, 9608) | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - |
+| `npc:underground-pass:2` | (2381, 9656) | Goblin (goblin_armed) 3 | no | no | - |
+| `npc:underground-pass:3` | (2395, 9683) | Blessed spider 4, Ogre 2 | no | no | - |
+| `npc:underground-pass:4` | (2394, 9656) | Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - |
+| `npc:underground-pass:5` | (2394, 9639) | Rat 1 | no | no | - |
+| `npc:underground-pass:6` | (2401, 9608) | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - |
+| `npc:underground-pass:7` | (2402, 9708) | Zombie 9 | no | no | - |
+| `npc:underground-pass:8` | (2406, 9628) | Rat 3 | no | no | - |
+| `npc:underground-pass:9` | (2412, 9640) | Rat 1 | no | no | - |
+| `npc:underground-pass:10` | (2421, 9633) | Giant bat 3, Rat 1 | no | no | - |
+| `npc:underground-pass:11` | (2422, 9622) | Rat 1 | no | no | - |
+| `npc:underground-pass:12` | (2432, 9722) | Blessed spider 8, Sir Carl 1, Sir Harry 1, Sir Jerro 1 | no | no | - |
+| `npc:underground-pass:13` | (2437, 9692) | Blessed spider 9, Goblin (goblin_armed) 5 | no | no | - |
+| `npc:underground-pass:14` | (2455, 9680) | Zombie 1 | no | no | - |
+| `npc:underground-pass:15` | (2470, 9695) | Giant bat 2 | no | no | - |
+| `npc:underground-pass:16` | (2489, 9703) | Giant bat 4 | no | no | - |

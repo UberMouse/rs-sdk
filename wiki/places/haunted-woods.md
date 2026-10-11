@@ -14,4 +14,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:haunted-woods:0` | (3567, 3481) | small_bat 1 | no | no | - |
+| `npc:haunted-woods:0` | (3567, 3481) | Bat 1 | no | no | - |

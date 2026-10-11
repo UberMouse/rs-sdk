@@ -6,7 +6,7 @@
 | Area | Site | Centre | Stand | Counts | F2P |
 |---|---|---|---|---|---|
 | [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | `pottery-oven:crafting-guild:0` | (2929, 3292) | (2929, 3291) | Pottery Oven 1 | yes |
-| [Kandarin](../places/kandarin.md) | `pottery-oven:kandarin:0` | (2616, 3662) | (2617, 3662) | Pottery Oven 1 | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-oven:east-ardougne:0` | (2591, 3325) | (2590, 3325) | Pottery Oven 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `pottery-oven:rellekka:0` | (2616, 3662) | (2617, 3662) | Pottery Oven 1 | no |
 | [Misthalin](../places/misthalin.md) | `pottery-oven:misthalin:0` | (3359, 3332) | (3359, 3333) | Pottery Oven 1 | no |
 | [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `pottery-oven:barbarian-village:0` | (3084, 3407) | (3084, 3408) | Pottery Oven 1 | yes |

@@ -13,5 +13,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:jail:0` | (3120, 3238) | jailguard 1 | yes | yes | - |
-| `npc:jail:1` | (3124, 3249) | jailguard 2 | yes | yes | - |
+| `npc:jail:0` | (3120, 3238) | Jail guard 1 | yes | yes | - |
+| `npc:jail:1` | (3124, 3249) | Jail guard 2 | yes | yes | - |

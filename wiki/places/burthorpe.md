@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:burthorpe:0` | (2906, 3537) | death_pub 1 | no | no | - |
+| `shop:burthorpe:0` | (2906, 3537) | The Toad and Chicken (death_pub) 1 | no | no | - |
 
 ## [Fires](../services/fire.md)
 
@@ -36,17 +36,17 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:burthorpe:0` | (2885, 3531) | death_ig_solider_wander 2 | no | yes | - |
-| `npc:burthorpe:1` | (2893, 3559) L1 | death_archer1 1, death_archer2 1 | no | no | - |
-| `npc:burthorpe:2` | (2897, 3557) | death_cook 1, death_guard1 1, death_guard2 1 | no | no | - |
-| `npc:burthorpe:3` | (2893, 3569) L1 | death_archer_trapped 1 | no | no | - |
-| `npc:burthorpe:4` | (2899, 3565) | death_guard1 1, death_servant1 1 | no | no | - |
-| `npc:burthorpe:5` | (2899, 3549) | death_archer1 1, death_archer2 1 | no | no | - |
-| `npc:burthorpe:6` | (2900, 3539) | death_ig_solider_wander 1 | no | yes | - |
-| `npc:burthorpe:7` | (2904, 3558) L1 | death_archer1 1, death_archer2 1 | no | no | - |
-| `npc:burthorpe:8` | (2904, 3569) L1 | death_archer1 1, death_archer2 1 | no | no | - |
-| `npc:burthorpe:9` | (2909, 3541) | death_ig_solider_wander 2, death_man_indoors2 1 | no | no | - |
-| `npc:burthorpe:10` | (2918, 3558) | death_man_indoors1 1 | no | no | - |
+| `npc:burthorpe:0` | (2885, 3531) | Soldier 2 | no | yes | - |
+| `npc:burthorpe:1` | (2893, 3559) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - |
+| `npc:burthorpe:2` | (2897, 3557) | Eadburg 1, Guard (death_guard1) 1, Guard (death_guard2) 1 | no | no | - |
+| `npc:burthorpe:3` | (2893, 3569) L1 | Archer (death_archer_trapped) 1 | no | no | - |
+| `npc:burthorpe:4` | (2899, 3565) | Guard (death_guard1) 1, Servant 1 | no | no | - |
+| `npc:burthorpe:5` | (2899, 3549) | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - |
+| `npc:burthorpe:6` | (2900, 3539) | Soldier 1 | no | yes | - |
+| `npc:burthorpe:7` | (2904, 3558) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - |
+| `npc:burthorpe:8` | (2904, 3569) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - |
+| `npc:burthorpe:9` | (2909, 3541) | Penda 1, Soldier 2 | no | no | - |
+| `npc:burthorpe:10` | (2918, 3558) | Unferth 1 | no | no | - |
 
 ## Ladders and stairs
 

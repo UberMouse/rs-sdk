@@ -7,12 +7,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:al-kharid:0` | (3288, 3190) | scimitarshop 1 | yes | yes | - |
-| `shop:al-kharid:1` | (3288, 3212) | gemshop2 1 | yes | no | - |
-| `shop:al-kharid:2` | (3316, 3164) | skirtshop 1 | yes | yes | - |
-| `shop:al-kharid:3` | (3316, 3175) | legsshop 1 | yes | yes | - |
-| `shop:al-kharid:4` | (3316, 3183) | generalshop3 2 | yes | yes | - |
-| `shop:al-kharid:5` | (3322, 3194) | craftingshop2 1 | yes | yes | - |
+| `shop:al-kharid:0` | (3288, 3190) | Zeke's Superior Scimitars. (scimitarshop) 1 | yes | yes | - |
+| `shop:al-kharid:1` | (3288, 3212) | Gem Trader. (gemshop2) 1 | yes | no | - |
+| `shop:al-kharid:2` | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes | yes | - |
+| `shop:al-kharid:3` | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes | yes | - |
+| `shop:al-kharid:4` | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes | yes | - |
+| `shop:al-kharid:5` | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes | yes | - |
 
 ## [Tanners](../services/tanner.md)
 
@@ -50,17 +50,17 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:al-kharid:0` | (3277, 3187) | [al_kharid_man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
-| `pickpocket:al-kharid:1` | (3292, 3172) | [al_kharid_warrior](../resources/pickpocket/al_kharid_warrior.md) 9 | yes | yes | - |
-| `pickpocket:al-kharid:2` | (3284, 3199) | [al_kharid_man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
-| `pickpocket:al-kharid:3` | (3298, 3203) | [al_kharid_man](../resources/pickpocket/al_kharid_man.md) 3 | yes | yes | - |
-| `pickpocket:al-kharid:4` | (3294, 3196) | [al_kharid_man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
+| `pickpocket:al-kharid:0` | (3277, 3187) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
+| `pickpocket:al-kharid:1` | (3292, 3172) | [Al-Kharid warrior](../resources/pickpocket/al_kharid_warrior.md) 9 | yes | yes | - |
+| `pickpocket:al-kharid:2` | (3284, 3199) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
+| `pickpocket:al-kharid:3` | (3298, 3203) | [Man](../resources/pickpocket/al_kharid_man.md) 3 | yes | yes | - |
+| `pickpocket:al-kharid:4` | (3294, 3196) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:al-kharid:0` | (3322, 3139) | spider 3, witch2 1 | yes | yes | - |
+| `npc:al-kharid:0` | (3322, 3139) | Spider 3, Witch 1 | yes | yes | - |
 
 ## Ladders and stairs
 

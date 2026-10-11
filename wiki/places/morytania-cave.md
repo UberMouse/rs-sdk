@@ -14,7 +14,7 @@ Bats and copper and tin veins; descriptive name, not settled from the data.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:morytania-cave:0` | (3413, 9641) | bat 1, small_bat 6 | no | no | - |
-| `npc:morytania-cave:1` | (3414, 9620) | bat 2 | no | no | - |
-| `npc:morytania-cave:2` | (3422, 9631) | bat 1, small_bat 3 | no | no | - |
-| `npc:morytania-cave:3` | (3434, 9637) | small_bat 3 | no | no | - |
+| `npc:morytania-cave:0` | (3413, 9641) | Bat 6, Giant bat 1 | no | no | - |
+| `npc:morytania-cave:1` | (3414, 9620) | Giant bat 2 | no | no | - |
+| `npc:morytania-cave:2` | (3422, 9631) | Bat 3, Giant bat 1 | no | no | - |
+| `npc:morytania-cave:3` | (3434, 9637) | Bat 3 | no | no | - |

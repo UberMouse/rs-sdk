@@ -9,8 +9,8 @@ The grounds inside the guild's wooden barricade (wood_wall_barricadel in map squ
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:ranging-guild:0` | (2661, 3419) | ranging_guild_tribalshop 1 | no | yes | - |
-| `shop:ranging-guild:1` | (2670, 3435) | ranging_guild_armourshop 1, ranging_guild_bowshop 1 | no | yes | - |
+| `shop:ranging-guild:0` | (2661, 3419) | Authentic throwing weapons. (ranging_guild_tribalshop) 1 | no | yes | - |
+| `shop:ranging-guild:1` | (2670, 3435) | Aaron's Archery Appendages. (ranging_guild_armourshop) 1, Dargaud's Bow and Arrows. (ranging_guild_bowshop) 1 | no | yes | - |
 
 ## [Tanners](../services/tanner.md)
 
@@ -28,13 +28,13 @@ The grounds inside the guild's wooden barricade (wood_wall_barricadel in map squ
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ranging-guild:0` | (2655, 3428) | ranging_guild_guard 2 | no | yes | - |
-| `npc:ranging-guild:1` | (2659, 3438) | ranging_guild_guard 1 | no | yes | - |
-| `npc:ranging-guild:2` | (2663, 3425) | ranging_guild_guard 1 | no | yes | - |
-| `npc:ranging-guild:3` | (2668, 3415) | ranging_guild_guard 2 | no | yes | - |
-| `npc:ranging-guild:4` | (2671, 3439) | ranging_guild_guard 3 | no | yes | - |
-| `npc:ranging-guild:5` | (2675, 3428) | ranging_guild_guard 1 | no | yes | - |
-| `npc:ranging-guild:6` | (2682, 3430) | ranging_guild_guard 1 | no | yes | - |
+| `npc:ranging-guild:0` | (2655, 3428) | Guard 2 | no | yes | - |
+| `npc:ranging-guild:1` | (2659, 3438) | Guard 1 | no | yes | - |
+| `npc:ranging-guild:2` | (2663, 3425) | Guard 1 | no | yes | - |
+| `npc:ranging-guild:3` | (2668, 3415) | Guard 2 | no | yes | - |
+| `npc:ranging-guild:4` | (2671, 3439) | Guard 3 | no | yes | - |
+| `npc:ranging-guild:5` | (2675, 3428) | Guard 1 | no | yes | - |
+| `npc:ranging-guild:6` | (2682, 3430) | Guard 1 | no | yes | - |
 
 ## Ladders and stairs
 

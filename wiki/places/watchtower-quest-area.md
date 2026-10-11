@@ -41,7 +41,7 @@ A walled village with Yanille soldiers, the Dragon Inn bartender and the watchto
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:watchtower-quest-area:0` | (2924, 4702) | yanille_soldier 1 | no | no | - |
+| `npc:watchtower-quest-area:0` | (2924, 4702) | Soldier 1 | no | no | - |
 
 ## Ladders and stairs
 

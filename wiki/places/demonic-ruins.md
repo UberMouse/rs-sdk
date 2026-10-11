@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:demonic-ruins:0` | (3282, 3880) | greater_demon 1 | yes | yes | 46 |
-| `npc:demonic-ruins:1` | (3287, 3894) | greater_demon 1 | yes | yes | 47 |
-| `npc:demonic-ruins:2` | (3296, 3872) | greater_demon 1 | yes | yes | 45 |
-| `npc:demonic-ruins:3` | (3304, 3886) | greater_demon 1 | yes | yes | 46 |
+| `npc:demonic-ruins:0` | (3282, 3880) | Greater demon 1 | yes | yes | 46 |
+| `npc:demonic-ruins:1` | (3287, 3894) | Greater demon 1 | yes | yes | 47 |
+| `npc:demonic-ruins:2` | (3296, 3872) | Greater demon 1 | yes | yes | 45 |
+| `npc:demonic-ruins:3` | (3304, 3886) | Greater demon 1 | yes | yes | 46 |

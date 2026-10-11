@@ -13,11 +13,11 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:black-knights-fortress:0` | (3020, 3515) | aggressive_black_knight 5, fortressguard 6 | yes | no | - |
-| `npc:black-knights-fortress:1` | (3014, 3516) L2 | aggressive_black_knight 1 | yes | no | - |
-| `npc:black-knights-fortress:2` | (3015, 3515) L1 | aggressive_black_knight 1 | yes | no | - |
-| `npc:black-knights-fortress:3` | (3023, 3513) L1 | aggressive_black_knight 3 | yes | no | - |
-| `npc:black-knights-fortress:4` | (3023, 3514) L2 | aggressive_black_knight 1 | yes | no | - |
+| `npc:black-knights-fortress:0` | (3020, 3515) | Black Knight 5, Fortress Guard 6 | yes | no | - |
+| `npc:black-knights-fortress:1` | (3014, 3516) L2 | Black Knight 1 | yes | no | - |
+| `npc:black-knights-fortress:2` | (3015, 3515) L1 | Black Knight 1 | yes | no | - |
+| `npc:black-knights-fortress:3` | (3023, 3513) L1 | Black Knight 3 | yes | no | - |
+| `npc:black-knights-fortress:4` | (3023, 3514) L2 | Black Knight 1 | yes | no | - |
 
 ## Ladders and stairs
 

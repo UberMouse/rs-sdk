@@ -7,8 +7,8 @@ minigames/game_gamesroom.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:burthorpe-games-room:0` | (2201, 4942) | death_pub 1 | no | no | - |
-| `shop:burthorpe-games-room:1` | (2207, 4958) | death_pub 1 | no | no | - |
+| `shop:burthorpe-games-room:0` | (2201, 4942) | The Toad and Chicken (death_pub) 1 | no | no | - |
+| `shop:burthorpe-games-room:1` | (2207, 4958) | The Toad and Chicken (death_pub) 1 | no | no | - |
 
 ## Ladders and stairs
 

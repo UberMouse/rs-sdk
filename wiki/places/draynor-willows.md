@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:draynor-willows:0` | (3085, 3237) | young_dark_wizard 2 | yes | no | - |
+| `npc:draynor-willows:0` | (3085, 3237) | Dark wizard 2 | yes | no | - |

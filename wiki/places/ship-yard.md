@@ -7,10 +7,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ship-yard:0` | (2986, 3060) | shipyardworker2 2 | no | no | - |
-| `npc:ship-yard:1` | (2987, 3049) | shipyardworker2 1 | no | no | - |
-| `npc:ship-yard:2` | (2995, 3061) | shipyardworker2 1 | no | no | - |
-| `npc:ship-yard:3` | (3000, 3046) | grandtree_foreman 1, shipyardworker2 1 | no | no | - |
+| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - |
+| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - |
+| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - |
+| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - |
 
 ## Ladders and stairs
 

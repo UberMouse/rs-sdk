@@ -19,8 +19,8 @@ Ladder up to a cellar at (2562, 3356); ogres and a blood-rune thieving chest. De
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dungeon-north-of-ardougne:0` | (2567, 9753) | bat 5 | no | no | - |
-| `npc:dungeon-north-of-ardougne:1` | (2585, 9737) | ogre 7 | no | no | - |
+| `npc:dungeon-north-of-ardougne:0` | (2567, 9753) | Giant bat 5 | no | no | - |
+| `npc:dungeon-north-of-ardougne:1` | (2585, 9737) | Ogre 7 | no | no | - |
 
 ## Ladders and stairs
 

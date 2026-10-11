@@ -33,6 +33,6 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 |---|---|---|---|---|---|---|---|
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:56` | (2592, 3593) | (2592, 3595) | 1 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:61` | (2687, 3491) | (2687, 3492) | 79 | no | yes | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2786, 3479) | (2786, 3479) | 2 | no | yes | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:77` | (2786, 3479) | (2786, 3479) | 2 | no | yes | - |
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 7 | no | no | - |
 | [Miscellania and Etceteria](../../places/miscellania.md) | `tree:miscellania:1` | (2547, 3870) | (2547, 3871) | 12 | no | no | - |

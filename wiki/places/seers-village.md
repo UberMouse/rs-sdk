@@ -53,8 +53,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:seers-village:0` | (2695, 3494) | [man](../resources/pickpocket/man.md) 1, [man2](../resources/pickpocket/man2.md) 1, [man3](../resources/pickpocket/man3.md) 1, [woman](../resources/pickpocket/woman.md) 3, [woman2](../resources/pickpocket/woman2.md) 2 | no | no | - |
-| `pickpocket:seers-village:1` | (2713, 3480) | [man](../resources/pickpocket/man.md) 1 | no | no | - |
+| `pickpocket:seers-village:0` | (2695, 3494) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 3, [Woman (woman2)](../resources/pickpocket/woman2.md) 2 | no | no | - |
+| `pickpocket:seers-village:1` | (2713, 3480) | [Man (man)](../resources/pickpocket/man.md) 1 | no | no | - |
 
 ## Ladders and stairs
 

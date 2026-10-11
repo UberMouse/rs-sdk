@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:barbarian-village:0` | (3076, 3429) | helmetshop 1 | yes | yes | - |
+| `shop:barbarian-village:0` | (3076, 3429) | Helmet Shop. (helmetshop) 1 | yes | yes | - |
 
 ## [Fires](../services/fire.md)
 
@@ -56,10 +56,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:barbarian-village:0` | (3081, 3419) | barbarian 6, barbarian_woman 3 | yes | yes | - |
-| `npc:barbarian-village:1` | (3079, 3441) | barbarian 5, barbarian_woman 2, gunthor_the_brave 1 | yes | yes | - |
-| `npc:barbarian-village:2` | (3096, 3428) L2 | barbarian 1 | yes | no | - |
-| `npc:barbarian-village:3` | (3096, 3432) | barbarian 1 | yes | yes | - |
+| `npc:barbarian-village:0` | (3081, 3419) | Barbarian 6, Barbarian woman 3 | yes | yes | - |
+| `npc:barbarian-village:1` | (3079, 3441) | Barbarian 5, Barbarian woman 2, Gunthor the brave 1 | yes | yes | - |
+| `npc:barbarian-village:2` | (3096, 3428) L2 | Barbarian 1 | yes | no | - |
+| `npc:barbarian-village:3` | (3096, 3432) | Barbarian 1 | yes | yes | - |
 
 ## Ladders and stairs
 

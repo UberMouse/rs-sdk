@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:lighthouse:0` | (2509, 3639) L1 | lighthouseshop 1 | no | no | - |
+| `shop:lighthouse:0` | (2509, 3639) L1 | The Lighthouse Store (lighthouseshop) 1 | no | no | - |

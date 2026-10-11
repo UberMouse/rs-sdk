@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:isafdar:0` | (2239, 3165) | regicide_bunny1 2, regicide_bunny2 1, regicide_rabbit 3 | no | no | - |
+| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - |

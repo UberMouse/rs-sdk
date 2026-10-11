@@ -1,5 +1,9 @@
 // What every rendered page shares: tile and flag formats (as the shop pages print coordinates), tables,
-// the order and titles of kinds, area labels and the paths pages link by.
+// the order and titles of kinds, area labels, the in-game names counts read by, and the paths pages
+// link by.
+import { params } from '../classify';
+import type { Config } from '../sources/configs';
+import type { DbRow } from '../sources/dbrows';
 import type { Feature, FeatureKind, Site, Tile, World } from '../types';
 
 /** The comment that opens every generated page. */
@@ -31,14 +35,19 @@ export const table = (headers: readonly string[], rows: readonly (readonly strin
 export const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
 
 /** Where the kinds of resources are listed, one page per subtype. */
-export const RESOURCE_KINDS: readonly FeatureKind[] = [
+export const RESOURCE_KINDS = [
     'tree',
     'rock',
     'fishing-spot',
     'stall',
     'thieving-chest',
     'pickpocket',
-];
+] as const satisfies readonly FeatureKind[];
+
+export type ResourceKind = (typeof RESOURCE_KINDS)[number];
+
+export const isResourceKind = (kind: FeatureKind): kind is ResourceKind =>
+    (RESOURCE_KINDS as readonly FeatureKind[]).includes(kind);
 
 /** Kinds in page order, each with the title of its section or page. */
 export const KINDS: readonly (readonly [FeatureKind, string])[] = [
@@ -69,7 +78,7 @@ export const KINDS: readonly (readonly [FeatureKind, string])[] = [
 
 /** Every kind not listed by subtype has a services page; `npc` and `connector` sites only show on place pages. */
 export const SERVICE_KINDS: readonly FeatureKind[] = KINDS.map(([k]) => k).filter(
-    k => !RESOURCE_KINDS.includes(k) && k !== 'npc' && k !== 'connector',
+    k => !isResourceKind(k) && k !== 'npc' && k !== 'connector',
 );
 
 export const kindTitle = (kind: FeatureKind): string => KINDS.find(([k]) => k === kind)?.[1] ?? kind;
@@ -100,18 +109,84 @@ export function link(from: string, to: string): string {
     return [...a.slice(common).map(() => '..'), ...b.slice(common)].join('/');
 }
 
+/** The game data pages read besides the world. */
+export interface PageData {
+    dbrows: readonly DbRow[];
+    npcConfigs: ReadonlyMap<string, Config>;
+    objConfigs: ReadonlyMap<string, Config>;
+    /** The title each explicit `~openshop(<inv>, ..., "<title>")` call gives its inv (openshopTitles). */
+    shopTitles: ReadonlyMap<string, string>;
+}
+
+/** One thing a site holds and how many. */
+export interface Part {
+    /** What the part counts by: a subtype (a config, inv or rock type), or the in-game name. */
+    key: string;
+    /** Its in-game name, or the subtype where the subtype is the clearer name (`yew`, `iron`). */
+    name: string;
+    n: number;
+}
+
+// Kinds whose subtype is an npc or loc config with a name of its own in game: a part reads as that
+// name, with the config beside it only where another config on the page shares it (man, man2 and man3
+// are all Man).
+const NAMED_CONFIGS: ReadonlySet<FeatureKind> = new Set<FeatureKind>(['npc', 'pickpocket', 'stall']);
+
+// Kinds whose name never tells two parts apart, so the key always follows it: every fishing spot is
+// named Fishing spot, and a shop keeps its inv, the name the scripts open it by, beside its title.
+const KEYED: ReadonlySet<FeatureKind> = new Set<FeatureKind>(['shop', 'fishing-spot']);
+
 /**
- * What a site holds, as `name n` parts: by subtype, or by the features' in-game names where the kind
- * has no subtypes (a connector site reads `Ladder 1`, not `connector 1`), sorted by name.
+ * The title the shop interface shows for a shop feature (shop/scripts/shop.rs2 sets it on
+ * shop_template:com_76): the title of the explicit call that opens its inv (classify.ts takes the
+ * inv from that call when there is one), else the npc's shop_title when it owns this inv
+ * (~openshop_activenpc), else the shopkeeper's name.
  */
-export function contents(site: Site, features: readonly Feature[]): string[] {
-    const counted = new Map<string, number>();
+function shopTitle(f: Feature, data: PageData): string {
+    const explicit = data.shopTitles.get(f.subtype);
+    if (explicit !== undefined) return explicit;
+    const cfg = f.source === 'npc' ? params(data.npcConfigs.get(f.config) ?? {}) : undefined;
+    return (cfg?.get('owned_shop') === f.subtype ? cfg.get('shop_title') : undefined) ?? f.name;
+}
+
+/** The parts of a site, sorted by name then key; a part whose features differ in name joins them with ` / `. */
+export function parts(site: Site, world: World, data: PageData): Part[] {
+    const byKey = new Map<string, { names: Set<string>; n: number }>();
     for (const i of site.features) {
-        const f = features[i]!;
-        const key = f.subtype || f.name;
-        counted.set(key, (counted.get(key) ?? 0) + 1);
+        const f = world.features[i]!;
+        // A bank counts by name (Banker, Bank booth, Shantay chest): nine placed banker configs share
+        // Banker, and which of them stands there matters to no one. Kinds with no subtype count by name too.
+        const [key, name] =
+            f.kind === 'shop'
+                ? [f.subtype, shopTitle(f, data)]
+                : f.kind === 'bank'
+                  ? [f.name, f.name]
+                  : NAMED_CONFIGS.has(f.kind) || f.kind === 'fishing-spot'
+                    ? [f.subtype, f.name]
+                    : [f.subtype || f.name, f.subtype || f.name];
+        const part = byKey.get(key);
+        if (part) {
+            part.names.add(name);
+            part.n++;
+        } else byKey.set(key, { names: new Set([name]), n: 1 });
     }
-    return [...counted].sort(([a], [b]) => cmp(a, b)).map(([k, n]) => `${k} ${n}`);
+    return [...byKey]
+        .map(([key, { names, n }]) => ({ key, name: [...names].sort(cmp).join(' / '), n }))
+        .sort((a, b) => cmp(a.name, b.name) || cmp(a.key, b.key));
+}
+
+/**
+ * How parts read on one page, given every part the page shows with its kind: a NAMED_CONFIGS part
+ * carries its key only where another key of those kinds on the page has the same name.
+ */
+export function labeller(shown: readonly (readonly [FeatureKind, Part])[]): (kind: FeatureKind, part: Part) => string {
+    const keysOf = new Map<string, Set<string>>();
+    for (const [kind, p] of shown)
+        if (NAMED_CONFIGS.has(kind)) keysOf.set(p.name, (keysOf.get(p.name) ?? new Set()).add(p.key));
+    return (kind, p) =>
+        KEYED.has(kind) || (NAMED_CONFIGS.has(kind) && (keysOf.get(p.name)?.size ?? 0) > 1)
+            ? `${p.name} (${p.key})`
+            : p.name;
 }
 
 export interface Areas {

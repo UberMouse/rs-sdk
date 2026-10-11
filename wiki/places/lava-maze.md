@@ -13,12 +13,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:lava-maze:0` | (3071, 3839) | [loc_2630](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 |
+| `fishing-spot:lava-maze:0` | (3071, 3839) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:lava-maze:0` | (3070, 3836) | kingscorpion 1 | yes | no | 40 |
-| `npc:lava-maze:1` | (3075, 3848) | kingscorpion 1 | yes | no | 42 |
-| `npc:lava-maze:2` | (3090, 3841) | kingscorpion 1 | yes | no | 41 |
+| `npc:lava-maze:0` | (3070, 3836) | King Scorpion 1 | yes | no | 40 |
+| `npc:lava-maze:1` | (3075, 3848) | King Scorpion 1 | yes | no | 42 |
+| `npc:lava-maze:2` | (3090, 3841) | King Scorpion 1 | yes | no | 41 |

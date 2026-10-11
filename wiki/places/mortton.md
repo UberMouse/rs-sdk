@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:mortton:0` | (3489, 3296) | razmiregeneralstore 1 | no | no | - |
+| `shop:mortton:0` | (3489, 3296) | Razmire General Store. (razmiregeneralstore) 1 | no | no | - |
 
 ## [Water sources](../services/water-source.md)
 

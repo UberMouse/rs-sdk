@@ -16,4 +16,4 @@ From the `trapped_chest` row `trapped_chest_chest_steel_arrowtips`.
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|---|
 | [Hemenster (Kandarin)](../../places/hemenster.md) | `thieving-chest:hemenster:0` | (2639, 3424) | (2640, 3424) | 1 | no | no | - |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2650, 3659) | (2649, 3659) | 1 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:1` | (2650, 3659) | (2649, 3659) | 1 | no | no | - |

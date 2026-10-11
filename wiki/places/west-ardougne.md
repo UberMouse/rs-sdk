@@ -41,15 +41,15 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:west-ardougne:0` | (2510, 3326) | dskin_w_ardoungecitizen1 1, dskin_w_ardoungecitizen2 1, dskin_w_ardoungecitizenlady1 1, mourner3 1, rat 6, w_ardoungecitizenlady1 2 | no | no | - |
-| `npc:west-ardougne:1` | (2501, 3292) | ghost 2 | no | no | - |
-| `npc:west-ardougne:2` | (2501, 3315) | mourner3 1 | no | no | - |
-| `npc:west-ardougne:3` | (2511, 3287) | zombie_armed 1 | no | no | - |
-| `npc:west-ardougne:4` | (2525, 3303) | dskin_w_ardoungecitizenlady1 1, dskin_w_ardoungecitizenlady3 1, mourner2 1, mourner3 1, mourner_armed 2, w_ardoungecitizenlady1 1 | no | no | - |
-| `npc:west-ardougne:5` | (2531, 3329) | rat 2 | no | no | - |
-| `npc:west-ardougne:6` | (2536, 3291) | mourner2 1, mourner3 1 | no | no | - |
-| `npc:west-ardougne:7` | (2543, 3326) | mourner2 2, mournerstew1 1, mournerstew3 3 | no | no | - |
-| `npc:west-ardougne:8` | (2543, 3309) | mourner_armed 1 | no | no | - |
+| `npc:west-ardougne:0` | (2510, 3326) | Man 1, Mourner (mourner3) 1, Rat 6, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (w_ardoungecitizenlady1) 2 | no | no | - |
+| `npc:west-ardougne:1` | (2501, 3292) | Ghost 2 | no | no | - |
+| `npc:west-ardougne:2` | (2501, 3315) | Mourner (mourner3) 1 | no | no | - |
+| `npc:west-ardougne:3` | (2511, 3287) | Zombie 1 | no | no | - |
+| `npc:west-ardougne:4` | (2525, 3303) | Mourner (mourner2) 1, Mourner (mourner3) 1, Mourner (mourner_armed) 2, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (dskin_w_ardoungecitizenlady3) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - |
+| `npc:west-ardougne:5` | (2531, 3329) | Rat 2 | no | no | - |
+| `npc:west-ardougne:6` | (2536, 3291) | Mourner (mourner2) 1, Mourner (mourner3) 1 | no | no | - |
+| `npc:west-ardougne:7` | (2543, 3326) | Mourner (mourner2) 2, Mourner (mournerstew1) 1, Mourner (mournerstew3) 3 | no | no | - |
+| `npc:west-ardougne:8` | (2543, 3309) | Mourner (mourner_armed) 1 | no | no | - |
 
 ## Ladders and stairs
 

@@ -24,7 +24,7 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Crandor](../../places/crandor.md) | `rock:crandor:3` | (2861, 3287) | (2861, 3286) | 3 | yes | no | - |
 | [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | 2 | yes | no | - |
 | [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | 4 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:11` | (2733, 3225) | (2732, 3225) | 10 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:10` | (2733, 3225) | (2732, 3225) | 10 | no | no | - |
 | [Karamja](../../places/karamja.md) | `rock:karamja:0` | (2744, 3151) | (2743, 3151) | 6 | no | no | - |
 | [Karamja Volcano dungeon](../../places/karamja-volcano-dungeon.md) | `rock:karamja-volcano-dungeon:0` | (2861, 9578) | (2861, 9578) | 4 | yes | no | - |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | 2 | yes | no | - |

@@ -1,15 +1,16 @@
 // Renders the world as the markdown agents read: wiki/places, wiki/resources and wiki/services, which are
 // wholly generated, and the generated head of wiki/world/README.md. renderWorld is pure; the rest reads
 // the game data it needs, writes the pages and removes stale ones, or lists what differs (--check).
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
-import { dirname, join, relative } from 'path';
-import { ROOT } from './paths';
-import { cmp, link } from './render/common';
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
+import { dirname, isAbsolute, join, relative } from 'path';
+import { ROOT, WORLD_JSON } from './paths';
+import { cmp, link, type PageData } from './render/common';
 import { renderPlaces } from './render/places';
-import { renderResources, type ResourceData } from './render/resources';
+import { renderResources } from './render/resources';
 import { renderServices } from './render/services';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
+import { readCallables, readTriggers } from './sources/triggers';
 import type { World } from './types';
 
 /** The folders renderWorld owns outright: a file in them that it did not render is stale. */
@@ -20,7 +21,7 @@ export const README = 'wiki/world/README.md';
 /** The line in README.md below which it is hand-written; the generator keeps what follows it. */
 export const HAND_WRITTEN = '<!-- Hand-written below this line: build.ts keeps it as it is. -->';
 
-export interface RenderData extends ResourceData {
+export interface RenderData extends PageData {
     /** README.md from the line after HAND_WRITTEN to the end. */
     readmeBody: string;
 }
@@ -55,18 +56,46 @@ function readme(world: World, pages: ReadonlyMap<string, string>, body: string):
 
 /** Every generated page and the README, keyed by repo-relative path, in path order. */
 export function renderWorld(world: World, data: RenderData): Map<string, string> {
-    const pages = new Map([...renderPlaces(world), ...renderResources(world, data), ...renderServices(world)]);
+    const pages = new Map([
+        ...renderPlaces(world, data),
+        ...renderResources(world, data),
+        ...renderServices(world, data),
+    ]);
     pages.set(README, readme(world, pages, data.readmeBody));
     return new Map([...pages].sort(([a], [b]) => cmp(a, b)));
 }
 
-/** Reads the configs and dbrows the pages need and the README's hand-written part (empty if no README). */
-export function readRenderData(root: string = ROOT): RenderData {
-    const file = join(root, README);
+// `~openshop(<inv>, buy, sell, haggle, "<title>")`, its title a string literal in every call
+// (shop/scripts/shop.rs2 [proc,openshop]); a call whose title is not one is left out.
+const OPENSHOP = /~openshop\(\s*([a-z0-9_]+)\s*,[^;"]*"((?:[^"\\]|\\.)*)"\s*\)/g;
+
+/** The title each explicit ~openshop call gives its inv; throws when two calls give one inv two titles. */
+export function openshopTitles(bodies: readonly string[]): Map<string, string> {
+    const titles = new Map<string, string>();
+    for (const body of bodies)
+        for (const line of body.split('\n'))
+            for (const m of line.matchAll(OPENSHOP)) {
+                // A call after `//` is commented out.
+                if (line.slice(0, m.index).includes('//')) continue;
+                const [, inv, literal] = m as unknown as [string, string, string];
+                // The interface shows the string's text: `\"` is a quote in it.
+                const title = literal.replace(/\\(.)/g, '$1');
+                const prior = titles.get(inv);
+                if (prior !== undefined && prior !== title)
+                    throw new Error(`~openshop calls give ${inv} two titles: "${prior}" and "${title}"`);
+                titles.set(inv, title);
+            }
+    return new Map([...titles].sort(([a], [b]) => cmp(a, b)));
+}
+
+/** Reads the game data the pages need and the README's hand-written part (empty if no README), from ROOT. */
+export function readRenderData(): RenderData {
+    const file = join(ROOT, README);
     return {
         dbrows: readDbrows(),
         npcConfigs: readConfigs('npc'),
         objConfigs: readConfigs('obj'),
+        shopTitles: openshopTitles([...readTriggers(), ...readCallables()].map(s => s.body)),
         readmeBody: existsSync(file) ? readmeBody(readFileSync(file, 'utf8')) : '',
     };
 }
@@ -82,26 +111,52 @@ function generatedFiles(root: string): string[] {
     return GENERATED_DIRS.flatMap(d => walk(join(root, d))).sort(cmp);
 }
 
+/** Whether `file` holds `text`; a file that is missing or cannot be read (a directory, say) does not. */
+function holds(file: string, text: string): boolean {
+    try {
+        return readFileSync(file, 'utf8') === text;
+    } catch {
+        return false;
+    }
+}
+
 /**
- * The repo-relative paths whose file under `root` is not `files`' content, missing, or (inside the
- * generated folders) not in `files` at all: what a fresh generation would change.
+ * The repo-relative paths whose file under `root` is not `files`' content, missing, unreadable, or
+ * (inside the generated folders) not in `files` at all: what a fresh generation would change.
  */
 export function drift(files: ReadonlyMap<string, string>, root: string = ROOT): string[] {
-    const differ = [...files]
-        .filter(([p, text]) => {
-            const file = join(root, p);
-            return !existsSync(file) || readFileSync(file, 'utf8') !== text;
-        })
-        .map(([p]) => p);
+    const differ = [...files].filter(([p, text]) => !holds(join(root, p), text)).map(([p]) => p);
     const stale = generatedFiles(root).filter(p => !files.has(p));
     return [...differ, ...stale].sort(cmp);
 }
 
-/** Writes `files` under `root` and removes the generated folders' files not among them; returns those. */
+/**
+ * The paths writeFiles may write: world.json, the README, and files inside the generated folders.
+ * A path is taken as it resolves, so `wiki/places/../../x` is outside them.
+ */
+function writable(p: string, root: string): boolean {
+    const at = relative(root, join(root, p));
+    if (at.startsWith('..') || isAbsolute(at)) return false;
+    return at === relative(ROOT, WORLD_JSON) || at === README || GENERATED_DIRS.some(d => at.startsWith(`${d}/`));
+}
+
+/**
+ * Writes `files` under `root` and removes the generated folders' files not among them; returns those.
+ * It throws, before touching anything, on a path it does not own or a generated folder that is a
+ * symlink, since a removal through one would delete files wherever the link points.
+ */
 export function writeFiles(files: ReadonlyMap<string, string>, root: string = ROOT): string[] {
+    const foreign = [...files.keys()].filter(p => !writable(p, root));
+    if (foreign.length) throw new Error(`writeFiles writes only generated files, not ${foreign.join(', ')}`);
+    for (const d of GENERATED_DIRS) {
+        const dir = join(root, d);
+        // lstat, not exists: a dangling link is still a link.
+        if (lstatSync(dir, { throwIfNoEntry: false })?.isSymbolicLink())
+            throw new Error(`${d} is a symlink; writeFiles removes stale files only from a real folder`);
+    }
     for (const [p, text] of files) {
         const file = join(root, p);
-        if (existsSync(file) && readFileSync(file, 'utf8') === text) continue;
+        if (holds(file, text)) continue;
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, text);
     }

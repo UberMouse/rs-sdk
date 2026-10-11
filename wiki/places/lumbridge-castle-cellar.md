@@ -13,7 +13,7 @@ Ladder up into Lumbridge castle at (3209, 3216).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:lumbridge-castle-cellar:0` | (3213, 9620) | spider 4 | yes | no | - |
+| `npc:lumbridge-castle-cellar:0` | (3213, 9620) | Spider 4 | yes | no | - |
 
 ## Ladders and stairs
 

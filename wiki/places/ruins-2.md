@@ -20,5 +20,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ruins-2:0` | (3157, 3740) | deadly_red_spider 1 | yes | no | 28 |
-| `npc:ruins-2:1` | (3169, 3736) | deadly_red_spider 4 | yes | no | 28 |
+| `npc:ruins-2:0` | (3157, 3740) | Deadly red spider 1 | yes | no | 28 |
+| `npc:ruins-2:1` | (3169, 3736) | Deadly red spider 4 | yes | no | 28 |

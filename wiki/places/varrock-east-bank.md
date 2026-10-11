@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:varrock-east-bank:0` | (3254, 3418) | banker 5, booth 4 | yes | no | - |
+| `bank:varrock-east-bank:0` | (3254, 3418) | Bank booth 4, Banker 5 | yes | no | - |

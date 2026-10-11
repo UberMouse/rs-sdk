@@ -19,8 +19,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:palace:0` | (3204, 3487) | [warrior_woman](../resources/pickpocket/warrior_woman.md) 2 | yes | no | - |
-| `pickpocket:palace:1` | (3205, 3493) L1 | [guard1](../resources/pickpocket/guard1.md) 2 | yes | no | - |
+| `pickpocket:palace:0` | (3204, 3487) | [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | yes | no | - |
+| `pickpocket:palace:1` | (3205, 3493) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - |
 
 ## Ladders and stairs
 

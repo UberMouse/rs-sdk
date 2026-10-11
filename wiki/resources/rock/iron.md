@@ -32,8 +32,8 @@ Respawn is the base in game ticks (0.6 s), which the scripts shorten as more pla
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:3` | (2588, 3233) | (2590, 3231) | 7 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:4` | (2604, 3235) | (2604, 3235) | 6 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 9 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:9` | (2703, 3331) | (2704, 3331) | 11 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:10` | (2725, 3693) | (2725, 3693) | 9 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:8` | (2703, 3331) | (2704, 3331) | 11 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:9` | (2725, 3693) | (2725, 3693) | 9 | no | no | - |
 | [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 7 | yes | no | - |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | 2 | yes | no | - |

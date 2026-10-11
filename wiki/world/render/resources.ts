@@ -1,9 +1,9 @@
 // wiki/resources/<kind>/<subtype>.md: what the game data says about one resource subtype (the dbrow the
 // skill script reads, or a fishing spot's options), then every site holding it.
 import { rockSubtype, treeSubtype } from '../classify';
-import { first, type Config } from '../sources/configs';
+import { first } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
-import type { FeatureKind, Site, World } from '../types';
+import type { Feature, Site, World } from '../types';
 import {
     areaCell,
     areasOf,
@@ -17,16 +17,11 @@ import {
     table,
     wilderness,
     yesNo,
+    type PageData,
+    type ResourceKind,
 } from './common';
 
-/** The game data resource pages read besides the world. */
-export interface ResourceData {
-    dbrows: readonly DbRow[];
-    npcConfigs: ReadonlyMap<string, Config>;
-    objConfigs: ReadonlyMap<string, Config>;
-}
-
-const SINGULAR: Partial<Record<FeatureKind, string>> = {
+const SINGULAR: Record<ResourceKind, string> = {
     tree: 'Tree',
     rock: 'Rock',
     'fishing-spot': 'Fishing spot',
@@ -47,15 +42,20 @@ const xp = (row: DbRow, column: string): string => {
     return tenths === undefined ? '-' : String(Number(tenths) / 10);
 };
 
-/** Builds a fact table's cells from the data; `name` of an obj or npc config falls back to the config. */
-function facts(data: ResourceData) {
-    const objName = (obj: string): string => first(data.objConfigs.get(obj), 'name') ?? obj;
-    const npcName = (npc: string): string => first(data.npcConfigs.get(npc), 'name') ?? npc;
+/**
+ * Builds a fact table's cells from the data. The name of an obj or npc config falls back to the
+ * config, and a value missing from a dbrow tuple reads `-`, as `value` has it.
+ */
+function facts(data: PageData) {
+    const objName = (obj: string | undefined): string =>
+        obj === undefined ? '-' : (first(data.objConfigs.get(obj), 'name') ?? obj);
+    const npcName = (npc: string | undefined): string =>
+        npc === undefined ? '-' : (first(data.npcConfigs.get(npc), 'name') ?? npc);
     /** `loot` tuples (obj, min, max, weight, ...) as `Coins x3`, `Cake`, each once. */
     const loot = (row: DbRow): string => {
-        const items = (row.data.loot ?? []).map(([obj, min, max]) => {
+        const items = (row.data.loot ?? []).map(([obj, min = '-', max = '-']) => {
             const n = min === max ? min : `${min}-${max}`;
-            return `${objName(obj!)}${n === '1' ? '' : ` x${n}`}`;
+            return `${objName(obj)}${n === '1' ? '' : ` x${n}`}`;
         });
         return [...new Set(items)].join(', ') || '-';
     };
@@ -76,7 +76,7 @@ const fromRows = (name: string, rows: readonly DbRow[]): string =>
 const NO_ROW = (name: string): string[] => [`No \`${name}\` row names this subtype.`];
 
 /** The data section of a subtype's page, by kind; `configs` are the placed configs of the subtype. */
-function dataSection(kind: FeatureKind, subtype: string, configs: readonly string[], data: ResourceData): string[] {
+function dataSection(kind: ResourceKind, subtype: string, configs: readonly string[], data: PageData): string[] {
     const f = facts(data);
     switch (kind) {
         case 'tree': {
@@ -108,17 +108,17 @@ function dataSection(kind: FeatureKind, subtype: string, configs: readonly strin
                     }),
                 ),
                 '',
-                ...rows.flatMap(r =>
-                    r.data.successchance?.length
-                        ? [
-                              ...table(
-                                  ['Axe', 'Low', 'High'],
-                                  r.data.successchance.map(([axe, low, high]) => [f.objName(axe!), low!, high!]),
-                              ),
-                              '',
-                          ]
-                        : ['The row lists no success chance per axe.', ''],
-                ),
+                // Several rows' axe tables would read as one without a name over each.
+                ...rows.flatMap(r => [
+                    ...(rows.length > 1 ? [`\`${r.row}\`:`, ''] : []),
+                    ...(r.data.successchance?.length
+                        ? table(
+                              ['Axe', 'Low', 'High'],
+                              r.data.successchance.map(([axe, low = '-', high = '-']) => [f.objName(axe), low, high]),
+                          )
+                        : ['The row lists no success chance per axe.']),
+                    '',
+                ]),
                 STAT_RANDOM('Woodcutting'),
                 '',
                 'A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).',
@@ -178,7 +178,7 @@ function dataSection(kind: FeatureKind, subtype: string, configs: readonly strin
                         xp(r, 'experience'),
                         value(r, 'respawn_ticks'),
                         cell(r, 'owner') ? f.npcName(value(r, 'owner')) : '-',
-                        [...new Set((r.data.guard ?? []).map(([g]) => f.npcName(g!)))].join(', ') || '-',
+                        [...new Set((r.data.guard ?? []).map(([g]) => f.npcName(g)))].join(', ') || '-',
                         f.loot(r),
                     ]),
                 ),
@@ -218,26 +218,32 @@ function dataSection(kind: FeatureKind, subtype: string, configs: readonly strin
                 STAT_RANDOM('Thieving'),
             ];
         }
-        default:
-            return [];
     }
 }
 
+// Kinds whose subtype is a config: their pages are titled by the in-game name, with the config
+// beside it only where another subtype of the kind shares the name (man, man2 and man3 are all Man).
+const TITLED_BY_NAME: ReadonlySet<ResourceKind> = new Set<ResourceKind>(['pickpocket', 'stall']);
+
 /** One page per subtype of each resource kind, keyed by repo-relative path. */
-export function renderResources(world: World, data: ResourceData): Map<string, string> {
+export function renderResources(world: World, data: PageData): Map<string, string> {
     const areas = areasOf(world);
     const out = new Map<string, string>();
     for (const kind of RESOURCE_KINDS) {
         const sites = world.sites.filter(s => s.kind === kind);
-        const subtypes = [...new Set(sites.flatMap(s => Object.keys(s.counts)))].sort(cmp);
-        for (const subtype of subtypes) {
-            const path = resourcePath(kind, subtype);
-            if (out.has(path)) throw new Error(`${kind} subtypes share the page ${path}`);
+        const subtypes = [...new Set(sites.flatMap(s => Object.keys(s.counts)))].sort(cmp).map(subtype => {
             const holding = sites.filter(s => s.counts[subtype] !== undefined).sort(byAreaThenId);
-            const features = holding
+            const features: Feature[] = holding
                 .flatMap(s => s.features.map(i => world.features[i]!))
                 .filter(f => f.subtype === subtype);
-            const names = [...new Set(features.map(f => f.name))].sort(cmp);
+            return { subtype, holding, features, name: [...new Set(features.map(f => f.name))].sort(cmp).join(', ') };
+        });
+        const named = new Map<string, number>();
+        for (const { name } of subtypes) named.set(name, (named.get(name) ?? 0) + 1);
+        for (const { subtype, holding, features, name } of subtypes) {
+            const path = resourcePath(kind, subtype);
+            if (out.has(path)) throw new Error(`${kind} subtypes share the page ${path}`);
+            const title = !TITLED_BY_NAME.has(kind) ? subtype : named.get(name)! > 1 ? `${name} (${subtype})` : name;
             const configs = [...new Set(features.map(f => f.config))].sort(cmp);
             const f2p = holding.filter(s => s.f2p).length;
             const row = (s: Site): string[] => [
@@ -254,9 +260,9 @@ export function renderResources(world: World, data: ResourceData): Map<string, s
                 path,
                 [
                     GENERATED,
-                    `# ${SINGULAR[kind]}: ${subtype}`,
+                    `# ${SINGULAR[kind]}: ${title}`,
                     '',
-                    `In-game name: ${names.join(', ')}. ${count(holding.length, 'site')} with ${features.length} placed in all; ${f2p} of the sites in F2P.`,
+                    `In-game name: ${name}. ${count(holding.length, 'site')} with ${features.length} placed in all; ${f2p} of the sites in F2P.`,
                     '',
                     '## Data',
                     '',

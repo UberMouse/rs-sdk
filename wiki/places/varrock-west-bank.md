@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:varrock-west-bank:0` | (3187, 3441) | banker 6, booth 6 | yes | no | - |
+| `bank:varrock-west-bank:0` | (3187, 3441) | Bank booth 6, Banker 6 | yes | no | - |

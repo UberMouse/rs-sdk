@@ -13,21 +13,21 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:grand-tree:0` | (2457, 3498) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
-| `pickpocket:grand-tree:1` | (2462, 3503) | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:grand-tree:2` | (2470, 3503) L2 | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:grand-tree:3` | (2476, 3502) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [gnome](../resources/pickpocket/gnome.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:grand-tree:4` | (2476, 3501) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnomechildblue](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - |
+| `pickpocket:grand-tree:0` | (2457, 3498) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
+| `pickpocket:grand-tree:1` | (2462, 3503) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:grand-tree:2` | (2470, 3503) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:grand-tree:3` | (2476, 3502) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:grand-tree:4` | (2476, 3501) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome child](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:grand-tree:0` | (2460, 3506) | gnomekingsguard 2 | no | no | - |
-| `npc:grand-tree:1` | (2466, 3502) L2 | d_skingnomeknight 1, gnomekingsguard 2, gnomekingsguard2 3, gnomeknight 1 | no | no | - |
-| `npc:grand-tree:2` | (2468, 3495) L1 | gnomekingsguard 2, gnomekingsguard2 1 | no | no | - |
-| `npc:grand-tree:3` | (2474, 3502) | gnomekingsguard 2, gnomekingsguard2 2 | no | no | - |
-| `npc:grand-tree:4` | (2477, 3512) | gnomekingsguard 1 | no | no | - |
+| `npc:grand-tree:0` | (2460, 3506) | Gnome guard (gnomekingsguard) 2 | no | no | - |
+| `npc:grand-tree:1` | (2466, 3502) L2 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 3, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - |
+| `npc:grand-tree:2` | (2468, 3495) L1 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:grand-tree:3` | (2474, 3502) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - |
+| `npc:grand-tree:4` | (2477, 3512) | Gnome guard (gnomekingsguard) 1 | no | no | - |
 
 ## Ladders and stairs
 

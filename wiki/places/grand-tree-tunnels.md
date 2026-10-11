@@ -15,12 +15,12 @@ Ladder up into the Grand Tree at (2463, 3497).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:grand-tree-tunnels:0` | (2445, 9888) | rat 5 | no | no | - |
-| `npc:grand-tree-tunnels:1` | (2443, 9862) | bat 1 | no | no | - |
-| `npc:grand-tree-tunnels:2` | (2457, 9860) | bat 2, rat 2 | no | no | - |
-| `npc:grand-tree-tunnels:3` | (2455, 9878) | rat 5 | no | no | - |
-| `npc:grand-tree-tunnels:4` | (2467, 9892) | gnomekingsguard 3, rat 3 | no | no | - |
-| `npc:grand-tree-tunnels:5` | (2479, 9864) | bat 1, rat 6 | no | no | - |
+| `npc:grand-tree-tunnels:0` | (2445, 9888) | Rat 5 | no | no | - |
+| `npc:grand-tree-tunnels:1` | (2443, 9862) | Giant bat 1 | no | no | - |
+| `npc:grand-tree-tunnels:2` | (2457, 9860) | Giant bat 2, Rat 2 | no | no | - |
+| `npc:grand-tree-tunnels:3` | (2455, 9878) | Rat 5 | no | no | - |
+| `npc:grand-tree-tunnels:4` | (2467, 9892) | Gnome guard 3, Rat 3 | no | no | - |
+| `npc:grand-tree-tunnels:5` | (2479, 9864) | Giant bat 1, Rat 6 | no | no | - |
 
 ## Ladders and stairs
 

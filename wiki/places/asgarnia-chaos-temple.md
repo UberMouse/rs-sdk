@@ -19,4 +19,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | death_woman_outdoors1 1 | no | no | - |
+| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | Hygd 1 | no | no | - |

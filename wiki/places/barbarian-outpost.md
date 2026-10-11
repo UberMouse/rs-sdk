@@ -14,7 +14,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:barbarian-outpost:0` | (2550, 3564) | barbarian 4, barbarian_woman 2, chicken 3 | no | no | - |
+| `npc:barbarian-outpost:0` | (2550, 3564) | Barbarian 4, Barbarian woman 2, Chicken 3 | no | no | - |
 
 ## Ladders and stairs
 

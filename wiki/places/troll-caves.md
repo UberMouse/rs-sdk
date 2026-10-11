@@ -13,4 +13,4 @@ Trolls of quests/quest_troll and quests/quest_death; descriptive name.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:troll-caves:0` | (2923, 10031) | death_troll_melee4 1, death_troll_melee6 1, death_troll_melee7 1, troll_melee1 1 | no | no | - |
+| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - |

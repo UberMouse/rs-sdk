@@ -20,4 +20,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:elf-camp:0` | (2198, 3253) | regicide_darkelf 2, regicide_darkelf2 6 | no | no | - |
+| `npc:elf-camp:0` | (2198, 3253) | Elf warrior (regicide_darkelf) 2, Elf warrior (regicide_darkelf2) 6 | no | no | - |

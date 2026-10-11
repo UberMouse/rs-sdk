@@ -30,12 +30,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:kharidian-desert:0` | (3270, 3029) | desertminingcaptain 1, desertminingmercenary1 4, desertminingmercenary2 2 | no | no | - |
-| `npc:kharidian-desert:1` | (3286, 3036) L1 | desertminingmercenary1 1 | no | no | - |
-| `npc:kharidian-desert:2` | (3291, 3035) | desertminingmercenary1 1 | no | no | - |
-| `npc:kharidian-desert:3` | (3300, 3276) | imp 1, scorpion 1 | yes | no | - |
-| `npc:kharidian-desert:4` | (3303, 3035) | desertminingmercenary1 1 | no | no | - |
-| `npc:kharidian-desert:5` | (3319, 3250) | rat 1 | yes | no | - |
+| `npc:kharidian-desert:0` | (3270, 3029) | Mercenary (desertminingmercenary1) 4, Mercenary (desertminingmercenary2) 2, Mercenary Captain 1 | no | no | - |
+| `npc:kharidian-desert:1` | (3286, 3036) L1 | Mercenary (desertminingmercenary1) 1 | no | no | - |
+| `npc:kharidian-desert:2` | (3291, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - |
+| `npc:kharidian-desert:3` | (3300, 3276) | Imp 1, Scorpion 1 | yes | no | - |
+| `npc:kharidian-desert:4` | (3303, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - |
+| `npc:kharidian-desert:5` | (3319, 3250) | Rat 1 | yes | no | - |
 
 ## Ladders and stairs
 

@@ -1,13 +1,31 @@
 import { afterAll, describe, expect, test } from 'bun:test';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { drift, HAND_WRITTEN, README, readmeBody, renderWorld, writeFiles, type RenderData } from '../render';
+import {
+    drift,
+    HAND_WRITTEN,
+    openshopTitles,
+    README,
+    readmeBody,
+    renderWorld,
+    writeFiles,
+    type RenderData,
+} from '../render';
 import { bySiteId, link, slug } from '../render/common';
+import type { Config } from '../sources/configs';
 import type { Feature, FeatureKind, Site, World } from '../types';
 
-const feature = (kind: FeatureKind, subtype: string, name: string, config: string, x: number, z: number, level = 0) =>
-    ({ source: 'loc', id: 1, config, tile: { level, x, z }, kind, subtype, name }) satisfies Feature;
+const feature = (
+    kind: FeatureKind,
+    subtype: string,
+    name: string,
+    config: string,
+    x: number,
+    z: number,
+    level = 0,
+    source: 'loc' | 'npc' = 'loc',
+) => ({ source, id: 1, config, tile: { level, x, z }, kind, subtype, name }) satisfies Feature;
 
 const site = (
     id: string,
@@ -108,6 +126,7 @@ const data: RenderData = {
         ['bronze_axe', { name: ['Bronze axe'] }],
         ['rune_axe', { name: ['Rune axe'] }],
     ]),
+    shopTitles: new Map(),
     readmeBody: '\nHand-written.\n',
 };
 
@@ -274,7 +293,7 @@ describe('renderWorld', () => {
 
           | Area | Site | Centre | Stand | Counts | F2P |
           |---|---|---|---|---|---|
-          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | banker 1, booth 2 | yes |
+          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | Bank booth 2, Banker 1 | yes |
           "
         `);
     });
@@ -308,6 +327,347 @@ describe('renderWorld', () => {
             'tree subtypes share the page wiki/resources/tree/rune-stones.md',
         );
     });
+});
+
+// One site of each resource kind and of the kinds counted by in-game name, all in one town: two
+// pickpocket configs and a monster share the name Man, a shop is titled each of the three ways, and a
+// tree's subtype has two dbrow rows.
+const named: World = {
+    format: 1,
+    generatedFrom: 'abc123',
+    areas: [{ id: 'town', name: 'Town', rects: [{ x1: 3000, z1: 3000, x2: 3500, z2: 3500 }] }],
+    features: [
+        feature('rock', 'iron', 'Rocks', 'ironrock1', 3200, 3200),
+        feature('stall', 'bakerystall', "Baker's stall", 'bakerystall', 3200, 3200),
+        feature('fishing-spot', 'saltfish', 'Fishing spot', '0_1_saltfish', 3200, 3200, 0, 'npc'),
+        feature('fishing-spot', 'saltfish', 'Fishing spot', '0_2_saltfish', 3201, 3200, 0, 'npc'),
+        feature('thieving-chest', 'chest_10_coins', 'Chest', 'chest_10_coins', 3200, 3200),
+        feature('pickpocket', 'man', 'Man', 'man', 3200, 3200, 0, 'npc'),
+        feature('pickpocket', 'man2', 'Man', 'man2', 3201, 3200, 0, 'npc'),
+        feature('shop', 'swordshop', 'Shop keeper', 'swordkeeper', 3200, 3200, 0, 'npc'),
+        feature('shop', 'rottenshop', 'Fadli', 'fadli', 3201, 3200, 0, 'npc'),
+        feature('shop', 'junkshop', 'Junk man', 'junkman', 3202, 3200, 0, 'npc'),
+        feature('npc', 'goblin', 'Goblin', 'goblin', 3200, 3200, 0, 'npc'),
+        feature('npc', 'man3', 'Man', 'man3', 3201, 3200, 0, 'npc'),
+        feature('bank', 'banker', 'Banker', 'banker1', 3200, 3200, 0, 'npc'),
+        feature('bank', 'banker', 'Banker', 'banker2', 3201, 3200, 0, 'npc'),
+        feature('bank', 'booth', 'Bank booth', 'bankbooth', 3202, 3200),
+        feature('tree', 'willow', 'Willow', 'willowtree', 3200, 3200),
+    ],
+    sites: [
+        site('bank:town:0', ['town'], [12, 13, 14], { banker: 2, booth: 1 }),
+        site('fishing-spot:town:0', ['town'], [2, 3], { saltfish: 2 }),
+        site('npc:town:0', ['town'], [10, 11], { goblin: 1, man3: 1 }),
+        site('pickpocket:town:0', ['town'], [5, 6], { man: 1, man2: 1 }),
+        site('rock:town:0', ['town'], [0], { iron: 1 }),
+        site('shop:town:0', ['town'], [7, 8, 9], { junkshop: 1, rottenshop: 1, swordshop: 1 }),
+        site('stall:town:0', ['town'], [1], { bakerystall: 1 }),
+        site('thieving-chest:town:0', ['town'], [4], { chest_10_coins: 1 }),
+        site('tree:town:0', ['town'], [15], { willow: 1 }),
+    ],
+};
+
+const namedData: RenderData = {
+    dbrows: [
+        {
+            row: 'iron_rock',
+            table: 'mining_table',
+            data: {
+                rock: [['ironrock1']],
+                ore_name: [['iron']],
+                rock_level: [['15']],
+                rock_exp: [['350']],
+                rock_output: [['iron_ore']],
+                rock_respawnrate: [['9']],
+                rock_successchance: [['96', '350']],
+            },
+        },
+        {
+            row: 'bakery',
+            table: 'stealing',
+            data: {
+                loc: [['bakerystall']],
+                level: [['5']],
+                experience: [['160']],
+                respawn_ticks: [['4']],
+                owner: [['baker']],
+                guard: [['guard1'], ['guard1']],
+                loot: [['cake', '1', '1', '10'], ['coins', '2', '5', '10'], ['cake', '1', '1', '5'], []],
+            },
+        },
+        {
+            row: 'chest_10',
+            table: 'trapped_chest',
+            data: {
+                loc: [['chest_10_coins']],
+                level: [['13']],
+                experience: [['78']],
+                respawn_ticks: [['12']],
+                loot: [['coins', '10', '10']],
+            },
+        },
+        {
+            row: 'man_row',
+            table: 'pickpocket',
+            data: {
+                npc: [['man'], ['man2']],
+                level: [['1']],
+                experience: [['80']],
+                success_chance: [['180', '240']],
+                stun_ticks: [['8']],
+                stun_damage: [['1']],
+                loot: [['coins', '3', '3']],
+            },
+        },
+        {
+            row: 'willow_tree_table',
+            table: 'woodcutting_trees',
+            data: { tree: [['willowtree']], successchance: [['bronze_axe', '8', '24'], ['rune_axe']] },
+        },
+        { row: 'willow_table', table: 'woodcutting_trees', data: { tree: [['willowtree2']] } },
+    ],
+    npcConfigs: new Map<string, Config>([
+        ['0_1_saltfish', { name: ['Fishing spot'], op1: ['Net'], op3: ['Bait'], op5: ['hidden'] }],
+        ['0_2_saltfish', { name: ['Fishing spot'] }],
+        ['baker', { name: ['Baker'] }],
+        ['guard1', { name: ['Guard'] }],
+        ['swordkeeper', { param: ['owned_shop,swordshop', 'shop_title,Sword Shop'] }],
+        // The explicit call's title wins over the npc's own, and a title for another inv is not this one's.
+        ['fadli', { param: ['owned_shop,rottenshop', "shop_title,Fadli's Shop"] }],
+        ['junkman', { param: ['owned_shop,othershop', 'shop_title,Other Shop'] }],
+    ]),
+    objConfigs: new Map([
+        ['iron_ore', { name: ['Iron ore'] }],
+        ['cake', { name: ['Cake'] }],
+        ['coins', { name: ['Coins'] }],
+        ['bronze_axe', { name: ['Bronze axe'] }],
+    ]),
+    shopTitles: new Map([['rottenshop', 'Shop of Distaste']]),
+    readmeBody: '',
+};
+
+const namedPages = renderWorld(named, namedData);
+
+/** A resource page's Data section, without the heading. */
+const dataOf = (path: string): string => {
+    const page = namedPages.get(path)!;
+    return page.slice(page.indexOf('## Data\n') + '## Data\n'.length, page.indexOf('## Sites\n'));
+};
+
+describe('in-game names and resource data', () => {
+    test('a place page counts by in-game name: a shop by its title, a config beside a name the page shares', () => {
+        expect(namedPages.get('wiki/places/town.md')).toMatchInlineSnapshot(`
+          "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
+          # Town
+
+          ## [Banks](../services/bank.md)
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`bank:town:0\` | (3200, 3200) | Bank booth 1, Banker 2 | yes | no | - |
+
+          ## [Shops](../services/shop.md)
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`shop:town:0\` | (3200, 3200) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | no | - |
+
+          ## Trees
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`tree:town:0\` | (3200, 3200) | [willow](../resources/tree/willow.md) 1 | yes | no | - |
+
+          ## Rocks
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`rock:town:0\` | (3200, 3200) | [iron](../resources/rock/iron.md) 1 | yes | no | - |
+
+          ## Fishing spots
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`fishing-spot:town:0\` | (3200, 3200) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - |
+
+          ## Stalls
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`stall:town:0\` | (3200, 3200) | [Baker's stall](../resources/stall/bakerystall.md) 1 | yes | no | - |
+
+          ## Thieving chests
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`thieving-chest:town:0\` | (3200, 3200) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | yes | no | - |
+
+          ## Pickpocket targets
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`pickpocket:town:0\` | (3200, 3200) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
+
+          ## Monsters
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|
+          | \`npc:town:0\` | (3200, 3200) | Goblin 1, Man (man3) 1 | yes | no | - |
+          "
+        `);
+    });
+
+    test('a services page: shops by title with the inv beside it, banks by name', () => {
+        expect(namedPages.get('wiki/services/shop.md')).toMatchInlineSnapshot(`
+          "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
+          # Shops
+
+          1 site, 1 of them in F2P.
+
+          | Area | Site | Centre | Stand | Counts | F2P |
+          |---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`shop:town:0\` | (3200, 3200) | (3200, 3199) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes |
+          "
+        `);
+        expect(namedPages.get('wiki/services/bank.md')).toMatchInlineSnapshot(`
+          "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
+          # Banks
+
+          1 site, 1 of them in F2P.
+
+          | Area | Site | Centre | Stand | Counts | F2P |
+          |---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`bank:town:0\` | (3200, 3200) | (3200, 3199) | Bank booth 1, Banker 2 | yes |
+          "
+        `);
+    });
+
+    test('a pickpocket page is titled by its in-game name, with the config where another shares it', () => {
+        expect(namedPages.get('wiki/resources/pickpocket/man2.md')).toMatchInlineSnapshot(`
+          "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
+          # Pickpocket target: Man (man2)
+
+          In-game name: Man. 1 site with 1 placed in all; 1 of the sites in F2P.
+
+          ## Data
+
+          From the \`pickpocket\` row \`man_row\`.
+
+          | Level | XP | Low | High | Stun (ticks) | Stun damage | Loot |
+          |---|---|---|---|---|---|---|
+          | 1 | 8 | 180 | 240 | 8 | 1 | Coins x3 |
+
+          Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Thieving level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+          ## Sites
+
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|---|---|
+          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - |
+          "
+        `);
+    });
+
+    test("a stall's page is titled by its in-game name; its data: owner, guards once, loot once", () => {
+        expect(namedPages.get('wiki/resources/stall/bakerystall.md')!.split('\n')[1]).toBe("# Stall: Baker's stall");
+        expect(dataOf('wiki/resources/stall/bakerystall.md')).toMatchInlineSnapshot(`
+          "
+          From the \`stealing\` row \`bakery\`.
+
+          | Level | XP | Respawn (ticks) | Owner | Guards | Loot |
+          |---|---|---|---|---|---|
+          | 5 | 16 | 4 | Baker | Guard | Cake, Coins x2-5, - x- |
+
+          "
+        `);
+    });
+
+    test('rock, fishing spot and thieving chest data', () => {
+        expect(dataOf('wiki/resources/rock/iron.md')).toMatchInlineSnapshot(`
+          "
+          From the \`mining_table\` row \`iron_rock\`.
+
+          | Row | Level | XP | Ore | Respawn (ticks) | Low | High |
+          |---|---|---|---|---|---|---|
+          | iron_rock | 15 | 35 | Iron ore | 9 | 96 | 350 |
+
+          Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Mining level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts). The pair is the same whatever the pickaxe: mining_table has no pickaxe column.
+
+          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+
+          "
+        `);
+        expect(dataOf('wiki/resources/fishing-spot/saltfish.md')).toMatchInlineSnapshot(`
+          "
+          The options of each spot config placed in the world (its npc config).
+
+          | Config | Name | Options |
+          |---|---|---|
+          | 0_1_saltfish | Fishing spot | Net, Bait |
+          | 0_2_saltfish | Fishing spot | - |
+
+          "
+        `);
+        expect(dataOf('wiki/resources/thieving-chest/chest_10_coins.md')).toMatchInlineSnapshot(`
+          "
+          From the \`trapped_chest\` row \`chest_10\`.
+
+          | Level | XP | Respawn (ticks) | Loot |
+          |---|---|---|---|
+          | 13 | 7.8 | 12 | Coins x10 |
+
+          "
+        `);
+    });
+
+    test("a subtype's several rows each name their axe table; a missing tuple value reads -", () => {
+        expect(dataOf('wiki/resources/tree/willow.md')).toMatchInlineSnapshot(`
+          "
+          From the \`woodcutting_trees\` rows \`willow_tree_table\`, \`willow_table\`.
+
+          | Level | XP | Product | Respawn (ticks) | Depletes |
+          |---|---|---|---|---|
+          | - | - | - | - | - |
+          | - | - | - | - | - |
+
+          \`willow_tree_table\`:
+
+          | Axe | Low | High |
+          |---|---|---|
+          | Bronze axe | 8 | 24 |
+          | rune_axe | - | - |
+
+          \`willow_table\`:
+
+          The row lists no success chance per axe.
+
+          Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Woodcutting level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+          A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).
+
+          Respawn is the base in game ticks (0.6 s), which the scripts shorten as more players are online (general/scripts/player_count.rs2).
+
+          "
+        `);
+    });
+});
+
+describe('openshopTitles', () => {
+    test('reads the title literal of each explicit call, skipping commented-out ones', () => {
+        const titles = openshopTitles([
+            '\n~openshop(b, 550, 1000, 20, "Zaff\'s \\"Staffs\\"");\nif (x) ~openshop(a, 1, 1, 1, "A");',
+            '\n// ~openshop(c, 1, 1, 1, "C");\n~openshop(d, 1, 1, 1, $title);\n~openshop(a, 1, 1, 1, "A");',
+        ]);
+        expect([...titles]).toEqual([
+            ['a', 'A'],
+            ['b', 'Zaff\'s "Staffs"'],
+        ]);
+    });
+
+    test('two titles for one inv throw', () =>
+        expect(() => openshopTitles(['~openshop(a, 1, 1, 1, "A");', '~openshop(a, 1, 1, 1, "B");'])).toThrow(
+            '~openshop calls give a two titles: "A" and "B"',
+        ));
 });
 
 describe('helpers', () => {
@@ -373,5 +733,32 @@ describe('writeFiles and drift', () => {
         expect(existsSync(join(root, 'wiki/resources'))).toBe(true);
         expect(readFileSync(join(root, 'wiki/other.md'), 'utf8')).toBe('not generated');
         expect(drift(files, root)).toEqual([]);
+    });
+
+    test('drift reports a path it cannot read as a file (a folder there) as differing', () => {
+        const root = tree();
+        mkdirSync(join(root, 'wiki/world.json'));
+        expect(drift(files, root)).toContain('wiki/world.json');
+    });
+
+    test('writeFiles refuses a path outside world.json, the README and the generated folders, writing nothing', () => {
+        for (const p of ['wiki/other.md', 'wiki/places/../other.md', '../outside.md', 'wiki/placesx/a.md']) {
+            const root = tree();
+            expect(() => writeFiles(new Map([...files, [p, 'x']]), root)).toThrow(`not ${p}`);
+            expect(readFileSync(join(root, 'wiki/places/kept.md'), 'utf8')).toBe('old text');
+            expect(existsSync(join(root, 'wiki/resources/rock/old.md'))).toBe(true);
+        }
+        expect(() => writeFiles(new Map([[README, 'x']]), tree())).not.toThrow();
+    });
+
+    test('writeFiles refuses a generated folder that is a symlink, leaving its target alone', () => {
+        const root = tree();
+        const elsewhere = mkdtempSync(join(tmpdir(), 'render-test-target-'));
+        roots.push(elsewhere);
+        writeFileSync(join(elsewhere, 'precious.md'), 'keep');
+        rmSync(join(root, 'wiki/places'), { recursive: true });
+        symlinkSync(elsewhere, join(root, 'wiki/places'));
+        expect(() => writeFiles(files, root)).toThrow('wiki/places is a symlink');
+        expect(readFileSync(join(elsewhere, 'precious.md'), 'utf8')).toBe('keep');
     });
 });

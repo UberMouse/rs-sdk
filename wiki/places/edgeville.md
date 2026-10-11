@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:edgeville:0` | (3081, 3511) | generalshop5 2 | yes | no | - |
+| `shop:edgeville:0` | (3081, 3511) | Edgeville General Store (generalshop5) 2 | yes | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -30,13 +30,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:edgeville:0` | (3098, 3509) | [man](../resources/pickpocket/man.md) 1, [man2](../resources/pickpocket/man2.md) 1, [man3](../resources/pickpocket/man3.md) 3 | yes | no | - |
+| `pickpocket:edgeville:0` | (3098, 3509) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 3 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:edgeville:0` | (3078, 3499) | imp 1 | yes | no | - |
+| `npc:edgeville:0` | (3078, 3499) | Imp 1 | yes | no | - |
 
 ## Ladders and stairs
 

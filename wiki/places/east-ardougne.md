@@ -7,12 +7,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:east-ardougne:0` | (2614, 3293) | adventurershop 2 | no | no | - |
-| `shop:east-ardougne:1` | (2656, 3296) | spicestall 1, topshop 1 | no | no | - |
-| `shop:east-ardougne:2` | (2656, 3314) | bakery 1, silverstall 1 | no | no | - |
-| `shop:east-ardougne:3` | (2666, 3295) | furshop 1 | no | no | - |
-| `shop:east-ardougne:4` | (2669, 3303) | ardougnegemstall 1 | no | no | - |
-| `shop:east-ardougne:5` | (2669, 3310) | bakery 1 | no | no | - |
+| `shop:east-ardougne:0` | (2614, 3293) | Aemad's Adventuring Supplies. (adventurershop) 2 | no | no | - |
+| `shop:east-ardougne:1` | (2656, 3296) | Ardougne Spice Stall. (spicestall) 1, Zenesha's Plate Mail Body Shop. (topshop) 1 | no | no | - |
+| `shop:east-ardougne:2` | (2656, 3314) | Ardougne Baker's Stall. (bakery) 1, Ardougne Silver Stall. (silverstall) 1 | no | no | - |
+| `shop:east-ardougne:3` | (2666, 3295) | Ardougne Fur Stall. (furshop) 1 | no | no | - |
+| `shop:east-ardougne:4` | (2669, 3303) | Ardougne Gem Stall. (ardougnegemstall) 1 | no | no | - |
+| `shop:east-ardougne:5` | (2669, 3310) | Ardougne Baker's Stall. (bakery) 1 | no | no | - |
 
 ## [Furnaces](../services/furnace.md)
 
@@ -88,9 +88,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `stall:east-ardougne:0` | (2660, 3312) | [bakers_stall_stealing](../resources/stall/bakers_stall_stealing.md) 2, [silk_stall_stealing](../resources/stall/silk_stall_stealing.md) 1, [silver_stall_stealing](../resources/stall/silver_stall_stealing.md) 1 | no | no | - |
-| `stall:east-ardougne:1` | (2659, 3298) | [fur_stall_stealing](../resources/stall/fur_stall_stealing.md) 1, [silk_stall_stealing](../resources/stall/silk_stall_stealing.md) 1, [spice_stall_stealing](../resources/stall/spice_stall_stealing.md) 1 | no | no | - |
-| `stall:east-ardougne:2` | (2667, 3303) | [gem_stall_stealing](../resources/stall/gem_stall_stealing.md) 1 | no | no | - |
+| `stall:east-ardougne:0` | (2660, 3312) | [Baker's stall](../resources/stall/bakers_stall_stealing.md) 2, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Silver stall](../resources/stall/silver_stall_stealing.md) 1 | no | no | - |
+| `stall:east-ardougne:1` | (2659, 3298) | [Fur stall](../resources/stall/fur_stall_stealing.md) 1, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Spice stall](../resources/stall/spice_stall_stealing.md) 1 | no | no | - |
+| `stall:east-ardougne:2` | (2667, 3303) | [Gem stall](../resources/stall/gem_stall_stealing.md) 1 | no | no | - |
 
 ## Thieving chests
 
@@ -106,26 +106,26 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:east-ardougne:0` | (2580, 3298) | [knight_of_ardougne](../resources/pickpocket/knight_of_ardougne.md) 1, [paladin](../resources/pickpocket/paladin.md) 7, [warrior_woman](../resources/pickpocket/warrior_woman.md) 3 | no | no | - |
-| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | [paladin](../resources/pickpocket/paladin.md) 8 | no | no | - |
-| `pickpocket:east-ardougne:2` | (2573, 3322) L1 | [ardougnian_female1](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
-| `pickpocket:east-ardougne:3` | (2584, 3304) L1 | [paladin](../resources/pickpocket/paladin.md) 5 | no | no | - |
-| `pickpocket:east-ardougne:4` | (2613, 3317) | [ardougnian_female1](../resources/pickpocket/ardougnian_female1.md) 1, [ardougnian_male1](../resources/pickpocket/ardougnian_male1.md) 1 | no | no | - |
-| `pickpocket:east-ardougne:5` | (2628, 3294) | [ardougnian_male1](../resources/pickpocket/ardougnian_male1.md) 1, [hero](../resources/pickpocket/hero.md) 1, [warrior_woman](../resources/pickpocket/warrior_woman.md) 2 | no | no | - |
-| `pickpocket:east-ardougne:6` | (2621, 3293) L1 | [ardougnian_female1](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
-| `pickpocket:east-ardougne:7` | (2636, 3339) | [ardougne_guard](../resources/pickpocket/ardougne_guard.md) 3 | no | no | - |
-| `pickpocket:east-ardougne:8` | (2659, 3308) | [ardougne_guard](../resources/pickpocket/ardougne_guard.md) 7, [hero](../resources/pickpocket/hero.md) 2, [knight_of_ardougne](../resources/pickpocket/knight_of_ardougne.md) 4, [paladin](../resources/pickpocket/paladin.md) 2 | no | no | - |
+| `pickpocket:east-ardougne:0` | (2580, 3298) | [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 1, [Paladin](../resources/pickpocket/paladin.md) 7, [Warrior woman](../resources/pickpocket/warrior_woman.md) 3 | no | no | - |
+| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | [Paladin](../resources/pickpocket/paladin.md) 8 | no | no | - |
+| `pickpocket:east-ardougne:2` | (2573, 3322) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
+| `pickpocket:east-ardougne:3` | (2584, 3304) L1 | [Paladin](../resources/pickpocket/paladin.md) 5 | no | no | - |
+| `pickpocket:east-ardougne:4` | (2613, 3317) | [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
+| `pickpocket:east-ardougne:5` | (2628, 3294) | [Hero](../resources/pickpocket/hero.md) 1, [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | no | no | - |
+| `pickpocket:east-ardougne:6` | (2621, 3293) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
+| `pickpocket:east-ardougne:7` | (2636, 3339) | [Guard](../resources/pickpocket/ardougne_guard.md) 3 | no | no | - |
+| `pickpocket:east-ardougne:8` | (2659, 3308) | [Guard](../resources/pickpocket/ardougne_guard.md) 7, [Hero](../resources/pickpocket/hero.md) 2, [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 4, [Paladin](../resources/pickpocket/paladin.md) 2 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:east-ardougne:0` | (2572, 3284) L2 | ardougne_archer 1 | no | no | - |
-| `npc:east-ardougne:1` | (2572, 3309) L2 | ardougne_archer 1 | no | no | - |
-| `npc:east-ardougne:2` | (2585, 3287) L2 | ardougne_archer 2 | no | no | - |
-| `npc:east-ardougne:3` | (2585, 3306) L2 | ardougne_archer 2 | no | no | - |
-| `npc:east-ardougne:4` | (2601, 3269) | smallscorpion 1 | no | no | - |
-| `npc:east-ardougne:5` | (2664, 3342) | cow 5 | no | no | - |
+| `npc:east-ardougne:0` | (2572, 3284) L2 | Archer 1 | no | no | - |
+| `npc:east-ardougne:1` | (2572, 3309) L2 | Archer 1 | no | no | - |
+| `npc:east-ardougne:2` | (2585, 3287) L2 | Archer 2 | no | no | - |
+| `npc:east-ardougne:3` | (2585, 3306) L2 | Archer 2 | no | no | - |
+| `npc:east-ardougne:4` | (2601, 3269) | Pit Scorpion 1 | no | no | - |
+| `npc:east-ardougne:5` | (2664, 3342) | Cow 5 | no | no | - |
 
 ## Ladders and stairs
 

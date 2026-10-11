@@ -18,7 +18,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:white-wolf-mountain:0` | (2849, 3513) | icewarrior 2 | no | yes | - |
+| `npc:white-wolf-mountain:0` | (2849, 3513) | Ice warrior 2 | no | yes | - |
 
 ## Ladders and stairs
 

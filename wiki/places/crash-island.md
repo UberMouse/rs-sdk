@@ -19,10 +19,10 @@ Lumdo and Waydar (quests/quest_mm npcs).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:crash-island:0` | (2894, 2715) | mm_jungle_scorpion 1 | no | no | - |
-| `npc:crash-island:1` | (2899, 2734) | mm_jungle_scorpion 1 | no | no | - |
-| `npc:crash-island:2` | (2902, 2724) | mm_jungle_scorpion 2 | no | no | - |
-| `npc:crash-island:3` | (2911, 2718) | mm_jungle_snake 1 | no | no | - |
-| `npc:crash-island:4` | (2913, 2726) | mm_jungle_snake 1 | no | no | - |
-| `npc:crash-island:5` | (2924, 2716) | mm_jungle_snake 2 | no | no | - |
-| `npc:crash-island:6` | (2921, 2727) | mm_jungle_snake 1 | no | no | - |
+| `npc:crash-island:0` | (2894, 2715) | Scorpion 1 | no | no | - |
+| `npc:crash-island:1` | (2899, 2734) | Scorpion 1 | no | no | - |
+| `npc:crash-island:2` | (2902, 2724) | Scorpion 2 | no | no | - |
+| `npc:crash-island:3` | (2911, 2718) | Snake 1 | no | no | - |
+| `npc:crash-island:4` | (2913, 2726) | Snake 1 | no | no | - |
+| `npc:crash-island:5` | (2924, 2716) | Snake 2 | no | no | - |
+| `npc:crash-island:6` | (2921, 2727) | Snake 1 | no | no | - |

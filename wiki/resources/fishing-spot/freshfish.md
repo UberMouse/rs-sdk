@@ -32,7 +32,7 @@ The options of each spot config placed in the world (its npc config).
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:2` | (2508, 3421) | (2508, 3420) | 1 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:4` | (2532, 3409) | (2531, 3407) | 5 | no | no | - |
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:5` | (2564, 3372) | (2563, 3372) | 2 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2716, 3531) | (2716, 3531) | 4 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2716, 3531) | (2716, 3531) | 4 | no | no | - |
 | [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | (2382, 3418) | 7 | no | no | - |
 | [Shilo Village (Karamja)](../../places/shilo-village.md) | `fishing-spot:shilo-village:0` | (2855, 2974) | (2855, 2972) | 3 | no | no | - |
 | [Barbarian Village fishing (Barbarian Village)](../../places/barbarian-village-fishing.md) | `fishing-spot:barbarian-village-fishing:0` | (3104, 3424) | (3103, 3424) | 1 | yes | yes | - |

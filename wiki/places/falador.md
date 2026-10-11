@@ -7,10 +7,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:falador:0` | (2944, 3334) | gemshop 1 | yes | yes | - |
-| `shop:falador:1` | (2954, 3387) | generalshop4 2, maceshop 1 | yes | yes | - |
-| `shop:falador:2` | (2973, 3312) | chainmailshop 1 | yes | yes | - |
-| `shop:falador:3` | (2979, 3383) | shieldshop 1 | yes | yes | - |
+| `shop:falador:0` | (2944, 3334) | Herquin's Gems. (gemshop) 1 | yes | yes | - |
+| `shop:falador:1` | (2954, 3387) | Falador General Store (generalshop4) 2, Flynn's Mace Market. (maceshop) 1 | yes | yes | - |
+| `shop:falador:2` | (2973, 3312) | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes | yes | - |
+| `shop:falador:3` | (2979, 3383) | Cassies' Shield Shop. (shieldshop) 1 | yes | yes | - |
 
 ## [Furnaces](../services/furnace.md)
 
@@ -55,34 +55,34 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:falador:0` | (2952, 3381) | [guard1](../resources/pickpocket/guard1.md) 2 | yes | yes | - |
-| `pickpocket:falador:1` | (2959, 3307) | [man2](../resources/pickpocket/man2.md) 1 | yes | yes | - |
-| `pickpocket:falador:2` | (2966, 3381) | [guard1](../resources/pickpocket/guard1.md) 3, [man](../resources/pickpocket/man.md) 1, [woman3](../resources/pickpocket/woman3.md) 1 | yes | yes | - |
-| `pickpocket:falador:3` | (2981, 3378) | [man3](../resources/pickpocket/man3.md) 1 | yes | yes | - |
-| `pickpocket:falador:4` | (3006, 3322) | [guard1](../resources/pickpocket/guard1.md) 3 | yes | yes | - |
+| `pickpocket:falador:0` | (2952, 3381) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | yes | - |
+| `pickpocket:falador:1` | (2959, 3307) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - |
+| `pickpocket:falador:2` | (2966, 3381) | [Guard](../resources/pickpocket/guard1.md) 3, [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman3.md) 1 | yes | yes | - |
+| `pickpocket:falador:3` | (2981, 3378) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | yes | - |
+| `pickpocket:falador:4` | (3006, 3322) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:falador:0` | (2947, 3329) | imp 1 | yes | yes | - |
-| `npc:falador:1` | (2951, 3360) | imp 1 | yes | yes | - |
-| `npc:falador:2` | (2971, 3328) L2 | white_knight 3 | yes | yes | - |
-| `npc:falador:3` | (2969, 3329) L1 | white_knight 1 | yes | yes | - |
-| `npc:falador:4` | (2980, 3345) | white_knight 4 | yes | yes | - |
-| `npc:falador:5` | (2974, 3337) L1 | white_knight 1 | yes | yes | - |
-| `npc:falador:6` | (2976, 3339) | white_knight 1 | yes | yes | - |
-| `npc:falador:7` | (2983, 3334) L1 | white_knight 3 | yes | yes | - |
-| `npc:falador:8` | (2985, 3345) L2 | white_knight 4 | yes | yes | - |
-| `npc:falador:9` | (2985, 3345) L1 | white_knight 2 | yes | yes | - |
-| `npc:falador:10` | (2982, 3352) L3 | white_knight 1 | yes | yes | - |
-| `npc:falador:11` | (2983, 3332) | white_knight 2 | yes | yes | - |
-| `npc:falador:12` | (2996, 3342) | white_knight 1 | yes | yes | - |
-| `npc:falador:13` | (3009, 3307) | imp 1 | yes | no | - |
-| `npc:falador:14` | (3013, 3314) | imp 2 | yes | no | - |
-| `npc:falador:15` | (3012, 3337) | dwarf_normal 1 | yes | no | - |
-| `npc:falador:16` | (3019, 3333) | dwarf_normal 1 | yes | no | - |
-| `npc:falador:17` | (3025, 3347) | dwarf_normal 1 | yes | no | - |
+| `npc:falador:0` | (2947, 3329) | Imp 1 | yes | yes | - |
+| `npc:falador:1` | (2951, 3360) | Imp 1 | yes | yes | - |
+| `npc:falador:2` | (2971, 3328) L2 | White Knight 3 | yes | yes | - |
+| `npc:falador:3` | (2969, 3329) L1 | White Knight 1 | yes | yes | - |
+| `npc:falador:4` | (2980, 3345) | White Knight 4 | yes | yes | - |
+| `npc:falador:5` | (2974, 3337) L1 | White Knight 1 | yes | yes | - |
+| `npc:falador:6` | (2976, 3339) | White Knight 1 | yes | yes | - |
+| `npc:falador:7` | (2983, 3334) L1 | White Knight 3 | yes | yes | - |
+| `npc:falador:8` | (2985, 3345) L2 | White Knight 4 | yes | yes | - |
+| `npc:falador:9` | (2985, 3345) L1 | White Knight 2 | yes | yes | - |
+| `npc:falador:10` | (2982, 3352) L3 | White Knight 1 | yes | yes | - |
+| `npc:falador:11` | (2983, 3332) | White Knight 2 | yes | yes | - |
+| `npc:falador:12` | (2996, 3342) | White Knight 1 | yes | yes | - |
+| `npc:falador:13` | (3009, 3307) | Imp 1 | yes | no | - |
+| `npc:falador:14` | (3013, 3314) | Imp 2 | yes | no | - |
+| `npc:falador:15` | (3012, 3337) | Dwarf 1 | yes | no | - |
+| `npc:falador:16` | (3019, 3333) | Dwarf 1 | yes | no | - |
+| `npc:falador:17` | (3025, 3347) | Dwarf 1 | yes | no | - |
 
 ## Ladders and stairs
 

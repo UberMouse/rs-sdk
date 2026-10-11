@@ -4,24 +4,28 @@ import {
     areaCell,
     areasOf,
     byAreaThenId,
-    contents,
     coord,
     count,
     GENERATED,
     kindTitle,
+    labeller,
+    parts,
     SERVICE_KINDS,
     servicePath,
     table,
     yesNo,
+    type PageData,
 } from './common';
 
 /** One page per service kind, keyed by repo-relative path. */
-export function renderServices(world: World): Map<string, string> {
+export function renderServices(world: World, data: PageData): Map<string, string> {
     const areas = areasOf(world);
     const out = new Map<string, string>();
     for (const kind of SERVICE_KINDS) {
         const path = servicePath(kind);
         const sites = world.sites.filter(s => s.kind === kind).sort(byAreaThenId);
+        const held = sites.map(s => parts(s, world, data));
+        const label = labeller(held.flat().map(p => [kind, p] as const));
         const f2p = sites.filter(s => s.f2p).length;
         out.set(
             path,
@@ -33,12 +37,12 @@ export function renderServices(world: World): Map<string, string> {
                 '',
                 ...table(
                     ['Area', 'Site', 'Centre', 'Stand', 'Counts', 'F2P'],
-                    sites.map(s => [
+                    sites.map((s, i) => [
                         areaCell(path, areas, s.areaPath),
                         `\`${s.id}\``,
                         coord(s.centre),
                         s.stand ? coord(s.stand) : '-',
-                        contents(s, world.features).join(', '),
+                        held[i]!.map(p => `${label(kind, p)} ${p.n}`).join(', '),
                         yesNo(s.f2p),
                     ]),
                 ),

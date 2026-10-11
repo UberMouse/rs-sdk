@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:draynor-market:0` | (3079, 3250) | aprilfoolshorseshop 1 | yes | no | - |
+| `shop:draynor-market:0` | (3079, 3250) | Diango's Toy Store (aprilfoolshorseshop) 1 | yes | no | - |
 
 ## [Fires](../services/fire.md)
 

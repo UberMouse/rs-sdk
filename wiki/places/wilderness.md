@@ -5,8 +5,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:wilderness:0` | (3025, 3701) | taxfree 1 | yes | yes | 23 |
-| `shop:wilderness:1` | (3036, 3707) | pizzabaseshop 1 | yes | yes | 24 |
+| `shop:wilderness:0` | (3025, 3701) | Bandit Duty Free (taxfree) 1 | yes | yes | 23 |
+| `shop:wilderness:1` | (3036, 3707) | Tony's Pizza Bases (pizzabaseshop) 1 | yes | yes | 24 |
 
 ## [Furnaces](../services/furnace.md)
 
@@ -231,7 +231,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:wilderness:0` | (3050, 3704) | [saltfish](../resources/fishing-spot/saltfish.md) 1 | yes | yes | 24 |
+| `fishing-spot:wilderness:0` | (3050, 3704) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | 24 |
 
 ## Thieving chests
 
@@ -243,127 +243,127 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:wilderness:0` | (3078, 3913) | [rogue](../resources/pickpocket/rogue.md) 2 | no | no | 50 |
+| `pickpocket:wilderness:0` | (3078, 3913) | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 50 |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:wilderness:0` | (2945, 3866) | icewarrior 1 | yes | no | 44 |
-| `npc:wilderness:1` | (2946, 3857) | icewarrior 1 | yes | no | 43 |
-| `npc:wilderness:2` | (2954, 3885) | icegiant 5, icewarrior 9 | yes | no | 48 |
-| `npc:wilderness:3` | (2953, 3926) | ice_spider 3, icegiant 2, icewarrior 7 | no | no | 53 |
-| `npc:wilderness:4` | (2953, 3858) | icewarrior 1 | yes | no | 43 |
-| `npc:wilderness:5` | (2955, 3945) | icegiant 1 | no | no | 54 |
-| `npc:wilderness:6` | (2958, 3866) | icewarrior 1 | yes | no | 44 |
-| `npc:wilderness:7` | (2962, 3755) | ghost 1 | yes | no | 30 |
-| `npc:wilderness:8` | (2967, 3946) | icewarrior 2 | no | no | 54 |
-| `npc:wilderness:9` | (2971, 3938) | icewarrior 1 | no | no | 53 |
-| `npc:wilderness:10` | (2982, 3568) | bearded_dark_wizard 3, young_dark_wizard 5 | yes | no | 7 |
-| `npc:wilderness:11` | (2979, 3950) | icegiant 1, icewarrior 2, skeleton_armed 1 | no | no | 55 |
-| `npc:wilderness:12` | (2981, 3699) | rat 1 | yes | no | 23 |
-| `npc:wilderness:13` | (2988, 3685) | giantspider1 5, spider 6 | yes | no | 22 |
-| `npc:wilderness:14` | (2984, 3933) | icewarrior 1 | no | no | 52 |
-| `npc:wilderness:15` | (2991, 3943) | skeleton_armed 2 | no | no | 54 |
-| `npc:wilderness:16` | (2990, 3755) | ghost 1 | yes | no | 30 |
-| `npc:wilderness:17` | (2998, 3701) | rat 4 | yes | no | 23 |
-| `npc:wilderness:18` | (3017, 3593) | skeleton_unarmed 13 | yes | yes | 11 |
-| `npc:wilderness:19` | (3025, 3851) | aggressive_black_knight 5, lesser_demon 4 | yes | yes | 43 |
-| `npc:wilderness:20` | (3021, 3761) | dwarf_chaos 4 | yes | no | 31 |
-| `npc:wilderness:21` | (3025, 3568) | scorpion 1 | yes | no | 7 |
-| `npc:wilderness:22` | (3028, 3577) | scorpion 1 | yes | no | 8 |
-| `npc:wilderness:23` | (3031, 3703) | brawling_bandit 2 | yes | yes | 24 |
-| `npc:wilderness:24` | (3032, 3570) | scorpion 1 | yes | no | 7 |
-| `npc:wilderness:25` | (3037, 3671) | guard_bandit 2 | yes | yes | 20 |
-| `npc:wilderness:26` | (3038, 3661) | guard_bandit 2 | yes | yes | 18 |
-| `npc:wilderness:27` | (3040, 3581) | scorpion 1 | yes | no | 8 |
-| `npc:wilderness:28` | (3040, 3703) | brawling_bandit 1 | yes | yes | 23 |
-| `npc:wilderness:29` | (3044, 3570) | scorpion 2 | yes | no | 7 |
-| `npc:wilderness:30` | (3053, 3887) | deadly_red_spider 14 | yes | yes | 48 |
-| `npc:wilderness:31` | (3054, 3852) | aggressive_black_knight 3 | yes | no | 42 |
-| `npc:wilderness:32` | (3055, 3574) | scorpion 1 | yes | no | 7 |
-| `npc:wilderness:33` | (3059, 3568) | scorpion 2 | yes | no | 7 |
-| `npc:wilderness:34` | (3057, 3842) | aggressive_black_knight 1 | yes | no | 41 |
-| `npc:wilderness:35` | (3062, 3555) | scorpion 1 | yes | no | 5 |
-| `npc:wilderness:36` | (3070, 3829) | kingscorpion 1 | yes | no | 39 |
-| `npc:wilderness:37` | (3073, 3532) | skeleton_unarmed 2 | yes | no | 2 |
-| `npc:wilderness:38` | (3076, 3957) | bat 7 | no | no | 56 |
-| `npc:wilderness:39` | (3078, 3810) | green_dragon 1 | yes | no | 37 |
-| `npc:wilderness:40` | (3081, 3551) | skeleton_armed 1 | yes | no | 4 |
-| `npc:wilderness:41` | (3088, 3700) | ghost 1 | yes | no | 23 |
-| `npc:wilderness:42` | (3091, 3861) | lesser_demon 1 | yes | no | 43 |
-| `npc:wilderness:43` | (3092, 3692) | ghost 1 | yes | no | 22 |
-| `npc:wilderness:44` | (3092, 3810) | green_dragon 1 | yes | no | 37 |
-| `npc:wilderness:45` | (3094, 3849) | giant 1 | yes | no | 42 |
-| `npc:wilderness:46` | (3094, 3869) | lesser_demon 1 | yes | no | 44 |
-| `npc:wilderness:47` | (3096, 3559) | skeleton_unarmed 1 | yes | no | 5 |
-| `npc:wilderness:48` | (3097, 3700) | ghost 1 | yes | no | 23 |
-| `npc:wilderness:49` | (3098, 3821) | green_dragon 1 | yes | no | 38 |
-| `npc:wilderness:50` | (3104, 3568) | skeleton_armed 5 | yes | no | 7 |
-| `npc:wilderness:51` | (3104, 3875) | giant 1 | yes | no | 45 |
-| `npc:wilderness:52` | (3105, 3696) | ghost 1 | yes | no | 23 |
-| `npc:wilderness:53` | (3106, 3548) | skeleton_unarmed 1 | yes | no | 4 |
-| `npc:wilderness:54` | (3107, 3528) | skeleton_unarmed 1 | yes | no | 2 |
-| `npc:wilderness:55` | (3107, 3812) | green_dragon 1 | yes | no | 37 |
-| `npc:wilderness:56` | (3110, 3854) | giant 1 | yes | no | 42 |
-| `npc:wilderness:57` | (3115, 3535) | skeleton_unarmed 2 | yes | no | 3 |
-| `npc:wilderness:58` | (3113, 3689) | ghost 1 | yes | no | 22 |
-| `npc:wilderness:59` | (3116, 3524) | skeleton_unarmed 1 | yes | no | 1 |
-| `npc:wilderness:60` | (3117, 3854) | giant 1 | yes | no | 42 |
-| `npc:wilderness:61` | (3118, 3820) | green_dragon 1 | yes | no | 38 |
-| `npc:wilderness:62` | (3139, 3818) | mossgiant 1 | yes | no | 38 |
-| `npc:wilderness:63` | (3142, 3804) | mossgiant 1, skeleton_armed 1 | yes | no | 36 |
-| `npc:wilderness:64` | (3141, 3826) | mossgiant 1 | yes | no | 39 |
-| `npc:wilderness:65` | (3147, 3732) | deadly_red_spider 2 | yes | no | 27 |
-| `npc:wilderness:66` | (3145, 3779) | skeleton_armed 1 | yes | no | 33 |
-| `npc:wilderness:67` | (3150, 3744) | deadly_red_spider 1 | yes | no | 29 |
-| `npc:wilderness:68` | (3153, 3676) | zombie_armed 1 | yes | no | 20 |
-| `npc:wilderness:69` | (3158, 3636) | rat 3 | yes | no | 15 |
-| `npc:wilderness:70` | (3160, 3568) | thug 1 | yes | yes | 7 |
-| `npc:wilderness:71` | (3170, 3885) | spider 17 | yes | yes | 47 |
-| `npc:wilderness:72` | (3163, 3685) | zombie_armed 1 | yes | no | 21 |
-| `npc:wilderness:73` | (3169, 3578) | thug 2 | yes | yes | 8 |
-| `npc:wilderness:74` | (3172, 3561) | thug 1 | yes | yes | 6 |
-| `npc:wilderness:75` | (3175, 3572) | thug 1 | yes | yes | 7 |
-| `npc:wilderness:76` | (3181, 3741) | deadly_red_spider 3 | yes | no | 29 |
-| `npc:wilderness:77` | (3179, 3564) | thug 1 | yes | yes | 6 |
-| `npc:wilderness:78` | (3179, 3786) | skeleton_armed 1 | yes | yes | 34 |
-| `npc:wilderness:79` | (3181, 3850) | red_dragon 1 | no | yes | 42 |
-| `npc:wilderness:80` | (3183, 3725) | rat 3 | yes | no | 26 |
-| `npc:wilderness:81` | (3184, 3580) | thug 1 | yes | yes | 8 |
-| `npc:wilderness:82` | (3191, 3960) | magicaxe 9 | no | no | 56 |
-| `npc:wilderness:83` | (3189, 3563) | thug 1 | yes | yes | 6 |
-| `npc:wilderness:84` | (3190, 3570) | thug 1 | yes | yes | 7 |
-| `npc:wilderness:85` | (3219, 3742) | skeleton_armed 4 | yes | yes | 29 |
-| `npc:wilderness:86` | (3213, 3819) | red_dragon 1 | no | yes | 38 |
-| `npc:wilderness:87` | (3223, 3830) | red_dragon 1 | no | yes | 39 |
-| `npc:wilderness:88` | (3228, 3739) | skeleton_armed 1 | yes | yes | 28 |
-| `npc:wilderness:89` | (3233, 3783) | dwarf_chaos 1 | yes | yes | 33 |
-| `npc:wilderness:90` | (3241, 3796) | dwarf_chaos 1 | yes | no | 35 |
-| `npc:wilderness:91` | (3249, 3949) | scorpion 1 | no | yes | 54 |
-| `npc:wilderness:92` | (3256, 3673) | rat 6 | yes | yes | 20 |
-| `npc:wilderness:93` | (3253, 3782) | dwarf_chaos 1 | yes | yes | 33 |
-| `npc:wilderness:94` | (3256, 3954) | scorpion 1 | no | yes | 55 |
-| `npc:wilderness:95` | (3261, 3736) | skeleton_armed 1 | yes | yes | 28 |
-| `npc:wilderness:96` | (3271, 3728) | skeleton_armed 5 | yes | yes | 27 |
-| `npc:wilderness:97` | (3269, 3823) | poisonspider 3 | yes | yes | 39 |
-| `npc:wilderness:98` | (3286, 3804) | poisonspider 21 | yes | yes | 38 |
-| `npc:wilderness:99` | (3277, 3663) | ghost 3 | yes | yes | 19 |
-| `npc:wilderness:100` | (3277, 3783) | poisonspider 2 | yes | yes | 33 |
-| `npc:wilderness:101` | (3280, 3832) | poisonspider 3 | yes | yes | 40 |
-| `npc:wilderness:102` | (3279, 3654) | ghost 1 | yes | yes | 17 |
-| `npc:wilderness:103` | (3286, 3791) | poisonspider 5 | yes | yes | 35 |
-| `npc:wilderness:104` | (3296, 3828) | poisonspider 11 | yes | yes | 40 |
-| `npc:wilderness:105` | (3289, 3652) | ghost 2 | yes | yes | 17 |
-| `npc:wilderness:106` | (3302, 3788) | poisonspider 4 | yes | yes | 35 |
-| `npc:wilderness:107` | (3300, 3649) | giant 1 | yes | yes | 17 |
-| `npc:wilderness:108` | (3308, 3816) | poisonspider 5 | yes | yes | 38 |
-| `npc:wilderness:109` | (3308, 3661) | giant 1 | yes | yes | 18 |
-| `npc:wilderness:110` | (3312, 3769) | aggressive_black_knight 2 | yes | yes | 32 |
-| `npc:wilderness:111` | (3311, 3845) | lesser_demon 1 | yes | yes | 41 |
-| `npc:wilderness:112` | (3320, 3797) | poisonspider 4 | yes | yes | 35 |
-| `npc:wilderness:113` | (3321, 3830) | poisonspider 4 | yes | yes | 40 |
-| `npc:wilderness:114` | (3324, 3856) | lesser_demon 1 | yes | yes | 43 |
+| `npc:wilderness:0` | (2945, 3866) | Ice warrior 1 | yes | no | 44 |
+| `npc:wilderness:1` | (2946, 3857) | Ice warrior 1 | yes | no | 43 |
+| `npc:wilderness:2` | (2954, 3885) | Ice giant 5, Ice warrior 9 | yes | no | 48 |
+| `npc:wilderness:3` | (2953, 3926) | Ice giant 2, Ice spider 3, Ice warrior 7 | no | no | 53 |
+| `npc:wilderness:4` | (2953, 3858) | Ice warrior 1 | yes | no | 43 |
+| `npc:wilderness:5` | (2955, 3945) | Ice giant 1 | no | no | 54 |
+| `npc:wilderness:6` | (2958, 3866) | Ice warrior 1 | yes | no | 44 |
+| `npc:wilderness:7` | (2962, 3755) | Ghost 1 | yes | no | 30 |
+| `npc:wilderness:8` | (2967, 3946) | Ice warrior 2 | no | no | 54 |
+| `npc:wilderness:9` | (2971, 3938) | Ice warrior 1 | no | no | 53 |
+| `npc:wilderness:10` | (2982, 3568) | Dark wizard (bearded_dark_wizard) 3, Dark wizard (young_dark_wizard) 5 | yes | no | 7 |
+| `npc:wilderness:11` | (2979, 3950) | Ice giant 1, Ice warrior 2, Skeleton (skeleton_armed) 1 | no | no | 55 |
+| `npc:wilderness:12` | (2981, 3699) | Rat 1 | yes | no | 23 |
+| `npc:wilderness:13` | (2988, 3685) | Giant spider 5, Spider 6 | yes | no | 22 |
+| `npc:wilderness:14` | (2984, 3933) | Ice warrior 1 | no | no | 52 |
+| `npc:wilderness:15` | (2991, 3943) | Skeleton (skeleton_armed) 2 | no | no | 54 |
+| `npc:wilderness:16` | (2990, 3755) | Ghost 1 | yes | no | 30 |
+| `npc:wilderness:17` | (2998, 3701) | Rat 4 | yes | no | 23 |
+| `npc:wilderness:18` | (3017, 3593) | Skeleton (skeleton_unarmed) 13 | yes | yes | 11 |
+| `npc:wilderness:19` | (3025, 3851) | Black Knight 5, Lesser demon 4 | yes | yes | 43 |
+| `npc:wilderness:20` | (3021, 3761) | Chaos dwarf 4 | yes | no | 31 |
+| `npc:wilderness:21` | (3025, 3568) | Scorpion 1 | yes | no | 7 |
+| `npc:wilderness:22` | (3028, 3577) | Scorpion 1 | yes | no | 8 |
+| `npc:wilderness:23` | (3031, 3703) | Bandit 2 | yes | yes | 24 |
+| `npc:wilderness:24` | (3032, 3570) | Scorpion 1 | yes | no | 7 |
+| `npc:wilderness:25` | (3037, 3671) | Guard Bandit 2 | yes | yes | 20 |
+| `npc:wilderness:26` | (3038, 3661) | Guard Bandit 2 | yes | yes | 18 |
+| `npc:wilderness:27` | (3040, 3581) | Scorpion 1 | yes | no | 8 |
+| `npc:wilderness:28` | (3040, 3703) | Bandit 1 | yes | yes | 23 |
+| `npc:wilderness:29` | (3044, 3570) | Scorpion 2 | yes | no | 7 |
+| `npc:wilderness:30` | (3053, 3887) | Deadly red spider 14 | yes | yes | 48 |
+| `npc:wilderness:31` | (3054, 3852) | Black Knight 3 | yes | no | 42 |
+| `npc:wilderness:32` | (3055, 3574) | Scorpion 1 | yes | no | 7 |
+| `npc:wilderness:33` | (3059, 3568) | Scorpion 2 | yes | no | 7 |
+| `npc:wilderness:34` | (3057, 3842) | Black Knight 1 | yes | no | 41 |
+| `npc:wilderness:35` | (3062, 3555) | Scorpion 1 | yes | no | 5 |
+| `npc:wilderness:36` | (3070, 3829) | King Scorpion 1 | yes | no | 39 |
+| `npc:wilderness:37` | (3073, 3532) | Skeleton (skeleton_unarmed) 2 | yes | no | 2 |
+| `npc:wilderness:38` | (3076, 3957) | Giant bat 7 | no | no | 56 |
+| `npc:wilderness:39` | (3078, 3810) | Green dragon 1 | yes | no | 37 |
+| `npc:wilderness:40` | (3081, 3551) | Skeleton (skeleton_armed) 1 | yes | no | 4 |
+| `npc:wilderness:41` | (3088, 3700) | Ghost 1 | yes | no | 23 |
+| `npc:wilderness:42` | (3091, 3861) | Lesser demon 1 | yes | no | 43 |
+| `npc:wilderness:43` | (3092, 3692) | Ghost 1 | yes | no | 22 |
+| `npc:wilderness:44` | (3092, 3810) | Green dragon 1 | yes | no | 37 |
+| `npc:wilderness:45` | (3094, 3849) | Giant 1 | yes | no | 42 |
+| `npc:wilderness:46` | (3094, 3869) | Lesser demon 1 | yes | no | 44 |
+| `npc:wilderness:47` | (3096, 3559) | Skeleton (skeleton_unarmed) 1 | yes | no | 5 |
+| `npc:wilderness:48` | (3097, 3700) | Ghost 1 | yes | no | 23 |
+| `npc:wilderness:49` | (3098, 3821) | Green dragon 1 | yes | no | 38 |
+| `npc:wilderness:50` | (3104, 3568) | Skeleton (skeleton_armed) 5 | yes | no | 7 |
+| `npc:wilderness:51` | (3104, 3875) | Giant 1 | yes | no | 45 |
+| `npc:wilderness:52` | (3105, 3696) | Ghost 1 | yes | no | 23 |
+| `npc:wilderness:53` | (3106, 3548) | Skeleton (skeleton_unarmed) 1 | yes | no | 4 |
+| `npc:wilderness:54` | (3107, 3528) | Skeleton (skeleton_unarmed) 1 | yes | no | 2 |
+| `npc:wilderness:55` | (3107, 3812) | Green dragon 1 | yes | no | 37 |
+| `npc:wilderness:56` | (3110, 3854) | Giant 1 | yes | no | 42 |
+| `npc:wilderness:57` | (3115, 3535) | Skeleton (skeleton_unarmed) 2 | yes | no | 3 |
+| `npc:wilderness:58` | (3113, 3689) | Ghost 1 | yes | no | 22 |
+| `npc:wilderness:59` | (3116, 3524) | Skeleton (skeleton_unarmed) 1 | yes | no | 1 |
+| `npc:wilderness:60` | (3117, 3854) | Giant 1 | yes | no | 42 |
+| `npc:wilderness:61` | (3118, 3820) | Green dragon 1 | yes | no | 38 |
+| `npc:wilderness:62` | (3139, 3818) | Moss giant 1 | yes | no | 38 |
+| `npc:wilderness:63` | (3142, 3804) | Moss giant 1, Skeleton (skeleton_armed) 1 | yes | no | 36 |
+| `npc:wilderness:64` | (3141, 3826) | Moss giant 1 | yes | no | 39 |
+| `npc:wilderness:65` | (3147, 3732) | Deadly red spider 2 | yes | no | 27 |
+| `npc:wilderness:66` | (3145, 3779) | Skeleton (skeleton_armed) 1 | yes | no | 33 |
+| `npc:wilderness:67` | (3150, 3744) | Deadly red spider 1 | yes | no | 29 |
+| `npc:wilderness:68` | (3153, 3676) | Zombie 1 | yes | no | 20 |
+| `npc:wilderness:69` | (3158, 3636) | Rat 3 | yes | no | 15 |
+| `npc:wilderness:70` | (3160, 3568) | Thug 1 | yes | yes | 7 |
+| `npc:wilderness:71` | (3170, 3885) | Spider 17 | yes | yes | 47 |
+| `npc:wilderness:72` | (3163, 3685) | Zombie 1 | yes | no | 21 |
+| `npc:wilderness:73` | (3169, 3578) | Thug 2 | yes | yes | 8 |
+| `npc:wilderness:74` | (3172, 3561) | Thug 1 | yes | yes | 6 |
+| `npc:wilderness:75` | (3175, 3572) | Thug 1 | yes | yes | 7 |
+| `npc:wilderness:76` | (3181, 3741) | Deadly red spider 3 | yes | no | 29 |
+| `npc:wilderness:77` | (3179, 3564) | Thug 1 | yes | yes | 6 |
+| `npc:wilderness:78` | (3179, 3786) | Skeleton (skeleton_armed) 1 | yes | yes | 34 |
+| `npc:wilderness:79` | (3181, 3850) | Red dragon 1 | no | yes | 42 |
+| `npc:wilderness:80` | (3183, 3725) | Rat 3 | yes | no | 26 |
+| `npc:wilderness:81` | (3184, 3580) | Thug 1 | yes | yes | 8 |
+| `npc:wilderness:82` | (3191, 3960) | Magic axe 9 | no | no | 56 |
+| `npc:wilderness:83` | (3189, 3563) | Thug 1 | yes | yes | 6 |
+| `npc:wilderness:84` | (3190, 3570) | Thug 1 | yes | yes | 7 |
+| `npc:wilderness:85` | (3219, 3742) | Skeleton (skeleton_armed) 4 | yes | yes | 29 |
+| `npc:wilderness:86` | (3213, 3819) | Red dragon 1 | no | yes | 38 |
+| `npc:wilderness:87` | (3223, 3830) | Red dragon 1 | no | yes | 39 |
+| `npc:wilderness:88` | (3228, 3739) | Skeleton (skeleton_armed) 1 | yes | yes | 28 |
+| `npc:wilderness:89` | (3233, 3783) | Chaos dwarf 1 | yes | yes | 33 |
+| `npc:wilderness:90` | (3241, 3796) | Chaos dwarf 1 | yes | no | 35 |
+| `npc:wilderness:91` | (3249, 3949) | Scorpion 1 | no | yes | 54 |
+| `npc:wilderness:92` | (3256, 3673) | Rat 6 | yes | yes | 20 |
+| `npc:wilderness:93` | (3253, 3782) | Chaos dwarf 1 | yes | yes | 33 |
+| `npc:wilderness:94` | (3256, 3954) | Scorpion 1 | no | yes | 55 |
+| `npc:wilderness:95` | (3261, 3736) | Skeleton (skeleton_armed) 1 | yes | yes | 28 |
+| `npc:wilderness:96` | (3271, 3728) | Skeleton (skeleton_armed) 5 | yes | yes | 27 |
+| `npc:wilderness:97` | (3269, 3823) | Poison spider 3 | yes | yes | 39 |
+| `npc:wilderness:98` | (3286, 3804) | Poison spider 21 | yes | yes | 38 |
+| `npc:wilderness:99` | (3277, 3663) | Ghost 3 | yes | yes | 19 |
+| `npc:wilderness:100` | (3277, 3783) | Poison spider 2 | yes | yes | 33 |
+| `npc:wilderness:101` | (3280, 3832) | Poison spider 3 | yes | yes | 40 |
+| `npc:wilderness:102` | (3279, 3654) | Ghost 1 | yes | yes | 17 |
+| `npc:wilderness:103` | (3286, 3791) | Poison spider 5 | yes | yes | 35 |
+| `npc:wilderness:104` | (3296, 3828) | Poison spider 11 | yes | yes | 40 |
+| `npc:wilderness:105` | (3289, 3652) | Ghost 2 | yes | yes | 17 |
+| `npc:wilderness:106` | (3302, 3788) | Poison spider 4 | yes | yes | 35 |
+| `npc:wilderness:107` | (3300, 3649) | Giant 1 | yes | yes | 17 |
+| `npc:wilderness:108` | (3308, 3816) | Poison spider 5 | yes | yes | 38 |
+| `npc:wilderness:109` | (3308, 3661) | Giant 1 | yes | yes | 18 |
+| `npc:wilderness:110` | (3312, 3769) | Black Knight 2 | yes | yes | 32 |
+| `npc:wilderness:111` | (3311, 3845) | Lesser demon 1 | yes | yes | 41 |
+| `npc:wilderness:112` | (3320, 3797) | Poison spider 4 | yes | yes | 35 |
+| `npc:wilderness:113` | (3321, 3830) | Poison spider 4 | yes | yes | 40 |
+| `npc:wilderness:114` | (3324, 3856) | Lesser demon 1 | yes | yes | 43 |
 
 ## Ladders and stairs
 

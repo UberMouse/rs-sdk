@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:yanille-bank:0` | (2615, 3092) | banker 3, booth 3 | no | no | - |
+| `bank:yanille-bank:0` | (2615, 3092) | Bank booth 3, Banker 3 | no | no | - |

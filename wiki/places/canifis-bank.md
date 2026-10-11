@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:canifis-bank:0` | (3513, 3480) | banker 2, booth 4 | no | no | - |
+| `bank:canifis-bank:0` | (3513, 3480) | Bank booth 4, Banker 2 | no | no | - |

@@ -15,8 +15,8 @@ quests/quest_zombiequeen npcs; descriptive name.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:shilo-village-quest-dungeon:0` | (2893, 9363) | zqskeleton_armed 2, zqzombie_armed 2 | no | no | - |
-| `npc:shilo-village-quest-dungeon:1` | (2892, 9384) | zqskeleton_armed 1 | no | no | - |
-| `npc:shilo-village-quest-dungeon:2` | (2901, 9355) | zqzombie_armed 1 | no | no | - |
-| `npc:shilo-village-quest-dungeon:3` | (2914, 9350) | zqskeleton_armed 1, zqzombie_armed 2 | no | no | - |
-| `npc:shilo-village-quest-dungeon:4` | (2928, 9354) | zqzombie_armed 1 | no | no | - |
+| `npc:shilo-village-quest-dungeon:0` | (2893, 9363) | Undead One (zqskeleton_armed) 2, Undead One (zqzombie_armed) 2 | no | no | - |
+| `npc:shilo-village-quest-dungeon:1` | (2892, 9384) | Undead One (zqskeleton_armed) 1 | no | no | - |
+| `npc:shilo-village-quest-dungeon:2` | (2901, 9355) | Undead One (zqzombie_armed) 1 | no | no | - |
+| `npc:shilo-village-quest-dungeon:3` | (2914, 9350) | Undead One (zqskeleton_armed) 1, Undead One (zqzombie_armed) 2 | no | no | - |
+| `npc:shilo-village-quest-dungeon:4` | (2928, 9354) | Undead One (zqzombie_armed) 1 | no | no | - |

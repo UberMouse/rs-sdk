@@ -13,5 +13,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:barbarian-village-fishing:0` | (3104, 3424) | [freshfish](../resources/fishing-spot/freshfish.md) 1 | yes | yes | - |
-| `fishing-spot:barbarian-village-fishing:1` | (3110, 3434) | [freshfish](../resources/fishing-spot/freshfish.md) 1 | yes | yes | - |
+| `fishing-spot:barbarian-village-fishing:0` | (3104, 3424) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | yes | yes | - |
+| `fishing-spot:barbarian-village-fishing:1` | (3110, 3434) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | yes | yes | - |

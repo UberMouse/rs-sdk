@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:miscellania-bank:0` | (2621, 3895) | banker 1 | no | no | - |
+| `bank:miscellania-bank:0` | (2621, 3895) | Banker 1 | no | no | - |

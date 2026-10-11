@@ -16,6 +16,6 @@ The world map's "Dwarven Mine" label, on Ice Mountain; the mine itself is the un
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dwarven-mine-entrance:0` | (3008, 3436) | dwarf_normal 1 | yes | no | - |
-| `npc:dwarven-mine-entrance:1` | (3018, 3436) | dwarf_normal 2 | yes | no | - |
-| `npc:dwarven-mine-entrance:2` | (3018, 3448) | mcannonguard 4 | yes | no | - |
+| `npc:dwarven-mine-entrance:0` | (3008, 3436) | Dwarf (dwarf_normal) 1 | yes | no | - |
+| `npc:dwarven-mine-entrance:1` | (3018, 3436) | Dwarf (dwarf_normal) 2 | yes | no | - |
+| `npc:dwarven-mine-entrance:2` | (3018, 3448) | Dwarf (mcannonguard) 4 | yes | no | - |

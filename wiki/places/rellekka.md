@@ -7,18 +7,59 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:rellekka:0` | (2662, 3673) | viking_bar 1 | no | no | - |
-| `shop:rellekka:1` | (2663, 3694) | viking_weapons_shop 1 | no | no | - |
+| `shop:rellekka:0` | (2625, 3675) | Yrsa's Accountrements (viking_clothes_shop) 1 | no | no | - |
+| `shop:rellekka:1` | (2642, 3677) | Fremennik Fish Monger (viking_fishmonger) 1, Fremennik Fur Trader (viking_furshop) 1, Sigmund the Merchant (viking_general_store) 1 | no | no | - |
+| `shop:rellekka:2` | (2662, 3673) | Rellekka Longhall Bar (viking_bar) 1 | no | no | - |
+| `shop:rellekka:3` | (2663, 3694) | Skulgrimen's Battle Gear (viking_weapons_shop) 1 | no | no | - |
+
+## [Furnaces](../services/furnace.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `furnace:rellekka:0` | (2617, 3666) | Furnace 2 | no | no | - |
+
+## [Anvils](../services/anvil.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `anvil:rellekka:0` | (2620, 3663) | Anvil 3 | no | no | - |
 
 ## [Fires](../services/fire.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fire:rellekka:0` | (2658, 3671) | Fire 1 | no | no | - |
-| `fire:rellekka:1` | (2668, 3702) | Fire 1 | no | no | - |
-| `fire:rellekka:2` | (2674, 3665) | Fire 1 | no | no | - |
-| `fire:rellekka:3` | (2675, 3676) | Fire 1 | no | no | - |
-| `fire:rellekka:4` | (2681, 3690) | Fire 1 | no | no | - |
+| `fire:rellekka:0` | (2624, 3674) | Fire 1 | no | no | - |
+| `fire:rellekka:1` | (2628, 3653) | Fire 1 | no | no | - |
+| `fire:rellekka:2` | (2641, 3651) | Fire 1 | no | no | - |
+| `fire:rellekka:3` | (2658, 3671) | Fire 1 | no | no | - |
+| `fire:rellekka:4` | (2668, 3702) | Fire 1 | no | no | - |
+| `fire:rellekka:5` | (2674, 3665) | Fire 1 | no | no | - |
+| `fire:rellekka:6` | (2675, 3676) | Fire 1 | no | no | - |
+| `fire:rellekka:7` | (2681, 3690) | Fire 1 | no | no | - |
+
+## [Spinning wheels](../services/spinning-wheel.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `spinning-wheel:rellekka:0` | (2617, 3659) | Spinning wheel 1 | no | no | - |
+
+## [Pottery wheels](../services/pottery-wheel.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `pottery-wheel:rellekka:0` | (2620, 3659) | Potter's Wheel 1 | no | no | - |
+
+## [Pottery ovens](../services/pottery-oven.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `pottery-oven:rellekka:0` | (2616, 3662) | Pottery Oven 1 | no | no | - |
+
+## [Sand pits](../services/sand-pit.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `sand-pit:rellekka:0` | (2667, 3707) | Sand pit 1 | no | no | - |
 
 ## Trees
 
@@ -30,32 +71,57 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `rock:rellekka:0` | (2684, 3704) | [clay](../resources/rock/clay.md) 1, [coal](../resources/rock/coal.md) 3 | no | no | - |
+| `rock:rellekka:0` | (2683, 3706) | [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 7 | no | no | - |
+
+## Fishing spots
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `fishing-spot:rellekka:0` | (2637, 3694) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | no | no | - |
+| `fishing-spot:rellekka:1` | (2647, 3710) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 4 | no | no | - |
+
+## Stalls
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|
+| `stall:rellekka:0` | (2638, 3676) | [Fish stall](../resources/stall/viking_fish_market.md) 2, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - |
+| `stall:rellekka:1` | (2647, 3678) | [Fish stall](../resources/stall/viking_fish_market.md) 1, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - |
 
 ## Thieving chests
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `thieving-chest:rellekka:0` | (2650, 3659) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - |
-| `thieving-chest:rellekka:1` | (2668, 3693) L1 | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - |
+| `thieving-chest:rellekka:0` | (2630, 3655) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - |
+| `thieving-chest:rellekka:1` | (2650, 3659) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - |
+| `thieving-chest:rellekka:2` | (2668, 3693) L1 | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:rellekka:0` | (2667, 3702) | [viking_woman](../resources/pickpocket/viking_woman.md) 1 | no | no | - |
-| `pickpocket:rellekka:1` | (2674, 3676) | [viking_man2](../resources/pickpocket/viking_man2.md) 1, [viking_woman_indoors](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - |
-| `pickpocket:rellekka:2` | (2676, 3665) | [viking_man4](../resources/pickpocket/viking_man4.md) 1 | no | no | - |
-| `pickpocket:rellekka:3` | (2679, 3690) | [viking_man3](../resources/pickpocket/viking_man3.md) 1 | no | no | - |
+| `pickpocket:rellekka:0` | (2627, 3654) | [Sassilik](../resources/pickpocket/viking_woman4.md) 1 | no | no | - |
+| `pickpocket:rellekka:1` | (2640, 3651) | [Jennella](../resources/pickpocket/viking_woman3.md) 1 | no | no | - |
+| `pickpocket:rellekka:2` | (2642, 3677) | [Agnar](../resources/pickpocket/viking_man.md) 1 | no | no | - |
+| `pickpocket:rellekka:3` | (2667, 3702) | [Freygerd](../resources/pickpocket/viking_woman.md) 1 | no | no | - |
+| `pickpocket:rellekka:4` | (2674, 3676) | [Freidir](../resources/pickpocket/viking_man2.md) 1, [Inga](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - |
+| `pickpocket:rellekka:5` | (2676, 3665) | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - |
+| `pickpocket:rellekka:6` | (2679, 3690) | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:rellekka:0` | (2650, 3676) | viking_guard 1 | no | no | - |
-| `npc:rellekka:1` | (2655, 3691) | viking_guard2 1 | no | no | - |
-| `npc:rellekka:2` | (2666, 3678) | viking_guard2 1 | no | no | - |
-| `npc:rellekka:3` | (2668, 3658) | viking_guard2 1 | no | no | - |
-| `npc:rellekka:4` | (2668, 3670) | viking_guard2 1 | no | no | - |
-| `npc:rellekka:5` | (2673, 3695) | viking_guard2 1 | no | no | - |
-| `npc:rellekka:6` | (2680, 3663) | chicken 2, chicken_brown 2, rooster 1 | no | no | - |
+| `npc:rellekka:0` | (2619, 3671) | Warrior 1 | no | no | - |
+| `npc:rellekka:1` | (2622, 3654) | Warrior 1 | no | no | - |
+| `npc:rellekka:2` | (2625, 3664) | Warrior 1 | no | no | - |
+| `npc:rellekka:3` | (2633, 3676) | Market Guard 1, Warrior 1 | no | no | - |
+| `npc:rellekka:4` | (2634, 3651) | Warrior 1 | no | no | - |
+| `npc:rellekka:5` | (2645, 3676) | Market Guard 4, Warrior 1 | no | no | - |
+| `npc:rellekka:6` | (2650, 3652) | Warrior 1 | no | no | - |
+| `npc:rellekka:7` | (2655, 3691) | Warrior 1 | no | no | - |
+| `npc:rellekka:8` | (2666, 3678) | Warrior 1 | no | no | - |
+| `npc:rellekka:9` | (2668, 3658) | Warrior 1 | no | no | - |
+| `npc:rellekka:10` | (2668, 3670) | Warrior 1 | no | no | - |
+| `npc:rellekka:11` | (2668, 3710) | Warrior 1 | no | no | - |
+| `npc:rellekka:12` | (2673, 3695) | Warrior 1 | no | no | - |
+| `npc:rellekka:13` | (2680, 3663) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - |

@@ -7,15 +7,15 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:varrock:0` | (3204, 3398) | swordshop 2 | yes | no | - |
-| `shop:varrock:1` | (3203, 3433) | memberstaffshop 1 | yes | no | - |
-| `shop:varrock:2` | (3204, 3417) | clotheshop 1 | yes | no | - |
-| `shop:varrock:3` | (3218, 3413) | generalshop2 2 | yes | no | - |
-| `shop:varrock:4` | (3229, 3438) | armourshop 1 | yes | no | - |
-| `shop:varrock:5` | (3232, 3423) | archeryshop 1 | yes | no | - |
-| `shop:varrock:6` | (3253, 3402) | runeshop 1 | yes | no | - |
-| `shop:varrock:7` | (3271, 3411) | teashop 1 | yes | no | - |
-| `shop:varrock:8` | (3281, 3398) | fancyclothesstore 1 | yes | no | - |
+| `shop:varrock:0` | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | no | - |
+| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - |
+| `shop:varrock:2` | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - |
+| `shop:varrock:3` | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | no | - |
+| `shop:varrock:4` | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | no | - |
+| `shop:varrock:5` | (3232, 3423) | Lowe's Archery Emporium (archeryshop) 1 | yes | no | - |
+| `shop:varrock:6` | (3253, 3402) | Aubury's Rune Shop. (runeshop) 1 | yes | no | - |
+| `shop:varrock:7` | (3271, 3411) | Ye Olde Tea Shoppe (teashop) 1 | yes | no | - |
+| `shop:varrock:8` | (3281, 3398) | Fancy Clothes Store (fancyclothesstore) 1 | yes | no | - |
 
 ## [Anvils](../services/anvil.md)
 
@@ -97,44 +97,44 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `stall:varrock:0` | (3269, 3410) | [tea_stall](../resources/stall/tea_stall.md) 1 | yes | no | - |
+| `stall:varrock:0` | (3269, 3410) | [Tea stall](../resources/stall/tea_stall.md) 1 | yes | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:varrock:0` | (3174, 3427) | [guard1](../resources/pickpocket/guard1.md) 3 | yes | no | - |
-| `pickpocket:varrock:1` | (3175, 3403) L1 | [guard1](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:2` | (3175, 3414) L1 | [guard1](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:3` | (3180, 3401) | [guard1](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:4` | (3194, 3396) | [man3](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:5` | (3203, 3497) L1 | [guard1](../resources/pickpocket/guard1.md) 2 | yes | no | - |
-| `pickpocket:varrock:6` | (3204, 3496) | [guard1](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:7` | (3209, 3379) | [guard1](../resources/pickpocket/guard1.md) 3 | yes | no | - |
-| `pickpocket:varrock:8` | (3212, 3463) | [guard1](../resources/pickpocket/guard1.md) 6 | yes | no | - |
-| `pickpocket:varrock:9` | (3223, 3400) | [man](../resources/pickpocket/man.md) 1, [woman2](../resources/pickpocket/woman2.md) 1 | yes | no | - |
-| `pickpocket:varrock:10` | (3231, 3399) L1 | [man3](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:11` | (3234, 3385) L1 | [man2](../resources/pickpocket/man2.md) 1 | yes | no | - |
-| `pickpocket:varrock:12` | (3238, 3406) | [man](../resources/pickpocket/man.md) 1, [man3](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:13` | (3243, 3501) | [guard1](../resources/pickpocket/guard1.md) 2 | yes | no | - |
-| `pickpocket:varrock:14` | (3245, 3395) | [man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:varrock:15` | (3261, 3402) | [man2](../resources/pickpocket/man2.md) 1 | yes | no | - |
-| `pickpocket:varrock:16` | (3274, 3427) | [guard1](../resources/pickpocket/guard1.md) 4 | yes | no | - |
-| `pickpocket:varrock:17` | (3280, 3500) | [man3](../resources/pickpocket/man3.md) 1, [woman](../resources/pickpocket/woman.md) 1, [woman2](../resources/pickpocket/woman2.md) 1 | yes | no | - |
+| `pickpocket:varrock:0` | (3174, 3427) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - |
+| `pickpocket:varrock:1` | (3175, 3403) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
+| `pickpocket:varrock:2` | (3175, 3414) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
+| `pickpocket:varrock:3` | (3180, 3401) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
+| `pickpocket:varrock:4` | (3194, 3396) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
+| `pickpocket:varrock:5` | (3203, 3497) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - |
+| `pickpocket:varrock:6` | (3204, 3496) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
+| `pickpocket:varrock:7` | (3209, 3379) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - |
+| `pickpocket:varrock:8` | (3212, 3463) | [Guard](../resources/pickpocket/guard1.md) 6 | yes | no | - |
+| `pickpocket:varrock:9` | (3223, 3400) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - |
+| `pickpocket:varrock:10` | (3231, 3399) L1 | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
+| `pickpocket:varrock:11` | (3234, 3385) L1 | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
+| `pickpocket:varrock:12` | (3238, 3406) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
+| `pickpocket:varrock:13` | (3243, 3501) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - |
+| `pickpocket:varrock:14` | (3245, 3395) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - |
+| `pickpocket:varrock:15` | (3261, 3402) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
+| `pickpocket:varrock:16` | (3274, 3427) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - |
+| `pickpocket:varrock:17` | (3280, 3500) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:varrock:0` | (3176, 3478) | ikov_lucien2 1, rat 3 | yes | no | - |
-| `npc:varrock:1` | (3177, 3405) | imp 1 | yes | no | - |
-| `npc:varrock:2` | (3213, 3502) | imp 1 | yes | no | - |
-| `npc:varrock:3` | (3225, 3395) | barbarian_woman 1 | yes | no | - |
-| `npc:varrock:4` | (3235, 3401) | tramp 1 | yes | no | - |
-| `npc:varrock:5` | (3242, 3392) | imp 1, mugger 1, rat 1, spider 1 | yes | no | - |
-| `npc:varrock:6` | (3246, 3384) L1 | weaponsmaster 1 | yes | no | - |
-| `npc:varrock:7` | (3246, 3458) | imp 1 | yes | no | - |
-| `npc:varrock:8` | (3277, 3505) | black_knight 1 | yes | no | - |
+| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - |
+| `npc:varrock:1` | (3177, 3405) | Imp 1 | yes | no | - |
+| `npc:varrock:2` | (3213, 3502) | Imp 1 | yes | no | - |
+| `npc:varrock:3` | (3225, 3395) | Barbarian woman 1 | yes | no | - |
+| `npc:varrock:4` | (3235, 3401) | Tramp 1 | yes | no | - |
+| `npc:varrock:5` | (3242, 3392) | Imp 1, Mugger 1, Rat 1, Spider 1 | yes | no | - |
+| `npc:varrock:6` | (3246, 3384) L1 | Weaponsmaster 1 | yes | no | - |
+| `npc:varrock:7` | (3246, 3458) | Imp 1 | yes | no | - |
+| `npc:varrock:8` | (3277, 3505) | Black Knight 1 | yes | no | - |
 
 ## Ladders and stairs
 

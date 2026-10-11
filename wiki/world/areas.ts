@@ -19,19 +19,24 @@
 import type { Area, Rect } from './types';
 
 /**
- * Rects filling the diamond |x - cx| + |z - cz| <= r, for a fence built on the diagonals: bands of
- * three rows, each as wide as its row nearest the centre, so a band reaches at most two tiles past
- * the diamond at its ends (onto the fence, for a fence two tiles thick).
+ * Rects approximating the diamond |x - cx| + |z - cz| <= r, for a fence built on the diagonals: bands
+ * of three rows, each as wide as its row nearest the centre, so a band reaches at most two tiles past
+ * the diamond at its ends (onto the fence, for a fence two tiles thick). The two tips, (cx, cz ± r),
+ * get a tile each when the last band stops short of them.
  */
 function diamond(cx: number, cz: number, r: number): Rect[] {
     const rects: Rect[] = [{ x1: cx - r, z1: cz - 1, x2: cx + r, z2: cz + 1 }];
+    let reached = 1;
     for (let near = 2; near < r; near += 3) {
         const [half, far] = [r - near, Math.min(near + 2, r)];
         rects.push(
             { x1: cx - half, z1: cz + near, x2: cx + half, z2: cz + far },
             { x1: cx - half, z1: cz - far, x2: cx + half, z2: cz - near },
         );
+        reached = far;
     }
+    // The bands cover every row up to r - 1, and row r is the tip alone.
+    if (reached < r) rects.push({ x1: cx, z1: cz + r, x2: cx, z2: cz + r }, { x1: cx, z1: cz - r, x2: cx, z2: cz - r });
     return rects;
 }
 
@@ -321,11 +326,20 @@ export const AREAS: readonly Area[] = [
     },
     { id: 'necromancer', name: 'Necromancer', parent: 'kandarin', rects: [{ x1: 2657, z1: 3231, x2: 2680, z2: 3254 }] },
     { id: 'observatory', name: 'Observatory', parent: 'kandarin', rects: [{ x1: 2428, z1: 3139, x2: 2451, z2: 3162 }] },
+    // The seed's square, refitted south and east to the town's brickwall buildings (the general store
+    // at x 2653-2659, z 3149-3155, the smithy, the range houses at x 2630-2637) and the piers and
+    // trawler east of them (x 2659-2685) in map squares m41_49 and m41_50. It stops short of the mine
+    // to the south-west (x 2625-2641, z 3138-3153) and the trees around it, down to z 3145, which stay
+    // Kandarin's.
     {
         id: 'port-khazard',
         name: 'Port Khazard',
         parent: 'kandarin',
-        rects: [{ x1: 2635, z1: 3165, x2: 2682, z2: 3212 }],
+        rects: [
+            { x1: 2635, z1: 3178, x2: 2686, z2: 3212 },
+            { x1: 2630, z1: 3156, x2: 2686, z2: 3177 },
+            { x1: 2642, z1: 3146, x2: 2686, z2: 3155 },
+        ],
     },
     {
         id: 'ranging-guild',
@@ -334,7 +348,20 @@ export const AREAS: readonly Area[] = [
         rects: diamond(2668, 3428, 17),
         notes: "The grounds inside the guild's wooden barricade (wood_wall_barricadel in map square m41_53), a diamond whose inside is |x - 2668| + |z - 3428| <= 17 with a watchtower at each tip. The guild door (2658, 3438) is in its north-west side and needs 40 Ranged (minigames/game_ranging/scripts/ranging_guild_door.rs2).",
     },
-    { id: 'rellekka', name: 'Rellekka', parent: 'kandarin', rects: [{ x1: 2648, z1: 3657, x2: 2695, z2: 3704 }] },
+    // The town inside its palisade (the viking_pike_defence locs), which runs from x 2604 along
+    // z 3644-3655 on the south and up x 2688-2692 on the east; rockslides bound the west, and the north
+    // stops at z 3712, below the rocky ground where the rock crabs lie. The seed's square missed the
+    // market and its shops (x 2625-2647); its east edge, x 2695, is kept. The strip x 2655+,
+    // z 3644-3655 inside the palisade is left to Fremennik Province, the smaller area, as the seed had it.
+    {
+        id: 'rellekka',
+        name: 'Rellekka',
+        parent: 'kandarin',
+        rects: [
+            { x1: 2604, z1: 3656, x2: 2695, z2: 3712 },
+            { x1: 2604, z1: 3645, x2: 2654, z2: 3655 },
+        ],
+    },
     {
         id: 'seers-village',
         name: "Seers' Village",

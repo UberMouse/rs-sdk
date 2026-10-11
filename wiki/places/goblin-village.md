@@ -21,4 +21,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:goblin-village:0` | (2956, 3502) | goblin_greenarmour 7, goblin_redarmour 8 | yes | no | - |
+| `npc:goblin-village:0` | (2956, 3502) | Goblin (goblin_greenarmour) 7, Goblin (goblin_redarmour) 8 | yes | no | - |

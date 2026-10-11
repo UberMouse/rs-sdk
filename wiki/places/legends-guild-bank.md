@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:legends-guild-bank:0` | (2732, 3379) L2 | banker 4 | no | no | - |
+| `bank:legends-guild-bank:0` | (2732, 3379) L2 | Banker 4 | no | no | - |

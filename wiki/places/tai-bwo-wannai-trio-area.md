@@ -7,5 +7,5 @@ quests/quest_tbwt npcs and the karambwan spots; descriptive name.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | [category_633](../resources/fishing-spot/category_633.md) 1 | no | no | - |
-| `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | [category_633](../resources/fishing-spot/category_633.md) 1 | no | no | - |
+| `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
+| `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |

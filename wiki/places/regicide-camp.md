@@ -13,7 +13,7 @@ quests/quest_regicide/scripts/quest_regicide.rs2:542 teleports here; descriptive
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:regicide-camp:0` | (2307, 4584) | regicide_bunny1 1, regicide_bunny2 5, regicide_rabbit 5 | no | no | - |
-| `npc:regicide-camp:1` | (2314, 4558) | chicken 2, chicken_brown 1, regicide_old_camp_guard 3 | no | no | - |
-| `npc:regicide-camp:2` | (2335, 4604) | regicide_bunny2 1, regicide_rabbit 2 | no | no | - |
-| `npc:regicide-camp:3` | (2363, 4575) | regicide_rabbit 2 | no | no | - |
+| `npc:regicide-camp:0` | (2307, 4584) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 5, Rabbit (regicide_rabbit) 5 | no | no | - |
+| `npc:regicide-camp:1` | (2314, 4558) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - |
+| `npc:regicide-camp:2` | (2335, 4604) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - |
+| `npc:regicide-camp:3` | (2363, 4575) | Rabbit (regicide_rabbit) 2 | no | no | - |

@@ -45,11 +45,11 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:entrana:0` | (2844, 3358) | [freshfish](../resources/fishing-spot/freshfish.md) 4 | no | no | - |
+| `fishing-spot:entrana:0` | (2844, 3358) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:entrana:0` | (2851, 3371) | chicken 6 | no | no | - |
-| `npc:entrana:1` | (2847, 3386) | fire_bird 1 | no | no | - |
+| `npc:entrana:0` | (2851, 3371) | Chicken 6 | no | no | - |
+| `npc:entrana:1` | (2847, 3386) | Entrana Fire Bird 1 | no | no | - |

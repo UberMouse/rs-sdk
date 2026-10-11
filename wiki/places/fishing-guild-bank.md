@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:fishing-guild-bank:0` | (2585, 3420) | banker 4, booth 4 | no | no | - |
+| `bank:fishing-guild-bank:0` | (2585, 3420) | Bank booth 4, Banker 4 | no | no | - |

@@ -14,7 +14,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:ruins:0` | (2957, 3704) | rat 5 | yes | no | 24 |
-| `npc:ruins:1` | (2970, 3689) | rat 4 | yes | no | 22 |
-| `npc:ruins:2` | (2974, 3705) | rat 1 | yes | no | 24 |
-| `npc:ruins:3` | (2976, 3697) | rat 1 | yes | no | 23 |
+| `npc:ruins:0` | (2957, 3704) | Rat 5 | yes | no | 24 |
+| `npc:ruins:1` | (2970, 3689) | Rat 4 | yes | no | 22 |
+| `npc:ruins:2` | (2974, 3705) | Rat 1 | yes | no | 24 |
+| `npc:ruins:3` | (2976, 3697) | Rat 1 | yes | no | 23 |

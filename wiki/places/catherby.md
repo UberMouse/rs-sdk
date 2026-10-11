@@ -7,9 +7,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:catherby:0` | (2800, 3439) | candleshop 1 | no | no | - |
-| `shop:catherby:1` | (2803, 3430) | arheinstore 1 | no | no | - |
-| `shop:catherby:2` | (2822, 3442) | archeryshop2 1 | no | no | - |
+| `shop:catherby:0` | (2800, 3439) | Candle Shop (candleshop) 1 | no | no | - |
+| `shop:catherby:1` | (2803, 3430) | Arhein Store (arheinstore) 1 | no | no | - |
+| `shop:catherby:2` | (2822, 3442) | Hicktons Archery Emporium. (archeryshop2) 1 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -41,8 +41,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:catherby:0` | (2804, 3430) | [man](../resources/pickpocket/man.md) 2 | no | no | - |
-| `pickpocket:catherby:1` | (2817, 3443) | [man3](../resources/pickpocket/man3.md) 1, [woman2](../resources/pickpocket/woman2.md) 1 | no | no | - |
+| `pickpocket:catherby:0` | (2804, 3430) | [Man (man)](../resources/pickpocket/man.md) 2 | no | no | - |
+| `pickpocket:catherby:1` | (2817, 3443) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman](../resources/pickpocket/woman2.md) 1 | no | no | - |
 
 ## Ladders and stairs
 

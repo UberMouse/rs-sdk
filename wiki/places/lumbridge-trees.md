@@ -13,10 +13,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:lumbridge-trees:0` | (3169, 3244) | giantspider1 1, spider 2 | yes | no | - |
-| `npc:lumbridge-trees:1` | (3185, 3244) | goblin 3 | yes | no | - |
-| `npc:lumbridge-trees:2` | (3196, 3206) | rat 1 | yes | no | - |
-| `npc:lumbridge-trees:3` | (3202, 3239) | giantspider1 2 | yes | no | - |
+| `npc:lumbridge-trees:0` | (3169, 3244) | Giant spider 1, Spider 2 | yes | no | - |
+| `npc:lumbridge-trees:1` | (3185, 3244) | Goblin 3 | yes | no | - |
+| `npc:lumbridge-trees:2` | (3196, 3206) | Rat 1 | yes | no | - |
+| `npc:lumbridge-trees:3` | (3202, 3239) | Giant spider 2 | yes | no | - |
 
 ## Ladders and stairs
 

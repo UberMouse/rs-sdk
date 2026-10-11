@@ -7,5 +7,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:the-hollows:0` | (3498, 3385) | mmsnailround_swamp 7, mmsnailround_yellow 2 | no | no | - |
-| `npc:the-hollows:1` | (3511, 3393) | mmsnailround_swamp 1 | no | no | - |
+| `npc:the-hollows:0` | (3498, 3385) | Myre Blamish Snail 7, Ochre Blamish Snail 2 | no | no | - |
+| `npc:the-hollows:1` | (3511, 3393) | Myre Blamish Snail 1 | no | no | - |

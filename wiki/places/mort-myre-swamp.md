@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:mort-myre-swamp:0` | (3421, 3371) | mmsnailpoint_swamp 4, mmsnailpoint_yellow 1, mmsnailround_swamp 3, mmsnailround_yellow 1 | no | no | - |
-| `npc:mort-myre-swamp:1` | (3425, 3403) | mmsnailround_yellow 2 | no | no | - |
-| `npc:mort-myre-swamp:2` | (3439, 3398) | mmsnailround_yellow 1 | no | no | - |
-| `npc:mort-myre-swamp:3` | (3444, 3405) | mmsnailround_swamp 1, mmsnailround_yellow 1 | no | no | - |
+| `npc:mort-myre-swamp:0` | (3421, 3371) | Myre Blamish Snail (mmsnailpoint_swamp) 4, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:mort-myre-swamp:1` | (3425, 3403) | Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - |
+| `npc:mort-myre-swamp:2` | (3439, 3398) | Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |
+| `npc:mort-myre-swamp:3` | (3444, 3405) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - |

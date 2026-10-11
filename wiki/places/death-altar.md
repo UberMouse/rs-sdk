@@ -19,9 +19,9 @@ Inside the death ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:death-altar:0` | (2193, 4850) | ghost 4 | no | no | - |
-| `npc:death-altar:1` | (2194, 4823) | ghost 3 | no | no | - |
-| `npc:death-altar:2` | (2211, 4826) | ghost 3 | no | no | - |
-| `npc:death-altar:3` | (2218, 4818) | ghost 1 | no | no | - |
-| `npc:death-altar:4` | (2222, 4847) | ghost 5 | no | no | - |
-| `npc:death-altar:5` | (2227, 4819) | ghost 1 | no | no | - |
+| `npc:death-altar:0` | (2193, 4850) | Ghost 4 | no | no | - |
+| `npc:death-altar:1` | (2194, 4823) | Ghost 3 | no | no | - |
+| `npc:death-altar:2` | (2211, 4826) | Ghost 3 | no | no | - |
+| `npc:death-altar:3` | (2218, 4818) | Ghost 1 | no | no | - |
+| `npc:death-altar:4` | (2222, 4847) | Ghost 5 | no | no | - |
+| `npc:death-altar:5` | (2227, 4819) | Ghost 1 | no | no | - |

@@ -195,6 +195,17 @@ describe('rules', () => {
         expect(one('loc', 'chest', {}, { triggers: viaMenu, callables: menu })?.kind).toBe('bank');
     });
 
+    test('a < in string text opens no interpolation, so the string still ends at its quote', () => {
+        const said = (body: string) => one('loc', 'chest', {}, { triggers: [trig('a.rs2', 'loc', 'chest', body)] });
+        expect(said('\nmes("HP < 10"); // @openbank;')).toBeNull();
+        expect(said('\nmes("HP <10, or 1<2"); mes("Ask @openbank.");')).toBeNull();
+        expect(said('\nmes("HP < 10"); @openbank;')?.kind).toBe('bank');
+        // An interpolation holding a string of its own is still code.
+        const callables = [label('~bank_name', '(string $s)\n@openbank;')];
+        const triggers = [trig('a.rs2', 'loc', 'chest', '\nmes("<p,neutral>Hi <~bank_name("sir")>!");')];
+        expect(one('loc', 'chest', {}, { triggers, callables })?.kind).toBe('bank');
+    });
+
     test('two dbrows listing one tree throw, naming both rows', () => {
         const dbrows = [
             { row: 'a_tree_table', table: 'woodcutting_trees', data: { tree: [['oak']] } },

@@ -19,4 +19,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:varrock-west-mine:0` | (3175, 3361) | mugger 1 | yes | no | - |
+| `npc:varrock-west-mine:0` | (3175, 3361) | Mugger 1 | yes | no | - |

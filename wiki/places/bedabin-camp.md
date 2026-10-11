@@ -7,11 +7,11 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:bedabin-camp:0` | (3169, 3037) | bedabincampshop 8 | no | no | - |
+| `shop:bedabin-camp:0` | (3169, 3037) | Bedabin Village Bartering (bedabincampshop) 8 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:bedabin-camp:0` | (3162, 3032) | bedabin_fighter 3 | no | no | - |
-| `npc:bedabin-camp:1` | (3178, 3032) | bedabin_fighter 3 | no | no | - |
+| `npc:bedabin-camp:0` | (3162, 3032) | Bedabin Nomad Fighter 3 | no | no | - |
+| `npc:bedabin-camp:1` | (3178, 3032) | Bedabin Nomad Fighter 3 | no | no | - |

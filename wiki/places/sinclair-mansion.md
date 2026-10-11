@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:sinclair-mansion:0` | (2736, 3561) | chicken 3, cow 1 | no | no | - |
+| `npc:sinclair-mansion:0` | (2736, 3561) | Chicken 3, Cow 1 | no | no | - |

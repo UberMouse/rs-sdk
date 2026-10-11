@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:tyras-camp:0` | (2186, 3152) | chicken 2, chicken_brown 1, regicide_tyras_guard 3 | no | no | - |
+| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - |

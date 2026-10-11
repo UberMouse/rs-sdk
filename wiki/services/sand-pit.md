@@ -5,8 +5,8 @@
 
 | Area | Site | Centre | Stand | Counts | F2P |
 |---|---|---|---|---|---|
-| [Kandarin](../places/kandarin.md) | `sand-pit:kandarin:0` | (2667, 3707) | (2667, 3706) | Sand pit 1 | no |
-| [Kandarin](../places/kandarin.md) | `sand-pit:kandarin:1` | (2816, 3341) | (2815, 3341) | Sand pit 1 | no |
+| [Kandarin](../places/kandarin.md) | `sand-pit:kandarin:0` | (2816, 3341) | (2815, 3341) | Sand pit 1 | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `sand-pit:rellekka:0` | (2667, 3707) | (2667, 3706) | Sand pit 1 | no |
 | [Yanille (Kandarin)](../places/yanille.md) | `sand-pit:yanille:0` | (2542, 3103) | (2541, 3103) | Sand pit 1 | no |
 | [Watchtower quest area](../places/watchtower-quest-area.md) | `sand-pit:watchtower-quest-area:0` | (2926, 4703) | (2925, 4703) | Sand pit 1 | no |
 | [Zanaris](../places/zanaris.md) | `sand-pit:zanaris:0` | (3207, 9562) | (3206, 9562) | Sand pit 1 | no |

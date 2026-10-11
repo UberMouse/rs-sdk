@@ -20,10 +20,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:rogues-castle:0` | (3284, 3931) | [rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 |
-| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 |
-| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 |
-| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 |
+| `pickpocket:rogues-castle:0` | (3284, 3931) | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 |
+| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 |
+| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 |
+| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 |
 
 ## Ladders and stairs
 

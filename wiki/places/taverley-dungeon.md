@@ -25,62 +25,62 @@ Ladder up south of Taverley at (2884, 3397).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:taverley-dungeon:0` | (2890, 9766) | [0_45_152_lavafish](../resources/fishing-spot/0_45_152_lavafish.md) 3 | no | no | - |
+| `fishing-spot:taverley-dungeon:0` | (2890, 9766) | [Fishing spot (0_45_152_lavafish)](../resources/fishing-spot/0_45_152_lavafish.md) 3 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:taverley-dungeon:0` | (2832, 9825) | black_dragon 2 | no | no | - |
-| `npc:taverley-dungeon:1` | (2845, 9761) | zombie_entranan 5 | no | no | - |
-| `npc:taverley-dungeon:2` | (2850, 9808) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:3` | (2857, 9779) | black_demon 2 | no | no | - |
-| `npc:taverley-dungeon:4` | (2857, 9822) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:5` | (2859, 9802) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:6` | (2862, 9817) | poisonspider 2 | no | no | - |
-| `npc:taverley-dungeon:7` | (2862, 9749) | greater_demon 2 | no | no | - |
-| `npc:taverley-dungeon:8` | (2863, 9769) | black_demon 1 | no | no | - |
-| `npc:taverley-dungeon:9` | (2869, 9776) | black_demon 1 | no | no | - |
-| `npc:taverley-dungeon:10` | (2870, 9799) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:11` | (2871, 9792) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:12` | (2876, 9806) | poisonspider 1 | no | no | - |
-| `npc:taverley-dungeon:13` | (2885, 9820) | skeleton_unarmed 6 | no | no | - |
-| `npc:taverley-dungeon:14` | (2884, 9836) | skeleton_armed 1 | no | no | - |
-| `npc:taverley-dungeon:15` | (2891, 9849) | ghost 2 | no | no | - |
-| `npc:taverley-dungeon:16` | (2891, 9701) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:17` | (2893, 9832) | spider 3 | no | no | - |
-| `npc:taverley-dungeon:18` | (2895, 9678) | aggressive_black_knight 1, lord_daquarius 1 | no | no | - |
-| `npc:taverley-dungeon:19` | (2892, 9710) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:20` | (2902, 9801) | babybluedragon 4, blue_dragon 3 | no | no | - |
-| `npc:taverley-dungeon:21` | (2897, 9766) | babybluedragon 3 | no | no | - |
-| `npc:taverley-dungeon:22` | (2902, 9689) | aggressive_black_knight 3 | no | no | - |
-| `npc:taverley-dungeon:23` | (2899, 9709) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:24` | (2900, 9701) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:25` | (2900, 9819) | ghost 1 | no | no | - |
-| `npc:taverley-dungeon:26` | (2910, 9849) | ghost 5 | no | no | - |
-| `npc:taverley-dungeon:27` | (2915, 9832) | bat 9 | no | no | - |
-| `npc:taverley-dungeon:28` | (2907, 9676) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:29` | (2907, 9711) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:30` | (2910, 9819) | ghost 2 | no | no | - |
-| `npc:taverley-dungeon:31` | (2914, 9799) | babybluedragon 2 | no | no | - |
-| `npc:taverley-dungeon:32` | (2918, 9703) | aggressive_black_knight 2 | no | no | - |
-| `npc:taverley-dungeon:33` | (2915, 9760) | dwarf_chaos 1 | no | no | - |
-| `npc:taverley-dungeon:34` | (2917, 9680) | aggressive_black_knight 2 | no | no | - |
-| `npc:taverley-dungeon:35` | (2917, 9695) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:36` | (2920, 9818) | ghost 1 | no | no | - |
-| `npc:taverley-dungeon:37` | (2925, 9759) | dwarf_chaos 2 | no | no | - |
-| `npc:taverley-dungeon:38` | (2923, 9710) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:39` | (2925, 9769) | dwarf_chaos 1 | no | no | - |
-| `npc:taverley-dungeon:40` | (2932, 9797) | dwarf_chaos 2, lesser_demon 5 | no | no | - |
-| `npc:taverley-dungeon:41` | (2932, 9755) | poison_scorpion 2 | no | no | - |
-| `npc:taverley-dungeon:42` | (2931, 9696) | dwarf_normal 2, jailer 1, rat 4 | no | no | - |
-| `npc:taverley-dungeon:43` | (2930, 9822) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:44` | (2936, 9837) | ghost 2 | no | no | - |
-| `npc:taverley-dungeon:45` | (2935, 9772) | poison_scorpion 2 | no | no | - |
-| `npc:taverley-dungeon:46` | (2936, 9829) | ghost 1 | no | no | - |
-| `npc:taverley-dungeon:47` | (2939, 9812) | aggressive_black_knight 1 | no | no | - |
-| `npc:taverley-dungeon:48` | (2941, 9779) | poison_scorpion 1 | no | no | - |
-| `npc:taverley-dungeon:49` | (2943, 9801) | aggressive_black_knight 1 | no | no | - |
+| `npc:taverley-dungeon:0` | (2832, 9825) | Black dragon 2 | no | no | - |
+| `npc:taverley-dungeon:1` | (2845, 9761) | Zombie 5 | no | no | - |
+| `npc:taverley-dungeon:2` | (2850, 9808) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:3` | (2857, 9779) | Black Demon 2 | no | no | - |
+| `npc:taverley-dungeon:4` | (2857, 9822) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:5` | (2859, 9802) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:6` | (2862, 9817) | Poison spider 2 | no | no | - |
+| `npc:taverley-dungeon:7` | (2862, 9749) | Greater demon 2 | no | no | - |
+| `npc:taverley-dungeon:8` | (2863, 9769) | Black Demon 1 | no | no | - |
+| `npc:taverley-dungeon:9` | (2869, 9776) | Black Demon 1 | no | no | - |
+| `npc:taverley-dungeon:10` | (2870, 9799) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:11` | (2871, 9792) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:12` | (2876, 9806) | Poison spider 1 | no | no | - |
+| `npc:taverley-dungeon:13` | (2885, 9820) | Skeleton (skeleton_unarmed) 6 | no | no | - |
+| `npc:taverley-dungeon:14` | (2884, 9836) | Skeleton (skeleton_armed) 1 | no | no | - |
+| `npc:taverley-dungeon:15` | (2891, 9849) | Ghost 2 | no | no | - |
+| `npc:taverley-dungeon:16` | (2891, 9701) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:17` | (2893, 9832) | Spider 3 | no | no | - |
+| `npc:taverley-dungeon:18` | (2895, 9678) | Black Knight 1, Lord Daquarius 1 | no | no | - |
+| `npc:taverley-dungeon:19` | (2892, 9710) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:20` | (2902, 9801) | Baby blue dragon 4, Blue dragon 3 | no | no | - |
+| `npc:taverley-dungeon:21` | (2897, 9766) | Baby blue dragon 3 | no | no | - |
+| `npc:taverley-dungeon:22` | (2902, 9689) | Black Knight 3 | no | no | - |
+| `npc:taverley-dungeon:23` | (2899, 9709) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:24` | (2900, 9701) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:25` | (2900, 9819) | Ghost 1 | no | no | - |
+| `npc:taverley-dungeon:26` | (2910, 9849) | Ghost 5 | no | no | - |
+| `npc:taverley-dungeon:27` | (2915, 9832) | Giant bat 9 | no | no | - |
+| `npc:taverley-dungeon:28` | (2907, 9676) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:29` | (2907, 9711) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:30` | (2910, 9819) | Ghost 2 | no | no | - |
+| `npc:taverley-dungeon:31` | (2914, 9799) | Baby blue dragon 2 | no | no | - |
+| `npc:taverley-dungeon:32` | (2918, 9703) | Black Knight 2 | no | no | - |
+| `npc:taverley-dungeon:33` | (2915, 9760) | Chaos dwarf 1 | no | no | - |
+| `npc:taverley-dungeon:34` | (2917, 9680) | Black Knight 2 | no | no | - |
+| `npc:taverley-dungeon:35` | (2917, 9695) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:36` | (2920, 9818) | Ghost 1 | no | no | - |
+| `npc:taverley-dungeon:37` | (2925, 9759) | Chaos dwarf 2 | no | no | - |
+| `npc:taverley-dungeon:38` | (2923, 9710) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:39` | (2925, 9769) | Chaos dwarf 1 | no | no | - |
+| `npc:taverley-dungeon:40` | (2932, 9797) | Chaos dwarf 2, Lesser demon 5 | no | no | - |
+| `npc:taverley-dungeon:41` | (2932, 9755) | Poison Scorpion 2 | no | no | - |
+| `npc:taverley-dungeon:42` | (2931, 9696) | Dwarf 2, Jailer 1, Rat 4 | no | no | - |
+| `npc:taverley-dungeon:43` | (2930, 9822) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:44` | (2936, 9837) | Ghost 2 | no | no | - |
+| `npc:taverley-dungeon:45` | (2935, 9772) | Poison Scorpion 2 | no | no | - |
+| `npc:taverley-dungeon:46` | (2936, 9829) | Ghost 1 | no | no | - |
+| `npc:taverley-dungeon:47` | (2939, 9812) | Black Knight 1 | no | no | - |
+| `npc:taverley-dungeon:48` | (2941, 9779) | Poison Scorpion 1 | no | no | - |
+| `npc:taverley-dungeon:49` | (2943, 9801) | Black Knight 1 | no | no | - |
 
 ## Ladders and stairs
 

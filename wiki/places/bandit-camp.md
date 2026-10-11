@@ -20,5 +20,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:bandit-camp:0` | (3034, 3684) | brawling_bandit 2 | yes | yes | 21 |
-| `npc:bandit-camp:1` | (3036, 3697) | black_heather 1, brawling_bandit 1, donny_the_lad 1, speedy_keith 1 | yes | yes | 23 |
+| `npc:bandit-camp:0` | (3034, 3684) | Bandit 2 | yes | yes | 21 |
+| `npc:bandit-camp:1` | (3036, 3697) | Bandit 1, Black Heather 1, Donny the lad 1, Speedy Keith 1 | yes | yes | 23 |

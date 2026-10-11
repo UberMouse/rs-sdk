@@ -9,4 +9,4 @@ Members only; opens the bank (areas/area_alkharid/scripts/shantay_chest.rs2).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:shantay-pass-bank-chest:0` | (3309, 3120) | chest 1 | yes | no | - |
+| `bank:shantay-pass-bank-chest:0` | (3309, 3120) | Shantay chest 1 | yes | no | - |

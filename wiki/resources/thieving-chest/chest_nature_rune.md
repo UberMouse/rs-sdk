@@ -17,5 +17,5 @@ From the `trapped_chest` row `trapped_chest_chest_nature_rune`.
 |---|---|---|---|---|---|---|---|
 | [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | 1 | no | no | - |
 | [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:3` | (2671, 3300) L1 | (2672, 3299) L1 | 1 | no | no | - |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:1` | (2668, 3693) L1 | (2667, 3693) L1 | 1 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:2` | (2668, 3693) L1 | (2667, 3693) L1 | 1 | no | no | - |
 | [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | 1 | no | no | 55 |

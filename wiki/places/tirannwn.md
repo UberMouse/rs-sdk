@@ -5,7 +5,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:tirannwn:0` | (2194, 3140) | regicide_general_shop_2 1 | no | no | - |
+| `shop:tirannwn:0` | (2194, 3140) | Quartermaster's Stores (regicide_general_shop_2) 1 | no | no | - |
 
 ## [Water sources](../services/water-source.md)
 
@@ -68,34 +68,34 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:tirannwn:0` | (2165, 3267) | [memberfish](../resources/fishing-spot/memberfish.md) 2 | no | no | - |
-| `fishing-spot:tirannwn:1` | (2165, 3286) | [memberfish](../resources/fishing-spot/memberfish.md) 1 | no | no | - |
-| `fishing-spot:tirannwn:2` | (2212, 3235) | [freshfish](../resources/fishing-spot/freshfish.md) 2 | no | no | - |
-| `fishing-spot:tirannwn:3` | (2215, 3248) | [freshfish](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
-| `fishing-spot:tirannwn:4` | (2225, 3243) | [freshfish](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
-| `fishing-spot:tirannwn:5` | (2272, 3249) | [freshfish](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
+| `fishing-spot:tirannwn:0` | (2165, 3267) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2 | no | no | - |
+| `fishing-spot:tirannwn:1` | (2165, 3286) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | no | - |
+| `fishing-spot:tirannwn:2` | (2212, 3235) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - |
+| `fishing-spot:tirannwn:3` | (2215, 3248) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
+| `fishing-spot:tirannwn:4` | (2225, 3243) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
+| `fishing-spot:tirannwn:5` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:tirannwn:0` | (2185, 3279) | regicide_bunny1 1, regicide_bunny2 2, regicide_rabbit 6 | no | no | - |
-| `npc:tirannwn:1` | (2189, 3223) | regicide_bunny1 1, regicide_bunny2 2, regicide_rabbit 3 | no | no | - |
-| `npc:tirannwn:2` | (2188, 3171) | regicide_tyras_camp_guard 1 | no | no | - |
-| `npc:tirannwn:3` | (2188, 3242) | regicide_darkelf 1 | no | no | - |
-| `npc:tirannwn:4` | (2192, 3150) | regicide_tyras_guard 1 | no | no | - |
-| `npc:tirannwn:5` | (2207, 3196) | regicide_bunny2 1, regicide_rabbit 2 | no | no | - |
-| `npc:tirannwn:6` | (2209, 3256) | regicide_darkelf 2 | no | no | - |
-| `npc:tirannwn:7` | (2210, 3239) | regicide_darkelf 1 | no | no | - |
-| `npc:tirannwn:8` | (2230, 3238) | regicide_bunny1 2, regicide_bunny2 1, regicide_rabbit 4 | no | no | - |
-| `npc:tirannwn:9` | (2243, 3161) | regicide_rabbit 1 | no | no | - |
-| `npc:tirannwn:10` | (2265, 3141) | regicide_bunny2 1, regicide_rabbit 1 | no | no | - |
-| `npc:tirannwn:11` | (2273, 3182) | regicide_rabbit 1 | no | no | - |
-| `npc:tirannwn:12` | (2277, 3161) | regicide_bunny2 1, regicide_rabbit 2 | no | no | - |
-| `npc:tirannwn:13` | (2279, 3219) | regicide_rabbit 1 | no | no | - |
-| `npc:tirannwn:14` | (2296, 3176) | regicide_bunny1 1, regicide_bunny2 1, regicide_rabbit 3 | no | no | - |
-| `npc:tirannwn:15` | (2296, 3250) | regicide_bunny1 1, regicide_bunny2 1, regicide_rabbit 1 | no | no | - |
-| `npc:tirannwn:16` | (2371, 3377) | giantspider1 2 | no | no | - |
+| `npc:tirannwn:0` | (2185, 3279) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 6 | no | no | - |
+| `npc:tirannwn:1` | (2189, 3223) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 3 | no | no | - |
+| `npc:tirannwn:2` | (2188, 3171) | Tyras guard (regicide_tyras_camp_guard) 1 | no | no | - |
+| `npc:tirannwn:3` | (2188, 3242) | Elf warrior 1 | no | no | - |
+| `npc:tirannwn:4` | (2192, 3150) | Tyras guard (regicide_tyras_guard) 1 | no | no | - |
+| `npc:tirannwn:5` | (2207, 3196) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - |
+| `npc:tirannwn:6` | (2209, 3256) | Elf warrior 2 | no | no | - |
+| `npc:tirannwn:7` | (2210, 3239) | Elf warrior 1 | no | no | - |
+| `npc:tirannwn:8` | (2230, 3238) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 4 | no | no | - |
+| `npc:tirannwn:9` | (2243, 3161) | Rabbit (regicide_rabbit) 1 | no | no | - |
+| `npc:tirannwn:10` | (2265, 3141) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - |
+| `npc:tirannwn:11` | (2273, 3182) | Rabbit (regicide_rabbit) 1 | no | no | - |
+| `npc:tirannwn:12` | (2277, 3161) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - |
+| `npc:tirannwn:13` | (2279, 3219) | Rabbit (regicide_rabbit) 1 | no | no | - |
+| `npc:tirannwn:14` | (2296, 3176) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - |
+| `npc:tirannwn:15` | (2296, 3250) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - |
+| `npc:tirannwn:16` | (2371, 3377) | Giant spider 2 | no | no | - |
 
 ## Ladders and stairs
 

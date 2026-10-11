@@ -15,4 +15,4 @@ The world map's "Underground Pass" label; the pass itself is the underground are
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:underground-pass-entrance:0` | (2453, 3307) | dskin_w_ardoungecitizen2 1 | no | no | - |
+| `npc:underground-pass-entrance:0` | (2453, 3307) | Woman 1 | no | no | - |

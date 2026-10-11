@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:desert-mining-camp:0` | (3280, 3026) | rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp:1` | (3287, 3030) | rowdymineguard 1 | no | no | - |
-| `npc:desert-mining-camp:2` | (3288, 3018) | desertminingmercenary1 1 | no | no | - |
-| `npc:desert-mining-camp:3` | (3298, 3022) | desertminingmercenary1 2, rowdymineguard 1 | no | no | - |
+| `npc:desert-mining-camp:0` | (3280, 3026) | Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp:1` | (3287, 3030) | Rowdy Guard 1 | no | no | - |
+| `npc:desert-mining-camp:2` | (3288, 3018) | Mercenary 1 | no | no | - |
+| `npc:desert-mining-camp:3` | (3298, 3022) | Mercenary 2, Rowdy Guard 1 | no | no | - |

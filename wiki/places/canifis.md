@@ -7,9 +7,9 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:canifis:0` | (3475, 3497) | werewolfgeneralstore 1 | no | no | - |
-| `shop:canifis:1` | (3499, 3506) | werewolfstore2 1 | no | no | - |
-| `shop:canifis:2` | (3507, 3496) | werewolfstore1 1 | no | no | - |
+| `shop:canifis:0` | (3475, 3497) | General Store (werewolfgeneralstore) 1 | no | no | - |
+| `shop:canifis:1` | (3499, 3506) | Barkers' Habidashery (werewolfstore2) 1 | no | no | - |
+| `shop:canifis:2` | (3507, 3496) | Rufus' Meat Emporium (werewolfstore1) 1 | no | no | - |
 
 ## [Tanners](../services/tanner.md)
 
@@ -21,15 +21,15 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:canifis:0` | (3474, 3474) | canafis_man2 1 | no | no | - |
-| `npc:canifis:1` | (3483, 3493) | canafis_man1 1, canafis_man2 1, canafis_man3 1, canafis_woman2 1, canafis_woman3 1 | no | no | - |
-| `npc:canifis:2` | (3479, 3498) L1 | canafis_woman3 1 | no | no | - |
-| `npc:canifis:3` | (3483, 3478) | canafis_man1 1 | no | no | - |
-| `npc:canifis:4` | (3490, 3472) L1 | canafis_woman2 1 | no | no | - |
-| `npc:canifis:5` | (3493, 3474) | canafis_man2 2, canafis_man3 1, canafis_woman1 1 | no | no | - |
-| `npc:canifis:6` | (3501, 3492) | canafis_man1 2, canafis_man3 1, canafis_woman1 1 | no | no | - |
-| `npc:canifis:7` | (3499, 3473) L1 | canafis_man3 1, canafis_woman1 1 | no | no | - |
-| `npc:canifis:8` | (3511, 3482) | canafis_man2 1 | no | no | - |
+| `npc:canifis:0` | (3474, 3474) | Man (canafis_man2) 1 | no | no | - |
+| `npc:canifis:1` | (3483, 3493) | Man (canafis_man1) 1, Man (canafis_man2) 1, Man (canafis_man3) 1, Woman (canafis_woman2) 1, Woman (canafis_woman3) 1 | no | no | - |
+| `npc:canifis:2` | (3479, 3498) L1 | Woman (canafis_woman3) 1 | no | no | - |
+| `npc:canifis:3` | (3483, 3478) | Man (canafis_man1) 1 | no | no | - |
+| `npc:canifis:4` | (3490, 3472) L1 | Woman (canafis_woman2) 1 | no | no | - |
+| `npc:canifis:5` | (3493, 3474) | Man (canafis_man2) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
+| `npc:canifis:6` | (3501, 3492) | Man (canafis_man1) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
+| `npc:canifis:7` | (3499, 3473) L1 | Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
+| `npc:canifis:8` | (3511, 3482) | Man (canafis_man2) 1 | no | no | - |
 
 ## Ladders and stairs
 

@@ -7,12 +7,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | blurberrybar 1 | no | no | - |
-| `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | giannerestaurant 2, gnomeshop_hudo 1 | no | no | - |
-| `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | gnomeshop_gulluck 1 | no | no | - |
-| `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | blurberrybar 2 | no | no | - |
-| `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | gnomeshop_rometti 1 | no | no | - |
-| `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | gnomeshop_heck 1 | no | no | - |
+| `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | Blurberry Bar (blurberrybar) 1 | no | no | - |
+| `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | Gianne's Restaurant (giannerestaurant) 2, Grand Tree Groceries (gnomeshop_hudo) 1 | no | no | - |
+| `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | Gulluck and Sons (gnomeshop_gulluck) 1 | no | no | - |
+| `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | Blurberry Bar (blurberrybar) 2 | no | no | - |
+| `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | Fine Fashions (gnomeshop_rometti) 1 | no | no | - |
+| `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | Funch's Fine Groceries (gnomeshop_heck) 1 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -45,97 +45,97 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | [freshfish](../resources/fishing-spot/freshfish.md) 7 | no | no | - |
+| `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 7 | no | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:tree-gnome-stronghold:0` | (2380, 3427) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:4` | (2383, 3452) | [gnome](../resources/pickpocket/gnome.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:6` | (2393, 3435) | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:7` | (2403, 3434) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 3, [gnome](../resources/pickpocket/gnome.md) 6 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:8` | (2394, 3500) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:10` | (2396, 3471) | [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:11` | (2399, 3514) L1 | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [gnomechild](../resources/pickpocket/gnomechild.md) 1, [gnomechildblue](../resources/pickpocket/gnomechildblue.md) 1, [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 3, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 3 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:15` | (2418, 3489) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnome](../resources/pickpocket/gnome.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 2, [gnome](../resources/pickpocket/gnome.md) 3, [gnomefemale](../resources/pickpocket/gnomefemale.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:18` | (2438, 3469) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnome](../resources/pickpocket/gnome.md) 2, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:19` | (2433, 3492) | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:23` | (2446, 3504) | [gnome](../resources/pickpocket/gnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 3, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 2, [gnome](../resources/pickpocket/gnome.md) 2, [gnomefemale](../resources/pickpocket/gnomefemale.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 3, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:27` | (2450, 3496) L2 | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:28` | (2456, 3465) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [gnome](../resources/pickpocket/gnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:29` | (2459, 3426) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 3 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:30` | (2466, 3489) L2 | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 2, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 3, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 2, [gnome](../resources/pickpocket/gnome.md) 3, [gnomechild](../resources/pickpocket/gnomechild.md) 1, [gnomechildgreen](../resources/pickpocket/gnomechildgreen.md) 1, [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 4, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1, [gnomefemale_dskinned](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:37` | (2481, 3498) L2 | [gnomefemale](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:tree-gnome-stronghold:38` | (2486, 3399) | [gnomefemale](../resources/pickpocket/gnomefemale.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:0` | (2380, 3427) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:4` | (2383, 3452) | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:6` | (2393, 3435) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:7` | (2403, 3434) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 3, [Gnome (gnome)](../resources/pickpocket/gnome.md) 6 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:8` | (2394, 3500) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:10` | (2396, 3471) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:11` | (2399, 3514) L1 | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildblue)](../resources/pickpocket/gnomechildblue.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 3 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:15` | (2418, 3489) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:18` | (2438, 3469) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:19` | (2433, 3492) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:23` | (2446, 3504) | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:27` | (2450, 3496) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:28` | (2456, 3465) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:29` | (2459, 3426) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:30` | (2466, 3489) L2 | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 4, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:37` | (2481, 3498) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| `pickpocket:tree-gnome-stronghold:38` | (2486, 3399) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:tree-gnome-stronghold:0` | (2381, 3428) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:1` | (2384, 3481) | gnomeknight 1 | no | no | - |
-| `npc:tree-gnome-stronghold:2` | (2388, 3473) | gnomeknight 1 | no | no | - |
-| `npc:tree-gnome-stronghold:3` | (2397, 3409) | duck 5, duck_female 1, terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:4` | (2392, 3454) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:5` | (2394, 3436) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:6` | (2407, 3385) | giantspider1 4 | no | no | - |
-| `npc:tree-gnome-stronghold:7` | (2408, 3452) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:8` | (2409, 3470) L1 | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:9` | (2410, 3416) | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:10` | (2415, 3473) L3 | d_skingnomeknight 1, gnomekingsguard 2, gnomeknight 1 | no | no | - |
-| `npc:tree-gnome-stronghold:11` | (2413, 3397) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:12` | (2421, 3410) | gnomekingsguard 1, gnomekingsguard2 1, terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | gnomeknight 1 | no | no | - |
-| `npc:tree-gnome-stronghold:14` | (2418, 3466) L1 | gnomekingsguard 2 | no | no | - |
-| `npc:tree-gnome-stronghold:15` | (2420, 3435) | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:16` | (2420, 3447) | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:17` | (2432, 3387) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:18` | (2437, 3442) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:19` | (2441, 3497) | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:20` | (2442, 3388) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:21` | (2442, 3489) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:22` | (2445, 3429) L1 | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:23` | (2449, 3509) | gnomekingsguard 1, gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:24` | (2448, 3496) L2 | gnomekingsguard 1, gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:25` | (2449, 3421) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:26` | (2452, 3488) | gnomekingsguard 2 | no | no | - |
-| `npc:tree-gnome-stronghold:27` | (2451, 3414) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:28` | (2461, 3394) | gnomekingsguard 2, gnomekingsguard2 2, terrorbird2 2 | no | no | - |
-| `npc:tree-gnome-stronghold:29` | (2459, 3417) L1 | d_skingnomeknight 2 | no | no | - |
-| `npc:tree-gnome-stronghold:30` | (2461, 3384) | gnomekingsguard 2, gnomekingsguard2 2 | no | no | - |
-| `npc:tree-gnome-stronghold:31` | (2459, 3438) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:32` | (2460, 3487) L2 | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:33` | (2461, 3422) | gnomekingsguard2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:34` | (2470, 3487) | gnomekingsguard 3, gnomekingsguard2 3 | no | no | - |
-| `npc:tree-gnome-stronghold:35` | (2466, 3456) | terrorbird2 2 | no | no | - |
-| `npc:tree-gnome-stronghold:36` | (2465, 3480) L2 | gnomekingsguard 2 | no | no | - |
-| `npc:tree-gnome-stronghold:37` | (2466, 3468) | gnomekingsguard 4, gnomekingsguard2 2 | no | no | - |
-| `npc:tree-gnome-stronghold:38` | (2480, 3406) | terrorbird2 1 | no | no | - |
-| `npc:tree-gnome-stronghold:39` | (2482, 3501) | gnomekingsguard 1 | no | no | - |
-| `npc:tree-gnome-stronghold:40` | (2483, 3496) L2 | gnomekingsguard2 2 | no | no | - |
+| `npc:tree-gnome-stronghold:0` | (2381, 3428) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:1` | (2384, 3481) | Gnome troop (gnomeknight) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:2` | (2388, 3473) | Gnome troop (gnomeknight) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:3` | (2397, 3409) | Duck (duck) 5, Duck (duck_female) 1, Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:4` | (2392, 3454) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:5` | (2394, 3436) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:6` | (2407, 3385) | Giant spider 4 | no | no | - |
+| `npc:tree-gnome-stronghold:7` | (2408, 3452) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:8` | (2409, 3470) L1 | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:9` | (2410, 3416) | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:10` | (2415, 3473) L3 | Gnome guard (gnomekingsguard) 2, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:11` | (2413, 3397) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:12` | (2421, 3410) | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1, Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | Gnome troop (gnomeknight) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:14` | (2418, 3466) L1 | Gnome guard (gnomekingsguard) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:15` | (2420, 3435) | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:16` | (2420, 3447) | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:17` | (2432, 3387) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:18` | (2437, 3442) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:19` | (2441, 3497) | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:20` | (2442, 3388) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:21` | (2442, 3489) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:22` | (2445, 3429) L1 | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:23` | (2449, 3509) | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:24` | (2448, 3496) L2 | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:25` | (2449, 3421) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:26` | (2452, 3488) | Gnome guard (gnomekingsguard) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:27` | (2451, 3414) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:28` | (2461, 3394) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2, Mounted terrorbird gnome 2 | no | no | - |
+| `npc:tree-gnome-stronghold:29` | (2459, 3417) L1 | Gnome troop (d_skingnomeknight) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:30` | (2461, 3384) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:31` | (2459, 3438) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:32` | (2460, 3487) L2 | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:33` | (2461, 3422) | Gnome guard (gnomekingsguard2) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:34` | (2470, 3487) | Gnome guard (gnomekingsguard) 3, Gnome guard (gnomekingsguard2) 3 | no | no | - |
+| `npc:tree-gnome-stronghold:35` | (2466, 3456) | Mounted terrorbird gnome 2 | no | no | - |
+| `npc:tree-gnome-stronghold:36` | (2465, 3480) L2 | Gnome guard (gnomekingsguard) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:37` | (2466, 3468) | Gnome guard (gnomekingsguard) 4, Gnome guard (gnomekingsguard2) 2 | no | no | - |
+| `npc:tree-gnome-stronghold:38` | (2480, 3406) | Mounted terrorbird gnome 1 | no | no | - |
+| `npc:tree-gnome-stronghold:39` | (2482, 3501) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| `npc:tree-gnome-stronghold:40` | (2483, 3496) L2 | Gnome guard (gnomekingsguard2) 2 | no | no | - |
 
 ## Ladders and stairs
 

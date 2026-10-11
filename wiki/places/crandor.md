@@ -14,13 +14,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:crandor:0` | (2820, 3259) | skeleton_armed 1 | yes | no | - |
-| `npc:crandor:1` | (2831, 3244) | mossgiant 3 | yes | no | - |
-| `npc:crandor:2` | (2835, 3279) | lesser_demon 2 | yes | no | - |
-| `npc:crandor:3` | (2842, 3298) | kingscorpion 1 | yes | no | - |
-| `npc:crandor:4` | (2844, 3291) | kingscorpion 1 | yes | no | - |
-| `npc:crandor:5` | (2850, 3248) | skeleton_armed 3 | yes | no | - |
-| `npc:crandor:6` | (2851, 3258) | skeleton_armed 2 | yes | no | - |
-| `npc:crandor:7` | (2851, 3298) | kingscorpion 1 | yes | no | - |
-| `npc:crandor:8` | (2859, 3283) | kingscorpion 1 | yes | no | - |
-| `npc:crandor:9` | (2861, 3295) | kingscorpion 1 | yes | no | - |
+| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - |
+| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - |
+| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - |
+| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - |
+| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - |
+| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - |
+| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - |
+| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - |
+| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - |
+| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - |

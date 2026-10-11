@@ -14,5 +14,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:al-kharid-mine:0` | (3298, 3305) | scorpion 6 | yes | no | - |
-| `npc:al-kharid-mine:1` | (3301, 3290) | scorpion 2 | yes | no | - |
+| `npc:al-kharid-mine:0` | (3298, 3305) | Scorpion 6 | yes | no | - |
+| `npc:al-kharid-mine:1` | (3301, 3290) | Scorpion 2 | yes | no | - |

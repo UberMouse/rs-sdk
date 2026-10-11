@@ -7,13 +7,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:white-knights-castle:0` | (2959, 3338) | white_knight 2 | yes | yes | - |
-| `npc:white-knights-castle:1` | (2957, 3341) L2 | white_knight 1 | yes | yes | - |
-| `npc:white-knights-castle:2` | (2963, 3338) L1 | white_knight 3 | yes | yes | - |
-| `npc:white-knights-castle:3` | (2962, 3339) L3 | white_knight 2 | yes | yes | - |
-| `npc:white-knights-castle:4` | (2961, 3351) L1 | white_knight 1 | yes | yes | - |
-| `npc:white-knights-castle:5` | (2964, 3352) L2 | white_knight 1 | yes | yes | - |
-| `npc:white-knights-castle:6` | (2969, 3346) | chicken 1, white_knight 1 | yes | yes | - |
+| `npc:white-knights-castle:0` | (2959, 3338) | White Knight 2 | yes | yes | - |
+| `npc:white-knights-castle:1` | (2957, 3341) L2 | White Knight 1 | yes | yes | - |
+| `npc:white-knights-castle:2` | (2963, 3338) L1 | White Knight 3 | yes | yes | - |
+| `npc:white-knights-castle:3` | (2962, 3339) L3 | White Knight 2 | yes | yes | - |
+| `npc:white-knights-castle:4` | (2961, 3351) L1 | White Knight 1 | yes | yes | - |
+| `npc:white-knights-castle:5` | (2964, 3352) L2 | White Knight 1 | yes | yes | - |
+| `npc:white-knights-castle:6` | (2969, 3346) | Chicken 1, White Knight 1 | yes | yes | - |
 
 ## Ladders and stairs
 

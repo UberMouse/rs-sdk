@@ -20,8 +20,8 @@ The options of each spot config placed in the world (its npc config).
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|---|
 | [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:0` | (2856, 3424) | (2855, 3424) | 1 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2637, 3694) | (2640, 3694) | 4 | no | no | - |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:10` | (2841, 3430) | (2842, 3432) | 1 | no | no | - |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2841, 3430) | (2842, 3432) | 1 | no | no | - |
 | [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | 11 | no | no | - |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 4 | no | no | - |
 | [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - |
 | [Miscellania and Etceteria](../../places/miscellania.md) | `fishing-spot:miscellania:0` | (2577, 3854) | (2577, 3853) | 4 | no | no | - |

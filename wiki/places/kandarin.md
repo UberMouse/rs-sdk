@@ -5,28 +5,17 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:kandarin:0` | (2464, 3287) | upassgeneralshop 1 | no | no | - |
-| `shop:kandarin:1` | (2514, 3385) | lathastrainingstore 1 | no | no | - |
-| `shop:kandarin:2` | (2527, 3161) L1 | gnomeshop 1 | no | no | - |
-| `shop:kandarin:3` | (2625, 3675) | viking_clothes_shop 1 | no | no | - |
-| `shop:kandarin:4` | (2642, 3677) | viking_fishmonger 1, viking_furshop 1, viking_general_store 1 | no | no | - |
-| `shop:kandarin:5` | (2655, 3152) | khazardshop 1 | no | no | - |
-| `shop:kandarin:6` | (2808, 3342) | herbloreshop2 1 | no | no | - |
-| `shop:kandarin:7` | (2834, 3445) | fishingshop2 1 | no | no | - |
-
-## [Furnaces](../services/furnace.md)
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:kandarin:0` | (2617, 3666) | Furnace 2 | no | no | - |
+| `shop:kandarin:0` | (2464, 3287) | West Ardougne General Store (upassgeneralshop) 1 | no | no | - |
+| `shop:kandarin:1` | (2514, 3385) | Armoury (lathastrainingstore) 1 | no | no | - |
+| `shop:kandarin:2` | (2527, 3161) L1 | Bolkoy's Village Shop (gnomeshop) 1 | no | no | - |
+| `shop:kandarin:3` | (2808, 3342) | Frincos Fabulous Herb Store. (herbloreshop2) 1 | no | no | - |
+| `shop:kandarin:4` | (2834, 3445) | Harrys Fishing Shop. (fishingshop2) 1 | no | no | - |
 
 ## [Anvils](../services/anvil.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
 | `anvil:kandarin:0` | (2499, 3332) | Anvil 1 | no | no | - |
-| `anvil:kandarin:1` | (2620, 3663) | Anvil 3 | no | no | - |
-| `anvil:kandarin:2` | (2651, 3164) | Anvil 2 | no | no | - |
 
 ## [Ranges](../services/range.md)
 
@@ -37,10 +26,9 @@
 | `range:kandarin:2` | (2571, 3248) | Range 1 | no | no | - |
 | `range:kandarin:3` | (2578, 3198) | Range 1 | no | no | - |
 | `range:kandarin:4` | (2591, 3209) | Range 1 | no | no | - |
-| `range:kandarin:5` | (2632, 3163) | Range 1 | no | no | - |
-| `range:kandarin:6` | (2642, 3355) | Range 1 | no | no | - |
-| `range:kandarin:7` | (2733, 3582) | Range 1 | no | no | - |
-| `range:kandarin:8` | (2763, 3274) | Range 1 | no | no | - |
+| `range:kandarin:5` | (2642, 3355) | Range 1 | no | no | - |
+| `range:kandarin:6` | (2733, 3582) | Range 1 | no | no | - |
+| `range:kandarin:7` | (2763, 3274) | Range 1 | no | no | - |
 
 ## [Fires](../services/fire.md)
 
@@ -62,42 +50,18 @@
 | `fire:kandarin:13` | (2609, 3476) | Fireplace 1 | no | no | - |
 | `fire:kandarin:14` | (2612, 3145) L2 | Fireplace 1 | no | no | - |
 | `fire:kandarin:15` | (2615, 3214) | Fireplace 1 | no | no | - |
-| `fire:kandarin:16` | (2624, 3674) | Fire 1 | no | no | - |
-| `fire:kandarin:17` | (2628, 3653) | Fire 1 | no | no | - |
-| `fire:kandarin:18` | (2633, 3176) | Cooking pot 1 | no | no | - |
-| `fire:kandarin:19` | (2641, 3651) | Fire 1 | no | no | - |
-| `fire:kandarin:20` | (2648, 3355) | Cooking pot 1 | no | no | - |
-| `fire:kandarin:21` | (2662, 3155) | Fire 1 | no | no | - |
-| `fire:kandarin:22` | (2727, 3161) | Fire 4 | no | no | - |
-| `fire:kandarin:23` | (2746, 3468) | Fireplace 1 | no | no | - |
-| `fire:kandarin:24` | (2747, 3580) | Fireplace 1 | no | no | - |
-| `fire:kandarin:25` | (2802, 3503) | Fire 1 | no | no | - |
-| `fire:kandarin:26` | (2820, 3555) | Fire 1 | no | no | - |
-
-## [Spinning wheels](../services/spinning-wheel.md)
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `spinning-wheel:kandarin:0` | (2617, 3659) | Spinning wheel 1 | no | no | - |
-
-## [Pottery wheels](../services/pottery-wheel.md)
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-wheel:kandarin:0` | (2620, 3659) | Potter's Wheel 1 | no | no | - |
-
-## [Pottery ovens](../services/pottery-oven.md)
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-oven:kandarin:0` | (2616, 3662) | Pottery Oven 1 | no | no | - |
+| `fire:kandarin:16` | (2648, 3355) | Cooking pot 1 | no | no | - |
+| `fire:kandarin:17` | (2727, 3161) | Fire 4 | no | no | - |
+| `fire:kandarin:18` | (2746, 3468) | Fireplace 1 | no | no | - |
+| `fire:kandarin:19` | (2747, 3580) | Fireplace 1 | no | no | - |
+| `fire:kandarin:20` | (2802, 3503) | Fire 1 | no | no | - |
+| `fire:kandarin:21` | (2820, 3555) | Fire 1 | no | no | - |
 
 ## [Sand pits](../services/sand-pit.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `sand-pit:kandarin:0` | (2667, 3707) | Sand pit 1 | no | no | - |
-| `sand-pit:kandarin:1` | (2816, 3341) | Sand pit 1 | no | no | - |
+| `sand-pit:kandarin:0` | (2816, 3341) | Sand pit 1 | no | no | - |
 
 ## [Water sources](../services/water-source.md)
 
@@ -205,27 +169,26 @@
 | `tree:kandarin:67` | (2629, 3347) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - |
 | `tree:kandarin:68` | (2638, 3356) | [normal](../resources/tree/normal.md) 2 | no | no | - |
 | `tree:kandarin:69` | (2638, 3366) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:kandarin:70` | (2647, 3159) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:kandarin:71` | (2650, 3144) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:kandarin:72` | (2672, 3227) | [willow](../resources/tree/willow.md) 3 | no | yes | - |
-| `tree:kandarin:73` | (2708, 3513) | [willow](../resources/tree/willow.md) 1 | no | no | - |
-| `tree:kandarin:74` | (2741, 3353) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | no | no | - |
-| `tree:kandarin:75` | (2738, 3517) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:kandarin:76` | (2747, 3568) | [willow](../resources/tree/willow.md) 1 | no | no | - |
-| `tree:kandarin:77` | (2748, 3480) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:kandarin:78` | (2786, 3479) | [maple](../resources/tree/maple.md) 2, [normal](../resources/tree/normal.md) 123, [oak](../resources/tree/oak.md) 9 | no | yes | - |
-| `tree:kandarin:79` | (2754, 3548) | [normal](../resources/tree/normal.md) 7 | no | no | - |
-| `tree:kandarin:80` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - |
-| `tree:kandarin:81` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - |
-| `tree:kandarin:82` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - |
-| `tree:kandarin:83` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - |
-| `tree:kandarin:84` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - |
-| `tree:kandarin:85` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:kandarin:86` | (2818, 3534) | [normal](../resources/tree/normal.md) 8 | no | no | - |
-| `tree:kandarin:87` | (2820, 3501) | [normal](../resources/tree/normal.md) 2 | no | yes | - |
-| `tree:kandarin:88` | (2840, 3448) | [normal](../resources/tree/normal.md) 16 | no | yes | - |
-| `tree:kandarin:89` | (2840, 3340) | [normal](../resources/tree/normal.md) 4 | no | no | - |
-| `tree:kandarin:90` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - |
+| `tree:kandarin:70` | (2650, 3144) | [normal](../resources/tree/normal.md) 3 | no | no | - |
+| `tree:kandarin:71` | (2672, 3227) | [willow](../resources/tree/willow.md) 3 | no | yes | - |
+| `tree:kandarin:72` | (2708, 3513) | [willow](../resources/tree/willow.md) 1 | no | no | - |
+| `tree:kandarin:73` | (2741, 3353) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | no | no | - |
+| `tree:kandarin:74` | (2738, 3517) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| `tree:kandarin:75` | (2747, 3568) | [willow](../resources/tree/willow.md) 1 | no | no | - |
+| `tree:kandarin:76` | (2748, 3480) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| `tree:kandarin:77` | (2786, 3479) | [maple](../resources/tree/maple.md) 2, [normal](../resources/tree/normal.md) 123, [oak](../resources/tree/oak.md) 9 | no | yes | - |
+| `tree:kandarin:78` | (2754, 3548) | [normal](../resources/tree/normal.md) 7 | no | no | - |
+| `tree:kandarin:79` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - |
+| `tree:kandarin:80` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - |
+| `tree:kandarin:81` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - |
+| `tree:kandarin:82` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - |
+| `tree:kandarin:83` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - |
+| `tree:kandarin:84` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - |
+| `tree:kandarin:85` | (2818, 3534) | [normal](../resources/tree/normal.md) 8 | no | no | - |
+| `tree:kandarin:86` | (2820, 3501) | [normal](../resources/tree/normal.md) 2 | no | yes | - |
+| `tree:kandarin:87` | (2840, 3448) | [normal](../resources/tree/normal.md) 16 | no | yes | - |
+| `tree:kandarin:88` | (2840, 3340) | [normal](../resources/tree/normal.md) 4 | no | no | - |
+| `tree:kandarin:89` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - |
 
 ## Rocks
 
@@ -239,197 +202,170 @@
 | `rock:kandarin:5` | (2606, 3224) | [coal](../resources/rock/coal.md) 4 | no | no | - |
 | `rock:kandarin:6` | (2630, 3143) | [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 1, [copper](../resources/rock/copper.md) 2, [iron](../resources/rock/iron.md) 9, [mithril](../resources/rock/mithril.md) 2, [tin](../resources/rock/tin.md) 7 | no | no | - |
 | `rock:kandarin:7` | (2640, 3152) | [copper](../resources/rock/copper.md) 2, [mithril](../resources/rock/mithril.md) 1 | no | no | - |
-| `rock:kandarin:8` | (2683, 3707) | [clay](../resources/rock/clay.md) 3, [coal](../resources/rock/coal.md) 4 | no | no | - |
-| `rock:kandarin:9` | (2703, 3331) | [coal](../resources/rock/coal.md) 13, [iron](../resources/rock/iron.md) 11 | no | no | - |
-| `rock:kandarin:10` | (2725, 3693) | [iron](../resources/rock/iron.md) 9, [mithril](../resources/rock/mithril.md) 2 | no | no | - |
-| `rock:kandarin:11` | (2733, 3225) | [gold](../resources/rock/gold.md) 10 | no | no | - |
+| `rock:kandarin:8` | (2703, 3331) | [coal](../resources/rock/coal.md) 13, [iron](../resources/rock/iron.md) 11 | no | no | - |
+| `rock:kandarin:9` | (2725, 3693) | [iron](../resources/rock/iron.md) 9, [mithril](../resources/rock/mithril.md) 2 | no | no | - |
+| `rock:kandarin:10` | (2733, 3225) | [gold](../resources/rock/gold.md) 10 | no | no | - |
 
 ## Fishing spots
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `fishing-spot:kandarin:0` | (2466, 3152) | [freshfish](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
-| `fishing-spot:kandarin:1` | (2508, 3506) | [loc_2027](../resources/fishing-spot/loc_2027.md) 9 | no | no | - |
-| `fishing-spot:kandarin:2` | (2508, 3421) | [freshfish](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
-| `fishing-spot:kandarin:3` | (2520, 3518) | [loc_2027](../resources/fishing-spot/loc_2027.md) 1 | no | no | - |
-| `fishing-spot:kandarin:4` | (2532, 3409) | [freshfish](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
-| `fishing-spot:kandarin:5` | (2564, 3372) | [freshfish](../resources/fishing-spot/freshfish.md) 2 | no | no | - |
-| `fishing-spot:kandarin:6` | (2637, 3694) | [rarefish](../resources/fishing-spot/rarefish.md) 4, [saltfish](../resources/fishing-spot/saltfish.md) 3 | no | no | - |
-| `fishing-spot:kandarin:7` | (2647, 3710) | [memberfish](../resources/fishing-spot/memberfish.md) 4 | no | no | - |
-| `fishing-spot:kandarin:8` | (2716, 3531) | [freshfish](../resources/fishing-spot/freshfish.md) 4 | no | no | - |
-| `fishing-spot:kandarin:9` | (2792, 3277) | [saltfish](../resources/fishing-spot/saltfish.md) 4 | no | no | - |
-| `fishing-spot:kandarin:10` | (2841, 3430) | [memberfish](../resources/fishing-spot/memberfish.md) 1, [rarefish](../resources/fishing-spot/rarefish.md) 1, [saltfish](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
-
-## Stalls
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `stall:kandarin:0` | (2638, 3676) | [viking_fish_market](../resources/stall/viking_fish_market.md) 2, [viking_fur_market](../resources/stall/viking_fur_market.md) 1 | no | no | - |
-| `stall:kandarin:1` | (2647, 3678) | [viking_fish_market](../resources/stall/viking_fish_market.md) 1, [viking_fur_market](../resources/stall/viking_fur_market.md) 1 | no | no | - |
-
-## Thieving chests
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `thieving-chest:kandarin:0` | (2630, 3655) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - |
+| `fishing-spot:kandarin:0` | (2466, 3152) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
+| `fishing-spot:kandarin:1` | (2508, 3506) | [Fishing spot (loc_2027)](../resources/fishing-spot/loc_2027.md) 9 | no | no | - |
+| `fishing-spot:kandarin:2` | (2508, 3421) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - |
+| `fishing-spot:kandarin:3` | (2520, 3518) | [Fishing spot (loc_2027)](../resources/fishing-spot/loc_2027.md) 1 | no | no | - |
+| `fishing-spot:kandarin:4` | (2532, 3409) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - |
+| `fishing-spot:kandarin:5` | (2564, 3372) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - |
+| `fishing-spot:kandarin:6` | (2716, 3531) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - |
+| `fishing-spot:kandarin:7` | (2792, 3277) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - |
+| `fishing-spot:kandarin:8` | (2841, 3430) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 1, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - |
 
 ## Pickpocket targets
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `pickpocket:kandarin:0` | (2377, 3442) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
-| `pickpocket:kandarin:1` | (2400, 3356) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 1, [gnome](../resources/pickpocket/gnome.md) 1 | no | no | - |
-| `pickpocket:kandarin:2` | (2506, 3229) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1 | no | yes | - |
-| `pickpocket:kandarin:3` | (2534, 3216) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 26, [darkskinned_gnome](../resources/pickpocket/darkskinned_gnome.md) 13, [gnome](../resources/pickpocket/gnome.md) 15 | no | yes | - |
-| `pickpocket:kandarin:4` | (2536, 3234) | [browclothedgnome](../resources/pickpocket/browclothedgnome.md) 1 | no | yes | - |
-| `pickpocket:kandarin:5` | (2547, 3116) L1 | [yanille_watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - |
-| `pickpocket:kandarin:6` | (2571, 3385) | [man](../resources/pickpocket/man.md) 1, [warrior_woman](../resources/pickpocket/warrior_woman.md) 4 | no | no | - |
-| `pickpocket:kandarin:7` | (2627, 3654) | [viking_woman4](../resources/pickpocket/viking_woman4.md) 1 | no | no | - |
-| `pickpocket:kandarin:8` | (2640, 3651) | [viking_woman3](../resources/pickpocket/viking_woman3.md) 1 | no | no | - |
-| `pickpocket:kandarin:9` | (2642, 3677) | [viking_man](../resources/pickpocket/viking_man.md) 1 | no | no | - |
-| `pickpocket:kandarin:10` | (2648, 3360) | [ardougnian_female1](../resources/pickpocket/ardougnian_female1.md) 1, [farmer1](../resources/pickpocket/farmer1.md) 3 | no | no | - |
+| `pickpocket:kandarin:0` | (2377, 3442) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
+| `pickpocket:kandarin:1` | (2400, 3356) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1 | no | no | - |
+| `pickpocket:kandarin:2` | (2506, 3229) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | yes | - |
+| `pickpocket:kandarin:3` | (2534, 3216) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 26, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 13, [Gnome (gnome)](../resources/pickpocket/gnome.md) 15 | no | yes | - |
+| `pickpocket:kandarin:4` | (2536, 3234) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | yes | - |
+| `pickpocket:kandarin:5` | (2547, 3116) L1 | [Watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - |
+| `pickpocket:kandarin:6` | (2571, 3385) | [Man (man)](../resources/pickpocket/man.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 4 | no | no | - |
+| `pickpocket:kandarin:7` | (2648, 3360) | [Farmer](../resources/pickpocket/farmer1.md) 3, [Woman (ardougnian_female1)](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:kandarin:0` | (2373, 3333) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:1` | (2378, 3366) | giantspider1 1 | no | no | - |
-| `npc:kandarin:2` | (2379, 3378) | giantspider1 1 | no | no | - |
-| `npc:kandarin:3` | (2385, 3339) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:4` | (2387, 3370) | giantspider1 1 | no | no | - |
-| `npc:kandarin:5` | (2394, 3334) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:6` | (2394, 3365) | giantspider1 1 | no | no | - |
-| `npc:kandarin:7` | (2445, 3358) | hobgoblin_armed 3 | no | no | - |
-| `npc:kandarin:8` | (2449, 3330) | hobgoblin_armed 3 | no | no | - |
-| `npc:kandarin:9` | (2453, 3363) | terrorbird2 1 | no | no | - |
-| `npc:kandarin:10` | (2465, 3181) | goblin 5, goblin_armed 4, rat 5 | no | no | - |
-| `npc:kandarin:11` | (2478, 3303) | dskin_w_ardoungecitizen1 2, dskin_w_ardoungecitizen2 1, dskin_w_ardoungecitizenlady1 5, dskin_w_ardoungecitizenlady3 2, khazard_troop 2, rat 58, w_ardoungecitizenlady1 1 | no | no | - |
-| `npc:kandarin:12` | (2461, 3166) | rat 1 | no | no | - |
-| `npc:kandarin:13` | (2463, 3285) | rat 1 | no | no | - |
-| `npc:kandarin:14` | (2463, 3375) | terrorbird2 1 | no | no | - |
-| `npc:kandarin:15` | (2469, 3227) | grave_scorpion 5 | no | no | - |
-| `npc:kandarin:16` | (2499, 3093) | ogre 5 | no | no | - |
-| `npc:kandarin:17` | (2497, 3292) | zombie_armed 1 | no | no | - |
-| `npc:kandarin:18` | (2501, 3332) | rat 2 | no | no | - |
-| `npc:kandarin:19` | (2500, 3226) | terrorbird3 1 | no | no | - |
-| `npc:kandarin:20` | (2506, 3113) | ogre2 4 | no | no | - |
-| `npc:kandarin:21` | (2510, 3189) | rat 9 | no | no | - |
-| `npc:kandarin:22` | (2502, 3242) | khazard_troop 1 | no | no | - |
-| `npc:kandarin:23` | (2504, 3133) | ogre 1 | no | no | - |
-| `npc:kandarin:24` | (2505, 3176) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:25` | (2507, 3149) | giant 1 | no | no | - |
-| `npc:kandarin:26` | (2507, 3211) | d_skingnomeknight 2 | no | yes | - |
-| `npc:kandarin:27` | (2512, 3085) | ogre2 4 | no | no | - |
-| `npc:kandarin:28` | (2516, 3246) | khazard_troop 6 | no | yes | - |
-| `npc:kandarin:29` | (2516, 3333) | rat 2 | no | no | - |
-| `npc:kandarin:30` | (2518, 3255) | khazard_troop 1 | no | no | - |
-| `npc:kandarin:31` | (2519, 3145) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:32` | (2524, 3269) | dskin_w_ardoungecitizen1 1, dskin_w_ardoungecitizen2 1, dskin_w_ardoungecitizenlady1 1, w_ardoungecitizenlady1 1 | no | no | - |
-| `npc:kandarin:33` | (2523, 3279) | dskin_w_ardoungecitizen1 1, mourner3 1 | no | no | - |
-| `npc:kandarin:34` | (2523, 3155) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:35` | (2530, 3333) | rat 3 | no | no | - |
-| `npc:kandarin:36` | (2537, 3244) | khazard_troop 7, khazard_troop_spearmen 5, terrorbird3 1 | no | yes | - |
-| `npc:kandarin:37` | (2534, 3213) | d_skingnomeknight 3, gnomeknight 5, terrorbird3 3 | no | yes | - |
-| `npc:kandarin:38` | (2532, 3375) | lathastrainingogre 2 | no | no | - |
-| `npc:kandarin:39` | (2534, 3568) | barbarian 1 | no | no | - |
-| `npc:kandarin:40` | (2543, 3278) | dskin_w_ardoungecitizen2 1, w_ardoungecitizenlady1 1 | no | no | - |
-| `npc:kandarin:41` | (2549, 3192) | goblin 4, goblin_armed 1, ogre 1, spider 5 | no | no | - |
-| `npc:kandarin:42` | (2542, 3155) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:43` | (2544, 3577) | barbarian 1 | no | no | - |
-| `npc:kandarin:44` | (2547, 3146) | giant 2 | no | no | - |
-| `npc:kandarin:45` | (2546, 3116) | tower_guard 1 | no | no | - |
-| `npc:kandarin:46` | (2548, 3287) | mourner3 1 | no | no | - |
-| `npc:kandarin:47` | (2553, 3406) | mossgiant 4 | no | no | - |
-| `npc:kandarin:48` | (2550, 3166) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:49` | (2553, 3324) | dskin_w_ardoungecitizenlady3 1, mourner3 3, mourner_armed 2, mournerstew1 3, mournerstew3 3 | no | no | - |
-| `npc:kandarin:50` | (2551, 3326) L1 | mournerstew2 2 | no | no | - |
-| `npc:kandarin:51` | (2553, 3275) | dskin_w_ardoungecitizenlady3 1 | no | no | - |
-| `npc:kandarin:52` | (2554, 3117) | tower_guard 1 | no | no | - |
-| `npc:kandarin:53` | (2554, 3307) | dskin_w_ardoungecitizenlady3 1 | no | no | - |
-| `npc:kandarin:54` | (2554, 3467) | mcannonguard 2 | no | no | - |
-| `npc:kandarin:55` | (2567, 3407) | goblin 4, goblin_armed 2 | no | no | - |
-| `npc:kandarin:56` | (2569, 3437) | goblin 3, goblin_armed 3 | no | no | - |
-| `npc:kandarin:57` | (2567, 3146) | arena_guard4 3 | no | no | - |
-| `npc:kandarin:58` | (2567, 3455) | goblin 1, mcannonguard 2 | no | no | - |
-| `npc:kandarin:59` | (2571, 3481) | bat 1 | no | no | - |
-| `npc:kandarin:60` | (2572, 3396) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:61` | (2572, 3420) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:62` | (2575, 3474) | bat 2 | no | no | - |
-| `npc:kandarin:63` | (2579, 3166) | arena_guard4 3 | no | no | - |
-| `npc:kandarin:64` | (2583, 3119) | cow 3 | no | no | - |
-| `npc:kandarin:65` | (2583, 3149) | arena_guard4 1 | no | no | - |
-| `npc:kandarin:66` | (2583, 3435) | goblin_armed 1 | no | no | - |
-| `npc:kandarin:67` | (2584, 3141) | arena_guard1 1 | no | no | - |
-| `npc:kandarin:68` | (2586, 3473) | bat 1 | no | no | - |
-| `npc:kandarin:69` | (2589, 3193) | arena_guard4 1 | no | no | - |
-| `npc:kandarin:70` | (2593, 3139) | arena_guard1 2 | no | no | - |
-| `npc:kandarin:71` | (2594, 3181) | arena_guard4 6 | no | no | - |
-| `npc:kandarin:72` | (2598, 3442) | duck 7, duck_female 18 | no | no | - |
-| `npc:kandarin:73` | (2594, 3474) | bat 1 | no | no | - |
-| `npc:kandarin:74` | (2595, 3131) | imp 1 | no | no | - |
-| `npc:kandarin:75` | (2597, 3120) | imp 1 | no | no | - |
-| `npc:kandarin:76` | (2599, 3193) | arena_guard4 1 | no | no | - |
-| `npc:kandarin:77` | (2606, 3126) | imp 1 | no | no | - |
-| `npc:kandarin:78` | (2607, 3165) | arena_guard4 1, arena_ogre 1, arena_scorpion 1 | no | no | - |
-| `npc:kandarin:79` | (2609, 3185) | arena_guard4 4 | no | no | - |
-| `npc:kandarin:80` | (2608, 3134) | imp 1 | no | no | - |
-| `npc:kandarin:81` | (2611, 3149) | arena_guard1 1, arena_guard4 2 | no | no | - |
-| `npc:kandarin:82` | (2610, 3193) | arena_guard3 1 | no | no | - |
-| `npc:kandarin:83` | (2613, 3477) | rat 2 | no | no | - |
-| `npc:kandarin:84` | (2614, 3116) | imp 1 | no | no | - |
-| `npc:kandarin:85` | (2618, 3448) | duck 5, duck_female 7 | no | no | - |
-| `npc:kandarin:86` | (2615, 3141) | arena_guard2 1 | no | no | - |
-| `npc:kandarin:87` | (2616, 3126) | imp 1 | no | no | - |
-| `npc:kandarin:88` | (2617, 3168) | arena_guard1 2 | no | no | - |
-| `npc:kandarin:89` | (2618, 3159) | arena_guard1 1 | no | no | - |
-| `npc:kandarin:90` | (2619, 3671) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:91` | (2621, 3133) | imp 1 | no | no | - |
-| `npc:kandarin:92` | (2622, 3395) | goblin 1, goblin_armed 2 | no | no | - |
-| `npc:kandarin:93` | (2621, 3408) | duck_female 2 | no | no | - |
-| `npc:kandarin:94` | (2622, 3118) | imp 1 | no | no | - |
-| `npc:kandarin:95` | (2622, 3654) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:96` | (2625, 3203) | imp 1 | no | no | - |
-| `npc:kandarin:97` | (2625, 3217) | imp 1 | no | no | - |
-| `npc:kandarin:98` | (2625, 3664) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:99` | (2629, 3233) | imp 1 | no | no | - |
-| `npc:kandarin:100` | (2630, 3210) | imp 1 | no | no | - |
-| `npc:kandarin:101` | (2633, 3676) | viking_guard 1, viking_guard2 1 | no | no | - |
-| `npc:kandarin:102` | (2632, 3202) | imp 1 | no | no | - |
-| `npc:kandarin:103` | (2633, 3222) | imp 1 | no | no | - |
-| `npc:kandarin:104` | (2633, 3243) | imp 1 | no | no | - |
-| `npc:kandarin:105` | (2634, 3651) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:106` | (2639, 3230) | imp 1 | no | no | - |
-| `npc:kandarin:107` | (2644, 3676) | viking_guard 3, viking_guard2 1 | no | no | - |
-| `npc:kandarin:108` | (2650, 3652) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:109` | (2656, 3720) | hobgoblin_armed 1 | no | yes | - |
-| `npc:kandarin:110` | (2659, 3729) | hobgoblin_armed 2 | no | yes | - |
-| `npc:kandarin:111` | (2666, 3351) | cow 5 | no | no | - |
-| `npc:kandarin:112` | (2676, 3090) | jungle_spider 18 | no | no | - |
-| `npc:kandarin:113` | (2668, 3710) | viking_guard2 1 | no | no | - |
-| `npc:kandarin:114` | (2672, 3728) | hobgoblin_armed 2 | no | yes | - |
-| `npc:kandarin:115` | (2676, 3110) | jungle_spider 3, spider 2 | no | no | - |
-| `npc:kandarin:116` | (2695, 3211) | mossgiant 5 | no | no | - |
-| `npc:kandarin:117` | (2692, 3274) | chicken 4 | no | no | - |
-| `npc:kandarin:118` | (2720, 3218) | poison_scorpion 5 | no | no | - |
-| `npc:kandarin:119` | (2720, 3583) | rat 1 | no | no | - |
-| `npc:kandarin:120` | (2727, 3160) | tribesman 9 | no | no | - |
-| `npc:kandarin:121` | (2728, 3575) | rat 4 | no | no | - |
-| `npc:kandarin:122` | (2731, 3225) | poison_scorpion 2 | no | no | - |
-| `npc:kandarin:123` | (2735, 3521) | highwayman 1 | no | no | - |
-| `npc:kandarin:124` | (2738, 3636) | viking_bunny_1 3, viking_bunny_2 5 | no | no | - |
-| `npc:kandarin:125` | (2749, 3521) | highwayman 1 | no | no | - |
-| `npc:kandarin:126` | (2752, 3409) | bat 1 | no | no | - |
-| `npc:kandarin:127` | (2753, 3396) | bat 1 | no | no | - |
-| `npc:kandarin:128` | (2768, 3210) | jungle_spider 1 | no | no | - |
-| `npc:kandarin:129` | (2804, 3507) | icegiant 1 | no | no | - |
-| `npc:kandarin:130` | (2811, 3506) | icegiant 1 | no | no | - |
-| `npc:kandarin:131` | (2818, 3561) | chicken 2, chicken_brown 2, rooster 1 | no | no | - |
-| `npc:kandarin:132` | (2817, 3514) | icegiant 1 | no | yes | - |
-| `npc:kandarin:133` | (2824, 3237) | skeleton_armed 1 | yes | no | - |
-| `npc:kandarin:134` | (2832, 3234) | skeleton_armed 1 | yes | no | - |
-| `npc:kandarin:135` | (2834, 3305) | skeleton_armed 1 | yes | no | - |
-| `npc:kandarin:136` | (2840, 3238) | skeleton_armed 1 | yes | no | - |
+| `npc:kandarin:0` | (2373, 3333) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:1` | (2378, 3366) | Giant spider 1 | no | no | - |
+| `npc:kandarin:2` | (2379, 3378) | Giant spider 1 | no | no | - |
+| `npc:kandarin:3` | (2385, 3339) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:4` | (2387, 3370) | Giant spider 1 | no | no | - |
+| `npc:kandarin:5` | (2394, 3334) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:6` | (2394, 3365) | Giant spider 1 | no | no | - |
+| `npc:kandarin:7` | (2445, 3358) | Hobgoblin 3 | no | no | - |
+| `npc:kandarin:8` | (2449, 3330) | Hobgoblin 3 | no | no | - |
+| `npc:kandarin:9` | (2453, 3363) | Mounted terrorbird gnome (terrorbird2) 1 | no | no | - |
+| `npc:kandarin:10` | (2465, 3181) | Goblin (goblin) 5, Goblin (goblin_armed) 4, Rat 5 | no | no | - |
+| `npc:kandarin:11` | (2478, 3303) | Khazard trooper (khazard_troop) 2, Man (dskin_w_ardoungecitizen1) 2, Rat 58, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 5, Woman (dskin_w_ardoungecitizenlady3) 2, Woman (w_ardoungecitizenlady1) 1 | no | no | - |
+| `npc:kandarin:12` | (2461, 3166) | Rat 1 | no | no | - |
+| `npc:kandarin:13` | (2463, 3285) | Rat 1 | no | no | - |
+| `npc:kandarin:14` | (2463, 3375) | Mounted terrorbird gnome (terrorbird2) 1 | no | no | - |
+| `npc:kandarin:15` | (2469, 3227) | Grave Scorpion 5 | no | no | - |
+| `npc:kandarin:16` | (2499, 3093) | Ogre (ogre) 5 | no | no | - |
+| `npc:kandarin:17` | (2497, 3292) | Zombie 1 | no | no | - |
+| `npc:kandarin:18` | (2501, 3332) | Rat 2 | no | no | - |
+| `npc:kandarin:19` | (2500, 3226) | Mounted terrorbird gnome (terrorbird3) 1 | no | no | - |
+| `npc:kandarin:20` | (2506, 3113) | Ogre (ogre2) 4 | no | no | - |
+| `npc:kandarin:21` | (2510, 3189) | Rat 9 | no | no | - |
+| `npc:kandarin:22` | (2502, 3242) | Khazard trooper (khazard_troop) 1 | no | no | - |
+| `npc:kandarin:23` | (2504, 3133) | Ogre (ogre) 1 | no | no | - |
+| `npc:kandarin:24` | (2505, 3176) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:25` | (2507, 3149) | Giant 1 | no | no | - |
+| `npc:kandarin:26` | (2507, 3211) | Gnome troop (d_skingnomeknight) 2 | no | yes | - |
+| `npc:kandarin:27` | (2512, 3085) | Ogre (ogre2) 4 | no | no | - |
+| `npc:kandarin:28` | (2516, 3246) | Khazard trooper (khazard_troop) 6 | no | yes | - |
+| `npc:kandarin:29` | (2516, 3333) | Rat 2 | no | no | - |
+| `npc:kandarin:30` | (2518, 3255) | Khazard trooper (khazard_troop) 1 | no | no | - |
+| `npc:kandarin:31` | (2519, 3145) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:32` | (2524, 3269) | Man (dskin_w_ardoungecitizen1) 1, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - |
+| `npc:kandarin:33` | (2523, 3279) | Man (dskin_w_ardoungecitizen1) 1, Mourner (mourner3) 1 | no | no | - |
+| `npc:kandarin:34` | (2523, 3155) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:35` | (2530, 3333) | Rat 3 | no | no | - |
+| `npc:kandarin:36` | (2537, 3244) | Khazard trooper (khazard_troop) 7, Khazard trooper (khazard_troop_spearmen) 5, Mounted terrorbird gnome (terrorbird3) 1 | no | yes | - |
+| `npc:kandarin:37` | (2534, 3213) | Gnome troop (d_skingnomeknight) 3, Gnome troop (gnomeknight) 5, Mounted terrorbird gnome (terrorbird3) 3 | no | yes | - |
+| `npc:kandarin:38` | (2532, 3375) | Ogre (lathastrainingogre) 2 | no | no | - |
+| `npc:kandarin:39` | (2534, 3568) | Barbarian 1 | no | no | - |
+| `npc:kandarin:40` | (2543, 3278) | Woman (dskin_w_ardoungecitizen2) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - |
+| `npc:kandarin:41` | (2549, 3192) | Goblin (goblin) 4, Goblin (goblin_armed) 1, Ogre (ogre) 1, Spider 5 | no | no | - |
+| `npc:kandarin:42` | (2542, 3155) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:43` | (2544, 3577) | Barbarian 1 | no | no | - |
+| `npc:kandarin:44` | (2547, 3146) | Giant 2 | no | no | - |
+| `npc:kandarin:45` | (2546, 3116) | Tower guard 1 | no | no | - |
+| `npc:kandarin:46` | (2548, 3287) | Mourner (mourner3) 1 | no | no | - |
+| `npc:kandarin:47` | (2553, 3406) | Moss giant 4 | no | no | - |
+| `npc:kandarin:48` | (2550, 3166) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:49` | (2553, 3324) | Mourner (mourner3) 3, Mourner (mourner_armed) 2, Mourner (mournerstew1) 3, Mourner (mournerstew3) 3, Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - |
+| `npc:kandarin:50` | (2551, 3326) L1 | Mourner (mournerstew2) 2 | no | no | - |
+| `npc:kandarin:51` | (2553, 3275) | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - |
+| `npc:kandarin:52` | (2554, 3117) | Tower guard 1 | no | no | - |
+| `npc:kandarin:53` | (2554, 3307) | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - |
+| `npc:kandarin:54` | (2554, 3467) | Dwarf 2 | no | no | - |
+| `npc:kandarin:55` | (2567, 3407) | Goblin (goblin) 4, Goblin (goblin_armed) 2 | no | no | - |
+| `npc:kandarin:56` | (2569, 3437) | Goblin (goblin) 3, Goblin (goblin_armed) 3 | no | no | - |
+| `npc:kandarin:57` | (2567, 3146) | Khazard Guard (arena_guard4) 3 | no | no | - |
+| `npc:kandarin:58` | (2567, 3455) | Dwarf 2, Goblin (goblin) 1 | no | no | - |
+| `npc:kandarin:59` | (2571, 3481) | Giant bat 1 | no | no | - |
+| `npc:kandarin:60` | (2572, 3396) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:61` | (2572, 3420) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:62` | (2575, 3474) | Giant bat 2 | no | no | - |
+| `npc:kandarin:63` | (2579, 3166) | Khazard Guard (arena_guard4) 3 | no | no | - |
+| `npc:kandarin:64` | (2583, 3119) | Cow 3 | no | no | - |
+| `npc:kandarin:65` | (2583, 3149) | Khazard Guard (arena_guard4) 1 | no | no | - |
+| `npc:kandarin:66` | (2583, 3435) | Goblin (goblin_armed) 1 | no | no | - |
+| `npc:kandarin:67` | (2584, 3141) | Khazard Guard (arena_guard1) 1 | no | no | - |
+| `npc:kandarin:68` | (2586, 3473) | Giant bat 1 | no | no | - |
+| `npc:kandarin:69` | (2589, 3193) | Khazard Guard (arena_guard4) 1 | no | no | - |
+| `npc:kandarin:70` | (2593, 3139) | Khazard Guard (arena_guard1) 2 | no | no | - |
+| `npc:kandarin:71` | (2594, 3181) | Khazard Guard (arena_guard4) 6 | no | no | - |
+| `npc:kandarin:72` | (2598, 3442) | Duck (duck) 7, Duck (duck_female) 18 | no | no | - |
+| `npc:kandarin:73` | (2594, 3474) | Giant bat 1 | no | no | - |
+| `npc:kandarin:74` | (2595, 3131) | Imp 1 | no | no | - |
+| `npc:kandarin:75` | (2597, 3120) | Imp 1 | no | no | - |
+| `npc:kandarin:76` | (2599, 3193) | Khazard Guard (arena_guard4) 1 | no | no | - |
+| `npc:kandarin:77` | (2606, 3126) | Imp 1 | no | no | - |
+| `npc:kandarin:78` | (2607, 3165) | Khazard Guard (arena_guard4) 1, Khazard Ogre 1, Khazard Scorpion 1 | no | no | - |
+| `npc:kandarin:79` | (2609, 3185) | Khazard Guard (arena_guard4) 4 | no | no | - |
+| `npc:kandarin:80` | (2608, 3134) | Imp 1 | no | no | - |
+| `npc:kandarin:81` | (2611, 3149) | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard4) 2 | no | no | - |
+| `npc:kandarin:82` | (2610, 3193) | Khazard Guard (arena_guard3) 1 | no | no | - |
+| `npc:kandarin:83` | (2613, 3477) | Rat 2 | no | no | - |
+| `npc:kandarin:84` | (2614, 3116) | Imp 1 | no | no | - |
+| `npc:kandarin:85` | (2618, 3448) | Duck (duck) 5, Duck (duck_female) 7 | no | no | - |
+| `npc:kandarin:86` | (2615, 3141) | Khazard Guard (arena_guard2) 1 | no | no | - |
+| `npc:kandarin:87` | (2616, 3126) | Imp 1 | no | no | - |
+| `npc:kandarin:88` | (2617, 3168) | Khazard Guard (arena_guard1) 2 | no | no | - |
+| `npc:kandarin:89` | (2618, 3159) | Khazard Guard (arena_guard1) 1 | no | no | - |
+| `npc:kandarin:90` | (2621, 3133) | Imp 1 | no | no | - |
+| `npc:kandarin:91` | (2622, 3395) | Goblin (goblin) 1, Goblin (goblin_armed) 2 | no | no | - |
+| `npc:kandarin:92` | (2621, 3408) | Duck (duck_female) 2 | no | no | - |
+| `npc:kandarin:93` | (2622, 3118) | Imp 1 | no | no | - |
+| `npc:kandarin:94` | (2625, 3203) | Imp 1 | no | no | - |
+| `npc:kandarin:95` | (2625, 3217) | Imp 1 | no | no | - |
+| `npc:kandarin:96` | (2629, 3233) | Imp 1 | no | no | - |
+| `npc:kandarin:97` | (2630, 3210) | Imp 1 | no | no | - |
+| `npc:kandarin:98` | (2632, 3202) | Imp 1 | no | no | - |
+| `npc:kandarin:99` | (2633, 3222) | Imp 1 | no | no | - |
+| `npc:kandarin:100` | (2633, 3243) | Imp 1 | no | no | - |
+| `npc:kandarin:101` | (2639, 3230) | Imp 1 | no | no | - |
+| `npc:kandarin:102` | (2656, 3720) | Hobgoblin 1 | no | yes | - |
+| `npc:kandarin:103` | (2659, 3729) | Hobgoblin 2 | no | yes | - |
+| `npc:kandarin:104` | (2666, 3351) | Cow 5 | no | no | - |
+| `npc:kandarin:105` | (2676, 3090) | Jungle spider 18 | no | no | - |
+| `npc:kandarin:106` | (2672, 3728) | Hobgoblin 2 | no | yes | - |
+| `npc:kandarin:107` | (2676, 3110) | Jungle spider 3, Spider 2 | no | no | - |
+| `npc:kandarin:108` | (2695, 3211) | Moss giant 5 | no | no | - |
+| `npc:kandarin:109` | (2692, 3274) | Chicken (chicken) 4 | no | no | - |
+| `npc:kandarin:110` | (2720, 3218) | Poison Scorpion 5 | no | no | - |
+| `npc:kandarin:111` | (2720, 3583) | Rat 1 | no | no | - |
+| `npc:kandarin:112` | (2727, 3160) | Tribesman 9 | no | no | - |
+| `npc:kandarin:113` | (2728, 3575) | Rat 4 | no | no | - |
+| `npc:kandarin:114` | (2731, 3225) | Poison Scorpion 2 | no | no | - |
+| `npc:kandarin:115` | (2735, 3521) | Highwayman 1 | no | no | - |
+| `npc:kandarin:116` | (2738, 3636) | Bunny (viking_bunny_1) 3, Bunny (viking_bunny_2) 5 | no | no | - |
+| `npc:kandarin:117` | (2749, 3521) | Highwayman 1 | no | no | - |
+| `npc:kandarin:118` | (2752, 3409) | Giant bat 1 | no | no | - |
+| `npc:kandarin:119` | (2753, 3396) | Giant bat 1 | no | no | - |
+| `npc:kandarin:120` | (2768, 3210) | Jungle spider 1 | no | no | - |
+| `npc:kandarin:121` | (2804, 3507) | Ice giant 1 | no | no | - |
+| `npc:kandarin:122` | (2811, 3506) | Ice giant 1 | no | no | - |
+| `npc:kandarin:123` | (2818, 3561) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - |
+| `npc:kandarin:124` | (2817, 3514) | Ice giant 1 | no | yes | - |
+| `npc:kandarin:125` | (2824, 3237) | Skeleton 1 | yes | no | - |
+| `npc:kandarin:126` | (2832, 3234) | Skeleton 1 | yes | no | - |
+| `npc:kandarin:127` | (2834, 3305) | Skeleton 1 | yes | no | - |
+| `npc:kandarin:128` | (2840, 3238) | Skeleton 1 | yes | no | - |
 
 ## Ladders and stairs
 
@@ -489,44 +425,42 @@
 | `connector:kandarin:51` | (2630, 3386) | Ladder 1 | no | no | - |
 | `connector:kandarin:52` | (2630, 3386) L1 | Ladder 1 | no | no | - |
 | `connector:kandarin:53` | (2630, 3386) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:54` | (2657, 3151) | Ladder 1 | no | no | - |
-| `connector:kandarin:55` | (2657, 3151) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:56` | (2659, 3492) | Ladder 1 | no | no | - |
-| `connector:kandarin:57` | (2677, 3087) | Ladder 1 | no | no | - |
-| `connector:kandarin:58` | (2677, 3087) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:59` | (2677, 3405) | Ladder 1 | no | no | - |
-| `connector:kandarin:60` | (2696, 3282) | Ladder 1 | no | no | - |
-| `connector:kandarin:61` | (2699, 3405) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:62` | (2699, 3405) L3 | Ladder 1 | no | no | - |
-| `connector:kandarin:63` | (2701, 3408) | Ladder 1 | no | no | - |
-| `connector:kandarin:64` | (2701, 3408) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:65` | (2704, 3403) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:66` | (2704, 3403) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:67` | (2724, 3374) | Staircase 1 | no | no | - |
-| `connector:kandarin:68` | (2737, 3582) | Ladder 1 | no | no | - |
-| `connector:kandarin:69` | (2737, 3582) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:70` | (2746, 3460) | Staircase 1 | no | no | - |
-| `connector:kandarin:71` | (2746, 3461) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:72` | (2747, 3493) | Ladder 1 | no | no | - |
-| `connector:kandarin:73` | (2747, 3493) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:74` | (2749, 3491) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:75` | (2749, 3491) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:76` | (2750, 3510) | Staircase 1 | no | no | - |
-| `connector:kandarin:77` | (2750, 3511) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:78` | (2767, 3491) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:79` | (2767, 3491) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:80` | (2776, 3234) | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:81` | (2776, 3234) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:82` | (2816, 3352) | Ladder 1 | no | no | - |
-| `connector:kandarin:83` | (2816, 3352) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:84` | (2829, 3330) | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:85` | (2829, 3330) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:86` | (2835, 3328) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:87` | (2835, 3328) L2 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:88` | (2835, 3332) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:89` | (2835, 3332) L2 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:90` | (2842, 3424) | Ladder 1 | no | no | - |
-| `connector:kandarin:91` | (2848, 3235) | Ladder 1 | yes | no | - |
+| `connector:kandarin:54` | (2659, 3492) | Ladder 1 | no | no | - |
+| `connector:kandarin:55` | (2677, 3087) | Ladder 1 | no | no | - |
+| `connector:kandarin:56` | (2677, 3087) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:57` | (2677, 3405) | Ladder 1 | no | no | - |
+| `connector:kandarin:58` | (2696, 3282) | Ladder 1 | no | no | - |
+| `connector:kandarin:59` | (2699, 3405) L2 | Ladder 1 | no | no | - |
+| `connector:kandarin:60` | (2699, 3405) L3 | Ladder 1 | no | no | - |
+| `connector:kandarin:61` | (2701, 3408) | Ladder 1 | no | no | - |
+| `connector:kandarin:62` | (2701, 3408) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:63` | (2704, 3403) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:64` | (2704, 3403) L2 | Ladder 1 | no | no | - |
+| `connector:kandarin:65` | (2724, 3374) | Staircase 1 | no | no | - |
+| `connector:kandarin:66` | (2737, 3582) | Ladder 1 | no | no | - |
+| `connector:kandarin:67` | (2737, 3582) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:68` | (2746, 3460) | Staircase 1 | no | no | - |
+| `connector:kandarin:69` | (2746, 3461) L1 | Staircase 1 | no | no | - |
+| `connector:kandarin:70` | (2747, 3493) | Ladder 1 | no | no | - |
+| `connector:kandarin:71` | (2747, 3493) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:72` | (2749, 3491) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:73` | (2749, 3491) L2 | Ladder 1 | no | no | - |
+| `connector:kandarin:74` | (2750, 3510) | Staircase 1 | no | no | - |
+| `connector:kandarin:75` | (2750, 3511) L1 | Staircase 1 | no | no | - |
+| `connector:kandarin:76` | (2767, 3491) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:77` | (2767, 3491) L2 | Ladder 1 | no | no | - |
+| `connector:kandarin:78` | (2776, 3234) | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:79` | (2776, 3234) L1 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:80` | (2816, 3352) | Ladder 1 | no | no | - |
+| `connector:kandarin:81` | (2816, 3352) L1 | Ladder 1 | no | no | - |
+| `connector:kandarin:82` | (2829, 3330) | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:83` | (2829, 3330) L1 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:84` | (2835, 3328) L1 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:85` | (2835, 3328) L2 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:86` | (2835, 3332) L1 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:87` | (2835, 3332) L2 | Ship's ladder 1 | no | no | - |
+| `connector:kandarin:88` | (2842, 3424) | Ladder 1 | no | no | - |
+| `connector:kandarin:89` | (2848, 3235) | Ladder 1 | yes | no | - |
 
 ## Areas within
 
@@ -556,9 +490,9 @@
 | [McGrubor's Wood](mcgrubors-wood.md) | tree 1 |
 | [Necromancer](necromancer.md) | tree 1, npc 1, connector 2 |
 | [Observatory](observatory.md) | tree 1 |
-| [Port Khazard](port-khazard.md) | shop 1, anvil 1, range 1, tree 1, rock 1, npc 1, connector 2 |
+| [Port Khazard](port-khazard.md) | shop 2, anvil 1, range 2, fire 2, tree 2, rock 1, npc 1, connector 4 |
 | [Ranging Guild](ranging-guild.md) | shop 2, tanner 1, tree 1, npc 7, connector 13 |
-| [Rellekka](rellekka.md) | shop 2, fire 5, tree 1, rock 1, thieving-chest 2, pickpocket 4, npc 7 |
+| [Rellekka](rellekka.md) | shop 4, furnace 1, anvil 1, fire 8, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, sand-pit 1, tree 1, rock 1, fishing-spot 2, stall 2, thieving-chest 3, pickpocket 7, npc 14 |
 | [Seers' Village](seers-village.md) | bank 1, anvil 1, range 1, fire 4, spinning-wheel 1, water-source 1, altar 1, tree 2, pickpocket 2, connector 10 |
 | [Sinclair Mansion](sinclair-mansion.md) | tree 1, npc 1 |
 | [Sorcerer's Tower](sorcerers-tower.md) | range 1, tree 1 |

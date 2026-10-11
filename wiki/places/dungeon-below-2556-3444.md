@@ -13,9 +13,9 @@ Ladder up at (2556, 3444); moss giants, skeletons and zombies. Descriptive name,
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | mossgiant 1, skeleton_armed 2 | no | no | - |
-| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | mossgiant 1, skeleton_armed 2, skeleton_unarmed 1, zombie_armed 1 | no | no | - |
-| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | mossgiant 1, skeleton_armed 1, zombie_armed 2 | no | no | - |
+| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | Moss giant 1, Skeleton (skeleton_armed) 2 | no | no | - |
+| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | Moss giant 1, Skeleton (skeleton_armed) 2, Skeleton (skeleton_unarmed) 1, Zombie 1 | no | no | - |
+| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | Moss giant 1, Skeleton (skeleton_armed) 1, Zombie 2 | no | no | - |
 
 ## Ladders and stairs
 

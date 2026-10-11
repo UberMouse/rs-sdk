@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `bank:falador-west-bank:0` | (2947, 3367) | banker 5, booth 5 | yes | yes | - |
+| `bank:falador-west-bank:0` | (2947, 3367) | Bank booth 5, Banker 5 | yes | yes | - |

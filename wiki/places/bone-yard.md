@@ -7,5 +7,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:bone-yard:0` | (3243, 3743) | skeleton_armed 2 | yes | yes | 29 |
-| `npc:bone-yard:1` | (3252, 3737) | skeleton_armed 1 | yes | yes | 28 |
+| `npc:bone-yard:0` | (3243, 3743) | Skeleton 2 | yes | yes | 29 |
+| `npc:bone-yard:1` | (3252, 3737) | Skeleton 1 | yes | yes | 28 |

@@ -16,5 +16,5 @@ The Dig Site quest (quests/quest_itexam).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:dig-site-dungeon:0` | (3378, 9751) | skeleton_unarmed 10 | no | no | - |
-| `npc:dig-site-dungeon:1` | (3378, 9815) | skeleton_unarmed 10 | no | no | - |
+| `npc:dig-site-dungeon:0` | (3378, 9751) | Skeleton 10 | no | no | - |
+| `npc:dig-site-dungeon:1` | (3378, 9815) | Skeleton 10 | no | no | - |

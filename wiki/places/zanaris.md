@@ -7,9 +7,9 @@ Members: the shed door in Lumbridge Swamp at (3202, 3169) with a dramen staff wi
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `shop:zanaris:0` | (3145, 9567) | generalshop8 2 | no | no | - |
-| `shop:zanaris:1` | (3247, 9589) | cheapringshop 1 | no | no | - |
-| `shop:zanaris:2` | (3252, 9572) | dragonswordshop 1 | no | no | - |
+| `shop:zanaris:0` | (3145, 9567) | Zanaris General Store (generalshop8) 2 | no | no | - |
+| `shop:zanaris:1` | (3247, 9589) | irksol (cheapringshop) 1 | no | no | - |
+| `shop:zanaris:2` | (3252, 9572) | jakut (dragonswordshop) 1 | no | no | - |
 
 ## [Furnaces](../services/furnace.md)
 
@@ -66,9 +66,9 @@ Members: the shed door in Lumbridge Swamp at (3202, 3169) with a dramen staff wi
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:zanaris:0` | (3153, 9544) | otherworldly_being 6 | no | no | - |
-| `npc:zanaris:1` | (3206, 9565) | cow 2 | no | no | - |
-| `npc:zanaris:2` | (3207, 9577) | cow 1 | no | no | - |
+| `npc:zanaris:0` | (3153, 9544) | Otherworldly being 6 | no | no | - |
+| `npc:zanaris:1` | (3206, 9565) | Cow 2 | no | no | - |
+| `npc:zanaris:2` | (3207, 9577) | Cow 1 | no | no | - |
 
 ## Ladders and stairs
 

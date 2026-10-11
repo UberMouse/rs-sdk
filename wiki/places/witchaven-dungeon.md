@@ -13,9 +13,9 @@ Ladder up near Witchaven at (2696, 3282); the Family Crest gold rocks (quests/qu
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
-| `npc:witchaven-dungeon:0` | (2697, 9689) | hobgoblin_armed 4 | no | no | - |
-| `npc:witchaven-dungeon:1` | (2721, 9669) | ogre 2 | no | no | - |
-| `npc:witchaven-dungeon:2` | (2722, 9709) | ogre 4 | no | no | - |
+| `npc:witchaven-dungeon:0` | (2697, 9689) | Hobgoblin 4 | no | no | - |
+| `npc:witchaven-dungeon:1` | (2721, 9669) | Ogre 2 | no | no | - |
+| `npc:witchaven-dungeon:2` | (2722, 9709) | Ogre 4 | no | no | - |
 
 ## Ladders and stairs
 
