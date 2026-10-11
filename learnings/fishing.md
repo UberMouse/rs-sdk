@@ -76,7 +76,7 @@ while (true) {
 | Al Kharid river | (3267, 3148), (3276, 3140) | Net/Bait | Spots `0_51_49_saltfish` (npc 330), from map data; behind the 10gp Lumbridge/Al Kharid toll gate; bank (3269, 3167), range (3271, 3180) nearby. Watch for a lvl 14 scorpion. Not walked by a bot. [map data 2026-10-10] |
 | Barbarian Village   | (3110, 3434)     | Lure/Bait    | Fly fishing (level 20+). Second spot at (3104, 3424).                                                                                     |
 
-**COMMON MISTAKE**: Lumbridge area (3238, 3251) has NO level-1 fishing spots; the two spots there (River Lum, npc 329, both at (3238, 3252)) are Lure/Bait (level 20+). Use Draynor! [map data 2026-10-10, not fished by a bot]
+**COMMON MISTAKE**: Lumbridge area (3238, 3251) has NO level-1 fishing spots; the two spots there (River Lum, npc 329, both at (3238, 3252)) are Lure/Bait (level 20+). Use Draynor! Lure fishing there works from level 20 (area (3239, 3248) r10; see wiki/skills/fishing.md). [v 2026-10-11 conductor2 local]
 
 **COMMON MISTAKE**: Lumbridge Swamp **(3239, 3147)** has NO fishing spots _at all_ — not net, not lure/bait. Verified against map spawn data: nearest spot is 28 tiles east at (3267, 3148) across the toll gate. Do not walk here to fish.
 

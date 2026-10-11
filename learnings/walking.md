@@ -73,6 +73,10 @@ if (dist > 5) {
 - From (3235, 3220) to Varrock West bank (3185, 3436) the conductor `walkTo` op arrives in one walk
   of 133 ticks with 38 sends, opening no door on the way. [v 2026-10-10 integration-tests local]
 
+### Lumbridge cooking pot to Varrock East bank
+
+- Pot (3232, 3238) -> Varrock East bank (3254, 3420) walked cleanly on every trip of the lure-cook-bank plan (3 trips per run), no hazards met. [v 2026-10-11 conductor2 local]
+
 ### Smithing loop legs (avoid the Varrock stone circle)
 
 - Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).

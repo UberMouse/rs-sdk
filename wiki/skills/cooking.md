@@ -67,7 +67,7 @@ Pizza/cake/kebab/wrap rows give the XP of the step at that level (pizza 143 at 3
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge Range | (3230, 3196) | 1 | south of Bob's Brilliant Axes; reachable from x 3231 and from (3230,3195), not from the west tiles (3229,3195..3197): from the west the cooking task walks round to it. Not the quest-gated castle "Cooking range" | - | 2026-10-11 conductor2w3 local |
-| Lumbridge general store Cooking pot | (3232, 3238) | 1 | open ground, no side caveat; 7 shrimps in 16 s; cooking area radius 6 | - | 2026-10-11 conductor2 local |
+| Lumbridge general store Cooking pot | (3232, 3238) | 1 | open ground, no side caveat; 7 shrimps in 16 s; cooking area radius 6. Burns very few salmon/trout at Cooking 60-83 (Cooking +227,500 xp in 18 min alongside lure fishing) | ~210k xp/hr in the lure-cook-bank plan | 2026-10-11 conductor2 local |
 
 ## Notes
 

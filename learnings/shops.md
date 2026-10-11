@@ -23,7 +23,7 @@ overstocked on that item, not that the sale failed.
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
 | Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]); iron 56 gp and steel 200 gp per the stock list, nothing above steel; bronze pickaxe 1gp only |
 | Nurmof's Pickaxe Shop | Dwarven Mine, under Falador | (2998, 9844) | Every pickaxe from bronze to rune (stock list: `wiki/shops/nurmofs-pickaxe-shop.md`); visited by a bot: Iron pickaxe 140 gp bought, reached via the Falador mine stairs (`learnings/walking.md`) [v 2026-10-11 conductor2w1 local] |
-| Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear |
+| Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear; fly fishing rod 5 gp; feather price climbs as stock drops: 277 feathers cost ~1,040 gp (a 450 order partial-filled) [v 2026-10-11 conductor2 local] |
 
 ## Starter tools: where to get each
 
