@@ -134,6 +134,13 @@ export default definePlan({
 - One-shot steps: `when: v => v.runs('withdraw') === 0`, and end the plan with its `until`
   (`until: v => v.runs('burn') > 0`).
 - A plan imports `@conductor/lib/plan` and `@conductor/tasks/<task>` and nothing else.
+- **Carry only what the plan uses.** Inventory slots are the plan's throughput: a leftover
+  product from an earlier plan (arrow shafts, cooked fish not needed yet), a tool superseded by a
+  better one (a bronze axe beside a steel axe) or a tool no phase uses (a pickaxe while fishing)
+  is a slot not filled each trip. Start a plan with a one-shot `bank` phase that keeps only what
+  its phases need (`depositAllExcept: [...]`) and, when a phase's product is not consumed by a
+  later phase, bank it in the loop instead of carrying it. Never drop an item the account may
+  want (tools, products); drop only what the goal's constraints allow (logs, burnt food).
 
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
