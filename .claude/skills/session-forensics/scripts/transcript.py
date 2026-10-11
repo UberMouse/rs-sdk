@@ -34,7 +34,7 @@ import re
 import shutil
 import sys
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -629,7 +629,7 @@ def corpus_row(args: tuple[str, str, str, str]) -> dict | None:
                 u = msg.get("usage")
                 if rec.get("type") != "assistant" or not isinstance(u, dict):
                     continue
-                if not (since <= ts[:10] and (not until or ts[:10] < until)):
+                if not (since <= ts and (not until or ts < until)):
                     continue
                 mid = msg.get("id") or f"line-{len(per_message)}"
                 if mid not in per_message:
@@ -676,10 +676,30 @@ def corpus_row(args: tuple[str, str, str, str]) -> dict | None:
     }
 
 
+def _bound(value: str) -> str:
+    """A --since/--until value as a string comparable with a transcript timestamp.
+
+    Transcript timestamps are UTC `YYYY-MM-DDTHH:MM:SS.mmmZ`, so a date-only bound compares
+    correctly as is (a prefix sorts before every timestamp of that day); a full ISO bound
+    (any offset, `Z` or none = UTC) is normalised to the same shape.
+    """
+    if not value or re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return value
+    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
 def corpus(root: Path, since: str, until: str | None, jobs: int) -> list[dict]:
     from multiprocessing import Pool
 
-    cutoff = datetime.fromisoformat(since).timestamp()
+    since, until = _bound(since), _bound(until or "")
+    cutoff = (
+        datetime.fromisoformat(since)
+        if len(since) == 10
+        else datetime.fromisoformat(since.replace("Z", "+00:00"))
+    ).timestamp()
     files = [
         str(f)
         for f in root.glob("*/**/*.jsonl")
@@ -986,8 +1006,8 @@ def main() -> int:
     p.add_argument("--json", action="store_true")
 
     p = sub.add_parser("corpus", help="one JSONL row per transcript across every session in a window")
-    p.add_argument("--since", required=True, help="YYYY-MM-DD, inclusive")
-    p.add_argument("--until", help="YYYY-MM-DD, exclusive")
+    p.add_argument("--since", required=True, help="YYYY-MM-DD or full ISO timestamp (Z/offset; none = UTC), inclusive")
+    p.add_argument("--until", help="YYYY-MM-DD or full ISO timestamp, exclusive")
     p.add_argument("--root", default=str(PROJECTS_ROOT))
     p.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     p.add_argument("--summary", action="store_true", help="month x kind token table instead of rows")
