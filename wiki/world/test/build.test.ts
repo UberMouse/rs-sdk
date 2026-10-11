@@ -161,3 +161,14 @@ describe('formatReport', () => {
         ]);
     });
 });
+
+test('loadWorld names a file that is not valid JSON and says how to regenerate it', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, '<<<<<<< HEAD\n{}\n=======\n{}\n>>>>>>> other\n');
+        expect(() => loadWorld(file)).toThrow(/world\.json is not valid JSON \(.*\): regenerate it with bun run world/);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
+});

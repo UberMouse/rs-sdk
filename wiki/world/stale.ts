@@ -1,5 +1,5 @@
-// Removing stale generated pages safely: from renderWorld's folders (render.ts writeFiles) and for the
-// generators of wiki/npcs and wiki/shops, which import this module rather than the render graph.
+// Guards for deleting generated files: refuseSymlink (used by render.ts writeFiles) and removeStalePages
+// (used by the wiki/npcs and wiki/shops generators, which import this module rather than the render graph).
 import { lstatSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { cmp } from './util';

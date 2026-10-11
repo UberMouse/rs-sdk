@@ -151,7 +151,11 @@ function shopTitle(f: Feature, data: PageData): string {
     return (cfg?.get('owned_shop') === f.subtype ? cfg.get('shop_title') : undefined) ?? f.name;
 }
 
-/** The key a feature counts by and the name it reads as. */
+/**
+ * The key a feature counts by and the name it reads as. A bank counts by name (Banker, Bank booth,
+ * Shantay chest): nine placed banker configs share Banker, and which of them stands there matters to
+ * no one. Kinds with no subtype count by name too.
+ */
 function partOf(f: Feature, data: PageData): [key: string, name: string] {
     if (f.kind === 'shop') return [f.subtype, shopTitle(f, data)];
     if (f.kind === 'bank') return [f.name, f.name];
@@ -164,8 +168,6 @@ export function parts(site: Site, world: World, data: PageData): Part[] {
     const byKey = new Map<string, { names: Set<string>; n: number }>();
     for (const i of site.features) {
         const f = world.features[i]!;
-        // A bank counts by name (Banker, Bank booth, Shantay chest): nine placed banker configs share
-        // Banker, and which of them stands there matters to no one. Kinds with no subtype count by name too.
         const [key, name] = partOf(f, data);
         const part = byKey.get(key);
         if (part) {

@@ -21,7 +21,13 @@ const isWorld = (x: Parsed): x is Parsed & World =>
 
 /** The world in `file` (default wiki/world.json); throws when it is not a world.json of this format. */
 export function loadWorld(file: string = WORLD_JSON): World {
-    const parsed: unknown = JSON.parse(readFileSync(file, 'utf8'));
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(readFileSync(file, 'utf8'));
+    } catch (e) {
+        if (!(e instanceof SyntaxError)) throw e;
+        throw new Error(`${file} is not valid JSON (${e.message}): regenerate it with bun run world`, { cause: e });
+    }
     const world: Parsed = isObject(parsed) ? parsed : {};
     if (world.format !== WORLD_FORMAT)
         throw new Error(

@@ -512,10 +512,14 @@ function main() {
     mkdirSync(SHOP_DIR, { recursive: true });
 
     const pageIndex: { name: string; file: string; location: string }[] = [];
+    const nameOfFile = new Map<string, string>();
 
     for (const page of shopPages) {
         const slug = slugify(page.shopTitle);
         const fileName = `${slug}.md`;
+        const first = nameOfFile.get(fileName);
+        if (first !== undefined) throw new Error(`two pages slug to ${fileName}: ${first} and ${page.shopName}`);
+        nameOfFile.set(fileName, page.shopName);
         const filePath = join(SHOP_DIR, fileName);
 
         const md = generateShopMarkdown(page, objData, locate(page.shopName, `wiki/shops/${fileName}`));
