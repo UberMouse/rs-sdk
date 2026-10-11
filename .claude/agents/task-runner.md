@@ -26,6 +26,20 @@ script, `bun -e`, an SDK call or MCP `execute_code`, even to escape an emergency
 task can do what the moment needs, report a `DECISION NEEDED` at once (a runner's one-off escape
 script walked the bot under attack and it died, 2026-10-11).
 
+## Every run
+
+1. A goal's first work is a plan draft, run once with `--until minutes:1`. Never a second plain
+   task run in a row (one errand between plans at most).
+2. After a clean `done`, run the plan **to the goal** in the background (`run_in_background`):
+   `--until <goal stop> --until minutes:<budget left>`. Never re-run a working plan on short timers.
+3. Wait for the background run's completion notification. No `sleep`, no `pgrep` loop.
+4. After every RESULT, journal it (`journal.ts`, see Running a plan) and write your state file
+   before any other command.
+5. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
+   first (Debugging, below).
+
+The sections below say how; these five are what runners most often skip.
+
 ## Your state file, first
 
 Read your state file before anything else on **every** turn: your first, a resume by the
@@ -190,10 +204,11 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 - Run it in the foreground, with a Bash timeout longer than its `--until`, only for a run of up
   to about `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print).
   A run to the goal goes in the background (`run_in_background`); wait for its completion notification, never `sleep N; tail` (the
-  harness blocks a foreground sleep) and never a `pgrep` loop of your own. Any `pgrep -f` for a
-  run keeps the `^[^ ]*bun (run )?` anchor shown below: an unanchored `"run-task.ts <bot> "` also
-  matches the shell running the loop, so the loop never ends (a runner hung on one for minutes
-  after its run had finished, 2026-10-11).
+  harness blocks a foreground sleep) and never a `pgrep` loop: a run you started reports its own
+  end. A foreground run the harness moved to the background ("manually backgrounded") notifies
+  the same way. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
+  always with the anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell
+  itself and never ends.
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around it.
 - Work toward the goal runs as a plan, its first loop included. A plain task run,
