@@ -980,6 +980,75 @@ function setWorldOpen(open: boolean) {
     renderWorld();
 }
 
+/** The 3D view's height in px, dragged by its handle; remembered per browser. */
+const WORLD_HEIGHT_KEY = 'plan-view:world-height';
+/** Matches .world-frame's min-height. */
+const WORLD_MIN_HEIGHT = 240;
+/** How far one arrow key press moves the handle. */
+const WORLD_KEY_STEP = 40;
+
+/** Sets the frame's height (clamped), or back to the stylesheet's default when null. */
+function applyWorldHeight(px: number | null) {
+    const frame = $('world-frame');
+    frame.style.height = px === null ? '' : `${Math.max(WORLD_MIN_HEIGHT, Math.round(px))}px`;
+}
+function saveWorldHeight() {
+    const px = $('world-frame').style.height;
+    try {
+        if (px) localStorage.setItem(WORLD_HEIGHT_KEY, String(parseInt(px, 10)));
+        else localStorage.removeItem(WORLD_HEIGHT_KEY);
+    } catch {
+        // storage blocked: this height lasts for this page only
+    }
+}
+function readWorldHeight(): number | null {
+    try {
+        const n = Number(localStorage.getItem(WORLD_HEIGHT_KEY));
+        return Number.isFinite(n) && n > 0 ? n : null;
+    } catch {
+        return null;
+    }
+}
+
+/** The handle under the frame: drag (or arrow keys) to resize, double-click to reset. */
+function initWorldResize() {
+    const frame = $('world-frame');
+    const handle = $('world-resize');
+    applyWorldHeight(readWorldHeight());
+    let drag: { y: number; height: number } | null = null;
+    handle.addEventListener('pointerdown', ev => {
+        if (ev.button !== 0) return;
+        ev.preventDefault();
+        handle.setPointerCapture(ev.pointerId);
+        drag = { y: ev.clientY, height: frame.getBoundingClientRect().height };
+        frame.classList.add('resizing');
+        handle.classList.add('active');
+    });
+    handle.addEventListener('pointermove', ev => {
+        if (drag) applyWorldHeight(drag.height + ev.clientY - drag.y);
+    });
+    const end = () => {
+        if (!drag) return;
+        drag = null;
+        frame.classList.remove('resizing');
+        handle.classList.remove('active');
+        saveWorldHeight();
+    };
+    handle.addEventListener('pointerup', end);
+    handle.addEventListener('pointercancel', end);
+    handle.addEventListener('dblclick', () => {
+        applyWorldHeight(null);
+        saveWorldHeight();
+    });
+    handle.addEventListener('keydown', ev => {
+        const step = ev.key === 'ArrowDown' ? WORLD_KEY_STEP : ev.key === 'ArrowUp' ? -WORLD_KEY_STEP : 0;
+        if (!step) return;
+        ev.preventDefault();
+        applyWorldHeight(frame.getBoundingClientRect().height + step);
+        saveWorldHeight();
+    });
+}
+
 /** rs-world, served by the viewer, streaming the engine's feed and following the bot. */
 const worldSrc = (w: WorldInfo) => `/rs-world/?${q({ live: w.feed, follow: w.follow })}`;
 
@@ -1037,9 +1106,11 @@ function renderWorld() {
         // Unloading it stops the renderer and closes its feed connection.
         frame.replaceChildren();
         frame.hidden = true;
+        $('world-resize').hidden = true;
         return;
     }
     frame.hidden = false;
+    $('world-resize').hidden = false;
     const src = worldSrc(ready);
     if (frame.querySelector('iframe')?.dataset.src === src) return;
     frame.replaceChildren(h('iframe', { src, 'data-src': src, title: `${ready.follow} in the game world (rs-world)` }));
@@ -1080,6 +1151,7 @@ async function init() {
     $('follow').addEventListener('click', () => setFollow(!follow));
     worldOpen = readWorldOpen();
     $('world-toggle').addEventListener('click', () => setWorldOpen(!worldOpen));
+    initWorldResize();
     const select = $<HTMLSelectElement>('bot');
     let bots: BotInfo[] = [];
     try {
