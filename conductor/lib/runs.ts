@@ -19,6 +19,27 @@ function isTimedResult(e: unknown): e is TimedResult {
     );
 }
 
+/** The `result` events of one run log, in order; lines that do not parse are counted in `skipped`, not fatal. */
+function readResultEvents(file: string): { events: Record<string, unknown>[]; skipped: number } {
+    const events: Record<string, unknown>[] = [];
+    let skipped = 0;
+    for (const line of readFileSync(file, 'utf8').split('\n')) {
+        if (!line.includes('"type":"result"')) continue;
+        try {
+            const e = JSON.parse(line);
+            if (e && e.type === 'result') events.push(e);
+        } catch {
+            skipped++;
+        }
+    }
+    return { events, skipped };
+}
+
+/** The first `result` event of a run log, or undefined when it has none (a run cut off before its result). */
+export function readResultEvent(file: string): Record<string, unknown> | undefined {
+    return readResultEvents(file).events[0];
+}
+
 /** Every `result` event in conductor/runs/<bot>/*.ndjson, oldest first; unparseable or malformed lines are counted, not fatal. */
 export function loadResults(botName: string): { results: TimedResult[]; skipped: number } {
     const dir = join(REPO_ROOT, 'conductor/runs', botName);
@@ -26,16 +47,11 @@ export function loadResults(botName: string): { results: TimedResult[]; skipped:
     let skipped = 0;
     if (!existsSync(dir)) return { results, skipped };
     for (const file of readdirSync(dir).filter(name => name.endsWith('.ndjson'))) {
-        for (const line of readFileSync(join(dir, file), 'utf8').split('\n')) {
-            if (!line.includes('"type":"result"')) continue;
-            try {
-                const e = JSON.parse(line);
-                if (e.type !== 'result') continue;
-                if (isTimedResult(e)) results.push(e);
-                else skipped++;
-            } catch {
-                skipped++;
-            }
+        const read = readResultEvents(join(dir, file));
+        skipped += read.skipped;
+        for (const e of read.events) {
+            if (isTimedResult(e)) results.push(e);
+            else skipped++;
         }
     }
     return { results: results.sort((a, b) => a.t - b.t), skipped };

@@ -2,12 +2,14 @@
 // the live driver, the result of a run that never produced one) and its argument parsing, kept out of
 // the CLI's process handling so tests can reach them.
 import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import type { BotSDK } from '../../sdk/index';
 import { LiveDriver } from '../core/drivers/live';
 import { Recorder, recordingFile } from '../core/drivers/recording';
+import { chainedPlainHint } from './chain-hint';
 import { TICK_STALL_MS } from './engine';
 import { readDurableState, REPO_ROOT } from './env';
+import { appendJournalLine, runJournalLine, type JournalLine } from './journal';
 import { isPlan, type PlanDef } from './plan';
 import { captureScreenshot } from './screenshot';
 import { parseStop, type StopCondition } from './stop';
@@ -16,7 +18,9 @@ import { errMessage, fileStamp } from './util';
 
 export const USAGE = `usage: bun conductor/run-task.ts <bot> <task> [--params '<json>'] [--until level:<skill>:<n>|xp:<skill>:<n>|minutes:<n>]... [--takeover]
        bun conductor/run-task.ts <bot> --plan <file> [--until ...]... [--takeover]
-       bun conductor/run-task.ts --list`;
+       bun conductor/run-task.ts --list
+  --objective <title> --journal <abs path> (given together): when the run ends, append its journal line
+  (kind run: task, command, result, a verdict from status and reason) to that file; nothing if it never ran`;
 
 export interface RunArgs {
     bot: string;
@@ -27,12 +31,16 @@ export interface RunArgs {
     params: unknown;
     stops: StopCondition[];
     takeover: boolean;
+    /** `--objective` and `--journal`, both or neither: the run journals itself when it ends. */
+    journal: { objective: string; file: string } | null;
 }
 
 /** The arguments after `--list` is ruled out; `error` is a usage error, with what was parsed before it. */
 export function parseRunArgs(argv: string[]): { args: RunArgs; error?: string } {
     const positional: string[] = [];
-    const args: RunArgs = { bot: '', task: '', plan: null, params: {}, stops: [], takeover: false };
+    const args: RunArgs = { bot: '', task: '', plan: null, params: {}, stops: [], takeover: false, journal: null };
+    let objective: string | undefined;
+    let journalFile: string | undefined;
     let paramsGiven = false;
     let error: string | undefined;
     try {
@@ -43,6 +51,8 @@ export function parseRunArgs(argv: string[]): { args: RunArgs; error?: string } 
                 paramsGiven = true;
             } else if (a === '--until') args.stops.push(parseStop(argv[++i] ?? ''));
             else if (a === '--takeover') args.takeover = true;
+            else if (a === '--objective') objective = argv[++i];
+            else if (a === '--journal') journalFile = argv[++i];
             else if (a === '--plan') {
                 if (args.plan !== null) throw new Error('--plan given twice');
                 const file = argv[++i];
@@ -53,6 +63,12 @@ export function parseRunArgs(argv: string[]): { args: RunArgs; error?: string } 
         }
     } catch (e) {
         error = errMessage(e);
+    }
+    if (error === undefined && (objective !== undefined || journalFile !== undefined)) {
+        if (!objective || !journalFile)
+            error = '--objective and --journal go together (--objective <title> --journal <abs path>)';
+        else if (!isAbsolute(journalFile)) error = '--journal needs an absolute path';
+        else args.journal = { objective, file: journalFile };
     }
     args.bot = positional[0] ?? '';
     if (args.plan === null) args.task = positional[1] ?? '';
@@ -203,6 +219,47 @@ export class ResultLine {
         this.out(`RESULT ${JSON.stringify(result)}`);
         return true;
     }
+}
+
+export interface EmitOptions {
+    resultLine: ResultLine;
+    /** The runs directory of the bot, where the hint looks for the previous run. */
+    runsDir: string;
+    /** A plan run never carries the chained-plain hint. */
+    isPlan: boolean;
+    /** `--objective`/`--journal`, with the `command` the journal line records. */
+    journal: { objective: string; file: string; command: string } | null;
+    /** Where the journal line goes; the CLI's is `appendJournalLine`. */
+    appendJournal?: (file: string, line: JournalLine) => unknown;
+    /** Where a failed hint or journal write is reported; the CLI's is stderr. */
+    note?: (msg: string) => void;
+}
+
+/**
+ * Prints the run's RESULT line (a plain run chained to another carries the hint) and, for a run that
+ * opened a log, appends its journal line when asked to; true when it printed. Neither the hint nor
+ * the journal can cost the RESULT line: a failure in either is noted and skipped.
+ */
+export function emitResult(result: TaskResult, o: EmitOptions): boolean {
+    const note = o.note ?? (msg => console.error(msg));
+    let hint: string | undefined;
+    if (!o.isPlan && result.runId) {
+        try {
+            hint = chainedPlainHint(o.runsDir, result.runId);
+        } catch (e) {
+            note(`run-task: chained-run hint skipped: ${errMessage(e)}`);
+        }
+    }
+    if (!o.resultLine.print(hint ? { ...result, hint } : result)) return false;
+    if (o.journal) {
+        try {
+            const line = runJournalLine(result, { objective: o.journal.objective, command: o.journal.command });
+            if (line) (o.appendJournal ?? appendJournalLine)(o.journal.file, line);
+        } catch (e) {
+            note(`run-task: journal not written: ${errMessage(e)}`);
+        }
+    }
+    return true;
 }
 
 /**

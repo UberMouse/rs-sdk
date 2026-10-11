@@ -47,6 +47,7 @@ describe('parseRunArgs', () => {
                 params: { tree: 'oak' },
                 stops: [{ kind: 'minutes', minutes: 2 }],
                 takeover: true,
+                journal: null,
             },
         });
     });
@@ -60,6 +61,7 @@ describe('parseRunArgs', () => {
                 params: {},
                 stops: [{ kind: 'minutes', minutes: 2 }],
                 takeover: false,
+                journal: null,
             },
         });
     });
@@ -73,6 +75,15 @@ describe('parseRunArgs', () => {
         [['bot1', '--plan', 'p.ts', '--params', '{}'], "--params is for a task; a plan's params are in its file"],
         [['bot1'], 'expected <bot> <task>'],
         [['bot1', 'woodcutting', '--nope'], 'unknown flag --nope'],
+        [
+            ['bot1', 'woodcutting', '--objective', 'O'],
+            '--objective and --journal go together (--objective <title> --journal <abs path>)',
+        ],
+        [
+            ['bot1', 'woodcutting', '--journal', '/a/j.jsonl'],
+            '--objective and --journal go together (--objective <title> --journal <abs path>)',
+        ],
+        [['bot1', 'woodcutting', '--objective', 'O', '--journal', 'j.jsonl'], '--journal needs an absolute path'],
     ])('%j is a usage error', (argv, error) => {
         expect(parseRunArgs(argv).error).toBe(error);
     });

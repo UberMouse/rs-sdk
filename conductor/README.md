@@ -132,6 +132,16 @@ bun conductor/run-task.ts --list
 bun conductor/run-task.ts conductor1 woodcutting --params '{"area":{"x":3195,"z":3220}}' --until minutes:1
 ```
 
+Two flags let `run-task` do the runner's bookkeeping. `--objective <title> --journal <abs path>`
+(given together, on a task or a plan run) make it append the run's mechanical journal line itself when
+the run ends, whatever the status (a signal's RESULT included): kind `run`, the objective, `task`
+(`plan:<name>` for a plan), `command`, `result` (`<runId> <status>: <reason>; +xp; <duration>`) and a
+verdict `<status>: <reason>`; nothing for a run that never opened a log. The line is built by
+`conductor/lib/journal.ts`, shared with `tools/journal.ts`. And a plain (non-plan) task run that follows
+another plain run in `conductor/runs/<bot>/` that started within 30 minutes of it (a plan, or a plan's
+phase runs, in between do not count; an older log does not either) carries `"hint": "2nd plain task run in a row: work that repeats belongs in a plan (--plan)"` in its
+RESULT (`conductor/lib/chain-hint.ts`).
+
 Run artifacts (NDJSON logs, screenshots, progress snapshots, save snapshots) land in
 `conductor/runs/<bot>/` (gitignored). Conductor run state lives in `.durable-state/`
 (gitignored, see `.claude/skills/durable-state`).

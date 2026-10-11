@@ -27,6 +27,18 @@ export function parseStop(spec: string): StopCondition {
     throw new Error(`bad --until "${spec}": expected level:<skill>:<n>, xp:<skill>:<n> or minutes:<n>`);
 }
 
+/** A stop as `--until` takes it (the inverse of `parseStop`). */
+export function formatStop(c: StopCondition): string {
+    switch (c.kind) {
+        case 'level':
+            return `level:${c.skill}:${c.level}`;
+        case 'xp':
+            return `xp:${c.skill}:${c.amount}`;
+        case 'minutes':
+            return `minutes:${c.minutes}`;
+    }
+}
+
 export function describeStop(c: StopCondition): string {
     switch (c.kind) {
         case 'level':

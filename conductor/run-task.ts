@@ -3,12 +3,15 @@
 //   bun conductor/run-task.ts --list
 //   bun conductor/run-task.ts <bot> <task> [--params '<json>'] [--until <stop>]... [--takeover]
 //   bun conductor/run-task.ts <bot> --plan <file> [--until <stop>]... [--takeover]
+//   either form also takes --objective <title> --journal <abs path> (together): when the run ends, run-task
+//   appends its journal line itself (kind run; nothing for a run that never opened a log)
 //
 //   <stop>: level:<skill>:<n> | xp:<skill>:<n> | minutes:<n>   (any one ends the run; for a plan,
 //   counted from the plan's start)
 //
 // The last stdout line is always `RESULT <json>` (a TaskResult; a PlanResult for a plan). Exit 0 for
-// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first).
+// status "done", 1 otherwise, 2 for a usage error (an error RESULT is printed first). A plain task run
+// that follows another plain task run carries a "hint" in its RESULT: repeated work belongs in a plan.
 //
 // Refuses to start when another controller already drives the bot, unless --takeover. A game
 // client must already be attached (conductor/tools/client.ts or the lite runner).
@@ -27,6 +30,7 @@ import { executeTask } from './lib/engine';
 import { controllerCount, loadBotEnv, type BotEnv } from './lib/env';
 import { type PlanDef, planParams, type PlanResult, runPlan } from './lib/plan';
 import {
+    emitResult as emit,
     errorResult,
     type LiveRun,
     loadPlan,
@@ -43,6 +47,7 @@ import {
 import { captureScreenshot } from './lib/screenshot';
 import type { TaskDef, TaskResult } from './lib/task';
 import { errMessage, fileStamp } from './lib/util';
+import { describeCommand } from './lib/journal';
 
 const argv = process.argv.slice(2);
 
@@ -61,11 +66,19 @@ if (argv.includes('--list')) {
 }
 
 const { args, error: usageError } = parseRunArgs(argv);
-const { bot: botName, task: taskName, params: rawParams, stops, takeover } = args;
+const { bot: botName, task: taskName, params: rawParams, stops, takeover, journal } = args;
 const startedAt = Date.now();
 /** The one RESULT line: the run's own, or a kill's or an error's in its place. */
 const resultLine = new ResultLine();
 const exitCode = () => (resultLine.printed?.status === 'done' ? 0 : 1);
+
+const emitResult = (result: TaskResult | PlanResult): boolean =>
+    emit(result, {
+        resultLine,
+        runsDir: runsDir(botName),
+        isPlan: args.plan !== null,
+        journal: journal && { ...journal, command: describeCommand(args) },
+    });
 
 type LoadedPlan = { def: PlanDef; path: string };
 /** The plan being run, once its file has loaded. */
@@ -94,7 +107,7 @@ function failure(
 
 /** Print the RESULT line for a run that never produced one, and exit. */
 function bail(reason: string, code = 1): never {
-    resultLine.print(failure(reason));
+    emitResult(failure(reason));
     process.exit(code);
 }
 
@@ -161,7 +174,7 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) {
         // A repeated signal, or one after the RESULT line, adds nothing.
         if (resultLine.printed) return;
         // A run that has its result (runScript is disconnecting) was not cut short: that is its RESULT.
-        resultLine.print(ranResult ?? killedResult(`killed by ${signal}`));
+        emitResult(ranResult ?? killedResult(`killed by ${signal}`));
         // Until the process exits, the engine winds down and runScript reports the disconnect (its
         // `── Error ──` and a stack, when the disconnect rejects the script), on stdout: send that
         // to stderr, so the RESULT stays the last stdout line and the diagnostics survive.
@@ -299,7 +312,7 @@ const run = await runScript(
 );
 
 // Connection failure or an exception outside the engine still honours the RESULT contract.
-const printed = resultLine.print(
+const printed = emitResult(
     ranResult ?? failure(run.error?.message ?? `${plan ? 'plan' : 'task'} did not produce a result`, run.duration),
 );
 // Exit explicitly, with the status's code, so nothing the run left pending keeps the process alive.

@@ -157,6 +157,8 @@ export interface TaskResult {
     inCombat: boolean | null;
     screenshots: string[];
     logFile: string;
+    /** A nudge run-task adds for the runner reading the RESULT (a chain of plain runs); absent normally. */
+    hint?: string;
 }
 
 /** Where a run's output goes: its NDJSON log, the console and screenshots. Tests pass in-memory ones. */
