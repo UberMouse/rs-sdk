@@ -52,6 +52,14 @@ Smelt XP per bar (`productexp` in tenths): bronze 6.2, iron 12.5, silver 13.7, s
 
 Smelting levels checked against `server/content/scripts/skill_smithing/configs/smelting/smelting.struct`; forging levels and bar counts against `configs/smithing/smithing.dbrow` (all 6 metals x all 17 items match the table; fixed the bar counts). Iron 50% success confirmed in `scripts/smelting/smelting.rs2`. [v 2026-10-09 conductor1 local]
 
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| SE Varrock iron -> Lumbridge furnace (3225, 3256) -> Varrock West anvil (3188, 3421) -> Varrock West bank | (3225, 3256) | 15 | 23 iron ore (~63 s with adamant pickaxe) smelt to ~14 bars (50% failures), +4,375 xp (Smithing 22 -> 31); 12 iron bars -> 4 kiteshields (3 bars each), +7,500 xp | not measured | 2026-10-11 conductor2 local |
+
+XP per action on this server (25x): iron smelt 312 xp per bar made (~190 per ore after failures); bronze scimitar 312 xp per bar (625 per scimitar, 2 bars); iron kiteshield 625 xp per bar (1,875 each, 3 bars). Bronze run: 4 scimitars = 2,500 xp. [v 2026-10-11 conductor2 local]
+
 ## Special Items
 
 Some items require quest completion:

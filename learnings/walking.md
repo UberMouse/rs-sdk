@@ -73,6 +73,14 @@ if (dist > 5) {
 - From (3235, 3220) to Varrock West bank (3185, 3436) the conductor `walkTo` op arrives in one walk
   of 133 ticks with 38 sends, opening no door on the way. [v 2026-10-10 integration-tests local]
 
+### Smithing loop legs (avoid the Varrock stone circle)
+
+- Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).
+- Furnace -> Varrock West anvil: travel to (3188, 3425), tolerance 3, via (3200, 3300), (3180, 3350).
+- Varrock West bank -> SE Varrock mine: travel to (3286, 3368), tolerance 4, via (3260, 3400); ~44 s.
+- Falador furnace -> Varrock West via (3035, 3385), (3100, 3420): ~86 s.
+[v 2026-10-11 conductor2 local]
+
 ### Varrock Mine to Varrock West Bank (~100 tiles)
 
 ```typescript

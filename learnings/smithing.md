@@ -45,6 +45,8 @@ await sdk.waitForCondition(
 |----------|-------------|----------|-------|
 | Varrock (west) | (3188, 3421) | 2783 | Multiple anvils in smithy, near west bank |
 
+Falador has a furnace and a bank; a `smith` run at the Falador furnace failed "no reachable anvil nearby (pass `area` at the anvil)". Nothing shows whether Falador has an anvil, so go to Varrock West (anvil beside the bank at (3185, 3436)). [v 2026-10-11 conductor2 local]
+
 Also anvils at (3188, 3424) and (3188, 3426) — same building, same id 2783.
 
 Two more anvils (id 2783) at (3246, 3404) and (3248, 3404) in south-east Varrock, reachable from
@@ -88,6 +90,7 @@ still opens the interface. [v 2026-10-10 itest-fixture local]
 | Buy hammer | Lumbridge General Store | (3210, 3244) |
 
 ### Route: Mine → Furnace → Anvil
+Run end to end by plan iron-smith: SE Varrock mine -> Lumbridge furnace -> Varrock West anvil -> Varrock West bank. [v 2026-10-11 conductor2 local] Legs and timings are in `learnings/walking.md`.
 This is a long loop. Consider using Varrock West Bank (nearby anvils) to store bars between trips.
 
 Use `sdk/API.md` for the current `smithAtAnvil` product and option signature
