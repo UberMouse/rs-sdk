@@ -206,8 +206,14 @@ Constraints: <areas to avoid; what may be spent or sold; items that must not be 
 Budget: <play time>; stop after <n> failed plans in a row.
 Knowledge: <learnings/wiki pages and verified spots that apply; methods to try or to explore;
   promoted plans to reuse (conductor/plans/<name>.ts)>.
+Methods: <the loop to write as a plan, e.g. "a mine -> smelt -> smith -> bank plan">.
 Report per your instructions: DECISION NEEDED, or GOAL with RESULT lines, plans, lessons.
 ```
+
+Every fact in Knowledge comes from a page or the account as observed now; name the page. A
+brief that said "Falador has an anvil" (no page did) cost a runner its first runs (2026-10-11).
+Name Methods as the plan to write, not a sequence of steps: "smith the bars, then a loop" read as
+plain task runs.
 
 A goal is a few plans' worth, such as a couple of levels in one or two skills or one resource
 target, not hours of open-ended play. One that needs errands first (withdraw a tool, buy food)
