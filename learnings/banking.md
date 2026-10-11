@@ -2,13 +2,9 @@
 
 Successful patterns for bank interactions.
 
-## Banks that are not booths
+## Where the banks are
 
-From the game scripts (every bank site: `wiki/world.json`, kind `bank`):
-
-- The Shantay Pass chest at (3309, 3120) opens your bank, members only (`shantay_chest.rs2`).
-- The Duel Arena's closed chests at (3381, 3269) and (3382, 3270) open into bank chests (op Bank), next to Fadli, who also banks (`game_duelarena/scripts/misc_locs.rs2`, `fadli.rs2`).
-- Castle Wars has a bank chest at (2444, 3083); Gundai banks in the Mage Arena chamber (2534, 4714); the fairy bankers of Zanaris are at (3150-3154, 9577-9580).
+Every bank, with its exact tile and a tile to stand on, is in [wiki/services/bank.md](../wiki/services/bank.md) (generated from the game data, so it includes the banks that are not booths: the Shantay Pass and Duel Arena chests, the Castle Wars chest, Gundai in the Mage Arena chamber and the Zanaris fairies). This page keeps only what runs verified.
 
 ## Opening the Bank
 
@@ -99,12 +95,13 @@ await new Promise(r => setTimeout(r, 500));
 
 Checked against the map data: `server/content/maps/m50_50.jm2` (Lumbridge, castle included) has no `bankbooth` (2213), `bankboothclosed` or `banker1/2` on any level, so the top-floor castle bank (added to the real game in 2007) does not exist here. [map data 2026-10-11]
 
-| Bank | Coordinates | Notes |
-|------|-------------|-------|
-| Varrock West | (3185, 3436) | Close to GE. Deposit and withdraw verified via the `bank` task with area {x:3185,z:3436,radius:6}. `bot.openBank` found no banker/booth (`no_bank_found`) from (3169, 3436), 16 tiles west, so walk to the booth first; the nearest working distance is untested. [v 2026-10-09 conductor1 local] |
-| Draynor | (3092, 3243) | Ground floor. The `bank` task works with explicit area `{x:3092,z:3243,radius:3}` (deposit and depositAllExcept). [v 2026-10-11 conductor2 local] |
-| Al Kharid | (3269, 3167) | Requires toll or quest |
-... others
+Coordinates for each bank: [wiki/services/bank.md](../wiki/services/bank.md). Verified in game:
+
+| Bank | Notes |
+|------|-------|
+| Varrock West | Close to GE. Deposit and withdraw verified via the `bank` task with area {x:3185,z:3436,radius:6}. `bot.openBank` found no banker/booth (`no_bank_found`) from (3169, 3436), 16 tiles west, so walk to the booth first; the nearest working distance is untested. [v 2026-10-09 conductor1 local] |
+| Draynor | Ground floor. The `bank` task works with explicit area `{x:3092,z:3243,radius:3}` (deposit and depositAllExcept). [v 2026-10-11 conductor2 local] |
+| Al Kharid | Requires toll or quest |
 
 ## Full Banking Loop Pattern
 

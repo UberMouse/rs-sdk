@@ -189,10 +189,10 @@ export type GitRun = (args: string[]) => string;
  * The last commit that touched server/content, so the hash moves only when server/content does.
  * When server/content has uncommitted changes it is `<sha>-dirty-<digest>`: the digest is the first
  * 12 hex of the sha1 over `git diff HEAD --binary -- server/content` and each untracked file there
- * (its path and, for a regular file, bytes), so a further uncommitted edit moves the hash again and a stale world.json
- * is not mistaken for a fresh one. It names the content and nothing more: it misses an edit to this
- * builder or to areas.ts, so whether world.json is fresh is answered by rebuilding and comparing
- * the bytes, not by this hash.
+ * (its path and, for a regular file, bytes), so a further uncommitted edit moves the hash again and
+ * a stale world.json is not mistaken for a fresh one. It names the content and nothing more: it
+ * misses an edit to this builder or to areas.ts, so whether world.json is fresh is answered by
+ * rebuilding and comparing the bytes, not by this hash.
  */
 export function contentHash(run: GitRun = git): string {
     const hash = run(['log', '-1', '--format=%H', '--', 'server/content']);
