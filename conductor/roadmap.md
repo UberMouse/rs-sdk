@@ -126,7 +126,6 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
-- agility: wiki/skills/agility.md lacks the Gnome course obstacle coordinates, the unlisted log balance (loc 2295 at 2474,3435; send by id and tile) and the nets/pipe 'can not do that from here' side restrictions; knowledge-curator to add (contract T6)
 - crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)
 - fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
 - combat: a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
