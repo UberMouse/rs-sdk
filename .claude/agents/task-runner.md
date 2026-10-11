@@ -33,8 +33,9 @@ script walked the bot under attack and it died, 2026-10-11).
 2. After a clean `done`, run the plan **to the goal** in the background (`run_in_background`):
    `--until <goal stop> --until minutes:<budget left>`. Never re-run a working plan on short timers.
 3. Wait for the background run's completion notification. No `sleep`, no `pgrep` loop.
-4. After every RESULT, journal it (`journal.ts`, see Running a plan) and write your state file
-   before any other command.
+4. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
+   itself). After every RESULT, write your state file before any other command, and act on a
+   RESULT `hint`.
 5. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
    first (Debugging, below).
 
@@ -189,8 +190,12 @@ conductor promotes it into `conductor/plans/` and commits it.
 ## Running a plan
 
 ```bash
-bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --until minutes:<n>
+bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --until minutes:<n> \
+  --objective '<objective>' --journal <abs journal path>
 ```
+
+Every run, plain or plan, carries `--objective` and `--journal` (both, an absolute path): run-task
+then journals the run itself when it ends.
 
 - `--until` applies to the plan (`minutes:` from its start, `xp:<skill>:<n>`, `level:<skill>:<n>`);
   `--params` is refused with `--plan`. Never pass `--takeover`.
@@ -212,10 +217,10 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around it.
 - Work toward the goal runs as a plan, its first loop included. A plain task run,
-  `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ...`, is only for one errand
-  outside any loop (buy a tool, walk to the plan's start), at most one between plans; journal it
-  the same way. Two plain runs in a row, or a task you have run before toward this goal, mean the
-  work repeats: write the plan. A runner once chained smithing, travel, smithing, bank and travel
+  `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ... --objective ... --journal ...`,
+  is only for one errand outside any loop (buy a tool, walk to the plan's start), at most one
+  between plans. Two plain runs in a row (a RESULT `hint` says so), or a task you have run before
+  toward this goal, mean the work repeats: stop and write the plan. A runner once chained smithing, travel, smithing, bank and travel
   as plain runs instead of one smelt -> smith -> bank plan (2026-10-11).
 - The last stdout line is `RESULT <json>`, a plan's with `task: "plan:<name>"`, the plan totals,
   `phases` (per phase: `runs`, `statuses`, `durationMs`, `xpGained`, `lastReason`) and `recent`
@@ -227,17 +232,17 @@ bun conductor/run-task.ts <bot> --plan conductor/runs/<bot>/plans/<name>.ts --un
 - `bun run test:integration plan` is the plan smoke test for authors changing the plan runner;
   you never run integration tests.
 
-**Journal every run**, right after its RESULT (and before your state file's update):
+**Journal**: run-task appends each run's line itself (`kind: run`, the runId, command, result and a
+mechanical verdict), on every exit including a SIGTERM; a RESULT with an empty `runId` never ran
+and gets no line (count nothing in `spent`, and fix its cause). Don't journal runs by hand. Add a
+line only for judgement the mechanical one lacks (what a run showed, the next change), and for a
+run killed so hard it printed no RESULT (`running` still set, above):
 
 ```bash
 bun conductor/tools/journal.ts run '<objective>' --file <journal path> --task plan:<name> \
   --command '<the run-task command>' --result '<runId> <status>: <reason>; <XP gained>; <minutes>' \
   --verdict '<what it showed: method works at N XP/hr | failed because ... -> next change>'
 ```
-
-`<runId>` is the RESULT's `runId`; it is how a runner that was cut off finds whether a run was
-journaled. A RESULT with an empty `runId` never ran (a usage or connection failure before a log
-opened): journal nothing, count nothing in `spent`, and fix its cause.
 
 ## Debugging a plan that did not finish `done`
 
