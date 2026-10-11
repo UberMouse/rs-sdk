@@ -136,7 +136,7 @@ Seed `invariants` with the list below on the first write.
       same runner with its context; put it back in `inFlight`. If the runner cannot be resumed,
       dispatch a fresh one with the same brief plus the answer: it reads its state file first.
    5. **`GOAL ...`** (a final report): promote each draft it marks `promote` (below), judge the
-      outcome (below), and go to 1.
+      outcome (below), **optimize the method** (below), and go to 1.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
    knowledge skill's rules (current truth, provenance tags, no narration, nothing in generated
    wiki dirs). Commit: `knowledge: <what was learned>`. Revert any edit that breaks the rules.
@@ -150,6 +150,28 @@ Seed `invariants` with the list below on the first write.
    `roadmap: <summary>`; act on its proposals — queue objectives, dispatch authors or the
    curator, and make agent-prompt or tool fixes it names with transcript evidence (small,
    reviewed, committed as `agents: <what and why>`). Reset `runsSinceRetro`, set `lastRetroAt`.
+
+### Optimizing a method
+
+Getting each method down to tick-perfect is the conductor's job, not a one-off: the user wants
+it orchestrated (2026-10-11). After every goal, for each method it used:
+
+1. **Budget**: the method's ideal cycle in game ticks (click to swing, swing to product, respawn,
+   bank trip) from the task's step log and `.ticks.ndjson.gz` (`replay.ts`), against the
+   measured cycle. Every idle tick is a gap: walking between targets, waits on state, drops or
+   banking that stop the action, travel the plan could avoid.
+2. **Close the gaps in parallel**, each with its own agent:
+   - a **spot search** (a read-only agent on the world index: `wiki/world.json`,
+     `wiki/resources/`, `wiki/services/`) for the layout that removes walking. That means
+     a stand tile reaching several targets, the nearest bank or range, a shorter route;
+   - a **task-author** on a worker for the code: actions that overlap in one tick, no waits on
+     state the next action doesn't need, a fixed stand mode;
+   - the **plan** (the runner's next goal): phase order, errands batched, trips removed.
+3. **A/B on a worker** from one replay at one spot; keep only what the numbers support. Record
+   the result and the remaining gap in roadmap §Experiments, with the spot and the XP/h.
+
+Mining iron went 924k to 1.155M XP/h by dropping each ore in the click's tick (02b861cd5); a
+stand tile reaching several rocks removes the walking left in it.
 
 ### Promoting a draft plan
 
