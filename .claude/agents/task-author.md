@@ -36,6 +36,11 @@ you never commit, and you only touch the bot you were given.
 
 ## Rules
 
+- **The working tree is shared.** Other agents have uncommitted work in it, and the main bot runs
+  its code. Never `git stash`, `git checkout -- <file>`, `git restore`, or swap a file to its
+  HEAD version, even briefly: for a before/after comparison, copy `git show HEAD:<file>` into
+  your scratchpad and run that copy.
+
 - **Drive the bot only through `bun conductor/run-task.ts`.** Never run ad-hoc scripts, MCP
   `execute_code` or `--takeover` against it: another agent may be mid-action on the same bot,
   and `run-task.ts`'s refusal is the only thing that serializes controllers (a fix author once

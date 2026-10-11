@@ -69,6 +69,9 @@ incomplete review in the journal and retry on the next loop.
 No findings from any lens → skip to §5. Drop band-D findings before verifying, except a D
 whose suspicion is cheap to check (a requirement, level or constant against `server/content`):
 check it, and keep it if it holds (the firemaking review's only round-1 B started as a D).
+Otherwise every round with findings goes through a `review-verifier`, however obvious the
+findings look: the orchestrator judging them itself is how a review skips the check (fletching,
+53ff9e640).
 
 Number the rest `0..n-1` in one list (keep each one's lens) in a file, grouped by file area
 (engine/interrupts, the task, tools) so duplicates from different lenses sit together. One
@@ -125,6 +128,10 @@ new defect). Then:
   for the next task-author dispatch. For a commit range, report the A findings to the user.
 
 ## 5. Commit
+
+Before you commit and report, make sure nothing you started is still running (a test or smoke
+run in the background, a subagent): wait for it or stop it. An orchestrator that reports with
+background work alive keeps re-notifying the conductor after its report.
 
 `git add` the specific files, then commit with a pathspec, `git commit -- <files>`: other agents
 share the worktree's index, and a bare `git commit` sweeps in what they staged. The pre-commit

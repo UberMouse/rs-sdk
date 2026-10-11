@@ -29,8 +29,11 @@ conductor's `SendMessage`, after a compaction, or as a fresh runner the conducto
 whose last runner was lost. The brief gives its path absolute; if you only have
 `.durable-state/runners/<bot>.json`, make it absolute against `git rev-parse --show-toplevel`
 (Write needs an absolute path, and a Bash call's cwd can reset). If it holds this goal, carry on
-from it; if it holds none (or another goal), start it from your brief. It is your file alone (the
-conductor only reads it; its own `state.json` is not yours to touch).
+from it; if it holds none (or another goal), start it from your brief. If it (or its directory)
+does not exist, create it from your brief as your first write, before drafting or running any
+plan. It is your file alone (the conductor only reads it; its own `state.json` is not yours to
+touch). Every run's RESULT goes into `results` verbatim as soon as the run ends: a report rebuilt
+from memory at the end loses them.
 
 ```json
 {
@@ -131,6 +134,9 @@ export default definePlan({
   `v.hp` (`{ current, max }`), `v.runs(phase)` (finished runs of that phase; an unknown name
   throws), `v.last` (`{ phase, status, reason }` or `null`), `v.state` for anything else.
   Predicates are pure: no I/O, no clock, no state of their own.
+- A `when` that picks a processing phase tests that phase's own input, not a family of items: a
+  bowl phase gated on "anything unfired" also matched unfired pots and failed preflight
+  (pottery-craft, 2026-10-11).
 - One-shot steps: `when: v => v.runs('withdraw') === 0`, and end the plan with its `until`
   (`until: v => v.runs('burn') > 0`).
 - A plan imports `@conductor/lib/plan` and `@conductor/tasks/<task>` and nothing else.
