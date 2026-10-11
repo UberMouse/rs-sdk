@@ -147,6 +147,10 @@ export default definePlan({
   its phases need (`depositAllExcept: [...]`) and, when a phase's product is not consumed by a
   later phase, bank it in the loop instead of carrying it. Never drop an item the account may
   want (tools, products); drop only what the goal's constraints allow (logs, burnt food).
+  A bank trip costs walking time, so make one only when slots run out (or a restock is due), and
+  bank everything then: a stackable product (coins, arrow shafts, runes) takes one slot however
+  many you hold, so it never justifies a trip of its own (banking coins every 300 gp while
+  thieving wasted the run's time).
 
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
