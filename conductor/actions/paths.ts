@@ -45,6 +45,28 @@ export interface Pathfinder {
     canStep(level: number, x: number, z: number, dx: number, dz: number): boolean;
 }
 
+/**
+ * Doors sdk/collision-data.json lacks, which the walk opens like the others. The data's door list misses
+ * the whole class of shape-9 ground-layer doors (diagonal, not walls), so their tiles stay blocked. The
+ * one known: the Wizards' Tower door into the stairs-and-ladder room (loc 1536 in maps/m48_49.jm2), without
+ * which no route into the room (the basement ladder, Sedridor) exists. Here its tile is unblocked and the
+ * door is known.
+ * A stopgap patch of sdk/collision-data.json: delete this list once that file lists loc 1536 at (3107,3162).
+ */
+export const EXTRA_DOORS: readonly DoorInfo[] = [{ level: 0, x: 3107, z: 3162, shape: 9, angle: 3, blockrange: true }];
+let extraDoorsMasked = false;
+/** Unblocks the EXTRA_DOORS tiles, once, after the SDK's own door index has been built. */
+function maskExtraDoors(): void {
+    initPathfinding();
+    if (extraDoorsMasked) return;
+    extraDoorsMasked = true;
+    for (const d of EXTRA_DOORS) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
+}
+const sameDoor = (a: DoorInfo, b: DoorInfo) => a.level === b.level && a.x === b.x && a.z === b.z;
+const isExtraDoor = (d: DoorInfo) => EXTRA_DOORS.some(e => sameDoor(e, d));
+const extraDoorAt = (level: number, x: number, z: number) =>
+    EXTRA_DOORS.find(d => d.level === level && d.x === x && d.z === z);
+
 /** sdk.findPath's default waypoint cap. */
 const MAX_WAYPOINTS = 500;
 /**
@@ -52,6 +74,15 @@ const MAX_WAYPOINTS = 500;
  * another plane (underground areas share level 0 at z + 6400), not one just past a gate (10-20 tiles).
  */
 const OTHER_PLANE_TILES = 100;
+
+/** A waypoint's tile and its four neighbours, where the SDK looks for a door along a route. */
+const CROSS_OFFSETS = [
+    [0, 0],
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+] as const;
 
 /** Routes over the collision data bundled with the SDK, indexed on the first query. */
 export const collisionPaths: Pathfinder = {
@@ -63,7 +94,24 @@ export const collisionPaths: Pathfinder = {
                 waypoints: [],
                 error: 'Source zone not allocated (no collision data for current position)',
             };
-        const waypoints = findLongPath(from.level, from.x, from.z, to.x, to.z, MAX_WAYPOINTS, avoid);
+        maskExtraDoors();
+        // A door the walk gave up on is walled again for this query; the SDK re-walls only its own kind.
+        const shut = avoid.filter(isExtraDoor);
+        for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, true);
+        let waypoints: Waypoint[];
+        try {
+            waypoints = findLongPath(
+                from.level,
+                from.x,
+                from.z,
+                to.x,
+                to.z,
+                MAX_WAYPOINTS,
+                avoid.filter(d => !isExtraDoor(d)),
+            );
+        } finally {
+            for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
+        }
         if (waypoints.length === 0 && !isZoneAllocated(from.level, to.x, to.z))
             return {
                 success: true,
@@ -86,10 +134,16 @@ export const collisionPaths: Pathfinder = {
     },
     doorsAlong: waypoints => {
         // The door index fills on load, which findDoorsAlongPath alone does not trigger.
-        initPathfinding();
-        return findDoorsAlongPath([...waypoints]);
+        maskExtraDoors();
+        const found = findDoorsAlongPath([...waypoints]);
+        for (const wp of waypoints)
+            for (const [dx, dz] of CROSS_OFFSETS) {
+                const d = extraDoorAt(wp.level, wp.x + dx, wp.z + dz);
+                if (d && !found.some(f => sameDoor(f, d))) found.push(d);
+            }
+        return found;
     },
-    doorAt: getDoorAt,
+    doorAt: (level, x, z) => getDoorAt(level, x, z) ?? extraDoorAt(level, x, z),
     walkable: isTileWalkable,
     // The server's `lineofwalk` between the two tiles (hasLineOfWalk, as skill_firemaking's push_player uses it).
     canStep(level, x, z, dx, dz) {

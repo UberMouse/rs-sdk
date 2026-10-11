@@ -83,8 +83,8 @@ const LUMBRIDGE_LANDING = { x: 3205, z: 3209 };
 // The Wizards' Tower: the staircase in the south-west corner of the ground floor, to the floor above
 // (middle) and the top. Its ladder (wizards_tower_laddertop) goes down to the basement, where Sedridor is.
 // The stairs and the ladder share one small room (x 3103..3107, z 3159..3163) entered by a diagonal door at
-// (3107, 3162) that sdk/collision-data.json does not list, so the pathfinder finds no route into the room
-// from outside (a walk there ends `no-path`); from inside it, or after the basement, the connectors work.
+// (3107, 3162) that sdk/collision-data.json does not list as a door; actions/paths.ts adds it (EXTRA_DOORS),
+// so a walk opens it and the connectors work from outside the room too.
 const TOWER_LANDING = { x: 3105, z: 3160 };
 
 export const CONNECTORS: readonly Connector[] = [

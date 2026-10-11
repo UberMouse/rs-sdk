@@ -1,0 +1,359 @@
+import { describe, expect, test } from 'bun:test';
+import type { BotAction } from '../../../sdk/types';
+import { MAX_CLICKS } from '../../actions/talk';
+import { stepBudgetTicks } from '../../lib/task';
+import { CONVERSE_MAX_TICKS, TALK_OPEN_TICKS } from '../../actions/talk';
+import talk from '../../tasks/talk';
+import { type Page, dialogScript } from '../dialog-script';
+import { fakePaths } from '../paths';
+import { walking } from '../react';
+import { simulate, type Simulation } from '../simulate';
+import { attackedFrom, world } from '../world';
+
+const DUKE = 'Duke Horacio';
+const base = world();
+/** The Duke one tile away, as in the castle. */
+const castle = base.npcBeside(DUKE, { options: ['Talk-to'] });
+const dukeParams = { npc: DUKE, choices: ['quests for me', 'Sure, no problem'] };
+/** What the Duke says: continue pages around the two choices, ending with the dialog closed. */
+const DUKE_PAGES: Page[] = [
+    [],
+    ['Have you any quests for me?', 'Where can I find money?'],
+    [],
+    [],
+    ['Sure, no problem.', 'Not right now.'],
+    [],
+    [],
+    null,
+];
+const clicks = (r: Simulation) =>
+    r.driver.commands.filter(c => c.type === 'send' && c.action.type === 'clickDialogOption');
+const logged = (r: Simulation) =>
+    r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
+const isClose = (c: { type: string; action?: BotAction }) => c.type === 'send' && c.action?.type === 'closeModal';
+
+describe('talk: conversation', () => {
+    test('talks to the NPC, answers the choices in order and is done when the dialog closes', async () => {
+        const script = dialogScript(DUKE_PAGES);
+        const r = await simulate(talk, { params: dukeParams, timeline: castle.series(40), react: script.react });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('talk: talked to Duke Horacio, 2 choices made');
+        expect(r.sends[0]).toBe('Talk-to Duke Horacio');
+        // One click per page: the dialog guard is off, so nothing else answers the continue pages.
+        expect(clicks(r)).toHaveLength(DUKE_PAGES.length - 1);
+        expect(script.shown).toBe(DUKE_PAGES.length);
+        expect(logged(r)).toEqual([
+            'dialog: choosing "Have you any quests for me?"',
+            'dialog: choosing "Sure, no problem."',
+        ]);
+        expect(r.steps).toEqual(['talk']);
+    });
+
+    test('allows the dialog guard off for the whole run', () => {
+        expect(talk.allow).toEqual(['dialog']);
+    });
+
+    test("a missing option fails with the dialog's options and closes the dialog", async () => {
+        const r = await simulate(talk, {
+            params: { npc: DUKE, choices: ['quests for me', 'Take the lamp'] },
+            timeline: castle.series(40),
+            react: dialogScript(DUKE_PAGES).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'talk: no option matching /Take the lamp/i (choice 2 of 2); the dialog offers "Sure, no problem." | "Not right now."',
+        );
+        expect(r.driver.commands.filter(isClose)).toHaveLength(1);
+    });
+
+    test('a dialog closing with choices left fails', async () => {
+        const r = await simulate(talk, {
+            params: dukeParams,
+            timeline: castle.series(40),
+            react: dialogScript([[], null]).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('talk: the dialog closed after 0 of 2 choices (next: /quests for me/i)');
+    });
+
+    test('a choice nobody expected fails', async () => {
+        const r = await simulate(talk, {
+            params: { npc: DUKE, choices: ['quests for me'] },
+            timeline: castle.series(40),
+            react: dialogScript(DUKE_PAGES).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'talk: a choice came after all 1 were answered: "Sure, no problem." | "Not right now."',
+        );
+    });
+
+    test('a conversation with no choices clicks through to the end', async () => {
+        const r = await simulate(talk, {
+            params: { npc: DUKE },
+            timeline: castle.series(40),
+            react: dialogScript([[], [], [], null]).react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('talk: talked to Duke Horacio, 0 choices made');
+    });
+
+    test('another option starts the conversation', async () => {
+        const w = base.npcBeside('Aubury', { options: ['Talk-to', 'Trade'] });
+        const r = await simulate(talk, {
+            params: { npc: 'aubury', option: '^trade$' },
+            timeline: w.series(40),
+            react: dialogScript([[], null]).react,
+        });
+        expect(r.sends[0]).toBe('Trade Aubury');
+        expect(r.result.status).toBe('done');
+    });
+
+    test('a dialog left open is resumed without talking again', async () => {
+        const open = castle.dialog({
+            text: 'page 0',
+            options: ['Have you any quests for me?', 'Where can I find money?'],
+        });
+        const script = dialogScript(DUKE_PAGES.slice(2), () => false, 1);
+        const r = await simulate(talk, {
+            params: { npc: DUKE, choices: ['Sure, no problem'] },
+            timeline: open.series(40),
+            react: script.react,
+        });
+        // The open page offers other options than the choice: that is a missing option, not a new talk.
+        expect(r.sends.filter(s => s.startsWith('Talk-to'))).toEqual([]);
+        expect(r.result.status).toBe('failed');
+    });
+});
+
+describe('talk: finding the NPC', () => {
+    test('no such NPC in sight fails after waiting a few loops', async () => {
+        const r = await simulate(talk, { params: dukeParams, timeline: base.series(30) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('talk: no reachable /Duke Horacio/ in sight');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('an unreachable NPC does not count', async () => {
+        const w = base.npcBeside(DUKE, { options: ['Talk-to'], reachable: false });
+        const r = await simulate(talk, { params: dukeParams, timeline: w.series(30) });
+        expect(r.result.reason).toBe(
+            'talk: no reachable /Duke Horacio/ in sight (1 in view but unreachable from here)',
+        );
+    });
+
+    test('three starts in a row that open no dialog fail the run with the last reason', async () => {
+        const r = await simulate(talk, {
+            params: dukeParams,
+            timeline: castle.series(1),
+            respond: () => ({ success: false, message: 'not connected' }),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('talk: 3 tries to talk to Duke Horacio failed (last: not connected)');
+        expect(r.sends).toHaveLength(3);
+    });
+
+    test('a failed start then a good one resets the count', async () => {
+        let n = 0;
+        const script = dialogScript([[], null]);
+        const r = await simulate(talk, {
+            params: { npc: DUKE },
+            timeline: castle.series(60),
+            respond: a => (a.type === 'interactNpc' && n++ < 2 ? { success: false, message: 'busy' } : undefined),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(logged(r)).toEqual(['talking to Duke Horacio failed: busy', 'talking to Duke Horacio failed: busy']);
+    });
+});
+
+describe('talk: walking first', () => {
+    test('walks to `at` and then talks', async () => {
+        const script = dialogScript([[], null]);
+        const far = world()
+            .player({ at: { x: 3230, z: 3220 } })
+            .npc(DUKE, 3212, 3220, { options: ['Talk-to'] });
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3211, z: 3220 } },
+            timeline: far.series(80),
+            react: walking(script.react),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.steps.slice(0, 2)).toEqual(['walk', 'talk']);
+    });
+
+    test('a stray dialog before the walk is closed, then the walk runs and the talk follows', async () => {
+        const script = dialogScript([[], null]);
+        const far = world()
+            .player({ at: { x: 3230, z: 3220 } })
+            .npc(DUKE, 3212, 3220, { options: ['Talk-to'] })
+            .dialog({ text: 'stray', options: [] });
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3211, z: 3220 } },
+            timeline: far.series(80),
+            // The close removes the stray dialog.
+            react: walking((a, st) =>
+                a.type === 'closeModal' ? t => world(t).dialog(false).build() : script.react(a, st),
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.steps.slice(0, 3)).toEqual(['talk', 'walk', 'talk']);
+        expect(r.driver.commands.filter(isClose)).toHaveLength(1);
+        expect(clicks(r)).toHaveLength(1);
+    });
+
+    test('already within the tolerance, it does not walk', async () => {
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3222, z: 3218, tolerance: 5 } },
+            timeline: castle.series(40),
+            react: dialogScript([[], null]).react,
+        });
+        expect(r.steps).toEqual(['talk']);
+    });
+
+    test('a corner of the tolerance square counts as there (walkTo measures Chebyshev, not straight-line)', async () => {
+        // 3 east and 3 north: straight-line 4.2 tiles, Chebyshev 3.
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3211, z: 3220 } },
+            timeline: castle.player({ at: { x: 3214, z: 3223 } }).series(40),
+            react: dialogScript([[], null]).react,
+        });
+        expect(r.steps).toEqual(['talk']);
+    });
+
+    test('no route fails at once', async () => {
+        const far = world().player({ at: { x: 3230, z: 3220 } });
+        const noRoute = fakePaths(() => ({ success: false, waypoints: [], error: 'no route' }));
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3211, z: 3220 } },
+            timeline: far.series(80),
+            pathfinder: noRoute,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^walk: can't walk to \(3211,3220\)/);
+    });
+
+    test('three walks in a row that never arrive fail the run', async () => {
+        const far = world().player({ at: { x: 3230, z: 3220 } });
+        // No `walking` react: the bot never moves, so every walk ends stuck.
+        const r = await simulate(talk, { params: { npc: DUKE, at: { x: 3211, z: 3220 } }, timeline: far.series(200) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^walk: 3 walks in a row failed toward \(3211,3220\)/);
+    });
+
+    test('refuses a Wilderness spot', async () => {
+        const r = await simulate(talk, { params: { npc: DUKE, at: { x: 3100, z: 3700 } }, timeline: castle.series(3) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('Wilderness');
+    });
+});
+
+describe('talk: using items', () => {
+    const cauldron = base
+        .inv('Raw beef', 1, { id: 2132 })
+        .inv('Raw chicken', 1, { id: 2138 })
+        .loc('Cauldron of Thunder', 3200, 3200, { options: ['Dip in'] });
+    const params = { use: { items: ['^raw beef$', '^raw chicken$'], onLoc: 'cauldron of thunder' } };
+    /** A use turns the item into its enchanted form: the slot's item is gone. */
+    const consumed = (a: BotAction, s: ReturnType<typeof cauldron.build>) =>
+        a.type === 'useItemOnLoc'
+            ? (t: typeof s) => ({ ...t, inventory: t.inventory.filter(i => i.slot !== a.itemSlot) })
+            : undefined;
+
+    test('uses each item on the loc in order; with no npc the run ends after them', async () => {
+        const r = await simulate(talk, { params, timeline: cauldron.series(40), react: consumed });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: used 2 items on cauldron of thunder');
+        expect(r.sends).toEqual(['use Raw beef on Cauldron of Thunder', 'use Raw chicken on Cauldron of Thunder']);
+    });
+
+    test('an item the bot does not hold fails', async () => {
+        const r = await simulate(talk, { params, timeline: cauldron.inv('Raw beef', 0).series(10) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'use-items: no item matching /^raw beef$/ in the inventory to use on cauldron of thunder',
+        );
+    });
+
+    test('no such loc in sight fails after waiting', async () => {
+        const w = base.inv('Raw beef', 1, { id: 2132 });
+        const r = await simulate(talk, { params, timeline: w.series(30) });
+        expect(r.result.reason).toBe('use-items: no reachable cauldron of thunder in sight');
+    });
+
+    test('uses first, then talks when both are given', async () => {
+        const w = cauldron.npcBeside(DUKE, { options: ['Talk-to'] });
+        const script = dialogScript([[], null]);
+        const r = await simulate(talk, {
+            params: { ...params, npc: DUKE },
+            timeline: w.series(60),
+            react: (a, s) => consumed(a, s as never) ?? script.react(a, s),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.steps).toEqual(['use-items', 'talk']);
+    });
+});
+
+describe('talk: guards', () => {
+    test('low HP mid-conversation: the guard eats and the same dialog carries on', async () => {
+        const script = dialogScript(DUKE_PAGES);
+        const r = await simulate(talk, {
+            params: dukeParams,
+            timeline: castle.inv('Shrimps', 1).series(60, (w, i) => w.player({ hp: i >= 6 && i < 9 ? 3 : 10 })),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.filter(s => s.startsWith('Talk-to'))).toHaveLength(1);
+        expect(r.sends.some(s => /eat/i.test(s))).toBe(true);
+        expect(r.result.reason).toBe('talk: talked to Duke Horacio, 2 choices made');
+    });
+});
+
+describe('talk: guards around the walk and the start', () => {
+    const far = world()
+        .player({ at: { x: 3230, z: 3220 } })
+        .inv('Shrimps', 1)
+        .npc(DUKE, 3212, 3220, { options: ['Talk-to'] });
+
+    test('an attacker hurting the bot mid-walk: the guard eats, then the walk resumes and the talk follows', async () => {
+        const script = dialogScript([[], null]);
+        const r = await simulate(talk, {
+            params: { npc: DUKE, at: { x: 3211, z: 3220 } },
+            timeline: far.series(120, (w, i) => (i >= 3 && i < 8 ? attackedFrom(w, i, 8).player({ hp: 3 }) : w)),
+            react: walking(script.react),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.some(s => /eat/i.test(s))).toBe(true);
+        expect(r.result.stepRuns['interrupt:low-hp']).toBe(1);
+        expect(r.steps).toEqual(['walk', 'talk']);
+    });
+
+    test('a stray interface open when the talk step starts is closed, and the talk then carries on', async () => {
+        const script = dialogScript([[], null]);
+        const r = await simulate(talk, {
+            params: { npc: DUKE },
+            timeline: castle.series(40, (w, i) => (i < 2 ? w.modal(5000) : w.modal(false))),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toContain('Talk-to Duke Horacio');
+    });
+});
+
+describe('talk: params and budgets', () => {
+    test('needs an npc or a use', async () => {
+        const r = await simulate(talk, { params: {}, timeline: base.series(3) });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('give an npc to talk to, a use, or both');
+    });
+
+    test('a pattern that is not a regular expression is refused', async () => {
+        const r = await simulate(talk, { params: { npc: DUKE, choices: ['('] }, timeline: base.series(3) });
+        expect(r.result.reason).toContain('choices.0: not a valid regular expression');
+    });
+
+    test('the step budget covers opening a dialog and the longest conversation', () => {
+        expect(MAX_CLICKS).toBeGreaterThan(40);
+        expect(stepBudgetTicks(talk.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(TALK_OPEN_TICKS + CONVERSE_MAX_TICKS);
+    });
+});
