@@ -8,28 +8,35 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-10T02:50Z (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 290
-(WC 62, Mining 51, FM 47, Thieving 39, HP 19, Att 16, Str 16, Prayer 15, Def 15, rest 1). Ranged,
-Magic, Cooking, Fletching, Fishing, Crafting, Smithing, Herblore, Agility, Runecraft are all level 1.
-Holds a steel axe (bought 200 gp from Bob; ~780k/h on Varrock oaks vs bronze 358k/h), bronze
-pickaxe, tinderbox, net, Knife, 19 Logs, little cash (~230 gp from thieving). Inventory is full of
-logs; bank at Varrock West holds the junk. Committed: the nine run-1 tasks plus `cooking`,
-`fishing`, `thieving`, the `bank` no-area fix, the winnable-attacker guard, and combat Ranged/Magic.
-In review or authoring: `crafting` (pottery, in review), `firemaking` clear-line burn (in review),
-`agility` and stairs/ladders in `walkTo` (authoring).
+State at 2026-10-11 (conductor run 2, account `conductor2`, rev 289, 25x XP): total level 469 / 1881,
+1.55% of max XP. WC 66, FM 55, Mining 51, Thieving 49, Cooking 44, Fishing 40, Crafting 35,
+Fletching 30, Str 25, HP 22, Att 16, Prayer 15, Def 15. Ranged, Magic, Smithing, Herblore, Agility,
+Runecraft are level 1. Goals done this window: Fletching 30 / Fishing 40 / Cooking 44 (plans
+`chop-fletch`, `fish-cook-bank`) and Crafting 35 by pottery (plan `pottery-craft`). In flight: a
+task-runner on guard thieving for money (draft `runs/conductor2/plans/guard-thieve.ts`, Guards
+unlock at Thieving 40).
+Holds a steel axe, bronze pickaxe, net, Knife, tinderbox; cooked food is banked at Draynor.
 
-- Measured on 289: WC oaks 590k/h bronze -> ~780k/h steel; Mining iron 541k/h, copper/tin 159k/h;
-  FM 689k-1.16M/h; Thieving men 91k/h (31 gp/min with food, 14 without); combat on chickens
-  Att 55k/h, Str 83k/h, Def 108k/h. Melee is 5-10x slower than gathering: do not grind it yet.
-- Immediate: clear the inventory (drop or bank the 19 Logs and any stray Oak logs), then the
-  Fletching/Fishing/Cooking chain: fletching arrow shafts on Logs, net shrimps at Draynor, cook them.
-  The last chain failed at fletching preflight on 2 stray Oak logs (see Experiments, Review follow-ups).
-- Then: crafting pottery and agility when committed (cheap level-1 skills: each lifts total level
-  fast), Ranged/Magic via `combat` skill param, firemaking line burn to FM 60+.
-- Tool tiers (decided): thieve for money -> adamant pickaxe; Mining past 60 needs coal/mithril.
-  Skip tiers when cheaper (user standing instruction: 25x XP makes the cheaper tier enough).
-- Chains: put one inventory-clean step (bank/drop) before any task that is picky about inventory
-  contents; do not leave leftovers from a skipped step.
+- Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching` (named logs, Make 10),
+  `mining`, `combat` (melee/Ranged/Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
+  `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` across levels.
+  Plans in `conductor/plans/`: chop-burn, chop-fletch, fish-cook-bank, pottery-craft.
+- Measured: WC oaks steel ~780k/h; Mining iron 541k/h; FM 690k-1.16M/h; Thieving men 91k/h with food,
+  166k/h without (+41 gp/min); Crafting pottery ~65k/h (Crafting 1->35 in ~12 min); cooking at the
+  Lumbridge Cooking pot 345k/h; fishing net ~95k/h; fletching shafts 70k/h (slow: Make 10 helps
+  only past Fletching ~30). Melee is 5-10x slower than gathering: do not grind it yet.
+- Next, in order (each is a goal for a task-runner; level-1 skills first, each lifts total level fast):
+  1. Agility 1 -> 40+ on the Gnome course (~2.2k XP/lap at 25x). Needs the bot at the Stronghold
+     (task has no travel; the runner plans a walk or a `walkTo` step first).
+  2. Smithing 1 -> 40+: mine iron/coal (Mining 541k/h) -> smelt -> smith, with banking in a plan.
+  3. Ranged and Magic 1 -> 30+ via `combat` (cows/goblins with bow+arrows from fletching, strike spells).
+  4. Money for the adamant pickaxe (guard thieving, in flight), then Mining 60+ (coal/mithril).
+  5. Quests that unlock Herblore (Druidic Ritual) and Runecraft (Rune Mysteries; tower ladder works,
+     tower-room entry is deferred, see Review follow-ups).
+  6. Raise the leaders cheaply: WC willows/yews at 60+, FM line burn on logs for FM 70+, Cooking/Fishing
+     on better food (trout/salmon need lure/bait fishing).
+- Standing rules: bank leftovers and superseded tools between goals (task-runner rule); bank cooked
+  food each loop; user instruction: skip tool tiers when the 25x XP makes the cheaper one enough.
 
 ## Unlocks
 
@@ -46,18 +53,20 @@ requirements before planning it.
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
-- In catalog: `woodcutting`, `pickup`, `firemaking`, `fletching`, `mining`, `combat` (melee,
-  Ranged, Magic), `bank` (no-area walk), `shop`, `smithing`, `cooking`, `fishing`, `thieving`.
-- **Attack-in-transit hazard (fixed)**: `underAttackGuard` fights a winnable attacker to the end,
-  bounded by progress; it fails at once for a stronger one. Tasks opt in with `guards: [underAttackGuard]`.
-- In review: `crafting` (pottery at Barbarian Village), `firemaking` east-west line burn.
-- Authoring: `agility` (Gnome course save exists), stairs/ladders in `walkTo` (`actions/climb.ts`,
-  `lib/connectors.ts`; unblocks multi-floor routes, Draynor rooftop, upstairs banks).
-- Next ideas, in order: `fletching` Make 10/Make X batching (see follow-ups); fletching tolerance
-  for mixed logs; `woodcutting` bank mode (logs for FM/fletching and money); `smithing` from mined
-  iron/coal; Herblore/Runecraft after their quests (Unlocks);
-  quest tasks (Rune Mysteries, Druidic Ritual); money making for the adamant pickaxe;
-  `combat` upgrades (eat real food, better target than chickens).
+- In catalog: `woodcutting`, `pickup`, `firemaking` (line burn with wall-edge check), `fletching`,
+  `mining`, `combat` (melee, Ranged, Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
+  `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` stairs/ladders.
+- In review: firemaking wall-edge fix (user report: thin walls), cooking reach fix (walk to a tile that
+  reaches the range). Both are uncommitted in the working tree; the main bot runs the working tree.
+- **Attack-in-transit hazard (fixed)**: `underAttackGuard` fights a winnable attacker to the end. A
+  Bear (lvl 21) roams the Lumbridge-Draynor road and failed two fishing walks; kill it once or route around.
+- Next ideas, in order: `agility` travel to the Stronghold (or a walkTo preflight inside the task) and
+  a second course for Agility 40+; `woodcutting` bank mode (logs for FM/fletching, money);
+  `smithing` plan from mined iron/coal (mine -> bank -> smelt -> smith); `crafting` beyond pottery
+  (leather, jewellery with gems/gold); quest tasks (Druidic Ritual, Rune Mysteries);
+  `combat` upgrades (eat real food from the bank, better target than chickens); `prayer` (bury bones);
+  `fishing` lure/bait for trout/salmon.
+- Done: `fletching` Make 10 batching and mixed-log tolerance; gates for stairs/ladders.
 
 ## Framework
 
@@ -107,19 +116,23 @@ on its own.
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
+- Skill speed ranking at the current levels (XP/hr): WC 780k, Mining iron 541k, Cooking 345k,
+  Thieving 166k, Crafting pottery 65k-310k (varies with water/clay trips), Fishing 95k, Fletching 70k.
+  Hypothesis: Agility (Gnome ~2.2k XP/lap) beats all of these at level 1. Status: measure on the first run.
+- Fletching: arrow shafts are the slowest gain. Hypothesis: shortbow/longbow (u) on oaks is 2-4x
+  XP/log. Variants: shafts vs oak longbow (u) at Fletching 30+. Status: untested.
+- Crafting past 35: pottery caps near Crafting 40 for useful XP; compare leather/gem cutting. Status: untested.
 - Combat target: chickens Def 108k/h, Str 83k/h, Att 55k/h vs 300k-1M/h for gathering. Hypothesis:
-  cows/goblins and a better weapon give 3-5x. Variants: chicken vs cow vs goblin, bronze vs iron
-  sword, style. Status: untested; low priority until cheap skills are lifted.
+  cows/goblins and a better weapon give 3-5x. Status: untested; run after Ranged/Magic.
 - Mining rock: iron 541k/h vs copper/tin 159k/h done. Next: coal at Mining 50+ with the adamant
-  pickaxe plan. Status: iron done, rest untested.
-- Woodcutting: steel axe on oaks ~780k/h (done); next compare willows/yews at WC 60+ and an
-  oak -> bank loop vs drop. Status: axe done, trees untested.
-- Firemaking: oak logs 1.16M/h at Varrock (short run), normal logs 689k/h; the clear-line burn
-  (in review) should stop the "can't light a fire here" failures. Compare line vs sidestep. Status: pending review.
-- Tool tier skipping: the 25x XP shortens every tier; test whether steel axe -> mithril directly
-  beats stepping through each (cost vs time). Status: steel done.
-- Chain robustness: does a clean-inventory pre-step (bank/drop) vs tolerant tasks (select the
-  wanted log by name) cut chain failures? Status: one failure observed (fletching, 2 stray Oak logs).
+  pickaxe. Status: iron done.
+- Woodcutting: oaks steel ~780k/h done; next willows/yews at WC 60+ and an oak -> bank loop vs drop.
+- Firemaking: line burn: 26 logs Lumbridge field 5 lines 91.6s -> 9 lines 79.6s once wall edges are
+  checked (author result). Compare against sidestep at the FM 60+ rate. Status: pending review.
+- Cooking at the Lumbridge Cooking pot beats the range (west-side unreachable); done (345k/h).
+- Tool tier skipping: steel axe done; test steel -> mithril directly beats stepping.
+- Chain robustness: plans (`when` predicates on inventory) replaced numbered chains; one failure
+  mode left: plan `when` bugs (pottery-craft craft-bowl matched an unfired pot). Status: watch.
 
 ## Review follow-ups
 
