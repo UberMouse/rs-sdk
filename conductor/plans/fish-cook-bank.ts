@@ -11,9 +11,18 @@ const pot = { x: 3232, z: 3238, radius: 5 };
 export default definePlan({
     name: 'fish-cook-bank',
     description: 'Draynor net fishing -> pot cooking -> Draynor bank of cooked fish',
-    until: v => (v.bank('Shrimps') ?? 0) + (v.bank('Anchovies') ?? 0) >= 20 && v.inv(cooked) === 0,
+    until: v => (v.bank('Shrimps') ?? 0) + (v.bank('Anchovies') ?? 0) >= 25 && v.inv(cooked) === 0,
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
+        phase(
+            bank,
+            {
+                area: { x: 3092, z: 3243, radius: 3 },
+                depositAllExcept: ['Small fishing net'],
+                withdraw: [{ item: 'Small fishing net', count: 1 }],
+            },
+            { name: 'get-net', when: v => v.inv('Small fishing net') === 0 },
+        ),
         phase(
             bank,
             { area: { x: 3092, z: 3243, radius: 3 }, depositAllExcept: ['Small fishing net'] },
