@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { mergeConfigs, parseConfigs } from '../sources/configs';
+import { collectConfigs, parseConfigs } from '../sources/configs';
 import { parseDbrows } from '../sources/dbrows';
 import { parsePack } from '../sources/packs';
 
@@ -24,23 +24,36 @@ describe('parseConfigs', () => {
     });
 });
 
-describe('mergeConfigs', () => {
-    test('a hand-written key replaces the dump value; the dump keys it does not set are kept', () => {
-        const dump = parseConfigs('[guard]\nname=Guard\nop2=Attack\n');
-        const written = parseConfigs('[guard]\nname=Town guard\n[extra]\nname=Extra\n');
-        const merged = mergeConfigs([dump, written]);
-        expect(merged.get('guard')).toEqual({ name: ['Town guard'], op2: ['Attack'] });
-        expect(merged.get('extra')).toEqual({ name: ['Extra'] });
+describe('collectConfigs', () => {
+    test('gathers configs from all files', () => {
+        const c = collectConfigs([
+            ['a.npc', '[guard]\nname=Guard\n'],
+            ['b.npc', '[extra]\nname=Extra\n'],
+        ]);
+        expect([...c.keys()]).toEqual(['guard', 'extra']);
     });
 
-    test('params merge by param name', () => {
-        const dump = parseConfigs('[guard]\nparam=a,1\nparam=b,2\n');
-        const written = parseConfigs('[guard]\nparam=a,9\nparam=c,3\n');
-        expect(mergeConfigs([dump, written]).get('guard')).toEqual({ param: ['a,9', 'b,2', 'c,3'] });
+    test('throws on a duplicate name, naming both files', () => {
+        expect(() =>
+            collectConfigs([
+                ['a.npc', '[guard]\nname=Guard\n'],
+                ['b.npc', '[guard]\nname=Town guard\n'],
+            ]),
+        ).toThrow('Duplicate config found: guard in a.npc and b.npc');
     });
 });
 
 describe('parseDbrows', () => {
+    test('quoted values keep their commas and lose the quotes', () => {
+        const rows = parseDbrows(
+            '[r]\ntable=t\ndata=message,"Congratulations, you just advanced an attack level."\ndata=x,"a",b\n',
+        );
+        expect(rows[0]!.data).toEqual({
+            message: [['Congratulations, you just advanced an attack level.']],
+            x: [['a', 'b']],
+        });
+    });
+
     test('rows keep their table and each data line', () => {
         const rows = parseDbrows(
             '[yew_tree_table]\ntable=woodcutting_trees\ndata=tree,yewtree\ndata=levelrequired,60\ndata=successchance,bronze_axe,4,12\n',

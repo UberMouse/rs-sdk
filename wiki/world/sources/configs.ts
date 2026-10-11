@@ -25,46 +25,28 @@ export function parseConfigs(text: string): Map<string, Config> {
     return out;
 }
 
-const paramName = (value: string): string => value.split(',')[0]!;
-
 /**
- * Layers configs, later over earlier, the way wiki/generate-npcs.ts merges a hand-written npc config
- * over the `_unpack` dump: a key the later config sets replaces the earlier values, other keys are
- * kept, and `param=` merges by param name. The engine packer refuses a name defined twice
- * (`Duplicate config found`, server/engine/tools/pack/config/PackShared.ts readConfigs), so on real
- * content no name is in two layers and this only decides what a duplicate would mean.
+ * Reads every config of one kind into a single map and throws on a name defined twice, naming both
+ * files, as the engine packer does (`Duplicate config found`, server/engine/tools/pack/config/PackShared.ts
+ * readConfigs), so no precedence rule is needed.
  */
-export function mergeConfigs(layers: Map<string, Config>[]): Map<string, Config> {
+export function collectConfigs(files: [file: string, text: string][]): Map<string, Config> {
     const out = new Map<string, Config>();
-    for (const layer of layers) {
-        for (const [name, config] of layer) {
-            const base = out.get(name);
-            if (!base) {
-                out.set(name, { ...config });
-                continue;
-            }
-            for (const [key, values] of Object.entries(config)) {
-                if (key !== 'param') {
-                    base[key] = values;
-                    continue;
-                }
-                const params = new Map((base.param ?? []).map(v => [paramName(v), v]));
-                for (const v of values) params.set(paramName(v), v);
-                base.param = [...params.values()];
-            }
+    const origin = new Map<string, string>();
+    for (const [file, text] of files) {
+        for (const [name, config] of parseConfigs(text)) {
+            if (out.has(name)) throw new Error(`Duplicate config found: ${name} in ${origin.get(name)} and ${file}`);
+            out.set(name, config);
+            origin.set(name, file);
         }
     }
     return out;
 }
 
-/** Every config of a kind: the `_unpack` dumps, then the hand-written configs over them. */
+/** Every config of a kind: all `_unpack/<rev>` dumps and the hand-written configs, skipping `_test/`. */
 export function readConfigs(ext: 'loc' | 'npc' | 'obj'): Map<string, Config> {
-    const files = [...new Glob(`**/*.${ext}`).scanSync(SCRIPTS)].sort();
-    const read = (fs: string[]): Map<string, Config> =>
-        mergeConfigs(fs.map(f => parseConfigs(readFileSync(join(SCRIPTS, f), 'utf8'))));
-    const unpacked = files.filter(f => f.startsWith('_unpack/'));
-    const written = files.filter(f => !f.startsWith('_unpack/') && !f.startsWith('_test/'));
-    return mergeConfigs([read(unpacked), read(written)]);
+    const files = [...new Glob(`**/*.${ext}`).scanSync(SCRIPTS)].filter(f => !f.startsWith('_test/')).sort();
+    return collectConfigs(files.map((f): [string, string] => [f, readFileSync(join(SCRIPTS, f), 'utf8')]));
 }
 
 export const first = (c: Config | undefined, key: string): string | undefined => c?.[key]?.[0];

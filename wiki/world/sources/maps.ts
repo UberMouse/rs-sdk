@@ -2,6 +2,8 @@
 // (server/engine/src/engine/GameMap.ts:264): a loc on any level whose column has the LINK_BELOW flag (0x2)
 // on its level-1 tile sits one level lower, and is skipped if that is below level 0. GameMap.loadNpcs
 // takes no land data, so npc spawns keep the level they are filed on.
+// The engine also skips locs outside F2P zones on a non-members world (GameMap.ts:248-262); this parser
+// deliberately does not model that, the world index records every placement and flags F2P separately.
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { MAPS } from '../paths';
