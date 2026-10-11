@@ -328,6 +328,11 @@ describe('renderWorld', () => {
             'tree subtypes share the page wiki/resources/tree/rune-stones.md',
         );
     });
+
+    test('two pages at one path throw, naming it, rather than one overwriting the other', () => {
+        const twice = { ...world, areas: [...world.areas, { ...world.areas[1]!, name: 'Other town' }] };
+        expect(() => renderWorld(twice, data)).toThrow('two pages render to wiki/places/town.md');
+    });
 });
 
 // One site of each resource kind and of the kinds counted by in-game name, all in one town: two

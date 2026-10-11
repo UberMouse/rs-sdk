@@ -2,8 +2,12 @@
 // holds every level (0-3). Underground areas need nothing special: underground map squares sit at
 // z + 6400 in world coordinates, so they are ordinary rects there.
 import type { Area, Rect, Tile } from './types';
+import { cmp } from './util';
 
 const LEVELS = [0, 1, 2, 3];
+
+/** What an area id may hold, as it is a file name: no `/`, `.` or case to fold. */
+const AREA_ID = /^[a-z0-9_-]+$/;
 
 const holds = (r: Rect, t: Tile): boolean =>
     (r.level === undefined || r.level === t.level) && t.x >= r.x1 && t.x <= r.x2 && t.z >= r.z1 && t.z <= r.z2;
@@ -59,13 +63,15 @@ function pathsOf(byId: Map<string, Area>): Map<string, string[]> {
 /**
  * Validates `areas` and returns a function giving the path (root first) of the deepest area holding a
  * tile, or `[]`. Between areas of one depth the smaller (total rect size) wins, then the lower id, so
- * a small place drawn over its sibling town resolves to the place. Throws on a duplicate id, a missing
- * parent, a parent cycle, an inverted rect, or a child rect not inside the union of its parent's rects,
- * which keeps every ancestor on the path holding the tile too.
+ * a small place drawn over its sibling town resolves to the place. Throws on an id that does not
+ * match AREA_ID (it names the area's page, wiki/places/<id>.md), a duplicate id, a missing parent, a
+ * parent cycle, an inverted rect, or a child rect not inside the union of its parent's rects, which
+ * keeps every ancestor on the path holding the tile too.
  */
 export function areaResolver(areas: readonly Area[]): (t: Tile) => string[] {
     const byId = new Map<string, Area>();
     for (const a of areas) {
+        if (!AREA_ID.test(a.id)) throw new Error(`area id '${a.id}' is not lowercase letters, digits, '-' and '_'`);
         if (byId.has(a.id)) throw new Error(`duplicate area id '${a.id}'`);
         byId.set(a.id, a);
         for (const r of a.rects)
@@ -80,10 +86,7 @@ export function areaResolver(areas: readonly Area[]): (t: Tile) => string[] {
             throw new Error(`area '${a.id}' rect ${JSON.stringify(outside)} is outside its parent '${a.parent}'`);
     }
     const order = [...areas].sort(
-        (a, b) =>
-            paths.get(b.id)!.length - paths.get(a.id)!.length ||
-            total(a) - total(b) ||
-            (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+        (a, b) => paths.get(b.id)!.length - paths.get(a.id)!.length || total(a) - total(b) || cmp(a.id, b.id),
     );
     return t => {
         const hit = order.find(a => a.rects.some(r => holds(r, t)));

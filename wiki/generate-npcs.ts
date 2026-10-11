@@ -7,11 +7,13 @@
 
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join, relative } from 'path';
+import { hasCombatParams } from './world/classify';
 import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
-import { removeStalePages } from './world/render';
-import { areaCell, areasOf, cmp, coord, KINDS, type Areas } from './world/render/common';
+import { removeStalePages } from './world/stale';
+import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
 import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
+import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
 const WIKI_DIR = join(import.meta.dir);
@@ -629,10 +631,7 @@ function isCombatNpc(config: NpcConfig): boolean {
 // ─── Check if NPC has Combat Stats ───────────────────────────────────────────
 
 function hasCombatStats(config: NpcConfig): boolean {
-    return config.params.has('attackbonus') || config.params.has('strengthbonus') ||
-        config.params.has('stabdefence') || config.params.has('slashdefence') ||
-        config.params.has('crushdefence') || config.params.has('magicdefence') ||
-        config.params.has('rangedefence');
+    return hasCombatParams(config.params.keys());
 }
 
 // ─── Main Pipeline ───────────────────────────────────────────────────────────

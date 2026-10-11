@@ -9,10 +9,11 @@ import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 
 import { basename, join, relative } from 'path';
 import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
-import { removeStalePages } from './world/render';
-import { areaCell, areasOf, cmp, coord } from './world/render/common';
+import { removeStalePages } from './world/stale';
+import { areaCell, areasOf, coord } from './world/render/common';
 import { readCallables, readTriggers } from './world/sources/triggers';
 import type { Site, Tile, World } from './world/types';
+import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
 const WIKI_DIR = join(import.meta.dir);

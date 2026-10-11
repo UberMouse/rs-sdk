@@ -1,18 +1,16 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
 // sites named by the curated areas, and every npc spawn clustered per config (npcSpawns, which the npc
-// pages read), then a report, and renders the pages (render.ts). `bun run world`
-// writes them and exits 1 when a site that agents choose from (COVERED) lies outside every area, so a
-// new bank or mine can't go unnamed. `--check` writes nothing: it exits 1 when world.json or a page
-// differs from what the game data and this code generate now, so a hand edit or a stale page fails
-// verify:conductor.
-import { lstatSync, readFileSync } from 'fs';
-import { relative, resolve as resolvePath } from 'path';
+// pages read); then prints a report and renders the pages (render.ts). `bun run world` writes them and
+// exits 1 on a site that breaks the COVERED rule. `--check` writes nothing: it exits 1 when world.json
+// or a page differs from what the game data and this code generate now, so a hand edit or a stale page
+// fails verify:conductor, and on the COVERED rule as the build does.
+import { relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
 import { classifier } from './classify';
+import { contentHash } from './content-hash';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
-import { cmp } from './render/common';
 import { buildSites, locSizes, spawnClusters, type SiteCollision } from './place';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
@@ -21,11 +19,13 @@ import { readPack } from './sources/packs';
 import { readCallables, readTriggers } from './sources/triggers';
 import { readZones } from './sources/zones';
 import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
+import { cmp } from './util';
 
 /**
  * The kinds whose every site must lie in an area: what an agent picks a place by (banks, shops,
- * resources, services, thieving). `npc` and `connector` sites may be anywhere; `npc` ones outside
- * every area are only warned about.
+ * resources, services, thieving). `bun run world` and `--check` exit 1 on a site of these kinds
+ * outside every area, so a new bank or mine can't go unnamed. `npc` and `connector` sites may be
+ * anywhere; `npc` ones outside every area are only warned about.
  */
 export const COVERED: ReadonlySet<FeatureKind> = new Set<FeatureKind>([
     'bank',
@@ -174,44 +174,6 @@ export function serializeWorld(world: World): string {
         '}',
         '',
     ].join('\n');
-}
-
-const git = (args: string[]): string => {
-    const run = Bun.spawnSync(['git', ...args], { cwd: ROOT, stderr: 'pipe' });
-    if (run.exitCode !== 0) throw new Error(`git ${args.join(' ')} failed: ${run.stderr.toString().trim()}`);
-    return run.stdout.toString().trim();
-};
-
-/** Runs git in the repo and returns its trimmed stdout; contentHash takes one so a test can stub it. */
-export type GitRun = (args: string[]) => string;
-
-/**
- * The last commit that touched server/content, so the hash moves only when server/content does.
- * When server/content has uncommitted changes it is `<sha>-dirty-<digest>`: the digest is the first
- * 12 hex of the sha1 over `git diff HEAD --binary -- server/content` and each untracked file there
- * (its path and, for a regular file, bytes), so a further uncommitted edit moves the hash again and
- * a stale world.json is not mistaken for a fresh one. It names the content and nothing more: it
- * misses an edit to this builder or to areas.ts, so whether world.json is fresh is answered by
- * rebuilding and comparing the bytes, not by this hash.
- */
-export function contentHash(run: GitRun = git): string {
-    const hash = run(['log', '-1', '--format=%H', '--', 'server/content']);
-    if (!/^[0-9a-f]{40}$/.test(hash)) throw new Error(`git log on server/content gave no commit: ${hash}`);
-    if (!run(['status', '--porcelain', '--', 'server/content'])) return hash;
-    const digest = new Bun.CryptoHasher('sha1');
-    digest.update(run(['diff', 'HEAD', '--binary', '--', 'server/content']));
-    const untracked = run(['ls-files', '-z', '--others', '--exclude-standard', '--', 'server/content'])
-        .split('\0')
-        .filter(Boolean)
-        .sort(cmp);
-    for (const file of untracked) {
-        // git prints paths relative to the repo; a test's stub may give absolute ones.
-        const path = resolvePath(ROOT, file);
-        digest.update(`\0${file}\0`);
-        // Only regular files have bytes to digest: a symlink or folder is named, not read.
-        if (lstatSync(path).isFile()) digest.update(readFileSync(path));
-    }
-    return `${hash}-dirty-${digest.digest('hex').slice(0, 12)}`;
 }
 
 const counts = (r: Partial<Record<string, number>>): string =>

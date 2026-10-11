@@ -2,9 +2,10 @@ import { afterAll, describe, expect, test } from 'bun:test';
 import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { contentHash, serializeWorld, type GitRun } from '../build';
+import { serializeWorld } from '../build';
+import { contentHash, type GitRun } from '../content-hash';
 import { loadFreshWorld } from '../load';
-import { removeStalePages } from '../render';
+import { removeStalePages } from '../stale';
 import { WORLD_FORMAT, type World } from '../types';
 
 const tmp = mkdtempSync(join(tmpdir(), 'fresh-test-'));
@@ -104,6 +105,14 @@ describe('removeStalePages', () => {
         expect(existsSync(join(dir, 'keep.md'))).toBe(true);
         expect(existsSync(join(dir, 'notes.txt'))).toBe(true);
         expect(existsSync(join(dir, 'a.md'))).toBe(false);
+    });
+
+    test('never removes a README.md placed in the folder by hand', () => {
+        const dir = join(tmp, 'with-readme');
+        mkdirSync(dir);
+        for (const f of ['README.md', 'old.md']) writeFileSync(join(dir, f), 'x');
+        expect(removeStalePages(dir, new Set())).toEqual(['old.md']);
+        expect(existsSync(join(dir, 'README.md'))).toBe(true);
     });
 
     test('refuses a symlinked folder, removing nothing through it', () => {

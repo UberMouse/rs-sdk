@@ -1,17 +1,19 @@
 // Renders the world as the markdown agents read: wiki/places, wiki/resources and wiki/services, which are
 // wholly generated, and the generated head of wiki/world/README.md. renderWorld is pure; the rest reads
 // the game data it needs, writes the pages and removes stale ones, or lists what differs (--check).
-import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
 import { ROOT, WORLD_JSON } from './paths';
-import { cmp, link, type PageData } from './render/common';
+import { link, type PageData } from './render/common';
 import { renderPlaces } from './render/places';
 import { renderResources } from './render/resources';
 import { renderServices } from './render/services';
 import { readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
 import { readCallables, readTriggers } from './sources/triggers';
+import { refuseSymlink } from './stale';
 import type { World } from './types';
+import { cmp } from './util';
 
 /** The folders renderWorld owns outright: a file in them that it did not render is stale. */
 export const GENERATED_DIRS: readonly string[] = ['wiki/places', 'wiki/resources', 'wiki/services'];
@@ -54,13 +56,20 @@ function readme(world: World, pages: ReadonlyMap<string, string>, body: string):
     ].join('\n');
 }
 
-/** Every generated page and the README, keyed by repo-relative path, in path order. */
+/**
+ * Every generated page and the README, keyed by repo-relative path, in path order. Throws when two
+ * pages share a path (two areas of one id, say), as one would overwrite the other.
+ */
 export function renderWorld(world: World, data: RenderData): Map<string, string> {
-    const pages = new Map([
+    const pages = new Map<string, string>();
+    for (const [path, text] of [
         ...renderPlaces(world, data),
         ...renderResources(world, data),
         ...renderServices(world, data),
-    ]);
+    ]) {
+        if (pages.has(path) || path === README) throw new Error(`two pages render to ${path}`);
+        pages.set(path, text);
+    }
     pages.set(README, readme(world, pages, data.readmeBody));
     return new Map([...pages].sort(([a], [b]) => cmp(a, b)));
 }
@@ -149,12 +158,7 @@ function writable(p: string, root: string): boolean {
 export function writeFiles(files: ReadonlyMap<string, string>, root: string = ROOT): string[] {
     const foreign = [...files.keys()].filter(p => !writable(p, root));
     if (foreign.length) throw new Error(`writeFiles writes only generated files, not ${foreign.join(', ')}`);
-    for (const d of GENERATED_DIRS) {
-        const dir = join(root, d);
-        // lstat, not exists: a dangling link is still a link.
-        if (lstatSync(dir, { throwIfNoEntry: false })?.isSymbolicLink())
-            throw new Error(`${d} is a symlink; writeFiles removes stale files only from a real folder`);
-    }
+    for (const d of GENERATED_DIRS) refuseSymlink(join(root, d));
     for (const [p, text] of files) {
         const file = join(root, p);
         if (holds(file, text)) continue;
@@ -168,26 +172,5 @@ export function writeFiles(files: ReadonlyMap<string, string>, root: string = RO
         const dir = dirname(join(root, p));
         if (!GENERATED_DIRS.some(d => join(root, d) === dir) && readdirSync(dir).length === 0) rmdirSync(dir);
     }
-    return stale;
-}
-
-/** Throws when `dir` is a symlink (a dangling one too), since deleting through it would delete wherever it points. */
-export function refuseSymlink(dir: string): void {
-    if (lstatSync(dir, { throwIfNoEntry: false })?.isSymbolicLink())
-        throw new Error(`${dir} is a symlink; stale pages are removed only from a real folder`);
-}
-
-/**
- * Removes the `.md` files in `dir` not among `written`, and returns their names, sorted. For the
- * generators of wiki/npcs and wiki/shops, whose pages are all generated. It throws, before removing
- * anything, when `dir` is a symlink or `written` holds an empty slug (`.md`), which names no page.
- */
-export function removeStalePages(dir: string, written: ReadonlySet<string>): string[] {
-    refuseSymlink(dir);
-    if (written.has('.md')) throw new Error(`a page with an empty slug (.md) was generated in ${dir}`);
-    const stale = readdirSync(dir)
-        .filter(f => f.endsWith('.md') && !written.has(f))
-        .sort(cmp);
-    for (const f of stale) unlinkSync(join(dir, f));
     return stale;
 }

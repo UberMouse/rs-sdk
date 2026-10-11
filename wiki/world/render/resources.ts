@@ -4,11 +4,11 @@ import { rockSubtype, treeSubtype } from '../classify';
 import { first } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
 import type { Feature, Site, World } from '../types';
+import { cmp } from '../util';
 import {
     areaCell,
     areasOf,
     byAreaThenId,
-    cmp,
     coord,
     count,
     GENERATED,
@@ -17,6 +17,7 @@ import {
     table,
     wilderness,
     yesNo,
+    type Page,
     type PageData,
     type ResourceKind,
 } from './common';
@@ -225,8 +226,8 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
 // beside it only where another subtype of the kind shares the name (man, man2 and man3 are all Man).
 const TITLED_BY_NAME: ReadonlySet<ResourceKind> = new Set<ResourceKind>(['pickpocket', 'stall']);
 
-/** One page per subtype of each resource kind, keyed by repo-relative path. */
-export function renderResources(world: World, data: PageData): Map<string, string> {
+/** One page per subtype of each resource kind, as its repo-relative path and text. */
+export function renderResources(world: World, data: PageData): Page[] {
     const areas = areasOf(world);
     const out = new Map<string, string>();
     for (const kind of RESOURCE_KINDS) {
@@ -279,5 +280,5 @@ export function renderResources(world: World, data: PageData): Map<string, strin
             );
         }
     }
-    return out;
+    return [...out];
 }

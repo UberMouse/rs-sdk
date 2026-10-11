@@ -2,10 +2,10 @@
 // this one, a table per kind; the sites of its child areas are summed per kind beside a link to each
 // child, so a region's page stays a map of its towns rather than every tree in it.
 import type { Area, FeatureKind, Site, World } from '../types';
+import { cmp, push } from '../util';
 import {
     byKind,
     bySiteId,
-    cmp,
     coord,
     GENERATED,
     isResourceKind,
@@ -20,6 +20,7 @@ import {
     table,
     wilderness,
     yesNo,
+    type Page,
     type PageData,
     type Part,
 } from './common';
@@ -33,15 +34,8 @@ const summary = (perKind: ReadonlyMap<FeatureKind, number> | undefined): string 
               .join(', ')
         : '-';
 
-/** Appends `x` to the list at `key`, making the list when it is the first. */
-function push<K, V>(lists: Map<K, V[]>, key: K, x: V): void {
-    const list = lists.get(key);
-    if (list) list.push(x);
-    else lists.set(key, [x]);
-}
-
-/** One page per area, keyed by repo-relative path. */
-export function renderPlaces(world: World, data: PageData): Map<string, string> {
+/** One page per area, as its repo-relative path and text. */
+export function renderPlaces(world: World, data: PageData): Page[] {
     const byId = new Map(world.areas.map(a => [a.id, a]));
     const leafSites = new Map<string, Site[]>();
     const under = new Map<string, Map<FeatureKind, number>>();
@@ -62,7 +56,7 @@ export function renderPlaces(world: World, data: PageData): Map<string, string> 
         return parent ? [...ancestors(parent), parent] : [];
     };
 
-    const out = new Map<string, string>();
+    const out: Page[] = [];
     for (const area of world.areas) {
         const path = placePath(area.id);
         const to = (id: string): string => link(path, placePath(id));
@@ -123,7 +117,7 @@ export function renderPlaces(world: World, data: PageData): Map<string, string> 
                 ),
                 '',
             );
-        out.set(path, lines.join('\n'));
+        out.push([path, lines.join('\n')]);
     }
     return out;
 }

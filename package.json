@@ -14,7 +14,7 @@
     "lint": "oxlint --deny-warnings conductor wiki/world",
     "fmt": "oxfmt '{conductor,wiki/world}/**/*.ts'",
     "fmt:check": "oxfmt --check '{conductor,wiki/world}/**/*.ts'",
-    "verify:conductor": "bun run fmt:check && bun run lint && tsc --noEmit -p conductor && tsc --noEmit -p wiki/world && bun wiki/world/build.ts --check",
+    "verify:conductor": "bun run fmt:check && bun run lint && tsc --noEmit -p conductor && tsc --noEmit -p wiki/world && tsc --noEmit -p wiki/tsconfig.generators.json && bun wiki/world/build.ts --check",
     "world": "bun wiki/world/build.ts",
     "prepare": "git config core.hooksPath .githooks"
   },

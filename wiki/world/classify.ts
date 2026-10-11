@@ -6,6 +6,7 @@ import { first } from './sources/configs';
 import type { DbRow } from './sources/dbrows';
 import type { Callable, Trigger } from './sources/triggers';
 import type { FeatureKind } from './types';
+import { cmp, push } from './util';
 
 export interface ClassifyInput {
     locConfigs: Map<string, Config>;
@@ -71,8 +72,10 @@ export const params = (cfg: Config): Map<string, string> =>
         }),
     );
 
-// The same predicate as hasCombatStats in wiki/generate-npcs.ts, which can't be imported (it runs main).
-const hasCombatStats = (cfg: Config): boolean => [...params(cfg).keys()].some(k => COMBAT_PARAMS.has(k));
+/** Whether param keys include a combat stat; wiki/generate-npcs.ts asks it of an npc config too. */
+export const hasCombatParams = (keys: Iterable<string>): boolean => [...keys].some(k => COMBAT_PARAMS.has(k));
+
+const hasCombatStats = (cfg: Config): boolean => hasCombatParams(params(cfg).keys());
 
 // What follows a `<` that opens an interpolation in the scripts: a proc call (`<~name(...)>`), a local
 // (`<$name>`), a varp (`<%name>`), a dot command (`<.displayname>`) or a command (`<tostring(...)>`).
@@ -216,12 +219,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const runes = dbrowIndex('runecraft_table', 'type');
 
     const byTarget = new Map<string, Trigger[]>();
-    for (const t of input.triggers) {
-        const key = `${t.on}:${t.category ? '_' : ''}${t.target}`;
-        const list = byTarget.get(key);
-        if (list) list.push(t);
-        else byTarget.set(key, [t]);
-    }
+    for (const t of input.triggers) push(byTarget, `${t.on}:${t.category ? '_' : ''}${t.target}`, t);
     const callables = new Map(
         (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: codeOf(c.body) }]),
     );
@@ -396,7 +394,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
                 for (const [, into] of body.matchAll(CHANGE[on]))
                     if (into !== config && configsOf(on).has(into!))
                         out.set(into!, (out.get(into!) ?? new Set()).add(t.op));
-        return new Map([...out].sort(([a], [b]) => (a < b ? -1 : 1)).map(([into, ops]) => [into, [...ops].sort()]));
+        return new Map([...out].sort(([a], [b]) => cmp(a, b)).map(([into, ops]) => [into, [...ops].sort()]));
     };
 
     /**

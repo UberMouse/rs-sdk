@@ -8,6 +8,7 @@ import { join } from 'path';
 import { MAPS } from '../paths';
 import { wildernessLevel } from '../sources/zones';
 import type { Area, Rect } from '../types';
+import { cmp } from '../util';
 
 export interface Label {
     name: string;
@@ -51,7 +52,7 @@ const around = (l: Label, half: number): Rect => ({
     z2: l.z + half - 1,
 });
 
-const byId = (a: { id: string }, b: { id: string }): number => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+const byId = (a: { id: string }, b: { id: string }): number => cmp(a.id, b.id);
 
 const inWilderness = (l: Label): boolean => wildernessLevel({ level: 0, x: l.x, z: l.z }) > 0;
 

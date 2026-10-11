@@ -91,4 +91,11 @@ describe('areaResolver', () => {
         ).toThrow(/cycle/);
         expect(() => areaResolver([{ ...p, rects: [{ x1: 9, z1: 0, x2: 0, z2: 9 }] }])).toThrow(/'p'/);
     });
+
+    test('an id that is not a plain file name is a build error, as it names the area page', () => {
+        const p: Area = { id: 'p', name: 'P', rects: [{ x1: 0, z1: 0, x2: 9, z2: 9 }] };
+        for (const id of ['a/b', '..', 'Town', 'a b', 'a.b', ''])
+            expect(() => areaResolver([{ ...p, id }])).toThrow(`area id '${id}' is not`);
+        expect(() => areaResolver([{ ...p, id: 'al-kharid_2' }])).not.toThrow();
+    });
 });

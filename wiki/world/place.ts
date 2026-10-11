@@ -7,11 +7,12 @@ import type { Config } from './sources/configs';
 import { first } from './sources/configs';
 import { isF2p, isMultiway, wildernessLevel, type Zones } from './sources/zones';
 import type { Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
+import { cmp, push } from './util';
 
 /**
  * How far apart (in tiles, Chebyshev as the engine's CoordGrid.distanceTo, CoordGrid.ts:60) two
  * features of a kind may be and still link into one site. A connector is always its own site.
- * `thieving-chest` has no radius in the spec; it takes the stall's, its thieving sibling.
+ * `thieving-chest` uses the stall radius: both are thieving targets agents treat as one place.
  */
 export const SITE_RADIUS: Record<FeatureKind, number> = {
     bank: 10,
@@ -93,7 +94,6 @@ export function locSizes(configs: Map<string, Config>): (f: Feature) => LocSize 
 
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 const dist2 = (a: Tile, b: Tile): number => (a.x - b.x) ** 2 + (a.z - b.z) ** 2;
-const cmp = (a: number | string, b: number | string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 /** Features in a stable order that does not depend on their index: tile, then identity. */
 const byFeature = (a: Feature, b: Feature): number =>
@@ -134,12 +134,7 @@ function cluster(features: readonly { tile: Tile }[], members: number[], radius:
         else cells.set(key, [k]);
     });
     const groups = new Map<number, number[]>();
-    members.forEach((i, k) => {
-        const r = root(k);
-        const g = groups.get(r);
-        if (g) g.push(i);
-        else groups.set(r, [i]);
-    });
+    members.forEach((i, k) => push(groups, root(k), i));
     return [...groups.values()];
 }
 
@@ -275,12 +270,7 @@ export function buildSites(
 ): Site[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
-    features.forEach((f, i) => {
-        const key = `${f.kind}\0${paths[i]!.at(-1) ?? ''}\0${f.tile.level}`;
-        const g = groups.get(key);
-        if (g) g.push(i);
-        else groups.set(key, [i]);
-    });
+    features.forEach((f, i) => push(groups, `${f.kind}\0${paths[i]!.at(-1) ?? ''}\0${f.tile.level}`, i));
 
     // Clusters per kind and area, across levels, since `n` counts within the area.
     const byArea = new Map<string, number[][]>();
@@ -343,12 +333,7 @@ export function spawnClusters(
 ): NpcSpawn[] {
     const paths = spawns.map(s => resolve(s.tile));
     const groups = new Map<string, number[]>();
-    spawns.forEach((s, i) => {
-        const key = `${s.config}\0${paths[i]!.at(-1) ?? ''}\0${s.tile.level}`;
-        const g = groups.get(key);
-        if (g) g.push(i);
-        else groups.set(key, [i]);
-    });
+    spawns.forEach((s, i) => push(groups, `${s.config}\0${paths[i]!.at(-1) ?? ''}\0${s.tile.level}`, i));
     const out: { first: Tile; spawn: NpcSpawn }[] = [];
     for (const members of groups.values())
         for (const c of cluster(spawns, members, SITE_RADIUS.npc)) {

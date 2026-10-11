@@ -14,20 +14,21 @@ import {
     servicePath,
     table,
     yesNo,
+    type Page,
     type PageData,
 } from './common';
 
-/** One page per service kind, keyed by repo-relative path. */
-export function renderServices(world: World, data: PageData): Map<string, string> {
+/** One page per service kind, as its repo-relative path and text. */
+export function renderServices(world: World, data: PageData): Page[] {
     const areas = areasOf(world);
-    const out = new Map<string, string>();
+    const out: Page[] = [];
     for (const kind of SERVICE_KINDS) {
         const path = servicePath(kind);
         const sites = world.sites.filter(s => s.kind === kind).sort(byAreaThenId);
         const held = sites.map(s => parts(s, world, data));
         const label = labeller(held.flat().map(p => [kind, p] as const));
         const f2p = sites.filter(s => s.f2p).length;
-        out.set(
+        out.push([
             path,
             [
                 GENERATED,
@@ -48,7 +49,7 @@ export function renderServices(world: World, data: PageData): Map<string, string
                 ),
                 '',
             ].join('\n'),
-        );
+        ]);
     }
     return out;
 }
