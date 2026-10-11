@@ -36,7 +36,7 @@ Ranged XP is gained by dealing damage with ranged weapons. Requires line of sigh
 
 ## Ranging Guild
 
-- **Location:** next to Hemenster (door at (2658, 3438)), not in Seers' Village; see [wiki/places/ranging-guild.md](../places/ranging-guild.md) [map data wiki/world/areas.ts 2026-10-11]
+- **Location:** next to Hemenster; see [wiki/places/ranging-guild.md](../places/ranging-guild.md) [map data 2026-10-11]
 - **Requirement:** 40 Ranged
 - **Features:** Target practice, weapon shop
 

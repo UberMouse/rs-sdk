@@ -154,8 +154,9 @@ Rules for every agent working in this repo:
   survive compaction and resumes.
 - **`conductor/` and `wiki/world/` code is formatted and linted**: oxfmt (`.oxfmtrc.json`) and oxlint
   (`.oxlintrc.json`, warnings denied). Finish code edits with `bun run verify:conductor` and
-  `bun test conductor` (`bun run fmt` formats in place). A Claude Code hook formats and lints each edited file, and the
-  git pre-commit hook (`.githooks/`, enabled by `bun install`) refuses staged files that fail.
+  `bun test conductor` (`bun run fmt` formats in place). A Claude Code hook formats and lints each
+  edited file there, and the git pre-commit hook (`.githooks/`, enabled by `bun install`) refuses
+  staged files that fail.
 
 ## Session Workflow
 
@@ -241,8 +242,9 @@ targets) and `wiki/places/` (one page per area); `wiki/world/README.md` explains
 These folders are the knowledge base, and agents keep it current. `wiki/items/`, `wiki/npcs/`,
 `wiki/shops/`, `wiki/places/`, `wiki/resources/`, `wiki/services/` and `wiki/world.json` are
 generated (`wiki/generate-*.ts`, `bun run world`): never edit them. Fix a wrong world page in its
-source (`wiki/world/areas.ts`, the rule table in `wiki/world/classify.ts`; see
-`wiki/world/README.md`) and rebuild; put any other correction in `learnings/` naming the page. When you add or correct facts in `learnings/`, `wiki/skills/` or
+source (the curated inputs in the "Where corrections go" table of `wiki/world/README.md`, e.g.
+`wiki/world/areas.ts`) and rebuild; put any other correction in `learnings/` naming the page.
+When you add or correct facts in `learnings/`, `wiki/skills/` or
 `wiki/quests/`, follow the `knowledge` skill (`.claude/skills/knowledge/SKILL.md`): provenance
 tags, fix wrong facts in place, one fact in one place.
 

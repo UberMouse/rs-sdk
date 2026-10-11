@@ -4,7 +4,7 @@ Successful patterns for bank interactions.
 
 ## Where the banks are
 
-Every bank, with its exact tile and a tile to stand on, is in [wiki/services/bank.md](../wiki/services/bank.md) (generated from the game data, so it includes the banks that are not booths: the Shantay Pass and Duel Arena chests, the Castle Wars chest, Gundai in the Mage Arena chamber and the Zanaris fairies). This page keeps only what runs verified.
+Every bank, with its exact tile, is in [wiki/services/bank.md](../wiki/services/bank.md); this page keeps what runs verified.
 
 ## Opening the Bank
 
@@ -95,7 +95,7 @@ await new Promise(r => setTimeout(r, 500));
 
 Checked against the map data: `server/content/maps/m50_50.jm2` (Lumbridge, castle included) has no `bankbooth` (2213), `bankboothclosed` or `banker1/2` on any level, so the top-floor castle bank (added to the real game in 2007) does not exist here. [map data 2026-10-11]
 
-Coordinates for each bank: [wiki/services/bank.md](../wiki/services/bank.md). Verified in game:
+Verified in game:
 
 | Bank | Notes |
 |------|-------|
