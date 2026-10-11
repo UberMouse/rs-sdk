@@ -429,18 +429,28 @@ const pick = (
     bad: string[] = [],
     blocked: (x: number, z: number) => boolean = () => false,
     area = AREA,
+    cutEdge: (x: number, z: number, dx: number, dz: number) => boolean = () => false,
 ) => {
     const ctx: Pick<PickCtx, 'state' | 'params' | 'memory' | 'pathfinder'> = {
         state: () => w.build(),
         params: { logs: 'Logs', area },
         memory: { line: null, bad: new Set(bad), lit: 0 },
-        pathfinder: fakePaths(() => ({ success: false, waypoints: [] }), [], blocked),
+        pathfinder: fakePaths(() => ({ success: false, waypoints: [] }), [], blocked, cutEdge),
     };
     return pickLine(ctx as unknown as PickCtx, logs);
 };
 
 /** Only z 3240, x 3228..3232 is clear: five tiles. */
 const onlyRow = (x: number, z: number) => z !== 3240 || x < 3228 || x > 3232;
+
+/** A wall on the edge west of x 3230. */
+const wall = (x: number, _z: number, dx: number) => dx === -1 && x === 3230;
+/** Only z 3240, x 3231..3232 is clear. */
+const row = (x: number, z: number) => z !== 3240 || x < 3231 || x > 3232;
+/** A fence on the edge west of x 3232. */
+const fence = (x: number, _z: number, dx: number) => dx === -1 && x === 3232;
+/** Every edge cut except the westward ones. */
+const notWest = (_x: number, _z: number, dx: number, dz: number) => dz !== 0 || dx === 1;
 
 describe('firemaking: pickLine', () => {
     test('prefers the longest run, capped at the logs held', () => {
@@ -462,6 +472,22 @@ describe('firemaking: pickLine', () => {
         const wide = { ...AREA, radius: 20 };
         const line = pick(east, 40, [], (_x, z) => z !== 3240, wide);
         expect(line).toEqual({ z: 3240, x: 3250, endX: 3222 });
+    });
+
+    test('a wall on the edge between two tiles cuts the line there', () => {
+        // The wall sits between x 3230 and 3229 on z 3240: only 3230..3232 stay joined (2 lights from 3232).
+        expect(pick(kit, 10, [], onlyRow, AREA, wall)).toEqual({ z: 3240, x: 3232, endX: 3231 });
+        // One log: the tile at the wall (3230) can't start a line, the first equally near start is 3231.
+        expect(pick(kit, 1, [], onlyRow, AREA, wall)).toEqual({ z: 3240, x: 3231, endX: 3231 });
+    });
+
+    test('a fence between the start and the rest leaves no line from a lone tile', () => {
+        // Row z 3240 is x 3231..3232 clear; the fence between them leaves two single tiles: no line at all.
+        expect(pick(kit, 5, [], row, AREA, fence)).toBeNull();
+    });
+
+    test('a wall on a diagonal or vertical edge does not cut a westward line', () => {
+        expect(pick(kit, 10, [], onlyRow, AREA, notWest)).toEqual({ z: 3240, x: 3232, endX: 3229 });
     });
 
     test('skips bad tiles and returns null with none left', () => {

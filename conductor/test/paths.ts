@@ -28,6 +28,8 @@ export function fakePaths(
     router: Router,
     doors: DoorInfo[] = [],
     blocked: (x: number, z: number) => boolean = () => false,
+    /** True when a one-tile step from (x, z) by (dx, dz) is cut by a wall on the edge. */
+    cutEdge: (x: number, z: number, dx: number, dz: number) => boolean = () => false,
 ): FakePaths {
     const queries: FakePaths['queries'] = [];
     const at = (level: number, x: number, z: number) => doors.find(d => d.level === level && d.x === x && d.z === z);
@@ -54,6 +56,7 @@ export function fakePaths(
         },
         doorAt: at,
         walkable: (_level, x, z) => !blocked(x, z),
+        canStep: (_level, x, z, dx, dz) => !blocked(x + dx, z + dz) && !cutEdge(x, z, dx, dz),
     };
 }
 

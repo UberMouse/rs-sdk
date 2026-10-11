@@ -92,14 +92,17 @@ function tileClear(ctx: Ctx, s: BotWorldState, x: number, tileZ: number): boolea
 
 /**
  * The best line in the area for `logs` logs: as many lights as the logs (or the longest there is), nearest the
- * bot among equals. A line of n clear tiles in a row, east to west, gives n - 1 lights. Only tiles within
- * SCAN_RADIUS of the bot count: beyond it the state cannot show a fire.
+ * bot among equals. A line of n clear tiles in a row, east to west, gives n - 1 lights; each step west must be open
+ * (`canStep`), since the game moves the bot west after a light. Only tiles within SCAN_RADIUS of the bot count:
+ * beyond it the state cannot show a fire.
  */
 export function pickLine(ctx: Ctx, logs: number): Line | null {
     const s = ctx.state();
     const p = s.player;
     const a = ctx.params.area;
     if (!p) return null;
+    const paths = ctx.pathfinder ?? collisionPaths;
+    const level = p.level;
     let best: { line: Line; lights: number; dist: number } | null = null;
     const west = a.x - a.radius;
     const seen = (x: number, tileZ: number) =>
@@ -109,7 +112,10 @@ export function pickLine(ctx: Ctx, logs: number): Line | null {
         const run: number[] = [];
         for (let x = west; x <= a.x + a.radius; x++) {
             const ok = inArea(a, { x, z: tz }) && seen(x, tz) && tileClear(ctx, s, x, tz);
-            run.push(ok ? (run[x - west - 1] ?? 0) + 1 : 0);
+            // The run carries on west only if the step onto the next tile is open: a wall or fence on the edge
+            // between them would stop the bot's step off the fire and the game would move it some other way.
+            const joined = x > west && paths.canStep(level, x, tz, -1, 0) ? (run[x - west - 1] ?? 0) : 0;
+            run.push(ok ? joined + 1 : 0);
         }
         for (let x = a.x + a.radius; x >= west; x--) {
             const lights = Math.min((run[x - west] ?? 0) - 1, logs);
@@ -128,7 +134,7 @@ export default defineTask({
         'Light logs from the inventory with a tinderbox until none of the given log type are left. ' +
         'Needs a tinderbox, the logs (exact item name, default "Logs") and the Firemaking level for them. ' +
         'Each light moves the bot one tile west, so it first picks a line inside `area` of clear tiles running east to west ' +
-        '(walkable per the collision data, no fire or other loc, no ground item; walls or fences between two tiles are not checked), long enough for the logs held, and burns along it; ' +
+        '(walkable per the collision data, no fire or other loc, no ground item, and the step west between each two tiles open: no wall or fence on the edge), long enough for the logs held, and burns along it; ' +
         'when the line is used up, or a tile refuses a fire, it picks a fresh line, and fails when no line is left in the area, when line starts are unreachable, or when lights keep failing. ' +
         'Requires `area`: it stays within `radius` of that centre (lines are picked only on tiles within 15 of the bot, as far as the client reports fires), so pick open ground; narrow paths between walls fit only a few fires. ' +
         'Verified spot: area {x:3230,z:3240,radius:6} (field east of the Lumbridge General Store).',

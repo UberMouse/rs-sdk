@@ -6,6 +6,7 @@
 // first imported; the collision index and door index build on the first query (about half a second).
 // The import stays static: the Pathfinder is synchronous, and every live run imports pathfinding.ts
 // through the BotSDK (sdk/index.ts) anyway.
+import * as rsmod from '../../server/vendor/rsmod-pathfinder';
 import {
     type DoorInfo,
     findDoorsAlongPath,
@@ -36,6 +37,12 @@ export interface Pathfinder {
     doorAt(level: number, x: number, z: number): DoorInfo | undefined;
     /** No wall or loc blocks the tile. */
     walkable(level: number, x: number, z: number): boolean;
+    /**
+     * A single step of one tile from (x, z) by (dx, dz) is open: the engine's line-of-walk test between the
+     * two tiles, so a wall or fence on their shared edge, a corner wall on a diagonal step, or a blocked
+     * destination refuses it. `walkable` alone says nothing about the edge between two tiles.
+     */
+    canStep(level: number, x: number, z: number, dx: number, dz: number): boolean;
 }
 
 /** sdk.findPath's default waypoint cap. */
@@ -84,4 +91,9 @@ export const collisionPaths: Pathfinder = {
     },
     doorAt: getDoorAt,
     walkable: isTileWalkable,
+    // The server's `lineofwalk` between the two tiles (hasLineOfWalk, as skill_firemaking's push_player uses it).
+    canStep(level, x, z, dx, dz) {
+        initPathfinding();
+        return rsmod.hasLineOfWalk(level, x, z, x + dx, z + dz, 1, 1, 1, 1, 0);
+    },
 };

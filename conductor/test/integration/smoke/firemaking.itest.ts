@@ -4,7 +4,8 @@ import { itestTimeout, runTask, withFixtureBot } from '../harness';
 
 // Field east of the Lumbridge General Store: the verified spot in the firemaking task description.
 const FIELD = { x: 3230, z: 3240 };
-const LOGS = 3;
+// Enough logs that the lines meet the wall edges around the field (x 3229..3230, z 3236..3241).
+const LOGS = 8;
 // A recently lit tile can refuse another fire (wiki/skills/firemaking.md), so back-to-back runs on the
 // exact centre can fail. Start on a random tile inside the area instead. No other integration test
 // uses this area (the action tests moved to x 3248..3258, z 3258..3262), so their fires cannot block it.
