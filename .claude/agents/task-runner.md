@@ -30,9 +30,14 @@ script walked the bot under attack and it died, 2026-10-11).
 
 1. A goal's first work is a plan draft, run once with `--until minutes:1`. Never a second plain
    task run in a row (one errand between plans at most).
-2. After a clean `done`, run the plan **to the goal** in the background (`run_in_background`):
-   `--until <goal stop> --until minutes:<budget left>`. Never re-run a working plan on short timers.
-3. Wait for the background run's completion notification. No `sleep`, no `pgrep` loop.
+2. After a clean `done`, run the plan **to the goal**: `--until <goal stop> --until
+   minutes:<budget left>`. Never re-run a working plan on short timers.
+3. Every `run-task.ts` command, a 1-minute test included, runs in the background
+   (`run_in_background`); then end your turn and wait for its completion notification. No
+   foreground run, no `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
+   receive the conductor's messages (the user had to kill a run to get a correction through,
+   2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
+   the anchored `pgrep` match below; it prints its RESULT on SIGTERM), then act on it.
 4. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`.
@@ -211,12 +216,10 @@ then journals the run itself when it ends.
   `minutes:` timers: each stop and restart is wasted travel and setup (a runner ran a working
   plan as minutes:3, then minutes:5, 2026-10-11). Start another run only when the plan itself
   ends: goal reached, failed, or `nothing left to do`.
-- Run it in the foreground, with a Bash timeout longer than its `--until`, only for a run of up
-  to about `minutes:8` (the Bash maximum is 10 minutes, and a plan needs time to stop and print).
-  A run to the goal goes in the background (`run_in_background`); wait for its completion notification, never `sleep N; tail` (the
+- Every run goes in the background (`run_in_background`), however short (Every run, item 3); read
+  its RESULT from the output file the completion notification names. Never `sleep N; tail` (the
   harness blocks a foreground sleep) and never a `pgrep` loop: a run you started reports its own
-  end. A foreground run the harness moved to the background ("manually backgrounded") notifies
-  the same way. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
+  end. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
   always with the anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell
   itself and never ends.
 - `No game client is attached`: stop and report it; don't start a client. `already has N
