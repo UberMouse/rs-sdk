@@ -52,3 +52,9 @@ Equip a staff and select an elemental spell from the combat style menu to auto-c
 
 - Staffs provide unlimited runes of their element, saving money on common spells.
 - Darkened spells in the spellbook mean you lack the level or runes to cast them.
+
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Lumbridge chickens, Wind Strike | (3231, 3295), radius 8 | 1-41 | Manual Wind Strike casts (Air + Mind runes, 1 each per cast); 97 casts took Magic 1 -> 41 at 25x XP. Runes from Aubury's (Varrock, see [shops](../../learnings/shops.md)): 110 of each cost 1079 gp. Cast mechanics: [combat](../../learnings/combat.md) | not from stats.ts (1 run: 17.6k Magic in a 10 min mixed Ranged/Magic plan) | 2026-10-11 conductor2 local |

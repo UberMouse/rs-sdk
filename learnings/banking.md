@@ -87,6 +87,10 @@ await sdk.sendCloseModal();
 await new Promise(r => setTimeout(r, 500));
 ```
 
+## One bank for the whole account
+
+Every bank booth and banker opens the same contents (`[bank]` is `scope=perm` in `server/content/scripts/interface_bank/configs/bank.inv`). Coins or items banked at Varrock can be withdrawn at Draynor or Falador; don't walk to a particular town for them. [server data 2026-10-11]
+
 ## Bank Locations (THERE IS NOT BANK IN LUMBRIDGE in 2004scape)
 
 Checked against the map data: `server/content/maps/m50_50.jm2` (Lumbridge, castle included) has no `bankbooth` (2213), `bankboothclosed` or `banker1/2` on any level, so the top-floor castle bank (added to the real game in 2007) does not exist here. [map data 2026-10-11]

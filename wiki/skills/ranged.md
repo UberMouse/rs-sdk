@@ -44,3 +44,9 @@ Ranged XP is gained by dealing damage with ranged weapons. Requires line of sigh
 
 - Arrows sometimes land near the target and can be picked up; others are lost on impact.
 - Monsters attacked by ranged will try to close to melee range.
+
+## Verified training spots
+
+| Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
+|---|---|---|---|---|---|
+| Lumbridge chickens | (3231, 3295), radius 8 | 1-40 | Shortbow + Bronze arrows wielded; arrows dropped by misses are picked up again. Ranged 1 -> 13 in 8 min, 13 -> 40 in ~10 min (also gave Hitpoints 24 -> 36). Setup: [combat](../../learnings/combat.md) | not from stats.ts (1 run: 14.4k Ranged in 10 min) | 2026-10-11 conductor2 local |
