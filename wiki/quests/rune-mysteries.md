@@ -35,3 +35,18 @@ None.
 | Head Wizard (Sedridor) | Wizard Tower, basement                        |
 | Aubury                 | Rune shop, southeast Varrock (behind east bank) |
 | Rune Essence Mine      | Accessed via teleport from Sedridor or Aubury |
+
+## Dialog choices (verified)
+
+Run by the `talk` task (plan `conductor/plans/rune-mysteries.ts`; whole quest took 321 s from Lumbridge). Choices, from `server/content/scripts/areas/{area_lumbridge/duke_horacio,area_wizard_tower/sedridor,area_varrock/aubury}.rs2`:
+
+| NPC | Stand | Choices in order |
+|-----|-------|------------------|
+| Duke Horacio (level 1) | (3211,3221) | "Have you any quests for me?", "Sure, no problem." |
+| Sedridor (basement) | (3104,9570) | "I'm looking for the head wizard.", "Ok, here you are.", "Yes, certainly." |
+| Aubury | (3252,3402) | "I have been sent here with a package for you." then talk to him again, no choices (he gives "Notes") |
+| Sedridor | (3104,9570) | none: takes the notes, the quest completes and the air talisman comes back |
+
+Route hazard on the Aubury leg: dark wizards at the Varrock stone circle near (3223,3373) (`learnings/hazards.md`). Approach Varrock from the south via (3260,3335). [v 2026-10-11 conductor2 local]
+
+Sedridor reads as unreachable from the ladder foot (3104,9576); stand south of the statues at (3104,9570). [v 2026-10-11 conductor2w3 local]
