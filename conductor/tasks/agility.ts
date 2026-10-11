@@ -242,7 +242,7 @@ export default defineTask({
         '`--until` stop. Each obstacle is picked from where the bot stands, so it resumes mid-lap and re-routes after a fall; it only walks ' +
         "on the ground and the course's own obstacles are the plane changes. The bot must start at the course (within " +
         `${GNOME.reach} tiles of the ` +
-        'start, on the course): this task does not travel to the Gnome Stronghold, which is far from Lumbridge and not walked to yet.',
+        'start, on the course): this task does not travel: run the `travel` task to {x:2474,z:3436} first (Lumbridge is about 700 tiles away, wolves on the way).',
     params: Params,
     memory: (): AgilityMemory => ({ laps: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

@@ -161,5 +161,7 @@ Review findings `task-review` deferred because their fix needs work outside the 
   private `levelForXp`; have it use `xpForLevel`/`levelForXp` from `lib/xp.ts` (scaling tenths)
   and drop the copy, which also gives the `lib/xp` exports a caller outside their test
   (code-quality Q3).
+- Knowledge: `learnings/hazards.md` has no White Wolf Mountain entry (white wolves lvl 25/38 attack combat-22 bots on the Lumbridge -> Gnome Stronghold route; the `travel` task takes the HP hit and relies on carried food; ~8 HP lost over a 270 s run with 10 shrimps eaten) (safety S1).
+- Actions: `clean` (dialog text strip) in `actions/gate.ts` duplicates `actions/climb.ts`; export one shared helper (touches climb.ts, out of the travel review's scope) (code-quality Q3).
 - Lib: thieving copies combat's `foodInInventory`/`wantsToEat` (`tasks/combat.ts`); move both to
   a shared `lib/food.ts` taking `{ food, eatBelow }` and have both tasks import it (contract T5).

@@ -1,0 +1,86 @@
+{
+    "name": "travel-lumbridge-c25",
+    "purpose": "Combat ~25 (Atk16 Str25 Def15 HP22, Agility 1) at Lumbridge courtyard (3222,3222), bronze sword + wooden shield wielded, 10 shrimps, 300 coins. Tests the travel task (long walk to the Gnome Stronghold).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3222
+            },
+            "skills": {
+                "Attack": 16,
+                "Strength": 25,
+                "Defence": 15,
+                "Hitpoints": 22,
+                "Agility": 1
+            },
+            "inventory": [
+                {
+                    "id": 315,
+                    "count": 10
+                },
+                {
+                    "id": 995,
+                    "count": 300
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1277,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1171,
+                    "count": 1,
+                    "slot": 5
+                }
+            ]
+        }
+    },
+    "sha1": "c99b50f547ca08b67accb3bcf3e6d23a20a8a25d",
+    "createdAt": "2026-10-11T00:34:39.495Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3222,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 16,
+            "Defence": 15,
+            "Strength": 25,
+            "Hitpoints": 22
+        },
+        "inventory": [
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 10
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 300
+            }
+        ],
+        "worn": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            },
+            {
+                "id": 1171,
+                "name": "wooden_shield",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
