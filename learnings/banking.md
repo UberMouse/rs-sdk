@@ -2,6 +2,14 @@
 
 Successful patterns for bank interactions.
 
+## Banks that are not booths
+
+From the game scripts (every bank site: `wiki/world.json`, kind `bank`):
+
+- The Shantay Pass chest at (3309, 3120) opens your bank, members only (`shantay_chest.rs2`).
+- The Duel Arena's closed chests at (3381, 3269) and (3382, 3270) open into bank chests (op Bank), next to Fadli, who also banks (`game_duelarena/scripts/misc_locs.rs2`, `fadli.rs2`).
+- Castle Wars has a bank chest at (2444, 3083); Gundai banks in the Mage Arena chamber (2534, 4714); the fairy bankers of Zanaris are at (3150-3154, 9577-9580).
+
 ## Opening the Bank
 
 

@@ -5,10 +5,30 @@ import { AREAS } from '../areas';
 describe('AREAS', () => {
     test('pass the resolver validation', () => expect(() => areaResolver(AREAS)).not.toThrow());
 
-    test('a few towns resolve under their kingdom', () => {
-        const resolve = areaResolver(AREAS);
+    const resolve = areaResolver(AREAS);
+
+    test('towns and their banks resolve under their kingdom', () => {
         expect(resolve({ level: 0, x: 3222, z: 3218 })).toEqual(['misthalin', 'lumbridge']);
-        expect(resolve({ level: 0, x: 3094, z: 3491 })).toEqual(['misthalin', 'edgeville']);
+        expect(resolve({ level: 0, x: 3094, z: 3491 })).toEqual(['misthalin', 'edgeville', 'edgeville-bank']);
         expect(resolve({ level: 0, x: 2989, z: 3355 })).toEqual(['asgarnia', 'falador']);
+        expect(resolve({ level: 0, x: 2947, z: 3368 })).toEqual(['asgarnia', 'falador', 'falador-west-bank']);
+    });
+
+    test('the Wilderness starts at z 3520 east of x 2943, as the engine has it (sources/zones.ts)', () => {
+        expect(resolve({ level: 0, x: 3100, z: 3520 })).toEqual(['wilderness']);
+        expect(resolve({ level: 0, x: 3100, z: 3519 })).toEqual(['misthalin']);
+        expect(resolve({ level: 0, x: 2944, z: 3600 })).toEqual(['wilderness']);
+        expect(resolve({ level: 0, x: 2943, z: 3600 })).toEqual(['asgarnia']);
+    });
+
+    test('Al Kharid is in the desert, past the fence', () => {
+        expect(resolve({ level: 0, x: 3269, z: 3167 })).toEqual(['kharidian-desert', 'al-kharid', 'al-kharid-bank']);
+        expect(resolve({ level: 0, x: 3267, z: 3227 })).toEqual(['misthalin']);
+        expect(resolve({ level: 0, x: 3277, z: 3227 })).toEqual(['kharidian-desert', 'toll-gate']);
+    });
+
+    test('underground areas are their own top-level areas at z + 6400', () => {
+        expect(resolve({ level: 0, x: 3043, z: 9745 })).toEqual(['dwarven-mine', 'mining-guild']);
+        expect(resolve({ level: 0, x: 3043, z: 3345 })).toEqual(['asgarnia']);
     });
 });

@@ -49,7 +49,7 @@ const isIdle = animation === -1;
 |----------|-------------|-------|
 | SE Varrock mine | (3285, 3365) | Copper, tin, iron rocks within 1-4 tiles of the centre; nothing attacked a combat-27 bot or a combat-20 bot; `bot.walkTo` from Lumbridge works (the task's return-to-area step walked from the chicken coop in under 30s). [v 2026-10-10 conductor2 local] |
 | Al Kharid mine | (3295, 3287) | Iron, coal, gold, silver, mithril, tin. Scorpions! |
-| Lumbridge Swamp mine | - | Interactions fail silently, avoid |
+| Lumbridge Swamp mine | (3238, 3162) | Coal, mithril and adamantite rocks across (3233-3243, 3157-3167); the swamp has no other rocks and no copper or tin (map data, `wiki/world.json`). An earlier run's interactions there failed silently, cause unknown |
 
 **Getting to Al Kharid mine from Lumbridge:** Pay 10gp toll at gate (3268, 3227), walk NE. Dialog sequence: continue → continue → "Yes, ok." (index 3) → continue.
 
