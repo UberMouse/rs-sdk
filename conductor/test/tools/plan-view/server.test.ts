@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { appendFileSync, cpSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { LogEvent, PhaseLog, RunSummary } from '../../../tools/plan-view/model';
+import { type LogEvent, type PhaseLog, type RunSummary, stampTime } from '../../../tools/plan-view/model';
 import {
     type BotInfo,
     hostAllowed,
@@ -24,9 +24,16 @@ afterAll(() => rmSync(root, { recursive: true, force: true }));
 mkdirSync(dir, { recursive: true });
 cpSync(FIXTURE, dir, { recursive: true });
 
-const line = (e: Record<string, unknown>) => `${JSON.stringify({ t: Date.now(), ...e })}\n`;
-const writeLog = (file: string, events: Record<string, unknown>[]) =>
-    writeFileSync(join(dir, file), events.map(line).join(''));
+const line = (e: Record<string, unknown>, t = Date.now()) => `${JSON.stringify({ t, ...e })}\n`;
+/**
+ * Events are stamped with the real clock (the store judges a pid-less log's freshness by its file's
+ * mtime, which is real too), unless `t` pins them: a log whose stamp the store compares with its
+ * events' times (a phase log is the first stamped at or after its selection) must carry that time.
+ */
+const writeLog = (file: string, events: Record<string, unknown>[], t?: number) =>
+    writeFileSync(join(dir, file), events.map(e => line(e, t)).join(''));
+/** The time of a fixture log's stamp. */
+const stamped = (file: string): number => stampTime(file)!;
 
 const START = {
     type: 'start',
@@ -71,8 +78,10 @@ describe('RunsStore', () => {
     });
 
     test("a log without a pid counts as running while it, or its open phase's log, is fresh", () => {
-        writeLog('2026-10-11T03-00-00-000Z-plan-old.ndjson', [START, SELECT]);
-        writeLog('2026-10-11T03-00-00-010Z-woodcutting.ndjson', [{ type: 'start', task: 'woodcutting', params: {} }]);
+        const OLD = '2026-10-11T03-00-00-000Z-plan-old.ndjson';
+        const PHASE = '2026-10-11T03-00-00-010Z-woodcutting.ndjson';
+        writeLog(OLD, [START, SELECT], stamped(OLD));
+        writeLog(PHASE, [{ type: 'start', task: 'woodcutting', params: {} }], stamped(PHASE));
         const p = store.run('conductor2', '2026-10-11T03-00-00-000Z-plan-old')!;
         expect(p.run.state).toBe('running');
         // Before phase-start, the open run's log is the first of its task stamped from its selection on.
