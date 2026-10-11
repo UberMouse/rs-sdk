@@ -980,15 +980,17 @@ Page shapes (all tables sorted for stable output; coordinates as `(x, z)` with `
 0, matching the shop pages):
 
 - `places/<area-id>.md`: area name, breadcrumb of parents, notes, requirements; a table per kind of
-  sites in it (and in its child areas, grouped by child): site, centre, counts, F2P, multiway,
-  Wilderness level; child area links.
+  the sites whose **leaf** area is this area: site, centre, counts, F2P, multiway, Wilderness
+  level; then each child area as a link with a per-kind count summary of the sites under it
+  (settled before Task 6: full recursive tables would put every tree of a region on its page).
 - `resources/<kind>/<subtype>.md` (trees, rocks, fishing spots, stalls, pickpocket): the dbrow facts
   (level, xp, product, respawn; success chances per tool for trees and rocks) then every site:
   area, centre, stand tile, count, F2P, multiway, Wilderness.
 - `services/<kind>.md` (bank, furnace, anvil, range, ...): every site with area, centre, stand tile,
   counts, F2P.
 - `wiki/world/README.md` (generated header + hand-written body): what each folder holds, that pages
-  are generated, and where corrections go (`areas.ts`, `gates.ts`, the rule table).
+  are generated, and where corrections go (`areas.ts`, the `classify.ts` rule table; `gates.ts`
+  arrives in phase 2).
 
 `build.ts` calls the renderer after writing `world.json`. A `--check` flag regenerates into memory
 and exits 1 if any generated file differs from the working tree (the freshness check); add it to
