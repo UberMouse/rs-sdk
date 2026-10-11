@@ -128,6 +128,39 @@ describe('guards during a generator step', () => {
         expect(r.result.stepRuns).toEqual({ chop: 1, 'interrupt:dialog': 1 });
     });
 
+    describe('starting in combat', () => {
+        const fighting = timeline(10, t => ({ inCombat: t < 5, xp: t >= 5 ? 1 : 0 }));
+        const steps = [step('chop', chop)];
+        const fleeing = defineTask({
+            name: 'test',
+            description: 'engine test',
+            params: z.object({ flee: z.boolean() }),
+            startInCombat: p => p.flee,
+            steps,
+        });
+
+        test('is refused by default, naming the attacker', async () => {
+            const r = await runTask(steps, fighting);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toStartWith('in combat at');
+            expect(r.sends).toEqual([]);
+        });
+
+        test('is allowed for a task whose startInCombat holds for its params, and only then', async () => {
+            const allowed = await runDef(fleeing, fighting, { params: { flee: true } });
+            expect(allowed.result.status).toBe('done');
+            const refused = await runDef(fleeing, fighting, { params: { flee: false } });
+            expect(refused.result.reason).toStartWith('in combat at');
+        });
+    });
+
+    test('a respawn since the run started ends the run with the death guard', async () => {
+        const base = timeline(10, t => ({ dead: t === 3 }));
+        const states = base.map(s => ({ ...s, player: { ...s.player!, respawnCount: s.tick >= 3 ? 1 : 0 } }));
+        const r = await runTask([step('idle', idle)], states);
+        expect(r.result).toMatchObject({ status: 'failed', endedBy: 'interrupt:death' });
+    });
+
     test('death mid-wait fails the run, even inside an uninterruptible section', async () => {
         const r = await runTask(
             [step('bank', banking)],
@@ -135,6 +168,7 @@ describe('guards during a generator step', () => {
         );
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toStartWith('interrupt:death: died');
+        expect(r.result.endedBy).toBe('interrupt:death');
         expect(r.sends).toEqual(['open bank', 'close bank']);
         expect(r.result.lastStep).toBe('bank');
     });
@@ -687,6 +721,7 @@ describe('the result', () => {
             runId: 'run-1',
             status: 'failed',
             reason: 'chop: out of trees',
+            endedBy: 'chop',
             params: {},
             durationMs: 3 * TICK_MS,
             loops: 1,

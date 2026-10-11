@@ -11,9 +11,13 @@ import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
+import { guardLabel } from './interrupts';
 import { checkStops, describeStop, type StopCondition, validateStops } from './stop';
 import type { Sinks, TaskDef, TaskResult, TaskStatus } from './task';
 import { countItems, errMessage, exactName, findSkill, INVENTORY_SLOTS, TICK_MS, xpGainedSince } from './util';
+
+/** `TaskResult.endedBy` of a run the death guard ended. */
+const DEATH_GUARD = guardLabel('death');
 
 /** What a plan's predicates read: the world now, plus what the plan has seen and done so far. */
 export interface PlanView {
@@ -105,6 +109,41 @@ export interface PlanParams {
 interface ParsedPhase {
     phase: Phase;
     result: ReturnType<AnyTaskDef['params']['safeParse']>;
+}
+
+/** An idle run's record, for the idle rail. */
+interface IdleRun {
+    name: string;
+    status: TaskStatus;
+    reason: string;
+}
+
+/**
+ * The idle rail's verdict, or null to carry on. The plan ends once `maxIdle` phase runs in a row were
+ * idle, or when a phase just ended done at once in the state it started in (`instantRepeat`). It ends
+ * `done` if every idle run ended done (the phases ran out of work), `failed` if any failed or stuck.
+ */
+function idleEnd(
+    idle: IdleRun[],
+    maxIdle: number,
+    instantRepeat: boolean,
+    hasUntil: boolean,
+): { status: 'done' | 'failed'; reason: string } | null {
+    const last = idle.at(-1);
+    if (last === undefined) return null;
+    const allDone = idle.every(r => r.status === 'done');
+    if (idle.length < maxIdle && !(instantRepeat && allDone)) return null;
+    if (allDone) {
+        const names = [...new Set(idle.map(r => r.name))].join(', ');
+        return {
+            status: 'done',
+            reason: `nothing left to do: ${names} done (${last.reason})${hasUntil ? '; plan until not met' : ''}`,
+        };
+    }
+    return {
+        status: 'failed',
+        reason: `phases make no progress (no XP, and each ended where it started or in a state seen since): ${idle.map(r => r.name).join(', ')}`,
+    };
 }
 
 /** Each phase's params parsed against its task's schema, in plan order: the one parse a plan run reads. */
@@ -290,6 +329,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         levelBefore[k.name] = k.baseLevel;
     }
     const invBefore = inventoryCounts(first);
+    const respawnsBefore = first.player?.respawnCount ?? 0;
 
     /** Each phase with its running summary, in plan order. */
     const entries = def.phases.map(p => ({
@@ -485,7 +525,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     /** The phase that just failed with 'continue', skipped by the next selection. */
     let skip: string | null = null;
     /** The phases of the current run of idle phases, in order. */
-    let idle: string[] = [];
+    let idle: IdleRun[] = [];
+    /** The previous phase run's name when it ended done, else null. */
+    let prevDone: string | null = null;
     /**
      * End states (idleSignature) of the phase runs since XP last rose. A run that ends in one of them,
      * or where it started, is idle: that catches phases that undo each other (deposit then withdraw,
@@ -501,6 +543,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         for (;;) {
             const s = observe(opts.state());
             const selectedAt = now();
+            // A respawn no phase reported (between two phase runs): the plan's inventory and position
+            // assumptions died with the bot, so the runner must look, not carry on.
+            const respawns = (s.player?.respawnCount ?? 0) - respawnsBefore;
+            if (respawns > 0)
+                return finish(
+                    'failed',
+                    `died between phases (${respawns} respawn${respawns === 1 ? '' : 's'} since the plan started)${last ? `; last: ${last.phase} ${last.status}: ${last.reason}` : ''}`,
+                );
             const stop = checkStops(stops, s, xpBefore, selectedAt - startedAt);
             if (stop) return finish('done', stop);
             const v = view(s);
@@ -650,6 +700,10 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             if (ext.error) return finish('error', ext.error);
             if (ext.planEnd) return finish(ext.planEnd.status, ext.planEnd.reason);
             if (result.status === 'error') return finish('error', `${chosen.name}: ${result.reason}`);
+            // A death ends the plan whatever onFail says: the runner has to see what happened.
+            if (result.endedBy === DEATH_GUARD)
+                // the engine's reason is `<guard>: <why>`; the phase name already says who died
+                return finish('failed', `${chosen.name}: ${result.reason.replace(`${DEATH_GUARD}: `, '')}`);
             if (result.status === 'done') {
                 fails.delete(chosen.name);
             } else {
@@ -671,12 +725,13 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             const end = after && idleSignature(after);
             const isIdle = end !== null && (end === signature || endsSinceXp.has(end));
             if (end !== null) endsSinceXp.add(end);
-            idle = isIdle ? [...idle, chosen.name] : [];
-            if (idle.length >= maxIdlePhases)
-                return finish(
-                    'failed',
-                    `phases make no progress (no XP, and each ended where it started or in a state seen since): ${idle.join(', ')}`,
-                );
+            idle = isIdle ? [...idle, { name: chosen.name, status: result.status, reason: result.reason }] : [];
+            // A phase that ended done, in the state it started in, right after it ended done: chosen again
+            // and finished at once, it has nothing left to do. No need to wait out the full rail.
+            const instantRepeat = result.status === 'done' && end === signature && prevDone === chosen.name;
+            prevDone = result.status === 'done' ? chosen.name : null;
+            const ended = idleEnd(idle, maxIdlePhases, instantRepeat, planUntil !== undefined);
+            if (ended) return finish(ended.status, ended.reason);
         }
     } catch (e) {
         if (e instanceof PredicateError) return finish('error', e.message);

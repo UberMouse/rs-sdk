@@ -32,12 +32,12 @@ roadmap Experiments).
 
 The catalog already has the shapes to compose:
 
-| Shape | Ends `done` when | Tasks |
-|---|---|---|
-| Producer | the inventory is full (`onFull: 'stop'`) | woodcutting, fishing, mining |
-| Consumer | its input is used up | firemaking, fletching, cooking, smithing, crafting, fill |
-| Errand | its operations are made | bank, shop, pickup |
-| Open-ended | never on its own | combat, thieving (`stopWhenFull` aside) |
+| Shape      | Ends `done` when                         | Tasks                                                    |
+| ---------- | ---------------------------------------- | -------------------------------------------------------- |
+| Producer   | the inventory is full (`onFull: 'stop'`) | woodcutting, fishing, mining                             |
+| Consumer   | its input is used up                     | firemaking, fletching, cooking, smithing, crafting, fill |
+| Errand     | its operations are made                  | bank, shop, pickup                                       |
+| Open-ended | never on its own                         | combat, thieving (`stopWhenFull` aside)                  |
 
 Only the open-ended tasks need an outside "until".
 
@@ -47,7 +47,7 @@ A plan is an ordered list of **phases**. A phase is one catalog task with params
 
 - `when(v)`: whether the phase may start. Default: always.
 - `until(v)`: optional; ends the phase `done` early. Checked at every tick of the phase.
-- `onFail`: what a `failed` or `stuck` phase means for the plan. Default `'fail'`.
+- `onFail`: what a `failed` or `stuck` phase means for the plan. Default `'fail'`. A death always ends the plan, whatever this says.
 
 The runner does what the engine does with steps, one level up:
 
@@ -60,10 +60,16 @@ The runner does what the engine does with steps, one level up:
 3. It ends `done` (by itself or by its `until`): back to 1. It ends `failed` or `stuck`: apply its
    `onFail`. It ends `error`: the plan ends `error` (a bug, not the world).
 
-Choosing from state and not from a position in a list is what makes a plan resume: after a death,
-a restart, or a dispatch onto a half-full inventory, the first applicable phase is still the right
-one. The ordering rule that falls out is **consumers above producers**, so the inventory drains
-before it refills.
+Choosing from state and not from a position in a list is what makes a plan resume: after a
+restart, or a dispatch onto a half-full inventory, the first applicable phase is still the right
+one.
+
+A death is the exception: it ends the plan `failed` (`<phase>: died ...`) whatever the phase's
+`onFail` and `maxFails` say, whether the death guard ended a phase run or a respawn is seen between
+two runs.
+
+The ordering rule that falls out is **consumers above producers**, so the inventory drains before
+it refills.
 
 ## The API
 
@@ -77,9 +83,13 @@ export default definePlan({
     name: 'chop-burn',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
-        phase(firemaking, { logs: 'Logs', area: { x: 3230, z: 3240, radius: 6 } }, {
-            when: v => v.full && v.inv('Logs') > 0,
-        }),
+        phase(
+            firemaking,
+            { logs: 'Logs', area: { x: 3230, z: 3240, radius: 6 } },
+            {
+                when: v => v.full && v.inv('Logs') > 0,
+            },
+        ),
         phase(woodcutting, { tree: 'tree', onFull: 'stop', area: { x: 3195, z: 3220, radius: 12 } }),
     ],
 });
@@ -101,16 +111,16 @@ export default definePlan({
 Predicates get one read-only view and must be pure: no I/O, no clock, no state of their own. That
 keeps every phase choice re-derivable from a run's recorded states.
 
-| Member | Meaning |
-|---|---|
-| `v.state` | the current `BotWorldState`, for anything below not covering it |
-| `v.inv(item)` | inventory count; `item` is an exact name (case-insensitive) or a RegExp |
-| `v.full` / `v.free` | every slot used / free slots |
-| `v.bank(item)` | bank count as last seen open during this plan; `undefined` before that |
-| `v.level(skill)` | base level |
-| `v.hp` | `{ current, max }` |
-| `v.runs(phase)` | times that phase has run in this plan |
-| `v.last` | the previous phase's `{ phase, status, reason }`, or `null` |
+| Member              | Meaning                                                                 |
+| ------------------- | ----------------------------------------------------------------------- |
+| `v.state`           | the current `BotWorldState`, for anything below not covering it         |
+| `v.inv(item)`       | inventory count; `item` is an exact name (case-insensitive) or a RegExp |
+| `v.full` / `v.free` | every slot used / free slots                                            |
+| `v.bank(item)`      | bank count as last seen open during this plan; `undefined` before that  |
+| `v.level(skill)`    | base level                                                              |
+| `v.hp`              | `{ current, max }`                                                      |
+| `v.runs(phase)`     | times that phase has run in this plan                                   |
+| `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
 
 `v.bank` exists because "smelt once enough ore is banked" needs it and the state only shows the bank
 while it is open: the runner keeps the last bank contents it saw in any phase.
@@ -133,7 +143,12 @@ forever.
 
 - **No progress.** A phase run is idle when it ends with total XP, inventory and position as they
   were when it started, or in an end state another phase run already reached since XP last rose; 3
-  idle phases in a row fail the plan (`phases make no progress (...): <names>`). It catches two
+  idle phases in a row end the plan: `done` (`nothing left to do: <names> done (<last reason>)`, plus
+  `; plan until not met` when the plan has an `until`; this `done` means the phases ran out of work,
+  not that the `until` was reached) if every one of them ended `done`, since the
+  phases have nothing left to do; a phase re-chosen that ends `done` at once, in the state it
+  started in, right after it ended `done`, ends it at the first repeat. `failed` (`phases make no
+progress (...): <names>`) if any ended failed or stuck, a real stall. It catches two
   phases handing the turn back and forth (woodcutting `onFull: 'stop'` on an inventory full of
   something else ends at once; so does a consumer with nothing to consume), and two that undo each
   other (deposit then withdraw, walk there then back), each changing the state but the plan going
@@ -172,7 +187,7 @@ forever.
 - The last stdout line stays `RESULT <json>`: a `TaskResult` with `task: "plan:<name>"`, the plan's
   totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and two
   extra fields: `phases`, one entry per phase `{ phase, task, runs, statuses, durationMs, xpGained,
-  lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`.
+lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`.
   The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.
@@ -205,7 +220,7 @@ what to spend, when to write or fix task code, when to run a retrospective. A go
 has:
 
 - an end state: `Fletching 40 and Firemaking 45`, `500 bronze bars banked`, `250 coins for a steel
-  axe`;
+axe`;
 - constraints: areas to avoid, what may be spent or sold, items that must not be risked;
 - a budget: play time, and how many failed plans in a row before it stops trying;
 - the starting knowledge: the learnings/wiki pages and spots that apply, and promoted plans to reuse.

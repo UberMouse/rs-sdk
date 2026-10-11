@@ -103,7 +103,8 @@ export interface ExecuteOptions {
     partOf?: string;
 }
 
-type End = { status: TaskStatus; reason: string };
+/** `by` is the step or guard that ended the run (TaskResult.endedBy). */
+type End = { status: TaskStatus; reason: string; by?: string };
 
 /** Item name -> count held, a stack counted as its size. */
 export function inventoryCounts(s: BotWorldState): Record<string, number> {
@@ -148,8 +149,8 @@ class AsyncGuard extends Error {
 }
 
 function ended(name: string, outcome: Outcome): End | null {
-    if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}` };
-    if (outcome && 'done' in outcome) return { status: 'done', reason: `${name}: ${outcome.done}` };
+    if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}`, by: name };
+    if (outcome && 'done' in outcome) return { status: 'done', reason: `${name}: ${outcome.done}`, by: name };
     return null;
 }
 
@@ -303,7 +304,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
-    const finish = async (status: TaskStatus, reason: string): Promise<TaskResult> => {
+    const finish = async (status: TaskStatus, reason: string, by?: string): Promise<TaskResult> => {
         if (status !== 'done') await takeScreenshot(status);
         await eatIfHurt();
         const s = stateOrNull();
@@ -330,6 +331,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             ...(opts.partOf !== undefined && { partOf: opts.partOf }),
             status,
             reason,
+            ...(by !== undefined && { endedBy: by }),
             params: ctx.params ?? opts.rawParams,
             durationMs: now() - startedAt,
             loops,
@@ -372,7 +374,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;
-    if (start?.combat.inCombat)
+    if (start?.combat.inCombat && !def.startInCombat?.(ctx.params))
         return finish('failed', `in combat at (${start.worldX},${start.worldZ}); handle the attacker first`);
     try {
         const refused: unknown = def.preflight?.(ctx);
@@ -542,7 +544,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             stepRuns[LEFTOVER_STEP] = 1;
             const criticalGuards = guards.filter(g => g.critical);
             const end = await runOp(LEFTOVER_STEP, closeLeftover(ctx, leftover), criticalGuards);
-            if (end) return finish(end.status, end.reason);
+            if (end) return finish(end.status, end.reason, end.by);
         }
         for (;;) {
             loops++;
@@ -551,7 +553,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             currentPos = posOf(s);
 
             const end = checkRun(s);
-            if (end) return finish(end.status, end.reason);
+            if (end) return finish(end.status, end.reason, end.by);
             const complete = def.isComplete?.(ctx);
             if (complete) return finish('done', complete);
 
@@ -599,7 +601,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             // and starve the watchdog and websocket frames.
             await sleep(0);
 
-            if (stepEnd) return finish(stepEnd.status, stepEnd.reason);
+            if (stepEnd) return finish(stepEnd.status, stepEnd.reason, stepEnd.by);
         }
     } catch (e) {
         if (e instanceof TickStall) return finish('stuck', e.message);

@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 import { GATE_MAX_TICKS, GNOME_GATE, insideFence, passGate } from '../actions/gate';
 import { collisionPaths } from '../actions/paths';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../actions/walk';
-import { log } from '../core/op';
+import { log, ticks } from '../core/op';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -12,6 +12,8 @@ const WALK_FAIL_LIMIT = 3;
 /** A far trip is many walks of WALK_MAX_TICKS; one step is one walk, so the step budget covers a walk and a gate. */
 const STEP_TIMEOUT_MS = 180_000;
 const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS), GATE_MAX_TICKS);
+/** Loops (a tick each) `flee` waits at the destination for the fight to end before it fails. */
+const FLEE_SETTLE_LOOPS = 15;
 /** How close a user waypoint must be passed. */
 const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
@@ -25,6 +27,11 @@ const Params = z.object({
     tolerance: z.number().int().min(1).default(3),
     /** Points to pass in order before `to` (to keep to a safe road, or to cross a stretch the route finder cannot). */
     waypoints: z.array(Point).default([]),
+    /**
+     * Run from a fight: the task may start in combat (every other task refuses to), walks without
+     * stopping for the attack, and is done only once out of combat at `to`.
+     */
+    flee: z.boolean().default(false),
 });
 
 type TravelParams = z.infer<typeof Params>;
@@ -63,6 +70,7 @@ const arrived = (ctx: Ctx) => {
         !needsGnomeGate(ctx)
     );
 };
+const fighting = (ctx: Ctx) => !!here(ctx)?.combat.inCombat;
 const waypointsLeft = (ctx: Ctx) => ctx.params.waypoints.slice(ctx.memory.nextWaypoint);
 
 /** The walk's failure reasons that retrying cannot fix. */
@@ -80,11 +88,14 @@ export default defineTask({
         "(declining Femi's boxes dialog once). Far trips take several walks (Lumbridge to the Gnome Stronghold is about 700 tiles). " +
         'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold crosses White Wolf Mountain, ' +
         'where wolves attack and cost HP; it eats at low HP, and with no food the low-hp guard fails the run. ' +
+        'With `flee: true` it also starts while in combat (the way out of a fight no other task will start in), walks on ' +
+        'without stopping for the attack, eats held food at low HP, and is done only once out of combat at `to`. Fleeing needs food too: in combat at low HP with none held, the low-hp guard fails the run at once. ' +
         'Fails where the route breaks: no path, a locked gate, or three failed walks in a row.',
     params: Params,
     memory: (): TravelMemory => ({ nextWaypoint: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
+    startInCombat: params => params.flee,
 
     preflight(ctx) {
         const { to, waypoints } = ctx.params;
@@ -96,10 +107,24 @@ export default defineTask({
     steps: [
         {
             name: 'arrived',
-            when: arrived,
+            when: ctx => arrived(ctx) && !(ctx.params.flee && fighting(ctx)),
             run: ctx => ({
                 done: `arrived within ${ctx.params.tolerance} tiles of (${ctx.params.to.x},${ctx.params.to.z})`,
             }),
+        },
+        {
+            // Arrived with the attacker still on the bot: wait for the fight to end.
+            name: 'fight-at-destination',
+            when: ctx => arrived(ctx) && ctx.params.flee && fighting(ctx),
+            *run(ctx) {
+                const settle = ctx.streak('stillFighting');
+                const waited = settle.add();
+                if (waited === 1)
+                    yield* log('arrived with the attacker still on the bot: waiting for the fight to end');
+                if (waited >= FLEE_SETTLE_LOOPS)
+                    return { fail: `still in combat at (${ctx.params.to.x},${ctx.params.to.z}) after fleeing there` };
+                yield* ticks(1);
+            },
         },
         {
             name: 'gnome-gate',

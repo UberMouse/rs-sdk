@@ -200,6 +200,8 @@ function scripted(name: string, outcomes: Outcome[]) {
     });
 }
 
+const failing = (name: string) => scripted(name, [{ fail: 'cannot' }]);
+
 const plan = (phases: Phase[], until?: Predicate): PlanDef => definePlan({ name: 'test-plan', phases, until });
 
 const sim = (def: PlanDef, opts: Partial<SimulatePlanOptions> = {}) =>
@@ -571,6 +573,43 @@ describe('onFail', () => {
         expect(r.result.reason).toBe('primary failed 2 times in a row: try: busy');
     });
 
+    test('a death in a phase ends the plan failed, whatever its onFail and maxFails', async () => {
+        const timeline = BASE.series(10, (w, i) => (i === 4 ? w.message('Oh dear, you are dead!') : w));
+        const r = await sim(plan([phase(watch, {}, { onFail: 'continue', maxFails: 9 }), phase(train, {})]), {
+            timeline,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('watch: died');
+        expect(r.result.reason).not.toContain('interrupt:death');
+        expect(selected(r)).toEqual(['watch']);
+        expect(r.runs[0]!.result.endedBy).toBe('interrupt:death');
+        const fn = await sim(plan([phase(watch, {}, { onFail: () => 'continue' }), phase(train, {})]), { timeline });
+        expect(fn.result.reason).toStartWith('watch: died');
+    });
+
+    test('a respawn seen between two phase runs ends the plan failed', async () => {
+        const timeline = BASE.series(12, (w, i) =>
+            i < 1 ? w : world({ ...w.build(), player: { ...w.build().player!, respawnCount: 1 } }),
+        );
+        const r = await sim(
+            plan([phase(train, {})], v => v.runs('train') >= 3),
+            { timeline },
+        );
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('died between phases (1 respawn since the plan started); last: train done');
+        expect(selected(r)).toEqual(['train']);
+    });
+
+    test('a respawn from before the plan started is not this plan', async () => {
+        const base = BASE.build();
+        const timeline = [{ ...base, player: { ...base.player!, respawnCount: 2 } }];
+        const r = await sim(
+            plan([phase(train, {})], v => v.runs('train') >= 2),
+            { timeline },
+        );
+        expect(r.result.status).toBe('done');
+    });
+
     test('an error phase ends the plan error, whatever its onFail', async () => {
         const thrower = defineTask({
             name: 'thrower',
@@ -595,11 +634,55 @@ describe('rails', () => {
     const noop = scripted('noop', [{ done: 'nothing to do' }]);
     const handBack = [phase(noop, {}, { name: 'a', when: v => v.last?.phase !== 'a' }), phase(noop, {}, { name: 'b' })];
 
-    test('phases that change nothing fail the plan after maxIdlePhases in a row', async () => {
+    const NOTHING = 'nothing left to do';
+
+    test('phases that finish and change nothing end the plan done after maxIdlePhases in a row', async () => {
         const r = await sim(plan(handBack));
-        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: a, b, a` });
+        expect(r.result).toMatchObject({ status: 'done', reason: `${NOTHING}: a, b done (try: nothing to do)` });
         const longer = await sim(plan(handBack), { maxIdlePhases: 5 });
-        expect(longer.result.reason).toBe(`${NO_PROGRESS}: a, b, a, b, a`);
+        expect(selected(longer)).toEqual(['a', 'b', 'a', 'b', 'a']);
+        expect(longer.result.status).toBe('done');
+    });
+
+    test('the done reason names an unmet plan until', async () => {
+        const r = await sim(plan(handBack, v => v.inv('Logs') > 99));
+        expect(r.result.reason).toBe(`${NOTHING}: a, b done (try: nothing to do); plan until not met`);
+    });
+
+    test('phases that fail without changing anything are a stall: the plan fails', async () => {
+        const r = await sim(
+            plan([
+                phase(failing('a'), {}, { name: 'a', when: v => v.last?.phase !== 'a', onFail: 'continue' }),
+                phase(failing('b'), {}, { name: 'b', onFail: 'continue' }),
+            ]),
+        );
+        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: a, b, a` });
+    });
+
+    test('a phase chosen again that ends done at once in the state it started in ends the plan done, without waiting', async () => {
+        // It fills the inventory first (a change), then is re-chosen and has nothing left to do.
+        const fill = scripted('fill', [{ done: 'inventory full: 25 ores' }]);
+        const r = await sim(
+            plan([phase(fill, {}, { name: 'mining' })], v => v.inv('Copper ore') >= 12),
+            {
+                maxIdlePhases: 9,
+            },
+        );
+        expect(selected(r)).toEqual(['mining', 'mining']);
+        expect(r.result).toMatchObject({
+            status: 'done',
+            reason: `${NOTHING}: mining done (try: inventory full: 25 ores); plan until not met`,
+        });
+    });
+
+    test('progress, then done at once in the same state, ends the plan done: nothing left to do', async () => {
+        const fill = scripted('fill', [{ done: 'inventory full: 25 ores' }]);
+        const r = await sim(plan([phase(fill, {}, { name: 'mining' })]), { maxIdlePhases: 9 });
+        expect(selected(r)).toEqual(['mining', 'mining']);
+        expect(r.result).toMatchObject({
+            status: 'done',
+            reason: `${NOTHING}: mining done (try: inventory full: 25 ores)`,
+        });
     });
 
     test('phases that undo each other without gaining XP are idle once their end states repeat', async () => {
@@ -611,14 +694,17 @@ describe('rails', () => {
         );
         // Each run moves the bot; from the third on, each ends where an earlier one did.
         expect(selected(r)).toEqual(['east', 'west', 'east', 'west', 'east']);
-        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: east, west, east` });
+        expect(r.result).toMatchObject({
+            status: 'done',
+            reason: expect.stringContaining('nothing left to do: east, west'),
+        });
     });
 
     test('a phase that only changes HP is idle', async () => {
         const r = await sim(plan([phase(rest, {})]));
-        expect(r.runs.map(x => x.result.reason)).toEqual(['rest: rested', 'rest: rested', 'rest: rested']);
-        expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: rest, rest, rest` });
-        expect(r.result.hp).toEqual({ current: 7, max: 10 });
+        expect(r.runs.map(x => x.result.reason)).toEqual(['rest: rested', 'rest: rested']);
+        expect(r.result).toMatchObject({ status: 'done', reason: expect.stringContaining('nothing left to do: rest') });
+        expect(r.result.hp).toEqual({ current: 8, max: 10 });
     });
 
     test('a phase that makes progress resets the idle count', async () => {

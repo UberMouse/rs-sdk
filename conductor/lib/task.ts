@@ -100,6 +100,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * order, at the same points and with the same episodes. Names must differ from the shared guards'.
      */
     guards?: readonly TaskGuard[];
+    /**
+     * The engine refuses to start a run in combat. A task that is the way out of a fight (travel with
+     * `flee`) opts in here, per its params; every other task keeps the refusal.
+     */
+    startInCombat?(params: z.infer<S>): boolean;
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];
@@ -131,6 +136,11 @@ export interface TaskResult {
     partOf?: string;
     status: TaskStatus;
     reason: string;
+    /**
+     * The step or guard whose outcome ended the run (`interrupt:death` for the death guard); absent when
+     * the run ended some other way (a stop, the watchdog, the step budget, a preflight refusal).
+     */
+    endedBy?: string;
     params: unknown;
     durationMs: number;
     loops: number;

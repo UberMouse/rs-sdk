@@ -267,3 +267,56 @@ describe('travel: the Gnome Stronghold', () => {
         expect(walks(r).slice(0, 2)).toEqual(['2520,3385', `${STAND.x},${STAND.z}`]);
     });
 });
+
+/** In combat for the first `until` ticks, holding two shrimps. */
+const inFight = (until: number, hp = 10) =>
+    base.inv('Shrimps', 2).series(60, (w, i) => w.player({ inCombat: i < until, hp }));
+
+describe('travel: flee', () => {
+    const to = { x: 3300, z: 3250 };
+
+    test('without the flag a run that starts in combat is refused', async () => {
+        const r = await simulate(travel, { params: { to }, timeline: inFight(8), react: walking() });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('in combat at');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('with the flag it starts in combat, walks on, and is done once out of combat at the destination', async () => {
+        const r = await simulate(travel, { params: { to, flee: true }, timeline: inFight(8), react: walking() });
+        expect(r.result.status).toBe('done');
+        expect(r.result.finalPos).toMatchObject({ x: 3298, z: 3250 });
+        expect(walks(r).length).toBeGreaterThan(0);
+        expect(r.result.stepRuns['interrupt:under-attack']).toBeUndefined();
+    });
+
+    test('low HP while fleeing eats held food, then the walk goes on', async () => {
+        const r = await simulate(travel, {
+            params: { to, flee: true },
+            timeline: base.inv('Shrimps', 2).series(60, (w, i) => w.player({ inCombat: i < 8, hp: i === 2 ? 3 : 10 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('still in combat at the destination fails after the settle loops', async () => {
+        const r = await simulate(travel, {
+            params: { to, flee: true },
+            timeline: base.series(80, w => w.player({ inCombat: true })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('fight-at-destination: still in combat at (3300,3250) after fleeing there');
+    });
+
+    test('fleeing with low HP, an attacker and no food fails in the low-hp guard', async () => {
+        const r = await simulate(travel, {
+            params: { to, flee: true },
+            timeline: base.series(30, w => w.player({ inCombat: true, hp: 4 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toEndWith('no food');
+    });
+});
