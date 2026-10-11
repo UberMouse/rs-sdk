@@ -136,7 +136,7 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Skill | Lvl | Best measured method | XP/h | Gap to close / next |
 |---|---|---|---|---|
 | Thieving | 99 | Falador guards, food (plan guard-thieve) | 2.2M (82-99) | done; Paladin/Hero untested |
-| Mining | 99 | iron power-mine, drop each ore (02b861cd5), Al Kharid | 1.155M (92-97) | stand tile reaching 2-3 rocks (in progress) |
+| Mining | 99 | iron power-mine, drop each ore (02b861cd5), a 4-rock layout (SE Varrock or Rimmington, area mode) | 1.167M (6.75 ticks/ore) | at the engine floor for iron: 5-tick swing + a step; 3-rock spots are respawn-bound (7.6); standing still and roll-tick clicks gain nothing |
 | Fishing | 79 | Lumbridge lure, cook + bank (plan lure-cook-bank) | ~1.1M | drop vs cook; better spot at 80+ |
 | Cooking | 83 | Lumbridge pot, inside lure-cook-bank | 345k (alone) | a range next to a bank; cook while fishing |
 | Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | only 5 trees (respawn waits); better axe; burn line next to the trees (12-tile walk); yews/maples at 80+ |
