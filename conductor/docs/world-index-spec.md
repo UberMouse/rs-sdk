@@ -38,11 +38,38 @@ get their own detailed plan once phase 1 lands (their inputs are phase 1's outpu
   2 region).
 - The worktree has no `node_modules` until `bun install`.
 
+## Global rules (apply to every task)
+
+- **Scope is phase 1** (Tasks 1-8 below). Phases 2-3 are out of scope for this spec.
+- **Code lives in `wiki/world/`**; unit tests in `wiki/world/test/**/*.test.ts` (bun:test), run with
+  `bun test wiki/world`. Tests on real game data are named `*.real.test.ts`; they read
+  `server/content` and may take a few seconds, but need no server. No test calls `process.exit`.
+- **Formatting and lint**: from Task 1, `wiki/world` is under oxfmt + oxlint (warnings denied) and
+  `tsc`, via `bun run verify:conductor`. Finish every task with `bun run verify:conductor`,
+  `bun test wiki/world` and `bun test conductor` all green.
+- **Style**: copy `conductor/` idiom (4-space indent, single quotes, named exports, small pure
+  functions). Comments explain why, at the density of `conductor/lib/`; a comment citing the
+  engine or a script names the file (and line where it helps).
+- **The game is the source of truth.** Classification and facts come from `server/content` (maps,
+  packs, configs, dbrows, scripts) and `server/engine/src`, never from name matching or memory. A
+  real-data test that fails means find out whether the fact or the code is wrong, then fix that.
+- **Do not edit** `server/`, `sdk/`, or `conductor/` code (except `package.json` scripts in
+  Task 1). `wiki/items/` is out of scope. `wiki/npcs/` and `wiki/shops/` change only through their
+  generators (Task 7). `conductor/lib/banks.ts` and `connectors.ts` are not changed in phase 1.
+- **Generated files are committed** (`wiki/world.json`, rendered pages) together with the code that
+  generates them, and are never hand-edited.
+- **Determinism**: generation output is byte-identical across runs (sorted output, no timestamps,
+  no `Date.now()`; `generatedFrom` is a git hash).
+- Game knowledge discovered along the way goes in `learnings/` per the `knowledge` skill, not in
+  code comments.
+
 ---
 
-## Phase 1: extract, classify, place
+## Task 1 — Scaffolding and source parsers
 
-### Task 1: Scaffolding
+Covers 1a-1c below.
+
+### 1a. Scaffolding
 
 **Files:**
 - Create: `wiki/world/tsconfig.json`, `wiki/world/types.ts`, `wiki/world/paths.ts`
@@ -158,9 +185,7 @@ export interface World {
 
 **Step 7:** Commit `feat(world): scaffolding for the world index generator`.
 
----
-
-### Task 2: Map parser with the bridge rule
+### 1b. Map parser with the bridge rule
 
 **Files:**
 - Create: `wiki/world/sources/maps.ts`, `wiki/world/test/maps.test.ts`
@@ -281,9 +306,7 @@ export function readAllMapSquares(dir = MAPS): { locs: MapLoc[]; npcs: MapNpc[] 
 
 **Step 5:** Commit `feat(world): map square parser with the bridge rule`.
 
----
-
-### Task 3: Packs, configs, dbrows
+### 1c. Packs, configs, dbrows
 
 **Files:**
 - Create: `wiki/world/sources/packs.ts`, `wiki/world/sources/configs.ts`, `wiki/world/sources/dbrows.ts`
@@ -453,9 +476,28 @@ export function readDbrows(): DbRow[] {
 
 **Step 5:** Commit `feat(world): pack, config and dbrow parsers`.
 
+### Acceptance criteria
+
+- [ ] `wiki/world/{tsconfig.json,paths.ts,types.ts}` exist as specified; `package.json` scripts
+      `test`, `fmt`, `fmt:check`, `lint`, `verify:conductor` cover `wiki/world`, and `world` runs
+      `wiki/world/build.ts` (the file may not exist until Task 5).
+- [ ] `parseMapSquare` applies the bridge rule to locs only (level-1 tile flag `& 0x2`), drops
+      locs that would go below level 0, keeps npc levels; tests pin all three plus world coords.
+- [ ] `parsePack`, `parseConfigs` (repeated keys collected, `//` comments skipped), `parseDbrows`
+      tested as specified.
+- [ ] `readConfigs` precedence matches `wiki/generate-npcs.ts`'s (hand-written configs override
+      `_unpack` dumps), with a test for that rule.
+- [ ] A real-data test reads every map square and finds the Canifis booths (`bankbooth`, id
+      2213, near (3513, 3480)) on level 0.
+- [ ] Out of scope: classification, clustering, any output file.
+
 ---
 
-### Task 4: Trigger index
+## Task 2 — Trigger index and classification
+
+Covers 2a-2b below.
+
+### 2a. Trigger index
 
 What makes a loc or NPC usable is the script trigger on it. Index every op trigger with its
 script path and body, so classification rules can ask "which script handles `[oplocu,_anvil]`" and
@@ -554,14 +596,12 @@ Note: `oploc` and `aploc` both count; one placement often has both, and rules de
 
 **Step 5:** Commit `feat(world): index of loc and npc op triggers`.
 
----
-
-### Task 5: Classification rules
+### 2b. Classification rules
 
 **Files:**
 - Create: `wiki/world/classify.ts`
 - Test: `wiki/world/test/classify.test.ts` (scripted inputs) and `wiki/world/test/classify.real.test.ts`
-  (real data; see Task 9)
+  (real data; see Task 5)
 
 A placement's config name and its config's `category` are matched against the trigger index and
 the dbrows. Each rule returns `{ kind, subtype } | null`. Two rules matching one placement is a build
@@ -677,9 +717,31 @@ For the `@openbank` "via a label" case: build, per file, the set of labels whose
 
 **Step 5:** Commit `feat(world): classify placements by the triggers and dbrows that use them`.
 
+### Acceptance criteria
+
+- [ ] `parseTriggers` indexes `op`/`ap` loc/npc triggers (ops 1-5 and `u`), names and categories,
+      bodies to the next header; labels/procs/queues are not triggers; tested.
+- [ ] `classifier` implements every row of the rule table, in order; two matching rules throw
+      naming both; no rule returns `null`. One scripted test per rule (positive) plus the scenery
+      negative.
+- [ ] `@openbank` is detected directly and one label deep within the same file; tested.
+- [ ] A real-data test (`classify.real.test.ts`) classifies, from the real configs/dbrows/
+      triggers: `bankbooth` bank, `bankboothclosed` and `loc_2214` not banks, `yewtree` tree/yew,
+      a `mining_table` iron rock rock/iron, `banker1` bank/banker, `duel_fadli` bank,
+      `magearena_banker` bank, a furnace, an anvil, a range (`cooking_oven` category), and every
+      loc/npc in the real data classifies without a two-rule error.
+- [ ] The two checks the rule table asks for (range category; tanner trigger) are done, and the
+      outcome is in the code (a `tanner` kind only if a trigger exists).
+- [ ] Out of scope: placement, clustering, areas.
+
 ---
 
-### Task 6: Zones (F2P, multiway, Wilderness)
+## Task 3 — Zones and areas
+
+Covers 3a-3b below. Step 5 of 3b (curation) belongs to Task 5, not here: this task lands the
+resolver, the seed tool and a seeded, lightly-corrected `areas.ts`.
+
+### 3a. Zones (F2P, multiway, Wilderness)
 
 **Files:**
 - Create: `wiki/world/sources/zones.ts`; Test: `wiki/world/test/zones.test.ts`
@@ -716,9 +778,7 @@ formula, and adjust the test's expectations to match it. Underground Wilderness 
 
 **Step 4:** Run. Expected: PASS. **Step 5:** Commit `feat(world): f2p, multiway and wilderness zones`.
 
----
-
-### Task 7: Areas: resolver, seed draft, curation
+### 3b. Areas: resolver, seed draft, curation
 
 **Files:**
 - Create: `wiki/world/areas.ts` (curated data), `wiki/world/area-resolve.ts`,
@@ -757,9 +817,9 @@ of the deepest area containing the tile (ties: smallest total rect area).
 become region areas, types 1 and 0 town/place areas with a 48x48 / 24x24 rect around the label,
 parented to the nearest region. The draft is a starting point only.
 
-**Step 5: Curate** `wiki/world/areas.ts` from the seed. Required before Task 9 can pass:
+**Step 5: Curate** `wiki/world/areas.ts` from the seed. Required before Task 5 can pass:
 - Every site of kind `bank`, `shop`, `tree`, `rock`, `fishing-spot`, any service kind, `stall`,
-  `pickpocket` lies in an area (Task 9's coverage report lists the ones that don't).
+  `pickpocket` lies in an area (Task 5's coverage report lists the ones that don't).
 - Each bank site gets its own leaf area with its common name (`Varrock West bank`, `Draynor bank`,
   `Falador East bank`, `Ardougne North bank`, `Zanaris bank`, `Mage Arena bank`, `Duel Arena
   bank chest`, ...). Use the 25 bank sites in `world-index.md` "Why" as the checklist.
@@ -774,9 +834,20 @@ parented to the nearest region. The draft is a starting point only.
 **Step 6:** Run the resolver test and `bun run verify:conductor`. Commit
 `feat(world): curated areas and their resolver`.
 
+### Acceptance criteria
+
+- [ ] `zoneKey`, `parseZoneCsv`, `readZones`, `wildernessLevel` as specified; the Wilderness
+      formula and bounds match the engine's (the file and line cited in a comment), tests match it.
+- [ ] `areaResolver` validates (unique ids, parents exist, child rects inside the parent's union)
+      and resolves the deepest, then smallest, containing area as a path; the four tests pass.
+- [ ] `tools/seed-areas.ts` prints a draft from `labels.txt`; `areas.ts` is that draft with the
+      label names cleaned (`/` -> space) and any obviously wrong parenting fixed; it passes the
+      resolver's validation.
+- [ ] Out of scope: coverage curation (Task 5), sites.
+
 ---
 
-### Task 8: Sites: clustering, stand tiles, flags
+## Task 4 — Sites: clustering, stand tiles, flags
 
 **Files:**
 - Create: `wiki/world/place.ts`; Test: `wiki/world/test/place.test.ts`
@@ -805,9 +876,25 @@ nearest the site centre. NPC-only sites: the walkable tile nearest the centre wi
 **Step 2:** Run, FAIL. **Step 3:** Implement `buildSites(features, resolve, zones, pathfinder)`.
 **Step 4:** PASS. **Step 5:** Commit `feat(world): cluster features into sites with stand tiles`.
 
+### Acceptance criteria
+
+- [ ] `buildSites(features, resolve, zones, pathfinder)` clusters per kind and level with the
+      radii given, never across leaf areas; ids are stable and input-order independent.
+- [ ] Sites carry `areaPath`, `centre`, `bbox`, `stand`, `counts`, `features`, `f2p`,
+      `multiway`, `wildernessLevel` (F2P/multiway: any feature tile's zone in the csv).
+- [ ] Stand tiles follow the rule given (bank: away from bankers; else nearest the centre;
+      npc-only: walkable nearest the centre in the bbox; else `null`).
+- [ ] The five tests listed pass with a stubbed pathfinder; production uses
+      `conductor/actions/paths.ts` `collisionPaths`.
+- [ ] Out of scope: writing `world.json`, rendering.
+
 ---
 
-### Task 9: Build pipeline, world.json, real-data facts and coverage
+## Task 5 — Build pipeline, area curation, world.json and real-data facts
+
+Includes Task 3b Step 5 (curating `areas.ts` until coverage is clean).
+
+### 5a. Build pipeline
 
 **Files:**
 - Create: `wiki/world/build.ts`, `wiki/world/load.ts` (reads `wiki/world.json` typed)
@@ -848,9 +935,22 @@ before changing either (the game is the source of truth; see CLAUDE.md).
 `bun test wiki/world`, `bun run verify:conductor`. Commit `feat(world): build world.json` (code,
 `areas.ts` changes and `wiki/world.json` together).
 
+### Acceptance criteria
+
+- [ ] `bun run world` writes `wiki/world.json` deterministically (two runs, identical bytes) and
+      prints the report described; it exits 1 on a coverage gap and 0 now.
+- [ ] `wiki/world/load.ts` returns a typed `World` from `wiki/world.json`.
+- [ ] `areas.ts` is curated per Task 3b Step 5: every required-kind site is in an area; all 25
+      bank sites from `world-index.md` have leaf areas with their common names; names already used
+      in `learnings/` and `wiki/skills/` are matched.
+- [ ] Every real-data fact listed is a passing test with a real body (no `todo`); any fact that
+      turned out wrong is corrected in the test with a comment citing the data that settled it.
+- [ ] `wiki/world.json` committed with the code.
+- [ ] Out of scope: markdown pages.
+
 ---
 
-### Task 10: Render places, resources and services pages
+## Task 6 — Render places, resources and services pages
 
 **Files:**
 - Create: `wiki/world/render/places.ts`, `render/resources.ts`, `render/services.ts`,
@@ -878,9 +978,19 @@ and exits 1 if any generated file differs from the working tree (the freshness c
 
 Commit `feat(world): render places, resources and services pages`.
 
+### Acceptance criteria
+
+- [ ] `places/`, `resources/`, `services/` pages generated with the shapes described, sorted and
+      deterministic; `wiki/world/README.md` explains the folders and where corrections go.
+- [ ] `bun wiki/world/build.ts --check` exits 1 on any drift and 0 on a fresh tree; it is part of
+      `verify:conductor`.
+- [ ] Snapshot tests for each page kind on a tiny synthetic `World`.
+- [ ] Pages committed with the code.
+- [ ] Out of scope: `wiki/npcs/`, `wiki/shops/`.
+
 ---
 
-### Task 11: NPC and shop pages use sites
+## Task 7 — NPC and shop pages use sites
 
 **Files:**
 - Modify: `wiki/generate-npcs.ts` (remove `MAP_SQUARE_AREAS`, `getAreaFromMapSquare`,
@@ -900,9 +1010,21 @@ corrected. Diff the regenerated pages and read a sample of 20 before committing.
 
 Commit `fix(wiki): npc and shop locations from world sites, with correct area names`.
 
+### Acceptance criteria
+
+- [ ] `MAP_SQUARE_AREAS` and the map-square area naming are gone from `generate-npcs.ts`;
+      locations come from `world.json` (`sites` or `npcSpawns`).
+- [ ] `world.json` gains `npcSpawns` (config -> clustered spawns with area paths); Task 5's
+      determinism and Task 6's `--check` still hold.
+- [ ] `wiki/npcs/banker.md` lists 16 sites with correct names; `fadli.md`, `gundai.md` have
+      locations; shop pages' coordinates come from shop sites.
+- [ ] Both generators still run (`bun wiki/generate-npcs.ts`, `bun wiki/generate-shops.ts`) and
+      their regenerated output is committed.
+- [ ] Out of scope: drop tables, item pages, page sections other than locations.
+
 ---
 
-### Task 12: Knowledge-base wiring
+## Task 8 — Knowledge-base wiring
 
 **Files:**
 - Modify: `.claude/skills/knowledge/SKILL.md` (generated folders now include `places/`,
@@ -914,12 +1036,21 @@ Commit `fix(wiki): npc and shop locations from world sites, with correct area na
 
 Commit `docs(knowledge): world index pages are generated; where corrections go`.
 
-**Phase 1 review:** run the `task-review` skill over the branch (lenses: code-quality, contract,
-robustness) and fix findings per memory `review-fix-all-bands` before starting phase 2.
+### Acceptance criteria
+
+- [ ] The knowledge skill, `CLAUDE.md` and the wiki README name the new generated folders, the
+      curated inputs and where corrections go.
+- [ ] `learnings/banking.md` links `wiki/services/bank.md`; verified-in-game notes kept, duplicate
+      coordinates removed.
+- [ ] Out of scope: other `learnings/` pages.
 
 ---
 
-## Phase 2: reachability and travel (outline; detail in a follow-up plan)
+## Out of scope for this spec
+
+Phases 2 and 3 below get their own spec once phase 1 lands.
+
+### Phase 2: reachability and travel (outline)
 
 1. **Connector extraction** (`sources/connectors.ts`): parse `ladders+stairs/scripts/*.rs2`
    `case <level>_<mx>_<mz>_<x>_<z> : p_telejump(<coord>)` into (loc tile -> landing); match to
@@ -941,7 +1072,7 @@ robustness) and fix findings per memory `review-fix-all-bands` before starting p
    tests); `conductor/lib/banks.ts` derives `BANKS` from bank sites (F2P, surface, reach `{}`) with
    the curated `auto: false` exclusions kept. Both run through `task-review`.
 
-## Phase 3: rate model and methods (outline; detail in a follow-up plan)
+### Phase 3: rate model and methods (outline)
 
 1. **Formula ports** (`wiki/world/model/`): `statRandom(level, low, high)` from the engine's
    `stat_random` command implementation; woodcutting (swing ticks, `successchance`, deplete 1/8,
