@@ -178,3 +178,20 @@ function isInAlKharid() {
     return player.worldX >= 3267 && player.worldZ < 3220;
 }
 ```
+
+## Stairs and ladders (`walkTo` between levels)
+
+`walkTo` climbs stairs and ladders when the target is on another level or region (connector table in `conductor/lib/connectors.ts`). Facts the connectors rest on (stand = tile to stand on before the op; inside a building stand on the exact tile):
+
+| Connector | Surface/upper loc, option | Stand / landing | Lower/other loc, option | Stand / landing |
+|---|---|---|---|---|
+| Falador mine stairs | (3059,3376) `Climb-down Staircase` | stand (3062,3376) | (3059,9776) `Climb-up Staircase` | landing (3058,9776) |
+| Wizards' Tower ladder | (3104,3162) `Climb-down Ladder` | stand (3105,3162), lands (3104,9576) | (3103,9576) `Climb-up Ladder` | lands (3105,3162) |
+| Wizards' Tower stairs | (3103,3159) on levels 0 and 1 | stand/landing (3105,3160) | top floor (3104,3160) | stand/landing (3104,3161) on level 2 |
+| Lumbridge castle SW tower stairs | (3204,3207) levels 0 and 1, (3205,3208) level 2 | stand/landing (3205,3209) on every level | | |
+
+- Both Falador mine directions were walked live (shop task: Nurmof's Iron pickaxe 140 gp, then back up and a sale at the Falador general store). Wizards' Tower and Lumbridge stairs/ladder were exercised only in integration tests. [v 2026-10-11 conductor2w1 local]
+- Lumbridge level 1 offers `Climb-up` and `Climb-down`; a plain `Climb` asks a "Climb up or down?" dialog. [v 2026-10-11 conductor2w1 local]
+- Underground areas sit on level 0 at the surface x with z + 6400 (Falador mine 3059,3376 -> 3059,9776; Wizards' Tower basement 3104,3162 -> 3104,9576). The Dwarven Mine region is x 2880..3071, z 9728..9855, not the Wilderness (the Edgeville dungeon, x 2944..3391, z >= 9920, is). [v 2026-10-11 conductor2w1 local]
+- Open problem: the Wizards' Tower stairs/ladder room (x 3103..3107, z 3159..3163) is entered through a diagonal door at (3107,3162) that the SDK collision data lacks, so a walk into the tower from outside ends with no path. [v 2026-10-11 conductor2w1 local]
+- Hazards at the landings (Falador mine scorpions, Wizards' Tower lesser demon): `learnings/hazards.md`; a combat-20 worker was not attacked on its Falador mine trips (safe level still unverified).
