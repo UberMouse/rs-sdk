@@ -87,6 +87,17 @@ describe('buildSites: clustering', () => {
         expect(sites[0]!.bbox).toEqual({ x1: 100, z1: 100, x2: 116, z2: 108, level: 0 });
     });
 
+    test('trees in diagonal grid cells within the radius are one site', () => {
+        // Radius 8: x 7 and 8 sit in different cells, and so do z 7 and 8.
+        expect(build([loc('tree', 'oak', 7, 7), loc('tree', 'oak', 15, 15)])).toHaveLength(1);
+        expect(build([loc('tree', 'oak', 7, 7), loc('tree', 'oak', 8, 9)])).toHaveLength(1);
+    });
+
+    test('trees exactly the radius apart are one site, one more apart are two', () => {
+        expect(build([loc('tree', 'oak', 100, 100), loc('tree', 'oak', 108, 100)])).toHaveLength(1);
+        expect(build([loc('tree', 'oak', 100, 100), loc('tree', 'oak', 109, 100)])).toHaveLength(2);
+    });
+
     test('features in two leaf areas never share a site', () => {
         const sites = build([booth(100, 100), booth(101, 100)], splitAt101);
         expect(sites.map(s => [s.id, s.areaPath, s.features])).toEqual([
@@ -163,11 +174,21 @@ describe('buildSites: stand tiles', () => {
         expect(site!.stand).toEqual({ level: 0, x: 100, z: 103 });
     });
 
-    test('an npc-only site stands on the walkable tile nearest the centre within its bbox', () => {
+    test('an npc-only site stands on the walkable tile nearest the centre within its bbox grown by a tile', () => {
         const fs = [npc('pickpocket', 'man', 100, 100), npc('pickpocket', 'man', 102, 100)];
         const collision = stubCollision([{ level: 0, x: 101, z: 100 }]);
         const [site] = buildSites(fs, oneArea, noZones, collision, quiet);
         expect(site!.stand).toEqual({ level: 0, x: 100, z: 100 });
+    });
+
+    test('an npc-only site with water all through its bbox stands on the shore one tile outside it', () => {
+        const fs = [npc('fishing-spot', 'net', 100, 100), npc('fishing-spot', 'net', 102, 100)];
+        const water = [99, 100, 101, 102, 103].map(x => ({ level: 0, x, z: 100 }));
+        const shore = [99, 100, 101, 102, 103].flatMap(x => [99, 101].map(z => ({ level: 0, x, z })));
+        const open = { level: 0, x: 101, z: 101 };
+        const collision = stubCollision([...water, ...shore.filter(t => t.x !== open.x || t.z !== open.z)]);
+        const [site] = buildSites(fs, oneArea, noZones, collision, quiet);
+        expect(site!.stand).toEqual(open);
     });
 
     test('no reachable tile is a null stand, logged', () => {
