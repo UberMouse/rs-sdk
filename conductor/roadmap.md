@@ -152,8 +152,8 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
 | Attack/Strength/Defence | 40/40/40 | Lumbridge cows, steel scimitar, cooked fish | 173-203k | no plan promoted (dead shop phase, AK-specific route); higher-XP targets at 40+ |
 | Prayer | 15 | bones from combat | - | no method measured |
-| Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | quest; route research in flight |
-| Runecraft | 1 | locked: Rune Mysteries (runner in flight 2026-10-14) | - | quest; `runecraft` task being authored |
+| Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | predicted (engine data, not run): herb supply binds, not clicks (identify/mix have no delay, ~1,300 potions/h). No shop sells herbs; best source found chaos druids ~0.45 herb/kill (~220 herbs/h, ~0.1-0.25M XP/h); lantadyme/dwarf weed ~2% of drops, so 70-99 by drops is infeasible: find a bulk herb source (Miscellania unevaluated) |
+| Runecraft | 1 | locked: Rune Mysteries (runner in flight 2026-10-14) | - | predicted (engine data, not run): one air trip to 9, then Aubury teleport -> essence -> earth ruins (3305,3472), ~180 ticks/28 ess, 130-150k (rune pickaxe saves 28 ticks/trip). XP is per essence; no tiaras or pure essence in this rev; needs an earth talisman (men 2/128). `runecraft` task being authored |
 
 Route-wide: banks are one account-wide bank; the walk ops pay the Al Kharid toll gate both ways
 (09c37ed56), so routes through Al Kharid need 10 gp, not a detour.
