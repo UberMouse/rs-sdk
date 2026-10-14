@@ -147,16 +147,16 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
 | Ranged | 40 | Shortbow, Lumbridge chickens | ~86k (13-40) | better bow/arrows, higher-HP targets |
 | Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | predicted (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
-| Hitpoints | 36 | from combat | - | follows melee/ranged |
+| Hitpoints | 46 | from combat | - | follows melee/ranged |
 | Crafting | 35 | pottery | 65k | leather, gems, glass |
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
-| Attack/Strength/Defence | 18/25/15 | chickens | 55-108k | cows + steel scimitar (in flight) |
+| Attack/Strength/Defence | 40/40/40 | Lumbridge cows, steel scimitar, cooked fish | 173-203k | no plan promoted (dead shop phase, AK-specific route); higher-XP targets at 40+ |
 | Prayer | 15 | bones from combat | - | no method measured |
-| Herblore | 1 | locked: Druidic Ritual | - | quest |
-| Runecraft | 1 | locked: Rune Mysteries | - | quest |
+| Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | quest; route research in flight |
+| Runecraft | 1 | locked: Rune Mysteries (runner in flight 2026-10-14) | - | quest; `runecraft` task being authored |
 
-Route-wide: banks are one account-wide bank; the Al Kharid toll gate is not yet paid by the walk ops
-(author in flight), so routes there detour north.
+Route-wide: banks are one account-wide bank; the walk ops pay the Al Kharid toll gate both ways
+(09c37ed56), so routes through Al Kharid need 10 gp, not a detour.
 
 ## Experiments
 
