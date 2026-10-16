@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { byWritten, formatReport, serializeWorld, type BuildReport } from '../build';
+import { byWritten, failed, formatReport, serializeWorld, type BuildReport } from '../build';
 import { loadWorld } from '../load';
 import { WORLD_FORMAT, type Feature, type World } from '../types';
 
@@ -47,10 +47,26 @@ const world: World = {
             source: 'ladders+stairs/scripts/ladders.rs2:81',
         },
     ],
+    quests: [{ id: 'zanaris', varp: 'zanaris', varpId: 147, complete: 6, stages: {}, source: 'quests.rs2:329' }],
+    loadoutRules: {
+        entrana: { forbidCategories: { weapon_axe: 'both', cannon_parts: 'carried' }, source: 'monk.rs2:26' },
+    },
+    transports: [
+        {
+            kind: 'ship',
+            route: 'port_sarim_to_karamja',
+            npc: 'captain_tobias',
+            from: { level: 0, x: 3028, z: 3216 },
+            to: { level: 1, x: 2956, z: 3143 },
+            fare: 30,
+            requires: ['coins:30'],
+            source: 'sailors.rs2:10',
+        },
+    ],
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site, npc spawn cluster or connector per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster, connector, quest, rule or transport per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -69,6 +85,15 @@ describe('serializeWorld', () => {
                 '  ],',
                 '  "connectors": [',
                 '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"}',
+                '  ],',
+                '  "quests": [',
+                '    {"id":"zanaris","varp":"zanaris","varpId":147,"complete":6,"stages":{},"source":"quests.rs2:329"}',
+                '  ],',
+                '  "loadoutRules": {',
+                '    "entrana": {"forbidCategories":{"weapon_axe":"both","cannon_parts":"carried"},"source":"monk.rs2:26"}',
+                '  },',
+                '  "transports": [',
+                '    {"kind":"ship","route":"port_sarim_to_karamja","npc":"captain_tobias","from":{"level":0,"x":3028,"z":3216},"to":{"level":1,"x":2956,"z":3143},"fare":30,"requires":["coins:30"],"source":"sailors.rs2:10"}',
                 '  ]',
                 '}',
                 '',
@@ -101,12 +126,15 @@ describe('serializeWorld', () => {
             expect(loadWorld(file)).toEqual(world);
             writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
-            // A format-2 file written before connectors, with its format bumped by hand, is still refused.
-            const { connectors: _, ...before } = world;
+            // A format-3 file written before quests and transports, with its format bumped by hand, is still
+            // refused; so is one whose loadoutRules is not an object.
+            const { quests: _, loadoutRules: _r, transports: _t, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
             expect(() => loadWorld(file)).toThrow(
-                /needs generatedFrom, areas, features, sites, npcSpawns and connectors/,
+                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules and transports/,
             );
+            writeFileSync(file, JSON.stringify({ ...world, loadoutRules: [] }));
+            expect(() => loadWorld(file)).toThrow(/not a world.json/);
         } finally {
             rmSync(dir, { recursive: true });
         }
@@ -146,14 +174,31 @@ describe('formatReport', () => {
         unpacked: {},
         log: [],
         connectors: { derived: 3, locs: 2, oneWay: [], underived: {}, offLand: [] },
+        quests: { count: 68, overrides: ['cog', 'ikov'], unread: [], stale: [] },
+        transports: {
+            ships: 19,
+            routes: 9,
+            curated: 2,
+            windows: [],
+            underived: [],
+            unreached: [],
+            unusedRoutes: [],
+            other: [],
+            outOfScope: [],
+        },
     };
+    const tail = [
+        'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
+        'transports: 19 ship rows on 9 routes, 2 curated rows',
+    ];
 
-    test('counts, then coverage, then connectors', () =>
+    test('counts, then coverage, then connectors, quests and transports', () =>
         expect(formatReport(report)).toEqual([
             'features: bank 3, tree 2',
             'sites: bank 1, tree 1',
             'coverage: every site of a covered kind lies in an area',
             'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
+            ...tail,
         ]));
 
     test('lists the one-way and off-land connectors, and the underived ops by what stopped them', () => {
@@ -181,6 +226,7 @@ describe('formatReport', () => {
             'warning: 2 connector ops with no landing, by what stopped them:',
             '  `@unhandled_stairs(loc_coord)` (stairs.rs2:42) does not move the player: 2',
             '    stairs (9, 9) op1, stairs (8, 8) op1',
+            ...tail,
         ]);
     });
 
@@ -198,6 +244,7 @@ describe('formatReport', () => {
             '  npc:unnamed:0',
             'warning: placements with no config in the pack: loc 9 2',
             'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
+            ...tail,
         ]);
     });
 
@@ -208,7 +255,52 @@ describe('formatReport', () => {
             'warning: 12 npc sites outside every area, the first 10:',
             ...npcUncovered.slice(0, 10).map(id => `  ${id}`),
             'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
+            ...tail,
         ]);
+    });
+
+    test('lists the quest and transport errors, warnings and notes, and failed says when to exit 1', () => {
+        expect(failed(report)).toBe(false);
+        const bad: BuildReport = {
+            ...report,
+            quests: { ...report.quests, unread: ['upass: `1` is not a varp (q.rs2:1)'], stale: ['ikov: not needed'] },
+            transports: {
+                ...report.transports,
+                windows: ['ned (1, 2) -> port_sarim_to_crandor: `%dragonquest = ^x` (ned.rs2:4)'],
+                underived: ['sailor (s.rs2:1): `while (true) {` (s.rs2:2): a loop is not followed'],
+                unreached: ['boat.rs2:9'],
+                unusedRoutes: ['crandor_to_port_sarim'],
+                other: ['sailor -> karamja: other:`x = 1` (s.rs2:3)'],
+                outOfScope: ['gliders (glider.rs2:7): a menu'],
+            },
+        };
+        expect(formatReport(bad).slice(4)).toEqual([
+            'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
+            'ERROR quests: 1 with no readable journal call and no override in gates.ts:',
+            '  upass: `1` is not a varp (q.rs2:1)',
+            'ERROR quests: 1 overrides in gates.ts not needed:',
+            '  ikov: not needed',
+            'transports: 19 ship rows on 9 routes, 2 curated rows',
+            'ERROR transports: 1 sail sites no npc op reaches (derive, curate or list them out of scope in gates.ts):',
+            '  boat.rs2:9',
+            'warning: 1 sail scripts the walker could not finish:',
+            '  sailor (s.rs2:1): `while (true) {` (s.rs2:2): a loop is not followed',
+            'warning: 1 transport requirements in no other form:',
+            '  sailor -> karamja: other:`x = 1` (s.rs2:3)',
+            'sail paths left out as quest windows: 1',
+            '  ned (1, 2) -> port_sarim_to_crandor: `%dragonquest = ^x` (ned.rs2:4)',
+            'sail routes no npc sails: crandor_to_port_sarim',
+            'transports out of scope (gates.ts): 1',
+            '  gliders (glider.rs2:7): a menu',
+        ]);
+        expect(failed(bad)).toBe(true);
+        for (const one of [
+            { ...report, uncovered: ['bank:x'] },
+            { ...report, quests: { ...report.quests, unread: ['x'] } },
+            { ...report, quests: { ...report.quests, stale: ['x'] } },
+            { ...report, transports: { ...report.transports, unreached: ['x'] } },
+        ])
+            expect(failed(one)).toBe(true);
     });
 });
 

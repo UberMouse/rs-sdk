@@ -107,6 +107,9 @@ const world: World = {
         stand: { level: 0, x: 3160, z: 3161 },
         source: 'ladders+stairs/scripts/ladders.rs2:1',
     })),
+    quests: [],
+    loadoutRules: {},
+    transports: [],
 };
 
 const data: RenderData = {
@@ -358,6 +361,9 @@ const named: World = {
     generatedFrom: 'abc123',
     npcSpawns: [],
     connectors: [],
+    quests: [],
+    loadoutRules: {},
+    transports: [],
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 3000, z1: 3000, x2: 3500, z2: 3500 }] }],
     features: [
         feature('rock', 'iron', 'Rocks', 'ironrock1', 3200, 3200),

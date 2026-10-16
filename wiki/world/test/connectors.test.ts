@@ -2,14 +2,13 @@ import { describe, expect, test } from 'bun:test';
 import { locSizes, type LocReach } from '../place';
 import type { Config } from '../sources/configs';
 import {
-    coordTile,
     deriveConnectors,
     directionOf,
     MAX_PATHS,
-    tileCoord,
     type ConnectorCollision,
     type Connectors,
 } from '../sources/connectors';
+import { coordTile, tileCoord } from '../sources/runescript';
 import { parseCallables, parseTriggers } from '../sources/triggers';
 import type { Feature, Tile } from '../types';
 

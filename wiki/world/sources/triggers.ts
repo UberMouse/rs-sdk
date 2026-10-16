@@ -32,14 +32,15 @@ export interface Callable {
     body: string;
 }
 
-interface Block {
+/** One script in a file: its `[trigger,subject]` header, the header's line, and its body. */
+export interface Block {
     file: string;
     header: string;
     line: number;
     body: string;
 }
 
-function blocks(file: string, text: string): Block[] {
+export function blocks(file: string, text: string): Block[] {
     const out: Block[] = [];
     let cur: Block | undefined;
     for (const [i, line] of text.split('\n').entries()) {
@@ -89,7 +90,8 @@ export function parseCallables(file: string, text: string): Callable[] {
     });
 }
 
-function readScripts(): [file: string, text: string][] {
+/** Every .rs2 file outside `_test/` and `_unpack/`, by path relative to server/content/scripts. */
+export function readScripts(): [file: string, text: string][] {
     return [...new Glob('**/*.rs2').scanSync(SCRIPTS)]
         .filter(f => !f.startsWith('_test/') && !f.startsWith('_unpack/'))
         .sort()

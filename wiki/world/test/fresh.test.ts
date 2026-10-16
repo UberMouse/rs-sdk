@@ -82,6 +82,9 @@ describe('loadFreshWorld', () => {
         sites: [],
         npcSpawns: [],
         connectors: [],
+        quests: [],
+        loadoutRules: {},
+        transports: [],
     };
     const file = join(tmp, 'world.json');
     writeFileSync(file, serializeWorld(world));

@@ -1,10 +1,13 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
 // sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
-// pages read), and every connector's landings (sources/connectors.ts); then prints a report and renders
-// the pages (render.ts). `bun run world` writes them and exits 1 on a site that breaks the COVERED rule.
-// `--check` writes nothing: it exits 1 when world.json or a page differs from what the game data and
-// this code generate now, so a hand edit or a stale page fails verify:conductor, and on the COVERED rule
-// as the build does.
+// pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
+// the loadout rules (sources/loadout.ts) and the transports (sources/transports.ts, gates.ts); then
+// prints a report and renders the pages (render.ts). `bun run world` writes them and exits 1 when the
+// report has an error (failed): a site that breaks the COVERED rule, a quest with neither a readable
+// journal call nor an override, an override the scan no longer needs, or a sail site no npc op reaches
+// that gates.ts does not list as out of scope. `--check` writes nothing: it exits 1 when world.json or a
+// page differs from what the game data and this code generate now, so a hand edit or a stale page fails
+// verify:conductor, and on a report error as the build does.
 import { relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
@@ -19,7 +22,12 @@ import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } f
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
-import { readCallables, readTriggers } from './sources/triggers';
+import { CURATED_TRANSPORTS, LOADOUT_PROCS, QUEST_OVERRIDES, TRANSPORTS_OUT_OF_SCOPE } from './gates';
+import { readConstants } from './sources/constants';
+import { deriveLoadoutRules } from './sources/loadout';
+import { deriveQuests, scanQuestCalls } from './sources/quests';
+import { byTransport, curatedTransports, deriveSails } from './sources/transports';
+import { parseCallables, parseTriggers, readScripts } from './sources/triggers';
 import { readZones } from './sources/zones';
 import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
 import { cmp, push } from './util';
@@ -76,7 +84,42 @@ export interface BuildReport {
         /** Rows whose landing is not walkable land, as oneWay lists them. */
         offLand: string[];
     };
+    quests: {
+        count: number;
+        /** Ids of the quests read from gates.ts QUEST_OVERRIDES. */
+        overrides: string[];
+        /** Quests with neither a readable journal call nor an override, as `<id>: <why>`: an error. */
+        unread: string[];
+        /** Overrides the scan no longer needs, as `<id>: <why>`: an error. */
+        stale: string[];
+    };
+    transports: {
+        /** Rows from the sail scripts, and the routes they sail. */
+        ships: number;
+        routes: number;
+        /** Rows from gates.ts CURATED_TRANSPORTS. */
+        curated: number;
+        /** Sail paths left out as quest windows. */
+        windows: string[];
+        /** Sail triggers the walker could not finish, with what stopped it. */
+        underived: string[];
+        /** Sail sites no npc op reaches and gates.ts does not list as out of scope: an error. */
+        unreached: string[];
+        /** sail.constant routes no npc sails. */
+        unusedRoutes: string[];
+        /** Transport rows with an other:<text> requirement, as `<npc> -> <route or kind>: <requirement>`. */
+        other: string[];
+        /** gates.ts TRANSPORTS_OUT_OF_SCOPE, as `<what> (<script>): <reason>`. */
+        outOfScope: string[];
+    };
 }
+
+/** Whether the report has an error, which fails `bun run world` and `--check`. */
+export const failed = (r: BuildReport): boolean =>
+    r.uncovered.length > 0 ||
+    r.quests.unread.length > 0 ||
+    r.quests.stale.length > 0 ||
+    r.transports.unreached.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -114,11 +157,13 @@ const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
 /** Reads the game data and builds the world, without writing anything. */
 export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { world: World; report: BuildReport } {
     const locConfigs = readConfigs('loc');
-    const triggers = readTriggers();
-    const callables = readCallables();
+    const npcConfigs = readConfigs('npc');
+    const scripts = readScripts();
+    const triggers = scripts.flatMap(([f, text]) => parseTriggers(f, text));
+    const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
     const classify = classifier({
         locConfigs,
-        npcConfigs: readConfigs('npc'),
+        npcConfigs,
         dbrows: readDbrows(),
         triggers,
         callables,
@@ -174,8 +219,42 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const byReason = new Map<string, string[]>();
     for (const u of underived) push(byReason, u.reason, named(u));
 
+    const constants = readConstants();
+    const quests = deriveQuests({
+        calls: scanQuestCalls(scripts),
+        constants,
+        varps: readPack('varp'),
+        varbits: readConfigs('varbit'),
+        overrides: QUEST_OVERRIDES,
+    });
+    const loadoutRules = deriveLoadoutRules(LOADOUT_PROCS, callables);
+    const sails = deriveSails({
+        files: scripts,
+        triggers,
+        callables,
+        constants,
+        npcConfigs,
+        spawns,
+        quests: quests.quests,
+        loadoutProcs: LOADOUT_PROCS,
+    });
+    const curated = curatedTransports(CURATED_TRANSPORTS, spawns);
+    const transports = [...sails.transports, ...curated].sort(byTransport);
+    const outOfScope = new Set(TRANSPORTS_OUT_OF_SCOPE.map(o => o.script));
+
     return {
-        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites, npcSpawns, connectors },
+        world: {
+            format: WORLD_FORMAT,
+            generatedFrom,
+            areas: [...areas],
+            features,
+            sites,
+            npcSpawns,
+            connectors,
+            quests: quests.quests,
+            loadoutRules,
+            transports,
+        },
         report: {
             features: tally(features, f => f.kind),
             sites: tally(sites, s => s.kind),
@@ -195,6 +274,31 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                         : [row(i)],
                 ),
             },
+            quests: {
+                count: quests.quests.length,
+                overrides: QUEST_OVERRIDES.map(o => o.id).sort(cmp),
+                unread: quests.unread,
+                stale: quests.stale,
+            },
+            transports: {
+                ships: sails.transports.length,
+                routes: new Set(sails.transports.map(t => t.route)).size,
+                curated: curated.length,
+                windows: sails.windows,
+                underived: sails.underived,
+                unreached: sails.unreached.filter(at => !outOfScope.has(at)),
+                unusedRoutes: sails.unusedRoutes,
+                other: [
+                    ...new Set(
+                        transports.flatMap(t =>
+                            t.requires
+                                .filter(r => r.startsWith('other:'))
+                                .map(r => `${t.npc} -> ${t.route ?? t.kind}: ${r}`),
+                        ),
+                    ),
+                ],
+                outOfScope: TRANSPORTS_OUT_OF_SCOPE.map(o => `${o.what} (${o.script}): ${o.reason}`),
+            },
         },
     };
 }
@@ -203,10 +307,21 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
 const jsonList = (key: string, xs: readonly unknown[]): string =>
     `  "${key}": [` + (xs.length ? `\n${xs.map(x => `    ${JSON.stringify(x)}`).join(',\n')}\n  ]` : ']');
 
+/** `"key": {` then one `"id": <JSON>` line per entry, or `"key": {}`. */
+const jsonRecord = (key: string, record: Readonly<Record<string, unknown>>): string => {
+    const entries = Object.entries(record);
+    return (
+        `  "${key}": {` +
+        (entries.length
+            ? `\n${entries.map(([id, x]) => `    ${JSON.stringify(id)}: ${JSON.stringify(x)}`).join(',\n')}\n  }`
+            : '}')
+    );
+};
+
 /**
- * Two-space JSON with one area, feature, site, npc spawn cluster or connector per line, so a diff shows which
- * ones changed. Keys keep the order the objects were built in, and undefined fields are left out as
- * JSON.stringify does.
+ * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule or
+ * transport per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
+ * and undefined fields are left out as JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
     return [
@@ -217,7 +332,10 @@ export function serializeWorld(world: World): string {
         jsonList('features', world.features) + ',',
         jsonList('sites', world.sites) + ',',
         jsonList('npcSpawns', world.npcSpawns) + ',',
-        jsonList('connectors', world.connectors),
+        jsonList('connectors', world.connectors) + ',',
+        jsonList('quests', world.quests) + ',',
+        jsonRecord('loadoutRules', world.loadoutRules) + ',',
+        jsonList('transports', world.transports),
         '}',
         '',
     ].join('\n');
@@ -229,6 +347,9 @@ const counts = (r: Partial<Record<string, number>>): string =>
         .join(', ');
 
 const NPC_SAMPLE = 10;
+
+/** A heading and the items under it, indented; nothing when there are none. */
+const list = (head: string, xs: readonly string[]): string[] => (xs.length ? [head, ...xs.map(x => `  ${x}`)] : []);
 
 export function formatReport(report: BuildReport): string[] {
     const lines = [`features: ${counts(report.features)}`, `sites: ${counts(report.sites)}`];
@@ -272,6 +393,28 @@ export function formatReport(report: BuildReport): string[] {
                 `    ${locs.join(', ')}`,
             ]),
         );
+    const q = report.quests;
+    lines.push(`quests: ${q.count}, ${q.overrides.length} of them from gates.ts overrides (${q.overrides.join(', ')})`);
+    if (q.unread.length)
+        lines.push(
+            `ERROR quests: ${q.unread.length} with no readable journal call and no override in gates.ts:`,
+            ...q.unread.map(u => `  ${u}`),
+        );
+    if (q.stale.length)
+        lines.push(`ERROR quests: ${q.stale.length} overrides in gates.ts not needed:`, ...q.stale.map(u => `  ${u}`));
+    const t = report.transports;
+    lines.push(`transports: ${t.ships} ship rows on ${t.routes} routes, ${t.curated} curated rows`);
+    lines.push(
+        ...list(
+            `ERROR transports: ${t.unreached.length} sail sites no npc op reaches (derive, curate or list them out of scope in gates.ts):`,
+            t.unreached,
+        ),
+        ...list(`warning: ${t.underived.length} sail scripts the walker could not finish:`, t.underived),
+        ...list(`warning: ${t.other.length} transport requirements in no other form:`, t.other),
+        ...list(`sail paths left out as quest windows: ${t.windows.length}`, t.windows),
+        ...(t.unusedRoutes.length ? [`sail routes no npc sails: ${t.unusedRoutes.join(', ')}`] : []),
+        ...list(`transports out of scope (gates.ts): ${t.outOfScope.length}`, t.outOfScope),
+    );
     return lines;
 }
 
@@ -292,9 +435,9 @@ if (import.meta.main) {
             for (const p of stale) console.log(`  ${p}`);
             process.exitCode = 1;
         } else console.log(`world: ${generated} are fresh`);
-        // A fresh world.json can still hold a site outside every area: `bun run world` fails on it, so
-        // the check does too.
-        if (report.uncovered.length) {
+        // A fresh world.json can still have a report error: `bun run world` fails on it, so the check
+        // does too.
+        if (failed(report)) {
             for (const line of formatReport(report)) console.log(line);
             process.exitCode = 1;
         }
@@ -302,6 +445,6 @@ if (import.meta.main) {
         const removed = writeFiles(files);
         for (const line of formatReport(report)) console.log(line);
         console.log(`wrote ${generated}${removed.length ? `, removed ${removed.length} stale` : ''}`);
-        if (report.uncovered.length) process.exitCode = 1;
+        if (failed(report)) process.exitCode = 1;
     }
 }

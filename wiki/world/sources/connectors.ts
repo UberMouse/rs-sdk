@@ -4,16 +4,17 @@
 // a jump relative to the player's tile or the loc's (`~climb_ladder(movecoord(coord(), 0, 1, 0), true)`,
 // per op or per `switch_int (loc_angle)`); a table keyed by the loc's tile (`switch_coord (loc_coord) { case
 // 0_50_50_4_7 : p_telejump(1_50_50_5_9); ... }`); and a label several locs call with their coords
-// (`@stair_options(<up>, <down>)`). A small parser reads the RuneScript those use, and an evaluator runs a
-// trigger with `loc_coord` and `loc_angle` known and the player's `coord` symbolic. A condition it can't
-// settle (a dialog choice, a quest varp) is taken both ways, so an op can have several landings; a
-// landing it can't compute, or an op that never moves the player, is reported with the construct that
-// stopped it, never guessed.
+// (`@stair_options(<up>, <down>)`). The parser in runescript.ts reads the RuneScript those use, and an
+// evaluator runs a trigger with `loc_coord` and `loc_angle` known and the player's `coord` symbolic. A
+// condition it can't settle (a dialog choice, a quest varp) is taken both ways, so an op can have several
+// landings; a landing it can't compute, an op that never moves the player, or a loop on the way, is
+// reported with the construct that stopped it, never guessed.
 import { codeOf } from '../classify';
 import { footprint, reachTiles, type SiteCollision, type SiteOptions } from '../place';
 import type { Connector, Feature, Tile } from '../types';
 import { cmp, push } from '../util';
 import { first, type Config } from './configs';
+import { parseScript, type Expr, type Node, type Script, type Stmt } from './runescript';
 import type { Callable, Trigger } from './triggers';
 
 /** The script directory whose op triggers make a loc a connector (classify.ts). */
@@ -77,297 +78,6 @@ export interface Connectors {
     underived: Underived[];
     /** Indexes into `connectors` of those with no connector back (WAY_BACK). */
     oneWay: number[];
-}
-
-// ---- Tokens and syntax ------------------------------------------------------------------------------
-
-interface Token {
-    k: 'coord' | 'num' | 'name' | 'str' | 'punct';
-    v: string;
-    line: number;
-    at: number;
-    end: number;
-}
-
-/** A construct the parser does not read, at a line of its script. */
-class ParseError extends Error {
-    constructor(
-        readonly line: number,
-        message: string,
-    ) {
-        super(message);
-    }
-}
-
-// Whitespace, a coord literal (level_mx_mz_x_z), a number, a name (`$local`, `%varp`, `^constant`,
-// `~proc`, `@label` or a command), a string, an operator or bracket.
-const TOKEN =
-    /\s+|(\d+_\d+_\d+_\d+_\d+)|(\d+)|([$%^~@]?[A-Za-z_][A-Za-z0-9_]*)|("(?:[^"\\]|\\.)*")|(<=|>=|[(){},;:=!<>&|+\-*/])/y;
-
-function tokenize(code: string, firstLine: number): Token[] {
-    const out: Token[] = [];
-    let line = firstLine;
-    for (let at = 0; at < code.length;) {
-        TOKEN.lastIndex = at;
-        const m = TOKEN.exec(code);
-        if (!m) throw new ParseError(line, `\`${code[at]}\``);
-        const k = m[1] ? 'coord' : m[2] ? 'num' : m[3] ? 'name' : m[4] ? 'str' : m[5] ? 'punct' : undefined;
-        if (k) out.push({ k, v: m[0], line, at, end: at + m[0].length });
-        line += m[0].split('\n').length - 1;
-        at += m[0].length;
-    }
-    return out;
-}
-
-/** A packed coord literal, level_mx_mz_x_z, as a tile: x = 64 * mx + x, z = 64 * mz + z. */
-export function coordTile(literal: string): Tile {
-    const [level, mx, mz, x, z] = literal.split('_').map(Number) as [number, number, number, number, number];
-    return { level, x: mx * 64 + x, z: mz * 64 + z };
-}
-
-/** A tile as a coord literal, as the scripts' `case` keys write it. */
-export const tileCoord = (t: Tile): string => `${t.level}_${t.x >> 6}_${t.z >> 6}_${t.x & 63}_${t.z & 63}`;
-
-interface Node {
-    /** The source text, whitespace collapsed. */
-    text: string;
-    line: number;
-}
-
-type Expr = Node &
-    (
-        | { t: 'num'; n: number }
-        | { t: 'coord'; tile: Tile }
-        | { t: 'str' }
-        /** A local, varp, constant, command or call; `args` null when written without parentheses. */
-        | { t: 'name'; name: string; args: Expr[] | null }
-        | { t: 'bin'; op: string; l: Expr; r: Expr }
-    );
-
-interface Case {
-    /** null for `case default`. */
-    keys: Expr[] | null;
-    body: Stmt[];
-}
-
-type Stmt = Node &
-    (
-        | { t: 'switch'; subject: Expr; cases: Case[] }
-        | { t: 'if'; cond: Expr; yes: Stmt[]; no: Stmt[] }
-        | { t: 'return' }
-        | { t: 'set'; name: string; value: Expr }
-        | { t: 'call'; call: Expr & { t: 'name' } }
-    );
-
-const COMPARE = new Set(['=', '!', '<', '>', '<=', '>=']);
-
-/**
- * A recursive-descent parser for the RuneScript the connector scripts use: `switch_*` with `case` lists,
- * `if`/`else`, `def_*` and `$local =`, `return`, and call statements; expressions are calls, names,
- * numbers, coords, strings and comparisons joined by `&` and `|`. Anything else (a `while` loop,
- * arithmetic) is a ParseError naming its line.
- */
-class Parser {
-    private i = 0;
-
-    constructor(
-        private readonly toks: Token[],
-        private readonly code: string,
-    ) {}
-
-    /** The statements up to the end of the tokens. */
-    script(): Stmt[] {
-        return this.block(() => false);
-    }
-
-    /** The `(type $name, ...)` list a label or proc body starts with. */
-    params(): string[] {
-        if (this.peek()?.v !== '(') return [];
-        const out: string[] = [];
-        for (let t = this.next(); t.v !== ')'; t = this.next()) if (t.v.startsWith('$')) out.push(t.v);
-        return out;
-    }
-
-    private peek(ahead = 0): Token | undefined {
-        return this.toks[this.i + ahead];
-    }
-
-    private next(): Token {
-        const t = this.toks[this.i++];
-        if (!t) throw new ParseError(this.toks.at(-1)?.line ?? 0, 'the script ends mid-statement');
-        return t;
-    }
-
-    private is(v: string): boolean {
-        return this.peek()?.v === v;
-    }
-
-    private expect(v: string): Token {
-        const t = this.next();
-        if (t.v !== v) throw this.error(t);
-        return t;
-    }
-
-    /** The source line a token is on, as the construct a ParseError names. */
-    private error(t: Token): ParseError {
-        const start = this.code.lastIndexOf('\n', t.at - 1) + 1;
-        const end = this.code.indexOf('\n', t.at);
-        return new ParseError(t.line, `\`${this.code.slice(start, end < 0 ? undefined : end).trim()}\``);
-    }
-
-    private text(from: Token): string {
-        return this.code.slice(from.at, this.toks[this.i - 1]!.end).replace(/\s+/g, ' ');
-    }
-
-    private block(stop: (t: Token) => boolean): Stmt[] {
-        const out: Stmt[] = [];
-        for (let t = this.peek(); t && !stop(t); t = this.peek()) {
-            if (t.v === ';') this.i++;
-            else out.push(this.statement());
-        }
-        return out;
-    }
-
-    private braced(): Stmt[] {
-        this.expect('{');
-        const body = this.block(t => t.v === '}');
-        this.expect('}');
-        return body;
-    }
-
-    private statement(): Stmt {
-        const t = this.peek()!;
-        if (t.k !== 'name') throw this.error(t);
-        if (t.v.startsWith('switch_')) return this.switch();
-        if (t.v === 'if') return this.if();
-        if (t.v === 'return') {
-            this.i++;
-            if (this.is('(')) {
-                this.next();
-                this.expr();
-                this.expect(')');
-            }
-            this.expect(';');
-            return { t: 'return', text: 'return', line: t.line };
-        }
-        const def = t.v.startsWith('def_');
-        if (def || (t.v.startsWith('$') && this.peek(1)?.v === '=')) {
-            if (def) this.i++;
-            const name = this.next();
-            if (!name.v.startsWith('$')) throw this.error(name);
-            this.expect('=');
-            const value = this.expr();
-            this.expect(';');
-            return { t: 'set', name: name.v, value, text: this.text(t), line: t.line };
-        }
-        if (this.peek(1)?.v !== '(' && this.peek(1)?.v !== ';') throw this.error(t);
-        const call = this.primary();
-        this.expect(';');
-        if (call.t !== 'name') throw this.error(t);
-        return { t: 'call', call, text: call.text, line: t.line };
-    }
-
-    private switch(): Stmt {
-        const start = this.next();
-        this.expect('(');
-        const subject = this.expr();
-        this.expect(')');
-        this.expect('{');
-        const cases: Case[] = [];
-        while (!this.is('}')) {
-            this.expect('case');
-            let keys: Expr[] | null = null;
-            if (this.is('default')) this.next();
-            else {
-                keys = [this.expr()];
-                while (this.is(',')) {
-                    this.next();
-                    keys.push(this.expr());
-                }
-            }
-            this.expect(':');
-            cases.push({ keys, body: this.block(t => t.v === 'case' || t.v === '}') });
-        }
-        this.expect('}');
-        return { t: 'switch', subject, cases, text: `${start.v} (${subject.text})`, line: start.line };
-    }
-
-    private if(): Stmt {
-        const start = this.expect('if');
-        this.expect('(');
-        const cond = this.expr();
-        this.expect(')');
-        const yes = this.braced();
-        let no: Stmt[] = [];
-        if (this.is('else')) {
-            this.next();
-            no = this.is('if') ? [this.if()] : this.braced();
-        }
-        return { t: 'if', cond, yes, no, text: `if (${cond.text})`, line: start.line };
-    }
-
-    private expr(): Expr {
-        return this.binary(0);
-    }
-
-    // Lowest first: `|`, `&`, then the comparisons.
-    private binary(level: number): Expr {
-        if (level === 3) return this.primary();
-        const start = this.peek()!;
-        let l = this.binary(level + 1);
-        const joins = (v: string) => (level === 0 ? v === '|' : level === 1 ? v === '&' : COMPARE.has(v));
-        while (this.peek() && joins(this.peek()!.v)) {
-            const op = this.next().v;
-            const r = this.binary(level + 1);
-            l = { t: 'bin', op, l, r, text: this.text(start), line: start.line };
-        }
-        return l;
-    }
-
-    private primary(): Expr {
-        const t = this.next();
-        if (t.v === '(') {
-            const e = this.expr();
-            this.expect(')');
-            return e;
-        }
-        if (t.v === '-' && this.peek()?.k === 'num')
-            return { t: 'num', n: -Number(this.next().v), text: this.text(t), line: t.line };
-        if (t.k === 'num') return { t: 'num', n: Number(t.v), text: t.v, line: t.line };
-        if (t.k === 'coord') return { t: 'coord', tile: coordTile(t.v), text: t.v, line: t.line };
-        if (t.k === 'str') return { t: 'str', text: t.v, line: t.line };
-        if (t.k !== 'name') throw this.error(t);
-        let args: Expr[] | null = null;
-        if (this.is('(')) {
-            this.next();
-            args = [];
-            while (!this.is(')')) {
-                if (args.length) this.expect(',');
-                args.push(this.expr());
-            }
-            this.next();
-        }
-        return { t: 'name', name: t.v, args, text: this.text(t), line: t.line };
-    }
-}
-
-interface Script {
-    file: string;
-    params: string[];
-    body: Stmt[];
-}
-
-/** A trigger's or callable's body parsed, or the construct that stopped the parser. */
-function parseScript(file: string, line: number, raw: string): Script | { error: string } {
-    const code = codeOf(raw);
-    try {
-        const p = new Parser(tokenize(code, line), code);
-        const params = p.params();
-        return { file, params, body: p.script() };
-    } catch (e) {
-        if (!(e instanceof ParseError)) throw e;
-        return { error: `${e.message} (${file}:${e.line}) is not read` };
-    }
 }
 
 // ---- Evaluation -------------------------------------------------------------------------------------
@@ -564,6 +274,11 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                         live: [{ ...p, env: new Map(p.env).set(s.name, evaluate(s.value, p.env, file)) }],
                         ended: [],
                     };
+                case 'def': {
+                    const env = new Map(p.env);
+                    for (const name of s.names) env.set(name, unknown(name));
+                    return { live: [{ ...p, env }], ended: [] };
+                }
                 case 'return':
                     return { live: [], ended: [p] };
                 case 'if': {
@@ -587,6 +302,10 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                     const flows = s.cases.map(c => block(c.body, [p], file, depth));
                     return merge(...flows, fallback ? { live: [], ended: [] } : { live: [p], ended: [] });
                 }
+                case 'while':
+                    // A loop runs a number of times the evaluator can't know: the op stops here.
+                    run.unknown.add(`\`${s.text}\` (${at(file, s)}) is not read`);
+                    return { live: [], ended: [p] };
                 case 'call':
                     break;
             }

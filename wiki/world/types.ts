@@ -125,8 +125,77 @@ export interface Connector {
     source: string;
 }
 
+/** One varp a quest's progress is read from (sources/quests.ts). */
+export interface QuestVarp {
+    /** The varp's name (`zanaris`) and its id in pack/varp.pack, as a save stores perm varps by id. */
+    varp: string;
+    varpId: number;
+    /**
+     * Progress is `getbit_range(varp, lo, hi)`, not the whole varp: the bits of a varbit, or a computed
+     * progress (Clock Tower's `~get_cog_progress`).
+     */
+    bits?: [lo: number, hi: number];
+    /** The varbit the scripts name, when progress is one (`horrorquest`: bits 0-10 of `deephorror`). */
+    varbit?: string;
+    /** The quest is done at progress >= complete. */
+    complete: number;
+}
+
+/**
+ * A quest by its quest-journal component (`questlist:<id>`), and how a save shows it done: `quest:<id>`
+ * is progress >= complete on `varp`, or on any one of `or`.
+ */
+export interface Quest extends QuestVarp {
+    id: string;
+    /** Other varps that show it done (Shield of Arrav: either gang's). */
+    or?: QuestVarp[];
+    /**
+     * The stages gates name (`quest:<id>>=<stage>`), by constant name: the value a gate compares the
+     * varp with. Empty until a gate names one.
+     */
+    stages: Record<string, number>;
+    /** The journal call it is read from, or the curated override's script (gates.ts). */
+    source: string;
+}
+
+/** What a loadout rule forbids an obj category in: the inventory, the worn slots, or either. */
+export type LoadoutScope = 'carried' | 'worn' | 'both';
+
+/**
+ * A ban on carrying or wearing any obj of some categories, read from the proc that checks it
+ * (sources/loadout.ts): an edge that needs `loadout:<id>` can't be crossed with one.
+ */
+export interface LoadoutRule {
+    /** Obj category -> where it is forbidden. */
+    forbidCategories: Record<string, LoadoutScope>;
+    /** The proc, as `areas/area_port_sarim/scripts/monk_of_entrana.rs2:26`. */
+    source: string;
+}
+
+/**
+ * A ride between two tiles no walk joins, boarded by talking to an npc: a ship route from the sail
+ * scripts (sources/transports.ts), or a curated one (gates.ts). One row per boarding npc spawn, landing
+ * and minimal requirement set.
+ */
+export interface Transport {
+    kind: 'ship' | 'cart';
+    /** The sail route, from its constant in interface_boat/scripts/sail.constant (`port_sarim_to_karamja`). */
+    route?: string;
+    /** The npc config the player talks to, and its spawn tile. */
+    npc: string;
+    from: Tile;
+    to: Tile;
+    /** Coins taken; requires lists it too, as coins:<fare>, when above 0. */
+    fare: number;
+    /** A minimal requirement set (requirements.ts), canonical and sorted. */
+    requires: string[];
+    /** The script line the landing comes from. */
+    source: string;
+    notes?: string;
+}
+
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 3;
+export const WORLD_FORMAT = 4;
 
 export interface World {
     /** WORLD_FORMAT when written. */
@@ -137,4 +206,7 @@ export interface World {
     sites: Site[];
     npcSpawns: NpcSpawn[];
     connectors: Connector[];
+    quests: Quest[];
+    loadoutRules: Record<string, LoadoutRule>;
+    transports: Transport[];
 }
