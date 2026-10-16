@@ -285,7 +285,7 @@
 | [Dark Wizards' Tower](dark-wizards-tower.md) | tree 1, npc 3, connector 3 |
 | [Death Plateau](death-plateau.md) | npc 1 |
 | [Druids' Circle](druids-circle.md) | altar 1, tree 2 |
-| [Dwarven Mine entrance](dwarven-mine-entrance.md) | tree 2, npc 3 |
+| [Dwarven Mine entrance](dwarven-mine-entrance.md) | tree 2, npc 3, connector 1 |
 | [Falador](falador.md) | bank 2, shop 4, furnace 1, range 2, spinning-wheel 1, water-source 1, tree 11, pickpocket 5, npc 25, connector 48 |
 | [Goblin Village](goblin-village.md) | fire 1, tree 3, npc 1 |
 | [Heroes' Guild](heros-guild.md) | shop 1, altar 1, tree 1, connector 5 |

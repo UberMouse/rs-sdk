@@ -46,6 +46,20 @@ const world: World = {
             relative: true,
             source: 'ladders+stairs/scripts/ladders.rs2:81',
         },
+        // A trapdoor: Open swaps in the open trapdoor, whose Climb-down moves the player.
+        {
+            feature: 1,
+            loc: { level: 0, x: 3, z: 4 },
+            op: 1,
+            opName: 'Open',
+            direction: 'down',
+            landing: { level: 0, x: 2, z: 6404 },
+            stand: { level: 0, x: 2, z: 4 },
+            relative: true,
+            source: 'general_use/scripts/trapdoors.rs2:11',
+            // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
+            then: { op: 1, opName: 'Climb-down' },
+        },
     ],
     quests: [
         {
@@ -108,7 +122,8 @@ describe('serializeWorld', () => {
                 '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true}',
                 '  ],',
                 '  "connectors": [',
-                '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"}',
+                '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"},',
+                '    {"feature":1,"loc":{"level":0,"x":3,"z":4},"op":1,"opName":"Open","direction":"down","landing":{"level":0,"x":2,"z":6404},"stand":{"level":0,"x":2,"z":4},"relative":true,"source":"general_use/scripts/trapdoors.rs2:11","then":{"op":1,"opName":"Climb-down"}}',
                 '  ],',
                 '  "quests": [',
                 '    {"id":"ball","varp":"ballquest","varpId":226,"complete":7,"stages":{},"source":"boy.rs2:13","varpDecreases":"witch.rs2:25: set back"}',

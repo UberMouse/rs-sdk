@@ -199,6 +199,7 @@
 | `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | down (3164, 3306) L1 | yes | no | - |
 | `connector:misthalin:8` | (3188, 3355) | Staircase 1 | up (3188, 3354) L1 | yes | no | - |
 | `connector:misthalin:9` | (3188, 3355) L1 | Staircase 1 | down (3188, 3358) | yes | no | - |
+| `connector:misthalin:10` | (3206, 3371) L2 | Trapdoor 1 | down (3205, 9771) L2 | yes | no | - |
 
 ## Areas within
 
@@ -210,13 +211,13 @@
 | [Dig Site](dig-site.md) | tree 2 |
 | [Draynor Manor](draynor-manor.md) | range 1, fire 1, tree 1, npc 6, connector 5 |
 | [Draynor Village](draynor-village.md) | bank 1, shop 1, fire 2, tree 7, fishing-spot 1, pickpocket 2, npc 9, connector 4 |
-| [Edgeville](edgeville.md) | bank 1, shop 1, range 1, tree 6, pickpocket 1, npc 1, connector 2 |
+| [Edgeville](edgeville.md) | bank 1, shop 1, range 1, tree 6, pickpocket 1, npc 1, connector 3 |
 | [Exam Centre](exam-centre.md) | tree 3 |
 | [Lumber Yard](lumber-yard.md) | tree 3, connector 2 |
-| [Lumbridge](lumbridge.md) | shop 2, furnace 1, range 1, fire 4, spinning-wheel 1, water-source 4, altar 1, tree 7, fishing-spot 1, pickpocket 8, npc 17, connector 12 |
+| [Lumbridge](lumbridge.md) | shop 2, furnace 1, range 1, fire 4, spinning-wheel 1, water-source 4, altar 1, tree 7, fishing-spot 1, pickpocket 8, npc 17, connector 13 |
 | [Lumbridge Swamp](lumbridge-swamp.md) | range 1, fire 1, rc-ruins 1, tree 6, rock 1 |
 | [River Lum](river-lum.md) | tree 2, npc 2 |
-| [Varrock](varrock.md) | bank 2, shop 9, anvil 4, range 8, fire 5, water-source 5, altar 3, tree 24, stall 1, pickpocket 20, npc 9, connector 68 |
+| [Varrock](varrock.md) | bank 2, shop 9, anvil 4, range 8, fire 5, water-source 5, altar 3, tree 24, stall 1, pickpocket 20, npc 9, connector 71 |
 | [Varrock East mine](varrock-east-mine.md) | rock 1 |
 | [Varrock West mine](varrock-west-mine.md) | tree 1, rock 1, npc 1 |
 | [Wizards' Tower](wizards-tower.md) | tree 1, npc 3, connector 4 |

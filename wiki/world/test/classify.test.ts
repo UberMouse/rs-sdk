@@ -293,6 +293,13 @@ describe('rules', () => {
         expect(one('loc', 'ladder', {}, { triggers })).toMatchObject({ kind: 'connector', subtype: '' });
     });
 
+    test('a trapdoor in general_use/scripts/trapdoors.rs2 is a connector; the same in another file there is not', () => {
+        const triggers = [trig('general_use/scripts/trapdoors.rs2', 'loc', 'trapdoor')];
+        expect(one('loc', 'trapdoor', {}, { triggers })).toMatchObject({ kind: 'connector', subtype: '' });
+        const other = [trig('general_use/scripts/trapdoors_old.rs2', 'loc', 'trapdoor')];
+        expect(one('loc', 'trapdoor', {}, { triggers: other })).toBeNull();
+    });
+
     test('an attackable npc with combat stats is an npc; without either it is not', () => {
         expect(one('npc', 'goblin', { op2: ['Attack'], param: ['stabdefence,-5'] })).toMatchObject({
             kind: 'npc',

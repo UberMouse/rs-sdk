@@ -1,15 +1,18 @@
-// Where each ladder and staircase puts the player: the landings of every `connector` feature (a loc with an
-// op trigger under scripts/ladders+stairs/, classify.ts), read from its op scripts by running them offline
-// for that one loc. The scripts pick a landing three ways (ladders+stairs/scripts/ladders.rs2, stairs.rs2):
-// a jump relative to the player's tile or the loc's (`~climb_ladder(movecoord(coord(), 0, 1, 0), true)`,
-// per op or per `switch_int (loc_angle)`); a table keyed by the loc's tile (`switch_coord (loc_coord) { case
-// 0_50_50_4_7 : p_telejump(1_50_50_5_9); ... }`); and a label several locs call with their coords
-// (`@stair_options(<up>, <down>)`). The parser in runescript.ts reads the RuneScript those use, and an
-// evaluator runs a trigger with `loc_coord` and `loc_angle` known and the player's `coord` symbolic. A
-// condition it can't settle (a dialog choice, a quest varp) is taken both ways, so an op can have several
-// landings; a landing it can't compute, an op that never moves the player, or a loop on the way, is
-// reported with the construct that stopped it, never guessed.
-import { codeOf } from '../classify';
+// Where each ladder, staircase, trapdoor and manhole puts the player: the landings of every `connector`
+// feature (a loc with an op trigger in classify.ts CONNECTOR_SCRIPTS), read from its op scripts by running
+// them offline for that one loc. The scripts pick a landing three ways (ladders+stairs/scripts/ladders.rs2,
+// stairs.rs2): a jump relative to the player's tile or the loc's (`~climb_ladder(movecoord(coord(), 0, 1,
+// 0), true)`, per op or per `switch_int (loc_angle)`); a table keyed by the loc's tile (`switch_coord
+// (loc_coord) { case 0_50_50_4_7 : p_telejump(1_50_50_5_9); ... }`); and a label several locs call with
+// their coords (`@stair_options(<up>, <down>)`). The parser in runescript.ts reads the RuneScript those
+// use, and an evaluator runs a trigger with `loc_coord` and `loc_angle` known and the player's `coord`
+// symbolic. A condition it can't settle (a dialog choice, a quest varp) is taken both ways, so an op can
+// have several landings; a landing it can't compute, an op that never moves the player, or a loop on the
+// way, is reported with the construct that stopped it, never guessed. An op that swaps its loc for another
+// on a path with no condition and no move (general_use/scripts/trapdoors.rs2: Open is
+// `loc_change(trapdoor_open, 500)`) is followed one step: the other loc's ops are run on the same tile,
+// and each that moves the player gives the swapping op a row.
+import { codeOf, CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { footprint, reachTiles, type SiteCollision, type SiteOptions } from '../place';
 import type { Connector, Feature, Tile } from '../types';
 import { cmp, push } from '../util';
@@ -25,11 +28,8 @@ import {
     type Flow as SharedFlow,
     type Value,
 } from './evaluate';
-import type { Expr, Node, Stmt } from './runescript';
+import type { Expr, Node, Script, Stmt } from './runescript';
 import type { Callable, Trigger } from './triggers';
-
-/** The script directory whose op triggers make a loc a connector (classify.ts). */
-const DIR = 'ladders+stairs/';
 
 /** z from which a level-0 tile is underground: those areas are drawn at the surface's x and z + 6400. */
 export const UNDERGROUND_Z = 6400;
@@ -69,7 +69,7 @@ export interface Underived {
     feature: number;
     loc: Tile;
     config: string;
-    /** 1-5; 0 when the config has no trigger under ladders+stairs/ at all. */
+    /** 1-5; 0 when the config has no trigger in CONNECTOR_SCRIPTS at all. */
     op: number;
     /** The construct that stopped it, with its script line. */
     reason: string;
@@ -118,8 +118,39 @@ type Flow = SharedFlow<Path>;
 /** Where a node is, as `file:line`. */
 const at = (file: string, n: Node): string => `${file}:${n.line}`;
 
+/** The commands that move the player, as MOVES finds them in a body. */
+const MOVERS = new Set(['p_telejump', 'p_teleport']);
 const MOVES = /\b(?:p_telejump|p_teleport)\s*\(/;
 const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
+
+/** A loc an op swaps its loc for, and the swap as a reason names it. */
+interface Swap {
+    into: string;
+    why: string;
+}
+
+/**
+ * The loc an op swaps its loc for: its script is one path of engine commands, with no condition, no
+ * move and no label or proc call (either can hide one), that runs one `loc_change(<other>, <duration>)`.
+ * LOC_CHANGE replaces the active loc on its own tile with its shape and angle (server/engine/src/engine/
+ * script/handlers/LocOps.ts); `.loc_change` changes a loc found elsewhere, so is not a swap. The other
+ * commands on the path (a message, a sound, a `loc_add` on another tile: general_use/scripts/
+ * manholes.rs2 puts the cover beside the manhole) don't stop it.
+ */
+function swapOf(script: Script, self: string): Swap | undefined {
+    const swaps: Swap[] = [];
+    for (const s of script.body) {
+        if (s.t === 'return') break;
+        if (s.t !== 'call') return undefined;
+        const { name } = s.call;
+        if (MOVERS.has(name) || name === 'jump' || name.startsWith('@') || name.startsWith('~')) return undefined;
+        if (name !== 'loc_change') continue;
+        const into = s.call.args?.[0];
+        if (into?.t !== 'name' || into.args !== null || into.name === self) return undefined;
+        swaps.push({ into: into.name, why: `\`${s.text}\` (${at(script.file, s)}) turns it into ${into.name}` });
+    }
+    return swaps.length === 1 ? swaps[0] : undefined;
+}
 
 /** Runs connector op scripts for one loc at a time, over the triggers' callables. */
 function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile, angle: number) => Run {
@@ -355,6 +386,8 @@ interface Pending {
     feature: number;
     op: number;
     landing: CoordValue;
+    /** The swapped-in loc's op that moves the player (Connector.then). */
+    followed?: Connector['then'];
 }
 
 /**
@@ -363,40 +396,69 @@ interface Pending {
  * landing beside the loc (where the way back puts a player), then nearest the loc's middle. A jump
  * relative to the player lands as far from the stand as the script shifts it, so its stand is first one
  * whose landing is walkable land, then one whose landing reaches a connector (the way back, usable where
- * the player arrives). Rows come out by feature, op and landing.
+ * the player arrives). An op that swaps the loc (swapOf) takes the landings of the swapped-in loc's
+ * ops, run on the same tile, each row naming that op in `then`; one of those ops that never moves the
+ * player gives no row. Rows come out by feature, op, landing and `then` op.
  */
 export function deriveConnectors(input: ConnectorInput): Connectors {
     const { features, locConfigs, collision, size } = input;
     const run = evaluator(input.callables);
+    const scriptOf = scriptCache();
     const byTarget = new Map<string, Trigger[]>();
-    // Every config's own loc triggers, as `config oploc1` / `config aploc1`, under any directory.
+    // Every config's own loc triggers, as `config oploc1` / `config aploc1`, in any script.
     const own = new Set<string>();
     for (const t of input.triggers) {
         if (t.on !== 'loc') continue;
         if (!t.category) own.add(`${t.target} ${t.kind}loc${t.op}`);
-        if (t.file.startsWith(DIR)) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
+        if (CONNECTOR_SCRIPTS.some(s => inSource(t.file, s))) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
     }
+    /** A config's triggers in CONNECTOR_SCRIPTS, by op. */
+    const triggersOf = (config: string): Trigger[] => {
+        const category = first(locConfigs.get(config), 'category');
+        // The engine runs a config's own trigger over its category's for the same trigger type (oploc1 and
+        // aploc1 are two), wherever that trigger's script lives (server/engine/src/engine/script/
+        // ScriptProvider.ts getByTrigger, ServerTriggerType.ts).
+        const shadowed = (t: Trigger) => own.has(`${config} ${t.kind}loc${t.op}`);
+        return [
+            ...(byTarget.get(config) ?? []),
+            ...(category ? (byTarget.get(`_${category}`) ?? []).filter(t => !shadowed(t)) : []),
+        ].sort((a, b) => cmp(a.op, b.op));
+    };
+    const opNameOf = (config: string, op: number): string => first(locConfigs.get(config), `op${op}`) ?? `op${op}`;
+    const noTrigger = `no op trigger in ${CONNECTOR_SCRIPTS.join(' or ')}`;
 
     const underived: Underived[] = [];
     const pending: Pending[] = [];
     features.forEach((f, feature) => {
         if (f.kind !== 'connector') return;
-        const cfg = locConfigs.get(f.config);
-        const category = first(cfg, 'category');
-        // The engine runs a config's own trigger over its category's for the same trigger type (oploc1 and
-        // aploc1 are two), wherever that trigger's script lives (server/engine/src/engine/script/
-        // ScriptProvider.ts getByTrigger, ServerTriggerType.ts).
-        const shadowed = (t: Trigger) => own.has(`${f.config} ${t.kind}loc${t.op}`);
-        const triggers = [
-            ...(byTarget.get(f.config) ?? []),
-            ...(category ? (byTarget.get(`_${category}`) ?? []).filter(t => !shadowed(t)) : []),
-        ];
         const fail = (op: number, reason: string) =>
             underived.push({ feature, loc: f.tile, config: f.config, op, reason });
-        if (!triggers.length) fail(0, `no op trigger under ${DIR}`);
-        for (const t of triggers.sort((a, b) => cmp(a.op, b.op))) {
+        const triggers = triggersOf(f.config);
+        if (!triggers.length) fail(0, noTrigger);
+        const angle = f.rotation ?? 0;
+        for (const t of triggers) {
             const op = Number(t.op);
-            const r = run(t, f.tile, f.rotation ?? 0);
+            const script = scriptOf(`${t.file}:${t.line}`, t.file, t.line, t.body);
+            const swap = 'error' in script ? undefined : swapOf(script, f.config);
+            if (swap) {
+                // One step only: an op of the swapped-in loc that swaps back (Close) lands nowhere.
+                const next = triggersOf(swap.into);
+                let moved = false;
+                for (const u of next) {
+                    const r = run(u, f.tile, angle);
+                    const followed = { op: Number(u.op), opName: opNameOf(swap.into, Number(u.op)) };
+                    for (const landing of r.landings) pending.push({ feature, op, landing, followed });
+                    for (const reason of r.unknown) fail(op, `${swap.why}, then ${reason}`);
+                    moved ||= r.landings.length > 0 || r.unknown.size > 0;
+                }
+                if (!moved)
+                    fail(
+                        op,
+                        `${swap.why}, ${next.length ? 'none of whose ops moves the player' : `which has ${noTrigger}`}`,
+                    );
+                continue;
+            }
+            const r = run(t, f.tile, angle);
             for (const landing of r.landings) pending.push({ feature, op, landing });
             for (const reason of r.unknown) fail(op, reason);
             if (!r.landings.length && !r.unknown.size) fail(op, r.dead.join(' / '));
@@ -464,20 +526,21 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
         const landing = p.landing.relative
             ? shift(stand!, p.landing)
             : { level: p.landing.level, x: p.landing.x, z: p.landing.z };
-        const row = `${p.feature} ${p.op} ${tileKey(landing)}`;
+        const row = `${p.feature} ${p.op} ${tileKey(landing)} ${p.followed?.op ?? 0}`;
         if (seen.has(row)) continue;
         seen.add(row);
-        const opName = first(locConfigs.get(f.config), `op${p.op}`) ?? `op${p.op}`;
         rows.push({
             feature: p.feature,
             loc: f.tile,
             op: p.op,
-            opName,
+            opName: opNameOf(f.config, p.op),
             direction: directionOf(f.tile, landing),
             landing,
             stand,
             ...(p.landing.relative ? { relative: true as const } : {}),
             source: p.landing.at,
+            // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
+            ...(p.followed ? { then: p.followed } : {}),
         });
     }
     rows.sort(
@@ -486,7 +549,8 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
             a.op - b.op ||
             a.landing.level - b.landing.level ||
             a.landing.x - b.landing.x ||
-            a.landing.z - b.landing.z,
+            a.landing.z - b.landing.z ||
+            (a.then?.op ?? 0) - (b.then?.op ?? 0),
     );
 
     // The way back: a connector on the landing's level near the landing, landing near this loc.

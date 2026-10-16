@@ -106,12 +106,13 @@
 |---|---|---|---|---|---|---|
 | `connector:lumbridge:0` | (3205, 3208) L2 | Staircase 1 | down (3205, 3209) L1 | yes | no | - |
 | `connector:lumbridge:1` | (3205, 3229) L2 | Staircase 1 | down (3205, 3228) L1 | yes | no | - |
-| `connector:lumbridge:2` | (3229, 3213) | Ladder 1 | up (3228, 3213) L1 | yes | no | - |
-| `connector:lumbridge:3` | (3229, 3213) L1 | Ladder 1 | down (3228, 3213), up (3228, 3213) L2 | yes | no | - |
-| `connector:lumbridge:4` | (3229, 3213) L2 | Ladder 1 | down (3228, 3213) L1 | yes | no | - |
-| `connector:lumbridge:5` | (3229, 3224) | Ladder 1 | up (3228, 3224) L1 | yes | no | - |
-| `connector:lumbridge:6` | (3229, 3224) L1 | Ladder 1 | down (3228, 3224), up (3228, 3224) L2 | yes | no | - |
-| `connector:lumbridge:7` | (3229, 3224) L2 | Ladder 1 | down (3228, 3224) L1 | yes | no | - |
+| `connector:lumbridge:2` | (3209, 3216) | Trapdoor 1 | down (3208, 9616) | yes | no | - |
+| `connector:lumbridge:3` | (3229, 3213) | Ladder 1 | up (3228, 3213) L1 | yes | no | - |
+| `connector:lumbridge:4` | (3229, 3213) L1 | Ladder 1 | down (3228, 3213), up (3228, 3213) L2 | yes | no | - |
+| `connector:lumbridge:5` | (3229, 3213) L2 | Ladder 1 | down (3228, 3213) L1 | yes | no | - |
+| `connector:lumbridge:6` | (3229, 3224) | Ladder 1 | up (3228, 3224) L1 | yes | no | - |
+| `connector:lumbridge:7` | (3229, 3224) L1 | Ladder 1 | down (3228, 3224), up (3228, 3224) L2 | yes | no | - |
+| `connector:lumbridge:8` | (3229, 3224) L2 | Ladder 1 | down (3228, 3224) L1 | yes | no | - |
 
 ## Areas within
 

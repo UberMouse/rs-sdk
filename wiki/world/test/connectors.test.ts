@@ -359,6 +359,112 @@ describe('relative jumps', () => {
     });
 });
 
+describe('an op that swaps its loc (general_use/scripts/trapdoors.rs2, manholes.rs2)', () => {
+    const file = 'general_use/scripts/trapdoors.rs2';
+    const text = `[oploc1,trapdoor]
+mes("The trapdoor opens...");
+sound_synth(door_open, 1, 0);
+loc_change(trapdoor_open, 500);
+
+[oploc1,trapdoor_open]
+mes("You climb down through the trapdoor...");
+p_telejump(movecoord(coord(), 0, 0, 6400));
+
+[oploc2,trapdoor_open]
+mes("You close the trapdoor.");
+sound_synth(door_close, 1, 0);
+loc_change(trapdoor, 500);
+
+[oploc1,manhole]
+mes("You pull back the cover from over the manhole.");
+loc_change(manhole_open, 400);
+loc_add(movecoord(loc_coord, 0, 0, -1), manhole_cover, loc_angle, loc_shape, 400);
+
+[oploc1,grate]
+if (%grate_unlocked = 1) {
+    loc_change(grate_open, 500);
+}
+
+[oploc1,chute]
+loc_change(chute_open, 500);
+p_telejump(movecoord(coord(), 0, 1, 0));
+
+[oploc1,manhole_open]
+p_telejump(movecoord(coord(), 0, 0, 6400));
+
+[oploc1,grate_open]
+p_telejump(movecoord(coord(), 0, 0, 6400));
+
+[oploc1,chute_open]
+p_telejump(movecoord(coord(), 0, 0, 6400));
+`;
+    const trapdoorConfigs = new Map<string, Config>([
+        ['trapdoor', { op1: ['Open'] }],
+        ['trapdoor_open', { op1: ['Climb-down'], op2: ['Close'] }],
+        ['manhole', { op1: ['Open'] }],
+        ['manhole_open', { op1: ['Climb-down'] }],
+        ['grate', { op1: ['Open'] }],
+        ['grate_open', { op1: ['Climb-down'] }],
+        ['chute', { op1: ['Slide'] }],
+        ['chute_open', { op1: ['Climb-down'] }],
+    ]);
+    const move = lineOf(file, text, 'p_telejump(movecoord(coord(), 0, 0, 6400));');
+
+    test("is followed: the placed loc's op lands where the swapped-in loc's moving op does, named in `then`", () => {
+        const out = deriveWith([file, text], [loc('trapdoor', at(0, 3230, 3230))], trapdoorConfigs);
+        // Close, the open trapdoor's op2, swaps back and moves no one: no row, and nothing underived.
+        expect(out.connectors).toEqual([
+            {
+                feature: 0,
+                loc: at(0, 3230, 3230),
+                op: 1,
+                opName: 'Open',
+                direction: 'down',
+                landing: at(0, 3229, 9630),
+                stand: at(0, 3229, 3230),
+                relative: true,
+                source: move,
+                // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
+                then: { op: 1, opName: 'Climb-down' },
+            },
+        ]);
+        expect(out.underived).toEqual([]);
+    });
+
+    test('a placed open trapdoor climbs down itself; its Close is underived, naming the swap', () => {
+        const out = deriveWith([file, text], [loc('trapdoor_open', at(0, 3240, 3240))], trapdoorConfigs);
+        expect(rowsOf(out, 0)).toEqual(['op1 Climb-down down 0,3239,9640 from 0,3239,3240 relative']);
+        expect(out.connectors[0]!.then).toBeUndefined();
+        expect(out.underived.map(u => [u.op, u.reason])).toEqual([
+            [
+                2,
+                `\`loc_change(trapdoor, 500)\` (${lineOf(file, text, 'loc_change(trapdoor, 500)')}) turns it into trapdoor, none of whose ops moves the player`,
+            ],
+        ]);
+    });
+
+    test('a swap beside a loc_add on another tile (the manhole cover) is still followed', () => {
+        const out = deriveWith([file, text], [loc('manhole', at(0, 3250, 3250))], trapdoorConfigs);
+        expect(rowsOf(out, 0)).toEqual(['op1 Open down 0,3249,9650 from 0,3249,3250 relative']);
+        expect(out.connectors[0]!.then).toEqual({ op: 1, opName: 'Climb-down' });
+        expect(out.underived).toEqual([]);
+    });
+
+    test('a loc_change under a condition, or beside a move, is not followed', () => {
+        const out = deriveWith(
+            [file, text],
+            [loc('grate', at(0, 3260, 3260)), loc('chute', at(0, 3270, 3270))],
+            trapdoorConfigs,
+        );
+        expect(out.underived.map(u => [u.config, u.reason])).toEqual([
+            ['grate', `${lineOf(file, text, '[oploc1,grate]')} never moves the player`],
+        ]);
+        // The chute's own move is its landing: one level up, not the open chute's drop.
+        expect(rowsOf(out, 1)).toEqual(['op1 Slide up 1,3269,3270 from 0,3269,3270 relative']);
+        expect(out.connectors[0]!.then).toBeUndefined();
+    });
+});
+
 describe('what stops a derivation is reported, never guessed', () => {
     test('a landing computed from a random offset names the unknown value', () => {
         const out = derive([loc('boardstairs', at(0, 3280, 3280))]);

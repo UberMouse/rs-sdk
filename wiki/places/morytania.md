@@ -88,6 +88,12 @@
 | `npc:morytania:41` | (3636, 3466) | Bat 1 | no | no | - |
 | `npc:morytania:42` | (3639, 3510) | Bat 1 | no | no | - |
 
+## Ladders and stairs
+
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:morytania:0` | (3405, 3507) | Trapdoor 1 | down (3405, 9906) | no | no | - |
+
 ## Areas within
 
 | Area | Sites in it |

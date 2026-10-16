@@ -98,9 +98,9 @@ export interface NpcSpawn {
 }
 
 /**
- * One way a connector loc (a ladder or staircase, kind `connector`) moves the player: one op and one
- * landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb on a middle
- * floor asks up or down) or a condition the script can't settle offline has a row per landing.
+ * One way a connector loc (a ladder, staircase, trapdoor or manhole, kind `connector`) moves the player:
+ * one op and one landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb on a
+ * middle floor asks up or down) or a condition the script can't settle offline has a row per landing.
  */
 export interface Connector {
     /** Index into World.features: the loc. */
@@ -123,6 +123,12 @@ export interface Connector {
     relative?: true;
     /** The script line the landing comes from, as `ladders+stairs/scripts/stairs.rs2:185`. */
     source: string;
+    /**
+     * `op` turns the loc into another (`loc_change` in place, with no condition or move: a trapdoor's
+     * Open), and this op of that loc moves the player (`{ op: 1, opName: 'Climb-down' }`): use `op`,
+     * then this op on the same tile. `source` is this op's line.
+     */
+    then?: { op: number; opName: string };
 }
 
 /** One varp a quest's progress is read from (sources/quests.ts). */
@@ -268,7 +274,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 8;
+export const WORLD_FORMAT = 9;
 
 export interface World {
     /** WORLD_FORMAT when written. */
