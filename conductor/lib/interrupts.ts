@@ -20,6 +20,10 @@ const DEATH_REASON_MESSAGES = 3;
 
 /** Eats (or failed eats) within one low-HP episode before the run gives up. */
 const MAX_EATS_PER_EPISODE = 8;
+/** Eats re-sent within one low-HP episode after the server ignored one while the player was held. */
+const MAX_HELD_RETRIES = 3;
+/** Ticks the guard waits for a hold (obstacle script, forced walk) to end before it re-sends the eat. */
+const HOLD_WAIT_TICKS = 20;
 /** Ticks waited per slice while regenerating HP with nothing to eat. */
 const REGEN_SLICE_TICKS = 5;
 /** Ticks of regeneration waiting per low-HP episode before giving up. */
@@ -119,6 +123,32 @@ export function underFire(s: BotWorldState): boolean {
     return !!s.player?.combat.inCombat || recentlyHit(s);
 }
 
+type Player = NonNullable<BotWorldState['player']>;
+
+/** The player animates, or moved since `before`: a movement script may be holding it. */
+function wasHeld(before: Player | null | undefined, now: Player | null | undefined): boolean {
+    if (!now) return false;
+    if (now.animId !== -1) return true;
+    return !!before && (before.worldX !== now.worldX || before.worldZ !== now.worldZ);
+}
+
+/**
+ * Waits until the player stands still and idle for a tick, at most HOLD_WAIT_TICKS; stops at once if
+ * the bot comes under fire, where waiting only costs HP. Returns whether the hold ended.
+ */
+function* waitHoldEnd(): Op<boolean> {
+    let last = yield* ticks(0);
+    for (let i = 0; i < HOLD_WAIT_TICKS; i++) {
+        const s = yield* ticks(1);
+        if (underFire(s)) return false;
+        const a = last.player;
+        const b = s.player;
+        if (b && b.animId === -1 && a && a.worldX === b.worldX && a.worldZ === b.worldZ) return true;
+        last = s;
+    }
+    return false;
+}
+
 interface LowHpEpisode {
     /** HP when the guard last ran, to tell whether the bot is still losing HP. */
     lastHp: number | null;
@@ -154,9 +184,31 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
             return;
         }
         if (++episode.eats > MAX_EATS_PER_EPISODE) return { fail: `${where} after ${MAX_EATS_PER_EPISODE} eats` };
-        const r = yield* eat(run, food);
-        if (!r.ok) return { fail: `${where}: could not eat ${food.name}: ${r.message}` };
-        yield* log(`low hp: ${where}: ate ${food.name}, +${r.hpGained} hp`);
+        let eaten = food;
+        let from = p;
+        let r = yield* eat(run, food);
+        // The server ignores an eat while a movement script holds the player (an agility obstacle): when
+        // the eat showed no effect and the player moved or animated during that attempt, wait the hold
+        // out and retry. Never under fire: a fight animates the player, and waiting there only costs HP.
+        // These retries are bounded by MAX_HELD_RETRIES, apart from MAX_EATS_PER_EPISODE.
+        let retries = 0;
+        for (; !r.ok && r.reason === 'timeout' && retries < MAX_HELD_RETRIES; retries++) {
+            const now = run.state();
+            if (!isLowHp(now) || underFire(now) || !wasHeld(from, now.player)) break;
+            const f = findFood(now);
+            if (!f) break;
+            yield* log(`low hp: eat ignored while held at (${now.player?.worldX},${now.player?.worldZ}); waiting`);
+            const ended = yield* waitHoldEnd();
+            yield* log(`low hp: hold ${ended ? 'ended' : 'still going'}; eating again (retry ${retries + 1})`);
+            eaten = f;
+            from = run.state().player;
+            r = yield* eat(run, f);
+        }
+        if (!r.ok) {
+            const after = retries > 0 ? ` (after ${retries} held retries)` : '';
+            return { fail: `${where}: could not eat ${eaten.name}: ${r.message}${after}` };
+        }
+        yield* log(`low hp: ${where}: ate ${eaten.name}, +${r.hpGained} hp`);
     },
 };
 

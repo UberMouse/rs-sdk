@@ -103,6 +103,18 @@ const spendLeft = (extra: number, seen: (number | undefined)[]): Step => ({
 const guardLog = (events: Record<string, unknown>[], name: string) =>
     events.filter(e => e.type === 'log' && typeof e.msg === 'string' && e.msg.startsWith(`guard ${name} `));
 
+/** HP drops at tick 2; the bot slides one tile a tick until `holdEnd`; the eat lands at `healAt`. */
+const held = (holdEnd: number, healAt: number) =>
+    timeline(60, t => ({
+        hp: t >= 2 && t < healAt ? 4 : 10,
+        food: t >= healAt ? 1 : 2,
+        xp: t >= healAt + 3 ? 25 : 0,
+    })).map((s, t) => ({
+        ...s,
+        player: s.player && { ...s.player, worldX: s.player.worldX + Math.min(t, holdEnd) },
+    }));
+const ignoring = { react: () => undefined };
+
 describe('guards during a generator step', () => {
     test('low HP mid-wait aborts the step, runs its finally, eats, and the step runs again', async () => {
         const states = timeline(20, t => ({ hp: t === 3 || t === 4 ? 4 : 10, food: 2, xp: t >= 10 ? 25 : 0 }));
@@ -165,6 +177,50 @@ describe('guards during a generator step', () => {
             expect(allowed.result.status).toBe('done');
             const refused = await runDef(fleeing, fighting, { params: { flee: false } });
             expect(refused.result.reason).toStartWith('in combat at');
+        });
+    });
+
+    describe('low HP while a movement script holds the player', () => {
+        test('an eat ignored during the hold is retried once it ends', async () => {
+            const r = await runTask([step('chop', chop)], held(14, 20), ignoring);
+            expect(r.result.status).toBe('done');
+            expect(r.sends.filter(x => x === 'Eat Shrimps').length).toBe(2);
+            expect(r.events.some(e => String(e.msg).includes('eat ignored while held'))).toBe(true);
+        });
+
+        test('a hold that never ends fails after a bounded number of retries', async () => {
+            const r = await runTask([step('chop', chop)], held(1000, 1000), ignoring);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toContain('could not eat Shrimps');
+            expect(r.sends.filter(x => x === 'Eat Shrimps').length).toBe(4); // the first eat and 3 held retries
+        });
+
+        test('an eat ignored while animating in place is retried once the animation ends', async () => {
+            const anim = timeline(60, t => ({
+                hp: t >= 2 && t < 28 ? 4 : 10,
+                food: t >= 28 ? 1 : 2,
+                xp: t >= 31 ? 25 : 0,
+            })).map((s, t) => ({ ...s, player: s.player && { ...s.player, animId: t < 20 ? 5 : -1 } }));
+            const r = await runTask([step('chop', chop)], anim, ignoring);
+            expect(r.result.status).toBe('done');
+            expect(r.events.some(e => String(e.msg).includes('eat ignored while held'))).toBe(true);
+        });
+
+        test('an eat ignored under fire is not retried', async () => {
+            const fight = timeline(60, t => ({ hp: t >= 2 ? 4 : 10, food: 2, inCombat: t >= 2, xp: 0 })).map(s => ({
+                ...s,
+                player: s.player && { ...s.player, animId: 5 },
+            }));
+            const r = await runTask([step('chop', chop)], fight, ignoring);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toContain('could not eat Shrimps');
+            expect(r.events.some(e => String(e.msg).includes('eat ignored while held'))).toBe(false);
+        });
+
+        test('an eat ignored while standing still is not retried', async () => {
+            const r = await runTask([step('chop', chop)], held(0, 1000), ignoring);
+            expect(r.result.status).toBe('failed');
+            expect(r.sends.filter(x => x === 'Eat Shrimps').length).toBe(2); // the guard's, and the end-of-run one
         });
     });
 
