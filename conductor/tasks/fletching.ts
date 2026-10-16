@@ -20,13 +20,29 @@ const BOW_LEVELS: Record<string, { shortBow: number; longBow: number }> = {
     'magic logs': { shortBow: 80, longBow: 85 },
 };
 
+/**
+ * Item ids of the unstrung bows (`unstrung_*` in server/content/pack/obj.pack). A strung bow has the
+ * same name as its unstrung one ("Willow longbow" both), so the task tells them apart by id.
+ */
+const UNSTRUNG_IDS: Record<string, { shortBow: number; longBow: number }> = {
+    [NORMAL_LOGS]: { shortBow: 50, longBow: 48 },
+    'oak logs': { shortBow: 54, longBow: 56 },
+    'willow logs': { shortBow: 60, longBow: 58 },
+    'maple logs': { shortBow: 64, longBow: 62 },
+    'yew logs': { shortBow: 68, longBow: 66 },
+    'magic logs': { shortBow: 72, longBow: 70 },
+};
+
 const KNIFE = /^knife$/i;
+const BOW_STRING = /^bow string$/i;
 const FEATHERS = /^feathers?$/i;
 const SHAFTS = /^arrow shafts?$/i;
 const FLETCH_FAIL_LIMIT = 3;
 /** How long the feathers get to take the shafts out of the inventory; the same 5s the make menu gets (FLETCH_MENU_TICKS). */
 const FEATHER_WAIT_MS = 5000;
 const FEATHER_WAIT_TICKS = Math.ceil(FEATHER_WAIT_MS / TICK_MS);
+/** Stringing has no delay (bows.rs2): the inventory changes within a tick or two, so 5s is only a ceiling. */
+const STRING_WAIT_TICKS = FEATHER_WAIT_TICKS;
 
 const Params = z.object({
     /** Product: "arrow shaft", "short bow" or "long bow" (the dialog labels). "shortbow (u)" / "longbow (u)" are accepted too. */
@@ -37,6 +53,12 @@ const Params = z.object({
     batch: z.union([z.literal(1), z.literal(5), z.literal(10)]).default(10),
     /** After the logs are cut, attach Feathers to the Arrow shafts (needs product "arrow shaft"). */
     attachFeathers: z.boolean().default(false),
+    /**
+     * String the bows (product "short bow" or "long bow" from `logs`): after the logs are cut, use a Bow string
+     * on every unstrung bow of that kind in the inventory. With no logs left in the inventory it strings the
+     * unstrung bows already held (no knife needed).
+     */
+    string: z.boolean().default(false),
 });
 
 type FletchParams = z.infer<typeof Params>;
@@ -64,6 +86,20 @@ function requiredLevel(product: string, logs: string): { level: number } | { err
     return { error: `unknown product "${product}" (arrow shaft, short bow, long bow)` };
 }
 
+/** Item ids of the unstrung bows `product` from `logs` is, or none for a product that is not a bow. */
+const unstrungId = (product: string, logs: string): number | undefined => {
+    const ids = UNSTRUNG_IDS[logs.toLowerCase()];
+    if (!ids) return undefined;
+    return /long/.test(product) ? ids.longBow : /short/.test(product) ? ids.shortBow : undefined;
+};
+
+/** The unstrung bows of the task's product in the inventory. */
+const unstrungBows = (ctx: Ctx, s = ctx.state()) => {
+    const id = unstrungId(normalizeProduct(ctx.params.product), ctx.params.logs);
+    return s.inventory.filter(i => i.id === id);
+};
+const unstrungCount = (ctx: Ctx, s = ctx.state()) => unstrungBows(ctx, s).reduce((n, i) => n + i.count, 0);
+
 const wantsFeathers = (ctx: Ctx) => ctx.params.attachFeathers && /shaft/.test(normalizeProduct(ctx.params.product));
 
 export default defineTask({
@@ -74,14 +110,22 @@ export default defineTask({
         'then uses Feathers on the Arrow shafts to make Headless arrows (needs Feathers in the inventory). Members world only. Needs a knife (no nearby shop sells one: ' +
         'ground spawn near (3224,3202), or Shantay Pass shop), the logs and the Fletching level. Works anywhere; ' +
         'the run fails if something attacks the bot. Other log types in the inventory are left alone. ' +
-        'Cuts `batch` logs (10 default, 5 or 1) per make-menu click, ~0.8 s per log.',
+        'Cuts `batch` logs (10 default, 5 or 1) per make-menu click, ~0.8 s per log. ' +
+        'With `string` (product "short bow" or "long bow"), then uses a Bow string on each unstrung bow it cut ' +
+        '(one per use, no delay, same XP as the cut); with no logs held it strings the unstrung bows already in the ' +
+        'inventory and needs no knife. Ends when logs and strings or bows run out.',
     params: Params,
 
     preflight(ctx) {
         const s = ctx.state();
-        if (!s.inventory.some(i => KNIFE.test(i.name))) return 'no knife in inventory';
         const wanted = exactName(ctx.params.logs);
-        if (countItems(s, wanted) === 0) return `no "${ctx.params.logs}" in inventory`;
+        const cutting = countItems(s, wanted) > 0;
+        // Stringing bows already held needs neither knife nor logs.
+        const stringOnly = ctx.params.string && !cutting && unstrungCount(ctx, s) > 0;
+        if (!stringOnly) {
+            if (!s.inventory.some(i => KNIFE.test(i.name))) return 'no knife in inventory';
+            if (!cutting) return `no "${ctx.params.logs}" in inventory`;
+        }
         const need = requiredLevel(normalizeProduct(ctx.params.product), ctx.params.logs);
         if ('error' in need) return need.error;
         const skill = findSkill(s, 'Fletching');
@@ -92,6 +136,11 @@ export default defineTask({
             return 'attachFeathers only works with product "arrow shaft"';
         if (wantsFeathers(ctx) && countItems(s, FEATHERS) === 0)
             return 'attachFeathers set but no Feathers in inventory';
+        if (ctx.params.string) {
+            if (unstrungId(normalizeProduct(ctx.params.product), ctx.params.logs) === undefined)
+                return 'string only works with product "short bow" or "long bow"';
+            if (countItems(s, BOW_STRING) === 0) return 'string set but no Bow string in inventory';
+        }
         return null;
     },
 
@@ -154,9 +203,44 @@ export default defineTask({
             },
         },
         {
+            name: 'string',
+            when: ctx => ctx.params.string && unstrungCount(ctx) > 0 && countItems(ctx.state(), BOW_STRING) > 0,
+            *run(ctx) {
+                const s = ctx.state();
+                const bow = unstrungBows(ctx, s)[0];
+                const bowString = s.inventory.find(i => BOW_STRING.test(i.name));
+                // The `when` guard guarantees both; this narrows the types and fails loudly rather than spin.
+                if (!bow || !bowString) return { fail: 'string step ran without a bow and a Bow string' };
+                const fails = ctx.streak('stringFails');
+                const before = unstrungCount(ctx, s);
+                const used = yield* useItemOnItem(ctx, bowString, bow);
+                // The op is satisfied by the first sign the game acted; the bow is strung when one leaves the unstrung count.
+                const strung =
+                    used.ok &&
+                    (yield* wait('bow strung', st => unstrungCount(ctx, st) < before, STRING_WAIT_TICKS)).kind ===
+                        'met';
+                if (strung) {
+                    fails.reset();
+                    return;
+                }
+                yield* log(`stringing failed: ${used.ok ? 'no bow strung' : used.message}`);
+                if (fails.add() >= FLETCH_FAIL_LIMIT) {
+                    const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
+                    return { fail: `${FLETCH_FAIL_LIMIT} stringing attempts failed (last game message: ${last})` };
+                }
+            },
+        },
+        {
             name: 'finish',
             when: () => true,
             run(ctx) {
+                if (ctx.params.string) {
+                    const bows = unstrungCount(ctx);
+                    if (bows > 0)
+                        return {
+                            done: `no ${ctx.params.logs} left to fletch; ${bows} unstrung bows left, no Bow string`,
+                        };
+                }
                 const left = countItems(ctx.state(), SHAFTS);
                 if (wantsFeathers(ctx) && left > 0)
                     return { done: `no ${ctx.params.logs} left to fletch; ${left} Arrow shafts left, no Feathers` };

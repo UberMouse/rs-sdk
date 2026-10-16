@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { FLETCH_MENU_TICKS } from '../../actions/fletch';
 import fletching from '../../tasks/fletching';
 import { simulate, type Simulation } from '../simulate';
@@ -173,10 +175,195 @@ describe('fletching: attaching feathers', () => {
     });
 });
 
+const UNSTRUNG = 58;
+const STRUNG = 847;
+const STRING = 1777;
+const OAK_LONGBOW_U = 56;
+const WILLOW_LOGS = 1519;
+
 const refusal = async (w: World, params: object = PARAMS) =>
     (await simulate(fletching, { params, timeline: w.series(1) })).result.reason;
 
+describe('fletching: stringing', () => {
+    const WILLOW = { product: 'long bow', logs: 'Willow logs', batch: 1 as const, string: true };
+    const USE_STRING = 'use Bow string on Willow longbow';
+    /** Unstrung and strung bows share a name in the game; the builder cannot hold both, so they get stand-in names. */
+    const NAMES: Record<string, string> = { Unstrung: 'Willow longbow', Strung: 'Willow longbow' };
+    /** The built state at tick `t`, the stand-in names given their real one. */
+    const snap = (w: World, t: number) => {
+        const r = w.tick(t).build();
+        return { ...r, inventory: r.inventory.map(i => ({ ...i, name: NAMES[i.name] ?? i.name })) };
+    };
+    const base = world().skill('Fletching', 40, 0).inv('Knife', 1);
+    /** `unstrung` bows and `strings` held, `strung` bows done (each worth 1,037 xp). */
+    const held = (unstrung: number, strings: number, strung = 0) =>
+        base
+            .inv('Unstrung', unstrung, { id: UNSTRUNG })
+            .inv('Strung', strung, { id: STRUNG })
+            .inv('Bow string', strings, { id: STRING })
+            .skill('Fletching', 40, 1037 * strung);
+    /** One bow strung every 2 ticks from tick 1, up to `max`. */
+    const stringing = (unstrung: number, strings: number, max = unstrung, edit = (w: World, _t: number) => w) =>
+        Array.from({ length: 40 }, (_, t) => {
+            const n = Math.min(Math.floor((t + 1) / 2), max);
+            return snap(edit(held(unstrung - n, strings - n, n), t), t);
+        });
+
+    test('uses a bow string on each unstrung bow, with no logs or knife needed', async () => {
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: stringing(3, 3, 3, w => w.inv('Knife', 0)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: no Willow logs left to fletch');
+        expect(r.sends).toEqual([USE_STRING, USE_STRING, USE_STRING]);
+        expect(r.result.xpGained).toEqual({ Fletching: 3111 });
+        expect(logged(r)).toEqual([]);
+    });
+
+    test('stops when the strings run out and says how many bows are left', async () => {
+        const r = await simulate(fletching, { params: WILLOW, timeline: stringing(3, 1, 1) });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: no Willow logs left to fletch; 2 unstrung bows left, no Bow string');
+        expect(r.sends).toEqual([USE_STRING]);
+    });
+
+    test('stops when the bows run out with strings left over', async () => {
+        const r = await simulate(fletching, { params: WILLOW, timeline: stringing(1, 4, 1) });
+        expect(r.result.reason).toBe('finish: no Willow logs left to fletch');
+        expect(r.sends).toEqual([USE_STRING]);
+    });
+
+    test('strings only the product bows: a strung bow of the same name and other unstrung bows are left alone', async () => {
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: stringing(1, 2, 1, w => w.inv('Oak longbow', 1, { id: OAK_LONGBOW_U })),
+        });
+        expect(r.sends).toEqual([USE_STRING]);
+    });
+
+    test('cuts every log first, then strings them', async () => {
+        const cutAt = 4;
+        const timeline = Array.from({ length: 40 }, (_, t) => {
+            const cutDone = t >= cutAt;
+            const n = cutDone ? Math.min(Math.floor((t - cutAt + 1) / 2), 1) : 0;
+            let w = base
+                .inv('Willow logs', cutDone ? 0 : 1, { id: WILLOW_LOGS })
+                .inv('Bow string', 1 - n, { id: STRING });
+            if (cutDone) w = w.inv('Unstrung', 1 - n, { id: UNSTRUNG }).inv('Strung', n, { id: STRUNG });
+            w = w.skill('Fletching', 40, (cutDone ? 1037 : 0) + n * 1037);
+            if (t === 1 || t === 2) w = w.dialog({ options: MENU });
+            return snap(w, t);
+        });
+        const r = await simulate(fletching, { params: WILLOW, timeline });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual(['use Knife on Willow logs', 'fletch Long Bow', USE_STRING]);
+        expect(r.result.xpGained).toEqual({ Fletching: 2074 });
+    });
+
+    test('three attempts the game answers with nothing happening fail the run with the last game message', async () => {
+        const nothing = 'Nothing interesting happens.';
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: Array.from({ length: 60 }, (_, t) =>
+                snap(t >= 1 ? held(2, 2).tick(t).message(nothing) : held(2, 2), t),
+            ),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(`string: 3 stringing attempts failed (last game message: ${nothing})`);
+        expect(r.sends.filter(s => s === USE_STRING)).toHaveLength(3);
+        expect(logged(r)).toEqual(Array(3).fill(`stringing failed: ${nothing}`));
+    });
+
+    test('a success in between resets the count', async () => {
+        const nothing = 'Nothing interesting happens.';
+        // Two refusals, a bow strung, two more refusals, a bow strung: never three in a row.
+        const state = (t: number) => {
+            const n = t >= 12 ? 2 : t >= 6 ? 1 : 0;
+            const refused = (t >= 1 && t <= 2) || (t >= 7 && t <= 8);
+            return snap(
+                refused
+                    ? held(2 - n, 2 - n, n)
+                          .tick(t)
+                          .message(nothing)
+                    : held(2 - n, 2 - n, n),
+                t,
+            );
+        };
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: Array.from({ length: 30 }, (_, t) => state(t)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.filter(s => s === USE_STRING).length).toBeGreaterThanOrEqual(4);
+    });
+
+    test('a level-up dialog while stringing is cleared and the bow still counts', async () => {
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: stringing(2, 2, 2, (w, t) => (t === 2 ? w.dialog({ options: ['Click here to continue'] }) : w)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toContain('continue dialog');
+    });
+
+    test('low HP while stringing eats, then carries on', async () => {
+        const r = await simulate(fletching, {
+            params: WILLOW,
+            timeline: stringing(2, 2, 2, (w, t) => w.inv('Shrimps', t >= 3 ? 0 : 1).player({ hp: t === 1 ? 4 : 10 })),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+        expect(r.result.status).toBe('done');
+    });
+});
+
 describe('fletching: preflight', () => {
+    test('string needs a bow product, strings and the level', async () => {
+        const hold = kit
+            .skill('Fletching', 40, 0)
+            .inv('Willow logs', 1, { id: WILLOW_LOGS })
+            .inv('Bow string', 1, { id: STRING });
+        const p = { product: 'long bow', logs: 'Willow logs', string: true };
+        expect(await refusal(hold, p)).not.toStartWith('preflight');
+        expect(await refusal(hold.inv('Bow string', 0), p)).toBe(
+            'preflight: string set but no Bow string in inventory',
+        );
+        expect(await refusal(hold, { ...p, product: 'arrow shaft' })).toBe(
+            'preflight: arrow shafts need normal "Logs"',
+        );
+        expect(await refusal(hold.skill('Fletching', 39, 0), p)).toBe(
+            'preflight: long bow from Willow logs needs fletching 40, bot has 39',
+        );
+        expect(await refusal(kit.inv('Bow string', 1, { id: STRING }), { ...PARAMS, string: true })).toBe(
+            'preflight: string only works with product "short bow" or "long bow"',
+        );
+    });
+
+    test('with string and unstrung bows held, no logs and no knife are needed; with neither, the logs are the refusal', async () => {
+        const bows = world()
+            .skill('Fletching', 40, 0)
+            .inv('Bow string', 1, { id: STRING })
+            .inv('Unstrung', 1, { id: UNSTRUNG });
+        const p = { product: 'long bow', logs: 'Willow logs', string: true };
+        expect(await refusal(bows, p)).not.toStartWith('preflight');
+        expect(await refusal(bows.inv('Unstrung', 0), p)).toBe('preflight: no knife in inventory');
+        expect(await refusal(bows.inv('Unstrung', 0).inv('Knife', 1), p)).toBe(
+            'preflight: no "Willow logs" in inventory',
+        );
+    });
+
+    test('the unstrung bow ids match the server item pack', () => {
+        const pack = readFileSync(join(import.meta.dir, '../../../server/content/pack/obj.pack'), 'utf8');
+        const ids = Object.fromEntries(
+            pack.split('\n').flatMap(l => (l.includes('=') ? [l.split('=').toReversed() as [string, string]] : [])),
+        );
+        expect(ids.unstrung_willow_longbow).toBe('58');
+        expect(ids.willow_longbow).toBe('847');
+        expect(ids.bow_string).toBe('1777');
+        expect(ids.unstrung_longbow).toBe('48');
+        expect(ids.unstrung_oak_longbow).toBe('56');
+    });
+
     test('needs a knife, the logs and, for the product, the level', async () => {
         expect(await refusal(kit.inv('Knife', 0))).toBe('preflight: no knife in inventory');
         expect(await refusal(kit.inv('Logs', 0))).toBe('preflight: no "Logs" in inventory');
