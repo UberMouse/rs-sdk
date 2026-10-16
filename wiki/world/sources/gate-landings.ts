@@ -6,20 +6,32 @@
 // bound (gate-scan.ts gateLander), down the paths that make the row's move (the scan's crossing; every move
 // when the scan sees none, as for a jump gates.ts reads as a crossing) and that an account meeting the
 // row's requirements takes. The row gets:
-// - `to`, when every landing is one tile whatever the stand (a literal, `movecoord(loc_coord, ...)`, or one
-//   every stand shares);
+// - `to`, when every stand lands, and every landing is one tile of walkable land (a literal,
+//   `movecoord(loc_coord, ...)`, or a tile each of several stands' walks ends on); off land, each stand is
+//   reported and the row is underived;
 // - `landings`, when a landing follows the stand (`movecoord(coord, ...)`, a step picked by the player's
-//   side): each stand with the landings it gives that are walkable land, the others reported;
+//   side), or some stand gives none: each stand with the landings it gives that are walkable land; the
+//   stands landing off land (offLand) and those giving no landing (unlanded) are reported;
 // - `opens`, when no landing is derived and a path deleted the loc or swapped it for one that doesn't
 //   block (the Kharazi jungle's `loc_change`, quests/quest_legends/scripts/jungle_tree.rs2:135, after which
-//   it teleports the player two tiles on by a value proc, :141, :161, which is not read);
+//   it teleports the player two tiles on by a value proc, :141, :161, which is not read). LOC_DEL and
+//   LOC_CHANGE take a duration and the loc comes back after it (the jungle's after `$respawnrate`), so the
+//   loc's tiles are walkable for a while after the op, not for good;
 // - nothing otherwise: the build report lists the row as underived, with what stopped each path.
 // Quest windows on objects are left as they are: the reach fill never crosses one.
 import { reachTiles, type SiteOptions } from '../place';
 import type { Gate, Tile } from '../types';
 import { cmp } from '../util';
 import type { ConnectorCollision } from './connectors';
-import { CROSS, gateLander, triggerKey, type GateCandidate, type GateScanInput, type LanderWorld } from './gate-scan';
+import {
+    CROSS,
+    gateLander,
+    triggerKey,
+    type GateCandidate,
+    type GateScanInput,
+    type LanderWorld,
+    type LandingOutcome,
+} from './gate-scan';
 
 /** The wall shapes: a move across one is a step through the wall, which the collision data gives. */
 const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
@@ -55,6 +67,16 @@ export interface OffLandLanding {
     at: string;
 }
 
+/** A stand of a row with landings that gives none: the row leaves it out (Gate.landings). */
+export interface UnlandedStand {
+    trigger: string;
+    loc: string;
+    tile: Tile;
+    stand: Tile;
+    /** Why no landing: each construct that stopped a path, with its script line, or what the paths did; sorted. */
+    reasons: string[];
+}
+
 export interface GateLandings {
     /** The rows of `gates`, in order, those on objects with what their move does. */
     gates: Gate[];
@@ -62,7 +84,18 @@ export interface GateLandings {
     counts: { to: number; landings: number; opens: number; underived: number; windows: number };
     underived: UnderivedGate[];
     offLand: OffLandLanding[];
+    unlanded: UnlandedStand[];
 }
+
+const NO_MOVE = 'no path an account meeting its requirements takes moves the player';
+
+/** Why a stand's paths give no landing. */
+const noLanding = (os: readonly LandingOutcome[]): string[] => {
+    const why = os.flatMap(o =>
+        o.k === 'underived' ? [o.why] : o.k === 'opens' ? [`opens the loc (${o.at}), landing nowhere derived`] : [],
+    );
+    return why.length ? [...new Set(why)].sort(cmp) : [NO_MOVE];
+};
 
 const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
 const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a.z - b.z;
@@ -82,6 +115,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
     const counts = { to: 0, landings: 0, opens: 0, underived: 0, windows: 0 };
     const underived: UnderivedGate[] = [];
     const offLand: OffLandLanding[] = [];
+    const unlanded: UnlandedStand[] = [];
 
     const gates = input.gates.map((g): Gate => {
         if (WALL_SHAPES.has(g.shape) || g.to) return g;
@@ -115,40 +149,58 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
             counts.opens++;
             return write({ opens: true });
         }
-        const outcomes = stands.flatMap(stand => run(stand).map(o => ({ stand, o })));
+        const byStand = stands.map(stand => ({ stand, outcomes: run(stand) }));
+        const outcomes = byStand.flatMap(({ stand, outcomes: os }) => os.map(o => ({ stand, o })));
         const landed = outcomes.flatMap(({ stand, o }) => (o.k === 'landing' ? [{ stand, ...o }] : []));
         // One way the row reads, by the section header's order: a landing, then an opening.
         if (landed.length) {
+            // Each landing once per stand, with the line that lands there.
+            const seen = new Set<string>();
+            const unique = landed.filter(l => {
+                const key = `${tileKey(l.stand)} ${tileKey(l.tile)}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            const offLandOf = (l: (typeof landed)[number]): OffLandLanding => ({
+                trigger: g.trigger,
+                loc: g.loc,
+                tile: g.tile,
+                stand: l.stand,
+                landing: l.tile,
+                at: l.at,
+            });
             // One tile from every stand: a fixed landing, or one the player's tile led to but every stand
             // shares (a walk to a fixed start first, as the monkey bars do).
-            const [first] = landed;
-            const stood = new Set(landed.map(l => tileKey(l.stand)));
+            const [first] = unique;
             if (
-                landed.every(l => tileKey(l.tile) === tileKey(first!.tile)) &&
-                (stood.size > 1 || landed.every(l => !l.player))
+                byStand.every(b => b.outcomes.some(o => o.k === 'landing')) &&
+                unique.every(l => tileKey(l.tile) === tileKey(first!.tile)) &&
+                (stands.length > 1 || unique.every(l => !l.player))
             ) {
+                if (!onLand(first!.tile)) {
+                    offLand.push(...unique.map(offLandOf));
+                    return fail(['every landing is off walkable land']);
+                }
                 counts.to++;
                 return write({ to: first!.tile });
             }
-            const seen = new Set<string>();
             const landings: NonNullable<Gate['landings']> = [];
-            for (const l of landed) {
-                const key = `${tileKey(l.stand)} ${tileKey(l.tile)}`;
-                if (seen.has(key)) continue;
-                seen.add(key);
+            for (const l of unique)
                 if (onLand(l.tile)) landings.push({ stand: l.stand, landing: l.tile });
-                else
-                    offLand.push({
+                else offLand.push(offLandOf(l));
+            if (!landings.length) return fail(['every landing is off walkable land']);
+            landings.sort((a, b) => byTile(a.stand, b.stand) || byTile(a.landing, b.landing));
+            // The stands that give no landing: left out of the row, and reported.
+            for (const b of byStand)
+                if (!b.outcomes.some(o => o.k === 'landing'))
+                    unlanded.push({
                         trigger: g.trigger,
                         loc: g.loc,
                         tile: g.tile,
-                        stand: l.stand,
-                        landing: l.tile,
-                        at: l.at,
+                        stand: b.stand,
+                        reasons: noLanding(b.outcomes),
                     });
-            }
-            if (!landings.length) return fail(['every landing is off walkable land']);
-            landings.sort((a, b) => byTile(a.stand, b.stand) || byTile(a.landing, b.landing));
             counts.landings++;
             return write({ landings });
         }
@@ -157,7 +209,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
             return write({ opens: true });
         }
         const reasons = outcomes.flatMap(({ o }) => (o.k === 'underived' ? [o.why] : []));
-        return fail(reasons.length ? reasons : ['no path an account meeting its requirements takes moves the player']);
+        return fail(reasons.length ? reasons : [NO_MOVE]);
     });
-    return { gates, counts, underived, offLand };
+    return { gates, counts, underived, offLand, unlanded };
 }

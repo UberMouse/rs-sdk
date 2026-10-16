@@ -52,6 +52,13 @@ if (%cookquest < ^cook_complete) {
 }
 p_telejump(0_50_50_5_5);
 
+[oploc1,oneside]
+if (coordx(coord) > coordx(loc_coord)) {
+    mes("You can't reach it from here.");
+    return;
+}
+p_telejump(0_50_50_6_6);
+
 [oploc1,bush]
 if (inv_total(inv, machete) = 0) {
     return;
@@ -136,6 +143,7 @@ const locConfigs = parseConfigs(
         '[rockpile]',
         '[battlement]',
         '[shed]',
+        '[oneside]',
         '[bush]\nparam=next_loc_stage,bush_cut',
         '[bush_cut]\nblockwalk=no',
         '[bush2]\nparam=next_loc_stage,bush_grown',
@@ -295,6 +303,32 @@ describe('deriveGateLandings: stands and landings', () => {
                 at: lineOf('p_telejump($coord)'),
             },
         ]);
+    });
+
+    test('a stand that gives no landing makes the row landings, not to, and is reported', () => {
+        // Two stands, west and east: the east one is refused (no path moves), the west one jumps.
+        const { gate, out } = one(row('oneside', 190, []), [at(190, 99), at(190, 101)]);
+        expect(gate.to).toBeUndefined();
+        expect(gate.landings).toEqual([{ stand: at(189, 100), landing: coordTile('0_50_50_6_6') }]);
+        expect(out.unlanded).toEqual([
+            {
+                trigger: 'oploc1,oneside',
+                loc: 'oneside',
+                tile: at(190, 100),
+                stand: at(191, 100),
+                reasons: ['no path an account meeting its requirements takes moves the player'],
+            },
+        ]);
+        expect(out.counts.landings).toBe(1);
+    });
+
+    test('one tile off land from every stand writes no to: each stand is reported and the row is underived', () => {
+        const sea = coordTile('0_50_50_5_5');
+        const { gate, out } = one(row('shed', 130, [['quest:cook']]), [], [sea]);
+        expect(gate.to).toBeUndefined();
+        expect(out.offLand.map(o => [o.stand, o.landing])).toEqual(around(130).map(stand => [stand, sea]));
+        expect(out.underived.map(u => u.reasons)).toEqual([['every landing is off walkable land']]);
+        expect(out.counts).toEqual({ to: 0, landings: 0, opens: 0, underived: 1, windows: 0 });
     });
 
     test('a loc every tile around which blocks still opens, from the tiles it is used from once they open', () => {

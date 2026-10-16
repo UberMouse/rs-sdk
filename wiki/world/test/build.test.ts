@@ -279,6 +279,7 @@ describe('formatReport', () => {
                 counts: { to: 0, landings: 0, opens: 0, underived: 0, windows: 0 },
                 underived: [],
                 offLand: [],
+                unlanded: [],
             },
         },
     };
@@ -489,9 +490,18 @@ describe('formatReport', () => {
                     at: 'r.rs2:7',
                 },
             ],
+            unlanded: [
+                {
+                    trigger: 'oploc1,rock',
+                    loc: 'rock',
+                    tile: at(9, 9),
+                    stand: at(9, 8),
+                    reasons: ['a (r.rs2:2)', 'b (r.rs2:3)'],
+                },
+            ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-8)).toEqual([
+        expect(lines.slice(-10)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are)',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
             '  oploc1,bridge: 2 (bridge (5, 5), bridge (5, 6))',
@@ -500,6 +510,8 @@ describe('formatReport', () => {
             '    no path moves (p.rs2:2)',
             'warning: 1 gate landings off walkable land, left out:',
             '  oploc1,rock rock (9, 9) from (8, 9) -> (10, 9) (r.rs2:7)',
+            'warning: 1 stands of gate rows with landings that give no landing, left out:',
+            '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
         ]);
         // Warnings: they do not fail the build.
         expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);

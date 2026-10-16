@@ -265,20 +265,23 @@ export interface Gate {
     /**
      * The gated move is a jump to this tile (the Zanaris shed's teleport), not a crossing of the loc; the
      * loc itself is passable as the collision data has it. On an object (not a wall: shapes 0-3 and 9) it
-     * can also be read from the script (sources/gate-landings.ts): the move lands here whichever tile the
-     * player uses the loc from.
+     * can also be read from the script (sources/gate-landings.ts): from every tile the loc is used from, the
+     * move lands here, a tile of walkable land.
      */
     to?: Tile;
     /**
      * On an object, a move whose landing depends on the tile the player uses the loc from (`movecoord(coord,
      * ...)`, a step picked by the player's side; sources/gate-landings.ts): from each `stand` (a walkable
      * tile on land the loc is reached from) it lands on `landing`, walkable land. A stand may have several
-     * (a dialogue choice), and a stand the move can't be derived from, or lands off land from, has none.
+     * (a dialogue choice), and a stand the move can't be derived from, or lands off land from, has none (the
+     * build report lists those stands).
      */
     landings?: { stand: Tile; landing: Tile }[];
     /**
      * On an object, the move deletes the loc or swaps it for one whose collision does not block
-     * (sources/gate-landings.ts): once `requires` is met, the loc's tiles are walkable.
+     * (sources/gate-landings.ts): once `requires` is met, the op makes the loc's tiles walkable for a while.
+     * LOC_DEL and LOC_CHANGE take a duration, after which the loc comes back (the Kharazi jungle's after
+     * `$respawnrate`), so the tiles are not open for good.
      */
     opens?: true;
     /** The script line that makes the check, as `file:line`. */

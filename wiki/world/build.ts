@@ -161,9 +161,10 @@ export interface BuildReport {
         skippedCheckers: string[];
         /**
          * Gate rows on objects whose move is not a coord literal (sources/gate-landings.ts): counted by
-         * outcome, the rows no path derives (Task 3's unreached list), and stands whose landing is off land.
+         * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land, and
+         * stands of rows with landings that give none.
          */
-        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand'>;
+        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand' | 'unlanded'>;
     };
 }
 
@@ -434,7 +435,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
                 ),
                 skippedCheckers,
-                landings: { counts: landings.counts, underived: landings.underived, offLand: landings.offLand },
+                landings: {
+                    counts: landings.counts,
+                    underived: landings.underived,
+                    offLand: landings.offLand,
+                    unlanded: landings.unlanded,
+                },
             },
         },
     };
@@ -608,6 +614,12 @@ export function formatReport(report: BuildReport): string[] {
             `warning: ${l.offLand.length} gate landings off walkable land, left out:`,
             l.offLand.map(
                 o => `${o.trigger} ${o.loc} ${coord(o.tile)} from ${coord(o.stand)} -> ${coord(o.landing)} (${o.at})`,
+            ),
+        ),
+        ...list(
+            `warning: ${l.unlanded.length} stands of gate rows with landings that give no landing, left out:`,
+            l.unlanded.map(
+                u => `${u.trigger} ${u.loc} ${coord(u.tile)} from ${coord(u.stand)}: ${u.reasons.join('; ')}`,
             ),
         ),
     );
