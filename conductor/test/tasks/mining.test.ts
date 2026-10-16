@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import type { StopCondition } from '../../lib/stop';
 import mining from '../../tasks/mining';
 import { fakePaths } from '../paths';
+import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { attackedFrom, type World, world } from '../world';
 
@@ -23,6 +24,53 @@ const xp = (amount: number): StopCondition[] => [{ kind: 'xp', skill: 'Mining', 
 const logged = (r: Simulation) =>
     r.events.flatMap(e => (e.type === 'log' && !String(e.msg).startsWith('guard ') ? [e.msg] : []));
 const MINE = 'Mine Rocks';
+
+describe('mining: rune essence', () => {
+    test('mines the essence rock (id 2491) in the essence mine until the inventory is full', async () => {
+        const essence = base.loc('Rune Essence', ROCK.x, ROCK.z, { id: 2491, options: ['Mine', 'Prospect'] });
+        const r = await simulate(mining, {
+            params: { rock: 'essence', onFull: 'stop' },
+            timeline: essence.series(12, (w, i) =>
+                i >= 6 ? w.inv('Rune essence', 27) : i >= 3 ? w.inv('Rune essence', 1) : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('stop-full: inventory full: 27 ores');
+        expect(r.sends[0]).toBe('Mine Rune Essence');
+    });
+});
+
+describe('mining: essence without an area', () => {
+    const FAR = { x: 2900, z: 4830 };
+    const rock = { x: 2925, z: 4848 };
+    const mine = world().skill('Mining', 1, 0).inv('Bronze pickaxe', 1).player({ at: FAR });
+
+    test('with no rock in view it walks to the nearest known essence rock', async () => {
+        const r = await simulate(mining, {
+            params: { rock: 'essence', onFull: 'stop' },
+            timeline: mine.series(4),
+            react: walking(),
+        });
+        expect(r.sends[0]).toMatch(/^walk/i);
+        expect(r.steps[0]).toBe('mine');
+    });
+
+    test('rock essence with onFull drop is refused', async () => {
+        const r = await simulate(mining, { params: { rock: 'essence' }, timeline: mine.series(3) });
+        expect(r.result.reason).toBe('preflight: rune essence must be mined with onFull "stop" ("drop" would drop it)');
+    });
+
+    test('with the rock in view it mines at once', async () => {
+        const r = await simulate(mining, {
+            params: { rock: 'essence', onFull: 'stop' },
+            timeline: mine
+                .player({ at: { x: rock.x - 2, z: rock.z } })
+                .loc('Rune Essence', rock.x, rock.z, { id: 2491, options: ['Mine'] })
+                .series(3),
+        });
+        expect(r.sends[0]).toBe('Mine Rune Essence');
+    });
+});
 
 describe('mining: mining', () => {
     test('mines the nearest rock of the listed type, and again after each ore', async () => {

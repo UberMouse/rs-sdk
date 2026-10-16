@@ -209,6 +209,8 @@ Review findings `task-review` deferred because their fix needs work outside the 
   safety S1).
 - bank: `bankInView` in `tasks/bank.ts` (/^bank booth$/, /banker/) is looser than `findUsableBooth` in `actions/bank.ts` (bank chests, Closed booths, usable options); export one shared predicate from the action so the no-walk shortcut cannot skip a walk and then fail no-bank-found (game G3, contract T5, code-quality Q3).
 - Knowledge: `learnings/banking.md` lacks the stand tiles in `lib/banks.ts` (Varrock East verified by smoke 2026-10-10T01-34-59-869Z-bank; Falador West/East, Edgeville map-data only; Draynor/Al Kharid skip reasons) (contract T6).
+- essence-mine: the Aubury Teleport is a raw `interactNpc` send; add a generic `interactNpc(npc, option)` op in `conductor/actions/interact.ts` mirroring `interactLoc`, with actions test and itest (contract T4).
+- Knowledge: no `wiki/skills/runecraft.md` or learnings entry for the essence-mine landing spots, the portal exit coord (defaults to Sedridor when unset), or talisman-on-ruins entry (contract T6).
 - Engine/lib: `Counter` has no read method (tasks read with `add(0)`); add `value()` (shop review).
 - Lib: pickup and fletching copy the same `attacked` step (fail on any `inCombat`); make it a
   shared guard in `lib/interrupts.ts` beside `underAttackGuard` (code-quality Q4, contract T1).

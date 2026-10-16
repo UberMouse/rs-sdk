@@ -1,0 +1,298 @@
+{
+    "name": "runecraft-ready",
+    "purpose": "rune-mysteries-done plus bronze pickaxe, willow logs burnt (23 free slots): Rune Mysteries complete, air talisman, Runecraft 1, Mining 99, at Lumbridge (3230,3240). Essence/runecraft smoke.",
+    "source": {
+        "kind": "snapshot",
+        "bot": "conductor2w1"
+    },
+    "sha1": "d6d08505efa05dbe0e3ccab3397b98a5bc565c89",
+    "createdAt": "2026-10-16T04:58:26.314Z",
+    "saveVersion": 8,
+    "summary": {
+        "position": {
+            "x": 3225,
+            "z": 3242,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 40,
+            "Hitpoints": 46,
+            "Ranged": 40,
+            "Prayer": 15,
+            "Magic": 41,
+            "Cooking": 83,
+            "Woodcutting": 80,
+            "Fletching": 30,
+            "Fishing": 79,
+            "Firemaking": 80,
+            "Crafting": 35,
+            "Smithing": 39,
+            "Mining": 99,
+            "Agility": 41,
+            "Thieving": 99
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1199
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 1438,
+                "name": "air_talisman",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 1353,
+                "name": "steel_axe",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1191,
+                "name": "iron_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 882,
+                "name": "bronze_arrow",
+                "count": 77
+            }
+        ],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 17688
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 5
+            },
+            {
+                "id": 1931,
+                "name": "pot_empty",
+                "count": 4
+            },
+            {
+                "id": 1205,
+                "name": "bronze_dagger",
+                "count": 1
+            },
+            {
+                "id": 438,
+                "name": "tin_ore",
+                "count": 16
+            },
+            {
+                "id": 841,
+                "name": "shortbow",
+                "count": 2
+            },
+            {
+                "id": 882,
+                "name": "bronze_arrow",
+                "count": 25
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 38
+            },
+            {
+                "id": 558,
+                "name": "mindrune",
+                "count": 28
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 6
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 4
+            },
+            {
+                "id": 559,
+                "name": "bodyrune",
+                "count": 2
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 23
+            },
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 52,
+                "name": "arrow_shaft",
+                "count": 600
+            },
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 323,
+                "name": "burntfish1",
+                "count": 2
+            },
+            {
+                "id": 1923,
+                "name": "bowl_empty",
+                "count": 12
+            },
+            {
+                "id": 1935,
+                "name": "jug_empty",
+                "count": 4
+            },
+            {
+                "id": 303,
+                "name": "net",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 1321,
+                "name": "bronze_scimitar",
+                "count": 4
+            },
+            {
+                "id": 1191,
+                "name": "iron_kiteshield",
+                "count": 3
+            },
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            },
+            {
+                "id": 1171,
+                "name": "wooden_shield",
+                "count": 1
+            },
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 2351,
+                "name": "iron_bar",
+                "count": 2
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 58
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 77
+            },
+            {
+                "id": 309,
+                "name": "fly_fishing_rod",
+                "count": 1
+            },
+            {
+                "id": 314,
+                "name": "feather",
+                "count": 123
+            },
+            {
+                "id": 1271,
+                "name": "adamant_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 1623,
+                "name": "uncut_sapphire",
+                "count": 2
+            },
+            {
+                "id": 1621,
+                "name": "uncut_emerald",
+                "count": 1
+            }
+        ],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "20": 42074162,
+            "21": 372560140,
+            "22": 84874368,
+            "23": 6359040,
+            "24": -2146422240,
+            "25": 34,
+            "28": -1,
+            "59": -1,
+            "63": 6,
+            "64": -1,
+            "101": 1,
+            "134": 51512,
+            "152": 1,
+            "166": 2,
+            "168": 2,
+            "169": 2,
+            "181": -1,
+            "209": -1,
+            "275": -1,
+            "277": -1,
+            "281": 1000,
+            "300": 1000,
+            "346": 2,
+            "367": -1
+        }
+    }
+}
