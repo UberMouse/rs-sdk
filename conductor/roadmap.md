@@ -20,7 +20,8 @@ Tick-perfect pass status (conductor skill, Optimizing a method): only Mining has
 and gap analysis (6.75 ticks/ore, floor). Thieving, melee, Ranged/Magic, WC/FM and Fishing/Cooking
 finished their goals with no budget, spot search or A/B. Do these before more training, ranked by
 XP still to earn / rate (hours at today's rate to finish): melee Att/Str/Def + HP ~3.9M XP at ~190k/h
-(20 h+), Ranged ~980k at 86k/h (11 h), Magic ~980k at ~150k/h (6.5 h), Smithing ~980k at 140k/h (7 h),
+(20 h+), Ranged ~980k at 86k/h (11 h), Magic ~980k at ~150k/h (6.5 h) — combat research 2026-10-16 predicts
+all combat in ~6-8 h with hill giants, a mithril scimitar, a willow shortbow and bought runes (Max route rows), Smithing ~980k at 140k/h (7 h),
 Cooking+Fishing ~1.4M at ~1.1M/h combined (1.3 h), WC+FM ~1.5M at 1.4M/h (1.1 h). Combat is where
 the hours are; the gathering skills are already near their cap. Estimate (not measured): a 4-tick steel
 scimitar at 1.8 dmg/swing gives ~270k/h at best, so the melee gap is the weapon/target tier, not clicks.
@@ -142,14 +143,14 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | no tick budget yet: 5 trees (respawn waits), 12-tile walk to the burn line, axe tier; yews/maples at 80+. Spot search + A/B pending |
 | Firemaking | 78 | willow logs line burn inside willow-burn | 768k | 2nd burn line costs a walk-back; maple/yew logs |
 | Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
-| Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
-| Ranged | 40 | Shortbow, Lumbridge chickens (14,400 XP in 10 min of plan) | ~86k (13-40) | slowest skill per hour (11 h left): better bow/arrows, higher-HP target, tick budget unmeasured |
+| Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | predicted: rune-bound, not time-bound: 41-99 is ~800-2,000 casts (<1 h at 5 ticks/cast) on a high-HP target: Fire Bolt (staff of fire) -> Wind/Fire Blast (death runes, Aubury 1000 stock, price ramps ~1%/unit short, cap 6x); ~50-140k gp. Alchemy not worth the nature-rune detour |
+| Ranged | 40 | Shortbow, Lumbridge chickens (14,400 XP in 10 min of plan) | ~86k (13-40) | predicted: willow shortbow (Dargaud, Ranging Guild, 200 gp) rapid (3 ticks) + iron/mithril arrows on hill giants ~450-750k, arrows picked up (80% drop); maple/yew need Fletching |
 | Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | predicted (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
-| Hitpoints | 46 | from combat | - | follows melee/ranged |
+| Hitpoints | 47 | from combat | - | predicted: finishes with melee (1.33 XP/dmg vs 4 per melee skill) |
 | Crafting | 35 | pottery | 65k | leather, gems, glass |
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
-| Attack/Strength/Defence | 40/44/40 | Lumbridge cows, steel scimitar, cooked fish (plan melee40, 13 min for 15-25 -> 40) | 173-203k | ~270k/h estimated ceiling at this weapon; the 20 h+ left makes this the biggest gap: better weapon (mithril/adamant scimitar), higher-HP target, tick budget from a melee40 replay (swing 4 ticks, eat/loot/walk idle ticks) |
-| Prayer | 15 | bones from combat | - | no method measured |
+| Attack/Strength/Defence | 40/44/40 | Lumbridge cows, steel scimitar, cooked fish (plan melee40, 13 min for 15-25 -> 40) | 173-203k | predicted (engine data, 2026-10-16 research): Edgeville Dungeon hill giants (35 HP, def 26, 12 spawns ~(3106,9834)) + Mithril scimitar (1,040 gp, Zeke) ~440k/skill at 40, ~570k at 55, ~750-900k with a rune sword (20.8k, Champions' Guild, 32 QP); Strength first; HP rides along; big bones -> Prayer. A/B on w3 in flight |
+| Prayer | 15 | bones from combat | - | predicted: big bones from hill giants while training melee, 375 XP each buried, ~60-95k/h |
 | Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | predicted (engine data, not run): herb supply binds, not clicks (identify/mix have no delay, ~1,300 potions/h). No shop sells herbs; best source found chaos druids ~0.45 herb/kill (~220 herbs/h, ~0.1-0.25M XP/h); lantadyme/dwarf weed ~2% of drops, so 70-99 by drops is infeasible: find a bulk herb source (Miscellania unevaluated) |
 | Runecraft | 1 | locked: Rune Mysteries (runner in flight 2026-10-14) | - | predicted (engine data, not run): one air trip to 9, then Aubury teleport -> essence -> earth ruins (3305,3472), ~180 ticks/28 ess, 130-150k (rune pickaxe saves 28 ticks/trip). XP is per essence; no tiaras or pure essence in this rev; needs an earth talisman (men 2/128). `runecraft` task being authored |
 

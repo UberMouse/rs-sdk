@@ -11,8 +11,9 @@
 // way back.
 //
 // A plane is a level and, at level 0, whether the tile is underground and in which underground area:
-// those (the Dwarven Mine, the Wizards' Tower basement) are drawn at the surface's x with z + 6400 on
-// level 0, and are separate planes (UNDERGROUND_AREAS): no stairs joins the mine to the basement.
+// those (the Dwarven Mine, the Wizards' Tower basement, the Taverley Dungeon) are drawn at the surface's x
+// with z + 6400 on level 0, and are separate planes (UNDERGROUND_AREAS): no stairs joins the mine to the
+// basement, and none joins the dungeon to the mine.
 
 export interface Tile {
     level: number;
@@ -38,11 +39,16 @@ export interface Connector {
 export const UNDERGROUND_Z = 6400;
 
 /**
- * The underground areas, as boxes of tiles (inclusive): the mapsquares of m45..47_152..153 (the Dwarven
- * Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower basement). Other underground
- * tiles count as one area, `u`, that no connector here leads to.
+ * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
+ * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
+ * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower
+ * basement). Other underground tiles count as one area, `u`, that no connector here leads to.
  */
 const UNDERGROUND_AREAS = [
+    // The Taverley Dungeon (collision flood fill from the ladder's landing: x 2817..2969, z 9671..9854). Its east
+    // edge (x 2944..2969, z <= 9801) lies inside the mine's box, next to a mine pocket at z >= 9806; no passage joins them.
+    { id: 'taverley', minX: 2816, maxX: 2943, minZ: 9664, maxZ: 9855 },
+    { id: 'taverley', minX: 2944, maxX: 2975, minZ: 9728, maxZ: 9803 },
     { id: 'mine', minX: 2880, maxX: 3071, minZ: 9728, maxZ: 9855 },
     { id: 'basement', minX: 3072, maxX: 3135, minZ: 9536, maxZ: 9599 },
 ] as const;
@@ -125,6 +131,24 @@ export const CONNECTORS: readonly Connector[] = [
         { loc: tile(0, 3059, 9776), stand: tile(0, 3058, 9776) },
         { loc: tile(0, 3059, 3376), stand: tile(0, 3062, 3376) },
         'scorpions (combat 14, hunt players up to combat 28) 2-3 tiles from the stairs at (3056, 9778) and (3054, 9773), king scorpions (combat 32, up to combat 64) around (3040-3048, 9770-9775)',
+    ),
+
+    // Taverley, Sanfew's herb house (Druidic Ritual): spiral stairs up to the first floor (locs 1738 and 1740;
+    // stairs.rs2 `0_45_53_18_36` and `1_45_53_18_36`).
+    ...pair(
+        "Taverley Sanfew's house stairs",
+        { loc: tile(0, 2898, 3428), stand: tile(0, 2897, 3428) },
+        { loc: tile(1, 2898, 3428), stand: tile(1, 2898, 3427) },
+    ),
+    // Taverley, south of the village: the ladder (ladder_cellar_inside_down 1759, on the surface) down into the
+    // Taverley Dungeon and the ladder back (ladder_from_cellar 1755, in the dungeon). ladders.rs2 shifts the
+    // climber's own tile by 6400, so the real landing is two tiles from the other stand (walkable; climb.ts
+    // checks the plane only); the stand tiles are the free tiles beside the ladders.
+    ...pair(
+        'Taverley Dungeon ladder',
+        { loc: tile(0, 2884, 9797), stand: tile(0, 2884, 9798) },
+        { loc: tile(0, 2884, 3397), stand: tile(0, 2884, 3396) },
+        'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part',
     ),
 ];
 
