@@ -147,7 +147,13 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - Edges: neighbour steps the collision data allows (`canStep`, so walls block); doors the
   pathfinder opens are passable unless `gates.ts` names them; connectors (Task 1) as one-way edges;
   gates and transports (Task 2) as edges carrying their requirements.
-- Members: a step into a non-F2P zone (`free2play.csv`, `isF2p`) adds `members`.
+- Members: bots always play on members worlds (user, 2026-10-16), so `members` is always satisfied.
+  The fill treats the token as the empty requirement and never adds it to a set; `world.json` still
+  records it on transports and gates where the scripts check `map_members`. No members-zone logic.
+- Ships: Task 2a's ship landings are on the deck (level 1). The fill needs the moves between deck and
+  quay as edges, from the gangplank locs (`general_use/scripts/gangplank.rs2`, relative moves),
+  derived the way Task 1 derives connectors and reported the same way when underivable. Without
+  them every boat leads nowhere.
 - Fill: from the Lumbridge spawn (3222, 3218, level 0), a multi-label BFS keeping, per tile, the
   antichain of minimal requirement sets (a set is dropped when a subset already reaches the tile).
   Bound the antichain size per tile (report tiles that hit the bound) so a gate-dense area cannot
@@ -157,10 +163,11 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 ### Acceptance criteria
 
 - [ ] Synthetic-grid tests: open walk; a wall; a door; a gated door; a connector; two gates with
-      overlapping requirements (antichain minimality); members zones; an unreachable pocket.
+      overlapping requirements (antichain minimality); a transport with a fare; an unreachable pocket.
 - [ ] Real-data facts (each a test with its evidence): Lumbridge, Draynor, Varrock, Falador reach
-      with `{}`; Al Kharid with `{coins:10}` or a members route (verify which the data gives);
-      Zanaris needs `{members, item:dramen_staff:worn}` (the shed door checks the staff, not the quest); Entrana only by boat;
+      with `{}`; Al Kharid with whatever the data gives (the `{coins:10}` toll, or `{}` by another route);
+      Zanaris needs `{item:dramen_staff:worn}` (the shed door checks the staff, not the quest); Entrana only
+      by boat, `{loadout:entrana}`; Musa Point on Karamja by boat and gangplank, `{coins:30}`;
       the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs.
 - [ ] Runtime and memory reported; within the global budget.
 
@@ -171,13 +178,14 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - Each `Site` and `NpcSpawn` gains `reach: string[][]` (minimal requirement sets of its stand tile,
   or of its nearest walkable tile for npc clusters); `[]` = unreachable.
 - Pages: a Requires column on resource, service and place tables (`-` for `{}`, the sets joined
-  with "or"); service and resource pages can be read as "where can a fresh F2P account do X".
+  with "or"); service and resource pages can be read as "where can a fresh account do X".
 - Build report: unreached sites of covered kinds, grouped by area, with the nearest reached tile
   and the plane, as the curation to-do list.
 
 ### Acceptance criteria
 
-- [ ] All 25 bank sites have `reach`; the F2P mainland banks are `[[]]`; Zanaris carries `{members, item:dramen_staff:worn}`.
+- [ ] All 25 bank sites have `reach`; the mainland banks a walk reaches with no requirement are `[[]]`;
+      Zanaris carries `{item:dramen_staff:worn}`.
 - [ ] The unreached report exists and is clean for banks and shops, or each remaining entry is
       explained in `gates.ts`/`areas.ts` notes.
 - [ ] `--check`, determinism and the format bump hold.
@@ -207,16 +215,22 @@ kind over the Task 3 graph, not a path per site.
 - `connectors.ts` builds its table from `world.json`'s connectors, keeping curated per-connector
   overrides (stand tweaks, `hazard`) in a small map keyed by loc tile; its existing tests (stand
   and landing walkable, a way back) run against the generated table.
-- `banks.ts` derives `BANKS` from bank sites with `reach` `[[]]` on the surface, F2P, keeping the
-  curated `auto: false` reasons (Draynor's dark wizards, Al Kharid's toll — the latter now also
-  visible as a requirement).
+- `banks.ts` derives `BANKS` from every bank site, on any level and members-only ones included (user,
+  2026-10-16: bots always play on members worlds). "Nearest" becomes the fewest walk ticks over the
+  Task 3 graph (Task 5's distances), not straight-line distance. A bank is a candidate only when the
+  account meets one of its `reach` sets and its route chains no more connectors than the walker
+  allows (`connectors.ts`). The curated `auto: false` reasons stay (Draynor's dark wizards); Al
+  Kharid's toll is now a requirement, not a curated skip.
 - Loading: the conductor reads `world.json` through `wiki/world/load.ts`, synchronously, once; a
   stale or missing file fails loudly at import, with the regenerate hint.
 
 ### Acceptance criteria
 
-- [ ] `bun test conductor` green (bar any known baseline), `nearestBank` behaviour unchanged for the
-      existing tests, and the task-review lenses pass on the change.
+- [ ] `bun test conductor` green (bar any known baseline), and the task-review lenses pass on the
+      change.
+- [ ] Every change in which bank `nearestBank` picks, for the existing tests and for each catalog
+      task's default area, is listed in the commit message with its reason (a closer bank by walk,
+      a members bank, an upstairs or underground bank); none picks a bank the walker cannot reach.
 - [ ] No catalog task changes behaviour unless a test shows the generated data corrected a curated
       row (then say which and why).
 
@@ -298,8 +312,9 @@ The scripts check items in three ways, and they behave differently in the fill:
 
 A category ban is not like the other requirements. Any account meets it by banking its gear, so it
 never decides whether a tile is reachable; it limits what a trip can carry there. It is recorded
-as a **loadout rule**: `world.json` gains `loadoutRules: { <id>: { forbidCategories, scope:
-'carried'|'worn'|'both', source } }`, and the edge carries the token `loadout:<id>`. Inside the
+as a **loadout rule**: `world.json` gains `loadoutRules: { <id>: { forbidCategories: { <category>:
+'carried'|'worn'|'both' }, source } }` (scope per category: Entrana bans `cannon_parts` only when
+carried), and the edge carries the token `loadout:<id>`. Inside the
 fill that token behaves like a requirement, so a route without the rule beats one with it and the
 antichain stays minimal. Phase 3 resolves categories from the obj configs and drops a method whose
 every route to its site carries a rule that bans the method's tool or weapon category. Entrana
