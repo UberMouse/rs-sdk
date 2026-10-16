@@ -388,8 +388,11 @@ type Value = { t: 'int'; n: number } | { t: 'bool'; b: boolean } | CoordValue | 
 /** What one placed loc's op does: its landings, and why a path through it lands nowhere. */
 interface Run {
     landings: CoordValue[];
-    /** Landings the evaluator can't compute: the call and what is unknown. */
-    unknown: string[];
+    /**
+     * Landings the evaluator can't compute: the call and what is unknown. A set, as several paths can
+     * reach one call: each reason once, in the order first met.
+     */
+    unknown: Set<string>;
     /** Why each path that never moved the player stopped, when none did. */
     dead: string[];
 }
@@ -471,7 +474,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
     };
 
     return (trigger, loc, angle) => {
-        const run: Run = { landings: [], unknown: [], dead: [] };
+        const run: Run = { landings: [], unknown: new Set(), dead: [] };
 
         const evaluate = (e: Expr, env: ReadonlyMap<string, Value>, file: string): Value => {
             switch (e.t) {
@@ -540,9 +543,8 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                         f = statement(s, p, file, depth);
                     } catch (e) {
                         if (!(e instanceof Unfollowed)) throw e;
-                        // That path ends unfollowed; the others still run. Several paths can reach it:
-                        // its reason is recorded once.
-                        if (!run.unknown.includes(e.message)) run.unknown.push(e.message);
+                        // That path ends unfollowed; the others still run.
+                        run.unknown.add(e.message);
                         f = { live: [], ended: [p] };
                     }
                     next.push(...f.live);
@@ -593,7 +595,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                 const v = args?.length === 1 ? evaluate(args[0]!, p.env, file) : unknown(s.text);
                 if (v.t === 'coord') run.landings.push(v);
                 else
-                    run.unknown.push(
+                    run.unknown.add(
                         `\`${s.text}\` (${at(file, s)}): ${v.t === 'unknown' ? v.text : s.text} is not known offline`,
                     );
                 return { live: [p], ended: [] };
@@ -612,7 +614,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             }
             const script = scriptOf(call, callee.file, callee.line, callee.body);
             if ('error' in script || depth >= MAX_DEPTH) {
-                run.unknown.push('error' in script ? script.error : `\`${s.text}\` (${at(file, s)}) calls too deep`);
+                run.unknown.add('error' in script ? script.error : `\`${s.text}\` (${at(file, s)}) calls too deep`);
                 return { live: [], ended: [p] };
             }
             const env = new Map(
@@ -626,7 +628,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
 
         const script = scriptOf(`${trigger.file}:${trigger.line}`, trigger.file, trigger.line, trigger.body);
         if ('error' in script) {
-            run.unknown.push(script.error);
+            run.unknown.add(script.error);
             return run;
         }
         let flow: Flow;
@@ -636,11 +638,11 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             if (!(e instanceof TooManyPaths)) throw e;
             return {
                 landings: [],
-                unknown: [`too many paths: ${trigger.file}:${trigger.line} branches past ${MAX_PATHS} ways`],
+                unknown: new Set([`too many paths: ${trigger.file}:${trigger.line} branches past ${MAX_PATHS} ways`]),
                 dead: [],
             };
         }
-        if (!run.landings.length && !run.unknown.length)
+        if (!run.landings.length && !run.unknown.size)
             run.dead = [
                 ...new Set(
                     [...flow.live, ...flow.ended].map(p =>
@@ -717,7 +719,7 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
             const r = run(t, f.tile, f.rotation ?? 0);
             for (const landing of r.landings) pending.push({ feature, op, landing });
             for (const reason of r.unknown) fail(op, reason);
-            if (!r.landings.length && !r.unknown.length) fail(op, r.dead.join(' / '));
+            if (!r.landings.length && !r.unknown.size) fail(op, r.dead.join(' / '));
         }
     });
 

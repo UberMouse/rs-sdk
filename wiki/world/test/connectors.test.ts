@@ -443,6 +443,45 @@ return(true);
         expect(out.connectors).toEqual([]);
     });
 
+    test('a landing not known offline that several paths reach is named once', () => {
+        const file = 'ladders+stairs/scripts/drop.rs2';
+        const text = `[oploc1,dropstairs]
+if (%dropstairs_seen = 1) {
+    mes("Again.");
+}
+p_telejump($nowhere);
+`;
+        const out = deriveWith(
+            [file, text],
+            [loc('dropstairs', at(0, 3260, 3260))],
+            new Map([['dropstairs', { op1: ['Climb-down'] }]]),
+        );
+        expect(out.underived.map(u => u.reason)).toEqual([
+            `\`p_telejump($nowhere)\` (${lineOf(file, text, 'p_telejump($nowhere)')}): $nowhere is not known offline`,
+        ]);
+    });
+
+    test('a callee the parser does not read, that several paths reach, is named once', () => {
+        const file = 'ladders+stairs/scripts/loop.rs2';
+        const text = `[oploc1,loopladder]
+if (%loopladder_seen = 1) {
+    mes("Again.");
+}
+~loop_climb;
+
+[proc,loop_climb]
+while (true) { p_telejump(coord); }
+`;
+        const out = deriveWith(
+            [file, text],
+            [loc('loopladder', at(0, 3270, 3270))],
+            new Map([['loopladder', { op1: ['Climb-up'] }]]),
+        );
+        expect(out.underived.map(u => u.reason)).toEqual([
+            `\`while (true) { p_telejump(coord); }\` (${lineOf(file, text, 'while (true)')}) is not read`,
+        ]);
+    });
+
     test(`an op that branches past ${MAX_PATHS} ways is underived, its landings dropped`, () => {
         const file = 'ladders+stairs/scripts/maze.rs2';
         const ifs = Array.from({ length: Math.log2(MAX_PATHS) + 1 }, (_, i) => `if (%maze_${i} = 1) { mes("${i}"); }`);
