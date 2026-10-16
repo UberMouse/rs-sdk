@@ -8,13 +8,17 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-16: total level 932 / 1881, 17.2% of max XP (conductor2, rev 289, 25x XP). Thieving 99,
-Mining 99, Cooking 83, WC 80, Fishing 79, FM 78, HP 47, Str 44, Magic/Agility 41, Att/Def/Ranged 40,
-Smithing 39, Crafting 35, Fletching 30, Prayer 15; Herblore and Runecraft 1.
-In flight: Rune Mysteries plan done on conductor2 (2026-10-14); Druidic Ritual blocked at `sanfew-start`
-(no Taverley level-0 -> level-1 connector in `conductor/lib/connectors.ts`; author fixing); `runecraft` and
-`essence-mine` tasks being authored. Next after the quests: Runecraft, Herblore, then Smithing by the
-banked-iron route (Max route row).
+State at 2026-10-16 (retro #7): conductor2, rev 289, 25x XP. Thieving 99, Mining 99, Cooking 83, WC 80, Fishing 79,
+FM 78, Smithing 52, HP 48, Str 47, Magic/Agility 41, Att/Def/Ranged 40, Crafting 35, Runecraft 34, Fletching 30,
+Herblore 28 (quest XP), Prayer 15. Rune Mysteries and Druidic Ritual done; Taverley connectors committed.
+In flight: Runecraft 44 on the earth loop with 28-essence trips (runner); task-author fixing three code faults
+the smithing goal hit: smithing `findStation` ignores `withOption` (picks the Al Kharid decoy furnace), `travel`
+stalls 380 s when already within tolerance, `v.bank` read `{}` (plan.ts observe fix in the working tree).
+Next: rerun the bulk-smithing plan (Experiments) to 55+ once those land, then the combat tick-perfect pass.
+
+Open conductor loop: a runner's Tick budget is now reported, but only the Runecraft earth number reached the
+Max route (and only as a prediction). After each GOAL report write the measured XP/h and the next
+optimization into the Max route row the same turn; Smithing and Runecraft rows were stale at retro #7.
 
 Tick-perfect pass status (conductor skill, Optimizing a method): only Mining has a measured tick budget
 and gap analysis (6.75 ticks/ore, floor). Thieving, melee, Ranged/Magic, WC/FM and Fishing/Cooking
@@ -145,14 +149,14 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
 | Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | predicted: rune-bound, not time-bound: 41-99 is ~800-2,000 casts (<1 h at 5 ticks/cast) on a high-HP target: Fire Bolt (staff of fire) -> Wind/Fire Blast (death runes, Aubury 1000 stock, price ramps ~1%/unit short, cap 6x); ~50-140k gp. Alchemy not worth the nature-rune detour |
 | Ranged | 40 | Shortbow, Lumbridge chickens (14,400 XP in 10 min of plan) | ~86k (13-40) | predicted: willow shortbow (Dargaud, Ranging Guild, 200 gp) rapid (3 ticks) + iron/mithril arrows on hill giants ~450-750k, arrows picked up (80% drop); maple/yew need Fletching |
-| Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | predicted (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
+| Smithing | 52 | iron kiteshields (plan iron-smith 140k; plan iron-bulk on banked ore took 39->52 in 5 runs, bulk never ran clean). Per 25-ore load: mine ~175 ticks, bank+walk back ~140, smelt 25 ore -> 13 bars 288 ticks (50% fail, idle), smith 4 kiteshields ~30; ~200k/h smelt+smith excl. mining (3329e5499) | 140k-200k | walking+banking per load is about as long as mining; mine a big stock first. Needs 3 code fixes (decoy furnace, travel-in-tolerance stall, v.bank), then rerun to 55-60. Older prediction (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
 | Hitpoints | 47 | from combat | - | predicted: finishes with melee (1.33 XP/dmg vs 4 per melee skill) |
 | Crafting | 35 | pottery | 65k | leather, gems, glass |
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
 | Attack/Strength/Defence | 40/44/40 | Lumbridge cows, steel scimitar, cooked fish (plan melee40, 13 min for 15-25 -> 40) | 173-203k | predicted (engine data, 2026-10-16 research): Edgeville Dungeon hill giants (35 HP, def 26, 12 spawns ~(3106,9834)) + Mithril scimitar (1,040 gp, Zeke) ~440k/skill at 40, ~570k at 55, ~750-900k with a rune sword (20.8k, Champions' Guild, 32 QP); Strength first; HP rides along; big bones -> Prayer. A/B on w3 in flight |
 | Prayer | 15 | bones from combat | - | predicted: big bones from hill giants while training melee, 375 XP each buried, ~60-95k/h |
 | Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | predicted (engine data, not run): herb supply binds, not clicks (identify/mix have no delay, ~1,300 potions/h). No shop sells herbs; best source found chaos druids ~0.45 herb/kill (~220 herbs/h, ~0.1-0.25M XP/h); lantadyme/dwarf weed ~2% of drops, so 70-99 by drops is infeasible: find a bulk herb source (Miscellania unevaluated) |
-| Runecraft | 1 | Aubury teleport -> essence -> air ruins (tasks `essence-mine`, `mining` rock essence, `runecraft`, 4bc55cf9e; worker draft air-runecraft) | ~35k (20 ess, bronze pickaxe; 44k at 27) | 61% of the 635-tick trip is walking (Falador air ruins); earth ruins (3305,3470) are 48 ticks from Aubury: earth + rune pickaxe + 27 ess ~190 ticks/trip ~200k predicted, needs an earth talisman (men 2/128); mining re-click fix in flight (-1.3 ticks/ess); conductor2 itself still RC 1 |
+| Runecraft | 34 | Aubury teleport -> essence -> air ruins (tasks `essence-mine`, `mining` rock essence, `runecraft`, 4bc55cf9e; worker draft air-runecraft) | 143k measured earth loop (RC 1->34 in 8.5 min incl. air trip and talisman hunt; 25-27 ess, adamant pick, ~230 ticks/trip: enter 53, mine 106 (46%), portal 6, craft 64); air ~35-44k | 61% of the 635-tick trip is walking (Falador air ruins); earth ruins (3305,3470) are 48 ticks from Aubury: earth + rune pickaxe + 27 ess ~190 ticks/trip ~200k predicted, needs an earth talisman (men 2/128); mining re-click fix in flight (-1.3 ticks/ess); next: 28 essence/trip and a rune pickaxe to cut the mine share; conductor2 RC 34 |
 
 Route-wide: banks are one account-wide bank; the walk ops pay the Al Kharid toll gate both ways
 (09c37ed56), so routes through Al Kharid need 10 gp, not a detour.
@@ -160,6 +164,14 @@ Route-wide: banks are one account-wide bank; the walk ops pay the Al Kharid toll
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
+
+- Runner handback discipline (retro #7): the smithing runner called SubagentHandback with message "placeholder"
+  right after launching a background run (turn 38): the harness reminder says handback is how a turn ends, and
+  "end your turn and wait" in task-runner.md reads the same. The tool then refused the real report. Fix proposed:
+  task-runner.md items 3/4 say "end your turn with one plain line of text; SubagentHandback only for the final
+  report". Metric: handbacks without a RESULT in `reported`.
+- Smithing bulk vs loop: iron-smith 140k/h vs bulk stock-then-smelt. Gate stages on `v.bank` once the fix lands,
+  the banked ore is used up (the last run smelted all ~111), so the plan mines its stock first; measure per-phase ticks and compare. Status: blocked on three code fixes.
 
 - Skill speed ranking at the current levels (XP/hr): Thieving guards 1.27M (with food), Mining iron adamant
   875k, WC oaks 780k, Cooking pot 345k, Smithing 140k, Fishing 95-200k, Crafting 65k, Fletching 70k.
