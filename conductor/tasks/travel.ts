@@ -4,6 +4,7 @@ import { collisionPaths } from '../actions/paths';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../actions/walk';
 import { log, ticks } from '../core/op';
 import { chebyshev } from '../lib/connectors';
+import { foodCount } from '../lib/interrupts';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -20,6 +21,9 @@ const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
 const GATE_STAND_TOLERANCE = 2;
 
+/** Food a Wilderness trip starts with unless `minFood` says otherwise: skeletons and wolves hit on the way. */
+const WILDERNESS_MIN_FOOD = 3;
+
 const Point = z.object({ x: z.number(), z: z.number() });
 const Params = z.object({
     /** The destination. `level` defaults to the bot's own (0 across the surface/underground divide). */
@@ -33,6 +37,14 @@ const Params = z.object({
      * stopping for the attack, and is done only once out of combat at `to`.
      */
     flee: z.boolean().default(false),
+    /**
+     * Opt in to the Wilderness: `to` and the waypoints may lie in it and the Wilderness guard stands down
+     * (death still ends the run). Needs `minFood` food to start; it eats at low HP and, with no food left
+     * in a fight or still losing HP, the low-hp guard fails the run rather than walking on to die.
+     */
+    wilderness: z.boolean().default(false),
+    /** Food items (anything with an Eat option) a `wilderness` run must carry to start (at least 1 whatever is set). */
+    minFood: z.number().int().min(0).default(WILDERNESS_MIN_FOOD),
 });
 
 type TravelParams = z.infer<typeof Params>;
@@ -93,7 +105,7 @@ export default defineTask({
     description:
         'Walk to a point `to` {x,z,level?} within `tolerance` (default 3) tiles, optionally through `waypoints` [{x,z}] first ' +
         '(a safe road, e.g. north of z 3240 past the Draynor dark wizards). Uses the walkTo op, so it opens the doors and gates ' +
-        'on its route and climbs the stairs of lib/connectors.ts; it never enters the Wilderness. A destination inside the Gnome ' +
+        'on its route and climbs the stairs of lib/connectors.ts; it never enters the Wilderness unless `wilderness: true` (then `to` may be inside it, e.g. the Wilderness agility course door 2998,3915 from Edgeville; needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and the low-hp guard fails the run when low in a fight with no food (except with `flee`, which walks on); death still ends it; walking is not stopped by attacks, so skeletons and wolves en route cost HP, not the run; carry only food and no valuables: a PvP or skeleton death loses the inventory). A destination inside the Gnome ' +
         'Stronghold (the agility course start 2474,3436) goes via its entrance gate at 2459,3383, opened here ' +
         "(declining Femi's boxes dialog once). Far trips take several walks (Lumbridge to the Gnome Stronghold is about 700 tiles). " +
         'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold crosses White Wolf Mountain, ' +
@@ -106,14 +118,22 @@ export default defineTask({
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
     startInCombat: params => params.flee,
+    allowWilderness: params => params.wilderness,
     // Walking away is the answer to low HP when fleeing: in combat with no food the low-hp guard must not end the run.
     keepGoingWithoutFood: params => params.flee,
 
     preflight(ctx) {
-        const { to, waypoints } = ctx.params;
-        for (const p of [to, ...waypoints])
-            if (squareReachesWilderness(p.x, p.z, 0)) return `(${p.x},${p.z}) is in the Wilderness`;
-        return null;
+        const { to, waypoints, wilderness, minFood } = ctx.params;
+        if (!wilderness) {
+            for (const p of [to, ...waypoints])
+                if (squareReachesWilderness(p.x, p.z, 0))
+                    return `(${p.x},${p.z}) is in the Wilderness (set wilderness: true)`;
+            return null;
+        }
+        // At least one: a Wilderness trip with no food has nothing for the low-hp guard to eat.
+        const needed = Math.max(1, minFood);
+        const food = foodCount(ctx.state());
+        return food < needed ? `a Wilderness trip needs ${needed} food (minFood), bot has ${food}` : null;
     },
 
     steps: [

@@ -115,7 +115,7 @@ describe('travel: preflight', () => {
     test('refuses a destination in the Wilderness', async () => {
         const r = await simulate(travel, { params: { to: { x: 3100, z: 3700 } }, timeline: base.series(1) });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('preflight: (3100,3700) is in the Wilderness');
+        expect(r.result.reason).toBe('preflight: (3100,3700) is in the Wilderness (set wilderness: true)');
     });
 
     test('refuses a waypoint in the Wilderness', async () => {
@@ -123,7 +123,7 @@ describe('travel: preflight', () => {
             params: { to: { x: 3300, z: 3250 }, waypoints: [{ x: 3100, z: 3700 }] },
             timeline: base.series(1),
         });
-        expect(r.result.reason).toBe('preflight: (3100,3700) is in the Wilderness');
+        expect(r.result.reason).toBe('preflight: (3100,3700) is in the Wilderness (set wilderness: true)');
     });
 });
 
@@ -282,7 +282,9 @@ describe('travel: the Gnome Stronghold', () => {
 
 /** In combat for the first `until` ticks, holding two shrimps. */
 const inFight = (until: number, hp = 10) =>
-    base.inv('Shrimps', 2).series(60, (w, i) => w.player({ inCombat: i < until, hp }));
+    base
+        .inv('Shrimps', 2)
+        .series(60, (w, i) => w.player({ inCombat: i < until, hp, lastDamageTick: i < until ? i : -1 }));
 
 describe('travel: flee', () => {
     const to = { x: 3300, z: 3250 };
@@ -354,5 +356,95 @@ describe('travel: flee', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toStartWith('interrupt:death: died');
+    });
+});
+
+describe('travel: wilderness opt-in', () => {
+    const EDGEVILLE = { x: 3094, z: 3492 };
+    const DOOR = { x: 2998, z: 3915 };
+    const edge = world().player({ at: EDGEVILLE });
+    const wild = (z: number) => edge.player({ at: { x: 3000, z } });
+
+    test('with the flag a destination and waypoint in the Wilderness are accepted and walked', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, waypoints: [{ x: 3050, z: 3700 }], wilderness: true },
+            timeline: edge.inv('Shrimps', 3).series(1),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(walks(r)[0]).toBe('3050,3700');
+        expect(r.result.finalPos).toMatchObject({ x: 2998, z: 3914 });
+    });
+
+    test('the Wilderness guard stands down on the way, and a hit does not fail the run', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, wilderness: true },
+            timeline: edge.inv('Shrimps', 3).series(40, (w, i) => w.player({ inCombat: i >= 3 && i < 8, hp: 45 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+    });
+
+    test('the guard still ends a Wilderness run without the flag', async () => {
+        const r = await simulate(travel, {
+            params: { to: { x: 3000, z: 3500 } },
+            timeline: wild(3600).series(5),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('failed');
+    });
+
+    test('refuses to start with too little food', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, wilderness: true },
+            timeline: edge.inv('Shrimps', 2).series(1),
+        });
+        expect(r.result.reason).toBe('preflight: a Wilderness trip needs 3 food (minFood), bot has 2');
+    });
+
+    test('minFood 0 is clamped to one food: a foodless bot is refused, one with a bite starts', async () => {
+        const none = await simulate(travel, {
+            params: { to: DOOR, wilderness: true, minFood: 0 },
+            timeline: edge.series(1),
+            react: walking(),
+        });
+        expect(none.result.reason).toBe('preflight: a Wilderness trip needs 1 food (minFood), bot has 0');
+        const one = await simulate(travel, {
+            params: { to: DOOR, wilderness: true, minFood: 0 },
+            timeline: edge.inv('Shrimps', 1).series(1),
+            react: walking(),
+        });
+        expect(one.result.status).toBe('done');
+    });
+
+    test('low HP in the Wilderness eats, then the walk goes on', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, wilderness: true },
+            timeline: edge.inv('Shrimps', 3).series(60, (w, i) => w.player({ hp: i === 3 ? 10 : 50, maxHp: 50 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('low HP under attack with no food left fails safely', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, wilderness: true },
+            timeline: edge
+                .inv('Shrimps', 3)
+                .series(60, (w, i) => attackedFrom(w, i, Infinity, 2).player({ hp: i >= 3 ? 8 : 50, maxHp: 50 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('failed');
+    });
+
+    test('HP still falling out of combat once the food is gone fails the trip rather than walking on', async () => {
+        const r = await simulate(travel, {
+            params: { to: DOOR, wilderness: true, minFood: 1 },
+            timeline: edge.inv('Shrimps', 1).series(80, (w, i) => w.player({ hp: Math.max(5, 30 - i), maxHp: 50 })),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.sends).toContain('Eat Shrimps');
     });
 });

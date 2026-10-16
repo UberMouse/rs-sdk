@@ -13,7 +13,7 @@ import { eat } from '../actions/eat';
 import { closeModalUntil } from '../actions/modal';
 import { type Command, log, type Op } from '../core/op';
 import { sleep } from './env';
-import { findFood, guardLabel, GUARDS, lowHpGuard, underFire } from './interrupts';
+import { findFood, guardLabel, GUARDS, isAttacked, lowHpGuard, underFire, wildernessGuard } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import {
     type Outcome,
@@ -383,7 +383,8 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;
-    if (start?.combat.inCombat && !def.startInCombat?.(ctx.params))
+    // The client's inCombat flag outlasts a fight: only an attacker or a recent hit refuses the start.
+    if (start && isAttacked(initial) && !def.startInCombat?.(ctx.params, initial))
         return finish('failed', `in combat at (${start.worldX},${start.worldZ}); handle the attacker first`);
     try {
         const refused: unknown = def.preflight?.(ctx);
@@ -398,7 +399,11 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     // Each guard's episode state, from when it first runs until its `when` is next checked false.
     const episodes = new Map<string, object>();
     const allowed: readonly string[] = def.allow ?? [];
-    const enabled = [...GUARDS.filter(g => !allowed.includes(g.name)), ...(def.guards ?? [])];
+    const inWilderness = !!def.allowWilderness?.(ctx.params);
+    const enabled = [
+        ...GUARDS.filter(g => !allowed.includes(g.name) && !(inWilderness && g.name === wildernessGuard.name)),
+        ...(def.guards ?? []),
+    ];
     // In a fight (or just hit) at low HP with no food (where the guard would fail the run) a task that keeps going holds the guard
     // off; out of combat the guard still waits for HP to regenerate. `when` is pure, so food is read here.
     const goesOnWithoutFood = !!def.keepGoingWithoutFood?.(ctx.params);

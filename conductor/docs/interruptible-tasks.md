@@ -349,3 +349,7 @@ Each phase leaves `run-task.ts` working and every task runnable.
   of `bot`/`sdk` and the woodcutting reference task carry most of that.
 - Uncommitted work in this worktree (`engine.ts`, `util.ts`, `woodcutting.ts`, new
   bank/mining/smithing tasks) should land before phase 1 touches the engine.
+
+## Starting in combat
+
+The engine refuses to start a run in combat. A task opts in with `startInCombat(params, state)`: `travel` with `flee`, and `combat` when something faces the bot and every such attacker is one of its targets or winnable (level no higher than the bot's, HP above the eat threshold). The fight step then fights the attacker first.

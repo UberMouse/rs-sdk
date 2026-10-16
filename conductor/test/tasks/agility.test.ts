@@ -284,7 +284,7 @@ describe('agility: preflight', () => {
     });
 
     test('an unknown course is a params error', async () => {
-        const r = await simulate(agility, { params: { course: 'barbarian' }, timeline: course.series(1) });
+        const r = await simulate(agility, { params: { course: 'sailing' }, timeline: course.series(1) });
         expect(r.result.status).toBe('error');
     });
 });

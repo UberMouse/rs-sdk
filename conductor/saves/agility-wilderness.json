@@ -1,0 +1,181 @@
+{
+    "name": "agility-wilderness",
+    "purpose": "Agility 55, Att/Str/Def 45, HP 50 (combat ~55), 15 Salmon in separate slots, at the Wilderness agility course entrance, south of the door (2998,3917). Tests the agility task, course wilderness.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2998,
+                "z": 3915
+            },
+            "skills": {
+                "Agility": 55,
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "e762e70da15d87a7891d423b69d4f87d7db3fd14",
+    "createdAt": "2026-10-16T06:42:50.078Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2998,
+            "z": 3915,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50,
+            "Agility": 55
+        },
+        "inventory": [
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

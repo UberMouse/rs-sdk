@@ -106,3 +106,30 @@ test(
     },
     itestTimeout({ taskMinutes: 3, extraMs: ATTACKED_WAIT_MS * 2 }),
 );
+
+// Edgeville bank to just past the Wilderness ditch (z 3520), on the road north; no other test stands here.
+const EDGEVILLE = { x: 3094, z: 3492 };
+const WILDERNESS_GOAL = { x: 3094, z: 3575 };
+
+test(
+    'travel enters the Wilderness only with wilderness: true',
+    async () => {
+        await withFixtureBot(
+            { position: EDGEVILLE, inventory: [{ id: Items.SHRIMPS, count: 3 }] },
+            async ({ name }) => {
+                const refused = await runTask(name, 'travel', { to: WILDERNESS_GOAL }, ['minutes:1']);
+                expect(refused.result.reason ?? '', refused.stderr).toContain('is in the Wilderness');
+                const run = await runTask(name, 'travel', { to: WILDERNESS_GOAL, wilderness: true }, ['minutes:3']);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                const p = run.result.finalPos!;
+                expect(
+                    Math.max(Math.abs(p.x - WILDERNESS_GOAL.x), Math.abs(p.z - WILDERNESS_GOAL.z)),
+                    detail,
+                ).toBeLessThanOrEqual(3);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);

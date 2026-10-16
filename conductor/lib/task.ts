@@ -92,7 +92,8 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     memory?(): M;
     /**
      * Guards this task handles itself (e.g. `dialog` for a task that drives dialogs); off for the
-     * whole run. The critical guards, `death` and `wilderness`, cannot be allowed.
+     * whole run. The critical guards, `death` and `wilderness`, cannot be allowed here (`allowWilderness`
+     * is the Wilderness opt-in).
      */
     allow?: readonly AllowableGuard[];
     /**
@@ -102,9 +103,15 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     guards?: readonly TaskGuard[];
     /**
      * The engine refuses to start a run in combat. A task that is the way out of a fight (travel with
-     * `flee`) opts in here, per its params; every other task keeps the refusal.
+     * `flee`) opts in here, per its params and the state the run starts in (combat starts when its attacker
+     * is one of its targets); every other task keeps the refusal.
      */
-    startInCombat?(params: z.infer<S>): boolean;
+    startInCombat?(params: z.infer<S>, state: BotWorldState): boolean;
+    /**
+     * The Wilderness guard ends a run in the Wilderness. A task whose work is there (the Wilderness agility
+     * course) opts out of it, per its params; every other task keeps the guard. `death` still ends the run.
+     */
+    allowWilderness?(params: z.infer<S>): boolean;
     /**
      * The low-hp guard eats held food as always, but in combat at low HP with none held it does not
      * end the run: for a task whose way of surviving low HP is to keep going (travel with `flee` walks

@@ -8,7 +8,7 @@ import { log, type Op, send, ticks, wait } from '../../core/op';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { LUMBRIDGE, timeline, worldState } from '../world';
+import { LUMBRIDGE, timeline, world, worldState } from '../world';
 import { runDef, runTask } from './harness';
 
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
@@ -212,6 +212,54 @@ describe('allow', () => {
         const guarded = await runTask(steps, dialogAt(0, 1));
         expect(guarded.result.stepRuns.answer).toBeUndefined();
         expect(guarded.result.stepRuns['interrupt:dialog']).toBeGreaterThan(0);
+    });
+});
+
+/** A task that finishes at tick 4, opting out of the Wilderness guard when `allowWilderness` says so. */
+const wildTask = (allowWilderness?: () => boolean) =>
+    defineTask({
+        name: 'wild',
+        description: 'allowWilderness',
+        params: z.object({}),
+        ...(allowWilderness && { allowWilderness }),
+        steps: [finishAt(4), idleStep],
+    });
+
+describe('allowWilderness', () => {
+    const inWilderness = world()
+        .player({ at: { x: 3000, z: 3940, level: 0 } })
+        .series(8);
+    test('the Wilderness guard ends a run in the Wilderness unless the task opts out through its params', async () => {
+        const guarded = await runDef(wildTask(), inWilderness);
+        expect(guarded.result.status).toBe('failed');
+        expect(guarded.result.reason).toBe('interrupt:wilderness: in the Wilderness at (3000,3940)');
+
+        const allowed = await runDef(
+            wildTask(() => true),
+            inWilderness,
+        );
+        expect(allowed.result.status).toBe('done');
+        expect(allowed.result.reason).toBe('finish: at tick 4');
+    });
+
+    test('death still ends a run that opted out of the Wilderness guard', async () => {
+        const dying = world()
+            .player({ at: { x: 3000, z: 3940, level: 0 } })
+            .series(8, (w, i) => (i >= 3 ? w.message('Oh dear, you are dead!') : w));
+        const r = await runDef(
+            wildTask(() => true),
+            dying,
+        );
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^interrupt:death: /);
+    });
+
+    test('a task that opts out with params that say no keeps the guard', async () => {
+        const r = await runDef(
+            wildTask(() => false),
+            inWilderness,
+        );
+        expect(r.result.reason).toBe('interrupt:wilderness: in the Wilderness at (3000,3940)');
     });
 });
 

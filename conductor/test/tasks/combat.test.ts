@@ -244,6 +244,75 @@ describe('combat: an NPC already attacking the bot', () => {
     });
 });
 
+const attackedBy = (name: string, index: number, level: number, hp = 10) =>
+    base
+        .player({ inCombat: true, lastDamageTick: 0, hp })
+        .npc(name, COOP.x + 1, COOP.z, { index, options: ['Attack'], attacking: true, combatLevel: level });
+
+describe('combat: starting in a fight', () => {
+    test('starts when the attacker is one of its targets, and fights it first', async () => {
+        const hurt = attackedBy('Chicken', CHICKEN, 1)
+            .npc('Chicken', COOP.x + 2, COOP.z, { index: 7, options: ['Attack'] })
+            .series(10, (f, i) =>
+                i >= 6 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0 }),
+            );
+        const k = await simulate(combat, { params: PARAMS, timeline: hurt, stops: xp(25) });
+        expect(k.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(k)[0]).toBe(CHICKEN);
+    });
+
+    test('starts against a winnable non-target attacker and waits out its auto-retaliate fight', async () => {
+        const goblin = attackedBy('Goblin', 20, 2);
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: goblin.series(10, (f, i) => (i >= 5 ? f.fighting(false).skill('Attack', 1, 25) : f.fighting(20))),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(r)).toEqual([]);
+    });
+
+    test('is refused against a non-target attacker above the bot, as before', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: attackedBy('Giant', 20, 28).series(3) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('in combat at');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('is refused at low HP, whether the attacker is a target or not', async () => {
+        const goblin = await simulate(combat, { params: PARAMS, timeline: attackedBy('Goblin', 20, 2, 4).series(3) });
+        expect(goblin.result.reason).toStartWith('in combat at');
+        const chicken = await simulate(combat, {
+            params: PARAMS,
+            timeline: attackedBy('Chicken', CHICKEN, 1, 4).series(3),
+        });
+        expect(chicken.result.status).toBe('failed');
+        expect(chicken.result.reason).toStartWith('in combat at');
+        expect(chicken.sends).toEqual([]);
+    });
+
+    test('a stale inCombat flag (no target, last hit 17 ticks ago, nobody attacking) does not refuse', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: chickenAt(base)
+                .player({ inCombat: true, lastDamageTick: 0 })
+                .tick(17)
+                .series(10, (f, i) => (i >= 6 ? f.fighting(false).skill('Attack', 1, 25) : f.fighting(false))),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(r)[0]).toBe(CHICKEN);
+    });
+
+    test('an unknown attacker (hit just now, none beside the bot) is refused', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: base.player({ inCombat: true, lastDamageTick: 0 }).tick(5).series(3),
+        });
+        expect(r.result.reason).toStartWith('in combat at');
+    });
+});
+
 describe('combat: guards mid-fight', () => {
     test('low HP mid-fight: the low-HP guard eats first, the eat step tops up to eatBelow', async () => {
         // HP drops to 4 of 10 on tick 4: under half, so the guard eats (+1 to 5), then the eat step (+1 to 6).

@@ -1,0 +1,136 @@
+{
+    "name": "agility-wilderness-edgeville",
+    "purpose": "Agility 55, Att/Str/Def 45, HP 50 (combat ~55), 10 Salmon in separate slots, at the Edgeville bank (3094,3492). Tests travel with wilderness true to the Wilderness agility course door (2998,3915), then agility course wilderness.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3094,
+                "z": 3492
+            },
+            "skills": {
+                "Agility": 55,
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "1cf0966f497d1f78173b0c5cd81cfa5b5258de4b",
+    "createdAt": "2026-10-16T07:47:54.189Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3094,
+            "z": 3492,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50,
+            "Agility": 55
+        },
+        "inventory": [
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

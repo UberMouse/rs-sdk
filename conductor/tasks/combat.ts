@@ -9,6 +9,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { attackers, recentlyHit } from '../lib/interrupts';
+import { isLowHp } from '../lib/threat';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -307,6 +308,21 @@ function countCast(ctx: Ctx, target: NearbyNpc) {
     return casts;
 }
 
+/**
+ * Combat may start in a fight (arriving at aggressive hill giants, an attack mid-plan) when something faces the
+ * bot and every such attacker is a target of this task, or winnable: its level no higher than the bot's with HP
+ * and HP above the eat threshold, which every attacker needs (the standing under-attack rule). An unknown attacker (a hit with none next to the
+ * bot) or a stronger one keeps the engine's refusal. The pick step fights the attacker first.
+ */
+export function startsInCombat(p: CombatParams, state: BotWorldState): boolean {
+    const foes = attackers(state);
+    const me = state.player;
+    if (!me || foes.length === 0) return false;
+    // Low HP refuses either way: the plan eats first, and the run starts healthy.
+    if (isLowHp(state)) return false;
+    return foes.every(n => matches(n, p) || n.combatLevel <= me.combatLevel);
+}
+
 export default defineTask({
     name: 'combat',
     description:
@@ -331,6 +347,7 @@ export default defineTask({
     }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
+    startInCombat: startsInCombat,
 
     preflight(ctx) {
         const s = ctx.state();

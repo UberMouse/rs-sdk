@@ -129,7 +129,11 @@ describe('guards during a generator step', () => {
     });
 
     describe('starting in combat', () => {
-        const fighting = timeline(10, t => ({ inCombat: t < 5, xp: t >= 5 ? 1 : 0 }));
+        const fighting = timeline(10, t => ({
+            inCombat: t < 5,
+            lastDamageTick: t < 5 ? t : undefined,
+            xp: t >= 5 ? 1 : 0,
+        }));
         const steps = [step('chop', chop)];
         const fleeing = defineTask({
             name: 'test',
@@ -144,6 +148,16 @@ describe('guards during a generator step', () => {
             expect(r.result.status).toBe('failed');
             expect(r.result.reason).toStartWith('in combat at');
             expect(r.sends).toEqual([]);
+        });
+
+        test('a stale inCombat flag (no attacker, last hit long ago) does not refuse', async () => {
+            // The replayed hill-giant start: inCombat true, no target, the last hit 17 ticks before.
+            const stale = timeline(30, t => ({ inCombat: true, lastDamageTick: 0, xp: t >= 20 ? 1 : 0 })).map(s => ({
+                ...s,
+                tick: s.tick + 17,
+            }));
+            const r = await runTask(steps, stale);
+            expect(r.result.reason).not.toStartWith('in combat');
         });
 
         test('is allowed for a task whose startInCombat holds for its params, and only then', async () => {

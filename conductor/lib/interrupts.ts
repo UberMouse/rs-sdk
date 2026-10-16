@@ -77,8 +77,11 @@ export interface TaskGuard<E extends object = object, N extends string = string>
 export const guardLabel = (name: string) => `interrupt:${name}`;
 
 /** An inventory item with an Eat option; Drink items are not food here. */
-export const findFood = (state: BotWorldState): InventoryItem | undefined =>
-    state.inventory.find(i => i.optionsWithIndex.some(o => /^eat$/i.test(o.text)));
+export const isFood = (item: InventoryItem): boolean => item.optionsWithIndex.some(o => /^eat$/i.test(o.text));
+/** Food items held: every item with an Eat option, counting stacks. */
+export const foodCount = (state: BotWorldState): number =>
+    state.inventory.filter(isFood).reduce((n, i) => n + i.count, 0);
+export const findFood = (state: BotWorldState): InventoryItem | undefined => state.inventory.find(isFood);
 
 const noEpisode = () => ({});
 
@@ -245,7 +248,7 @@ export const recentlyHit = (s: BotWorldState): boolean => {
 };
 
 /** In combat, and something attacks the bot: an attacker next to it, or a hit taken lately. */
-const isAttacked = (s: BotWorldState): boolean =>
+export const isAttacked = (s: BotWorldState): boolean =>
     !!s.player?.combat.inCombat && (attackers(s).length > 0 || recentlyHit(s));
 
 interface UnderAttackEpisode {

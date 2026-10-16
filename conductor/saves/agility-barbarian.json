@@ -1,0 +1,181 @@
+{
+    "name": "agility-barbarian",
+    "purpose": "Agility 41, Att/Str/Def 45, HP 50 (combat ~55), 15 Salmon in separate slots, at the Barbarian Outpost course start north of the pipe (2552,3562). Tests the agility task, course barbarian.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2552,
+                "z": 3562
+            },
+            "skills": {
+                "Agility": 41,
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "6379104e6f6879c22528e8efd4e1298922e99f87",
+    "createdAt": "2026-10-16T06:42:49.679Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2552,
+            "z": 3562,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50,
+            "Agility": 41
+        },
+        "inventory": [
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
