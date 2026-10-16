@@ -39,7 +39,7 @@ The catalog already has the shapes to compose:
 | Errand     | its operations are made                  | bank, shop, pickup                                       |
 | Open-ended | never on its own                         | combat, thieving (`stopWhenFull` aside)                  |
 
-Only the open-ended tasks need an outside "until".
+Only the open-ended tasks need an outside "until". `thieving` does not end when its food runs out: a phase needs an `until` on food, or the low-hp guard fails the run (`knight-thieve` does this). [v 2026-10-16 conductor2w3 local]
 
 ## The model
 

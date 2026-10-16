@@ -53,6 +53,7 @@ Levels and XP checked against `server/content/scripts/skill_fishing/scripts/fish
 |---|---|---|---|---|---|
 | Draynor south | (3086, 3227) r2 | 1 | Net/Bait, small net; dark wizards hit the northern tiles. More spots/map data: `learnings/fishing.md` | Fishing 1->13 in 1 min; 1->34 in ~4 min, 34->40 in 1 min (`fish-cook` plan trips, not stats.ts) | 2026-10-11 conductor2 local |
 | Lumbridge river (lure) | (3239, 3248) r10 | 20 | Lure/Bait spots hop over z 3241..3255 at x 3238/3239; a small area (r6 at (3238,3252)) missed hopped spots and idled the task for its 700-tick no-spot wait. Mixed salmon + trout, ~13 fish/min (25 fish in 122 s), uses 1 feather per fish (inventoryDelta Feather -25 for 25 fish). Fishing 48->79 in the 3 plan runs (+147,000 xp in 18 min with cooking) | ~70k xp/hr observed in an 18-min plan (Fishing 147k) | 2026-10-11 conductor2 local |
+| Catherby cage fishing (Lobster) | (2841, 3430) | 40 | Lobster pot (Harry's fishing shop sells it for 20 gp), bank (2809, 3443), range (2817, 3444). 19 lobsters in ~2 min; 0 burnt at Cooking 83. Walks: Lumbridge -> Catherby 143 s, Catherby -> Ardougne 53 s (no wolf attacks at combat 49) | not measured (one 2 min run) | 2026-10-16 conductor2w3 local |
 
 ## Fishing Guild
 

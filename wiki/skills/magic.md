@@ -62,3 +62,4 @@ Equip a staff and select an elemental spell from the combat style menu to auto-c
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge chickens, Wind Strike | (3231, 3295), radius 8 | 1-41 | Manual Wind Strike casts (Air + Mind runes, 1 each per cast); 97 casts took Magic 1 -> 41 at 25x XP. Runes from Aubury's (Varrock, see [shops](../../learnings/shops.md)): 110 of each cost 1079 gp. Cast mechanics: [combat](../../learnings/combat.md) | not from stats.ts (1 run: 17.6k Magic in a 10 min mixed Ranged/Magic plan) | 2026-10-11 conductor2 local |
+| Edgeville Dungeon hill giants ("Giant"), Wind Blast + Staff of air | see [hazards](../../learnings/hazards.md) | 41-66 | `combat` task, manual Wind Blast, ~4 casts per kill; Magic 41 -> 66 in 641 s; Defence also gained +32k XP. Plan `magic-blast-giants` (main account) | ~673k Magic XP/h while casting (one run) | 2026-10-16 conductor2 local |

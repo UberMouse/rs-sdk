@@ -41,7 +41,7 @@ None.
 
 ## Verified run (conductor2w5, local)
 
-Plan `restless-ghost` (talk, interact, pickup tasks) did the whole quest in 301 s from Lumbridge (Prayer 15 start): **Prayer +28,125 XP** (1,125 base at 25x). Per phase: Aereck 19 s, Urhney 69 s (walk to the swamp house), wear amulet 1 s, open coffin 56 s (walk back), ghost 16 s, skull 65 s (walk, ladder down, take), coffin again 60 s (walk, ladder up), skull on coffin 16 s. [v 2026-10-16 conductor2w5 local]
+Plan `restless-ghost` (talk, interact, pickup tasks) did the whole quest in 301 s from Lumbridge (Prayer 15 start): **Prayer +28,125 XP** (1,125 base at 25x). Per phase: Aereck 19 s, Urhney 69 s (walk to the swamp house), wear amulet 1 s, open coffin 56 s (walk back), ghost 16 s, skull 65 s (walk, ladder down, take), coffin again 60 s (walk, ladder up), skull on coffin 16 s. [v 2026-10-16 conductor2w5 local] The main account ran it in 294 s (Prayer 50 -> 59, +28,125). [v 2026-10-16 conductor2 local]
 
 | Step | Where | How |
 |------|-------|-----|
