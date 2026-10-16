@@ -24,6 +24,9 @@ Use the **Accurate** fighting style to gain Attack XP. Grants 4 XP per damage de
 
 - Attack level affects only accuracy, higher damage requires training Strength.
 - See the Items Database for detailed weapon stats.
+- Swing speed comes from the weapon's `attackrate` (default 4 ticks): scimitars, swords, daggers and claws 4; longswords and maces 5; battleaxes 6; 2h swords and halberds 7 (`skill_combat/configs/melee/*.obj`, `player_melee.rs2:59`). A kill pays exactly NPC HP x 100 XP at 25x to the trained skill (damage is capped at the NPC's remaining HP, `player_melee.rs2:32`), so the scimitar's speed beats every slower weapon on XP/h. [server data, unverified in game 2026-10-16]
+- Adamant and Rune scimitars are sold by no shop (Zeke's stops at Mithril): smith them (adamant: Smithing 75, 2 bars; rune: Smithing 90, 2 runite bars, `smithing.dbrow:177-198`). No dragon scimitar exists in this revision. A rune longsword (Scavvo, 32,000 gp) needs the Champions' Guild (32 quest points); a dragon longsword (Jakut, Zanaris, 100,000 gp) needs Lost City and is only ~1-2% faster than a rune scimitar. [server data, unverified in game 2026-10-16]
+- Melee training targets by model (HP / defence): hill giant 35/26 (12 spawns, Edgeville Dungeon), moss giant 60/30 (4 spawns at (3158, 9903) and (3165, 9879), Edgeville Dungeon east, multi-combat; the walk from the hill giants is unverified), ice giant 70/40 (3, Asgarnian Ice Dungeon). Moss giants come out ~28% faster than hill giants at equal per-kill overhead. [server data, unverified in game 2026-10-16]
 
 ## Verified training spots
 
