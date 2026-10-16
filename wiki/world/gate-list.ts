@@ -2173,7 +2173,8 @@ export const GATE_LIST: readonly CuratedGate[] = [
         },
     ),
     gate('oploc1,troll_stronghold_entrance', 'quests/quest_troll/scripts/quest_troll.rs2:109', 'quest:troll>=40', {
-        why: 'The secret door opens from ^troll_freed_godric, or once %troll_opened_back_exit (not a quest varp) records it opened from inside; the scan does not read that varp.',
+        to: '0_44_157_7_2',
+        why: 'The secret door opens from ^troll_freed_godric, or once %troll_opened_back_exit (not a quest varp) records it opened from inside; the scan does not read that varp. It teleports into the stronghold (quest_troll.rs2:113).',
         stages: { 'quest:troll>=40': '^troll_freed_godric' },
         scan: '89eab116',
     }),
@@ -2608,7 +2609,8 @@ export const GATE_LIST: readonly CuratedGate[] = [
             ['quest:zombiequeen', 'skill:agility:32'],
         ],
         {
-            why: 'The crawl-way shows only once the tattered scroll is read (quest_zombiequeen.rs2:615), a bit of %zq_map_mechanisms the quest sets and never clears; the scan does not read testbit. Doing the quest reads it.',
+            to: '0_43_146_8_45',
+            why: 'The crawl-way shows only once the tattered scroll is read (quest_zombiequeen.rs2:615), a bit of %zq_map_mechanisms the quest sets and never clears; the scan does not read testbit. Doing the quest reads it. The gated move is the teleport into the tomb (quest_zombiequeen.rs2:643); the crossing the scan also sees is the failed squeeze, which puts the player back (quest_zombiequeen.rs2:625-634).',
             scan: '7f1981be',
         },
     ),

@@ -264,9 +264,23 @@ export interface Gate {
     from?: Side;
     /**
      * The gated move is a jump to this tile (the Zanaris shed's teleport), not a crossing of the loc; the
-     * loc itself is passable as the collision data has it.
+     * loc itself is passable as the collision data has it. On an object (not a wall: shapes 0-3 and 9) it
+     * can also be read from the script (sources/gate-landings.ts): the move lands here whichever tile the
+     * player uses the loc from.
      */
     to?: Tile;
+    /**
+     * On an object, a move whose landing depends on the tile the player uses the loc from (`movecoord(coord,
+     * ...)`, a step picked by the player's side; sources/gate-landings.ts): from each `stand` (a walkable
+     * tile on land the loc is reached from) it lands on `landing`, walkable land. A stand may have several
+     * (a dialogue choice), and a stand the move can't be derived from, or lands off land from, has none.
+     */
+    landings?: { stand: Tile; landing: Tile }[];
+    /**
+     * On an object, the move deletes the loc or swaps it for one whose collision does not block
+     * (sources/gate-landings.ts): once `requires` is met, the loc's tiles are walkable.
+     */
+    opens?: true;
     /** The script line that makes the check, as `file:line`. */
     source: string;
     /** A gate's notes (gates.ts), or what a quest window is open for. */
@@ -274,7 +288,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 9;
+export const WORLD_FORMAT = 10;
 
 export interface World {
     /** WORLD_FORMAT when written. */

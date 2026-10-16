@@ -99,6 +99,28 @@ const world: World = {
             from: 'far',
             source: 'skill_cooking/scripts/cooking_guild.rs2:4',
         },
+        {
+            trigger: 'oploc1,miningguildladder',
+            kind: 'gate',
+            loc: 'miningguildladder',
+            tile: { level: 0, x: 3018, z: 3339 },
+            shape: 10,
+            angle: 0,
+            requires: [['skill:mining:60']],
+            landings: [{ stand: { level: 0, x: 3017, z: 3339 }, landing: { level: 0, x: 3017, z: 9739 } }],
+            source: 'areas/area_falador/scripts/mining_guild.rs2:2',
+        },
+        {
+            trigger: 'oploc1,_jungle_bush',
+            kind: 'gate',
+            loc: 'kharazi_jungle_plant1',
+            tile: { level: 0, x: 2760, z: 2937 },
+            shape: 10,
+            angle: 0,
+            requires: [['category:weapon_axe:held', 'item:machette:held', 'quest:legends']],
+            opens: true,
+            source: 'quests/quest_legends/scripts/jungle_tree.rs2:8',
+        },
     ],
 };
 
@@ -134,7 +156,9 @@ describe('serializeWorld', () => {
                 '    {"kind":"ship","route":"port_sarim_to_karamja","npc":"captain_tobias","from":{"level":0,"x":3028,"z":3216},"to":{"level":1,"x":2956,"z":3143},"fare":30,"requires":["coins:30"],"source":"sailors.rs2:31","paidAt":["sailors.rs2:29"]}',
                 '  ],',
                 '  "gates": [',
-                '    {"trigger":"oploc1,chefdoor","kind":"gate","loc":"chefdoor","tile":{"level":0,"x":3143,"z":3443},"shape":0,"angle":1,"requires":[["item:chefs_hat:worn","skill:cooking:32"]],"from":"far","source":"skill_cooking/scripts/cooking_guild.rs2:4"}',
+                '    {"trigger":"oploc1,chefdoor","kind":"gate","loc":"chefdoor","tile":{"level":0,"x":3143,"z":3443},"shape":0,"angle":1,"requires":[["item:chefs_hat:worn","skill:cooking:32"]],"from":"far","source":"skill_cooking/scripts/cooking_guild.rs2:4"},',
+                '    {"trigger":"oploc1,miningguildladder","kind":"gate","loc":"miningguildladder","tile":{"level":0,"x":3018,"z":3339},"shape":10,"angle":0,"requires":[["skill:mining:60"]],"landings":[{"stand":{"level":0,"x":3017,"z":3339},"landing":{"level":0,"x":3017,"z":9739}}],"source":"areas/area_falador/scripts/mining_guild.rs2:2"},',
+                '    {"trigger":"oploc1,_jungle_bush","kind":"gate","loc":"kharazi_jungle_plant1","tile":{"level":0,"x":2760,"z":2937},"shape":10,"angle":0,"requires":[["category:weapon_axe:held","item:machette:held","quest:legends"]],"opens":true,"source":"quests/quest_legends/scripts/jungle_tree.rs2:8"}',
                 '  ]',
                 '}',
                 '',
@@ -204,10 +228,15 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         const { format: _, ...old } = world;
         writeFileSync(file, JSON.stringify(old));
         expect(() => loadWorld(file)).toThrow(/format none.*regenerate it with bun run world/);
+        // Format 9 was written before gate rows had landings or opens.
+        writeFileSync(file, serializeWorld({ ...world, format: 9 }));
+        expect(() => loadWorld(file)).toThrow(`format 9, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }
 });
+
+const at = (x: number, z: number) => ({ level: 0, x, z });
 
 describe('formatReport', () => {
     const report: BuildReport = {
@@ -246,14 +275,22 @@ describe('formatReport', () => {
             windows: [],
             other: [],
             skippedCheckers: [],
+            landings: {
+                counts: { to: 0, landings: 0, opens: 0, underived: 0, windows: 0 },
+                underived: [],
+                offLand: [],
+            },
         },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
+    const landingsLine =
+        'gate moves on objects: 0 to, 0 landings, 0 opens, 0 underived (rows; 0 quest windows left as they are)';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
         gatesLine,
+        landingsLine,
     ];
 
     test('counts, then coverage, then connectors, quests, transports and gates', () =>
@@ -360,6 +397,7 @@ describe('formatReport', () => {
             'transports out of scope (gates.ts): 1',
             '  gliders (glider.rs2:7): a menu',
             gatesLine,
+            landingsLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -391,7 +429,7 @@ describe('formatReport', () => {
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
         };
-        expect(formatReport({ ...report, gates }).slice(-21)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-22)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -413,6 +451,7 @@ describe('formatReport', () => {
             '  oploc1,maze (m.rs2:1): too many paths',
             'quest windows, kept out of the fill: 1',
             '  oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought',
+            landingsLine,
         ]);
         expect(
             failed({
@@ -420,6 +459,50 @@ describe('formatReport', () => {
                 gates: { ...report.gates, unplaced: ['x'], other: ['y'], unclear: ['z'], skippedCheckers: ['w'] },
             }),
         ).toBe(false);
+    });
+
+    test('counts the gate moves on objects, lists the underived rows by trigger and the landings off land', () => {
+        const landings: BuildReport['gates']['landings'] = {
+            counts: { to: 1, landings: 2, opens: 3, underived: 3, windows: 1 },
+            underived: [
+                { trigger: 'oploc1,pipe', loc: 'pipe', tile: at(1, 1), reasons: ['no path moves (p.rs2:2)'] },
+                {
+                    trigger: 'oploc1,bridge',
+                    loc: 'bridge',
+                    tile: at(5, 5),
+                    reasons: ['no tile on land reaches the loc'],
+                },
+                {
+                    trigger: 'oploc1,bridge',
+                    loc: 'bridge',
+                    tile: at(5, 6),
+                    reasons: ['no tile on land reaches the loc'],
+                },
+            ],
+            offLand: [
+                {
+                    trigger: 'oploc1,rock',
+                    loc: 'rock',
+                    tile: at(9, 9),
+                    stand: at(8, 9),
+                    landing: at(10, 9),
+                    at: 'r.rs2:7',
+                },
+            ],
+        };
+        const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
+        expect(lines.slice(-8)).toEqual([
+            'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are)',
+            'warning: 3 gate rows on objects with no landing derived, by trigger:',
+            '  oploc1,bridge: 2 (bridge (5, 5), bridge (5, 6))',
+            '    no tile on land reaches the loc',
+            '  oploc1,pipe: 1 (pipe (1, 1))',
+            '    no path moves (p.rs2:2)',
+            'warning: 1 gate landings off walkable land, left out:',
+            '  oploc1,rock rock (9, 9) from (8, 9) -> (10, 9) (r.rs2:7)',
+        ]);
+        // Warnings: they do not fail the build.
+        expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);
     });
 });
 

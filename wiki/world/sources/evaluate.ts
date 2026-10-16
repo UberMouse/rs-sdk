@@ -12,6 +12,12 @@ export interface CoordValue {
     z: number;
     /** The script line it was written on, as `file:line`. */
     at: string;
+    /**
+     * Computed, in a run that knows them (sources/gate-scan.ts Binding), from the player's tile (another
+     * stand can give another tile) or the loc's (its LOC_COORD, a coord param); the scan sees neither as a
+     * fixed tile.
+     */
+    from?: 'player' | 'loc';
 }
 
 export type Value =

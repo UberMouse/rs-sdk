@@ -30,6 +30,17 @@
 // quest is done (Iban's temple turning the player away once Underground Pass is done) is a window too,
 // unless another path to the same tile needs that quest or tests that varp, as a toll paid until the quest
 // is done and free after (beforeOnly); on a quest with `or` varps it stays as other:<text>.
+//
+// A bound run (Binding, gateLander) runs one trigger for one placed loc and one tile the player uses it
+// from, to say where its move puts the player (sources/gate-landings.ts). The loc's facts and params are
+// known, `coord` is the player's tile, moved by each position-setting command on the path, and `inzone`
+// and `map_blocked` (from the collision data) are computed, so a side condition is settled rather than
+// recorded. A call the scan counts as one move is run through to the position-setting commands in its
+// body (a proc given only known values may call itself, as ~agility_walk does), and the landing is where
+// the last one leaves the player; `loc_del`, and `loc_change` to a loc whose collision does not block,
+// open the loc. A `stat_random` roll is followed only the way it succeeds: a slip is not the move. A
+// condition the scan reads only as other:<text>, or not at all, goes both ways unrecorded, as which paths
+// are kept (consistent) reads only requirements, refusals and quest stages.
 import { codeOf } from '../classify';
 import { minimalSets, requirementSet, subsetOf } from '../requirements';
 import type { Gate, Quest, Side, Tile } from '../types';
@@ -46,6 +57,7 @@ import {
     TooManyPaths,
     truthOf,
     unknown,
+    type CoordValue,
     type Flow as SharedFlow,
     type Value,
 } from './evaluate';
@@ -146,6 +158,33 @@ export interface GateScanInput {
     /** Tool-checker procs and the obj categories they accept (sources/conditions.ts toolCheckers). */
     tools?: ReadonlyMap<string, readonly string[]>;
 }
+
+/** What a bound run (gateLander) reads of the world beyond the scripts. */
+export interface LanderWorld {
+    /** The loc configs: a loc's params and category, and whether a loc blocks. */
+    locConfigs: ReadonlyMap<string, Config>;
+    /** MAP_BLOCKED (ServerOps.ts): the tile's collision blocks walking (GameMap.ts isMapBlocked). */
+    mapBlocked(tile: Tile): boolean;
+}
+
+/** One placed loc and the tile the player uses it from: what a bound run knows that the scan doesn't. */
+export interface Binding {
+    config: string;
+    tile: Tile;
+    shape: number;
+    angle: number;
+    stand: Tile;
+}
+
+/**
+ * What a move past a gate's check does from one stand, on one path an account meeting the gate's
+ * requirements can take (gateLander): lands the player on a tile (`player` when the tile follows the
+ * stand), opens the loc, or can't be told offline (`why`, with the construct and its script line).
+ */
+export type LandingOutcome =
+    | { k: 'landing'; tile: Tile; player: boolean; at: string }
+    | { k: 'opens'; at: string }
+    | { k: 'underived'; why: string };
 
 /** A trigger's name as its header writes it. */
 export const triggerKey = (t: Trigger): string => `${t.kind}${t.on}${t.op},${t.category ? '_' : ''}${t.target}`;
@@ -393,6 +432,17 @@ interface Path {
     /** Objs taken, net of any given: obj -> count. */
     taken: ReadonlyMap<string, number>;
     moved: boolean;
+    /**
+     * A bound run's: the last move the scan counts on the path, as `` `text` (file:line) ``, and where the
+     * scan says each it counted goes (GateMove.to).
+     */
+    move?: { at: string; tos: readonly string[] };
+    /** A bound run's: how many calls the scan counts as one move the path is inside. */
+    within?: number;
+    /** A bound run's: where the last position-setting command left the player, or why that isn't known offline. */
+    landing?: { tile: Tile; player: boolean; at: string } | { why: string };
+    /** A bound run's: the command that deleted the loc or swapped it for one that doesn't block, as `file:line`. */
+    opened?: string;
 }
 
 type Flow = SharedFlow<Path>;
@@ -412,6 +462,10 @@ interface Moved {
 interface Run {
     moves: Moved[];
     blocked: Path[];
+    /** Every path at the end of the run, moved or not. */
+    ends: Path[];
+    /** A bound run's: each condition read, by its text, with the requirement its passing way holds. */
+    passing?: ReadonlyMap<string, readonly string[]>;
     why: string[];
 }
 
@@ -458,8 +512,16 @@ const valueKey = (v: Value): string =>
             : v.t === 'range'
               ? `r${v.lo},${v.hi}`
               : v.t === 'coord'
-                ? `c${v.relative}${v.level},${v.x},${v.z}`
+                ? `c${v.relative}${v.from ?? ''}${v.level},${v.x},${v.z}`
                 : `u${v.choice ?? ''}${v.side ?? ''}${v.text}`;
+
+/** Each path part's key, once: a path's locals, conditions and objs taken are never changed, only replaced. */
+const partKeys = new WeakMap<object, string>();
+const keyOf = <T extends object>(part: T, key: (part: T) => string): string => {
+    let k = partKeys.get(part);
+    if (k === undefined) partKeys.set(part, (k = key(part)));
+    return k;
+};
 
 /**
  * The paths, each state once: two that took the same conditions, paid the same, moved alike and hold the
@@ -470,10 +532,12 @@ function distinctPaths(paths: readonly Path[]): Path[] {
     for (const p of paths) {
         const key = [
             p.moved,
+            p.landing ? JSON.stringify(p.landing) : '',
+            p.opened ?? '',
             p.fare,
-            [...p.taken].map(([o, n]) => `${o}=${n}`).join(','),
-            p.conds.map(condKey).join('\n'),
-            [...p.env].map(([k, v]) => `${k}=${valueKey(v)}`).join('\n'),
+            keyOf(p.taken, t => [...t].map(([o, n]) => `${o}=${n}`).join(',')),
+            keyOf(p.conds, cs => cs.map(condKey).join('\n')),
+            keyOf(p.env, env => [...env].map(([k, v]) => `${k}=${valueKey(v)}`).join('\n')),
         ].join('\t');
         if (!out.has(key)) out.set(key, p);
     }
@@ -522,8 +586,45 @@ function sideOf(side: Value & { t: 'unknown' }, op: string, other: Value, otherT
     return undefined;
 }
 
+/** The key a bound run keeps the player's tile under in a path's locals; no local is named so. */
+const POS = 'coord';
+
+/** Bounds a bound run's calls, a proc calling itself among them: ~agility_walk steps one tile a call. */
+const BOUND_DEPTH = 64;
+
+/** The engine's two-int arithmetic commands (handlers/NumberOps.ts). */
+const ARITHMETIC: Readonly<Record<string, (a: number, b: number) => number>> = {
+    add: (a, b) => a + b,
+    sub: (a, b) => a - b,
+    multiply: (a, b) => a * b,
+    divide: (a, b) => Math.trunc(a / b),
+};
+
+/**
+ * Whether a loc of `cfg` placed with `shape` blocks walking, as the engine adds its collision
+ * (server/engine/src/engine/GameMap.ts changeLocCollision, by routefinder/flags.ts locShapeLayer): a wall
+ * (0-3) or a ground loc (9-21) when it has `blockwalk`, ground decor (22) when it is active too, wall decor
+ * (4-8) never. Undefined for a config not known, or ground decor whose being active the config leaves to
+ * its models (cache/config/LocType.ts postDecode: one with an op is active).
+ */
+export function blocksWalk(cfg: Config | undefined, shape: number): boolean | undefined {
+    if (!cfg) return undefined;
+    if (first(cfg, 'blockwalk') === 'no' || (shape >= 4 && shape <= 8)) return false;
+    if (shape !== 22) return true;
+    const active = first(cfg, 'active');
+    if (active !== undefined) return active === 'yes';
+    return [1, 2, 3, 4, 5].some(n => first(cfg, `op${n}`) !== undefined) ? true : undefined;
+}
+
+/** A coord the script fixes or computes offline, not a shift of an unknown tile. */
+const isFixed = (v: Value | undefined): v is CoordValue => v?.t === 'coord' && !v.relative;
+
+/** Where a move lands as GateMove.to writes it: the coord literal of a fixed tile, else CROSS. */
+const moveTarget = (v: Value | undefined): string =>
+    v?.t === 'coord' && !v.relative && !v.from ? tileCoord(v) : CROSS;
+
 /** Runs loc op triggers, over the callables. */
-function gateWalker(input: GateScanInput) {
+function gateWalker(input: GateScanInput, world?: LanderWorld) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const scriptOf = scriptCache();
     const read = conditionReader(input.quests, input.loadoutProcs, input.tools);
@@ -574,6 +675,23 @@ function gateWalker(input: GateScanInput) {
     // is a move as a whole: what it does inside (an agility walk, a door's swing) can't gate it.
     const reads = readsSubjects(input.loadoutProcs, input.tools);
     const readsConditions = marking((_, code) => reads.test(code) || PAYS.test(code));
+    // Callables that change a loc, themselves or through a callee: a bound run follows them for `opened`.
+    const changingLoc = marking((_, code) => CHANGES_LOC.test(code), incidental);
+    // The loc categories: in a bound run, `loc_category = jungle_bush` compares two names.
+    const categories = new Set([...(world?.locConfigs.values() ?? [])].flatMap(c => c.category ?? []));
+    /**
+     * The bound run's loc (Binding), while one runs: its facts as LocOps.ts gives them, its params by
+     * name, and its shape. A run is synchronous, so one at a time.
+     */
+    let bound:
+        | {
+              facts: Map<string, Value>;
+              params: Map<string, Value>;
+              shape: number;
+              /** Each condition read, by its text: the requirement the way it lets the player through holds. */
+              passing: Map<string, string[]>;
+          }
+        | undefined;
     /** Whether a trigger's body can move the player. */
     const bodyMoves = (body: string): boolean => {
         const code = codeOf(body);
@@ -622,17 +740,36 @@ function gateWalker(input: GateScanInput) {
         if (e.name.startsWith('$')) return env.get(e.name) ?? unknown(e.name);
         if (e.name.startsWith('^')) return constant(e.name) ?? unknown(e.name);
         // COORD is the player's tile (server/engine/src/engine/script/handlers/PlayerOps.ts), written `coord` or
-        // `coord()`; the loc's facts the same.
-        if (!e.args?.length && e.name === 'coord') return sideUnknown('coord');
-        if (!e.args?.length && LOC_FACTS.has(e.name)) return locUnknown(e.text);
+        // `coord()`; the loc's facts the same. A bound run knows them.
+        if (!e.args?.length && e.name === 'coord') return env.get(POS) ?? sideUnknown('coord');
+        if (!e.args?.length && LOC_FACTS.has(e.name)) return bound?.facts.get(e.name) ?? locUnknown(e.text);
         if (e.args === null) {
             if (e.name === 'true' || e.name === 'false') return { t: 'bool', b: e.name === 'true' };
-            return known(e.name) ? { t: 'name', v: e.name } : unknown(e.text);
+            return known(e.name) || (bound && categories.has(e.name)) ? { t: 'name', v: e.name } : unknown(e.text);
         }
+        // LOC_PARAM reads the active loc's config param (LocOps.ts).
+        const param = e.args[0];
+        if (bound && e.name === 'loc_param' && param?.t === 'name' && param.args === null)
+            return bound.params.get(param.name) ?? unknown(e.text);
         const args = e.args.map(a => evaluate(a, env, file));
         if (SIDE_COMMANDS.has(e.name) && args.some(isSide)) return sideUnknown(e.text);
         if (SIDE_COMMANDS.has(e.name) && args.every(locOrKnown) && args.some(isLoc)) return locUnknown(e.text);
         const [a0, a1, a2, a3] = args;
+        // `calc(x)` is x; ADD, SUB, MULTIPLY and DIVIDE as their names say.
+        if (e.name === 'calc' && args.length === 1 && a0!.t !== 'unknown') return a0!;
+        // INZONE: the third coord within the box the first two span, level included (ServerOps.ts).
+        if (e.name === 'inzone' && isFixed(a0) && isFixed(a1) && isFixed(a2))
+            return {
+                t: 'bool',
+                b: [a2.x, a2.level, a2.z].every(
+                    (n, i) => n >= [a0.x, a0.level, a0.z][i]! && n <= [a1.x, a1.level, a1.z][i]!,
+                ),
+            };
+        // MAP_BLOCKED, in a bound run, from the collision data.
+        if (bound && world && e.name === 'map_blocked' && a0?.t === 'coord' && !a0.relative)
+            return { t: 'bool', b: world.mapBlocked(a0) };
+        const arithmetic = ARITHMETIC[e.name];
+        if (arithmetic && a0?.t === 'int' && a1?.t === 'int') return { t: 'int', n: arithmetic(a0.n, a1.n) };
         // COORDX, COORDY (the level) and COORDZ split a coord; MOVECOORD adds (x, level, z) to one
         // (handlers/ServerOps.ts).
         if (/^coord[xyz]$/.test(e.name) && a0?.t === 'coord')
@@ -646,10 +783,26 @@ function gateWalker(input: GateScanInput) {
     };
 
     /**
+     * What a condition the walker can't settle means, taken `want` way (meaning): in a bound run, a requirement
+     * goes into `passing` rather than onto the path, as that is all `consistent` reads of it, and paths that
+     * met the same condition by different requirements (an axe held or worn) run on as one.
+     */
+    const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[][] => {
+        const ways = meaning(e, want, env, file);
+        if (!bound) return ways;
+        for (const c of ways.flat()) {
+            if (c.k !== 'req' && c.k !== 'coins') continue;
+            const req = c.k === 'req' ? c.req : `coins:${c.n}`;
+            if (!bound.passing.get(c.text)?.includes(req)) push(bound.passing, c.text, req);
+        }
+        return ways.map(w => w.filter(c => c.k !== 'req' && c.k !== 'coins'));
+    };
+
+    /**
      * What a condition the walker can't settle means, taken `want` way: the ways it can hold, each a list of
      * what it means (one way unless it reads as a choice of objs, a tool any of whose categories does).
      */
-    const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[][] => {
+    const meaning = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[][] => {
         const text = `\`${e.text}\` (${file}:${e.line})`;
         // The player's side: a comparison with an operand on the player's tile.
         const [l, op0, r] = e.t === 'bin' && NEGATE[e.op] ? [e.l, e.op, e.r] : [e, '=', undefined];
@@ -708,6 +861,16 @@ function gateWalker(input: GateScanInput) {
             case 'useitem':
                 return [[reading.is ? { k: 'req', req: `item:${reading.obj}:held`, text } : { k: 'free', text }]];
             case 'other':
+                // STAT_RANDOM is true when the roll succeeds (PlayerOps.ts): a bound run follows only that way,
+                // as a failed roll (an agility slip, a fall) is not the move.
+                if (bound && l.t === 'name' && l.name === 'stat_random') {
+                    const truth = r ? truthOf(rv) : true;
+                    if (truth !== undefined && (op0 === '=' || op0 === '!'))
+                        return want === (truth === (op0 === '=')) ? [[]] : [];
+                }
+                // A bound run goes both ways without noting it: which paths it keeps (consistent) reads only
+                // the conditions above, and paths that differ by these alone run on as one.
+                if (bound) return [[]];
                 // Taken false, it says so: two paths that differ only by it hold either way (minimalOptions).
                 if (reading.subject) return [[{ k: 'other', text: want ? text : `not ${text}` }]];
                 // A random draw (in the condition, or held in a local it tests: `$rand = random(20)`) goes
@@ -771,8 +934,8 @@ function gateWalker(input: GateScanInput) {
         return classify(e, want, env, file);
     };
 
-    const runTrigger = (trigger: Trigger): Run => {
-        const run: Run = { moves: [], blocked: [], why: [] };
+    const runTrigger = (trigger: Trigger, binding?: Binding): Run => {
+        const run: Run = { moves: [], blocked: [], ends: [], why: [] };
         const stop = (why: string) => {
             if (!run.why.includes(why)) run.why.push(why);
         };
@@ -800,6 +963,28 @@ function gateWalker(input: GateScanInput) {
             const move = (to: string): Flow => {
                 run.moves.push({ to, conds: p.conds, fare: p.fare, taken: p.taken });
                 return { live: [{ ...p, moved: true }], ended: [] };
+            };
+            /** A bound run's path `q` made a move the scan counts, to `to`, here. */
+            const made = (q: Path, to: string): NonNullable<Path['move']> => ({
+                at: `\`${s.text}\` (${at})`,
+                tos: [...(q.move?.tos ?? []), to],
+            });
+            /**
+             * A bound run's position-setting command: the player is at `v` from here on, and it is the
+             * path's landing until a later one.
+             */
+            const reposition = (q: Path, v: Value | undefined): Path => {
+                const landing =
+                    v?.t === 'coord' && !v.relative
+                        ? { tile: { level: v.level, x: v.x, z: v.z }, player: v.from === 'player', at }
+                        : {
+                              why: `\`${s.text}\` (${at}): ${v?.t === 'unknown' ? `\`${v.text}\`` : 'the tile'} is not known offline`,
+                          };
+                return {
+                    ...q,
+                    landing,
+                    env: new Map(q.env).set(POS, 'tile' in landing ? v! : unknown(`coord after ${at}`)),
+                };
             };
             switch (s.t) {
                 case 'set':
@@ -877,9 +1062,24 @@ function gateWalker(input: GateScanInput) {
             }
             const { name } = s.call;
             const raw = s.call.args ?? [];
-            const target = (v: Value | undefined): string => (v?.t === 'coord' && !v.relative ? tileCoord(v) : CROSS);
             const index = MOVE_COMMANDS[name];
-            if (index !== undefined) return move(target(raw[index] && evaluate(raw[index], p.env, file)));
+            if (index !== undefined) {
+                const v = raw[index] && evaluate(raw[index], p.env, file);
+                if (!bound) return move(moveTarget(v));
+                // Inside a call the scan counts as one move, a command only moves the player on.
+                const counts = p.within ? {} : { move: made(p, moveTarget(v)) };
+                return { live: [reposition({ ...p, moved: true, ...counts }, v)], ended: [] };
+            }
+            // LOC_DEL removes the active loc and LOC_CHANGE swaps it in place, keeping its shape (LocOps.ts):
+            // the loc's tiles are open once nothing there blocks.
+            if (bound && (name === 'loc_del' || name === 'loc_change')) {
+                const into = name === 'loc_change' && raw[0] ? evaluate(raw[0], p.env, file) : undefined;
+                const opens =
+                    name === 'loc_del' ||
+                    (into?.t === 'name' && blocksWalk(world?.locConfigs.get(into.v), bound.shape) === false);
+                const { opened: _, ...shut } = p;
+                return { live: [opens ? { ...p, opened: at } : shut], ended: [] };
+            }
             if (name === 'inv_del' || name === 'inv_add') {
                 const obj = nameOf(raw[1], p.env);
                 if (nameOf(raw[0], p.env) !== 'inv' || !obj) return { live: [p], ended: [] };
@@ -918,27 +1118,53 @@ function gateWalker(input: GateScanInput) {
             if (!call) return { live: [p], ended: [] };
             const isLabel = call.startsWith('@');
             const callee = byCall.get(call);
-            if (doorProc(call)) return move(CROSS);
-            // A call of a script already running (a dialogue that asks again) repeats what this path walks.
-            if (stack.includes(call)) return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
-            if (!callee || !moves(call)) {
-                // A proc that can't move the player returns to the script; a label never does.
-                return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
+            // A call the scan counts as one move: a bound run reads it through, for where it lands.
+            let counted = false;
+            if (doorProc(call)) {
+                if (!bound) return move(CROSS);
+                counted = true;
             }
-            // A moving proc given a fixed tile moves the player there.
-            const fixed = isLabel ? undefined : args.find(a => a.t === 'coord' && !a.relative);
-            if (fixed) return move(target(fixed));
-            if (!isLabel && !readsConditions.has(call)) return move(CROSS);
+            // A call of a script already running (a dialogue that asks again) repeats what this path walks;
+            // in a bound run a proc given only known values may call itself (~agility_walk steps one tile a
+            // call), to BOUND_DEPTH.
+            if (stack.includes(call) && (isLabel || !bound || args.some(a => a.t === 'unknown')))
+                return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
+            // A proc that can't move the player (nor, in a bound run, change a loc) returns to the script; a
+            // label never does.
+            if (!callee || !(moves(call) || (bound && changingLoc.has(call))))
+                return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
+            // A moving proc given a fixed tile moves the player there; one that reads no condition the scan
+            // reads crosses the loc.
+            const fixed = isLabel ? undefined : args.find(a => a.t === 'coord' && !a.relative && !a.from);
+            if (!counted && moves(call) && !isLabel && (fixed || !readsConditions.has(call))) {
+                if (!bound) return move(moveTarget(fixed));
+                counted = true;
+            }
             const script = scriptOf(call, callee.file, callee.line, callee.body);
-            if ('error' in script || stack.length >= MAX_DEPTH) {
+            if ('error' in script || stack.length >= (bound ? BOUND_DEPTH : MAX_DEPTH)) {
                 stop('error' in script ? script.error : `\`${s.text}\` (${at}) calls too deep`);
                 return { live: [], ended: [p] };
             }
             const env = new Map(script.params.map((param, i) => [param, args[i] ?? unknown(param)]));
-            const flow = block(script.body, [{ ...p, env }], script.file, [...stack, call]);
+            // A bound run carries the player's tile into the call and back out of it.
+            if (bound) env.set(POS, p.env.get(POS)!);
+            const entered = counted
+                ? {
+                      ...p,
+                      moved: true,
+                      move: made(p, doorProc(call) ? CROSS : moveTarget(fixed)),
+                      within: (p.within ?? 0) + 1,
+                  }
+                : p;
+            const flow = block(script.body, [{ ...entered, env }], script.file, [...stack, call]);
             const out = [...flow.live, ...flow.ended];
             // A label is a jump: the script ends where it does. A proc returns, to the caller's locals.
-            return isLabel ? { live: [], ended: out } : { live: out.map(q => ({ ...q, env: p.env })), ended: [] };
+            const back = (q: Path): Path => ({
+                ...q,
+                env: bound ? new Map(p.env).set(POS, q.env.get(POS)!) : p.env,
+                within: p.within,
+            });
+            return isLabel ? { live: [], ended: out } : { live: out.map(back), ended: [] };
         };
 
         const script = scriptOf(`${trigger.file}:${trigger.line}`, trigger.file, trigger.line, trigger.body);
@@ -946,17 +1172,156 @@ function gateWalker(input: GateScanInput) {
             stop(script.error);
             return run;
         }
+        bound = binding && boundLoc(binding);
+        if (bound) run.passing = bound.passing;
         try {
-            const start: Path = { env: new Map(), conds: [], fare: 0, taken: new Map(), moved: false };
+            // A bound run starts with the player on the stand.
+            const env = new Map<string, Value>(
+                binding
+                    ? [[POS, { t: 'coord', relative: false, ...binding.stand, at: 'the stand', from: 'player' }]]
+                    : [],
+            );
+            const start: Path = { env, conds: [], fare: 0, taken: new Map(), moved: false };
             const flow = block(script.body, [start], script.file, []);
-            run.blocked = [...flow.live, ...flow.ended].filter(p => !p.moved);
+            run.ends = [...flow.live, ...flow.ended];
+            run.blocked = run.ends.filter(p => !p.moved);
         } catch (e) {
             if (!(e instanceof TooManyPaths)) throw e;
             stop(`too many paths: ${trigger.file}:${trigger.line} branches past ${MAX_PATHS} ways`);
+        } finally {
+            bound = undefined;
         }
         return run;
     };
-    return { bodyMoves, run: runTrigger };
+
+    /** A Binding's loc as a bound run reads it: LOC_COORD, LOC_ANGLE, LOC_SHAPE, LOC_TYPE and LOC_CATEGORY, and its params. */
+    const boundLoc = (b: Binding): NonNullable<typeof bound> => {
+        const cfg = world?.locConfigs.get(b.config);
+        const facts = new Map<string, Value>([
+            ['loc_coord', { t: 'coord', relative: false, ...b.tile, at: 'loc_coord', from: 'loc' }],
+            ['loc_angle', { t: 'int', n: b.angle }],
+            ['loc_shape', { t: 'int', n: b.shape }],
+            ['loc_type', { t: 'name', v: b.config }],
+        ]);
+        const category = first(cfg, 'category');
+        if (category) facts.set('loc_category', { t: 'name', v: category });
+        // `param=next_loc_stage,kharazi_jungle_plant1_slashed`: a number, a coord, or a config's name.
+        const params = new Map(
+            (cfg?.param ?? []).map((line): [string, Value] => {
+                const [key = '', ...rest] = line.split(',');
+                const value = rest.join(',');
+                const v: Value = /^-?\d+$/.test(value)
+                    ? { t: 'int', n: Number(value) }
+                    : isCoordLiteral(value)
+                      ? {
+                            t: 'coord',
+                            relative: false,
+                            ...coordTile(value),
+                            at: `${b.config} param ${key}`,
+                            from: 'loc',
+                        }
+                      : { t: 'name', v: value };
+                return [key, v];
+            }),
+        );
+        return { facts, params, shape: b.shape, passing: new Map() };
+    };
+
+    const completes: Completes = new Map(input.quests.map(q => [q.id, q.complete]));
+
+    /**
+     * What a gate row's move does from one stand (LandingOutcome), on each path that makes it (the scan's
+     * move `to`, GateMove.to; any move when undefined) and that an account meeting one of `requires` can
+     * take (consistent), quest windows and paths no account takes left out; and what stopped the run, if
+     * anything did.
+     */
+    const land = (
+        trigger: Trigger,
+        binding: Binding,
+        requires: readonly (readonly string[])[],
+        to?: string,
+    ): LandingOutcome[] => {
+        const run = runTrigger(trigger, binding);
+        const passing = run.passing ?? new Map<string, string[]>();
+        const kept = run.ends.filter(p => {
+            if (!p.move || (to !== undefined && !p.move.tos.includes(to))) return false;
+            const s = settle(p.conds, p.fare, p.taken);
+            return (
+                !s.dead &&
+                s.window === undefined &&
+                (!requires.length || requires.some(set => consistent(p.conds, set, passing, completes)))
+            );
+        });
+        return [
+            ...kept.map((p): LandingOutcome => {
+                if (p.landing && 'tile' in p.landing) return { k: 'landing', ...p.landing };
+                if (p.opened) return { k: 'opens', at: p.opened };
+                return { k: 'underived', why: p.landing?.why ?? `${p.move?.at} sets no position on this path` };
+            }),
+            ...run.why.map((why): LandingOutcome => ({ k: 'underived', why })),
+        ];
+    };
+    return { bodyMoves, run: runTrigger, land };
+}
+
+/** The stage `set` holds of a quest: its `quest:<id>>=<n>`, or complete for `quest:<id>`. */
+function stageIn(set: readonly string[], quest: string, completes: Completes): number | undefined {
+    const stages = set.flatMap(r => {
+        const m = r.match(/^quest:([a-z0-9_]+)(?:>=(\d+))?$/);
+        return m?.[1] === quest ? [m[2] === undefined ? (completes.get(quest) ?? 0) : Number(m[2])] : [];
+    });
+    return stages.length ? Math.max(...stages) : undefined;
+}
+
+/**
+ * Whether holding requirement `have` meets `need`: it implies it, or it is the same skill, quest points or
+ * coins at least as high, or it consumes the obj `need` holds.
+ */
+function meets(completes: Completes, have: string, need: string): boolean {
+    if (implies(completes, have, need)) return true;
+    const [h, n] = [have, need].map(r => r.match(/^(skill:[a-z_]+|questpoints|coins):(\d+)$/));
+    if (h && n && h[1] === n[1]) return Number(h[2]) >= Number(n[2]);
+    const consumed = have.match(/^consume:([a-z0-9_]+):\d+$/);
+    return consumed !== null && need === `item:${consumed[1]}:held`;
+}
+
+/**
+ * Whether an account that meets requirement set `set` can take a path with these conditions: none of them
+ * is a read condition taken the way that refuses the player what the set holds (`stat(mining) < 60` taken
+ * true, `passing` giving it skill:mining:60 the other way, when the set holds skill:mining:60), and each
+ * quest varp's comparisons hold at a stage the set reaches.
+ */
+function consistent(
+    conds: readonly Cond[],
+    set: readonly string[],
+    passing: ReadonlyMap<string, readonly string[]>,
+    completes: Completes,
+): boolean {
+    const refuses = (c: Cond) =>
+        c.k === 'free' && (passing.get(c.text) ?? []).some(r => set.some(h => meets(completes, h, r)));
+    if (conds.some(refuses)) return false;
+    const byVarp = new Map<string, Extract<Cond, { k: 'quest' }>[]>();
+    for (const c of conds) if (c.k === 'quest' && c.ref.own) push(byVarp, c.ref.varp, c);
+    return [...byVarp.values()].every(comps => {
+        const { ref } = comps[0]!;
+        const need = stageIn(set, ref.quest.id, completes);
+        if (need === undefined) return true;
+        const points = [need, ref.complete, ...comps.flatMap(c => [c.n - 1, c.n, c.n + 1])].filter(v => v >= need);
+        return points.some(v => comps.every(c => holds(v, c.op, c.n)));
+    });
+}
+
+/**
+ * Runs a gate trigger for one placed loc and stand (Binding), and says what its move past the check does
+ * there (LandingOutcome, sources/gate-scan.ts header): one outcome per path that makes the scan's move `to`
+ * (any move when undefined) and that an account meeting one of `requires` takes, and one per construct that
+ * stopped the run.
+ */
+export function gateLander(
+    input: GateScanInput,
+    world: LanderWorld,
+): (trigger: Trigger, binding: Binding, requires: readonly (readonly string[])[], to?: string) => LandingOutcome[] {
+    return gateWalker(input, world).land;
 }
 
 // ---- Proposals --------------------------------------------------------------------------------------

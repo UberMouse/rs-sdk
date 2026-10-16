@@ -34,7 +34,8 @@ import {
     TRANSPORTS_OUT_OF_SCOPE,
 } from './gates';
 import { readConstants } from './sources/constants';
-import { placeGates, reviewGates, scanGates } from './sources/gate-scan';
+import { deriveGateLandings, type GateLandings } from './sources/gate-landings';
+import { placeGates, reviewGates, scanGates, type GateScanInput } from './sources/gate-scan';
 import { toolCheckers } from './sources/conditions';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
@@ -158,6 +159,11 @@ export interface BuildReport {
         other: string[];
         /** `*_checker` procs not read as tool checkers (sources/conditions.ts toolCheckers), with why. */
         skippedCheckers: string[];
+        /**
+         * Gate rows on objects whose move is not a coord literal (sources/gate-landings.ts): counted by
+         * outcome, the rows no path derives (Task 3's unreached list), and stands whose landing is off land.
+         */
+        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand'>;
     };
 }
 
@@ -307,7 +313,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         }),
     );
     const transports = [...sails.transports, ...curated].sort(byTransport);
-    const candidates = scanGates({
+    const scan: GateScanInput = {
         triggers,
         callables,
         constants,
@@ -315,7 +321,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         loadoutProcs: LOADOUT_PROCS,
         names: new Set([...objConfigs.keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
         tools,
-    });
+    };
+    const candidates = scanGates(scan);
     const review = reviewGates(candidates, GATES, new Map(scripts));
     const gates = placeGates({
         curated: GATES,
@@ -328,6 +335,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         }),
         quests: quests.quests,
         constants,
+    });
+    // Where each gated move on an object lands.
+    const landings = deriveGateLandings({
+        gates: gates.gates,
+        scan,
+        candidates,
+        locConfigs,
+        collision,
+        size: locSizes(locConfigs),
     });
     // Each quest's stages are the constants its gates compare with (Quest.stages).
     const questRows = quests.quests.map(q => {
@@ -351,7 +367,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             quests: questRows,
             loadoutRules,
             transports,
-            gates: gates.gates,
+            gates: landings.gates,
         },
         report: {
             features: tally(features, f => f.kind),
@@ -418,6 +434,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
                 ),
                 skippedCheckers,
+                landings: { counts: landings.counts, underived: landings.underived, offLand: landings.offLand },
             },
         },
     };
@@ -562,6 +579,37 @@ export function formatReport(report: BuildReport): string[] {
         ),
         ...list(`gates the scan can't settle (unclear): ${g.unclear.length}`, g.unclear),
         ...list(`quest windows, kept out of the fill: ${g.windows.length}`, g.windows),
+    );
+    const l = g.landings;
+    lines.push(
+        `gate moves on objects: ${l.counts.to} to, ${l.counts.landings} landings, ${l.counts.opens} opens, ` +
+            `${l.counts.underived} underived (rows; ${l.counts.windows} quest windows left as they are)`,
+    );
+    // The underived rows by trigger: how many, then each construct that stopped one, with its script line.
+    const byTrigger = new Map<string, { rows: string[]; reasons: Set<string> }>();
+    for (const u of l.underived) {
+        const entry = byTrigger.get(u.trigger) ?? { rows: [], reasons: new Set<string>() };
+        byTrigger.set(u.trigger, entry);
+        entry.rows.push(`${u.loc} ${coord(u.tile)}`);
+        for (const r of u.reasons) entry.reasons.add(r);
+    }
+    if (byTrigger.size)
+        lines.push(
+            `warning: ${l.counts.underived} gate rows on objects with no landing derived, by trigger:`,
+            ...[...byTrigger]
+                .sort(([a, x], [b, y]) => y.rows.length - x.rows.length || cmp(a, b))
+                .flatMap(([trigger, entry]) => [
+                    `  ${trigger}: ${entry.rows.length} (${entry.rows.join(', ')})`,
+                    ...[...entry.reasons].sort(cmp).map(r => `    ${r}`),
+                ]),
+        );
+    lines.push(
+        ...list(
+            `warning: ${l.offLand.length} gate landings off walkable land, left out:`,
+            l.offLand.map(
+                o => `${o.trigger} ${o.loc} ${coord(o.tile)} from ${coord(o.stand)} -> ${coord(o.landing)} (${o.at})`,
+            ),
+        ),
     );
     return lines;
 }
