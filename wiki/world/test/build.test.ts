@@ -34,10 +34,23 @@ const world: World = {
             f2p: true,
         },
     ],
+    connectors: [
+        {
+            feature: 0,
+            loc: { level: 0, x: 1, z: 2 },
+            op: 1,
+            opName: 'Climb-up',
+            direction: 'up',
+            landing: { level: 1, x: 1, z: 3 },
+            stand: { level: 0, x: 1, z: 3 },
+            relative: true,
+            source: 'ladders+stairs/scripts/ladders.rs2:81',
+        },
+    ],
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site or npc spawn cluster per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster or connector per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -53,6 +66,9 @@ describe('serializeWorld', () => {
                 '  "sites": [],',
                 '  "npcSpawns": [',
                 '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true}',
+                '  ],',
+                '  "connectors": [',
+                '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"}',
                 '  ]',
                 '}',
                 '',
@@ -85,10 +101,12 @@ describe('serializeWorld', () => {
             expect(loadWorld(file)).toEqual(world);
             writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
-            // A format-1 file written before npcSpawns, with its format bumped by hand, is still refused.
-            const { npcSpawns: _, ...before } = world;
+            // A format-2 file written before connectors, with its format bumped by hand, is still refused.
+            const { connectors: _, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
-            expect(() => loadWorld(file)).toThrow(/needs generatedFrom, areas, features, sites and npcSpawns/);
+            expect(() => loadWorld(file)).toThrow(
+                /needs generatedFrom, areas, features, sites, npcSpawns and connectors/,
+            );
         } finally {
             rmSync(dir, { recursive: true });
         }
@@ -127,14 +145,44 @@ describe('formatReport', () => {
         npcUncovered: [],
         unpacked: {},
         log: [],
+        connectors: { derived: 3, locs: 2, oneWay: [], underived: {}, offLand: [] },
     };
 
-    test('counts, then coverage', () =>
+    test('counts, then coverage, then connectors', () =>
         expect(formatReport(report)).toEqual([
             'features: bank 3, tree 2',
             'sites: bank 1, tree 1',
             'coverage: every site of a covered kind lies in an area',
+            'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
         ]));
+
+    test('lists the one-way and off-land connectors, and the underived ops by what stopped them', () => {
+        const lines = formatReport({
+            ...report,
+            connectors: {
+                derived: 3,
+                locs: 2,
+                oneWay: ['ladder (1, 2) op1 Climb-up -> (1, 3) L1 (ladders.rs2:81)'],
+                offLand: ['ladder (5, 5) op1 Climb-up -> (5, 6) L4 (ladders.rs2:62)'],
+                underived: {
+                    '`@unhandled_stairs(loc_coord)` (stairs.rs2:42) does not move the player': [
+                        'stairs (9, 9) op1',
+                        'stairs (8, 8) op1',
+                    ],
+                },
+            },
+        });
+        expect(lines.slice(3)).toEqual([
+            'connectors: 3 derived on 2 locs, 1 one-way, 2 underived',
+            'warning: 1 one-way connectors (none back within 5 tiles):',
+            '  ladder (1, 2) op1 Climb-up -> (1, 3) L1 (ladders.rs2:81)',
+            'warning: 1 connectors land off walkable land:',
+            '  ladder (5, 5) op1 Climb-up -> (5, 6) L4 (ladders.rs2:62)',
+            'warning: 2 connector ops with no landing, by what stopped them:',
+            '  `@unhandled_stairs(loc_coord)` (stairs.rs2:42) does not move the player: 2',
+            '    stairs (9, 9) op1, stairs (8, 8) op1',
+        ]);
+    });
 
     test('lists the uncovered sites and the warnings', () => {
         const lines = formatReport({
@@ -149,6 +197,7 @@ describe('formatReport', () => {
             'warning: 1 npc site outside every area:',
             '  npc:unnamed:0',
             'warning: placements with no config in the pack: loc 9 2',
+            'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
         ]);
     });
 
@@ -158,6 +207,7 @@ describe('formatReport', () => {
         expect(lines.slice(3)).toEqual([
             'warning: 12 npc sites outside every area, the first 10:',
             ...npcUncovered.slice(0, 10).map(id => `  ${id}`),
+            'connectors: 3 derived on 2 locs, 0 one-way, 0 underived',
         ]);
     });
 });

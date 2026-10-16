@@ -187,18 +187,18 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:misthalin:0` | (3083, 3513) | Ladder 1 | yes | no | - |
-| `connector:misthalin:1` | (3083, 3513) L1 | Ladder 1 | yes | no | - |
-| `connector:misthalin:2` | (3116, 3452) | Ladder 1 | yes | yes | - |
-| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | yes | no | - |
-| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | yes | no | - |
-| `connector:misthalin:5` | (3164, 3307) | Ladder 1 | yes | no | - |
-| `connector:misthalin:6` | (3164, 3307) L1 | Ladder 1 | yes | no | - |
-| `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | yes | no | - |
-| `connector:misthalin:8` | (3188, 3355) | Staircase 1 | yes | no | - |
-| `connector:misthalin:9` | (3188, 3355) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:misthalin:0` | (3083, 3513) | Ladder 1 | up (3082, 3513) L1 | yes | no | - |
+| `connector:misthalin:1` | (3083, 3513) L1 | Ladder 1 | down (3082, 3513) | yes | no | - |
+| `connector:misthalin:2` | (3116, 3452) | Ladder 1 | down (3115, 9852) | yes | yes | - |
+| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | up (3155, 3435) L1 | yes | no | - |
+| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | down (3159, 3435) | yes | no | - |
+| `connector:misthalin:5` | (3164, 3307) | Ladder 1 | up (3164, 3306) L1 | yes | no | - |
+| `connector:misthalin:6` | (3164, 3307) L1 | Ladder 1 | down (3164, 3306), up (3164, 3306) L2 | yes | no | - |
+| `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | down (3164, 3306) L1 | yes | no | - |
+| `connector:misthalin:8` | (3188, 3355) | Staircase 1 | up (3188, 3354) L1 | yes | no | - |
+| `connector:misthalin:9` | (3188, 3355) L1 | Staircase 1 | down (3188, 3358) | yes | no | - |
 
 ## Areas within
 

@@ -42,21 +42,21 @@ Holy Grail (quests/quest_grail): the restored realm with King Percival (m41_73) 
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:fisher-realm:0` | (2633, 4680) | Staircase 1 | no | no | - |
-| `connector:fisher-realm:1` | (2634, 4681) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:2` | (2640, 4682) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:3` | (2640, 4683) L2 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:4` | (2648, 4683) | Staircase 1 | no | no | - |
-| `connector:fisher-realm:5` | (2649, 4684) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:6` | (2651, 4684) L1 | Ladder 1 | no | no | - |
-| `connector:fisher-realm:7` | (2651, 4684) L2 | Ladder 1 | no | no | - |
-| `connector:fisher-realm:8` | (2761, 4680) | Staircase 1 | no | no | - |
-| `connector:fisher-realm:9` | (2762, 4681) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:10` | (2768, 4682) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:11` | (2768, 4683) L2 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:12` | (2776, 4683) | Staircase 1 | no | no | - |
-| `connector:fisher-realm:13` | (2777, 4684) L1 | Staircase 1 | no | no | - |
-| `connector:fisher-realm:14` | (2779, 4684) L1 | Ladder 1 | no | no | - |
-| `connector:fisher-realm:15` | (2779, 4684) L2 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:fisher-realm:0` | (2633, 4680) | Staircase 1 | up (2634, 4682) L1 | no | no | - |
+| `connector:fisher-realm:1` | (2634, 4681) L1 | Staircase 1 | down (2635, 4681) | no | no | - |
+| `connector:fisher-realm:2` | (2640, 4682) L1 | Staircase 1 | up (2640, 4685) L2 | no | no | - |
+| `connector:fisher-realm:3` | (2640, 4683) L2 | Staircase 1 | down (2640, 4681) L1 | no | no | - |
+| `connector:fisher-realm:4` | (2648, 4683) | Staircase 1 | up (2649, 4685) L1 | no | no | - |
+| `connector:fisher-realm:5` | (2649, 4684) L1 | Staircase 1 | down (2650, 4684) | no | no | - |
+| `connector:fisher-realm:6` | (2651, 4684) L1 | Ladder 1 | up (2650, 4684) L2 | no | no | - |
+| `connector:fisher-realm:7` | (2651, 4684) L2 | Ladder 1 | down (2650, 4684) L1 | no | no | - |
+| `connector:fisher-realm:8` | (2761, 4680) | Staircase 1 | up (2762, 4682) L1 | no | no | - |
+| `connector:fisher-realm:9` | (2762, 4681) L1 | Staircase 1 | down (2763, 4681) | no | no | - |
+| `connector:fisher-realm:10` | (2768, 4682) L1 | Staircase 1 | up (2768, 4685) L2 | no | no | - |
+| `connector:fisher-realm:11` | (2768, 4683) L2 | Staircase 1 | down (2768, 4681) L1 | no | no | - |
+| `connector:fisher-realm:12` | (2776, 4683) | Staircase 1 | up (2777, 4685) L1 | no | no | - |
+| `connector:fisher-realm:13` | (2777, 4684) L1 | Staircase 1 | down (2778, 4684) | no | no | - |
+| `connector:fisher-realm:14` | (2779, 4684) L1 | Ladder 1 | up (2778, 4684) L2 | no | no | - |
+| `connector:fisher-realm:15` | (2779, 4684) L2 | Ladder 1 | down (2778, 4684) L1 | no | no | - |

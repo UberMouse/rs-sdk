@@ -9,6 +9,7 @@ const trig = (file: string, on: 'loc' | 'npc', target: string, body = '', catego
     op,
     target,
     category,
+    line: 1,
     body,
 });
 
@@ -70,7 +71,7 @@ function one(...args: Parameters<typeof classify>) {
     return out[0] ?? null;
 }
 
-const label = (call: string, body: string): Callable => ({ file: 'f.rs2', call, body });
+const label = (call: string, body: string): Callable => ({ file: 'f.rs2', call, line: 1, body });
 
 describe('rules', () => {
     test('a rock is a mining_table rock, its ore the subtype', () => {

@@ -46,20 +46,20 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:catherby:0` | (2807, 3454) | Ladder 1 | no | no | - |
-| `connector:catherby:1` | (2807, 3454) L1 | Ladder 1 | no | no | - |
-| `connector:catherby:2` | (2808, 3423) L1 | Ship's ladder 1 | no | no | - |
-| `connector:catherby:3` | (2808, 3423) L2 | Ship's ladder 1 | no | no | - |
-| `connector:catherby:4` | (2810, 3419) | Ship's ladder 1 | no | no | - |
-| `connector:catherby:5` | (2810, 3419) L1 | Ship's ladder 1 | no | no | - |
-| `connector:catherby:6` | (2811, 3423) L1 | Ship's ladder 1 | no | no | - |
-| `connector:catherby:7` | (2811, 3423) L2 | Ship's ladder 1 | no | no | - |
-| `connector:catherby:8` | (2812, 3450) | Ladder 1 | no | no | - |
-| `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | no | no | - |
-| `connector:catherby:10` | (2825, 3445) | Ladder 1 | no | no | - |
-| `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:catherby:0` | (2807, 3454) | Ladder 1 | up (2807, 3453) L1 | no | no | - |
+| `connector:catherby:1` | (2807, 3454) L1 | Ladder 1 | down (2807, 3453) | no | no | - |
+| `connector:catherby:2` | (2808, 3423) L1 | Ship's ladder 1 | up (2808, 3424) L2 | no | no | - |
+| `connector:catherby:3` | (2808, 3423) L2 | Ship's ladder 1 | down (2808, 3422) L1 | no | no | - |
+| `connector:catherby:4` | (2810, 3419) | Ship's ladder 1 | up (2810, 3418) L1 | no | no | - |
+| `connector:catherby:5` | (2810, 3419) L1 | Ship's ladder 1 | down (2810, 3418) | no | no | - |
+| `connector:catherby:6` | (2811, 3423) L1 | Ship's ladder 1 | up (2811, 3424) L2 | no | no | - |
+| `connector:catherby:7` | (2811, 3423) L2 | Ship's ladder 1 | down (2811, 3422) L1 | no | no | - |
+| `connector:catherby:8` | (2812, 3450) | Ladder 1 | up (2812, 3451) L1 | no | no | - |
+| `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | down (2812, 3451) | no | no | - |
+| `connector:catherby:10` | (2825, 3445) | Ladder 1 | up (2824, 3445) L1 | no | no | - |
+| `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | down (2824, 3445) | no | no | - |
 
 ## Areas within
 

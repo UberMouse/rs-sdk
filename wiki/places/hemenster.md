@@ -39,7 +39,7 @@ The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to t
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:hemenster:0` | (2642, 3428) | Ladder 1 | no | no | - |
-| `connector:hemenster:1` | (2642, 3428) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:hemenster:0` | (2642, 3428) | Ladder 1 | up (2642, 3429) L1 | no | no | - |
+| `connector:hemenster:1` | (2642, 3428) L1 | Ladder 1 | down (2642, 3429) | no | no | - |

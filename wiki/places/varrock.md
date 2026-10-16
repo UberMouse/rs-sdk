@@ -138,70 +138,70 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:varrock:0` | (3175, 3420) | Staircase 1 | yes | no | - |
-| `connector:varrock:1` | (3175, 3420) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:2` | (3177, 3401) | Staircase 1 | yes | no | - |
-| `connector:varrock:3` | (3177, 3401) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:4` | (3183, 3447) | Ladder 1 | yes | no | - |
-| `connector:varrock:5` | (3183, 3447) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:6` | (3187, 3414) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:7` | (3187, 3433) | Staircase 1 | yes | no | - |
-| `connector:varrock:8` | (3188, 3389) | Staircase 1 | yes | no | - |
-| `connector:varrock:9` | (3188, 3390) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:10` | (3202, 3416) | Ladder 1 | yes | no | - |
-| `connector:varrock:11` | (3202, 3416) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:12` | (3202, 3434) | Ladder 1 | yes | no | - |
-| `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:14` | (3202, 3497) | Staircase 1 | yes | no | - |
-| `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:16` | (3203, 3389) | Ladder 1 | yes | no | - |
-| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | yes | no | - |
-| `connector:varrock:19` | (3205, 3395) | Ladder 1 | yes | no | - |
-| `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:21` | (3205, 3497) L2 | Ladder 1 | yes | no | - |
-| `connector:varrock:22` | (3205, 3497) L3 | Ladder 1 | yes | no | - |
-| `connector:varrock:23` | (3214, 3410) | Ladder 1 | yes | no | - |
-| `connector:varrock:24` | (3214, 3410) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:25` | (3218, 3496) | Staircase 1 | yes | no | - |
-| `connector:varrock:26` | (3219, 3496) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:27` | (3224, 3388) | Ladder 1 | yes | no | - |
-| `connector:varrock:28` | (3224, 3388) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:29` | (3225, 3472) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:30` | (3225, 3472) L2 | Ladder 1 | yes | no | - |
-| `connector:varrock:31` | (3227, 3393) | Staircase 1 | yes | no | - |
-| `connector:varrock:32` | (3228, 3393) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:33` | (3230, 3383) | Staircase 1 | yes | no | - |
-| `connector:varrock:34` | (3230, 3383) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:35` | (3230, 3504) | Ladder 1 | yes | no | - |
-| `connector:varrock:36` | (3231, 3401) | Ladder 1 | yes | no | - |
-| `connector:varrock:37` | (3233, 3424) | Ladder 1 | yes | no | - |
-| `connector:varrock:38` | (3233, 3424) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:39` | (3237, 3447) | Staircase 1 | yes | no | - |
-| `connector:varrock:40` | (3238, 3447) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:41` | (3239, 3489) | Staircase 1 | yes | no | - |
-| `connector:varrock:42` | (3240, 3489) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:43` | (3244, 3383) | Ladder 1 | yes | no | - |
-| `connector:varrock:44` | (3247, 3409) | Ladder 1 | yes | no | - |
-| `connector:varrock:45` | (3247, 3409) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:46` | (3252, 3384) | Ladder 1 | yes | no | - |
-| `connector:varrock:47` | (3252, 3384) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:48` | (3255, 3421) | Staircase 1 | yes | no | - |
-| `connector:varrock:49` | (3255, 3421) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:50` | (3258, 3487) | Staircase 1 | yes | no | - |
-| `connector:varrock:51` | (3258, 3487) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:52` | (3258, 3487) L2 | Staircase 1 | yes | no | - |
-| `connector:varrock:53` | (3258, 3487) L3 | Staircase 1 | yes | no | - |
-| `connector:varrock:54` | (3259, 3446) | Staircase 1 | yes | no | - |
-| `connector:varrock:55` | (3259, 3447) L1 | Staircase 1 | yes | no | - |
-| `connector:varrock:56` | (3262, 3403) | Ladder 1 | yes | no | - |
-| `connector:varrock:57` | (3262, 3403) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:58` | (3283, 3398) | Ladder 1 | yes | no | - |
-| `connector:varrock:59` | (3283, 3398) L1 | Ladder 1 | yes | no | - |
-| `connector:varrock:60` | (3285, 3493) | Staircase 1 | yes | no | - |
-| `connector:varrock:61` | (3285, 3493) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:varrock:0` | (3175, 3420) | Staircase 1 | up (3175, 3419) L1 | yes | no | - |
+| `connector:varrock:1` | (3175, 3420) L1 | Staircase 1 | down (3175, 3423) | yes | no | - |
+| `connector:varrock:2` | (3177, 3401) | Staircase 1 | up (3176, 3401) L1 | yes | no | - |
+| `connector:varrock:3` | (3177, 3401) L1 | Staircase 1 | down (3180, 3401) | yes | no | - |
+| `connector:varrock:4` | (3183, 3447) | Ladder 1 | up (3183, 3446) L1 | yes | no | - |
+| `connector:varrock:5` | (3183, 3447) L1 | Ladder 1 | down (3183, 3446) | yes | no | - |
+| `connector:varrock:6` | (3187, 3414) L1 | Ladder 1 | down (3186, 3414) | yes | no | - |
+| `connector:varrock:7` | (3187, 3433) | Staircase 1 | down (3190, 9833) | yes | no | - |
+| `connector:varrock:8` | (3188, 3389) | Staircase 1 | up (3188, 3392) L1 | yes | no | - |
+| `connector:varrock:9` | (3188, 3390) L1 | Staircase 1 | down (3188, 3388) | yes | no | - |
+| `connector:varrock:10` | (3202, 3416) | Ladder 1 | up (3202, 3417) L1 | yes | no | - |
+| `connector:varrock:11` | (3202, 3416) L1 | Ladder 1 | down (3202, 3417) | yes | no | - |
+| `connector:varrock:12` | (3202, 3434) | Ladder 1 | up (3201, 3434) L1 | yes | no | - |
+| `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | down (3201, 3434) | yes | no | - |
+| `connector:varrock:14` | (3202, 3497) | Staircase 1 | up (3203, 3496) L1 | yes | no | - |
+| `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | down (3203, 3496), up (3204, 3497) L2 | yes | no | - |
+| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 | yes | no | - |
+| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) | yes | no | - |
+| `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | down (3203, 3496) L1 | yes | no | - |
+| `connector:varrock:19` | (3205, 3395) | Ladder 1 | up (3204, 3395) L1 | yes | no | - |
+| `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | down (3204, 3395) | yes | no | - |
+| `connector:varrock:21` | (3205, 3497) L2 | Ladder 1 | up (3204, 3497) L3 | yes | no | - |
+| `connector:varrock:22` | (3205, 3497) L3 | Ladder 1 | down (3204, 3497) L2 | yes | no | - |
+| `connector:varrock:23` | (3214, 3410) | Ladder 1 | up (3214, 3411) L1 | yes | no | - |
+| `connector:varrock:24` | (3214, 3410) L1 | Ladder 1 | down (3214, 3411) | yes | no | - |
+| `connector:varrock:25` | (3218, 3496) | Staircase 1 | up (3220, 3496) L1 | yes | no | - |
+| `connector:varrock:26` | (3219, 3496) L1 | Staircase 1 | down (3220, 3496) | yes | no | - |
+| `connector:varrock:27` | (3224, 3388) | Ladder 1 | up (3223, 3388) L1 | yes | no | - |
+| `connector:varrock:28` | (3224, 3388) L1 | Ladder 1 | down (3223, 3388) | yes | no | - |
+| `connector:varrock:29` | (3225, 3472) L1 | Ladder 1 | up (3224, 3472) L2 | yes | no | - |
+| `connector:varrock:30` | (3225, 3472) L2 | Ladder 1 | down (3224, 3472) L1 | yes | no | - |
+| `connector:varrock:31` | (3227, 3393) | Staircase 1 | up (3230, 3393) L1 | yes | no | - |
+| `connector:varrock:32` | (3228, 3393) L1 | Staircase 1 | down (3226, 3393) | yes | no | - |
+| `connector:varrock:33` | (3230, 3383) | Staircase 1 | up (3230, 3382) L1 | yes | no | - |
+| `connector:varrock:34` | (3230, 3383) L1 | Staircase 1 | down (3230, 3386) | yes | no | - |
+| `connector:varrock:35` | (3230, 3504) | Ladder 1 | down (3229, 9904) | yes | no | - |
+| `connector:varrock:36` | (3231, 3401) | Ladder 1 | down (3230, 9801) | yes | no | - |
+| `connector:varrock:37` | (3233, 3424) | Ladder 1 | up (3232, 3424) L1 | yes | no | - |
+| `connector:varrock:38` | (3233, 3424) L1 | Ladder 1 | down (3232, 3424) | yes | no | - |
+| `connector:varrock:39` | (3237, 3447) | Staircase 1 | up (3239, 3447) L1 | yes | no | - |
+| `connector:varrock:40` | (3238, 3447) L1 | Staircase 1 | down (3239, 3447) | yes | no | - |
+| `connector:varrock:41` | (3239, 3489) | Staircase 1 | up (3242, 3489) L1 | yes | no | - |
+| `connector:varrock:42` | (3240, 3489) L1 | Staircase 1 | down (3238, 3489) | yes | no | - |
+| `connector:varrock:43` | (3244, 3383) | Ladder 1 | down (3244, 9782) | yes | no | - |
+| `connector:varrock:44` | (3247, 3409) | Ladder 1 | up (3246, 3409) L1 | yes | no | - |
+| `connector:varrock:45` | (3247, 3409) L1 | Ladder 1 | down (3246, 3409) | yes | no | - |
+| `connector:varrock:46` | (3252, 3384) | Ladder 1 | up (3251, 3384) L1 | yes | no | - |
+| `connector:varrock:47` | (3252, 3384) L1 | Ladder 1 | down (3251, 3384) | yes | no | - |
+| `connector:varrock:48` | (3255, 3421) | Staircase 1 | up (3255, 3420) L1 | yes | no | - |
+| `connector:varrock:49` | (3255, 3421) L1 | Staircase 1 | down (3254, 3421) | yes | no | - |
+| `connector:varrock:50` | (3258, 3487) | Staircase 1 | up (3258, 3486) L1 | yes | no | - |
+| `connector:varrock:51` | (3258, 3487) L1 | Staircase 1 | down (3258, 3486), up (3258, 3486) L2 | yes | no | - |
+| `connector:varrock:52` | (3258, 3487) L2 | Staircase 1 | down (3258, 3486) L1, up (3258, 3486) L3 | yes | no | - |
+| `connector:varrock:53` | (3258, 3487) L3 | Staircase 1 | down (3258, 3486) L2 | yes | no | - |
+| `connector:varrock:54` | (3259, 3446) | Staircase 1 | up (3259, 3449) L1 | yes | no | - |
+| `connector:varrock:55` | (3259, 3447) L1 | Staircase 1 | down (3259, 3445) | yes | no | - |
+| `connector:varrock:56` | (3262, 3403) | Ladder 1 | up (3261, 3403) L1 | yes | no | - |
+| `connector:varrock:57` | (3262, 3403) L1 | Ladder 1 | down (3261, 3403) | yes | no | - |
+| `connector:varrock:58` | (3283, 3398) | Ladder 1 | up (3282, 3398) L1 | yes | no | - |
+| `connector:varrock:59` | (3283, 3398) L1 | Ladder 1 | down (3282, 3398) | yes | no | - |
+| `connector:varrock:60` | (3285, 3493) | Staircase 1 | up (3285, 3492) L1 | yes | no | - |
+| `connector:varrock:61` | (3285, 3493) L1 | Staircase 1 | down (3285, 3496) | yes | no | - |
 
 ## Areas within
 

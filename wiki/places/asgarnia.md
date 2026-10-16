@@ -211,68 +211,68 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:asgarnia:0` | (2823, 3513) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:1` | (2824, 3507) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:2` | (2845, 3516) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:3` | (2848, 3519) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:4` | (2851, 3234) L1 | Ship's ladder 1 | yes | no | - |
-| `connector:asgarnia:5` | (2851, 3234) L2 | Ship's ladder 1 | yes | no | - |
-| `connector:asgarnia:6` | (2851, 3236) L1 | Ship's ladder 1 | yes | no | - |
-| `connector:asgarnia:7` | (2851, 3236) L2 | Ship's ladder 1 | yes | no | - |
-| `connector:asgarnia:8` | (2857, 3346) | Ladder 1 | no | no | - |
-| `connector:asgarnia:9` | (2857, 3346) L1 | Ladder 1 | no | no | - |
-| `connector:asgarnia:10` | (2857, 3517) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:11` | (2859, 3519) | Ladder 1 | no | yes | - |
-| `connector:asgarnia:12` | (2884, 3397) | Ladder 1 | no | no | - |
-| `connector:asgarnia:13` | (2895, 3513) | Staircase 1 | no | no | - |
-| `connector:asgarnia:14` | (2895, 3516) L1 | Ladder 1 | no | no | - |
-| `connector:asgarnia:15` | (2895, 3516) L2 | Ladder 1 | no | no | - |
-| `connector:asgarnia:16` | (2896, 3513) L1 | Staircase 1 | no | no | - |
-| `connector:asgarnia:17` | (2898, 3428) | Staircase 1 | no | no | - |
-| `connector:asgarnia:18` | (2898, 3428) L1 | Staircase 1 | no | no | - |
-| `connector:asgarnia:19` | (2906, 3470) L1 | Staircase 1 | no | no | - |
-| `connector:asgarnia:20` | (2907, 3476) | Ladder 1 | no | no | - |
-| `connector:asgarnia:21` | (2915, 3323) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:22` | (2915, 3323) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:23` | (2915, 3441) | Ladder 1 | no | no | - |
-| `connector:asgarnia:24` | (2915, 3441) L1 | Ladder 1 | no | no | - |
-| `connector:asgarnia:25` | (2915, 3450) | Ladder 1 | no | no | - |
-| `connector:asgarnia:26` | (2915, 3450) L1 | Ladder 1 | no | no | - |
-| `connector:asgarnia:27` | (2929, 3544) | Ladder 1 | no | no | - |
-| `connector:asgarnia:28` | (2929, 3544) L1 | Ladder 1 | no | no | - |
-| `connector:asgarnia:29` | (3008, 3150) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:30` | (3011, 3235) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:31` | (3011, 3235) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:32` | (3013, 3203) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:33` | (3013, 3203) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:34` | (3013, 3244) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:35` | (3023, 3261) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:36` | (3024, 3261) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:37` | (3026, 3248) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:38` | (3026, 3248) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:39` | (3027, 3353) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:40` | (3027, 3353) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:41` | (3034, 3363) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:42` | (3035, 3344) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:43` | (3035, 3344) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:44` | (3035, 3363) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:45` | (3042, 3379) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:46` | (3042, 3379) L2 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:47` | (3044, 3381) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:48` | (3044, 3382) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:49` | (3045, 3363) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:50` | (3045, 3364) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:51` | (3048, 3352) | Staircase 1 | yes | no | - |
-| `connector:asgarnia:52` | (3049, 3353) L1 | Staircase 1 | yes | no | - |
-| `connector:asgarnia:53` | (3050, 3355) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:54` | (3050, 3355) L2 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:55` | (3059, 3354) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:56` | (3059, 3354) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:57` | (3059, 3357) | Ladder 1 | yes | no | - |
-| `connector:asgarnia:58` | (3059, 3357) L1 | Ladder 1 | yes | no | - |
-| `connector:asgarnia:59` | (3059, 3376) | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:asgarnia:0` | (2823, 3513) | Ladder 1 | down (2824, 9913) | no | yes | - |
+| `connector:asgarnia:1` | (2824, 3507) | Ladder 1 | down (2825, 9907) | no | yes | - |
+| `connector:asgarnia:2` | (2845, 3516) | Ladder 1 | down (2846, 9916) | no | yes | - |
+| `connector:asgarnia:3` | (2848, 3519) | Ladder 1 | down (2849, 9919) | no | yes | - |
+| `connector:asgarnia:4` | (2851, 3234) L1 | Ship's ladder 1 | up (2852, 3234) L2 | yes | no | - |
+| `connector:asgarnia:5` | (2851, 3234) L2 | Ship's ladder 1 | down (2850, 3234) L1 | yes | no | - |
+| `connector:asgarnia:6` | (2851, 3236) L1 | Ship's ladder 1 | up (2852, 3236) L2 | yes | no | - |
+| `connector:asgarnia:7` | (2851, 3236) L2 | Ship's ladder 1 | down (2850, 3236) L1 | yes | no | - |
+| `connector:asgarnia:8` | (2857, 3346) | Ladder 1 | up (2856, 3346) L1 | no | no | - |
+| `connector:asgarnia:9` | (2857, 3346) L1 | Ladder 1 | down (2856, 3346) | no | no | - |
+| `connector:asgarnia:10` | (2857, 3517) | Ladder 1 | down (2858, 9917) | no | yes | - |
+| `connector:asgarnia:11` | (2859, 3519) | Ladder 1 | down (2860, 9919) | no | yes | - |
+| `connector:asgarnia:12` | (2884, 3397) | Ladder 1 | down (2885, 9797) | no | no | - |
+| `connector:asgarnia:13` | (2895, 3513) | Staircase 1 | up (2897, 3513) L1 | no | no | - |
+| `connector:asgarnia:14` | (2895, 3516) L1 | Ladder 1 | up (2894, 3516) L2 | no | no | - |
+| `connector:asgarnia:15` | (2895, 3516) L2 | Ladder 1 | down (2894, 3516) L1 | no | no | - |
+| `connector:asgarnia:16` | (2896, 3513) L1 | Staircase 1 | down (2896, 3512) | no | no | - |
+| `connector:asgarnia:17` | (2898, 3428) | Staircase 1 | up (2898, 3427) L1 | no | no | - |
+| `connector:asgarnia:18` | (2898, 3428) L1 | Staircase 1 | down (2897, 3428) | no | no | - |
+| `connector:asgarnia:19` | (2906, 3470) L1 | Staircase 1 | down (2906, 3468) | no | no | - |
+| `connector:asgarnia:20` | (2907, 3476) | Ladder 1 | down (2906, 9876) | no | no | - |
+| `connector:asgarnia:21` | (2915, 3323) | Ladder 1 | up (2914, 3323) L1 | yes | no | - |
+| `connector:asgarnia:22` | (2915, 3323) L1 | Ladder 1 | down (2914, 3323) | yes | no | - |
+| `connector:asgarnia:23` | (2915, 3441) | Ladder 1 | up (2914, 3441) L1 | no | no | - |
+| `connector:asgarnia:24` | (2915, 3441) L1 | Ladder 1 | down (2914, 3441) | no | no | - |
+| `connector:asgarnia:25` | (2915, 3450) | Ladder 1 | up (2914, 3450) L1 | no | no | - |
+| `connector:asgarnia:26` | (2915, 3450) L1 | Ladder 1 | down (2914, 3450) | no | no | - |
+| `connector:asgarnia:27` | (2929, 3544) | Ladder 1 | up (2929, 3545) L1 | no | no | - |
+| `connector:asgarnia:28` | (2929, 3544) L1 | Ladder 1 | down (2929, 3545) | no | no | - |
+| `connector:asgarnia:29` | (3008, 3150) | Ladder 1 | down (3009, 9550) | yes | no | - |
+| `connector:asgarnia:30` | (3011, 3235) | Ladder 1 | up (3010, 3235) L1 | yes | no | - |
+| `connector:asgarnia:31` | (3011, 3235) L1 | Ladder 1 | down (3010, 3235) | yes | no | - |
+| `connector:asgarnia:32` | (3013, 3203) | Ladder 1 | up (3012, 3203) L1 | yes | no | - |
+| `connector:asgarnia:33` | (3013, 3203) L1 | Ladder 1 | down (3012, 3203) | yes | no | - |
+| `connector:asgarnia:34` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) | yes | no | - |
+| `connector:asgarnia:35` | (3023, 3261) | Staircase 1 | up (3025, 3261) L1 | yes | no | - |
+| `connector:asgarnia:36` | (3024, 3261) L1 | Staircase 1 | down (3025, 3261) | yes | no | - |
+| `connector:asgarnia:37` | (3026, 3248) | Staircase 1 | up (3026, 3247) L1 | yes | no | - |
+| `connector:asgarnia:38` | (3026, 3248) L1 | Staircase 1 | down (3025, 3248) | yes | no | - |
+| `connector:asgarnia:39` | (3027, 3353) | Ladder 1 | up (3026, 3353) L1 | yes | no | - |
+| `connector:asgarnia:40` | (3027, 3353) L1 | Ladder 1 | down (3026, 3353) | yes | no | - |
+| `connector:asgarnia:41` | (3034, 3363) | Staircase 1 | up (3036, 3363) L1 | yes | no | - |
+| `connector:asgarnia:42` | (3035, 3344) | Ladder 1 | up (3035, 3345) L1 | yes | no | - |
+| `connector:asgarnia:43` | (3035, 3344) L1 | Ladder 1 | down (3035, 3345) | yes | no | - |
+| `connector:asgarnia:44` | (3035, 3363) L1 | Staircase 1 | down (3036, 3363) | yes | no | - |
+| `connector:asgarnia:45` | (3042, 3379) L1 | Ladder 1 | up (3043, 3379) L2 | yes | no | - |
+| `connector:asgarnia:46` | (3042, 3379) L2 | Ladder 1 | down (3043, 3379) L1 | yes | no | - |
+| `connector:asgarnia:47` | (3044, 3381) | Staircase 1 | up (3044, 3384) L1 | yes | no | - |
+| `connector:asgarnia:48` | (3044, 3382) L1 | Staircase 1 | down (3044, 3380) | yes | no | - |
+| `connector:asgarnia:49` | (3045, 3363) | Staircase 1 | up (3045, 3366) L1 | yes | no | - |
+| `connector:asgarnia:50` | (3045, 3364) L1 | Staircase 1 | down (3045, 3362) | yes | no | - |
+| `connector:asgarnia:51` | (3048, 3352) | Staircase 1 | up (3049, 3354) L1 | yes | no | - |
+| `connector:asgarnia:52` | (3049, 3353) L1 | Staircase 1 | down (3049, 3354) | yes | no | - |
+| `connector:asgarnia:53` | (3050, 3355) L1 | Ladder 1 | up (3049, 3355) L2 | yes | no | - |
+| `connector:asgarnia:54` | (3050, 3355) L2 | Ladder 1 | down (3049, 3355) L1 | yes | no | - |
+| `connector:asgarnia:55` | (3059, 3354) | Ladder 1 | up (3059, 3353) L1 | yes | no | - |
+| `connector:asgarnia:56` | (3059, 3354) L1 | Ladder 1 | down (3059, 3353) | yes | no | - |
+| `connector:asgarnia:57` | (3059, 3357) | Ladder 1 | up (3059, 3358) L1 | yes | no | - |
+| `connector:asgarnia:58` | (3059, 3357) L1 | Ladder 1 | down (3059, 3358) | yes | no | - |
+| `connector:asgarnia:59` | (3059, 3376) | Staircase 1 | down (3058, 9776) | yes | no | - |
 
 ## Areas within
 

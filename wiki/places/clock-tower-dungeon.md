@@ -27,15 +27,15 @@ Ladders up to the Clock Tower south of Ardougne, (2566-2575, 3222-3255).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:clock-tower-dungeon:0` | (2561, 9622) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:1` | (2566, 9627) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:2` | (2566, 9631) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:3` | (2566, 9642) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:4` | (2569, 9627) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:5` | (2569, 9631) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:6` | (2572, 9627) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:8` | (2575, 9655) | Ladder 1 | no | no | - |
-| `connector:clock-tower-dungeon:9` | (2621, 9661) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:clock-tower-dungeon:0` | (2561, 9622) | Ladder 1 | up (2561, 3221) | no | no | - |
+| `connector:clock-tower-dungeon:1` | (2566, 9627) | Ladder 1 | up (2565, 3227) | no | no | - |
+| `connector:clock-tower-dungeon:2` | (2566, 9631) | Ladder 1 | up (2565, 3231) | no | no | - |
+| `connector:clock-tower-dungeon:3` | (2566, 9642) | Ladder 1 | up (2565, 3242) | no | no | - |
+| `connector:clock-tower-dungeon:4` | (2569, 9627) | Ladder 1 | up (2568, 3227) | no | no | - |
+| `connector:clock-tower-dungeon:5` | (2569, 9631) | Ladder 1 | up (2568, 3231) | no | no | - |
+| `connector:clock-tower-dungeon:6` | (2572, 9627) | Ladder 1 | up (2571, 3227) | no | no | - |
+| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | up (2571, 3231) | no | no | - |
+| `connector:clock-tower-dungeon:8` | (2575, 9655) | Ladder 1 | up (2575, 3256) | no | no | - |
+| `connector:clock-tower-dungeon:9` | (2621, 9661) | Ladder 1 | up (2620, 3261) | no | no | - |

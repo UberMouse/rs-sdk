@@ -12,6 +12,6 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:taverley:0` | (2906, 3469) | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:taverley:0` | (2906, 3469) | Staircase 1 | up (2906, 3472) L1 | no | no | - |

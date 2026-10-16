@@ -92,7 +92,7 @@ const INTERPOLATION = /^[a-z_~$%.]$/;
  * the quotes and every column, so argsAt still splits a call's arguments where they are; a string
  * argument is never bound (only bare names are), so its text is not needed.
  */
-function codeOf(body: string): string {
+export function codeOf(body: string): string {
     return body
         .split('\n')
         .map(line => {

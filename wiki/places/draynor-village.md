@@ -37,10 +37,10 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:draynor-village:0` | (3099, 3266) | Staircase 1 | yes | no | - |
-| `connector:draynor-village:1` | (3100, 3266) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:draynor-village:0` | (3099, 3266) | Staircase 1 | up (3102, 3266) L1 | yes | no | - |
+| `connector:draynor-village:1` | (3100, 3266) L1 | Staircase 1 | down (3098, 3266) | yes | no | - |
 
 ## Areas within
 

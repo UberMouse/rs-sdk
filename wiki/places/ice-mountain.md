@@ -19,7 +19,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:ice-mountain:0` | (3029, 3506) L2 | Staircase 1 | yes | no | - |
-| `connector:ice-mountain:1` | (3029, 3507) L3 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:ice-mountain:0` | (3029, 3506) L2 | Staircase 1 | up (3028, 3507) L3 | yes | no | - |
+| `connector:ice-mountain:1` | (3029, 3507) L3 | Staircase 1 | down (3028, 3507) L2 | yes | no | - |

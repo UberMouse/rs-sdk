@@ -18,18 +18,18 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:dark-knight-fortress:0` | (3022, 3625) L1 | Ladder 1 | yes | yes | 14 |
-| `connector:dark-knight-fortress:1` | (3022, 3625) L2 | Ladder 1 | yes | yes | 14 |
-| `connector:dark-knight-fortress:2` | (3022, 3625) L3 | Ladder 1 | yes | no | 14 |
-| `connector:dark-knight-fortress:3` | (3022, 3638) L1 | Ladder 1 | yes | yes | 15 |
-| `connector:dark-knight-fortress:4` | (3022, 3638) L2 | Ladder 1 | yes | yes | 15 |
-| `connector:dark-knight-fortress:5` | (3022, 3638) L3 | Ladder 1 | yes | no | 15 |
-| `connector:dark-knight-fortress:6` | (3036, 3625) | Ladder 1 | yes | yes | 14 |
-| `connector:dark-knight-fortress:7` | (3036, 3625) L1 | Ladder 1 | yes | yes | 14 |
-| `connector:dark-knight-fortress:8` | (3036, 3625) L2 | Ladder 1 | yes | yes | 14 |
-| `connector:dark-knight-fortress:9` | (3036, 3625) L3 | Ladder 1 | yes | no | 14 |
-| `connector:dark-knight-fortress:10` | (3036, 3638) L1 | Ladder 1 | yes | yes | 15 |
-| `connector:dark-knight-fortress:11` | (3036, 3638) L2 | Ladder 1 | yes | yes | 15 |
-| `connector:dark-knight-fortress:12` | (3036, 3638) L3 | Ladder 1 | yes | no | 15 |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:dark-knight-fortress:0` | (3022, 3625) L1 | Ladder 1 | down (3021, 3625), up (3021, 3625) L2 | yes | yes | 14 |
+| `connector:dark-knight-fortress:1` | (3022, 3625) L2 | Ladder 1 | down (3021, 3625) L1, up (3021, 3625) L3 | yes | yes | 14 |
+| `connector:dark-knight-fortress:2` | (3022, 3625) L3 | Ladder 1 | down (3021, 3625) L2 | yes | no | 14 |
+| `connector:dark-knight-fortress:3` | (3022, 3638) L1 | Ladder 1 | down (3021, 3638), up (3021, 3638) L2 | yes | yes | 15 |
+| `connector:dark-knight-fortress:4` | (3022, 3638) L2 | Ladder 1 | down (3021, 3638) L1, up (3021, 3638) L3 | yes | yes | 15 |
+| `connector:dark-knight-fortress:5` | (3022, 3638) L3 | Ladder 1 | down (3021, 3638) L2 | yes | no | 15 |
+| `connector:dark-knight-fortress:6` | (3036, 3625) | Ladder 1 | up (3035, 3625) L1 | yes | yes | 14 |
+| `connector:dark-knight-fortress:7` | (3036, 3625) L1 | Ladder 1 | down (3035, 3625), up (3035, 3625) L2 | yes | yes | 14 |
+| `connector:dark-knight-fortress:8` | (3036, 3625) L2 | Ladder 1 | down (3035, 3625) L1, up (3035, 3625) L3 | yes | yes | 14 |
+| `connector:dark-knight-fortress:9` | (3036, 3625) L3 | Ladder 1 | down (3035, 3625) L2 | yes | no | 14 |
+| `connector:dark-knight-fortress:10` | (3036, 3638) L1 | Ladder 1 | down (3035, 3638), up (3035, 3638) L2 | yes | yes | 15 |
+| `connector:dark-knight-fortress:11` | (3036, 3638) L2 | Ladder 1 | down (3035, 3638) L1, up (3035, 3638) L3 | yes | yes | 15 |
+| `connector:dark-knight-fortress:12` | (3036, 3638) L3 | Ladder 1 | down (3035, 3638) L2 | yes | no | 15 |

@@ -50,10 +50,10 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:fishing-guild:0` | (2615, 3394) | Ladder 1 | no | no | - |
-| `connector:fishing-guild:1` | (2615, 3394) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:fishing-guild:0` | (2615, 3394) | Ladder 1 | up (2614, 3394) L1 | no | no | - |
+| `connector:fishing-guild:1` | (2615, 3394) L1 | Ladder 1 | down (2614, 3394) | no | no | - |
 
 ## Areas within
 

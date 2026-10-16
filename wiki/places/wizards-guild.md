@@ -27,8 +27,8 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:wizards-guild:0` | (2590, 3084) L1 | Staircase 1 | no | no | - |
-| `connector:wizards-guild:1` | (2590, 3085) L2 | Staircase 1 | no | no | - |
-| `connector:wizards-guild:2` | (2594, 3085) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:wizards-guild:0` | (2590, 3084) L1 | Staircase 1 | up (2590, 3087) L2 | no | no | - |
+| `connector:wizards-guild:1` | (2590, 3085) L2 | Staircase 1 | down (2590, 3083) L1 | no | no | - |
+| `connector:wizards-guild:2` | (2594, 3085) | Ladder 1 | down (2594, 9486) | no | no | - |

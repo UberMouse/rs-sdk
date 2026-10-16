@@ -145,9 +145,32 @@ interface Candidate {
 }
 
 /**
- * The tiles a player can use a site's locs from: around each loc's rotated footprint (and on it, for
- * a loc that does not block), walkable and passing the engine's reach test.
+ * A loc's footprint as placed: the engine's Loc keeps the config's width and length, and its reach test
+ * swaps them for a loc turned a quarter (ReachStrategy.reachRectangle's rotate).
  */
+export function footprint(f: Feature, size: SiteOptions['size']): { w: number; l: number } {
+    const s = size(f);
+    return (f.rotation ?? 0) % 2 === 1 ? { w: s.length, l: s.width } : { w: s.width, l: s.length };
+}
+
+/**
+ * The tiles a player can use a loc from: around its rotated footprint (and on it, for a loc that does
+ * not block), walkable and passing the engine's reach test.
+ */
+export function reachTiles(f: Feature, collision: SiteCollision, size: SiteOptions['size']): Tile[] {
+    const loc: LocReach = { ...f.tile, ...size(f), shape: f.shape ?? 10, rotation: f.rotation ?? 0 };
+    const { w, l } = footprint(f, size);
+    const { level, x, z } = f.tile;
+    const out: Tile[] = [];
+    for (let cx = x - 1; cx <= x + w; cx++)
+        for (let cz = z - 1; cz <= z + l; cz++) {
+            const tile = { level, x: cx, z: cz };
+            if (collision.walkable(level, cx, cz) && collision.reached(tile, loc)) out.push(tile);
+        }
+    return out;
+}
+
+/** The tiles a player can use a site's locs from (reachTiles), each with its side's bank preference. */
 function locCandidates(
     features: readonly Feature[],
     locs: number[],
@@ -156,25 +179,15 @@ function locCandidates(
     /** From the site's locs toward its bankers; zero when no side is preferred. */
     bankers: { x: number; z: number },
 ): Candidate[] {
-    const out: Candidate[] = [];
-    for (const i of locs) {
+    return locs.flatMap(i => {
         const f = features[i]!;
-        const s = size(f);
-        const rotation = f.rotation ?? 0;
-        const loc: LocReach = { ...f.tile, ...s, shape: f.shape ?? 10, rotation };
-        // The engine's Loc keeps the config's width and length; its reach test swaps them for a loc
-        // turned a quarter (ReachStrategy.reachRectangle's rotate), and so must the ring searched here.
-        const [w, l] = rotation % 2 === 1 ? [s.length, s.width] : [s.width, s.length];
-        const { level, x, z } = f.tile;
-        for (let cx = x - 1; cx <= x + w; cx++)
-            for (let cz = z - 1; cz <= z + l; cz++) {
-                const tile = { level, x: cx, z: cz };
-                if (!collision.walkable(level, cx, cz) || !collision.reached(tile, loc)) continue;
-                const side = { x: cx < x ? -1 : cx >= x + w ? 1 : 0, z: cz < z ? -1 : cz >= z + l ? 1 : 0 };
-                out.push({ tile, away: -(side.x * bankers.x + side.z * bankers.z) });
-            }
-    }
-    return out;
+        const { w, l } = footprint(f, size);
+        const { x, z } = f.tile;
+        return reachTiles(f, collision, size).map(tile => {
+            const side = { x: tile.x < x ? -1 : tile.x >= x + w ? 1 : 0, z: tile.z < z ? -1 : tile.z >= z + l ? 1 : 0 };
+            return { tile, away: -(side.x * bankers.x + side.z * bankers.z) };
+        });
+    });
 }
 
 const mean = (tiles: Tile[], axis: 'x' | 'z'): number => tiles.reduce((s, t) => s + t[axis], 0) / tiles.length;

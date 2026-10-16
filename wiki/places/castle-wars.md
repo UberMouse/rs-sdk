@@ -17,19 +17,19 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:castle-wars:0` | (2417, 3074) | Staircase 1 | no | yes | - |
-| `connector:castle-wars:1` | (2419, 3078) | Staircase 1 | no | yes | - |
-| `connector:castle-wars:2` | (2419, 3080) L1 | Staircase 1 | no | yes | - |
-| `connector:castle-wars:3` | (2421, 3073) | Ladder 1 | no | yes | - |
-| `connector:castle-wars:4` | (2421, 3073) L1 | Ladder 1 | no | yes | - |
-| `connector:castle-wars:5` | (2425, 3074) L2 | Staircase 1 | no | yes | - |
-| `connector:castle-wars:6` | (2425, 3074) L3 | Staircase 1 | no | yes | - |
-| `connector:castle-wars:7` | (2428, 3081) L1 | Staircase 1 | no | yes | - |
-| `connector:castle-wars:8` | (2429, 3074) L1 | Ladder 1 | no | yes | - |
-| `connector:castle-wars:9` | (2430, 3081) L2 | Staircase 1 | no | yes | - |
-| `connector:castle-wars:10` | (2430, 3082) | Ladder 1 | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:castle-wars:0` | (2417, 3074) | Staircase 1 | to (2416, 3074), to (2417, 3077) | no | yes | - |
+| `connector:castle-wars:1` | (2419, 3078) | Staircase 1 | up (2420, 3080) L1 | no | yes | - |
+| `connector:castle-wars:2` | (2419, 3080) L1 | Staircase 1 | down (2419, 3077) | no | yes | - |
+| `connector:castle-wars:3` | (2421, 3073) | Ladder 1 | up (2421, 3074) L1 | no | yes | - |
+| `connector:castle-wars:4` | (2421, 3073) L1 | Ladder 1 | down (2421, 3074) | no | yes | - |
+| `connector:castle-wars:5` | (2425, 3074) L2 | Staircase 1 | up (2426, 3074) L3 | no | yes | - |
+| `connector:castle-wars:6` | (2425, 3074) L3 | Staircase 1 | down (2425, 3077) L2 | no | yes | - |
+| `connector:castle-wars:7` | (2428, 3081) L1 | Staircase 1 | up (2430, 3080) L2 | no | yes | - |
+| `connector:castle-wars:8` | (2429, 3074) L1 | Ladder 1 | up (2429, 3075) L2 | no | yes | - |
+| `connector:castle-wars:9` | (2430, 3081) L2 | Staircase 1 | down (2427, 3081) L1 | no | yes | - |
+| `connector:castle-wars:10` | (2430, 3082) | Ladder 1 | down (2430, 9481) | no | yes | - |
 
 ## Areas within
 

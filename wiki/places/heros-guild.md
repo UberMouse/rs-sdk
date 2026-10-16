@@ -23,10 +23,10 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:heros-guild:0` | (2890, 3508) L1 | Ladder 1 | no | no | - |
-| `connector:heros-guild:1` | (2890, 3508) L2 | Ladder 1 | no | no | - |
-| `connector:heros-guild:2` | (2892, 3507) | Ladder 1 | no | no | - |
-| `connector:heros-guild:3` | (2895, 3505) L1 | Ladder 1 | no | no | - |
-| `connector:heros-guild:4` | (2895, 3505) L2 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:heros-guild:0` | (2890, 3508) L1 | Ladder 1 | up (2889, 3508) L2 | no | no | - |
+| `connector:heros-guild:1` | (2890, 3508) L2 | Ladder 1 | down (2889, 3508) L1 | no | no | - |
+| `connector:heros-guild:2` | (2892, 3507) | Ladder 1 | down (2893, 9907) | no | no | - |
+| `connector:heros-guild:3` | (2895, 3505) L1 | Ladder 1 | up (2894, 3505) L2 | no | no | - |
+| `connector:heros-guild:4` | (2895, 3505) L2 | Ladder 1 | down (2894, 3505) L1 | no | no | - |

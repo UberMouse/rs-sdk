@@ -64,15 +64,15 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:al-kharid:0` | (3284, 3165) | Ladder 1 | yes | yes | - |
-| `connector:al-kharid:1` | (3284, 3165) L1 | Ladder 1 | yes | yes | - |
-| `connector:al-kharid:2` | (3286, 3192) | Ladder 1 | yes | yes | - |
-| `connector:al-kharid:3` | (3286, 3192) L1 | Ladder 1 | yes | yes | - |
-| `connector:al-kharid:4` | (3286, 3192) L2 | Ladder 1 | yes | no | - |
-| `connector:al-kharid:5` | (3312, 3185) | Staircase 1 | yes | yes | - |
-| `connector:al-kharid:6` | (3313, 3185) L1 | Staircase 1 | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:al-kharid:0` | (3284, 3165) | Ladder 1 | up (3283, 3165) L1 | yes | yes | - |
+| `connector:al-kharid:1` | (3284, 3165) L1 | Ladder 1 | down (3283, 3165) | yes | yes | - |
+| `connector:al-kharid:2` | (3286, 3192) | Ladder 1 | up (3286, 3191) L1 | yes | yes | - |
+| `connector:al-kharid:3` | (3286, 3192) L1 | Ladder 1 | down (3286, 3191), up (3286, 3191) L2 | yes | yes | - |
+| `connector:al-kharid:4` | (3286, 3192) L2 | Ladder 1 | down (3286, 3191) L1 | yes | no | - |
+| `connector:al-kharid:5` | (3312, 3185) | Staircase 1 | up (3314, 3185) L1 | yes | yes | - |
+| `connector:al-kharid:6` | (3313, 3185) L1 | Staircase 1 | down (3313, 3184) | yes | yes | - |
 
 ## Areas within
 

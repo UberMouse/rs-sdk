@@ -17,7 +17,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:crafting-guild:0` | (2931, 3282) | Staircase 1 | yes | no | - |
-| `connector:crafting-guild:1` | (2932, 3282) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:crafting-guild:0` | (2931, 3282) | Staircase 1 | up (2933, 3282) L1 | yes | no | - |
+| `connector:crafting-guild:1` | (2932, 3282) L1 | Staircase 1 | down (2932, 3281) | yes | no | - |

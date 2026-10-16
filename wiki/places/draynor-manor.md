@@ -34,10 +34,10 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:draynor-manor:0` | (3104, 3362) L1 | Staircase 1 | yes | no | - |
-| `connector:draynor-manor:1` | (3105, 3363) L2 | Staircase 1 | yes | no | - |
-| `connector:draynor-manor:2` | (3108, 3363) | Staircase 1 | yes | no | - |
-| `connector:draynor-manor:3` | (3108, 3364) L1 | Staircase 1 | yes | no | - |
-| `connector:draynor-manor:4` | (3115, 3357) | Stairs 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:draynor-manor:0` | (3104, 3362) L1 | Staircase 1 | up (3105, 3364) L2 | yes | no | - |
+| `connector:draynor-manor:1` | (3105, 3363) L2 | Staircase 1 | down (3106, 3363) L1 | yes | no | - |
+| `connector:draynor-manor:2` | (3108, 3363) | Staircase 1 | up (3108, 3366) L1 | yes | no | - |
+| `connector:draynor-manor:3` | (3108, 3364) L1 | Staircase 1 | down (3108, 3362) | yes | no | - |
+| `connector:draynor-manor:4` | (3115, 3357) | Stairs 1 | down (3077, 9771) | yes | no | - |

@@ -21,23 +21,23 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:black-knights-fortress:0` | (3010, 3515) | Staircase 1 | yes | no | - |
-| `connector:black-knights-fortress:1` | (3010, 3516) L2 | Staircase 1 | yes | no | - |
-| `connector:black-knights-fortress:2` | (3010, 3516) L3 | Staircase 1 | yes | no | - |
-| `connector:black-knights-fortress:3` | (3011, 3515) L1 | Staircase 1 | yes | no | - |
-| `connector:black-knights-fortress:4` | (3015, 3519) | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:5` | (3015, 3519) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:6` | (3016, 3519) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:7` | (3016, 3519) L2 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:8` | (3017, 3516) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:9` | (3017, 3516) L2 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:10` | (3021, 3510) | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:11` | (3021, 3510) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:12` | (3022, 3518) | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:13` | (3022, 3518) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:14` | (3023, 3513) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:15` | (3023, 3513) L2 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:16` | (3025, 3513) L1 | Ladder 1 | yes | no | - |
-| `connector:black-knights-fortress:17` | (3025, 3513) L2 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:black-knights-fortress:0` | (3010, 3515) | Staircase 1 | up (3012, 3515) L1 | yes | no | - |
+| `connector:black-knights-fortress:1` | (3010, 3516) L2 | Staircase 1 | up (3010, 3515) L3 | yes | no | - |
+| `connector:black-knights-fortress:2` | (3010, 3516) L3 | Staircase 1 | down (3010, 3515) L2 | yes | no | - |
+| `connector:black-knights-fortress:3` | (3011, 3515) L1 | Staircase 1 | down (3011, 3514) | yes | no | - |
+| `connector:black-knights-fortress:4` | (3015, 3519) | Ladder 1 | up (3015, 3518) L1 | yes | no | - |
+| `connector:black-knights-fortress:5` | (3015, 3519) L1 | Ladder 1 | down (3015, 3518) | yes | no | - |
+| `connector:black-knights-fortress:6` | (3016, 3519) L1 | Ladder 1 | up (3016, 3518) L2 | yes | no | - |
+| `connector:black-knights-fortress:7` | (3016, 3519) L2 | Ladder 1 | down (3016, 3518) L1 | yes | no | - |
+| `connector:black-knights-fortress:8` | (3017, 3516) L1 | Ladder 1 | up (3016, 3516) L2 | yes | no | - |
+| `connector:black-knights-fortress:9` | (3017, 3516) L2 | Ladder 1 | down (3016, 3516) L1 | yes | no | - |
+| `connector:black-knights-fortress:10` | (3021, 3510) | Ladder 1 | up (3022, 3510) L1 | yes | no | - |
+| `connector:black-knights-fortress:11` | (3021, 3510) L1 | Ladder 1 | down (3022, 3510) | yes | no | - |
+| `connector:black-knights-fortress:12` | (3022, 3518) | Ladder 1 | up (3022, 3517) L1 | yes | no | - |
+| `connector:black-knights-fortress:13` | (3022, 3518) L1 | Ladder 1 | down (3022, 3517) | yes | no | - |
+| `connector:black-knights-fortress:14` | (3023, 3513) L1 | Ladder 1 | up (3023, 3514) L2 | yes | no | - |
+| `connector:black-knights-fortress:15` | (3023, 3513) L2 | Ladder 1 | down (3023, 3514) L1 | yes | no | - |
+| `connector:black-knights-fortress:16` | (3025, 3513) L1 | Ladder 1 | up (3025, 3514) L2 | yes | no | - |
+| `connector:black-knights-fortress:17` | (3025, 3513) L2 | Ladder 1 | down (3025, 3514) L1 | yes | no | - |

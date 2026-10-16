@@ -19,6 +19,6 @@ Ladder up at (2556, 3444); moss giants, skeletons and zombies. Descriptive name,
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | Ladder 1 | up (2557, 3444) | no | no | - |

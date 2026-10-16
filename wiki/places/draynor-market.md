@@ -24,7 +24,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:draynor-market:0` | (3090, 3251) | Staircase 1 | yes | no | - |
-| `connector:draynor-market:1` | (3091, 3251) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:draynor-market:0` | (3090, 3251) | Staircase 1 | up (3093, 3251) L1 | yes | no | - |
+| `connector:draynor-market:1` | (3091, 3251) L1 | Staircase 1 | down (3089, 3251) | yes | no | - |

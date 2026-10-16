@@ -50,12 +50,12 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:rimmington:0` | (2948, 3213) | Ladder 1 | yes | no | - |
-| `connector:rimmington:1` | (2948, 3213) L1 | Ladder 1 | yes | no | - |
-| `connector:rimmington:2` | (2965, 3215) | Staircase 1 | yes | no | - |
-| `connector:rimmington:3` | (2966, 3215) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:rimmington:0` | (2948, 3213) | Ladder 1 | up (2947, 3213) L1 | yes | no | - |
+| `connector:rimmington:1` | (2948, 3213) L1 | Ladder 1 | down (2947, 3213) | yes | no | - |
+| `connector:rimmington:2` | (2965, 3215) | Staircase 1 | up (2968, 3215) L1 | yes | no | - |
+| `connector:rimmington:3` | (2966, 3215) L1 | Staircase 1 | down (2964, 3215) | yes | no | - |
 
 ## Areas within
 

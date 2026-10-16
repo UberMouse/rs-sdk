@@ -19,6 +19,6 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:zoo:0` | (2621, 3261) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:zoo:0` | (2621, 3261) | Ladder 1 | down (2620, 9661) | no | no | - |

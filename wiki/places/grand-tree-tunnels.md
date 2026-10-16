@@ -24,9 +24,9 @@ Ladder up into the Grand Tree at (2463, 3497).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:grand-tree-tunnels:0` | (2463, 9897) | Ladder 1 | no | no | - |
-| `connector:grand-tree-tunnels:1` | (2492, 9864) L1 | Ladder 1 | no | no | - |
-| `connector:grand-tree-tunnels:2` | (2492, 9864) L2 | Ladder 1 | no | no | - |
-| `connector:grand-tree-tunnels:3` | (2492, 9864) L3 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:grand-tree-tunnels:0` | (2463, 9897) | Ladder 1 | up (2464, 3497) | no | no | - |
+| `connector:grand-tree-tunnels:1` | (2492, 9864) L1 | Ladder 1 | down (2491, 9864), up (2491, 9864) L2 | no | no | - |
+| `connector:grand-tree-tunnels:2` | (2492, 9864) L2 | Ladder 1 | down (2491, 9864) L1, up (2491, 9864) L3 | no | no | - |
+| `connector:grand-tree-tunnels:3` | (2492, 9864) L3 | Ladder 1 | down (2491, 9864) L2, up (2491, 9864) L4 | no | no | - |

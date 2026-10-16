@@ -22,7 +22,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:white-wolf-mountain:0` | (2827, 3510) | Ladder 1 | no | yes | - |
-| `connector:white-wolf-mountain:1` | (2848, 3513) | Ladder 1 | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:white-wolf-mountain:0` | (2827, 3510) | Ladder 1 | down (2828, 9910) | no | yes | - |
+| `connector:white-wolf-mountain:1` | (2848, 3513) | Ladder 1 | down (2849, 9913) | no | yes | - |

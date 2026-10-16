@@ -13,6 +13,8 @@ export interface Trigger {
     /** Config or category name, without the category's leading underscore. */
     target: string;
     category: boolean;
+    /** The header's line in the file, from 1. */
+    line: number;
     /** The header line's tail and every line up to the next `[` header. */
     body: string;
 }
@@ -22,6 +24,8 @@ export interface Callable {
     file: string;
     /** How a body calls it: `@name` for a label, `~name` for a proc. */
     call: string;
+    /** The header's line in the file, from 1. */
+    line: number;
     /** The header line's tail (its parameter list) and every line up to the next `[` header. */
     body: string;
 }
@@ -29,19 +33,20 @@ export interface Callable {
 interface Block {
     file: string;
     header: string;
+    line: number;
     body: string;
 }
 
 function blocks(file: string, text: string): Block[] {
     const out: Block[] = [];
     let cur: Block | undefined;
-    for (const line of text.split('\n')) {
+    for (const [i, line] of text.split('\n').entries()) {
         const end = line.startsWith('[') ? line.indexOf(']') : -1;
         if (line.startsWith('[') && end < 0) {
             // An unterminated `[` line is no header, and it ends the block before it.
             cur = undefined;
         } else if (end >= 0) {
-            cur = { file, header: line.slice(0, end + 1), body: line.slice(end + 1) };
+            cur = { file, header: line.slice(0, end + 1), line: i + 1, body: line.slice(end + 1) };
             out.push(cur);
         } else if (cur) {
             cur.body += '\n' + line;
@@ -59,7 +64,17 @@ export function parseTriggers(file: string, text: string): Trigger[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(OP);
         return m
-            ? [{ file, on: m[1] as 'loc' | 'npc', op: m[2]!, category: m[3] === '_', target: m[4]!, body: b.body }]
+            ? [
+                  {
+                      file,
+                      on: m[1] as 'loc' | 'npc',
+                      op: m[2]!,
+                      category: m[3] === '_',
+                      target: m[4]!,
+                      line: b.line,
+                      body: b.body,
+                  },
+              ]
             : [];
     });
 }
@@ -67,7 +82,7 @@ export function parseTriggers(file: string, text: string): Trigger[] {
 export function parseCallables(file: string, text: string): Callable[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(/^\[(label|proc),([a-z0-9_]+)\]$/);
-        return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], body: b.body }] : [];
+        return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], line: b.line, body: b.body }] : [];
     });
 }
 

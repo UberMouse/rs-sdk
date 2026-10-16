@@ -20,6 +20,6 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:gnome-ball-field:0` | (2396, 3475) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:gnome-ball-field:0` | (2396, 3475) L1 | Staircase 1 | down (2397, 3475) | no | no | - |

@@ -1,6 +1,6 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
-// sites named by the curated areas, and every npc spawn clustered per config (npcSpawns, which the npc
-// pages read); then prints a report and renders the pages (render.ts). `bun run world` writes them and
+// sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
+// pages read), and every connector's landings (sources/connectors.ts); then prints a report and renders the pages (render.ts). `bun run world` writes them and
 // exits 1 on a site that breaks the COVERED rule. `--check` writes nothing: it exits 1 when world.json
 // or a page differs from what the game data and this code generate now, so a hand edit or a stale page
 // fails verify:conductor, and on the COVERED rule as the build does.
@@ -11,14 +11,15 @@ import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
-import { buildSites, locSizes, spawnClusters, type SiteCollision } from './place';
+import { buildSites, locSizes, spawnClusters } from './place';
 import { readConfigs } from './sources/configs';
+import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } from './sources/connectors';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
 import { readCallables, readTriggers } from './sources/triggers';
 import { readZones } from './sources/zones';
-import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
+import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type Tile, type World } from './types';
 import { cmp } from './util';
 
 /**
@@ -62,12 +63,23 @@ export interface BuildReport {
     unpacked: Record<string, number>;
     /** Lines buildSites logged (sites with no stand tile). */
     log: string[];
+    connectors: {
+        /** Connector rows written (World.connectors), and the locs they come from. */
+        derived: number;
+        locs: number;
+        /** Rows with no connector back, as `config (x, z) op<n> <op name> -> (x, z) (script:line)`. */
+        oneWay: string[];
+        /** Connector ops with no landing, grouped by the construct that stopped them: `reason` -> locs. */
+        underived: Record<string, string[]>;
+        /** Rows whose landing is not walkable land, as oneWay lists them. */
+        offLand: string[];
+    };
 }
 
 export interface BuildInput {
     generatedFrom: string;
     areas: readonly Area[];
-    collision: SiteCollision;
+    collision: ConnectorCollision;
 }
 
 /** The written order: kind, x, z, level, config, then the rest of a feature's identity. */
@@ -94,15 +106,23 @@ const tally = <T>(xs: readonly T[], key: (x: T) => string): Record<string, numbe
     return Object.fromEntries([...counted].sort(([a], [b]) => cmp(a, b)));
 };
 
+/** `(x, z)`, with ` L<n>` above level 0, as the pages print a tile. */
+const at = (t: Tile): string => `(${t.x}, ${t.z})${t.level > 0 ? ` L${t.level}` : ''}`;
+
+/** An underived connector op as the report lists it: `config (x, z) op<n>`. */
+const named = (u: Underived): string => `${u.config} ${at(u.loc)} op${u.op}`;
+
 /** Reads the game data and builds the world, without writing anything. */
 export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { world: World; report: BuildReport } {
     const locConfigs = readConfigs('loc');
+    const triggers = readTriggers();
+    const callables = readCallables();
     const classify = classifier({
         locConfigs,
         npcConfigs: readConfigs('npc'),
         dbrows: readDbrows(),
-        triggers: readTriggers(),
-        callables: readCallables(),
+        triggers,
+        callables,
     });
     const packs = { loc: readPack('loc'), npc: readPack('npc') };
     const map = readAllMapSquares();
@@ -140,8 +160,23 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     const npcSpawns = spawnClusters(spawns, resolve, zones);
 
+    const { connectors, underived, oneWay } = deriveConnectors({
+        features,
+        triggers,
+        callables,
+        locConfigs,
+        collision,
+        size: locSizes(locConfigs),
+    });
+    const row = (i: number): string => {
+        const c = connectors[i]!;
+        return `${features[c.feature]!.config} ${at(c.loc)} op${c.op} ${c.opName} -> ${at(c.landing)} (${c.source})`;
+    };
+    const byReason = new Map<string, string[]>();
+    for (const u of underived) byReason.set(u.reason, [...(byReason.get(u.reason) ?? []), named(u)]);
+
     return {
-        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites, npcSpawns },
+        world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites, npcSpawns, connectors },
         report: {
             features: tally(features, f => f.kind),
             sites: tally(sites, s => s.kind),
@@ -149,6 +184,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             npcUncovered: sites.filter(s => s.kind === 'npc' && outside(s)).map(s => s.id),
             unpacked: tally(unpacked, u => u),
             log,
+            connectors: {
+                derived: connectors.length,
+                locs: new Set(connectors.map(c => c.feature)).size,
+                oneWay: oneWay.map(row),
+                underived: Object.fromEntries([...byReason].sort(([a], [b]) => cmp(a, b))),
+                offLand: connectors.flatMap((c, i) =>
+                    collision.land(c.landing.level, c.landing.x, c.landing.z) &&
+                    collision.walkable(c.landing.level, c.landing.x, c.landing.z)
+                        ? []
+                        : [row(i)],
+                ),
+            },
         },
     };
 }
@@ -158,7 +205,7 @@ const jsonList = (key: string, xs: readonly unknown[]): string =>
     `  "${key}": [` + (xs.length ? `\n${xs.map(x => `    ${JSON.stringify(x)}`).join(',\n')}\n  ]` : ']');
 
 /**
- * Two-space JSON with one area, feature, site or npc spawn cluster per line, so a diff shows which
+ * Two-space JSON with one area, feature, site, npc spawn cluster or connector per line, so a diff shows which
  * ones changed. Keys keep the order the objects were built in, and undefined fields are left out as
  * JSON.stringify does.
  */
@@ -170,7 +217,8 @@ export function serializeWorld(world: World): string {
         jsonList('areas', world.areas) + ',',
         jsonList('features', world.features) + ',',
         jsonList('sites', world.sites) + ',',
-        jsonList('npcSpawns', world.npcSpawns),
+        jsonList('npcSpawns', world.npcSpawns) + ',',
+        jsonList('connectors', world.connectors),
         '}',
         '',
     ].join('\n');
@@ -205,6 +253,26 @@ export function formatReport(report: BuildReport): string[] {
     if (Object.keys(report.unpacked).length)
         lines.push(`warning: placements with no config in the pack: ${counts(report.unpacked)}`);
     if (report.log.length) lines.push(`warning: ${report.log.length} sites logged:`, ...report.log.map(l => `  ${l}`));
+    const c = report.connectors;
+    const underived = Object.values(c.underived).reduce((n, locs) => n + locs.length, 0);
+    lines.push(
+        `connectors: ${c.derived} derived on ${c.locs} locs, ${c.oneWay.length} one-way, ${underived} underived`,
+    );
+    if (c.oneWay.length)
+        lines.push(
+            `warning: ${c.oneWay.length} one-way connectors (none back within ${WAY_BACK} tiles):`,
+            ...c.oneWay.map(l => `  ${l}`),
+        );
+    if (c.offLand.length)
+        lines.push(`warning: ${c.offLand.length} connectors land off walkable land:`, ...c.offLand.map(l => `  ${l}`));
+    if (underived)
+        lines.push(
+            `warning: ${underived} connector ops with no landing, by what stopped them:`,
+            ...Object.entries(c.underived).flatMap(([reason, locs]) => [
+                `  ${reason}: ${locs.length}`,
+                `    ${locs.join(', ')}`,
+            ]),
+        );
     return lines;
 }
 

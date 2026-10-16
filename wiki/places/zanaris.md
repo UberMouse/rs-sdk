@@ -72,13 +72,13 @@ Members: the shed door in Lumbridge Swamp at (3202, 3169) with a dramen staff wi
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:zanaris:0` | (3171, 9578) | Ladder 1 | no | no | - |
-| `connector:zanaris:1` | (3171, 9578) L1 | Ladder 1 | no | no | - |
-| `connector:zanaris:2` | (3222, 9588) | Ladder 1 | no | no | - |
-| `connector:zanaris:3` | (3253, 9591) L1 | Ladder 1 | no | no | - |
-| `connector:zanaris:4` | (3253, 9591) L2 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:zanaris:0` | (3171, 9578) | Ladder 1 | up (3170, 9578) L1 | no | no | - |
+| `connector:zanaris:1` | (3171, 9578) L1 | Ladder 1 | down (3170, 9578) | no | no | - |
+| `connector:zanaris:2` | (3222, 9588) | Ladder 1 | up (3201, 3169) | no | no | - |
+| `connector:zanaris:3` | (3253, 9591) L1 | Ladder 1 | up (3253, 9590) L2 | no | no | - |
+| `connector:zanaris:4` | (3253, 9591) L2 | Ladder 1 | up (3253, 9590) L3 | no | no | - |
 
 ## Areas within
 

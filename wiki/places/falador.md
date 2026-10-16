@@ -86,48 +86,48 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:falador:0` | (2946, 3363) | Ladder 1 | yes | yes | - |
-| `connector:falador:1` | (2946, 3363) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:2` | (2946, 3378) | Ladder 1 | yes | yes | - |
-| `connector:falador:3` | (2946, 3378) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:4` | (2954, 3389) | Ladder 1 | yes | yes | - |
-| `connector:falador:5` | (2954, 3389) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:6` | (2954, 3390) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:7` | (2954, 3390) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:8` | (2959, 3369) | Staircase 1 | yes | yes | - |
-| `connector:falador:9` | (2959, 3370) L1 | Staircase 1 | yes | yes | - |
-| `connector:falador:10` | (2962, 3394) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:11` | (2962, 3394) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:12` | (2962, 3394) L3 | Ladder 1 | yes | yes | - |
-| `connector:falador:13` | (2969, 3394) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:14` | (2969, 3394) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:15` | (2969, 3394) L3 | Ladder 1 | yes | yes | - |
-| `connector:falador:16` | (2971, 3370) | Staircase 1 | yes | yes | - |
-| `connector:falador:17` | (2971, 3371) L1 | Staircase 1 | yes | yes | - |
-| `connector:falador:18` | (2973, 3384) | Staircase 1 | yes | yes | - |
-| `connector:falador:19` | (2973, 3385) L1 | Staircase 1 | yes | yes | - |
-| `connector:falador:20` | (2983, 3351) | Ladder 1 | yes | yes | - |
-| `connector:falador:21` | (2983, 3351) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:22` | (2983, 3351) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:23` | (2983, 3351) L3 | Ladder 1 | yes | yes | - |
-| `connector:falador:24` | (2983, 3352) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:25` | (2983, 3352) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:26` | (2984, 3337) L1 | Staircase 1 | yes | yes | - |
-| `connector:falador:27` | (2984, 3338) L2 | Staircase 1 | yes | yes | - |
-| `connector:falador:28` | (2994, 3341) | Ladder 1 | yes | yes | - |
-| `connector:falador:29` | (2994, 3341) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:30` | (2994, 3341) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:31` | (2994, 3341) L3 | Ladder 1 | yes | yes | - |
-| `connector:falador:32` | (2996, 3341) L1 | Ladder 1 | yes | yes | - |
-| `connector:falador:33` | (2996, 3341) L2 | Ladder 1 | yes | yes | - |
-| `connector:falador:34` | (3011, 3338) | Staircase 1 | yes | no | - |
-| `connector:falador:35` | (3011, 3338) L1 | Staircase 1 | yes | no | - |
-| `connector:falador:36` | (3018, 3343) | Staircase 1 | yes | no | - |
-| `connector:falador:37` | (3019, 3343) L1 | Staircase 1 | yes | no | - |
-| `connector:falador:38` | (3021, 3332) | Staircase 1 | yes | no | - |
-| `connector:falador:39` | (3022, 3332) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:falador:0` | (2946, 3363) | Ladder 1 | up (2947, 3363) L1 | yes | yes | - |
+| `connector:falador:1` | (2946, 3363) L1 | Ladder 1 | down (2947, 3363) | yes | yes | - |
+| `connector:falador:2` | (2946, 3378) | Ladder 1 | up (2945, 3378) L1 | yes | yes | - |
+| `connector:falador:3` | (2946, 3378) L1 | Ladder 1 | down (2945, 3378) | yes | yes | - |
+| `connector:falador:4` | (2954, 3389) | Ladder 1 | up (2953, 3389) L1 | yes | yes | - |
+| `connector:falador:5` | (2954, 3389) L1 | Ladder 1 | down (2953, 3389) | yes | yes | - |
+| `connector:falador:6` | (2954, 3390) L1 | Ladder 1 | up (2955, 3390) L2 | yes | yes | - |
+| `connector:falador:7` | (2954, 3390) L2 | Ladder 1 | down (2955, 3390) L1 | yes | yes | - |
+| `connector:falador:8` | (2959, 3369) | Staircase 1 | up (2959, 3372) L1 | yes | yes | - |
+| `connector:falador:9` | (2959, 3370) L1 | Staircase 1 | down (2959, 3368) | yes | yes | - |
+| `connector:falador:10` | (2962, 3394) L1 | Ladder 1 | up (2961, 3394) L2 | yes | yes | - |
+| `connector:falador:11` | (2962, 3394) L2 | Ladder 1 | up (2962, 3393) L3 | yes | yes | - |
+| `connector:falador:12` | (2962, 3394) L3 | Ladder 1 | down (2962, 3393) L2 | yes | yes | - |
+| `connector:falador:13` | (2969, 3394) L1 | Ladder 1 | up (2970, 3394) L2 | yes | yes | - |
+| `connector:falador:14` | (2969, 3394) L2 | Ladder 1 | up (2969, 3393) L3 | yes | yes | - |
+| `connector:falador:15` | (2969, 3394) L3 | Ladder 1 | down (2969, 3393) L2 | yes | yes | - |
+| `connector:falador:16` | (2971, 3370) | Staircase 1 | up (2971, 3373) L1 | yes | yes | - |
+| `connector:falador:17` | (2971, 3371) L1 | Staircase 1 | down (2971, 3369) | yes | yes | - |
+| `connector:falador:18` | (2973, 3384) | Staircase 1 | up (2972, 3385) L1 | yes | yes | - |
+| `connector:falador:19` | (2973, 3385) L1 | Staircase 1 | down (2972, 3384) | yes | yes | - |
+| `connector:falador:20` | (2983, 3351) | Ladder 1 | up (2983, 3350) L1 | yes | yes | - |
+| `connector:falador:21` | (2983, 3351) L1 | Ladder 1 | down (2983, 3350) | yes | yes | - |
+| `connector:falador:22` | (2983, 3351) L2 | Ladder 1 | up (2983, 3350) L3 | yes | yes | - |
+| `connector:falador:23` | (2983, 3351) L3 | Ladder 1 | down (2983, 3350) L2 | yes | yes | - |
+| `connector:falador:24` | (2983, 3352) L1 | Ladder 1 | up (2983, 3353) L2 | yes | yes | - |
+| `connector:falador:25` | (2983, 3352) L2 | Ladder 1 | down (2983, 3353) L1 | yes | yes | - |
+| `connector:falador:26` | (2984, 3337) L1 | Staircase 1 | up (2984, 3340) L2 | yes | yes | - |
+| `connector:falador:27` | (2984, 3338) L2 | Staircase 1 | down (2984, 3336) L1 | yes | yes | - |
+| `connector:falador:28` | (2994, 3341) | Ladder 1 | up (2993, 3341) L1 | yes | yes | - |
+| `connector:falador:29` | (2994, 3341) L1 | Ladder 1 | down (2993, 3341) | yes | yes | - |
+| `connector:falador:30` | (2994, 3341) L2 | Ladder 1 | up (2995, 3341) L3 | yes | yes | - |
+| `connector:falador:31` | (2994, 3341) L3 | Ladder 1 | down (2995, 3341) L2 | yes | yes | - |
+| `connector:falador:32` | (2996, 3341) L1 | Ladder 1 | up (2995, 3341) L2 | yes | yes | - |
+| `connector:falador:33` | (2996, 3341) L2 | Ladder 1 | down (2995, 3341) L1 | yes | yes | - |
+| `connector:falador:34` | (3011, 3338) | Staircase 1 | up (3011, 3337) L1 | yes | no | - |
+| `connector:falador:35` | (3011, 3338) L1 | Staircase 1 | down (3010, 3338) | yes | no | - |
+| `connector:falador:36` | (3018, 3343) | Staircase 1 | up (3021, 3344) L1 | yes | no | - |
+| `connector:falador:37` | (3019, 3343) L1 | Staircase 1 | down (3017, 3344) | yes | no | - |
+| `connector:falador:38` | (3021, 3332) | Staircase 1 | up (3024, 3333) L1 | yes | no | - |
+| `connector:falador:39` | (3022, 3332) L1 | Staircase 1 | down (3020, 3333) | yes | no | - |
 
 ## Areas within
 

@@ -19,8 +19,8 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:dark-wizards-tower:0` | (2907, 3334) | Staircase 1 | no | no | - |
-| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | Staircase 1 | no | no | - |
-| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:dark-wizards-tower:0` | (2907, 3334) | Staircase 1 | up (2908, 3336) L1 | no | no | - |
+| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | Staircase 1 | down (2908, 3336), up (2908, 3336) L2 | no | no | - |
+| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | Staircase 1 | down (2908, 3336) L1 | no | no | - |

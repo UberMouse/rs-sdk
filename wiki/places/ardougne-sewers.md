@@ -31,7 +31,7 @@ Ladder up to East Ardougne at (2632, 3294) and to (2570, 3267); the Hazeel Cult 
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:ardougne-sewers:0` | (2570, 9667) | Ladder 1 | no | no | - |
-| `connector:ardougne-sewers:1` | (2632, 9694) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:ardougne-sewers:0` | (2570, 9667) | Ladder 1 | up (2570, 3268) | no | no | - |
+| `connector:ardougne-sewers:1` | (2632, 9694) | Ladder 1 | up (2631, 3294) | no | no | - |

@@ -18,9 +18,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:tai-bwo-wannai:0` | (2796, 3076) | Ladder 1 | no | no | - |
-| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | Ladder 1 | no | no | - |
-| `connector:tai-bwo-wannai:2` | (2804, 3075) | Ladder 1 | no | no | - |
-| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:tai-bwo-wannai:0` | (2796, 3076) | Ladder 1 | up (2795, 3076) L1 | no | no | - |
+| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | Ladder 1 | down (2795, 3076) | no | no | - |
+| `connector:tai-bwo-wannai:2` | (2804, 3075) | Ladder 1 | up (2803, 3075) L1 | no | no | - |
+| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | Ladder 1 | down (2803, 3075) | no | no | - |

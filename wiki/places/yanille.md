@@ -90,20 +90,20 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:yanille:0` | (2537, 3085) | Staircase 1 | no | no | - |
-| `connector:yanille:1` | (2537, 3085) L1 | Staircase 1 | no | no | - |
-| `connector:yanille:2` | (2537, 3096) | Staircase 1 | no | no | - |
-| `connector:yanille:3` | (2537, 3097) L1 | Staircase 1 | no | no | - |
-| `connector:yanille:4` | (2544, 3111) L1 | Ladder 1 | no | no | - |
-| `connector:yanille:5` | (2556, 3081) | Ladder 1 | no | no | - |
-| `connector:yanille:6` | (2556, 3081) L1 | Ladder 1 | no | no | - |
-| `connector:yanille:7` | (2590, 3089) | Staircase 1 | no | no | - |
-| `connector:yanille:8` | (2590, 3090) L1 | Staircase 1 | no | no | - |
-| `connector:yanille:9` | (2597, 3107) | Ladder 1 | no | no | - |
-| `connector:yanille:10` | (2597, 3107) L1 | Ladder 1 | no | no | - |
-| `connector:yanille:11` | (2603, 3078) | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:yanille:0` | (2537, 3085) | Staircase 1 | up (2537, 3084) L1 | no | no | - |
+| `connector:yanille:1` | (2537, 3085) L1 | Staircase 1 | down (2537, 3088) | no | no | - |
+| `connector:yanille:2` | (2537, 3096) | Staircase 1 | up (2537, 3099) L1 | no | no | - |
+| `connector:yanille:3` | (2537, 3097) L1 | Staircase 1 | down (2537, 3095) | no | no | - |
+| `connector:yanille:4` | (2544, 3111) L1 | Ladder 1 | down (2543, 3111) | no | no | - |
+| `connector:yanille:5` | (2556, 3081) | Ladder 1 | up (2555, 3081) L1 | no | no | - |
+| `connector:yanille:6` | (2556, 3081) L1 | Ladder 1 | down (2555, 3081) | no | no | - |
+| `connector:yanille:7` | (2590, 3089) | Staircase 1 | up (2590, 3092) L1 | no | no | - |
+| `connector:yanille:8` | (2590, 3090) L1 | Staircase 1 | down (2590, 3088) | no | no | - |
+| `connector:yanille:9` | (2597, 3107) | Ladder 1 | up (2596, 3107) L1 | no | no | - |
+| `connector:yanille:10` | (2597, 3107) L1 | Ladder 1 | down (2596, 3107) | no | no | - |
+| `connector:yanille:11` | (2603, 3078) | Staircase 1 | down (2601, 9478) | no | no | - |
 
 ## Areas within
 
