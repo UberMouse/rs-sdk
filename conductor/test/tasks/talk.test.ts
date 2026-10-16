@@ -267,6 +267,43 @@ describe('talk: using items', () => {
         expect(r.sends).toEqual(['use Raw beef on Cauldron of Thunder', 'use Raw chicken on Cauldron of Thunder']);
     });
 
+    test('a use that opens a message box: its pages are clicked through before the run is done', async () => {
+        const script = dialogScript([[], [], null], a => a.type === 'useItemOnLoc');
+        const r = await simulate(talk, {
+            params,
+            timeline: cauldron.series(60),
+            react: (a, s) => script.react(a, s) ?? consumed(a, s as never),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: used 2 items on cauldron of thunder');
+        expect(r.steps).toEqual(['use-items', 'finish']);
+        expect(clicks(r)).toHaveLength(2);
+    });
+
+    test('a use whose dialog offers a menu: with no choices it is closed and the run is done', async () => {
+        const script = dialogScript([['Yes', 'No'], null], a => a.type === 'useItemOnLoc');
+        const r = await simulate(talk, {
+            params,
+            timeline: cauldron.series(60),
+            react: (a, s) => script.react(a, s) ?? consumed(a, s as never),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: used 2 items on cauldron of thunder');
+        expect(r.driver.commands.some(isClose)).toBe(true);
+        expect(clicks(r)).toHaveLength(0);
+    });
+
+    test('a use whose dialog is a menu the choices do not match fails and closes it', async () => {
+        const script = dialogScript([['Yes', 'No'], null], a => a.type === 'useItemOnLoc');
+        const r = await simulate(talk, {
+            params: { ...params, choices: ['^maybe$'] },
+            timeline: cauldron.series(60),
+            react: (a, s) => script.react(a, s) ?? consumed(a, s as never),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.driver.commands.some(isClose)).toBe(true);
+    });
+
     test('an item the bot does not hold fails', async () => {
         const r = await simulate(talk, { params, timeline: cauldron.inv('Raw beef', 0).series(10) });
         expect(r.result.status).toBe('failed');

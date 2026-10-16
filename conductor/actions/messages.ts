@@ -22,6 +22,11 @@ export function messageSince(state: BotWorldState, cursor: number, pattern: RegE
     return state.gameMessages.find(m => position(m) > cursor && pattern.test(m.text))?.text ?? null;
 }
 
+/** The game messages after `cursor`, oldest first, with the tick each arrived on. */
+export function messagesSince(state: BotWorldState, cursor: number): { text: string; tick: number }[] {
+    return state.gameMessages.filter(m => position(m) > cursor).map(m => ({ text: m.text, tick: m.tick }));
+}
+
 /** The first dialog page after `cursor` with a line matching `pattern`, as one line, or null. */
 export function dialogSince(state: BotWorldState, cursor: number, pattern: RegExp): string | null {
     const page = state.recentDialogs.find(d => position(d) > cursor && d.text.some(line => pattern.test(line)));

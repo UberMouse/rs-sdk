@@ -9,8 +9,9 @@ import {
     type TalkProgress,
 } from '../actions/talk';
 import { useItemOnLoc } from '../actions/use';
-import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
-import { log, send, ticks } from '../core/op';
+import { WALK_MAX_TICKS } from '../actions/walk';
+import { log, type Op, send, ticks } from '../core/op';
+import { AtSchema, atSpot, matcher, Pattern, walkToSpotStep } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -20,7 +21,6 @@ const FAIL_LIMIT = 3;
 /** Loops (2 ticks each) the NPC or loc may be out of sight before the task fails. */
 const MISSING_LIMIT = 3;
 const MISSING_WAIT_TICKS = 2;
-const DEFAULT_TOLERANCE = 3;
 /** A walk, then a conversation of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
 /** A conversation changes nothing the watchdog sees until its item arrives: outlast the longest. */
@@ -30,33 +30,12 @@ const STUCK_AFTER_MS = stuckWindowMs(
     failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
 );
 
-/** The walk's failure reasons that retrying cannot fix. */
-const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'bad-coordinates'];
-
-const isPattern = (source: string) => {
-    try {
-        void new RegExp(source, 'i');
-        return true;
-    } catch {
-        return false;
-    }
-};
-const Pattern = z.string().refine(isPattern, 'not a valid regular expression');
-const matcher = (source: string) => new RegExp(source, 'i');
-
 const Params = z
     .object({
         /** Name (case-insensitive regex) of the NPC to talk to; omit for a run that only uses items. */
         npc: Pattern.optional(),
-        /** Where to stand first: walked to (across floors, through doors) unless already within `tolerance`. */
-        at: z
-            .object({
-                x: z.number(),
-                z: z.number(),
-                level: z.number().int().optional(),
-                tolerance: z.number().int().min(1).default(DEFAULT_TOLERANCE),
-            })
-            .optional(),
+        /** Where to stand first. */
+        at: AtSchema.optional(),
         /** The NPC option that starts the conversation (regex on its text); default "Talk-to". */
         option: Pattern.default(TALK_OPTION.source),
         /**
@@ -81,17 +60,13 @@ interface TalkMemory {
 }
 type Ctx = TaskContext<TalkParams, TalkMemory>;
 
-/** Within `tolerance` tiles of `at` as walkTo counts them (Chebyshev, not straight-line), on its level. */
-const atSpot = (ctx: Ctx) => {
-    const { at } = ctx.params;
-    const p = ctx.state().player;
-    if (!at || !p) return true;
-    return (
-        Math.max(Math.abs(p.worldX - at.x), Math.abs(p.worldZ - at.z)) <= at.tolerance &&
-        (at.level === undefined || p.level === at.level)
-    );
-};
+const here = (ctx: Ctx) => atSpot(ctx.params.at, ctx.state());
 const usesLeft = (ctx: Ctx) => ctx.params.use !== undefined && ctx.memory.used < ctx.params.use.items.length;
+
+/** Leaves no dialog open behind a failed step. */
+function* closeDialog(ctx: Ctx, reason: string): Op<void> {
+    if (ctx.state().dialog.isOpen) yield* send({ type: 'closeModal', reason });
+}
 
 /** The nearest reachable NPC of that name that has the conversation's option. */
 function findNpc(ctx: Ctx): NearbyNpc | undefined {
@@ -125,7 +100,8 @@ export default defineTask({
     description:
         'Talk to an NPC and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?} ' +
         '(walked to first, across floors and through doors), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
-        '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item on a nearby loc first; with no `npc` the run ends after the uses). ' +
+        '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item on a nearby loc first; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
+        'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
         "Done once the dialog has closed after the last choice. Fails with the dialog's options when an expected option is missing or an unexpected choice appears, " +
         'and when the dialog closes with choices left. E.g. {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}. ' +
         'Recipes and hazards: wiki/quests/rune-mysteries.md, learnings/hazards.md (Varrock stone circle dark wizards).',
@@ -143,35 +119,7 @@ export default defineTask({
     },
 
     steps: [
-        {
-            name: 'walk',
-            when: ctx => !!ctx.params.at && !!ctx.state().player && !ctx.state().dialog.isOpen && !atSpot(ctx),
-            *run(ctx) {
-                const { at } = ctx.params;
-                // Narrowing only: when() guarantees it.
-                if (!at) return;
-                const before = ctx.distanceTo(at.x, at.z);
-                const r = yield* walkTo(
-                    ctx,
-                    at.x,
-                    at.z,
-                    at.tolerance,
-                    at.level === undefined ? {} : { level: at.level },
-                );
-                const fails = ctx.streak('walkFails');
-                // `ok` while not at the spot (another floor, a different measure) must count as a failure, or this loops.
-                if ((r.ok && atSpot(ctx)) || timedOutAdvancing(r, before, ctx.distanceTo(at.x, at.z))) {
-                    fails.reset();
-                    return;
-                }
-                const why = r.ok ? 'ended away from the spot' : r.reason;
-                yield* log(`walk to (${at.x},${at.z}) failed (${why}): ${r.message}`);
-                if (!r.ok && FINAL_WALK_FAILURES.includes(r.reason))
-                    return { fail: `can't walk to (${at.x},${at.z}): ${r.message}` };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} walks in a row failed toward (${at.x},${at.z}); last: ${r.message}` };
-            },
-        },
+        walkToSpotStep<TalkParams, TalkMemory>(FAIL_LIMIT),
         {
             name: 'use-items',
             when: usesLeft,
@@ -207,9 +155,21 @@ export default defineTask({
         {
             name: 'finish',
             when: ctx => ctx.params.npc === undefined,
-            run: ctx => ({
-                done: `used ${ctx.memory.used} item${ctx.memory.used === 1 ? '' : 's'} on ${ctx.params.use?.onLoc}`,
-            }),
+            *run(ctx) {
+                // A use can open a message box (the skull put in the coffin) whose pages carry the effect: click through it.
+                if (ctx.state().dialog.isOpen) {
+                    ctx.memory.progress.answered = 0;
+                    const r = yield* converse(ctx, ctx.params.choices.map(matcher), ctx.memory.progress);
+                    if (!r.ok) {
+                        yield* closeDialog(ctx, 'close dialog after a use');
+                        // Without choices the dialog was only a side effect of the uses, which did succeed.
+                        if (ctx.params.choices.length > 0) return { fail: r.message };
+                    }
+                }
+                return {
+                    done: `used ${ctx.memory.used} item${ctx.memory.used === 1 ? '' : 's'} on ${ctx.params.use?.onLoc}`,
+                };
+            },
         },
         {
             name: 'talk',
@@ -217,7 +177,7 @@ export default defineTask({
             *run(ctx) {
                 const { progress } = ctx.memory;
                 // A stray dialog (not our conversation) while the walk or the uses are still due: close it, let those steps run.
-                if (ctx.state().dialog.isOpen && progress.answered === 0 && (!atSpot(ctx) || usesLeft(ctx))) {
+                if (ctx.state().dialog.isOpen && progress.answered === 0 && (!here(ctx) || usesLeft(ctx))) {
                     yield* send({ type: 'closeModal', reason: 'close a stray dialog before walking or using' });
                     yield* ticks(1);
                     return;
@@ -252,9 +212,7 @@ export default defineTask({
                     return {
                         done: `talked to ${ctx.params.npc}, ${r.answered} choice${r.answered === 1 ? '' : 's'} made`,
                     };
-                // Leave no dialog open behind a failed run.
-                if (ctx.state().dialog.isOpen)
-                    yield* send({ type: 'closeModal', reason: 'close dialog after a failed talk' });
+                yield* closeDialog(ctx, 'close dialog after a failed talk');
                 return { fail: r.message };
             },
         },

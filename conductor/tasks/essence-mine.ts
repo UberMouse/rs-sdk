@@ -1,8 +1,8 @@
 import { z } from 'zod/v4';
-import { interactLoc } from '../actions/interact';
+import { interactLoc, interactNpc } from '../actions/interact';
 import { CANT_REACH, messageCursor, messageSince } from '../actions/messages';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
-import { log, send, ticks, wait } from '../core/op';
+import { log, ticks, wait } from '../core/op';
 import {
     ESSENCE_PORTALS,
     inEssenceMine,
@@ -96,19 +96,14 @@ export default defineTask({
                     return;
                 }
                 missing.reset();
-                const option = aubury.optionsWithIndex.find(o => TELEPORT_OPTION.test(o.text));
-                if (!option) return { fail: `Aubury has no Teleport option (${aubury.options.join(', ')})` };
                 const cursor = messageCursor(ctx.state());
-                const sent = yield* send({
-                    type: 'interactNpc',
-                    npcIndex: aubury.index,
-                    optionIndex: option.opIndex,
-                    reason: 'Teleport Aubury',
-                });
+                const sent = yield* interactNpc(aubury, TELEPORT_OPTION);
                 const fails = ctx.streak('teleportFails');
                 const failed = (why: string): { fail: string } | undefined =>
                     fails.add() >= FAIL_LIMIT ? { fail: `${FAIL_LIMIT} teleports in a row failed: ${why}` } : undefined;
-                if (!sent.success) return failed(sent.message);
+                if (!sent.ok && sent.reason === 'no-option')
+                    return { fail: `Aubury has no Teleport option (${aubury.options.join(', ')})` };
+                if (!sent.ok) return failed(sent.message);
                 const w = yield* wait(
                     'teleport to the essence mine',
                     s =>
