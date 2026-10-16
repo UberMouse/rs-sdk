@@ -19,14 +19,55 @@ const line = (c: Connector): string =>
     `op${c.op} ${c.direction} ${show(c.landing)} from ${c.stand ? show(c.stand) : '-'}${c.relative ? ' relative' : ''}`;
 const onLand = (t: Tile): boolean => siteCollision.land(t.level, t.x, t.z) && siteCollision.walkable(t.level, t.x, t.z);
 
+/** A curated row the scripts contradict: one field's curated value, the derived one, and why. */
+interface Contradicted {
+    row: { name: string; direction: 'up' | 'down'; loc: Tile };
+    /** The curated field, and the derived row's field it is checked against. */
+    field: 'to' | 'stand';
+    curated: Tile;
+    derived: Tile;
+    evidence: string;
+}
+
+/**
+ * Curated rows the scripts contradict. Each entry fails once conductor/lib/connectors.ts corrects its row,
+ * and must then be removed. Task 6, which makes that table a view of the derived rows, clears this list.
+ */
+const CONTRADICTED: readonly Contradicted[] = [
+    {
+        row: { name: 'Edgeville Dungeon trapdoor', direction: 'down', loc: { level: 0, x: 3097, z: 3468 } },
+        field: 'to',
+        curated: { level: 0, x: 3097, z: 9868 },
+        derived: { level: 0, x: 3096, z: 9868 },
+        evidence:
+            "trapdoors.rs2:11 moves the player's own tile 6400 north and the trapdoor's only reach tile is (3096, 3468), " +
+            "so the landing is (3096, 9868); the curated (3097, 9868) is pair() copying the ladder's stand",
+    },
+];
+
+const contradiction = (row: (typeof CONNECTORS)[number]): Contradicted | undefined =>
+    CONTRADICTED.find(c => c.row.name === row.name && c.row.direction === row.direction && same(c.row.loc, row.loc));
+
 describe('conductor/lib/connectors.ts is reproduced: loc tile and landing exact, stand within 1 tile', () => {
     for (const [i, row] of CONNECTORS.entries())
         test(`${i}: ${row.direction} ${row.name} at ${show(row.loc)}`, () => {
             const derived = rowsAt(row.loc).filter(c => c.direction === row.direction);
+            const wrong = contradiction(row);
+            if (wrong) {
+                // Still wrong in the table, and still what the scripts give.
+                expect(show(row[wrong.field])).toBe(show(wrong.curated));
+                const field = wrong.field === 'to' ? 'landing' : 'stand';
+                expect(derived.map(c => (c[field] ? show(c[field]) : '-'))).toContain(show(wrong.derived));
+                return;
+            }
             expect(derived.map(c => show(c.landing))).toContain(show(row.to));
             const stands = derived.filter(c => same(c.landing, row.to)).map(c => c.stand);
             expect(stands.some(s => s !== null && s.level === row.stand.level && cheb(s, row.stand) <= 1)).toBe(true);
         });
+
+    test('every contradicted entry names a curated row', () => {
+        expect(CONTRADICTED.filter(c => !CONNECTORS.some(r => contradiction(r) === c))).toEqual([]);
+    });
 });
 
 describe('the three script forms on real data', () => {
@@ -77,7 +118,7 @@ describe('the three script forms on real data', () => {
 
 describe('trapdoors and manholes (general_use/scripts/trapdoors.rs2, manholes.rs2)', () => {
     // Per config: op, op name, the swapped-in loc's op that moves the player, and the line of that move.
-    const EXPECTED: Record<string, [number, string, Connector['then'], string]> = {
+    const EXPECTED: Record<string, [number, string, Connector['thenOp'], string]> = {
         trapdoor: [1, 'Open', { op: 1, opName: 'Climb-down' }, 'general_use/scripts/trapdoors.rs2:11'],
         trapdoor_open: [1, 'Climb-down', undefined, 'general_use/scripts/trapdoors.rs2:11'],
         // manholeopen's op1 is named `Climb down` in its config.
@@ -100,14 +141,14 @@ describe('trapdoors and manholes (general_use/scripts/trapdoors.rs2, manholes.rs
             expect(
                 rows.length + underived.filter(l => l.startsWith(`${f.config} ${show(f.tile)} op`)).length,
             ).toBeGreaterThan(0);
-            for (const c of rows) expect([c.op, c.opName, c.then, c.source]).toEqual(EXPECTED[f.config]!);
+            for (const c of rows) expect([c.op, c.opName, c.thenOp, c.source]).toEqual(EXPECTED[f.config]!);
         }
     });
 
     test('the Varrock Sewers manhole: Open, then Climb down, lands its stand + 6400; the sewer ladder comes back', () => {
         const [c, ...rest] = rowsAt({ level: 0, x: 3237, z: 3458 });
         expect(rest).toEqual([]);
-        expect([c!.opName, c!.then, c!.direction, c!.relative]).toEqual([
+        expect([c!.opName, c!.thenOp, c!.direction, c!.relative]).toEqual([
             'Open',
             { op: 1, opName: 'Climb down' },
             'down',
@@ -163,7 +204,7 @@ describe('the build report', () => {
             'op1 up (3208, 3216) from (3208, 9616) relative',
         ]);
         const down = rowsAt({ level: 0, x: 3209, z: 3216 });
-        expect(down.map(c => `${c.opName} then ${c.then?.opName} ${line(c)}`)).toEqual([
+        expect(down.map(c => `${c.opName} then ${c.thenOp?.opName} ${line(c)}`)).toEqual([
             'Open then Climb-down op1 down (3208, 9616) from (3208, 3216) relative',
         ]);
         expect(down[0]!.source).toBe('general_use/scripts/trapdoors.rs2:11');

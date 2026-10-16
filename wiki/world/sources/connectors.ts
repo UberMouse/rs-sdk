@@ -386,8 +386,8 @@ interface Pending {
     feature: number;
     op: number;
     landing: CoordValue;
-    /** The swapped-in loc's op that moves the player (Connector.then). */
-    followed?: Connector['then'];
+    /** The swapped-in loc's op that moves the player (Connector.thenOp). */
+    followed?: Connector['thenOp'];
 }
 
 /**
@@ -397,8 +397,8 @@ interface Pending {
  * relative to the player lands as far from the stand as the script shifts it, so its stand is first one
  * whose landing is walkable land, then one whose landing reaches a connector (the way back, usable where
  * the player arrives). An op that swaps the loc (swapOf) takes the landings of the swapped-in loc's
- * ops, run on the same tile, each row naming that op in `then`; one of those ops that never moves the
- * player gives no row. Rows come out by feature, op, landing and `then` op.
+ * ops, run on the same tile, each row naming that op in `thenOp`; one of those ops that never moves the
+ * player gives no row. Rows come out by feature, op, landing and `thenOp` op.
  */
 export function deriveConnectors(input: ConnectorInput): Connectors {
     const { features, locConfigs, collision, size } = input;
@@ -539,8 +539,7 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
             stand,
             ...(p.landing.relative ? { relative: true as const } : {}),
             source: p.landing.at,
-            // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
-            ...(p.followed ? { then: p.followed } : {}),
+            ...(p.followed ? { thenOp: p.followed } : {}),
         });
     }
     rows.sort(
@@ -550,7 +549,7 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
             a.landing.level - b.landing.level ||
             a.landing.x - b.landing.x ||
             a.landing.z - b.landing.z ||
-            (a.then?.op ?? 0) - (b.then?.op ?? 0),
+            (a.thenOp?.op ?? 0) - (b.thenOp?.op ?? 0),
     );
 
     // The way back: a connector on the landing's level near the landing, landing near this loc.

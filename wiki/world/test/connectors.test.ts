@@ -410,7 +410,7 @@ p_telejump(movecoord(coord(), 0, 0, 6400));
     ]);
     const move = lineOf(file, text, 'p_telejump(movecoord(coord(), 0, 0, 6400));');
 
-    test("is followed: the placed loc's op lands where the swapped-in loc's moving op does, named in `then`", () => {
+    test("is followed: the placed loc's op lands where the swapped-in loc's moving op does, named in `thenOp`", () => {
         const out = deriveWith([file, text], [loc('trapdoor', at(0, 3230, 3230))], trapdoorConfigs);
         // Close, the open trapdoor's op2, swaps back and moves no one: no row, and nothing underived.
         expect(out.connectors).toEqual([
@@ -424,8 +424,7 @@ p_telejump(movecoord(coord(), 0, 0, 6400));
                 stand: at(0, 3229, 3230),
                 relative: true,
                 source: move,
-                // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
-                then: { op: 1, opName: 'Climb-down' },
+                thenOp: { op: 1, opName: 'Climb-down' },
             },
         ]);
         expect(out.underived).toEqual([]);
@@ -434,7 +433,7 @@ p_telejump(movecoord(coord(), 0, 0, 6400));
     test('a placed open trapdoor climbs down itself; its Close is underived, naming the swap', () => {
         const out = deriveWith([file, text], [loc('trapdoor_open', at(0, 3240, 3240))], trapdoorConfigs);
         expect(rowsOf(out, 0)).toEqual(['op1 Climb-down down 0,3239,9640 from 0,3239,3240 relative']);
-        expect(out.connectors[0]!.then).toBeUndefined();
+        expect(out.connectors[0]!.thenOp).toBeUndefined();
         expect(out.underived.map(u => [u.op, u.reason])).toEqual([
             [
                 2,
@@ -446,7 +445,7 @@ p_telejump(movecoord(coord(), 0, 0, 6400));
     test('a swap beside a loc_add on another tile (the manhole cover) is still followed', () => {
         const out = deriveWith([file, text], [loc('manhole', at(0, 3250, 3250))], trapdoorConfigs);
         expect(rowsOf(out, 0)).toEqual(['op1 Open down 0,3249,9650 from 0,3249,3250 relative']);
-        expect(out.connectors[0]!.then).toEqual({ op: 1, opName: 'Climb-down' });
+        expect(out.connectors[0]!.thenOp).toEqual({ op: 1, opName: 'Climb-down' });
         expect(out.underived).toEqual([]);
     });
 
@@ -461,7 +460,7 @@ p_telejump(movecoord(coord(), 0, 0, 6400));
         ]);
         // The chute's own move is its landing: one level up, not the open chute's drop.
         expect(rowsOf(out, 1)).toEqual(['op1 Slide up 1,3269,3270 from 0,3269,3270 relative']);
-        expect(out.connectors[0]!.then).toBeUndefined();
+        expect(out.connectors[0]!.thenOp).toBeUndefined();
     });
 });
 

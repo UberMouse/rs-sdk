@@ -128,7 +128,7 @@ export interface Connector {
      * Open), and this op of that loc moves the player (`{ op: 1, opName: 'Climb-down' }`): use `op`,
      * then this op on the same tile. `source` is this op's line.
      */
-    then?: { op: number; opName: string };
+    thenOp?: { op: number; opName: string };
 }
 
 /** One varp a quest's progress is read from (sources/quests.ts). */

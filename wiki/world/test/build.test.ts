@@ -57,8 +57,7 @@ const world: World = {
             stand: { level: 0, x: 2, z: 4 },
             relative: true,
             source: 'general_use/scripts/trapdoors.rs2:11',
-            // oxlint-disable-next-line unicorn/no-thenable -- Connector.then is an op, never a function, so an awaited row is not taken for a promise
-            then: { op: 1, opName: 'Climb-down' },
+            thenOp: { op: 1, opName: 'Climb-down' },
         },
     ],
     quests: [
@@ -123,7 +122,7 @@ describe('serializeWorld', () => {
                 '  ],',
                 '  "connectors": [',
                 '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"},',
-                '    {"feature":1,"loc":{"level":0,"x":3,"z":4},"op":1,"opName":"Open","direction":"down","landing":{"level":0,"x":2,"z":6404},"stand":{"level":0,"x":2,"z":4},"relative":true,"source":"general_use/scripts/trapdoors.rs2:11","then":{"op":1,"opName":"Climb-down"}}',
+                '    {"feature":1,"loc":{"level":0,"x":3,"z":4},"op":1,"opName":"Open","direction":"down","landing":{"level":0,"x":2,"z":6404},"stand":{"level":0,"x":2,"z":4},"relative":true,"source":"general_use/scripts/trapdoors.rs2:11","thenOp":{"op":1,"opName":"Climb-down"}}',
                 '  ],',
                 '  "quests": [',
                 '    {"id":"ball","varp":"ballquest","varpId":226,"complete":7,"stages":{},"source":"boy.rs2:13","varpDecreases":"witch.rs2:25: set back"}',
