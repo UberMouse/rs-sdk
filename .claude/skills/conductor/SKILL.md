@@ -149,7 +149,9 @@ Seed `invariants` with the list below on the first write.
       same runner with its context; put it back in `inFlight`. If the runner cannot be resumed,
       dispatch a fresh one with the same brief plus the answer: it reads its state file first.
    5. **`GOAL ...`** (a final report): promote each draft it marks `promote` (below), judge the
-      outcome (below), **optimize the method** (below), and go to 1.
+      outcome (below), write the report's measured XP/h, tick budget and next optimization into
+      that skill's roadmap §Max route row in the same turn (retro #7: rows lagged the reports),
+      **optimize the method** (below), and go to 1.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
    knowledge skill's rules (current truth, provenance tags, no narration, nothing in generated
    wiki dirs). Commit: `knowledge: <what was learned>`. Revert any edit that breaks the rules.
