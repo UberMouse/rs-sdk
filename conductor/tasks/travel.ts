@@ -3,6 +3,7 @@ import { GATE_MAX_TICKS, GNOME_GATE, insideFence, passGate } from '../actions/ga
 import { collisionPaths } from '../actions/paths';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../actions/walk';
 import { log, ticks } from '../core/op';
+import { chebyshev } from '../lib/connectors';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -43,6 +44,15 @@ type Ctx = TaskContext<TravelParams, TravelMemory>;
 
 const here = (ctx: Ctx) => ctx.state().player;
 /**
+ * Tiles to (x, z) in the metric walkTo's tolerance uses (Chebyshev). ctx.distanceTo is Euclidean: at
+ * (3189,3428) the point (3188,3425) is 3.16 away, outside a tolerance of 3 that walkTo calls "Already
+ * at destination", so the walk step returned at once and spun without a tick until the watchdog.
+ */
+const tilesTo = (ctx: Ctx, x: number, tz: number) => {
+    const p = here(ctx);
+    return p ? chebyshev({ x: p.worldX, z: p.worldZ }, { x, z: tz }) : Infinity;
+};
+/**
  * The Gnome Stronghold's interior is fenced all round (gnomefence locs); the only way in is the gate,
  * which the pathfinder cannot route through, so a destination inside it from outside goes via the gate.
  */
@@ -58,14 +68,14 @@ const needsGnomeGate = (ctx: Ctx) => {
 };
 /** Close enough to the gate's stand tile to open it. */
 const atGnomeGate = (ctx: Ctx) =>
-    !!here(ctx) && ctx.distanceTo(GNOME_GATE.stand.x, GNOME_GATE.stand.z) <= GATE_STAND_TOLERANCE;
+    !!here(ctx) && tilesTo(ctx, GNOME_GATE.stand.x, GNOME_GATE.stand.z) <= GATE_STAND_TOLERANCE;
 /** Within tolerance of `to`, and not still outside a fence that `to` is inside. */
 const arrived = (ctx: Ctx) => {
     const p = here(ctx);
     const { to, tolerance } = ctx.params;
     return (
         !!p &&
-        ctx.distanceTo(to.x, to.z) <= tolerance &&
+        tilesTo(ctx, to.x, to.z) <= tolerance &&
         (to.level === undefined || p.level === to.level) &&
         !needsGnomeGate(ctx)
     );
@@ -152,7 +162,7 @@ export default defineTask({
                 const gate = !wp && needsGnomeGate(ctx);
                 const goal = wp ?? (gate ? GNOME_GATE.stand : to);
                 const tolerance = wp ? WAYPOINT_TOLERANCE : gate ? GATE_STAND_TOLERANCE : ctx.params.tolerance;
-                const before = ctx.distanceTo(goal.x, goal.z);
+                const before = tilesTo(ctx, goal.x, goal.z);
                 const r: WalkResult = yield* walkTo(ctx, goal.x, goal.z, tolerance, wp ? {} : { level: to.level });
                 const fails = ctx.streak('walkFails');
                 if (r.ok) {
@@ -160,7 +170,7 @@ export default defineTask({
                     if (wp) ctx.memory.nextWaypoint++;
                     return;
                 }
-                if (timedOutAdvancing(r, before, ctx.distanceTo(goal.x, goal.z))) {
+                if (timedOutAdvancing(r, before, tilesTo(ctx, goal.x, goal.z))) {
                     fails.reset();
                     return;
                 }

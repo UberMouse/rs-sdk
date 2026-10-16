@@ -106,6 +106,10 @@ if (!bought.success) {
 Quantities above 1000 are rejected up front rather than expanded into thousands
 of Buy-1 packets.
 
+## Zeke's scimitar shop (Al Kharid, (3288, 3190))
+
+- Mithril scimitar 1,040 gp, stock 1, restocks about 1 per 4,000 ticks (~27 min): a second buy 12 min after the first found it out of stock; one ~28 min later worked. Buy one per trip. [v 2026-10-16 conductor2w3 local]
+
 ## Money-Making Alternatives
 
 Since general stores can be overstocked, consider:

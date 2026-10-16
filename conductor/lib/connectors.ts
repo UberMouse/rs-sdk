@@ -50,6 +50,8 @@ const UNDERGROUND_AREAS = [
     { id: 'taverley', minX: 2816, maxX: 2943, minZ: 9664, maxZ: 9855 },
     { id: 'taverley', minX: 2944, maxX: 2975, minZ: 9728, maxZ: 9803 },
     { id: 'mine', minX: 2880, maxX: 3071, minZ: 9728, maxZ: 9855 },
+    // The Edgeville Dungeon, including its Wilderness part north of z 9920.
+    { id: 'edgeville', minX: 3072, maxX: 3199, minZ: 9792, maxZ: 9983 },
     { id: 'basement', minX: 3072, maxX: 3135, minZ: 9536, maxZ: 9599 },
 ] as const;
 
@@ -142,13 +144,33 @@ export const CONNECTORS: readonly Connector[] = [
     ),
     // Taverley, south of the village: the ladder (ladder_cellar_inside_down 1759, on the surface) down into the
     // Taverley Dungeon and the ladder back (ladder_from_cellar 1755, in the dungeon). ladders.rs2 shifts the
-    // climber's own tile by 6400, so the real landing is two tiles from the other stand (walkable; climb.ts
-    // checks the plane only); the stand tiles are the free tiles beside the ladders.
+    // climber's own tile (coord()) by 6400, not the loc's, so each ladder lands on the other's stand tile. The
+    // surface ladder has forceapproach=east: it is used from (2885, 3397), east of the loc.
     ...pair(
         'Taverley Dungeon ladder',
-        { loc: tile(0, 2884, 9797), stand: tile(0, 2884, 9798) },
-        { loc: tile(0, 2884, 3397), stand: tile(0, 2884, 3396) },
+        { loc: tile(0, 2884, 9797), stand: tile(0, 2885, 9797) },
+        { loc: tile(0, 2884, 3397), stand: tile(0, 2885, 3397) },
         'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part',
+    ),
+
+    // Edgeville, in the ruined house south-west of the bank: the trapdoor (trapdoor 1568, closed: "Open", then
+    // Climb-down) into the Edgeville Dungeon and the ladder back (ladder_from_cellar 1755 at (3096, 9867)). Both
+    // scripts move the climber's own tile (coord()) 6400, so each side lands on the tile it was used from. The
+    // trapdoor at (3097, 3468) is inside the house, reached by the opening on its west side: stand (3096, 3468).
+    ...pair(
+        'Edgeville Dungeon trapdoor',
+        { loc: tile(0, 3096, 9867), stand: tile(0, 3097, 9868) },
+        { loc: tile(0, 3097, 3468), stand: tile(0, 3096, 3468) },
+        'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)',
+    ),
+
+    // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder (ladder 1747, Climb-up) to the
+    // first floor and its laddertop (1746, Climb-down). ladders.rs2 moves the climber's own tile (coord()) one
+    // level, so each side lands on the tile it was used from; neither loc has forceapproach.
+    ...pair(
+        "Seers' Village spinning house ladder",
+        { loc: tile(0, 2715, 3470), stand: tile(0, 2714, 3470) },
+        { loc: tile(1, 2715, 3470), stand: tile(1, 2714, 3470) },
     ),
 ];
 

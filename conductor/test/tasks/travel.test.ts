@@ -37,6 +37,18 @@ describe('travel: the walk', () => {
         expect(r.sends).toEqual([]);
     });
 
+    test('a diagonal-ish target exactly at the tolerance (Chebyshev 3, Euclidean 3.16) is arrived at once', async () => {
+        const r = await simulate(travel, {
+            params: { to: { x: START.x - 1, z: START.z + 3 }, tolerance: 3 },
+            timeline: base.series(1),
+            react: walking(),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toMatch(/^arrived: arrived within 3 tiles/);
+        expect(r.steps).toEqual(['arrived']);
+        expect(r.sends).toEqual([]);
+    });
+
     test('walks the waypoints in order before the destination', async () => {
         const r = await simulate(travel, {
             params: {

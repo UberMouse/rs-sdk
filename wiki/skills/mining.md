@@ -43,7 +43,7 @@ From `skill_mining/scripts/mining.rs2` and the engine's `STAT_RANDOM`
 
 | Level | Ore | XP | Notable Locations |
 |-------|-----|----|-------------------|
-| 1 | Rune essence | 5 | Varrock, Yanille rune essence mines |
+| 1 | Rune essence | 5 | Rune essence mine via Aubury's teleport (see [runecraft](runecraft.md)); rock never depletes; 20 essence gave 2500 XP at 25x [v 2026-10-16 conductor2w1 local] |
 | 1 | Clay | 5 | |
 | 1 | Tin | 17.5 | SW Varrock, SE Varrock, Rimmington |
 | 1 | Copper | 17.5 | SW Varrock, SE Varrock, Rimmington |

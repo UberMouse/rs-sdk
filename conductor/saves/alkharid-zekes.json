@@ -1,0 +1,53 @@
+{
+    "name": "alkharid-zekes",
+    "purpose": "Combat ~55 at Zeke's, Al Kharid (3287,3190) with 550 coins. Tests walking from Al Kharid north via the toll gate (travel, waypoint 3270,3330).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3287,
+                "z": 3190
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 550
+                }
+            ]
+        }
+    },
+    "sha1": "233631f22d8e8144e0636dd221271807dcc528d2",
+    "createdAt": "2026-10-16T07:35:11.835Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3287,
+            "z": 3190,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 550
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

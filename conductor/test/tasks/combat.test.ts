@@ -183,6 +183,67 @@ describe('combat: fighting', () => {
     });
 });
 
+describe('combat: after the kill', () => {
+    test('the combat timer tail (inCombat with no target) does not hold the next attack or the loot back', async () => {
+        const second = 6;
+        const sentIn: { combat: boolean; target: number }[] = [];
+        const w = chickenAt(chickenAt(base), COOP.x - 1, COOP.z + 1);
+        const timeline = w.series(30, (f, i) => {
+            // Killed on tick 6; the combat timer keeps inCombat on until tick 24 with the target gone.
+            if (i >= 14) return feathersDropped(f).fighting(second).skill('Attack', 1, 50);
+            if (i >= 6) return feathersDropped(f).fighting(false).player({ inCombat: true }).skill('Attack', 1, 25);
+            return i >= 2 ? f.fighting(CHICKEN) : f;
+        });
+        const driver: TimelineDriver = new TimelineDriver(timeline, {
+            respond: a => {
+                if (a.type === 'pickupItem' || a.type === 'interactNpc') {
+                    const c = driver.state().player?.combat;
+                    sentIn.push({ combat: !!c?.inCombat, target: c?.targetIndex ?? -2 });
+                }
+                return undefined;
+            },
+        });
+        const r = await simulate(combat, { params: { ...PARAMS, loot: ['Feather'] }, driver, stops: xp(50) });
+        expect(r.sends.slice(0, 2)).toEqual([ATTACK, 'take Feather']);
+        // The loot and the second attack went out during the tail, not after it.
+        expect(sentIn.slice(1).every(s => s.combat && s.target === -1)).toBe(true);
+        expect(driver.state().tick).toBeLessThan(24);
+    });
+});
+
+// The bot is hit (tick 3) and has no target of its own; chicken 7 is free and nearer than chicken 6, which attacks it.
+const hit = (w: World) => w.player({ inCombat: true, lastDamageTick: 3 });
+const two = (w: World) =>
+    w
+        .npc('Chicken', COOP.x + 1, COOP.z, { index: 7, options: ['Attack'] })
+        .npc('Chicken', COOP.x + 2, COOP.z, { index: 6, options: ['Attack'], attacking: true, inCombat: true });
+const attacked = (r: Simulation) =>
+    r.driver.commands.flatMap(c => (c.type === 'send' && c.action.type === 'interactNpc' ? [c.action.npcIndex] : []));
+
+describe('combat: an NPC already attacking the bot', () => {
+    test('is attacked back before any free NPC (the server refuses another target while one is on the bot)', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            // The engine refuses to start in combat: the chickens and the hit arrive on tick 3.
+            timeline: base.series(10, (w, i) => {
+                if (i >= 8) return hit(two(w)).fighting(false).skill('Attack', 1, 25);
+                return i >= 3 ? hit(two(w)) : w;
+            }),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(6);
+    });
+
+    test('without a recent hit the attacker is left to others and the free NPC is chosen', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: two(base).series(8, (w, i) => (i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w)),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(7);
+    });
+});
+
 describe('combat: guards mid-fight', () => {
     test('low HP mid-fight: the low-HP guard eats first, the eat step tops up to eatBelow', async () => {
         // HP drops to 4 of 10 on tick 4: under half, so the guard eats (+1 to 5), then the eat step (+1 to 6).
@@ -320,6 +381,22 @@ describe('combat: bones and loot', () => {
         });
         expect(r.result.reason).toBe('reached +25 Attack xp');
         expect(r.sends).toEqual(['Bury Bones', ATTACK]);
+    });
+
+    test('big bones (a giant drops them) are picked up and buried like bones', async () => {
+        const ground = coop.ground('Big bones', COOP.x + 1, COOP.z + 1, 1, { id: 532 });
+        const picked = await simulate(combat, {
+            params: { ...PARAMS, buryBones: true },
+            timeline: ground.series(1),
+            respond: a => (a.type === 'pickupItem' ? { success: false, message: 'stop here' } : undefined),
+        });
+        expect(picked.sends[0]).toBe('take Big bones');
+        const buried = await simulate(combat, {
+            params: { ...PARAMS, buryBones: true },
+            timeline: [coop.inv('Big bones', 1, bury).build(), ...kill(coop).slice(1)],
+            stops: xp(25),
+        });
+        expect(buried.sends).toEqual(['Bury Big bones', ATTACK]);
     });
 
     test('bones that never bury fail after three tries', async () => {

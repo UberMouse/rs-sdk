@@ -1,0 +1,47 @@
+{
+    "name": "air-temple-empty",
+    "purpose": "Runecraft 1 inside the air altar temple (2841,4830), Air talisman, no essence. Tests runecraft leave-only errand.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2841,
+                "z": 4830
+            },
+            "skills": {
+                "Runecraft": 1
+            },
+            "inventory": [
+                {
+                    "id": 1438,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "8a8b8b25d4f4de3f593b46570400b092d72d1de4",
+    "createdAt": "2026-10-16T07:40:33.716Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2841,
+            "z": 4830,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1438,
+                "name": "air_talisman",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

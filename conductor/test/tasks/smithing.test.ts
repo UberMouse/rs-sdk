@@ -98,7 +98,7 @@ describe('smithing: smelt', () => {
     });
 
     test('a furnace further than 2 tiles is walked to first', async () => {
-        const far = ores(1).player({ at: { x: FURNACE.x + 6, z: FURNACE.z } });
+        const far = ores(1).player({ at: { x: FURNACE.x + 12, z: FURNACE.z } });
         const r = await simulate(smithing, {
             params: SMELT_PARAMS,
             timeline: far.series(1),
@@ -108,12 +108,81 @@ describe('smithing: smelt', () => {
         expect(r.sends[0]).toBe(`walk to (${FURNACE.x}, ${FURNACE.z})`);
     });
 
+    test('a reachable furnace within 8 tiles is used directly: no walk to the wrong side of a wall', async () => {
+        const near = ores(1).player({ at: { x: FURNACE.x + 5, z: FURNACE.z } });
+        const r = await simulate(smithing, {
+            params: SMELT_PARAMS,
+            timeline: near.series(1),
+            react: walking(smithyReact(BRONZE, MENU)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends[0]).toBe(OPEN_MENU);
+        expect(r.sends.some(m => m.startsWith('walk to'))).toBe(false);
+    });
+
+    test('a furnace at +5 that is not reachable is still walked to', async () => {
+        const near = world()
+            .player({ at: { x: FURNACE.x + 5, z: FURNACE.z } })
+            .skill('Smithing', 1, 0)
+            .loc('Furnace', FURNACE.x, FURNACE.z, { id: 2781, options: ['Smelt'], reachable: false })
+            .inv('Copper ore', 1)
+            .inv('Tin ore', 1);
+        const r = await simulate(smithing, {
+            params: SMELT_PARAMS,
+            timeline: near.series(1),
+            react: walking(smithyReact(BRONZE, MENU)),
+        });
+        expect(r.sends[0]).toBe(`walk to (${FURNACE.x}, ${FURNACE.z})`);
+    });
+
+    test('a reachable furnace at +9 is walked to', async () => {
+        const far = ores(1).player({ at: { x: FURNACE.x + 9, z: FURNACE.z } });
+        const r = await simulate(smithing, {
+            params: SMELT_PARAMS,
+            timeline: far.series(1),
+            react: walking(smithyReact(BRONZE, MENU)),
+        });
+        expect(r.sends[0]).toBe(`walk to (${FURNACE.x}, ${FURNACE.z})`);
+    });
+
+    test('a direct attempt that failed is retried after a walk, and the shortcut returns after a success', async () => {
+        let opens = 0;
+        const near = ores(2).player({ at: { x: FURNACE.x + 5, z: FURNACE.z } });
+        const r = await simulate(smithing, {
+            params: SMELT_PARAMS,
+            timeline: near.series(1),
+            react: walking(smithyReact(BRONZE, MENU)),
+            respond: a =>
+                a.type === 'interactLoc' && ++opens === 1 ? { success: false, message: 'blocked' } : undefined,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.slice(0, 3)).toEqual([OPEN_MENU, `walk to (${FURNACE.x}, ${FURNACE.z})`, OPEN_MENU]);
+        expect(r.sends.filter(m => m.startsWith('walk to'))).toHaveLength(1);
+        expect(r.result.inventoryDelta['Bronze bar']).toBe(2);
+    });
+
+    test('a retry walk that fails sends the next attempt direct again', async () => {
+        let opens = 0;
+        const near = ores(1).player({ at: { x: FURNACE.x + 5, z: FURNACE.z } });
+        const r = await simulate(smithing, {
+            params: SMELT_PARAMS,
+            timeline: near.series(1),
+            pathfinder: blocked(),
+            react: smithyReact(BRONZE, MENU),
+            respond: a =>
+                a.type === 'interactLoc' && ++opens === 1 ? { success: false, message: 'blocked' } : undefined,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.filter(m => m === OPEN_MENU)).toHaveLength(2);
+        expect(r.sends.some(m => m.startsWith('walk to'))).toBe(false);
+    });
+
     test('four walks to the furnace that fail in a row fail the run', async () => {
         const paths = blocked();
-        const far = ores(1).player({ at: { x: FURNACE.x + 6, z: FURNACE.z } });
+        const far = ores(1).player({ at: { x: FURNACE.x + 12, z: FURNACE.z } });
         const r = await simulate(smithing, { params: SMELT_PARAMS, timeline: far.series(1), pathfinder: paths });
         expect(r.result.reason).toBe(
-            `smelt: 4 smelts in a row failed (last: Cannot reach Furnace: No path to (${FURNACE.x}, ${FURNACE.z}) from (${FURNACE.x + 6}, ${FURNACE.z}): blocked)`,
+            `smelt: 4 smelts in a row failed (last: Cannot reach Furnace: No path to (${FURNACE.x}, ${FURNACE.z}) from (${FURNACE.x + 12}, ${FURNACE.z}): blocked)`,
         );
         expect(paths.queries).toHaveLength(4 * 2);
         expect(r.sends).toEqual([]);
@@ -134,11 +203,17 @@ describe('smithing: smelt', () => {
         const r = await simulate(smithing, {
             params: SMELT_PARAMS,
             timeline: ores(1).series(1),
-            react: smithyReact(null, MENU),
+            react: walking(smithyReact(null, MENU)),
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('smelt: 4 smelts in a row used no ore (last: Smelting timed out)');
-        expect(r.sends).toEqual(times(4, OPEN_MENU, CLICK_BRONZE));
+        // The first failure sends the next attempt to the furnace's side, one walk.
+        expect(r.sends).toEqual([
+            OPEN_MENU,
+            CLICK_BRONZE,
+            `walk to (${FURNACE.x}, ${FURNACE.z})`,
+            ...times(3, OPEN_MENU, CLICK_BRONZE),
+        ]);
         expect(logged(r)).toEqual(times(4, 'smelt failed: Smelting timed out'));
     });
 
@@ -149,7 +224,7 @@ describe('smithing: smelt', () => {
         const r = await simulate(smithing, {
             params: SMELT_PARAMS,
             timeline: ores(2).series(1),
-            react: smithyReact(BRONZE, MENU),
+            react: walking(smithyReact(BRONZE, MENU)),
             respond: a =>
                 a.type === 'interactLoc' && refused.has(++opens) ? { success: false, message: 'blocked' } : undefined,
         });
@@ -297,7 +372,7 @@ describe('smithing: smith', () => {
     });
 
     test('an anvil further than 2 tiles is walked to first; four failed walks fail the run', async () => {
-        const far = bars(1).player({ at: { x: ANVIL.x + 6, z: ANVIL.z } });
+        const far = bars(1).player({ at: { x: ANVIL.x + 12, z: ANVIL.z } });
         const r = await simulate(smithing, {
             params: SMITH_PARAMS,
             timeline: far.series(1),
@@ -308,9 +383,21 @@ describe('smithing: smith', () => {
         const paths = blocked();
         const stuck = await simulate(smithing, { params: SMITH_PARAMS, timeline: far.series(1), pathfinder: paths });
         expect(stuck.result.reason).toBe(
-            `smith: can't reach the anvil (No path to (${ANVIL.x}, ${ANVIL.z}) from (${ANVIL.x + 6}, ${ANVIL.z}): blocked)`,
+            `smith: can't reach the anvil (No path to (${ANVIL.x}, ${ANVIL.z}) from (${ANVIL.x + 12}, ${ANVIL.z}): blocked)`,
         );
         expect(paths.queries).toHaveLength(4 * 2);
+    });
+
+    test('a reachable anvil at +5 is used directly: no walk', async () => {
+        const near = bars(1).player({ at: { x: ANVIL.x + 5, z: ANVIL.z } });
+        const r = await simulate(smithing, {
+            params: SMITH_PARAMS,
+            timeline: near.series(1),
+            react: walking(smithyReact(DAGGER)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends[0]).toBe(USE_BAR);
+        expect(r.sends.some(m => m.startsWith('walk to'))).toBe(false);
     });
 
     test('no reachable anvil fails the run on the fourth look', async () => {

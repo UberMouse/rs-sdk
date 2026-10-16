@@ -43,8 +43,13 @@ function setup(at: Tile, coins: number) {
 
 const dest = (s: BotWorldState) => ({ x: s.player!.worldX < 3268 ? 3268 : 3267, z: s.player!.worldZ });
 
-async function walk(at: Tile, to: Tile, coins: number, opts: { free?: boolean; choice?: string[] } = {}) {
-    const pf = paths();
+async function walk(
+    at: Tile,
+    to: Tile,
+    coins: number,
+    opts: { free?: boolean; choice?: string[]; pathfinder?: ReturnType<typeof paths> } = {},
+) {
+    const pf = opts.pathfinder ?? paths();
     let toll = 0;
     const stroll = walking(
         (a: BotAction, s: BotWorldState): Effect | undefined => {
@@ -135,5 +140,33 @@ describe('walkTo beside the toll gate', () => {
     test('a bot already on its destination side opens nothing', async () => {
         const r = await walk(WEST, { x: 3250, z: 3228 }, 100);
         expect(r.sends.some(a => a.type === 'interactLoc')).toBe(false);
+    });
+});
+
+describe('walkTo a destination on the bot own side whose route goes through the gate', () => {
+    // Al Kharid's north is only reachable round the west side: the route crosses the gate and comes back
+    // east north of the wall (the replay of 2026-10-16T07-20-11 travel, which stood stuck at the gate).
+    const NORTH_EAST = { x: 3274, z: 3330 };
+    const loop = () =>
+        fakePaths(
+            () => ({
+                success: true,
+                reachedDestination: true,
+                waypoints: route({ x: 3268, z: 3227 }, { x: 3267, z: 3227 }, { x: 3265, z: 3265 }, NORTH_EAST),
+            }),
+            GATES,
+        );
+
+    test('pays the toll on the way out and arrives', async () => {
+        const r = await walk(EAST, NORTH_EAST, 100, { pathfinder: loop() });
+        expect(r.result.ok).toBe(true);
+        expect(r.tolls()).toBe(1);
+        expect(r.sends.filter(a => a.type === 'interactLoc')).toHaveLength(1);
+    });
+
+    test('with no coins it asks for a route round the gate instead', async () => {
+        const r = await walk(EAST, NORTH_EAST, 5, { pathfinder: loop() });
+        expect(r.sends.some(a => a.type === 'interactLoc')).toBe(false);
+        expect(r.pf.queries[0]!.avoid.map(d => d.z).sort()).toEqual([3227, 3228]);
     });
 });

@@ -4,8 +4,9 @@ import { drop, dropOres } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
 import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { type Area, AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
+import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -27,6 +28,7 @@ const ROCK_NAMES = [
     'mithril',
     'adamantite',
     'runite',
+    'essence',
 ] as const;
 type RockName = (typeof ROCK_NAMES)[number];
 
@@ -42,6 +44,8 @@ const ROCKS = {
     mithril: { level: 55, respawnTicks: 400, ore: 'Mithril ore', ids: [2102, 2103, 2131, 2132] },
     adamantite: { level: 70, respawnTicks: 800, ore: 'Adamantite ore', ids: [2104, 2105, 2133, 2134] },
     runite: { level: 85, respawnTicks: 2400, ore: 'Runite ore', ids: [2106, 2107, 2135, 2136] },
+    // Rune Essence Mine rock (id 2491): never depletes, so respawnTicks is a nominal 1.
+    essence: { level: 1, respawnTicks: 1, ore: 'Rune essence', ids: [2491] },
 } as const satisfies Record<RockName, { level: number; respawnTicks: number; ore: string; ids: readonly number[] }>;
 
 /** Pickaxe levelrequire from skill_mining/configs/pickaxes.obj (pickaxe_checker.rs2 ignores a pickaxe below it). */
@@ -170,6 +174,22 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
     };
 }
 
+/** Within this many tiles of a rock cluster's rock the bot sees it (walkToArea stops 2 tiles short). */
+const ESSENCE_SPOT_RADIUS = 3;
+
+/**
+ * Aubury's teleport lands the bot at one of 22 spots of the Rune Essence Mine, some further than the
+ * view from every rock, and the rocks form four clusters. With no `area` and no essence rock in view,
+ * the nearest known rock cluster to walk to (null: not in the mine, an area is set, or already there).
+ */
+function essenceSpotToWalkTo(ctx: Ctx): Area | null {
+    const { area } = ctx.params;
+    const s = ctx.state();
+    if (area || !derive(ctx.params).rocks.includes('essence') || !inEssenceMine(s) || !s.player) return null;
+    const spot = nearestPoint(ctx, ESSENCE_ROCK_SPOTS);
+    return ctx.distanceTo(spot.x, spot.z) > ESSENCE_SPOT_RADIUS ? { ...spot, radius: ESSENCE_SPOT_RADIUS } : null;
+}
+
 export default defineTask({
     name: 'mining',
     description:
@@ -183,7 +203,7 @@ export default defineTask({
         'When every listed rock in reach is mined out it waits for respawns, up to max(300 ticks, slowest listed rock respawn ticks + 75 ticks) ' +
         '(2 min for rocks up to coal, mithril 190 s, adamantite 350 s), then fails: with `area` "area depleted: no reachable <rock> rock in radius N for Ns", ' +
         'without it "no reachable <rock> rock nearby for Ns". With `area` it stays within `radius` of that centre; without it, it mines ' +
-        'wherever the bot stands. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
+        'wherever the bot stands, except `essence` inside the Rune Essence Mine, which walks to the nearest of the mine\'s four rock clusters when none is in view (teleport landings can be far from every rock). `essence` is the Rune Essence Mine rock (reach it with the essence-mine task); it needs onFull "stop" (refused with "drop") and never depletes. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
     params: Params,
     memory: (): MiningMemory => ({ noRockSinceTick: null }),
     // Mining a rock cancels auto-retaliate, so a bot under attack must not touch one.
@@ -205,6 +225,8 @@ export default defineTask({
         for (const r of d.rocks)
             if (skill.baseLevel < ROCKS[r].level)
                 return `${r} needs mining ${ROCKS[r].level}, bot has ${skill.baseLevel}`;
+        if (d.rocks.includes('essence') && ctx.params.onFull === 'drop')
+            return 'rune essence must be mined with onFull "stop" ("drop" would drop it)';
         return refuseArea(ctx.params.area);
     },
 
@@ -250,7 +272,14 @@ export default defineTask({
                 // Drop as you go: the drop is sent in the same tick as the next click and costs no swing, so
                 // the inventory rarely fills. This also drops ore held from before the run.
                 if (ctx.params.onFull === 'drop') yield* dropOres(ctx, d.orePattern);
-                if (!rock) return yield* waitForRespawn(ctx);
+                if (!rock) {
+                    const spot = essenceSpotToWalkTo(ctx);
+                    if (spot) {
+                        const failure = yield* walkToArea(ctx, spot);
+                        return failure ? { fail: failure } : undefined;
+                    }
+                    return yield* waitForRespawn(ctx);
+                }
                 ctx.memory.noRockSinceTick = null;
                 const mined = yield* mine(ctx, rock, d.orePattern);
                 const mineFails = ctx.streak('mineFails');

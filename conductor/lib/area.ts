@@ -23,6 +23,11 @@ export const AreaSchema = z.object({
     x: z.number(),
     z: z.number(),
     radius: z.number().min(MIN_AREA_RADIUS).default(DEFAULT_AREA_RADIUS),
+    /**
+     * The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may
+     * start on another, e.g. a bank walk from the first floor of a house.
+     */
+    level: z.number().int().min(0).optional(),
 });
 export type Area = z.infer<typeof AreaSchema>;
 
@@ -46,7 +51,7 @@ export function refuseArea(area: Area | undefined): string | null {
  */
 export function* walkToArea(ctx: TaskContext<unknown, object>, area: Area): Op<string | null> {
     const before = ctx.distanceTo(area.x, area.z);
-    const r = yield* walkTo(ctx, area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1));
+    const r = yield* walkTo(ctx, area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1), { level: area.level });
     const fails = ctx.counter('area.walkFails');
     if (r.ok) {
         fails.reset();
@@ -67,7 +72,13 @@ export function returnToAreaStep<P>(areaOf: (params: P) => Area | undefined): St
         // No player (logging in, respawning) is not "far away": distanceTo would be Infinity.
         when: ctx => {
             const a = areaOf(ctx.params);
-            return !!a && !!ctx.state().player && ctx.distanceTo(a.x, a.z) > a.radius + WORK_REACH;
+            const player = ctx.state().player;
+            return (
+                !!a &&
+                !!player &&
+                (ctx.distanceTo(a.x, a.z) > a.radius + WORK_REACH ||
+                    (a.level !== undefined && player.level !== a.level))
+            );
         },
         *run(ctx) {
             const a = areaOf(ctx.params);

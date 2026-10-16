@@ -103,6 +103,14 @@ const ANVIL = /anvil/i;
 export const FAIL_LIMIT = 4;
 /** Within this many tiles of the furnace or anvil the client's own pathing reaches it; further, the task walks first. */
 const STATION_REACH = 2;
+/**
+ * A station this close and `reachable` is interacted with directly: the client routes to the side the server
+ * lets it use. A walkTo to within STATION_REACH can stop on the wrong side of a wall (the Al Kharid furnace
+ * at (3272,3185) is open to the east only, and (3270,3184) is within 2 tiles of it from the west).
+ */
+const STATION_DIRECT_REACH = 8;
+/** After a failed direct attempt the walk goes this close: next to the station, on the side the route reaches. */
+const STATION_RETRY_REACH = 1;
 /** Each smelt or smith action is a few ticks; a walk to the station can take longer. */
 const STEP_TIMEOUT_MS = 90_000;
 /** The longest smelt or smith op: what the walk to the station leaves of the step (its reserveTicks). */
@@ -137,7 +145,16 @@ const Params = z.object({
 });
 
 type SmithingParams = z.infer<typeof Params>;
-type Ctx = TaskContext<SmithingParams>;
+/** Per-run state: where the last attempt at a station that skipped the walk failed from. */
+interface SmithingMemory {
+    /**
+     * Where a failed attempt without a walk started; until one succeeds. If the bot has since moved (the
+     * client's detour round a wall brought it close), the next attempt is direct again; from the same tile
+     * nothing moved, and it walks next to the station first.
+     */
+    directFrom: { x: number; z: number } | null;
+}
+type Ctx = TaskContext<SmithingParams, SmithingMemory>;
 
 const countOf = (state: BotWorldState, name: string) => countItems(state, exactName(name));
 
@@ -168,14 +185,34 @@ function findStation(ctx: Ctx, name: RegExp, filter: (l: NearbyLoc) => boolean, 
     return reachableOnly && match?.reachable === false ? null : match;
 }
 
+const stayedAt = (ctx: Ctx, from: { x: number; z: number } | null) => {
+    const p = ctx.state().player;
+    return !!from && !!p && p.worldX === from.x && p.worldZ === from.z;
+};
+
+/** Whether the station is too far for the client's own pathing: not within reach, nor a direct-shortcut one. */
+function needsWalk(ctx: Ctx, station: NearbyLoc): boolean {
+    const distance = ctx.distanceTo(station.x, station.z);
+    // A direct attempt that failed without the bot moving: walk to the station's side first.
+    if (stayedAt(ctx, ctx.memory.directFrom)) return distance > STATION_RETRY_REACH;
+    if (distance <= STATION_REACH) return false;
+    return !(station.reachable === true && distance <= STATION_DIRECT_REACH);
+}
+
 /**
  * Walks within STATION_REACH of a furnace or anvil further away, leaving the step room for the op after
  * it; the walk's failure message, or null.
  */
 function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
-    if (ctx.distanceTo(station.x, station.z) <= STATION_REACH) return null;
-    const w = yield* walkTo(ctx, station.x, station.z, STATION_REACH, { reserveTicks: OP_MAX_TICKS });
-    return w.ok ? null : w.message;
+    if (!needsWalk(ctx, station)) return null;
+    const retrying = stayedAt(ctx, ctx.memory.directFrom);
+    const w = yield* walkTo(ctx, station.x, station.z, retrying ? STATION_RETRY_REACH : STATION_REACH, {
+        reserveTicks: OP_MAX_TICKS,
+    });
+    if (w.ok) return null;
+    // A retry walk that failed leaves the bot where it was: the next attempt goes direct again, not into the same walk.
+    if (retrying) ctx.memory.directFrom = null;
+    return w.message;
 }
 
 export default defineTask({
@@ -188,8 +225,9 @@ export default defineTask({
         'Needs the Smithing level for the bar/product (checked against the engine configs) and, to smith, a hammer. ' +
         'Smelting takes about 8 ticks a bar; iron has a 50% failure chance. ' +
         '`area` centres on the furnace/anvil; it walks there when far away. Known spots: Lumbridge furnace (3225,3256), ' +
-        'Varrock west anvils (3188,3421). Avoid the Al Kharid furnace (toll gate).',
+        'Varrock west anvils (3188,3421). The Al Kharid furnace (3272,3185) works from its open east side: a reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
     params: Params,
+    memory: (): SmithingMemory => ({ directFrom: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -245,18 +283,22 @@ export default defineTask({
                         ? { fail: 'no furnace with a Smelt option nearby (pass `area` at the furnace)' }
                         : undefined;
                 }
+                const direct = !needsWalk(ctx, furnace);
+                const from = ctx.state().player;
                 const walkFailed = yield* walkToStation(ctx, furnace);
                 // A failed walk counts as a failed smelt, as it did when bot.useItemOnLoc walked.
                 const r: SmeltResult = walkFailed
                     ? { ok: false, reason: 'cant-reach', message: `Cannot reach ${furnace.name}: ${walkFailed}` }
                     : yield* smelt(ctx, furnace, recipe.menuLabel);
                 if (!r.ok) {
+                    if (direct && from) ctx.memory.directFrom = { x: from.worldX, z: from.worldZ };
                     yield* log(`smelt failed: ${r.message}`);
                     if (fails.add() < FAIL_LIMIT) return;
                     // A click the furnace never acted on is the legacy "used no ore" failure.
                     const what = r.reason === 'timeout' ? 'used no ore' : 'failed';
                     return { fail: `${FAIL_LIMIT} smelts in a row ${what} (last: ${r.message})` };
                 }
+                ctx.memory.directFrom = null;
                 fails.reset();
             },
         },
@@ -274,6 +316,8 @@ export default defineTask({
                         ? { fail: 'no reachable anvil nearby (pass `area` at the anvil)' }
                         : undefined;
                 }
+                const direct = !needsWalk(ctx, anvil);
+                const from = ctx.state().player;
                 const walkFailed = yield* walkToStation(ctx, anvil);
                 if (walkFailed) {
                     yield* log(`walk to the anvil failed: ${walkFailed}`);
@@ -281,12 +325,14 @@ export default defineTask({
                 }
                 const r = yield* smith(ctx, anvil, product.name, exactName(recipe.bar));
                 if (!r.ok) {
+                    if (direct && from) ctx.memory.directFrom = { x: from.worldX, z: from.worldZ };
                     yield* log(`smith failed: ${r.message}`, { reason: r.reason });
                     if (r.reason === 'no-hammer') return { fail: 'no hammer in inventory' };
                     return fails.add() >= FAIL_LIMIT
                         ? { fail: `${FAIL_LIMIT} smiths in a row failed (last: ${r.message})` }
                         : undefined;
                 }
+                ctx.memory.directFrom = null;
                 fails.reset();
             },
         },

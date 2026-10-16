@@ -860,6 +860,63 @@ describe('the view', () => {
         expect(r.result.status).toBe('done');
     });
 
+    test("the client's empty bank list on the tick before the close does not wipe what was remembered", async () => {
+        // Open and listed at ticks 2-3, emptied for tick 4 only, closed from tick 5.
+        const timeline = BASE.series(9, (w, i) => {
+            if (i === 2 || i === 3) return w.bank([{ name: 'Copper ore', count: 6 }]);
+            return i === 4 ? w.bank([]) : w;
+        });
+        const seen: (number | undefined)[] = [];
+        await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push(v.bank('Copper ore'));
+                                return v.runs('watch') > 0;
+                            },
+                        },
+                    ),
+                    phase(watch, {}, { until: v => v.state.tick >= 7 }),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline },
+        );
+        expect(seen).toEqual([undefined, 6]);
+    });
+
+    test('a bank left empty for two open ticks reads as emptied', async () => {
+        const timeline = BASE.series(9, (w, i) => {
+            if (i === 2) return w.bank([{ name: 'Copper ore', count: 6 }]);
+            return i === 3 || i === 4 ? w.bank([]) : w;
+        });
+        const seen: (number | undefined)[] = [];
+        await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push(v.bank('Copper ore'));
+                                return v.runs('watch') > 0;
+                            },
+                        },
+                    ),
+                    phase(watch, {}, { until: v => v.state.tick >= 7 }),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline },
+        );
+        expect(seen).toEqual([undefined, 0]);
+    });
+
     test('a later look at the bank replaces what was remembered: an item no longer listed reads 0', async () => {
         const timeline = BASE.series(8, (w, i) => {
             if (i === 2)

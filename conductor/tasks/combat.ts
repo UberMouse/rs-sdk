@@ -8,6 +8,7 @@ import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { attackers, recentlyHit } from '../lib/interrupts';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -127,11 +128,18 @@ interface CombatMemory {
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
-const BONES_NAME = 'Bones';
-const BONES = new RegExp(`^${BONES_NAME}$`, 'i');
+/** The bones `buryBones` picks up and buries: what F2P monsters drop (big bones from giants, bat bones from bats). */
+const BONE_NAMES = ['Bones', 'Big bones', 'Bat bones', 'Wolf bones'];
 const BURY_OPTION = /^bury$/i;
-const isBones = (i: { name: string }) => BONES.test(i.name);
+const isBones = (i: { name: string }) => BONE_NAMES.some(n => exactName(n).test(i.name));
 const countBones = (s: BotWorldState) => s.inventory.filter(isBones).length;
+
+/**
+ * The bot has a target and is fighting it. `combat.inCombat` alone stays true for about 20 ticks after the
+ * kill (the combat timer, with `targetIndex` already -1): waiting for it to clear idles through the ticks the
+ * next attack could use, and holds loot back. The target is what the next step needs.
+ */
+const fighting = (s: BotWorldState) => !!s.player?.combat.inCombat && s.player.combat.targetIndex >= 0;
 
 const worn = (s: BotWorldState, name: string) => s.equipment.some(i => exactName(name).test(i.name));
 const carried = (s: BotWorldState, name: string) => s.inventory.some(i => exactName(name).test(i.name));
@@ -188,7 +196,7 @@ const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i
 
 /** Reachable wanted ground items near the fight spot, nearest first. */
 function wantedGroundItems(ctx: Ctx) {
-    const names = ctx.params.buryBones ? [...ctx.params.loot, BONES_NAME] : ctx.params.loot;
+    const names = ctx.params.buryBones ? [...ctx.params.loot, ...BONE_NAMES] : ctx.params.loot;
     if (names.length === 0 || ctx.inventoryFull()) return [];
     return ctx
         .state()
@@ -198,9 +206,22 @@ function wantedGroundItems(ctx: Ctx) {
         .sort((a, b) => a.distance - b.distance);
 }
 
-/** The nearest free in-limit target, or else a free matching NPC that is too strong. */
+/**
+ * The in-limit target: first a matching NPC that is already fighting the bot (the server refuses an attack on
+ * any other NPC while one is on the bot, "I'm already under attack!", and the bot would repeat it until the
+ * attacker died to its auto-retaliate), else the nearest free one, or else a free matching NPC that is too strong.
+ */
 function pickTarget(state: BotWorldState, p: CombatParams) {
     const limit = levelLimit(state, p);
+    // `attackers` cannot tell the bot's attacker from an NPC fighting another player; a recent hit on the bot can.
+    const attacker = (recentlyHit(state) ? attackers(state) : []).find(
+        n =>
+            matches(n, p) &&
+            n.reachable !== false &&
+            n.combatLevel <= limit &&
+            n.options.some(o => ATTACK_OPTION.test(o)),
+    );
+    if (attacker) return { target: attacker, tooStrong: undefined, limit };
     const candidates = state.nearbyNpcs.filter(
         n =>
             matches(n, p) &&
@@ -233,9 +254,9 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
         const p = state.player;
         return { fail: `fight lasted over ${FIGHT_TIMEOUT_MS / 1000}s at (${p?.worldX},${p?.worldZ})` };
     }
-    const w = yield* wait('kill', s => !s.player?.combat.inCombat || wantsToEat(s, ctx.params), FIGHT_SLICE_TICKS);
+    const w = yield* wait('kill', s => !fighting(s) || wantsToEat(s, ctx.params), FIGHT_SLICE_TICKS);
     // The fight being timed is over; a later fight starts a fresh clock.
-    if (!w.state.player?.combat.inCombat) ctx.memory.fightStartedAtTick = null;
+    if (!fighting(w.state)) ctx.memory.fightStartedAtTick = null;
 }
 
 /** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
@@ -295,7 +316,7 @@ export default defineTask({
         'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +
         'Magic: casts `spell` (free-to-play Strike/Bolt/Blast, e.g. "Wind Strike", 1 Mind + 1 Air rune per cast) at ' +
         "each target with runes from the inventory (a worn Staff of <element> replaces just that element's rune); fails when runes run out or the " +
-        'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying and a loot list. ' +
+        'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones) and a loot list; an NPC already attacking the bot is fought first. ' +
         'Refuses areas reaching the Wilderness and NPCs more than `maxLevelGap` (default 5) levels above the bot. ' +
         'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
         'Weapon/shield need the bot to meet their wield requirement. Spots: Lumbridge chickens (3231,3295, ' +
@@ -445,8 +466,9 @@ export default defineTask({
         },
         {
             name: 'loot',
-            // Never walk off to loot while something is hitting the bot.
-            when: ctx => !ctx.state().player?.combat.inCombat && wantedGroundItems(ctx).length > 0,
+            // Never walk off to loot while fighting, or while another NPC is attacking the bot.
+            when: ctx =>
+                !fighting(ctx.state()) && attackers(ctx.state()).length === 0 && wantedGroundItems(ctx).length > 0,
             *run(ctx) {
                 // Expired skips are dropped here, not in `when`/wantedGroundItems, which stay pure.
                 const tick = ctx.state().tick;
@@ -531,7 +553,7 @@ export default defineTask({
                     yield* ticks(NO_PLAYER_WAIT_TICKS);
                     return;
                 }
-                if (p.combat.inCombat) return yield* waitForKill(ctx);
+                if (fighting(state)) return yield* waitForKill(ctx);
                 ctx.memory.fightStartedAtTick = null;
 
                 const chosen = yield* chooseTarget(ctx);

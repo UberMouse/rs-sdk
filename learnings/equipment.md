@@ -12,6 +12,8 @@ Where the next tier of gear comes from. Item stats and full shop stock are in th
 | Black, mithril, adamant, rune axe | none to chop; Attack 10/20/30/40 to wield | no shop sells them; smith mithril/adamant/rune at Smithing 51/71/86 (1 bar); black is not smithable | — | 2026-10-10 conductor2 local, read from content |
 | Iron to rune pickaxe | Mining 1/6/21/31/41 (iron/steel/mithril/adamant/rune) to use; Attack to wield | Nurmof's Pickaxe Shop, Dwarven Mine (2998, 9844); not smithable | 140 / 500 / 1,300 / 3,200 / 32,000 gp | iron 140 gp bought 2026-10-11 conductor2w1 local; adamant 3,200 gp bought 2026-10-11 conductor2 local (Falador mine stairs, no scorpion trouble at combat ~22-24); other tiers read from content |
 
+Wearing a tool frees an inventory slot: a worn adamant pickaxe (wield Attack 31) mines essence with the `mining` task unchanged, and wielding it moves the previous weapon into the inventory (bank it). The catalog has no equip task; the `combat` task with `weapon` set and a phase `until` that the item is worn equips it and stops in under 1 s without fighting. [v 2026-10-16 conductor2 local]
+
 How much each tier speeds up chopping and mining: `wiki/skills/woodcutting.md` (Chop speed) and
 `wiki/skills/mining.md` (Mining speed).
 

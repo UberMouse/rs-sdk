@@ -104,7 +104,7 @@ Verified in game:
 | Bank | Notes |
 |------|-------|
 | Varrock West | Close to GE. Deposit and withdraw verified via the `bank` task with area {x:3185,z:3436,radius:6}. `bot.openBank` found no banker/booth (`no_bank_found`) from (3169, 3436), 16 tiles west, so walk to the booth first; the nearest working distance is untested. [v 2026-10-09 conductor1 local] |
-| Draynor | Ground floor. The `bank` task works with explicit area `{x:3092,z:3243,radius:3}` (deposit and depositAllExcept). `depositAllExcept` banks every inventory item not listed, including a sword or shield carried unworn. [v 2026-10-11 conductor2 local] |
+| Draynor | Ground floor. The `bank` task works with explicit area `{x:3092,z:3243,radius:3}` (deposit and depositAllExcept). `depositAllExcept` banks every inventory item not listed, including a sword or shield carried unworn, and talismans: a plan that needs one must list it in the except list. [v 2026-10-16 conductor2 local] |
 | Al Kharid | Requires toll or quest |
 
 ## Full Banking Loop Pattern

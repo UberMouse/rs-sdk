@@ -36,8 +36,10 @@ script walked the bot under attack and it died, 2026-10-11).
 3. Every `run-task.ts` command runs in the background
    (`run_in_background`), as the bare command: no trailing `&`, `nohup` or `> file` (the harness
    captures the output; an `&` inside detaches the run, the background command ends at once and no
-   notification ever comes for the run, 2026-10-11). Then end your turn and wait for its completion
-   notification. No
+   notification ever comes for the run, 2026-10-11). Then end your turn with one plain line of text
+   and wait for its completion notification. Waiting is never a hand-back: SubagentHandback carries
+   only your report (Returning, below) and accepts one, so a hand-back that only waits loses the
+   real report (a runner sent "placeholder", 2026-10-16). No
    foreground run, no foreground `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
    receive the conductor's messages (the user had to kill a run to get a correction through,
    2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
@@ -309,7 +311,10 @@ further variant.
 Come back only when:
 
 - the goal is reached, or its budget (play time or failed plans in a row) is spent;
-- the fix is in task or engine code (a script fault);
+- the fix is in task or engine code (a script fault). That includes a plan-engine feature your plan
+  relies on observed broken (e.g. `v.bank` reading `{}` after bank visits): report it with the log
+  lines instead of rewriting the plan around it; the conductor decides whether a workaround is
+  acceptable (a run-count workaround hid a broken `v.bank` and degenerated a bulk plan, 2026-10-16);
 - a decision is outside the goal's constraints: spending or selling beyond them, a risky area,
   a quest or unlock, a different goal being the better use of time;
 - the goal looks unreachable as set.

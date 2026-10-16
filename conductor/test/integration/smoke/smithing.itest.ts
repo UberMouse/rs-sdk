@@ -70,3 +70,38 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+const IRON_ORE = 440;
+// Al Kharid furnace (3272,3185): open from the east only. From the west wall side the old walk-to-within-2 stalled.
+const AL_KHARID_FURNACE = { x: 3272, z: 3185 };
+
+test(
+    'smithing task smelts iron at the Al Kharid furnace from the wrong side of its wall',
+    async () => {
+        await withFixtureBot(
+            {
+                position: { x: 3270, z: 3184 },
+                skills: { Smithing: 52 },
+                inventory: Array.from({ length: 6 }, () => ({ id: IRON_ORE, count: 1 })),
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'smithing',
+                    {
+                        mode: 'smelt',
+                        bar: 'iron',
+                        area: { x: AL_KHARID_FURNACE.x, z: AL_KHARID_FURNACE.z, radius: 6 },
+                    },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                // Iron has a 50% failure chance: assert some bars, not the count.
+                expect(run.result.inventoryDelta['Iron bar'], detail).toBeGreaterThan(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);

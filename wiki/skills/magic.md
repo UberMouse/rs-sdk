@@ -44,9 +44,13 @@ Equip a staff and select an elemental spell from the combat style menu to auto-c
 
 ## Magic Guild
 
-- **Location:** Yanille
-- **Requirement:** 66 Magic
-- **Features:** Sells rare soul runes, training zombies
+- **Location:** Yanille; store at (2595, 3087) level 1 ([shop page](../shops/magic-guild-store.md)).
+- **Requirement:** Magic 66 to pass the door (`areas/area_yanille/scripts/magic_guild.rs2:11-13`), no quest.
+- **Store stock:** nature 1000, fire 3000, death/law/chaos/blood 1000 each, staves 2 (`areas/area_yanille/configs/magic_guild/magic_guild.inv:15-31`). The only shops with nature runes are this one and Lundail (250, Mage Arena cellar, Wilderness ~55). Prices ramp 1% per unit bought (delta 10, `shop/scripts/shop.rs2:139-146`), so 1,000 nature runes (base 20) cost ~94,750 gp in one visit. [server data, unverified in game 2026-10-16]
+
+## Superheat Item
+
+- Magic 43, 1 nature + 4 fire runes, 1,325 Magic XP per cast at 25x (`skill_magic/configs/magic_spells.dbrow:183-187`). Pays the bar's smelting Smithing XP with no failure roll (iron always succeeds, no Ring of Forging needed) and needs no furnace (`skill_magic/scripts/spells/superheat.rs2`). With 2+ coal held and Smithing 30+, iron ore superheats into steel. A worn Staff of fire replaces the 4 fire runes (`skill_magic/scripts/magic.rs2:53-67`); Zaff (Varrock, 3203,3433) sells it for 1,500 gp. [server data, unverified in game 2026-10-16]
 
 ## Notes
 
