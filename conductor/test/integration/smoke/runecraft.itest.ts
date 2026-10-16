@@ -6,6 +6,8 @@ import { itestTimeout, runTask, withFixtureBot } from '../harness';
 const RUNE_MYSTERIES = { 63: 6 };
 // Beside the Air ruins south of Falador (2984,3291), and inside the essence mine (map square 45_75).
 const AIR_RUINS = { x: 2985, z: 3288 };
+// Inside the air temple (map square 44_75).
+const AIR_TEMPLE = { x: 2841, z: 4830 };
 const AUBURY = { x: 3253, z: 3403 };
 
 test(
@@ -33,6 +35,27 @@ test(
         );
     },
     itestTimeout({ taskMinutes: 3 }),
+);
+
+test(
+    'runecraft task started inside the air temple with no essence leaves and is done',
+    async () => {
+        await withFixtureBot(
+            {
+                position: AIR_TEMPLE,
+                skills: { Runecraft: 1 },
+                inventory: [{ id: Items.AIR_TALISMAN, count: 1 }],
+            },
+            async ({ name }) => {
+                const run = await runTask(name, 'runecraft', { altar: 'air' }, ['minutes:2']);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.finalPos.z, detail).toBeLessThan(4000);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
 );
 
 test(

@@ -48,6 +48,8 @@ type RunecraftParams = z.infer<typeof Params>;
 interface RunecraftMemory {
     /** The essence was bound at the altar; the run now only has to get outside. */
     crafted: boolean;
+    /** The run started inside the temple with no essence: it only leaves (a plan ended in the altar), and is done outside. */
+    leaveOnly: boolean;
 }
 type Ctx = TaskContext<RunecraftParams, RunecraftMemory>;
 
@@ -63,10 +65,10 @@ export default defineTask({
         "One runecrafting trip: with the altar's talisman and rune essence held, walk to its Mysterious ruins, use the talisman on them (no tiaras in this revision), " +
         'bind every rune essence at the altar (Craft-rune; one action for the whole stack), and leave by the temple portal. ' +
         '`altar`: air, mind, water, earth, fire or body (levels 1/2/5/9/14/20; ruins at air (2984,3291), mind (2981,3513), water (3184,3164), earth (3305,3473), fire (3312,3254), body (3052,3444)). ' +
-        'Done once the essence is crafted and the bot is back outside by the ruins. Fails with no essence or talisman. Get essence with the essence-mine task + mining rock "essence". ' +
+        'Done once the essence is crafted and the bot is back outside by the ruins. Started inside the temple with no essence (a plan ended in the altar), it just leaves and is done. Fails with no essence or talisman. Get essence with the essence-mine task + mining rock "essence". ' +
         'Runes stack: they take one inventory slot per type.',
     params: Params,
-    memory: (): RunecraftMemory => ({ crafted: false }),
+    memory: (): RunecraftMemory => ({ crafted: false, leaveOnly: false }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -90,14 +92,19 @@ export default defineTask({
     steps: [
         {
             name: 'finish',
-            when: ctx => ctx.memory.crafted && !inside(ctx),
-            run: ctx => ({ done: `crafted ${ctx.params.altar} runes and left the temple` }),
+            when: ctx => (ctx.memory.crafted || ctx.memory.leaveOnly) && !inside(ctx),
+            run: ctx => ({
+                done: ctx.memory.crafted
+                    ? `crafted ${ctx.params.altar} runes and left the temple`
+                    : `left the ${ctx.params.altar} temple with no essence to craft`,
+            }),
         },
         {
             name: 'leave',
             when: ctx => inside(ctx) && (ctx.memory.crafted || essenceHeld(ctx) === 0),
             *run(ctx) {
-                // A temple entered with nothing to craft: leave, then `enter` fails on the missing essence.
+                // A temple with nothing to craft: leave and be done (`enter` would fail on the missing essence).
+                if (!ctx.memory.crafted) ctx.memory.leaveOnly = true;
                 const portal = nearest(ctx, l => PORTAL.test(l.name) && l.options.some(o => USE_OPTION.test(o)));
                 const missing = ctx.streak('noPortal');
                 if (!portal) {
@@ -139,6 +146,12 @@ export default defineTask({
                         yield* ticks(CRAFT_DELAY_TICKS);
                         return;
                     }
+                }
+                if (sent.ok && essenceHeld(ctx) === 0) {
+                    // The essence went after the wait gave up: the craft happened, so `leave` must not report an empty temple.
+                    ctx.memory.crafted = true;
+                    yield* log(`crafted ${ctx.params.altar} runes (late)`);
+                    return;
                 }
                 yield* log(`craft failed: ${sent.ok ? 'the essence stayed in the inventory' : sent.message}`);
                 if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} crafts in a row failed` };

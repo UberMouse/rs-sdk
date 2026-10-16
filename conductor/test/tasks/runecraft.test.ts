@@ -75,13 +75,13 @@ describe('runecraft: the trip', () => {
         expect(r.steps[0]).toBe('enter');
     });
 
-    test('inside a temple with no essence it leaves, then fails on the missing essence', async () => {
+    test('inside a temple with no essence it only leaves and is done', async () => {
         const r = await simulate(runecraft, {
             params: { altar: 'air' },
             timeline: temple(0).series(40, (w, i) => (i < 8 ? w : outside(0).tick(i))),
         });
-        expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toBe('enter: no rune essence held');
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: left the air temple with no essence to craft');
         expect(r.sends).toEqual(['Use Portal']);
     });
 });

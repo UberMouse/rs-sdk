@@ -581,7 +581,11 @@ function* openDoorBy(w: Walk, doors: readonly DoorInfo[], shut: Set<string>, wp:
         if (w.avoided.has(doorKey(door))) return;
         if (Math.abs(door.x - wp.x) + Math.abs(door.z - wp.z) > 1) continue;
         const key = tileKey(door);
-        const r = yield* openDoorAt(w, door);
+        // The toll gate is crossed (and paid) only when this waypoint is on its far side: the route may
+        // run through it and back to a destination on the bot's own side, and a waypoint on the near side
+        // leaves it for the next one. `continue` (not 'already-open') keeps the door in `shut`, so that next waypoint retries it.
+        if (isTollGate(door) && !crossesToll(w, wp)) continue;
+        const r = yield* openDoorAt(w, door, wp);
         if (r === 'not-found') {
             shut.delete(key);
             continue;
@@ -649,15 +653,14 @@ const openables = (s: BotWorldState) =>
  * nor shows it locked, walks beside it first (the server's route to it may run through the door) and
  * tries once more. The Al Kharid toll gate is paid for (10 coins, toll.ts) when the route crosses it.
  */
-function* openDoorAt(w: Walk, at: Point): Op<DoorOpen> {
+function* openDoorAt(w: Walk, at: Point, toward: Point = w.target): Op<DoorOpen> {
     const door = w.ctx.state().nearbyLocs.find(l => l.x === at.x && l.z === at.z);
     if (!door) return 'not-found';
     const open = door.optionsWithIndex.find(o => OPEN.test(o.text));
     if (!open) return 'already-open';
     if (isTollGate(door)) {
-        // Only to cross it: a bot already on its destination's side (just through, or the route runs beside it) pays nothing.
-        const here = w.ctx.state().player;
-        if (!here || isEastOfToll(here.worldX) === isEastOfToll(w.target.x)) return 'already-open';
+        // Only to cross it: a bot already on the side it is heading for (just through, or the route runs beside it) pays nothing.
+        if (!crossesToll(w, toward)) return 'already-open';
         return yield* payTollAt(w);
     }
     const first = yield* tryOpen(w, door, open.opIndex);
@@ -665,6 +668,12 @@ function* openDoorAt(w: Walk, at: Point): Op<DoorOpen> {
     if (!(yield* walkBeside(w, door))) return 'cant-reach';
     const second = yield* tryOpen(w, door, open.opIndex);
     return second === 'opened' || second === 'locked' ? second : 'cant-reach';
+}
+
+/** Going to `toward` from where the bot stands crosses the toll gate's line. */
+function crossesToll(w: Walk, toward: Point): boolean {
+    const here = w.ctx.state().player;
+    return !!here && isEastOfToll(here.worldX) !== isEastOfToll(toward.x);
 }
 
 /** The Al Kharid toll gate: pays and passes it (toll.ts), or is `locked` when the bot cannot pay, which routes around it. */
