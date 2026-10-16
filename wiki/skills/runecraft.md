@@ -1,6 +1,6 @@
 # Runecraft
 
-Runecraft turns rune essence into runes at an altar. Sources: `server/content/scripts/skill_runecraft/configs/runecraft.dbrow`, `essence_mine.rs2`; run facts from worker conductor2w1.
+Runecraft turns rune essence into runes at an altar. Sources: `server/content/scripts/skill_runecraft/configs/runecraft.dbrow`, `essence_mine.rs2`; run facts from workers conductor2w1 and conductor2.
 
 ## Mechanics
 
@@ -31,5 +31,9 @@ Runecraft turns rune essence into runes at an altar. Sources: `server/content/sc
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Air altar, Falador ruins | (2983, 3291) | 1 | Aubury teleport, mine 20 essence (bronze pickaxe), portal back, walk to ruins, enter, craft, exit, walk back. About 635 ticks per trip (teleport 6, mine 166, portal 9, Aubury to ruins + craft + exit ~240, walk back ~215); 27 essence ~44k XP/hr. Runecraft 17 -> 33 and Mining +4750 in a 10 min `air-runecraft` plan (3 crafts) | ~35k Runecraft (20 essence, computed from tick budget; one plan, not stats.ts) | 2026-10-16 conductor2w1 local |
+| Earth altar, ruins (3305, 3470) | (3305, 3470) | 9 | Loop with an adamant pickaxe and 25 essence (pickaxe, coins and talisman take slots; the 28-slot layout is not yet measured). Phases, 0.4 s ticks, 2-3 samples: enter-mine (walk to Aubury + teleport) ~53 ticks, mine 25 essence ~106, portal out ~6, craft-earth (Aubury to ruins, enter, craft, exit) ~64. About 230 ticks (~92 s) per trip, ~3,656 XP per trip; mining is ~46% of the trip. Needs an earth talisman. Plan `earth-runecraft`: Runecraft 1 -> 34 in 513 s (one air trip first, then earth) | ~143k Runecraft (computed from trip time, not stats.ts) | 2026-10-16 conductor2 local |
 
-Predicted, not run: earth altar ruins (3305, 3470) is 19.2 s (~48 ticks) from Aubury and 21.2 s back [live walk timing]; with a rune pickaxe and 27 essence about 190 ticks per trip, ~200k XP/hr. Needs an earth talisman.
+
+The air altar loop also fits a first trip: one 25-essence air trip took Runecraft 1 -> 9+ (+3,125 XP; craft phase ~87 s including the Falador walk). [v 2026-10-16 conductor2 local]
+
+Earth talisman source: one 172 s combat hunt on "Man" in Varrock (area (3238, 3404) radius 14, near Aubury and the Varrock East bank) dropped one; a single sample consistent with the 2/128 table above. [v 2026-10-16 conductor2 local]
