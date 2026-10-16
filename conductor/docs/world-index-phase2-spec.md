@@ -323,7 +323,7 @@ like, read from the proc bodies, not from a name list where the body can be read
 
 **Files:** `wiki/world/distance.ts`, tests; `types.ts`/`build.ts`.
 
-For every resource and processor site, the walked distance (ticks, walking and running) from its
+For every resource and processor site, the travel time in run ticks (bots always run, user 2026-10-16; no walking ticks) from its
 stand tile to the nearest reachable bank and, where phase 3 needs it, the nearest processor of the
 right kind (furnace for ore, range for raw fish, anvil for bars), under the site's own requirement
 sets (a site reachable with `{}` uses only `{}` paths). Computed with one multi-source BFS per sink
@@ -331,7 +331,7 @@ kind over the Task 3 graph, not a path per site.
 
 ### Acceptance criteria
 
-- [ ] `nearest: { bank?: { site, walkTicks, runTicks, requires }, ... }` on resource and processor
+- [ ] `nearest: { bank?: { site, runTicks, requires }, ... }` on resource and processor
       sites (format bump); rendered as a "nearest bank" column.
 - [ ] Real-data spot checks against `conductor/tools/stats.ts` runs or `learnings/` routes where they
       exist (e.g. Draynor willows -> Draynor bank, Varrock West mine -> Varrock West bank), within
@@ -345,7 +345,7 @@ kind over the Task 3 graph, not a path per site.
   overrides (stand tweaks, `hazard`) in a small map keyed by loc tile; its existing tests (stand
   and landing walkable, a way back) run against the generated table.
 - `banks.ts` derives `BANKS` from every bank site, on any level and members-only ones included (user,
-  2026-10-16: bots always play on members worlds). "Nearest" becomes the fewest walk ticks over the
+  2026-10-16: bots always play on members worlds). "Nearest" becomes the fewest run ticks over the
   Task 3 graph (Task 5's distances), not straight-line distance. A bank is a candidate only when the
   account meets one of its `reach` sets and its route chains no more connectors than the walker
   allows (`connectors.ts`). The curated `auto: false` reasons stay (Draynor's dark wizards); Al
