@@ -12,7 +12,7 @@
 
 ## Items Needed
 
-- 4 raw meats (raw beef, raw rat meat, raw chicken, or raw bear meat)
+- One each of raw beef, raw rat meat, raw bear meat and raw chicken (4 items; Sanfew asks for the enchanted versions of exactly these; `sanfew.rs2:56`). Hold them until Sanfew has been spoken to: the cauldron only works after that.
 
 ## Rewards
 
@@ -24,9 +24,9 @@
 
 1. Speak to **Kaqemeex** at the stone circle north of Taverley. He asks you to help the druids complete a ritual to purify the circle.
 2. Go south into Taverley and visit **Sanfew** on the 2nd floor of the Herblore shop.
-3. Sanfew tells you to place four raw meats into the Cauldron of Thunder in **Taverley Dungeon**.
+3. Sanfew tells you to have one each of four raw meats (beef, rat, bear, chicken) enchanted in the Cauldron of Thunder in **Taverley Dungeon**.
 4. Enter Taverley Dungeon. Head to the prison door area where you will need to fight past animated suits of armour.
-5. Use each of the 4 raw meats on the **Cauldron of Thunder** to enchant them.
+5. Use each of the 4 different raw meats on the **Cauldron of Thunder** to enchant them.
 6. Return the enchanted meats to **Sanfew** on the 2nd floor of the Herblore shop.
 7. Go back to **Kaqemeex** at the stone circle north of Taverley to complete the quest.
 
@@ -37,3 +37,10 @@
 | Kaqemeex               | Stone circle, north of Taverley        |
 | Sanfew                 | 2nd floor, Herblore shop in Taverley   |
 | Cauldron of Thunder    | Taverley Dungeon, past the prison door |
+
+## Verified details
+
+- Kaqemeex start dialog choices: 'search of a quest' then 'Ok, I will try' (`kaqemeex.rs2`). [v 2026-10-16 conductor2 local]
+- Sanfew is npc 454 upstairs (level 1) at (2897, 3426) in the Taverley herb house. Spiral stairs up: loc 1738 at (2898, 3428) level 0, stand at (2897, 3428); down: loc 1740 (`stairs.rs2`, map m45_53). `walkTo` to Sanfew fails with "No connector from level 0 ... on level 1" until the Taverley stair connectors exist (plan failed there at `sanfew-start`). [v 2026-10-16 conductor2 local]
+- Cauldron of Thunder loc at (2893, 9831) (map m45_153), behind iron doors ~(2887, 9829); the first opens animate Suits of armour (level 19, HP 29; `prison_doors.rs2`). Taverley Dungeon ladder at (2884, 3397). Server data, not yet run live.
+- Meat hunts (combat task + loot + until-held phase, 30-120 s each): raw chicken at Lumbridge chickens (3231, 3295 r8); raw beef at Lumbridge cows (3253, 3290 r12); raw rat meat from giant rats (3208, 3178 r10); raw bear meat from bears (2965, 3470 r12, north of Falador on the Taverley road). [v 2026-10-16 conductor2 local]
