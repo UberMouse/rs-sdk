@@ -351,6 +351,10 @@ report, and they are reviewed and committed with the task.
    or the file was lost): dispatch a fresh runner on the goal from your own record (the
    objective's `title`, the last journal lines for it, roadmap §Now), with constraints and budget
    set afresh; it starts the goal from that brief.
+   A Claude Code restart can leave both the old runner agent and its `run-task` alive: `pgrep -af run-task`
+   first. Never `TaskStop` a runner whose bot has a live run (stopping an agent kills its child run); let the
+   fresh runner wait on that pid and stop the stale agent only once the run has exited. Journal any result
+   you read from a live run's logs the moment you read it.
 6. Per `inFlight`: a runner or author that died across the boundary may have left the bot
    mid-action — check state before re-dispatching. With `openGate` set, run `task-review` on the
    uncommitted change, with its `worker` and `replay` (an older gate without them: the worker
