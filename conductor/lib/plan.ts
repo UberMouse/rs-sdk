@@ -298,14 +298,34 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     /** The bank as last seen open in any state the plan or a phase read: item name -> count. */
     let bankCounts: Map<string, number> | null = null;
     let seen: BotWorldState | null = null;
+    /**
+     * The client empties the bank's item list for the tick before it reports the bank closed, so the last
+     * state seen open is empty whatever the bank holds. An empty list after a listed one is therefore
+     * taken only once a second open tick confirms it (a bank emptied on purpose stays open at least that
+     * long under withBank's close wait; one closed straight after its last withdrawal reads as before).
+     */
+    let sessionListed = false;
+    let emptyOpenTicks = 0;
+    let lastOpenTick = -1;
     const observe = (s: BotWorldState): BotWorldState => {
         if (s === seen) return s;
         seen = s;
-        if (s.bank.isOpen) {
-            const counts = new Map<string, number>();
-            for (const i of s.bank.items) counts.set(i.name, (counts.get(i.name) ?? 0) + i.count);
-            bankCounts = counts;
+        if (!s.bank.isOpen) {
+            sessionListed = false;
+            emptyOpenTicks = 0;
+            return s;
         }
+        if (s.tick === lastOpenTick && s.bank.items.length === 0) return s;
+        lastOpenTick = s.tick;
+        if (s.bank.items.length > 0) {
+            sessionListed = true;
+            emptyOpenTicks = 0;
+        } else if (sessionListed && ++emptyOpenTicks < 2) {
+            return s;
+        }
+        const counts = new Map<string, number>();
+        for (const i of s.bank.items) counts.set(i.name, (counts.get(i.name) ?? 0) + i.count);
+        bankCounts = counts;
         return s;
     };
     /** A phase's driver, with every state it hands out observed for the bank memory. */

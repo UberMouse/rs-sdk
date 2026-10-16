@@ -123,7 +123,10 @@ keeps every phase choice re-derivable from a run's recorded states.
 | `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
 
 `v.bank` exists because "smelt once enough ore is banked" needs it and the state only shows the bank
-while it is open: the runner keeps the last bank contents it saw in any phase.
+while it is open: the runner keeps the last bank contents it saw in any phase. The client lists the bank
+empty for the one tick before it reports it closed, so a single empty tick after a listed one is ignored
+(two in a row are taken as an emptied bank). A bank emptied by a final withdraw-all and closed on the very
+next tick therefore reads as its pre-withdraw contents until it is next opened.
 
 `v.runs` gives one-shot steps without a program counter: `when: v => v.runs('withdraw') === 0` is
 today's chain step "withdraw first". A one-shot chain ends through the plan's `until` (e.g.
