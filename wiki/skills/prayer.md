@@ -53,3 +53,4 @@ Pray at any church altar to fully restore prayer points.
 ## Verified training spots
 
 - Lumbridge chickens (3231, 3295) train Prayer as a by-product of melee and bone burying: about a third of the melee XP; details in [strength](strength.md#verified-training-spots). [v 2026-10-09 conductor1 local]
+- Edgeville Dungeon hill giants (3100-3114, 9827-9840): burying their Big bones (always dropped; 375 XP each at the local 25x rate) while training Mithril-scimitar Strength gave 57k Prayer/h (+9,525, Prayer 1->33 in 10 min), at ~7 ticks per bury and 575k Strength/h, against 619k/h without burying. Hazard below combat 56: [hazards](../../learnings/hazards.md). [v 2026-10-16 conductor2w3 local]

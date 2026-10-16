@@ -79,7 +79,7 @@ if (dist > 5) {
 
 ### Varrock East bank to the Gnome Stronghold course
 
-- Varrock East bank (3254, 3420) -> course start (2474, 3436): `travel` to {x:2474, z:3436}, tolerance 3, no waypoints. 250 s; the task's `gnome-gate` step opens the Stronghold gate itself (a few dialogs, suspended by the dialog guard). Arrived (2473, 3436) with HP 19/23 at combat 25; no food eaten, no combat logged, the travel log records no damage event. White-wolf trouble is not confirmed or ruled out by one trip (HP was 19/23 on arrival, cause not logged). [v 2026-10-11 conductor2 local]
+- Varrock East bank (3254, 3420) -> course start (2474, 3436): `travel` to {x:2474, z:3436}, tolerance 3, no waypoints. 250 s; the task's `gnome-gate` step opens the Stronghold gate itself (a few dialogs, suspended by the dialog guard). Arrived (2473, 3436) with HP 19/23 at combat 25; no food eaten, no combat logged, the travel log records no damage event. White-wolf trouble is not confirmed or ruled out by one trip (HP was 19/23 on arrival, cause not logged). Repeat at combat ~50: 245 s, no attack, 16 fish carried and none eaten. [v 2026-10-16 conductor2 local]
 
 ### Smithing loop legs (avoid the Varrock stone circle)
 
@@ -205,6 +205,7 @@ function isInAlKharid() {
 | Wizards' Tower ladder | (3104,3162) `Climb-down Ladder` | stand (3105,3162), lands (3104,9576) | (3103,9576) `Climb-up Ladder` | lands (3105,3162) |
 | Wizards' Tower stairs | (3103,3159) on levels 0 and 1 | stand/landing (3105,3160) | top floor (3104,3160) | stand/landing (3104,3161) on level 2 |
 | Lumbridge castle SW tower stairs | (3204,3207) levels 0 and 1, (3205,3208) level 2 | stand/landing (3205,3209) on every level | | |
+| Edgeville Dungeon trapdoor | (3097,3468) closed: `Open`, then `Climb-down` | stand (3096,3468), the west opening of the ruined house ((3096,3467) is across a wall and the open fails); lands (3097,9868) | ladder (3096,9867) `Climb-up` | lands (3096,3467), outside the house's south wall |
 
 - Both Falador mine directions were walked live (shop task: Nurmof's Iron pickaxe 140 gp, then back up and a sale at the Falador general store). Wizards' Tower and Lumbridge stairs/ladder were exercised only in integration tests. [v 2026-10-11 conductor2w1 local]
 - Lumbridge level 1 offers `Climb-up` and `Climb-down`; a plain `Climb` asks a "Climb up or down?" dialog. [v 2026-10-11 conductor2w1 local]

@@ -52,6 +52,8 @@ const inCombat = state?.player?.combat.inCombat ?? false;
 const isAnimating = (state?.player?.animId ?? -1) !== -1;
 ```
 
+`combat.inCombat` stays true for ~20 ticks after a kill while the target index is already -1, so do not use it to decide that the next fight has started or that the bot is still busy; check the target. [v 2026-10-16 conductor2w3 local]
+
 ## Safe Training Locations
 
 | Location | Coordinates | Targets | Notes |
