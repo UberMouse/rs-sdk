@@ -6,8 +6,30 @@ is built: `bun run world` writes `wiki/world.json` (features, sites, curated are
 the `wiki/places|resources|services` pages; the NPC and shop generators read it. Phase 2 answers
 "can a bot get there, and what does it need?" for every site, and gives phase 3 real walk distances.
 
-Status: **draft, not yet scheduled** (2026-10-11). Re-read the code it names before starting: phase 1
-landed after this was written.
+Status: **in build** on branch `world-index-phase2` (2026-10-16), via the `sdd-loop` skill. Checked
+against the code at that date: `wiki/world/` has `collision.ts` (the SDK bundle via `collisionPaths`),
+`classify.ts` (kind `connector`), `sources/zones.ts` (`isF2p`), `types.ts` (`Site`, `World`,
+`WORLD_FORMAT = 2`). Baseline: `bun run world` 4.9 s, `world.json` 5.8 MB.
+
+## Assumptions (2026-10-16)
+
+- **Collision is the SDK bundle as the bot's walker sees it**: `collisionPaths` in
+  `conductor/actions/paths.ts` (`canStep`, `walkable`, with `EXTRA_DOORS` masked), the same data
+  phase 1 places stand tiles with. Reach therefore means "a bot can walk there". Known gaps in the
+  bundle (shape-9 ground doors other than the one in `EXTRA_DOORS`) are not patched here; they show
+  up in the unreached report.
+- **The bundle has every door open** (`initPathfinding` masks door walls). A door that `gates.ts`
+  names is walled again inside the fill (from its loc tile, shape and angle), and the fill crosses
+  it only as an edge that carries the gate's requirements. A one-way door (`ONE_WAY_DOORS`, left
+  walled by the SDK) stays walled unless `gates.ts` gives it an edge.
+- **Mainland-fill zones are not land.** `initPathfinding` allocates every empty zone in
+  x 2304-3392, z 2944-3584 as open so its long-range search can cross gaps. Those zones are not
+  in the data's zone list, and the fill does not enter them. A test pins this, and the build report
+  counts fill-zone tiles adjacent to reached tiles.
+- **Concurrent conductor edits**: a conductor run is adding Taverley connectors and a `taverley`
+  underground area to `conductor/lib/connectors.ts` on `main`. Before Task 1's real-data test and
+  again before Task 6, merge `main` into this branch so those rows are in the table being
+  reproduced.
 
 ## Decisions carried from the design
 
@@ -84,8 +106,9 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
   (Cooking Guild), `crafting_guild_door`, `ranging_guild_door` (40 Ranged), the Lost City shed door
   in Lumbridge Swamp, guild and quest doors under `scripts/doors/`.
 - `gates.ts` is the curated list: `{ loc, tile(s), requires: Requirement[], source, notes }`, where
-  `Requirement` is a tagged union: `quest:<id>`, `skill:<skill>:<level>`, `item:<obj>` (worn or held),
-  `coins:<n>`, `members`, `other:<text>`. Each scanned candidate is either confirmed here (with its
+  `Requirement` is a tagged union: `quest:<id>`, `quest:<id>>=<stage>`, `skill:<skill>:<level>`,
+  `item:<obj>:worn|held`, `coins:<n>`, `consume:<obj>:<n>`, `members`, `loadout:<id>`, `other:<text>`
+  (see Settled questions). Each scanned candidate is either confirmed here (with its
   requirement) or listed as "not a gate" with the reason; the build fails on an unreviewed candidate,
   so new content is never silently ignored.
 - Transports: parse `scripts/interface_boat/` (`sail.rs2`, `sail.constant`) for ship routes (from,
@@ -99,7 +122,7 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - [ ] Every scanned candidate is confirmed or rejected in `gates.ts` (the build fails otherwise);
       every entry cites its script.
 - [ ] Ship routes are derived from `sail.rs2`/`sail.constant` with their fares; Port Sarim -> Karamja
-      and the Entrana boat (members, no weapons/armour: record as `other`) are pinned by tests.
+      and the Entrana boat (`{members, loadout:entrana}`) are pinned by tests.
 
 ## Task 3 — Reachability graph and flood fill
 
@@ -124,7 +147,7 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
       overlapping requirements (antichain minimality); members zones; an unreachable pocket.
 - [ ] Real-data facts (each a test with its evidence): Lumbridge, Draynor, Varrock, Falador reach
       with `{}`; Al Kharid with `{coins:10}` or a members route (verify which the data gives);
-      Zanaris needs `quest:lost-city` (and whatever else its door requires); Entrana only by boat;
+      Zanaris needs `{members, item:dramen_staff:worn}` (the shed door checks the staff, not the quest); Entrana only by boat;
       the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs.
 - [ ] Runtime and memory reported; within the global budget.
 
@@ -141,7 +164,7 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 
 ### Acceptance criteria
 
-- [ ] All 25 bank sites have `reach`; the F2P mainland banks are `[[]]`; Zanaris carries its quest.
+- [ ] All 25 bank sites have `reach`; the F2P mainland banks are `[[]]`; Zanaris carries `{members, item:dramen_staff:worn}`.
 - [ ] The unreached report exists and is clean for banks and shops, or each remaining entry is
       explained in `gates.ts`/`areas.ts` notes.
 - [ ] `--check`, determinism and the format bump hold.
@@ -199,9 +222,76 @@ gate corrections go), `CLAUDE.md` (agents can filter pages by Requires), `conduc
 - Fixing `conductor/lib/wilderness.ts` (a separate follow-up: the phase 1 build found it may
   disagree with `wilderness_levels.rs2` on upper floors and the underground limit; check first).
 
-## Open questions to settle before Task 2
+## Settled questions (2026-10-16)
 
-- Whether quest completion can be read generically (a single quest-points or progress varp per
-  quest) or needs a per-quest table; decide from `scripts/quests/` before writing the scanner.
-- How to represent "no weapons or armour" (Entrana) and similar inventory conditions so phase 3 can
-  honour them; `other:<text>` is the fallback.
+### Quest progress is read generically, with a short override table
+
+Each quest's journal button calls `~send_quest_progress(questlist:<id>, %<varp>, ^<x>_complete)`
+(or `~send_quest_progress_colour`, same arguments), and `general/scripts/quests.rs2:5` shows the
+quest as done at `progress >= complete`. Every `^<x>_complete` is in `general/configs/quest.constant`;
+varp ids are in `pack/varp.pack` (`147=zanaris`). So the scanner derives a quest table
+`{ id: <questlist component>, varp, varpId, complete }` from those calls, with no per-quest table.
+
+The forms it cannot read go in a curated override in `gates.ts`, each citing its script; the build
+fails on any `questlist` component that is in neither:
+
+- computed progress: `cog` (`~get_cog_progress`), `itexam` (`~itexam_progress`);
+- bit-packed: `elemental_workshop` (`%elemental_workshop_bits` against `2 * ^..._complete`);
+- literal thresholds: `haunted` (3), `upass` (one call passes `1`);
+- two varps on one entry: `blackarmgang` (`%blackarmgang` / `%phoenixgang`, either gang);
+- two endings: `ikov` (`^ikov_completed_armadyl` 80, `^ikov_completed_lucien` 90; `>= 80` is done).
+
+**Requirement forms.** `quest:<id>` means `varp >= complete`. `quest:<id>>=<stage>` (with the stage
+constant's name in `source`) covers a gate that opens part-way through a quest; completion
+satisfies it too. Both assume quest varps only grow, which a test checks on the scanned
+`%varp = ^const` assignments (the assignment constants for each quest are non-decreasing in stage
+order, or the quest is listed as an exception).
+
+**Which checks are gates.** 110 `oploc`/`aploc` triggers that move the player (`p_telejump`,
+`p_teleport`, door procs) test a quest varp: 14 compare only against `_complete`, 40 use a
+`>=`/`<` stage test, 55 use an exact `=` or a `switch_int`. Sampling the exact ones shows they
+are mostly not access conditions. `gate-scan.ts` sorts each candidate into one of these, and
+`gates.ts` records which:
+
+- **gate**: a steady requirement (`_shilo_metalgate`, `quest:zombiequeen`);
+- **side effect**: passable always, the check only advances the quest (`mcannoncave`) — not a gate;
+- **temporary block**: shut only during a stage (`gnome_areagate` during The Grand Tree,
+  `_varrock_gate`'s Biohazard search) — not a gate, with the reason;
+- **quest window**: open only between two stages and shut once the quest is done
+  (`dragonshipgangplank_on`, `quest_dragon_bought_ship` until `dragon_complete`) — kept out of the
+  fill and listed in the build report. A bot mid-quest is driven by quest tasks, not the world index.
+
+The fill models a settled account: each quest either not started, or complete, plus the
+monotonic stage gates.
+
+**Evaluating it.** The conductor already reads perm varps by id from a save (`SaveSummary.varps`,
+`conductor/lib/saves.ts`). So `world.json` gains a `quests` table (`id`, `varpId`, `complete`, and
+the stages any gate names), and a requirement is checked against a live bot with no new SDK state.
+
+### Item conditions: two requirements and a loadout rule
+
+The scripts check items in three ways, and they behave differently in the fill:
+
+- **Hold or wear an item.** The Zanaris shed (`oploc1,zanarisdoor`,
+  `quest_zanaris.rs2:91`) checks only `inv_total(worn, dramen_staff) > 0 & map_members`, not the
+  quest varp; entering *completes* Lost City. Requirement `item:<obj>:worn` or `item:<obj>:held`.
+- **Consume an item.** Shantay Pass (`inv_del(inv, shantay_pass, 1)`, `shantay_pass.rs2:38`), the
+  Al Kharid toll. Requirement `coins:<n>` or `consume:<obj>:<n>`; phase 3 charges both per crossing.
+- **Carry none of a category.** Entrana (`[proc,has_entrana_restricted_items]`,
+  `monk_of_entrana.rs2:26`) refuses any carried or worn obj in 23 categories (`armour_*`,
+  `weapon_*`, plus carried `cannon_parts`). The ban is by **category, not equip slot**: Ice gloves
+  (`wearpos=hands`, no category) pass, while axes (`weapon_axe`) and pickaxes (`weapon_pickaxe`)
+  are refused.
+
+A category ban is not like the other requirements. Any account meets it by banking its gear, so it
+never decides whether a tile is reachable; it limits what a trip can carry there. It is recorded
+as a **loadout rule**: `world.json` gains `loadoutRules: { <id>: { forbidCategories, scope:
+'carried'|'worn'|'both', source } }`, and the edge carries the token `loadout:<id>`. Inside the
+fill that token behaves like a requirement, so a route without the rule beats one with it and the
+antichain stays minimal. Phase 3 resolves categories from the obj configs and drops a method whose
+every route to its site carries a rule that bans the method's tool or weapon category. Entrana
+then has no woodcutting or mining, but keeps fishing and cooking. `other:<text>` stays only for
+conditions none of these forms fit, and the build report lists each one.
+
+Tasks 2, 3 and 4 above are updated to match. Task 4's Requires column renders `loadout:entrana` as
+"no weapons/armour (Entrana rule)".
