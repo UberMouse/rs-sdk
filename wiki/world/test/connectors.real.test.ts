@@ -58,11 +58,16 @@ describe('conductor/lib/connectors.ts is reproduced: loc tile and landing exact,
                 expect(show(row[wrong.field])).toBe(show(wrong.curated));
                 const field = wrong.field === 'to' ? 'landing' : 'stand';
                 expect(derived.map(c => (c[field] ? show(c[field]) : '-'))).toContain(show(wrong.derived));
-                return;
             }
-            expect(derived.map(c => show(c.landing))).toContain(show(row.to));
-            const stands = derived.filter(c => same(c.landing, row.to)).map(c => c.stand);
-            expect(stands.some(s => s !== null && s.level === row.stand.level && cheb(s, row.stand) <= 1)).toBe(true);
+            // The list excuses only its field: every other field keeps the exact check.
+            const landing = wrong?.field === 'to' ? wrong.derived : row.to;
+            if (wrong?.field !== 'to') expect(derived.map(c => show(c.landing))).toContain(show(row.to));
+            if (wrong?.field !== 'stand') {
+                const stands = derived.filter(c => same(c.landing, landing)).map(c => c.stand);
+                expect(stands.some(s => s !== null && s.level === row.stand.level && cheb(s, row.stand) <= 1)).toBe(
+                    true,
+                );
+            }
         });
 
     test('every contradicted entry names a curated row', () => {
