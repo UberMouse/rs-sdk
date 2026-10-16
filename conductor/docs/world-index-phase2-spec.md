@@ -89,6 +89,51 @@ landing cannot be derived is listed in the build report with the reason (never g
 - [ ] `world.json` gains `connectors` (format bump); pages unchanged except where a connector site
       now names its landing.
 
+## Task 1b — Trapdoors as connectors
+
+Added during the build (2026-10-16), after `main` gained a curated Edgeville Dungeon trapdoor row
+(`conductor/lib/connectors.ts`, "Edgeville Dungeon trapdoor") that Task 1's scripts do not cover.
+
+**Files:** `wiki/world/sources/connectors.ts`, `wiki/world/classify.ts` (the connector kind's script
+sources), `wiki/world/types.ts`, `wiki/world/load.ts`, their tests; regenerated `wiki/world.json` and
+pages.
+
+The generic trapdoor (`general_use/scripts/trapdoors.rs2`) is two locs on one tile: `trapdoor`
+(op1 Open, `loc_change(trapdoor_open, 500)`) and `trapdoor_open` (op1 Climb-down,
+`p_telejump(movecoord(coord(), 0, 0, 6400))`; op2 Close). The map places the closed one.
+
+- The `connector` kind's script sources become `ladders+stairs/` **and**
+  `general_use/scripts/trapdoors.rs2`, so placed `trapdoor` (and `trapdoor_open`, if the map places
+  any) locs are connector features, not doors or scenery.
+- When an op's script only swaps the loc (`loc_change(<other>, ...)` on its own tile, no move), the
+  reader follows it: the row keeps the placed loc, its tile and the swapping op (`op: 1`,
+  `opName: 'Open'`), takes the landing from the swapped-to loc's moving op, and records that op in a
+  new optional field `then: { op: number; opName: string }` (`{1, 'Climb-down'}`). `source` is the
+  line of the move (`general_use/scripts/trapdoors.rs2:11`). A swapped-to loc's op that does not
+  move (Close) gives no row.
+- Landings use the existing relative-move path (`relative: true`, stand chosen with the reach
+  test), the same as the ladders.
+- `then` is a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
+
+### Acceptance criteria
+
+- [ ] Every placed `trapdoor` loc covered by `trapdoors.rs2` has a row or an underived reason. The
+      build report counts them with the other connectors.
+- [ ] The two real-data tests that fail now pass: the Edgeville Dungeon trapdoor row from
+      `conductor/lib/connectors.ts` is reproduced (loc tile, landing, stand within 1 tile), and
+      "has a way back for every curated connector" holds.
+- [ ] The Lumbridge castle cellar ladder (`ladder_from_cellar` (3209, 9616)) is no longer one-way;
+      its way down is the kitchen trapdoor at (3209, 3216). The test that pinned it as one-way is
+      rewritten to pin the pair, and the one-way script-cite check accepts `trapdoors.rs2`.
+- [ ] A unit test on a scripted trapdoor pair pins the follow-through: the closed loc's row carries
+      `then`, the Close op gives no row, and a `loc_change` that is not the op's only effect is not
+      followed.
+- [ ] `world.json` carries `then`; `--check` is green; pages change only where a trapdoor site now
+      names its landing. Report the build time and `world.json` size.
+- [ ] Out of scope: quest and minigame trapdoors with their own scripts (`mm_temple`, `grandtree`,
+      `viking_peer`, `holy_barrier`, `quest_mm`, duel arena, Castle Wars). They are gates or
+      curation, not this task.
+
 ## Task 2 — Gates and transports
 
 **Files:** `wiki/world/gates.ts` (curated), `wiki/world/sources/gate-scan.ts`,
