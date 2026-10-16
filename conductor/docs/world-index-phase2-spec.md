@@ -115,6 +115,19 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
   to, fare, members/quest conditions); curate the rest in `gates.ts` as `{ from, to, requires,
   source }`.
 
+**Split (2026-10-16), built as two reviewed commits:**
+
+- **Task 2a — requirements, quests, loadout rules, transports.** The `Requirement` type and its
+  canonical string form (in `wiki/world/requirements.ts`); the quest table derived from the
+  `send_quest_progress` calls with its curated overrides and varp ids (`World.quests`); loadout
+  rules (`World.loadoutRules`, Entrana's from `has_entrana_restricted_items`); ship routes from
+  `sail.rs2`/`sail.constant` plus curated transports (`World.transports`); format bump. Criteria:
+  the quest and transport bullets of "Settled questions" and the third criterion below.
+- **Task 2b — gate scan and curation.** `gate-scan.ts`, the curated gate list in `gates.ts`
+  (every candidate confirmed or rejected, with a kind: gate / side effect / temporary block /
+  quest window), the build failing on an unreviewed candidate, `World.gates`. Criteria: the first
+  two below.
+
 ### Acceptance criteria
 
 - [ ] The scan finds the calibration examples above with the right requirement kind; tests on
