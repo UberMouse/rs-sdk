@@ -495,3 +495,112 @@ describe('smithing: smith', () => {
         expect(s.interface.isOpen && s.interface.interfaceId === SMITHING_INTERFACE).toBe(false);
     });
 });
+
+const dropped = (r: Simulation) => r.sends.filter(x => x.startsWith('drop'));
+
+describe('smithing: onDone', () => {
+    const WORK = {
+        takes: [{ name: 'Bronze bar', count: 1 }],
+        gives: { name: 'Bronze dagger', id: 1205 },
+        xp: 125,
+    };
+    const DROP_PARAMS = { ...SMITH_PARAMS, onDone: 'drop' };
+
+    test('keep (the default) leaves the products in the inventory', async () => {
+        const r = await simulate(smithing, {
+            params: SMITH_PARAMS,
+            timeline: bars(2).series(1),
+            react: smithyReact(WORK),
+        });
+        expect(dropped(r)).toEqual([]);
+        expect(r.result.inventoryDelta).toEqual({ 'Bronze bar': -2, 'Bronze dagger': 2 });
+    });
+
+    test('drop drops each product once the bars are used up, then is done', async () => {
+        const r = await simulate(smithing, {
+            params: DROP_PARAMS,
+            timeline: bars(2).series(1),
+            react: smithyReact(WORK),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: out of Bronze bars for dagger');
+        expect(r.sends).toEqual([
+            USE_BAR,
+            CLICK_DAGGER,
+            USE_BAR,
+            CLICK_DAGGER,
+            'drop Bronze dagger',
+            'drop Bronze dagger',
+        ]);
+        expect(r.result.inventoryDelta).toEqual({ 'Bronze bar': -2 });
+    });
+
+    test('drop leaves bars, hammer, runes and other items alone, and does not drop while bars remain', async () => {
+        const r = await simulate(smithing, {
+            params: { ...DROP_PARAMS, product: 'platebody' },
+            timeline: bars(7).skill('Smithing', 18, 0).inv('Nature rune', 50).inv('Bronze dagger', 1).series(1),
+            react: smithyReact({
+                takes: [{ name: 'Bronze bar', count: 5 }],
+                gives: { name: 'Bronze platebody', id: PLATEBODY },
+                xp: 625,
+            }),
+        });
+        expect(dropped(r)).toEqual(['drop Bronze platebody']);
+        const inv = r.driver.state().inventory.map(i => i.name);
+        expect(inv).toContain('Bronze bar');
+        expect(inv).toContain('Hammer');
+        expect(inv).toContain('Nature rune');
+        expect(inv).toContain('Bronze dagger');
+        expect(inv).not.toContain('Bronze platebody');
+    });
+
+    test('three failed drops in a row retry, and a fourth that works finishes the run', async () => {
+        const react = smithyReact(WORK);
+        let drops = 0;
+        const r = await simulate(smithing, {
+            params: DROP_PARAMS,
+            timeline: bars(1).series(1),
+            react: (a, s) => (a.type === 'dropItem' && ++drops <= 3 ? undefined : react(a, s)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(dropped(r)).toEqual(Array(4).fill('drop Bronze dagger'));
+    });
+
+    test('four failed drops in a row fail the run, naming the last one', async () => {
+        const react = smithyReact(WORK);
+        const r = await simulate(smithing, {
+            params: DROP_PARAMS,
+            timeline: bars(1).series(1),
+            react: (a, s) => (a.type === 'dropItem' ? undefined : react(a, s)),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('4 drops of the products in a row failed (last: Drop of Bronze dagger');
+        expect(dropped(r)).toHaveLength(4);
+    });
+
+    test('drops the game-named Adamnt warhammer', async () => {
+        const r = await simulate(smithing, {
+            params: { ...DROP_PARAMS, bar: 'adamant', product: 'warhammer' },
+            timeline: smithy(world()).skill('Smithing', 99, 0).inv('Adamantite bar', 3, { id: 2361 }).series(1),
+            react: smithyReact({
+                takes: [{ name: 'Adamantite bar', count: 3 }],
+                gives: { name: 'Adamnt warhammer', id: 1345 },
+                xp: 1000,
+            }),
+        });
+        expect(r.result.status).toBe('done');
+        expect(dropped(r)).toEqual(['drop Adamnt warhammer']);
+    });
+
+    test('preflight refuses drop in smelt mode and a product already in the inventory', async () => {
+        const smelt = await refusal(
+            { ...SMELT_PARAMS, onDone: 'drop' },
+            smelter(world()).inv('Copper ore', 1).inv('Tin ore', 1),
+        );
+        expect(smelt.reason).toBe(`preflight: onDone 'drop' only applies to mode 'smith'`);
+        const held = await refusal(DROP_PARAMS, bars(1).inv('Bronze dagger', 1));
+        expect(held.reason).toBe(
+            `preflight: onDone 'drop' would also drop the Bronze dagger already in the inventory: bank it first`,
+        );
+    });
+});

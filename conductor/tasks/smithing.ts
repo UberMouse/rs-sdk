@@ -17,6 +17,7 @@ import {
     smithingProduct,
     HAMMER,
 } from '../actions/smith';
+import { drop } from '../actions/drop';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
@@ -142,6 +143,12 @@ const Params = z.object({
     product: z.string().default('dagger'),
     /** Stay near the furnace / anvil; walk back when further than `radius`. */
     area: AreaSchema.optional(),
+    /**
+     * Smith mode only: what to do with the forged products once the bars are used up. 'keep' leaves them in
+     * the inventory; 'drop' drops them (only the products: never bars, ore, runes, tools or coins), for a
+     * loop that trains Smithing without a bank.
+     */
+    onDone: z.enum(['keep', 'drop']).default('keep'),
 });
 
 type SmithingParams = z.infer<typeof Params>;
@@ -157,6 +164,14 @@ interface SmithingMemory {
 type Ctx = TaskContext<SmithingParams, SmithingMemory>;
 
 const countOf = (state: BotWorldState, name: string) => countItems(state, exactName(name));
+
+/** The exact name of the item `product` makes from `bar`: "Iron platebody", "Adamant 2h sword" (the game's own typo "Adamnt warhammer"). */
+const productItem = (bar: Metal, product: SmithingProduct) =>
+    exactName(bar === 'adamant' && product === 'warhammer' ? 'Adamnt warhammer' : `${SMELT[bar].menuLabel} ${product}`);
+
+/** Fewer bars than one `product` takes: nothing more can be forged. */
+const outOfBars = (s: BotWorldState, bar: Metal, product: { bars: number }) =>
+    countOf(s, SMELT[bar].bar) < product.bars;
 
 const metalIndex = (bar: Metal) => BARS.indexOf(bar);
 
@@ -225,7 +240,7 @@ export default defineTask({
         'Needs the Smithing level for the bar/product (checked against the engine configs) and, to smith, a hammer. ' +
         'Smelting takes about 8 ticks a bar; iron has a 50% failure chance. ' +
         '`area` centres on the furnace/anvil; it walks there when far away. Known spots: Lumbridge furnace (3225,3256), ' +
-        'Varrock west anvils (3188,3421). The Al Kharid furnace (3272,3185) works from its open east side: a reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
+        'Varrock west anvils (3188,3421). Smith mode with `onDone: "drop"` drops the forged products once the bars run out (default "keep"), for a bankless loop. The Al Kharid furnace (3272,3185) works from its open east side: a reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
     params: Params,
     memory: (): SmithingMemory => ({ directFrom: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
@@ -236,6 +251,7 @@ export default defineTask({
         const { mode, bar } = ctx.params;
         const level = smithingLevel(s);
         if (mode === 'smelt') {
+            if (ctx.params.onDone === 'drop') return `onDone 'drop' only applies to mode 'smith'`;
             const r = SMELT[bar];
             if (level < r.level) return `${r.bar} needs smithing ${r.level}, bot has ${level}`;
             if (smeltableBars(s, bar) < 1) {
@@ -248,21 +264,44 @@ export default defineTask({
             const need = product.levels[metalIndex(bar)] ?? 99;
             if (level < need) return `${bar} ${ctx.params.product} needs smithing ${need}, bot has ${level}`;
             if (!s.inventory.some(i => HAMMER.test(i.name))) return 'no hammer in inventory';
-            const have = countOf(s, SMELT[bar].bar);
-            if (have < product.bars)
-                return `${ctx.params.product} needs ${product.bars} ${SMELT[bar].bar}(s), bot has ${have}`;
+            if (outOfBars(s, bar, product))
+                return `${ctx.params.product} needs ${product.bars} ${SMELT[bar].bar}(s), bot has ${countOf(s, SMELT[bar].bar)}`;
+            // The drop clears every copy of the product, so a copy held beforehand (an axe, a spare weapon) would go too.
+            if (ctx.params.onDone === 'drop' && countItems(s, productItem(bar, product.name)) > 0)
+                return `onDone 'drop' would also drop the ${SMELT[bar].menuLabel} ${product.name} already in the inventory: bank it first`;
         }
         return refuseArea(ctx.params.area);
     },
 
     steps: [
         {
+            name: 'drop-products',
+            when: ctx => {
+                const { mode, bar, onDone } = ctx.params;
+                const product = lookupProduct(ctx.params.product);
+                if (mode !== 'smith' || onDone !== 'drop' || !product) return false;
+                const s = ctx.state();
+                return outOfBars(s, bar, product) && countItems(s, productItem(bar, product.name)) > 0;
+            },
+            *run(ctx) {
+                // `when` only passes for a known product.
+                const product = lookupProduct(ctx.params.product) as { name: SmithingProduct };
+                const fails = ctx.streak('dropFails');
+                const r = yield* drop(ctx, productItem(ctx.params.bar, product.name), 'all');
+                if (r.ok) return fails.reset();
+                yield* log(`drop failed: ${r.message}`, { reason: r.reason });
+                return fails.add() >= FAIL_LIMIT
+                    ? { fail: `${FAIL_LIMIT} drops of the products in a row failed (last: ${r.message})` }
+                    : undefined;
+            },
+        },
+        {
             name: 'finish',
             when: ctx => {
                 const s = ctx.state();
                 if (ctx.params.mode === 'smelt') return smeltableBars(s, ctx.params.bar) < 1;
                 const product = lookupProduct(ctx.params.product);
-                return !product || countOf(s, SMELT[ctx.params.bar].bar) < product.bars;
+                return !product || outOfBars(s, ctx.params.bar, product);
             },
             run: ctx =>
                 ctx.params.mode === 'smelt'

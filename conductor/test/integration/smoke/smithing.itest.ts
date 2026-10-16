@@ -71,6 +71,44 @@ test(
     itestTimeout({ taskMinutes: 3 }),
 );
 
+test(
+    'smithing task with onDone drop forges daggers and drops them, keeping the hammer',
+    async () => {
+        await withFixtureBot(
+            {
+                position: ANVIL,
+                skills: { Smithing: 1 },
+                inventory: [
+                    { id: Items.HAMMER, count: 1 },
+                    { id: Items.BRONZE_BAR, count: 2 },
+                ],
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'smithing',
+                    {
+                        mode: 'smith',
+                        bar: 'bronze',
+                        product: 'dagger',
+                        onDone: 'drop',
+                        area: { x: ANVIL.x, z: ANVIL.z, radius: 6 },
+                    },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta['Bronze bar'], detail).toBe(-2);
+                expect(run.result.inventoryDelta['Bronze dagger'] ?? 0, detail).toBe(0);
+                expect(run.result.inventoryDelta['Hammer'] ?? 0, detail).toBe(0);
+                expect(run.result.xpGained.Smithing, detail).toBeGreaterThan(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
+
 const IRON_ORE = 440;
 // Al Kharid furnace (3272,3185): open from the east only. From the west wall side the old walk-to-within-2 stalled.
 const AL_KHARID_FURNACE = { x: 3272, z: 3185 };
