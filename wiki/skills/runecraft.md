@@ -13,7 +13,7 @@ Runecraft turns rune essence into runes at an altar. Sources: `server/content/sc
 
 - Mine: Aubury (Varrock rune shop, stand at (3252, 3402)) has a Teleport option (op4, no dialog) once Rune Mysteries is done (see [rune-mysteries](../quests/rune-mysteries.md)). The portal in the mine returns you beside Aubury, (3252-3253, 3402-3403). A null exit defaults to Sedridor (untested live). [v 2026-10-16 conductor2w1 local]
 - Essence rocks (loc 2491) stand in four clusters about 35 tiles apart, and the teleport can land out of view of every rock, so the task must walk to a cluster. The rock never depletes. Mining: [mining](mining.md); tasks `essence-mine` and `mining` with `rock: "essence"`. [v 2026-10-16 conductor2w1 local]
-- Pickaxe swing ticks: bronze 7, iron 6, steel 5, mithril 4, adamant 3, rune 2. Observed 8.3 ticks per essence with bronze (about 1.3 ticks per essence lost re-sending Mine). [v 2026-10-16 conductor2w1 local]
+- Pickaxe swing ticks: bronze 7, iron 6, steel 5, mithril 4, adamant 3, rune 2. Essence swing period is the pickaxe value + 1 (bronze 7+1 = 8 ticks per essence, measured 8.00 with one Mine click and with a click per ore, 20 essence); a re-click right after an ore costs nothing (`mining.rs2` get_ore_essence re-queues the swing), so only a faster pickaxe speeds it up. [v 2026-10-16 conductor2w1 local]
 
 ## Talismans (drop sources, from drop tables, not run)
 

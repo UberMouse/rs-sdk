@@ -57,6 +57,7 @@ Smelting levels checked against `server/content/scripts/skill_smithing/configs/s
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | SE Varrock iron -> Lumbridge furnace (3225, 3256) -> Varrock West anvil (3188, 3421) -> Varrock West bank | (3225, 3256) | 15 | 23 iron ore (~63 s with adamant pickaxe) smelt to ~14 bars (50% failures), +4,375 xp (Smithing 22 -> 31); 12 iron bars -> 4 kiteshields (3 bars each), +7,500 xp | not measured | 2026-10-11 conductor2 local |
+| Banked-iron bulk: mine 25 iron ore at SE Varrock (Mining 99, adamant pickaxe), bank at Varrock East, smelt at Lumbridge furnace, smith at Varrock West anvil (3188, 3421) | (3225, 3256) | 15 | Mining 25 ore ~70 s; mine -> Varrock East bank walk + deposit ~24 s; walk back ~31 s. 25 ore -> ~13 bars at Lumbridge furnace in ~115 s (~8 ticks/bar incl. 50% failures); 13 bars -> 4 iron kiteshields ~12 s. Varrock West bank -> anvil is a short walk. Smelt + smith of pre-mined stock: +18,438 Smithing xp (42 -> 52) in 328 s | ~200k (smelt + smith only, excl. mining; one run) | 2026-10-16 conductor2 local |
 
 XP per action on this server (25x): iron smelt 312 xp per bar made (~190 per ore after failures); bronze scimitar 312 xp per bar (625 per scimitar, 2 bars); iron kiteshield 625 xp per bar (1,875 each, 3 bars). Bronze run: 4 scimitars = 2,500 xp. [v 2026-10-11 conductor2 local]
 
