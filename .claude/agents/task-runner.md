@@ -340,6 +340,8 @@ Lessons: <the lessons in `reported` (and any re-sent), or "none">
 GOAL reached | budget spent | script fault | unreachable: <end state against the goal, one line>
 RESULT <json of each run in `reported`, verbatim, one line each; then any marked (re-sent)>
 Plans: <path: verdict, runs, XP/hr; mark a draft that worked "promote">
+Tick budget: <per training method: measured ticks per cycle (action, walk, bank, eat, respawn waits)
+  from the step log, and where the idle ticks are; the conductor fills roadmap §Max route from it>
 Cause: world | script | unclear   (omit when reached)
 Diagnosis: <2-5 sentences with evidence: log lines, screenshot paths, replay output>
 Suggested next step: <one line for the conductor>
