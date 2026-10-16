@@ -107,7 +107,10 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
   in Lumbridge Swamp, guild and quest doors under `scripts/doors/`.
 - `gates.ts` is the curated list: `{ loc, tile(s), requires: Requirement[], source, notes }`, where
   `Requirement` is a tagged union: `quest:<id>`, `quest:<id>>=<stage>`, `skill:<skill>:<level>`,
-  `item:<obj>:worn|held`, `coins:<n>`, `consume:<obj>:<n>`, `members`, `loadout:<id>`, `other:<text>`
+  `item:<obj>:worn|held`, `category:<category>:worn|held` (any obj of an obj-config category, e.g. any
+  axe: a script's `inv_totalcat` or a tool-checker proc such as `~woodcutting_axe_checker` maps to the
+  categories it tests), `questpoints:<n>` (`%qp >= n`, e.g. the Champions' Guild door), `coins:<n>`,
+  `consume:<obj>:<n>`, `members`, `loadout:<id>`, `other:<text>`
   (see Settled questions). Each scanned candidate is either confirmed here (with its
   requirement) or listed as "not a gate" with the reason; the build fails on an unreviewed candidate,
   so new content is never silently ignored.
