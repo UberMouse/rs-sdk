@@ -36,7 +36,7 @@ import {
     type Flow as SharedFlow,
     type Value,
 } from './evaluate';
-import { coordTile, isCoordLiteral, type Expr, type Stmt } from './runescript';
+import { coordTile, isCoordLiteral, tileCoord, type Expr, type Stmt } from './runescript';
 import { blocks, type Callable, type Trigger } from './triggers';
 
 /** The varp a sail sets, which the ship_journey interface reads for its map. */
@@ -63,6 +63,8 @@ export interface SailInput {
     quests: readonly Quest[];
     /** Loadout rule id -> the proc that checks it (gates.ts LOADOUT_PROCS). */
     loadoutProcs: Readonly<Record<string, string>>;
+    /** Tool-checker procs and the obj categories they accept (sources/conditions.ts toolCheckers). */
+    tools?: ReadonlyMap<string, readonly string[]>;
 }
 
 export interface Sails {
@@ -213,7 +215,7 @@ function sailWalker(input: SailInput, reaches: Reach) {
     const sailProcs = sailProcsOf(input.callables);
     const scriptOf = scriptCache();
 
-    const read = conditionReader(input.quests, input.loadoutProcs);
+    const read = conditionReader(input.quests, input.loadoutProcs, input.tools);
 
     const constant = (name: string): Value | undefined => {
         const c = input.constants.get(name);
@@ -300,6 +302,15 @@ function sailWalker(input: SailInput, reaches: Reach) {
                     if (r.least <= 0) return { k: 'free' };
                     if (r.obj === 'coins' && r.where === 'inv') return { k: 'coins', n: r.least, text };
                     return { k: 'req', req: `item:${r.obj}:${r.where === 'inv' ? 'held' : 'worn'}` };
+                case 'questpoints':
+                    return r.least > 0 ? { k: 'req', req: `questpoints:${r.least}` } : { k: 'free' };
+                case 'category': {
+                    // One path is one set of requirements: a choice of ways has no single form here.
+                    const [way, ...more] = r.ways;
+                    if (!r.has) return { k: 'free' };
+                    if (!way || more.length) return { k: 'other', text };
+                    return { k: 'req', req: `category:${way.category}:${way.where === 'inv' ? 'held' : 'worn'}` };
+                }
                 default:
                     return { k: 'other', text };
             }
@@ -564,7 +575,7 @@ const tileOrder = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x |
 export const byTransport = (a: Transport, b: Transport): number =>
     cmp(a.route ?? '', b.route ?? '') ||
     cmp(a.kind, b.kind) ||
-    cmp(a.npc, b.npc) ||
+    cmp(a.npc ?? a.loc ?? '', b.npc ?? b.loc ?? '') ||
     tileOrder(a.from, b.from) ||
     tileOrder(a.to, b.to) ||
     cmp(a.requires.join('\n'), b.requires.join('\n'));
@@ -687,12 +698,17 @@ export function outOfScopeSites(
     };
 }
 
-/** A curated transport (gates.ts CURATED_TRANSPORTS) as written there. */
+/** A curated transport (gates.ts CURATED_TRANSPORTS) as written there: boarded at an npc or at a loc. */
 export interface CuratedTransport {
     kind: Transport['kind'];
-    npc: string;
-    /** The landing, a coord literal as the script writes it. */
-    to: string;
+    /** The npc config talked to, at every spawn of it; or the loc config used, at every placed loc of it. */
+    npc?: string;
+    loc?: string;
+    /**
+     * The landing, a coord literal as the script writes it; for a loc, or the landing by the placed loc's
+     * tile literal when each lands elsewhere (a `switch_coord (loc_coord)`).
+     */
+    to: string | Record<string, string>;
     fare: number;
     /** Canonical requirement strings (requirements.ts), the fare's coins:<n> among them. */
     requires: string[];
@@ -703,31 +719,39 @@ export interface CuratedTransport {
 }
 
 /**
- * The curated transports as rows, one per spawn of each one's npc. Throws on an entry whose npc never
- * spawns, whose landing is not a coord literal, whose requirements are not canonical, or whose fare is
+ * The curated transports as rows, one per spawn of each one's npc or placed loc of its loc. Throws on an
+ * entry with neither or both, whose npc never spawns or loc is never placed, whose landing is not a coord
+ * literal (or names no landing for a placed loc), whose requirements are not canonical, or whose fare is
  * not its coins:<n>, so a curated row can't drift from the form the derived ones have.
  */
 export function curatedTransports(
     entries: readonly CuratedTransport[],
     spawns: readonly { config: string; tile: Tile }[],
+    locs: readonly { config: string; tile: Tile }[] = [],
 ): Transport[] {
     return entries.flatMap(e => {
-        const at = spawns.filter(s => s.config === e.npc);
+        const fail = (why: string) => new Error(`curated transport ${e.npc ?? e.loc} (${e.source}): ${why}`);
+        if ((e.npc === undefined) === (e.loc === undefined)) throw fail('give an npc or a loc');
+        const at = e.npc !== undefined ? spawns.filter(s => s.config === e.npc) : locs.filter(l => l.config === e.loc);
         const requires = minimalSets([e.requires])[0]!;
-        const fail = (why: string) => new Error(`curated transport ${e.npc} (${e.source}): ${why}`);
-        if (!at.length) throw fail('the npc has no spawn');
-        if (!isCoordLiteral(e.to)) throw fail(`${e.to} is not a coord literal`);
+        if (!at.length) throw fail(e.npc !== undefined ? 'the npc has no spawn' : 'the loc is never placed');
+        const landing = (from: Tile): string => {
+            const to = typeof e.to === 'string' ? e.to : e.to[tileCoord(from)];
+            if (to === undefined) throw fail(`no landing for the loc at ${tileCoord(from)}`);
+            if (!isCoordLiteral(to)) throw fail(`${to} is not a coord literal`);
+            return to;
+        };
         if (requires.join('\n') !== e.requires.join('\n')) throw fail(`write requires as ${JSON.stringify(requires)}`);
         if (fareOf(requires) !== e.fare) throw fail(`fare ${e.fare} is not its coins:<n>`);
         return at.map(s => ({
             kind: e.kind,
-            npc: e.npc,
+            ...(e.npc !== undefined ? { npc: e.npc } : { loc: e.loc }),
             from: s.tile,
-            to: coordTile(e.to),
+            to: coordTile(landing(s.tile)),
             source: e.source,
             fare: e.fare,
             requires,
-            paidAt: e.paidAt,
+            ...(e.paidAt.length ? { paidAt: e.paidAt } : {}),
             notes: e.notes,
         }));
     });

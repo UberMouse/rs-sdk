@@ -25,9 +25,10 @@ export type Value =
     | { t: 'name'; v: string }
     /**
      * Not known offline; `choice` when it is a dialogue choice the player makes, `side` when it depends on
-     * which side of a loc the player stands (sources/gate-scan.ts).
+     * which side of a loc the player stands, `loc` when it depends only on which loc this is (its tile,
+     * angle or type: sources/gate-scan.ts).
      */
-    | { t: 'unknown'; text: string; choice?: true; side?: true };
+    | { t: 'unknown'; text: string; choice?: true; side?: true; loc?: true };
 
 export const unknown = (text: string, choice?: boolean): Value => ({
     t: 'unknown',

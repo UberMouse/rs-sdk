@@ -2,8 +2,10 @@
 // quests whose journal calls the scan can't read, the procs that hold a loadout rule, transports the sail
 // scripts don't give, the transports left out of scope, and every gate candidate confirmed or rejected.
 // Every entry cites its script. The build reads these together with what it derives (sources/quests.ts,
-// sources/loadout.ts, sources/transports.ts, sources/gate-scan.ts) and fails on a quest in neither, an
-// override the scan no longer needs, or a gate candidate GATES does not review.
+// sources/loadout.ts, sources/transports.ts, sources/gate-scan.ts) and fails on a quest in neither, a quest
+// override the scan no longer needs, a gate candidate GATES does not review, a GATES entry the scan no
+// longer finds, a gate at odds with the scan without a why, and an override (a rejection, or a gate with a
+// why) whose scan digest no longer matches the scan's proposal.
 import { GATE_LIST } from './gate-list';
 import type { CuratedGate } from './sources/gate-scan';
 import type { QuestOverride } from './sources/quests';
@@ -98,7 +100,10 @@ export const LOADOUT_PROCS: Readonly<Record<string, string>> = {
     entrana: '~has_entrana_restricted_items',
 };
 
-/** Transports the sail scripts don't give: boarded by talking to `npc`, at every spawn of it. */
+/**
+ * Transports the sail scripts don't give: boarded by talking to `npc`, at every spawn of it, or by using
+ * `loc`, at every placed loc of it.
+ */
 export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
     {
         kind: 'cart',
@@ -123,6 +128,25 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
         notes:
             'Vigroy, Shilo Village to Brimhaven; no quest check in the script (Shilo is behind the quest anyway). The fare is ' +
             'as Hajedy’s (~calc_shilocart_cost, areas/area_brimhaven/scripts/hajedy.rs2:50).',
+    },
+    {
+        kind: 'sled',
+        loc: 'trollromance_piste_walk_barrier_down',
+        to: {
+            '0_43_59_20_59': '0_43_59_38_18',
+            '0_43_59_21_59': '0_43_59_38_18',
+            '0_43_58_33_59': '0_43_58_42_7',
+            '0_43_58_34_59': '0_43_58_42_7',
+        },
+        fare: 0,
+        requires: ['item:trollromance_toboggon_waxed:worn', 'skill:agility:28'],
+        source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:10',
+        paidAt: [],
+        notes:
+            "Troll Romance's piste near Trollheim: sledding down needs 28 Agility and a waxed sled worn " +
+            '(quest_troll_love.rs2:2, 6); the barrier picks the ride by loc_coord, each landing at its foot ' +
+            '(~trollromance_first_sled_ride, quest_troll_love.rs2:219; ~trollromance_second_sled_ride, :288). The first ride ' +
+            'crashes 1 time in 250 (random(250), :144) and drops the player at 0_43_59_47_18 instead.',
     },
 ];
 

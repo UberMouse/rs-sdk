@@ -2,6 +2,7 @@
 // placed locs.
 import { describe, expect, test } from 'bun:test';
 import { GATES, LOADOUT_PROCS, QUEST_OVERRIDES } from '../gates';
+import { toolCheckers } from '../sources/conditions';
 import { readConfigs } from '../sources/configs';
 import { readConstants } from '../sources/constants';
 import { CROSS, gatedSets, placeGates, reviewGates, scanGates, type CuratedGate } from '../sources/gate-scan';
@@ -23,13 +24,19 @@ const { quests } = deriveQuests({
     decreasing: {},
 });
 const locConfigs = readConfigs('loc');
+const objConfigs = readConfigs('obj');
+const tools = toolCheckers(
+    callables,
+    new Map([...objConfigs].flatMap(([obj, cfg]) => (cfg.category?.[0] ? [[obj, cfg.category[0]]] : []))),
+);
 const candidates = scanGates({
     triggers,
     callables,
     constants,
     quests,
     loadoutProcs: LOADOUT_PROCS,
-    names: new Set([...readConfigs('obj').keys(), ...locConfigs.keys(), ...readConfigs('npc').keys()]),
+    names: new Set([...objConfigs.keys(), ...locConfigs.keys(), ...readConfigs('npc').keys()]),
+    tools,
 });
 const scanned = (trigger: string) => candidates.find(c => c.trigger === trigger);
 const curated = (trigger: string): CuratedGate | undefined => GATES.find(e => e.trigger === trigger);
@@ -115,10 +122,73 @@ describe('the calibration gates: what the scan proposes and gates.ts confirms', 
         }));
 });
 
+describe('obj categories, quest points and conditions the scan cannot read', () => {
+    test('the tool checker procs are the ones returning objs of one category, or null', () =>
+        expect(tools).toEqual(
+            new Map([
+                ['~god_staff_checker', ['weapon_staff']],
+                ['~pickaxe_checker', ['weapon_pickaxe']],
+                ['~woodcutting_axe_checker', ['weapon_axe']],
+            ]),
+        ));
+
+    test("the Champions' Guild: 32 quest points", () => {
+        expect(scanned('oploc1,championdoor')?.kind).toBe('gate');
+        expect(gatedSets(scanned('oploc1,championdoor')?.moves[0])).toEqual([['questpoints:32']]);
+        expect(curated('oploc1,championdoor')).toMatchObject({ kind: 'gate', requires: [['questpoints:32']] });
+    });
+
+    test('an axe or a pickaxe held or worn: the Brimhaven vines and the White Wolf Mountain rockslide', () => {
+        const vine = scanned('oploc1,karam_dungeon_vineblocking1');
+        for (const m of vine?.moves ?? [])
+            expect(gatedSets(m)).toEqual([
+                ['category:weapon_axe:held', 'skill:woodcutting:10'],
+                ['category:weapon_axe:worn', 'skill:woodcutting:10'],
+            ]);
+        const sets = [
+            ['category:weapon_pickaxe:held', 'skill:mining:50'],
+            ['category:weapon_pickaxe:worn', 'skill:mining:50'],
+        ];
+        expect(gatedSets(scanned('oploc2,herorockslide')?.moves[0])).toEqual(sets);
+        expect(curated('oploc2,herorockslide')).toMatchObject({ kind: 'gate', requires: sets });
+    });
+
+    test("Ape Atoll's bamboo gate: a monkey greegree worn", () => {
+        expect(gatedSets(scanned('oploc1,mm_bamboo_largedoor')?.moves[0])).toEqual([['category:mm_greegree:worn']]);
+        expect(curated('oploc1,mm_bamboo_largedoor')).toMatchObject({
+            kind: 'gate',
+            requires: [['category:mm_greegree:worn']],
+        });
+    });
+
+    test('an unread condition that decides whether the gate opens makes a candidate', () =>
+        expect(scanned('oploc1,_outpost_gate')).toMatchObject({
+            kind: 'unclear',
+            unread: [
+                '`npc_find(coord, barbguard1, 5, 0) = true` (areas/area_barbarian_outpost/scripts/outpost_gate.rs2:3)',
+            ],
+        }));
+
+    test('an unread condition that decides where the player lands makes a candidate', () =>
+        expect(scanned('oploc1,skavid_cave2')).toMatchObject({
+            kind: 'unclear',
+            unread: [
+                '`$outcome = 0` (quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:127)',
+                '`$outcome = 1` (quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:127)',
+            ],
+        }));
+
+    test('a dialogue choice and a random draw are not unread conditions', () => {
+        expect(scanned('oploc1,entranaladdertop')?.unread).not.toContainEqual(expect.stringContaining('$option'));
+        // `$rand = random(20)`, then `$rand = 0`, `$rand = 1`, ...: a draw held in a local.
+        expect(scanned('oploc1,vt_mazeportal_wrong')).toBeUndefined();
+    });
+});
+
 describe('gates.ts', () => {
     test('reviews every candidate, and every entry agrees with the scan or says why', () => {
         const review = reviewGates(candidates, GATES, new Map(scripts));
-        expect(review).toEqual({ unreviewed: [], stale: [], invalid: [] });
+        expect(review).toEqual({ unreviewed: [], stale: [], drifted: [], invalid: [] });
     });
 
     test('every confirmed gate has a placed loc, with its tile, shape and angle', () => {

@@ -15,6 +15,9 @@ const FORMS: [Requirement, string][] = [
     [{ kind: 'skill', skill: 'ranged', level: 40 }, 'skill:ranged:40'],
     [{ kind: 'item', obj: 'dramen_staff', how: 'worn' }, 'item:dramen_staff:worn'],
     [{ kind: 'item', obj: 'shiloshipticket', how: 'held' }, 'item:shiloshipticket:held'],
+    [{ kind: 'category', category: 'weapon_axe', how: 'held' }, 'category:weapon_axe:held'],
+    [{ kind: 'category', category: 'mm_greegree', how: 'worn' }, 'category:mm_greegree:worn'],
+    [{ kind: 'questpoints', n: 32 }, 'questpoints:32'],
     [{ kind: 'coins', n: 10 }, 'coins:10'],
     [{ kind: 'consume', obj: 'shantay_pass', n: 1 }, 'consume:shantay_pass:1'],
     [{ kind: 'members' }, 'members'],
@@ -35,6 +38,10 @@ describe('requirement strings', () => {
         'quest:dragon>2',
         'skill:ranged',
         'item:dramen_staff:wielded',
+        'category:weapon_axe',
+        'category:Weapon_axe:held',
+        'questpoints:',
+        'questpoints:032',
         'coins:-1',
         'coins:010',
         'coins:ten',
@@ -59,6 +66,11 @@ describe('requirement sets', () => {
         expect(set).toEqual(['coins:10', 'coins:9', 'loadout:entrana', 'members']);
         // The same set however it was written.
         expect(requirementSet(['loadout:entrana', 'coins:9', 'members', 'coins:10'])).toEqual(set);
+        expect(requirementSet(['questpoints:32', 'skill:mining:52', 'category:weapon_pickaxe:held'])).toEqual([
+            'category:weapon_pickaxe:held',
+            'questpoints:32',
+            'skill:mining:52',
+        ]);
     });
 
     test('a set with a string in no form is refused', () =>

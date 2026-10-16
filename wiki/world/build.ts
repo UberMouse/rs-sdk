@@ -35,6 +35,7 @@ import {
 } from './gates';
 import { readConstants } from './sources/constants';
 import { placeGates, reviewGates, scanGates } from './sources/gate-scan';
+import { toolCheckers } from './sources/conditions';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
@@ -141,6 +142,8 @@ export interface BuildReport {
         unreviewed: string[];
         /** gates.ts entries no candidate has: an error. */
         stale: string[];
+        /** gates.ts overrides whose scan digest no longer matches the scan's proposal: an error. */
+        drifted: string[];
         /** gates.ts entries malformed or at odds with the scan without a why: an error. */
         invalid: string[];
         /** Gate requirements `quest:<id>>=<n>` no stage constant names: an error. */
@@ -165,6 +168,7 @@ export const failed = (r: BuildReport): boolean =>
     r.transports.staleOutOfScope.length > 0 ||
     r.gates.unreviewed.length > 0 ||
     r.gates.stale.length > 0 ||
+    r.gates.drifted.length > 0 ||
     r.gates.invalid.length > 0 ||
     r.gates.unnamed.length > 0;
 
@@ -276,6 +280,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         decreasing: QUEST_VARP_EXCEPTIONS,
     });
     const loadoutRules = deriveLoadoutRules(LOADOUT_PROCS, callables);
+    const objConfigs = readConfigs('obj');
+    // The tool-checker procs and the obj categories they accept, read from the procs and the obj configs.
+    const tools = toolCheckers(
+        callables,
+        new Map([...objConfigs].flatMap(([obj, cfg]) => (cfg.category?.[0] ? [[obj, cfg.category[0]]] : []))),
+    );
     const sails = deriveSails({
         files: scripts,
         triggers,
@@ -285,8 +295,16 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         spawns,
         quests: quests.quests,
         loadoutProcs: LOADOUT_PROCS,
+        tools,
     });
-    const curated = curatedTransports(CURATED_TRANSPORTS, spawns);
+    const curated = curatedTransports(
+        CURATED_TRANSPORTS,
+        spawns,
+        map.locs.flatMap(l => {
+            const config = packs.loc.name.get(l.id);
+            return config === undefined ? [] : [{ config, tile: l.tile }];
+        }),
+    );
     const transports = [...sails.transports, ...curated].sort(byTransport);
     const candidates = scanGates({
         triggers,
@@ -294,7 +312,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         constants,
         quests: quests.quests,
         loadoutProcs: LOADOUT_PROCS,
-        names: new Set([...readConfigs('obj').keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
+        names: new Set([...objConfigs.keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
+        tools,
     });
     const review = reviewGates(candidates, GATES, new Map(scripts));
     const gates = placeGates({
@@ -372,7 +391,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                         transports.flatMap(t =>
                             t.requires
                                 .filter(r => r.startsWith('other:'))
-                                .map(r => `${t.npc} -> ${t.route ?? t.kind}: ${r}`),
+                                .map(r => `${t.npc ?? t.loc} -> ${t.route ?? t.kind}: ${r}`),
                         ),
                     ),
                 ],
@@ -388,6 +407,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 ),
                 unreviewed: review.unreviewed,
                 stale: review.stale,
+                drifted: review.drifted,
                 invalid: review.invalid,
                 unnamed: gates.unnamed,
                 unplaced: gates.unplaced,
@@ -526,6 +546,10 @@ export function formatReport(report: BuildReport): string[] {
             g.unreviewed,
         ),
         ...list(`ERROR gates: ${g.stale.length} gates.ts entries the scan no longer finds:`, g.stale),
+        ...list(
+            `ERROR gates: ${g.drifted.length} gates.ts overrides whose scan proposal changed (read each trigger again):`,
+            g.drifted,
+        ),
         ...list(`ERROR gates: ${g.invalid.length} gates.ts entries malformed or at odds with the scan:`, g.invalid),
         ...list(`ERROR gates: ${g.unnamed.length} quest stages no constant names:`, g.unnamed),
         ...list(`warning: ${g.unplaced.length} gates with no placed loc:`, g.unplaced),

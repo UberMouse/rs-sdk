@@ -1,10 +1,13 @@
 import { describe, expect, test } from 'bun:test';
+import { toolCheckers } from '../sources/conditions';
 import { parseConfigs } from '../sources/configs';
 import { collectConstants } from '../sources/constants';
 import {
     CROSS,
     gatedSets,
     placeGates,
+    proposalDigest,
+    proposalText,
     reviewGates,
     scanGates,
     type CuratedGate,
@@ -185,6 +188,69 @@ if (%cookquest >= ^cook_started) {
 
 [oploc1,plaindoor]
 ~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,greegate]
+if (inv_totalcat(worn, greegree) = 0) {
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[proc,axe_checker](boolean $levelcheck)(namedobj)
+if (inv_total(inv, rune_axe) > 0) {
+    return(rune_axe);
+}
+if (inv_total(inv, bronze_axe) > 0) {
+    return(bronze_axe);
+}
+return(null);
+
+[oploc1,axetree]
+def_namedobj $axe = ~axe_checker(false);
+if ($axe = null) {
+    return;
+}
+p_teleport(0_50_50_9_9);
+
+[oploc1,qpdoor]
+if (%qp < 32) {
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,guarddoor]
+if (npc_find(coord, guard, 5, 0) = true) {
+    mes("Halt!");
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,mapcave]
+def_int $outcome = ~cave_check;
+if ($outcome = 1) {
+    p_teleport(0_50_50_2_2);
+    return;
+}
+p_teleport(0_50_50_3_3);
+
+[oploc1,drawportal]
+def_int $rand = random(3);
+if ($rand = 0) {
+    p_teleport(0_50_50_4_4);
+    return;
+}
+p_teleport(0_50_50_5_5);
+
+[oploc1,choicedoor]
+if (~p_choice2("Yes", 1, "No", 2) = 1) {
+    ~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+}
+
+[oploc1,tiledoor]
+if (loc_coord = 0_50_50_6_6) {
+    p_teleport(0_50_50_7_7);
+    return;
+}
+p_teleport(0_50_50_8_8);
 `;
 const FILES: [string, string][] = [
     ['doors/scripts/door_procs.rs2', DOORS],
@@ -226,7 +292,8 @@ const INPUT: GateScanInput = {
     constants,
     quests: QUEST_TABLE,
     loadoutProcs: { entrana: '~has_entrana_restricted_items' },
-    names: new Set(['next', 'brasskey', 'chefs_hat', 'coins', 'ticket', 'staff', 'robe', 'boots']),
+    names: new Set(['next', 'brasskey', 'chefs_hat', 'coins', 'ticket', 'staff', 'robe', 'boots', 'guard']),
+    tools: new Map([['~axe_checker', ['weapon_axe']]]),
 };
 const candidates = scanGates(INPUT);
 /** The line of quests/test.rs2 a needle is first on, as a script cites it. */
@@ -337,6 +404,48 @@ describe('scanGates: each condition form', () => {
         }));
 });
 
+describe('scanGates: obj categories, quest points, and conditions it cannot read', () => {
+    test('a tool checker is a proc returning objs of one category, or null', () => {
+        const callables = INPUT.callables;
+        const categories = new Map([
+            ['rune_axe', 'weapon_axe'],
+            ['bronze_axe', 'weapon_axe'],
+        ]);
+        expect(toolCheckers(callables, categories)).toEqual(new Map([['~axe_checker', ['weapon_axe']]]));
+        // An obj with no category: not a checker.
+        expect(toolCheckers(callables, new Map([['rune_axe', 'weapon_axe']]))).toEqual(new Map());
+    });
+
+    test('a tool checker against null: any obj of its category, held or worn', () =>
+        expect(gatedSets(move('oploc1,axetree', '0_50_50_9_9'))).toEqual([
+            ['category:weapon_axe:held'],
+            ['category:weapon_axe:worn'],
+        ]));
+
+    test('inv_totalcat: category:<category>:worn|held', () =>
+        expect(gatedSets(move('oploc1,greegate'))).toEqual([['category:greegree:worn']]));
+
+    test('%qp: questpoints:<n>', () => expect(gatedSets(move('oploc1,qpdoor'))).toEqual([['questpoints:32']]));
+
+    test('an unread condition that decides whether it moves: a candidate naming it', () =>
+        expect(scanned('oploc1,guarddoor')).toMatchObject({
+            kind: 'unclear',
+            moves: [{ to: CROSS, options: [{ requires: [], sides: [] }] }],
+            unread: [`\`npc_find(coord, guard, 5, 0) = true\` (${line('npc_find(coord, guard')})`],
+        }));
+
+    test('an unread condition that decides where it lands: a candidate naming it', () =>
+        expect(scanned('oploc1,mapcave')).toMatchObject({
+            kind: 'unclear',
+            unread: [`\`$outcome = 1\` (${line('if ($outcome = 1)')})`],
+        }));
+
+    test('not unread: a random draw held in a local, a dialogue choice, and a fact about the loc alone', () => {
+        for (const t of ['oploc1,drawportal', 'oploc1,choicedoor', 'oploc1,tiledoor'])
+            expect(candidates.find(c => c.trigger === t)).toBeUndefined();
+    });
+});
+
 /** A curated gate entry, cited at `source`. */
 const gate = (trigger: string, requires: string[][], more: Partial<CuratedGate> = {}): CuratedGate => ({
     trigger,
@@ -401,6 +510,69 @@ describe('reviewGates', () => {
             'oploc1,membergate (quests/test.rs2:999): source quests/test.rs2:999 is not a line of code',
             'oploc1,keydoor (quests/test.rs2): source quests/test.rs2 is not file:line',
         ]);
+    });
+});
+
+/** The side-effect entry for oploc1,sidecave, a curated override. */
+const sideEffect = (more: Partial<CuratedGate> = {}): CuratedGate => ({
+    trigger: 'oploc1,sidecave',
+    kind: 'side-effect',
+    source,
+    why: 'the check only advances the quest',
+    ...more,
+});
+
+describe('reviewGates: the scan digest an override pins', () => {
+    const files = new Map(FILES);
+    const digest = proposalDigest(scanned('oploc1,sidecave'));
+
+    test('the digest of the proposal it was read against passes', () =>
+        expect(reviewGates(candidates, [sideEffect({ scan: digest })], files)).toMatchObject({
+            drifted: [],
+            invalid: [],
+        }));
+
+    test('no digest, or the digest of a proposal that has since changed: drifted, naming the one to write', () => {
+        const text = proposalText(scanned('oploc1,sidecave'));
+        expect(JSON.parse(text)[0]).toBe('side-effect');
+        expect(reviewGates(candidates, [sideEffect()], files).drifted).toEqual([
+            `oploc1,sidecave (quests/test.rs2:2): no scan digest; read the trigger again and write scan: '${digest}' (${text})`,
+        ]);
+        expect(reviewGates(candidates, [sideEffect({ scan: '00000000' })], files).drifted).toEqual([
+            `oploc1,sidecave (quests/test.rs2:2): the scan's proposal changed from 00000000; read the trigger again and write scan: '${digest}' (${text})`,
+        ]);
+    });
+
+    test('a gate with a why pins one too; a gate that matches the scan has none', () => {
+        const odd = gate('oploc1,guilddoor', [['skill:cooking:40']], { why: 'a test' });
+        expect(reviewGates(candidates, [odd], files).drifted).toHaveLength(1);
+        const plain = gate('oploc1,guilddoor', [['skill:cooking:32']], { scan: digest });
+        expect(reviewGates(candidates, [plain], files).invalid).toEqual([
+            'oploc1,guilddoor (quests/test.rs2:2): scan pins an override: a gate that matches the scan has none',
+        ]);
+    });
+
+    test('an empty why is refused', () =>
+        expect(reviewGates(candidates, [sideEffect({ why: '  ', scan: digest })], files).invalid).toEqual([
+            'oploc1,sidecave (quests/test.rs2:2): why is empty',
+            'oploc1,sidecave (quests/test.rs2:2): a side-effect needs its reason in why',
+        ]));
+
+    test('the digest leaves out script lines, so an edit that only shifts lines keeps it', () => {
+        const c = scanned('oploc1,mapcave');
+        const shifted = { ...c, unread: c.unread.map(u => u.replace(/:\d+\)$/, ':999)')) };
+        expect(proposalDigest(shifted)).toBe(proposalDigest(c));
+        expect(proposalDigest({ ...c, unread: [] })).not.toBe(proposalDigest(c));
+        // An other:<text> the scan proposes cites its line too.
+        const gang = scanned('oploc1,gangdoor');
+        const moved = {
+            ...gang,
+            moves: gang.moves.map(m => ({
+                ...m,
+                options: m.options.map(o => ({ ...o, requires: o.requires.map(r => r.replace(/:\d+\)$/, ':999)')) })),
+            })),
+        };
+        expect(proposalDigest(moved)).toBe(proposalDigest(gang));
     });
 });
 
@@ -544,6 +716,30 @@ inv_del(inv, coins, 10);
             'oploc1,stagedoor (quests/test.rs2:2): quest:cook>=2',
             'oploc1,completedoor (quests/test.rs2:2): quest:cook>=1 (^cook_complete does not hold it)',
         ]);
+        expect(
+            place([
+                {
+                    trigger: 'oploc1,stagedoor',
+                    kind: 'gate',
+                    requires: [['quest:cook>=2'], ['quest:cook>=3']],
+                    source,
+                    why: 'a test',
+                    stages: { 'quest:cook>=2': '^cook_started+1', 'quest:cook>=3': '3' },
+                },
+            ]).unnamed,
+        ).toEqual([]);
+        expect(
+            place([
+                {
+                    trigger: 'oploc1,stagedoor',
+                    kind: 'gate',
+                    requires: [['quest:cook>=2']],
+                    source,
+                    why: 'a test',
+                    stages: { 'quest:cook>=2': '3' },
+                },
+            ]).unnamed,
+        ).toEqual(['oploc1,stagedoor (quests/test.rs2:2): quest:cook>=2 (3 does not hold it)']);
         expect(unplaced).toEqual([
             // completedoor has no placed loc here at all.
             'oploc1,completedoor (quests/test.rs2:2)',

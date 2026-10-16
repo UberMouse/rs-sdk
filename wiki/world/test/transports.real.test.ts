@@ -17,9 +17,15 @@ const triggers = scripts.flatMap(([f, t]) => parseTriggers(f, t));
 const callables = scripts.flatMap(([f, t]) => parseCallables(f, t));
 const constants = readConstants();
 const npcPack = readPack('npc');
-const spawns = readAllMapSquares().npcs.flatMap(n => {
+const locPack = readPack('loc');
+const map = readAllMapSquares();
+const spawns = map.npcs.flatMap(n => {
     const config = npcPack.name.get(n.id);
     return config ? [{ config, tile: n.tile }] : [];
+});
+const placed = map.locs.flatMap(l => {
+    const config = locPack.name.get(l.id);
+    return config ? [{ config, tile: l.tile }] : [];
 });
 const { quests } = deriveQuests({
     scan: scanQuestCalls(scripts),
@@ -127,8 +133,39 @@ describe('ship routes', () => {
     });
 });
 
-test('the curated transports land on the spawns of their npcs', () =>
-    expect(curatedTransports(CURATED_TRANSPORTS, spawns).map(t => [t.npc, t.from.level, t.to, t.requires])).toEqual([
-        ['brimhavencartdriver', 0, { level: 0, x: 2834, z: 2951 }, ['coins:10', 'quest:zombiequeen']],
-        ['shilocartdriver', 0, { level: 0, x: 2776, z: 3214 }, ['coins:10']],
+test('the curated transports land on the spawns of their npcs and the placed locs of their locs', () =>
+    expect(
+        curatedTransports(CURATED_TRANSPORTS, spawns, placed).map(t => [t.npc ?? t.loc, t.from, t.to, t.requires]),
+    ).toEqual([
+        [
+            'brimhavencartdriver',
+            { level: 0, x: 2779, z: 3211 },
+            { level: 0, x: 2834, z: 2951 },
+            ['coins:10', 'quest:zombiequeen'],
+        ],
+        ['shilocartdriver', { level: 0, x: 2834, z: 2954 }, { level: 0, x: 2776, z: 3214 }, ['coins:10']],
+        // Troll Romance's sled: each barrier tile rides to the foot of its own piste (quest_troll_love.rs2:219, 288).
+        ...[
+            [
+                { level: 0, x: 2785, z: 3771 },
+                { level: 0, x: 2794, z: 3719 },
+            ],
+            [
+                { level: 0, x: 2786, z: 3771 },
+                { level: 0, x: 2794, z: 3719 },
+            ],
+            [
+                { level: 0, x: 2772, z: 3835 },
+                { level: 0, x: 2790, z: 3794 },
+            ],
+            [
+                { level: 0, x: 2773, z: 3835 },
+                { level: 0, x: 2790, z: 3794 },
+            ],
+        ].map(([from, to]) => [
+            'trollromance_piste_walk_barrier_down',
+            from,
+            to,
+            ['item:trollromance_toboggon_waxed:worn', 'skill:agility:28'],
+        ]),
     ]));

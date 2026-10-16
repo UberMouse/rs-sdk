@@ -3,8 +3,10 @@
 // the subject on the left (`^stage > %varp` reads as `%varp < ^stage`) and the op negated when the path
 // takes it false; each walker then maps the reading to what it means on its paths.
 import type { Quest } from '../types';
+import { cmp } from '../util';
 import { truthOf, type Value } from './evaluate';
-import type { Expr } from './runescript';
+import { parseScript, type Expr, type Stmt } from './runescript';
+import type { Callable } from './triggers';
 
 /** A quest varp by the name the scripts use, with the value that completes the quest on it. */
 export interface QuestRef {
@@ -32,6 +34,14 @@ export type Reading =
     | { k: 'stat'; skill: string; least: number }
     /** `last_useitem` (a use-item op): the item used is (`is`) or is not `obj`. */
     | { k: 'useitem'; obj: string; is: boolean }
+    /**
+     * Any obj of a category, worn or carried: `inv_totalcat(inv|worn, category)`, or a tool-checker proc's
+     * result (toolCheckers) against `null`. `ways` are the alternatives, any one of which does; `has` when
+     * the path needs one, false when it allows none.
+     */
+    | { k: 'category'; ways: { category: string; where: 'inv' | 'worn' }[]; has: boolean }
+    /** `%qp`, the player's quest points: at least `least`; 0 when the path allows any. */
+    | { k: 'questpoints'; least: number }
     /**
      * Any other condition. `subject` when it is about one of the subjects above but its value is not
      * known offline (`stat(agility) < loc_param(agil_level_req)`).
@@ -80,13 +90,54 @@ export interface ConditionContext {
     nameOf(e: Expr | undefined): string | undefined;
 }
 
+/** The quest points varp (general/scripts/quests.rs2 counts them into it). */
+const QUEST_POINTS = '%qp';
+
 /**
- * Reads conditions against the quest table and the loadout procs: `read(e, want, ctx)` is what `e`
- * taken as `want` says (Reading).
+ * Tool-checker procs, by `~name`, with the obj categories they accept: a proc whose returns are each an obj
+ * (`return(rune_axe);`) but the last, `return(null);`, and whose objs all have a category in their config.
+ * `~pickaxe_checker` (skill_mining/scripts/pickaxe_checker.rs2:1) returns one of six pickaxes worn in the
+ * right hand or carried, all `weapon_pickaxe`; a script that tests its result against `null` needs one.
+ */
+export function toolCheckers(
+    callables: readonly Callable[],
+    objCategory: ReadonlyMap<string, string>,
+): Map<string, string[]> {
+    const out = new Map<string, string[]>();
+    for (const c of callables) {
+        if (!c.call.startsWith('~') || !/\breturn\s*\(\s*null\s*\)/.test(c.body)) continue;
+        const script = parseScript(c.file, c.line, c.body);
+        if ('error' in script) continue;
+        const returned: string[] = [];
+        let other = false;
+        const walk = (stmts: readonly Stmt[]): void => {
+            for (const st of stmts)
+                if (st.t === 'return') {
+                    const v = st.value;
+                    if (v?.t === 'name' && v.args === null && v.name !== 'null') returned.push(v.name);
+                    else if (!(v?.t === 'name' && v.name === 'null')) other = true;
+                } else if (st.t === 'if') {
+                    walk(st.yes);
+                    walk(st.no);
+                } else if (st.t === 'switch' || st.t === 'while') other = true;
+        };
+        walk(script.body);
+        const last = script.body.at(-1);
+        const categories = returned.map(o => objCategory.get(o));
+        if (other || !returned.length || last?.t !== 'return' || categories.some(x => x === undefined)) continue;
+        out.set(c.call, [...new Set(categories as string[])].sort(cmp));
+    }
+    return out;
+}
+
+/**
+ * Reads conditions against the quest table, the loadout procs and the tool checkers (toolCheckers):
+ * `read(e, want, ctx)` is what `e` taken as `want` says (Reading).
  */
 export function conditionReader(
     quests: readonly Quest[],
     loadoutProcs: Readonly<Record<string, string>>,
+    tools: ReadonlyMap<string, readonly string[]> = new Map(),
 ): (e: Expr, want: boolean, ctx: ConditionContext) => Reading {
     // Quest varps by the name the scripts use (a varbit's, or the varp's when progress is the whole varp).
     const questOf = new Map<string, QuestRef>();
@@ -101,7 +152,9 @@ export function conditionReader(
         (questOf.has(x.name) ||
             x.name === 'map_members' ||
             x.name === 'inv_total' ||
+            x.name === 'inv_totalcat' ||
             x.name === 'inv_getobj' ||
+            x.name === QUEST_POINTS ||
             x.name === 'stat' ||
             x.name === 'stat_base' ||
             x.name === 'last_useitem' ||
@@ -113,8 +166,23 @@ export function conditionReader(
         const [lhs, rhs, op1] = !isSubject(l) && isSubject(r) ? [r, l, FLIP[op0]!] : [l, r, op0];
         const op = want ? op1 : NEGATE[op1]!;
         if (lhs.t !== 'name') return { k: 'other', subject: false };
-        const unread: Reading = { k: 'other', subject: isSubject(lhs) };
         const eq = op === '=' || op === '!';
+
+        // A tool checker's result (called here, or held in a local) against null: the obj it finds is worn
+        // in the right hand or carried (skill_mining/scripts/pickaxe_checker.rs2:3).
+        const held = ctx.evaluate(lhs);
+        const checker = held.t === 'unknown' ? held.text.match(/^~[a-z0-9_]+/)?.[0] : undefined;
+        const categories = checker ? tools.get(checker) : undefined;
+        if (categories && eq && rhs.t === 'name' && rhs.name === 'null' && rhs.args === null)
+            return {
+                k: 'category',
+                ways: categories.flatMap(category => [
+                    { category, where: 'inv' as const },
+                    { category, where: 'worn' as const },
+                ]),
+                has: op === '!',
+            };
+        const unread: Reading = { k: 'other', subject: isSubject(lhs) || !!categories };
 
         if (lhs.name === 'map_members' && lhs.args === null && eq) {
             const truth = truthOf(ctx.evaluate(rhs));
@@ -141,6 +209,19 @@ export function conditionReader(
             const v = ctx.evaluate(rhs);
             return v.t === 'int' ? v.n : v.t === 'range' ? v.hi : undefined;
         };
+
+        if (lhs.name === QUEST_POINTS && lhs.args === null) {
+            const n = count();
+            return n === undefined ? unread : { k: 'questpoints', least: leastOf(op, n) };
+        }
+
+        if (lhs.name === 'inv_totalcat' && lhs.args?.length === 2) {
+            const where = ctx.nameOf(lhs.args[0]);
+            const category = ctx.nameOf(lhs.args[1]);
+            const n = count();
+            if ((where !== 'inv' && where !== 'worn') || !category || n === undefined) return unread;
+            return { k: 'category', ways: [{ category, where }], has: leastOf(op, n) > 0 };
+        }
 
         if (lhs.name === 'inv_total' && lhs.args?.length === 2) {
             const where = ctx.nameOf(lhs.args[0]);

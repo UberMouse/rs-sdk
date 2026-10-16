@@ -445,4 +445,42 @@ describe('curatedTransports', () => {
     ])('%o is refused: %s', (change, why) =>
         expect(() => curatedTransports([{ ...cart, ...change }], SPAWNS)).toThrow(why),
     );
+
+    // A ride boarded at a loc, each placed loc landing by its own tile (a sled run picked by loc_coord).
+    const sled: CuratedTransport = {
+        kind: 'sled',
+        loc: 'barrier',
+        to: { '0_43_59_20_59': '0_43_59_38_18', '0_43_58_33_59': '0_43_58_42_7' },
+        fare: 0,
+        requires: ['skill:agility:28'],
+        source: 'sled.rs2:10',
+        paidAt: [],
+        notes: 'a sled',
+    };
+    const LOCS = [
+        { config: 'barrier', tile: at(2772, 3835) },
+        { config: 'barrier', tile: at(2785, 3771) },
+        { config: 'gate', tile: at(3000, 3000) },
+    ];
+
+    test('one row per placed loc of the loc, landing by its tile, with no paidAt when nothing is paid', () => {
+        const rides = curatedTransports([sled], SPAWNS, LOCS);
+        expect(rides.map(t => [t.loc, t.npc, t.from, t.to])).toEqual([
+            ['barrier', undefined, at(2772, 3835), at(2790, 3794)],
+            ['barrier', undefined, at(2785, 3771), at(2794, 3719)],
+        ]);
+        expect(rides.every(t => !('paidAt' in t))).toBe(true);
+    });
+
+    test.each([
+        [{ npc: 'customs_officer' }, 'give an npc or a loc'],
+        [{ loc: undefined }, 'give an npc or a loc'],
+        [{ loc: 'nothing' }, 'the loc is never placed'],
+        [{ to: { '0_43_59_20_59': '0_43_59_38_18' } }, 'no landing for the loc at 0_43_58_33_59'],
+        [{ to: '0_43_59_38_18' }, ''],
+    ])('a loc ride with %o: %s', (change, why) => {
+        const run = () => curatedTransports([{ ...sled, ...change }], SPAWNS, LOCS);
+        if (why) expect(run).toThrow(why);
+        else expect(run().map(t => t.to)).toEqual([at(2790, 3794), at(2790, 3794)]);
+    });
 });

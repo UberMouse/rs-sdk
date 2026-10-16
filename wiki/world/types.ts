@@ -180,16 +180,17 @@ export interface LoadoutRule {
 }
 
 /**
- * A ride between two tiles no walk joins, boarded by talking to an npc: a ship route from the sail
- * scripts (sources/transports.ts), or a curated one (gates.ts). One row per boarding npc spawn, landing
- * and minimal requirement set.
+ * A ride between two tiles no walk joins, boarded by talking to an npc or using a loc: a ship route from
+ * the sail scripts (sources/transports.ts), or a curated one (gates.ts). One row per boarding npc spawn or
+ * placed loc, landing and minimal requirement set.
  */
 export interface Transport {
-    kind: 'ship' | 'cart';
+    kind: 'ship' | 'cart' | 'sled';
     /** The sail route, from its constant in interface_boat/scripts/sail.constant (`port_sarim_to_karamja`). */
     route?: string;
-    /** The npc config the player talks to, and its spawn tile. */
-    npc: string;
+    /** The npc config the player talks to, or (`loc`) the loc config they use; `from` is its tile. */
+    npc?: string;
+    loc?: string;
     from: Tile;
     to: Tile;
     /** Coins taken; requires lists it too, as coins:<fare>, when above 0. */
@@ -207,9 +208,20 @@ export interface Transport {
 }
 
 /**
- * Which side of a loc the player stands on (sources/gate-scan.ts): `loc` the loc's own tile (where the door
- * procs' `~check_axis(coord, loc_coord, loc_angle)` is true, doors/scripts/door_procs.rs2), `far` the tile
- * across its wall, or a compass side of it (`west`: the player's x below the loc's).
+ * Which side of a loc the player stands on (sources/gate-scan.ts).
+ *
+ * `loc` and `far` are the two sides of a wall loc's axis, as the door procs' `~check_axis(coord, loc_coord,
+ * loc_angle)` (doors/scripts/door_procs.rs2:77) tells them apart: for a loc at angle north or south it
+ * compares the player's z with the loc's, for west or east their x; equal is `loc` (the loc's own row or
+ * column, so its own tile), anything else `far`. The far tile of a straight wall (shape 0) is the one its
+ * door opens onto (`~door_open`, door_procs.rs2:1): angle 0 (west) x - 1, 1 (north) z + 1, 2 (east)
+ * x + 1, 3 (south) z - 1.
+ *
+ * A compass side compares the player's tile with the loc's on one axis, as the scripts write it: `west`
+ * x below the loc's, `east` x above, `south` z below, `north` z above. On a straight wall it names one of
+ * the two tiles. A diagonal door (shape 9) runs corner to corner, so each side is a pair of directions;
+ * gates.ts names it by one of them and its why says which pair (the Ranging Guild door's `west` is its
+ * north-west side, x <= the loc's and z >= the loc's, minigames/game_ranging/scripts/ranging_guild_door.rs2:2).
  */
 export type Side = 'loc' | 'far' | 'west' | 'east' | 'north' | 'south';
 
@@ -221,7 +233,10 @@ export interface Gate {
     /** The op trigger that checks it, as its header names it: `oploc1,chefdoor`, `oploc1,_shilo_metalgate`. */
     trigger: string;
     kind: 'gate' | 'quest-window';
-    /** The placed loc config, its tile, shape and angle (its rotation, 0 west to 3 south). */
+    /**
+     * The placed loc config, its tile, shape (0 a straight wall, 9 a diagonal one, 10 an object) and angle
+     * (its rotation: 0 west, 1 north, 2 east, 3 south, the side of the tile a straight wall stands on).
+     */
     loc: string;
     tile: Tile;
     shape: number;
@@ -234,7 +249,10 @@ export interface Gate {
      * quest window.
      */
     requires: string[][];
-    /** The check applies only when crossing from this side; absent: from either. */
+    /**
+     * The check applies only when crossing from this side (Side); crossing from the other is free. Absent:
+     * the check applies from either side.
+     */
     from?: Side;
     /**
      * The gated move is a jump to this tile (the Zanaris shed's teleport), not a crossing of the loc; the
@@ -248,7 +266,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 6;
+export const WORLD_FORMAT = 7;
 
 export interface World {
     /** WORLD_FORMAT when written. */

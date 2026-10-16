@@ -224,6 +224,7 @@ describe('formatReport', () => {
             forms: { quest: 1, skill: 1 },
             unreviewed: [],
             stale: [],
+            drifted: [],
             invalid: [],
             unnamed: [],
             unplaced: [],
@@ -354,6 +355,7 @@ describe('formatReport', () => {
             { ...report, transports: { ...report.transports, staleOutOfScope: ['x'] } },
             { ...report, gates: { ...report.gates, unreviewed: ['x'] } },
             { ...report, gates: { ...report.gates, stale: ['x'] } },
+            { ...report, gates: { ...report.gates, drifted: ['x'] } },
             { ...report, gates: { ...report.gates, invalid: ['x'] } },
             { ...report, gates: { ...report.gates, unnamed: ['x'] } },
         ])
@@ -365,6 +367,7 @@ describe('formatReport', () => {
             ...report.gates,
             unreviewed: ['oploc1,newdoor (d.rs2:1): gate'],
             stale: ['oploc1,olddoor (d.rs2:9)'],
+            drifted: ["oploc1,movedoor (m.rs2:3): the scan's proposal changed from 00000000; read the trigger again"],
             invalid: ['oploc1,chefdoor (c.rs2:4): the scan proposes side-effect'],
             unnamed: ['oploc1,x (x.rs2:2): quest:ball>=3'],
             unplaced: ['oploc1,ghost (g.rs2:1)'],
@@ -372,12 +375,14 @@ describe('formatReport', () => {
             unclear: ['oploc1,maze (m.rs2:1): too many paths'],
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
         };
-        expect(formatReport({ ...report, gates }).slice(-17)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-19)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
             'ERROR gates: 1 gates.ts entries the scan no longer finds:',
             '  oploc1,olddoor (d.rs2:9)',
+            'ERROR gates: 1 gates.ts overrides whose scan proposal changed (read each trigger again):',
+            "  oploc1,movedoor (m.rs2:3): the scan's proposal changed from 00000000; read the trigger again",
             'ERROR gates: 1 gates.ts entries malformed or at odds with the scan:',
             '  oploc1,chefdoor (c.rs2:4): the scan proposes side-effect',
             'ERROR gates: 1 quest stages no constant names:',

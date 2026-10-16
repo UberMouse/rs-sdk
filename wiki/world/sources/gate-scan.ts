@@ -69,6 +69,8 @@ const CHANGES_LOC = /\bloc_(?:add|change|del)\s*\(/;
 /** A condition or payment the scan reads (sources/conditions.ts), or a call it may be in. */
 const READS = /%[a-z]|\bstat(?:_base)?\s*\(|\binv_(?:total|del)\s*\(|\bmap_members\b|\blast_useitem\b|~has_/;
 const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
+/** A random draw (an agility or thieving roll, a chance): it goes both ways and gates nothing. */
+const RANDOM = /\b(?:random|randominc|stat_random)\s*\(|~random_range\b|~chance\b/;
 
 /** A move that crosses the loc, as GateMove.to writes it; any other `to` is a coord literal. */
 export const CROSS = 'cross';
@@ -106,6 +108,11 @@ export interface GateCandidate {
     /** The conditions it branched on before a move, as `` `text` (file:line) ``, each once in order met. */
     conditions: string[];
     /**
+     * The conditions it branched on before a move that the scan can't read (not a dialogue choice or a random
+     * draw), as `conditions` lists them: they gate nothing in `moves`, so gates.ts says what they do.
+     */
+    unread: string[];
+    /**
      * Quest windows: moves open only between two stages, and blocks shut only during one, as
      * `<to or block>: <conditions>`.
      */
@@ -128,6 +135,8 @@ export interface GateScanInput {
     loadoutProcs: Readonly<Record<string, string>>;
     /** Config names a bare name may be (objs, locs, npcs): what `def_obj $key = brass_key` holds. */
     names: ReadonlySet<string>;
+    /** Tool-checker procs and the obj categories they accept (sources/conditions.ts toolCheckers). */
+    tools?: ReadonlyMap<string, readonly string[]>;
 }
 
 /** A trigger's name as its header writes it. */
@@ -155,7 +164,9 @@ type Cond =
     /** About a subject the scan reads, with a value it can't: other:<text>. */
     | { k: 'other'; text: string }
     /** The side of the loc the player stands on (Side), or the condition when it names none. */
-    | { k: 'side'; side: string };
+    | { k: 'side'; side: string }
+    /** A condition the scan can't read, taken `want` way: it needs nothing, but can make the trigger a candidate. */
+    | { k: 'unread'; text: string; want: boolean };
 
 /** Whether a whole number satisfies `v op n`. */
 const holds = (v: number, op: string, n: number): boolean =>
@@ -352,6 +363,8 @@ const condKey = (c: Cond): string => {
             return `quest ${c.ref.varp} ${c.op} ${c.n}`;
         case 'coins':
             return `coins ${c.n}`;
+        case 'unread':
+            return `unread ${c.want} ${c.text}`;
         default:
             return `${c.k} ${c.text}`;
     }
@@ -408,6 +421,13 @@ const branch = (p: Path, ways: readonly Cond[][]): Path[] => ways.map(cs => ({ .
 
 const sideUnknown = (text: string): Value => ({ t: 'unknown', text, side: true });
 const isSide = (v: Value): boolean => v.t === 'unknown' && v.side === true;
+const locUnknown = (text: string): Value => ({ t: 'unknown', text, loc: true });
+const isLoc = (v: Value): boolean => v.t === 'unknown' && v.loc === true;
+/** A value fixed offline, or one that depends only on which loc this is. */
+const locOrKnown = (v: Value): boolean => isLoc(v) || v.t !== 'unknown';
+
+/** The active loc's own facts (handlers/LocOps.ts): a condition on them alone says nothing of the player. */
+const LOC_FACTS = new Set(['loc_coord', 'loc_angle', 'loc_type', 'loc_shape', 'loc_category']);
 
 /** Commands whose value is a side of the loc when an argument is the player's tile. */
 const SIDE_COMMANDS = new Set([
@@ -443,7 +463,7 @@ function sideOf(side: Value & { t: 'unknown' }, op: string, other: Value, otherT
 function gateWalker(input: GateScanInput) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const scriptOf = scriptCache();
-    const read = conditionReader(input.quests, input.loadoutProcs);
+    const read = conditionReader(input.quests, input.loadoutProcs, input.tools);
     const loadoutCalls = new Set(Object.values(input.loadoutProcs));
 
     // The call graph: each callable's code and the callables it calls, and who calls each.
@@ -517,8 +537,12 @@ function gateWalker(input: GateScanInput) {
             case 'bin': {
                 const [l, r] = [evaluate(e.l, env, file), evaluate(e.r, env, file)];
                 const side = isSide(l) || isSide(r);
+                // About the loc alone: a loc fact against a loc fact or a value fixed offline.
+                const loc = !side && locOrKnown(l) && locOrKnown(r) && (isLoc(l) || isLoc(r));
                 const folded = fold(e.op, l, r, e.text);
-                if (folded) return side && folded.t === 'unknown' ? sideUnknown(e.text) : folded;
+                if (folded && folded.t === 'unknown' && (side || loc))
+                    return side ? sideUnknown(e.text) : locUnknown(e.text);
+                if (folded) return folded;
                 if (l.t === 'int' && r.t === 'int') {
                     const n = { '+': l.n + r.n, '-': l.n - r.n, '*': l.n * r.n, '/': Math.trunc(l.n / r.n) }[e.op];
                     if (n !== undefined) return { t: 'int', n };
@@ -526,21 +550,24 @@ function gateWalker(input: GateScanInput) {
                     if (b !== undefined) return { t: 'bool', b };
                 }
                 const choice = (l.t === 'unknown' && l.choice) || (r.t === 'unknown' && r.choice);
-                return side ? sideUnknown(e.text) : unknown(e.text, choice);
+                return side ? sideUnknown(e.text) : loc ? locUnknown(e.text) : unknown(e.text, choice);
             }
             case 'name':
                 break;
         }
         if (e.name.startsWith('$')) return env.get(e.name) ?? unknown(e.name);
         if (e.name.startsWith('^')) return constant(e.name) ?? unknown(e.name);
+        // COORD is the player's tile (server/engine/src/engine/script/handlers/PlayerOps.ts), written `coord` or
+        // `coord()`; the loc's facts the same.
+        if (!e.args?.length && e.name === 'coord') return sideUnknown('coord');
+        if (!e.args?.length && LOC_FACTS.has(e.name)) return locUnknown(e.text);
         if (e.args === null) {
             if (e.name === 'true' || e.name === 'false') return { t: 'bool', b: e.name === 'true' };
-            // COORD is the player's tile (server/engine/src/engine/script/handlers/PlayerOps.ts).
-            if (e.name === 'coord') return sideUnknown('coord');
             return known(e.name) ? { t: 'name', v: e.name } : unknown(e.text);
         }
         const args = e.args.map(a => evaluate(a, env, file));
         if (SIDE_COMMANDS.has(e.name) && args.some(isSide)) return sideUnknown(e.text);
+        if (SIDE_COMMANDS.has(e.name) && args.every(locOrKnown) && args.some(isLoc)) return locUnknown(e.text);
         const [a0, a1, a2, a3] = args;
         // COORDX, COORDY (the level) and COORDZ split a coord; MOVECOORD adds (x, level, z) to one
         // (handlers/ServerOps.ts).
@@ -554,8 +581,11 @@ function gateWalker(input: GateScanInput) {
         return unknown(e.text);
     };
 
-    /** What a condition the walker can't settle means, taken `want` way: [] when nothing it reads. */
-    const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[] => {
+    /**
+     * What a condition the walker can't settle means, taken `want` way: the ways it can hold, each a list of
+     * what it means (one way unless it reads as a choice of objs, a tool any of whose categories does).
+     */
+    const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[][] => {
         const text = `\`${e.text}\` (${file}:${e.line})`;
         // The player's side: a comparison with an operand on the player's tile.
         const [l, op0, r] = e.t === 'bin' && NEGATE[e.op] ? [e.l, e.op, e.r] : [e, '=', undefined];
@@ -563,41 +593,65 @@ function gateWalker(input: GateScanInput) {
         if (isSide(lv) || isSide(rv)) {
             const [s, o, oText, op1] = isSide(lv) ? [lv, rv, r?.text ?? 'true', op0] : [rv, lv, l.text, FLIP[op0]!];
             const named = s.t === 'unknown' ? sideOf(s, want ? op1 : NEGATE[op1]!, o, oText) : undefined;
-            return [{ k: 'side', side: named ?? `${e.text} = ${want}` }];
+            return [[{ k: 'side', side: named ?? `${e.text} = ${want}` }]];
         }
         const reading = read(e, want, { evaluate: x => evaluate(x, env, file), nameOf: x => nameOf(x, env) });
         switch (reading.k) {
             case 'members':
-                return [reading.holds ? { k: 'req', req: 'members', text } : { k: 'free', text }];
+                return [[reading.holds ? { k: 'req', req: 'members', text } : { k: 'free', text }]];
             case 'loadout':
-                return [reading.clear ? { k: 'req', req: `loadout:${reading.rule}`, text } : { k: 'free', text }];
+                return [[reading.clear ? { k: 'req', req: `loadout:${reading.rule}`, text } : { k: 'free', text }]];
             case 'quest':
                 return [
-                    {
-                        k: 'quest',
-                        ref: reading.ref,
-                        op: reading.op,
-                        n: reading.n,
-                        name: reading.name,
-                        text,
-                        shown: `\`${reading.ref.varp} ${reading.op} ${reading.name ?? reading.n}\` (${file}:${e.line})`,
-                    },
+                    [
+                        {
+                            k: 'quest',
+                            ref: reading.ref,
+                            op: reading.op,
+                            n: reading.n,
+                            name: reading.name,
+                            text,
+                            shown: `\`${reading.ref.varp} ${reading.op} ${reading.name ?? reading.n}\` (${file}:${e.line})`,
+                        },
+                    ],
                 ];
             case 'inv':
-                if (reading.least <= 0) return [{ k: 'free', text }];
-                if (reading.obj === 'coins' && reading.where === 'inv') return [{ k: 'coins', n: reading.least, text }];
-                return [{ k: 'req', req: `item:${reading.obj}:${reading.where === 'inv' ? 'held' : 'worn'}`, text }];
+                if (reading.least <= 0) return [[{ k: 'free', text }]];
+                if (reading.obj === 'coins' && reading.where === 'inv')
+                    return [[{ k: 'coins', n: reading.least, text }]];
+                return [[{ k: 'req', req: `item:${reading.obj}:${reading.where === 'inv' ? 'held' : 'worn'}`, text }]];
+            case 'category':
+                if (!reading.has) return [[{ k: 'free', text }]];
+                return reading.ways.map(w => [
+                    { k: 'req', req: `category:${w.category}:${w.where === 'inv' ? 'held' : 'worn'}`, text },
+                ]);
+            case 'questpoints':
+                return [
+                    [
+                        reading.least <= 0
+                            ? { k: 'free', text }
+                            : { k: 'req', req: `questpoints:${reading.least}`, text },
+                    ],
+                ];
             case 'stat':
                 return [
-                    reading.least <= 0
-                        ? { k: 'free', text }
-                        : { k: 'req', req: `skill:${reading.skill}:${reading.least}`, text },
+                    [
+                        reading.least <= 0
+                            ? { k: 'free', text }
+                            : { k: 'req', req: `skill:${reading.skill}:${reading.least}`, text },
+                    ],
                 ];
             case 'useitem':
-                return [reading.is ? { k: 'req', req: `item:${reading.obj}:held`, text } : { k: 'free', text }];
+                return [[reading.is ? { k: 'req', req: `item:${reading.obj}:held`, text } : { k: 'free', text }]];
             case 'other':
                 // Taken false, it says so: two paths that differ only by it hold either way (minimalOptions).
-                return reading.subject ? [{ k: 'other', text: want ? text : `not ${text}` }] : [];
+                if (reading.subject) return [[{ k: 'other', text: want ? text : `not ${text}` }]];
+                // A random draw (in the condition, or held in a local it tests: `$rand = random(20)`) goes
+                // both ways and gates nothing; any other condition the scan can't read is noted, so a move
+                // behind it still makes the trigger a candidate.
+                return RANDOM.test(e.text) || [lv, rv].some(v => v.t === 'unknown' && RANDOM.test(v.text))
+                    ? [[]]
+                    : [[{ k: 'unread', text, want }]];
         }
     };
 
@@ -630,7 +684,8 @@ function gateWalker(input: GateScanInput) {
     const assume = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string, depth = 0): Cond[][] => {
         const v = evaluate(e, env, file);
         if (v.t === 'bool') return v.b === want ? [[]] : [];
-        if (v.t === 'unknown' && v.choice) return [[]];
+        // A dialogue choice, or a fact about the loc alone (which tile, angle or type it is), goes both ways.
+        if (v.t === 'unknown' && (v.choice || v.loc)) return [[]];
         // `~proc = <bool>` or a bare `~proc` on a condition proc: its condition, taken the way it is wanted.
         const [subject, op, rhs] =
             e.t === 'bin' && (e.op === '=' || e.op === '!') ? [e.l, e.op, e.r] : [e, '=', undefined];
@@ -649,7 +704,7 @@ function gateWalker(input: GateScanInput) {
             if ((e.op === '&') === want) return distinct(both(l, r));
             return distinct([...l, ...both(assume(e.l, !want, env, file, depth), r)]);
         }
-        return [classify(e, want, env, file)];
+        return classify(e, want, env, file);
     };
 
     const runTrigger = (trigger: Trigger): Run => {
@@ -767,7 +822,9 @@ function gateWalker(input: GateScanInput) {
                 const count = raw[2] && evaluate(raw[2], p.env, file);
                 const n = count?.t === 'int' ? count.n : count?.t === 'range' ? count.hi : undefined;
                 if (n === undefined) {
-                    if (name === 'inv_add') return { live: [p], ended: [] };
+                    // Coins taken by a sum the scan can't compute: a fare in no form. Any other obj taken by an
+                    // unknown count (all the player holds of it) needs nothing.
+                    if (name === 'inv_add' || obj !== 'coins') return { live: [p], ended: [] };
                     return {
                         live: [{ ...p, conds: [...p.conds, { k: 'other', text: `\`${s.text}\` (${at})` }] }],
                         ended: [],
@@ -844,14 +901,45 @@ function gateWalker(input: GateScanInput) {
 function conditionsOf(run: Run): string[] {
     const out = new Set<string>();
     for (const conds of [...run.moves.map(m => m.conds), ...run.blocked.map(p => p.conds)])
-        for (const c of conds) if (c.k !== 'side') out.add(c.text);
+        for (const c of conds) if (c.k !== 'side' && c.k !== 'unread') out.add(c.text);
     return [...out];
+}
+
+/** Each unread condition on some of these paths, with the ways they took it. */
+function unreadWays(conds: readonly (readonly Cond[])[]): Map<string, Set<boolean>> {
+    const out = new Map<string, Set<boolean>>();
+    for (const cs of conds)
+        for (const c of cs) if (c.k === 'unread') out.set(c.text, (out.get(c.text) ?? new Set()).add(c.want));
+    return out;
+}
+
+/**
+ * The conditions a run could not read that decide whether, or where, it moves: taken one way, no path
+ * moves (every path that took it so ended without a move) and taken the other, one does; or taken each
+ * way, the paths land on different tiles. Each once, in the order met.
+ */
+function unreadOf(run: Run): string[] {
+    const moved = unreadWays(run.moves.map(m => m.conds));
+    const blocked = unreadWays(run.blocked.map(p => p.conds));
+    const landings = (text: string, want: boolean) =>
+        new Set(
+            run.moves
+                .filter(m => m.conds.some(c => c.k === 'unread' && c.text === text && c.want === want))
+                .map(m => m.to),
+        );
+    return [...moved].flatMap(([text, wants]) => {
+        const decidesWhether = [true, false].some(w => wants.has(!w) && !wants.has(w) && blocked.get(text)?.has(w));
+        const [yes, no] = [landings(text, true), landings(text, false)];
+        const decidesWhere = yes.size > 0 && no.size > 0 && [...yes].some(t => !no.has(t));
+        return decidesWhether || decidesWhere ? [text] : [];
+    });
 }
 
 /** What a run makes the trigger (GateCandidate), or null when it read no condition before a move. */
 function propose(trigger: Trigger, run: Run, completes: Completes): GateCandidate | null {
     const conditions = conditionsOf(run);
-    if (!run.why.length && (!run.moves.length || !conditions.length)) return null;
+    const unread = unreadOf(run);
+    if (!run.why.length && (!run.moves.length || (!conditions.length && !unread.length))) return null;
     const settled = run.moves.map(m => ({ to: m.to, ...settle(m.conds, m.fare, m.taken) })).filter(s => !s.dead);
     const open = settled.filter(s => s.window === undefined);
     const windows = [
@@ -875,23 +963,26 @@ function propose(trigger: Trigger, run: Run, completes: Completes): GateCandidat
     for (const s of open) for (const [req, name] of Object.entries(s.stages)) if (named.has(req)) stages[req] = name;
     const gated = moves.some(m => m.options.some(o => o.requires.length));
     const blocks = windows.some(w => w.startsWith('block: '));
-    const kind: GateKind = run.why.length
-        ? 'unclear'
-        : gated
-          ? 'gate'
-          : !open.length
-            ? windows.length
-                ? 'quest-window'
-                : 'unclear'
-            : blocks
-              ? 'temporary-block'
-              : 'side-effect';
+    // Only conditions it can't read: what they gate is for gates.ts to say.
+    const kind: GateKind =
+        run.why.length || (!gated && !conditions.length)
+            ? 'unclear'
+            : gated
+              ? 'gate'
+              : !open.length
+                ? windows.length
+                    ? 'quest-window'
+                    : 'unclear'
+                : blocks
+                  ? 'temporary-block'
+                  : 'side-effect';
     return {
         trigger: triggerKey(trigger),
         source: `${trigger.file}:${trigger.line}`,
         kind,
         moves,
         conditions,
+        unread,
         windows: [...new Set(windows)].sort(cmp),
         stages: Object.fromEntries(Object.entries(stages).sort(([a], [b]) => cmp(a, b))),
         ...(run.why.length ? { why: run.why.join('; ') } : {}),
@@ -943,6 +1034,11 @@ export interface CuratedGate {
      * what the scan proposes (why the scan is wrong there).
      */
     why?: string;
+    /**
+     * For an entry with a why (every rejection, and a gate that overrides the scan): the digest of the scan
+     * proposal it was written against (proposalDigest). The review fails when the proposal changes.
+     */
+    scan?: string;
     /** For a gate: what else to know about it (written to World.gates). */
     notes?: string;
     /**
@@ -967,6 +1063,11 @@ export interface GateReview {
     unreviewed: string[];
     /** Entries for triggers the scan no longer finds: an error. */
     stale: string[];
+    /**
+     * Overrides (a rejection, or a gate with a why) whose scan digest is missing or no longer the scan's
+     * proposal, with the digest to write once the trigger is read again: an error.
+     */
+    drifted: string[];
     /** Entries that are malformed, or differ from the scan's proposal with no `why`: an error. */
     invalid: string[];
 }
@@ -994,6 +1095,33 @@ const OPPOSITE: Readonly<Record<string, Side>> = {
     south: 'north',
 };
 
+/** A text without its ` (file:line)` citations. */
+const strip = (t: string): string => t.replace(/ \([^()]*\.rs2:\d+\)/g, '');
+
+/**
+ * A candidate's proposal as one line, without script lines (so a script edit that only shifts lines
+ * doesn't touch it): its kind, each move's target, gated sets and side, its windows and its unread
+ * conditions.
+ */
+export function proposalText(c: GateCandidate): string {
+    return JSON.stringify([
+        c.kind,
+        c.moves.map(m => [m.to, gatedSets(m).map(set => set.map(strip)), gatedSide(m) ?? '']),
+        c.windows.map(strip),
+        c.unread.map(strip),
+    ]);
+}
+
+/** proposalText hashed (32-bit FNV-1a) to 8 hex digits: what a curated override pins (CuratedGate.scan). */
+export function proposalDigest(c: GateCandidate): string {
+    let h = 0x811c9dc5;
+    for (const ch of proposalText(c)) {
+        h ^= ch.codePointAt(0)!;
+        h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+}
+
 /** A candidate's gated requirement sets on one move: the minimal sets of its options that need something. */
 export const gatedSets = (move: GateMove | undefined): string[][] =>
     minimalSets((move?.options ?? []).filter(o => o.requires.length).map(o => o.requires));
@@ -1018,6 +1146,7 @@ export function reviewGates(
     const seen = new Set<string>();
     const invalid: string[] = [];
     const stale: string[] = [];
+    const drifted: string[] = [];
     for (const e of curated) {
         const fail = (why: string) => invalid.push(`${e.trigger} (${e.source}): ${why}`);
         if (seen.has(e.trigger)) fail('listed twice');
@@ -1030,6 +1159,17 @@ export function reviewGates(
         const at = e.source.match(/^([^:]+\.rs2):(\d+)$/);
         if (!at) fail(`source ${e.source} is not file:line`);
         else if (files && !lineAt(at[1]!, Number(at[2]))?.trim()) fail(`source ${e.source} is not a line of code`);
+        // An entry that overrides the scan (a rejection, or a gate with a why) pins the proposal it read: when
+        // the proposal changes, the entry has drifted until someone reads the trigger again.
+        const overrides = e.kind !== 'gate' || e.why !== undefined;
+        const digest = proposalDigest(c);
+        if (overrides && e.scan !== digest)
+            drifted.push(
+                `${e.trigger} (${e.source}): ${e.scan === undefined ? 'no scan digest' : `the scan's proposal changed from ${e.scan}`}; ` +
+                    `read the trigger again and write scan: '${digest}' (${proposalText(c)})`,
+            );
+        if (!overrides && e.scan !== undefined) fail('scan pins an override: a gate that matches the scan has none');
+        if (e.why !== undefined && !e.why.trim()) fail('why is empty');
         if (e.kind !== 'gate') {
             if (e.requires || e.from || e.to || e.notes || e.byConfig || e.stages || e.at)
                 fail(`a ${e.kind} has no requires, from, to, notes, byConfig, stages or at`);
@@ -1050,7 +1190,7 @@ export function reviewGates(
         const targets = e.to === undefined ? [CROSS] : typeof e.to === 'string' ? [e.to] : Object.values(e.to);
         for (const t of [...targets, ...(typeof e.to === 'object' ? Object.keys(e.to) : [])])
             if (t !== CROSS && !isCoordLiteral(t)) fail(`to ${t} is not a coord literal`);
-        if (e.why !== undefined) continue;
+        if (overrides) continue;
         for (const to of targets) {
             const move = c.moves.find(m => m.to === to);
             const scanned = gatedSets(move);
@@ -1065,6 +1205,7 @@ export function reviewGates(
     return {
         unreviewed: candidates.filter(c => !seen.has(c.trigger)).map(c => `${c.trigger} (${c.source}): ${c.kind}`),
         stale,
+        drifted,
         invalid,
     };
 }
@@ -1132,10 +1273,10 @@ export function placeGates(input: GatePlacementInput): GatePlacement {
             const stage = req.match(/^quest:([a-z0-9_]+)>=(\d+)$/);
             if (!stage) continue;
             const name = e.stages?.[req] ?? candidates.get(e.trigger)?.stages[req];
-            const [constant, plus] = (name ?? '').split('+');
-            const value = constantInt(input.constants, constant!);
-            const nameHolds =
-                !name?.startsWith('^') || (value !== undefined && value + (plus ? 1 : 0) === Number(stage[2]));
+            // `^name`, `^name+1`, or the number itself: each must hold the stage.
+            const [base, plus] = (name ?? '').split('+');
+            const value = base?.startsWith('^') ? constantInt(input.constants, base) : Number(base);
+            const nameHolds = value !== undefined && value + (plus ? 1 : 0) === Number(stage[2]);
             if (!name || !questIds.has(stage[1]!) || !nameHolds) {
                 unnamed.push(`${e.trigger} (${e.source}): ${req}${name ? ` (${name} does not hold it)` : ''}`);
                 continue;

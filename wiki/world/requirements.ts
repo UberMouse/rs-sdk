@@ -8,6 +8,10 @@
 //                          Peril's holy barrier, areas/area_mausoleum/scripts/holy_barrier.rs2:2)
 //   skill:<skill>:<level>  a base level
 //   item:<obj>:worn|held   wearing, or carrying, the obj (the Zanaris shed checks a worn dramen staff)
+//   category:<category>:worn|held
+//                          wearing, or carrying, any obj of an obj-config category: an `inv_totalcat`
+//                          check, or a tool-checker proc's objs (`~pickaxe_checker` returns a weapon_pickaxe)
+//   questpoints:<n>        at least n quest points (`%qp >= n`, the Champions' Guild door)
 //   coins:<n>              n coins taken per crossing (a toll, a fare)
 //   consume:<obj>:<n>      n of the obj taken per crossing (a Shantay pass, a ship ticket)
 //   members                a members world
@@ -19,6 +23,8 @@ export type Requirement =
     | { kind: 'quest'; quest: string; stage?: number }
     | { kind: 'skill'; skill: string; level: number }
     | { kind: 'item'; obj: string; how: 'worn' | 'held' }
+    | { kind: 'category'; category: string; how: 'worn' | 'held' }
+    | { kind: 'questpoints'; n: number }
     | { kind: 'coins'; n: number }
     | { kind: 'consume'; obj: string; n: number }
     | { kind: 'members' }
@@ -49,6 +55,12 @@ export function formatRequirement(r: Requirement): string {
         case 'item':
             ids(r.obj);
             return `item:${r.obj}:${r.how}`;
+        case 'category':
+            ids(r.category);
+            return `category:${r.category}:${r.how}`;
+        case 'questpoints':
+            count(r.n);
+            return `questpoints:${r.n}`;
         case 'coins':
             count(r.n);
             return `coins:${r.n}`;
@@ -72,6 +84,8 @@ const FORMS: [RegExp, (m: RegExpMatchArray) => Requirement][] = [
     [/^quest:([a-z0-9_]+)>=(\d+)$/, m => ({ kind: 'quest', quest: m[1]!, stage: Number(m[2]) })],
     [/^skill:([a-z0-9_]+):(\d+)$/, m => ({ kind: 'skill', skill: m[1]!, level: Number(m[2]) })],
     [/^item:([a-z0-9_]+):(worn|held)$/, m => ({ kind: 'item', obj: m[1]!, how: m[2] as 'worn' | 'held' })],
+    [/^category:([a-z0-9_]+):(worn|held)$/, m => ({ kind: 'category', category: m[1]!, how: m[2] as 'worn' | 'held' })],
+    [/^questpoints:(\d+)$/, m => ({ kind: 'questpoints', n: Number(m[1]) })],
     [/^coins:(\d+)$/, m => ({ kind: 'coins', n: Number(m[1]) })],
     [/^consume:([a-z0-9_]+):(\d+)$/, m => ({ kind: 'consume', obj: m[1]!, n: Number(m[2]) })],
     [/^members$/, () => ({ kind: 'members' })],
