@@ -320,7 +320,9 @@ level above the NPC's hunt threshold (twice its level for `huntmode=cowardly`). 
 attacks, and the numbers measure the method alone (the user, 2026-10-11).
 
 `bun conductor/run-task.ts <worker> <name> --params '<json>' --until minutes:1`. Iterate until the
-RESULT is `done` and `stepRuns` look like the task you meant. On failure, Read the `logFile` and
+RESULT is `done` and `stepRuns` look like the task you meant. Run anything longer than a few
+seconds with `run_in_background` and wait for its completion notification: a foreground `sleep`
+is blocked, there is no Monitor tool, and a `pgrep`/`sleep` loop wastes turns. On failure, Read the `logFile` and
 use `bun sdk/cli.ts <worker>`. The lite client `load.ts --client` starts has no pixels, so runs on
 it take no screenshots; when you need them, load without `--client` and run the rendering client
 instead (`bun conductor/tools/client.ts <worker> --headless`), then
