@@ -5,6 +5,7 @@
 import type { Quest } from '../types';
 import { cmp } from '../util';
 import { truthOf, type Value } from './evaluate';
+import type { LoadoutProc } from './loadout';
 import { parseScript, type Expr, type Stmt } from './runescript';
 import type { Callable } from './triggers';
 
@@ -95,39 +96,88 @@ const QUEST_POINTS = '%qp';
 
 /**
  * Tool-checker procs, by `~name`, with the obj categories they accept: a proc whose returns are each an obj
- * (`return(rune_axe);`) but the last, `return(null);`, and whose objs all have a category in their config.
- * `~pickaxe_checker` (skill_mining/scripts/pickaxe_checker.rs2:1) returns one of six pickaxes worn in the
- * right hand or carried, all `weapon_pickaxe`; a script that tests its result against `null` needs one.
+ * (`return(rune_axe);`) under an `if` that tests that obj (worn in the right hand or carried), but the
+ * last, `return(null);`, and whose objs all have a category in their config. `~pickaxe_checker`
+ * (skill_mining/scripts/pickaxe_checker.rs2:1) returns one of six pickaxes, all `weapon_pickaxe`; a script
+ * that tests its result against `null` needs one. A `*_checker` proc of that shape that fails any of this
+ * is listed in `skipped` with why (`~god_staff_checker` returns a staff for a god cape held,
+ * areas/area_mage_arena/scripts/chamber_guardian.rs2:51), for the build to warn of.
  */
 export function toolCheckers(
     callables: readonly Callable[],
     objCategory: ReadonlyMap<string, string>,
-): Map<string, string[]> {
-    const out = new Map<string, string[]>();
+): { tools: Map<string, string[]>; skipped: string[] } {
+    const tools = new Map<string, string[]>();
+    const skipped: string[] = [];
     for (const c of callables) {
         if (!c.call.startsWith('~') || !/\breturn\s*\(\s*null\s*\)/.test(c.body)) continue;
+        const named = c.call.endsWith('_checker');
+        const skip = (why: string) => {
+            if (named) skipped.push(`${c.call} (${c.file}:${c.line}): ${why}`);
+        };
         const script = parseScript(c.file, c.line, c.body);
-        if ('error' in script) continue;
+        if ('error' in script) {
+            skip(`not read: ${script.error}`);
+            continue;
+        }
         const returned: string[] = [];
-        let other = false;
-        const walk = (stmts: readonly Stmt[]): void => {
+        let other: string | undefined;
+        const walk = (stmts: readonly Stmt[], guard: string | undefined): void => {
             for (const st of stmts)
                 if (st.t === 'return') {
                     const v = st.value;
-                    if (v?.t === 'name' && v.args === null && v.name !== 'null') returned.push(v.name);
-                    else if (!(v?.t === 'name' && v.name === 'null')) other = true;
+                    if (v?.t === 'name' && v.args === null && v.name === 'null') continue;
+                    if (v?.t !== 'name' || v.args !== null) other ??= `returns \`${v?.text ?? ''}\``;
+                    else if (!guard || !new RegExp(`\\b${v.name}\\b`).test(guard))
+                        other ??= `returns ${v.name} under \`${guard ?? 'no if'}\`, which does not test it`;
+                    else returned.push(v.name);
                 } else if (st.t === 'if') {
-                    walk(st.yes);
-                    walk(st.no);
-                } else if (st.t === 'switch' || st.t === 'while') other = true;
+                    walk(st.yes, st.cond.text);
+                    walk(st.no, undefined);
+                } else if (st.t === 'switch' || st.t === 'while') other ??= `has a ${st.t}`;
         };
-        walk(script.body);
+        walk(script.body, undefined);
         const last = script.body.at(-1);
-        const categories = returned.map(o => objCategory.get(o));
-        if (other || !returned.length || last?.t !== 'return' || categories.some(x => x === undefined)) continue;
-        out.set(c.call, [...new Set(categories as string[])].sort(cmp));
+        const missing = returned.filter(o => !objCategory.has(o));
+        if (other) skip(other);
+        else if (!returned.length || last?.t !== 'return') skip('returns no obj, or does not end in return(null)');
+        else if (missing.length) skip(`${missing.join(', ')} has no category`);
+        else tools.set(c.call, [...new Set(returned.map(o => objCategory.get(o)!))].sort(cmp));
     }
-    return out;
+    return { tools, skipped };
+}
+
+/** The commands the reader takes as a condition's subject, beside varps (`%name`) and the procs it is given. */
+const SUBJECTS = ['map_members', 'inv_total', 'inv_totalcat', 'inv_getobj', 'stat', 'stat_base', 'last_useitem'];
+/** The SUBJECTS written without arguments; the others are calls (`stat(`, not the `stat` type). */
+const WORD_SUBJECTS = new Set(['map_members', 'last_useitem']);
+/**
+ * The SUBJECTS that don't make a callee's code a condition: `inv_getobj` reads the equipment in the procs
+ * every move runs through (`~playerwalk`, `~update_bas`, `~player_teleport_normal`) to pick animations, and
+ * walking those takes each crossing past the walker's path bound. A trigger's own `inv_getobj(worn, slot)
+ * = obj` is still read.
+ */
+const NOT_IN_CALLEES = new Set(['inv_getobj']);
+
+/**
+ * Whether a callee's code names a subject conditionReader reads: a varp (quest progress, `%qp`), one of
+ * SUBJECTS (but NOT_IN_CALLEES), a loadout proc or a tool checker. The gate scan (sources/gate-scan.ts)
+ * treats a moving proc whose code (and callees) names none as one move, so the two share this list.
+ */
+export function readsSubjects(
+    loadoutProcs: Readonly<Record<string, LoadoutProc>>,
+    tools: ReadonlyMap<string, readonly string[]> = new Map(),
+): RegExp {
+    const subjects = SUBJECTS.filter(s => !NOT_IN_CALLEES.has(s));
+    const calls = subjects.filter(s => !WORD_SUBJECTS.has(s));
+    const words = [
+        ...subjects.filter(s => WORD_SUBJECTS.has(s)),
+        ...Object.values(loadoutProcs).map(p => p.call),
+        ...tools.keys(),
+    ];
+    return new RegExp(
+        `%[a-z]|(?<![a-z0-9_])(?:${calls.join('|')})\\s*\\(|(?<![a-z0-9_])(?:${words.join('|')})(?![a-z0-9_])`,
+    );
 }
 
 /**
@@ -136,7 +186,7 @@ export function toolCheckers(
  */
 export function conditionReader(
     quests: readonly Quest[],
-    loadoutProcs: Readonly<Record<string, string>>,
+    loadoutProcs: Readonly<Record<string, LoadoutProc>>,
     tools: ReadonlyMap<string, readonly string[]> = new Map(),
 ): (e: Expr, want: boolean, ctx: ConditionContext) => Reading {
     // Quest varps by the name the scripts use (a varbit's, or the varp's when progress is the whole varp).
@@ -146,19 +196,10 @@ export function conditionReader(
             const name = v.varbit ? `%${v.varbit}` : v.bits ? undefined : `%${v.varp}`;
             if (name) questOf.set(name, { quest: q, varp: name, complete: v.complete, own: v === q });
         }
-    const loadoutOf = new Map(Object.entries(loadoutProcs).map(([id, proc]) => [proc, id]));
+    const loadoutOf = new Map(Object.entries(loadoutProcs).map(([id, p]) => [p.call, { id, ...p }]));
     const isSubject = (x: Expr): boolean =>
         x.t === 'name' &&
-        (questOf.has(x.name) ||
-            x.name === 'map_members' ||
-            x.name === 'inv_total' ||
-            x.name === 'inv_totalcat' ||
-            x.name === 'inv_getobj' ||
-            x.name === QUEST_POINTS ||
-            x.name === 'stat' ||
-            x.name === 'stat_base' ||
-            x.name === 'last_useitem' ||
-            loadoutOf.has(x.name));
+        (questOf.has(x.name) || SUBJECTS.includes(x.name) || x.name === QUEST_POINTS || loadoutOf.has(x.name));
 
     return (e, want, ctx) => {
         // A bare boolean (`if (~has_x)`) reads as `~has_x = true`.
@@ -190,9 +231,13 @@ export function conditionReader(
         }
 
         const loadout = loadoutOf.get(lhs.name);
-        if (loadout && lhs.args === null && eq) {
+        if (loadout && !lhs.args?.length && eq) {
             const truth = truthOf(ctx.evaluate(rhs));
-            return truth === undefined ? unread : { k: 'loadout', rule: loadout, clear: truth !== (op === '=') };
+            // Whether the path takes the proc as returning true; what true means is the proc's polarity.
+            const isTrue = truth === (op === '=');
+            return truth === undefined
+                ? unread
+                : { k: 'loadout', rule: loadout.id, clear: loadout.trueWhen === 'clear' ? isTrue : !isTrue };
         }
 
         const ref = questOf.get(lhs.name);

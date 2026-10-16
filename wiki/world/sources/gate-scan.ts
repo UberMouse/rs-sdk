@@ -7,29 +7,37 @@
 //   doors/scripts/ that moves the player or changes a loc: `~open_and_close_door`, `~open_door`, the
 //   double-door procs), which crosses the loc; a call of any other moving proc given a fixed tile
 //   (`~forcemove(0_44_46_54_9)`, `~climb_ladder(<coord>, true)`), a move there; or a call of a moving
-//   proc with no condition the scan reads anywhere below it (an agility walk), a crossing. A move to a
-//   coord the script fixes is a jump to that tile; any other (relative to the loc or the player) crosses
-//   the loc. Moves inside a random event, the ring of life or equipping (INCIDENTAL) are not passage.
-// - a condition on a quest varp, `stat`/`stat_base`, `inv_total(inv|worn, obj)`, `inv_getobj(worn,
-//   slot)`, `last_useitem`, `map_members` or a loadout proc (gates.ts LOADOUT_PROCS) is read by
-//   sources/conditions.ts, and a parameterless proc that only returns a condition is read as it; one on
-//   the player's tile (`~check_axis(coord, loc_coord, loc_angle)`, `coordx(coord) < coordx(loc_coord)`)
-//   records the side the player stands on; any other (a dialogue choice, an npc nearby, another varp)
-//   goes both ways and adds nothing. `inv_del(inv, coins, n)` before the move is a toll, other objs
-//   deleted are consumed.
+//   proc with no condition the scan reads anywhere below it (conditions.ts readsSubjects; an agility
+//   walk), a crossing. A move to a coord the script fixes is a jump to that tile; any other (relative to
+//   the loc or the player) crosses the loc. Moves inside a random event, the ring of life or equipping
+//   (INCIDENTAL) are not passage.
+// - a condition on a quest varp, `%qp`, `stat`/`stat_base`, `inv_total(inv|worn, obj)`,
+//   `inv_totalcat(inv|worn, category)`, `inv_getobj(worn, slot)`, `last_useitem`, `map_members`, a
+//   loadout proc (gates.ts LOADOUT_PROCS) or a tool checker's result against null (`~pickaxe_checker`,
+//   conditions.ts toolCheckers) is read by sources/conditions.ts, and a parameterless proc that only
+//   returns a condition is read as it; one on the player's tile (`~check_axis(coord, loc_coord,
+//   loc_angle)`, `coordx(coord) < coordx(loc_coord)`) records the side the player stands on; one on the
+//   loc alone (`loc_coord`, `loc_angle`, `loc_type`) and a dialogue choice or random draw go both ways and
+//   add nothing; any other (an npc nearby, another varp) is unread: it adds nothing to the sets, but one
+//   that decides whether or where the trigger moves is listed (GateCandidate.unread) and makes it a
+//   candidate. `inv_del(inv, coins, n)` before the move is a toll, other objs deleted are consumed.
 //
 // A trigger that branched on one of those conditions before a move is a candidate, and the scan proposes
 // what it is (GateKind) for gates.ts to confirm. Quest conditions are read for a settled account (each
 // quest not started or complete, sources/quests.ts): a move that needs the varp above a stage needs
-// `quest:<id>>=<stage>` (or `quest:<id>` at complete); one open neither before the quest nor after it is
-// a quest window and left out.
+// `quest:<id>>=<stage>` (or `quest:<id>` at complete), whether the script tests it so or refuses below it;
+// one open neither before the quest nor after it is a quest window and left out. One open only before the
+// quest is done (Iban's temple turning the player away once Underground Pass is done) is a window too,
+// unless another path to the same tile needs that quest or tests that varp, as a toll paid until the quest
+// is done and free after (beforeOnly); on a quest with `or` varps it stays as other:<text>.
 import { codeOf } from '../classify';
 import { minimalSets, requirementSet, subsetOf } from '../requirements';
 import type { Gate, Quest, Side, Tile } from '../types';
 import { cmp, push } from '../util';
-import { conditionReader, FLIP, NEGATE, nameOf, type QuestRef } from './conditions';
+import { conditionReader, FLIP, NEGATE, nameOf, readsSubjects, type QuestRef } from './conditions';
 import { first, type Config } from './configs';
 import { constantInt, type Constant } from './constants';
+import type { LoadoutProc } from './loadout';
 import {
     equal,
     fold,
@@ -66,8 +74,8 @@ const MOVE_COMMANDS: Readonly<Record<string, number>> = { p_telejump: 0, p_telep
 
 const MOVES = /\b(?:p_telejump|p_teleport|p_exactmove)\s*\(/;
 const CHANGES_LOC = /\bloc_(?:add|change|del)\s*\(/;
-/** A condition or payment the scan reads (sources/conditions.ts), or a call it may be in. */
-const READS = /%[a-z]|\bstat(?:_base)?\s*\(|\binv_(?:total|del)\s*\(|\bmap_members\b|\blast_useitem\b|~has_/;
+/** A payment the scan reads; the conditions it reads are sources/conditions.ts readsSubjects. */
+const PAYS = /\binv_del\s*\(/;
 const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
 /** A random draw (an agility or thieving roll, a chance): it goes both ways and gates nothing. */
 const RANDOM = /\b(?:random|randominc|stat_random)\s*\(|~random_range\b|~chance\b/;
@@ -132,7 +140,7 @@ export interface GateScanInput {
     constants: ReadonlyMap<string, Constant>;
     quests: readonly Quest[];
     /** Loadout rule id -> the proc that checks it (gates.ts LOADOUT_PROCS). */
-    loadoutProcs: Readonly<Record<string, string>>;
+    loadoutProcs: Readonly<Record<string, LoadoutProc>>;
     /** Config names a bare name may be (objs, locs, npcs): what `def_obj $key = brass_key` holds. */
     names: ReadonlySet<string>;
     /** Tool-checker procs and the obj categories they accept (sources/conditions.ts toolCheckers). */
@@ -519,7 +527,7 @@ function gateWalker(input: GateScanInput) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const scriptOf = scriptCache();
     const read = conditionReader(input.quests, input.loadoutProcs, input.tools);
-    const loadoutCalls = new Set(Object.values(input.loadoutProcs));
+    const loadoutCalls = new Set(Object.values(input.loadoutProcs).map(p => p.call));
 
     // The call graph: each callable's code and the callables it calls, and who calls each.
     const graph = new Map(
@@ -564,7 +572,8 @@ function gateWalker(input: GateScanInput) {
     const moves = (call: string): boolean => moving.has(call);
     // Callables with a condition the scan reads, themselves or through a callee. A moving proc with none
     // is a move as a whole: what it does inside (an agility walk, a door's swing) can't gate it.
-    const readsConditions = marking((_, code) => READS.test(code));
+    const reads = readsSubjects(input.loadoutProcs, input.tools);
+    const readsConditions = marking((_, code) => reads.test(code) || PAYS.test(code));
     /** Whether a trigger's body can move the player. */
     const bodyMoves = (body: string): boolean => {
         const code = codeOf(body);

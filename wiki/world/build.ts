@@ -156,6 +156,8 @@ export interface BuildReport {
         windows: string[];
         /** Gate requirements in no other form, as `<trigger>: <requirement>`. */
         other: string[];
+        /** `*_checker` procs not read as tool checkers (sources/conditions.ts toolCheckers), with why. */
+        skippedCheckers: string[];
     };
 }
 
@@ -282,7 +284,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const loadoutRules = deriveLoadoutRules(LOADOUT_PROCS, callables);
     const objConfigs = readConfigs('obj');
     // The tool-checker procs and the obj categories they accept, read from the procs and the obj configs.
-    const tools = toolCheckers(
+    const { tools, skipped: skippedCheckers } = toolCheckers(
         callables,
         new Map([...objConfigs].flatMap(([obj, cfg]) => (cfg.category?.[0] ? [[obj, cfg.category[0]]] : []))),
     );
@@ -295,7 +297,6 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         spawns,
         quests: quests.quests,
         loadoutProcs: LOADOUT_PROCS,
-        tools,
     });
     const curated = curatedTransports(
         CURATED_TRANSPORTS,
@@ -416,6 +417,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 other: GATES.flatMap(e =>
                     (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
                 ),
+                skippedCheckers,
             },
         },
     };
@@ -554,6 +556,10 @@ export function formatReport(report: BuildReport): string[] {
         ...list(`ERROR gates: ${g.unnamed.length} quest stages no constant names:`, g.unnamed),
         ...list(`warning: ${g.unplaced.length} gates with no placed loc:`, g.unplaced),
         ...list(`warning: ${g.other.length} gate requirements in no other form:`, g.other),
+        ...list(
+            `warning: ${g.skippedCheckers.length} *_checker procs not read as tool checkers (a script testing one reads as unread):`,
+            g.skippedCheckers,
+        ),
         ...list(`gates the scan can't settle (unclear): ${g.unclear.length}`, g.unclear),
         ...list(`quest windows, kept out of the fill: ${g.windows.length}`, g.windows),
     );

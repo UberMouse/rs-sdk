@@ -231,6 +231,7 @@ describe('formatReport', () => {
             unclear: [],
             windows: [],
             other: [],
+            skippedCheckers: [],
         },
     };
     const gatesLine =
@@ -374,8 +375,9 @@ describe('formatReport', () => {
             other: ['oploc1,odd: other:`x = 1` (o.rs2:3)'],
             unclear: ['oploc1,maze (m.rs2:1): too many paths'],
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
+            skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
         };
-        expect(formatReport({ ...report, gates }).slice(-19)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-21)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -391,14 +393,19 @@ describe('formatReport', () => {
             '  oploc1,ghost (g.rs2:1)',
             'warning: 1 gate requirements in no other form:',
             '  oploc1,odd: other:`x = 1` (o.rs2:3)',
+            'warning: 1 *_checker procs not read as tool checkers (a script testing one reads as unread):',
+            '  ~god_staff_checker (c.rs2:51): returns a staff under a cape check',
             "gates the scan can't settle (unclear): 1",
             '  oploc1,maze (m.rs2:1): too many paths',
             'quest windows, kept out of the fill: 1',
             '  oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought',
         ]);
-        expect(failed({ ...report, gates: { ...report.gates, unplaced: ['x'], other: ['y'], unclear: ['z'] } })).toBe(
-            false,
-        );
+        expect(
+            failed({
+                ...report,
+                gates: { ...report.gates, unplaced: ['x'], other: ['y'], unclear: ['z'], skippedCheckers: ['w'] },
+            }),
+        ).toBe(false);
     });
 });
 

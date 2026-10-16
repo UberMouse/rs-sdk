@@ -25,7 +25,7 @@ const { quests } = deriveQuests({
 });
 const locConfigs = readConfigs('loc');
 const objConfigs = readConfigs('obj');
-const tools = toolCheckers(
+const { tools, skipped } = toolCheckers(
     callables,
     new Map([...objConfigs].flatMap(([obj, cfg]) => (cfg.category?.[0] ? [[obj, cfg.category[0]]] : []))),
 );
@@ -123,14 +123,26 @@ describe('the calibration gates: what the scan proposes and gates.ts confirms', 
 });
 
 describe('obj categories, quest points and conditions the scan cannot read', () => {
-    test('the tool checker procs are the ones returning objs of one category, or null', () =>
+    test('the tool checker procs return objs of one category, each under an if that tests it, or null', () => {
         expect(tools).toEqual(
             new Map([
-                ['~god_staff_checker', ['weapon_staff']],
                 ['~pickaxe_checker', ['weapon_pickaxe']],
                 ['~woodcutting_axe_checker', ['weapon_axe']],
             ]),
-        ));
+        );
+        // The god staff checker returns a staff for a god cape held: not a tool the player holds.
+        expect(skipped).toEqual([
+            '~god_staff_checker (areas/area_mage_arena/scripts/chamber_guardian.rs2:51): returns saradomin_staff under `~obj_gettotal(saradomin_cape) > 0`, which does not test it',
+            '~slash_checker (general/scripts/slash_checker.rs2:1): returns $weapon under `oc_param($weapon, slashattack_anim) ! human_unarmedpunch`, which does not test it',
+        ]);
+    });
+
+    test("loadout rules on gates: the Mage Arena's barrier and Glarial's tomb", () => {
+        expect(gatedSets(scanned('oploc1,magearena_scan')?.moves[0])).toEqual([['loadout:mage_arena']]);
+        expect(gatedSets(scanned('oplocu,glarials_tombstone_waterfall_quest')?.moves[0])).toEqual([
+            ['item:glarials_pebble_waterfall_quest:held', 'loadout:glarials_tomb'],
+        ]);
+    });
 
     test("the Champions' Guild: 32 quest points", () => {
         expect(scanned('oploc1,championdoor')?.kind).toBe('gate');

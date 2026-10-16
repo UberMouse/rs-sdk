@@ -62,6 +62,91 @@ describe('the Entrana loadout rule', () => {
     });
 });
 
+describe('the loadout rules read from procs that return true when the player is clear', () => {
+    const rules = deriveLoadoutRules(LOADOUT_PROCS, callables);
+    // The 21 armour and weapon categories both procs ban carried or worn.
+    const arms = Object.fromEntries(
+        [
+            'armour_body',
+            'armour_hands',
+            'armour_helmet',
+            'armour_legs',
+            'armour_shield',
+            'arrows',
+            'weapon_2h_sword',
+            'weapon_axe',
+            'weapon_blunt',
+            'weapon_bow',
+            'weapon_claws',
+            'weapon_crossbow',
+            'weapon_javelin',
+            'weapon_pickaxe',
+            'weapon_polearm',
+            'weapon_scythe',
+            'weapon_slash',
+            'weapon_spear',
+            'weapon_spiked',
+            'weapon_stab',
+            'weapon_thrown',
+        ].map(c => [c, 'both']),
+    );
+    const clues = Object.fromEntries(
+        ['easy', 'medium', 'hard'].flatMap(t => [`trail_casket_${t}`, `trail_clue_${t}`]).map(c => [c, 'carried']),
+    );
+
+    test("the Mage Arena's: arms, logs (category_22), clue scrolls and caskets, cannon parts, and fletching parts", () =>
+        expect(rules.mage_arena).toEqual({
+            forbidCategories: {
+                ...arms,
+                ...clues,
+                cannon_parts: 'carried',
+                category_22: 'carried',
+                unstrung_bow: 'carried',
+            },
+            forbidObjs: { arrow_shaft: 'carried', bow_string: 'carried', headless_arrow: 'carried' },
+            source: 'areas/area_mage_arena/scripts/mage_arena.rs2:100',
+        }));
+
+    test("Glarial's tomb's: arms, staffs and capes, runes (category_149), flowers worn, crafting and fletching supplies, and logs by name", () =>
+        expect(rules.glarials_tomb).toEqual({
+            forbidCategories: {
+                ...arms,
+                ...clues,
+                armour_cape: 'both',
+                armour_godcape: 'both',
+                cannon_parts: 'carried',
+                category_149: 'carried',
+                flowers: 'worn',
+                unstrung_bow: 'carried',
+                weapon_staff: 'both',
+            },
+            forbidObjs: Object.fromEntries(
+                [
+                    'arrow_shaft',
+                    'ball_of_wool',
+                    'bow_string',
+                    'dragon_leather',
+                    'dragon_leather_black',
+                    'dragon_leather_blue',
+                    'dragon_leather_red',
+                    'hard_leather',
+                    'headless_arrow',
+                    'knife',
+                    'leather',
+                    'logs',
+                    'magic_logs',
+                    'maple_logs',
+                    'needle',
+                    'oak_logs',
+                    'thread',
+                    'willow_logs',
+                    'yew_logs',
+                ].map(o => [o, 'carried']),
+            ),
+            source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:44',
+        }));
+});
+
 describe('ship routes', () => {
     test('Port Sarim to Karamja: 30 coins with any of the three sailors, landing on the ship at Musa Point', () =>
         expect(route('port_sarim_to_karamja').map(t => [t.npc, t.to, t.fare, t.requires, t.source, t.paidAt])).toEqual(

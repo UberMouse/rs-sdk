@@ -246,14 +246,14 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'areas/area_mage_arena/scripts/mage_arena.rs2:85',
         [
             [
+                'loadout:mage_arena',
                 'other:Mage Arena miniquest done (%magearena >= ^mage_arena_complete, areas/area_mage_arena/scripts/mage_arena.rs2:85)',
-                'other:no weapons or armour carried or worn (~can_enter_mage_arena, areas/area_mage_arena/scripts/mage_arena.rs2:100)',
             ],
         ],
         {
             from: 'north',
-            why: 'From the north the barrier checks the Mage Arena miniquest (%magearena, not a quest varp) and ~can_enter_mage_arena (obj categories carried or worn, mage_arena.rs2:100), neither of which the scan reads; from the south it lets the player out free (mage_arena.rs2:95).',
-            scan: 'f233dc9d',
+            why: 'From the north the barrier checks the Mage Arena miniquest (%magearena, not a quest varp, which the scan does not read) and the arena loadout (~can_enter_mage_arena, gates.ts LOADOUT_PROCS); from the south it lets the player out free (mage_arena.rs2:95).',
+            scan: '6f25d0ff',
         },
     ),
     gate(
@@ -2257,13 +2257,13 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'quests/quest_upass/scripts/quest_upass.rs2:81',
         [
             [
-                'other:Underground Pass started with King Lathas (bit ^upass_started_bit of %ibanmulti, quests/quest_upass/scripts/quest_upass.rs2:85)',
+                'other:Underground Pass started with King Lathas (bit ^upass_started_bit of %ibanmulti, quests/quest_upass/scripts/quest_upass.rs2:85) and Koftik spoken to at the entrance (%upass > ^upass_not_started, quests/quest_upass/scripts/quest_upass.rs2:89)',
                 'quest:biohazard',
             ],
         ],
         {
             to: '0_38_151_62_52',
-            why: 'Besides Biohazard, the entrance needs the Underground Pass started (a bit of %ibanmulti), which the scan does not read.',
+            why: "Besides Biohazard, the entrance needs the Underground Pass started (a bit of %ibanmulti), which the scan does not read, and then Koftik's first dialogue (%upass past ^upass_not_started, quest_upass.rs2:89-94), which the scan drops beside that bit.",
             scan: 'c5dd1979',
         },
     ),
@@ -2420,17 +2420,8 @@ export const GATE_LIST: readonly CuratedGate[] = [
     gate(
         'oplocu,glarials_tombstone_waterfall_quest',
         'quests/quest_waterfall/scripts/quest_waterfall.rs2:103',
-        [
-            [
-                'item:glarials_pebble_waterfall_quest:held',
-                'other:no weapons or armour carried or worn (~waterfall_can_enter_glarials_tomb, quests/quest_waterfall/scripts/quest_waterfall.rs2:44)',
-            ],
-        ],
-        {
-            to: '0_39_153_58_52',
-            why: "The pebble opens Glarial's tomb only to a player carrying and wearing no weapons or armour (obj categories, ~waterfall_can_enter_glarials_tomb at quest_waterfall.rs2:44), a proc result the scan does not read (quest_waterfall.rs2:112).",
-            scan: '25d9944f',
-        },
+        'item:glarials_pebble_waterfall_quest:held loadout:glarials_tomb',
+        { to: '0_39_153_58_52' },
     ),
     gate(
         'oploc1,lograft_waterfall_quest',

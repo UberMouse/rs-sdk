@@ -152,8 +152,8 @@ export interface Quest extends QuestVarp {
     /**
      * The stages gates name (`quest:<id>>=<stage>`), by constant name: the value a gate compares the
      * varp with, or `^name+1` for one that opens past it (`%princequest > ^prince_guard_drunk`); the number
-     * itself when the script compares with no constant (`%itwatchtower < 4` names `4`). Empty until a gate
-     * names one.
+     * itself when the script compares with no constant (`%itwatchtower < 4` names `4`), `<n>+1` when that
+     * opens past it (`%misc > 0` names `0+1`). Empty until a gate names one.
      */
     stages: Record<string, number>;
     /** The journal call it is read from, or the curated override's script (gates.ts). */
@@ -169,12 +169,14 @@ export interface Quest extends QuestVarp {
 export type LoadoutScope = 'carried' | 'worn' | 'both';
 
 /**
- * A ban on carrying or wearing any obj of some categories, read from the proc that checks it
- * (sources/loadout.ts): an edge that needs `loadout:<id>` can't be crossed with one.
+ * A ban on carrying or wearing any obj of some categories, or some objs by name, read from the proc that
+ * checks it (sources/loadout.ts): an edge that needs `loadout:<id>` can't be crossed with one.
  */
 export interface LoadoutRule {
     /** Obj category -> where it is forbidden. */
     forbidCategories: Record<string, LoadoutScope>;
+    /** Obj -> where it is forbidden, for the objs the proc bans by name (the Mage Arena's bow string). */
+    forbidObjs?: Record<string, LoadoutScope>;
     /** The proc, as `areas/area_port_sarim/scripts/monk_of_entrana.rs2:26`. */
     source: string;
 }
@@ -266,7 +268,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 7;
+export const WORLD_FORMAT = 8;
 
 export interface World {
     /** WORLD_FORMAT when written. */

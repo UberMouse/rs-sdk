@@ -213,7 +213,7 @@ const INPUT: SailInput = {
     npcConfigs,
     spawns: SPAWNS,
     quests: [quest('dragon', 'dragonquest', 10), quest('hunt', 'hunt', 4), quest('zombiequeen', 'zombiequeen', 15)],
-    loadoutProcs: { entrana: '~has_entrana_restricted_items' },
+    loadoutProcs: { entrana: { call: '~has_entrana_restricted_items', trueWhen: 'banned' } },
 };
 const sails = deriveSails(INPUT);
 const rows = (npc: string) => sails.transports.filter(t => t.npc === npc);
@@ -411,9 +411,32 @@ describe('deriveLoadoutRule', () => {
 
     const other = (body: string) => () => deriveLoadoutRule({ ...proc, body: `()(boolean)\n${body}` });
 
+    test('an obj banned by name: forbidObjs', () =>
+        expect(
+            deriveLoadoutRule({
+                ...proc,
+                body: '()(boolean)\nif (inv_totalcat(inv, weapon_axe) > 0 | inv_total(inv, knife) > 0) { return(true); }\nreturn(false);',
+            }),
+        ).toEqual({
+            forbidCategories: { weapon_axe: 'carried' },
+            forbidObjs: { knife: 'carried' },
+            source: 'monk.rs2:13',
+        }));
+
+    test('a proc that returns true when the player is clear, read with that polarity', () => {
+        const clear = '()(boolean)\nif (inv_totalcat(worn, armour_body) > 0) { return(false); }\nreturn(true);';
+        expect(deriveLoadoutRule({ ...proc, body: clear }, 'clear')).toEqual({
+            forbidCategories: { armour_body: 'worn' },
+            source: 'monk.rs2:13',
+        });
+        expect(() => deriveLoadoutRule({ ...proc, body: clear })).toThrow(
+            'is not `if (<category terms>) { return(true); } return(false);`',
+        );
+    });
+
     test('a proc in another form fails, naming what it is', () => {
-        expect(other('if (inv_total(inv, axe) > 0) { return(true); }\nreturn(false);')).toThrow(
-            '`inv_total(inv, axe) > 0` (monk.rs2:14) is not inv_totalcat(inv|worn, <category>) > 0',
+        expect(other('if (stat(magic) > 0) { return(true); }\nreturn(false);')).toThrow(
+            '`stat(magic) > 0` (monk.rs2:14) is not inv_totalcat(inv|worn, <category>) > 0 or inv_total(inv|worn, <obj>) > 0',
         );
         expect(other('return(false);')).toThrow('is not `if (<category terms>) { return(true); } return(false);`');
     });

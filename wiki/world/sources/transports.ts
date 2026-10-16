@@ -11,7 +11,7 @@
 // (net of any it gives), and the conditions the path took. A dialogue choice (`~p_choice*`) goes both
 // ways and adds nothing. Each condition, read by sources/conditions.ts, becomes a requirement
 // (requirements.ts): a members check `members`, a quest varp `quest:<id>` or `quest:<id>>=<stage>`,
-// holding an obj `item:<obj>:held`, a loadout proc (gates.ts LOADOUT_PROCS) returning false
+// holding an obj `item:<obj>:held`, a loadout proc (gates.ts LOADOUT_PROCS) finding the player clear
 // `loadout:<id>`; or nothing, when it only says the player lacks something (no coins, no rum, an F2P
 // world, a quest not yet at a stage: a path for that player, not a requirement); or `other:<text>` when
 // none fits. A path that needs a quest varp at one exact stage below complete is a quest window: it is
@@ -25,6 +25,7 @@ import { cmp, push } from '../util';
 import { first, type Config } from './configs';
 import { conditionReader, nameOf } from './conditions';
 import type { Constant } from './constants';
+import type { LoadoutProc } from './loadout';
 import {
     equal,
     fold,
@@ -62,9 +63,7 @@ export interface SailInput {
     spawns: readonly { config: string; tile: Tile }[];
     quests: readonly Quest[];
     /** Loadout rule id -> the proc that checks it (gates.ts LOADOUT_PROCS). */
-    loadoutProcs: Readonly<Record<string, string>>;
-    /** Tool-checker procs and the obj categories they accept (sources/conditions.ts toolCheckers). */
-    tools?: ReadonlyMap<string, readonly string[]>;
+    loadoutProcs: Readonly<Record<string, LoadoutProc>>;
 }
 
 export interface Sails {
@@ -215,7 +214,7 @@ function sailWalker(input: SailInput, reaches: Reach) {
     const sailProcs = sailProcsOf(input.callables);
     const scriptOf = scriptCache();
 
-    const read = conditionReader(input.quests, input.loadoutProcs, input.tools);
+    const read = conditionReader(input.quests, input.loadoutProcs);
 
     const constant = (name: string): Value | undefined => {
         const c = input.constants.get(name);

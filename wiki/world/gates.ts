@@ -8,6 +8,7 @@
 // why) whose scan digest no longer matches the scan's proposal.
 import { GATE_LIST } from './gate-list';
 import type { CuratedGate } from './sources/gate-scan';
+import type { LoadoutProc } from './sources/loadout';
 import type { QuestOverride } from './sources/quests';
 import type { CuratedTransport } from './sources/transports';
 
@@ -93,11 +94,17 @@ export const QUEST_VARP_EXCEPTIONS: Readonly<Record<string, string>> = {
 };
 
 /**
- * Loadout rules by id, each read from the proc that checks it (sources/loadout.ts): an edge that calls
- * the proc and refuses when it returns true needs `loadout:<id>`.
+ * Loadout rules by id, each read from the proc that checks it (sources/loadout.ts), with what the proc's
+ * true means: an edge that calls the proc and refuses a player it finds carrying something banned needs
+ * `loadout:<id>`.
  */
-export const LOADOUT_PROCS: Readonly<Record<string, string>> = {
-    entrana: '~has_entrana_restricted_items',
+export const LOADOUT_PROCS: Readonly<Record<string, LoadoutProc>> = {
+    // Boarding for Entrana (areas/area_port_sarim/scripts/monk_of_entrana.rs2:26).
+    entrana: { call: '~has_entrana_restricted_items', trueWhen: 'banned' },
+    // Glarial's tomb, with the pebble (quests/quest_waterfall/scripts/quest_waterfall.rs2:44).
+    glarials_tomb: { call: '~waterfall_can_enter_glarials_tomb', trueWhen: 'clear' },
+    // Into the Mage Arena (areas/area_mage_arena/scripts/mage_arena.rs2:100).
+    mage_arena: { call: '~can_enter_mage_arena', trueWhen: 'clear' },
 };
 
 /**

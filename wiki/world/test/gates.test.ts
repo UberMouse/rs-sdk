@@ -204,6 +204,24 @@ if (inv_total(inv, bronze_axe) > 0) {
 }
 return(null);
 
+[proc,cape_checker]()(namedobj)
+if (inv_total(inv, god_cape) > 0) {
+    return(god_staff);
+}
+return(null);
+
+[proc,can_pass_clear]()(boolean)
+if (inv_totalcat(worn, armour_body) > 0) {
+    return(false);
+}
+return(true);
+
+[oploc1,cleardoor]
+if (~can_pass_clear() = false) {
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
 [oploc1,axetree]
 def_namedobj $axe = ~axe_checker(false);
 if ($axe = null) {
@@ -326,7 +344,10 @@ const INPUT: GateScanInput = {
     callables: FILES.flatMap(([f, t]) => parseCallables(f, t)),
     constants,
     quests: QUEST_TABLE,
-    loadoutProcs: { entrana: '~has_entrana_restricted_items' },
+    loadoutProcs: {
+        entrana: { call: '~has_entrana_restricted_items', trueWhen: 'banned' },
+        clearloadout: { call: '~can_pass_clear', trueWhen: 'clear' },
+    },
     names: new Set(['next', 'brasskey', 'chefs_hat', 'coins', 'ticket', 'staff', 'robe', 'boots', 'guard']),
     tools: new Map([['~axe_checker', ['weapon_axe']]]),
 };
@@ -446,9 +467,17 @@ describe('scanGates: obj categories, quest points, and conditions it cannot read
             ['rune_axe', 'weapon_axe'],
             ['bronze_axe', 'weapon_axe'],
         ]);
-        expect(toolCheckers(callables, categories)).toEqual(new Map([['~axe_checker', ['weapon_axe']]]));
-        // An obj with no category: not a checker.
-        expect(toolCheckers(callables, new Map([['rune_axe', 'weapon_axe']]))).toEqual(new Map());
+        expect(toolCheckers(callables, categories)).toEqual({
+            tools: new Map([['~axe_checker', ['weapon_axe']]]),
+            skipped: [
+                '~cape_checker (quests/test.rs2:' +
+                    `${Number(line('[proc,cape_checker]').split(':')[1])}): returns god_staff under \`inv_total(inv, god_cape) > 0\`, which does not test it`,
+            ],
+        });
+        // An obj with no category: not a checker, and said so.
+        expect(toolCheckers(callables, new Map([['rune_axe', 'weapon_axe']])).skipped).toContain(
+            `~axe_checker (${line('[proc,axe_checker]')}): bronze_axe has no category`,
+        );
     });
 
     test('a tool checker against null: any obj of its category, held or worn', () =>
@@ -461,6 +490,9 @@ describe('scanGates: obj categories, quest points, and conditions it cannot read
         expect(gatedSets(move('oploc1,greegate'))).toEqual([['category:greegree:worn']]));
 
     test('%qp: questpoints:<n>', () => expect(gatedSets(move('oploc1,qpdoor'))).toEqual([['questpoints:32']]));
+
+    test('a loadout proc that returns true when clear, called with empty parens: loadout:<id>', () =>
+        expect(gatedSets(move('oploc1,cleardoor'))).toEqual([['loadout:clearloadout']]));
 
     test('an unread condition that decides whether it moves: a candidate naming it', () =>
         expect(scanned('oploc1,guarddoor')).toMatchObject({
