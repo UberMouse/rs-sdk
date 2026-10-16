@@ -54,18 +54,82 @@ export interface Pathfinder {
  * A stopgap patch of sdk/collision-data.json: delete this list once that file lists loc 1536 at (3107,3162).
  */
 export const EXTRA_DOORS: readonly DoorInfo[] = [{ level: 0, x: 3107, z: 3162, shape: 9, angle: 3, blockrange: true }];
-let extraDoorsMasked = false;
-/** Unblocks the EXTRA_DOORS tiles, once, after the SDK's own door index has been built. */
-function maskExtraDoors(): void {
+/**
+ * Every closed slashable web (loc 733 `bigweb_slashable`, from server/content/maps/*.jm2; the `webwall` loc 1810
+ * is placed on no map). A web fills its tile (ground-layer collision, blockwalk) until slashed, when it becomes
+ * `bigweb_slashed` (no collision) for 100 ticks, so the walk treats it like a closed door: the route may run
+ * through its tile and the walk slashes it open on the way (walk.ts). Masked like EXTRA_DOORS.
+ */
+const slashWeb = (level: number, x: number, z: number, angle: number): DoorInfo => ({
+    level,
+    x,
+    z,
+    shape: 10,
+    angle,
+    blockrange: true,
+});
+export const SLASH_WEBS: readonly DoorInfo[] = [
+    slashWeb(0, 2565, 3124, 2),
+    slashWeb(0, 2569, 3118, 1),
+    slashWeb(0, 2570, 3118, 1),
+    slashWeb(0, 2574, 3124, 0),
+    slashWeb(0, 2654, 9766, 3),
+    slashWeb(0, 3030, 3852, 2),
+    slashWeb(0, 3083, 3833, 2),
+    slashWeb(0, 3093, 3957, 0),
+    slashWeb(0, 3095, 3957, 0),
+    slashWeb(0, 3115, 3859, 1),
+    slashWeb(0, 3147, 3727, 1),
+    slashWeb(0, 3158, 3951, 1),
+    slashWeb(0, 3163, 3736, 0),
+    slashWeb(0, 3183, 3733, 1),
+    // Varrock Sewers, the way to the moss giants.
+    slashWeb(0, 3210, 9898, 1),
+];
+/** The doors the data lacks and the webs, masked open in the collision index and known as doors. */
+const MASKED: readonly DoorInfo[] = [...EXTRA_DOORS, ...SLASH_WEBS];
+let maskedOpenDone = false;
+/** Unblocks the MASKED tiles (EXTRA_DOORS and SLASH_WEBS), once, after the SDK's own door index has been built. */
+function maskDoorsAndWebs(): void {
     initPathfinding();
-    if (extraDoorsMasked) return;
-    extraDoorsMasked = true;
-    for (const d of EXTRA_DOORS) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
+    if (maskedOpenDone) return;
+    maskedOpenDone = true;
+    for (const d of MASKED) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
 }
 const sameDoor = (a: DoorInfo, b: DoorInfo) => a.level === b.level && a.x === b.x && a.z === b.z;
-const isExtraDoor = (d: DoorInfo) => EXTRA_DOORS.some(e => sameDoor(e, d));
-const extraDoorAt = (level: number, x: number, z: number) =>
-    EXTRA_DOORS.find(d => d.level === level && d.x === x && d.z === z);
+const isMasked = (d: DoorInfo) => MASKED.some(e => sameDoor(e, d));
+const maskedAt = (level: number, x: number, z: number) => MASKED.find(d => d.level === level && d.x === x && d.z === z);
+
+/**
+ * The route with a waypoint on each masked door's tile (a web, a diagonal door) and on the tile before it. A
+ * route's waypoints are only where it turns, so a door in the middle of a straight run has none near it, and
+ * the walk (which opens a door when a waypoint is beside it) would walk into the closed door before trying it.
+ */
+export function withDoorStops(waypoints: Waypoint[]): Waypoint[] {
+    const out: Waypoint[] = [];
+    for (const [i, b] of waypoints.entries()) {
+        const a = waypoints[i - 1];
+        if (a && a.level === b.level) {
+            const n = Math.max(Math.abs(b.x - a.x), Math.abs(b.z - a.z));
+            const at = (k: number): Waypoint => ({
+                level: a.level,
+                x: a.x + Math.round(((b.x - a.x) * k) / n),
+                z: a.z + Math.round(((b.z - a.z) * k) / n),
+            });
+            for (let k = 1; k <= n; k++) {
+                const t = at(k);
+                if (!maskedAt(t.level, t.x, t.z)) continue;
+                // Before it, then on it; the segment's own ends are waypoints already.
+                const prev = at(k - 1);
+                const last = out.at(-1);
+                if (k > 1 && !(last && last.x === prev.x && last.z === prev.z)) out.push(prev);
+                if (k < n) out.push(t);
+            }
+        }
+        out.push(b);
+    }
+    return out;
+}
 
 /** sdk.findPath's default waypoint cap. */
 const MAX_WAYPOINTS = 500;
@@ -94,9 +158,9 @@ export const collisionPaths: Pathfinder = {
                 waypoints: [],
                 error: 'Source zone not allocated (no collision data for current position)',
             };
-        maskExtraDoors();
+        maskDoorsAndWebs();
         // A door the walk gave up on is walled again for this query; the SDK re-walls only its own kind.
-        const shut = avoid.filter(isExtraDoor);
+        const shut = avoid.filter(isMasked);
         for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, true);
         let waypoints: Waypoint[];
         try {
@@ -107,7 +171,7 @@ export const collisionPaths: Pathfinder = {
                 to.x,
                 to.z,
                 MAX_WAYPOINTS,
-                avoid.filter(d => !isExtraDoor(d)),
+                avoid.filter(d => !isMasked(d)),
             );
         } finally {
             for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
@@ -130,20 +194,20 @@ export const collisionPaths: Pathfinder = {
                     error: `Destination (${to.x}, ${to.z}) is unreachable — path ends ${remaining} tiles away at (${last.x}, ${last.z}). The target may be underground or on a different plane that requires a ladder/stairs to access.`,
                 };
         }
-        return { success: true, waypoints, reachedDestination };
+        return { success: true, waypoints: withDoorStops(waypoints), reachedDestination };
     },
     doorsAlong: waypoints => {
         // The door index fills on load, which findDoorsAlongPath alone does not trigger.
-        maskExtraDoors();
+        maskDoorsAndWebs();
         const found = findDoorsAlongPath([...waypoints]);
         for (const wp of waypoints)
             for (const [dx, dz] of CROSS_OFFSETS) {
-                const d = extraDoorAt(wp.level, wp.x + dx, wp.z + dz);
+                const d = maskedAt(wp.level, wp.x + dx, wp.z + dz);
                 if (d && !found.some(f => sameDoor(f, d))) found.push(d);
             }
         return found;
     },
-    doorAt: (level, x, z) => getDoorAt(level, x, z) ?? extraDoorAt(level, x, z),
+    doorAt: (level, x, z) => getDoorAt(level, x, z) ?? maskedAt(level, x, z),
     walkable: isTileWalkable,
     // The server's `lineofwalk` between the two tiles (hasLineOfWalk, as skill_firemaking's push_player uses it).
     canStep(level, x, z, dx, dz) {

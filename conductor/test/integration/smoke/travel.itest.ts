@@ -133,3 +133,56 @@ test(
     },
     itestTimeout({ taskMinutes: 4 }),
 );
+
+// Varrock Sewers: the way east to the moss giants is closed by a slashable web at (3210, 9898), the only link
+// (the Edgeville Dungeon side ends at a wall at x 3152). Start at the sewer ladder's landing; the goal is a
+// tile west of the web that no route reaches without crossing it (an offline flood fill; the moss giants'
+// tiles x < 3200 lie in lib/connectors.ts's Edgeville Dungeon box, a different plane, until it has a sewers box).
+// Combat 99 so nothing in the sewers hunts the bot.
+const SEWER_LADDER = { x: 3237, z: 9859 };
+const BEYOND_WEB = { x: 3201, z: 9881 };
+const WEAPON_SLOT = 3;
+const MITHRIL_SCIMITAR = 1329;
+const SEWER_FIGHTER = { Attack: 99, Strength: 99, Defence: 99, Hitpoints: 99 };
+
+test(
+    'travel slashes the sewer web open and reaches the tiles beyond it',
+    async () => {
+        await withFixtureBot(
+            {
+                position: SEWER_LADDER,
+                skills: SEWER_FIGHTER,
+                equipment: [{ id: MITHRIL_SCIMITAR, count: 1, slot: WEAPON_SLOT }],
+            },
+            async ({ name }) => {
+                const run = await runTask(name, 'travel', { to: BEYOND_WEB, tolerance: 1 }, ['minutes:4']);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                const p = run.result.finalPos!;
+                expect(
+                    Math.max(Math.abs(p.x - BEYOND_WEB.x), Math.abs(p.z - BEYOND_WEB.z)),
+                    detail,
+                ).toBeLessThanOrEqual(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);
+
+test(
+    'travel beyond the sewer web with no slash weapon fails saying so',
+    async () => {
+        await withFixtureBot(
+            { position: SEWER_LADDER, skills: SEWER_FIGHTER },
+            async ({ name }) => {
+                const run = await runTask(name, 'travel', { to: BEYOND_WEB, tolerance: 1 }, ['minutes:4']);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('failed');
+                expect(run.result.reason, detail).toContain('No slash weapon');
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);

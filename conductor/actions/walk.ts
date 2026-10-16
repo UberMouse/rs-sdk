@@ -17,6 +17,9 @@
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
 // - A route that crosses the Wilderness (the surface one, or the Edgeville dungeon's) to a destination
 //   outside it is `no-path`, never walked: upstream walks whatever the pathfinder returns.
+// - A closed slashable web (SLASH_WEBS in paths.ts, the Varrock Sewers one among them) is a door the route may cross:
+//   the walk sends Slash on it (the server needs a slash weapon wielded) and repeats on "You fail to cut
+//   through it." up to WEB_SLASH_ATTEMPTS times; upstream has no web handling and fails `no-path`.
 // - On a raised section of an agility course, or inside the Gnome Stronghold's fence with a destination outside
 //   it, the ground pathfinder has no route out, so the walk first crosses the course's obstacles forward to the
 //   ground, or walks to the gate and passes it outward (leaveEnclosure); upstream fails `no-path`.
@@ -45,6 +48,8 @@ const GATE_OUT_ATTEMPTS = 2;
 export const GATE_OUT_TICKS = GATE_OUT_ATTEMPTS * GATE_ATTEMPT_TICKS;
 /** Route queries before the walk gives up (upstream MAX_ITERATIONS). */
 const MAX_ROUTES = 50;
+/** Slashes of one web a walk tries (each cuts it half the time) before it routes around. */
+export const WEB_SLASH_ATTEMPTS = 6;
 /** Blocking-door opens a walk tries when it is stuck (upstream MAX_DOOR_RETRIES). */
 const MAX_DOOR_RETRIES = 3;
 /** Failed opens of one door before the walk routes around it. */
@@ -88,7 +93,12 @@ export const WALK_BASE_TICKS = 2 * DOOR_OPEN_TICKS + 20;
 export const WALK_TICKS_PER_TILE = 2;
 
 const OPEN = /^open$/i;
+const SLASH = /^slash$/i;
 const LOCKED = /locked/i;
+const NO_BLADE = /sharp blade/i;
+const WEB_CUT_FAILED = /fail to cut/i;
+// A web has no locked outcome, so its stop set differs from DOOR_REFUSAL; NO_BLADE is a subset of WEB_STOP.
+const WEB_STOP = /sharp blade|can't reach|cannot reach/i;
 const DOOR_REFUSAL = /locked|can't reach|cannot reach/i;
 
 export type WalkResult =
@@ -99,6 +109,7 @@ export type WalkResult =
               | 'bad-coordinates'
               | 'no-player'
               | 'no-path'
+              | 'no-blade'
               | 'no-connector'
               | 'climb-failed'
               | 'dead-end'
@@ -146,7 +157,7 @@ export const walkBudgetTicks = (tiles: number, maxTicks = WALK_MAX_TICKS): numbe
     Math.min(maxTicks, WALK_BASE_TICKS + WALK_TICKS_PER_TILE * tiles);
 
 type Point = { x: number; z: number };
-type DoorOpen = 'opened' | 'already-open' | 'locked' | 'cant-reach' | 'not-found';
+type DoorOpen = 'opened' | 'already-open' | 'locked' | 'cant-reach' | 'not-found' | 'no-blade' | 'unslashed';
 
 /** One walk's shared state: its budget and the doors it has given up on. */
 interface Walk {
@@ -162,12 +173,16 @@ interface Walk {
     doorFails: Map<string, number>;
     /** Blocking-door opens tried so far. */
     doorRetries: number;
+    /** The web the server said needs a sharper weapon: ends the walk `no-blade`. */
+    noBlade?: Point;
 }
 
 const posOf = (p: { worldX: number; worldZ: number }): Point => ({ x: p.worldX, z: p.worldZ });
 const tileKey = (p: Point) => `${p.x},${p.z}`;
 const doorKey = (d: DoorInfo) => `${d.level},${d.x},${d.z}`;
 const hasOpen = (l: NearbyLoc) => l.optionsWithIndex.some(o => OPEN.test(o.text));
+/** A closed door, gate or web: it has an Open or Slash option (an open one has neither). */
+const isShut = (l: NearbyLoc) => l.optionsWithIndex.some(o => OPEN.test(o.text) || SLASH.test(o.text));
 const adjacent = (a: Point, b: Point) => chebyshev(a, b) === 1;
 /** A route's last waypoint; undefined for a failed or empty route. */
 const lastWaypoint = (p: PathResult) => (p.success ? p.waypoints.at(-1) : undefined);
@@ -197,6 +212,8 @@ function* pause(w: Walk, n: number): Op<void> {
  * `no-connector` is no chain of connectors leading there; `climb-failed` is a climb that did not change
  * the plane (the loc missing, refused or out of reach). The one tick budget covers the legs and the
  * climbs, and a `timeout` in the middle (`advancing`) is carried on by walking again.
+ *
+ * `no-blade` is a slashable web on the route and no slash weapon wielded: final, do not retry.
  *
  * Spends coins: a route through the Al Kharid toll gate pays its toll (TOLL_FEE, 10 coins) on each crossing,
  * automatically; with fewer coins the route goes round the gate instead.
@@ -490,6 +507,7 @@ function* walkOnPlane(
         const partial = path.reachedDestination === false && chebyshev(end, target) > tolerance;
         if (partial && lastPartialEnd && end.x === lastPartialEnd.x && end.z === lastPartialEnd.z) {
             if (!(yield* tryOpenDoor(w))) {
+                if (w.noBlade) return noBladeFailure(w.noBlade, x, z);
                 const short = Math.round(chebyshev(end, target));
                 return {
                     ok: false,
@@ -508,8 +526,10 @@ function* walkOnPlane(
         let stuckInARow = 0;
         for (const wp of waypoints) {
             if (outOfTime(w)) return timedOut();
-            if (shut.size > 0 && nearDoor(shut, wp) && chebyshev(pos, wp) <= DOOR_REACH)
+            if (shut.size > 0 && nearDoor(shut, wp) && chebyshev(pos, wp) <= DOOR_REACH) {
                 yield* openDoorBy(w, doors, shut, wp);
+                if (w.noBlade) return noBladeFailure(w.noBlade, x, z);
+            }
 
             // Intermediate waypoints only need passing near; the last must honour the caller's
             // tolerance, or a tolerance under 2 could never be met.
@@ -519,6 +539,7 @@ function* walkOnPlane(
             if (leg.status === 'stuck') {
                 if (++stuckInARow >= STUCK_WAYPOINTS) {
                     yield* tryOpenDoor(w);
+                    if (w.noBlade) return noBladeFailure(w.noBlade, x, z);
                     break;
                 }
             } else {
@@ -532,13 +553,24 @@ function* walkOnPlane(
             bestRemaining = remaining;
             poorProgress = 0;
         } else if (++poorProgress >= POOR_PROGRESS_LIMIT) {
-            if (!(yield* tryOpenDoor(w)))
+            if (!(yield* tryOpenDoor(w))) {
+                if (w.noBlade) return noBladeFailure(w.noBlade, x, z);
                 return { ok: false, reason: 'stuck', message: `Stuck at (${pos.x}, ${pos.z})` };
+            }
             poorProgress = 0;
         }
     }
     if (outOfTime(w)) return timedOut();
     return { ok: false, reason: 'gave-up', message: `Could not reach (${x}, ${z}) - stopped at (${pos.x}, ${pos.z})` };
+}
+
+/** The walk's end when a web needs a slash weapon the bot does not wield. */
+function noBladeFailure(web: Point, x: number, z: number): WalkResult {
+    return {
+        ok: false,
+        reason: 'no-blade',
+        message: `No slash weapon: the web at (${web.x}, ${web.z}) on the way to (${x}, ${z}) needs a sword, scimitar, axe or other slashing weapon wielded`,
+    };
 }
 
 /** A route from where the bot stands now, around the doors this walk gave up on. */
@@ -597,6 +629,15 @@ function* openDoorBy(w: Walk, doors: readonly DoorInfo[], shut: Set<string>, wp:
             w.avoided.set(doorKey(door), door);
             shut.delete(key);
             yield* log(`walk: door at (${door.x}, ${door.z}) is locked; routing around it`);
+        } else if (r === 'no-blade') {
+            w.noBlade = { x: door.x, z: door.z };
+            yield* log(`walk: web at (${door.x}, ${door.z}): only a sharp blade can cut it`);
+        } else if (r === 'unslashed') {
+            w.avoided.set(doorKey(door), door);
+            shut.delete(key);
+            yield* log(
+                `walk: web at (${door.x}, ${door.z}) not cut in ${WEB_SLASH_ATTEMPTS} slashes; routing around it`,
+            );
         } else {
             const fails = (w.doorFails.get(key) ?? 0) + 1;
             w.doorFails.set(key, fails);
@@ -621,6 +662,10 @@ function* tryOpenDoor(w: Walk): Op<boolean> {
     const nearest = openables(w.ctx.state())[0];
     if (nearest) {
         const r = yield* openDoorAt(w, nearest);
+        if (r === 'no-blade') {
+            w.noBlade = { x: nearest.x, z: nearest.z };
+            return false;
+        }
         if (r === 'opened' || r === 'already-open') {
             w.doorRetries++;
             yield* pause(w, 1);
@@ -644,9 +689,9 @@ function* tryOpenDoor(w: Walk): Op<boolean> {
     return false;
 }
 
-/** Locs with an Open option within DOOR_REACH, nearest first. */
+/** Locs with an Open or Slash option within DOOR_REACH, nearest first. */
 const openables = (s: BotWorldState) =>
-    s.nearbyLocs.filter(l => hasOpen(l) && l.distance <= DOOR_REACH).sort((a, b) => a.distance - b.distance);
+    s.nearbyLocs.filter(l => isShut(l) && l.distance <= DOOR_REACH).sort((a, b) => a.distance - b.distance);
 
 /**
  * Opens the door at `at`: Open on it, letting the server walk the bot there; if that neither opens it
@@ -654,8 +699,11 @@ const openables = (s: BotWorldState) =>
  * tries once more. The Al Kharid toll gate is paid for (10 coins, toll.ts) when the route crosses it.
  */
 function* openDoorAt(w: Walk, at: Point, toward: Point = w.target): Op<DoorOpen> {
-    const door = w.ctx.state().nearbyLocs.find(l => l.x === at.x && l.z === at.z);
+    const here = w.ctx.state().nearbyLocs.filter(l => l.x === at.x && l.z === at.z);
+    const door = here.find(isShut) ?? here[0];
     if (!door) return 'not-found';
+    const slash = door.optionsWithIndex.find(o => SLASH.test(o.text));
+    if (slash) return yield* slashWebAt(w, door, slash.opIndex);
     const open = door.optionsWithIndex.find(o => OPEN.test(o.text));
     if (!open) return 'already-open';
     if (isTollGate(door)) {
@@ -685,6 +733,36 @@ function* payTollAt(w: Walk): Op<DoorOpen> {
     }
     yield* log(`walk: Al Kharid toll gate: ${r.message}`);
     return r.reason === 'no-coins' ? 'locked' : 'cant-reach';
+}
+
+/**
+ * Slashes the web until it is cut: Slash, then wait for the web to change or the game's answer. "You fail
+ * to cut through it." slashes again (up to WEB_SLASH_ATTEMPTS); "Only a sharp blade ..." is `no-blade` (no
+ * slash weapon wielded); a refused or unanswered slash is `cant-reach`.
+ */
+function* slashWebAt(w: Walk, web: NearbyLoc, option: number): Op<DoorOpen> {
+    const intact = (s: BotWorldState) =>
+        s.nearbyLocs.some(l => l.x === web.x && l.z === web.z && l.id === web.id && isShut(l));
+    for (let attempt = 1; attempt <= WEB_SLASH_ATTEMPTS; attempt++) {
+        const cursor = messageCursor(w.ctx.state());
+        const sent = yield* interactLoc(web, option);
+        if (!sent.ok) {
+            yield* log(`walk: Slash on ${web.name} at (${web.x}, ${web.z}) not sent: ${sent.message}`);
+            return 'cant-reach';
+        }
+        const stop = (s: BotWorldState) => messageSince(s, cursor, WEB_STOP);
+        const failed = (s: BotWorldState) => messageSince(s, cursor, WEB_CUT_FAILED);
+        const waited = yield* wait(
+            `slash ${web.name}`,
+            s => !!stop(s) || !!failed(s) || !intact(s),
+            allowed(w, DOOR_OPEN_TICKS),
+        );
+        const said = stop(waited.state);
+        if (said) return NO_BLADE.test(said) ? 'no-blade' : 'cant-reach';
+        if (!intact(waited.state)) return 'opened';
+        if (!failed(waited.state)) return 'cant-reach';
+    }
+    return 'unslashed';
 }
 
 /** Sends Open on `door` and waits for it to open (gone, or no Open option), or the game's refusal. */

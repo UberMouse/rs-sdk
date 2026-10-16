@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
 import type { Effect } from '../../core/drivers/timeline';
 import travel from '../../tasks/travel';
-import { fakePaths } from '../paths';
+import { door, fakePaths } from '../paths';
 import { consume, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { attackedFrom, world } from '../world';
@@ -12,6 +12,7 @@ const base = world().player({ at: START });
 /** The walkTo sends' destinations, in order. */
 const walks = (r: Simulation) =>
     r.commands.flatMap(c => (c.type === 'send' && c.action.type === 'walkTo' ? [`${c.action.x},${c.action.z}`] : []));
+const sharpBlade: Effect = s => world(s).message('Only a sharp blade can cut through this sticky web.').build();
 const noRoute = fakePaths(() => ({ success: false, waypoints: [], error: 'no route' }));
 
 describe('travel: the walk', () => {
@@ -85,6 +86,27 @@ describe('travel: where the route breaks', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toStartWith("walk: can't travel to (3300,3250):");
+        expect(r.steps).toEqual(['walk']);
+    });
+
+    test('a web that needs a sharper weapon fails at once, saying no slash weapon', async () => {
+        const web = door(3222, 3230);
+        const paths = fakePaths(
+            () => ({
+                success: true,
+                reachedDestination: true,
+                waypoints: [web, { x: 3222, z: 3240 }].map(t => ({ x: t.x, z: t.z, level: 0 })),
+            }),
+            [web],
+        );
+        const r = await simulate(travel, {
+            params: { to: { x: 3222, z: 3240 } },
+            timeline: base.loc('Web', web.x, web.z, { id: 733, options: ['Slash'] }).series(1),
+            pathfinder: paths,
+            react: walking(a => (a.type === 'interactLoc' ? sharpBlade : undefined)),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith("walk: can't travel to (3222,3240): No slash weapon");
         expect(r.steps).toEqual(['walk']);
     });
 

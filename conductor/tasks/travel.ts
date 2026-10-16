@@ -5,6 +5,7 @@ import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../a
 import { log, ticks } from '../core/op';
 import { chebyshev } from '../lib/connectors';
 import { foodCount } from '../lib/interrupts';
+import { FINAL_WALK_FAILURES } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -94,9 +95,6 @@ const arrived = (ctx: Ctx) => {
 };
 const fighting = (ctx: Ctx) => !!here(ctx)?.combat.inCombat;
 const waypointsLeft = (ctx: Ctx) => ctx.params.waypoints.slice(ctx.memory.nextWaypoint);
-
-/** The walk's failure reasons that retrying cannot fix. */
-const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'bad-coordinates'];
 
 // No underAttackGuard on purpose: the bot outwalks an aggressive monster, which a fight guard would turn
 // into a failed run. Without `flee`, no food, low HP and an attacker fail the run in the shared low-hp guard.

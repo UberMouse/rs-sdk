@@ -9,7 +9,7 @@ import type { Step, TaskContext } from './task';
 const DEFAULT_TOLERANCE = 3;
 
 /** The walk's failure reasons that retrying cannot fix. */
-const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'bad-coordinates'];
+export const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'no-blade', 'bad-coordinates'];
 
 const isPattern = (source: string) => {
     try {
