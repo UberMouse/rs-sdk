@@ -5,6 +5,7 @@ import {
     coordTile,
     deriveConnectors,
     directionOf,
+    MAX_PATHS,
     tileCoord,
     type ConnectorCollision,
     type Connectors,
@@ -174,6 +175,22 @@ const derive = (features: Feature[], blocked: Tile[] = [], offLand: Tile[] = [])
         size,
     });
 
+/** `derive` over other scripts, each a `[file, text]`, and their configs. */
+const deriveWith = (
+    script: [string, string],
+    features: Feature[],
+    locConfigs: Map<string, Config>,
+    others: [string, string][] = [],
+): Connectors =>
+    deriveConnectors({
+        features,
+        triggers: [script, ...others].flatMap(([f, t]) => parseTriggers(f, t)),
+        callables: [script, ...others].flatMap(([f, t]) => parseCallables(f, t)),
+        locConfigs,
+        collision: stub(footprints(features)),
+        size: locSizes(locConfigs),
+    });
+
 /** The rows for one feature, as `op direction landing stand` lines. */
 const rowsOf = (out: Connectors, feature: number): string[] =>
     out.connectors
@@ -249,6 +266,41 @@ describe('labels shared by several locs', () => {
     });
 });
 
+describe("a category's triggers", () => {
+    test("run for an op the config has no trigger of its own for, as the engine's getByTrigger picks", () => {
+        const file = 'ladders+stairs/scripts/category.rs2';
+        const text = `[oploc1,_cat_ladder]
+p_telejump(movecoord(loc_coord, 1, 1, 0));
+
+[oploc2,_cat_ladder]
+p_telejump(movecoord(loc_coord, 0, 1, 1));
+
+[oploc1,catladder_own]
+p_telejump(movecoord(loc_coord, 0, 2, 0));
+`;
+        // A quest's own op2 for its ladder, outside ladders+stairs/, also replaces the category's.
+        const quest: [string, string] = [
+            'quests/quest_x/scripts/ladder.rs2',
+            '[oploc2,catladder_quest]\nmes("No.");\n',
+        ];
+        const out = deriveWith(
+            [file, text],
+            [loc('catladder_own', at(0, 3400, 3400)), loc('catladder_quest', at(0, 3410, 3410))],
+            new Map([
+                ['catladder_own', { category: ['cat_ladder'], op1: ['Climb-up'], op2: ['Climb'] }],
+                ['catladder_quest', { category: ['cat_ladder'], op1: ['Climb-up'], op2: ['Climb'] }],
+            ]),
+            [quest],
+        );
+        expect(out.connectors.map(c => `${c.feature} op${c.op} ${key(c.landing)}`)).toEqual([
+            '0 op1 2,3400,3400',
+            '0 op2 1,3400,3401',
+            '1 op1 1,3411,3410',
+        ]);
+        expect(out.underived).toEqual([]);
+    });
+});
+
 describe('relative jumps', () => {
     test("movecoord(coord(), ...) shifts the player's tile: the landing is the stand moved", () => {
         const out = derive([loc('ladder', at(0, 3230, 3230))]);
@@ -315,6 +367,62 @@ describe('what stops a derivation is reported, never guessed', () => {
         expect(out.underived.map(u => u.reason)).toEqual([
             `\`@nowhere\` (${lineOf(STAIRS_FILE, STAIRS, '@nowhere;')}) jumps to a label no script defines`,
         ]);
+    });
+
+    test('a proc that can move the player, used as a value, ends that path and is named', () => {
+        const file = 'ladders+stairs/scripts/trapdoors.rs2';
+        const text = `[oploc1,trapdoor]
+if (~trapdoor_drop(coord) = true) {
+    p_telejump(0_50_150_30_30);
+}
+
+[oploc1,hatch]
+if (~has_key = true) {
+    p_telejump(1_50_50_30_30);
+}
+
+[proc,trapdoor_drop](coord $c)
+p_telejump(movecoord($c, 0, 0, 6400));
+return(true);
+
+[proc,has_key]
+return(true);
+`;
+        const out = deriveWith(
+            [file, text],
+            [loc('trapdoor', at(0, 3230, 3230)), loc('hatch', at(0, 3240, 3240))],
+            new Map([
+                ['trapdoor', { op1: ['Climb-down'] }],
+                ['hatch', { op1: ['Climb-up'] }],
+            ]),
+        );
+        expect(out.underived.map(u => [u.config, u.reason])).toEqual([
+            [
+                'trapdoor',
+                `\`~trapdoor_drop(coord)\` (${lineOf(file, text, 'if (~trapdoor_drop')}) moves the player inside a value`,
+            ],
+        ]);
+        // A proc that never moves the player is still an unknown value, taken both ways.
+        expect(out.connectors.map(c => `${c.feature} ${key(c.landing)}`)).toEqual(['1 1,3230,3230']);
+    });
+
+    test(`an op that branches past ${MAX_PATHS} ways is underived, its landings dropped`, () => {
+        const file = 'ladders+stairs/scripts/maze.rs2';
+        const ifs = Array.from({ length: Math.log2(MAX_PATHS) + 1 }, (_, i) => `if (%maze_${i} = 1) { mes("${i}"); }`);
+        const text = `[oploc1,mazestairs]\n${ifs.join('\n')}\np_telejump(1_50_50_40_40);\n\n[oploc1,shortstairs]\n${ifs.slice(1).join('\n')}\np_telejump(1_50_50_40_40);\n`;
+        const out = deriveWith(
+            [file, text],
+            [loc('mazestairs', at(0, 3240, 3240)), loc('shortstairs', at(0, 3250, 3250))],
+            new Map([
+                ['mazestairs', { op1: ['Climb-up'] }],
+                ['shortstairs', { op1: ['Climb-up'] }],
+            ]),
+        );
+        expect(out.underived.map(u => [u.config, u.reason])).toEqual([
+            ['mazestairs', `too many paths: ${file}:1 branches past ${MAX_PATHS} ways`],
+        ]);
+        // Exactly MAX_PATHS paths still run.
+        expect(out.connectors.map(c => `${c.feature} ${key(c.landing)}`)).toEqual(['1 1,3240,3240']);
     });
 
     test('a relative landing with no tile on land reaching the loc', () => {

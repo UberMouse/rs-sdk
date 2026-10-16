@@ -27,6 +27,7 @@ export const UNDERGROUND_Z = 6400;
  * the landing, whose own landing is within this of the first loc. Nearness only, no walk between them is
  * checked. The furthest-apart pair is 4 tiles (the Yanille dungeon stairs, stairs.rs2 yanillestairsdown
  * and yanillestairsup); past 5 the nearest candidates are other ladders, whose partners are missing.
+ * So two unrelated connectors that near each other's landings can falsely pair, and hide a one-way one.
  */
 export const WAY_BACK = 5;
 
@@ -35,6 +36,13 @@ const ARRIVAL = 2;
 
 /** Bounds label and proc calls, so a cycle can't recurse forever. */
 const MAX_DEPTH = 12;
+
+/**
+ * Bounds the paths one op's run follows: each condition not settled offline doubles them. Past it the op
+ * is underived ("too many paths"), its landings dropped rather than a partial set kept. The scripts
+ * reach at most 3.
+ */
+export const MAX_PATHS = 64;
 
 export interface ConnectorCollision extends SiteCollision {
     /**
@@ -388,9 +396,14 @@ interface Run {
 
 interface Path {
     env: ReadonlyMap<string, Value>;
-    landed: boolean;
     notes: readonly string[];
 }
+
+/** A path the evaluator can't follow past an expression (a proc that can move the player, as a value). */
+class Unfollowed extends Error {}
+
+/** An op whose run passed MAX_PATHS. */
+class TooManyPaths extends Error {}
 
 interface Flow {
     /** Paths that run on past the statement. */
@@ -510,6 +523,9 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                 const [x, level, z] = off.map(v => (v as { n: number }).n) as [number, number, number];
                 return { ...base, level: base.level + level, x: base.x + x, z: base.z + z, at: at(file, e) };
             }
+            // A proc's value isn't computed: one that can move the player would land somewhere unseen.
+            if (e.name.startsWith('~') && moves(e.name))
+                throw new Unfollowed(`\`${e.text}\` (${at(file, e)}) moves the player inside a value`);
             return unknown(e.text);
         };
 
@@ -519,11 +535,20 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             for (const s of stmts) {
                 const next: Path[] = [];
                 for (const p of live) {
-                    const f = statement(s, p, file, depth);
+                    let f: Flow;
+                    try {
+                        f = statement(s, p, file, depth);
+                    } catch (e) {
+                        if (!(e instanceof Unfollowed)) throw e;
+                        // That path ends unfollowed; the others still run.
+                        run.unknown.push(e.message);
+                        f = { live: [], ended: [p] };
+                    }
                     next.push(...f.live);
                     ended.push(...f.ended);
                 }
                 live = next;
+                if (live.length + ended.length > MAX_PATHS) throw new TooManyPaths();
             }
             return { live, ended };
         };
@@ -570,7 +595,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                     run.unknown.push(
                         `\`${s.text}\` (${at(file, s)}): ${v.t === 'unknown' ? v.text : s.text} is not known offline`,
                     );
-                return { live: [{ ...p, landed: true }], ended: [] };
+                return { live: [p], ended: [] };
             }
             const jump = name === 'jump' && args?.[0]?.t === 'name' ? `@${args[0].name}` : undefined;
             const call = jump ?? (name.startsWith('@') || name.startsWith('~') ? name : undefined);
@@ -587,12 +612,12 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             const script = scriptOf(call, callee.file, callee.line, callee.body);
             if ('error' in script || depth >= MAX_DEPTH) {
                 run.unknown.push('error' in script ? script.error : `\`${s.text}\` (${at(file, s)}) calls too deep`);
-                return { live: [], ended: [{ ...p, landed: true }] };
+                return { live: [], ended: [p] };
             }
             const env = new Map(
                 script.params.map((param, i) => [param, args?.[i] ? evaluate(args[i]!, p.env, file) : unknown(param)]),
             );
-            const flow = block(script.body, [{ env, landed: p.landed, notes: p.notes }], script.file, depth + 1);
+            const flow = block(script.body, [{ env, notes: p.notes }], script.file, depth + 1);
             const out = [...flow.live, ...flow.ended];
             // A label is a jump: the script ends where it does. A proc returns, to the caller's locals.
             return isLabel ? { live: [], ended: out } : { live: out.map(q => ({ ...q, env: p.env })), ended: [] };
@@ -603,7 +628,17 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             run.unknown.push(script.error);
             return run;
         }
-        const flow = block(script.body, [{ env: new Map(), landed: false, notes: [] }], script.file, 0);
+        let flow: Flow;
+        try {
+            flow = block(script.body, [{ env: new Map(), notes: [] }], script.file, 0);
+        } catch (e) {
+            if (!(e instanceof TooManyPaths)) throw e;
+            return {
+                landings: [],
+                unknown: [`too many paths: ${trigger.file}:${trigger.line} branches past ${MAX_PATHS} ways`],
+                dead: [],
+            };
+        }
         if (!run.landings.length && !run.unknown.length)
             run.dead = [
                 ...new Set(
@@ -651,8 +686,13 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
     const { features, locConfigs, collision, size } = input;
     const run = evaluator(input.callables);
     const byTarget = new Map<string, Trigger[]>();
-    for (const t of input.triggers)
-        if (t.on === 'loc' && t.file.startsWith(DIR)) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
+    // Every config's own loc op triggers, as `config op`, under any directory.
+    const own = new Set<string>();
+    for (const t of input.triggers) {
+        if (t.on !== 'loc') continue;
+        if (!t.category) own.add(`${t.target} ${t.op}`);
+        if (t.file.startsWith(DIR)) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
+    }
 
     const underived: Underived[] = [];
     const pending: Pending[] = [];
@@ -660,7 +700,13 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
         if (f.kind !== 'connector') return;
         const cfg = locConfigs.get(f.config);
         const category = first(cfg, 'category');
-        const triggers = [...(byTarget.get(f.config) ?? []), ...(category ? (byTarget.get(`_${category}`) ?? []) : [])];
+        // The engine runs a config's own trigger for an op over its category's, wherever that trigger's
+        // script lives (server/engine/src/engine/script/ScriptProvider.ts getByTrigger).
+        const shadowed = (t: Trigger) => own.has(`${f.config} ${t.op}`);
+        const triggers = [
+            ...(byTarget.get(f.config) ?? []),
+            ...(category ? (byTarget.get(`_${category}`) ?? []).filter(t => !shadowed(t)) : []),
+        ];
         const fail = (op: number, reason: string) =>
             underived.push({ feature, loc: f.tile, config: f.config, op, reason });
         if (!triggers.length) fail(0, `no op trigger under ${DIR}`);

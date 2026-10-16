@@ -35,8 +35,9 @@ const summary = (perKind: ReadonlyMap<FeatureKind, number> | undefined): string 
         : '-';
 
 /**
- * Where a connector site's locs lead: each direction and landing once, in the order of World.connectors
- * (by feature, op, landing); `-` when the scripts give none.
+ * Where a connector site's locs lead: each direction and landing once, in the order of the site's
+ * features, then each feature's connectors in World.connectors order (by op, landing); `-` when the
+ * scripts give none.
  */
 const leadsTo = (site: Site, byFeature: ReadonlyMap<number, Connector[]>): string => {
     const out = new Set<string>();

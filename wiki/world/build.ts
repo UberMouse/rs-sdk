@@ -1,9 +1,10 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
 // sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
-// pages read), and every connector's landings (sources/connectors.ts); then prints a report and renders the pages (render.ts). `bun run world` writes them and
-// exits 1 on a site that breaks the COVERED rule. `--check` writes nothing: it exits 1 when world.json
-// or a page differs from what the game data and this code generate now, so a hand edit or a stale page
-// fails verify:conductor, and on the COVERED rule as the build does.
+// pages read), and every connector's landings (sources/connectors.ts); then prints a report and renders
+// the pages (render.ts). `bun run world` writes them and exits 1 on a site that breaks the COVERED rule.
+// `--check` writes nothing: it exits 1 when world.json or a page differs from what the game data and
+// this code generate now, so a hand edit or a stale page fails verify:conductor, and on the COVERED rule
+// as the build does.
 import { relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
@@ -11,6 +12,7 @@ import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
+import { coord } from './render/common';
 import { buildSites, locSizes, spawnClusters } from './place';
 import { readConfigs } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } from './sources/connectors';
@@ -19,8 +21,8 @@ import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
 import { readCallables, readTriggers } from './sources/triggers';
 import { readZones } from './sources/zones';
-import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type Tile, type World } from './types';
-import { cmp } from './util';
+import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
+import { cmp, push } from './util';
 
 /**
  * The kinds whose every site must lie in an area: what an agent picks a place by (banks, shops,
@@ -106,11 +108,8 @@ const tally = <T>(xs: readonly T[], key: (x: T) => string): Record<string, numbe
     return Object.fromEntries([...counted].sort(([a], [b]) => cmp(a, b)));
 };
 
-/** `(x, z)`, with ` L<n>` above level 0, as the pages print a tile. */
-const at = (t: Tile): string => `(${t.x}, ${t.z})${t.level > 0 ? ` L${t.level}` : ''}`;
-
 /** An underived connector op as the report lists it: `config (x, z) op<n>`. */
-const named = (u: Underived): string => `${u.config} ${at(u.loc)} op${u.op}`;
+const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
 
 /** Reads the game data and builds the world, without writing anything. */
 export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { world: World; report: BuildReport } {
@@ -170,10 +169,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     const row = (i: number): string => {
         const c = connectors[i]!;
-        return `${features[c.feature]!.config} ${at(c.loc)} op${c.op} ${c.opName} -> ${at(c.landing)} (${c.source})`;
+        return `${features[c.feature]!.config} ${coord(c.loc)} op${c.op} ${c.opName} -> ${coord(c.landing)} (${c.source})`;
     };
     const byReason = new Map<string, string[]>();
-    for (const u of underived) byReason.set(u.reason, [...(byReason.get(u.reason) ?? []), named(u)]);
+    for (const u of underived) push(byReason, u.reason, named(u));
 
     return {
         world: { format: WORLD_FORMAT, generatedFrom, areas: [...areas], features, sites, npcSpawns, connectors },
