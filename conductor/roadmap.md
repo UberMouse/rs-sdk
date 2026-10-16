@@ -16,7 +16,7 @@ Ranged 40, Fletching 30, Herblore 28.
 
 | Row | XP left | Rate | Hours | Status |
 |---|---|---|---|---|
-| Agility 52->99 | 961k | 1.05M/h Wilderness (w4: 52->84 in 18 min) | 1.1 | measured on a worker; main not run yet |
+| Agility 52->99 | 961k | Wilderness course, plan agility-wilderness: w4 52->84 in ~18 min (~1.05M/h), rerun +587k in ~31 min (~1.14M/h, 37 laps, 2 eats) | ~0.9 | measured on a worker; the food-out leave -> Edgeville bank -> enter leg never fired (food lasted), unproven |
 | Smithing 60->99 + Magic 66->99 | 932k + 897k | Khazard superheat 514k Smith + 727k Magic/h | 1.8 (Magic done inside it) | measured; needs ~100k gp, ~700 natures, Staff of fire first (leg prep ~1.5 h incl. knights ~95k gp/h) |
 | Crafting 70->99 | 865k | 322k/h flax-spin | 2.7 | measured; lever = pick share (43%) |
 | Runecraft 55->99 | 950k | earth v2 (nearest cluster) 153k measured on w1 | 6.2 | measured 2026-10-16 (w1 55->64 in 18 min); +4% with a rune-drop step |
