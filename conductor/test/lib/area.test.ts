@@ -69,3 +69,30 @@ describe('walkToArea: walks that run out of ticks', () => {
         expect(r.result.durationMs).toBe(3 * budget * TICK_MS);
     });
 });
+
+describe('an area with a level', () => {
+    const upstairs = world().player({ at: { ...START, level: 1 } });
+    const noRoute = fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' }));
+
+    test('a bot on another floor is away from the area even standing at its x, z', async () => {
+        const area: Area = { x: START.x, z: START.z, radius: 5, level: 0 };
+        const r = await runTask([returnToAreaStep(() => area), there], upstairs.series(1), {
+            pathfinder: noRoute,
+            react: walking(),
+        });
+        expect(r.result.stepRuns['return-to-area']).toBeGreaterThan(0);
+    });
+
+    test('an area with no level is on whatever floor the bot is on', async () => {
+        const area: Area = { x: START.x, z: START.z, radius: 5 };
+        const r = await runTask([returnToAreaStep(() => area), there], upstairs.series(1), { pathfinder: noRoute });
+        expect(r.result.reason).toBe('there: in the area');
+        expect(r.result.stepRuns['return-to-area']).toBeUndefined();
+    });
+
+    test('on the right floor and inside, nothing is walked', async () => {
+        const area: Area = { x: START.x, z: START.z, radius: 5, level: 1 };
+        const r = await runTask([returnToAreaStep(() => area), there], upstairs.series(1), { pathfinder: noRoute });
+        expect(r.result.stepRuns['return-to-area']).toBeUndefined();
+    });
+});

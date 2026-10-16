@@ -1,0 +1,59 @@
+{
+    "name": "seers-crafting",
+    "purpose": "Crafting 35, combat ~50, Agility 41, Woodcutting 80 at the Seers' Village bank (2727,3493), empty inventory but 2000 coins. Flax picking / spinning at the Seers wheel / bow string plan.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2727,
+                "z": 3493
+            },
+            "skills": {
+                "Crafting": 35,
+                "Attack": 45,
+                "Strength": 50,
+                "Defence": 45,
+                "Hitpoints": 50,
+                "Agility": 41,
+                "Woodcutting": 80
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 2000
+                }
+            ]
+        }
+    },
+    "sha1": "de49066cd94fbc3f5b7172ec56e483d0852b8e60",
+    "createdAt": "2026-10-16T06:42:37.436Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2727,
+            "z": 3493,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 50,
+            "Hitpoints": 50,
+            "Woodcutting": 80,
+            "Crafting": 35,
+            "Agility": 41
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 2000
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
