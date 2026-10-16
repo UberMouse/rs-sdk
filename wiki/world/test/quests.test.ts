@@ -251,6 +251,16 @@ while (%zanaris > 5) {
         ]);
     });
 
+    test('a computed assignment is not checked, and forgets the stage shown', () =>
+        expect(
+            check(`[opnpc1,a]
+if (%zanaris >= 5) {
+    %zanaris = calc(%zanaris - 4);
+    %zanaris = 2;
+}
+`).decreases,
+        ).toEqual([]));
+
     test('a varbit quest is checked by the varbit name, a computed one not at all', () => {
         const { decreases } = check(`[proc,b]
 if (%horrorquest = 5) %horrorquest = 2;

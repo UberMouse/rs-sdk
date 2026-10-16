@@ -314,6 +314,50 @@ describe('deriveSails', () => {
     });
 });
 
+/** The sails of `text` as odd.rs2, in place of the fixtures' odd sailor. */
+const sailsOf = (text: string, quests: readonly Quest[] = INPUT.quests) => {
+    const files: [string, string][] = [...FILES.filter(([f]) => f !== 'odd.rs2'), ['odd.rs2', text]];
+    return deriveSails({
+        ...INPUT,
+        files,
+        triggers: files.flatMap(([f, t]) => parseTriggers(f, t)),
+        callables: files.flatMap(([f, t]) => parseCallables(f, t)),
+        quests,
+    });
+};
+
+describe('deriveSails, on scripts of their own', () => {
+    test('a stage of a varp that also completes a quest has no requirement form; its completion does', () => {
+        const arrav: Quest = {
+            ...quest('blackarmgang', 'blackarmgang', 4),
+            or: [{ varp: 'phoenixgang', varpId: 2, complete: 10 }],
+        };
+        const r = sailsOf(
+            `[opnpc1,oddsailor]
+if (%phoenixgang >= 3) {
+    ~set_sail("a", "", 0_50_50_1_1, 5, 1);
+}
+if (%phoenixgang >= 10) {
+    ~set_sail("b", "", 0_50_50_2_2, 5, 1);
+}
+`,
+            [...INPUT.quests, arrav],
+        );
+        expect(r.transports.filter(t => t.npc === 'oddsailor').map(t => t.requires)).toEqual([
+            ['other:`%phoenixgang >= 3` (odd.rs2:2)'],
+            ['quest:blackarmgang'],
+        ]);
+    });
+
+    test('a trigger past MAX_PATHS is reported, and the sites it reached count as unreached', () => {
+        const ifs = Array.from({ length: 9 }, (_, i) => `if (%v${i} = 1) { mes("a"); }`).join('\n');
+        const r = sailsOf(`[opnpc1,oddsailor]\n${ifs}\n~set_sail("x", "", 0_50_50_1_1, 5, 1);\n`);
+        expect(r.transports.filter(t => t.npc === 'oddsailor')).toEqual([]);
+        expect(r.underived).toEqual(['oddsailor (odd.rs2:1): too many paths: odd.rs2:1 branches past 256 ways']);
+        expect(r.unreached).toEqual(['odd.rs2:11']);
+    });
+});
+
 test('sailSites: each call of a sail proc, and each %journey_number = outside one, in any script', () =>
     expect(sailSites(FILES, INPUT.callables)).toEqual([
         'customs.rs2:25',

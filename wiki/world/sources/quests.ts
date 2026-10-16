@@ -231,8 +231,9 @@ type Bounds = ReadonlyMap<string, number>;
  * Every quest varp assignment in `files` that lowers the varp (sources/quests.ts header). A bound comes
  * from a condition around the assignment (`if (%v >= ^stage)`, `case ^stage :` of `switch_int (%v)`, the
  * `else` of `if (%v < ^stage)`) or an earlier `%v = <value>` in the same script; an assignment of a value
- * below it is a decrease. A quest read from bits of a varp is checked when they are a varbit, which the
- * scripts assign whole; a computed progress (an override's `bits`) is left out.
+ * below it is a decrease; an assignment of a computed value is not checked. A quest read from bits of a
+ * varp is checked when they are a varbit, which the scripts assign whole; a computed progress (an
+ * override's `bits`) is left out.
  */
 export function questVarpDecreases(
     files: readonly [file: string, text: string][],
@@ -278,7 +279,11 @@ export function questVarpDecreases(
         for (const s of stmts) {
             if (s.t === 'set' && questOf.has(s.name)) {
                 const n = value(s.value);
-                if (n === undefined) continue;
+                // A computed value (`calc(...)`, `setbit(...)`) is not checked, and leaves the varp unknown.
+                if (n === undefined) {
+                    local.delete(s.name);
+                    continue;
+                }
                 const least = local.get(s.name);
                 if (least !== undefined && n < least)
                     decreases.push({

@@ -57,7 +57,9 @@ export const QUEST_OVERRIDES: readonly QuestOverride[] = [
         bits: [0, 3],
         complete: '^itexam_complete',
         source: 'quests/quest_itexam/scripts/quest_itexam.rs2:15',
-        notes: 'The journal passes ~itexam_progress, which is getbit_range(%itexamlevel, 0, 3).',
+        notes:
+            'The journal passes ~itexam_progress, which is getbit_range(%itexamlevel, 0, 3). Only those bits are ever set ' +
+            '(~itexam_set_progress, quest_itexam.rs2:22), so the quest points count comparing the whole varp agrees (general/scripts/quests.rs2:242).',
     },
     {
         id: 'upass',

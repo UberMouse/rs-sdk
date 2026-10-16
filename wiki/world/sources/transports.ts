@@ -79,37 +79,45 @@ const CALLS = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)|\b[a-z][a-z0-9_]*\b/g;
 const sailProcsOf = (callables: readonly Callable[]): Set<string> =>
     new Set(callables.filter(c => c.call.startsWith('~') && SETS_JOURNEY.test(codeOf(c.body))).map(c => c.call));
 
+/** Which scripts can reach a sail (sailReach). */
+interface Reach {
+    /** A trigger's body: it sets %journey_number, or calls or names a callable that can. */
+    body(body: string): boolean;
+    /** A callable, by `@label` or `~proc`. */
+    call(call: string): boolean;
+}
+
 /**
- * Whether a script body can reach a sail: it, or a script it calls or names as a label (`@multi2("...",
- * customs_journey, ...)` jumps to its label arguments), sets %journey_number. Cached by callable, when
- * the body is one (`call`).
+ * Which scripts can reach a sail: one that sets %journey_number, or calls or names as a label
+ * (`@multi2("...", customs_journey, ...)` jumps to its label arguments) a callable that can. Every
+ * callable is marked once, back along the call graph from those that set it.
  */
-function sailReach(callables: readonly Callable[]): (body: string, call?: string) => boolean {
-    const byCall = new Map(callables.map(c => [c.call, c]));
-    // Each callable's answer, from a search that saw everything it reaches, so it is exact.
-    const cache = new Map<string, boolean>();
-    const search = (body: string): boolean => {
-        const seen = new Set<string>();
-        const queue = [body];
-        while (queue.length) {
-            const code = codeOf(queue.shift()!);
-            if (SETS_JOURNEY.test(code)) return true;
-            for (const m of code.matchAll(CALLS)) {
-                const next = m[1] ? `@${m[1]}` : /^[@~]/.test(m[0]) ? m[0] : `@${m[0]}`;
-                const c = byCall.get(next);
-                if (!c || seen.has(next) || cache.get(next) === false) continue;
-                if (cache.get(next)) return true;
-                seen.add(next);
-                queue.push(c.body);
+function sailReach(callables: readonly Callable[]): Reach {
+    const defined = new Set(callables.map(c => c.call));
+    const calls = (code: string): string[] =>
+        [...code.matchAll(CALLS)]
+            .map(m => (m[1] ? `@${m[1]}` : /^[@~]/.test(m[0]) ? m[0] : `@${m[0]}`))
+            .filter(n => defined.has(n));
+    const callers = new Map<string, string[]>();
+    const marked = new Set<string>();
+    for (const c of callables) {
+        const code = codeOf(c.body);
+        if (SETS_JOURNEY.test(code)) marked.add(c.call);
+        for (const callee of calls(code)) push(callers, callee, c.call);
+    }
+    const queue = [...marked];
+    while (queue.length)
+        for (const caller of callers.get(queue.pop()!) ?? [])
+            if (!marked.has(caller)) {
+                marked.add(caller);
+                queue.push(caller);
             }
-        }
-        return false;
-    };
-    return (body, call) => {
-        if (call === undefined) return search(body);
-        let known = cache.get(call);
-        if (known === undefined) cache.set(call, (known = search(body)));
-        return known;
+    return {
+        body: body => {
+            const code = codeOf(body);
+            return SETS_JOURNEY.test(code) || calls(code).some(c => marked.has(c));
+        },
+        call: call => marked.has(call),
     };
 }
 
@@ -157,14 +165,14 @@ const unknown = (text: string, choice?: boolean): Value => ({
 type Cond =
     /** A requirement's canonical string. */
     | { k: 'req'; req: string }
-    /** Holds at least n coins: met by the fare when the path takes as many. */
+    /** Holds at least n coins: met by the fare when the path takes as many, else other:<text>. */
     | { k: 'coins'; n: number; text: string }
     /** Says only that the player lacks something: a path for that player, no requirement. */
     | { k: 'free' }
     /** A quest varp at one stage short of complete: the path is left out. */
     | { k: 'window'; text: string }
     | { k: 'other'; text: string };
-// A window's or other's text is the condition and its line: `\`%q = ^stage\` (file:line)`.
+// A coins', window's or other's text is the condition and its line: `\`%q = ^stage\` (file:line)`.
 
 const truthOf = (v: Value): boolean | undefined => (v.t === 'bool' ? v.b : v.t === 'int' ? v.n !== 0 : undefined);
 
@@ -237,7 +245,7 @@ function nameOf(e: Expr | undefined, env: ReadonlyMap<string, Value>): string | 
 }
 
 /** Runs npc op triggers for one spawn at a time, over the callables. */
-function sailWalker(input: SailInput, reaches: (body: string, call?: string) => boolean) {
+function sailWalker(input: SailInput, reaches: Reach) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const sailProcs = sailProcsOf(input.callables);
     const parsed = new Map<string, Script | { error: string }>();
@@ -247,12 +255,15 @@ function sailWalker(input: SailInput, reaches: (body: string, call?: string) => 
         return s;
     };
 
-    // Quest varps by the name the scripts use: a varbit's, or the varp's when progress is the whole varp.
-    const questOf = new Map<string, Quest>();
+    // Quest varps by the name the scripts use (a varbit's, or the varp's when progress is the whole varp),
+    // each with the value that completes the quest on it, and whether it is the quest's own (not an `or`).
+    const questOf = new Map<string, { quest: Quest; complete: number; own: boolean }>();
     for (const q of input.quests)
-        for (const v of [q, ...(q.or ?? [])])
-            if (v.varbit) questOf.set(`%${v.varbit}`, q);
-            else if (!v.bits) questOf.set(`%${v.varp}`, q);
+        for (const v of [q, ...(q.or ?? [])]) {
+            const ref = { quest: q, complete: v.complete, own: v === q };
+            if (v.varbit) questOf.set(`%${v.varbit}`, ref);
+            else if (!v.bits) questOf.set(`%${v.varp}`, ref);
+        }
     const loadoutOf = new Map(Object.entries(input.loadoutProcs).map(([id, proc]) => [proc, id]));
 
     const constant = (name: string): Value | undefined => {
@@ -351,14 +362,15 @@ function sailWalker(input: SailInput, reaches: (body: string, call?: string) => 
                 return truth === (op === '=') ? { k: 'free' } : { k: 'req', req: `loadout:${loadout}` };
             }
 
-            const quest = questOf.get(lhs.name);
-            if (quest && lhs.args === null) {
+            const ref = questOf.get(lhs.name);
+            if (ref && lhs.args === null) {
                 if (v.t !== 'int') return other;
                 const least = ({ '>=': v.n, '>': v.n + 1, '=': v.n } as Record<string, number>)[op];
                 if (least === undefined || least <= 0) return { k: 'free' };
-                if (least >= quest.complete) return { k: 'req', req: `quest:${quest.id}` };
+                if (least >= ref.complete) return { k: 'req', req: `quest:${ref.quest.id}` };
                 if (op === '=') return { k: 'window', text };
-                return { k: 'req', req: `quest:${quest.id}>=${least}` };
+                // A stage counts on the quest's own varp: one of another varp that completes it has no form.
+                return ref.own ? { k: 'req', req: `quest:${ref.quest.id}>=${least}` } : other;
             }
 
             if (lhs.name === 'inv_total' && lhs.args?.length === 2) {
@@ -371,7 +383,7 @@ function sailWalker(input: SailInput, reaches: (body: string, call?: string) => 
                 const least =
                     ({ '>': n + 1, '>=': n, '!': n === 0 ? 1 : 0, '=': n } as Record<string, number>)[op] ?? 0;
                 if (least <= 0) return { k: 'free' };
-                if (obj === 'coins' && where === 'inv') return { k: 'coins', n: least, text: e.text };
+                if (obj === 'coins' && where === 'inv') return { k: 'coins', n: least, text };
                 return { k: 'req', req: `item:${obj}:${where === 'inv' ? 'held' : 'worn'}` };
             }
             return other;
@@ -540,7 +552,7 @@ function sailWalker(input: SailInput, reaches: (body: string, call?: string) => 
                 const label = a.t === 'name' ? byCall.get(`@${a.v}`) : undefined;
                 return label ? [label] : [];
             });
-            if (!callee || !(reaches(callee.body, call) || passed.some(l => reaches(l.body, l.call)))) {
+            if (!callee || !(reaches.call(call) || passed.some(l => reaches.call(l.call)))) {
                 // A proc that never sails returns to the script; a label never does.
                 return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
             }
@@ -570,7 +582,9 @@ function sailWalker(input: SailInput, reaches: (body: string, call?: string) => 
             } catch (e) {
                 if (!(e instanceof TooManyPaths)) throw e;
                 underived.add(`too many paths: ${trigger.file}:${trigger.line} branches past ${MAX_PATHS} ways`);
+                // Its sails are dropped, so the sites it reached are unread: the build fails on them.
                 sailed.length = 0;
+                reached.clear();
             }
         return { sailed, reached, underived };
     };
@@ -652,7 +666,7 @@ export function deriveSails(input: SailInput): Sails {
     const underived = new Set<string>();
     const reached = new Set<string>();
     for (const t of input.triggers) {
-        if (t.on !== 'npc' || !/^[1-5]$/.test(t.op) || !reaches(t.body)) continue;
+        if (t.on !== 'npc' || !/^[1-5]$/.test(t.op) || !reaches.body(t.body)) continue;
         for (const config of configsOf(t))
             for (const spawn of byConfig.get(config) ?? []) {
                 const r = run(t, spawn);
