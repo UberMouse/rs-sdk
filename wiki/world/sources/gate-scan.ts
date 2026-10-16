@@ -110,7 +110,10 @@ export interface GateCandidate {
      * `<to or block>: <conditions>`.
      */
     windows: string[];
-    /** The stage constant each `quest:<id>>=<n>` in `moves` was compared with: requirement -> `^name`. */
+    /**
+     * What names each `quest:<id>>=<n>` in `moves`: the stage constant it was compared with (`^name`), one
+     * past it for a `>` (`^name+1`), or the number when the script names no constant.
+     */
     stages: Record<string, string>;
     /** For `unclear`: what stopped the walker. */
     why?: string;
@@ -503,16 +506,16 @@ function gateWalker(input: GateScanInput) {
     const known = (name: string): boolean =>
         name === 'inv' || name === 'worn' || input.names.has(name) || byCall.has(`@${name}`);
 
-    const evaluate = (e: Expr, env: ReadonlyMap<string, Value>): Value => {
+    const evaluate = (e: Expr, env: ReadonlyMap<string, Value>, file: string): Value => {
         switch (e.t) {
             case 'num':
                 return { t: 'int', n: e.n };
             case 'coord':
-                return { t: 'coord', relative: false, ...e.tile, at: `${e.line}` };
+                return { t: 'coord', relative: false, ...e.tile, at: `${file}:${e.line}` };
             case 'str':
                 return unknown(e.text);
             case 'bin': {
-                const [l, r] = [evaluate(e.l, env), evaluate(e.r, env)];
+                const [l, r] = [evaluate(e.l, env, file), evaluate(e.r, env, file)];
                 const side = isSide(l) || isSide(r);
                 const folded = fold(e.op, l, r, e.text);
                 if (folded) return side && folded.t === 'unknown' ? sideUnknown(e.text) : folded;
@@ -536,7 +539,7 @@ function gateWalker(input: GateScanInput) {
             if (e.name === 'coord') return sideUnknown('coord');
             return known(e.name) ? { t: 'name', v: e.name } : unknown(e.text);
         }
-        const args = e.args.map(a => evaluate(a, env));
+        const args = e.args.map(a => evaluate(a, env, file));
         if (SIDE_COMMANDS.has(e.name) && args.some(isSide)) return sideUnknown(e.text);
         const [a0, a1, a2, a3] = args;
         // COORDX, COORDY (the level) and COORDZ split a coord; MOVECOORD adds (x, level, z) to one
@@ -556,13 +559,13 @@ function gateWalker(input: GateScanInput) {
         const text = `\`${e.text}\` (${file}:${e.line})`;
         // The player's side: a comparison with an operand on the player's tile.
         const [l, op0, r] = e.t === 'bin' && NEGATE[e.op] ? [e.l, e.op, e.r] : [e, '=', undefined];
-        const [lv, rv] = [evaluate(l, env), r ? evaluate(r, env) : ({ t: 'bool', b: true } as Value)];
+        const [lv, rv] = [evaluate(l, env, file), r ? evaluate(r, env, file) : ({ t: 'bool', b: true } as Value)];
         if (isSide(lv) || isSide(rv)) {
             const [s, o, oText, op1] = isSide(lv) ? [lv, rv, r?.text ?? 'true', op0] : [rv, lv, l.text, FLIP[op0]!];
             const named = s.t === 'unknown' ? sideOf(s, want ? op1 : NEGATE[op1]!, o, oText) : undefined;
             return [{ k: 'side', side: named ?? `${e.text} = ${want}` }];
         }
-        const reading = read(e, want, { evaluate: x => evaluate(x, env), nameOf: x => nameOf(x, env) });
+        const reading = read(e, want, { evaluate: x => evaluate(x, env, file), nameOf: x => nameOf(x, env) });
         switch (reading.k) {
             case 'members':
                 return [reading.holds ? { k: 'req', req: 'members', text } : { k: 'free', text }];
@@ -625,7 +628,7 @@ function gateWalker(input: GateScanInput) {
 
     /** The ways a condition can hold as `want`: each a list of what it means; [] when it can't. */
     const assume = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string, depth = 0): Cond[][] => {
-        const v = evaluate(e, env);
+        const v = evaluate(e, env, file);
         if (v.t === 'bool') return v.b === want ? [[]] : [];
         if (v.t === 'unknown' && v.choice) return [[]];
         // `~proc = <bool>` or a bare `~proc` on a condition proc: its condition, taken the way it is wanted.
@@ -635,7 +638,7 @@ function gateWalker(input: GateScanInput) {
             subject.t === 'name' && subject.name.startsWith('~') && !subject.args?.length
                 ? conditionOf(subject.name)
                 : null;
-        const truth = rhs ? truthOf(evaluate(rhs, env)) : true;
+        const truth = rhs ? truthOf(evaluate(rhs, env, file)) : true;
         if (proc && truth !== undefined && depth < MAX_DEPTH)
             return assume(proc.cond, want === (truth === (op === '=')), new Map(), proc.file, depth + 1);
         if (e.t === 'bin' && (e.op === '&' || e.op === '|')) {
@@ -682,7 +685,10 @@ function gateWalker(input: GateScanInput) {
             switch (s.t) {
                 case 'set':
                     if (!s.name.startsWith('$')) return { live: [p], ended: [] };
-                    return { live: [{ ...p, env: new Map(p.env).set(s.name, evaluate(s.value, p.env)) }], ended: [] };
+                    return {
+                        live: [{ ...p, env: new Map(p.env).set(s.name, evaluate(s.value, p.env, file)) }],
+                        ended: [],
+                    };
                 case 'def': {
                     const env = new Map(p.env);
                     for (const name of s.names) env.set(name, unknown(name));
@@ -702,10 +708,10 @@ function gateWalker(input: GateScanInput) {
                         ended: [],
                     });
                 case 'switch': {
-                    const subject = evaluate(s.subject, p.env);
+                    const subject = evaluate(s.subject, p.env, file);
                     const keyed = s.cases.filter(c => c.keys !== null);
                     const fallback = s.cases.find(c => c.keys === null);
-                    const hits = keyed.map(c => c.keys!.map(k => equal(evaluate(k, p.env), subject)));
+                    const hits = keyed.map(c => c.keys!.map(k => equal(evaluate(k, p.env, file), subject)));
                     if (hits.every(h => h.every(x => x !== undefined))) {
                         const hit = keyed.find((_, i) => hits[i]!.includes(true));
                         if (hit) return block(hit.body, [p], file, stack);
@@ -754,11 +760,11 @@ function gateWalker(input: GateScanInput) {
             const raw = s.call.args ?? [];
             const target = (v: Value | undefined): string => (v?.t === 'coord' && !v.relative ? tileCoord(v) : CROSS);
             const index = MOVE_COMMANDS[name];
-            if (index !== undefined) return move(target(raw[index] && evaluate(raw[index], p.env)));
+            if (index !== undefined) return move(target(raw[index] && evaluate(raw[index], p.env, file)));
             if (name === 'inv_del' || name === 'inv_add') {
                 const obj = nameOf(raw[1], p.env);
                 if (nameOf(raw[0], p.env) !== 'inv' || !obj) return { live: [p], ended: [] };
-                const count = raw[2] && evaluate(raw[2], p.env);
+                const count = raw[2] && evaluate(raw[2], p.env, file);
                 const n = count?.t === 'int' ? count.n : count?.t === 'range' ? count.hi : undefined;
                 if (n === undefined) {
                     if (name === 'inv_add') return { live: [p], ended: [] };
@@ -774,7 +780,7 @@ function gateWalker(input: GateScanInput) {
                     ended: [],
                 };
             }
-            const args = raw.map(a => evaluate(a, p.env));
+            const args = raw.map(a => evaluate(a, p.env, file));
             const jumped = name === 'jump' ? args[0] : undefined;
             const call = jumped
                 ? jumped.t === 'name'

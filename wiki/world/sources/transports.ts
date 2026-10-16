@@ -9,13 +9,14 @@
 // `npc_coord` and `npc_type` are known: a customs officer's destination depends on which one it is),
 // down every path, and records on each path the coins taken (`inv_del(inv, coins, n)`), the objs taken
 // (net of any it gives), and the conditions the path took. A dialogue choice (`~p_choice*`) goes both
-// ways and adds nothing. Each condition becomes a requirement (requirements.ts): a members check
-// `members`, a quest varp `quest:<id>` or `quest:<id>>=<stage>`, holding an obj `item:<obj>:held`, a
-// loadout proc (gates.ts LOADOUT_PROCS) returning false `loadout:<id>`; or nothing, when it only says the
-// player lacks something (no coins, no rum, an F2P world, a quest not yet at a stage: a path for that
-// player, not a requirement); or `other:<text>` when none fits. A path that needs a quest varp at one exact
-// stage below complete is a quest window: it is left out and reported. A transport is a minimal set of
-// the requirements of the paths that sail from one npc spawn to one landing.
+// ways and adds nothing. Each condition, read by sources/conditions.ts, becomes a requirement
+// (requirements.ts): a members check `members`, a quest varp `quest:<id>` or `quest:<id>>=<stage>`,
+// holding an obj `item:<obj>:held`, a loadout proc (gates.ts LOADOUT_PROCS) returning false
+// `loadout:<id>`; or nothing, when it only says the player lacks something (no coins, no rum, an F2P
+// world, a quest not yet at a stage: a path for that player, not a requirement); or `other:<text>` when
+// none fits. A path that needs a quest varp at one exact stage below complete is a quest window: it is
+// left out and reported. A transport is a minimal set of the requirements of the paths that sail from
+// one npc spawn to one landing.
 import { codeOf } from '../classify';
 import { coord as coordText } from '../render/common';
 import { minimalSets, parseRequirement } from '../requirements';

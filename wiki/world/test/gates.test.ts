@@ -349,7 +349,7 @@ const gate = (trigger: string, requires: string[][], more: Partial<CuratedGate> 
 describe('reviewGates', () => {
     const files = new Map(FILES);
 
-    test('a candidate gates.ts does not review is listed; the build fails on it', () => {
+    test('a candidate gates.ts does not review is listed (the build fails on any: failed() in build.test.ts)', () => {
         const review = reviewGates(candidates, [], files);
         expect(review.unreviewed).toContain('oploc1,completedoor (quests/test.rs2:1): gate');
         expect(review.unreviewed).toHaveLength(candidates.length);

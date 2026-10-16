@@ -1,6 +1,6 @@
-// What the offline script walkers share (sources/connectors.ts, sources/transports.ts): the values they
-// compute, equality and the boolean fold over them, the flow of paths through a statement, and a cache
-// of parsed scripts.
+// What the offline script walkers share (sources/connectors.ts, sources/transports.ts,
+// sources/gate-scan.ts): the values they compute, equality and the boolean fold over them, the flow of
+// paths through a statement, and a cache of parsed scripts.
 import { parseScript, type Script } from './runescript';
 
 /** A coord a script computed: a tile, or (`relative`) a shift of the player's tile. */
