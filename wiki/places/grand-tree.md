@@ -31,9 +31,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:grand-tree:0` | (2466, 3495) | Ladder 1 | no | no | - |
-| `connector:grand-tree:1` | (2466, 3495) L1 | Ladder 1 | no | no | - |
-| `connector:grand-tree:2` | (2466, 3495) L2 | Ladder 1 | no | no | - |
-| `connector:grand-tree:3` | (2466, 3495) L3 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:grand-tree:0` | (2466, 3495) | Ladder 1 | up (2465, 3495) L1 | no | no | - |
+| `connector:grand-tree:1` | (2466, 3495) L1 | Ladder 1 | down (2465, 3495), up (2465, 3495) L2 | no | no | - |
+| `connector:grand-tree:2` | (2466, 3495) L2 | Ladder 1 | down (2465, 3495) L1, up (2465, 3495) L3 | no | no | - |
+| `connector:grand-tree:3` | (2466, 3495) L3 | Ladder 1 | down (2465, 3495) L2 | no | no | - |

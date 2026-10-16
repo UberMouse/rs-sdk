@@ -24,6 +24,6 @@ Ladder up to a cellar at (2562, 3356); ogres and a blood-rune thieving chest. De
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:dungeon-north-of-ardougne:0` | (2562, 9756) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:dungeon-north-of-ardougne:0` | (2562, 9756) | Ladder 1 | up (2561, 3356) | no | no | - |

@@ -23,13 +23,13 @@ Ladders up onto White Wolf Mountain at (2823-2859, 3507-3519); descriptive name.
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:white-wolf-mountain-caves:0` | (2823, 9913) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:1` | (2824, 9907) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:2` | (2827, 9910) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:3` | (2845, 9916) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:4` | (2848, 9913) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:5` | (2848, 9919) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:6` | (2857, 9917) | Ladder 1 | no | no | - |
-| `connector:white-wolf-mountain-caves:7` | (2859, 9919) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:white-wolf-mountain-caves:0` | (2823, 9913) | Ladder 1 | up (2824, 3513) | no | no | - |
+| `connector:white-wolf-mountain-caves:1` | (2824, 9907) | Ladder 1 | up (2825, 3507) | no | no | - |
+| `connector:white-wolf-mountain-caves:2` | (2827, 9910) | Ladder 1 | up (2828, 3510) | no | no | - |
+| `connector:white-wolf-mountain-caves:3` | (2845, 9916) | Ladder 1 | up (2846, 3516) | no | no | - |
+| `connector:white-wolf-mountain-caves:4` | (2848, 9913) | Ladder 1 | up (2849, 3513) | no | no | - |
+| `connector:white-wolf-mountain-caves:5` | (2848, 9919) | Ladder 1 | up (2849, 3519) | no | no | - |
+| `connector:white-wolf-mountain-caves:6` | (2857, 9917) | Ladder 1 | up (2858, 3517) | no | no | - |
+| `connector:white-wolf-mountain-caves:7` | (2859, 9919) | Ladder 1 | up (2860, 3519) | no | no | - |

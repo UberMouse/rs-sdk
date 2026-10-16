@@ -23,22 +23,22 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:tutorial-island:0` | (3082, 3124) | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:1` | (3083, 3124) L1 | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:2` | (3092, 3104) L1 | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:3` | (3093, 3105) L2 | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:4` | (3115, 3107) | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:5` | (3116, 3107) L1 | Staircase 1 | yes | no | - |
-| `connector:tutorial-island:6` | (3116, 3126) | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:7` | (3116, 3126) L1 | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:8` | (3123, 3128) | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:9` | (3123, 3128) L1 | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:10` | (3126, 3124) L1 | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:11` | (3126, 3124) L2 | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:12` | (3139, 3078) | Ladder 1 | yes | no | - |
-| `connector:tutorial-island:13` | (3139, 3078) L1 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:tutorial-island:0` | (3082, 3124) | Staircase 1 | up (3084, 3124) L1 | yes | no | - |
+| `connector:tutorial-island:1` | (3083, 3124) L1 | Staircase 1 | down (3084, 3124) | yes | no | - |
+| `connector:tutorial-island:2` | (3092, 3104) L1 | Staircase 1 | - | yes | no | - |
+| `connector:tutorial-island:3` | (3093, 3105) L2 | Staircase 1 | - | yes | no | - |
+| `connector:tutorial-island:4` | (3115, 3107) | Staircase 1 | up (3117, 3107) L1 | yes | no | - |
+| `connector:tutorial-island:5` | (3116, 3107) L1 | Staircase 1 | down (3117, 3107) | yes | no | - |
+| `connector:tutorial-island:6` | (3116, 3126) | Ladder 1 | up (3115, 3126) L1 | yes | no | - |
+| `connector:tutorial-island:7` | (3116, 3126) L1 | Ladder 1 | down (3115, 3126) | yes | no | - |
+| `connector:tutorial-island:8` | (3123, 3128) | Ladder 1 | up (3122, 3128) L1 | yes | no | - |
+| `connector:tutorial-island:9` | (3123, 3128) L1 | Ladder 1 | down (3122, 3128) | yes | no | - |
+| `connector:tutorial-island:10` | (3126, 3124) L1 | Ladder 1 | up (3125, 3124) L2 | yes | no | - |
+| `connector:tutorial-island:11` | (3126, 3124) L2 | Ladder 1 | down (3125, 3124) L1 | yes | no | - |
+| `connector:tutorial-island:12` | (3139, 3078) | Ladder 1 | up (3138, 3078) L1 | yes | no | - |
+| `connector:tutorial-island:13` | (3139, 3078) L1 | Ladder 1 | down (3138, 3078) | yes | no | - |
 
 ## Areas within
 

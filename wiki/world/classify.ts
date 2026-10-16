@@ -53,6 +53,21 @@ const STATIONS: Record<string, FeatureKind> = {
     rc_ruins: 'rc-ruins',
 };
 
+/**
+ * The scripts whose loc op triggers make a loc a `connector`: the ladders and staircases, and the
+ * generic trapdoor and manhole, whose Open swaps in the open loc and whose Climb-down moves the player
+ * (general_use/scripts/trapdoors.rs2, manholes.rs2). sources/connectors.ts reads their landings.
+ */
+export const CONNECTOR_SCRIPTS: readonly string[] = [
+    'ladders+stairs/',
+    'general_use/scripts/trapdoors.rs2',
+    'general_use/scripts/manholes.rs2',
+];
+
+/** Whether a script file is in a source: a directory (ending in `/`) that holds it, or that one file. */
+export const inSource = (file: string, source: string): boolean =>
+    source.endsWith('/') ? file.startsWith(source) : file === source;
+
 const COMBAT_PARAMS = new Set([
     'attackbonus',
     'strengthbonus',
@@ -92,7 +107,7 @@ const INTERPOLATION = /^[a-z_~$%.]$/;
  * the quotes and every column, so argsAt still splits a call's arguments where they are; a string
  * argument is never bound (only bare names are), so its text is not needed.
  */
-function codeOf(body: string): string {
+export function codeOf(body: string): string {
     return body
         .split('\n')
         .map(line => {
@@ -237,8 +252,9 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         const ops = opsOf(triggersOn(on, config, cfg));
         return ops.length ? ops : [ANY_OP];
     };
-    const under = (dir: string) => (on: 'loc' | 'npc', config: string, cfg: Config) =>
-        triggersOn(on, config, cfg).filter(t => t.file.startsWith(dir));
+    /** The triggers on a config in any of `sources` (inSource). */
+    const under = (sources: readonly string[]) => (on: 'loc' | 'npc', config: string, cfg: Config) =>
+        triggersOn(on, config, cfg).filter(t => sources.some(s => inSource(t.file, s)));
 
     const reached = new Map<string, Reached[]>();
     /**
@@ -304,7 +320,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
 
     // Only fishing_spots/: skill_fishing/scripts/fishing_guild.rs2 also has npc triggers (its shop,
     // the master fisher). A spot named by config rather than category (lava eels) is its own subtype.
-    const fishingSpots = under('skill_fishing/scripts/fishing_spots/');
+    const fishingSpots = under(['skill_fishing/scripts/fishing_spots/']);
     const fishingSpot: Rule = (on, config, cfg) => {
         const ts = fishingSpots(on, config, cfg);
         return ts.length ? { kind: 'fishing-spot', subtype: first(cfg, 'category') ?? config, ops: opsOf(ts) } : null;
@@ -350,9 +366,9 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         return { kind, subtype: row ? row.row.replace(/^runecraft_/, '') : '', ops };
     };
 
-    /** A rule claiming the configs with a trigger under a script directory; `named`: the config is the subtype. */
-    const byDir = (kind: FeatureKind, only: 'loc' | 'npc', dir: string, named: boolean): Rule => {
-        const triggersUnder = under(dir);
+    /** A rule claiming the configs with a trigger in a script source (inSource); `named`: the config is the subtype. */
+    const bySource = (kind: FeatureKind, only: 'loc' | 'npc', sources: readonly string[], named: boolean): Rule => {
+        const triggersUnder = under(sources);
         return (on, config, cfg) => {
             const ts = on === only ? triggersUnder(on, config, cfg) : [];
             return ts.length ? { kind, subtype: named ? config : '', ops: opsOf(ts) } : null;
@@ -368,10 +384,10 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         ['tanner', tanner],
         ['station', station],
         // Stalls and chests by their script's directory, not their names (`tea_stall` is a stall).
-        ['stall', byDir('stall', 'loc', 'skill_thieving/scripts/stalls/', true)],
-        ['thieving-chest', byDir('thieving-chest', 'loc', 'skill_thieving/scripts/chest/', true)],
-        ['pickpocket', byDir('pickpocket', 'npc', 'skill_thieving/scripts/pickpocketing/', true)],
-        ['connector', byDir('connector', 'loc', 'ladders+stairs/', false)],
+        ['stall', bySource('stall', 'loc', ['skill_thieving/scripts/stalls/'], true)],
+        ['thieving-chest', bySource('thieving-chest', 'loc', ['skill_thieving/scripts/chest/'], true)],
+        ['pickpocket', bySource('pickpocket', 'npc', ['skill_thieving/scripts/pickpocketing/'], true)],
+        ['connector', bySource('connector', 'loc', CONNECTOR_SCRIPTS, false)],
     ];
 
     const configsOf = (on: 'loc' | 'npc'): Map<string, Config> => (on === 'loc' ? input.locConfigs : input.npcConfigs);

@@ -17,7 +17,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:necromancer:0` | (2669, 3243) | Staircase 1 | no | yes | - |
-| `connector:necromancer:1` | (2669, 3244) L1 | Staircase 1 | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:necromancer:0` | (2669, 3243) | Staircase 1 | up (2669, 3246) L1 | no | yes | - |
+| `connector:necromancer:1` | (2669, 3244) L1 | Staircase 1 | down (2669, 3242) | no | yes | - |

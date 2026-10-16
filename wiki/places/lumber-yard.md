@@ -13,7 +13,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:lumber-yard:0` | (3310, 3509) | Ladder 1 | yes | no | - |
-| `connector:lumber-yard:1` | (3310, 3509) L1 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:lumber-yard:0` | (3310, 3509) | Ladder 1 | up (3309, 3509) L1 | yes | no | - |
+| `connector:lumber-yard:1` | (3310, 3509) L1 | Ladder 1 | down (3309, 3509) | yes | no | - |

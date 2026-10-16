@@ -8,11 +8,15 @@ import { SCRIPTS } from '../paths';
 export interface Trigger {
     file: string;
     on: 'loc' | 'npc';
+    /** `op` or `ap` (approach), as the header gives it: the engine looks each up as its own trigger. */
+    kind: 'op' | 'ap';
     /** '1'-'5', or 'u' for use-item-on. */
     op: string;
     /** Config or category name, without the category's leading underscore. */
     target: string;
     category: boolean;
+    /** The header's line in the file, from 1. */
+    line: number;
     /** The header line's tail and every line up to the next `[` header. */
     body: string;
 }
@@ -22,26 +26,30 @@ export interface Callable {
     file: string;
     /** How a body calls it: `@name` for a label, `~name` for a proc. */
     call: string;
+    /** The header's line in the file, from 1. */
+    line: number;
     /** The header line's tail (its parameter list) and every line up to the next `[` header. */
     body: string;
 }
 
-interface Block {
+/** One script in a file: its `[trigger,subject]` header, the header's line, and its body. */
+export interface Block {
     file: string;
     header: string;
+    line: number;
     body: string;
 }
 
-function blocks(file: string, text: string): Block[] {
+export function blocks(file: string, text: string): Block[] {
     const out: Block[] = [];
     let cur: Block | undefined;
-    for (const line of text.split('\n')) {
+    for (const [i, line] of text.split('\n').entries()) {
         const end = line.startsWith('[') ? line.indexOf(']') : -1;
         if (line.startsWith('[') && end < 0) {
             // An unterminated `[` line is no header, and it ends the block before it.
             cur = undefined;
         } else if (end >= 0) {
-            cur = { file, header: line.slice(0, end + 1), body: line.slice(end + 1) };
+            cur = { file, header: line.slice(0, end + 1), line: i + 1, body: line.slice(end + 1) };
             out.push(cur);
         } else if (cur) {
             cur.body += '\n' + line;
@@ -53,13 +61,24 @@ function blocks(file: string, text: string): Block[] {
 // `op` and `ap` (approach) both count: one subject often has both, and both are kept (`opsOf` in
 // classify.ts collapses them to the op slot). A leading `_` names a category (`[apnpc3,_bank_teller]`);
 // `t` (spell on) ops are not uses.
-const OP = /^\[(?:op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
+const OP = /^\[(op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
 
 export function parseTriggers(file: string, text: string): Trigger[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(OP);
         return m
-            ? [{ file, on: m[1] as 'loc' | 'npc', op: m[2]!, category: m[3] === '_', target: m[4]!, body: b.body }]
+            ? [
+                  {
+                      file,
+                      on: m[2] as 'loc' | 'npc',
+                      kind: m[1] as 'op' | 'ap',
+                      op: m[3]!,
+                      category: m[4] === '_',
+                      target: m[5]!,
+                      line: b.line,
+                      body: b.body,
+                  },
+              ]
             : [];
     });
 }
@@ -67,11 +86,12 @@ export function parseTriggers(file: string, text: string): Trigger[] {
 export function parseCallables(file: string, text: string): Callable[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(/^\[(label|proc),([a-z0-9_]+)\]$/);
-        return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], body: b.body }] : [];
+        return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], line: b.line, body: b.body }] : [];
     });
 }
 
-function readScripts(): [file: string, text: string][] {
+/** Every .rs2 file outside `_test/` and `_unpack/`, by path relative to server/content/scripts. */
+export function readScripts(): [file: string, text: string][] {
     return [...new Glob('**/*.rs2').scanSync(SCRIPTS)]
         .filter(f => !f.startsWith('_test/') && !f.startsWith('_unpack/'))
         .sort()

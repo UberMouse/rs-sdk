@@ -129,70 +129,71 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:east-ardougne:0` | (2566, 3322) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:1` | (2566, 3322) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:2` | (2568, 3268) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:3` | (2568, 3268) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:4` | (2570, 3267) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:5` | (2571, 3288) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:6` | (2571, 3288) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:7` | (2571, 3291) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:8` | (2571, 3291) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:9` | (2571, 3295) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:10` | (2571, 3295) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:11` | (2571, 3302) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:12` | (2571, 3302) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:13` | (2571, 3305) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:14` | (2571, 3305) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:15` | (2572, 3325) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:16` | (2573, 3271) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:17` | (2573, 3271) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:18` | (2573, 3325) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:19` | (2575, 3331) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:20` | (2576, 3331) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:21` | (2591, 3334) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:22` | (2592, 3334) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:23` | (2610, 3306) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:24` | (2610, 3306) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:25` | (2610, 3306) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:26` | (2610, 3306) L3 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:27` | (2617, 3315) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:28` | (2617, 3315) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:29` | (2617, 3323) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:30` | (2617, 3323) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:31` | (2622, 3292) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:32` | (2622, 3292) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:33` | (2631, 3322) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:34` | (2646, 3302) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:35` | (2647, 3302) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:36` | (2648, 3294) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:37` | (2648, 3295) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:38` | (2648, 3310) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:39` | (2649, 3281) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:40` | (2649, 3281) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:41` | (2649, 3286) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:42` | (2649, 3286) L2 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:43` | (2649, 3311) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:44` | (2650, 3281) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:45` | (2650, 3281) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:46` | (2650, 3286) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:47` | (2650, 3286) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:48` | (2655, 3322) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:49` | (2655, 3322) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:50` | (2662, 3291) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:51` | (2662, 3293) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:52` | (2662, 3321) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:53` | (2663, 3321) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:54` | (2665, 3290) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:55` | (2665, 3290) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:56` | (2673, 3300) | Staircase 1 | no | no | - |
-| `connector:east-ardougne:57` | (2674, 3300) L1 | Staircase 1 | no | no | - |
-| `connector:east-ardougne:58` | (2674, 3309) | Ladder 1 | no | no | - |
-| `connector:east-ardougne:59` | (2674, 3309) L1 | Ladder 1 | no | no | - |
-| `connector:east-ardougne:60` | (2682, 3267) | Ship's ladder 1 | no | no | - |
-| `connector:east-ardougne:61` | (2682, 3267) L1 | Ship's ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:east-ardougne:0` | (2566, 3322) | Staircase 1 | up (2566, 3321) L1 | no | no | - |
+| `connector:east-ardougne:1` | (2566, 3322) L1 | Staircase 1 | down (2565, 3322) | no | no | - |
+| `connector:east-ardougne:2` | (2568, 3268) | Staircase 1 | up (2568, 3267) L1 | no | no | - |
+| `connector:east-ardougne:3` | (2568, 3268) L1 | Staircase 1 | down (2568, 3271) | no | no | - |
+| `connector:east-ardougne:4` | (2570, 3267) | Ladder 1 | down (2570, 9668) | no | no | - |
+| `connector:east-ardougne:5` | (2571, 3288) L1 | Ladder 1 | up (2572, 3288) L2 | no | no | - |
+| `connector:east-ardougne:6` | (2571, 3288) L2 | Ladder 1 | down (2572, 3288) L1 | no | no | - |
+| `connector:east-ardougne:7` | (2571, 3291) L1 | Ladder 1 | up (2572, 3291) L2 | no | no | - |
+| `connector:east-ardougne:8` | (2571, 3291) L2 | Ladder 1 | down (2572, 3291) L1 | no | no | - |
+| `connector:east-ardougne:9` | (2571, 3295) | Staircase 1 | up (2571, 3294) L1 | no | no | - |
+| `connector:east-ardougne:10` | (2571, 3295) L1 | Staircase 1 | down (2571, 3298) | no | no | - |
+| `connector:east-ardougne:11` | (2571, 3302) L1 | Ladder 1 | up (2572, 3302) L2 | no | no | - |
+| `connector:east-ardougne:12` | (2571, 3302) L2 | Ladder 1 | down (2572, 3302) L1 | no | no | - |
+| `connector:east-ardougne:13` | (2571, 3305) L1 | Ladder 1 | up (2572, 3305) L2 | no | no | - |
+| `connector:east-ardougne:14` | (2571, 3305) L2 | Ladder 1 | down (2572, 3305) L1 | no | no | - |
+| `connector:east-ardougne:15` | (2572, 3325) | Staircase 1 | up (2574, 3325) L1 | no | no | - |
+| `connector:east-ardougne:16` | (2573, 3271) L1 | Ladder 1 | up (2572, 3271) L2 | no | no | - |
+| `connector:east-ardougne:17` | (2573, 3271) L2 | Ladder 1 | down (2572, 3271) L1 | no | no | - |
+| `connector:east-ardougne:18` | (2573, 3325) L1 | Staircase 1 | down (2573, 3324) | no | no | - |
+| `connector:east-ardougne:19` | (2575, 3331) | Staircase 1 | up (2578, 3331) L1 | no | no | - |
+| `connector:east-ardougne:20` | (2576, 3331) L1 | Staircase 1 | down (2574, 3331) | no | no | - |
+| `connector:east-ardougne:21` | (2591, 3334) | Staircase 1 | up (2594, 3334) L1 | no | no | - |
+| `connector:east-ardougne:22` | (2592, 3334) L1 | Staircase 1 | down (2590, 3334) | no | no | - |
+| `connector:east-ardougne:23` | (2610, 3306) | Ladder 1 | up (2609, 3306) L1 | no | no | - |
+| `connector:east-ardougne:24` | (2610, 3306) L1 | Ladder 1 | down (2609, 3306), up (2609, 3306) L2 | no | no | - |
+| `connector:east-ardougne:25` | (2610, 3306) L2 | Ladder 1 | down (2609, 3306) L1, up (2609, 3306) L3 | no | no | - |
+| `connector:east-ardougne:26` | (2610, 3306) L3 | Ladder 1 | down (2609, 3306) L2 | no | no | - |
+| `connector:east-ardougne:27` | (2617, 3315) | Ladder 1 | up (2616, 3315) L1 | no | no | - |
+| `connector:east-ardougne:28` | (2617, 3315) L1 | Ladder 1 | down (2616, 3315) | no | no | - |
+| `connector:east-ardougne:29` | (2617, 3323) | Ladder 1 | up (2616, 3323) L1 | no | no | - |
+| `connector:east-ardougne:30` | (2617, 3323) L1 | Ladder 1 | down (2616, 3323) | no | no | - |
+| `connector:east-ardougne:31` | (2622, 3292) | Ladder 1 | up (2621, 3292) L1 | no | no | - |
+| `connector:east-ardougne:32` | (2622, 3292) L1 | Ladder 1 | down (2621, 3292) | no | no | - |
+| `connector:east-ardougne:33` | (2631, 3322) L1 | Staircase 1 | down (2631, 3325) | no | no | - |
+| `connector:east-ardougne:34` | (2632, 3294) | Manhole 1 | down (2631, 9694) | no | no | - |
+| `connector:east-ardougne:35` | (2646, 3302) | Staircase 1 | up (2648, 3301) L1 | no | no | - |
+| `connector:east-ardougne:36` | (2647, 3302) L1 | Staircase 1 | down (2645, 3302) | no | no | - |
+| `connector:east-ardougne:37` | (2648, 3294) | Staircase 1 | up (2649, 3296) L1 | no | no | - |
+| `connector:east-ardougne:38` | (2648, 3295) L1 | Staircase 1 | down (2648, 3293) | no | no | - |
+| `connector:east-ardougne:39` | (2648, 3310) | Staircase 1 | up (2649, 3312) L1 | no | no | - |
+| `connector:east-ardougne:40` | (2649, 3281) L1 | Ladder 1 | up (2649, 3282) L2 | no | no | - |
+| `connector:east-ardougne:41` | (2649, 3281) L2 | Ladder 1 | down (2649, 3282) L1 | no | no | - |
+| `connector:east-ardougne:42` | (2649, 3286) L1 | Ladder 1 | up (2649, 3287) L2 | no | no | - |
+| `connector:east-ardougne:43` | (2649, 3286) L2 | Ladder 1 | down (2649, 3287) L1 | no | no | - |
+| `connector:east-ardougne:44` | (2649, 3311) L1 | Staircase 1 | down (2650, 3311) | no | no | - |
+| `connector:east-ardougne:45` | (2650, 3281) | Ladder 1 | up (2650, 3280) L1 | no | no | - |
+| `connector:east-ardougne:46` | (2650, 3281) L1 | Ladder 1 | down (2650, 3280) | no | no | - |
+| `connector:east-ardougne:47` | (2650, 3286) | Ladder 1 | up (2650, 3285) L1 | no | no | - |
+| `connector:east-ardougne:48` | (2650, 3286) L1 | Ladder 1 | down (2650, 3285) | no | no | - |
+| `connector:east-ardougne:49` | (2655, 3322) | Ladder 1 | up (2655, 3321) L1 | no | no | - |
+| `connector:east-ardougne:50` | (2655, 3322) L1 | Ladder 1 | down (2655, 3321) | no | no | - |
+| `connector:east-ardougne:51` | (2662, 3291) L1 | Staircase 1 | down (2662, 3294) | no | no | - |
+| `connector:east-ardougne:52` | (2662, 3293) | Staircase 1 | up (2661, 3291) L1 | no | no | - |
+| `connector:east-ardougne:53` | (2662, 3321) | Staircase 1 | up (2665, 3321) L1 | no | no | - |
+| `connector:east-ardougne:54` | (2663, 3321) L1 | Staircase 1 | down (2661, 3321) | no | no | - |
+| `connector:east-ardougne:55` | (2665, 3290) | Ladder 1 | up (2665, 3291) L1 | no | no | - |
+| `connector:east-ardougne:56` | (2665, 3290) L1 | Ladder 1 | down (2665, 3291) | no | no | - |
+| `connector:east-ardougne:57` | (2673, 3300) | Staircase 1 | up (2675, 3300) L1 | no | no | - |
+| `connector:east-ardougne:58` | (2674, 3300) L1 | Staircase 1 | down (2674, 3299) | no | no | - |
+| `connector:east-ardougne:59` | (2674, 3309) | Ladder 1 | up (2673, 3309) L1 | no | no | - |
+| `connector:east-ardougne:60` | (2674, 3309) L1 | Ladder 1 | down (2673, 3309) | no | no | - |
+| `connector:east-ardougne:61` | (2682, 3267) | Ship's ladder 1 | up (2681, 3267) L1 | no | no | - |
+| `connector:east-ardougne:62` | (2682, 3267) L1 | Ship's ladder 1 | down (2681, 3267) | no | no | - |
 
 ## Areas within
 

@@ -20,9 +20,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:lumbridge-trees:0` | (3204, 3207) | Staircase 1 | yes | no | - |
-| `connector:lumbridge-trees:1` | (3204, 3207) L1 | Staircase 1 | yes | no | - |
-| `connector:lumbridge-trees:2` | (3204, 3229) | Staircase 1 | yes | no | - |
-| `connector:lumbridge-trees:3` | (3204, 3229) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:lumbridge-trees:0` | (3204, 3207) | Staircase 1 | up (3205, 3209) L1 | yes | no | - |
+| `connector:lumbridge-trees:1` | (3204, 3207) L1 | Staircase 1 | down (3205, 3209), up (3205, 3209) L2 | yes | no | - |
+| `connector:lumbridge-trees:2` | (3204, 3229) | Staircase 1 | up (3205, 3228) L1 | yes | no | - |
+| `connector:lumbridge-trees:3` | (3204, 3229) L1 | Staircase 1 | down (3205, 3228), up (3206, 3229) L2 | yes | no | - |

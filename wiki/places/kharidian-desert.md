@@ -39,12 +39,12 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:kharidian-desert:0` | (3188, 2987) | Ladder 1 | no | no | - |
-| `connector:kharidian-desert:1` | (3188, 2987) L1 | Ladder 1 | no | no | - |
-| `connector:kharidian-desert:2` | (3290, 3036) | Ladder 1 | no | no | - |
-| `connector:kharidian-desert:3` | (3290, 3036) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:kharidian-desert:0` | (3188, 2987) | Ladder 1 | up (3188, 2986) L1 | no | no | - |
+| `connector:kharidian-desert:1` | (3188, 2987) L1 | Ladder 1 | down (3188, 2986) | no | no | - |
+| `connector:kharidian-desert:2` | (3290, 3036) | Ladder 1 | up (3289, 3036) L1 | no | no | - |
+| `connector:kharidian-desert:3` | (3290, 3036) L1 | Ladder 1 | down (3289, 3036) | no | no | - |
 
 ## Areas within
 

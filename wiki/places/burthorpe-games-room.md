@@ -12,10 +12,10 @@ minigames/game_gamesroom.
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:burthorpe-games-room:0` | (2205, 4935) L1 | Stairs 1 | no | no | - |
-| `connector:burthorpe-games-room:1` | (2207, 4935) | Stairs 1 | no | no | - |
-| `connector:burthorpe-games-room:2` | (2207, 4935) L1 | Stairs 1 | no | no | - |
-| `connector:burthorpe-games-room:3` | (2212, 4941) | Stairs 1 | no | no | - |
-| `connector:burthorpe-games-room:4` | (2212, 4942) L1 | Stairs 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:burthorpe-games-room:0` | (2205, 4935) L1 | Stairs 1 | - | no | no | - |
+| `connector:burthorpe-games-room:1` | (2207, 4935) | Stairs 1 | up (2207, 4934) L1 | no | no | - |
+| `connector:burthorpe-games-room:2` | (2207, 4935) L1 | Stairs 1 | down (2207, 4938) | no | no | - |
+| `connector:burthorpe-games-room:3` | (2212, 4941) | Stairs 1 | up (2212, 4944) L1 | no | no | - |
+| `connector:burthorpe-games-room:4` | (2212, 4942) L1 | Stairs 1 | down (2212, 4940) | no | no | - |

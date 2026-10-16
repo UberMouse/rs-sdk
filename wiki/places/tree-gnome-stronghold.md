@@ -139,61 +139,61 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:tree-gnome-stronghold:0` | (2384, 3506) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:1` | (2384, 3506) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:2` | (2389, 3512) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:3` | (2389, 3513) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:4` | (2395, 3474) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:5` | (2396, 3501) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:6` | (2396, 3501) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:7` | (2398, 3512) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:8` | (2398, 3513) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:9` | (2401, 3449) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:10` | (2401, 3450) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:11` | (2408, 3435) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:12` | (2408, 3435) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:13` | (2413, 3488) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:14` | (2413, 3489) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:15` | (2416, 3445) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:16` | (2416, 3446) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:17` | (2417, 3490) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:18` | (2418, 3417) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:19` | (2418, 3417) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:20` | (2418, 3491) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:21` | (2420, 3471) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:22` | (2421, 3472) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:23` | (2423, 3422) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:24` | (2423, 3422) L2 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:25` | (2423, 3442) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:26` | (2423, 3442) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:27` | (2437, 3464) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:28` | (2437, 3464) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:29` | (2440, 3404) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:30` | (2440, 3404) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:31` | (2443, 3463) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:32` | (2443, 3463) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:33` | (2444, 3414) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:34` | (2445, 3415) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:35` | (2445, 3434) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:36` | (2445, 3434) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:37` | (2449, 3464) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:38` | (2449, 3464) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:39` | (2455, 3417) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:40` | (2456, 3417) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:41` | (2461, 3416) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:42` | (2461, 3417) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:43` | (2475, 3400) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:44` | (2475, 3400) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:45` | (2476, 3463) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:46` | (2476, 3463) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-stronghold:47` | (2479, 3408) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:48` | (2479, 3408) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:49` | (2485, 3402) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:50` | (2485, 3402) L1 | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:51` | (2488, 3407) | Staircase 1 | no | no | - |
-| `connector:tree-gnome-stronghold:52` | (2489, 3408) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:tree-gnome-stronghold:0` | (2384, 3506) | Staircase 1 | up (2384, 3505) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:1` | (2384, 3506) L1 | Staircase 1 | down (2383, 3506) | no | no | - |
+| `connector:tree-gnome-stronghold:2` | (2389, 3512) | Staircase 1 | up (2388, 3513) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:3` | (2389, 3513) L1 | Staircase 1 | down (2389, 3514) | no | no | - |
+| `connector:tree-gnome-stronghold:4` | (2395, 3474) | Staircase 1 | up (2396, 3476) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:5` | (2396, 3501) | Staircase 1 | up (2396, 3500) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:6` | (2396, 3501) L1 | Staircase 1 | down (2395, 3501) | no | no | - |
+| `connector:tree-gnome-stronghold:7` | (2398, 3512) | Staircase 1 | up (2397, 3513) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:8` | (2398, 3513) L1 | Staircase 1 | down (2398, 3514) | no | no | - |
+| `connector:tree-gnome-stronghold:9` | (2401, 3449) | Staircase 1 | up (2400, 3450) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:10` | (2401, 3450) L1 | Staircase 1 | down (2401, 3451) | no | no | - |
+| `connector:tree-gnome-stronghold:11` | (2408, 3435) | Ladder 1 | up (2407, 3435) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:12` | (2408, 3435) L1 | Ladder 1 | down (2407, 3435) | no | no | - |
+| `connector:tree-gnome-stronghold:13` | (2413, 3488) | Staircase 1 | up (2412, 3489) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:14` | (2413, 3489) L1 | Staircase 1 | down (2413, 3490) | no | no | - |
+| `connector:tree-gnome-stronghold:15` | (2416, 3445) | Staircase 1 | up (2415, 3446) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:16` | (2416, 3446) L1 | Staircase 1 | down (2416, 3447) | no | no | - |
+| `connector:tree-gnome-stronghold:17` | (2417, 3490) | Staircase 1 | up (2418, 3492) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:18` | (2418, 3417) | Staircase 1 | up (2418, 3416) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:19` | (2418, 3417) L1 | Staircase 1 | down (2417, 3417) | no | no | - |
+| `connector:tree-gnome-stronghold:20` | (2418, 3491) L1 | Staircase 1 | down (2419, 3491) | no | no | - |
+| `connector:tree-gnome-stronghold:21` | (2420, 3471) | Staircase 1 | up (2421, 3473) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:22` | (2421, 3472) L1 | Staircase 1 | down (2422, 3472) | no | no | - |
+| `connector:tree-gnome-stronghold:23` | (2423, 3422) L1 | Ladder 1 | up (2422, 3422) L2 | no | no | - |
+| `connector:tree-gnome-stronghold:24` | (2423, 3422) L2 | Ladder 1 | down (2422, 3422) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:25` | (2423, 3442) | Ladder 1 | up (2422, 3442) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:26` | (2423, 3442) L1 | Ladder 1 | down (2422, 3442) | no | no | - |
+| `connector:tree-gnome-stronghold:27` | (2437, 3464) | Ladder 1 | up (2436, 3464) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:28` | (2437, 3464) L1 | Ladder 1 | down (2436, 3464) | no | no | - |
+| `connector:tree-gnome-stronghold:29` | (2440, 3404) | Staircase 1 | up (2440, 3403) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:30` | (2440, 3404) L1 | Staircase 1 | down (2439, 3404) | no | no | - |
+| `connector:tree-gnome-stronghold:31` | (2443, 3463) | Ladder 1 | up (2442, 3463) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:32` | (2443, 3463) L1 | Ladder 1 | down (2442, 3463) | no | no | - |
+| `connector:tree-gnome-stronghold:33` | (2444, 3414) | Staircase 1 | up (2445, 3416) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:34` | (2445, 3415) L1 | Staircase 1 | down (2446, 3415) | no | no | - |
+| `connector:tree-gnome-stronghold:35` | (2445, 3434) | Staircase 1 | up (2445, 3433) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:36` | (2445, 3434) L1 | Staircase 1 | down (2444, 3434) | no | no | - |
+| `connector:tree-gnome-stronghold:37` | (2449, 3464) | Ladder 1 | up (2449, 3463) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:38` | (2449, 3464) L1 | Ladder 1 | down (2449, 3463) | no | no | - |
+| `connector:tree-gnome-stronghold:39` | (2455, 3417) | Staircase 1 | up (2457, 3417) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:40` | (2456, 3417) L1 | Staircase 1 | down (2456, 3416) | no | no | - |
+| `connector:tree-gnome-stronghold:41` | (2461, 3416) | Staircase 1 | up (2460, 3417) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:42` | (2461, 3417) L1 | Staircase 1 | down (2461, 3418) | no | no | - |
+| `connector:tree-gnome-stronghold:43` | (2475, 3400) | Staircase 1 | up (2475, 3399) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:44` | (2475, 3400) L1 | Staircase 1 | down (2474, 3400) | no | no | - |
+| `connector:tree-gnome-stronghold:45` | (2476, 3463) | Ladder 1 | up (2475, 3463) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:46` | (2476, 3463) L1 | Ladder 1 | down (2475, 3463) | no | no | - |
+| `connector:tree-gnome-stronghold:47` | (2479, 3408) | Staircase 1 | up (2479, 3407) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:48` | (2479, 3408) L1 | Staircase 1 | down (2478, 3408) | no | no | - |
+| `connector:tree-gnome-stronghold:49` | (2485, 3402) | Staircase 1 | up (2485, 3401) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:50` | (2485, 3402) L1 | Staircase 1 | down (2484, 3402) | no | no | - |
+| `connector:tree-gnome-stronghold:51` | (2488, 3407) | Staircase 1 | up (2489, 3409) L1 | no | no | - |
+| `connector:tree-gnome-stronghold:52` | (2489, 3408) L1 | Staircase 1 | down (2490, 3408) | no | no | - |
 
 ## Areas within
 

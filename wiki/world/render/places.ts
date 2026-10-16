@@ -1,7 +1,7 @@
 // wiki/places/<area-id>.md: one page per curated area. It lists only the sites whose deepest area is
 // this one, a table per kind; the sites of its child areas are summed per kind beside a link to each
 // child, so a region's page stays a map of its towns rather than every tree in it.
-import type { Area, FeatureKind, Site, World } from '../types';
+import type { Area, Connector, FeatureKind, Site, World } from '../types';
 import { cmp, push } from '../util';
 import {
     byKind,
@@ -34,9 +34,24 @@ const summary = (perKind: ReadonlyMap<FeatureKind, number> | undefined): string 
               .join(', ')
         : '-';
 
+/**
+ * Where a connector site's locs lead: each direction and landing once, in the order of the site's
+ * features, then each feature's connectors in World.connectors order (by op, landing); `-` when the
+ * scripts give none.
+ */
+const leadsTo = (site: Site, byFeature: ReadonlyMap<number, Connector[]>): string => {
+    const out = new Set<string>();
+    for (const i of site.features)
+        for (const c of byFeature.get(i) ?? [])
+            out.add(`${c.direction === 'other' ? 'to' : c.direction} ${coord(c.landing)}`);
+    return out.size ? [...out].join(', ') : '-';
+};
+
 /** One page per area, as its repo-relative path and text. */
 export function renderPlaces(world: World, data: PageData): Page[] {
     const byId = new Map(world.areas.map(a => [a.id, a]));
+    const byFeature = new Map<number, Connector[]>();
+    for (const c of world.connectors) push(byFeature, c.feature, c);
     const leafSites = new Map<string, Site[]>();
     const under = new Map<string, Map<FeatureKind, number>>();
     for (const s of world.sites) {
@@ -85,11 +100,13 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                             : `${label(kind, p)} ${p.n}`,
                     )
                     .join(', ');
+            // A connector's row also says where it leads (World.connectors).
+            const connector = kind === 'connector';
             lines.push(
                 `## ${heading}`,
                 '',
                 ...table(
-                    ['Site', 'Centre', 'Counts', 'F2P', 'Multiway', 'Wilderness'],
+                    ['Site', 'Centre', 'Counts', ...(connector ? ['Leads to'] : []), 'F2P', 'Multiway', 'Wilderness'],
                     held
                         .filter(({ site }) => site.kind === kind)
                         .sort((a, b) => bySiteId(a.site.id, b.site.id))
@@ -97,6 +114,7 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                             `\`${s.id}\``,
                             coord(s.centre),
                             counts(ps),
+                            ...(connector ? [leadsTo(s, byFeature)] : []),
                             yesNo(s.f2p),
                             yesNo(s.multiway),
                             wilderness(s.wildernessLevel),

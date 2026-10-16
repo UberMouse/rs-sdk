@@ -1,4 +1,4 @@
-// server/content/pack/{loc,npc,obj}.pack: one `id=name` line per config.
+// server/content/pack/{loc,npc,obj,varp}.pack: one `id=name` line per config.
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { PACK } from '../paths';
@@ -22,5 +22,5 @@ export function parsePack(text: string): Pack {
     return { name, id };
 }
 
-export const readPack = (kind: 'loc' | 'npc' | 'obj'): Pack =>
+export const readPack = (kind: 'loc' | 'npc' | 'obj' | 'varp'): Pack =>
     parsePack(readFileSync(join(PACK, `${kind}.pack`), 'utf8'));

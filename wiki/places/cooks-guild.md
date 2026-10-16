@@ -17,9 +17,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:cooks-guild:0` | (3144, 3446) L1 | Ladder 1 | yes | no | - |
-| `connector:cooks-guild:1` | (3144, 3446) L2 | Ladder 1 | yes | no | - |
-| `connector:cooks-guild:2` | (3144, 3447) | Staircase 1 | yes | no | - |
-| `connector:cooks-guild:3` | (3144, 3448) L1 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:cooks-guild:0` | (3144, 3446) L1 | Ladder 1 | up (3144, 3447) L2 | yes | no | - |
+| `connector:cooks-guild:1` | (3144, 3446) L2 | Ladder 1 | down (3143, 3446) L1 | yes | no | - |
+| `connector:cooks-guild:2` | (3144, 3447) | Staircase 1 | up (3143, 3448) L1 | yes | no | - |
+| `connector:cooks-guild:3` | (3144, 3448) L1 | Staircase 1 | down (3143, 3448) | yes | no | - |

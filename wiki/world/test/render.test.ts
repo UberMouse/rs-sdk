@@ -14,7 +14,7 @@ import {
 } from '../render';
 import { bySiteId, link, slug } from '../render/common';
 import type { Config } from '../sources/configs';
-import type { Feature, FeatureKind, Site, World } from '../types';
+import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } from '../types';
 
 const feature = (
     kind: FeatureKind,
@@ -54,7 +54,7 @@ const site = (
 // A region holding a town holding a bank; a tree site in the town on level 1, one in the region in the
 // Wilderness, two more in the town to show sites sort by their number, and sites of kinds without pages.
 const world: World = {
-    format: 2,
+    format: WORLD_FORMAT,
     generatedFrom: 'abc123',
     npcSpawns: [],
     areas: [
@@ -96,6 +96,21 @@ const world: World = {
         site('tree:town:10', ['region', 'town'], [8], { yew: 1 }),
         site('tree:town:2', ['region', 'town'], [7], { yew: 1 }),
     ],
+    // The ladder's two ops land on one tile, which its row names once.
+    connectors: [1, 2].map(op => ({
+        feature: 6,
+        loc: { level: 0, x: 3160, z: 3160 },
+        op,
+        opName: op === 1 ? 'Climb' : 'Climb-up',
+        direction: 'up' as const,
+        landing: { level: 1, x: 3160, z: 3161 },
+        stand: { level: 0, x: 3160, z: 3161 },
+        source: 'ladders+stairs/scripts/ladders.rs2:1',
+    })),
+    quests: [],
+    loadoutRules: {},
+    transports: [],
+    gates: [],
 };
 
 const data: RenderData = {
@@ -182,9 +197,9 @@ describe('renderWorld', () => {
 
           ## Ladders and stairs
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | yes | no | - |
+          | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+          |---|---|---|---|---|---|---|
+          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 | yes | no | - |
 
           ## Areas within
 
@@ -343,9 +358,14 @@ describe('renderWorld', () => {
 // pickpocket configs and a monster share the name Man, a shop is titled each of the three ways, and a
 // tree's subtype has two dbrow rows.
 const named: World = {
-    format: 2,
+    format: WORLD_FORMAT,
     generatedFrom: 'abc123',
     npcSpawns: [],
+    connectors: [],
+    quests: [],
+    loadoutRules: {},
+    transports: [],
+    gates: [],
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 3000, z1: 3000, x2: 3500, z2: 3500 }] }],
     features: [
         feature('rock', 'iron', 'Rocks', 'ironrock1', 3200, 3200),

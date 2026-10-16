@@ -15,12 +15,13 @@ if_openmain(bank_main);
 describe('parseTriggers', () => {
     const t = parseTriggers('interface_bank/scripts/bank_booth.rs2', rs2);
 
-    test('op triggers on names and categories, with bodies', () => {
+    test('op triggers on names and categories, with their header lines and bodies', () => {
         expect(t.map(x => [x.on, x.op, x.target, x.category])).toEqual([
             ['loc', '1', 'bankbooth', false],
             ['loc', '2', 'bankbooth', false],
             ['npc', '3', 'bank_teller', true],
         ]);
+        expect(t.map(x => x.line)).toEqual([1, 5, 6]);
         expect(t[0]!.body).toContain('@openbank');
         expect(t[1]!.body).toContain('@openbank');
     });
@@ -35,18 +36,18 @@ describe('parseTriggers', () => {
 
     test('labels and procs are indexed by how a body calls them', () => {
         expect(parseCallables('f.rs2', rs2)).toEqual([
-            { file: 'f.rs2', call: '@openbank', body: '\nif_openmain(bank_main);\n' },
+            { file: 'f.rs2', call: '@openbank', line: 8, body: '\nif_openmain(bank_main);\n' },
         ]);
         expect(parseCallables('f.rs2', '[proc,openshop](inv $shop)\nx;\n')).toEqual([
-            { file: 'f.rs2', call: '~openshop', body: '(inv $shop)\nx;\n' },
+            { file: 'f.rs2', call: '~openshop', line: 1, body: '(inv $shop)\nx;\n' },
         ]);
     });
 
     test('ap triggers and use-item ops count; spell-target ops and queues do not', () => {
         const u = parseTriggers('f.rs2', '[apnpc1,man]\n[oplocu,_anvil]\n[opnpct,man]\n[queue,man]\n[proc,x]\n');
-        expect(u.map(x => [x.on, x.op, x.target, x.category])).toEqual([
-            ['npc', '1', 'man', false],
-            ['loc', 'u', 'anvil', true],
+        expect(u.map(x => [x.kind, x.on, x.op, x.target, x.category])).toEqual([
+            ['ap', 'npc', '1', 'man', false],
+            ['op', 'loc', 'u', 'anvil', true],
         ]);
     });
 

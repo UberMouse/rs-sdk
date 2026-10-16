@@ -18,7 +18,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:monastery:0` | (3046, 3483) L1 | Ladder 1 | yes | no | - |
-| `connector:monastery:1` | (3057, 3483) L1 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:monastery:0` | (3046, 3483) L1 | Ladder 1 | down (3045, 3483) | yes | no | - |
+| `connector:monastery:1` | (3057, 3483) L1 | Ladder 1 | down (3056, 3483) | yes | no | - |

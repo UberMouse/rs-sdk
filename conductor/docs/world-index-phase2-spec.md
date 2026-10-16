@@ -6,8 +6,30 @@ is built: `bun run world` writes `wiki/world.json` (features, sites, curated are
 the `wiki/places|resources|services` pages; the NPC and shop generators read it. Phase 2 answers
 "can a bot get there, and what does it need?" for every site, and gives phase 3 real walk distances.
 
-Status: **draft, not yet scheduled** (2026-10-11). Re-read the code it names before starting: phase 1
-landed after this was written.
+Status: **in build** on branch `world-index-phase2` (2026-10-16), via the `sdd-loop` skill. Checked
+against the code at that date: `wiki/world/` has `collision.ts` (the SDK bundle via `collisionPaths`),
+`classify.ts` (kind `connector`), `sources/zones.ts` (`isF2p`), `types.ts` (`Site`, `World`,
+`WORLD_FORMAT = 2`). Baseline: `bun run world` 4.9 s, `world.json` 5.8 MB.
+
+## Assumptions (2026-10-16)
+
+- **Collision is the SDK bundle as the bot's walker sees it**: `collisionPaths` in
+  `conductor/actions/paths.ts` (`canStep`, `walkable`, with `EXTRA_DOORS` masked), the same data
+  phase 1 places stand tiles with. Reach therefore means "a bot can walk there". Known gaps in the
+  bundle (shape-9 ground doors other than the one in `EXTRA_DOORS`) are not patched here; they show
+  up in the unreached report.
+- **The bundle has every door open** (`initPathfinding` masks door walls). A door that `gates.ts`
+  names is walled again inside the fill (from its loc tile, shape and angle), and the fill crosses
+  it only as an edge that carries the gate's requirements. A one-way door (`ONE_WAY_DOORS`, left
+  walled by the SDK) stays walled unless `gates.ts` gives it an edge.
+- **Mainland-fill zones are not land.** `initPathfinding` allocates every empty zone in
+  x 2304-3392, z 2944-3584 as open so its long-range search can cross gaps. Those zones are not
+  in the data's zone list, and the fill does not enter them. A test pins this, and the build report
+  counts fill-zone tiles adjacent to reached tiles.
+- **Concurrent conductor edits**: a conductor run is adding Taverley connectors and a `taverley`
+  underground area to `conductor/lib/connectors.ts` on `main`. Before Task 1's real-data test and
+  again before Task 6, merge `main` into this branch so those rows are in the table being
+  reproduced.
 
 ## Decisions carried from the design
 
@@ -67,6 +89,67 @@ landing cannot be derived is listed in the build report with the reason (never g
 - [ ] `world.json` gains `connectors` (format bump); pages unchanged except where a connector site
       now names its landing.
 
+## Task 1b — Trapdoors as connectors
+
+Added during the build (2026-10-16), after `main` gained a curated Edgeville Dungeon trapdoor row
+(`conductor/lib/connectors.ts`, "Edgeville Dungeon trapdoor") that Task 1's scripts do not cover.
+
+**Files:** `wiki/world/sources/connectors.ts`, `wiki/world/classify.ts` (the connector kind's script
+sources), `wiki/world/types.ts`, `wiki/world/load.ts`, their tests; regenerated `wiki/world.json` and
+pages.
+
+The generic trapdoor (`general_use/scripts/trapdoors.rs2`) is two locs on one tile: `trapdoor`
+(op1 Open, `loc_change(trapdoor_open, 500)`) and `trapdoor_open` (op1 Climb-down,
+`p_telejump(movecoord(coord(), 0, 0, 6400))`; op2 Close). The map places the closed one. The
+generic manhole (`general_use/scripts/manholes.rs2`, the Varrock Sewers entrance at (3237, 3458)) is
+the same pattern: `manholeclosed` op1 Open swaps to `manholeopen` and also `loc_add`s the cover
+(`loc_883`) on the next tile; `manholeopen` op1 Climb-down moves the player +6400 (line 10).
+
+- The `connector` kind's script sources become `ladders+stairs/` **and**
+  `general_use/scripts/trapdoors.rs2` and `general_use/scripts/manholes.rs2`, so placed `trapdoor`
+  and `manholeclosed` (and their open forms, if the map places any) are connector features, not
+  doors or scenery.
+- When an op's script swaps the loc (`loc_change(<other>, ...)` on its own tile) on a path with no
+  condition and no move, the reader follows it. Other effects on that path (messages, sounds, a
+  `loc_add` on another tile) do not stop it. The reader follows it as follows: the row keeps the placed loc, its tile and the swapping op (`op: 1`,
+  `opName: 'Open'`), takes the landing from the swapped-to loc's moving op, and records that op in a
+  new optional field `thenOp: { op: number; opName: string }` (not `then`: oxlint `unicorn/no-thenable`) (`{1, 'Climb-down'}`). `source` is the
+  line of the move (`general_use/scripts/trapdoors.rs2:11`). A swapped-to loc's op that does not
+  move (Close) gives no row.
+- Landings use the existing relative-move path (`relative: true`, stand chosen with the reach
+  test), the same as the ladders.
+- `thenOp` is a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
+
+### Acceptance criteria
+
+- [ ] Every placed `trapdoor` and `manholeclosed` loc has a row or an underived reason. The build
+      report counts them with the other connectors.
+- [ ] The Varrock Sewers manhole is derived: loc (3237, 3458), Open then Climb-down, stand within
+      1 tile of (3237, 3459), landing its stand + 6400. Its way back, `ladder_from_cellar`
+      (3237, 9858), is already derived, so neither side is one-way (a real-data test).
+- [ ] The two real-data tests that fail now pass: the Edgeville Dungeon trapdoor row from
+      `conductor/lib/connectors.ts` is reproduced (loc tile, landing, stand within 1 tile), and
+      "has a way back for every curated connector" holds.
+- [ ] A curated row the scripts contradict is not loosened or skipped silently. The real-data
+      test keeps a list of known contradictions, each with the curated value, the derived value and
+      the evidence (script line, reach tiles), and asserts the curated row still holds the recorded
+      wrong value, so the entry fails and must be removed once `main` corrects it. At 1b's commit the
+      only one is the Edgeville trapdoor's landing: curated (3097, 9868), copied by `pair()` from
+      the ladder's stand; derived (3096, 9868), because `trapdoors.rs2:11` moves the player's own
+      tile and the trapdoor's only reach tile is (3096, 3468). Task 6, which makes the table a view,
+      clears it.
+- [ ] The Lumbridge castle cellar ladder (`ladder_from_cellar` (3209, 9616)) is no longer one-way;
+      its way down is the kitchen trapdoor at (3209, 3216). The test that pinned it as one-way is
+      rewritten to pin the pair, and the one-way script-cite check accepts `trapdoors.rs2`.
+- [ ] A unit test on a scripted trapdoor pair pins the follow-through: the closed loc's row carries
+      `thenOp`, the Close op gives no row, a swap beside a `loc_add` on another tile is still followed,
+      and a `loc_change` under a condition or beside a move is not followed.
+- [ ] `world.json` carries `thenOp`; `--check` is green; pages change only where a trapdoor site now
+      names its landing. Report the build time and `world.json` size.
+- [ ] Out of scope: quest and minigame trapdoors with their own scripts (`mm_temple`, `grandtree`,
+      `viking_peer`, `holy_barrier`, `quest_mm`, duel arena, Castle Wars). They are gates or
+      curation, not this task.
+
 ## Task 2 — Gates and transports
 
 **Files:** `wiki/world/gates.ts` (curated), `wiki/world/sources/gate-scan.ts`,
@@ -84,13 +167,30 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
   (Cooking Guild), `crafting_guild_door`, `ranging_guild_door` (40 Ranged), the Lost City shed door
   in Lumbridge Swamp, guild and quest doors under `scripts/doors/`.
 - `gates.ts` is the curated list: `{ loc, tile(s), requires: Requirement[], source, notes }`, where
-  `Requirement` is a tagged union: `quest:<id>`, `skill:<skill>:<level>`, `item:<obj>` (worn or held),
-  `coins:<n>`, `members`, `other:<text>`. Each scanned candidate is either confirmed here (with its
+  `Requirement` is a tagged union: `quest:<id>`, `quest:<id>>=<stage>`, `skill:<skill>:<level>`,
+  `item:<obj>:worn|held`, `category:<category>:worn|held` (any obj of an obj-config category, e.g. any
+  axe: a script's `inv_totalcat` or a tool-checker proc such as `~woodcutting_axe_checker` maps to the
+  categories it tests), `questpoints:<n>` (`%qp >= n`, e.g. the Champions' Guild door), `coins:<n>`,
+  `consume:<obj>:<n>`, `members`, `loadout:<id>`, `other:<text>`
+  (see Settled questions). Each scanned candidate is either confirmed here (with its
   requirement) or listed as "not a gate" with the reason; the build fails on an unreviewed candidate,
   so new content is never silently ignored.
 - Transports: parse `scripts/interface_boat/` (`sail.rs2`, `sail.constant`) for ship routes (from,
   to, fare, members/quest conditions); curate the rest in `gates.ts` as `{ from, to, requires,
   source }`.
+
+**Split (2026-10-16), built as two reviewed commits:**
+
+- **Task 2a — requirements, quests, loadout rules, transports.** The `Requirement` type and its
+  canonical string form (in `wiki/world/requirements.ts`); the quest table derived from the
+  `send_quest_progress` calls with its curated overrides and varp ids (`World.quests`); loadout
+  rules (`World.loadoutRules`, Entrana's from `has_entrana_restricted_items`); ship routes from
+  `sail.rs2`/`sail.constant` plus curated transports (`World.transports`); format bump. Criteria:
+  the quest and transport bullets of "Settled questions" and the third criterion below.
+- **Task 2b — gate scan and curation.** `gate-scan.ts`, the curated gate list in `gates.ts`
+  (every candidate confirmed or rejected, with a kind: gate / side effect / temporary block /
+  quest window), the build failing on an unreviewed candidate, `World.gates`. Criteria: the first
+  two below.
 
 ### Acceptance criteria
 
@@ -99,7 +199,57 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - [ ] Every scanned candidate is confirmed or rejected in `gates.ts` (the build fails otherwise);
       every entry cites its script.
 - [ ] Ship routes are derived from `sail.rs2`/`sail.constant` with their fares; Port Sarim -> Karamja
-      and the Entrana boat (members, no weapons/armour: record as `other`) are pinned by tests.
+      and the Entrana boat (`{members, loadout:entrana}`) are pinned by tests.
+
+## Task 2c — Landings for gated moves on objects
+
+Added during the build (2026-10-16). The gate scan writes `cross` for every move that is not a coord
+literal. On a wall (shapes 0-3 and 9) that means stepping through the wall, which Task 3 does from the
+collision data. On any other loc it says nothing about where the player ends up. At 2b's commit,
+420 gate rows on 85 triggers are like this: ladders (`miningguildladder`, `monasteryladder`,
+`paramayaladderup`), climbing rocks and pipes (`troll_climbingrocks`, `karam_dungeon_pipe`), the
+Kharazi jungle bushes and trees (`_jungle_bush`, `_jungle_tree`, 228 rows), and absolute teleports
+(`troll_stronghold_entrance`). Without landings, Task 3 cannot use any of them, and the Mining Guild
+is unreachable.
+
+**Files:** `wiki/world/sources/gate-scan.ts` (or a new `sources/gate-landings.ts` it feeds),
+`wiki/world/types.ts`, `wiki/world/load.ts`, their tests; regenerated `wiki/world.json` and pages.
+
+For each placed loc of such a row, derive what the move past the check does. Evaluate only the path
+the scan kept (the check passed), with the loc's tile, shape and angle bound as in Task 1, and the
+player's `coord` bound to each tile the loc can be used from (the phase 1 reach test's approach
+tiles on the loc's level). Follow labels and procs the way Task 1 does. The landing is where the
+last position-setting call on the path leaves the player: `p_telejump`, `p_teleport`,
+`p_exactmove`, `~climb_ladder`, `~forcemove`, `~agility_force_move`, `~agility_exactmove` and their
+like, read from the proc bodies, not from a name list where the body can be read.
+
+- **One landing whatever the player tile** (a literal, `movecoord(loc_coord, ...)`): the row gets
+  `to`, as the Zanaris shed already has.
+- **Depends on the player tile** (`movecoord(coord, ...)`, or a `$dx` picked by the player's side):
+  a new field `landings: { stand: Tile; landing: Tile }[]`, one per approach tile the move is
+  derivable from. A landing must be walkable and on land; otherwise that stand is reported.
+- **Removes or swaps the loc and moves nothing**: `loc_del`, or `loc_change` to a loc whose
+  collision does not block, in the trigger or a proc it calls (the jungle bushes and trees). The
+  row gets a new field `opens: true`: once its requirements are met, the loc's tiles are walkable.
+- **Anything else** (`map_findsquare`, a random tile, a construct the evaluator stops on): listed
+  in the build report as underived, with the construct and `file:line`. Never guessed.
+
+`landings` and `opens` are a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
+
+### Acceptance criteria
+
+- [ ] Every gate row with a `cross` move on a non-wall loc has `to`, `landings` or `opens`, or an
+      underived reason. The build report counts each outcome and lists the underived ones by
+      trigger.
+- [ ] Real-data tests, each with its script as evidence: `miningguildladder` lands +6400 from each
+      stand (`mining_guild.rs2:8`), the `monasteryladder` one level up, `_jungle_bush` opens,
+      `troll_climbingrocks` through its label (`@rockslide_obstacle`), and
+      `troll_stronghold_entrance` to its literal tile.
+- [ ] Unit tests on scripted triggers pin each outcome, and pin that a move on a path the check
+      refuses is never used.
+- [ ] `--check` is green; report the build time and `world.json` size.
+- [ ] Out of scope: wall gates (Task 3 crosses them from collision), and curating underived rows
+      (Task 3's unreached report is that to-do list).
 
 ## Task 3 — Reachability graph and flood fill
 
@@ -111,7 +261,27 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - Edges: neighbour steps the collision data allows (`canStep`, so walls block); doors the
   pathfinder opens are passable unless `gates.ts` names them; connectors (Task 1) as one-way edges;
   gates and transports (Task 2) as edges carrying their requirements.
-- Members: a step into a non-F2P zone (`free2play.csv`, `isF2p`) adds `members`.
+- Gate rows (`World.gates`, Tasks 2b and 2c), read as follows:
+  - Each row is one way to make one move. `requires` lists alternatives: any one set opens it.
+    Several rows on one loc (other ops, other triggers) are alternatives as well.
+  - With `from`, the check applies only when crossing from that side; the other direction is free.
+  - A wall row with no `to` is the door walled again and crossed as an edge between its two tiles.
+  - A row with `to` is a jump from the loc's approach tiles to `to`; the loc itself stays as the
+    collision data has it.
+  - A row with `landings` gives an edge from each `stand` to its `landing`.
+  - A row with `opens` makes the loc's tiles walkable under its requirements.
+  - Quest windows (`kind: 'quest-window'`, `requires: []`) are never crossed.
+  - A gate whose loc tile is a Task 1 connector's loc tile (the Dwarf Cannon guard tower's `ladder` at (2570, 3441),
+    `quest:mcannon>=2`) puts its
+    requirements on that connector's edge.
+  - Connectors with `relative: true` give an edge only from their `stand`.
+- Members: bots always play on members worlds (user, 2026-10-16), so `members` is always satisfied.
+  The fill treats the token as the empty requirement and never adds it to a set; `world.json` still
+  records it on transports and gates where the scripts check `map_members`. No members-zone logic.
+- Ships: Task 2a's ship landings are on the deck (level 1). The fill needs the moves between deck and
+  quay as edges, from the gangplank locs (`general_use/scripts/gangplank.rs2`, relative moves),
+  derived the way Task 1 derives connectors and reported the same way when underivable. Without
+  them every boat leads nowhere.
 - Fill: from the Lumbridge spawn (3222, 3218, level 0), a multi-label BFS keeping, per tile, the
   antichain of minimal requirement sets (a set is dropped when a subset already reaches the tile).
   Bound the antichain size per tile (report tiles that hit the bound) so a gate-dense area cannot
@@ -121,11 +291,13 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 ### Acceptance criteria
 
 - [ ] Synthetic-grid tests: open walk; a wall; a door; a gated door; a connector; two gates with
-      overlapping requirements (antichain minimality); members zones; an unreachable pocket.
+      overlapping requirements (antichain minimality); a transport with a fare; an unreachable pocket.
 - [ ] Real-data facts (each a test with its evidence): Lumbridge, Draynor, Varrock, Falador reach
-      with `{}`; Al Kharid with `{coins:10}` or a members route (verify which the data gives);
-      Zanaris needs `quest:lost-city` (and whatever else its door requires); Entrana only by boat;
-      the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs.
+      with `{}`; Al Kharid with whatever the data gives (the `{coins:10}` toll, or `{}` by another route);
+      Zanaris needs `{item:dramen_staff:worn}` (the shed door checks the staff, not the quest); Entrana only
+      by boat, `{loadout:entrana}`; Musa Point on Karamja by boat and gangplank, `{coins:30}`;
+      the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs; the
+      Mining Guild mine needs `{skill:mining:60}` (Task 2c's ladder landing).
 - [ ] Runtime and memory reported; within the global budget.
 
 ## Task 4 — Access on sites and pages
@@ -135,13 +307,14 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - Each `Site` and `NpcSpawn` gains `reach: string[][]` (minimal requirement sets of its stand tile,
   or of its nearest walkable tile for npc clusters); `[]` = unreachable.
 - Pages: a Requires column on resource, service and place tables (`-` for `{}`, the sets joined
-  with "or"); service and resource pages can be read as "where can a fresh F2P account do X".
+  with "or"); service and resource pages can be read as "where can a fresh account do X".
 - Build report: unreached sites of covered kinds, grouped by area, with the nearest reached tile
   and the plane, as the curation to-do list.
 
 ### Acceptance criteria
 
-- [ ] All 25 bank sites have `reach`; the F2P mainland banks are `[[]]`; Zanaris carries its quest.
+- [ ] All 25 bank sites have `reach`; the mainland banks a walk reaches with no requirement are `[[]]`;
+      Zanaris carries `{item:dramen_staff:worn}`.
 - [ ] The unreached report exists and is clean for banks and shops, or each remaining entry is
       explained in `gates.ts`/`areas.ts` notes.
 - [ ] `--check`, determinism and the format bump hold.
@@ -150,7 +323,7 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 
 **Files:** `wiki/world/distance.ts`, tests; `types.ts`/`build.ts`.
 
-For every resource and processor site, the walked distance (ticks, walking and running) from its
+For every resource and processor site, the travel time in run ticks (bots always run, user 2026-10-16; no walking ticks) from its
 stand tile to the nearest reachable bank and, where phase 3 needs it, the nearest processor of the
 right kind (furnace for ore, range for raw fish, anvil for bars), under the site's own requirement
 sets (a site reachable with `{}` uses only `{}` paths). Computed with one multi-source BFS per sink
@@ -158,7 +331,7 @@ kind over the Task 3 graph, not a path per site.
 
 ### Acceptance criteria
 
-- [ ] `nearest: { bank?: { site, walkTicks, runTicks, requires }, ... }` on resource and processor
+- [ ] `nearest: { bank?: { site, runTicks, requires }, ... }` on resource and processor
       sites (format bump); rendered as a "nearest bank" column.
 - [ ] Real-data spot checks against `conductor/tools/stats.ts` runs or `learnings/` routes where they
       exist (e.g. Draynor willows -> Draynor bank, Varrock West mine -> Varrock West bank), within
@@ -171,16 +344,22 @@ kind over the Task 3 graph, not a path per site.
 - `connectors.ts` builds its table from `world.json`'s connectors, keeping curated per-connector
   overrides (stand tweaks, `hazard`) in a small map keyed by loc tile; its existing tests (stand
   and landing walkable, a way back) run against the generated table.
-- `banks.ts` derives `BANKS` from bank sites with `reach` `[[]]` on the surface, F2P, keeping the
-  curated `auto: false` reasons (Draynor's dark wizards, Al Kharid's toll — the latter now also
-  visible as a requirement).
+- `banks.ts` derives `BANKS` from every bank site, on any level and members-only ones included (user,
+  2026-10-16: bots always play on members worlds). "Nearest" becomes the fewest run ticks over the
+  Task 3 graph (Task 5's distances), not straight-line distance. A bank is a candidate only when the
+  account meets one of its `reach` sets and its route chains no more connectors than the walker
+  allows (`connectors.ts`). The curated `auto: false` reasons stay (Draynor's dark wizards); Al
+  Kharid's toll is now a requirement, not a curated skip.
 - Loading: the conductor reads `world.json` through `wiki/world/load.ts`, synchronously, once; a
   stale or missing file fails loudly at import, with the regenerate hint.
 
 ### Acceptance criteria
 
-- [ ] `bun test conductor` green (bar any known baseline), `nearestBank` behaviour unchanged for the
-      existing tests, and the task-review lenses pass on the change.
+- [ ] `bun test conductor` green (bar any known baseline), and the task-review lenses pass on the
+      change.
+- [ ] Every change in which bank `nearestBank` picks, for the existing tests and for each catalog
+      task's default area, is listed in the commit message with its reason (a closer bank by walk,
+      a members bank, an upstairs or underground bank); none picks a bank the walker cannot reach.
 - [ ] No catalog task changes behaviour unless a test shows the generated data corrected a curated
       row (then say which and why).
 
@@ -199,9 +378,77 @@ gate corrections go), `CLAUDE.md` (agents can filter pages by Requires), `conduc
 - Fixing `conductor/lib/wilderness.ts` (a separate follow-up: the phase 1 build found it may
   disagree with `wilderness_levels.rs2` on upper floors and the underground limit; check first).
 
-## Open questions to settle before Task 2
+## Settled questions (2026-10-16)
 
-- Whether quest completion can be read generically (a single quest-points or progress varp per
-  quest) or needs a per-quest table; decide from `scripts/quests/` before writing the scanner.
-- How to represent "no weapons or armour" (Entrana) and similar inventory conditions so phase 3 can
-  honour them; `other:<text>` is the fallback.
+### Quest progress is read generically, with a short override table
+
+Each quest's journal button calls `~send_quest_progress(questlist:<id>, %<varp>, ^<x>_complete)`
+(or `~send_quest_progress_colour`, same arguments), and `general/scripts/quests.rs2:5` shows the
+quest as done at `progress >= complete`. Every `^<x>_complete` is in `general/configs/quest.constant`;
+varp ids are in `pack/varp.pack` (`147=zanaris`). So the scanner derives a quest table
+`{ id: <questlist component>, varp, varpId, complete }` from those calls, with no per-quest table.
+
+The forms it cannot read go in a curated override in `gates.ts`, each citing its script; the build
+fails on any `questlist` component that is in neither:
+
+- computed progress: `cog` (`~get_cog_progress`), `itexam` (`~itexam_progress`);
+- bit-packed: `elemental_workshop` (`%elemental_workshop_bits` against `2 * ^..._complete`);
+- literal thresholds: `haunted` (3), `upass` (one call passes `1`);
+- two varps on one entry: `blackarmgang` (`%blackarmgang` / `%phoenixgang`, either gang);
+- two endings: `ikov` (`^ikov_completed_armadyl` 80, `^ikov_completed_lucien` 90; `>= 80` is done).
+
+**Requirement forms.** `quest:<id>` means `varp >= complete`. `quest:<id>>=<stage>` (with the stage
+constant's name in `source`) covers a gate that opens part-way through a quest; completion
+satisfies it too. Both assume quest varps only grow, which a test checks on the scanned
+`%varp = ^const` assignments (the assignment constants for each quest are non-decreasing in stage
+order, or the quest is listed as an exception).
+
+**Which checks are gates.** 110 `oploc`/`aploc` triggers that move the player (`p_telejump`,
+`p_teleport`, door procs) test a quest varp: 14 compare only against `_complete`, 40 use a
+`>=`/`<` stage test, 55 use an exact `=` or a `switch_int`. Sampling the exact ones shows they
+are mostly not access conditions. `gate-scan.ts` sorts each candidate into one of these, and
+`gates.ts` records which:
+
+- **gate**: a steady requirement (`_shilo_metalgate`, `quest:zombiequeen`);
+- **side effect**: passable always, the check only advances the quest (`mcannoncave`) — not a gate;
+- **temporary block**: shut only during a stage (`gnome_areagate` during The Grand Tree,
+  `_varrock_gate`'s Biohazard search) — not a gate, with the reason;
+- **quest window**: open only between two stages and shut once the quest is done
+  (`dragonshipgangplank_on`, `quest_dragon_bought_ship` until `dragon_complete`) — kept out of the
+  fill and listed in the build report. A bot mid-quest is driven by quest tasks, not the world index.
+
+The fill models a settled account: each quest either not started, or complete, plus the
+monotonic stage gates.
+
+**Evaluating it.** The conductor already reads perm varps by id from a save (`SaveSummary.varps`,
+`conductor/lib/saves.ts`). So `world.json` gains a `quests` table (`id`, `varpId`, `complete`, and
+the stages any gate names), and a requirement is checked against a live bot with no new SDK state.
+
+### Item conditions: two requirements and a loadout rule
+
+The scripts check items in three ways, and they behave differently in the fill:
+
+- **Hold or wear an item.** The Zanaris shed (`oploc1,zanarisdoor`,
+  `quest_zanaris.rs2:91`) checks only `inv_total(worn, dramen_staff) > 0 & map_members`, not the
+  quest varp; entering *completes* Lost City. Requirement `item:<obj>:worn` or `item:<obj>:held`.
+- **Consume an item.** Shantay Pass (`inv_del(inv, shantay_pass, 1)`, `shantay_pass.rs2:38`), the
+  Al Kharid toll. Requirement `coins:<n>` or `consume:<obj>:<n>`; phase 3 charges both per crossing.
+- **Carry none of a category.** Entrana (`[proc,has_entrana_restricted_items]`,
+  `monk_of_entrana.rs2:26`) refuses any carried or worn obj in 23 categories (`armour_*`,
+  `weapon_*`, plus carried `cannon_parts`). The ban is by **category, not equip slot**: Ice gloves
+  (`wearpos=hands`, no category) pass, while axes (`weapon_axe`) and pickaxes (`weapon_pickaxe`)
+  are refused.
+
+A category ban is not like the other requirements. Any account meets it by banking its gear, so it
+never decides whether a tile is reachable; it limits what a trip can carry there. It is recorded
+as a **loadout rule**: `world.json` gains `loadoutRules: { <id>: { forbidCategories: { <category>:
+'carried'|'worn'|'both' }, source } }` (scope per category: Entrana bans `cannon_parts` only when
+carried), and the edge carries the token `loadout:<id>`. Inside the
+fill that token behaves like a requirement, so a route without the rule beats one with it and the
+antichain stays minimal. Phase 3 resolves categories from the obj configs and drops a method whose
+every route to its site carries a rule that bans the method's tool or weapon category. Entrana
+then has no woodcutting or mining, but keeps fishing and cooking. `other:<text>` stays only for
+conditions none of these forms fit, and the build report lists each one.
+
+Tasks 2, 3 and 4 above are updated to match. Task 4's Requires column renders `loadout:entrana` as
+"no weapons/armour (Entrana rule)".

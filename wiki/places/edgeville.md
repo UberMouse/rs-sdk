@@ -40,10 +40,11 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:edgeville:0` | (3096, 3511) | Ladder 1 | yes | no | - |
-| `connector:edgeville:1` | (3096, 3511) L1 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:edgeville:0` | (3096, 3511) | Ladder 1 | up (3095, 3511) L1 | yes | no | - |
+| `connector:edgeville:1` | (3096, 3511) L1 | Ladder 1 | down (3095, 3511) | yes | no | - |
+| `connector:edgeville:2` | (3097, 3468) | Trapdoor 1 | down (3096, 9868) | yes | no | - |
 
 ## Areas within
 

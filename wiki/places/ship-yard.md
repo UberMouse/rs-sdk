@@ -14,7 +14,7 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:ship-yard:0` | (2990, 3066) L1 | Ship's ladder 1 | no | no | - |
-| `connector:ship-yard:1` | (2990, 3066) L2 | Ship's ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:ship-yard:0` | (2990, 3066) L1 | Ship's ladder 1 | up (2991, 3066) L2 | no | no | - |
+| `connector:ship-yard:1` | (2990, 3066) L2 | Ship's ladder 1 | down (2989, 3066) L1 | no | no | - |

@@ -33,12 +33,12 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:canifis:0` | (3478, 3500) | Ladder 1 | no | no | - |
-| `connector:canifis:1` | (3478, 3500) L1 | Ladder 1 | no | no | - |
-| `connector:canifis:2` | (3501, 3475) | Staircase 1 | no | no | - |
-| `connector:canifis:3` | (3501, 3476) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:canifis:0` | (3478, 3500) | Ladder 1 | up (3477, 3500) L1 | no | no | - |
+| `connector:canifis:1` | (3478, 3500) L1 | Ladder 1 | down (3477, 3500) | no | no | - |
+| `connector:canifis:2` | (3501, 3475) | Staircase 1 | up (3500, 3476) L1 | no | no | - |
+| `connector:canifis:3` | (3501, 3476) L1 | Staircase 1 | down (3501, 3477) | no | no | - |
 
 ## Areas within
 

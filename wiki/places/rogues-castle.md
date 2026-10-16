@@ -27,9 +27,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | no | yes | 53 |
-| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | no | yes | 53 |
-| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | no | yes | 53 |
-| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | no | no | 53 |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 | no | yes | 53 |
+| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936), up (3282, 3936) L2 | no | yes | 53 |
+| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1, up (3281, 3936) L3 | no | yes | 53 |
+| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 | no | no | 53 |

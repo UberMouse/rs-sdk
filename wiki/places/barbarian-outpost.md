@@ -18,6 +18,6 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:barbarian-outpost:0` | (2547, 3551) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:barbarian-outpost:0` | (2547, 3551) | Ladder 1 | down (2548, 9951) | no | no | - |

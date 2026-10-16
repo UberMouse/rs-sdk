@@ -21,9 +21,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:keep-le-faye:0` | (2769, 3398) L1 | Staircase 1 | no | no | - |
-| `connector:keep-le-faye:1` | (2769, 3399) L2 | Staircase 1 | no | no | - |
-| `connector:keep-le-faye:2` | (2769, 3404) | Staircase 1 | no | no | - |
-| `connector:keep-le-faye:3` | (2769, 3405) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:keep-le-faye:0` | (2769, 3398) L1 | Staircase 1 | up (2769, 3401) L2 | no | no | - |
+| `connector:keep-le-faye:1` | (2769, 3399) L2 | Staircase 1 | down (2769, 3397) L1 | no | no | - |
+| `connector:keep-le-faye:2` | (2769, 3404) | Staircase 1 | up (2769, 3407) L1 | no | no | - |
+| `connector:keep-le-faye:3` | (2769, 3405) L1 | Staircase 1 | down (2769, 3403) | no | no | - |

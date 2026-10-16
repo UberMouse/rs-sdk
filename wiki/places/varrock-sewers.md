@@ -32,7 +32,7 @@ Ladders up into Varrock at (3237, 3458) and (3230, 3504).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:varrock-sewers:0` | (3230, 9904) | Ladder 1 | yes | yes | - |
-| `connector:varrock-sewers:1` | (3237, 9858) | Ladder 1 | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:varrock-sewers:0` | (3230, 9904) | Ladder 1 | up (3229, 3504) | yes | yes | - |
+| `connector:varrock-sewers:1` | (3237, 9858) | Ladder 1 | up (3236, 3458) | yes | yes | - |

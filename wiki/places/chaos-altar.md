@@ -11,13 +11,13 @@ Inside the chaos ruins.
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:chaos-altar:0` | (2255, 4829) L2 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:1` | (2255, 4829) L3 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:2` | (2259, 4845) | Ladder 1 | no | no | - |
-| `connector:chaos-altar:3` | (2259, 4845) L1 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:4` | (2275, 4834) L1 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:5` | (2275, 4834) L2 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:6` | (2282, 4853) L1 | Ladder 1 | no | no | - |
-| `connector:chaos-altar:7` | (2282, 4853) L2 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:chaos-altar:0` | (2255, 4829) L2 | Ladder 1 | up (2254, 4829) L3 | no | no | - |
+| `connector:chaos-altar:1` | (2255, 4829) L3 | Ladder 1 | down (2254, 4829) L2 | no | no | - |
+| `connector:chaos-altar:2` | (2259, 4845) | Ladder 1 | up (2258, 4845) L1 | no | no | - |
+| `connector:chaos-altar:3` | (2259, 4845) L1 | Ladder 1 | down (2258, 4845) | no | no | - |
+| `connector:chaos-altar:4` | (2275, 4834) L1 | Ladder 1 | up (2274, 4834) L2 | no | no | - |
+| `connector:chaos-altar:5` | (2275, 4834) L2 | Ladder 1 | down (2274, 4834) L1 | no | no | - |
+| `connector:chaos-altar:6` | (2282, 4853) L1 | Ladder 1 | up (2281, 4853) L2 | no | no | - |
+| `connector:chaos-altar:7` | (2282, 4853) L2 | Ladder 1 | down (2281, 4853) L1 | no | no | - |

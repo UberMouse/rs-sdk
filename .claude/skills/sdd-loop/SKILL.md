@@ -25,7 +25,7 @@ by subagents, then a whole-branch review."
                   implement ─► ⟨spec-review ∥ quality-review⟩ ─► one combined fix
                     ─► (re-review what the fix touched)* ─► task done, committed
   4. Verify     verify:conductor, bun test conductor, the touched integration tests
-  5. Branch     task-review over BASE..HEAD, delegated to ONE subagent; fixes A/B/C
+  5. Branch     task-review over BASE..HEAD, delegated to ONE subagent; fixes A/B + meaningful C
   6. Land       report; merge into main when the user says so
 ```
 
@@ -124,9 +124,12 @@ Tasks run **strictly sequentially**; each commits. Per task:
    when it answers it; otherwise `AskUserQuestion`, then re-dispatch.
 2. **Review in parallel**: the *Spec-compliance* and *Code-quality* reviewers in **one message**,
    same commit, `model: reviewModel`. Neither edits the tree.
-3. **Converge**: either flagged (FAIL, or PASS with findings worth fixing) ⇒ **one combined fix
-   agent** (Implementer template, fix mode A) with both finding sets inline; it commits on top.
-   Re-run only the reviews whose findings it touched. Repeat until the latest run of each is clean.
+3. **Converge**: either flagged (FAIL, or PASS with meaningful findings) ⇒ **one combined fix
+   agent** (Implementer template, fix mode A) with the meaningful findings of both inline; it
+   commits on top. Meaningful is task-review §2's test (a silent failure or guess, a broken
+   guarantee, a misleading comment, drifted duplication); drop cosmetic ones (style, a harmless
+   cast, an edge no input reaches) with a one-line reason in state.json. Re-run only the reviews
+   whose findings it touched. Repeat until the latest run of each has no meaningful findings.
    Findings the reviewer marks pre-existing or out of scope: decide; out-of-scope ones go to
    `## Review follow-ups` in `conductor/roadmap.md` (in §6's report if the roadmap is not on this
    branch), never into the task.
@@ -155,7 +158,7 @@ re-verify; don't start §5 on a red tree. Baseline failures still red are report
 The per-task reviews each saw one task; this sees the whole change. Dispatch **one**
 `general-purpose` agent (`model: opus`) to run `.claude/skills/task-review/SKILL.md` end to end on
 the range `git diff <base>..HEAD -- conductor/ .claude/`: five lenses in parallel, the verifier,
-fixes for A/B/C (D, refuted and duplicates dropped), round 2 on the lenses that had fixes. Adapt
+fixes for A, B and meaningful C (D, cosmetic C, refuted and duplicates dropped), round 2 on the lenses that had fixes. Adapt
 its §3–§5 for engine code: its fix agents use the *Implementer* template (fix mode B) and commit on
 top as `fix(review): <what>`; there is no worker bot unless a finding needs a smoke run. It returns
 a compact report (found / fixed / deferred / dropped per lens, the fix commits). Keep the lens

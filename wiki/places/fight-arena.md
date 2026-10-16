@@ -15,3 +15,9 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|
 | `npc:fight-arena:0` | (2593, 3163) L3 | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - |
+
+## Ladders and stairs
+
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:fight-arena:0` | (2593, 3162) L3 | Trapdoor 1 | down (2592, 9562) L3 | no | no | - |

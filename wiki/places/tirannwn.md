@@ -99,16 +99,16 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:tirannwn:0` | (2273, 3275) | Ladder 1 | no | no | - |
-| `connector:tirannwn:1` | (2273, 3275) L1 | Ladder 1 | no | no | - |
-| `connector:tirannwn:2` | (2294, 3299) | Ladder 1 | no | no | - |
-| `connector:tirannwn:3` | (2294, 3299) L1 | Ladder 1 | no | no | - |
-| `connector:tirannwn:4` | (2369, 3125) | Ladder 1 | no | yes | - |
-| `connector:tirannwn:5` | (2369, 3126) L1 | Staircase 1 | no | yes | - |
-| `connector:tirannwn:6` | (2369, 3126) L2 | Staircase 1 | no | yes | - |
-| `connector:tirannwn:7` | (2370, 3133) L1 | Ladder 1 | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:tirannwn:0` | (2273, 3275) | Ladder 1 | up (2272, 3275) L1 | no | no | - |
+| `connector:tirannwn:1` | (2273, 3275) L1 | Ladder 1 | down (2272, 3275) | no | no | - |
+| `connector:tirannwn:2` | (2294, 3299) | Ladder 1 | up (2294, 3298) L1 | no | no | - |
+| `connector:tirannwn:3` | (2294, 3299) L1 | Ladder 1 | down (2294, 3298) | no | no | - |
+| `connector:tirannwn:4` | (2369, 3125) | Ladder 1 | down (2369, 9526) | no | yes | - |
+| `connector:tirannwn:5` | (2369, 3126) L1 | Staircase 1 | up (2369, 3127) L2 | no | yes | - |
+| `connector:tirannwn:6` | (2369, 3126) L2 | Staircase 1 | down (2372, 3126) L1 | no | yes | - |
+| `connector:tirannwn:7` | (2370, 3133) L1 | Ladder 1 | up (2370, 3132) L2 | no | yes | - |
 
 ## Areas within
 

@@ -369,98 +369,99 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:kandarin:0` | (2374, 3131) L2 | Staircase 1 | no | yes | - |
-| `connector:kandarin:1` | (2374, 3133) L3 | Staircase 1 | no | yes | - |
-| `connector:kandarin:2` | (2376, 3489) | Staircase 1 | no | no | - |
-| `connector:kandarin:3` | (2377, 3489) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:4` | (2378, 3134) | Ladder 1 | no | yes | - |
-| `connector:kandarin:5` | (2378, 3134) L1 | Ladder 1 | no | yes | - |
-| `connector:kandarin:6` | (2380, 3127) | Staircase 1 | no | yes | - |
-| `connector:kandarin:7` | (2380, 3127) L1 | Staircase 1 | no | yes | - |
-| `connector:kandarin:8` | (2382, 3131) | Staircase 1 | no | yes | - |
-| `connector:kandarin:9` | (2458, 3310) | Ladder 1 | no | no | - |
-| `connector:kandarin:10` | (2458, 3310) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:11` | (2503, 3252) | Ladder 1 | no | no | - |
-| `connector:kandarin:12` | (2503, 3252) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:13` | (2515, 3173) | Ladder 1 | no | no | - |
-| `connector:kandarin:14` | (2515, 3173) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:15` | (2516, 3424) | Staircase 1 | no | no | - |
-| `connector:kandarin:16` | (2516, 3425) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:17` | (2517, 3429) | Staircase 1 | no | no | - |
-| `connector:kandarin:18` | (2518, 3430) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:19` | (2521, 3493) | Ladder 1 | no | no | - |
-| `connector:kandarin:20` | (2521, 3493) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:21` | (2532, 3545) | Ladder 1 | no | no | - |
-| `connector:kandarin:22` | (2532, 3545) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:23` | (2533, 3155) | Ladder 1 | no | no | - |
-| `connector:kandarin:24` | (2560, 3356) | Ladder 1 | no | no | - |
-| `connector:kandarin:25` | (2560, 3356) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:26` | (2562, 3356) | Ladder 1 | no | no | - |
-| `connector:kandarin:27` | (2566, 3227) | Ladder 1 | no | no | - |
-| `connector:kandarin:28` | (2566, 3231) | Ladder 1 | no | no | - |
-| `connector:kandarin:29` | (2566, 3242) | Ladder 1 | no | no | - |
-| `connector:kandarin:30` | (2569, 3122) | Staircase 1 | no | no | - |
-| `connector:kandarin:31` | (2569, 3227) | Ladder 1 | no | no | - |
-| `connector:kandarin:32` | (2569, 3231) | Ladder 1 | no | no | - |
-| `connector:kandarin:33` | (2570, 3441) | Ladder 1 | no | no | - |
-| `connector:kandarin:34` | (2570, 3441) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:35` | (2570, 3443) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:36` | (2570, 3443) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:37` | (2572, 3227) | Ladder 1 | no | no | - |
-| `connector:kandarin:38` | (2572, 3240) | Staircase 1 | no | no | - |
-| `connector:kandarin:39` | (2572, 3240) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:40` | (2572, 3241) L2 | Staircase 1 | no | no | - |
-| `connector:kandarin:41` | (2595, 3208) | Staircase 1 | no | no | - |
-| `connector:kandarin:42` | (2596, 3208) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:43` | (2612, 3475) | Ladder 1 | no | no | - |
-| `connector:kandarin:44` | (2612, 3475) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:45` | (2613, 3139) | Staircase 1 | no | no | - |
-| `connector:kandarin:46` | (2613, 3139) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:47` | (2616, 3208) | Staircase 1 | no | no | - |
-| `connector:kandarin:48` | (2617, 3208) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:49` | (2619, 3140) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:50` | (2619, 3140) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:51` | (2630, 3386) | Ladder 1 | no | no | - |
-| `connector:kandarin:52` | (2630, 3386) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:53` | (2630, 3386) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:54` | (2659, 3492) | Ladder 1 | no | no | - |
-| `connector:kandarin:55` | (2677, 3087) | Ladder 1 | no | no | - |
-| `connector:kandarin:56` | (2677, 3087) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:57` | (2677, 3405) | Ladder 1 | no | no | - |
-| `connector:kandarin:58` | (2696, 3282) | Ladder 1 | no | no | - |
-| `connector:kandarin:59` | (2699, 3405) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:60` | (2699, 3405) L3 | Ladder 1 | no | no | - |
-| `connector:kandarin:61` | (2701, 3408) | Ladder 1 | no | no | - |
-| `connector:kandarin:62` | (2701, 3408) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:63` | (2704, 3403) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:64` | (2704, 3403) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:65` | (2724, 3374) | Staircase 1 | no | no | - |
-| `connector:kandarin:66` | (2737, 3582) | Ladder 1 | no | no | - |
-| `connector:kandarin:67` | (2737, 3582) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:68` | (2746, 3460) | Staircase 1 | no | no | - |
-| `connector:kandarin:69` | (2746, 3461) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:70` | (2747, 3493) | Ladder 1 | no | no | - |
-| `connector:kandarin:71` | (2747, 3493) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:72` | (2749, 3491) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:73` | (2749, 3491) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:74` | (2750, 3510) | Staircase 1 | no | no | - |
-| `connector:kandarin:75` | (2750, 3511) L1 | Staircase 1 | no | no | - |
-| `connector:kandarin:76` | (2767, 3491) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:77` | (2767, 3491) L2 | Ladder 1 | no | no | - |
-| `connector:kandarin:78` | (2776, 3234) | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:79` | (2776, 3234) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:80` | (2816, 3352) | Ladder 1 | no | no | - |
-| `connector:kandarin:81` | (2816, 3352) L1 | Ladder 1 | no | no | - |
-| `connector:kandarin:82` | (2829, 3330) | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:83` | (2829, 3330) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:84` | (2835, 3328) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:85` | (2835, 3328) L2 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:86` | (2835, 3332) L1 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:87` | (2835, 3332) L2 | Ship's ladder 1 | no | no | - |
-| `connector:kandarin:88` | (2842, 3424) | Ladder 1 | no | no | - |
-| `connector:kandarin:89` | (2848, 3235) | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:kandarin:0` | (2374, 3131) L2 | Staircase 1 | up (2373, 3133) L3 | no | yes | - |
+| `connector:kandarin:1` | (2374, 3133) L3 | Staircase 1 | down (2374, 3130) L2 | no | yes | - |
+| `connector:kandarin:2` | (2376, 3489) | Staircase 1 | up (2378, 3489) L1 | no | no | - |
+| `connector:kandarin:3` | (2377, 3489) L1 | Staircase 1 | down (2377, 3488) | no | no | - |
+| `connector:kandarin:4` | (2378, 3134) | Ladder 1 | up (2378, 3133) L1 | no | yes | - |
+| `connector:kandarin:5` | (2378, 3134) L1 | Ladder 1 | down (2378, 3133) | no | yes | - |
+| `connector:kandarin:6` | (2380, 3127) | Staircase 1 | up (2379, 3127) L1 | no | yes | - |
+| `connector:kandarin:7` | (2380, 3127) L1 | Staircase 1 | down (2380, 3130) | no | yes | - |
+| `connector:kandarin:8` | (2382, 3131) | Staircase 1 | to (2382, 3130), to (2383, 3133) | no | yes | - |
+| `connector:kandarin:9` | (2399, 3099) | Trapdoor 1 | down (2399, 9500) | no | yes | - |
+| `connector:kandarin:10` | (2458, 3310) | Ladder 1 | up (2457, 3310) L1 | no | no | - |
+| `connector:kandarin:11` | (2458, 3310) L1 | Ladder 1 | down (2457, 3310) | no | no | - |
+| `connector:kandarin:12` | (2503, 3252) | Ladder 1 | up (2502, 3252) L1 | no | no | - |
+| `connector:kandarin:13` | (2503, 3252) L1 | Ladder 1 | down (2502, 3252) | no | no | - |
+| `connector:kandarin:14` | (2515, 3173) | Ladder 1 | up (2516, 3173) L1 | no | no | - |
+| `connector:kandarin:15` | (2515, 3173) L1 | Ladder 1 | down (2516, 3173) | no | no | - |
+| `connector:kandarin:16` | (2516, 3424) | Staircase 1 | up (2517, 3426) L1 | no | no | - |
+| `connector:kandarin:17` | (2516, 3425) L1 | Staircase 1 | down (2516, 3423) | no | no | - |
+| `connector:kandarin:18` | (2517, 3429) | Staircase 1 | up (2518, 3431) L1 | no | no | - |
+| `connector:kandarin:19` | (2518, 3430) L1 | Staircase 1 | down (2519, 3430) | no | no | - |
+| `connector:kandarin:20` | (2521, 3493) | Ladder 1 | up (2521, 3494) L1 | no | no | - |
+| `connector:kandarin:21` | (2521, 3493) L1 | Ladder 1 | down (2521, 3494) | no | no | - |
+| `connector:kandarin:22` | (2532, 3545) | Ladder 1 | up (2532, 3546) L1 | no | no | - |
+| `connector:kandarin:23` | (2532, 3545) L1 | Ladder 1 | down (2532, 3546) | no | no | - |
+| `connector:kandarin:24` | (2533, 3155) | Ladder 1 | down (2533, 9556) | no | no | - |
+| `connector:kandarin:25` | (2560, 3356) | Ladder 1 | up (2560, 3357) L1 | no | no | - |
+| `connector:kandarin:26` | (2560, 3356) L1 | Ladder 1 | down (2560, 3357) | no | no | - |
+| `connector:kandarin:27` | (2562, 3356) | Ladder 1 | down (2561, 9756) | no | no | - |
+| `connector:kandarin:28` | (2566, 3227) | Ladder 1 | down (2565, 9627) | no | no | - |
+| `connector:kandarin:29` | (2566, 3231) | Ladder 1 | down (2565, 9631) | no | no | - |
+| `connector:kandarin:30` | (2566, 3242) | Ladder 1 | down (2565, 9642) | no | no | - |
+| `connector:kandarin:31` | (2569, 3122) | Staircase 1 | down (2569, 9525) | no | no | - |
+| `connector:kandarin:32` | (2569, 3227) | Ladder 1 | down (2568, 9627) | no | no | - |
+| `connector:kandarin:33` | (2569, 3231) | Ladder 1 | down (2568, 9631) | no | no | - |
+| `connector:kandarin:34` | (2570, 3441) | Ladder 1 | up (2569, 3441) L1 | no | no | - |
+| `connector:kandarin:35` | (2570, 3441) L1 | Ladder 1 | down (2569, 3441) | no | no | - |
+| `connector:kandarin:36` | (2570, 3443) L1 | Ladder 1 | up (2569, 3443) L2 | no | no | - |
+| `connector:kandarin:37` | (2570, 3443) L2 | Ladder 1 | down (2569, 3443) L1 | no | no | - |
+| `connector:kandarin:38` | (2572, 3227) | Ladder 1 | down (2571, 9627) | no | no | - |
+| `connector:kandarin:39` | (2572, 3240) | Staircase 1 | up (2571, 3241) L1 | no | no | - |
+| `connector:kandarin:40` | (2572, 3240) L1 | Staircase 1 | down (2572, 3242), up (2571, 3241) L2 | no | no | - |
+| `connector:kandarin:41` | (2572, 3241) L2 | Staircase 1 | down (2572, 3242) L1 | no | no | - |
+| `connector:kandarin:42` | (2595, 3208) | Staircase 1 | up (2597, 3208) L1 | no | no | - |
+| `connector:kandarin:43` | (2596, 3208) L1 | Staircase 1 | down (2596, 3207) | no | no | - |
+| `connector:kandarin:44` | (2612, 3475) | Ladder 1 | up (2611, 3475) L1 | no | no | - |
+| `connector:kandarin:45` | (2612, 3475) L1 | Ladder 1 | down (2611, 3475) | no | no | - |
+| `connector:kandarin:46` | (2613, 3139) | Staircase 1 | up (2612, 3139) L1 | no | no | - |
+| `connector:kandarin:47` | (2613, 3139) L1 | Staircase 1 | down (2616, 3139) | no | no | - |
+| `connector:kandarin:48` | (2616, 3208) | Staircase 1 | up (2618, 3208) L1 | no | no | - |
+| `connector:kandarin:49` | (2617, 3208) L1 | Staircase 1 | down (2617, 3207) | no | no | - |
+| `connector:kandarin:50` | (2619, 3140) L1 | Ladder 1 | up (2618, 3140) L2 | no | no | - |
+| `connector:kandarin:51` | (2619, 3140) L2 | Ladder 1 | down (2618, 3140) L1 | no | no | - |
+| `connector:kandarin:52` | (2630, 3386) | Ladder 1 | up (2630, 3385) L1 | no | no | - |
+| `connector:kandarin:53` | (2630, 3386) L1 | Ladder 1 | down (2630, 3385), up (2630, 3385) L2 | no | no | - |
+| `connector:kandarin:54` | (2630, 3386) L2 | Ladder 1 | down (2630, 3385) L1 | no | no | - |
+| `connector:kandarin:55` | (2659, 3492) | Ladder 1 | down (2658, 9892) | no | no | - |
+| `connector:kandarin:56` | (2677, 3087) | Ladder 1 | up (2676, 3087) L1 | no | no | - |
+| `connector:kandarin:57` | (2677, 3087) L1 | Ladder 1 | down (2676, 3087) | no | no | - |
+| `connector:kandarin:58` | (2677, 3405) | Ladder 1 | down (2677, 9804) | no | no | - |
+| `connector:kandarin:59` | (2696, 3282) | Ladder 1 | down (2696, 9683) | no | no | - |
+| `connector:kandarin:60` | (2699, 3405) L2 | Ladder 1 | up (2698, 3405) L3 | no | no | - |
+| `connector:kandarin:61` | (2699, 3405) L3 | Ladder 1 | down (2698, 3405) L2 | no | no | - |
+| `connector:kandarin:62` | (2701, 3408) | Ladder 1 | up (2700, 3408) L1 | no | no | - |
+| `connector:kandarin:63` | (2701, 3408) L1 | Ladder 1 | down (2700, 3408) | no | no | - |
+| `connector:kandarin:64` | (2704, 3403) L1 | Ladder 1 | up (2703, 3403) L2 | no | no | - |
+| `connector:kandarin:65` | (2704, 3403) L2 | Ladder 1 | down (2703, 3403) L1 | no | no | - |
+| `connector:kandarin:66` | (2724, 3374) | Staircase 1 | down (2727, 9774) | no | no | - |
+| `connector:kandarin:67` | (2737, 3582) | Ladder 1 | up (2736, 3582) L1 | no | no | - |
+| `connector:kandarin:68` | (2737, 3582) L1 | Ladder 1 | down (2736, 3582) | no | no | - |
+| `connector:kandarin:69` | (2746, 3460) | Staircase 1 | up (2745, 3461) L1 | no | no | - |
+| `connector:kandarin:70` | (2746, 3461) L1 | Staircase 1 | down (2746, 3462) | no | no | - |
+| `connector:kandarin:71` | (2747, 3493) | Ladder 1 | up (2746, 3493) L1 | no | no | - |
+| `connector:kandarin:72` | (2747, 3493) L1 | Ladder 1 | down (2746, 3493) | no | no | - |
+| `connector:kandarin:73` | (2749, 3491) L1 | Ladder 1 | up (2748, 3491) L2 | no | no | - |
+| `connector:kandarin:74` | (2749, 3491) L2 | Ladder 1 | down (2748, 3491) L1 | no | no | - |
+| `connector:kandarin:75` | (2750, 3510) | Staircase 1 | up (2750, 3513) L1 | no | no | - |
+| `connector:kandarin:76` | (2750, 3511) L1 | Staircase 1 | down (2750, 3509) | no | no | - |
+| `connector:kandarin:77` | (2767, 3491) L1 | Ladder 1 | up (2766, 3491) L2 | no | no | - |
+| `connector:kandarin:78` | (2767, 3491) L2 | Ladder 1 | down (2766, 3491) L1 | no | no | - |
+| `connector:kandarin:79` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 | no | no | - |
+| `connector:kandarin:80` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) | no | no | - |
+| `connector:kandarin:81` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 | no | no | - |
+| `connector:kandarin:82` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) | no | no | - |
+| `connector:kandarin:83` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 | no | no | - |
+| `connector:kandarin:84` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) | no | no | - |
+| `connector:kandarin:85` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 | no | no | - |
+| `connector:kandarin:86` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 | no | no | - |
+| `connector:kandarin:87` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 | no | no | - |
+| `connector:kandarin:88` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 | no | no | - |
+| `connector:kandarin:89` | (2842, 3424) | Ladder 1 | down (2841, 9824) | no | no | - |
+| `connector:kandarin:90` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 | yes | no | - |
 
 ## Areas within
 
@@ -472,12 +473,12 @@
 | [Baxtorian Falls](baxtorian-falls.md) | tree 1 |
 | [Beehives](beehives.md) | tree 1 |
 | [Camelot Castle](camelot-castle.md) | water-source 2, connector 2 |
-| [Castle Wars](castle-wars.md) | bank 1, water-source 1, tree 1, connector 11 |
+| [Castle Wars](castle-wars.md) | bank 1, water-source 1, tree 1, connector 12 |
 | [Catherby](catherby.md) | bank 1, shop 3, range 2, fire 1, water-source 2, tree 1, pickpocket 2, connector 12 |
 | [Coal Trucks](coal-trucks.md) | tree 4, rock 1, npc 2 |
 | [Combat Training Camp](combat-training-camp.md) | tree 1, npc 1 |
-| [East Ardougne](east-ardougne.md) | bank 2, shop 6, furnace 1, range 2, fire 2, pottery-wheel 2, pottery-oven 1, water-source 6, altar 1, tree 17, stall 3, thieving-chest 5, pickpocket 9, npc 8, connector 63 |
-| [Fight Arena](fight-arena.md) | tree 2, npc 1 |
+| [East Ardougne](east-ardougne.md) | bank 2, shop 6, furnace 1, range 2, fire 2, pottery-wheel 2, pottery-oven 1, water-source 6, altar 1, tree 17, stall 3, thieving-chest 5, pickpocket 9, npc 8, connector 64 |
+| [Fight Arena](fight-arena.md) | tree 2, npc 1, connector 1 |
 | [Fishing Guild](fishing-guild.md) | bank 1, shop 1, range 1, tree 3, fishing-spot 1, pickpocket 1, npc 8, connector 2 |
 | [Fishing Platform](fishing-platform.md) | connector 1 |
 | [Flax](flax.md) | tree 2 |

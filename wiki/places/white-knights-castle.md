@@ -17,13 +17,13 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:white-knights-castle:0` | (2954, 3338) | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:1` | (2955, 3338) L1 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:2` | (2957, 3338) L2 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:3` | (2957, 3339) L3 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:4` | (2960, 3338) L1 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:5` | (2960, 3339) L2 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:6` | (2968, 3347) L1 | Staircase 1 | yes | yes | - |
-| `connector:white-knights-castle:7` | (2970, 3347) | Staircase 1 | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:white-knights-castle:0` | (2954, 3338) | Staircase 1 | up (2956, 3338) L1 | yes | yes | - |
+| `connector:white-knights-castle:1` | (2955, 3338) L1 | Staircase 1 | down (2955, 3337) | yes | yes | - |
+| `connector:white-knights-castle:2` | (2957, 3338) L2 | Staircase 1 | up (2956, 3339) L3 | yes | yes | - |
+| `connector:white-knights-castle:3` | (2957, 3339) L3 | Staircase 1 | down (2957, 3340) L2 | yes | yes | - |
+| `connector:white-knights-castle:4` | (2960, 3338) L1 | Staircase 1 | up (2959, 3339) L2 | yes | yes | - |
+| `connector:white-knights-castle:5` | (2960, 3339) L2 | Staircase 1 | down (2960, 3340) L1 | yes | yes | - |
+| `connector:white-knights-castle:6` | (2968, 3347) L1 | Staircase 1 | down (2971, 3347) | yes | yes | - |
+| `connector:white-knights-castle:7` | (2970, 3347) | Staircase 1 | up (2968, 3348) L1 | yes | yes | - |

@@ -84,7 +84,7 @@ Ladder up south of Taverley at (2884, 3397).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:taverley-dungeon:0` | (2842, 9824) | Ladder 1 | no | no | - |
-| `connector:taverley-dungeon:1` | (2884, 9797) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:taverley-dungeon:0` | (2842, 9824) | Ladder 1 | up (2841, 3424) | no | no | - |
+| `connector:taverley-dungeon:1` | (2884, 9797) | Ladder 1 | up (2885, 3397) | no | no | - |

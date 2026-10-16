@@ -24,14 +24,14 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:legends-guild:0` | (2725, 3375) L1 | Ladder 1 | no | no | - |
-| `connector:legends-guild:1` | (2725, 3375) L2 | Ladder 1 | no | no | - |
-| `connector:legends-guild:2` | (2732, 3375) L1 | Ladder 1 | no | no | - |
-| `connector:legends-guild:3` | (2732, 3375) L2 | Ladder 1 | no | no | - |
-| `connector:legends-guild:4` | (2732, 3377) | Staircase 1 | no | no | - |
-| `connector:legends-guild:5` | (2732, 3378) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:legends-guild:0` | (2725, 3375) L1 | Ladder 1 | up (2724, 3375) L2 | no | no | - |
+| `connector:legends-guild:1` | (2725, 3375) L2 | Ladder 1 | down (2724, 3375) L1 | no | no | - |
+| `connector:legends-guild:2` | (2732, 3375) L1 | Ladder 1 | up (2731, 3375) L2 | no | no | - |
+| `connector:legends-guild:3` | (2732, 3375) L2 | Ladder 1 | down (2731, 3375) L1 | no | no | - |
+| `connector:legends-guild:4` | (2732, 3377) | Staircase 1 | up (2732, 3380) L1 | no | no | - |
+| `connector:legends-guild:5` | (2732, 3378) L1 | Staircase 1 | down (2732, 3376) | no | no | - |
 
 ## Areas within
 

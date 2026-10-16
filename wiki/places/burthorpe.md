@@ -50,18 +50,18 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:burthorpe:0` | (2891, 3556) | Ladder 1 | no | no | - |
-| `connector:burthorpe:1` | (2891, 3556) L1 | Ladder 1 | no | no | - |
-| `connector:burthorpe:2` | (2891, 3571) | Ladder 1 | no | no | - |
-| `connector:burthorpe:3` | (2891, 3571) L1 | Ladder 1 | no | no | - |
-| `connector:burthorpe:4` | (2897, 3566) | Stairs 1 | no | no | - |
-| `connector:burthorpe:5` | (2897, 3567) L1 | Stairs 1 | no | no | - |
-| `connector:burthorpe:6` | (2899, 3566) | Stairs 1 | no | no | - |
-| `connector:burthorpe:7` | (2906, 3556) | Ladder 1 | no | no | - |
-| `connector:burthorpe:8` | (2906, 3556) L1 | Ladder 1 | no | no | - |
-| `connector:burthorpe:9` | (2906, 3571) | Ladder 1 | no | no | - |
-| `connector:burthorpe:10` | (2906, 3571) L1 | Ladder 1 | no | no | - |
-| `connector:burthorpe:11` | (2914, 3539) | Staircase 1 | no | no | - |
-| `connector:burthorpe:12` | (2914, 3540) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:burthorpe:0` | (2891, 3556) | Ladder 1 | up (2891, 3557) L1 | no | no | - |
+| `connector:burthorpe:1` | (2891, 3556) L1 | Ladder 1 | down (2891, 3557) | no | no | - |
+| `connector:burthorpe:2` | (2891, 3571) | Ladder 1 | up (2891, 3570) L1 | no | no | - |
+| `connector:burthorpe:3` | (2891, 3571) L1 | Ladder 1 | down (2891, 3570) | no | no | - |
+| `connector:burthorpe:4` | (2897, 3566) | Stairs 1 | up (2897, 3569) L1 | no | no | - |
+| `connector:burthorpe:5` | (2897, 3567) L1 | Stairs 1 | down (2897, 3565) | no | no | - |
+| `connector:burthorpe:6` | (2899, 3566) | Stairs 1 | - | no | no | - |
+| `connector:burthorpe:7` | (2906, 3556) | Ladder 1 | up (2905, 3556) L1 | no | no | - |
+| `connector:burthorpe:8` | (2906, 3556) L1 | Ladder 1 | down (2905, 3556) | no | no | - |
+| `connector:burthorpe:9` | (2906, 3571) | Ladder 1 | up (2905, 3571) L1 | no | no | - |
+| `connector:burthorpe:10` | (2906, 3571) L1 | Ladder 1 | down (2905, 3571) | no | no | - |
+| `connector:burthorpe:11` | (2914, 3539) | Staircase 1 | up (2914, 3542) L1 | no | no | - |
+| `connector:burthorpe:12` | (2914, 3540) L1 | Staircase 1 | down (2914, 3538) | no | no | - |

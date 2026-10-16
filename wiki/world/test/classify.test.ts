@@ -6,9 +6,11 @@ import type { Callable, Trigger } from '../sources/triggers';
 const trig = (file: string, on: 'loc' | 'npc', target: string, body = '', category = false, op = '1'): Trigger => ({
     file,
     on,
+    kind: 'op',
     op,
     target,
     category,
+    line: 1,
     body,
 });
 
@@ -70,7 +72,7 @@ function one(...args: Parameters<typeof classify>) {
     return out[0] ?? null;
 }
 
-const label = (call: string, body: string): Callable => ({ file: 'f.rs2', call, body });
+const label = (call: string, body: string): Callable => ({ file: 'f.rs2', call, line: 1, body });
 
 describe('rules', () => {
     test('a rock is a mining_table rock, its ore the subtype', () => {
@@ -289,6 +291,13 @@ describe('rules', () => {
     test('a ladder is a connector', () => {
         const triggers = [trig('ladders+stairs/scripts/ladders.rs2', 'loc', 'ladder')];
         expect(one('loc', 'ladder', {}, { triggers })).toMatchObject({ kind: 'connector', subtype: '' });
+    });
+
+    test('a trapdoor in general_use/scripts/trapdoors.rs2 is a connector; the same in another file there is not', () => {
+        const triggers = [trig('general_use/scripts/trapdoors.rs2', 'loc', 'trapdoor')];
+        expect(one('loc', 'trapdoor', {}, { triggers })).toMatchObject({ kind: 'connector', subtype: '' });
+        const other = [trig('general_use/scripts/trapdoors_old.rs2', 'loc', 'trapdoor')];
+        expect(one('loc', 'trapdoor', {}, { triggers: other })).toBeNull();
     });
 
     test('an attackable npc with combat stats is an npc; without either it is not', () => {

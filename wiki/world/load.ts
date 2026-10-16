@@ -11,13 +11,14 @@ type Parsed = { [key: string]: unknown };
 const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== null && !Array.isArray(x);
 
 /**
- * Whether `x` is a world.json of this format: its format, a string generatedFrom and the four lists.
- * The lists' items are taken as build.ts wrote them.
+ * Whether `x` is a world.json of this format: its format, a string generatedFrom, the eight lists and
+ * the loadoutRules object. Their items are taken as build.ts wrote them.
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&
     typeof x.generatedFrom === 'string' &&
-    [x.areas, x.features, x.sites, x.npcSpawns].every(Array.isArray);
+    [x.areas, x.features, x.sites, x.npcSpawns, x.connectors, x.quests, x.transports, x.gates].every(Array.isArray) &&
+    isObject(x.loadoutRules);
 
 /** The world in `file` (default wiki/world.json); throws when it is not a world.json of this format. */
 export function loadWorld(file: string = WORLD_JSON): World {
@@ -34,7 +35,9 @@ export function loadWorld(file: string = WORLD_JSON): World {
             `${file} has format ${String(world.format ?? 'none')}, this code reads format ${WORLD_FORMAT}: regenerate it with bun run world`,
         );
     if (!isWorld(world))
-        throw new Error(`${file} is not a world.json: it needs generatedFrom, areas, features, sites and npcSpawns`);
+        throw new Error(
+            `${file} is not a world.json: it needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports and gates`,
+        );
     return world;
 }
 

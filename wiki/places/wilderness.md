@@ -367,18 +367,18 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:wilderness:0` | (3005, 3963) | Ladder 1 | no | no | 56 |
-| `connector:wilderness:1` | (3017, 3849) | Ladder 1 | no | no | 42 |
-| `connector:wilderness:2` | (3017, 3959) L1 | Ship's ladder 1 | no | no | 55 |
-| `connector:wilderness:3` | (3017, 3959) L2 | Ship's ladder 1 | no | no | 55 |
-| `connector:wilderness:4` | (3018, 3957) | Ladder 1 | no | no | 55 |
-| `connector:wilderness:5` | (3018, 3957) L1 | Ladder 1 | no | no | 55 |
-| `connector:wilderness:6` | (3019, 3959) L1 | Ship's ladder 1 | no | no | 55 |
-| `connector:wilderness:7` | (3019, 3959) L2 | Ship's ladder 1 | no | no | 55 |
-| `connector:wilderness:8` | (3044, 3924) | Staircase 1 | no | no | 51 |
-| `connector:wilderness:9` | (3088, 3571) | Ladder 1 | yes | no | 7 |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:wilderness:0` | (3005, 3963) | Ladder 1 | down (3005, 10362) | no | no | 56 |
+| `connector:wilderness:1` | (3017, 3849) | Ladder 1 | down (3069, 10255) | no | no | 42 |
+| `connector:wilderness:2` | (3017, 3959) L1 | Ship's ladder 1 | up (3017, 3960) L2 | no | no | 55 |
+| `connector:wilderness:3` | (3017, 3959) L2 | Ship's ladder 1 | down (3017, 3958) L1 | no | no | 55 |
+| `connector:wilderness:4` | (3018, 3957) | Ladder 1 | up (3018, 3956) L1 | no | no | 55 |
+| `connector:wilderness:5` | (3018, 3957) L1 | Ladder 1 | down (3018, 3956) | no | no | 55 |
+| `connector:wilderness:6` | (3019, 3959) L1 | Ship's ladder 1 | up (3019, 3960) L2 | no | no | 55 |
+| `connector:wilderness:7` | (3019, 3959) L2 | Ship's ladder 1 | down (3019, 3958) L1 | no | no | 55 |
+| `connector:wilderness:8` | (3044, 3924) | Staircase 1 | down (3045, 10323) | no | no | 51 |
+| `connector:wilderness:9` | (3088, 3571) | Ladder 1 | down (3089, 9971) | yes | no | 7 |
 
 ## Areas within
 

@@ -51,9 +51,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:port-khazard:0` | (2650, 3165) | Ladder 1 | no | no | - |
-| `connector:port-khazard:1` | (2650, 3165) L1 | Ladder 1 | no | no | - |
-| `connector:port-khazard:2` | (2657, 3151) | Ladder 1 | no | no | - |
-| `connector:port-khazard:3` | (2657, 3151) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:port-khazard:0` | (2650, 3165) | Ladder 1 | up (2651, 3165) L1 | no | no | - |
+| `connector:port-khazard:1` | (2650, 3165) L1 | Ladder 1 | down (2651, 3165) | no | no | - |
+| `connector:port-khazard:2` | (2657, 3151) | Ladder 1 | up (2658, 3151) L1 | no | no | - |
+| `connector:port-khazard:3` | (2657, 3151) L1 | Ladder 1 | down (2658, 3151) | no | no | - |

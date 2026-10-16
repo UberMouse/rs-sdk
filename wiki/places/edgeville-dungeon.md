@@ -50,8 +50,8 @@ Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sou
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:edgeville-dungeon:0` | (3088, 9971) | Ladder 1 | no | no | 7 |
-| `connector:edgeville-dungeon:1` | (3096, 9867) | Ladder 1 | yes | no | - |
-| `connector:edgeville-dungeon:2` | (3116, 9852) | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:edgeville-dungeon:0` | (3088, 9971) | Ladder 1 | up (3089, 3571) | no | no | 7 |
+| `connector:edgeville-dungeon:1` | (3096, 9867) | Ladder 1 | up (3096, 3468) | yes | no | - |
+| `connector:edgeville-dungeon:2` | (3116, 9852) | Ladder 1 | up (3115, 3452) | yes | no | - |

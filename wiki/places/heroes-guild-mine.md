@@ -21,7 +21,7 @@ Ladder up into the Heroes' Guild at (2892, 3507).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:heroes-guild-mine:0` | (2892, 9907) | Ladder 1 | no | no | - |
-| `connector:heroes-guild-mine:1` | (2907, 9876) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:heroes-guild-mine:0` | (2892, 9907) | Ladder 1 | up (2893, 3507) | no | no | - |
+| `connector:heroes-guild-mine:1` | (2907, 9876) | Ladder 1 | up (2906, 3476) | no | no | - |

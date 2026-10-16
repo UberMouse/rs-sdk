@@ -19,6 +19,6 @@ Ladder up near Witchaven at (2696, 3282); the Family Crest gold rocks (quests/qu
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:witchaven-dungeon:0` | (2696, 9682) | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:witchaven-dungeon:0` | (2696, 9682) | Ladder 1 | up (2696, 3283) | no | no | - |

@@ -38,18 +38,18 @@ The grounds inside the guild's wooden barricade (wood_wall_barricadel in map squ
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:ranging-guild:0` | (2652, 3428) | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:1` | (2652, 3428) L1 | Ladder 1 | no | no | - |
-| `connector:ranging-guild:2` | (2652, 3428) L2 | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:3` | (2668, 3412) | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:4` | (2668, 3412) L1 | Ladder 1 | no | no | - |
-| `connector:ranging-guild:5` | (2668, 3412) L2 | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:6` | (2668, 3428) L1 | Ladder 1 | no | no | - |
-| `connector:ranging-guild:7` | (2668, 3444) | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:8` | (2668, 3444) L1 | Ladder 1 | no | no | - |
-| `connector:ranging-guild:9` | (2668, 3444) L2 | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:10` | (2684, 3428) | Ladder 1 | no | yes | - |
-| `connector:ranging-guild:11` | (2684, 3428) L1 | Ladder 1 | no | no | - |
-| `connector:ranging-guild:12` | (2684, 3428) L2 | Ladder 1 | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:ranging-guild:0` | (2652, 3428) | Ladder 1 | up (2653, 3428) L1 | no | yes | - |
+| `connector:ranging-guild:1` | (2652, 3428) L1 | Ladder 1 | down (2653, 3428), up (2653, 3428) L2 | no | no | - |
+| `connector:ranging-guild:2` | (2652, 3428) L2 | Ladder 1 | down (2653, 3428) L1 | no | yes | - |
+| `connector:ranging-guild:3` | (2668, 3412) | Ladder 1 | up (2668, 3413) L1 | no | yes | - |
+| `connector:ranging-guild:4` | (2668, 3412) L1 | Ladder 1 | down (2668, 3413), up (2668, 3413) L2 | no | no | - |
+| `connector:ranging-guild:5` | (2668, 3412) L2 | Ladder 1 | down (2668, 3413) L1 | no | yes | - |
+| `connector:ranging-guild:6` | (2668, 3428) L1 | Ladder 1 | up (2667, 3428) L2 | no | no | - |
+| `connector:ranging-guild:7` | (2668, 3444) | Ladder 1 | up (2668, 3443) L1 | no | yes | - |
+| `connector:ranging-guild:8` | (2668, 3444) L1 | Ladder 1 | down (2668, 3443), up (2668, 3443) L2 | no | no | - |
+| `connector:ranging-guild:9` | (2668, 3444) L2 | Ladder 1 | down (2668, 3443) L1 | no | yes | - |
+| `connector:ranging-guild:10` | (2684, 3428) | Ladder 1 | up (2683, 3428) L1 | no | yes | - |
+| `connector:ranging-guild:11` | (2684, 3428) L1 | Ladder 1 | down (2683, 3428), up (2683, 3428) L2 | no | no | - |
+| `connector:ranging-guild:12` | (2684, 3428) L2 | Ladder 1 | down (2683, 3428) L1 | no | yes | - |

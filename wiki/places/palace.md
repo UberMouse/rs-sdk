@@ -24,11 +24,11 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:palace:0` | (3202, 3472) L2 | Staircase 1 | yes | no | - |
-| `connector:palace:1` | (3203, 3472) L3 | Staircase 1 | yes | no | - |
-| `connector:palace:2` | (3212, 3473) | Staircase 1 | yes | no | - |
-| `connector:palace:3` | (3212, 3474) L1 | Staircase 1 | yes | no | - |
-| `connector:palace:4` | (3221, 3472) L2 | Staircase 1 | yes | no | - |
-| `connector:palace:5` | (3222, 3472) L3 | Staircase 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:palace:0` | (3202, 3472) L2 | Staircase 1 | - | yes | no | - |
+| `connector:palace:1` | (3203, 3472) L3 | Staircase 1 | - | yes | no | - |
+| `connector:palace:2` | (3212, 3473) | Staircase 1 | up (3212, 3476) L1 | yes | no | - |
+| `connector:palace:3` | (3212, 3474) L1 | Staircase 1 | down (3212, 3472) | yes | no | - |
+| `connector:palace:4` | (3221, 3472) L2 | Staircase 1 | up (3223, 3472) L3 | yes | no | - |
+| `connector:palace:5` | (3222, 3472) L3 | Staircase 1 | down (3222, 3471) L2 | yes | no | - |

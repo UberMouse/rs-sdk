@@ -63,12 +63,12 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:barbarian-village:0` | (3096, 3433) | Ladder 1 | yes | yes | - |
-| `connector:barbarian-village:1` | (3096, 3433) L1 | Ladder 1 | yes | no | - |
-| `connector:barbarian-village:2` | (3097, 3433) L1 | Ladder 1 | yes | no | - |
-| `connector:barbarian-village:3` | (3097, 3433) L2 | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:barbarian-village:0` | (3096, 3433) | Ladder 1 | up (3096, 3432) L1 | yes | yes | - |
+| `connector:barbarian-village:1` | (3096, 3433) L1 | Ladder 1 | down (3096, 3432) | yes | no | - |
+| `connector:barbarian-village:2` | (3097, 3433) L1 | Ladder 1 | up (3097, 3432) L2 | yes | no | - |
+| `connector:barbarian-village:3` | (3097, 3433) L2 | Ladder 1 | down (3097, 3432) L1 | yes | no | - |
 
 ## Areas within
 

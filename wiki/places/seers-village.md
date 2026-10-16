@@ -58,18 +58,18 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:seers-village:0` | (2698, 3496) | Staircase 1 | no | no | - |
-| `connector:seers-village:1` | (2698, 3496) L1 | Staircase 1 | no | no | - |
-| `connector:seers-village:2` | (2699, 3476) | Ladder 1 | no | no | - |
-| `connector:seers-village:3` | (2699, 3476) L1 | Ladder 1 | no | no | - |
-| `connector:seers-village:4` | (2715, 3470) | Ladder 1 | no | no | - |
-| `connector:seers-village:5` | (2715, 3470) L1 | Ladder 1 | no | no | - |
-| `connector:seers-village:6` | (2728, 3460) | Staircase 1 | no | no | - |
-| `connector:seers-village:7` | (2728, 3491) | Ladder 1 | no | no | - |
-| `connector:seers-village:8` | (2728, 3491) L1 | Ladder 1 | no | no | - |
-| `connector:seers-village:9` | (2729, 3461) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:seers-village:0` | (2698, 3496) | Staircase 1 | up (2698, 3495) L1 | no | no | - |
+| `connector:seers-village:1` | (2698, 3496) L1 | Staircase 1 | down (2697, 3496) | no | no | - |
+| `connector:seers-village:2` | (2699, 3476) | Ladder 1 | up (2699, 3475) L1 | no | no | - |
+| `connector:seers-village:3` | (2699, 3476) L1 | Ladder 1 | down (2699, 3475) | no | no | - |
+| `connector:seers-village:4` | (2715, 3470) | Ladder 1 | up (2714, 3470) L1 | no | no | - |
+| `connector:seers-village:5` | (2715, 3470) L1 | Ladder 1 | down (2714, 3470) | no | no | - |
+| `connector:seers-village:6` | (2728, 3460) | Staircase 1 | up (2729, 3462) L1 | no | no | - |
+| `connector:seers-village:7` | (2728, 3491) | Ladder 1 | up (2727, 3491) L1 | no | no | - |
+| `connector:seers-village:8` | (2728, 3491) L1 | Ladder 1 | down (2727, 3491) | no | no | - |
+| `connector:seers-village:9` | (2729, 3461) L1 | Staircase 1 | down (2730, 3461) | no | no | - |
 
 ## Areas within
 

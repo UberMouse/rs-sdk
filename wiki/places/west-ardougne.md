@@ -53,17 +53,17 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:west-ardougne:0` | (2523, 3314) | Staircase 1 | no | no | - |
-| `connector:west-ardougne:1` | (2523, 3314) L1 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:2` | (2526, 3291) | Staircase 1 | no | no | - |
-| `connector:west-ardougne:3` | (2526, 3292) L1 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:4` | (2527, 3314) L1 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:5` | (2527, 3314) L2 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:6` | (2530, 3317) L1 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:7` | (2530, 3319) | Staircase 1 | no | no | - |
-| `connector:west-ardougne:8` | (2531, 3294) | Staircase 1 | no | no | - |
-| `connector:west-ardougne:9` | (2531, 3294) L1 | Staircase 1 | no | no | - |
-| `connector:west-ardougne:10` | (2542, 3324) | Staircase 1 | no | no | - |
-| `connector:west-ardougne:11` | (2543, 3325) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:west-ardougne:0` | (2523, 3314) | Staircase 1 | up (2523, 3313) L1 | no | no | - |
+| `connector:west-ardougne:1` | (2523, 3314) L1 | Staircase 1 | down (2523, 3317) | no | no | - |
+| `connector:west-ardougne:2` | (2526, 3291) | Staircase 1 | up (2527, 3293) L1 | no | no | - |
+| `connector:west-ardougne:3` | (2526, 3292) L1 | Staircase 1 | down (2526, 3290) | no | no | - |
+| `connector:west-ardougne:4` | (2527, 3314) L1 | Staircase 1 | up (2527, 3313) L2 | no | no | - |
+| `connector:west-ardougne:5` | (2527, 3314) L2 | Staircase 1 | down (2527, 3317) L1 | no | no | - |
+| `connector:west-ardougne:6` | (2530, 3317) L1 | Staircase 1 | down (2530, 3320) | no | no | - |
+| `connector:west-ardougne:7` | (2530, 3319) | Staircase 1 | up (2529, 3317) L1 | no | no | - |
+| `connector:west-ardougne:8` | (2531, 3294) | Staircase 1 | up (2531, 3293) L1 | no | no | - |
+| `connector:west-ardougne:9` | (2531, 3294) L1 | Staircase 1 | down (2530, 3294) | no | no | - |
+| `connector:west-ardougne:10` | (2542, 3324) | Staircase 1 | up (2543, 3326) L1 | no | no | - |
+| `connector:west-ardougne:11` | (2543, 3325) L1 | Staircase 1 | down (2544, 3325) | no | no | - |

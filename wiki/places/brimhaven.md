@@ -45,9 +45,9 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:brimhaven:0` | (2759, 3196) | Staircase 1 | no | no | - |
-| `connector:brimhaven:1` | (2759, 3196) L1 | Staircase 1 | no | no | - |
-| `connector:brimhaven:2` | (2796, 3195) | Staircase 1 | no | no | - |
-| `connector:brimhaven:3` | (2796, 3196) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:brimhaven:0` | (2759, 3196) | Staircase 1 | up (2759, 3195) L1 | no | no | - |
+| `connector:brimhaven:1` | (2759, 3196) L1 | Staircase 1 | down (2759, 3199) | no | no | - |
+| `connector:brimhaven:2` | (2796, 3195) | Staircase 1 | up (2796, 3198) L1 | no | no | - |
+| `connector:brimhaven:3` | (2796, 3196) L1 | Staircase 1 | down (2796, 3194) | no | no | - |

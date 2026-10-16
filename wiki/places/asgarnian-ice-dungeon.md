@@ -27,6 +27,6 @@ Ladder up to Mudskipper Point at (3008, 3150).
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:asgarnian-ice-dungeon:0` | (3008, 9550) | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:asgarnian-ice-dungeon:0` | (3008, 9550) | Ladder 1 | up (3009, 3150) | yes | no | - |

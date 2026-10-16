@@ -24,13 +24,13 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:tree-gnome-village:0` | (2516, 3165) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:1` | (2516, 3165) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:2` | (2521, 3162) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:3` | (2521, 3162) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:4` | (2525, 3162) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:5` | (2525, 3162) L1 | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:6` | (2525, 3172) | Ladder 1 | no | no | - |
-| `connector:tree-gnome-village:7` | (2525, 3172) L1 | Ladder 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:tree-gnome-village:0` | (2516, 3165) | Ladder 1 | up (2516, 3166) L1 | no | no | - |
+| `connector:tree-gnome-village:1` | (2516, 3165) L1 | Ladder 1 | down (2516, 3166) | no | no | - |
+| `connector:tree-gnome-village:2` | (2521, 3162) | Ladder 1 | up (2521, 3163) L1 | no | no | - |
+| `connector:tree-gnome-village:3` | (2521, 3162) L1 | Ladder 1 | down (2521, 3163) | no | no | - |
+| `connector:tree-gnome-village:4` | (2525, 3162) | Ladder 1 | up (2526, 3162) L1 | no | no | - |
+| `connector:tree-gnome-village:5` | (2525, 3162) L1 | Ladder 1 | down (2526, 3162) | no | no | - |
+| `connector:tree-gnome-village:6` | (2525, 3172) | Ladder 1 | up (2526, 3172) L1 | no | no | - |
+| `connector:tree-gnome-village:7` | (2525, 3172) L1 | Ladder 1 | down (2526, 3172) | no | no | - |

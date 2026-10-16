@@ -75,18 +75,18 @@ The two islands of areas/area_miscellania.
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:miscellania:0` | (2505, 3848) | Staircase 1 | no | no | - |
-| `connector:miscellania:1` | (2505, 3848) L1 | Staircase 1 | no | no | - |
-| `connector:miscellania:2` | (2505, 3848) L2 | Staircase 1 | no | no | - |
-| `connector:miscellania:3` | (2505, 3849) L3 | Staircase 1 | no | no | - |
-| `connector:miscellania:4` | (2505, 3871) | Staircase 1 | no | no | - |
-| `connector:miscellania:5` | (2505, 3871) L1 | Staircase 1 | no | no | - |
-| `connector:miscellania:6` | (2505, 3871) L2 | Staircase 1 | no | no | - |
-| `connector:miscellania:7` | (2506, 3871) L3 | Staircase 1 | no | no | - |
-| `connector:miscellania:8` | (2613, 3867) | Staircase 1 | no | no | - |
-| `connector:miscellania:9` | (2614, 3867) L1 | Staircase 1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:miscellania:0` | (2505, 3848) | Staircase 1 | up (2504, 3849) L1 | no | no | - |
+| `connector:miscellania:1` | (2505, 3848) L1 | Staircase 1 | down (2504, 3849), up (2504, 3849) L2 | no | no | - |
+| `connector:miscellania:2` | (2505, 3848) L2 | Staircase 1 | down (2505, 3850) L1, up (2504, 3849) L3 | no | no | - |
+| `connector:miscellania:3` | (2505, 3849) L3 | Staircase 1 | down (2505, 3850) L2 | no | no | - |
+| `connector:miscellania:4` | (2505, 3871) | Staircase 1 | up (2507, 3871) L1 | no | no | - |
+| `connector:miscellania:5` | (2505, 3871) L1 | Staircase 1 | down (2507, 3871), up (2507, 3871) L2 | no | no | - |
+| `connector:miscellania:6` | (2505, 3871) L2 | Staircase 1 | down (2506, 3870) L1, up (2507, 3871) L3 | no | no | - |
+| `connector:miscellania:7` | (2506, 3871) L3 | Staircase 1 | down (2506, 3870) L2 | no | no | - |
+| `connector:miscellania:8` | (2613, 3867) | Staircase 1 | up (2615, 3867) L1 | no | no | - |
+| `connector:miscellania:9` | (2614, 3867) L1 | Staircase 1 | down (2614, 3866) | no | no | - |
 
 ## Areas within
 

@@ -13,9 +13,9 @@ Mining 60 for its ladder and its door at (3046, 9756) (areas/area_falador/script
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `connector:mining-guild:0` | (3018, 9739) | Ladder 1 | yes | no | - |
-| `connector:mining-guild:1` | (3019, 9738) | Ladder 1 | yes | no | - |
-| `connector:mining-guild:2` | (3019, 9740) | Ladder 1 | yes | no | - |
-| `connector:mining-guild:3` | (3020, 9739) | Ladder 1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
+|---|---|---|---|---|---|---|
+| `connector:mining-guild:0` | (3018, 9739) | Ladder 1 | up (3017, 3339) | yes | no | - |
+| `connector:mining-guild:1` | (3019, 9738) | Ladder 1 | up (3018, 3338) | yes | no | - |
+| `connector:mining-guild:2` | (3019, 9740) | Ladder 1 | up (3018, 3340) | yes | no | - |
+| `connector:mining-guild:3` | (3020, 9739) | Ladder 1 | up (3019, 3339) | yes | no | - |
