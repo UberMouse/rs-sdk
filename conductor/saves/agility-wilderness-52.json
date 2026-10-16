@@ -1,0 +1,56 @@
+{
+    "name": "agility-wilderness-52",
+    "purpose": "Agility 52, Att 70 Str 70 Def 73 HP 73 (like conductor2), empty inventory, bank 60 Salmon, at Edgeville bank. Wilderness agility plan test.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3094,
+                "z": 3492
+            },
+            "skills": {
+                "Agility": 52,
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 73,
+                "Hitpoints": 73
+            },
+            "inventory": [],
+            "bank": [
+                {
+                    "id": 329,
+                    "count": 60
+                }
+            ]
+        }
+    },
+    "sha1": "e5646df5e33c14ed15705b2060029382704e47c0",
+    "createdAt": "2026-10-16T08:36:22.400Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3094,
+            "z": 3492,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 73,
+            "Strength": 70,
+            "Hitpoints": 73,
+            "Agility": 52
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 60
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

@@ -1,0 +1,102 @@
+{
+    "name": "superheat-loop",
+    "purpose": "Superheat Smithing loop test: Mining 99, Smithing 60, Magic 55, worn Staff of fire, hammer + adamant pickaxe, bank 600 nature runes + 300 iron ore, at Varrock East bank",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3254,
+                "z": 3420
+            },
+            "skills": {
+                "Mining": 99,
+                "Smithing": 60,
+                "Magic": 55,
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 60
+            },
+            "inventory": [
+                {
+                    "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 1271,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1387,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "bank": [
+                {
+                    "id": 561,
+                    "count": 600
+                },
+                {
+                    "id": 440,
+                    "count": 300
+                }
+            ]
+        }
+    },
+    "sha1": "e5938ebbc84acc1ee84747c72724e556931c2400",
+    "createdAt": "2026-10-16T07:54:47.436Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3254,
+            "z": 3420,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 60,
+            "Magic": 55,
+            "Smithing": 60,
+            "Mining": 99
+        },
+        "inventory": [
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 1271,
+                "name": "adamant_pickaxe",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1387,
+                "name": "staff_of_fire",
+                "count": 1
+            }
+        ],
+        "bank": [
+            {
+                "id": 561,
+                "name": "naturerune",
+                "count": 600
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 300
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "name": "seers-willow-fletch",
+    "purpose": "Seers bank (2726,3494): Woodcutting 80, Fletching 40, mithril axe wielded, Knife, 600 Bow strings banked. Tests the willow-longbows plan (chop willows, cut longbows (u), string, bank).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2726,
+                "z": 3494
+            },
+            "skills": {
+                "Woodcutting": 80,
+                "Fletching": 40,
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 946,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1355,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "bank": [
+                {
+                    "id": 1777,
+                    "count": 600
+                }
+            ]
+        }
+    },
+    "sha1": "4074874b8322039475f3eb36c5b26409bf622c4c",
+    "createdAt": "2026-10-16T09:16:32.979Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2726,
+            "z": 3494,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70,
+            "Woodcutting": 80,
+            "Fletching": 40
+        },
+        "inventory": [
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1355,
+                "name": "mithril_axe",
+                "count": 1
+            }
+        ],
+        "bank": [
+            {
+                "id": 1777,
+                "name": "bow_string",
+                "count": 600
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
