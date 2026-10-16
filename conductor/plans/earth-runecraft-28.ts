@@ -10,8 +10,7 @@ import runecraft from '@conductor/tasks/runecraft';
 
 const ESS = /^rune essence$/i;
 const PICK = /^adamant pickaxe$/i;
-const SCIM = /^steel scimitar$/i;
-const ROCK_AREA = { x: 2891, z: 4847, radius: 6 };
+const SCIM = /^(steel|mithril) scimitar$/i;
 const BANK_AREA = { x: 3254, z: 3420, radius: 5 };
 const pickWorn = (v: { state: { equipment: { name: string }[] } }) => v.state.equipment.some(i => PICK.test(i.name));
 
@@ -22,7 +21,14 @@ export default definePlan({
     phases: [
         phase(
             bank,
-            { area: BANK_AREA, depositAllExcept: ['Adamant pickaxe', 'Earth talisman'] },
+            {
+                area: BANK_AREA,
+                depositAllExcept: ['Adamant pickaxe', 'Earth talisman'],
+                withdraw: [
+                    { item: 'Adamant pickaxe', count: 1, upTo: true },
+                    { item: 'Earth talisman', count: 1, upTo: true },
+                ],
+            },
             { name: 'bank-1', when: v => v.runs('bank-1') === 0 },
         ),
         phase(
@@ -45,11 +51,7 @@ export default definePlan({
             { name: 'craft-earth', when: v => v.inv(ESS) > 0 && !inEssenceMine(v.state) },
         ),
         phase(essenceMine, { action: 'leave' }, { name: 'leave-mine', when: v => inEssenceMine(v.state) && v.full }),
-        phase(
-            mining,
-            { rock: 'essence', onFull: 'stop', area: ROCK_AREA },
-            { name: 'mine-essence', when: v => inEssenceMine(v.state) },
-        ),
+        phase(mining, { rock: 'essence', onFull: 'stop' }, { name: 'mine-essence', when: v => inEssenceMine(v.state) }),
         phase(
             essenceMine,
             { action: 'enter' },
