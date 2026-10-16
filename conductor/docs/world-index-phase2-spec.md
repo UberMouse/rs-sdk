@@ -113,12 +113,12 @@ the same pattern: `manholeclosed` op1 Open swaps to `manholeopen` and also `loc_
   condition and no move, the reader follows it. Other effects on that path (messages, sounds, a
   `loc_add` on another tile) do not stop it. The reader follows it as follows: the row keeps the placed loc, its tile and the swapping op (`op: 1`,
   `opName: 'Open'`), takes the landing from the swapped-to loc's moving op, and records that op in a
-  new optional field `then: { op: number; opName: string }` (`{1, 'Climb-down'}`). `source` is the
+  new optional field `thenOp: { op: number; opName: string }` (not `then`: oxlint `unicorn/no-thenable`) (`{1, 'Climb-down'}`). `source` is the
   line of the move (`general_use/scripts/trapdoors.rs2:11`). A swapped-to loc's op that does not
   move (Close) gives no row.
 - Landings use the existing relative-move path (`relative: true`, stand chosen with the reach
   test), the same as the ladders.
-- `then` is a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
+- `thenOp` is a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
 
 ### Acceptance criteria
 
@@ -130,13 +130,21 @@ the same pattern: `manholeclosed` op1 Open swaps to `manholeopen` and also `loc_
 - [ ] The two real-data tests that fail now pass: the Edgeville Dungeon trapdoor row from
       `conductor/lib/connectors.ts` is reproduced (loc tile, landing, stand within 1 tile), and
       "has a way back for every curated connector" holds.
+- [ ] A curated row the scripts contradict is not loosened or skipped silently. The real-data
+      test keeps a list of known contradictions, each with the curated value, the derived value and
+      the evidence (script line, reach tiles), and asserts the curated row still holds the recorded
+      wrong value, so the entry fails and must be removed once `main` corrects it. At 1b's commit the
+      only one is the Edgeville trapdoor's landing: curated (3097, 9868), copied by `pair()` from
+      the ladder's stand; derived (3096, 9868), because `trapdoors.rs2:11` moves the player's own
+      tile and the trapdoor's only reach tile is (3096, 3468). Task 6, which makes the table a view,
+      clears it.
 - [ ] The Lumbridge castle cellar ladder (`ladder_from_cellar` (3209, 9616)) is no longer one-way;
       its way down is the kitchen trapdoor at (3209, 3216). The test that pinned it as one-way is
       rewritten to pin the pair, and the one-way script-cite check accepts `trapdoors.rs2`.
 - [ ] A unit test on a scripted trapdoor pair pins the follow-through: the closed loc's row carries
-      `then`, the Close op gives no row, a swap beside a `loc_add` on another tile is still followed,
+      `thenOp`, the Close op gives no row, a swap beside a `loc_add` on another tile is still followed,
       and a `loc_change` under a condition or beside a move is not followed.
-- [ ] `world.json` carries `then`; `--check` is green; pages change only where a trapdoor site now
+- [ ] `world.json` carries `thenOp`; `--check` is green; pages change only where a trapdoor site now
       names its landing. Report the build time and `world.json` size.
 - [ ] Out of scope: quest and minigame trapdoors with their own scripts (`mm_temple`, `grandtree`,
       `viking_peer`, `holy_barrier`, `quest_mm`, duel arena, Castle Wars). They are gates or
