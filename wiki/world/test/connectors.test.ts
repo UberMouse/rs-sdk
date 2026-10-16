@@ -420,6 +420,29 @@ return(true);
         expect(out.connectors.map(c => `${c.feature} ${key(c.landing)}`)).toEqual(['1 1,3230,3230']);
     });
 
+    test('an unfollowable proc that several paths reach is named once', () => {
+        const file = 'ladders+stairs/scripts/trapdoors.rs2';
+        const text = `[oploc1,trapdoor]
+if (%trapdoor_seen = 1) {
+    mes("Again.");
+}
+def_boolean $dropped = ~trapdoor_drop(coord);
+
+[proc,trapdoor_drop](coord $c)
+p_telejump(movecoord($c, 0, 0, 6400));
+return(true);
+`;
+        const out = deriveWith(
+            [file, text],
+            [loc('trapdoor', at(0, 3230, 3230))],
+            new Map([['trapdoor', { op1: ['Climb-down'] }]]),
+        );
+        expect(out.underived.map(u => u.reason)).toEqual([
+            `\`~trapdoor_drop(coord)\` (${lineOf(file, text, 'def_boolean $dropped')}) moves the player inside a value`,
+        ]);
+        expect(out.connectors).toEqual([]);
+    });
+
     test(`an op that branches past ${MAX_PATHS} ways is underived, its landings dropped`, () => {
         const file = 'ladders+stairs/scripts/maze.rs2';
         const ifs = Array.from({ length: Math.log2(MAX_PATHS) + 1 }, (_, i) => `if (%maze_${i} = 1) { mes("${i}"); }`);

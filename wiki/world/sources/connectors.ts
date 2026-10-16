@@ -540,8 +540,9 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                         f = statement(s, p, file, depth);
                     } catch (e) {
                         if (!(e instanceof Unfollowed)) throw e;
-                        // That path ends unfollowed; the others still run.
-                        run.unknown.push(e.message);
+                        // That path ends unfollowed; the others still run. Several paths can reach it:
+                        // its reason is recorded once.
+                        if (!run.unknown.includes(e.message)) run.unknown.push(e.message);
                         f = { live: [], ended: [p] };
                     }
                     next.push(...f.live);
