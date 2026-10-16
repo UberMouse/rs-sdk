@@ -7,7 +7,8 @@ Runecraft turns rune essence into runes at an altar. Sources: `server/content/sc
 - XP is per essence crafted (air: 125 XP per essence at the local 25x rate). Level only adds runes per essence, not XP. [v 2026-10-16 conductor2w1 local]
 - One craft action converts the whole stack of essence in the inventory. [v 2026-10-16 conductor2w1 local]
 - No tiaras and no pure essence exist in this revision. A ruins is entered by using that altar's own talisman on the ruins (the talisman is not consumed); only rune essence is used. [v 2026-10-16 conductor2w1 local]
-- Altar levels: air 1, mind 2, water 5, earth 9, fire 14, body 20.
+- Altar levels and XP per essence at 25x: air 1 (125), mind 2, water 5, earth 9 (162.5), fire 14 (175), body 20 (187.5), cosmic 27 (200), chaos 35 (212.5), nature 44 (225), law 54 (237.5), death 65 (250, but the death ruins have no `rune_type`, so no talisman enters them: unusable) (`runecraft.dbrow`, `runecraft.loc:284-289`). Runes per essence (`level/multiplier + 1`) do not change XP. No combination runes exist in this revision, and essence cannot be noted (`blankrune` is not stackable; `cert_blankrune` is only used in Drezel's dialogue). [server data, unverified in game 2026-10-16]
+- Faster loops ranked from server data (research 2026-10-16, not run): fire with a Ring of dueling out (Duel Arena landing (3315, 3235), ~19 tiles from the fire ruins) and Varrock Teleport back is ~186k/h, but each ring is 8 trips and needs an emerald (gem trader stock 1, Herquin 0) plus a cosmic rune to enchant (only Lundail, Mage Arena, stock 20), so ~29 rings for 55 -> 99 is not practical. Without the ring fire is ~141k/h, no better than earth. Body via Falador Teleport in is ~150k/h for 2 law runes a trip. Earth with the rune stack dropped each trip (27 essence) and the nearest essence cluster is ~153k/h for no unlock (~171k/h with a rune pickaxe). Chaos (Wilderness), cosmic (Lost City + Zanaris) and law (Troll Stronghold, Entrana bans pickaxes) all come out below earth. [server data, unverified in game 2026-10-16]
 
 ## Rune essence
 
@@ -23,8 +24,11 @@ Runecraft turns rune essence into runes at an altar. Sources: `server/content/sc
 | Mind | imps 7/128 |
 | Water | wizards 3/128 |
 | Earth | men, women, farmers 2/128 |
-| Fire | skeletons 2/128 |
-| Body | guards 3/128 |
+| Fire | skeletons 2/128, dark wizards 2/128 |
+| Body | guards 3/128, hill giants 2/128 |
+| Cosmic | fishing casket 8/128 of caskets (caskets are very rare) |
+| Chaos / Nature | the gem-table talisman roll (4/128 of a ~3/128 table hit): chaos underground only, nature on the surface only |
+| Law | Troll Stronghold reward; Dunstan gives a spare |
 
 ## Verified training spots
 
