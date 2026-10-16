@@ -1,0 +1,297 @@
+{
+    "name": "superheat",
+    "purpose": "Magic 43, Smithing 60, Staff of fire worn, 26 Iron ore + 30 Nature runes at Varrock West bank (3185,3436). Tests spell-items (Superheat Item).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3185,
+                "z": 3436
+            },
+            "skills": {
+                "Magic": 43,
+                "Smithing": 60
+            },
+            "inventory": [
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 440,
+                    "count": 1
+                },
+                {
+                    "id": 561,
+                    "count": 30
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1387,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "1b1bfb89aa0e80cd19827ffd2d335da5f22240f6",
+    "createdAt": "2026-10-16T07:42:21.100Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3185,
+            "z": 3436,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10,
+            "Magic": 43,
+            "Smithing": 60
+        },
+        "inventory": [
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 440,
+                "name": "iron_ore",
+                "count": 1
+            },
+            {
+                "id": 561,
+                "name": "naturerune",
+                "count": 30
+            }
+        ],
+        "worn": [
+            {
+                "id": 1387,
+                "name": "staff_of_fire",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
