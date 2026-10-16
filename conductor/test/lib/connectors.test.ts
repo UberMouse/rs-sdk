@@ -80,6 +80,27 @@ describe('planConnectors', () => {
         ]);
     });
 
+    test("Taverley: Sanfew's first floor is the herb-house stairs, and the dungeon its own area by the ladder", () => {
+        const up = planConnectors(at(0, 2924, 3485), at(1, 2897, 3426));
+        expect(names(up)).toEqual(["up Taverley Sanfew's house stairs"]);
+        expect(up?.[0]?.stand).toEqual(at(0, 2897, 3428));
+        expect(names(planConnectors(at(1, 2897, 3426), at(0, 2924, 3485)))).toEqual([
+            "down Taverley Sanfew's house stairs",
+        ]);
+        expect(names(planConnectors(at(0, 2924, 3485), at(0, 2890, 9830)))).toEqual(['down Taverley Dungeon ladder']);
+        expect(names(planConnectors(at(0, 2890, 9830), at(0, 2924, 3485)))).toEqual(['up Taverley Dungeon ladder']);
+        // Not the Dwarven Mine: its stairs are in Falador, the dungeon is a separate area. The mine's north-west
+        // pocket (x 2962..2975, z 9806..9819) sits inside the dungeon's x range but is the mine.
+        expect(planeOf(0, 2970, 9812)).toBe(planeOf(0, 2998, 9844));
+        expect(planeOf(0, 2960, 9780)).toBe(planeOf(0, 2890, 9830));
+        expect(planeOf(0, 2850, 9700)).toBe(planeOf(0, 2890, 9830));
+        expect(planeOf(0, 2890, 9830)).not.toBe(planeOf(0, 2998, 9844));
+        expect(planConnectors(at(0, 2890, 9830), at(0, 2998, 9844))?.map(c => c.name)).toEqual([
+            'Taverley Dungeon ladder',
+            'Falador mine stairs',
+        ]);
+    });
+
     test('an underground area no connector leads to is no-connector (null), not an empty chain', () => {
         expect(planConnectors(at(0, 3058, 9780), at(0, 3100, 9930))).toBeNull();
         expect(planConnectors(at(0, 3104, 9577), at(0, 3100, 9930))).toBeNull();
@@ -151,6 +172,9 @@ describe('the table against the collision data', () => {
         // The mine: from the landing under Falador to Nurmof's shop (2998, 9844).
         const r = collisionPaths.findPath({ level: 0, x: 3058, z: 9776 }, { x: 2998, z: 9844 }, []);
         expect(r.success && r.reachedDestination).toBe(true);
+        // The Taverley Dungeon: from the ladder's landing to the cauldron room.
+        const dungeon = collisionPaths.findPath({ level: 0, x: 2884, z: 9798 }, { x: 2890, z: 9830 }, []);
+        expect(dungeon.success && dungeon.reachedDestination).toBe(true);
         // Lumbridge castle's first floor from the landing to the north end.
         const up = collisionPaths.findPath({ level: 1, x: 3205, z: 3209 }, { x: 3205, z: 3228 }, []);
         expect(up.success && up.reachedDestination).toBe(true);
