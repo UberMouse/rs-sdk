@@ -8,6 +8,8 @@ import { SCRIPTS } from '../paths';
 export interface Trigger {
     file: string;
     on: 'loc' | 'npc';
+    /** `op` or `ap` (approach), as the header gives it: the engine looks each up as its own trigger. */
+    kind: 'op' | 'ap';
     /** '1'-'5', or 'u' for use-item-on. */
     op: string;
     /** Config or category name, without the category's leading underscore. */
@@ -58,7 +60,7 @@ function blocks(file: string, text: string): Block[] {
 // `op` and `ap` (approach) both count: one subject often has both, and both are kept (`opsOf` in
 // classify.ts collapses them to the op slot). A leading `_` names a category (`[apnpc3,_bank_teller]`);
 // `t` (spell on) ops are not uses.
-const OP = /^\[(?:op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
+const OP = /^\[(op|ap)(loc|npc)([1-5u]),(_?)([a-z0-9_]+)\]$/;
 
 export function parseTriggers(file: string, text: string): Trigger[] {
     return blocks(file, text).flatMap(b => {
@@ -67,10 +69,11 @@ export function parseTriggers(file: string, text: string): Trigger[] {
             ? [
                   {
                       file,
-                      on: m[1] as 'loc' | 'npc',
-                      op: m[2]!,
-                      category: m[3] === '_',
-                      target: m[4]!,
+                      on: m[2] as 'loc' | 'npc',
+                      kind: m[1] as 'op' | 'ap',
+                      op: m[3]!,
+                      category: m[4] === '_',
+                      target: m[5]!,
                       line: b.line,
                       body: b.body,
                   },

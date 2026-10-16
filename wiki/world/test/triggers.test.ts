@@ -45,9 +45,9 @@ describe('parseTriggers', () => {
 
     test('ap triggers and use-item ops count; spell-target ops and queues do not', () => {
         const u = parseTriggers('f.rs2', '[apnpc1,man]\n[oplocu,_anvil]\n[opnpct,man]\n[queue,man]\n[proc,x]\n');
-        expect(u.map(x => [x.on, x.op, x.target, x.category])).toEqual([
-            ['npc', '1', 'man', false],
-            ['loc', 'u', 'anvil', true],
+        expect(u.map(x => [x.kind, x.on, x.op, x.target, x.category])).toEqual([
+            ['ap', 'npc', '1', 'man', false],
+            ['op', 'loc', 'u', 'anvil', true],
         ]);
     });
 

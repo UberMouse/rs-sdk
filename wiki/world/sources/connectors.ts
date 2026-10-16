@@ -686,11 +686,11 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
     const { features, locConfigs, collision, size } = input;
     const run = evaluator(input.callables);
     const byTarget = new Map<string, Trigger[]>();
-    // Every config's own loc op triggers, as `config op`, under any directory.
+    // Every config's own loc triggers, as `config oploc1` / `config aploc1`, under any directory.
     const own = new Set<string>();
     for (const t of input.triggers) {
         if (t.on !== 'loc') continue;
-        if (!t.category) own.add(`${t.target} ${t.op}`);
+        if (!t.category) own.add(`${t.target} ${t.kind}loc${t.op}`);
         if (t.file.startsWith(DIR)) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
     }
 
@@ -700,9 +700,10 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
         if (f.kind !== 'connector') return;
         const cfg = locConfigs.get(f.config);
         const category = first(cfg, 'category');
-        // The engine runs a config's own trigger for an op over its category's, wherever that trigger's
-        // script lives (server/engine/src/engine/script/ScriptProvider.ts getByTrigger).
-        const shadowed = (t: Trigger) => own.has(`${f.config} ${t.op}`);
+        // The engine runs a config's own trigger over its category's for the same trigger type (oploc1 and
+        // aploc1 are two), wherever that trigger's script lives (server/engine/src/engine/script/
+        // ScriptProvider.ts getByTrigger, ServerTriggerType.ts).
+        const shadowed = (t: Trigger) => own.has(`${f.config} ${t.kind}loc${t.op}`);
         const triggers = [
             ...(byTarget.get(f.config) ?? []),
             ...(category ? (byTarget.get(`_${category}`) ?? []).filter(t => !shadowed(t)) : []),

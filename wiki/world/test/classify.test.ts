@@ -6,6 +6,7 @@ import type { Callable, Trigger } from '../sources/triggers';
 const trig = (file: string, on: 'loc' | 'npc', target: string, body = '', category = false, op = '1'): Trigger => ({
     file,
     on,
+    kind: 'op',
     op,
     target,
     category,

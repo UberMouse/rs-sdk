@@ -299,6 +299,20 @@ p_telejump(movecoord(loc_coord, 0, 2, 0));
         ]);
         expect(out.underived).toEqual([]);
     });
+
+    test("a config's own aploc1 is another trigger type: it does not hide the category's oploc1", () => {
+        const file = 'ladders+stairs/scripts/category.rs2';
+        const text = '[oploc1,_cat_ladder]\np_telejump(movecoord(loc_coord, 1, 1, 0));\n';
+        const quest: [string, string] = ['quests/quest_x/scripts/ladder.rs2', '[aploc1,catladder_ap]\nmes("No.");\n'];
+        const out = deriveWith(
+            [file, text],
+            [loc('catladder_ap', at(0, 3420, 3420))],
+            new Map([['catladder_ap', { category: ['cat_ladder'], op1: ['Climb-up'] }]]),
+            [quest],
+        );
+        expect(out.connectors.map(c => `${c.feature} op${c.op} ${key(c.landing)}`)).toEqual(['0 op1 1,3421,3420']);
+        expect(out.underived).toEqual([]);
+    });
 });
 
 describe('relative jumps', () => {
