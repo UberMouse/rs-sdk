@@ -1,6 +1,6 @@
 // What a way through the world needs: a gate's condition, a transport's fare, a quest. A requirement has
-// a canonical string form, which world.json writes and the reach fill (phase 2, Task 3) keys its
-// requirement sets by, so two sets compare as sorted string lists:
+// a canonical string form, which world.json writes; a set of them is written sorted and each once
+// (requirementSet), so two sets compare as string lists:
 //
 //   quest:<id>             the quest is done: its varp >= complete (World.quests)
 //   quest:<id>>=<stage>    the quest's varp has reached <stage> (opens part-way; completion meets it too)

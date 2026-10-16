@@ -78,9 +78,10 @@ const OVERRIDES: QuestOverride[] = [
 ];
 
 describe('scanQuestCalls', () => {
-    const calls = scanQuestCalls(FILES);
+    const { calls, unread } = scanQuestCalls(FILES);
 
     test('reads both journal procs, a nested argument whole, and skips comments and calls with no component', () => {
+        expect(unread).toEqual([]);
         expect(calls.map(c => `${c.id} | ${c.progress} | ${c.complete} | ${c.at}`)).toEqual([
             'zanaris | %zanaris | ^zanaris_complete | general/scripts/quests.rs2:2',
             'horror | %horrorquest | ^horror_complete | general/scripts/quests.rs2:3',
@@ -95,11 +96,38 @@ describe('scanQuestCalls', () => {
     });
 });
 
+describe('scanQuestCalls, on a call over several lines or with the wrong arguments', () => {
+    const { calls, unread } = scanQuestCalls([
+        [
+            'q.rs2',
+            `[proc,a]
+~send_quest_progress(questlist:zanaris,
+    %zanaris,
+    ^zanaris_complete);
+~send_quest_progress(questlist:haunted, %haunted);
+~send_quest_progress_colour($component, $progress, $complete_progress);
+`,
+        ],
+    ]);
+
+    test('a call split across lines is read, at the line it starts on', () =>
+        expect(calls).toEqual([{ id: 'zanaris', progress: '%zanaris', complete: '^zanaris_complete', at: 'q.rs2:2' }]));
+
+    test('a call naming a quest that is not (questlist:<id>, <progress>, <complete>) is unread, and fails derive', () => {
+        const why =
+            '`~send_quest_progress(questlist:haunted, %haunted)` (q.rs2:5) is not ' +
+            '~send_quest_progress(questlist:<id>, <progress>, <complete>)';
+        expect(unread).toEqual([why]);
+        const scan = { calls, unread };
+        expect(deriveQuests({ scan, constants, varps, varbits, overrides: [], decreasing: {} }).unread).toEqual([why]);
+    });
+});
+
 describe('deriveQuests', () => {
-    const calls = scanQuestCalls(FILES);
+    const scan = scanQuestCalls(FILES);
 
     test('a quest whose calls agree on (%varp, ^x_complete) is read from them, citing the first call', () => {
-        const { quests } = deriveQuests({ calls, constants, varps, varbits, overrides: [] });
+        const { quests } = deriveQuests({ scan, constants, varps, varbits, overrides: [], decreasing: {} });
         expect(quests.find(q => q.id === 'zanaris')).toEqual({
             id: 'zanaris',
             varp: 'zanaris',
@@ -111,7 +139,7 @@ describe('deriveQuests', () => {
     });
 
     test('a varbit is read as bits of its base varp', () => {
-        const { quests } = deriveQuests({ calls, constants, varps, varbits, overrides: [] });
+        const { quests } = deriveQuests({ scan, constants, varps, varbits, overrides: [], decreasing: {} });
         expect(quests.find(q => q.id === 'horror')).toMatchObject({
             varp: 'deephorror',
             varpId: 351,
@@ -122,7 +150,7 @@ describe('deriveQuests', () => {
     });
 
     test('each form the scan can not read is unread without an override, with what stopped it', () => {
-        const { quests, unread } = deriveQuests({ calls, constants, varps, varbits, overrides: [] });
+        const { quests, unread } = deriveQuests({ scan, constants, varps, varbits, overrides: [], decreasing: {} });
         expect(quests.map(q => q.id)).toEqual(['horror', 'zanaris']);
         expect(unread.map(u => u.split(':')[0])).toEqual([
             'blackarmgang',
@@ -147,7 +175,14 @@ describe('deriveQuests', () => {
     });
 
     test('an override reads its varp, bits from constants, and the other varps that complete it', () => {
-        const { quests, unread, stale } = deriveQuests({ calls, constants, varps, varbits, overrides: OVERRIDES });
+        const { quests, unread, stale } = deriveQuests({
+            scan,
+            constants,
+            varps,
+            varbits,
+            overrides: OVERRIDES,
+            decreasing: {},
+        });
         expect(unread.map(u => u.split(':')[0])).toEqual(['ikov']);
         expect(stale).toEqual([]);
         const q = (id: string) => quests.find(x => x.id === id);
@@ -174,15 +209,36 @@ describe('deriveQuests', () => {
             { id: 'zanaris', varp: 'zanaris', complete: 6, source: 'x.rs2:1', notes: '' },
             { id: 'gone', varp: 'zanaris', complete: 6, source: 'x.rs2:1', notes: '' },
         ];
-        const { stale } = deriveQuests({ calls, constants, varps, varbits, overrides: [...OVERRIDES, ...extra] });
+        const { stale } = deriveQuests({
+            scan,
+            constants,
+            varps,
+            varbits,
+            overrides: [...OVERRIDES, ...extra],
+            decreasing: {},
+        });
         expect(stale).toEqual([
             'gone: no journal call names questlist:gone',
             'zanaris: its calls read as %zanaris >= 6 without the override',
         ]);
     });
 
+    test('a quest listed as decreasing carries why on its row; one not in the table is stale', () => {
+        const { quests, stale } = deriveQuests({
+            scan,
+            constants,
+            varps,
+            varbits,
+            overrides: [],
+            decreasing: { zanaris: 'q.rs2:9: set back', gone: 'q.rs2:1: no such quest' },
+        });
+        expect(quests.find(q => q.id === 'zanaris')?.varpDecreases).toBe('q.rs2:9: set back');
+        expect(quests.find(q => q.id === 'horror')).not.toHaveProperty('varpDecreases');
+        expect(stale).toEqual(['gone: listed as decreasing, but no journal call names questlist:gone']);
+    });
+
     const bad = (o: Partial<QuestOverride>) => () =>
-        deriveQuests({ calls, constants, varps, varbits, overrides: [{ ...OVERRIDES[0]!, ...o }] });
+        deriveQuests({ scan, constants, varps, varbits, overrides: [{ ...OVERRIDES[0]!, ...o }], decreasing: {} });
 
     test('an override naming a varp or constant that does not exist throws', () => {
         expect(bad({ varp: 'nope' })).toThrow('quest override cog: %nope is not in pack/varp.pack');

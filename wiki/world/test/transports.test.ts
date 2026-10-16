@@ -5,6 +5,7 @@ import { deriveLoadoutRule } from '../sources/loadout';
 import {
     curatedTransports,
     deriveSails,
+    outOfScopeSites,
     sailSites,
     type CuratedTransport,
     type SailInput,
@@ -218,7 +219,7 @@ const sails = deriveSails(INPUT);
 const rows = (npc: string) => sails.transports.filter(t => t.npc === npc);
 
 describe('deriveSails', () => {
-    test('a sail through a shared label: the fare is the coins taken, the landing from the label call', () => {
+    test('a sail through a shared label: the fare is the coins taken, cited with the sail call', () => {
         expect(rows('captain_tobias')).toEqual([
             {
                 kind: 'ship',
@@ -226,9 +227,10 @@ describe('deriveSails', () => {
                 npc: 'captain_tobias',
                 from: at(3028, 3216),
                 to: at(2956, 3143, 1),
-                source: 'sailors.rs2:7',
+                source: 'sailors.rs2:23',
                 fare: 30,
                 requires: ['coins:30'],
+                paidAt: ['sailors.rs2:22'],
             },
         ]);
         // The category's other npc boards the same route from its own spawn.
@@ -249,14 +251,24 @@ describe('deriveSails', () => {
         ]));
 
     test('a quest check, a random fare counted at its most, and a ticket taken net of one bought', () =>
-        expect(rows('captain_shanks').map(t => [t.route, t.fare, t.requires, t.notes])).toEqual([
+        expect(rows('captain_shanks').map(t => [t.route, t.source, t.fare, t.requires, t.paidAt, t.notes])).toEqual([
             [
                 'cairn_to_port_sarim',
+                'shanks.rs2:14',
                 45,
                 ['coins:45', 'quest:zombiequeen'],
+                ['shanks.rs2:10'],
                 'the fare is random, 26 to 45 coins (shanks.rs2:10): it counts as 45',
             ],
-            ['cairn_to_port_sarim', 0, ['consume:shiloshipticket:1', 'quest:zombiequeen'], undefined],
+            // The ticket taken is the one the player brought: the line that takes it is cited.
+            [
+                'cairn_to_port_sarim',
+                'shanks.rs2:14',
+                0,
+                ['consume:shiloshipticket:1', 'quest:zombiequeen'],
+                ['shanks.rs2:13'],
+                undefined,
+            ],
         ]));
 
     test('a sail open only at one quest stage is a quest window: left out and reported with its condition', () => {
@@ -349,6 +361,18 @@ if (%phoenixgang >= 10) {
         ]);
     });
 
+    test('a quest varp `! 0` is the quest started; `! n` above 0 asks nothing', () => {
+        const r = sailsOf(`[opnpc1,oddsailor]
+if (%dragonquest ! 0) {
+    ~set_sail("a", "", 0_50_50_1_1, 5, 1);
+}
+if (%dragonquest ! 4) {
+    ~set_sail("b", "", 0_50_50_2_2, 5, 1);
+}
+`);
+        expect(r.transports.filter(t => t.npc === 'oddsailor').map(t => t.requires)).toEqual([['quest:dragon>=1'], []]);
+    });
+
     test('a trigger past MAX_PATHS is reported, and the sites it reached count as unreached', () => {
         const ifs = Array.from({ length: 9 }, (_, i) => `if (%v${i} = 1) { mes("a"); }`).join('\n');
         const r = sailsOf(`[opnpc1,oddsailor]\n${ifs}\n~set_sail("x", "", 0_50_50_1_1, 5, 1);\n`);
@@ -369,6 +393,12 @@ test('sailSites: each call of a sail proc, and each %journey_number = outside on
         'sailors.rs2:23',
         'shanks.rs2:14',
     ]));
+
+test('outOfScopeSites: listed sites leave the unreached; a listed site no longer unreached is stale', () =>
+    expect(outOfScopeSites(['a.rs2:1', 'b.rs2:2'], ['b.rs2:2', 'c.rs2:3'])).toEqual({
+        unreached: ['a.rs2:1'],
+        stale: ['c.rs2:3'],
+    }));
 
 describe('deriveLoadoutRule', () => {
     const proc = INPUT.callables.find(c => c.call === '~has_entrana_restricted_items')!;
@@ -397,6 +427,7 @@ describe('curatedTransports', () => {
         fare: 10,
         requires: ['coins:10', 'quest:zombiequeen'],
         source: 'cart.rs2:43',
+        paidAt: ['cart.rs2:41'],
         notes: 'a cart',
     };
 

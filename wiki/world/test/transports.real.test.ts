@@ -22,11 +22,12 @@ const spawns = readAllMapSquares().npcs.flatMap(n => {
     return config ? [{ config, tile: n.tile }] : [];
 });
 const { quests } = deriveQuests({
-    calls: scanQuestCalls(scripts),
+    scan: scanQuestCalls(scripts),
     constants,
     varps: readPack('varp'),
     varbits: readConfigs('varbit'),
     overrides: QUEST_OVERRIDES,
+    decreasing: {},
 });
 const sails = deriveSails({
     files: scripts,
@@ -57,13 +58,15 @@ describe('the Entrana loadout rule', () => {
 
 describe('ship routes', () => {
     test('Port Sarim to Karamja: 30 coins with any of the three sailors, landing on the ship at Musa Point', () =>
-        expect(route('port_sarim_to_karamja').map(t => [t.npc, t.to, t.fare, t.requires, t.source])).toEqual(
+        expect(route('port_sarim_to_karamja').map(t => [t.npc, t.to, t.fare, t.requires, t.source, t.paidAt])).toEqual(
             ['captain_tobias', 'seaman_lorris', 'seaman_thresnor'].map(npc => [
                 npc,
                 { level: 1, x: 2956, z: 3143 },
                 30,
                 ['coins:30'],
-                'areas/area_port_sarim/scripts/sailors.rs2:10',
+                // The ~set_sail call, and the inv_del that takes the 30 coins.
+                'areas/area_port_sarim/scripts/sailors.rs2:31',
+                ['areas/area_port_sarim/scripts/sailors.rs2:29'],
             ]),
         ));
 

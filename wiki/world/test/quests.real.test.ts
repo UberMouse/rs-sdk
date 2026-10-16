@@ -10,11 +10,12 @@ import { readScripts } from '../sources/triggers';
 const scripts = readScripts();
 const constants = readConstants();
 const { quests, unread, stale } = deriveQuests({
-    calls: scanQuestCalls(scripts),
+    scan: scanQuestCalls(scripts),
     constants,
     varps: readPack('varp'),
     varbits: readConfigs('varbit'),
     overrides: QUEST_OVERRIDES,
+    decreasing: QUEST_VARP_EXCEPTIONS,
 });
 const quest = (id: string) => quests.find(q => q.id === id);
 
@@ -94,5 +95,7 @@ describe('quest varps only grow', () => {
         expect(decreases).toEqual([
             { quest: 'ball', varp: 'ballquest', from: 3, to: 1, at: 'quests/quest_ball/scripts/witch.rs2:25' },
         ]);
+        // world.json carries it on the quest's row.
+        expect(quest('ball')?.varpDecreases).toBe(QUEST_VARP_EXCEPTIONS.ball!);
     });
 });

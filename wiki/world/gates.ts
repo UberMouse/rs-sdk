@@ -73,8 +73,9 @@ export const QUEST_OVERRIDES: readonly QuestOverride[] = [
 ];
 
 /**
- * Quests whose varp a script sets below a stage it was shown at (sources/quests.ts questVarpDecreases),
- * so a `quest:<id>>=<stage>` gate on them is not safe: the reach fill must not assume the stage stays.
+ * Quests whose varp a script sets below a stage it was shown at (sources/quests.ts questVarpDecreases).
+ * The build writes each reason on the quest's row in world.json (Quest.varpDecreases), so a reader of a
+ * `quest:<id>>=<stage>` on it can see the stage may not stay; it fails on an id the quest table lacks.
  */
 export const QUEST_VARP_EXCEPTIONS: Readonly<Record<string, string>> = {
     ball: 'quests/quest_ball/scripts/witch.rs2:25: the witch catching you at ^ball_unlocked_mousedoor sets %ballquest back to ^ball_started.',
@@ -97,6 +98,7 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
         fare: 10,
         requires: ['coins:10', 'quest:zombiequeen'],
         source: 'areas/area_brimhaven/scripts/hajedy.rs2:43',
+        paidAt: ['areas/area_brimhaven/scripts/hajedy.rs2:41'],
         notes:
             'Hajedy, Brimhaven to Shilo Village, refuses until Shilo Village is done (hajedy.rs2:17). The fare is 5% of the coins ' +
             'carried, at least 10 and at most 200 (~calc_shilocart_cost, hajedy.rs2:50): 10 with 200 coins or fewer.',
@@ -108,6 +110,7 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
         fare: 10,
         requires: ['coins:10'],
         source: 'areas/area_shilo/scripts/vigroy.rs2:31',
+        paidAt: ['areas/area_shilo/scripts/vigroy.rs2:29'],
         notes:
             'Vigroy, Shilo Village to Brimhaven; no quest check in the script (Shilo is behind the quest anyway). The fare is ' +
             'as Hajedy’s (~calc_shilocart_cost, areas/area_brimhaven/scripts/hajedy.rs2:50).',
@@ -115,17 +118,17 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
 ];
 
 /**
- * Transports neither derived nor curated yet, and why: the build report lists them, so the reach fill's
- * unreached report can be read against them. The sail sites among them (a `%journey_number` no npc op
- * reaches) are named by script so the build does not report them as unread.
+ * Transports neither derived nor curated, and why; the build report lists them. An entry with `sailSite`
+ * names a sail site (sources/transports.ts sailSites) no npc op reaches, which the build then does not
+ * fail on; the build fails on such an entry once its site is gone or an npc op reaches it.
  */
-export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; reason: string }[] = [
+export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; reason: string; sailSite?: true }[] = [
     {
         script: 'general_use/scripts/gangplank.rs2:8',
         what: 'gangplanks (loc categories gangplank_board, gangplank_disembark)',
         reason:
             'the sail routes land on a ship deck (level 1) and a gangplank loc moves the player to the quay; its landing is the ' +
-            "player's tile shifted by a computed offset (calc on ~gangplank_dir_mod), a connector-like edge the reach fill needs",
+            "player's tile shifted by a computed offset (calc on ~gangplank_dir_mod), which no source here derives",
     },
     {
         script: 'skill_runecraft/scripts/essence_mine.rs2:1',
@@ -156,11 +159,13 @@ export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; r
     },
     {
         script: 'minigames/game_trawler/scripts/trawler_start.rs2:36',
+        sailSite: true,
         what: 'the Fishing Trawler boat (journey 11)',
         reason: 'a minigame: its queue script ([queue,trawler_start]) sets it, not an npc op',
     },
     {
         script: 'minigames/game_trawler/scripts/trawler_win.rs2:44',
+        sailSite: true,
         what: 'the Fishing Trawler return (journey 12)',
         reason: 'a minigame: its queue script ([queue,trawler_player_win]) sets it, not an npc op',
     },
@@ -172,6 +177,6 @@ export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; r
     {
         script: 'areas/area_yanille/scripts/magic_guild.rs2:19',
         what: 'the Magic Guild portals',
-        reason: 'loc ops, not npc ops; the guild door needs 66 Magic (magic_guild.rs2:11), a gate for Task 2b',
+        reason: 'loc ops, not npc ops; the guild door needs 66 Magic (magic_guild.rs2:11)',
     },
 ];

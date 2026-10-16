@@ -23,7 +23,19 @@ import type { Quest, Tile, Transport } from '../types';
 import { cmp, push } from '../util';
 import { first, type Config } from './configs';
 import type { Constant } from './constants';
-import { coordTile, isCoordLiteral, parseScript, type Expr, type Script, type Stmt } from './runescript';
+import {
+    equal,
+    fold,
+    merge,
+    scriptCache,
+    TooManyPaths,
+    truthOf,
+    unknown,
+    type CoordValue,
+    type Flow as SharedFlow,
+    type Value,
+} from './evaluate';
+import { coordTile, isCoordLiteral, type Expr, type Stmt } from './runescript';
 import { blocks, type Callable, type Trigger } from './triggers';
 
 /** The varp a sail sets, which the ship_journey interface reads for its map. */
@@ -144,23 +156,6 @@ export function sailSites(files: readonly [file: string, text: string][], callab
 
 // ---- Values and conditions -------------------------------------------------------------------------
 
-type Value =
-    | { t: 'int'; n: number }
-    /** `~random_range(lo, hi)`: lo to hi inclusive. */
-    | { t: 'range'; lo: number; hi: number }
-    | { t: 'bool'; b: boolean }
-    | { t: 'coord'; tile: Tile; at: string }
-    /** A bare name the walker knows is a config: an npc, a label, or an inventory (`inv`, `worn`). */
-    | { t: 'name'; v: string }
-    /** Not known offline; `choice` when it is a dialogue choice the player makes. */
-    | { t: 'unknown'; text: string; choice?: true };
-
-const unknown = (text: string, choice?: boolean): Value => ({
-    t: 'unknown',
-    text,
-    ...(choice ? { choice: true as const } : {}),
-});
-
 /** What one condition a path took means for the player. */
 type Cond =
     /** A requirement's canonical string. */
@@ -173,21 +168,6 @@ type Cond =
     | { k: 'window'; text: string }
     | { k: 'other'; text: string };
 // A coins', window's or other's text is the condition and its line: `\`%q = ^stage\` (file:line)`.
-
-const truthOf = (v: Value): boolean | undefined => (v.t === 'bool' ? v.b : v.t === 'int' ? v.n !== 0 : undefined);
-
-/** Each value equal to the other, or undefined when either isn't known. */
-function equal(a: Value, b: Value): boolean | undefined {
-    if (a.t === 'int' && b.t === 'int') return a.n === b.n;
-    if (a.t === 'name' && b.t === 'name') return a.v === b.v;
-    if (a.t === 'coord' && b.t === 'coord')
-        return a.tile.level === b.tile.level && a.tile.x === b.tile.x && a.tile.z === b.tile.z;
-    if (a.t === 'bool' || b.t === 'bool') {
-        const [x, y] = [truthOf(a), truthOf(b)];
-        return x === undefined || y === undefined ? undefined : x === y;
-    }
-    return undefined;
-}
 
 /** The comparison `!(l op r)` is, as `l op' r`. */
 const NEGATE: Readonly<Record<string, string>> = { '=': '!', '!': '=', '<': '>=', '>=': '<', '>': '<=', '<=': '>' };
@@ -208,12 +188,13 @@ interface Path {
     fareNotes: readonly string[];
     /** Objs taken, net of any given: obj -> count. */
     taken: ReadonlyMap<string, number>;
+    /** The lines that took coins (`coins`) or each obj, as `file:line`. */
+    paid: ReadonlyMap<string, readonly string[]>;
+    /** The call of the sail proc this path is in, as `file:line`. */
+    site?: string;
 }
 
-interface Flow {
-    live: Path[];
-    ended: Path[];
-}
+type Flow = SharedFlow<Path>;
 
 /** Where a statement runs: its file, and whether its script is a sail proc (its own sets aren't sites). */
 interface Where {
@@ -221,17 +202,15 @@ interface Where {
     sailProc: boolean;
 }
 
-const merge = (...flows: Flow[]): Flow => ({ live: flows.flatMap(f => f.live), ended: flows.flatMap(f => f.ended) });
-
 /** One path per way a condition can hold, each with what that way means. */
 const branch = (p: Path, ways: readonly Cond[][]): Path[] => ways.map(cs => ({ ...p, conds: [...p.conds, ...cs] }));
-
-class TooManyPaths extends Error {}
 
 /** A sail one path made. */
 interface Sailed {
     path: Path;
-    landing: { tile: Tile; at: string };
+    landing: CoordValue;
+    /** The script line that makes the move (Transport.source). */
+    source: string;
 }
 
 /** The config an argument names: a bare name (an obj in `inv_total(inv, coins)`), or a local holding one. */
@@ -248,12 +227,7 @@ function nameOf(e: Expr | undefined, env: ReadonlyMap<string, Value>): string | 
 function sailWalker(input: SailInput, reaches: Reach) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const sailProcs = sailProcsOf(input.callables);
-    const parsed = new Map<string, Script | { error: string }>();
-    const scriptOf = (key: string, file: string, line: number, raw: string) => {
-        let s = parsed.get(key);
-        if (!s) parsed.set(key, (s = parseScript(file, line, raw)));
-        return s;
-    };
+    const scriptOf = scriptCache();
 
     // Quest varps by the name the scripts use (a varbit's, or the varp's when progress is the whole varp),
     // each with the value that completes the quest on it, and whether it is the quest's own (not an `or`).
@@ -270,7 +244,7 @@ function sailWalker(input: SailInput, reaches: Reach) {
         const c = input.constants.get(name);
         if (!c) return undefined;
         if (/^-?\d+$/.test(c.value)) return { t: 'int', n: Number(c.value) };
-        if (isCoordLiteral(c.value)) return { t: 'coord', tile: coordTile(c.value), at: c.at };
+        if (isCoordLiteral(c.value)) return { t: 'coord', relative: false, ...coordTile(c.value), at: c.at };
         return undefined;
     };
     /** A bare name the walker can compare: an npc config, a label, or an inventory. */
@@ -286,22 +260,14 @@ function sailWalker(input: SailInput, reaches: Reach) {
                 case 'num':
                     return { t: 'int', n: e.n };
                 case 'coord':
-                    return { t: 'coord', tile: e.tile, at: `${file}:${e.line}` };
+                    return { t: 'coord', relative: false, ...e.tile, at: `${file}:${e.line}` };
                 case 'str':
                     return unknown(e.text);
                 case 'bin': {
                     const [l, r] = [evaluate(e.l, env, file), evaluate(e.r, env, file)];
+                    const folded = fold(e.op, l, r, e.text);
+                    if (folded) return folded;
                     const choice = (l.t === 'unknown' && l.choice) || (r.t === 'unknown' && r.choice);
-                    if (e.op === '&' || e.op === '|') {
-                        const short = e.op === '|';
-                        if ((l.t === 'bool' && l.b === short) || (r.t === 'bool' && r.b === short))
-                            return { t: 'bool', b: short };
-                        return l.t === 'bool' && r.t === 'bool' ? { t: 'bool', b: !short } : unknown(e.text, choice);
-                    }
-                    if (e.op === '=' || e.op === '!') {
-                        const same = equal(l, r);
-                        return same === undefined ? unknown(e.text, choice) : { t: 'bool', b: same === (e.op === '=') };
-                    }
                     if (l.t !== 'int' || r.t !== 'int') return unknown(e.text, choice);
                     const n = { '+': l.n + r.n, '-': l.n - r.n, '*': l.n * r.n, '/': Math.trunc(l.n / r.n) }[e.op];
                     if (n !== undefined) return { t: 'int', n };
@@ -317,7 +283,7 @@ function sailWalker(input: SailInput, reaches: Reach) {
                 if (e.name === 'true' || e.name === 'false') return { t: 'bool', b: e.name === 'true' };
                 // Engine commands (server/engine/src/engine/script/handlers/NpcOps.ts): the active npc's
                 // tile and config.
-                if (e.name === 'npc_coord') return { t: 'coord', tile: spawn.tile, at: 'npc_coord' };
+                if (e.name === 'npc_coord') return { t: 'coord', relative: false, ...spawn.tile, at: 'npc_coord' };
                 if (e.name === 'npc_type') return { t: 'name', v: spawn.config };
                 return known(e.name) ? { t: 'name', v: e.name } : unknown(e.text);
             }
@@ -326,7 +292,7 @@ function sailWalker(input: SailInput, reaches: Reach) {
             if (/^coord[xyz]$/.test(e.name) && a0?.t === 'coord')
                 return {
                     t: 'int',
-                    n: e.name === 'coordx' ? a0.tile.x : e.name === 'coordz' ? a0.tile.z : a0.tile.level,
+                    n: e.name === 'coordx' ? a0.x : e.name === 'coordz' ? a0.z : a0.level,
                 };
             // `$min + randominc($max - $min)`: min to max inclusive (general/scripts/misc/random_range.rs2:2).
             if (e.name === '~random_range' && a0?.t === 'int' && a1?.t === 'int')
@@ -365,7 +331,10 @@ function sailWalker(input: SailInput, reaches: Reach) {
             const ref = questOf.get(lhs.name);
             if (ref && lhs.args === null) {
                 if (v.t !== 'int') return other;
-                const least = ({ '>=': v.n, '>': v.n + 1, '=': v.n } as Record<string, number>)[op];
+                // `! 0` is started, as `>= 1`; `! n` above 0 and `<` allow none at all.
+                const least = ({ '>=': v.n, '>': v.n + 1, '=': v.n, '!': v.n === 0 ? 1 : 0 } as Record<string, number>)[
+                    op
+                ];
                 if (least === undefined || least <= 0) return { k: 'free' };
                 if (least >= ref.complete) return { k: 'req', req: `quest:${ref.quest.id}` };
                 if (op === '=') return { k: 'window', text };
@@ -505,7 +474,9 @@ function sailWalker(input: SailInput, reaches: Reach) {
             if (name === 'p_telejump' || name === 'p_teleport') {
                 if (p.journey === undefined) return { live: [p], ended: [] };
                 const landing = raw[0] && evaluate(raw[0], p.env, file);
-                if (landing?.t === 'coord') sailed.push({ path: p, landing });
+                // Inside a sail proc the move is its call; else this line.
+                const source = where.sailProc && p.site ? p.site : at;
+                if (landing?.t === 'coord') sailed.push({ path: p, landing, source });
                 else underived.add(`\`${s.text}\` (${at}): the landing is not known offline`);
                 return { live: [], ended: [p] };
             }
@@ -523,11 +494,16 @@ function sailWalker(input: SailInput, reaches: Reach) {
                         count?.t === 'range'
                             ? [`the fare is random, ${count.lo} to ${count.hi} coins (${at}): it counts as ${count.hi}`]
                             : [];
-                    return { live: [{ ...p, fare: p.fare + n, fareNotes: [...p.fareNotes, ...note] }], ended: [] };
+                    const paid = new Map(p.paid).set('coins', [...(p.paid.get('coins') ?? []), at]);
+                    return {
+                        live: [{ ...p, fare: p.fare + n, fareNotes: [...p.fareNotes, ...note], paid }],
+                        ended: [],
+                    };
                 }
                 const sign = name === 'inv_del' ? 1 : -1;
                 const taken = new Map(p.taken).set(obj, (p.taken.get(obj) ?? 0) + sign * n);
-                return { live: [{ ...p, taken }], ended: [] };
+                const paid = sign > 0 ? new Map(p.paid).set(obj, [...(p.paid.get(obj) ?? []), at]) : p.paid;
+                return { live: [{ ...p, taken, paid }], ended: [] };
             }
             const args = raw.map(a => evaluate(a, p.env, file));
             const target = name === 'jump' ? args[0] : undefined;
@@ -562,9 +538,10 @@ function sailWalker(input: SailInput, reaches: Reach) {
                 return { live: [], ended: [p] };
             }
             const env = new Map(script.params.map((param, i) => [param, args[i] ?? unknown(param)]));
+            const site = sailProcs.has(call) && !where.sailProc ? at : p.site;
             const flow = block(
                 script.body,
-                [{ ...p, env }],
+                [{ ...p, env, ...(site ? { site } : {}) }],
                 { file: script.file, sailProc: sailProcs.has(call) },
                 depth + 1,
             );
@@ -577,7 +554,14 @@ function sailWalker(input: SailInput, reaches: Reach) {
         if ('error' in script) underived.add(script.error);
         else
             try {
-                const start: Path = { env: new Map(), conds: [], fare: 0, fareNotes: [], taken: new Map() };
+                const start: Path = {
+                    env: new Map(),
+                    conds: [],
+                    fare: 0,
+                    fareNotes: [],
+                    taken: new Map(),
+                    paid: new Map(),
+                };
                 block(script.body, [start], { file: script.file, sailProc: false }, 0);
             } catch (e) {
                 if (!(e instanceof TooManyPaths)) throw e;
@@ -590,8 +574,11 @@ function sailWalker(input: SailInput, reaches: Reach) {
     };
 }
 
-/** The requirement set a sailed path needs, or the quest window that keeps it out. */
-function requirementsOf(p: Path): { requires: string[] } | { window: string } {
+/**
+ * The requirement set a sailed path needs and the lines that take what it pays (coins:<n> and each
+ * consume:<obj>:<n>), or the quest window that keeps it out.
+ */
+function requirementsOf(p: Path): { requires: string[]; paidAt: string[] } | { window: string } {
     const window = p.conds.find(c => c.k === 'window');
     if (window) return { window: window.text };
     const reqs = new Set<string>();
@@ -600,14 +587,19 @@ function requirementsOf(p: Path): { requires: string[] } | { window: string } {
         else if (c.k === 'other') reqs.add(`other:${c.text}`);
         else if (c.k === 'coins' && c.n > p.fare) reqs.add(`other:${c.text}`);
     }
-    if (p.fare > 0) reqs.add(`coins:${p.fare}`);
+    const paidAt: string[] = [];
+    if (p.fare > 0) {
+        reqs.add(`coins:${p.fare}`);
+        paidAt.push(...(p.paid.get('coins') ?? []));
+    }
     for (const [obj, n] of p.taken)
         if (n > 0) {
             reqs.add(`consume:${obj}:${n}`);
+            paidAt.push(...(p.paid.get(obj) ?? []));
             // Taking it means holding it.
             reqs.delete(`item:${obj}:held`);
         }
-    return { requires: [...reqs] };
+    return { requires: [...reqs], paidAt };
 }
 
 /** The coins a requirement set takes: its `coins:<n>`, 0 when it has none. */
@@ -658,8 +650,8 @@ export function deriveSails(input: SailInput): Sails {
             : [t.target];
 
     type Row = {
-        base: Omit<Transport, 'requires' | 'fare' | 'notes'>;
-        sets: { requires: string[]; notes: string[] }[];
+        base: Omit<Transport, 'requires' | 'fare' | 'paidAt' | 'notes'>;
+        sets: { requires: string[]; paidAt: string[]; notes: string[] }[];
     };
     const rows = new Map<string, Row>();
     const windows = new Set<string>();
@@ -680,18 +672,20 @@ export function deriveSails(input: SailInput): Sails {
                         windows.add(`${config} ${coordText(spawn.tile)} -> ${name}: ${req.window}`);
                         continue;
                     }
-                    const key = `${config} ${coordText(spawn.tile)} -> ${coordText(s.landing.tile)} ${name}`;
+                    const to = { level: s.landing.level, x: s.landing.x, z: s.landing.z };
+                    const key = `${config} ${coordText(spawn.tile)} -> ${coordText(to)} ${name}`;
                     let row = rows.get(key);
                     if (!row) {
                         const base = { kind: 'ship' as const, ...(route ? { route } : {}), npc: config };
                         row = {
-                            base: { ...base, from: spawn.tile, to: s.landing.tile, source: s.landing.at },
+                            base: { ...base, from: spawn.tile, to, source: s.source },
                             sets: [],
                         };
                         rows.set(key, row);
                     }
                     row.sets.push({
                         requires: req.requires,
+                        paidAt: req.paidAt,
                         notes: [
                             ...(route ? [] : [`journey ${s.path.journey} is not a route in ${ROUTES_FILE}`]),
                             ...s.path.fareNotes,
@@ -703,14 +697,17 @@ export function deriveSails(input: SailInput): Sails {
 
     const transports: Transport[] = [];
     for (const { base, sets } of rows.values()) {
-        const canonical = sets.map(s => ({ key: [...new Set(s.requires)].sort(cmp).join('\n'), notes: s.notes }));
+        const canonical = sets.map(s => ({ ...s, key: [...new Set(s.requires)].sort(cmp).join('\n') }));
         for (const requires of minimalSets(sets.map(s => s.requires))) {
             const key = requires.join('\n');
-            const notes = [...new Set(canonical.filter(s => s.key === key).flatMap(s => s.notes))];
+            const same = canonical.filter(s => s.key === key);
+            const paidAt = [...new Set(same.flatMap(s => s.paidAt))].sort(cmp);
+            const notes = [...new Set(same.flatMap(s => s.notes))];
             transports.push({
                 ...base,
                 fare: fareOf(requires),
                 requires,
+                ...(paidAt.length ? { paidAt } : {}),
                 ...(notes.length ? { notes: notes.join('; ') } : {}),
             });
         }
@@ -727,6 +724,22 @@ export function deriveSails(input: SailInput): Sails {
     };
 }
 
+/**
+ * The unreached sail sites (Sails.unreached) less those listed out of scope (`listed`, `file:line`), and
+ * the listed ones that are no longer unreached sites: gone from the scripts, or reached by an npc op.
+ */
+export function outOfScopeSites(
+    unreached: readonly string[],
+    listed: readonly string[],
+): { unreached: string[]; stale: string[] } {
+    const out = new Set(listed);
+    const left = new Set(unreached);
+    return {
+        unreached: unreached.filter(at => !out.has(at)),
+        stale: [...out].filter(at => !left.has(at)).sort(cmp),
+    };
+}
+
 /** A curated transport (gates.ts CURATED_TRANSPORTS) as written there. */
 export interface CuratedTransport {
     kind: Transport['kind'];
@@ -736,7 +749,9 @@ export interface CuratedTransport {
     fare: number;
     /** Canonical requirement strings (requirements.ts), the fare's coins:<n> among them. */
     requires: string[];
+    /** The script line that makes the move, and those that take the fare. */
     source: string;
+    paidAt: string[];
     notes: string;
 }
 
@@ -762,9 +777,10 @@ export function curatedTransports(
             npc: e.npc,
             from: s.tile,
             to: coordTile(e.to),
+            source: e.source,
             fare: e.fare,
             requires,
-            source: e.source,
+            paidAt: e.paidAt,
             notes: e.notes,
         }));
     });

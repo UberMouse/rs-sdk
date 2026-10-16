@@ -156,6 +156,11 @@ export interface Quest extends QuestVarp {
     stages: Record<string, number>;
     /** The journal call it is read from, or the curated override's script (gates.ts). */
     source: string;
+    /**
+     * Set when a script sets the varp back below a stage (gates.ts QUEST_VARP_EXCEPTIONS): why, with the
+     * script line. A `quest:<id>>=<stage>` on this quest may stop holding.
+     */
+    varpDecreases?: string;
 }
 
 /** What a loadout rule forbids an obj category in: the inventory, the worn slots, or either. */
@@ -189,13 +194,18 @@ export interface Transport {
     fare: number;
     /** A minimal requirement set (requirements.ts), canonical and sorted. */
     requires: string[];
-    /** The script line the landing comes from. */
+    /**
+     * The script line that makes the move: the call of the sail proc (`~set_sail(...)`), or the
+     * teleport itself when no sail proc makes it.
+     */
     source: string;
+    /** The script lines that take the fare and any consumed objs, as `file:line`; absent when none do. */
+    paidAt?: string[];
     notes?: string;
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 4;
+export const WORLD_FORMAT = 5;
 
 export interface World {
     /** WORLD_FORMAT when written. */

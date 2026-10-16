@@ -63,37 +63,68 @@ function argsAt(code: string, open: number): string[] | null {
     return null;
 }
 
-/** Every journal call in the scripts: those that pass a `questlist:<id>` component. */
-export function scanQuestCalls(files: readonly [file: string, text: string][]): QuestCall[] {
-    const out: QuestCall[] = [];
+/** The journal calls in the scripts, and those that name a quest but can't be read. */
+export interface QuestScan {
+    calls: QuestCall[];
+    /**
+     * Calls that name a `questlist:` component but aren't `(questlist:<id>, <progress>, <complete>)`,
+     * as `` `<call>` (file:line) ``: each fails the build as an unread quest does.
+     */
+    unread: string[];
+}
+
+/**
+ * Every journal call in the scripts, read over the whole text so a call split across lines counts.
+ * A call that names no `questlist:` component (the procs passing their own parameters on) is skipped.
+ */
+export function scanQuestCalls(files: readonly [file: string, text: string][]): QuestScan {
+    const calls: QuestCall[] = [];
+    const unread: string[] = [];
     for (const [file, text] of files) {
-        const lines = codeOf(text).split('\n');
-        lines.forEach((line, i) => {
-            for (const m of line.matchAll(CALL)) {
-                const args = argsAt(line, m.index + m[0].length - 1);
-                const component = args?.[0]?.match(/^questlist:([a-z0-9_]+)$/);
-                if (!args || args.length !== 3 || !component) continue;
-                out.push({ id: component[1]!, progress: args[1]!, complete: args[2]!, at: `${file}:${i + 1}` });
+        const code = codeOf(text);
+        const lineAt = (index: number) => code.slice(0, index).split('\n').length;
+        for (const m of code.matchAll(CALL)) {
+            const open = m.index + m[0].length - 1;
+            const args = argsAt(code, open);
+            const at = `${file}:${lineAt(m.index)}`;
+            const component = args?.[0]?.match(/^questlist:([a-z0-9_]+)$/);
+            if (args && args.length === 3 && component)
+                calls.push({ id: component[1]!, progress: args[1]!, complete: args[2]!, at });
+            else {
+                const call = code.slice(m.index, args ? code.indexOf(')', open) + 1 : code.indexOf('\n', open));
+                if (/\bquestlist:/.test(call) || args === null)
+                    unread.push(
+                        `\`${call.replace(/\s+/g, ' ').trim()}\` (${at}) is not ` +
+                            '~send_quest_progress(questlist:<id>, <progress>, <complete>)',
+                    );
             }
-        });
+        }
     }
-    return out;
+    return { calls, unread };
 }
 
 export interface QuestInput {
-    calls: readonly QuestCall[];
+    scan: QuestScan;
     constants: ReadonlyMap<string, Constant>;
     varps: Pack;
     /** The `.varbit` configs: a `basevar`, `startbit` and `endbit` each. */
     varbits: ReadonlyMap<string, Config>;
     overrides: readonly QuestOverride[];
+    /** Quests whose varp a script sets back below a stage (gates.ts QUEST_VARP_EXCEPTIONS): id -> why. */
+    decreasing: Readonly<Record<string, string>>;
 }
 
 export interface Quests {
     quests: Quest[];
-    /** Quests the calls don't give and no override covers, as `<id>: <why>`: the build fails on any. */
+    /**
+     * Quests the calls don't give and no override covers, as `<id>: <why>`, and the journal calls the
+     * scan can't read (QuestScan.unread): the build fails on any.
+     */
     unread: string[];
-    /** Overrides whose quest the calls give as they are, or that no call names: the build fails on any. */
+    /**
+     * Overrides whose quest the calls give as they are, or that no call names, and decreasing quests
+     * that aren't in the table: the build fails on any.
+     */
     stale: string[];
 }
 
@@ -169,12 +200,12 @@ function overrideVarp(
  * from its calls when every one reads as `(%varp, ^x_complete)` and they agree, else from its override.
  * Sorted by id.
  */
-export function deriveQuests({ calls, constants, varps, varbits, overrides }: QuestInput): Quests {
+export function deriveQuests({ scan, constants, varps, varbits, overrides, decreasing }: QuestInput): Quests {
     const byId = new Map<string, QuestCall[]>();
-    for (const c of [...calls].sort((a, b) => cmp(a.at, b.at))) push(byId, c.id, c);
+    for (const c of [...scan.calls].sort((a, b) => cmp(a.at, b.at))) push(byId, c.id, c);
     const overrideOf = new Map(overrides.map(o => [o.id, o]));
     const quests: Quest[] = [];
-    const unread: string[] = [];
+    const unread: string[] = [...scan.unread];
     const stale: string[] = [];
     for (const [id, cs] of [...byId].sort(([a], [b]) => cmp(a, b))) {
         const read = cs.map(c => readCall(c, constants, varps, varbits));
@@ -202,7 +233,12 @@ export function deriveQuests({ calls, constants, varps, varbits, overrides }: Qu
         } else quests.push({ id, ...readable[0]!, stages: {}, source: cs[0]!.at });
     }
     for (const o of overrides) if (!byId.has(o.id)) stale.push(`${o.id}: no journal call names questlist:${o.id}`);
-    return { quests, unread, stale: stale.sort(cmp) };
+    for (const [id, why] of Object.entries(decreasing)) {
+        const q = quests.find(x => x.id === id);
+        if (q) q.varpDecreases = why;
+        else stale.push(`${id}: listed as decreasing, but no journal call names questlist:${id}`);
+    }
+    return { quests, unread: unread.sort(cmp), stale: stale.sort(cmp) };
 }
 
 // ---- Quest varps only grow ---------------------------------------------------------------------------
@@ -274,6 +310,7 @@ export function questVarpDecreases(
         if (least !== undefined) into.set(v, Math.max(into.get(v) ?? 0, least));
     };
 
+    // Limit: a bound shown or set inside an `if`, `switch` or loop does not carry past it.
     const walk = (stmts: readonly Stmt[], bounds: Bounds, file: string): void => {
         const local = new Map(bounds);
         for (const s of stmts) {

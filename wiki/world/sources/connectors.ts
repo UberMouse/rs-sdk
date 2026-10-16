@@ -14,7 +14,18 @@ import { footprint, reachTiles, type SiteCollision, type SiteOptions } from '../
 import type { Connector, Feature, Tile } from '../types';
 import { cmp, push } from '../util';
 import { first, type Config } from './configs';
-import { parseScript, type Expr, type Node, type Script, type Stmt } from './runescript';
+import {
+    equal,
+    fold,
+    merge,
+    scriptCache,
+    TooManyPaths,
+    unknown,
+    type CoordValue,
+    type Flow as SharedFlow,
+    type Value,
+} from './evaluate';
+import type { Expr, Node, Stmt } from './runescript';
 import type { Callable, Trigger } from './triggers';
 
 /** The script directory whose op triggers make a loc a connector (classify.ts). */
@@ -82,19 +93,6 @@ export interface Connectors {
 
 // ---- Evaluation -------------------------------------------------------------------------------------
 
-/** A coord the script computed: a tile, or (`relative`) a shift of the player's tile. */
-interface CoordValue {
-    t: 'coord';
-    relative: boolean;
-    level: number;
-    x: number;
-    z: number;
-    /** The script line it was written on, as `file:line`. */
-    at: string;
-}
-
-type Value = { t: 'int'; n: number } | { t: 'bool'; b: boolean } | CoordValue | { t: 'unknown'; text: string };
-
 /** What one placed loc's op does: its landings, and why a path through it lands nowhere. */
 interface Run {
     landings: CoordValue[];
@@ -115,34 +113,10 @@ interface Path {
 /** A path the evaluator can't follow past an expression (a proc that can move the player, as a value). */
 class Unfollowed extends Error {}
 
-/** An op whose run passed MAX_PATHS. */
-class TooManyPaths extends Error {}
-
-interface Flow {
-    /** Paths that run on past the statement. */
-    live: Path[];
-    /** Paths that ended the script in it (a `return`, or a label jumped to). */
-    ended: Path[];
-}
-
-const unknown = (text: string): Value => ({ t: 'unknown', text });
+type Flow = SharedFlow<Path>;
 
 /** Where a node is, as `file:line`. */
 const at = (file: string, n: Node): string => `${file}:${n.line}`;
-
-const merge = (...flows: Flow[]): Flow => ({
-    live: flows.flatMap(f => f.live),
-    ended: flows.flatMap(f => f.ended),
-});
-
-/** Whether two values are equal; undefined when either isn't known. */
-function equal(a: Value, b: Value): boolean | undefined {
-    if (a.t === 'int' && b.t === 'int') return a.n === b.n;
-    if (a.t === 'bool' && b.t === 'bool') return a.b === b.b;
-    if (a.t === 'coord' && b.t === 'coord' && !a.relative && !b.relative)
-        return a.level === b.level && a.x === b.x && a.z === b.z;
-    return undefined;
-}
 
 const MOVES = /\b(?:p_telejump|p_teleport)\s*\(/;
 const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
@@ -150,12 +124,7 @@ const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
 /** Runs connector op scripts for one loc at a time, over the triggers' callables. */
 function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile, angle: number) => Run {
     const byCall = new Map(callables.map(c => [c.call, c]));
-    const parsed = new Map<string, Script | { error: string }>();
-    const scriptOf = (key: string, file: string, line: number, raw: string) => {
-        let s = parsed.get(key);
-        if (!s) parsed.set(key, (s = parseScript(file, line, raw)));
-        return s;
-    };
+    const scriptOf = scriptCache();
 
     // Whether a callable, or one it calls, moves the player: the others (mes, an npc's taunt) can't
     // change a landing and are passed over without parsing.
@@ -196,16 +165,8 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                     return unknown(e.text);
                 case 'bin': {
                     const [l, r] = [evaluate(e.l, env, file), evaluate(e.r, env, file)];
-                    if (e.op === '&' || e.op === '|') {
-                        const short = e.op === '|';
-                        if ((l.t === 'bool' && l.b === short) || (r.t === 'bool' && r.b === short))
-                            return { t: 'bool', b: short };
-                        return l.t === 'bool' && r.t === 'bool' ? { t: 'bool', b: !short } : unknown(e.text);
-                    }
-                    if (e.op === '=' || e.op === '!') {
-                        const same = equal(l, r);
-                        return same === undefined ? unknown(e.text) : { t: 'bool', b: same === (e.op === '=') };
-                    }
+                    const folded = fold(e.op, l, r, e.text);
+                    if (folded) return folded;
                     if (l.t !== 'int' || r.t !== 'int') return unknown(e.text);
                     const b = { '<': l.n < r.n, '>': l.n > r.n, '<=': l.n <= r.n, '>=': l.n >= r.n }[e.op];
                     return b === undefined ? unknown(e.text) : { t: 'bool', b };

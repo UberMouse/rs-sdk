@@ -3,11 +3,12 @@
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts) and the transports (sources/transports.ts, gates.ts); then
 // prints a report and renders the pages (render.ts). `bun run world` writes them and exits 1 when the
-// report has an error (failed): a site that breaks the COVERED rule, a quest with neither a readable
-// journal call nor an override, an override the scan no longer needs, or a sail site no npc op reaches
-// that gates.ts does not list as out of scope. `--check` writes nothing: it exits 1 when world.json or a
-// page differs from what the game data and this code generate now, so a hand edit or a stale page fails
-// verify:conductor, and on a report error as the build does.
+// report has an error (failed): a site that breaks the COVERED rule, a quest or journal call the scan
+// can't read with no override, a gates.ts quest entry no longer needed, a sail site no npc op reaches
+// that gates.ts does not list as out of scope, or one it lists that is gone or now reached. `--check`
+// writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
+// generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
+// build does.
 import { relative } from 'path';
 import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
@@ -22,11 +23,17 @@ import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } f
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
-import { CURATED_TRANSPORTS, LOADOUT_PROCS, QUEST_OVERRIDES, TRANSPORTS_OUT_OF_SCOPE } from './gates';
+import {
+    CURATED_TRANSPORTS,
+    LOADOUT_PROCS,
+    QUEST_OVERRIDES,
+    QUEST_VARP_EXCEPTIONS,
+    TRANSPORTS_OUT_OF_SCOPE,
+} from './gates';
 import { readConstants } from './sources/constants';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
-import { byTransport, curatedTransports, deriveSails } from './sources/transports';
+import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
 import { parseCallables, parseTriggers, readScripts } from './sources/triggers';
 import { readZones } from './sources/zones';
 import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
@@ -88,9 +95,12 @@ export interface BuildReport {
         count: number;
         /** Ids of the quests read from gates.ts QUEST_OVERRIDES. */
         overrides: string[];
-        /** Quests with neither a readable journal call nor an override, as `<id>: <why>`: an error. */
+        /**
+         * Quests with neither a readable journal call nor an override, as `<id>: <why>`, and journal
+         * calls that can't be read: an error.
+         */
         unread: string[];
-        /** Overrides the scan no longer needs, as `<id>: <why>`: an error. */
+        /** Overrides the scan no longer needs, and varp exceptions for quests not in the table: an error. */
         stale: string[];
     };
     transports: {
@@ -105,6 +115,8 @@ export interface BuildReport {
         underived: string[];
         /** Sail sites no npc op reaches and gates.ts does not list as out of scope: an error. */
         unreached: string[];
+        /** Sail sites gates.ts lists out of scope that are gone or now reached: an error. */
+        staleOutOfScope: string[];
         /** sail.constant routes no npc sails. */
         unusedRoutes: string[];
         /** Transport rows with an other:<text> requirement, as `<npc> -> <route or kind>: <requirement>`. */
@@ -119,7 +131,8 @@ export const failed = (r: BuildReport): boolean =>
     r.uncovered.length > 0 ||
     r.quests.unread.length > 0 ||
     r.quests.stale.length > 0 ||
-    r.transports.unreached.length > 0;
+    r.transports.unreached.length > 0 ||
+    r.transports.staleOutOfScope.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -221,11 +234,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
 
     const constants = readConstants();
     const quests = deriveQuests({
-        calls: scanQuestCalls(scripts),
+        scan: scanQuestCalls(scripts),
         constants,
         varps: readPack('varp'),
         varbits: readConfigs('varbit'),
         overrides: QUEST_OVERRIDES,
+        decreasing: QUEST_VARP_EXCEPTIONS,
     });
     const loadoutRules = deriveLoadoutRules(LOADOUT_PROCS, callables);
     const sails = deriveSails({
@@ -240,7 +254,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     const curated = curatedTransports(CURATED_TRANSPORTS, spawns);
     const transports = [...sails.transports, ...curated].sort(byTransport);
-    const outOfScope = new Set(TRANSPORTS_OUT_OF_SCOPE.map(o => o.script));
+    const sailSiteCheck = outOfScopeSites(
+        sails.unreached,
+        TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
+    );
 
     return {
         world: {
@@ -286,7 +303,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 curated: curated.length,
                 windows: sails.windows,
                 underived: sails.underived,
-                unreached: sails.unreached.filter(at => !outOfScope.has(at)),
+                unreached: sailSiteCheck.unreached,
+                staleOutOfScope: sailSiteCheck.stale,
                 unusedRoutes: sails.unusedRoutes,
                 other: [
                     ...new Set(
@@ -397,17 +415,21 @@ export function formatReport(report: BuildReport): string[] {
     lines.push(`quests: ${q.count}, ${q.overrides.length} of them from gates.ts overrides (${q.overrides.join(', ')})`);
     if (q.unread.length)
         lines.push(
-            `ERROR quests: ${q.unread.length} with no readable journal call and no override in gates.ts:`,
+            `ERROR quests: ${q.unread.length} journal calls or quests not read, with no override in gates.ts:`,
             ...q.unread.map(u => `  ${u}`),
         );
     if (q.stale.length)
-        lines.push(`ERROR quests: ${q.stale.length} overrides in gates.ts not needed:`, ...q.stale.map(u => `  ${u}`));
+        lines.push(`ERROR quests: ${q.stale.length} entries in gates.ts not needed:`, ...q.stale.map(u => `  ${u}`));
     const t = report.transports;
     lines.push(`transports: ${t.ships} ship rows on ${t.routes} routes, ${t.curated} curated rows`);
     lines.push(
         ...list(
             `ERROR transports: ${t.unreached.length} sail sites no npc op reaches (derive, curate or list them out of scope in gates.ts):`,
             t.unreached,
+        ),
+        ...list(
+            `ERROR transports: ${t.staleOutOfScope.length} sail sites gates.ts lists out of scope are gone or now reached:`,
+            t.staleOutOfScope,
         ),
         ...list(`warning: ${t.underived.length} sail scripts the walker could not finish:`, t.underived),
         ...list(`warning: ${t.other.length} transport requirements in no other form:`, t.other),
