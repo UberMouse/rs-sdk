@@ -8,13 +8,22 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-11 ~08:30 (conductor run 2 paused, account `conductor2`, rev 289, 25x XP): total level
-927 / 1881, 17.2% of max XP. Thieving 99, Mining 99, Cooking 83, WC 80, Fishing 79, FM 78, HP 46, Magic 41,
-Agility 41, Att/Str/Def/Ranged 40, Smithing 39, Crafting 35, Fletching 30, Prayer 15; Herblore and Runecraft 1.
-Logged out at the Draynor willows (snapshot `session-end`); ~1,200 coins held, ~18k banked. Nothing in flight.
-Next: run `conductor/plans/rune-mysteries.ts` on conductor2 (unlocks Runecraft; the `talk` task is new),
-then Druidic Ritual (`talk` with `use`, untested live), then Smithing 60 by the banked-iron route (Max route
-row, ~250k predicted). Read §Max route first: explore goals fill its empty and wide rows.
+State at 2026-10-16: total level 932 / 1881, 17.2% of max XP (conductor2, rev 289, 25x XP). Thieving 99,
+Mining 99, Cooking 83, WC 80, Fishing 79, FM 78, HP 47, Str 44, Magic/Agility 41, Att/Def/Ranged 40,
+Smithing 39, Crafting 35, Fletching 30, Prayer 15; Herblore and Runecraft 1.
+In flight: Rune Mysteries plan done on conductor2 (2026-10-14); Druidic Ritual blocked at `sanfew-start`
+(no Taverley level-0 -> level-1 connector in `conductor/lib/connectors.ts`; author fixing); `runecraft` and
+`essence-mine` tasks being authored. Next after the quests: Runecraft, Herblore, then Smithing by the
+banked-iron route (Max route row).
+
+Tick-perfect pass status (conductor skill, Optimizing a method): only Mining has a measured tick budget
+and gap analysis (6.75 ticks/ore, floor). Thieving, melee, Ranged/Magic, WC/FM and Fishing/Cooking
+finished their goals with no budget, spot search or A/B. Do these before more training, ranked by
+XP still to earn / rate (hours at today's rate to finish): melee Att/Str/Def + HP ~3.9M XP at ~190k/h
+(20 h+), Ranged ~980k at 86k/h (11 h), Magic ~980k at ~150k/h (6.5 h), Smithing ~980k at 140k/h (7 h),
+Cooking+Fishing ~1.4M at ~1.1M/h combined (1.3 h), WC+FM ~1.5M at 1.4M/h (1.1 h). Combat is where
+the hours are; the gathering skills are already near their cap. Estimate (not measured): a 4-tick steel
+scimitar at 1.8 dmg/swing gives ~270k/h at best, so the melee gap is the weapon/target tier, not clicks.
 
 - Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching`, `mining`, `combat`
   (melee/Ranged/Magic), `bank`, `shop`, `smithing` (smelt + anvil), `cooking`, `fishing`, `thieving`,
@@ -31,17 +40,6 @@ row, ~250k predicted). Read §Max route first: explore goals fill its empty and 
 - Failure lessons this run (plan/brief faults, not task code): size fishing areas to cover hopped
   spots; do not order training before the purchases it needs (buy runes/arrows first); briefs state only
   confirmed facts (banks are account-wide); runners start every run in the background.
-- Next, in order:
-  1. Thieving 82 -> 99 (in flight, ~680k XP). Watch Paladin/Hero need and food stock.
-  2. Mining 69 -> 99 (873k XP, ~1 h; coal/mithril at 70+): feeds Smithing.
-  3. Herblore (Druidic Ritual) and Runecraft (Rune Mysteries) quests: each level-1 skill is a cheap,
-     fast total-level gain once unlocked. Check quest pages for requirements first.
-  4. Melee Att/Str/Def to 40-50 with the banked cooked fish (Fishing/Cooking food stock): try cows or
-     goblins vs chickens (Experiments); lifts HP too, and Prayer via bones.
-  5. Smithing 39 -> 60+ with coal + steel bars after Mining; Fletching/Crafting past 35 (oak longbows,
-     leather/gems, see Experiments).
-  6. Raise the leaders: WC willows/yews, FM on logs 70+, Fishing/Cooking to 99 via lure/bait.
-  7. Magic/Ranged past 41 (stronger spells, better bow) once melee has a target tier.
 - Standing rules: bank leftovers and superseded tools between goals (task-runner rule); bank cooked
   food each loop; always use food when thieving (user); skip tool tiers when 25x XP makes the cheaper
   one enough; never walk through the Varrock stone circle (3223,3373) (dark wizards killed the bot):
@@ -137,20 +135,20 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 
 | Skill | Lvl | Best measured method | XP/h | Gap to close / next |
 |---|---|---|---|---|
-| Thieving | 99 | Falador guards, food (plan guard-thieve) | 2.2M (82-99) | done; Paladin/Hero untested |
+| Thieving | 99 | Falador guards, Trout/Salmon, one East booth (plan guard-thieve) | 2.2M (82-99, 683k in 19 min) | at 99, done; no tick budget taken (pickpocket delay vs stun/eat ticks); only matters if XP is wanted from it |
 | Mining | 99 | iron power-mine, drop each ore (02b861cd5), a 4-rock layout (SE Varrock or Rimmington, area mode) | 1.167M (6.75 ticks/ore) | at the engine floor for iron: 5-tick swing + a step; 3-rock spots are respawn-bound (7.6); standing still and roll-tick clicks gain nothing |
 | Fishing | 79 | Lumbridge lure, cook + bank (plan lure-cook-bank) | ~1.1M | drop vs cook; better spot at 80+ |
 | Cooking | 83 | Lumbridge pot, inside lure-cook-bank | 345k (alone) | a range next to a bank; cook while fishing |
-| Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | only 5 trees (respawn waits); better axe; burn line next to the trees (12-tile walk); yews/maples at 80+ |
+| Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | no tick budget yet: 5 trees (respawn waits), 12-tile walk to the burn line, axe tier; yews/maples at 80+. Spot search + A/B pending |
 | Firemaking | 78 | willow logs line burn inside willow-burn | 768k | 2nd burn line costs a walk-back; maple/yew logs |
 | Agility | 41 | Gnome course (plan gnome-agility) | ~224k (1-38) | per-obstacle idle ticks; higher courses |
 | Magic | 41 | Wind Strike, Lumbridge chickens | ~150k (1-41) | stronger spells; alch or splash? |
-| Ranged | 40 | Shortbow, Lumbridge chickens | ~86k (13-40) | better bow/arrows, higher-HP targets |
+| Ranged | 40 | Shortbow, Lumbridge chickens (14,400 XP in 10 min of plan) | ~86k (13-40) | slowest skill per hour (11 h left): better bow/arrows, higher-HP target, tick budget unmeasured |
 | Smithing | 39 | iron kiteshields (plan iron-smith) | 140k | predicted (route search, not run): banked iron in bulk phases (mine SE Varrock -> Varrock East bank; smelt Al Kharid furnace + bank; platebodies at Varrock anvil + bank) ~250k; Superheat (Magic 43; nature runes only at the Mage Arena) ~520-600k; Ring of Forging ~740k; steel worse per tick |
 | Hitpoints | 46 | from combat | - | follows melee/ranged |
 | Crafting | 35 | pottery | 65k | leather, gems, glass |
 | Fletching | 30 | arrow shafts | 70k | oak/willow longbows (u) |
-| Attack/Strength/Defence | 40/40/40 | Lumbridge cows, steel scimitar, cooked fish | 173-203k | no plan promoted (dead shop phase, AK-specific route); higher-XP targets at 40+ |
+| Attack/Strength/Defence | 40/44/40 | Lumbridge cows, steel scimitar, cooked fish (plan melee40, 13 min for 15-25 -> 40) | 173-203k | ~270k/h estimated ceiling at this weapon; the 20 h+ left makes this the biggest gap: better weapon (mithril/adamant scimitar), higher-HP target, tick budget from a melee40 replay (swing 4 ticks, eat/loot/walk idle ticks) |
 | Prayer | 15 | bones from combat | - | no method measured |
 | Herblore | 1 | locked: Druidic Ritual (runner in flight 2026-10-14) | - | predicted (engine data, not run): herb supply binds, not clicks (identify/mix have no delay, ~1,300 potions/h). No shop sells herbs; best source found chaos druids ~0.45 herb/kill (~220 herbs/h, ~0.1-0.25M XP/h); lantadyme/dwarf weed ~2% of drops, so 70-99 by drops is infeasible: find a bulk herb source (Miscellania unevaluated) |
 | Runecraft | 1 | locked: Rune Mysteries (runner in flight 2026-10-14) | - | predicted (engine data, not run): one air trip to 9, then Aubury teleport -> essence -> earth ruins (3305,3472), ~180 ticks/28 ess, 130-150k (rune pickaxe saves 28 ticks/trip). XP is per essence; no tiaras or pure essence in this rev; needs an earth talisman (men 2/128). `runecraft` task being authored |
@@ -179,6 +177,14 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 - Tool tier skipping: steel axe done; test steel -> mithril directly beats stepping.
 - Smithing method: iron kiteshield loop 140k/h (bars 50% smelt fail) vs smelt-only 131k/h. Variants: ring of
   forging, steel bars (coal), smithing bigger items per bar (platebody 5 bars). Status: untested.
+- Tick-perfect pass on combat (priority): from a `melee40` and `ranged-magic` replay compute idle ticks per kill
+  (walk, loot, eat, bury, re-target). Spot search for cows/goblins vs stronger targets (hill giants, guards)
+  and weapon tier; A/B on a worker at one spot. Metric: XP/h per skill. Status: not started.
+- Tick-perfect pass on willow-burn and Fishing/Cooking (cheap, ~1 h each left): burn line next to the trees,
+  cook while fishing. Status: not started.
+- Hand-curated connectors (`lib/connectors.ts`, 176 lines; Wizards' Tower door c0593d7f1, Taverley 2026-10-16)
+  have cost two blocked goals. Hypothesis: the world-index phase 2 spec (connectors from the scripts) removes
+  the class; schedule it before the next quest goal. Status: spec drafted, not authored.
 - Runner process: plan-first from loop 1 and run to goal in the background. Metric: plain runs per goal
   and idle minutes between a RESULT and the next run (journal `at` gaps). Status: after the checklist
   restructure (retro #4) and `--objective` auto-journal; measure on the next three runners.
