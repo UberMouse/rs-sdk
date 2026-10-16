@@ -154,7 +154,7 @@ Agent(general-purpose, model=opus):
 
     Adaptations to the skill for this run:
     - §1: dispatch the five `task-reviewer` lenses yourself, in parallel; §2 the verifier.
-    - §3: fix A, B and C. Your fix agents are general-purpose (model sonnet, opus for engine
+    - §3: fix A, B and meaningful C (task-review §2 defines it; drop cosmetic C with a reason). Your fix agents are general-purpose (model sonnet, opus for engine
       changes) given the findings inline; they commit on top as `fix(review): <what>`, with a
       pathspec, after `bun run verify:conductor` and `bun test conductor` pass. No worker bot
       unless a finding needs a smoke run (then ask me for one; never drive a conductor bot).

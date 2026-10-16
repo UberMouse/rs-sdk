@@ -41,8 +41,10 @@ Each lens defines what A–D mean for it. Across lenses they mean, roughly:
 - **C** — latent (no current path reaches it), or a quality issue with no runtime effect.
 - **D** — speculative: needs an input or game state you could not show is possible.
 
-Fixes are applied for A, B and C (a C whose fix needs work outside the change is deferred, per
-`.claude/skills/task-review/SKILL.md` §2). D is dropped.
+Fixes are applied for A and B, and for a C the orchestrator judges meaningful (a silent failure,
+a broken guarantee, a misleading comment, drifted duplication; per
+`.claude/skills/task-review/SKILL.md` §2). A cosmetic C and D are dropped. Still report every C:
+the orchestrator makes the call, not the lens.
 
 ## Finding format
 

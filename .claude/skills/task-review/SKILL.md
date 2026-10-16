@@ -12,8 +12,8 @@ fix-forward loop. Here there is no human gate: the conductor acts on the verifie
 change (uncommitted from task-author, or a commit range)
   -> 5 task-reviewer agents in parallel, one per lens        (.claude/review-lenses/*.md)
   -> review-verifier(s): refute wrong findings, re-band the rest
-  -> A/B/C: task-author fixes + re-checks  -> round 2 on the lenses that had fixes
-  -> D / refuted / duplicates: dropped
+  -> A/B and meaningful C: task-author fixes + re-checks  -> round 2 on the lenses that had fixes
+  -> D / cosmetic C / refuted / duplicates: dropped
   -> commit (or revert)
 ```
 
@@ -78,11 +78,17 @@ Number the rest `0..n-1` in one list (keep each one's lens) in a file, grouped b
 `review-verifier` handles up to ~20 findings; past that, dispatch one per group **in
 parallel**, each told which indices are its own. Then sort:
 
-- **fix**: not refuted, not a duplicate, band A, B or C.
-- **drop**: band D, refuted, duplicates.
+- **fix**: not refuted, not a duplicate, and band A or B, or a **meaningful** C.
+- **drop**: band D, a cosmetic C, refuted, duplicates.
 
-Fix C findings too: the codebase is young, and a backlog of small issues outlives its context.
-Defer one only when its fix needs work outside the change's files (a new task, an SDK change
+A C is meaningful when it is a silent failure or a guess where the code should report, a broken
+guarantee (a check the code claims and doesn't make), a stale or misleading comment, or
+duplication that has already drifted. A C is cosmetic when no output or reader changes: a style
+preference, a harmless cast, a latent edge no script or input can reach. You (the orchestrator)
+judge each C and give a dropped one a one-line reason in the report. A round-2 review that finds
+only cosmetic C closes the review. There is no backlog: the codebase is young, and a backlog of
+small issues outlives its context. Defer a meaningful finding only when its fix needs work outside
+the change's files (a new task, an SDK change
 upstream would own); then add it to `## Review follow-ups` in `conductor/roadmap.md`
 (`- <task>: <summary> (<lens> <criterion>)`).
 
