@@ -185,6 +185,56 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - [ ] Ship routes are derived from `sail.rs2`/`sail.constant` with their fares; Port Sarim -> Karamja
       and the Entrana boat (`{members, loadout:entrana}`) are pinned by tests.
 
+## Task 2c — Landings for gated moves on objects
+
+Added during the build (2026-10-16). The gate scan writes `cross` for every move that is not a coord
+literal. On a wall (shapes 0-3 and 9) that means stepping through the wall, which Task 3 does from the
+collision data. On any other loc it says nothing about where the player ends up. At 2b's commit,
+420 gate rows on 85 triggers are like this: ladders (`miningguildladder`, `monasteryladder`,
+`paramayaladderup`), climbing rocks and pipes (`troll_climbingrocks`, `karam_dungeon_pipe`), the
+Kharazi jungle bushes and trees (`_jungle_bush`, `_jungle_tree`, 228 rows), and absolute teleports
+(`troll_stronghold_entrance`). Without landings, Task 3 cannot use any of them, and the Mining Guild
+is unreachable.
+
+**Files:** `wiki/world/sources/gate-scan.ts` (or a new `sources/gate-landings.ts` it feeds),
+`wiki/world/types.ts`, `wiki/world/load.ts`, their tests; regenerated `wiki/world.json` and pages.
+
+For each placed loc of such a row, derive what the move past the check does. Evaluate only the path
+the scan kept (the check passed), with the loc's tile, shape and angle bound as in Task 1, and the
+player's `coord` bound to each tile the loc can be used from (the phase 1 reach test's approach
+tiles on the loc's level). Follow labels and procs the way Task 1 does. The landing is where the
+last position-setting call on the path leaves the player: `p_telejump`, `p_teleport`,
+`p_exactmove`, `~climb_ladder`, `~forcemove`, `~agility_force_move`, `~agility_exactmove` and their
+like, read from the proc bodies, not from a name list where the body can be read.
+
+- **One landing whatever the player tile** (a literal, `movecoord(loc_coord, ...)`): the row gets
+  `to`, as the Zanaris shed already has.
+- **Depends on the player tile** (`movecoord(coord, ...)`, or a `$dx` picked by the player's side):
+  a new field `landings: { stand: Tile; landing: Tile }[]`, one per approach tile the move is
+  derivable from. A landing must be walkable and on land; otherwise that stand is reported.
+- **Removes or swaps the loc and moves nothing**: `loc_del`, or `loc_change` to a loc whose
+  collision does not block, in the trigger or a proc it calls (the jungle bushes and trees). The
+  row gets a new field `opens: true`: once its requirements are met, the loc's tiles are walkable.
+- **Anything else** (`map_findsquare`, a random tile, a construct the evaluator stops on): listed
+  in the build report as underived, with the construct and `file:line`. Never guessed.
+
+`landings` and `opens` are a format change: bump `WORLD_FORMAT`, update `load.ts` and its tests.
+
+### Acceptance criteria
+
+- [ ] Every gate row with a `cross` move on a non-wall loc has `to`, `landings` or `opens`, or an
+      underived reason. The build report counts each outcome and lists the underived ones by
+      trigger.
+- [ ] Real-data tests, each with its script as evidence: `miningguildladder` lands +6400 from each
+      stand (`mining_guild.rs2:8`), the `monasteryladder` one level up, `_jungle_bush` opens,
+      `troll_climbingrocks` through its label (`@rockslide_obstacle`), and
+      `troll_stronghold_entrance` to its literal tile.
+- [ ] Unit tests on scripted triggers pin each outcome, and pin that a move on a path the check
+      refuses is never used.
+- [ ] `--check` is green; report the build time and `world.json` size.
+- [ ] Out of scope: wall gates (Task 3 crosses them from collision), and curating underived rows
+      (Task 3's unreached report is that to-do list).
+
 ## Task 3 — Reachability graph and flood fill
 
 **Files:** `wiki/world/reach.ts`, `wiki/world/test/reach.test.ts`,
@@ -195,6 +245,20 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
 - Edges: neighbour steps the collision data allows (`canStep`, so walls block); doors the
   pathfinder opens are passable unless `gates.ts` names them; connectors (Task 1) as one-way edges;
   gates and transports (Task 2) as edges carrying their requirements.
+- Gate rows (`World.gates`, Tasks 2b and 2c), read as follows:
+  - Each row is one way to make one move. `requires` lists alternatives: any one set opens it.
+    Several rows on one loc (other ops, other triggers) are alternatives as well.
+  - With `from`, the check applies only when crossing from that side; the other direction is free.
+  - A wall row with no `to` is the door walled again and crossed as an edge between its two tiles.
+  - A row with `to` is a jump from the loc's approach tiles to `to`; the loc itself stays as the
+    collision data has it.
+  - A row with `landings` gives an edge from each `stand` to its `landing`.
+  - A row with `opens` makes the loc's tiles walkable under its requirements.
+  - Quest windows (`kind: 'quest-window'`, `requires: []`) are never crossed.
+  - A gate whose loc tile is a Task 1 connector's loc tile (the Dwarf Cannon guard tower's `ladder` at (2570, 3441),
+    `quest:mcannon>=2`) puts its
+    requirements on that connector's edge.
+  - Connectors with `relative: true` give an edge only from their `stand`.
 - Members: bots always play on members worlds (user, 2026-10-16), so `members` is always satisfied.
   The fill treats the token as the empty requirement and never adds it to a set; `world.json` still
   records it on transports and gates where the scripts check `map_members`. No members-zone logic.
@@ -216,7 +280,8 @@ charters, carpets, gnome gliders, fairy rings when in content, quest teleports o
       with `{}`; Al Kharid with whatever the data gives (the `{coins:10}` toll, or `{}` by another route);
       Zanaris needs `{item:dramen_staff:worn}` (the shed door checks the staff, not the quest); Entrana only
       by boat, `{loadout:entrana}`; Musa Point on Karamja by boat and gangplank, `{coins:30}`;
-      the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs.
+      the Dwarven Mine reaches with `{}` through the Ice Mountain ladder and Falador stairs; the
+      Mining Guild mine needs `{skill:mining:60}` (Task 2c's ladder landing).
 - [ ] Runtime and memory reported; within the global budget.
 
 ## Task 4 — Access on sites and pages
