@@ -100,13 +100,18 @@ pages.
 
 The generic trapdoor (`general_use/scripts/trapdoors.rs2`) is two locs on one tile: `trapdoor`
 (op1 Open, `loc_change(trapdoor_open, 500)`) and `trapdoor_open` (op1 Climb-down,
-`p_telejump(movecoord(coord(), 0, 0, 6400))`; op2 Close). The map places the closed one.
+`p_telejump(movecoord(coord(), 0, 0, 6400))`; op2 Close). The map places the closed one. The
+generic manhole (`general_use/scripts/manholes.rs2`, the Varrock Sewers entrance at (3237, 3458)) is
+the same pattern: `manholeclosed` op1 Open swaps to `manholeopen` and also `loc_add`s the cover
+(`loc_883`) on the next tile; `manholeopen` op1 Climb-down moves the player +6400 (line 10).
 
 - The `connector` kind's script sources become `ladders+stairs/` **and**
-  `general_use/scripts/trapdoors.rs2`, so placed `trapdoor` (and `trapdoor_open`, if the map places
-  any) locs are connector features, not doors or scenery.
-- When an op's script only swaps the loc (`loc_change(<other>, ...)` on its own tile, no move), the
-  reader follows it: the row keeps the placed loc, its tile and the swapping op (`op: 1`,
+  `general_use/scripts/trapdoors.rs2` and `general_use/scripts/manholes.rs2`, so placed `trapdoor`
+  and `manholeclosed` (and their open forms, if the map places any) are connector features, not
+  doors or scenery.
+- When an op's script swaps the loc (`loc_change(<other>, ...)` on its own tile) on a path with no
+  condition and no move, the reader follows it. Other effects on that path (messages, sounds, a
+  `loc_add` on another tile) do not stop it. The reader follows it as follows: the row keeps the placed loc, its tile and the swapping op (`op: 1`,
   `opName: 'Open'`), takes the landing from the swapped-to loc's moving op, and records that op in a
   new optional field `then: { op: number; opName: string }` (`{1, 'Climb-down'}`). `source` is the
   line of the move (`general_use/scripts/trapdoors.rs2:11`). A swapped-to loc's op that does not
@@ -117,8 +122,11 @@ The generic trapdoor (`general_use/scripts/trapdoors.rs2`) is two locs on one ti
 
 ### Acceptance criteria
 
-- [ ] Every placed `trapdoor` loc covered by `trapdoors.rs2` has a row or an underived reason. The
-      build report counts them with the other connectors.
+- [ ] Every placed `trapdoor` and `manholeclosed` loc has a row or an underived reason. The build
+      report counts them with the other connectors.
+- [ ] The Varrock Sewers manhole is derived: loc (3237, 3458), Open then Climb-down, stand within
+      1 tile of (3237, 3459), landing its stand + 6400. Its way back, `ladder_from_cellar`
+      (3237, 9858), is already derived, so neither side is one-way (a real-data test).
 - [ ] The two real-data tests that fail now pass: the Edgeville Dungeon trapdoor row from
       `conductor/lib/connectors.ts` is reproduced (loc tile, landing, stand within 1 tile), and
       "has a way back for every curated connector" holds.
@@ -126,8 +134,8 @@ The generic trapdoor (`general_use/scripts/trapdoors.rs2`) is two locs on one ti
       its way down is the kitchen trapdoor at (3209, 3216). The test that pinned it as one-way is
       rewritten to pin the pair, and the one-way script-cite check accepts `trapdoors.rs2`.
 - [ ] A unit test on a scripted trapdoor pair pins the follow-through: the closed loc's row carries
-      `then`, the Close op gives no row, and a `loc_change` that is not the op's only effect is not
-      followed.
+      `then`, the Close op gives no row, a swap beside a `loc_add` on another tile is still followed,
+      and a `loc_change` under a condition or beside a move is not followed.
 - [ ] `world.json` carries `then`; `--check` is green; pages change only where a trapdoor site now
       names its landing. Report the build time and `world.json` size.
 - [ ] Out of scope: quest and minigame trapdoors with their own scripts (`mm_temple`, `grandtree`,
