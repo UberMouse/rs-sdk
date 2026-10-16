@@ -180,6 +180,11 @@ interface Settled {
     sides: string[];
     /** The quest conditions that hold neither before the quest nor once it is done. */
     window?: string;
+    /**
+     * Quests whose conditions here hold before the quest but not once it is done (`%upass <
+     * ^upass_complete`), with the conditions as shown: propose decides whether that shuts the path.
+     */
+    before: { quest: string; varp: string; settled: boolean; shown: string }[];
     /** The quest conditions contradict: no account takes this path. */
     dead?: true;
     stages: Record<string, string>;
@@ -187,9 +192,15 @@ interface Settled {
 
 /**
  * What the conditions a path took need. Each quest varp's comparisons are tested on the values that
- * decide them (0, complete, and each compared value and its neighbours): holding at 0 needs nothing;
- * at complete, the least value that holds (`quest:<id>` when that is complete); at a value past complete
- * only, that value; at none of these, a window. A varp with no value that holds is a path no account takes.
+ * decide them (0, complete, and each compared value and its neighbours): holding at 0 and at complete
+ * needs nothing; at complete, the least value that holds (`quest:<id>` when that is complete); at a value
+ * past complete only, that value; at none of these, a window. A varp with no value that holds is a path no
+ * account takes.
+ *
+ * Holding at 0 but not once the quest is done (`%upass < ^upass_complete`, Iban's temple turning the
+ * player away once Underground Pass is done, quests/quest_upass/scripts/quest_upass.rs2:592) needs
+ * nothing, and is listed in `before` for propose (beforeOnly) to judge: on a settled account the path may
+ * be shut.
  */
 function settle(conds: readonly Cond[], fare: number, taken: ReadonlyMap<string, number>): Settled {
     const reqs = new Set<string>();
@@ -203,6 +214,7 @@ function settle(conds: readonly Cond[], fare: number, taken: ReadonlyMap<string,
         else if (c.k === 'side') sides.add(c.side);
         else if (c.k === 'quest') byVarp.set(c.ref.varp, [...(byVarp.get(c.ref.varp) ?? []), c]);
     const windows: string[] = [];
+    const before: Settled['before'] = [];
     for (const comps of byVarp.values()) {
         const { ref } = comps[0]!;
         const points = [
@@ -210,10 +222,19 @@ function settle(conds: readonly Cond[], fare: number, taken: ReadonlyMap<string,
         ].sort((a, b) => a - b);
         const sat = (v: number) => comps.every(c => holds(v, c.op, c.n));
         const least = points.find(sat);
-        if (least === undefined) return { requires: [], sides: [], dead: true, stages: {} };
-        // Open before the quest: a path for an account that has not started it, no requirement (as a
-        // transport's `<`, sources/transports.ts).
-        if (sat(0)) continue;
+        if (least === undefined) return { requires: [], sides: [], dead: true, stages: {}, before: [] };
+        // Open before the quest and once it is done: no requirement.
+        if (sat(0) && sat(ref.complete)) continue;
+        // Open before the quest only (see above).
+        if (sat(0)) {
+            before.push({
+                quest: ref.quest.id,
+                varp: ref.varp,
+                settled: ref.own && !ref.quest.or?.length,
+                shown: comps.map(c => c.shown).join(' & '),
+            });
+            continue;
+        }
         // Open from complete on, or (when complete is not) from a stage past it that a comparison names:
         // Priest in Peril's holy barrier opens at ^priestperil_access_holy_barrier, 61, after complete at 60
         // (areas/area_mausoleum/scripts/holy_barrier.rs2:2).
@@ -253,7 +274,41 @@ function settle(conds: readonly Cond[], fare: number, taken: ReadonlyMap<string,
         sides: [...sides].sort(cmp),
         ...(windows.length ? { window: windows.join(' | ') } : {}),
         stages,
+        before,
     };
+}
+
+/**
+ * The windows a move's paths get for conditions that hold only before a quest is done (Settled.before).
+ * Such a path is still open on a settled account when another path to the same tile needs that quest:
+ * the script splits on it and takes the done account the other way (the Al Kharid toll: 10 coins until
+ * Prince Ali is saved, free after, areas/area_alkharid/scripts/border_gate.rs2:28), or tests the same
+ * varp. Otherwise the path is shut once the quest is done: a window. On a quest with `or` varps it is not
+ * settled, since the quest can be done with this varp at 0 (Shield of Arrav with the other gang): the
+ * condition stays in the set as other:<text>. On a blocked path it is only the gate's other side, a
+ * player who has not got there yet, so it needs nothing either way.
+ */
+function beforeOnly<T extends Settled & { to: string }>(settled: readonly T[]): T[] {
+    const needs = (s: T, b: Settled['before'][number]) =>
+        s.requires.some(
+            r => r === `quest:${b.quest}` || r.startsWith(`quest:${b.quest}>=`) || r.includes(`\`${b.varp} `),
+        );
+    return settled.map(s => {
+        const shut = s.before.filter(
+            b =>
+                !settled.some(
+                    o => o !== s && o.to === s.to && o.window === undefined && !o.before.length && needs(o, b),
+                ),
+        );
+        if (!shut.length) return s;
+        const windows = shut.filter(b => b.settled).map(b => b.shown);
+        const others = shut.filter(b => !b.settled).map(b => `other:${b.shown}`);
+        return {
+            ...s,
+            requires: others.length ? requirementSet([...s.requires, ...others]) : s.requires,
+            ...(windows.length ? { window: [...(s.window ? [s.window] : []), ...windows].join(' | ') } : {}),
+        };
+    });
 }
 
 /** Each quest's complete value, by id: what `quest:<id>` means as a stage. */
@@ -940,7 +995,9 @@ function propose(trigger: Trigger, run: Run, completes: Completes): GateCandidat
     const conditions = conditionsOf(run);
     const unread = unreadOf(run);
     if (!run.why.length && (!run.moves.length || (!conditions.length && !unread.length))) return null;
-    const settled = run.moves.map(m => ({ to: m.to, ...settle(m.conds, m.fare, m.taken) })).filter(s => !s.dead);
+    const settled = beforeOnly(
+        run.moves.map(m => ({ to: m.to, ...settle(m.conds, m.fare, m.taken) })).filter(s => !s.dead),
+    );
     const open = settled.filter(s => s.window === undefined);
     const windows = [
         ...settled.flatMap(s => (s.window === undefined ? [] : [`${s.to}: ${s.window}`])),

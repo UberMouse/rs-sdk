@@ -251,6 +251,41 @@ if (loc_coord = 0_50_50_6_6) {
     return;
 }
 p_teleport(0_50_50_8_8);
+
+[oploc1,ruinsdoor]
+if (%cookquest >= ^cook_complete) {
+    mes("The temple is in ruins.");
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,latedoor]
+if (%cookquest < ^cook_found_cave) {
+    mes("Not yet.");
+    return;
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,splitgate]
+if (%cookquest < ^cook_complete) {
+    if (inv_total(inv, coins) < 10) {
+        return;
+    }
+    inv_del(inv, coins, 10);
+}
+~open_and_close_door(next, ~check_axis(coord, loc_coord, loc_angle), false);
+
+[oploc1,oldladder]
+if (%cookquest < ^cook_complete) {
+    p_telejump(0_50_50_10_10);
+    return;
+}
+p_telejump(0_50_50_11_11);
+
+[oploc1,gangexit]
+if (%phoenixgang < ^phoenix_complete) {
+    p_telejump(0_50_50_12_12);
+}
 `;
 const FILES: [string, string][] = [
     ['doors/scripts/door_procs.rs2', DOORS],
@@ -444,6 +479,41 @@ describe('scanGates: obj categories, quest points, and conditions it cannot read
         for (const t of ['oploc1,drawportal', 'oploc1,choicedoor', 'oploc1,tiledoor'])
             expect(candidates.find(c => c.trigger === t)).toBeUndefined();
     });
+});
+
+describe('scanGates: a quest stage taken the negated way', () => {
+    test('refused once the quest is done: no move left, a quest window', () =>
+        expect(scanned('oploc1,ruinsdoor')).toMatchObject({
+            kind: 'quest-window',
+            moves: [],
+            windows: [`cross: \`%cookquest < ^cook_complete\` (${line('%cookquest >= ^cook_complete')})`],
+        }));
+
+    test('refused until a stage: quest:<id>>=<stage>, named by its constant', () => {
+        expect(gatedSets(move('oploc1,latedoor'))).toEqual([['quest:cook>=2']]);
+        expect(scanned('oploc1,latedoor').stages).toEqual({ 'quest:cook>=2': '^cook_found_cave' });
+    });
+
+    test('a toll until the quest is done and free after: both ways stay, the toll needs no window', () =>
+        expect(scanned('oploc1,splitgate')).toMatchObject({
+            kind: 'gate',
+            moves: [{ to: CROSS, options: [{ requires: ['coins:10'] }, { requires: ['quest:cook'] }] }],
+            windows: [],
+        }));
+
+    test('a landing only before the quest is done, another after: the first is a window', () =>
+        expect(scanned('oploc1,oldladder')).toMatchObject({
+            kind: 'gate',
+            moves: [{ to: '0_50_50_11_11', options: [{ requires: ['quest:cook'] }] }],
+            windows: [
+                `0_50_50_10_10: \`%cookquest < ^cook_complete\` (quests/test.rs2:${Number(line('[oploc1,oldladder]').split(':')[1]) + 1})`,
+            ],
+        }));
+
+    test("before done on one of a quest's `or` varps: not settled, other:<text>", () =>
+        expect(gatedSets(move('oploc1,gangexit', '0_50_50_12_12'))).toEqual([
+            [`other:\`%phoenixgang < ^phoenix_complete\` (${line('%phoenixgang < ^phoenix_complete')})`],
+        ]));
 });
 
 /** A curated gate entry, cited at `source`. */

@@ -1085,7 +1085,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc1,bedabin_tentdoor',
         'quests/quest_desertrescue/scripts/bedabin_nomad_guard.rs2:43',
         'The Bedabin tent opens only between gaining access (a bit of %desertrescue_map_mechanisms) and ^desertrescue_learned_darts.',
-        'b57faa22',
+        '908142ac',
     ),
     no(
         'side-effect',
@@ -1122,7 +1122,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         gate(trigger, 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:119', 'item:metal_key:held', {
             why: 'The camp gates open either way with the metal key held (~open_desertcamp_gate); the guards searching the player (~desertcamp_guard_search) take the walker past its path bound.',
             notes: 'Leaving in slave clothes near a guard gets the player searched instead (quest_desertrescue.rs2:110).',
-            scan: trigger.startsWith('oplocu,') ? '0bd40309' : 'fc6064d5',
+            scan: trigger.startsWith('oplocu,') ? 'f31e7783' : 'f31e7783',
         }),
     ),
     ...['oploc1,thttmineentrancel', 'oploc1,thttmineentrancer', 'oploc1,thttmineexitl', 'oploc1,thttmineexitr'].map(
@@ -1133,7 +1133,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
                 'item:slave_boots:worn item:slave_robe:worn item:slave_shirt:worn',
                 {
                     why: "The mine doors open either way in slave robes (~wearing_slave_robes, quest_desertrescue.rs2:465); the guards' search takes the walker past its path bound.",
-                    scan: '7549f2cc',
+                    scan: '6468318a',
                 },
             ),
     ),
@@ -1146,7 +1146,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
             to: '0_51_147_22_7',
             why: "Deeper into the mine from the west in slave robes from ^desertrescue_given_pineapple (quest_desertrescue.rs2:480); back in robes, or free once the quest is done. The guards' search takes the walker past its path bound.",
             stages: { 'quest:desertrescue>=17': '^desertrescue_given_pineapple' },
-            scan: '77439b49',
+            scan: 'f31e7783',
         },
     ),
     no(
@@ -1285,7 +1285,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oplocu,stonedisc_ds_nature',
         'quests/quest_druidspirit/scripts/quest_druidspirit.rs2:140',
         "Using a Nature Spirit item on the stone; it only nudges the player off the spirit's tile, not passage.",
-        '484d9f69',
+        '5ba10771',
     ),
     no(
         'not-a-gate',
@@ -1320,12 +1320,20 @@ export const GATE_LIST: readonly CuratedGate[] = [
     ),
     gate('oploc1,rehnisondoorshut', 'quests/quest_elena/scripts/doors.rs2:97', 'quest:elena>=21'),
     gate('oploc1,loc_2535', 'quests/quest_elena/scripts/doors.rs2:14', 'quest:elena', { from: 'loc' }),
-    gate('oplocu,plaguemudpatch1', 'quests/quest_elena/scripts/mud_patch.rs2:2', 'item:spade:held quest:elena>=8', {
-        to: '0_40_152_2_9',
-    }),
-    gate('oplocu,plaguemudpatch2', 'quests/quest_elena/scripts/mud_patch.rs2:8', 'item:spade:held quest:elena>=8', {
-        to: '0_40_152_2_9',
-    }),
+    no(
+        'quest-window',
+        'oplocu,plaguemudpatch1',
+        'quests/quest_elena/scripts/mud_patch.rs2:15',
+        'Digging through to the West Ardougne sewer with a spade works once the patch is soaked (^quest_elena_mud_patch4, mud_patch.rs2:19) and only until Biohazard is started, when the ground is packed hard (mud_patch.rs2:15).',
+        '384f4d90',
+    ),
+    no(
+        'quest-window',
+        'oplocu,plaguemudpatch2',
+        'quests/quest_elena/scripts/mud_patch.rs2:15',
+        'Digging through to the West Ardougne sewer with a spade works once the patch is soaked (^quest_elena_mud_patch4, mud_patch.rs2:19) and only until Biohazard is started, when the ground is packed hard (mud_patch.rs2:15).',
+        '384f4d90',
+    ),
     gate('oplocu,elenagateshut', 'quests/quest_elena/scripts/plaguehouse.rs2:22', 'item:elenakey:held'),
     gate('oploc1,elenagateshut', 'quests/quest_elena/scripts/plaguehouse.rs2:31', 'item:elenakey:held | quest:elena', {
         from: 'loc',
@@ -1545,7 +1553,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc1,ikov_traplever',
         'quests/quest_ikov/scripts/ikov_dungeon.rs2:141',
         'A lever: before ^ikov_disabled_trap pulling it drops the player into a pit; not passage.',
-        '83d0f0b7',
+        'fa80742f',
     ),
     gate('oploc1,ikov_trapleverdoor', 'quests/quest_ikov/scripts/ikov_dungeon.rs2:171', 'quest:ikov>=30'),
     gate('oploc1,ikov_firewarriordoor', 'quests/quest_ikov/scripts/ikov_dungeon.rs2:178', 'quest:ikov>=40', {
@@ -1663,7 +1671,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         ],
         {
             why: 'The guard lets the player through once %gutanoth_gold (not a quest varp) records a gold bar given; the scan does not read it.',
-            scan: '0d6ad7f3',
+            scan: 'bc854eab',
         },
     ),
     gate(
@@ -1676,7 +1684,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         ],
         {
             why: 'The guard lets the player through once %gutanoth_gold (not a quest varp) records a gold bar given; the scan does not read it.',
-            scan: '0d6ad7f3',
+            scan: 'bc854eab',
         },
     ),
     gate(
@@ -1819,14 +1827,14 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc2,lqfirewall_straight',
         'quests/quest_legends/scripts/quest_legends.rs2:225',
         'Investigating the flames: from inside the octagram the player can always leap out (singed); walking through needs ^legends_defeated_nezikchened_fire, as oploc1.',
-        'cda2122c',
+        '2527c1b6',
     ),
     no(
         'side-effect',
         'oploc2,lqfirewall_diagonal',
         'quests/quest_legends/scripts/quest_legends.rs2:225',
         'Investigating the flames: from inside the octagram the player can always leap out (singed); walking through needs ^legends_defeated_nezikchened_fire, as oploc1.',
-        'cda2122c',
+        '2527c1b6',
     ),
     gate(
         'oplocu,lqfirewall_straight',
@@ -2085,7 +2093,12 @@ export const GATE_LIST: readonly CuratedGate[] = [
     gate(
         'oploc2,route_stalagmite_cave_entrace',
         'quests/quest_routequest/scripts/routequest_myreque.rs2:125',
-        'skill:agility:25',
+        'quest:routequest>=80 skill:agility:25',
+        {
+            to: '0_54_153_49_40',
+            stages: { 'quest:routequest>=80': '^routequest_ambush' },
+            notes: 'Before ^routequest_ambush the cave leads to its pre-ambush copy on level 3 (routequest_myreque.rs2:129-135), a quest window.',
+        },
     ),
     gate(
         'oploc1,thrttavernbasementfalsewall',
@@ -2220,44 +2233,25 @@ export const GATE_LIST: readonly CuratedGate[] = [
     gate(
         'oploc1,upass_templedoor_closed_right',
         'quests/quest_upass/scripts/quest_upass.rs2:576',
-        [
-            ['quest:regicide>=2'],
-            [
-                'item:zamrobebottom:worn',
-                'item:zamrobetop:worn',
-                'other:Underground Pass not done (%upass < ^upass_complete, quests/quest_upass/scripts/quest_upass.rs2:592)',
-                'other:nothing worn but the Zamorak robes (quests/quest_upass/scripts/quest_upass.rs2:586)',
-            ],
-        ],
+        'quest:regicide>=2',
         {
             from: 'east',
             stages: { 'quest:regicide>=2': '^regicide_spoken_lathas' },
-            why: "Into Iban's temple from the east from ^regicide_spoken_lathas, or wearing the Zamorak robes and nothing else (inv_freespace(worn), which the scan does not read, quest_upass.rs2:586) while Underground Pass is not done: once it is the temple is in ruins (quest_upass.rs2:592), a negated quest stage the scan drops. Leaving west is free.",
-            scan: 'fe8e224f',
+            notes: 'Before Underground Pass is done the door also lets in a player wearing the Zamorak robes and nothing else (quest_upass.rs2:586); once it is done the temple is in ruins (quest_upass.rs2:592), so that route is a quest window.',
         },
     ),
-    gate(
-        'oploc1,upass_templedoor_closed_left',
-        'quests/quest_upass/scripts/quest_upass.rs2:576',
-        [
-            ['quest:regicide>=2'],
-            [
-                'item:zamrobebottom:worn',
-                'item:zamrobetop:worn',
-                'other:Underground Pass not done (%upass < ^upass_complete, quests/quest_upass/scripts/quest_upass.rs2:592)',
-                'other:nothing worn but the Zamorak robes (quests/quest_upass/scripts/quest_upass.rs2:586)',
-            ],
-        ],
-        {
-            from: 'east',
-            stages: { 'quest:regicide>=2': '^regicide_spoken_lathas' },
-            why: "Into Iban's temple from the east from ^regicide_spoken_lathas, or wearing the Zamorak robes and nothing else (inv_freespace(worn), which the scan does not read, quest_upass.rs2:586) while Underground Pass is not done: once it is the temple is in ruins (quest_upass.rs2:592), a negated quest stage the scan drops. Leaving west is free.",
-            scan: 'fe8e224f',
-        },
-    ),
-    gate('oplocu,cave_temple_altar', 'quests/quest_upass/scripts/quest_upass.rs2:651', 'consume:ibandoll:1', {
-        to: '0_38_150_50_7',
+    gate('oploc1,upass_templedoor_closed_left', 'quests/quest_upass/scripts/quest_upass.rs2:576', 'quest:regicide>=2', {
+        from: 'east',
+        stages: { 'quest:regicide>=2': '^regicide_spoken_lathas' },
+        notes: 'Before Underground Pass is done the door also lets in a player wearing the Zamorak robes and nothing else (quest_upass.rs2:586); once it is done the temple is in ruins (quest_upass.rs2:592), so that route is a quest window.',
     }),
+    no(
+        'quest-window',
+        'oplocu,cave_temple_altar',
+        'quests/quest_upass/scripts/quest_upass.rs2:653',
+        'Throwing the completed doll of Iban into the pit, an Underground Pass step: only until Iban is defeated (%upass <= ^upass_confronted_iban, quest_upass.rs2:654).',
+        '96018e02',
+    ),
     gate(
         'oploc1,upass_caveentrance2',
         'quests/quest_upass/scripts/quest_upass.rs2:81',
@@ -2414,14 +2408,14 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc1,viking_seers_door1',
         'quests/quest_viking/scripts/viking_peer.rs2:288',
         "Into the Seer's puzzle room only mid-trial, with an empty inventory; once the Seer's vote or the quest is done the player refuses (viking_peer.rs2:288). Leaving is free.",
-        '9adc30b3',
+        '5bd7c825',
     ),
     no(
         'quest-window',
         'oploc2,viking_warrior_ladder',
         'quests/quest_viking/scripts/viking_thorvald.rs2:134',
         "Down to Thorvald's trial only mid-trial; once his vote or the quest is done the player refuses.",
-        'a0c62133',
+        '684dbf37',
     ),
     gate(
         'oplocu,glarials_tombstone_waterfall_quest',
@@ -2495,7 +2489,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc1,baxtorian_chalice_waterfall_quest',
         'quests/quest_waterfall/scripts/quest_waterfall.rs2:442',
         'Taking from the chalice floods the cavern and washes the player downstream (a trap); not passage.',
-        '76f84c85',
+        '83612878',
     ),
     gate('oploc1,zanarisdoor', 'quests/quest_zanaris/scripts/quest_zanaris.rs2:93', 'item:dramen_staff:worn members', {
         from: 'far',
@@ -2503,7 +2497,13 @@ export const GATE_LIST: readonly CuratedGate[] = [
     }),
     gate('oploc1,_shilo_woodengate', 'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:102', 'quest:zombiequeen'),
     gate('oploc1,_zqtombdoor', 'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1353', 'quest:zombiequeen>=12'),
-    gate('oplocu,_zqtombdoor', 'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1403', 'consume:bones:1'),
+    no(
+        'quest-window',
+        'oplocu,_zqtombdoor',
+        'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1403',
+        'Bones placed in the tomb door, a Shilo Village step, only until ^zombiequeen_unlocked_tombdoor (quest_zombiequeen.rs2:1403); after that Open (oploc1,_zqtombdoor) is the gate.',
+        '9e91bdd0',
+    ),
     gate(
         'oploc1,zq_rashrocks',
         'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1464',
@@ -2515,14 +2515,14 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'oploc1,zqrashdolmen',
         'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1509',
         "Searching Rashiliyia's dolmen, a Shilo Village quest step: it summons Nazastarool or gives up her remains, and its only move steps the player one tile back from the dolmen (quest_zombiequeen.rs2:1540-1541); not passage.",
-        'c3279169',
+        'b64efe9a',
     ),
     no(
         'not-a-gate',
         'oploc2,zqrashdolmen',
         'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1509',
         "Searching Rashiliyia's dolmen, a Shilo Village quest step: it summons Nazastarool or gives up her remains, and its only move steps the player one tile back from the dolmen (quest_zombiequeen.rs2:1540-1541); not passage.",
-        'c3279169',
+        'b64efe9a',
     ),
     no(
         'not-a-gate',

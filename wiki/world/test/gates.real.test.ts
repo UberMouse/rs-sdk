@@ -178,6 +178,19 @@ describe('obj categories, quest points and conditions the scan cannot read', () 
             ],
         }));
 
+    test("Iban's temple: the robes route shuts once Underground Pass is done, so the gate is the Regicide stage", () => {
+        const c = scanned('oploc1,upass_templedoor_closed_right');
+        expect(gatedSets(c?.moves[0])).toEqual([['quest:regicide>=2']]);
+        expect(c?.windows).toEqual([
+            'cross: `%upass < ^upass_complete` (quests/quest_upass/scripts/quest_upass.rs2:592)',
+        ]);
+        expect(curated('oploc1,upass_templedoor_closed_right')).toMatchObject({
+            kind: 'gate',
+            requires: [['quest:regicide>=2']],
+            from: 'east',
+        });
+    });
+
     test('a dialogue choice and a random draw are not unread conditions', () => {
         expect(scanned('oploc1,entranaladdertop')?.unread).not.toContainEqual(expect.stringContaining('$option'));
         // `$rand = random(20)`, then `$rand = 0`, `$rand = 1`, ...: a draw held in a local.
