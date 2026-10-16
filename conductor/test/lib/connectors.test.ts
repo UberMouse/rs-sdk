@@ -3,6 +3,9 @@ import { collisionPaths } from '../../actions/paths';
 import { CONNECTORS, MAX_HOPS, planConnectors, planeOf, type Tile } from '../../lib/connectors';
 
 const at = (level: number, x: number, z: number): Tile => ({ level, x, z });
+/** A landing is the stand tile, or (behind a wall from the loc) a tile the stand tile is a walk from. */
+const reaches = (from: Tile, to: Tile) =>
+    (from.x === to.x && from.z === to.z) || collisionPaths.findPath(from, to, []).reachedDestination;
 const names = (chain: readonly { name: string; direction: string }[] | null) =>
     chain?.map(c => `${c.direction} ${c.name}`);
 
@@ -19,8 +22,9 @@ describe('planeOf', () => {
         expect(planeOf(0, 3058, 9776)).toBe('0u-mine');
         expect(planeOf(0, 3104, 9576)).toBe('0u-basement');
         expect(planeOf(0, 3104, 9577)).not.toBe(planeOf(0, 3058, 9776));
-        // Underground elsewhere (the Edgeville dungeon) is neither.
-        expect(planeOf(0, 3100, 9930)).toBe('0u');
+        // The Edgeville dungeon is its own area; underground elsewhere (the Varrock sewers) is neither.
+        expect(planeOf(0, 3100, 9930)).toBe('0u-edgeville');
+        expect(planeOf(0, 3237, 9858)).toBe('0u');
     });
 });
 
@@ -101,9 +105,30 @@ describe('planConnectors', () => {
         ]);
     });
 
+    test('the Edgeville Dungeon is the trapdoor down from Edgeville, and its ladder the way out', () => {
+        const down = planConnectors(at(0, 3094, 3490), at(0, 3108, 9835));
+        expect(names(down)).toEqual(['down Edgeville Dungeon trapdoor']);
+        expect(down?.[0]?.loc).toEqual(at(0, 3097, 3468));
+        // Inside the house, west of the trapdoor.
+        expect(down?.[0]?.stand).toEqual(at(0, 3096, 3468));
+        expect(down?.[0]?.to).toEqual(at(0, 3097, 9868));
+        const up = planConnectors(at(0, 3108, 9835), at(0, 3094, 3490));
+        expect(names(up)).toEqual(['up Edgeville Dungeon trapdoor']);
+        expect(up?.[0]?.stand).toEqual(at(0, 3097, 9868));
+        expect(up?.[0]?.to).toEqual(at(0, 3096, 3468));
+        // Neither the Dwarven Mine nor the Wizards' basement shares a way into it.
+        expect(names(planConnectors(at(0, 3058, 9780), at(0, 3108, 9835)))).toEqual([
+            'up Falador mine stairs',
+            'down Edgeville Dungeon trapdoor',
+        ]);
+        // The ladder's landing reaches the hill giants in the real collision data.
+        const walk = collisionPaths.findPath({ level: 0, x: 3097, z: 9868 }, { x: 3108, z: 9835 }, []);
+        expect(walk.success && walk.reachedDestination).toBe(true);
+    });
+
     test('an underground area no connector leads to is no-connector (null), not an empty chain', () => {
-        expect(planConnectors(at(0, 3058, 9780), at(0, 3100, 9930))).toBeNull();
-        expect(planConnectors(at(0, 3104, 9577), at(0, 3100, 9930))).toBeNull();
+        expect(planConnectors(at(0, 3058, 9780), at(0, 3237, 9858))).toBeNull();
+        expect(planConnectors(at(0, 3104, 9577), at(0, 3237, 9858))).toBeNull();
     });
 
     test('the mine stairs and the tower top floor carry a hazard note, in both directions', () => {
@@ -152,17 +177,15 @@ describe('the table against the collision data', () => {
         }
     });
 
-    test("every connector has a way back, landing on the other side's stand tile", () => {
+    test("every connector has a way back, landing on the other side's stand tile or a walk from it", () => {
         for (const c of CONNECTORS) {
             const back = CONNECTORS.find(
                 k =>
                     k.direction !== c.direction &&
                     k.loc.level === c.to.level &&
                     planeOf(k.loc.level, k.loc.x, k.loc.z) === planeOf(c.to.level, c.to.x, c.to.z) &&
-                    k.stand.x === c.to.x &&
-                    k.stand.z === c.to.z &&
-                    k.to.x === c.stand.x &&
-                    k.to.z === c.stand.z,
+                    reaches(c.to, k.stand) &&
+                    reaches(k.to, c.stand),
             );
             expect(back, `${c.name} ${c.direction} at (${c.loc.x}, ${c.loc.z})`).toBeDefined();
         }
@@ -173,10 +196,27 @@ describe('the table against the collision data', () => {
         const r = collisionPaths.findPath({ level: 0, x: 3058, z: 9776 }, { x: 2998, z: 9844 }, []);
         expect(r.success && r.reachedDestination).toBe(true);
         // The Taverley Dungeon: from the ladder's landing to the cauldron room.
-        const dungeon = collisionPaths.findPath({ level: 0, x: 2884, z: 9798 }, { x: 2890, z: 9830 }, []);
+        const dungeon = collisionPaths.findPath({ level: 0, x: 2885, z: 9797 }, { x: 2890, z: 9830 }, []);
         expect(dungeon.success && dungeon.reachedDestination).toBe(true);
         // Lumbridge castle's first floor from the landing to the north end.
         const up = collisionPaths.findPath({ level: 1, x: 3205, z: 3209 }, { x: 3205, z: 3228 }, []);
         expect(up.success && up.reachedDestination).toBe(true);
+    });
+});
+
+describe("Seers' Village spinning house", () => {
+    test('the wheel on the first floor is one ladder up from the bank, and the way back is the ladder down', () => {
+        const up = planConnectors(at(0, 2727, 3493), at(1, 2712, 3471));
+        expect(names(up)).toEqual(["up Seers' Village spinning house ladder"]);
+        expect(up?.[0]?.stand).toEqual(at(0, 2714, 3470));
+        expect(up?.[0]?.to).toEqual(at(1, 2714, 3470));
+        expect(names(planConnectors(at(1, 2712, 3471), at(0, 2727, 3493)))).toEqual([
+            "down Seers' Village spinning house ladder",
+        ]);
+    });
+
+    test('the landing reaches the wheel, and the ground stand reaches the bank, in the collision data', () => {
+        expect(collisionPaths.findPath(at(1, 2714, 3470), at(1, 2712, 3471), []).reachedDestination).toBe(true);
+        expect(collisionPaths.findPath(at(0, 2714, 3470), at(0, 2727, 3493), []).reachedDestination).toBe(true);
     });
 });

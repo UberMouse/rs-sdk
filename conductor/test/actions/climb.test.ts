@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { CLIMB_DIALOG_TICKS, CLIMB_MAX_TICKS, CLIMB_WAIT_TICKS, climb } from '../../actions/climb';
+import { CLIMB_DIALOG_TICKS, CLIMB_MAX_TICKS, CLIMB_OPEN_TICKS, CLIMB_WAIT_TICKS, climb } from '../../actions/climb';
 import { CONNECTORS } from '../../lib/connectors';
 import { castle, floorLocs, LANDING } from '../stairs';
 import { world } from '../world';
@@ -116,7 +116,49 @@ describe('climb', () => {
         expect(r.result).toMatchObject({ ok: false, reason: 'send-failed' });
     });
 
-    test('the worst case is a send, the dialog, its answer and the wait', () => {
-        expect(CLIMB_MAX_TICKS).toBe(1 + CLIMB_DIALOG_TICKS + 1 + CLIMB_WAIT_TICKS);
+    test('the worst case is a send, the dialog or the opening, its answer and the wait', () => {
+        expect(CLIMB_MAX_TICKS).toBe(1 + Math.max(CLIMB_DIALOG_TICKS, CLIMB_OPEN_TICKS) + 1 + CLIMB_WAIT_TICKS);
+    });
+});
+
+describe('climb through a closed trapdoor', () => {
+    const trapdoor = CONNECTORS.find(k => k.name === 'Edgeville Dungeon trapdoor' && k.direction === 'down');
+    if (!trapdoor) throw new Error('no Edgeville Dungeon trapdoor');
+    const surface = world().player({ at: { level: 0, x: 3096, z: 3467 } });
+    const closed = surface.loc('Trapdoor', 3097, 3468, { options: ['Open'] });
+    const open = surface.loc('Trapdoor', 3097, 3468, { options: ['Climb-down', 'Close'] });
+    const below = world().player({ at: { level: 0, x: 3097, z: 9868 } });
+    const timeline = (opensAt: number, climbsAt: number) =>
+        Array.from({ length: 40 }, (_, i) => ({
+            ...(i >= climbsAt ? below : i >= opensAt ? open : closed).build(),
+            tick: i,
+        }));
+
+    test('opens it, then climbs down once it offers Climb-down', async () => {
+        const r = await runOp(timeline(3, 8), ctx => climb(ctx, trapdoor));
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends.map(s => s.type === 'interactLoc' && s.optionIndex)).toEqual([1, 1]);
+        expect(r.sends.map(s => s.type === 'interactLoc' && s.reason)).toEqual([
+            'Open Trapdoor',
+            'Climb-down Trapdoor',
+        ]);
+    });
+
+    test('an already open trapdoor is climbed at once', async () => {
+        const r = await runOp(timeline(0, 4), ctx => climb(ctx, trapdoor));
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends.map(s => s.type === 'interactLoc' && s.reason)).toEqual(['Climb-down Trapdoor']);
+    });
+
+    test('a trapdoor that never opens is not-opened after CLIMB_OPEN_TICKS', async () => {
+        const r = await runOp(timeline(99, 99), ctx => climb(ctx, trapdoor));
+        expect(r.result).toMatchObject({ ok: false, reason: 'not-opened' });
+        expect(r.sends).toHaveLength(1);
+        expect(r.driver.state().tick).toBe(CLIMB_OPEN_TICKS);
+    });
+
+    test('a refused open is send-failed', async () => {
+        const r = await runOp(timeline(3, 8), ctx => climb(ctx, trapdoor), { respond: refuse });
+        expect(r.result).toMatchObject({ ok: false, reason: 'send-failed' });
     });
 });

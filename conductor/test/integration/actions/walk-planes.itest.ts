@@ -144,3 +144,29 @@ test(
     },
     itestTimeout({ extraMs: 2 * MAX_WALKS * WALK_MAX_TICKS * TICK_MS }),
 );
+
+// Edgeville: the trapdoor in the ruined house south-west of the bank (closed: opened first, then Climb-down)
+// into the Edgeville Dungeon, and the ladder back, which lands on the tile it was climbed from, inside the house. The fixture's
+// combat level is above what the dungeon's spiders and skeletons hunt near the ladder.
+const EDGEVILLE_BANK = { x: 3094, z: 3490 };
+const DUNGEON_LANDING = { x: 3097, z: 9869 };
+const TRAPDOOR_STEPS = /^(Open|Climb-down) Trapdoor$/;
+const DUNGEON_SKILLS = { Attack: 60, Strength: 60, Defence: 60, Hitpoints: 60 };
+
+test(
+    'walkTo opens the Edgeville trapdoor, climbs into the dungeon and back out by the ladder',
+    async () => {
+        await withFixtureBot({ position: EDGEVILLE_BANK, skills: DUNGEON_SKILLS }, async ({ sdk }) => {
+            const down = await arrive(sdk, DUNGEON_LANDING.x, DUNGEON_LANDING.z, 0);
+            expect(down.result, JSON.stringify(down.sent)).toMatchObject({ ok: true });
+            expect(here(sdk).z).toBeGreaterThan(9000);
+            expect(down.sent.filter(r => TRAPDOOR_STEPS.test(r))).toEqual(['Open Trapdoor', 'Climb-down Trapdoor']);
+
+            const up = await arrive(sdk, EDGEVILLE_BANK.x, EDGEVILLE_BANK.z, 0);
+            expect(up.result, JSON.stringify(up.sent)).toMatchObject({ ok: true });
+            expect(here(sdk).z).toBeLessThan(6400);
+            expect(up.sent.filter(r => r === 'Climb-up Ladder')).toEqual(['Climb-up Ladder']);
+        });
+    },
+    itestTimeout({ extraMs: 2 * MAX_WALKS * WALK_MAX_TICKS * TICK_MS }),
+);

@@ -229,7 +229,7 @@ export const GUARDS: readonly TaskGuard<object, GuardName>[] = [
  * whenever it has any face target, so an NPC within reach facing another player (one fighting someone
  * else) cannot be told from the real attacker: it is treated as the attacker.
  */
-function attackers(s: BotWorldState): BotWorldState['nearbyNpcs'] {
+export function attackers(s: BotWorldState): BotWorldState['nearbyNpcs'] {
     return s.nearbyNpcs.filter(n => n.targetIndex >= PLAYER_TARGET_OFFSET && n.distance <= ATTACKER_REACH);
 }
 

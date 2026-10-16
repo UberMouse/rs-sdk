@@ -3,7 +3,8 @@
 // Uses one level connector (lib/connectors.ts): finds its loc, sends the option for the direction and waits
 // until the bot is on the plane it leads to, read from state (level, and whether z is underground).
 // The loc's own Climb-up / Climb-down option is sent where it has one; a middle floor's plain "Climb"
-// opens a "Climb up or down?" dialog, answered here as part of the climb. The walk to the loc is the
+// opens a "Climb up or down?" dialog, answered here as part of the climb. A closed trapdoor (only "Open")
+// is opened first and the climb goes on once it offers "Climb-down". The walk to the loc is the
 // caller's (walkTo's); the client's own pathing covers the last tiles.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, scan, send, wait } from '../core/op';
@@ -16,12 +17,15 @@ import { CANT_REACH, messageCursor, messageSince } from './messages';
 /** A choice dialog has more than one option; a lone Continue is left alone. */
 const CHOICE_MIN_OPTIONS = 1;
 
+const CLIMB_WINDOW_MS = 6000;
 /** The ticks the server takes to walk to the loc, climb (arrive delay and animation) and move the bot. */
-export const CLIMB_WAIT_TICKS = Math.ceil(6000 / TICK_MS);
+export const CLIMB_WAIT_TICKS = Math.ceil(CLIMB_WINDOW_MS / TICK_MS);
 /** The ticks the "Climb up or down?" dialog takes to open, after the walk to the loc. */
 export const CLIMB_DIALOG_TICKS = Math.ceil(4000 / TICK_MS);
-/** The worst case of one climb, in ticks: a send, the dialog, its answer, the wait. Walks reserve this. */
-export const CLIMB_MAX_TICKS = 1 + CLIMB_DIALOG_TICKS + 1 + CLIMB_WAIT_TICKS;
+/** The ticks a closed trapdoor gets to open (the walk to it, then the loc change), after the send. */
+export const CLIMB_OPEN_TICKS = CLIMB_WAIT_TICKS;
+/** The worst case of one climb, in ticks: a send, the dialog or the opening, the answer or climb send, the wait. Walks reserve this. */
+export const CLIMB_MAX_TICKS = 1 + Math.max(CLIMB_DIALOG_TICKS, CLIMB_OPEN_TICKS) + 1 + CLIMB_WAIT_TICKS;
 /** How far from the table's tile a loc may be found (a multi-tile loc reports one of its tiles). */
 const LOC_SLACK = 2;
 
@@ -29,7 +33,7 @@ export type ClimbResult =
     | { ok: true }
     | {
           ok: false;
-          reason: 'wrong-plane' | 'no-loc' | 'cant-reach' | 'no-dialog' | 'send-failed' | 'timeout';
+          reason: 'wrong-plane' | 'no-loc' | 'cant-reach' | 'no-dialog' | 'send-failed' | 'timeout' | 'not-opened';
           message: string;
       };
 
@@ -39,6 +43,8 @@ const OPTIONS = {
 } as const;
 /** A middle floor's op 1: it asks which way. */
 const ASKS = /^climb$/i;
+/** A closed trapdoor's only option. */
+const OPEN = /^open$/i;
 
 const where = (c: Connector) => `${c.name} at (${c.loc.x}, ${c.loc.z}) level ${c.loc.level}`;
 const planeNow = (s: BotWorldState) =>
@@ -51,13 +57,19 @@ const cantReach = (c: Connector): ClimbResult => ({
     message: `Cannot reach the ${where(c)}`,
 });
 
-/** The connector's loc among `locs`: on its tile, else the nearest within LOC_SLACK, with a climb option. */
-function findLoc(locs: readonly NearbyLoc[], c: Connector): NearbyLoc | undefined {
-    const o = OPTIONS[c.direction];
-    const usable = locs.filter(l => l.level === c.loc.level && (hasOption(l, o.direct) || hasOption(l, ASKS)));
+/** The nearest loc to the connector's tile within LOC_SLACK on its level that `ok` accepts (a multi-tile loc reports one of its tiles). */
+function nearestLoc(locs: readonly NearbyLoc[], c: Connector, ok: (l: NearbyLoc) => boolean): NearbyLoc | undefined {
     const gap = (l: NearbyLoc) => Math.max(Math.abs(l.x - c.loc.x), Math.abs(l.z - c.loc.z));
-    return usable.filter(l => gap(l) <= LOC_SLACK).sort((a, b) => gap(a) - gap(b))[0];
+    return locs.filter(l => l.level === c.loc.level && ok(l) && gap(l) <= LOC_SLACK).sort((a, b) => gap(a) - gap(b))[0];
 }
+
+/** The connector's loc among `locs`: on its tile, else the nearest within LOC_SLACK, with a climb option. */
+const findLoc = (locs: readonly NearbyLoc[], c: Connector) =>
+    nearestLoc(locs, c, l => hasOption(l, OPTIONS[c.direction].direct) || hasOption(l, ASKS));
+
+/** The connector's loc when it is closed: a trapdoor within LOC_SLACK offering Open. */
+const findClosed = (locs: readonly NearbyLoc[], c: Connector) =>
+    nearestLoc(locs, c, l => /trapdoor/i.test(l.name) && hasOption(l, OPEN));
 
 /**
  * Climbs `c`: sends its option on the loc and waits for the bot to be on the plane it leads to
@@ -76,15 +88,32 @@ export function* climb(ctx: ActionContext, c: Connector): Op<ClimbResult> {
         };
 
     const o = OPTIONS[c.direction];
+    let cursor = messageCursor(before);
     let loc = findLoc(before.nearbyLocs, c);
-    if (!loc) loc = findLoc(yield* scan(), c);
-    if (!loc) return { ok: false, reason: 'no-loc', message: `No ${where(c)} in sight` };
+    const scanned = loc ? [] : yield* scan();
+    loc ??= findLoc(scanned, c);
+    if (!loc) {
+        const closed = findClosed(before.nearbyLocs, c) ?? findClosed(scanned, c);
+        if (!closed) return { ok: false, reason: 'no-loc', message: `No ${where(c)} in sight` };
+        const opening = yield* interactLoc(closed, OPEN);
+        if (!opening.ok) return { ok: false, reason: 'send-failed', message: opening.message };
+        const opened = yield* wait(
+            `open ${c.name}`,
+            s => !!findLoc(s.nearbyLocs, c) || !!messageSince(s, cursor, CANT_REACH),
+            CLIMB_OPEN_TICKS,
+        );
+        loc = findLoc(opened.state.nearbyLocs, c);
+        if (!loc)
+            return messageSince(opened.state, cursor, CANT_REACH)
+                ? cantReach(c)
+                : { ok: false, reason: 'not-opened', message: `The ${where(c)} did not open` };
+        cursor = messageCursor(opened.state);
+    }
 
     // findLoc only returns a loc with the direction's option or the plain Climb.
     const direct = loc.optionsWithIndex.find(opt => o.direct.test(opt.text));
     const asks = !direct;
 
-    const cursor = messageCursor(before);
     const there = (s: BotWorldState) => planeNow(s) === planeOf(c.to.level, c.to.x, c.to.z);
     const refused = (s: BotWorldState) => !!messageSince(s, cursor, CANT_REACH);
     const sent = yield* interactLoc(loc, direct ? direct.opIndex : ASKS);

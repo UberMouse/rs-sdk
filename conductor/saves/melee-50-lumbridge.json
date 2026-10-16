@@ -1,0 +1,256 @@
+{
+    "name": "melee-50-lumbridge",
+    "purpose": "Combat ~50 (Atk 40 Str 44 Def 40 HP 47), steel scimitar + iron kiteshield worn, 5000 coins, 20 Salmon in 20 separate slots (cooked fish do not stack), at Lumbridge cow field (3253,3279). Melee A/B: cows vs Edgeville Dungeon hill giants (buy Mithril scimitar at Zeke's).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3253,
+                "z": 3279
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 44,
+                "Defence": 40,
+                "Hitpoints": 47
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 5000
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1191,
+                    "count": 1,
+                    "slot": 5
+                }
+            ]
+        }
+    },
+    "sha1": "59297952a186f7b9a937e9984002c8cb5b7e4421",
+    "createdAt": "2026-10-16T06:03:04.617Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3253,
+            "z": 3279,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 44,
+            "Hitpoints": 47
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 5000
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1191,
+                "name": "iron_kiteshield",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
