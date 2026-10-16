@@ -38,6 +38,12 @@ Pray at any church altar to fully restore prayer points.
 | Babydragon bones | 30 | Baby dragons (Taverley Dungeon, Brimhaven Dungeon) |
 | Dragon bones | 72 | Adult dragons (Green, Blue, Red, Black, KBD) |
 
+## Bones, quests and dragons (server data, research 2026-10-16)
+
+- Burying is the only bone-to-Prayer path: no altar multiplier (`skill_prayer/scripts/altar.rs2` only recharges) and no Ectofuntus. No shop sells bones. XP at 25x: regular 112.5, big 375, baby dragon 750, dragon 1,800 (`skill_prayer/configs/bones.obj`). A bury holds the player 1 tick (`p_delay(0)`), so at most one bone per 2 ticks. [server data, unverified in game 2026-10-16]
+- Quest lumps (x25): Priest in Peril 35,150 (King Roald starts it, no requirements in the script), Holy Grail 275,000 (+382,500 Defence; needs Merlin's Crystal, whose Sir Mordred is level 39). Both implemented. Together ~1/3 of the Prayer left from 60 on this server's XP curve. [server data, unverified in game 2026-10-16]
+- Green dragons (Wilderness (3078-3118, 3810-3821), 5 spawns, 75 HP) pay 24 Prayer XP per HP killed vs 10.7 for hill giants; modelled ~170k Prayer/h alongside melee. Dragonfire hits up to 50 unprotected; the anti-dragon shield (free: Oziach, Edgeville, then Duke Horacio, Lumbridge; `oziach.rs2`, `duke_horacio.rs2:59-64`) caps it at 5 (`npc/scripts/dragon.rs2:110-117`). Dragon melee hits and food use are unmeasured. [model, research 2026-10-16]
+
 ## Monastery
 
 - **Location:** West of Edgeville
