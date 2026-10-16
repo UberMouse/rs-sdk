@@ -15,15 +15,19 @@ export interface CoordValue {
 }
 
 export type Value =
-    | { t: 'int'; n: number }
+    /** A whole number; `name` the constant it was read from (`^prince_saved`), when it was. */
+    | { t: 'int'; n: number; name?: string }
     /** `~random_range(lo, hi)`: lo to hi inclusive. */
     | { t: 'range'; lo: number; hi: number }
     | { t: 'bool'; b: boolean }
     | CoordValue
     /** A bare name a walker knows is a config: an npc, a label, or an inventory (`inv`, `worn`). */
     | { t: 'name'; v: string }
-    /** Not known offline; `choice` when it is a dialogue choice the player makes. */
-    | { t: 'unknown'; text: string; choice?: true };
+    /**
+     * Not known offline; `choice` when it is a dialogue choice the player makes, `side` when it depends on
+     * which side of a loc the player stands (sources/gate-scan.ts).
+     */
+    | { t: 'unknown'; text: string; choice?: true; side?: true };
 
 export const unknown = (text: string, choice?: boolean): Value => ({
     t: 'unknown',

@@ -110,6 +110,7 @@ const world: World = {
     quests: [],
     loadoutRules: {},
     transports: [],
+    gates: [],
 };
 
 const data: RenderData = {
@@ -364,6 +365,7 @@ const named: World = {
     quests: [],
     loadoutRules: {},
     transports: [],
+    gates: [],
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 3000, z1: 3000, x2: 3500, z2: 3500 }] }],
     features: [
         feature('rock', 'iron', 'Rocks', 'ironrock1', 3200, 3200),

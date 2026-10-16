@@ -74,10 +74,23 @@ const world: World = {
             paidAt: ['sailors.rs2:29'],
         },
     ],
+    gates: [
+        {
+            trigger: 'oploc1,chefdoor',
+            kind: 'gate',
+            loc: 'chefdoor',
+            tile: { level: 0, x: 3143, z: 3443 },
+            shape: 0,
+            angle: 1,
+            requires: [['item:chefs_hat:worn', 'skill:cooking:32']],
+            from: 'far',
+            source: 'skill_cooking/scripts/cooking_guild.rs2:4',
+        },
+    ],
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site, npc spawn cluster, connector, quest, rule or transport per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport or gate per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -105,6 +118,9 @@ describe('serializeWorld', () => {
                 '  },',
                 '  "transports": [',
                 '    {"kind":"ship","route":"port_sarim_to_karamja","npc":"captain_tobias","from":{"level":0,"x":3028,"z":3216},"to":{"level":1,"x":2956,"z":3143},"fare":30,"requires":["coins:30"],"source":"sailors.rs2:31","paidAt":["sailors.rs2:29"]}',
+                '  ],',
+                '  "gates": [',
+                '    {"trigger":"oploc1,chefdoor","kind":"gate","loc":"chefdoor","tile":{"level":0,"x":3143,"z":3443},"shape":0,"angle":1,"requires":[["item:chefs_hat:worn","skill:cooking:32"]],"from":"far","source":"skill_cooking/scripts/cooking_guild.rs2:4"}',
                 '  ]',
                 '}',
                 '',
@@ -138,12 +154,15 @@ describe('serializeWorld', () => {
             writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
             // A format-3 file written before quests and transports, with its format bumped by hand, is still
-            // refused; so is one whose loadoutRules is not an object.
+            // refused; so are a format-5 one without gates and one whose loadoutRules is not an object.
             const { quests: _, loadoutRules: _r, transports: _t, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
             expect(() => loadWorld(file)).toThrow(
-                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules and transports/,
+                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports and gates/,
             );
+            const { gates: _g, ...noGates } = world;
+            writeFileSync(file, JSON.stringify(noGates));
+            expect(() => loadWorld(file)).toThrow(/not a world.json/);
             writeFileSync(file, JSON.stringify({ ...world, loadoutRules: [] }));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
         } finally {
@@ -198,13 +217,30 @@ describe('formatReport', () => {
             other: [],
             outOfScope: [],
         },
+        gates: {
+            candidates: 3,
+            kinds: { gate: 2, 'side-effect': 1 },
+            placed: 4,
+            forms: { quest: 1, skill: 1 },
+            unreviewed: [],
+            stale: [],
+            invalid: [],
+            unnamed: [],
+            unplaced: [],
+            unclear: [],
+            windows: [],
+            other: [],
+        },
     };
+    const gatesLine =
+        'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
+        gatesLine,
     ];
 
-    test('counts, then coverage, then connectors, quests and transports', () =>
+    test('counts, then coverage, then connectors, quests, transports and gates', () =>
         expect(formatReport(report)).toEqual([
             'features: bank 3, tree 2',
             'sites: bank 1, tree 1',
@@ -307,6 +343,7 @@ describe('formatReport', () => {
             'sail routes no npc sails: crandor_to_port_sarim',
             'transports out of scope (gates.ts): 1',
             '  gliders (glider.rs2:7): a menu',
+            gatesLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -315,8 +352,48 @@ describe('formatReport', () => {
             { ...report, quests: { ...report.quests, stale: ['x'] } },
             { ...report, transports: { ...report.transports, unreached: ['x'] } },
             { ...report, transports: { ...report.transports, staleOutOfScope: ['x'] } },
+            { ...report, gates: { ...report.gates, unreviewed: ['x'] } },
+            { ...report, gates: { ...report.gates, stale: ['x'] } },
+            { ...report, gates: { ...report.gates, invalid: ['x'] } },
+            { ...report, gates: { ...report.gates, unnamed: ['x'] } },
         ])
             expect(failed(one)).toBe(true);
+    });
+
+    test('lists the gate errors, warnings, unclear entries and quest windows; warnings alone do not fail', () => {
+        const gates: BuildReport['gates'] = {
+            ...report.gates,
+            unreviewed: ['oploc1,newdoor (d.rs2:1): gate'],
+            stale: ['oploc1,olddoor (d.rs2:9)'],
+            invalid: ['oploc1,chefdoor (c.rs2:4): the scan proposes side-effect'],
+            unnamed: ['oploc1,x (x.rs2:2): quest:ball>=3'],
+            unplaced: ['oploc1,ghost (g.rs2:1)'],
+            other: ['oploc1,odd: other:`x = 1` (o.rs2:3)'],
+            unclear: ['oploc1,maze (m.rs2:1): too many paths'],
+            windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
+        };
+        expect(formatReport({ ...report, gates }).slice(-17)).toEqual([
+            gatesLine,
+            'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
+            '  oploc1,newdoor (d.rs2:1): gate',
+            'ERROR gates: 1 gates.ts entries the scan no longer finds:',
+            '  oploc1,olddoor (d.rs2:9)',
+            'ERROR gates: 1 gates.ts entries malformed or at odds with the scan:',
+            '  oploc1,chefdoor (c.rs2:4): the scan proposes side-effect',
+            'ERROR gates: 1 quest stages no constant names:',
+            '  oploc1,x (x.rs2:2): quest:ball>=3',
+            'warning: 1 gates with no placed loc:',
+            '  oploc1,ghost (g.rs2:1)',
+            'warning: 1 gate requirements in no other form:',
+            '  oploc1,odd: other:`x = 1` (o.rs2:3)',
+            "gates the scan can't settle (unclear): 1",
+            '  oploc1,maze (m.rs2:1): too many paths',
+            'quest windows, kept out of the fill: 1',
+            '  oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought',
+        ]);
+        expect(failed({ ...report, gates: { ...report.gates, unplaced: ['x'], other: ['y'], unclear: ['z'] } })).toBe(
+            false,
+        );
     });
 });
 

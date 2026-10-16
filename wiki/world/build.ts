@@ -1,11 +1,13 @@
 // Builds wiki/world.json from the game data: every classified placement as a feature, clustered into
 // sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
-// the loadout rules (sources/loadout.ts) and the transports (sources/transports.ts, gates.ts); then
-// prints a report and renders the pages (render.ts). `bun run world` writes them and exits 1 when the
-// report has an error (failed): a site that breaks the COVERED rule, a quest or journal call the scan
-// can't read with no override, a gates.ts quest entry no longer needed, a sail site no npc op reaches
-// that gates.ts does not list as out of scope, or one it lists that is gone or now reached. `--check`
+// the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
+// (sources/gate-scan.ts, gates.ts); then prints a report and renders the pages (render.ts). `bun run
+// world` writes them and exits 1 when the report has an error (failed): a site that breaks the COVERED
+// rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
+// needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
+// is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
+// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does. `--check`
 // writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
@@ -25,12 +27,14 @@ import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
 import {
     CURATED_TRANSPORTS,
+    GATES,
     LOADOUT_PROCS,
     QUEST_OVERRIDES,
     QUEST_VARP_EXCEPTIONS,
     TRANSPORTS_OUT_OF_SCOPE,
 } from './gates';
 import { readConstants } from './sources/constants';
+import { placeGates, reviewGates, scanGates } from './sources/gate-scan';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
@@ -124,6 +128,32 @@ export interface BuildReport {
         /** gates.ts TRANSPORTS_OUT_OF_SCOPE, as `<what> (<script>): <reason>`. */
         outOfScope: string[];
     };
+    gates: {
+        /** Loc op triggers the scan finds (sources/gate-scan.ts). */
+        candidates: number;
+        /** gates.ts entries by kind. */
+        kinds: Record<string, number>;
+        /** World.gates rows: placed locs of gates and quest windows. */
+        placed: number;
+        /** Requirement forms the confirmed gates use (`quest`, `skill`, ...), counted over their sets. */
+        forms: Record<string, number>;
+        /** Candidates gates.ts does not review: an error. */
+        unreviewed: string[];
+        /** gates.ts entries no candidate has: an error. */
+        stale: string[];
+        /** gates.ts entries malformed or at odds with the scan without a why: an error. */
+        invalid: string[];
+        /** Gate requirements `quest:<id>>=<n>` no stage constant names: an error. */
+        unnamed: string[];
+        /** Gates and quest windows with no placed loc. */
+        unplaced: string[];
+        /** Entries of kind unclear, as `<trigger> (<source>): <why>`. */
+        unclear: string[];
+        /** Quest windows, kept out of the fill, as `<trigger> (<source>): <why>`. */
+        windows: string[];
+        /** Gate requirements in no other form, as `<trigger>: <requirement>`. */
+        other: string[];
+    };
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -132,7 +162,11 @@ export const failed = (r: BuildReport): boolean =>
     r.quests.unread.length > 0 ||
     r.quests.stale.length > 0 ||
     r.transports.unreached.length > 0 ||
-    r.transports.staleOutOfScope.length > 0;
+    r.transports.staleOutOfScope.length > 0 ||
+    r.gates.unreviewed.length > 0 ||
+    r.gates.stale.length > 0 ||
+    r.gates.invalid.length > 0 ||
+    r.gates.unnamed.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -254,6 +288,32 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     const curated = curatedTransports(CURATED_TRANSPORTS, spawns);
     const transports = [...sails.transports, ...curated].sort(byTransport);
+    const candidates = scanGates({
+        triggers,
+        callables,
+        constants,
+        quests: quests.quests,
+        loadoutProcs: LOADOUT_PROCS,
+        names: new Set([...readConfigs('obj').keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
+    });
+    const review = reviewGates(candidates, GATES, new Map(scripts));
+    const gates = placeGates({
+        curated: GATES,
+        candidates,
+        triggers,
+        locConfigs,
+        locs: map.locs.flatMap(l => {
+            const config = packs.loc.name.get(l.id);
+            return config === undefined ? [] : [{ config, tile: l.tile, shape: l.shape, rotation: l.rotation }];
+        }),
+        quests: quests.quests,
+        constants,
+    });
+    // Each quest's stages are the constants its gates compare with (Quest.stages).
+    const questRows = quests.quests.map(q => {
+        const staged = gates.stages.get(q.id);
+        return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
+    });
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
@@ -268,9 +328,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             sites,
             npcSpawns,
             connectors,
-            quests: quests.quests,
+            quests: questRows,
             loadoutRules,
             transports,
+            gates: gates.gates,
         },
         report: {
             features: tally(features, f => f.kind),
@@ -317,6 +378,25 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 ],
                 outOfScope: TRANSPORTS_OUT_OF_SCOPE.map(o => `${o.what} (${o.script}): ${o.reason}`),
             },
+            gates: {
+                candidates: candidates.length,
+                kinds: tally(GATES, e => e.kind),
+                placed: gates.gates.length,
+                forms: tally(
+                    GATES.flatMap(e => (e.kind === 'gate' ? (e.requires ?? []).flat() : [])),
+                    r => r.replace(/:.*/, ''),
+                ),
+                unreviewed: review.unreviewed,
+                stale: review.stale,
+                invalid: review.invalid,
+                unnamed: gates.unnamed,
+                unplaced: gates.unplaced,
+                unclear: GATES.filter(e => e.kind === 'unclear').map(e => `${e.trigger} (${e.source}): ${e.why}`),
+                windows: GATES.filter(e => e.kind === 'quest-window').map(e => `${e.trigger} (${e.source}): ${e.why}`),
+                other: GATES.flatMap(e =>
+                    (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
+                ),
+            },
         },
     };
 }
@@ -337,8 +417,8 @@ const jsonRecord = (key: string, record: Readonly<Record<string, unknown>>): str
 };
 
 /**
- * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule or
- * transport per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
+ * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule,
+ * transport or gate per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
  * and undefined fields are left out as JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
@@ -353,7 +433,8 @@ export function serializeWorld(world: World): string {
         jsonList('connectors', world.connectors) + ',',
         jsonList('quests', world.quests) + ',',
         jsonRecord('loadoutRules', world.loadoutRules) + ',',
-        jsonList('transports', world.transports),
+        jsonList('transports', world.transports) + ',',
+        jsonList('gates', world.gates),
         '}',
         '',
     ].join('\n');
@@ -436,6 +517,21 @@ export function formatReport(report: BuildReport): string[] {
         ...list(`sail paths left out as quest windows: ${t.windows.length}`, t.windows),
         ...(t.unusedRoutes.length ? [`sail routes no npc sails: ${t.unusedRoutes.join(', ')}`] : []),
         ...list(`transports out of scope (gates.ts): ${t.outOfScope.length}`, t.outOfScope),
+    );
+    const g = report.gates;
+    lines.push(
+        `gates: ${g.candidates} candidates, by kind ${counts(g.kinds)}; ${g.placed} placed; requirement forms ${counts(g.forms)}`,
+        ...list(
+            `ERROR gates: ${g.unreviewed.length} candidates gates.ts does not review (confirm or reject each):`,
+            g.unreviewed,
+        ),
+        ...list(`ERROR gates: ${g.stale.length} gates.ts entries the scan no longer finds:`, g.stale),
+        ...list(`ERROR gates: ${g.invalid.length} gates.ts entries malformed or at odds with the scan:`, g.invalid),
+        ...list(`ERROR gates: ${g.unnamed.length} quest stages no constant names:`, g.unnamed),
+        ...list(`warning: ${g.unplaced.length} gates with no placed loc:`, g.unplaced),
+        ...list(`warning: ${g.other.length} gate requirements in no other form:`, g.other),
+        ...list(`gates the scan can't settle (unclear): ${g.unclear.length}`, g.unclear),
+        ...list(`quest windows, kept out of the fill: ${g.windows.length}`, g.windows),
     );
     return lines;
 }

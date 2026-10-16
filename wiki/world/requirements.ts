@@ -3,7 +3,9 @@
 // (requirementSet), so two sets compare as string lists:
 //
 //   quest:<id>             the quest is done: its varp >= complete (World.quests)
-//   quest:<id>>=<stage>    the quest's varp has reached <stage> (opens part-way; completion meets it too)
+//   quest:<id>>=<stage>    the quest's varp has reached <stage>: a stage below complete opens part-way
+//                          (completion meets it too), one above complete is a step after it (Priest in
+//                          Peril's holy barrier, areas/area_mausoleum/scripts/holy_barrier.rs2:2)
 //   skill:<skill>:<level>  a base level
 //   item:<obj>:worn|held   wearing, or carrying, the obj (the Zanaris shed checks a worn dramen staff)
 //   coins:<n>              n coins taken per crossing (a toll, a fare)

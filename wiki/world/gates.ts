@@ -1,10 +1,19 @@
 // What the world index reads from curated tables because the scripts are too complex to read offline:
 // quests whose journal calls the scan can't read, the procs that hold a loadout rule, transports the sail
-// scripts don't give, and the transports left out of scope. Every entry cites its script. The build reads
-// these together with what it derives (sources/quests.ts, sources/loadout.ts, sources/transports.ts) and
-// fails on a quest in neither, or an override the scan no longer needs.
+// scripts don't give, the transports left out of scope, and every gate candidate confirmed or rejected.
+// Every entry cites its script. The build reads these together with what it derives (sources/quests.ts,
+// sources/loadout.ts, sources/transports.ts, sources/gate-scan.ts) and fails on a quest in neither, an
+// override the scan no longer needs, or a gate candidate GATES does not review.
+import { GATE_LIST } from './gate-list';
+import type { CuratedGate } from './sources/gate-scan';
 import type { QuestOverride } from './sources/quests';
 import type { CuratedTransport } from './sources/transports';
+
+/**
+ * Every gate candidate the scan finds (sources/gate-scan.ts), confirmed as a gate with its requirements or
+ * rejected with its kind and reason; the list is long, so it lives in gate-list.ts.
+ */
+export const GATES: readonly CuratedGate[] = GATE_LIST;
 
 /**
  * Quests whose `~send_quest_progress` calls don't read as `(%varp, ^x_complete)` (sources/quests.ts), with

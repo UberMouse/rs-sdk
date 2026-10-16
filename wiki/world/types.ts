@@ -151,7 +151,9 @@ export interface Quest extends QuestVarp {
     or?: QuestVarp[];
     /**
      * The stages gates name (`quest:<id>>=<stage>`), by constant name: the value a gate compares the
-     * varp with. Empty until a gate names one.
+     * varp with, or `^name+1` for one that opens past it (`%princequest > ^prince_guard_drunk`); the number
+     * itself when the script compares with no constant (`%itwatchtower < 4` names `4`). Empty until a gate
+     * names one.
      */
     stages: Record<string, number>;
     /** The journal call it is read from, or the curated override's script (gates.ts). */
@@ -204,8 +206,49 @@ export interface Transport {
     notes?: string;
 }
 
+/**
+ * Which side of a loc the player stands on (sources/gate-scan.ts): `loc` the loc's own tile (where the door
+ * procs' `~check_axis(coord, loc_coord, loc_angle)` is true, doors/scripts/door_procs.rs2), `far` the tile
+ * across its wall, or a compass side of it (`west`: the player's x below the loc's).
+ */
+export type Side = 'loc' | 'far' | 'west' | 'east' | 'north' | 'south';
+
+/**
+ * One placed loc whose op checks a condition before letting the player through (gates.ts GATES): a gate,
+ * or a quest window (open only between two stages of a quest, so on a settled account never).
+ */
+export interface Gate {
+    /** The op trigger that checks it, as its header names it: `oploc1,chefdoor`, `oploc1,_shilo_metalgate`. */
+    trigger: string;
+    kind: 'gate' | 'quest-window';
+    /** The placed loc config, its tile, shape and angle (its rotation, 0 west to 3 south). */
+    loc: string;
+    tile: Tile;
+    shape: number;
+    angle: number;
+    /** The config's size, unrotated, when it is not 1x1. */
+    width?: number;
+    length?: number;
+    /**
+     * The minimal requirement sets (requirements.ts), any one of which lets the player through; `[]` for a
+     * quest window.
+     */
+    requires: string[][];
+    /** The check applies only when crossing from this side; absent: from either. */
+    from?: Side;
+    /**
+     * The gated move is a jump to this tile (the Zanaris shed's teleport), not a crossing of the loc; the
+     * loc itself is passable as the collision data has it.
+     */
+    to?: Tile;
+    /** The script line that makes the check, as `file:line`. */
+    source: string;
+    /** A gate's notes (gates.ts), or what a quest window is open for. */
+    notes?: string;
+}
+
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 5;
+export const WORLD_FORMAT = 6;
 
 export interface World {
     /** WORLD_FORMAT when written. */
@@ -219,4 +262,5 @@ export interface World {
     quests: Quest[];
     loadoutRules: Record<string, LoadoutRule>;
     transports: Transport[];
+    gates: Gate[];
 }

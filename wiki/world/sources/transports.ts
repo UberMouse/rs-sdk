@@ -22,6 +22,7 @@ import { minimalSets, parseRequirement } from '../requirements';
 import type { Quest, Tile, Transport } from '../types';
 import { cmp, push } from '../util';
 import { first, type Config } from './configs';
+import { conditionReader, nameOf } from './conditions';
 import type { Constant } from './constants';
 import {
     equal,
@@ -29,7 +30,6 @@ import {
     merge,
     scriptCache,
     TooManyPaths,
-    truthOf,
     unknown,
     type CoordValue,
     type Flow as SharedFlow,
@@ -169,13 +169,6 @@ type Cond =
     | { k: 'other'; text: string };
 // A coins', window's or other's text is the condition and its line: `\`%q = ^stage\` (file:line)`.
 
-/** The comparison `!(l op r)` is, as `l op' r`. */
-const NEGATE: Readonly<Record<string, string>> = { '=': '!', '!': '=', '<': '>=', '>=': '<', '>': '<=', '<=': '>' };
-/** The comparison `r op l` is, as `l op' r`. */
-const FLIP: Readonly<Record<string, string>> = { '=': '=', '!': '!', '<': '>', '>': '<', '<=': '>=', '>=': '<=' };
-
-const TRUE: Expr = { t: 'name', name: 'true', args: null, text: 'true', line: 0 };
-
 // ---- The walker -------------------------------------------------------------------------------------
 
 interface Path {
@@ -213,32 +206,13 @@ interface Sailed {
     source: string;
 }
 
-/** The config an argument names: a bare name (an obj in `inv_total(inv, coins)`), or a local holding one. */
-function nameOf(e: Expr | undefined, env: ReadonlyMap<string, Value>): string | undefined {
-    if (e?.t !== 'name' || e.args !== null) return undefined;
-    if (e.name.startsWith('$')) {
-        const v = env.get(e.name);
-        return v?.t === 'name' ? v.v : undefined;
-    }
-    return /^[a-z0-9_]+$/.test(e.name) ? e.name : undefined;
-}
-
 /** Runs npc op triggers for one spawn at a time, over the callables. */
 function sailWalker(input: SailInput, reaches: Reach) {
     const byCall = new Map(input.callables.map(c => [c.call, c]));
     const sailProcs = sailProcsOf(input.callables);
     const scriptOf = scriptCache();
 
-    // Quest varps by the name the scripts use (a varbit's, or the varp's when progress is the whole varp),
-    // each with the value that completes the quest on it, and whether it is the quest's own (not an `or`).
-    const questOf = new Map<string, { quest: Quest; complete: number; own: boolean }>();
-    for (const q of input.quests)
-        for (const v of [q, ...(q.or ?? [])]) {
-            const ref = { quest: q, complete: v.complete, own: v === q };
-            if (v.varbit) questOf.set(`%${v.varbit}`, ref);
-            else if (!v.bits) questOf.set(`%${v.varp}`, ref);
-        }
-    const loadoutOf = new Map(Object.entries(input.loadoutProcs).map(([id, proc]) => [proc, id]));
+    const read = conditionReader(input.quests, input.loadoutProcs);
 
     const constant = (name: string): Value | undefined => {
         const c = input.constants.get(name);
@@ -304,58 +278,30 @@ function sailWalker(input: SailInput, reaches: Reach) {
         /** What a condition that is neither known nor a dialogue choice means (Cond), taken `want` way. */
         const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond => {
             const text = `\`${e.text}\` (${file}:${e.line})`;
-            const other: Cond = { k: 'other', text };
-            // A bare boolean (`if (~has_x)`) reads as `~has_x = true`.
-            const [l, op0, r] = e.t === 'bin' && NEGATE[e.op] ? [e.l, e.op, e.r] : [e, '=', TRUE];
-            // What the condition is about on the left: `^stage > %varp` reads as `%varp < ^stage`.
-            const subject = (x: Expr) =>
-                x.t === 'name' &&
-                (x.name.startsWith('%') || x.name === 'map_members' || x.name === 'inv_total' || loadoutOf.has(x.name));
-            const [lhs, rhs, op1] = !subject(l) && subject(r) ? [r, l, FLIP[op0]!] : [l, r, op0];
-            const op = want ? op1 : NEGATE[op1]!;
-            const v = evaluate(rhs, env, file);
-            if (lhs.t !== 'name') return other;
-
-            const truth = truthOf(v);
-            if (lhs.name === 'map_members' && lhs.args === null && (op === '=' || op === '!')) {
-                if (truth === undefined) return other;
-                return truth === (op === '=') ? { k: 'req', req: 'members' } : { k: 'free' };
+            const r = read(e, want, { evaluate: x => evaluate(x, env, file), nameOf: x => nameOf(x, env) });
+            switch (r.k) {
+                case 'members':
+                    return r.holds ? { k: 'req', req: 'members' } : { k: 'free' };
+                case 'loadout':
+                    return r.clear ? { k: 'req', req: `loadout:${r.rule}` } : { k: 'free' };
+                case 'quest': {
+                    // `! 0` is started, as `>= 1`; `! n` above 0 and `<` allow none at all.
+                    const least = (
+                        { '>=': r.n, '>': r.n + 1, '=': r.n, '!': r.n === 0 ? 1 : 0 } as Record<string, number>
+                    )[r.op];
+                    if (least === undefined || least <= 0) return { k: 'free' };
+                    if (least >= r.ref.complete) return { k: 'req', req: `quest:${r.ref.quest.id}` };
+                    if (r.op === '=') return { k: 'window', text };
+                    // A stage counts on the quest's own varp: one of another varp that completes it has no form.
+                    return r.ref.own ? { k: 'req', req: `quest:${r.ref.quest.id}>=${least}` } : { k: 'other', text };
+                }
+                case 'inv':
+                    if (r.least <= 0) return { k: 'free' };
+                    if (r.obj === 'coins' && r.where === 'inv') return { k: 'coins', n: r.least, text };
+                    return { k: 'req', req: `item:${r.obj}:${r.where === 'inv' ? 'held' : 'worn'}` };
+                default:
+                    return { k: 'other', text };
             }
-
-            const loadout = loadoutOf.get(lhs.name);
-            if (loadout && lhs.args === null && (op === '=' || op === '!')) {
-                if (truth === undefined) return other;
-                return truth === (op === '=') ? { k: 'free' } : { k: 'req', req: `loadout:${loadout}` };
-            }
-
-            const ref = questOf.get(lhs.name);
-            if (ref && lhs.args === null) {
-                if (v.t !== 'int') return other;
-                // `! 0` is started, as `>= 1`; `! n` above 0 and `<` allow none at all.
-                const least = ({ '>=': v.n, '>': v.n + 1, '=': v.n, '!': v.n === 0 ? 1 : 0 } as Record<string, number>)[
-                    op
-                ];
-                if (least === undefined || least <= 0) return { k: 'free' };
-                if (least >= ref.complete) return { k: 'req', req: `quest:${ref.quest.id}` };
-                if (op === '=') return { k: 'window', text };
-                // A stage counts on the quest's own varp: one of another varp that completes it has no form.
-                return ref.own ? { k: 'req', req: `quest:${ref.quest.id}>=${least}` } : other;
-            }
-
-            if (lhs.name === 'inv_total' && lhs.args?.length === 2) {
-                const where = nameOf(lhs.args[0], env);
-                const obj = nameOf(lhs.args[1], env);
-                if ((where !== 'inv' && where !== 'worn') || !obj) return other;
-                const n = v.t === 'int' ? v.n : v.t === 'range' ? v.hi : undefined;
-                if (n === undefined) return other;
-                // The least count the path implies, 0 when it allows none.
-                const least =
-                    ({ '>': n + 1, '>=': n, '!': n === 0 ? 1 : 0, '=': n } as Record<string, number>)[op] ?? 0;
-                if (least <= 0) return { k: 'free' };
-                if (obj === 'coins' && where === 'inv') return { k: 'coins', n: least, text };
-                return { k: 'req', req: `item:${obj}:${where === 'inv' ? 'held' : 'worn'}` };
-            }
-            return other;
         };
 
         /** The ways a condition can hold as `want`: each a list of what it means; [] when it can't. */
