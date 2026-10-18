@@ -5,9 +5,9 @@
 // training pages read them.
 //
 // - Levels and tools: a method counts when its families model it at the profile (no ModelError): each family refuses
-//   a level under its requirement and a missing or unusable tool itself (model/families/), so the query keeps no
-//   copy of those rules. The profile's axe and pickaxe are the ones the checker would pick (profile.ts): the
-//   caller's to set.
+//   a level under its requirement itself, and woodcutting and mining an axe or pickaxe the profile lacks (mining one
+//   above its Mining level too) (model/families/), so the query keeps no copy of those rules. The profile's axe and
+//   pickaxe are the only tools it holds (profile.ts), the ones the checker would pick: the caller's to set.
 // - Reach: a method's `ways` are the requirement sets that get to all of its sites, shortest travel first; the query
 //   rates the first one `met` accepts every token of (conductor/lib/account.ts meetsOneOf's semantics: `[]` needs
 //   nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
@@ -131,7 +131,7 @@ let shared: MethodQuery | undefined;
  * The query over the committed world.json (loadFreshWorld: it refuses one built from other game data than
  * server/content holds) and the model from the game data, built on first use.
  */
-export const defaultQuery = (): MethodQuery => (shared ??= methodQuery(loadFreshWorld(), methodModel(readGameData())));
+const defaultQuery = (): MethodQuery => (shared ??= methodQuery(loadFreshWorld(), methodModel(readGameData())));
 
 /** methodRate over the committed world.json (defaultQuery). */
 export const methodRate = (id: string, profile: Profile): CycleRates => defaultQuery().methodRate(id, profile);

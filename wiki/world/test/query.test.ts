@@ -227,7 +227,7 @@ describe('bestMethods', () => {
         expect(rank('woodcutting', at('woodcutting', 19))).toEqual([]);
         // Firemaking 30 lets it in: bronze, 278,761.
         const both = { ...at('woodcutting', 25), levels: { ...at('woodcutting', 25).levels, firemaking: 30 } };
-        expect(rank('woodcutting', both, { met: none }).map(r => r[0])).toContain('tree-burn-bank');
+        expect(rank('woodcutting', both, { met: none })).toContainEqual(['tree-burn-bank', 0, 278_761]);
     });
 
     test('tools: no axe, no chopping method', () => {
