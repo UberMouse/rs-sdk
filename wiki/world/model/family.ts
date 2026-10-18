@@ -18,7 +18,7 @@ export interface ActionModel {
     consumes: { obj: string; count: number }[];
     /** Extra ticks a failed attempt costs (a stun). */
     failTicks?: number;
-    /** A feature runs out: with `chance` per success, then stays down `respawnTicks`. Absent: it never does. */
+    /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
 }
 

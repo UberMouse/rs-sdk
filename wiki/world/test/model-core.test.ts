@@ -131,6 +131,8 @@ const model = (m: Partial<ActionModel>): ActionModel => ({
     ...m,
 });
 
+const dep = (chance: number, respawnTicks = 9) => model({ deplete: { chance, respawnTicks } });
+
 describe('rate', () => {
     test('ticksPerItem: attempts per success, and the failures among them', () => {
         // 1/0.25 = 4 attempts of 3 ticks.
@@ -158,6 +160,23 @@ describe('rate', () => {
         const rocks = model({ deplete: { chance: 1, respawnTicks: 5 } });
         expect(resourceCap(rocks, 3)).toBe(3 / 8);
         expect(gatherRate(rocks, 3)).toEqual({ itemsPerTick: 1 / 3, binding: 'player' });
+    });
+
+    test('rejects NaN and out-of-range inputs, naming the field and value', () => {
+        expect(() => ticksPerItem(model({ success: NaN }))).toThrow(/success NaN/);
+        expect(() => ticksPerItem(model({ success: 1.5 }))).toThrow(/success 1.5/);
+        expect(() => ticksPerItem(model({ ticksPerAttempt: 0 }))).toThrow(/ticksPerAttempt 0/);
+        expect(() => ticksPerItem(model({ ticksPerAttempt: NaN }))).toThrow(/ticksPerAttempt NaN/);
+        expect(() => ticksPerItem(model({ ticksPerAttempt: Infinity }))).toThrow(/ticksPerAttempt Infinity/);
+        expect(() => ticksPerItem(model({ failTicks: -1 }))).toThrow(/failTicks -1/);
+        expect(() => ticksPerItem(model({ failTicks: NaN }))).toThrow(/failTicks NaN/);
+        for (const chance of [NaN, 0, -0.5, 1.5]) {
+            expect(() => resourceCap(dep(chance), 1)).toThrow(new RegExp(`deplete.chance ${chance}`));
+            expect(() => gatherRate(dep(chance), 1)).toThrow(/deplete.chance/);
+        }
+        expect(() => resourceCap(dep(1, -1), 1)).toThrow(/respawnTicks -1/);
+        expect(() => resourceCap(dep(1, NaN), 1)).toThrow(/respawnTicks NaN/);
+        expect(() => resourceCap(dep(1, Infinity), 1)).toThrow(/respawnTicks Infinity/);
     });
 
     test('a resource that never depletes has no cap', () => {
