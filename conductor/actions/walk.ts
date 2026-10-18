@@ -28,7 +28,8 @@
 //   and fails `no-path`. The walk keeps one tick budget across the legs and the climbs.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { log, type Op, send, wait } from '../core/op';
-import { chebyshev, MAX_HOPS, planConnectors, planeOf, UNDERGROUND_Z } from '../lib/connectors';
+import { accountOf } from '../lib/account';
+import { chebyshev, CONNECTORS, MAX_HOPS, planConnectors, planeOf, UNDERGROUND_Z } from '../lib/connectors';
 import { TICK_MS } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
 import { CLIMB_MAX_TICKS, climb } from './climb';
@@ -377,7 +378,9 @@ function* walkAcrossPlanes(
             return last.ok ? last : failedLeg(last, hop > 0);
         }
 
-        const c = planConnectors(here, dest)?.[0];
+        // Over the bot's own levels and coins, as lib/banks.ts nearestBank picks a bank: a door or connector the
+        // account meets is one this walk may cross.
+        const c = planConnectors(here, dest, CONNECTORS, accountOf(s))?.[0];
         if (!c)
             return {
                 ok: false,

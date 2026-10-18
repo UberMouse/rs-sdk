@@ -287,3 +287,37 @@ describe('a timeout on the way to the stairs: advancing only when it made progre
         expect(w.result).toMatchObject({ ok: false, reason: 'no-time' });
     });
 });
+
+// The Fishing Guild's ladder is behind its Fishing 68 door: the walk plans over the bot's own levels, as nearestBank
+// picks a bank, so a bot with the level is led through the door to the ladder and one without has no way up.
+const GUILD_LADDER = { x: 2615, z: 3394 };
+const GUILD_UPSTAIRS = { x: 2614, z: 3394 };
+const outsideGuild = (fishing: number) =>
+    world()
+        .player({ at: { x: 2611, z: 3390, level: 0 } })
+        .skill('Fishing', fishing)
+        .loc('Ladder', GUILD_LADDER.x, GUILD_LADDER.z, { options: ['Climb-up'] })
+        .build();
+const guildLadder: Run['react'] = action =>
+    action.type === 'interactLoc' && action.x === GUILD_LADDER.x && action.z === GUILD_LADDER.z
+        ? s => ({
+              ...world(s)
+                  .player({ at: { ...GUILD_UPSTAIRS, level: 1 } })
+                  .build(),
+              nearbyLocs: [],
+          })
+        : undefined;
+
+describe("walkTo plans over the bot's account", () => {
+    test('a ladder behind a skill door: no-connector below the level, climbed at it', async () => {
+        const below = await walk(outsideGuild(67), 2614, 3395, { level: 1, react: guildLadder });
+        expect(below.result).toMatchObject({ ok: false, reason: 'no-connector' });
+        expect(below.sends).toEqual([]);
+
+        const at = await walk(outsideGuild(68), 2614, 3395, { level: 1, react: guildLadder });
+        expect(at.result.ok).toBe(true);
+        expect(at.paths.queries[0]).toMatchObject({ to: GUILD_UPSTAIRS });
+        expect(at.options).toEqual([1]);
+        expect(at.at.level).toBe(1);
+    });
+});
