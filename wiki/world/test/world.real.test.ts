@@ -139,26 +139,34 @@ describe('banks', () => {
         expect(world.features.filter(f => f.config === 'bankboothclosed' || f.config === 'loc_2214')).toEqual([]);
     });
 
-    test('every banks.ts stand tile reaches a booth of a generated bank site, near its stand tile', () => {
-        // A banks.ts stand can be 4 tiles from the generated one, both right: at Varrock West the
-        // generated stand (3185, 3440) is the public-side tile nearest the booth row's centre and
-        // banks.ts has (3185, 3436) at the row's south end. Each reaches a booth by the engine's reach
-        // test (collision.real.test.ts pins the banks.ts one), so that test is the check.
+    test('every banks.ts stand tile reaches a booth or chest of its bank site, near its stand tile', () => {
+        // banks.ts is a view of these sites, and its curated stand can be 4 tiles from the generated one, both
+        // right: at Varrock West the generated stand (3185, 3440) is the public-side tile nearest the booth row's
+        // centre and banks.ts has (3185, 3436) at the row's south end. Each reaches a booth by the engine's reach
+        // test (collision.real.test.ts pins the banks.ts one), so that test is the check. A site of bankers only
+        // has no loc to reach.
         const size = locSizes(readConfigs('loc'));
-        const banks = sitesOf('bank').filter(s => s.stand && s.centre.level === 0);
+        const banks = new Map(sitesOf('bank').map(s => [s.id, s]));
         for (const b of BANKS) {
-            const tile = { level: 0, ...b.stand };
+            const tile = b.stand;
+            const site = banks.get(b.id);
+            const booths = site ? featuresOf(site).filter(f => f.source === 'loc') : [];
+            const reaches =
+                !booths.length ||
+                booths.some(f =>
+                    siteCollision.reached(tile, {
+                        ...f.tile,
+                        ...size(f),
+                        shape: f.shape ?? 10,
+                        rotation: f.rotation ?? 0,
+                    }),
+                );
             const near = (s: Site): number => Math.max(Math.abs(s.stand!.x - tile.x), Math.abs(s.stand!.z - tile.z));
-            const site = banks.reduce((best, s) => (near(s) < near(best) ? s : best));
-            const booths = featuresOf(site).filter(f => f.source === 'loc');
-            const reaches = booths.some(f =>
-                siteCollision.reached(tile, { ...f.tile, ...size(f), shape: f.shape ?? 10, rotation: f.rotation ?? 0 }),
-            );
             expect({
                 bank: b.name,
-                walkable: siteCollision.walkable(0, tile.x, tile.z),
+                walkable: siteCollision.walkable(tile.level, tile.x, tile.z),
                 reaches,
-                near: near(site) <= 4,
+                near: !!site?.stand && near(site) <= 4,
             }).toEqual({
                 bank: b.name,
                 walkable: true,

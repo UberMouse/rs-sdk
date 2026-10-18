@@ -1,19 +1,23 @@
-// Level connectors: the staircases and ladders a walk uses to change plane. A curated table, because the
-// pathfinder only routes inside one plane and the engine keeps each connector's landing in its scripts
-// (server/content/scripts/ladders+stairs/scripts/*.rs2: `case <level>_<mx>_<mz>_<x>_<z> : p_telejump(...)`,
-// where a coordinate is level_mapsquareX_mapsquareZ_localX_localZ, x = 64 * mx + localX), not in any data a
-// run can read. Locs sit at the tiles of the map files (server/content/maps/*.jm2, ids in pack/loc.pack).
+// Level connectors: the staircases, ladders and trapdoors a walk uses to change plane, as a view of the generated
+// world index (lib/world-index.ts, `World.connectors`, which wiki/world/sources/connectors.ts reads from the scripts:
+// each row's landing and its `source` line). The pathfinder only routes inside one plane; a walk across planes goes
+// to a connector's `stand` tile, climbs it (actions/climb.ts) and goes on from its landing. Which connectors, in
+// which order, is planConnectors: the climbs of the shortest way over the world index's graph (lib/walk-graph.ts).
 //
-// To add one: read its loc tile and landing from those two places, and give it a `stand` tile on the
-// loc's own plane (walkable, beside it: the tile the opposite connector lands on is the usual choice;
-// a loc with `forceapproach` must be reached from its side). test/lib/connectors.test.ts checks every
-// entry's stand and landing tiles are walkable in the collision data and that each connector has its
-// way back.
+// The table keeps the generated rows a walk can use (`leftOut` below says why the others are not), one per loc,
+// direction and landing, and lays the curated facts the scripts do not give over them: a readable name and a hazard
+// note per loc tile (OVERRIDES). A fact the scripts do give (a landing, a stand) is not curated here: correct the
+// generator instead (wiki/world/README.md). test/lib/connectors.test.ts checks every row's stand and landing are
+// walkable in the collision data and that each connector has its way back.
 //
 // A plane is a level and, at level 0, whether the tile is underground and in which underground area:
 // those (the Dwarven Mine, the Wizards' Tower basement, the Taverley Dungeon) are drawn at the surface's x
 // with z + 6400 on level 0, and are separate planes (UNDERGROUND_AREAS): no stairs joins the mine to the
 // basement, and none joins the dungeon to the mine.
+import type { Connector as Row, World } from '../../wiki/world/types';
+import { type Account, NO_ACCOUNT } from './account';
+import { nearestWay } from './walk-graph';
+import { WORLD } from './world-index';
 
 export interface Tile {
     level: number;
@@ -42,7 +46,7 @@ export const UNDERGROUND_Z = 6400;
  * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
  * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
  * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower
- * basement). Other underground tiles count as one area, `u`, that no connector here leads to.
+ * basement). Other underground tiles count as one area, `u`, so the table leaves out every connector into them.
  */
 const UNDERGROUND_AREAS = [
     // The Taverley Dungeon (collision flood fill from the ladder's landing: x 2817..2969, z 9671..9854). Its east
@@ -62,161 +66,167 @@ export function planeOf(level: number, x: number, z: number): string {
     return `${level}u${area ? `-${area.id}` : ''}`;
 }
 const planeAt = (t: Tile) => planeOf(t.level, t.x, t.z);
+/**
+ * An underground plane in no named area: one plane for many unconnected places. A walk decides by planeOf whether it
+ * has arrived on its destination's plane (actions/walk.ts walkTo), so it cannot follow a climb into one of them.
+ */
+const lumped = (plane: string) => plane.endsWith('u');
 
-const tile = (level: number, x: number, z: number): Tile => ({ level, x, z });
 /** The distance in tiles (Chebyshev) between two points. */
 export const chebyshev = (a: { x: number; z: number }, b: { x: number; z: number }) =>
     Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 
+/** What the table lays over a generated row: a curated name and hazard. */
+export interface Override {
+    name?: string;
+    hazard?: string;
+}
+
+/** An override's key: the loc's tile, and the direction when it holds for one of the loc's directions only. */
+const key = (level: number, x: number, z: number, direction?: 'up' | 'down') =>
+    `${level},${x},${z}${direction ? ` ${direction}` : ''}`;
+
+const SCORPIONS =
+    'scorpions (combat 14, hunt players up to combat 28) 2-3 tiles from the stairs at (3056, 9778) and (3054, 9773), king scorpions (combat 32, up to combat 64) around (3040-3048, 9770-9775)';
+const LESSER_DEMON =
+    'a lesser demon (combat 82, hunts every player) wanders the top floor from (3110, 3157), 6 tiles from the stairs';
+const TAVERLEY_DUNGEON =
+    'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part';
+const EDGEVILLE_DUNGEON =
+    'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)';
+
 /**
- * A connector and the one back, as the engine pairs them: `lower` is the lower plane's side (the
- * underground one of a ladder or stairs down into a mine), `up` leaves it and `down` leaves `upper`.
- * A middle floor's loc is in two pairs (its Climb-up and its Climb-down). `hazard` is a danger at either
- * side's tile (both directions carry it).
+ * The curated names and hazards, by loc tile (`level,x,z`, with ` up` or ` down` for one direction of a middle
+ * floor's loc). A hazard is on both sides of a connector: the loc on each side carries it.
  */
-const pair = (
-    name: string,
-    lower: { loc: Tile; stand: Tile },
-    upper: { loc: Tile; stand: Tile },
-    hazard?: string,
-): Connector[] => [
-    { name, direction: 'up', loc: lower.loc, stand: lower.stand, to: upper.stand, hazard },
-    { name, direction: 'down', loc: upper.loc, stand: upper.stand, to: lower.stand, hazard },
-];
-
-// Lumbridge castle: the staircase in the south-west tower, ground (spiralstairs) to first floor
-// (spiralstairsmiddle: Climb-up and Climb-down) to the top floor (spiralstairstop).
-const LUMBRIDGE_STAIRS = tile(0, 3204, 3207);
-const LUMBRIDGE_LANDING = { x: 3205, z: 3209 };
-// The Wizards' Tower: the staircase in the south-west corner of the ground floor, to the floor above
-// (middle) and the top. Its ladder (wizards_tower_laddertop) goes down to the basement, where Sedridor is.
-// The stairs and the ladder share one small room (x 3103..3107, z 3159..3163) entered by a diagonal door at
-// (3107, 3162) that sdk/collision-data.json does not list as a door; actions/paths.ts adds it (EXTRA_DOORS),
-// so a walk opens it and the connectors work from outside the room too.
-const TOWER_LANDING = { x: 3105, z: 3160 };
-
-export const CONNECTORS: readonly Connector[] = [
-    // Lumbridge castle, ground floor <-> first floor <-> second floor.
-    ...pair(
-        'Lumbridge castle stairs',
-        { loc: LUMBRIDGE_STAIRS, stand: tile(0, LUMBRIDGE_LANDING.x, LUMBRIDGE_LANDING.z) },
-        { loc: { ...LUMBRIDGE_STAIRS, level: 1 }, stand: tile(1, LUMBRIDGE_LANDING.x, LUMBRIDGE_LANDING.z) },
-    ),
-    ...pair(
-        'Lumbridge castle stairs',
-        { loc: { ...LUMBRIDGE_STAIRS, level: 1 }, stand: tile(1, LUMBRIDGE_LANDING.x, LUMBRIDGE_LANDING.z) },
-        { loc: tile(2, 3205, 3208), stand: tile(2, LUMBRIDGE_LANDING.x, LUMBRIDGE_LANDING.z) },
-    ),
-
-    // Wizards' Tower, ground floor <-> first floor <-> top floor.
-    ...pair(
-        "Wizards' Tower stairs",
-        { loc: tile(0, 3103, 3159), stand: tile(0, TOWER_LANDING.x, TOWER_LANDING.z) },
-        { loc: tile(1, 3103, 3159), stand: tile(1, TOWER_LANDING.x, TOWER_LANDING.z) },
-    ),
-    ...pair(
-        "Wizards' Tower stairs",
-        { loc: tile(1, 3103, 3159), stand: tile(1, TOWER_LANDING.x, TOWER_LANDING.z) },
-        { loc: tile(2, 3104, 3160), stand: tile(2, 3104, 3161) },
-        'a lesser demon (combat 82, hunts every player) wanders the top floor from (3110, 3157), 6 tiles from the stairs',
-    ),
-    // Wizards' Tower ground floor <-> basement (Rune Mysteries: Sedridor).
-    ...pair(
-        "Wizards' Tower ladder",
-        { loc: tile(0, 3103, 9576), stand: tile(0, 3104, 9576) },
-        { loc: tile(0, 3104, 3162), stand: tile(0, 3105, 3162) },
-    ),
-
+export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
+    // Lumbridge castle: the staircase in the south-west tower, ground (spiralstairs) to first floor
+    // (spiralstairsmiddle: Climb-up and Climb-down) to the top floor (spiralstairstop).
+    [key(0, 3204, 3207), { name: 'Lumbridge castle stairs' }],
+    [key(1, 3204, 3207), { name: 'Lumbridge castle stairs' }],
+    [key(2, 3205, 3208), { name: 'Lumbridge castle stairs' }],
+    // The Wizards' Tower: the staircase in the south-west corner of the ground floor, to the floor above and the top,
+    // and its ladder down to the basement, where Sedridor is. The stairs and the ladder share one small room
+    // (x 3103..3107, z 3159..3163) entered by a diagonal door at (3107, 3162) that sdk/collision-data.json does not
+    // list as a door; actions/paths.ts adds it (EXTRA_DOORS), so a walk opens it.
+    [key(0, 3103, 3159), { name: "Wizards' Tower stairs" }],
+    [key(1, 3103, 3159), { name: "Wizards' Tower stairs" }],
+    [key(1, 3103, 3159, 'up'), { hazard: LESSER_DEMON }],
+    [key(2, 3104, 3160), { name: "Wizards' Tower stairs", hazard: LESSER_DEMON }],
+    [key(0, 3104, 3162), { name: "Wizards' Tower ladder" }],
+    [key(0, 3103, 9576), { name: "Wizards' Tower ladder" }],
     // Falador, north-east of the city: the stairs down to the Dwarven Mine (Nurmof's Pickaxe Shop).
-    ...pair(
-        'Falador mine stairs',
-        { loc: tile(0, 3059, 9776), stand: tile(0, 3058, 9776) },
-        { loc: tile(0, 3059, 3376), stand: tile(0, 3062, 3376) },
-        'scorpions (combat 14, hunt players up to combat 28) 2-3 tiles from the stairs at (3056, 9778) and (3054, 9773), king scorpions (combat 32, up to combat 64) around (3040-3048, 9770-9775)',
-    ),
+    [key(0, 3059, 3376), { name: 'Falador mine stairs', hazard: SCORPIONS }],
+    [key(0, 3059, 9776), { name: 'Falador mine stairs', hazard: SCORPIONS }],
+    // Taverley, Sanfew's herb house (Druidic Ritual): spiral stairs up to the first floor.
+    [key(0, 2898, 3428), { name: "Taverley Sanfew's house stairs" }],
+    [key(1, 2898, 3428), { name: "Taverley Sanfew's house stairs" }],
+    // Taverley, south of the village: the ladder down into the Taverley Dungeon and the ladder back.
+    [key(0, 2884, 3397), { name: 'Taverley Dungeon ladder', hazard: TAVERLEY_DUNGEON }],
+    [key(0, 2884, 9797), { name: 'Taverley Dungeon ladder', hazard: TAVERLEY_DUNGEON }],
+    // Edgeville, in the ruined house south-west of the bank: the trapdoor (closed: "Open", then Climb-down) into the
+    // Edgeville Dungeon and the ladder back. The trapdoor is reached by the opening on the house's west side.
+    [key(0, 3097, 3468), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
+    [key(0, 3096, 9867), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
+    // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
+    [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
+    [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
+]);
 
-    // Taverley, Sanfew's herb house (Druidic Ritual): spiral stairs up to the first floor (locs 1738 and 1740;
-    // stairs.rs2 `0_45_53_18_36` and `1_45_53_18_36`).
-    ...pair(
-        "Taverley Sanfew's house stairs",
-        { loc: tile(0, 2898, 3428), stand: tile(0, 2897, 3428) },
-        { loc: tile(1, 2898, 3428), stand: tile(1, 2898, 3427) },
-    ),
-    // Taverley, south of the village: the ladder (ladder_cellar_inside_down 1759, on the surface) down into the
-    // Taverley Dungeon and the ladder back (ladder_from_cellar 1755, in the dungeon). ladders.rs2 shifts the
-    // climber's own tile (coord()) by 6400, not the loc's, so each ladder lands on the other's stand tile. The
-    // surface ladder has forceapproach=east: it is used from (2885, 3397), east of the loc.
-    ...pair(
-        'Taverley Dungeon ladder',
-        { loc: tile(0, 2884, 9797), stand: tile(0, 2885, 9797) },
-        { loc: tile(0, 2884, 3397), stand: tile(0, 2885, 3397) },
-        'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part',
-    ),
+/** A climb's op as actions/climb.ts sends it: the direction's own option, or a middle floor's plain Climb. */
+const CLIMB_OP = /^((climb|walk)-(up|down)|climb)$/i;
 
-    // Edgeville, in the ruined house south-west of the bank: the trapdoor (trapdoor 1568, closed: "Open", then
-    // Climb-down) into the Edgeville Dungeon and the ladder back (ladder_from_cellar 1755 at (3096, 9867)). Both
-    // scripts move the climber's own tile (coord()) 6400, so each side lands on the tile it was used from. The
-    // trapdoor at (3097, 3468) is inside the house, reached by the opening on its west side: stand (3096, 3468).
-    ...pair(
-        'Edgeville Dungeon trapdoor',
-        { loc: tile(0, 3096, 9867), stand: tile(0, 3097, 9868) },
-        { loc: tile(0, 3097, 3468), stand: tile(0, 3096, 3468) },
-        'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)',
-    ),
+/**
+ * Why a walk cannot use a generated row, or undefined when it can. actions/climb.ts sends a Climb-up or Climb-down
+ * (Walk-), or Climb and answers its question, or opens a closed trapdoor first; it waits until the plane changes.
+ * A gate on a row's op needs no check here: the graph's edge carries its requirement (wiki/world/reach.ts).
+ */
+function leftOut(row: Row, world: World): string | undefined {
+    if (row.direction === 'other') return 'not up or down';
+    if (!row.stand) return 'no stand tile';
+    const from = planeAt(row.loc);
+    const to = planeAt(row.landing);
+    if (from === to) return 'stays on its plane';
+    if (lumped(from) || lumped(to)) return 'into an underground area planeOf does not name';
+    const moving = row.thenOp ?? row;
+    if (!CLIMB_OP.test(moving.opName)) return `op ${moving.opName}, which climb does not send`;
+    if (row.thenOp && !(/^open$/i.test(row.opName) && /trapdoor/i.test(world.features[row.feature]?.name ?? '')))
+        return `opened by ${row.opName}, and climb opens only a trapdoor`;
+    return undefined;
+}
 
-    // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder (ladder 1747, Climb-up) to the
-    // first floor and its laddertop (1746, Climb-down). ladders.rs2 moves the climber's own tile (coord()) one
-    // level, so each side lands on the tile it was used from; neither loc has forceapproach.
-    ...pair(
-        "Seers' Village spinning house ladder",
-        { loc: tile(0, 2715, 3470), stand: tile(0, 2714, 3470) },
-        { loc: tile(1, 2715, 3470), stand: tile(1, 2714, 3470) },
-    ),
-];
+/** A generated row left out of the table, and why. */
+export interface LeftOut {
+    row: string;
+    why: string;
+}
+
+/** The connectors of `world` a walk can use, with `overrides` laid over them, and the rows left out. */
+export function connectorTable(
+    world: World,
+    overrides: ReadonlyMap<string, Override> = OVERRIDES,
+): { connectors: Connector[]; left: LeftOut[] } {
+    const areaName = new Map(world.areas.map(a => [a.id, a.name]));
+    const placeOf = new Map<number, string>();
+    for (const s of world.sites) {
+        const place = areaName.get(s.areaPath.at(-1) ?? '');
+        if (place) for (const f of s.features) placeOf.set(f, place);
+    }
+    const connectors: Connector[] = [];
+    const left: LeftOut[] = [];
+    const seen = new Set<string>();
+    for (const row of world.connectors) {
+        const feature = world.features[row.feature];
+        const what = `${feature?.config ?? `feature ${row.feature}`} (${row.loc.x}, ${row.loc.z}) L${row.loc.level} ${row.opName}`;
+        const why = leftOut(row, world);
+        // The direction and stand checks narrow the row's type; leftOut has refused it already.
+        if (why || row.direction === 'other' || !row.stand) {
+            left.push({ row: what, why: why ?? 'not up or down' });
+            continue;
+        }
+        // A middle floor's Climb and its Climb-up (or Climb-down) are one connector to climb.
+        const { level, x, z } = row.loc;
+        const once = `${key(level, x, z, row.direction)} ${row.landing.level},${row.landing.x},${row.landing.z}`;
+        if (seen.has(once)) continue;
+        seen.add(once);
+        const o = { ...overrides.get(key(level, x, z)), ...overrides.get(key(level, x, z, row.direction)) };
+        const place = placeOf.get(row.feature);
+        connectors.push({
+            name: o.name ?? `${feature?.name ?? 'connector'}${place ? `, ${place}` : ''}`,
+            direction: row.direction,
+            loc: { ...row.loc },
+            stand: { ...row.stand },
+            to: { ...row.landing },
+            ...(o.hazard ? { hazard: o.hazard } : {}),
+        });
+    }
+    return { connectors, left };
+}
+
+const BUILT = connectorTable(WORLD);
+export const CONNECTORS: readonly Connector[] = BUILT.connectors;
+/** The generated rows CONNECTORS leaves out, each with why. */
+export const LEFT_OUT: readonly LeftOut[] = BUILT.left;
 
 /** A walk chains at most this many connectors (Lumbridge ground floor to the top floor is two). */
 export const MAX_HOPS = 4;
-/**
- * An upper floor (level 1 and up) is one building's, not the whole map's: its connectors are only
- * reachable from a tile this close to them (the largest castle here is about 30 tiles across).
- */
-const UPPER_FLOOR_REACH = 40;
-/** Cost of using a connector, in tiles of walking: the climb's ticks and a little reluctance. */
-const CONNECTOR_COST = 10;
 
 /**
- * The connectors to use, in order, to get from `from` to the plane of `to`: the cheapest chain by
- * walking distance (each leg a straight line, as the pathfinder's routes are unknown here). Empty
- * when `from` is already on `to`'s plane; null when no chain of at most MAX_HOPS connectors leads
- * there.
+ * The connectors to use, in order, to get from `from` to the plane of `to`: those of the shortest way a walk takes
+ * to `to` or a tile beside it, in run ticks over the world index's graph (lib/walk-graph.ts), climbing only rows of
+ * `table` and crossing only the doors `account` opens (by default only those that ask nothing). Empty when `from` is
+ * already on `to`'s plane; null when no way of at most MAX_HOPS connectors leads there.
  */
 export function planConnectors(
     from: Tile,
     to: Tile,
     table: readonly Connector[] = CONNECTORS,
+    account: Account = NO_ACCOUNT,
 ): readonly Connector[] | null {
-    const goal = planeAt(to);
-    interface Plan {
-        cost: number;
-        chain: readonly Connector[];
-    }
-    // The cheapest plan from `at`, having spent `cost` along `chain`.
-    const search = (at: Tile, cost: number, chain: readonly Connector[]): Plan | null => {
-        if (planeAt(at) === goal) {
-            // A connector lands on a whole plane, but an upper floor is one building's: the destination
-            // must be near where the chain lands, else no connector serves it.
-            if (chain.length > 0 && to.level > 0 && chebyshev(at, to) > UPPER_FLOOR_REACH) return null;
-            return { cost: cost + chebyshev(at, to), chain };
-        }
-        if (chain.length >= MAX_HOPS) return null;
-        let best: Plan | null = null;
-        for (const c of table) {
-            if (chain.includes(c) || planeAt(c.loc) !== planeAt(at)) continue;
-            if (at.level > 0 && chebyshev(at, c.stand) > UPPER_FLOOR_REACH) continue;
-            const found = search(c.to, cost + chebyshev(at, c.stand) + CONNECTOR_COST, [...chain, c]);
-            if (found && (!best || found.cost < best.cost)) best = found;
-        }
-        return best;
-    };
-    return search(from, 0, [])?.chain ?? null;
+    if (planeAt(from) === planeAt(to)) return [];
+    // `to` may be a loc's tile, which no step enters: a tile beside it serves, as a walk's tolerance does.
+    const near: Tile[] = [to];
+    for (let dx = -1; dx <= 1; dx++)
+        for (let dz = -1; dz <= 1; dz++) if (dx || dz) near.push({ level: to.level, x: to.x + dx, z: to.z + dz });
+    return nearestWay(from, near, { account, connectors: table, maxHops: MAX_HOPS })?.chain ?? null;
 }

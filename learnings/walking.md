@@ -197,7 +197,7 @@ function isInAlKharid() {
 
 ## Stairs and ladders (`walkTo` between levels)
 
-`walkTo` climbs stairs and ladders when the target is on another level or region (connector table in `conductor/lib/connectors.ts`). Facts the connectors rest on (stand = tile to stand on before the op; inside a building stand on the exact tile):
+`walkTo` climbs stairs and ladders when the target is on another level or region. Its connectors are the world index's (`wiki/world.json`, read by `conductor/lib/connectors.ts`), and it picks them as the shortest way over the index's graph (`conductor/lib/walk-graph.ts`), so it may take a staircase this table does not list (Lumbridge castle's north tower stairs at (3204,3229) to the Duke; the Ice Mountain trapdoor at (3019,3450) into the Dwarven Mine's north end). Facts the connectors rest on (stand = tile to stand on before the op; inside a building stand on the exact tile):
 
 | Connector | Surface/upper loc, option | Stand / landing | Lower/other loc, option | Stand / landing |
 |---|---|---|---|---|
@@ -205,7 +205,7 @@ function isInAlKharid() {
 | Wizards' Tower ladder | (3104,3162) `Climb-down Ladder` | stand (3105,3162), lands (3104,9576) | (3103,9576) `Climb-up Ladder` | lands (3105,3162) |
 | Wizards' Tower stairs | (3103,3159) on levels 0 and 1 | stand/landing (3105,3160) | top floor (3104,3160) | stand/landing (3104,3161) on level 2 |
 | Lumbridge castle SW tower stairs | (3204,3207) levels 0 and 1, (3205,3208) level 2 | stand/landing (3205,3209) on every level | | |
-| Edgeville Dungeon trapdoor | (3097,3468) closed: `Open`, then `Climb-down` | stand (3096,3468), the west opening of the ruined house ((3096,3467) is across a wall and the open fails); lands (3097,9868) | ladder (3096,9867) `Climb-up` | stand (3097,9868); lands (3097,3468), inside the ruined house (leave by its west opening) [v 2026-10-16 server data + review] |
+| Edgeville Dungeon trapdoor | (3097,3468) closed: `Open`, then `Climb-down` | stand (3096,3468), the west opening of the ruined house ((3096,3467) is across a wall and the open fails); lands (3096,9868) (`trapdoors.rs2:11` moves the player's own tile) | ladder (3096,9867) `Climb-up` | stand (3096,9868); lands (3096,3468), inside the ruined house (leave by its west opening) [v 2026-10-18 server data] |
 
 - Both Falador mine directions were walked live (shop task: Nurmof's Iron pickaxe 140 gp, then back up and a sale at the Falador general store). Wizards' Tower and Lumbridge stairs/ladder were exercised only in integration tests. [v 2026-10-11 conductor2w1 local]
 - Lumbridge level 1 offers `Climb-up` and `Climb-down`; a plain `Climb` asks a "Climb up or down?" dialog. [v 2026-10-11 conductor2w1 local]

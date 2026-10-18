@@ -4,7 +4,6 @@ import { CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS } from '../../actions/bank'
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../../actions/modal';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TICK_MS } from '../../lib/util';
-import { nearestBank } from '../../lib/banks';
 import bank from '../../tasks/bank';
 import { fakePaths } from '../paths';
 import { bankReact, walking } from '../react';
@@ -158,16 +157,25 @@ describe('bank: no area walks to the nearest bank', () => {
         .player({ at: { x: 3222, z: 3222 } })
         .inv('Logs', 2);
 
-    test('from Lumbridge it walks to Varrock East (never Draynor or Al Kharid), then does the trip', async () => {
+    test('from Lumbridge without coins it walks to Varrock West (never Draynor), then does the trip', async () => {
         // No booth appears on arrival here, so the trip itself ends in no-bank-found; only the walk is asserted.
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
             timeline: lumbridge.series(1),
             react: walking(react),
         });
-        expect(r.sends[0]).toBe('walk to (3254, 3420)');
-        expect(logged(r)[0]).toBe('no area given: walking to the nearest bank, Varrock East (3254,3420)');
+        expect(r.sends[0]).toBe('walk to (3185, 3436)');
+        expect(logged(r)[0]).toBe('no area given: walking to the nearest bank, Varrock West (3185,3436)');
         expect(r.steps[0]).toBe('walk-to-bank');
+    });
+
+    test('from Lumbridge with the toll in coins it picks Al Kharid, through the gate', async () => {
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: lumbridge.inv('Coins', 10).series(1),
+            react: walking(react),
+        });
+        expect(logged(r)[0]).toBe('no area given: walking to the nearest bank, Al Kharid (3269,3167)');
     });
 
     test('a bank already in view is used without walking', async () => {
@@ -191,15 +199,22 @@ describe('bank: no area walks to the nearest bank', () => {
     });
 
     test('the bank picked at the first walk is kept when the bot ends up nearer another', async () => {
-        // Lumbridge (nearest: Varrock East) for the first ticks, then beside Falador East while the walk keeps failing.
+        // Lumbridge (nearest: Varrock West) for the first ticks, then beside Falador East while the walk keeps failing.
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
             timeline: lumbridge.series(12, (w, i) => (i < 3 ? w : w.player({ at: { x: 3014, z: 3356 } }))),
             pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
         });
         expect(r.result.status).toBe('failed');
-        expect(r.result.reason).toContain('(3254, 3420)');
+        expect(r.result.reason).toContain('(3185, 3436)');
         expect(logged(r).filter(m => m.startsWith('no area given'))).toHaveLength(1);
+    });
+
+    test('with no area where no walk reaches a bank it is refused: the Barbarian Outpost course, left by its pipe', async () => {
+        const course = lumbridge.player({ at: { x: 2552, z: 3562 } });
+        expect((await refusal({ deposit: [{ item: 'Logs' }] }, course)).reason).toBe(
+            'preflight: no bank a walk reaches from here (lib/banks.ts): pass an explicit `area` for the bank to walk to',
+        );
     });
 
     test('off the surface with no area and no bank in view is refused', async () => {
@@ -209,13 +224,6 @@ describe('bank: no area walks to the nearest bank', () => {
         );
         const upstairs = lumbridge.player({ at: { x: 3222, z: 3222, level: 1 } });
         expect((await refusal({ deposit: [{ item: 'Logs' }] }, upstairs)).reason).toContain('pass an explicit `area`');
-    });
-
-    test('the table skips Draynor and Al Kharid, and picks by distance', async () => {
-        expect(nearestBank({ x: 3092, z: 3243 })?.name).not.toBe('Draynor');
-        expect(nearestBank({ x: 3269, z: 3167 })?.name).not.toBe('Al Kharid');
-        expect(nearestBank({ x: 3190, z: 3440 })?.name).toBe('Varrock West');
-        expect(nearestBank({ x: 2950, z: 3370 })?.name).toBe('Falador West');
     });
 });
 
