@@ -1,19 +1,35 @@
 // What each task + params variant has actually produced, from every run's result event.
 //
 //   bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--phases] [--json]
+//   bun conductor/tools/stats.ts <bot> --methods [--since <YYYY-MM-DD>] [--json]
 //
 // A plan counts once, as `plan:<name>` with its phases and their params as the variant; `--phases`
 // also counts each of its phase runs as a run of that task.
 //
+// `--methods`: per curated training method (wiki/world/methods.ts), its plans' whole runs: the XP/hr of
+// each skill it trains beside its floor at the levels the earliest run started on, the gap, and a
+// `measured` entry to paste into methods.ts (lib/methods.ts says where each figure comes from).
+//
 // The conductor uses this to pick the best method for an objective and to compare a new
 // variant (a different spot, target or mode) against the incumbent; the curator copies XP/hr
 // into the knowledge base from here, not from a single run.
-import { loadResults, selectResults } from '../lib/runs';
+import { readGameData } from '../../wiki/world/model/families/index';
+import { methodModel } from '../../wiki/world/model/method';
+import { formatMethodRuns, measuredFloor, methodRuns, runStart } from '../lib/methods';
+import { loadResults, readStartState, selectResults } from '../lib/runs';
 import { canonical, fail, parseCli } from '../lib/util';
 
-const usage = 'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--phases] [--json]';
+const usage =
+    'usage: bun conductor/tools/stats.ts <bot> [--task <name>] [--since <YYYY-MM-DD>] [--phases] [--json]\n' +
+    '       bun conductor/tools/stats.ts <bot> --methods [--since <YYYY-MM-DD>] [--json]';
 const { values, positionals } = parseCli(
-    { task: { type: 'string' }, since: { type: 'string' }, phases: { type: 'boolean' }, json: { type: 'boolean' } },
+    {
+        task: { type: 'string' },
+        since: { type: 'string' },
+        phases: { type: 'boolean' },
+        methods: { type: 'boolean' },
+        json: { type: 'boolean' },
+    },
     usage,
 );
 const [bot] = positionals;
@@ -39,6 +55,30 @@ interface Variant {
 const { results: allResults, skipped } = loadResults(bot);
 if (skipped)
     console.error(`stats: skipped ${skipped} unparseable or malformed result line(s) in conductor/runs/${bot}`);
+
+if (values.methods) {
+    if (taskFilter !== undefined || values.phases)
+        fail(`--methods counts whole plan runs: no --task or --phases\n${usage}`, 2);
+    // Imported here: the world index loads world.json on import, which only --methods needs.
+    const { WORLD } = await import('../lib/world-index');
+    const model = methodModel(readGameData());
+    const list = methodRuns({
+        bot,
+        command: `stats.ts ${bot} --methods${values.since === undefined ? '' : ` --since ${values.since}`}`,
+        methods: WORLD.methods,
+        results: allResults,
+        since,
+        start: r => {
+            const state = readStartState(r.logFile);
+            return state && runStart(state);
+        },
+        tools: model.tools,
+        floor: measuredFloor(WORLD, model),
+    });
+    if (values.json) console.log(JSON.stringify(list, null, 2));
+    else for (const line of formatMethodRuns(list)) console.log(line);
+    process.exit(0);
+}
 const results = selectResults(allResults, {
     since,
     ...(taskFilter && { task: taskFilter }),

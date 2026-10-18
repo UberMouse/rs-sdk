@@ -14,6 +14,7 @@ const keep = ['Fly fishing rod', 'Feather', 'Coins'];
 
 export default definePlan({
     name: 'lure-cook-bank',
+    method: 'lure-lumbridge-cook-bank',
     description: 'Lumbridge fly fishing -> Lumbridge cooking pot -> Varrock East bank of cooked trout/salmon',
     requires: {
         'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5,

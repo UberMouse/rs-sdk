@@ -99,12 +99,18 @@ export default definePlan({
   `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails? }`; `name`
   defaults to the task's name and must be unique in the plan when a task appears twice (two bank
   phases).
-- `definePlan({ name, description?, phases, until?, requires? })`. The plan's own `until(v)` ends
+- `definePlan({ name, description?, phases, until?, requires?, method? })`. The plan's own `until(v)` ends
   the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
   (`'combat level 5+'` above: the walk between the spots passes Giant spiders that attack lower
   levels): each is checked before every phase choice, and one that does not hold ends the plan
   `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
   `no phase applies`.
+- `method` (optional) is the id of the training method the plan runs, a record of
+  `wiki/world/methods.ts` whose `plans` lists this plan back. `conductor/test/plans.test.ts` fails
+  when the two disagree either way (a method world.json lacks, or one that doesn't list the plan; a
+  method listing a plan that isn't promoted or names another method) and prints the promoted plans
+  with no `method` as a to-do list. `stats.ts <bot> --methods` sets each method's plan runs beside
+  its floor at the levels the runs started on.
 
 ### The view (`v`)
 
@@ -194,6 +200,10 @@ lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, sta
   The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.
+- `stats.ts <bot> --methods` reads a plan's whole runs per curated method (`method` above): the XP/hr
+  of each skill the method trains over the plans' total run time, the floor at the base levels the
+  earliest run started on (read from its first phase run's recording) and the best axe or pickaxe
+  held at any phase run's start, the gap, and a `measured` entry for `wiki/world/methods.ts`.
 - A plan killed by a signal (SIGINT, SIGTERM, SIGHUP) ends `error`, `killed by <signal>`, with its
   totals so far in the RESULT and the plan log, the cut phase run counted as `error`; so stats keeps
   its XP and runs although its phase runs (`partOf`) count only with `--phases`. A hard kill

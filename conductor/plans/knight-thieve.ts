@@ -19,6 +19,7 @@ const nearArdougne = (v: PlanView): boolean => px(v) < 2720;
 
 export default definePlan({
     name: 'knight-thieve',
+    method: 'knight-ardougne-pickpocket',
     description: 'Knights of Ardougne with Lobsters (fished at Catherby); coins banked at Ardougne South',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
