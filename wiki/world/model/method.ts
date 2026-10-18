@@ -57,7 +57,7 @@ export interface ResolvedMethod {
     /**
      * Each skill the method trains (the gather family's, then the process step's), and the lowest level of it at which
      * the families model the method with the other skills of the method at 99: what each skill itself needs (fly
-     * fishing and cooking trout and salmon: Fishing 20, Cooking 25). The highest of them is `minLevel`.
+     * fishing and cooking trout and salmon: Fishing 20, Cooking 25, where `minLevel`, every skill at once, is 25).
      */
     levels: Partial<Record<Skill, number>>;
 }
