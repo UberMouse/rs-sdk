@@ -3,10 +3,10 @@
 // menu choice (the spirit trees), an interface click (the gnome gliders), an item op (the Fisher Realm's whistle). An
 // entry names the trigger, the act, where it is done, the landing coords and what it needs; the build checks each
 // against the scripts: the trigger's header is there, each landing (or a constant whose value it is) is written in the
-// trigger's script or on the move's line, each dialogue choice is an option text of those scripts, each zone is
-// written on the line it cites, and, for a loc or npc op trigger, the gate scan finds the trigger moving the player to
-// each landing. Each spawn cluster of the npc (beside it, place.ts besideCluster), each placed loc of the loc (its
-// approach tiles, place.ts reachTiles), or the zone's tiles, gets one World.crossings row. A landing the script puts
+// trigger's script or on the move's line, each dialogue choice is an option text of those scripts, each zone is an
+// `inzone` on the line it cites or in the trigger's script, and, for a loc or npc op trigger, the gate scan finds the
+// trigger moving the player to each landing. Each spawn cluster of the npc (beside it, place.ts besideCluster), each
+// placed loc of the loc (its approach tiles, place.ts reachTiles), or the zone's tiles, gets one World.crossings row. A landing the script puts
 // on a tile the collision blocks (the Fisher Realm's, inside a tree) lands on the tiles the player steps out to; one
 // off land, or with no step out, is left out. A placement with no tile on land, or whose every landing is left out,
 // gets no row; the build report lists each, and each landing left out or stepped out of.

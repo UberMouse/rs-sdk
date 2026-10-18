@@ -244,13 +244,13 @@ export const NPC_TELEPORTS: readonly NpcTeleport[] = [
     },
 ];
 
-/** The gnome glider landings (areas/area_gnome/configs/glider.constant) and the button that flies to each. */
+/** The gnome glider landings (areas/area_gnome/configs/glider.constant) by the button that flies to each. */
 const GLIDERS = [
-    { button: 'com_21', dest: '^gandius', line: 1 },
-    { button: 'com_22', dest: '^ta_quir_priw', line: 2 },
-    { button: 'com_23', dest: '^sindarpos', line: 3 },
-    { button: 'com_24', dest: '^lemanto_andra', line: 4 },
-    { button: 'com_25', dest: '^kar_hewo', line: 5 },
+    { button: 'com_21', dest: '^gandius' },
+    { button: 'com_22', dest: '^ta_quir_priw' },
+    { button: 'com_23', dest: '^sindarpos' },
+    { button: 'com_24', dest: '^lemanto_andra' },
+    { button: 'com_25', dest: '^kar_hewo' },
 ] as const;
 /**
  * Where a flight starts (~calc_gliderstart, gnome_glider.rs2:26): the box 8 tiles round the start's landing the player
@@ -262,6 +262,7 @@ const GLIDER_STARTS = [
     { dest: '^kar_hewo', box: ['0_51_50_12_3', '0_51_50_28_19'], line: 31 },
     { dest: '^sindarpos', box: ['0_44_54_26_33', '0_44_54_42_49'], line: 33 },
 ] as const;
+/** The gliders' landings, as glider.constant writes them. */
 const GLIDER_LANDINGS: Readonly<Record<string, string>> = {
     '^gandius': '0_46_46_27_25',
     '^ta_quir_priw': '3_38_54_33_45',
