@@ -1,7 +1,7 @@
 // The method query on a synthetic world: made-up families with round numbers (training.test.ts's), so each floor is
 // worked by hand from cycle.ts in the comments, and every filter is shown letting a method through and keeping one out.
 import { describe, expect, test } from 'bun:test';
-import { ModelError, type Family } from '../model/family';
+import { ModelError, ProfileError, type Family } from '../model/family';
 import type { Item } from '../model/items';
 import { MethodError, type MethodModel } from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
@@ -34,8 +34,8 @@ const woodcutting: Family = {
     skills: ['woodcutting'],
     kinds: ['tree'],
     model: (_site, _params, profile) => {
-        if (profile.levels.woodcutting < 20) throw new ModelError('Woodcutting 20');
-        if (!profile.axe) throw new ModelError('no axe');
+        if (profile.levels.woodcutting < 20) throw new ProfileError('Woodcutting 20');
+        if (!profile.axe) throw new ProfileError('no axe');
         return {
             ticksPerAttempt: profile.axe === 'rune_axe' ? 2 : 4,
             success: 1,
@@ -53,7 +53,7 @@ const firemaking: Family = {
     skills: ['firemaking'],
     kinds: ['range'],
     model: (_site, _params, profile) => {
-        if (profile.levels.firemaking < 30) throw new ModelError('Firemaking 30');
+        if (profile.levels.firemaking < 30) throw new ProfileError('Firemaking 30');
         return {
             ticksPerAttempt: 3,
             success: 1,
@@ -266,12 +266,46 @@ describe('bestMethods', () => {
         expect(burnt.measured.map(x => [x.xpPerHour, Math.round(x.floor)])).toEqual([[185_000, 278_761]]);
     });
 
+    test("a measured figure's floor is over the way the result rates, not the shortest", () => {
+        // tree-bank measured at Woodcutting 35 with the bronze axe. Its short way (legs 5 + 5): 112 + 10 = 122 ticks,
+        // 28 x 9000 / 122 = 2065.57 logs/h, 516,393. The long way (20 + 20): 152 ticks, 414,474 (above).
+        const measured = { ...burn.measured![0]!, xpPerHour: { woodcutting: 400_000 }, level: { woodcutting: 35 } };
+        const q = methodQuery({ ...world, methods: [{ ...banked, measured: [measured] }] }, model);
+        const floor = (opts: BestOptions) =>
+            q
+                .bestMethods('woodcutting', at('woodcutting', 50), opts)
+                .map(r => [r.way, Math.round(r.measured[0]!.floor)]);
+        expect(floor({})).toEqual([[0, 516_393]]);
+        // A `met` without the quest forces the long way: its floor there.
+        expect(floor({ met: none })).toEqual([[1, 414_474]]);
+    });
+
     test('an error that is not a family refusing the profile stops the query, naming the method', () => {
         const zero: Family = { ...woodcutting, model: (...a) => ({ ...woodcutting.model(...a), ticksPerAttempt: 0 }) };
         const broken = methodQuery(world, { ...model, families: new Map([...model.families, ['woodcutting', zero]]) });
         expect(() => broken.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(MethodError);
         expect(() => broken.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(
             /^methods\.ts tree-burn-bank: ticksPerAttempt 0 is not finite and > 0/,
+        );
+    });
+
+    test('a ModelError that is not a ProfileError (a data fault) stops the query too, naming the method', () => {
+        // tree-drop names logs as its food, which `foods` has no heal for: model/method.ts's rate refuses it.
+        const fed = methodQuery({ ...world, methods: [burn, banked, wild, { ...drop, food: 'logs' }] }, model);
+        expect(() => fed.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(MethodError);
+        expect(() => fed.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(
+            /^methods\.ts tree-drop: logs is not a food with a fixed heal$/,
+        );
+        // A family's own ModelError (not a refusal of the profile) the same.
+        const unknown: Family = {
+            ...woodcutting,
+            model: () => {
+                throw new ModelError('site tree:town:0 has no tree yew');
+            },
+        };
+        const bad = methodQuery(world, { ...model, families: new Map([...model.families, ['woodcutting', unknown]]) });
+        expect(() => bad.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(
+            /^methods\.ts tree-burn-bank: site tree:town:0 has no tree yew$/,
         );
     });
 });

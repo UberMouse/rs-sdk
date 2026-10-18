@@ -225,16 +225,19 @@ export function forMethod<T>(m: Pick<ResolvedMethod, 'def'>, f: () => T): T {
 export interface MeasuredFigure {
     measured: Measured;
     xpPerHour: number;
-    /** The floor at measuredProfile (the figure's levels and tool), over the shortest way; 0 when it gives none. */
+    /** The floor at measuredProfile (the figure's levels and tool), over measuredFigures' way; 0 when it gives none. */
     floor: number;
 }
 
-/** The method's measured figures that have an XP/hr for `skill`, in the record's order, each with its floor. */
-export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodContext): MeasuredFigure[] {
+/**
+ * The method's measured figures that have an XP/hr for `skill`, in the record's order, each with its floor over its
+ * `way`th way (the shortest by default): the way the figure is set beside.
+ */
+export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodContext, way = 0): MeasuredFigure[] {
     return (m.def.measured ?? []).flatMap(measured => {
         const xpPerHour = measured.xpPerHour[skill];
         if (xpPerHour === undefined) return [];
-        const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx).xpPerHour[skill] ?? 0;
+        const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx, way).xpPerHour[skill] ?? 0;
         return [{ measured, xpPerHour, floor }];
     });
 }

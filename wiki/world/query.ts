@@ -4,10 +4,12 @@
 // model/method.ts: the floor, the levels and tools a family asks for and the measured figures are its, as the
 // training pages read them.
 //
-// - Levels and tools: a method counts when its families model it at the profile (no ModelError): each family refuses
+// - Levels and tools: a method counts when its families model it at the profile (no ProfileError): each family refuses
 //   a level under its requirement itself, and woodcutting and mining an axe or pickaxe the profile lacks (mining one
-//   above its Mining level too) (model/families/), so the query keeps no copy of those rules. The profile's axe and
-//   pickaxe are the only tools it holds (profile.ts), the ones the checker would pick: the caller's to set.
+//   above its Mining level too) (model/families/), so the query keeps no copy of those rules. Any other error (a data
+//   or record fault: an obj or food the game lacks, a bad param) stops the query as a MethodError naming the method. The
+//   profile's axe and pickaxe are the only tools it holds (profile.ts), the ones the checker would pick: the caller's
+//   to set.
 // - Reach: a method's `ways` are the requirement sets that get to all of its sites, shortest travel first; the query
 //   rates the first one `met` accepts every token of (conductor/lib/account.ts meetsOneOf's semantics: `[]` needs
 //   nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
@@ -18,7 +20,7 @@
 import { loadFreshWorld } from './load';
 import type { CycleRates } from './model/cycle';
 import { readGameData } from './model/families/index';
-import { ModelError } from './model/family';
+import { ProfileError } from './model/family';
 import {
     forMethod,
     fromWorldMethod,
@@ -65,7 +67,7 @@ export interface RankedMethod {
     /** The whole floor at the profile over that way (model/cycle.ts). */
     rates: CycleRates;
     hazard: Hazard;
-    /** The method's measured figures for the queried skill, each beside the floor at its own levels and tool. */
+    /** The method's measured figures for the queried skill, each beside the floor at its own levels and tool over `way`. */
     measured: MeasuredFigure[];
 }
 
@@ -110,14 +112,15 @@ export function methodQuery(world: Pick<World, 'sites' | 'features' | 'methods'>
                     try {
                         return rateMethod(m, profile, ctx, way);
                     } catch (e) {
-                        // A family refusing the profile: a level under its requirement, a tool missing or unusable.
-                        if (e instanceof ModelError) return undefined;
+                        // A family refusing the profile (a level under its requirement, no axe or pickaxe, or one
+                        // above the profile's level) drops the method; any other error is a fault, named by forMethod.
+                        if (e instanceof ProfileError) return undefined;
                         throw e;
                     }
                 });
                 if (!rates) continue;
                 const xpPerHour = rates.xpPerHour[skill] ?? 0;
-                const measured = forMethod(m, () => measuredFigures(m, skill, ctx));
+                const measured = forMethod(m, () => measuredFigures(m, skill, ctx, way));
                 ranked.push({ method: m, way, xpPerHour, rates, hazard, measured });
             }
             return ranked.sort((a, b) => b.xpPerHour - a.xpPerHour || cmp(a.method.def.id, b.method.def.id));

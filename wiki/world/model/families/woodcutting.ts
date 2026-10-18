@@ -1,6 +1,6 @@
 // Chopping a tree: skill_woodcutting/scripts/woodcut.rs2 on the woodcutting_trees rows (configs/trees.dbrow).
 import { treeSubtype } from '../../classify';
-import { ModelError, type ActionModel } from '../family';
+import { ModelError, ProfileError, type ActionModel } from '../family';
 import { statRandomChance } from '../roll';
 import {
     int,
@@ -34,7 +34,7 @@ export const woodcutting: FamilyFactory = data => {
             // The level check (woodcut.rs2:34-39), then an axe: ~woodcutting_axe_checker returns null with none
             // (:64-67, :194-247), and the axe's successchance row gives the roll (:249-262).
             requireLevel(profile, 'woodcutting', int(row, 'levelrequired'), `a ${subtype} tree`);
-            if (!profile.axe) throw new ModelError(`chopping a ${subtype} tree needs an axe`);
+            if (!profile.axe) throw new ProfileError(`chopping a ${subtype} tree needs an axe`);
             const chance = row.data.successchance?.find(([axe]) => axe === profile.axe);
             if (!chance) throw new ModelError(`${row.row} has no successchance for ${profile.axe}`);
             // ~get_logs (:162-191): one stat_random roll; a log and productexp on a success, then the tree falls

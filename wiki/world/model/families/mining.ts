@@ -2,7 +2,7 @@
 // `mining_rate` and `levelrequire` (configs/pickaxes.obj).
 import { first } from '../../sources/configs';
 import type { DbRow } from '../../sources/dbrows';
-import { ModelError, type ActionModel } from '../family';
+import { ModelError, ProfileError, type ActionModel } from '../family';
 import { statRandomChance } from '../roll';
 import {
     clickTicks,
@@ -70,7 +70,7 @@ export const mining: FamilyFactory = data => {
             // mining_rate sets the swing (:75-80, :112-123).
             requireLevel(profile, 'mining', int(row, 'rock_level'), `a ${subtype} rock`);
             const pickaxe = profile.pickaxe;
-            if (!pickaxe) throw new ModelError(`mining a ${subtype} rock needs a pickaxe`);
+            if (!pickaxe) throw new ProfileError(`mining a ${subtype} rock needs a pickaxe`);
             const pick = data.objs.get(pickaxe);
             const rate = Number(param(pick, 'mining_rate'));
             if (!pick || !Number.isFinite(rate)) throw new ModelError(`${pickaxe} has no mining_rate`);

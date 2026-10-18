@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { ModelError, type ActionModel, type Family } from '../model/family';
+import { ModelError, ProfileError, type Family } from '../model/family';
 import { lootExpectation, lootRows, scaleByPlayercount, type GameData } from '../model/families/common';
 import { parseCatch, readSpots } from '../model/families/fishing';
 import { buildFamilies, FAMILIES } from '../model/families/index';
@@ -263,11 +263,29 @@ const profile = (level: number, tools: Partial<Profile> = {}): Profile => ({
     ...tools,
 });
 
-/** Runs a family, expecting a ModelError whose message matches `re`. */
+/** What running a family throws (it must throw). */
+function thrown(id: string, where: { site: Site; world: World }, params: unknown, p: Profile): unknown {
+    try {
+        family(id).model(where.site, params, p, where.world);
+    } catch (e) {
+        return e;
+    }
+    throw new Error(`${id} modelled it`);
+}
+
+/** Runs a family, expecting a ModelError whose message matches `re` that is not a ProfileError: a site, param or data fault. */
 function fails(id: string, where: { site: Site; world: World }, params: unknown, p: Profile, re: RegExp): void {
-    const run = (): ActionModel => family(id).model(where.site, params, p, where.world);
-    expect(run).toThrow(ModelError);
-    expect(run).toThrow(re);
+    const e = thrown(id, where, params, p);
+    expect(e).toBeInstanceOf(ModelError);
+    expect(e).not.toBeInstanceOf(ProfileError);
+    expect((e as Error).message).toMatch(re);
+}
+
+/** Runs a family, expecting a ProfileError (the profile can't do it: a level, a tool) whose message matches `re`. */
+function refuses(id: string, where: { site: Site; world: World }, params: unknown, p: Profile, re: RegExp): void {
+    const e = thrown(id, where, params, p);
+    expect(e).toBeInstanceOf(ProfileError);
+    expect((e as Error).message).toMatch(re);
 }
 
 describe('helpers', () => {
@@ -345,8 +363,8 @@ describe('woodcutting', () => {
     test('fails with a reason', () => {
         const rune = profile(60, { axe: 'rune_axe' });
         fails('woodcutting', yew, { tree: 'magic' }, rune, /has no tree magic/);
-        fails('woodcutting', yew, { tree: 'yew' }, profile(59, { axe: 'rune_axe' }), /needs woodcutting 60.*has 59/);
-        fails('woodcutting', yew, {}, profile(60), /needs an axe/);
+        refuses('woodcutting', yew, { tree: 'yew' }, profile(59, { axe: 'rune_axe' }), /needs woodcutting 60.*has 59/);
+        refuses('woodcutting', yew, {}, profile(60), /needs an axe/);
         fails('woodcutting', yew, {}, profile(60, { axe: 'bronze_axe' }), /no successchance for bronze_axe/);
         fails('woodcutting', yew, { axe: 'rune_axe' }, rune, /no param axe/);
         fails('woodcutting', at('rock', [['ironrock1', 'iron']]), {}, rune, /rock site, not a tree site/);
@@ -419,9 +437,9 @@ describe('mining', () => {
     });
 
     test('fails with a reason', () => {
-        fails('mining', iron, {}, profile(14, { pickaxe: 'adamant_pickaxe' }), /needs mining 15/);
-        fails('mining', iron, {}, profile(60), /needs a pickaxe/);
-        fails('mining', iron, {}, profile(40, { pickaxe: 'rune_pickaxe' }), /a rune_pickaxe needs mining 41/);
+        refuses('mining', iron, {}, profile(14, { pickaxe: 'adamant_pickaxe' }), /needs mining 15/);
+        refuses('mining', iron, {}, profile(60), /needs a pickaxe/);
+        refuses('mining', iron, {}, profile(40, { pickaxe: 'rune_pickaxe' }), /a rune_pickaxe needs mining 41/);
         fails('mining', iron, { rock: 'gold' }, adamant, /has no rock gold/);
         fails('mining', at('rock', [['gemrock', 'gems']]), {}, adamant, /gemrock \(category none\) is not modelled/);
         const mixed = at('rock', [
@@ -494,7 +512,7 @@ describe('fishing', () => {
     });
 
     test('fails with a reason', () => {
-        fails('fishing', lure, { tool: 'fly_fishing_rod' }, profile(19), /needs fishing 20/);
+        refuses('fishing', lure, { tool: 'fly_fishing_rod' }, profile(19), /needs fishing 20/);
         fails('fishing', lure, { tool: 'harpoon' }, profile(40), /no harpoon catch \(modelled: fly_fishing_rod\)/);
         fails('fishing', lure, {}, profile(40), /needs a tool param/);
         fails('fishing', lure, { tool: 1 }, profile(40), /tool must be a string/);
@@ -527,7 +545,7 @@ describe('pickpocket', () => {
     });
 
     test('fails with a reason', () => {
-        fails('pickpocket', guards, {}, profile(39), /needs thieving 40/);
+        refuses('pickpocket', guards, {}, profile(39), /needs thieving 40/);
         // A malformed loot row, or a stun under a tick, fails naming its row rather than modelling NaN or a wrong cadence.
         expect(() => lootRows(parseDbrows('[r]\ntable=pickpocket\ndata=loot,coins,x,30,128')[0]!)).toThrow(
             /r has a malformed loot\[0\]: coins,x,30,128/,
@@ -558,7 +576,7 @@ describe('stall', () => {
     });
 
     test('fails with a reason', () => {
-        fails('stall', bakery, {}, profile(4), /needs thieving 5/);
+        refuses('stall', bakery, {}, profile(4), /needs thieving 5/);
         const bad = parseDbrows(DBROWS.replace('data=loot,cake,1,1,13,a cake', 'data=loot,cake,1,,13,a cake'));
         const stall = buildFamilies({ ...data, dbrows: bad }).get('stall')!;
         expect(() => stall.model(bakery.site, {}, profile(5), bakery.world)).toThrow(/malformed loot\[0\]/);
@@ -613,7 +631,7 @@ describe('cooking', () => {
     });
 
     test('fails with a reason', () => {
-        fails('cooking', fire, { food: 'raw_salmon' }, profile(24), /needs cooking 25/);
+        refuses('cooking', fire, { food: 'raw_salmon' }, profile(24), /needs cooking 25/);
         fails('cooking', fire, { food: 'raw_shark' }, profile(99), /no cooking_generic row cooks raw_shark/);
         fails('cooking', fire, {}, profile(99), /needs a food param/);
         fails('cooking', fire, { food: 'uncooked_cake' }, profile(99), /can't be cooked on site fire:test:0/);

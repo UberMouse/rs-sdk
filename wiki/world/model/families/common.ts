@@ -5,7 +5,7 @@ import { readDbrows, type DbRow } from '../../sources/dbrows';
 import { readScripts } from '../../sources/triggers';
 import type { Feature, FeatureKind, Site, World } from '../../types';
 import { cmp } from '../../util';
-import { ModelError, type Family } from '../family';
+import { ModelError, ProfileError, type Family } from '../family';
 import type { Profile } from '../profile';
 import type { Skill } from '../server';
 
@@ -73,10 +73,10 @@ export function targetFeatures(
     return { subtype: chosen, features };
 }
 
-/** Fails unless the profile's `skill` is at least `level`, naming what needs it. */
+/** Fails with a ProfileError unless the profile's `skill` is at least `level`, naming what needs it. */
 export function requireLevel(profile: Profile, skill: Skill, level: number, what: string): void {
     if (profile.levels[skill] < level)
-        throw new ModelError(`${what} needs ${skill} ${level}; the profile has ${profile.levels[skill]}`);
+        throw new ProfileError(`${what} needs ${skill} ${level}; the profile has ${profile.levels[skill]}`);
 }
 
 /** The rows of a dbtable by one value of `column` (its first field on each data line); a value in two rows throws. */
