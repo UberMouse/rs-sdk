@@ -7,7 +7,7 @@ import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timelin
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import shop from '../../tasks/shop';
-import { door, fakePaths } from '../paths';
+import { door, fakePaths, noCrossings } from '../paths';
 import { shopReact, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
@@ -137,6 +137,8 @@ describe('shop: the trip', () => {
             params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
             timeline: away.series(1),
             react: walking(react),
+            // The test's open ground, not the farm fences and stile the world index has between here and the shop.
+            walkWorld: noCrossings(),
         });
         expect(r.sends).toEqual([`walk to (${KEEPER.x}, ${KEEPER.z})`, OPEN, 'buy Hammer', CLOSE]);
         expect(r.steps).toEqual(['walk-to-shop', 'trade', 'finish']);
@@ -158,6 +160,7 @@ describe('shop: the trip', () => {
             params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
             timeline: away.series(1),
             pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
+            walkWorld: noCrossings(),
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe(

@@ -3,10 +3,22 @@ import { locSizes } from '../../../wiki/world/place';
 import { fillReach, wallTiles } from '../../../wiki/world/reach';
 import { readConfigs } from '../../../wiki/world/sources/configs';
 import { at, Grid } from '../../../wiki/world/test/grid';
-import type { Crossing, Gate, Transport } from '../../../wiki/world/types';
+import { CROSSING_TICKS } from '../../../wiki/world/distance';
+import { expectedTicks, statRandomChance } from '../../../wiki/world/roll';
+import type { Crossing, Gate, Roll, Transport, World } from '../../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
-import { doorRefusal, nearestWay, walkGraph, type WalkGraph } from '../../lib/walk-graph';
+import {
+    BANK_DETOUR_TICKS,
+    type Detour,
+    doorRefusal,
+    moveRefusal,
+    nearestWay,
+    planWay,
+    walkGraph,
+    type WalkGraph,
+    type WalkSearch,
+} from '../../lib/walk-graph';
 import { WORLD } from '../../lib/world-index';
 
 const configs = readConfigs('loc');
@@ -70,12 +82,14 @@ describe('doorRefusal: the door rows a walk crosses are those the walker opens',
     });
 });
 
-describe('the walk search crosses a door only when the walker opens it', () => {
-    test('with 99 in every skill, a pick-lock door and a crumbly wall shortcut are still not crossed', () => {
-        for (const loc of ['loc_2551', 'castlecrumbly']) {
-            const ticks = across(row(loc), maxed());
-            expect(ticks === undefined || ticks > CROSSED, `${loc}: ${ticks}`).toBe(true);
-        }
+describe('the walk search crosses a door only when the walker opens it, or makes its move', () => {
+    test('a pick-lock door is a move (cross sends Pick-lock), taken at the Thieving level it asks, not below', () => {
+        const door = row('loc_2551');
+        expect(doorRefusal(door, opName)).toBe('op Pick Lock, not Open');
+        expect(moveRefusal(door)).toBeUndefined();
+        expect(across(door, maxed())).toBe(CROSSED);
+        const below = across(door, { levels: { thieving: 15 }, coins: 0 });
+        expect(below === undefined || below > CROSSED).toBe(true);
     });
 
     test("a guild door the account qualifies for is crossed: the Magic Guild's at Magic 66", () => {
@@ -98,43 +112,54 @@ const sea = () => {
     for (let z = 3200; z < 3232; z++) grid.block(at(0, 3216, z));
     return grid;
 };
-/** A search of a scripted world's walk graph, with nothing met but `{}`. */
-const search = (graph: WalkGraph) => ({ account: NO_ACCOUNT, connectors: [], maxHops: MAX_HOPS, graph });
+const size = locSizes(new Map());
+const empty = { features: [], connectors: [], gates: [], transports: [], crossings: [] };
+type Rows = Partial<Pick<World, 'gates' | 'transports' | 'crossings'>>;
+/** The walk graph of a scripted world: `rows` over `collision` (the island by default). */
+const graphOf = (
+    rows: Rows,
+    collision = sea(),
+    names: (loc: string, op: number) => string | undefined = () => 'Open',
+) => walkGraph({ world: { ...empty, ...rows }, collision, size, opName: names });
+/** A search of a scripted world's walk graph, with nothing met but `{}` unless `account` says. */
+const search = (graph: WalkGraph, account: Account = NO_ACCOUNT): WalkSearch => ({
+    account,
+    connectors: [],
+    maxHops: MAX_HOPS,
+    graph,
+});
+const WEST = at(0, 3205, 3220);
+const EAST = at(0, 3225, 3220);
+/** A move from (3215, z) on the west shore to the island, landing at (3217, z), free unless `over` says. */
+const move = (over: Partial<Crossing> = {}, z = 3220): Crossing => ({
+    via: 'scripted',
+    act: { kind: 'loc-op', loc: 'log_balance', op: 1 },
+    at: at(0, 3214, z),
+    from: [at(0, 3215, z)],
+    landings: [{ tile: at(0, 3217, z), spread: 0 }],
+    requires: [[]],
+    source: 'a.rs2:1',
+    ...over,
+});
+const crossed = (w: ReturnType<typeof nearestWay>) =>
+    w?.hops.flatMap(h => (h.kind === 'cross' ? [h.move.act] : [])) ?? [];
+/** Run ticks of a way of `steps` steps (half a tick each) and crossings of `crossing` ticks, rounded up once. */
+const ticks = (steps: number, crossing: number) => Math.ceil((steps + 2 * crossing) / 2);
 
 describe('the walk search ignores every edge kind it does not walk', () => {
-    const size = locSizes(new Map());
-    const WEST = at(0, 3205, 3220);
-    const EAST = at(0, 3225, 3220);
-    const ship: Transport = {
-        kind: 'ship',
-        npc: 'sailor',
-        from: at(0, 3210, 3210),
-        to: EAST,
-        fare: 0,
-        requires: [],
-        source: 'sail.rs2:1',
-    };
-    const move = (via: Crossing['via']): Crossing => ({
-        via,
-        act:
-            via === 'scripted'
-                ? { kind: 'loc-op', loc: 'log_balance', op: 1 }
-                : { kind: 'npc-op', npc: 'aubury', op: 4 },
-        at: at(0, 3214, 3220),
-        from: [at(0, 3215, 3220)],
-        landings: [{ tile: EAST, spread: 0 }],
-        requires: [[]],
-        source: 'a.rs2:1',
-    });
-    const empty = { features: [], connectors: [], gates: [], transports: [], crossings: [] };
-
-    test.each([
-        ['a ship', { ...empty, transports: [ship] }],
-        ['a scripted move', { ...empty, crossings: [move('scripted')] }],
-        ['a teleport', { ...empty, crossings: [move('teleport')] }],
-    ])('%s to the island, free: the fill reaches it, the walk does not', (_, world) => {
+    test('a ship to the island: the fill reaches it, the walk does not', () => {
+        const ship: Transport = {
+            kind: 'ship',
+            npc: 'sailor',
+            from: at(0, 3210, 3210),
+            to: EAST,
+            fare: 0,
+            requires: [],
+            source: 'sail.rs2:1',
+        };
+        const world = { ...empty, transports: [ship] };
         expect(fillReach({ world, collision: sea(), size, start: WEST }).setsAt(EAST)).toEqual([[]]);
-        const graph = walkGraph({ world, collision: sea(), size, opName: () => undefined });
+        const graph = graphOf({ transports: [ship] });
         expect(nearestWay(WEST, [EAST], search(graph))).toBeUndefined();
         expect(nearestWay(WEST, [at(0, 3205, 3225)], search(graph))?.runTicks).toBe(3);
     });
@@ -152,8 +177,248 @@ describe('the walk search ignores every edge kind it does not walk', () => {
             source: 't.rs2:1',
         };
         const grid = new Grid().wallColumn(3216, 3200, 3231, [3220]);
-        const graph = walkGraph({ world: { ...empty, gates: [gate] }, collision: grid, size, opName: () => 'Open' });
+        const way = nearestWay(WEST, [EAST], search(graphOf({ gates: [gate] }, grid)));
         // 10 steps to the door's west tile, the crossing, 9 steps on.
-        expect(nearestWay(WEST, [EAST], search(graph))?.runTicks).toBe(Math.ceil((10 + 2 * 2 + 9) / 2));
+        expect(way?.runTicks).toBe(ticks(10 + 9, 2));
+        expect(way?.hops.map(h => h.kind)).toEqual(['door']);
+    });
+});
+
+describe('the walk search makes scripted moves and teleports', () => {
+    test('a scripted move: walked to its from tile, crossed, walked on, the move a hop of the way', () => {
+        const way = nearestWay(WEST, [EAST], search(graphOf({ crossings: [move()] })));
+        // 10 steps to (3215, 3220), the move, 8 steps on.
+        expect(way?.runTicks).toBe(ticks(10 + 8, CROSSING_TICKS.scripted));
+        expect(way?.hops).toEqual([
+            {
+                kind: 'cross',
+                move: {
+                    via: 'scripted',
+                    act: { kind: 'loc-op', loc: 'log_balance', op: 1 },
+                    at: at(0, 3214, 3220),
+                    landings: [at(0, 3217, 3220)],
+                    source: 'a.rs2:1',
+                },
+                stand: at(0, 3215, 3220),
+                landing: at(0, 3217, 3220),
+                requires: [[]],
+            },
+        ]);
+    });
+
+    test('a teleport that needs an obj carried: taken with it, no way without', () => {
+        const talisman = move({
+            via: 'teleport',
+            act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'airtemple_ruined' },
+            requires: [['item:air_talisman:held']],
+        });
+        const graph = graphOf({ crossings: [talisman] });
+        expect(nearestWay(WEST, [EAST], search(graph))).toBeUndefined();
+        const carrying: Account = { ...NO_ACCOUNT, held: new Map([['air_talisman', 1]]) };
+        const way = nearestWay(WEST, [EAST], search(graph, carrying));
+        expect(way?.runTicks).toBe(ticks(10 + 8, CROSSING_TICKS.teleport));
+        expect(crossed(way)).toEqual([talisman.act]);
+    });
+
+    test('a teleport behind a quest: no way until the caller says the quest is done', () => {
+        const wizard = move({
+            via: 'teleport',
+            act: { kind: 'npc-op', npc: 'aubury', op: 4 },
+            requires: [['quest:runemysteries']],
+        });
+        const graph = graphOf({ crossings: [wizard] });
+        expect(nearestWay(WEST, [EAST], search(graph))).toBeUndefined();
+        const done: Account = { ...NO_ACCOUNT, met: new Set(['quest:runemysteries']) };
+        expect(crossed(nearestWay(WEST, [EAST], search(graph, done)))).toEqual([wizard.act]);
+    });
+
+    test('a random landing costs its longest (the spread), and a way goes on from whichever landing it gets', () => {
+        const [north, south] = [at(0, 3220, 3228), at(0, 3220, 3212)];
+        const random = move({
+            landings: [
+                { tile: north, spread: 8 },
+                { tile: south, spread: 8 },
+            ],
+        });
+        const graph = graphOf({ crossings: [random] });
+        const way = nearestWay(WEST, [EAST], search(graph));
+        // To the move, its crossing and the spread, then the 8 diagonal steps from either landing.
+        expect(way?.runTicks).toBe(ticks(10 + 8, CROSSING_TICKS.scripted + 8));
+        // The walk lands on one and plans again from there: either reaches the target in 8 steps.
+        for (const landed of [north, south]) expect(nearestWay(landed, [EAST], search(graph))?.runTicks).toBe(4);
+    });
+
+    test('a move given up on (avoid) is not taken', () => {
+        const graph = graphOf({ crossings: [move()] });
+        expect(nearestWay(WEST, [EAST], { ...search(graph), avoid: m => m.at.x === 3214 })).toBeUndefined();
+    });
+});
+
+describe('the essence mine portals: the way back to the wizard on record', () => {
+    // The mine is the island; each portal row lands by its wizard, behind a came-from requirement.
+    const MINE = at(0, 3225, 3220);
+    const [byA, byB] = [at(0, 3205, 3204), at(0, 3205, 3228)];
+    const portal = (exit: typeof byA, wizard: string): Crossing => ({
+        via: 'teleport',
+        act: { kind: 'loc-op', loc: 'blankrunestone_exit_portal', op: 1 },
+        at: at(0, 3226, 3226),
+        from: [at(0, 3226, 3225)],
+        landings: [{ tile: exit, spread: 0 }],
+        requires: [[`other:came from ${wizard}`]],
+        source: 'essence_mine.rs2:41',
+    });
+    const graph = graphOf({ crossings: [portal(byA, 'wiz_a'), portal(byB, 'wiz_b')] });
+    const TARGET = at(0, 3206, 3227);
+    const landed = (met: string[]) =>
+        nearestWay(MINE, [TARGET], search(graph, { ...NO_ACCOUNT, met: new Set(met) }))?.hops.flatMap(h =>
+            h.kind === 'cross' ? [h.landing] : [],
+        );
+
+    test("the wizard on record's portal edge, even when the other wizard's exit is nearer the destination", () => {
+        expect(landed(['other:came from wiz_a'])).toEqual([byA]);
+        expect(landed(['other:came from wiz_b'])).toEqual([byB]);
+    });
+
+    test('with none on record, the nearest exit (the walk goes on from wherever the portal lands)', () => {
+        expect(landed([])).toEqual([byB]);
+    });
+});
+
+/** An account with an Agility level (base and current) and hitpoints left. */
+const agile = (level: number, hitpoints = 99): Account => ({
+    levels: { agility: level },
+    coins: 0,
+    current: { agility: level, hitpoints },
+});
+
+describe("rolled crossings are priced at the bot's current level", () => {
+    // A wall between the shores with one gap, at z 3205: the way round from FROM to TO is 15 steps to (3215, 3205),
+    // one through the gap and 15 on, 31 half ticks. The shortcut across the wall at z 3220 is a roll whose failure
+    // takes 20 ticks and 5 hitpoints; through it the way is 3 steps, the roll's expected ticks, 4 steps.
+    const ROUND_HALF = 31;
+    const roll: Roll = { stat: 'agility', low: 50, high: 250, source: 'a.rs2:2', fail: { ticks: 20, damage: 5 } };
+    const shortcut = move({
+        landings: [{ tile: at(0, 3216, 3220), spread: 0 }],
+        requires: [['skill:agility:10']],
+        roll,
+    });
+    const graph = graphOf({ crossings: [shortcut] }, new Grid().wallColumn(3216, 3200, 3231, [3205]));
+    const [FROM, TO] = [at(0, 3212, 3220), at(0, 3220, 3220)];
+    const way = (a: Account) => nearestWay(FROM, [TO], search(graph, a));
+    /** The way through the shortcut at a level, in half ticks: the roll's expected ticks rounded up to a half tick. */
+    const throughHalf = (level: number) =>
+        3 +
+        4 +
+        Math.ceil(
+            2 * expectedTicks(CROSSING_TICKS.scripted, statRandomChance(roll.low, roll.high, level), 20, 0) - 1e-9,
+        );
+    const levels = Array.from({ length: 90 }, (_, i) => i + 10);
+    /** The last level the shortcut costs more than the way round, and the first it costs less. */
+    const [ROUND_AT, CROSS_AT] = [
+        levels.findLast(l => throughHalf(l) > ROUND_HALF)!,
+        levels.find(l => throughHalf(l) < ROUND_HALF)!,
+    ];
+
+    test('skipped at a low level and taken at a high one, switching where the expected costs cross', () => {
+        expect(way(agile(10))!.runTicks).toBe(Math.ceil(ROUND_HALF / 2));
+        expect([ROUND_AT, CROSS_AT]).toEqual([60, 62]);
+        expect(crossed(way(agile(10)))).toEqual([]);
+        expect(crossed(way(agile(ROUND_AT)))).toEqual([]);
+        expect(crossed(way(agile(CROSS_AT)))).toEqual([shortcut.act]);
+        expect(way(agile(CROSS_AT))!.runTicks).toBe(Math.ceil(throughHalf(CROSS_AT) / 2));
+        expect(crossed(way(agile(99)))).toEqual([shortcut.act]);
+    });
+
+    test('below the level it asks, never; the current level prices the roll, not the base', () => {
+        expect(crossed(way(agile(9)))).toEqual([]);
+        expect(crossed(way({ ...agile(CROSS_AT), current: { agility: ROUND_AT, hitpoints: 99 } }))).toEqual([]);
+        expect(crossed(way({ ...agile(ROUND_AT), current: { agility: CROSS_AT, hitpoints: 99 } }))).toEqual([
+            shortcut.act,
+        ]);
+    });
+
+    test('a failure that can take the hitpoints the bot has left refuses it, whatever the level', () => {
+        expect(crossed(way(agile(99, roll.fail.damage)))).toEqual([]);
+        expect(crossed(way(agile(99, roll.fail.damage + 1)))).toEqual([shortcut.act]);
+    });
+});
+
+const gate = (over: Partial<Gate> = {}): Gate => ({
+    trigger: 'oploc1,squeeze',
+    kind: 'gate',
+    loc: 'squeeze',
+    tile: at(0, 3216, 3220),
+    shape: 0,
+    angle: 0,
+    requires: [[]],
+    source: 't.rs2:1',
+    ...over,
+});
+const walled = () => new Grid().wallColumn(3216, 3200, 3231, [3220]);
+const climbOver = () => 'Climb-over';
+
+describe('gate rows the walker does not open are moves', () => {
+    test('a door crossed by another op than Open: its op, sent with cross', () => {
+        const way = nearestWay(WEST, [EAST], search(graphOf({ gates: [gate()] }, walled(), climbOver)));
+        expect(crossed(way)).toEqual([{ kind: 'loc-op', loc: 'squeeze', op: 1 }]);
+    });
+
+    test('a payment asked in dialogue: refused without choices, made with them', () => {
+        const pass = { requires: [['consume:shantay_pass:1']] };
+        expect(moveRefusal(gate(pass))).toMatch(/payment/);
+        const choices = { kind: 'loc-op' as const, loc: 'squeeze', op: 1, choices: ['Yes'] };
+        expect(moveRefusal(gate({ ...pass, act: choices }))).toBeUndefined();
+        const carrying: Account = { ...NO_ACCOUNT, held: new Map([['shantay_pass', 1]]) };
+        const graph = graphOf({ gates: [gate({ ...pass, act: choices })] }, walled(), climbOver);
+        expect(crossed(nearestWay(WEST, [EAST], search(graph, carrying)))).toEqual([choices]);
+    });
+
+    test('a use-item trigger names no obj: refused', () => {
+        expect(moveRefusal(gate({ trigger: 'oplocu,squeeze' }))).toMatch(/item used on it/);
+    });
+});
+
+describe('bank detours for an obj a crossing needs', () => {
+    // A free way to the island far north (z 3231) and a talisman teleport straight across (z 3220).
+    const START = at(0, 3210, 3220);
+    const talisman = move({
+        via: 'teleport',
+        act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'airtemple_ruined' },
+        landings: [{ tile: EAST, spread: 0 }],
+        requires: [['item:air_talisman:held']],
+    });
+    const graph = graphOf({ crossings: [talisman, move({}, 3231)] });
+    const NEAR_BANK = at(0, 3210, 3216);
+    const detour = (count: number | undefined, banks = [NEAR_BANK], free = 27): Detour => ({
+        bank: obj => (obj === 'air_talisman' ? count : undefined),
+        banks,
+        free,
+        stackable: () => false,
+    });
+    const plan = (d?: Detour) => planWay(START, [EAST], { ...search(graph), ...(d && { detour: d }) });
+    const free = plan()!;
+
+    test('taken when the bank holds the obj and the detour is shorter: to the bank, withdraw, the teleport', () => {
+        const way = plan(detour(1))!;
+        // 4 steps to the bank, the bank's ticks, 5 steps to the ruins' from tile, the teleport.
+        expect(way.runTicks).toBe(2 + BANK_DETOUR_TICKS + ticks(5, CROSSING_TICKS.teleport));
+        expect(way.runTicks).toBeLessThan(free.runTicks);
+        expect(way.hops.map(h => h.kind)).toEqual(['bank', 'cross']);
+        expect(way.hops[0]).toMatchObject({ stand: NEAR_BANK, withdraw: [{ obj: 'air_talisman', count: 1 }] });
+        expect(crossed(way)).toEqual([talisman.act]);
+    });
+
+    test('skipped when the bank count is unknown or none: the free way north', () => {
+        expect(plan(detour(undefined))).toEqual(free);
+        expect(plan(detour(0))).toEqual(free);
+        expect(crossed(free)).toEqual([{ kind: 'loc-op', loc: 'log_balance', op: 1 }]);
+    });
+
+    test('skipped when the detour is longer: a bank far south', () => {
+        expect(plan(detour(1, [at(0, 3200, 3200)]))).toEqual(free);
+    });
+
+    test('skipped with no free slot for the obj', () => {
+        expect(plan(detour(1, [NEAR_BANK], 0))).toEqual(free);
     });
 });

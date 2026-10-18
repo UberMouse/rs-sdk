@@ -225,8 +225,8 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
     test('is empty on the destination plane and null where nothing leads', () => {
         expect(planConnectors(at(0, 3222, 3222), at(0, 3300, 3300))).toEqual([]);
         expect(planConnectors(at(0, 3222, 3222), at(3, 3205, 3209))).toBeNull();
-        // A tile on no floor.
-        expect(planConnectors(at(1, 3500, 3500), at(0, 3222, 3222))).toBeNull();
+        // A tile off the map.
+        expect(planConnectors(at(1, 0, 0), at(0, 3222, 3222))).toBeNull();
     });
 
     test('Lumbridge castle: the south-west staircase to its floors and back, the north one to the north end', () => {

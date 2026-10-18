@@ -1,6 +1,13 @@
 // Pathfinders for unit tests, in place of the SDK's collision data (actions/paths.ts): no 23 MB load,
 // and routes a test chooses.
+import { reachCollision } from '../../wiki/world/collision';
+import { locSizes } from '../../wiki/world/place';
+import { readConfigs } from '../../wiki/world/sources/configs';
+import { Grid } from '../../wiki/world/test/grid';
 import type { DoorInfo, Pathfinder, PathResult, Waypoint } from '../actions/paths';
+import { CONNECTORS } from '../lib/connectors';
+import { walkGraph, type WalkWorld } from '../lib/walk-graph';
+import { WORLD } from '../lib/world-index';
 
 export type Router = (from: Waypoint, to: { x: number; z: number }, avoid: readonly DoorInfo[]) => PathResult;
 
@@ -63,3 +70,40 @@ export function fakePaths(
 /** Open ground: one straight leg to the destination. */
 export const straightPaths = (): FakePaths =>
     fakePaths((from, to) => ({ success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] }));
+
+let offMap: WalkWorld | undefined;
+/**
+ * A walk world (ActionContext.walkWorld) with nothing on the map a test's tiles are on: a walk plans no hop and is
+ * walked on its plane, by the test's own routes, for a scripted world the world index's crossings would not match.
+ */
+export const noCrossings = (): WalkWorld =>
+    (offMap ??= {
+        graph: walkGraph({
+            world: { features: [], connectors: [], gates: [], transports: [], crossings: [] },
+            collision: new Grid(),
+            size: locSizes(new Map()),
+            opName: () => undefined,
+        }),
+        connectors: [],
+        banks: [],
+    });
+
+let connectorsOnly: WalkWorld | undefined;
+/**
+ * The world index's walk world with its connectors and doors and none of its moves (crossing rows, gate jumps):
+ * for a test of climbs whose scripted world has none of the stiles and shortcuts the index plans through on the way.
+ */
+export function onlyConnectors(): WalkWorld {
+    if (connectorsOnly) return connectorsOnly;
+    const configs = readConfigs('loc');
+    return (connectorsOnly = {
+        graph: walkGraph({
+            world: { ...WORLD, crossings: [], gates: WORLD.gates.filter(g => !g.to && !g.landings && !g.opens) },
+            collision: reachCollision,
+            size: locSizes(configs),
+            opName: (loc, op) => configs.get(loc)?.[`op${op}`]?.[0],
+        }),
+        connectors: CONNECTORS,
+        banks: [],
+    });
+}

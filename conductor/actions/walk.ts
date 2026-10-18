@@ -23,19 +23,29 @@
 // - On a raised section of an agility course, or inside the Gnome Stronghold's fence with a destination outside
 //   it, the ground pathfinder has no route out, so the walk first crosses the course's obstacles forward to the
 //   ground, or walks to the gate and passes it outward (leaveEnclosure); upstream fails `no-path`.
-// - A destination on another plane (a level above or below, or underground at z >= 6400) is reached through the
-//   level connectors of lib/connectors.ts (staircases, ladders), used with the climb op; upstream has none
-//   and fails `no-path`. The walk keeps one tick budget across the legs and the climbs.
+// - A walk is planned over the world index's graph (lib/walk-graph.ts planWay) before it is walked: a destination on
+//   another plane (a level above or below, or underground at z >= 6400) is reached through the level connectors of
+//   lib/connectors.ts (staircases, ladders), used with the climb op, and a way on any plane through the moves the
+//   graph has (scripted moves, teleports, agility shortcuts priced at the bot's level, gate jumps) made with the
+//   cross op, or through a bank detour for an obj a move needs; upstream has none of them and fails `no-path` or
+//   walks round. The walk keeps one tick budget across the legs and the hops.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import { actName } from '../../wiki/world/reach';
+import { CAME_FROM, cameFrom } from '../../wiki/world/requirements';
 import { log, type Op, send, wait } from '../core/op';
-import { accountOf } from '../lib/account';
-import { chebyshev, CONNECTORS, MAX_HOPS, planConnectors, planeOf, UNDERGROUND_Z } from '../lib/connectors';
-import { TICK_MS } from '../lib/util';
+import { type Account, accountOf, meetsOneOf } from '../lib/account';
+import { BANK_STAND_RADIUS, BANKS } from '../lib/banks';
+import { chebyshev, CONNECTORS, MAX_HOPS, planeOf, type Tile, UNDERGROUND_Z } from '../lib/connectors';
+import { configId, objInfo } from '../lib/packs';
+import { INVENTORY_SLOTS, TICK_MS } from '../lib/util';
+import { type Detour, type Hop, type Move, planWay, type WalkWorld, worldGraph } from '../lib/walk-graph';
 import { isInWilderness } from '../lib/wilderness';
+import { BANK_TRANSFER_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from './bank';
 import { CLIMB_MAX_TICKS, climb } from './climb';
 import type { ActionContext } from './context';
 import { courseSectionOf, leaveCourse } from './course';
-import { GATE_ATTEMPT_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
+import { cross, crossWaitTicks } from './cross';
+import { GATE_ATTEMPT_TICKS, GATE_MAX_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
 import { interactLoc } from './interact';
 import { canPayToll, isEastOfToll, isTollGate, payToll, TOLL_GATE_LOCS, TOLL_LEVEL, TOLL_MAX_TICKS } from './toll';
 import { messageCursor, messageSince } from './messages';
@@ -47,6 +57,16 @@ export const WALK_TOLERANCE = 3;
 const GATE_OUT_ATTEMPTS = 2;
 /** The worst case of that pass, in ticks, which a walk keeps back for it. */
 export const GATE_OUT_TICKS = GATE_OUT_ATTEMPTS * GATE_ATTEMPT_TICKS;
+/** Hops (climbs, moves, bank detours, the plans again after one fails) a walk makes before it gives up. */
+const MAX_WALK_HOPS = 16;
+/** A plan's targets are the tiles within the walk's tolerance of its destination, at most this far. */
+const PLAN_RADIUS = 3;
+/** The sends of a move besides its act: its dialogue choices. */
+const CROSS_SEND_TICKS = 2;
+/** A bank detour's hop at its worst: the open, a withdrawal, the close. */
+const BANK_HOP_TICKS = OPEN_BANK_WAIT_TICKS + BANK_TRANSFER_WAIT_TICKS + CLOSE_BANK_WAIT_TICKS;
+/** The Gnome Stronghold gate's loc config (gate.ts GNOME_GATE). */
+const GNOME_GATE_LOC = 'gnome_areagate';
 /** Route queries before the walk gives up (upstream MAX_ITERATIONS). */
 const MAX_ROUTES = 50;
 /** Slashes of one web a walk tries (each cuts it half the time) before it routes around. */
@@ -113,6 +133,7 @@ export type WalkResult =
               | 'no-blade'
               | 'no-connector'
               | 'climb-failed'
+              | 'cross-failed'
               | 'dead-end'
               | 'stuck'
               | 'gave-up'
@@ -139,6 +160,12 @@ export interface WalkOptions {
      * these, so the step finishes inside its tick budget instead of the engine ending the run `stuck`.
      */
     reserveTicks?: number;
+    /**
+     * Requirement tokens the caller has checked the account meets that its state does not show: a quest done
+     * (`quest:runemysteries`), the wizard it came into the essence mine by (`other:came from aubury`). A move that
+     * asks one is planned only with it (lib/account.ts).
+     */
+    met?: Iterable<string>;
 }
 
 /**
@@ -206,18 +233,22 @@ function* pause(w: Walk, n: number): Op<void> {
 }
 
 /**
- * Walks to within `tolerance` tiles of (x, z), opening the doors and gates on the way. On the bot's own
- * plane that is `walkOnPlane`. When the destination is on another (`opts.level`, or across the
- * surface/underground divide at z >= 6400) the walk goes to the staircase or ladder of lib/connectors.ts
- * that leads there, climbs it (`climb`) and goes on from where it lands, one connector after another.
- * `no-connector` is no chain of connectors leading there; `climb-failed` is a climb that did not change
- * the plane (the loc missing, refused or out of reach). The one tick budget covers the legs and the
- * climbs, and a `timeout` in the middle (`advancing`) is carried on by walking again.
+ * Walks to within `tolerance` tiles of (x, z), opening the doors and gates on the way. The way is planned over the
+ * world index's graph (walkRoute): when it changes plane (`opts.level`, or across the surface/underground divide at
+ * z >= 6400) the walk goes to the staircase or ladder of lib/connectors.ts that leads there and climbs it (`climb`);
+ * when it is shorter through a move (a scripted move, a teleport, a shortcut, a gate jump) the walk goes to the
+ * move's approach and makes it (`cross`); when a move needs an obj the bot does not carry and the bank holds one
+ * (ActionContext.bank) it may go to a bank first; and after each it plans again from where it landed. A way with no
+ * hop is walked on the plane (`walkOnPlane`). `no-connector` is no way leading to another plane; `climb-failed` a
+ * climb that did not change the plane (the loc missing, refused or out of reach); `cross-failed` no way left once
+ * the moves refused on the way are given up on. The one tick budget covers the legs and the hops, and a `timeout`
+ * in the middle (`advancing`) is carried on by walking again.
  *
  * `no-blade` is a slashable web on the route and no slash weapon wielded: final, do not retry.
  *
  * Spends coins: a route through the Al Kharid toll gate pays its toll (TOLL_FEE, 10 coins) on each crossing,
- * automatically; with fewer coins the route goes round the gate instead.
+ * automatically; with fewer coins the route goes round the gate instead. A move that takes an obj (a Shantay pass)
+ * spends it, and a bank detour withdraws what the way on needs.
  */
 export function* walkTo(
     ctx: ActionContext,
@@ -231,11 +262,11 @@ export function* walkTo(
     if (!p || !Number.isFinite(x) || !Number.isFinite(z)) return yield* walkOnPlane(ctx, x, z, tolerance, opts);
     const left = yield* leaveEnclosure(ctx, x, z, opts);
     if (left) return left;
-    const sameSide = z >= UNDERGROUND_Z === p.worldZ >= UNDERGROUND_Z;
-    const level = opts.level ?? (sameSide ? p.level : 0);
-    if (planeOf(level, x, z) === planeOf(p.level, p.worldX, p.worldZ))
-        return yield* walkOnPlane(ctx, x, z, tolerance, opts);
-    return yield* walkAcrossPlanes(ctx, { level, x, z }, tolerance, opts);
+    // Where the bot stands once out: leaving a course section changes its level.
+    const now = ctx.state().player ?? p;
+    const sameSide = z >= UNDERGROUND_Z === now.worldZ >= UNDERGROUND_Z;
+    const level = opts.level ?? (sameSide ? now.level : 0);
+    return yield* walkRoute(ctx, { level, x, z }, tolerance, opts);
 }
 
 /**
@@ -346,19 +377,101 @@ function failedLeg(r: Extract<WalkResult, { ok: false }>, progressed: boolean, p
     return { ...r, message };
 }
 
-/** Walks to a destination on another plane: connector by connector, within one tick budget. */
-function* walkAcrossPlanes(
-    ctx: ActionContext,
-    dest: { level: number; x: number; z: number },
-    tolerance: number,
-    opts: WalkOptions,
-): Op<WalkResult> {
+/** What one walk has learned on its way: what it came in by, the moves it gave up on, the bank objs not there. */
+interface Learned {
+    met: Set<string>;
+    avoid: Set<string>;
+    absent: Set<string>;
+    /** The last hop that failed, for the message when no way is left. */
+    failed?: string;
+}
+
+/** A move's key: its act on its tile, and its source line. */
+const moveKey = (m: Move) => `${actName(m)} ${m.at.level},${m.at.x},${m.at.z} ${m.source}`;
+
+/** The tiles a walk to (x, z) within `tolerance` may end on, as a plan's targets: at least the tile's neighbours. */
+function targetsOf(dest: Tile, tolerance: number): Tile[] {
+    const r = Math.max(1, Math.min(tolerance, PLAN_RADIUS));
+    const out: Tile[] = [dest];
+    for (let dx = -r; dx <= r; dx++)
+        for (let dz = -r; dz <= r; dz++) if (dx || dz) out.push({ level: dest.level, x: dest.x + dx, z: dest.z + dz });
+    return out;
+}
+
+/** The way from where the bot stands to `dest`, over what the bot carries and the walk has learned. */
+function planRoute(ctx: ActionContext, s: BotWorldState, dest: Tile, tolerance: number, rec: Learned) {
+    const p = s.player!;
+    const world = ctx.walkWorld ?? defaultWorld();
+    const seen = accountOf(s);
+    const account: Account = { ...seen, met: new Set([...(seen.met ?? []), ...rec.met]) };
+    const banks = world.banks.filter(b => meetsOneOf(account, b.reach)).map(b => b.stand);
+    const counted = ctx.bank;
+    const detour: Detour | undefined = counted && {
+        bank: obj => (rec.absent.has(obj) ? 0 : counted(objInfo(obj)?.name ?? obj)),
+        banks,
+        free: INVENTORY_SLOTS - s.inventory.length,
+        stackable: obj => objInfo(obj)?.stackable ?? false,
+    };
+    return planWay({ level: p.level, x: p.worldX, z: p.worldZ }, targetsOf(dest, tolerance), {
+        account,
+        connectors: world.connectors,
+        maxHops: MAX_HOPS,
+        graph: world.graph,
+        avoid: m => rec.avoid.has(moveKey(m)),
+        ...(detour && { detour }),
+    });
+}
+
+let builtWorld: WalkWorld | undefined;
+/** The world index's walk world: its graph, the connector table, the banks a task may pick on its own. */
+const defaultWorld = (): WalkWorld =>
+    (builtWorld ??= { graph: worldGraph(), connectors: CONNECTORS, banks: BANKS.filter(b => b.auto) });
+
+/** The first hop of a way the walk acts on: a door is opened along the walk to the next one. */
+const firstHop = (hops: readonly Hop[] | undefined) => hops?.find(h => h.kind !== 'door');
+
+/** What a hop is, for logs and messages. */
+function hopName(h: Exclude<Hop, { kind: 'door' }>): string {
+    if (h.kind === 'climb') return `${h.connector.name} at (${h.connector.stand.x}, ${h.connector.stand.z})`;
+    if (h.kind === 'bank') return `the bank at (${h.stand.x}, ${h.stand.z})`;
+    return `${actName(h.move)} at (${h.move.at.x}, ${h.move.at.z})`;
+}
+
+/** The ticks a hop takes once the walk is at its stand, which the walk to it keeps back. */
+function hopTicks(h: Exclude<Hop, { kind: 'door' }>): number {
+    if (h.kind === 'climb') return CLIMB_MAX_TICKS;
+    if (h.kind === 'bank') return BANK_HOP_TICKS;
+    if (isGnomeGate(h.move)) return GATE_MAX_TICKS;
+    return crossWaitTicks(h.move) + CROSS_SEND_TICKS;
+}
+
+/** The Gnome Stronghold gate, which gate.ts passes (Femi's dialog asks a choice its rows do not carry). */
+const isGnomeGate = (m: Move) => m.act.kind === 'loc-op' && m.act.loc === GNOME_GATE_LOC;
+
+/**
+ * Walks to `dest` hop by hop: plans the way over the world index's graph (lib/walk-graph.ts planWay), walks to its
+ * first hop (a connector, a move, a bank detour) and makes it, then plans again from where the bot stands, so a
+ * random landing or a failed roll is walked on from wherever it left the bot. A way with no hop is walked on the
+ * plane (walkOnPlane), as is a destination the graph has no way to on the bot's own plane. A move the game refuses
+ * is given up on for the rest of the walk, a bank obj found missing too.
+ */
+function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
     const start = ctx.state();
     const what = `(${dest.x}, ${dest.z}) on level ${dest.level}`;
-    const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, what);
+    const p0 = start.player;
+    if (
+        p0 &&
+        planeOf(p0.level, p0.worldX, p0.worldZ) === planeOf(dest.level, dest.x, dest.z) &&
+        chebyshev(posOf(p0), dest) <= tolerance
+    )
+        return { ok: true, message: 'Already at destination' };
+    // On its own level a walk names the destination as walkOnPlane does.
+    const own = p0?.level === dest.level ? `(${dest.x}, ${dest.z})` : what;
+    const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, own);
     if (noTime) return noTime;
     const deadline = start.tick + maxTicks;
-    for (let hop = 0; hop <= MAX_HOPS; hop++) {
+    const rec: Learned = { met: new Set(opts.met ?? []), avoid: new Set(), absent: new Set() };
+    for (let hop = 0; hop <= MAX_WALK_HOPS; hop++) {
         const s = ctx.state();
         const p = s.player;
         if (!p) return { ok: false, reason: 'no-player', message: 'No player state' };
@@ -366,44 +479,130 @@ function* walkAcrossPlanes(
             return {
                 ok: false,
                 reason: 'timeout',
-                advancing: true,
+                advancing: hop > 0,
                 message: `Walk to ${what} ran out of its ${maxTicks} ticks at (${p.worldX}, ${p.worldZ}) level ${p.level}`,
             };
         const here = { level: p.level, x: p.worldX, z: p.worldZ };
-        if (planeOf(here.level, here.x, here.z) === planeOf(dest.level, dest.x, dest.z)) {
-            const last = yield* walkOnPlane(ctx, dest.x, dest.z, tolerance, {
-                maxTicks: deadline - s.tick,
-                reserveTicks: reserve,
-            });
-            return last.ok ? last : failedLeg(last, hop > 0);
-        }
-
-        // Over the bot's own levels and coins, as lib/banks.ts nearestBank picks a bank: a door or connector the
-        // account meets is one this walk may cross.
-        const c = planConnectors(here, dest, CONNECTORS, accountOf(s))?.[0];
-        if (!c)
+        const samePlane = planeOf(here.level, here.x, here.z) === planeOf(dest.level, dest.x, dest.z);
+        if (samePlane && chebyshev(here, dest) <= tolerance) return { ok: true, message: 'Arrived' };
+        const way = planRoute(ctx, s, dest, tolerance, rec);
+        const next = firstHop(way?.hops);
+        if (!next) {
+            // A walk that gave up on a move and finds no way left ends; one with no hop to make, or a destination the
+            // graph does not reach, is walked on the plane.
+            if (!way && rec.failed)
+                return { ok: false, reason: 'cross-failed', message: `No way left to ${what}: ${rec.failed}` };
+            if (samePlane) {
+                const last = yield* walkOnPlane(ctx, dest.x, dest.z, tolerance, {
+                    maxTicks: deadline - s.tick,
+                    reserveTicks: reserve,
+                });
+                return last.ok ? last : failedLeg(last, hop > 0);
+            }
             return {
                 ok: false,
                 reason: 'no-connector',
                 message: `No connector from level ${here.level} (${here.x}, ${here.z}) to ${what}`,
             };
-        const at = `${c.name} at (${c.stand.x}, ${c.stand.z})`;
+        }
+        const name = hopName(next);
+        const stand = next.kind === 'climb' ? next.connector.stand : next.stand;
         // The stand tile exactly: a tile beside it can be across a wall (the Falador stairs are in a house).
-        const walked = yield* walkOnPlane(ctx, c.stand.x, c.stand.z, 0, {
+        const walked = yield* walkOnPlane(ctx, stand.x, stand.z, next.kind === 'bank' ? BANK_STAND_RADIUS - 1 : 0, {
             maxTicks: deadline - s.tick,
-            reserveTicks: reserve + CLIMB_MAX_TICKS,
+            reserveTicks: reserve + hopTicks(next),
         });
         if (!walked.ok) {
             const now = ctx.state().player;
-            const nearer = !!now && chebyshev(posOf(now), c.stand) < chebyshev(here, c.stand);
-            return failedLeg(walked, hop > 0 || nearer, `walking to the ${at}: `);
+            const nearer = !!now && chebyshev(posOf(now), stand) < chebyshev(here, stand);
+            return failedLeg(walked, hop > 0 || nearer, `walking to the ${name}: `);
         }
-        if (c.hazard) yield* log(`walk: WARNING at the ${c.name}: ${c.hazard}`);
-        const climbed = yield* climb(ctx, c);
-        if (!climbed.ok) return { ok: false, reason: 'climb-failed', message: `${at}: ${climbed.message}` };
-        yield* log(`walk: climbed ${c.direction} the ${c.name}`);
+        if (next.kind === 'climb') {
+            const c = next.connector;
+            if (c.hazard) yield* log(`walk: WARNING at the ${c.name}: ${c.hazard}`);
+            const climbed = yield* climb(ctx, c);
+            if (!climbed.ok) return { ok: false, reason: 'climb-failed', message: `${name}: ${climbed.message}` };
+            yield* log(`walk: climbed ${c.direction} the ${c.name}`);
+        } else if (next.kind === 'bank') yield* bankHop(ctx, next, rec);
+        else
+            yield* crossHop(ctx, next, rec, () => {
+                const again = firstHop(planRoute(ctx, ctx.state(), dest, tolerance, rec)?.hops);
+                return again?.kind === 'cross' && moveKey(again.move) === moveKey(next.move);
+            });
     }
-    return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_HOPS} connectors` };
+    return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_WALK_HOPS} hops` };
+}
+
+/**
+ * Makes a move of the way (cross.ts; the Gnome Stronghold gate by gate.ts's passGate), noting what the walk learns:
+ * the wizard it came in by, a move refused (given up on for the rest of the walk). A failed roll is tried again
+ * where it leaves the bot while `stillBest` holds; one that leaves it elsewhere is planned again from there.
+ */
+function* crossHop(
+    ctx: ActionContext,
+    h: Extract<Hop, { kind: 'cross' }>,
+    rec: Learned,
+    stillBest: () => boolean,
+): Op<void> {
+    const m = h.move;
+    const name = hopName(h);
+    if (isGnomeGate(m)) {
+        const r = yield* passGate(ctx, GNOME_GATE, h.landing.z > m.at.z ? 'in' : 'out');
+        if (r.ok) yield* log('walk: passed the Gnome Stronghold gate');
+        else {
+            rec.avoid.add(moveKey(m));
+            rec.failed = `${name}: ${r.message}`;
+            yield* log(`walk: ${rec.failed}; planning without it`);
+        }
+        return;
+    }
+    const r = yield* cross(ctx, m, { retry: () => !m.roll?.fail.to && stillBest() });
+    if (r.ok) {
+        if (m.act.kind === 'npc-op') {
+            for (const t of rec.met) if (t.startsWith(CAME_FROM)) rec.met.delete(t);
+            rec.met.add(cameFrom(m.act.npc));
+        }
+        yield* log(`walk: crossed ${name}${r.attempts > 1 ? ` in ${r.attempts} attempts` : ''}`);
+        return;
+    }
+    if (r.reason === 'fell') {
+        yield* log(`walk: ${r.message}; planning again from here`);
+        return;
+    }
+    rec.avoid.add(moveKey(m));
+    rec.failed = r.message;
+    yield* log(`walk: ${r.reason}: ${r.message}; planning without it`);
+}
+
+/**
+ * A bank detour's hop: opens the bank and withdraws what the way on needs. An obj the bank turns out not to hold (or a
+ * bank that does not open) is noted absent, so the walk plans again without it.
+ */
+function* bankHop(ctx: ActionContext, h: Extract<Hop, { kind: 'bank' }>, rec: Learned): Op<void> {
+    const name = hopName(h);
+    const r = yield* withBank(
+        ctx,
+        (function* (): Op<void> {
+            for (const w of h.withdraw) {
+                const id = configId('obj', w.obj);
+                const item = ctx.state().bank.items.find(i => i.id === id);
+                if (!item) {
+                    rec.absent.add(w.obj);
+                    yield* log(`walk: ${name} holds no ${w.obj}; planning without it`);
+                    continue;
+                }
+                const got = yield* withdraw(ctx, item, Math.min(w.count, item.count));
+                if (got.ok) yield* log(`walk: withdrew ${got.amountWithdrawn} ${item.name} at ${name}`);
+                else {
+                    rec.absent.add(w.obj);
+                    yield* log(`walk: withdrawing ${item.name} at ${name}: ${got.message}`);
+                }
+            }
+        })(),
+    );
+    if (r.ok) return;
+    for (const w of h.withdraw) rec.absent.add(w.obj);
+    yield* log(`walk: ${name} did not open (${r.message}); planning without it`);
 }
 
 /**

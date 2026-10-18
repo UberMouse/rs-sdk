@@ -139,7 +139,7 @@ const HALVES = 2;
  * least 1/256 of one above it: they are S + ((256 - v) / v) * (F + B) with S, F and B whole ticks and v in 1..256
  * (the chance is v/256), so in half ticks they are a whole number over v. Float error is about 1e-12.
  */
-const halfTicks = (ticks: number): number => Math.ceil(ticks * HALVES - 1e-9);
+export const halfTicks = (ticks: number): number => Math.ceil(ticks * HALVES - 1e-9);
 
 /** A way to a sink as one search found it: half ticks, the sink's index among the sources, the way's set id. */
 interface Found {

@@ -72,9 +72,10 @@ describe('nearestBank: the fewest run ticks a walk takes, to a bank the account 
         expect(nearestBank(gate, account({ met: new Set(['quest:legends']) }))?.name).toBe("Legends' Guild");
     });
 
-    test('never a bank the walker cannot reach: Zanaris is through the shed, a jump no walk makes', () => {
+    test('Zanaris is through the shed, a jump the walker makes (actions/cross.ts) with a dramen staff worn', () => {
         const shed = at(0, 3201, 3169);
-        expect(nearestBank(shed, account({ met: new Set(['item:dramen_staff:worn']) }))?.name).not.toBe('Zanaris');
+        expect(nearestBank(shed, account({ worn: new Set(['dramen_staff']) }))?.name).toBe('Zanaris');
+        expect(nearestBank(shed)?.name).not.toBe('Zanaris');
     });
 
     test("from a booth's own tile a step leads off it; from the bankers' side or off the map there is none", () => {

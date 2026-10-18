@@ -12,6 +12,7 @@
 import type { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
+import type { WalkWorld } from './walk-graph';
 import type { Op, Outcome } from '../core/op';
 import type { AllowableGuard, TaskGuard } from './interrupts';
 import { TICK_MS } from './util';
@@ -58,6 +59,13 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     previousPos: { x: number; z: number } | null;
     /** Where the walkTo op gets its routes (ActionContext); unset, the SDK's collision data. */
     readonly pathfinder?: Pathfinder;
+    /** Where the walkTo op plans its way (ActionContext); unset, the world index's. */
+    readonly walkWorld?: WalkWorld;
+    /**
+     * The bank's count of an item by name as the plan last saw it open before this run (ActionContext); unset when
+     * no plan has seen the bank open.
+     */
+    bank?(item: string): number | undefined;
     /**
      * Ticks the running generator step (or guard op) has left of its budget (stepBudgetTicks): waiting
      * this many more is within it, one more ends the run `stuck`. Undefined outside one. An op that

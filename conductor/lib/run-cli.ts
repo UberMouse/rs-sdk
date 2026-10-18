@@ -293,6 +293,8 @@ export interface LiveRun extends RunLog {
 export interface LiveRunOptions extends ResultBase {
     /** Where the log and recording go: `runsDir(bot)` in the CLI. */
     dir: string;
+    /** The plan's bank record at the phase's start, recorded with the run's inputs (RunInputs.bank). */
+    bank?: Record<string, number>;
     stops: StopCondition[];
     print(line: string): void;
     warn(msg: string): void;
@@ -322,6 +324,7 @@ export function openLiveRun(sdk: BotSDK, o: LiveRunOptions): LiveRun {
             params: o.params,
             stops: o.stops,
             ...(o.partOf !== undefined && { partOf: o.partOf }),
+            ...(o.bank && { bank: o.bank }),
         },
         o.warn,
     );

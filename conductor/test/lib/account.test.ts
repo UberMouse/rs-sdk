@@ -60,12 +60,58 @@ describe('meetsSet and meetsOneOf', () => {
     });
 });
 
+describe('meetsToken: objs carried and worn, and the wizard on record', () => {
+    const carrying = account({
+        held: new Map([
+            ['air_talisman', 1],
+            ['shantay_pass', 2],
+        ]),
+        worn: new Set(['dramen_staff']),
+    });
+
+    test('an obj carried meets item:<obj>:held; one worn meets item:<obj>:worn, not :held', () => {
+        expect(meetsToken(carrying, 'item:air_talisman:held')).toBe(true);
+        expect(meetsToken(carrying, 'item:water_talisman:held')).toBe(false);
+        expect(meetsToken(carrying, 'item:dramen_staff:worn')).toBe(true);
+        expect(meetsToken(carrying, 'item:dramen_staff:held')).toBe(false);
+    });
+
+    test('consume:<obj>:<n> is met with n or more carried', () => {
+        expect(meetsToken(carrying, 'consume:shantay_pass:2')).toBe(true);
+        expect(meetsToken(carrying, 'consume:shantay_pass:3')).toBe(false);
+    });
+
+    test('a came-from requirement is met only for the wizard on record, and for any with none on record', () => {
+        const aubury = account({ met: new Set(['other:came from aubury']) });
+        expect(meetsToken(aubury, 'other:came from aubury')).toBe(true);
+        expect(meetsToken(aubury, 'other:came from wizard_sedridor')).toBe(false);
+        expect(meetsToken(NO_ACCOUNT, 'other:came from wizard_sedridor')).toBe(true);
+    });
+});
+
 describe('accountOf', () => {
-    test("a bot's base levels by lower-case name, and the coins it carries", () => {
-        const built = world().skill('Fishing', 68).skill('Mining', 30).inv('Coins', 25).inv('Bronze axe').build();
-        // A boosted level is not the base level the tokens ask for.
+    test("a bot's base and current levels by lower-case name, the coins and objs it carries, what it wears", () => {
+        const built = world()
+            .skill('Fishing', 68)
+            .skill('Mining', 30)
+            .inv('Coins', 25)
+            .inv('Bronze axe')
+            .equipment({ name: 'Bronze pickaxe' })
+            .build();
+        // A boosted level is not the base level the tokens ask for, but it is what a roll reads.
         const state = { ...built, skills: built.skills.map(s => (s.name === 'Mining' ? { ...s, level: 35 } : s)) };
-        expect(accountOf(state)).toEqual({ levels: { fishing: 68, mining: 30 }, coins: 25 });
+        const a = accountOf(state);
+        expect(a.levels).toEqual({ fishing: 68, mining: 30 });
+        expect(a.current).toEqual({ fishing: 68, mining: 35, hitpoints: 10 });
+        expect(a.coins).toBe(25);
+        expect(a.held).toEqual(
+            new Map([
+                ['coins', 25],
+                ['bronze_axe', 1],
+            ]),
+        );
+        expect(a.worn).toEqual(new Set(['bronze_pickaxe']));
+        expect(a.met).toEqual(new Set(['category:weapon_axe:held', 'category:weapon_pickaxe:worn']));
     });
 
     test('no coins carried is 0', () => {

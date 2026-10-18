@@ -1,6 +1,7 @@
 // Runs a task through executeTask on a scripted timeline, with in-memory sinks and no server.
 import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
+import type { WalkWorld } from '../lib/walk-graph';
 import { TimelineDriver, type TimelineOptions } from '../core/drivers/timeline';
 import type { Command } from '../core/op';
 import { executeTask, type ExecuteOptions } from '../lib/engine';
@@ -23,6 +24,10 @@ export interface SimulateOptions {
     scan?: (radius?: number) => NearbyLoc[];
     /** Routes for the walkTo op; default `straightPaths()`, open ground. */
     pathfinder?: Pathfinder;
+    /** Where the walkTo op plans its way; default the world index's. */
+    walkWorld?: WalkWorld;
+    /** The plan's bank record the run starts with (ExecuteOptions.bank). */
+    bank?: Record<string, number>;
     stops?: StopCondition[];
     /** A driver of your own (a TimelineDriver subclass) in place of `timeline`, `respond` and `scan`. */
     driver?: TimelineDriver;
@@ -67,6 +72,8 @@ export async function simulate(task: Parameters<typeof executeTask>[0], opts: Si
         rawParams: opts.params ?? {},
         stops: opts.stops ?? [],
         pathfinder: opts.pathfinder ?? straightPaths(),
+        ...(opts.walkWorld && { walkWorld: opts.walkWorld }),
+        ...(opts.bank && { bank: opts.bank }),
         ...(opts.externalStop && { externalStop: opts.externalStop }),
         ...(opts.partOf !== undefined && { partOf: opts.partOf }),
     });

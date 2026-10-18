@@ -860,6 +860,41 @@ describe('the view', () => {
         expect(r.result.status).toBe('done');
     });
 
+    test('a phase run starts with the bank as last seen open, the record its walks plan on (ExecuteOptions.bank)', async () => {
+        const timeline = BASE.series(8, (w, i) =>
+            i === 2 || i === 3 ? w.bank([{ name: 'Copper ore', count: 10 }]) : w,
+        );
+        const records: (number | undefined)[] = [];
+        const probe = defineTask({
+            name: 'probe',
+            description: 'plan test bank record',
+            params: z.object({}),
+            steps: [
+                {
+                    name: 'probe',
+                    when: () => true,
+                    run(ctx) {
+                        records.push(ctx.bank?.('copper ore'), ctx.bank?.('Tin ore'));
+                        return { done: 'probed' };
+                    },
+                },
+            ],
+        });
+        const r = await sim(
+            plan(
+                [
+                    phase(probe, {}, { when: v => v.runs('probe') === 0 || v.runs('watch') > 0 }),
+                    phase(watch, {}, { until: v => v.state.tick >= 6 }),
+                ],
+                v => v.runs('probe') >= 2,
+            ),
+            { timeline },
+        );
+        expect(r.result.status).toBe('done');
+        // The first probe ran before the plan saw the bank (no record); the second after watch saw it: 10, no tin.
+        expect(records).toEqual([undefined, undefined, 10, 0]);
+    });
+
     test("the client's empty bank list on the tick before the close does not wipe what was remembered", async () => {
         // Open and listed at ticks 2-3, emptied for tick 4 only, closed from tick 5.
         const timeline = BASE.series(9, (w, i) => {

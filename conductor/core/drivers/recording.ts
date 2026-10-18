@@ -41,6 +41,8 @@ export interface RunInputs {
     progressEveryMs?: number;
     /** The plan's runId, for a phase run (ExecuteOptions.partOf). */
     partOf?: string;
+    /** The plan's bank record at the phase's start (ExecuteOptions.bank). */
+    bank?: Record<string, number>;
 }
 
 /** A command as the driver (or the screenshot sink) received it. */

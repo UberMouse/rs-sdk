@@ -212,8 +212,11 @@ export interface RunPlanOptions {
     pathfinder?: Pathfinder;
     /** Reads the world between phases. */
     state(): BotWorldState;
-    /** A new phase run; `index` counts the plan's phase runs from 0. */
-    newPhaseRun(phase: Phase, index: number): PhaseRun;
+    /**
+     * A new phase run; `index` counts the plan's phase runs from 0. `inputs.bank` is the bank record it starts with
+     * (ExecuteOptions.bank), for the run's recorded inputs.
+     */
+    newPhaseRun(phase: Phase, index: number, inputs?: { bank?: Record<string, number> }): PhaseRun;
     /** Phases in a row that change nothing before the plan fails. Default DEFAULT_MAX_IDLE_PHASES. */
     maxIdlePhases?: number;
     /**
@@ -651,7 +654,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             const index = loops++;
             say(`phase ${index + 1}: ${chosen.name}`);
             running = chosen;
-            const run = opts.newPhaseRun(chosen, index);
+            // The bank as last seen open, for the phase's walks to plan a detour on (ExecuteOptions.bank).
+            const bank = bankCounts ? Object.fromEntries(bankCounts) : undefined;
+            const run = opts.newPhaseRun(chosen, index, bank && { bank });
             // Names the phase's own log while it runs; phase-end alone would leave a live viewer guessing.
             emit({ type: 'phase-start', phase: chosen.name, index, runId: run.runId, logFile: run.logFile });
             const flight = {
@@ -686,6 +691,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     // One clock for the plan's stops and the phase's watchdog and durations.
                     now: phaseNow,
                     ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
+                    ...(bank && { bank }),
                 });
                 flight.result = result;
             } finally {

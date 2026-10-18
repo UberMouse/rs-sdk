@@ -8,6 +8,7 @@ import type { BotWorldState } from '../../sdk/types';
 import { type Driver, type Guard, guardsUnder, interpret, type Interpretation, TickStall } from '../core/interpret';
 import type { ActionContext } from '../actions/context';
 import type { Pathfinder } from '../actions/paths';
+import type { WalkWorld } from './walk-graph';
 import { clearStrayChoice, dismiss, leftoverModal, strayChoice } from '../actions/dismiss';
 import { eat } from '../actions/eat';
 import { closeModalUntil } from '../actions/modal';
@@ -95,6 +96,13 @@ export interface ExecuteOptions {
     now?: () => number;
     /** Routes for the walkTo op (TaskContext.pathfinder); default the SDK's collision data. */
     pathfinder?: Pathfinder;
+    /** Where the walkTo op plans its way (TaskContext.walkWorld); default the world index's. */
+    walkWorld?: WalkWorld;
+    /**
+     * The bank as the plan last saw it open before this run, item name -> count (TaskContext.bank); absent when no
+     * plan has seen it. Recorded with the run's inputs, so a replay plans as the run did.
+     */
+    bank?: Readonly<Record<string, number>>;
     botName: string;
     runId: string;
     /** Where the event sink writes; reported in the result. */
@@ -111,6 +119,16 @@ export interface ExecuteOptions {
     /** The runId of the plan this run is a phase of; copied into the result. */
     partOf?: string;
 }
+
+/** A bank record's count of an item by name, case aside: 0 for one the record does not hold. */
+const bankCount =
+    (bank: Readonly<Record<string, number>>) =>
+    (item: string): number => {
+        const name = item.toLowerCase();
+        let n = 0;
+        for (const [k, count] of Object.entries(bank)) if (k.toLowerCase() === name) n += count;
+        return n;
+    };
 
 /** `by` is the step or guard that ended the run (TaskResult.endedBy). */
 type End = { status: TaskStatus; reason: string; by?: string };
@@ -264,6 +282,8 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             return mapCounter(counts, name);
         },
         ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
+        ...(opts.walkWorld && { walkWorld: opts.walkWorld }),
+        ...(opts.bank && { bank: bankCount(opts.bank) }),
         stepTicksLeft: () => (opStartTick === null ? undefined : opStartTick + stepBudgetTicks - driver.state().tick),
         inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {

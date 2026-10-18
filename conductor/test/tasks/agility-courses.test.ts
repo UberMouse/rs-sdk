@@ -4,6 +4,7 @@ import type { Effect } from '../../core/drivers/timeline';
 import agility from '../../tasks/agility';
 import { simulate, type Simulation } from '../simulate';
 import { consume, walking } from '../react';
+import { noCrossings } from '../paths';
 import { attackedFrom, world, type NpcOptions, type World } from '../world';
 
 type Spot = { x: number; z: number; level: number };
@@ -526,6 +527,8 @@ describe('agility: wilderness course', () => {
             params: { course: 'wilderness', laps: 1 },
             timeline: without('Obstacle pipe', { x: 3010, z: 3931, level: 0 }).series(400),
             react: sightOf(wildernessReactor(), pipe, 4),
+            // The test's open ground: in the world index this tile is outside the course, through its door.
+            walkWorld: noCrossings(),
         });
         expect(r.result.reason).toBe(`stop-laps: 1 laps${LEAVE_NOTE}`);
         expect(withoutWalks(r.sends)[0]).toBe(PIPE);

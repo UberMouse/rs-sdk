@@ -5,7 +5,7 @@ import { CLIMB_MAX_TICKS } from '../../actions/climb';
 import { type WalkOptions, type WalkResult, walkTo, timedOutAdvancing } from '../../actions/walk';
 import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { interpret } from '../../core/interpret';
-import { straightPaths } from '../paths';
+import { onlyConnectors, straightPaths } from '../paths';
 import { walking } from '../react';
 import { castle, floorLocs, LANDING } from '../stairs';
 import { world } from '../world';
@@ -25,6 +25,8 @@ async function walk(first: BotWorldState, x: number, z: number, opts: Run = {}, 
     const ctx = {
         state: () => driver.state(),
         pathfinder: paths,
+        // The index's connectors without its moves: the scripted worlds here have none of the stiles on the way.
+        walkWorld: onlyConnectors(),
         stepTicksLeft: () =>
             opts.stepBudget === undefined ? undefined : startTick + opts.stepBudget - driver.state().tick,
     };

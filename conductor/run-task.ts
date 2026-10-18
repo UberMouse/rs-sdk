@@ -278,7 +278,7 @@ const run = await runScript(
                 if (!s) throw new Error('no world state from client');
                 return s;
             },
-            newPhaseRun: p => {
+            newPhaseRun: (p, _index, inputs) => {
                 // A killed plan starts nothing more: the next phase would log a run that never was.
                 if (resultLine.printed) throw new Error('the run was killed');
                 const phase = openLiveRun(sdk, {
@@ -288,6 +288,7 @@ const run = await runScript(
                     params: p.params,
                     stops: [],
                     partOf: runId,
+                    ...(inputs?.bank && { bank: inputs.bank }),
                     print,
                     warn,
                 });

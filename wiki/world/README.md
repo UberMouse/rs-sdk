@@ -158,8 +158,8 @@ over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them
 
 Both are walks over the neighbour steps and the free edges that carry no price of their own. A landing or a way back
 no walk gets to is left unpriced and listed in the build report, and the distances do not take that edge (the fill
-still does). The conductor's walker (`conductor/lib/walk-graph.ts`) does not walk scripted moves, teleports or
-transports.
+still does). The conductor's walker (`conductor/lib/walk-graph.ts`) walks scripted moves and teleports, and prices a
+roll at the bot's own level rather than the lowest allowed; it does not take transports.
 
 ### The unreached report
 

@@ -44,6 +44,7 @@ export async function replayRun(
             stops: run.stops,
             ...(run.progressEveryMs !== undefined && { progressEveryMs: run.progressEveryMs }),
             ...(run.partOf !== undefined && { partOf: run.partOf }),
+            ...(run.bank && { bank: run.bank }),
             ...(stop && { externalStop: () => (++externalChecks >= stop.check ? stop.reason : null) }),
         });
     } finally {
