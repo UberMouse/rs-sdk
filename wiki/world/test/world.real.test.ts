@@ -143,9 +143,9 @@ describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', ()
         });
     });
 
-    test('no move is a duplicate of a connector row, and every row is written, beside the dbrow teleports', () => {
+    test('no move is a duplicate of a connector row, and every row is written, beside the teleports', () => {
         expect(report.scripted.duplicates).toEqual([]);
-        expect(report.scripted.rows + report.teleports.rows).toBe(world.crossings.length);
+        expect(report.scripted.rows + report.teleports.rows + report.npcTeleports.rows).toBe(world.crossings.length);
     });
 
     test("Crandor up the rope from Elvarg's lair asks Dragon Slayer: the secret door from the volcano side", () => {

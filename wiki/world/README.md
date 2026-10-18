@@ -50,6 +50,7 @@ Within a set every requirement applies; any one set is enough. A set is written 
 | `members` | a members world |
 | `loadout:<id>` | carrying none of a loadout rule's categories (Entrana: no weapons or armour) |
 | `other:<text>` | a condition none of the forms fit; the build report lists each |
+| `other:came from <npc>` | the way came in by the npc's teleport: a way out back to where it came from (the essence mine's portals) |
 
 Sets are canonical (`canonicalSet`, `dominates`): a requirement another in the set implies is merged away
 (`quest:x` covers `quest:x>=3`), the coins of every crossing on the way are summed into one `coins:<n>`, a
@@ -100,9 +101,22 @@ the loc's `rune_type`, gives the landing coords and the talisman, which the gate
 ruins gets a `teleport` row, `act: item-on-loc` with its talisman and `item:<talisman>:held` (and `members` on a
 members row), and each portal a free `scripted` row back out. A row lands on every tile its coords can give: one of
 several coords (the cosmic temple's four entrances, the chaos portals' eight tiles round the ruins), and with a
-radius (`map_findsquare`, the body temple's) any open tile of the coord's ring. Ten altars are reached this way; the
+radius (`map_findsquare`, the body temple's) any open tile of the coord's ring with a line of walk to the coord. Ten altars are reached this way; the
 death temple has no ruins in this revision, so its altar is in `EXPECTED_UNREACHED`, and so are the decoration trees
 round the air, nature and water temples that no walk from the landing gets beside.
+
+The rune essence mine is an `NPC_TELEPORTS` entry: every npc op trigger whose whole body jumps to
+`@teleport_to_essence_mine` (Aubury's op4; Sedridor's, Cromperty's, Distentor's and Brimstail's op3) gets a
+`teleport` row, `act: npc-op`, done from the tiles beside the wizard's spawn, under `quest:runemysteries`, landing on
+every tile the `essence_mine_teleports` draw can give (each coord, and the open tiles within 1 with a line of sight to
+it). The portals send the player back to the wizard they came by, which a varp keeps and no stateless edge follows,
+so each portal has a row to every wizard's exit (the open tiles within 2 with a line of walk to it), under
+`other:came from <npc>` and what gets a walk to that wizard's teleport, read off a fill without the portals:
+Distentor's adds 66 Magic, as he stands inside the Magic Guild. A site's nearest-sink search meets every came-from
+requirement (`NearestOptions.context`), so the mine's rocks have a bank (Varrock East, by a portal to Aubury), and a
+fill takes a portal only where a walk already gets, so no reach set asks a came-from. A few landings are nooks the
+cave walls and dead trees close in, which no walk leaves: so no landing's spread is priced, the teleport rows are in
+the build report's unpriced list, and the distances do not take them.
 
 The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
 over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:

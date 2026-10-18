@@ -24,7 +24,9 @@
 // when that join, the crossing's alternative added, is still dominated by the context (requirements.ts dominates:
 // asks no more than it). So a site reached with `{}` gets a distance over `{}` edges alone, a site reached with
 // `{coins:30}` may pay one 30-coin fare but not two 20-coin tolls, and no way asks more than its context. A site
-// takes the shortest over its contexts, then the one whose way asks fewest requirements.
+// takes the shortest over its contexts, then the one whose way asks fewest requirements. The caller may widen a
+// reach set into its context (NearestOptions.context) with what a way meets by how it came in, which no reach set
+// says: the essence mine's came-from requirements (sources/npc-teleports.ts cameFromContext).
 //
 // Each tile keeps one label (its shortest way found, and of ways equally short the one asking less), so the search
 // is exact for the path cost wherever whether a crossing is allowed does not depend on the way so far: a context
@@ -173,6 +175,8 @@ export interface NearestOptions {
      * searches off the land no walk gets to, which a crossing out of it joins to the sinks. Absent: every tile.
      */
     reached?: (i: number) => boolean;
+    /** A site's reach set as the context its searches run under (the header comment). Absent: the set itself. */
+    context?: (set: readonly string[]) => readonly string[];
 }
 
 /** Offers or expands a label: a tile, half ticks to the sink, the sink's index, the way's set id. */
@@ -363,7 +367,7 @@ export function nearestSinks(
             const ctxOf = new Map<SiteIn, number[]>();
             for (const t of targets) {
                 if (!usable(t)) continue;
-                const ids = t.reach.map(r => sets.intern(r));
+                const ids = t.reach.map(r => sets.intern(options.context ? options.context(r) : r));
                 ctxOf.set(t, ids);
                 for (const c of ids) {
                     const tiles = contexts.get(c) ?? new Set<number>();

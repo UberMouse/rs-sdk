@@ -20,6 +20,8 @@
 //   members                a members world
 //   loadout:<id>           carrying none of a loadout rule's categories (World.loadoutRules)
 //   other:<text>           a condition none of these forms fit; the build report lists each one
+//   other:came from <npc>  the way came in by the npc's teleport (cameFrom): a way out that returns to where the
+//                          player came from (the essence mine's portals) has one per npc
 import { cmp } from './util';
 
 export type Requirement =
@@ -35,6 +37,15 @@ export type Requirement =
     | { kind: 'other'; text: string };
 
 const ID = /^[a-z0-9_]+$/;
+
+/** The prefix of a came-from requirement (cameFrom). */
+export const CAME_FROM = 'other:came from ';
+/**
+ * The requirement of a way out that returns to the npc the way came in by (sources/npc-teleports.ts): no account
+ * holds it, but a way that came in by the npc's op meets it, which distance.ts lets a context say
+ * (NearestOptions.context).
+ */
+export const cameFrom = (npc: string): string => `${CAME_FROM}${npc}`;
 
 /** The canonical string of a requirement. Throws on a malformed one (an id that isn't `[a-z0-9_]+`). */
 export function formatRequirement(r: Requirement): string {

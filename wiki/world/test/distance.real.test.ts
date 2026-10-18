@@ -7,11 +7,14 @@ import { loadWorld } from '../load';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { readConfigs } from '../sources/configs';
+import { cameFromContext } from '../sources/npc-teleports';
 import type { Tile } from '../types';
 
 const world = loadWorld();
 const graph = reachGraph({ world, collision: reachCollision, size: locSizes(readConfigs('loc')) });
-const { nearest } = nearestSinks(graph, world.sites);
+// As the build searches them: a context takes the essence mine's came-from requirements.
+const context = cameFromContext(world.crossings);
+const { nearest } = nearestSinks(graph, world.sites, { context });
 
 const site = (id: string) => {
     const s = world.sites.find(x => x.id === id);
@@ -26,9 +29,9 @@ test("world.json's nearest is what distance.ts computes from its graph", () => {
 });
 
 test('searching every context in full finds what the improvement-only searches find', () => {
-    // All four sink kinds and all their contexts (65 searches), each run from the sinks until its targets settle.
-    const full = nearestSinks(graph, world.sites, { full: true });
-    expect(full.report.contexts).toEqual(nearestSinks(graph, world.sites).report.contexts);
+    // All four sink kinds and all their contexts, each run from the sinks until its targets settle.
+    const full = nearestSinks(graph, world.sites, { full: true, context });
+    expect(full.report.contexts).toEqual(nearestSinks(graph, world.sites, { context }).report.contexts);
     for (const s of world.sites) expect([s.id, full.nearest.get(s.id)]).toEqual([s.id, nearest.get(s.id)]);
 }, 60_000);
 

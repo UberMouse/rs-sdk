@@ -1,8 +1,9 @@
 // Loc teleports whose landing is drawn from a dbrow's coord list (gates.ts DBROW_TELEPORTS). The trigger finds
 // its row by a param of the loc (`db_find(<table>:<key>, loc_param(<param>))`) and jumps to
 // `map_findsquare(db_getfield(<row>, <table>:<column>, random(<count>)))`: one of the row's coords at random, then
-// a random tile in that coord's ring [min, max] (Chebyshev) the collision does not block, or the coord itself when
-// none is open (server/engine/src/engine/script/handlers/ServerOps.ts MAP_FINDSQUARE). The gate scan
+// a random tile in that coord's ring [min, max] (Chebyshev) the collision does not block and its type's line test
+// passes from, or the coord itself when none does (server/engine/src/engine/script/handlers/ServerOps.ts
+// MAP_FINDSQUARE). The gate scan
 // (sources/gate-scan.ts) reads neither the dbrow nor a `last_useitem` test against one of its fields, so an entry
 // names the trigger, the table and its columns, and every coord and obj comes from the dbrow. Each placed loc of a
 // config the trigger covers gets one World.crossings row: done from every tile on land it is used from, landing on
@@ -52,8 +53,17 @@ export interface DbrowTeleportInput {
     objConfigs: ReadonlyMap<string, Config>;
     /** Every placed loc. */
     locs: readonly PlacedLoc[];
-    collision: ConnectorCollision;
+    collision: TeleportCollision;
     size: SiteOptions['size'];
+}
+
+/** The collision a teleport's landings are read over: a findsquare ring's line tests too. */
+export interface TeleportCollision extends ConnectorCollision {
+    /**
+     * The engine's line of walk or of sight from (x, z) to (tx, tz) on `level`, for a player of size 1
+     * (server/engine/src/engine/GameMap.ts isLineOfWalk, isLineOfSight).
+     */
+    line(kind: 'walk' | 'sight', level: number, x: number, z: number, tx: number, tz: number): boolean;
 }
 
 /** A placed loc no tile on land is used from, given no row. */
@@ -86,18 +96,23 @@ const paramOf = (cfg: Config | undefined, name: string): string | undefined =>
 /** The tiles the engine draws from at most (server/engine/src/engine/script/handlers/ServerOps.ts:298). */
 const FINDSQUARE_MAX_TILES = 100;
 
+/** The `map_findsquare` types by value (^map_findsquare_lineofwalk 0, lineofsight 1, none 2; general/configs/map_findsquare.constant). */
+const FINDSQUARE_LINES: readonly ('walk' | 'sight' | undefined)[] = ['walk', 'sight', undefined];
+
 /**
- * The tiles `map_findsquare(coord, min, max, type)` can give (the header comment): of type 0 only (no line of walk
- * or sight to trace), and of a ring of at most FINDSQUARE_MAX_TILES tiles, as the engine stops at that many open
- * ones, x-major, and a bigger ring could leave some out (ServerOps.ts:301-324). Throws on a radius the engine
- * refuses (a negative one, ServerOps.ts:278-279), on a radius that is no integer, and on min above max.
+ * The tiles `map_findsquare(coord, min, max, type)` can give (the header comment): of a ring of at most
+ * FINDSQUARE_MAX_TILES tiles, as the engine stops at that many open ones, x-major, and a bigger ring could leave some
+ * out (ServerOps.ts:301-324); each tile walkable and, for type 0 or 1, with a line of walk or sight from it to the
+ * coord (ServerOps.ts passesType). Throws on a radius the engine refuses (a negative one, ServerOps.ts:278-279), on a
+ * radius that is no integer, on min above max, and on a type that is none of the three.
  */
 export function findsquareTiles(
     [literal, lo = '0', hi = '0', type = '0']: readonly string[],
-    walkable: ConnectorCollision['walkable'],
+    collision: Pick<TeleportCollision, 'walkable' | 'line'>,
 ): Tile[] {
     if (!literal || !isCoordLiteral(literal)) throw new Error(`${literal} is not a coord literal`);
-    if (type !== '0') throw new Error(`map_findsquare type ${type} (a line of walk or sight) is not read`);
+    if (!/^[012]$/.test(type)) throw new Error(`map_findsquare type ${type} is not 0, 1 or 2`);
+    const line = FINDSQUARE_LINES[Number(type)];
     const o = coordTile(literal);
     if (!/^\d+$/.test(lo) || !/^\d+$/.test(hi) || Number(lo) > Number(hi))
         throw new Error(`map_findsquare radius ${lo} to ${hi} is not 0 <= min <= max in integers`);
@@ -110,7 +125,11 @@ export function findsquareTiles(
     const out: Tile[] = [];
     for (let x = o.x - max; x <= o.x + max; x++)
         for (let z = o.z - max; z <= o.z + max; z++)
-            if (Math.max(Math.abs(x - o.x), Math.abs(z - o.z)) >= min && walkable(o.level, x, z))
+            if (
+                Math.max(Math.abs(x - o.x), Math.abs(z - o.z)) >= min &&
+                collision.walkable(o.level, x, z) &&
+                (!line || collision.line(line, o.level, x, z, o.x, o.z))
+            )
                 out.push({ level: o.level, x, z });
     return out.length ? out : [o];
 }
@@ -152,7 +171,7 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
             if (!row) throw fail(`no ${e.table} row has ${e.key.column} ${value} (${l.config})`);
             let tiles: Tile[];
             try {
-                tiles = (row.data[e.landings] ?? []).flatMap(c => findsquareTiles(c, collision.walkable));
+                tiles = (row.data[e.landings] ?? []).flatMap(c => findsquareTiles(c, collision));
             } catch (err) {
                 throw fail(`${row.row}.${e.landings}: ${(err as Error).message}`);
             }

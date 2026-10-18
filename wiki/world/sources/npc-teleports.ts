@@ -1,0 +1,281 @@
+// Npc teleports to a coord drawn from an enum, and the loc that sends the player back (gates.ts NPC_TELEPORTS): the
+// essence mine. An npc op trigger whose whole body is `@<label>(^<coord>)` jumps to the label, which checks its
+// requirement, keeps the coord in a varp, and jumps to `map_findsquare` round a coord drawn from the enum at random;
+// the back trigger jumps to `map_findsquare` round the varp's coord. The npcs, their ops and the coords they pass come
+// from those triggers and the constants, the landings from the enum and the rings' lines; an entry names the label,
+// the enum, the requirement and the lines. Each spawn cluster of a caller's npc gets one World.crossings row, done
+// from the tiles beside the cluster (place.ts besideCluster) on land. The back move goes where the varp says, which
+// no stateless edge can follow: each placed loc of the back trigger gets a row per caller's npc, landing round the
+// coord that npc passes, under `other:came from <npc>` (requirements.ts cameFrom), which only a way that came in by
+// that npc's op meets. A way that came in by it met what got it to the npc's teleport too, so the build joins that to
+// the way back (joinWaysIn): a fill does not take the portal to Distentor, inside the Magic Guild, without 66 Magic. A
+// cluster or loc no tile on land is used from gets no row, nor does one whose every landing is off walkable land; the
+// build report lists both, and each landing left out.
+import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
+import type { Reach } from '../reach';
+import { CAME_FROM, cameFrom, minimalSets, requirementSet, type QuestFacts } from '../requirements';
+import type { Crossing, NpcSpawn, Quest, Tile } from '../types';
+import { cmp } from '../util';
+import { first, type Config } from './configs';
+import { constantInt, type Constant } from './constants';
+import { findsquareTiles, type TeleportCollision } from './dbrow-teleports';
+import { triggerConfigs, triggerKey } from './gate-scan';
+import { isCoordLiteral } from './runescript';
+import type { Callable, Trigger } from './triggers';
+
+/** An npc teleport to an enum's coords, and the loc trigger back (the header comment). */
+export interface NpcTeleport {
+    /** The label the npcs' op triggers jump to, without its `@`: `teleport_to_essence_mine`. */
+    label: string;
+    /** How the move is priced (distance.ts CROSSING_TICKS). */
+    via: Crossing['via'];
+    /** The enum of coords the label draws from: `enum(int, coord, <enum>, random(enum_getoutputcount(<enum>)))`. */
+    enum: string;
+    /** What the label checks before the move, and the line it checks it on, which names each quest's varp. */
+    requires: readonly string[];
+    checkedAt: string;
+    /** The label's `map_findsquare` line round the drawn coord, and the `p_telejump` line, as `file:line`. */
+    ring: string;
+    source: string;
+    /**
+     * The loc trigger that sends the player back to the coord the label was passed, which the label keeps in
+     * `%<varp>`: its `map_findsquare` line round the varp, and its `p_telejump` line.
+     */
+    back: { trigger: string; via: Crossing['via']; varp: string; ring: string; source: string };
+}
+
+export interface NpcTeleportInput {
+    entries: readonly NpcTeleport[];
+    triggers: readonly Trigger[];
+    callables: readonly Callable[];
+    /** Script text by file, to read the entries' lines. */
+    scripts: ReadonlyMap<string, string>;
+    constants: ReadonlyMap<string, Constant>;
+    enums: ReadonlyMap<string, Config>;
+    npcConfigs: ReadonlyMap<string, Config>;
+    locConfigs: ReadonlyMap<string, Config>;
+    quests: readonly Pick<Quest, 'id' | 'varp'>[];
+    /** Every npc spawn cluster (place.ts spawnClusters). */
+    spawns: readonly Pick<Placed<NpcSpawn>, 'config' | 'centre' | 'bbox'>[];
+    /** Every placed loc. */
+    locs: readonly PlacedLoc[];
+    collision: TeleportCollision & StepCollision;
+    size: SiteOptions['size'];
+}
+
+/** A spawn cluster or placed loc no tile on land is used from, given no row: its npc or loc config and tile. */
+export interface NpcTeleportMiss {
+    trigger: string;
+    config: string;
+    tile: Tile;
+}
+
+/** A landing off walkable land, left out of its row. */
+export interface NpcTeleportOffLand extends NpcTeleportMiss {
+    landing: Tile;
+}
+
+export interface NpcTeleports {
+    /** World.crossings rows: by entry, the npcs' rows by config, then the back rows by loc tile and npc. */
+    crossings: Crossing[];
+    unstood: NpcTeleportMiss[];
+    offLand: NpcTeleportOffLand[];
+}
+
+const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
+const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a.z - b.z;
+const escape = (s: string): string => s.replace(/[$^]/g, '\\$&');
+
+/** The World.crossings rows of gates.ts NPC_TELEPORTS (the header comment). Throws on an entry the data refutes. */
+export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
+    const { collision, size } = input;
+    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const crossings: Crossing[] = [];
+    const unstood: NpcTeleportMiss[] = [];
+    const offLand: NpcTeleportOffLand[] = [];
+    for (const e of input.entries) {
+        const fail = (why: string) => new Error(`gates.ts NPC_TELEPORTS @${e.label} (${e.source}): ${why}`);
+        /** The text of a `file:line` in the block (a label or trigger) `b`, or a failure. */
+        const lineIn = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): string => {
+            const [file, n] = at.split(':');
+            const k = Number(n) - b.line;
+            if (file !== b.file || !(k >= 0 && k < b.body.split('\n').length))
+                throw fail(`${what} ${at} is not in ${b.file}:${b.line}`);
+            return input.scripts.get(file)!.split('\n')[Number(n) - 1]!;
+        };
+        /** The `map_findsquare(<arg>, <min>, <max>, <type>)` of a line: its arg, and its ring with the type's value. */
+        const ringOf = (text: string, at: string): { arg: string; ring: string[] } => {
+            const m = text.match(
+                /\bmap_findsquare\s*\(\s*([$%][a-z0-9_]+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\^[a-z0-9_]+)\s*\)/,
+            );
+            const type = m && constantInt(input.constants, m[4]!);
+            if (!m || type === undefined) throw fail(`${at} has no map_findsquare(<var>, <min>, <max>, ^<type>)`);
+            return { arg: m[1]!, ring: [m[2]!, m[3]!, String(type)] };
+        };
+        /** The tiles a ring round `literal` can give, each once, and those of them on walkable land. */
+        const land = (literal: string, ring: string[]): { all: Tile[]; on: Tile[] } => {
+            let tiles: Tile[];
+            try {
+                tiles = findsquareTiles([literal, ...ring], collision);
+            } catch (err) {
+                throw fail((err as Error).message);
+            }
+            const all = [...new Map(tiles.map(t => [tileKey(t), t])).values()].sort(byTile);
+            return { all, on: all.filter(onLand) };
+        };
+
+        const label = input.callables.find(c => c.call === `@${e.label}`);
+        if (!label) throw fail('no such label');
+        // The label's coord parameter, kept in the varp the back trigger reads.
+        const param = label.body.match(/^\(\s*coord\s+(\$[a-z0-9_]+)\s*\)/)?.[1];
+        if (!param) throw fail('the label takes no one coord parameter');
+        if (!new RegExp(`%${e.back.varp}\\s*=\\s*${escape(param)}\\b`).test(label.body))
+            throw fail(`the label does not set %${e.back.varp} to ${param}`);
+        if (!/\bp_telejump\s*\(/.test(lineIn(e.source, label, 'the jump')))
+            throw fail(`${e.source} is not a p_telejump`);
+        const ring = ringOf(lineIn(e.ring, label, 'the ring'), e.ring);
+        const draw = `${escape(ring.arg)}\\s*=\\s*enum\\(\\s*int\\s*,\\s*coord\\s*,\\s*${e.enum}\\s*,\\s*random\\(\\s*enum_getoutputcount\\(\\s*${e.enum}\\s*\\)\\s*\\)\\s*\\)`;
+        if (!new RegExp(draw).test(label.body)) throw fail(`the label does not draw ${ring.arg} from ${e.enum}`);
+        const checked = lineIn(e.checkedAt, label, 'the check');
+        for (const r of e.requires) {
+            const id = r.match(/^quest:([a-z0-9_]+)/)?.[1];
+            if (!id) continue;
+            const q = input.quests.find(x => x.id === id);
+            if (!q) throw fail(`no quest ${id}`);
+            if (!checked.includes(`%${q.varp}`)) throw fail(`${e.checkedAt} does not read %${q.varp}`);
+        }
+        const requires = [requirementSet(e.requires)];
+        const cfg = input.enums.get(e.enum);
+        if (first(cfg, 'outputtype') !== 'coord') throw fail(`enum ${e.enum} does not give coords`);
+        const coords = (cfg?.val ?? []).map(v => v.slice(v.indexOf(',') + 1));
+        if (!coords.length || !coords.every(isCoordLiteral)) throw fail(`enum ${e.enum} has no coords, or a non-coord`);
+        const drawn = [...new Map(coords.flatMap(c => land(c, ring.ring).all).map(t => [tileKey(t), t])).values()].sort(
+            byTile,
+        );
+        const landings = drawn.filter(onLand);
+
+        // The npc op triggers that jump to the label and nothing else, with the coord constant they pass.
+        const call = new RegExp(`^\\s*@${e.label}\\s*\\(\\s*(\\^[a-z0-9_]+)\\s*\\)\\s*;?\\s*$`);
+        const callers = input.triggers.flatMap(t => {
+            const passed = t.body.replace(/\/\/.*$/gm, '').match(call)?.[1];
+            if (t.on !== 'npc' || t.kind !== 'op' || t.op === 'u' || !passed) return [];
+            if (t.category) throw fail(`${triggerKey(t)} is a category trigger, which is not read`);
+            if (first(input.npcConfigs.get(t.target), `op${t.op}`) === undefined) return [];
+            const literal = input.constants.get(passed)?.value;
+            if (!literal || !isCoordLiteral(literal)) throw fail(`${triggerKey(t)} passes ${passed}, no coord`);
+            return [{ trigger: t, npc: t.target, back: literal }];
+        });
+        if (!callers.length) throw fail('no npc op trigger jumps to it');
+        callers.sort((a, b) => cmp(a.npc, b.npc) || cmp(a.trigger.op, b.trigger.op));
+        for (const { trigger, npc } of callers) {
+            const clusters = input.spawns.filter(s => s.config === npc);
+            if (!clusters.length) throw fail(`${npc} has no spawn`);
+            for (const c of clusters) {
+                const miss = { trigger: triggerKey(trigger), config: npc, tile: c.centre };
+                for (const t of drawn) if (!onLand(t)) offLand.push({ ...miss, landing: t });
+                const from = besideCluster(c, collision).filter(onLand).sort(byTile);
+                if (!from.length) unstood.push(miss);
+                if (!from.length || !landings.length) continue;
+                crossings.push({
+                    via: e.via,
+                    act: { kind: 'npc-op', npc, op: Number(trigger.op) },
+                    at: c.centre,
+                    from,
+                    landings: landings.map(tile => ({ tile })),
+                    requires,
+                    source: e.source,
+                });
+            }
+        }
+
+        const back = input.triggers.find(t => triggerKey(t) === e.back.trigger);
+        if (!back || back.on !== 'loc' || back.op === 'u') throw fail(`no loc op trigger ${e.back.trigger}`);
+        const backBlock = { file: back.file, line: back.line, body: back.body };
+        if (!/\bp_telejump\s*\(/.test(lineIn(e.back.source, backBlock, 'the jump back')))
+            throw fail(`${e.back.source} is not a p_telejump`);
+        const backRing = ringOf(lineIn(e.back.ring, backBlock, 'the ring back'), e.back.ring);
+        if (backRing.arg !== `%${e.back.varp}`) throw fail(`${e.back.ring} rings ${backRing.arg}, not %${e.back.varp}`);
+        const covered = new Set(triggerConfigs(input.triggers, input.locConfigs)(back));
+        const placed = input.locs
+            .filter(l => covered.has(l.config))
+            .sort((a, b) => byTile(a.tile, b.tile) || cmp(a.config, b.config));
+        if (!placed.length) throw fail(`no placed loc of a config ${e.back.trigger} covers`);
+        // One way back per npc, as a back coord is the npc's.
+        const ways = [...new Map(callers.map(c => [c.npc, land(c.back, backRing.ring)])).entries()];
+        for (const l of placed) {
+            const miss = { trigger: e.back.trigger, config: l.config, tile: l.tile };
+            const from = reachTiles(l, collision, size)
+                .filter(t => collision.land(t.level, t.x, t.z))
+                .sort(byTile);
+            if (!from.length) unstood.push(miss);
+            for (const [npc, { all, on }] of ways) {
+                for (const t of all) if (!onLand(t)) offLand.push({ ...miss, landing: t });
+                if (!from.length || !on.length) continue;
+                crossings.push({
+                    via: e.back.via,
+                    act: { kind: 'loc-op', loc: l.config, op: Number(back.op) },
+                    at: l.tile,
+                    from,
+                    landings: on.map(tile => ({ tile })),
+                    requires: [[cameFrom(npc)]],
+                    source: e.back.source,
+                });
+            }
+        }
+    }
+    return { crossings, unstood, offLand };
+}
+
+/** The npc a came-from row returns to (its first set's came-from requirement), or undefined for another row. */
+export const returnsTo = (c: Crossing): string | undefined =>
+    c.requires[0]?.find(r => r.startsWith(CAME_FROM))?.slice(CAME_FROM.length);
+
+/**
+ * The rows with each way back asking what got the way in (the header comment): a came-from row's sets are its npc's
+ * teleport's, each set that `fill` (a fill over the rows without the ways back) gets to a tile the teleport row is done
+ * from, joined with one of the row's own and the came-from requirement. A way back to an npc no set gets to is left
+ * out. Every other row is as it was.
+ */
+export function joinWaysIn(
+    crossings: readonly Crossing[],
+    fill: Pick<Reach, 'setsAny'>,
+    quests?: QuestFacts,
+): Crossing[] {
+    const ways = new Map<string, string[][]>();
+    const wayIn = (npc: string): string[][] => {
+        let sets = ways.get(npc);
+        if (!sets) {
+            sets = minimalSets(
+                crossings
+                    .filter(c => c.act.kind === 'npc-op' && c.act.npc === npc)
+                    .flatMap(c =>
+                        fill
+                            .setsAny(c.from)
+                            .flatMap(s =>
+                                c.requires.map(r => [...s, ...r, cameFrom(npc)].filter(x => x !== 'members')),
+                            ),
+                    ),
+                quests,
+            );
+            ways.set(npc, sets);
+        }
+        return sets;
+    };
+    return crossings.flatMap(c => {
+        const npc = returnsTo(c);
+        if (npc === undefined) return [c];
+        const requires = wayIn(npc);
+        return requires.length ? [{ ...c, requires }] : [];
+    });
+}
+
+/**
+ * The requirement context of a site's reach set, for its nearest sinks (distance.ts NearestOptions.context): the set
+ * and every came-from requirement of the rows. A way back asks what got the way in too (joinWaysIn), so a context
+ * takes only the ways back to the npcs whose teleport it gets to: the mine's portals to the wizards a walk can use,
+ * not to Distentor in the Magic Guild without 66 Magic.
+ */
+export function cameFromContext(crossings: readonly Crossing[]): (set: readonly string[]) => string[] {
+    const tokens = [...new Set(crossings.flatMap(c => (returnsTo(c) === undefined ? [] : [cameFrom(returnsTo(c)!)])))];
+    return set => requirementSet([...set, ...tokens]);
+}

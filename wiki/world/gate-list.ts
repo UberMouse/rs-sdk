@@ -807,7 +807,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'not-a-gate',
         'oploc1,blankrunestone_exit_portal',
         'skill_runecraft/scripts/essence_mine.rs2:28',
-        'The rune essence mine exit portal: a transport, out of scope (gates.ts TRANSPORTS_OUT_OF_SCOPE).',
+        'The rune essence mine exit portal: a teleport back to the wizard the player came from, which gates.ts NPC_TELEPORTS gives as crossing rows.',
         '83d1dd66',
     ),
     no(

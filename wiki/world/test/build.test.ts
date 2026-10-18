@@ -9,6 +9,7 @@ import {
     failed,
     formatReport,
     formatScripted,
+    formatNpcTeleports,
     formatTeleports,
     formatUnreached,
     nearestReached,
@@ -445,6 +446,7 @@ describe('formatReport', () => {
             duplicates: [],
         },
         teleports: { rows: 0, unstood: [], offLand: [] },
+        npcTeleports: { rows: 0, unstood: [], offLand: [], other: [] },
         reach: {
             nodes: 64,
             reached: 10,
@@ -480,6 +482,7 @@ describe('formatReport', () => {
     const scriptedLine =
         'scripted moves: 0 crossing rows; triggers ; placed locs rows 0, unsettled 0, duplicate 0, door 0, not-a-passage 0';
     const teleportsLine = 'dbrow teleports: 0 crossing rows (gates.ts DBROW_TELEPORTS)';
+    const npcTeleportsLine = 'npc teleports: 0 crossing rows (gates.ts NPC_TELEPORTS)';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
@@ -487,6 +490,7 @@ describe('formatReport', () => {
         landingsLine,
         scriptedLine,
         teleportsLine,
+        npcTeleportsLine,
     ];
 
     test('counts, then coverage, then connectors, quests, transports and gates', () =>
@@ -604,6 +608,7 @@ describe('formatReport', () => {
             landingsLine,
             scriptedLine,
             teleportsLine,
+            npcTeleportsLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -662,7 +667,7 @@ describe('formatReport', () => {
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
         };
-        expect(formatReport({ ...report, gates }).slice(-24)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-25)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -687,6 +692,7 @@ describe('formatReport', () => {
             landingsLine,
             scriptedLine,
             teleportsLine,
+            npcTeleportsLine,
         ]);
         expect(
             failed({
@@ -737,7 +743,7 @@ describe('formatReport', () => {
             ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-12)).toEqual([
+        expect(lines.slice(-13)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
                 '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
@@ -751,6 +757,7 @@ describe('formatReport', () => {
             '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
             scriptedLine,
             teleportsLine,
+            npcTeleportsLine,
         ]);
         // Warnings: they do not fail the build.
         expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);
@@ -807,6 +814,25 @@ describe('formatReport', () => {
             '  oplocu,_rc_ruins ruins (1, 1) -> (9, 9)',
         ]);
         expect(failed({ ...report, teleports })).toBe(false);
+    });
+
+    test('the npc teleports: rows, then the npcs and locs given none, the landings left out and other: requirements', () => {
+        const npcTeleports: BuildReport['npcTeleports'] = {
+            rows: 3,
+            unstood: [{ trigger: 'opnpc3,wizard', config: 'wizard', tile: at(4, 4) }],
+            offLand: [{ trigger: 'oploc1,portal', config: 'portal', tile: at(1, 1), landing: at(9, 9) }],
+            other: ['loc-op 1 portal: other:came from wizard'],
+        };
+        expect(formatNpcTeleports(npcTeleports)).toEqual([
+            'npc teleports: 3 crossing rows (gates.ts NPC_TELEPORTS)',
+            'warning: 1 npc teleport npcs and locs no tile on land is used from, no row:',
+            '  opnpc3,wizard wizard (4, 4)',
+            'warning: 1 npc teleport landings off walkable land, left out:',
+            '  oploc1,portal portal (1, 1) -> (9, 9)',
+            'warning: 1 npc teleport requirements in no other form:',
+            '  loc-op 1 portal: other:came from wizard',
+        ]);
+        expect(failed({ ...report, npcTeleports })).toBe(false);
     });
 });
 

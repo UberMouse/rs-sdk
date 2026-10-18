@@ -7,6 +7,7 @@ import { initPathfinding, isZoneAllocated } from '../../sdk/pathfinding';
 import * as rsmod from '../../server/vendor/rsmod-pathfinder';
 import type { ReachCollision } from './reach';
 import type { ConnectorCollision } from './sources/connectors';
+import type { TeleportCollision } from './sources/dbrow-teleports';
 
 /** A zone's key: its level and its 8x8 tile block. */
 const zoneKey = (level: number, x: number, z: number): number => (level * 1024 + (x >> 3)) * 2048 + (z >> 3);
@@ -53,13 +54,19 @@ function once(done: Set<string>, level: number, x: number, z: number): boolean {
 
 /**
  * The collision the reach fill walks (reach.ts): siteCollision's queries, the zones the data lists, and
- * `canStep` (collisionPaths', the engine's line of walk between two tiles). An edit runs on the rsmod
+ * `canStep` (collisionPaths', the engine's line of walk between two tiles); and the line tests a teleport's
+ * findsquare ring reads (sources/dbrow-teleports.ts), on the same rsmod instance. An edit runs on the rsmod
  * instance sdk/pathfinding.ts fills and is undone after, so nothing else in the process sees it.
  */
-export const reachCollision: ReachCollision = {
+export const reachCollision: ReachCollision & TeleportCollision = {
     ...siteCollision,
     zones: ZONES,
     canStep: collisionPaths.canStep,
+    // As GameMap.ts isLineOfWalk and isLineOfSight call them.
+    line(kind, level, x, z, tx, tz) {
+        initPathfinding();
+        return (kind === 'walk' ? rsmod.hasLineOfWalk : rsmod.hasLineOfSight)(level, x, z, tx, tz, 1, 1, 1, 1, 0);
+    },
     edited(edits, f) {
         initPathfinding();
         const undo: (() => void)[] = [];

@@ -1,9 +1,9 @@
 // What the world index reads from curated tables because the scripts are too complex to read offline:
 // quests whose journal calls the scan can't read, the procs that hold a loadout rule, transports the sail
-// scripts don't give, the loc teleports to a dbrow's coords, the transports left out of scope, and every gate
-// candidate confirmed or rejected. Every entry cites its script. The build reads these together with what it
-// derives (sources/quests.ts, sources/loadout.ts, sources/transports.ts, sources/dbrow-teleports.ts,
-// sources/gate-scan.ts) and fails on a quest in neither, a quest override the scan no longer needs, a gate
+// scripts don't give, the loc teleports to a dbrow's coords, the npc teleports to an enum's coords, the transports
+// left out of scope, and every gate candidate confirmed or rejected. Every entry cites its script. The build reads
+// these together with what it derives (sources/quests.ts, sources/loadout.ts, sources/transports.ts,
+// sources/dbrow-teleports.ts, sources/npc-teleports.ts, sources/gate-scan.ts) and fails on a quest in neither, a quest override the scan no longer needs, a gate
 // candidate GATES does not review, a GATES entry the scan no longer finds, a gate at odds with the scan without
 // a why, and an override (a rejection, or a gate with a why) whose scan digest no longer matches the scan's
 // proposal.
@@ -11,6 +11,7 @@ import { GATE_LIST } from './gate-list';
 import type { DbrowTeleport } from './sources/dbrow-teleports';
 import type { CuratedGate } from './sources/gate-scan';
 import type { LoadoutProc } from './sources/loadout';
+import type { NpcTeleport } from './sources/npc-teleports';
 import type { QuestOverride } from './sources/quests';
 import type { CuratedTransport } from './sources/transports';
 
@@ -191,18 +192,40 @@ export const DBROW_TELEPORTS: readonly DbrowTeleport[] = [
 ];
 
 /**
+ * Npc teleports to a coord drawn from an enum, and the loc back (sources/npc-teleports.ts): the label the npcs' ops
+ * jump to and the lines it is read from, so the npcs, their ops and the coords come from the scripts and the enum.
+ * Each spawn cluster of a caller's npc gets a World.crossings row, and each placed loc of the back trigger one per npc.
+ */
+export const NPC_TELEPORTS: readonly NpcTeleport[] = [
+    {
+        // The rune essence mine: Aubury's op4 and Sedridor's, Cromperty's, Distentor's and Brimstail's op3 jump here
+        // with the coord to send the player back to (aubury.rs2:33, sedridor.rs2:45, wizard_cromperty.rs2:10,
+        // wizard_distentor.rs2:16, brimstail.rs2:21). The npc talks, then `p_delay(4)` (:20) before the jump. The
+        // portal goes back after `p_delay(1)` (:34) to %exit_essence_mine_coord, set at :8; it is null, and the
+        // portal sends the player to Sedridor, only for one who never came in by an npc (:35).
+        label: 'teleport_to_essence_mine',
+        via: 'teleport',
+        enum: 'essence_mine_teleports',
+        requires: ['quest:runemysteries'],
+        checkedAt: 'skill_runecraft/scripts/essence_mine.rs2:2',
+        ring: 'skill_runecraft/scripts/essence_mine.rs2:24',
+        source: 'skill_runecraft/scripts/essence_mine.rs2:25',
+        back: {
+            trigger: 'oploc1,blankrunestone_exit_portal',
+            via: 'teleport',
+            varp: 'exit_essence_mine_coord',
+            ring: 'skill_runecraft/scripts/essence_mine.rs2:40',
+            source: 'skill_runecraft/scripts/essence_mine.rs2:41',
+        },
+    },
+];
+
+/**
  * Transports neither derived nor curated, and why; the build report lists them. An entry with `sailSite`
  * names a sail site (sources/transports.ts sailSites) no npc op reaches, which the build then does not
  * fail on; the build fails on such an entry once its site is gone or an npc op reaches it.
  */
 export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; reason: string; sailSite?: true }[] = [
-    {
-        script: 'skill_runecraft/scripts/essence_mine.rs2:1',
-        what: 'the rune essence mine teleport (Aubury, Sedridor, Cromperty, Distentor, Brimstail) and its exit portals',
-        reason:
-            'the landing is random among the essence_mine_teleports enum, and the portal returns to %exit_essence_mine_coord, ' +
-            'the wizard the player came from; needs quest:runemysteries (essence_mine.rs2:2)',
-    },
     {
         script: 'areas/area_gnome/scripts/gnome_glider.rs2:7',
         what: 'gnome gliders',

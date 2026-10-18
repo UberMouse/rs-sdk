@@ -61,6 +61,18 @@ export class Grid implements ReachCollision {
             this.open(l, x, z + dz, dx, 0)
         );
     };
+    /**
+     * A line of walk or sight (sources/dbrow-teleports.ts TeleportCollision), both read alike here: a run of
+     * `canStep` steps from (x, z) to (tx, tz), diagonal while both coordinates differ.
+     */
+    line = (_kind: 'walk' | 'sight', l: number, x: number, z: number, tx: number, tz: number): boolean => {
+        while (x !== tx || z !== tz) {
+            const [dx, dz] = [Math.sign(tx - x), Math.sign(tz - z)];
+            if (!this.canStep(l, x, z, dx, dz)) return false;
+            [x, z] = [x + dx, z + dz];
+        }
+        return true;
+    };
     /** A wall is used from its two tiles (place.ts's reach test); any other loc from a tile sharing an edge. */
     reached = (from: Tile, l: LocReach): boolean => {
         if (l.shape === 0) {

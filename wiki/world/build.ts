@@ -2,7 +2,8 @@
 // sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
-// (sources/gate-scan.ts, gates.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
+// (sources/gate-scan.ts, gates.ts), the crossings (sources/gate-landings.ts, sources/dbrow-teleports.ts,
+// sources/npc-teleports.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
 // (distance.ts); then prints a report and renders the pages (render.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches, by pocket
@@ -20,6 +21,7 @@ import { areaResolver } from './area-resolve';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
+import { questFacts } from './requirements';
 import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
@@ -35,6 +37,7 @@ import {
     type SiteOptions,
 } from './place';
 import {
+    actName,
     fillReach,
     formatReach,
     reachGraph,
@@ -46,15 +49,17 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
-import { deriveDbrowTeleports, type DbrowTeleports } from './sources/dbrow-teleports';
+import { deriveDbrowTeleports, type DbrowTeleports, type TeleportCollision } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
+import { cameFromContext, deriveNpcTeleports, joinWaysIn, returnsTo, type NpcTeleports } from './sources/npc-teleports';
 import { readPack } from './sources/packs';
 import {
     CURATED_TRANSPORTS,
     DBROW_TELEPORTS,
     GATES,
     LOADOUT_PROCS,
+    NPC_TELEPORTS,
     QUEST_OVERRIDES,
     QUEST_VARP_EXCEPTIONS,
     TRANSPORTS_OUT_OF_SCOPE,
@@ -293,6 +298,12 @@ export interface BuildReport {
      * locs no tile on land is used from, and the landings off walkable land (warnings).
      */
     teleports: Pick<DbrowTeleports, 'unstood' | 'offLand'> & { rows: number };
+    /**
+     * The npc teleports to an enum's coords and their locs back (sources/npc-teleports.ts): the World.crossings rows
+     * written, the spawn clusters and placed locs no tile on land is used from, the landings off walkable land, and
+     * the rows' requirements in no other form, as `<act>: <requirement>` (warnings).
+     */
+    npcTeleports: Pick<NpcTeleports, 'unstood' | 'offLand'> & { rows: number; other: string[] };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
@@ -330,7 +341,7 @@ export const failed = (r: BuildReport): boolean =>
 export interface BuildInput {
     generatedFrom: string;
     areas: readonly Area[];
-    collision: ReachCollision;
+    collision: ReachCollision & TeleportCollision;
 }
 
 /** The written order: kind, x, z, level, config, then the rest of a feature's identity. */
@@ -783,13 +794,39 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         collision,
         size: locSizes(locConfigs),
     });
-    const crossingRows: Crossing[] = [...scripted.crossings, ...teleports.crossings];
+    // The npc teleports to an enum's coords: the essence mine's wizards and its portals back.
+    const npcTeleports = deriveNpcTeleports({
+        entries: NPC_TELEPORTS,
+        triggers,
+        callables,
+        scripts: new Map(scripts),
+        constants,
+        enums: readConfigs('enum'),
+        npcConfigs,
+        locConfigs,
+        quests: quests.quests,
+        spawns: placedSpawns,
+        locs: placedLocs,
+        collision,
+        size: locSizes(locConfigs),
+    });
+    const rows: Crossing[] = [...scripted.crossings, ...teleports.crossings];
+    const world0 = { features, connectors, gates: landings.gates, transports, quests: questRows };
+    // A way back by the mine's portals asks what got the way in to its wizard (sources/npc-teleports.ts joinWaysIn),
+    // read off a fill without the ways back.
+    const wayIn = fillReach({
+        world: { ...world0, crossings: [...rows, ...npcTeleports.crossings.filter(c => returnsTo(c) === undefined)] },
+        collision,
+        size: locSizes(locConfigs),
+    });
+    const npcRows = joinWaysIn(npcTeleports.crossings, wayIn, questFacts(questRows));
+    const crossingRows: Crossing[] = [...rows, ...npcRows];
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
     // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
     // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there was anything
     // to price (priceCrossings returns new rows only then).
     const unpricedInput = {
-        world: { features, connectors, gates: landings.gates, transports, quests: questRows, crossings: crossingRows },
+        world: { ...world0, crossings: crossingRows },
         collision,
         size: locSizes(locConfigs),
     };
@@ -811,7 +848,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
-    const distance = nearestSinks(graph, reached.sites, { reached: fill.reachedAt });
+    // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).
+    const distance = nearestSinks(graph, reached.sites, {
+        reached: fill.reachedAt,
+        context: cameFromContext(reachInput.world.crossings),
+    });
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
@@ -940,6 +981,21 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 duplicates: scripted.duplicates,
             },
             teleports: { rows: teleports.crossings.length, unstood: teleports.unstood, offLand: teleports.offLand },
+            npcTeleports: {
+                rows: npcRows.length,
+                unstood: npcTeleports.unstood,
+                offLand: npcTeleports.offLand,
+                other: [
+                    ...new Set(
+                        npcRows.flatMap(c =>
+                            c.requires
+                                .flat()
+                                .filter(r => r.startsWith('other:'))
+                                .map(r => `${actName(c)}: ${r}`),
+                        ),
+                    ),
+                ],
+            },
             reach: fill.report,
             distance: distance.report,
             unpriced: priced.unpriced,
@@ -1132,6 +1188,7 @@ export function formatReport(report: BuildReport): string[] {
         ),
         ...formatScripted(report.scripted),
         ...formatTeleports(report.teleports),
+        ...formatNpcTeleports(report.npcTeleports),
         ...list(
             `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
             report.unpriced,
@@ -1193,6 +1250,25 @@ export function formatTeleports(r: BuildReport['teleports']): string[] {
             `warning: ${r.offLand.length} dbrow teleport landings off walkable land, left out:`,
             r.offLand.map(m => `${m.trigger} ${m.loc} ${coord(m.tile)} -> ${coord(m.landing)}`),
         ),
+    ];
+}
+
+/**
+ * The npc teleports' section: rows written, then the clusters and locs given none, the landings left out and the
+ * requirements in no other form (warnings).
+ */
+export function formatNpcTeleports(r: BuildReport['npcTeleports']): string[] {
+    return [
+        `npc teleports: ${r.rows} crossing rows (gates.ts NPC_TELEPORTS)`,
+        ...list(
+            `warning: ${r.unstood.length} npc teleport npcs and locs no tile on land is used from, no row:`,
+            r.unstood.map(m => `${m.trigger} ${m.config} ${coord(m.tile)}`),
+        ),
+        ...list(
+            `warning: ${r.offLand.length} npc teleport landings off walkable land, left out:`,
+            r.offLand.map(m => `${m.trigger} ${m.config} ${coord(m.tile)} -> ${coord(m.landing)}`),
+        ),
+        ...list(`warning: ${r.other.length} npc teleport requirements in no other form:`, r.other),
     ];
 }
 

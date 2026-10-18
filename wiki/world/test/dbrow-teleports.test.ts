@@ -127,21 +127,55 @@ const derive = (entries: DbrowTeleport[], more: { objs?: string; locs?: string; 
 };
 const key = (t: Tile) => `${t.level} ${t.x} ${t.z}`;
 
-/** No tile blocked. */
-const open = () => true;
+/** No tile blocked, every line clear. */
+const open = { walkable: () => true, line: () => true };
 
 describe('findsquareTiles', () => {
     test('radius 0 is the coord itself', () =>
         expect(findsquareTiles(['0_50_50_5_5', '0', '0', '0'], open)).toEqual([at(0, 3205, 3205)]));
     test('a ring from min to max, without the blocked tiles', () => {
-        const tiles = findsquareTiles(['0_50_50_5_5', '1', '1', '0'], (_l, x, z) => !(x === 3204 && z === 3204));
+        const tiles = findsquareTiles(['0_50_50_5_5', '1', '1', '2'], {
+            ...open,
+            walkable: (_l, x, z) => !(x === 3204 && z === 3204),
+        });
         expect(tiles).toHaveLength(7);
         expect(tiles.map(key)).not.toContain('0 3205 3205');
     });
     test('the coord when every tile is blocked, as the engine hands it back', () =>
-        expect(findsquareTiles(['0_50_50_5_5', '0', '2', '0'], () => false)).toEqual([at(0, 3205, 3205)]));
-    test('a line of walk or sight is not read', () =>
-        expect(() => findsquareTiles(['0_50_50_5_5', '0', '2', '1'], open)).toThrow(/type 1/));
+        expect(findsquareTiles(['0_50_50_5_5', '0', '2', '0'], { ...open, walkable: () => false })).toEqual([
+            at(0, 3205, 3205),
+        ]));
+    test('type 0 keeps the tiles with a line of walk to the coord, 1 a line of sight, 2 any', () => {
+        const lines: string[] = [];
+        // A line of walk from no tile west of the coord, of sight from none south of it.
+        const lined = {
+            walkable: () => true,
+            line: (kind: 'walk' | 'sight', _l: number, x: number, z: number, tx: number, tz: number) => {
+                lines.push(`${kind} ${tx} ${tz}`);
+                return kind === 'walk' ? x >= tx : z >= tz;
+            },
+        };
+        expect(findsquareTiles(['0_50_50_5_5', '0', '1', '0'], lined).map(t => [t.x, t.z])).toEqual([
+            [3205, 3204],
+            [3205, 3205],
+            [3205, 3206],
+            [3206, 3204],
+            [3206, 3205],
+            [3206, 3206],
+        ]);
+        expect(new Set(lines)).toEqual(new Set(['walk 3205 3205']));
+        expect(findsquareTiles(['0_50_50_5_5', '0', '1', '1'], lined).map(t => [t.x, t.z])).toEqual([
+            [3204, 3205],
+            [3204, 3206],
+            [3205, 3205],
+            [3205, 3206],
+            [3206, 3205],
+            [3206, 3206],
+        ]);
+        expect(findsquareTiles(['0_50_50_5_5', '0', '1', '2'], lined)).toHaveLength(9);
+    });
+    test('a type none of the three is refused', () =>
+        expect(() => findsquareTiles(['0_50_50_5_5', '0', '2', '3'], open)).toThrow(/type 3 is not 0, 1 or 2/));
     test('a radius that is negative, no integer, or min above max is refused', () => {
         for (const [lo, hi] of [
             ['-1', '1'],
