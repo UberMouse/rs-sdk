@@ -2,6 +2,7 @@
 name: review-verifier
 description: Adversarially checks task-review findings against the code - refutes the factually wrong ones and re-bands the rest against their lens - so the conductor fixes only real issues. Read-only. Dispatched once per review round with all findings.
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, Bash
 ---
 

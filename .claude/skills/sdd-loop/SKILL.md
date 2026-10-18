@@ -50,7 +50,11 @@ main checkout.
 - `invariants`: the three under §Resuming.
 
 Models: `implModel` `opus` for engine/core/lib work, `sonnet` for docs, agent prompts and simple
-tasks; `reviewModel` `sonnet`. **Every Agent call passes `model` explicitly.**
+tasks; `reviewModel` `sonnet`. **Every Agent call passes `model` explicitly.** Implementers, fix
+agents and the per-task reviewers are the `sdd-implementer`, `sdd-spec-reviewer` and
+`sdd-code-reviewer` agent types (`.claude/agents/`), not `general-purpose`: their definitions set
+effort `medium`, the implementer's turn cap and compaction window, and a tool list without the
+dozens of tools a `general-purpose` agent pays to load on every call.
 
 ## Resuming
 
@@ -110,7 +114,18 @@ Write `conductor/docs/<topic>-spec.md` (or beside the design doc), modelled on
   tests, including the test criterion and an out-of-scope line where there is a temptation.
 - `## Out of scope for this spec`.
 
-Size tasks so one reviewer can hold one diff: usually 3-8 tasks. Commit the design doc and spec
+Size tasks so one reviewer can hold one diff: usually 3-8 tasks. Size them for the implementer
+too: one behaviour in one module or a few closely related files, which an implementer finishes
+in roughly a hundred tool calls. Every call re-reads the agent's whole context, so a task that
+runs for hundreds of calls costs far more than two that each run for half as many. Split:
+
+- **Exploration from building.** A task that must first find out what exists (scan game data,
+  enumerate the cases, measure counts) becomes a research task whose deliverable is a committed
+  findings file, fixture or data table; the build task after it reads that, not the raw sources.
+- **A large file's separate concerns.** Name the functions or sections a task touches in a file
+  over a few hundred lines, so the implementer reads those, not the file again and again.
+
+Commit the design doc and spec
 together: `docs(conductor): plan and spec for <topic>`. Echo the task list to the user and carry
 on: the doc was the approval, the spec is its expansion.
 
@@ -118,12 +133,13 @@ on: the doc was the approval, the spec is its expansion.
 
 Tasks run **strictly sequentially**; each commits. Per task:
 
-1. **Implementer** (`Agent`, `general-purpose`, `model: implModel`) with the *Implementer*
+1. **Implementer** (`Agent`, `sdd-implementer`, `model: implModel`) with the *Implementer*
    template, the task's section of the spec **inline** plus the global rules. It implements,
    tests, verifies, commits, self-reviews. A blocking question: answer it from the design doc
-   when it answers it; otherwise `AskUserQuestion`, then re-dispatch.
-2. **Review in parallel**: the *Spec-compliance* and *Code-quality* reviewers in **one message**,
-   same commit, `model: reviewModel`. Neither edits the tree.
+   when it answers it; otherwise `AskUserQuestion`, then re-dispatch. A partial return (it hit
+   its turn cap): the template's *Turn cap* rule.
+2. **Review in parallel**: `sdd-spec-reviewer` and `sdd-code-reviewer` with their templates in
+   **one message**, same commit, `model: reviewModel`. Neither edits the tree.
 3. **Converge**: either flagged (FAIL, or PASS with meaningful findings) ⇒ **one combined fix
    agent** (Implementer template, fix mode A) with the meaningful findings of both inline; it
    commits on top. Meaningful is task-review §2's test (a silent failure or guess, a broken
@@ -159,7 +175,7 @@ The per-task reviews each saw one task; this sees the whole change. Dispatch **o
 `general-purpose` agent (`model: opus`) to run `.claude/skills/task-review/SKILL.md` end to end on
 the range `git diff <base>..HEAD -- conductor/ .claude/`: five lenses in parallel, the verifier,
 fixes for A, B and meaningful C (D, cosmetic C, refuted and duplicates dropped), round 2 on the lenses that had fixes. Adapt
-its §3–§5 for engine code: its fix agents use the *Implementer* template (fix mode B) and commit on
+its §3–§5 for engine code: its fix agents are `sdd-implementer` (fix mode B) and commit on
 top as `fix(review): <what>`; there is no worker bot unless a finding needs a smoke run. It returns
 a compact report (found / fixed / deferred / dropped per lens, the fix commits). Keep the lens
 JSON out of your own context. Then re-run §4.

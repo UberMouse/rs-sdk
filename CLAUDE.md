@@ -429,7 +429,8 @@ conductor/             # see conductor/README.md
 .claude/
 ├── skills/            # conductor, task-review, knowledge, durable-state, session-forensics
 ├── agents/            # task-runner, task-author, task-reviewer, review-verifier,
-│                      # knowledge-curator, retrospective
+│                      # knowledge-curator, retrospective,
+│                      # sdd-implementer, sdd-spec-reviewer, sdd-code-reviewer (sdd-loop)
 └── review-lenses/     # task-review criteria
 
 ```

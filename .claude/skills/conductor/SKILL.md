@@ -143,6 +143,11 @@ Seed `invariants` with the list below on the first write.
 4. **Dispatch** a `task-runner` with the goal brief (template below); add it to `inFlight` and to
    `runners` (its agent ID, `<abs worktree>/.durable-state/runners/<bot>.json`, the objective id),
    mark the objective `in-progress`, `attempts += 1`, rewrite state.
+   **Bookkeeping rides along** (durable-state §Write discipline 3): a report's state changes,
+   journal line, progress check and follow-up dispatch go out as parallel calls in one message,
+   and the state write with the new agent IDs goes in the next message with whatever it does.
+   When a goal closes with nothing in flight, the state is complete: say in one line that this is
+   a clean point for the user to `/clear` and resume the conductor, then carry on.
 5. **On the runner's report** (it journaled its own runs):
    1. Drop the `inFlight` entry. Recount `runsSinceRetro`:
       `jq -s --arg t "<lastRetroAt>" '[.[] | select(.kind == "run" and .at > $t)] | length' <journal>`.
