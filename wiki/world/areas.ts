@@ -1028,7 +1028,7 @@ export const AREAS: readonly Area[] = [
         id: 'burthorpe-games-room',
         name: 'Burthorpe Games Room',
         rects: [{ x1: 2176, z1: 4928, x2: 2239, z2: 4991 }],
-        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:486), which land on a random tile (stairs.rs2:491), so sources/connectors.ts derives no landing and the world index's walk from the Lumbridge spawn does not reach the room or its bars (build.ts unreached report).",
+        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:485), which land on a random tile (stairs.rs2:491), so sources/connectors.ts derives no landing and the world index's walk from the Lumbridge spawn does not reach the room or its bars (build.ts unreached report).",
     },
     {
         id: 'fisher-realm',
