@@ -228,8 +228,10 @@ Each phase is usable when it lands.
    (fixes the wrong names).
 2. **Reachability and travel (built).** Generated connectors, `gates.ts` and transports, the flood fill,
    access flags on every site; `connectors.ts` and `banks.ts` become views. See "Phase 2 as built".
-3. **Rate model and methods.** Gathering, processing and thieving first, then combat (formulas plus
-   player profile); `training/` pages, `query.ts`, calibration against `stats.ts`.
+3. **Rate model and methods (built).** Gathering, cooking and thieving families, curated method records, the
+   floor, `training/` pages, `query.ts`, calibration against `stats.ts`. See "Phase 3 as built".
+4. **Combat.** Accuracy, max hit, gear bonuses, kills/hr, drop tables and aggression hazards, as a
+   combat family on the phase 3 contract (`ActionModel`), with methods in `methods.ts`.
 
 ## Phase 2 as built
 
@@ -260,3 +262,42 @@ Known gaps, listed by the build's unreached report: the Shantay Pass queued move
 unreached); unconditional scripted moves outside `ladders+stairs/` (the Mage Arena ladder, the Gnome
 Stronghold gate, the lighthouse); banker clusters across booths; unnamed underground areas outside
 the walker's `planeOf`.
+
+## Phase 3 as built
+
+Built per `conductor/docs/world-index-phase3-spec.md`; the hand-written reference is the Methods section of
+`wiki/world/README.md`. Where it differs from the design above:
+
+- **Methods are curated, not enumerated.** `wiki/world/methods.ts` holds one record per method the conductor
+  runs or has found (a tile in the site, a family, its params, a sink, its plans); the build resolves each
+  (`model/method.ts`) and fails naming one it can't. Six seed records. There is no site x sink enumeration.
+- **The model is the floor.** `model/cycle.ts` rates a method at a profile (levels, tool, food) as the
+  tick-perfect rate over the shortest way, with drop, bank and process-bank sinks, eat ticks and tool slots; the
+  families (`model/families/`: woodcutting, mining, fishing, pickpocket, stall, cooking) port the game's
+  formulas, each citing its script. `server.ts` reads `TICK_MS` and `XP_RATE` from the engine.
+- **No rate grid in world.json.** `methods[]` carries the resolved legs and sinks (WORLD_FORMAT 13); the
+  rates are computed on demand and rendered into `wiki/training/<skill>.md` (a README beside them) as floor
+  XP/hr by level next to the measured figures.
+- **Measured figures are curated.** A record's `measured` is pasted from `stats.ts <bot> --methods`
+  when a goal finishes; the build reads no run logs. `--methods` sets each method's plan runs beside the floor
+  at each run's start levels and tool, and prints the paste-ready entry only when every counted run started the
+  same. A plan names its method (`PlanDef.method`), checked both ways by `conductor/test/plans.test.ts`.
+- **`query.ts`** has `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
+  multiway })`: `met` omitted counts every token as met; a hazard is the maximum over the gather, processor and
+  bank sites; a ProfileError drops a method and a data fault throws a MethodError naming it; the ranking is by
+  floor XP/hr, ties by id, and each result carries its rated way and its measured figures.
+- **No calibration report in the build.** The comparison is `stats.ts --methods` (percent of floor), not a
+  build warning.
+
+Known gaps:
+
+- Combat is phase 4. Processing families with script-constant timings (firemaking, smelting, anvil smithing,
+  fletching, spinning, crafting), runecraft and agility are added by the family contract when a method needs
+  them.
+- Only the axe and pickaxe are profile tools: fishing rods are not checked. The floor wields the axe or pickaxe
+  and does not check its wield level.
+- Hitpoints does not enter the floor; stun damage comes from the game's table.
+- A level gained during a run makes a start-level floor understate it.
+- A long-lived process caches world.json until restart.
+- `iron-se-varrock-bank`'s measured figure was assembled by hand from iron-bulk's mine-leg phases.
+- Most promoted plans (23 of 26 at this commit) have no method yet; `bun test conductor/test/plans.test.ts` prints them.

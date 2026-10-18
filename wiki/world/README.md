@@ -81,6 +81,35 @@ script. Known leftovers are the desert behind the Shantay Pass (a queued move), 
 `ladders+stairs/` (the Mage Arena ladder, the Gnome Stronghold gate and railing, the lighthouse), and unnamed
 underground areas.
 
+## Methods
+
+A method is a curated record in `wiki/world/methods.ts` (`MethodDef`): a family (the kind of action: woodcutting,
+mining, fishing, pickpocket, stall, cooking; `model/families/`), a tile `at` in the gather site, the family's params,
+a sink (`drop`, `bank`, or `process-bank`: a process step at a range, then the bank) and the promoted plans that run
+it. Sites renumber when the data changes and tiles don't, so a record names a tile. `bun run world` resolves each
+(`model/method.ts`: its site, sinks, legs, minimum level) into `methods[]` in world.json and fails naming a record it
+can't; there is no rate grid in world.json.
+
+The **floor** (`model/cycle.ts`) is the tick-perfect rate of a method at a profile (levels, tool, food): the game's
+formulas (`model/`, each citing its script) for ideal play over the shortest way, with no tick wasted and banking at
+its minimum tick cost. Legs are run ticks. A bot measures at or below it, and the gap is what a tick-perfect pass
+works on; a measured figure above its floor is a model bug. The pages in `wiki/training/` show the floor by level
+beside the measured figures; `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
+multiway })` in `query.ts` give it to code, `bestMethods` ranked by floor XP/hr.
+
+Measured figures are curated, not read at build time: when a goal finishes, `bun conductor/tools/stats.ts <bot>
+--methods` prints the paste-ready `measured` entry (XP/hr, the levels and tool the runs started at, bot, date, hours,
+the command), and the conductor pastes it into the record. A plan names its method (`PlanDef.method`, see
+`conductor/docs/plans.md`) and the record lists the plan back.
+
+Adding a method:
+
+1. Write the record in `methods.ts`: a tile in the site, the params, the sink, the plans.
+2. A new kind of action needs a family module in `model/families/` (one file, its registry line in `index.ts`) with a
+   test worked by hand from its script in `test/families.test.ts`.
+3. `bun run world`; read the method's row in `wiki/training/<skill>.md`.
+4. After bots have run it, paste the `stats.ts --methods` entry into `measured`.
+
 ## Where corrections go
 
 | Wrong on a page | Fix it in |
@@ -93,6 +122,8 @@ underground areas.
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |
+| A method's tile, params, sink, plans or a measured figure | its record in `wiki/world/methods.ts`, then `bun run world` |
+| A method's floor (a formula, a cycle or tool rule) | the family module in `wiki/world/model/families/`, or `model/` (`cycle.ts`, `rate.ts`, `roll.ts`), with its hand-worked test |
 
 Then run `bun run world` and commit the code with the regenerated files. What is learned in game
 about a place (a hazard, a route, a rate measured) goes in `learnings/` per the `knowledge` skill,

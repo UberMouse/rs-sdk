@@ -254,8 +254,8 @@ function readme(pages: ReadonlyMap<Skill, readonly ResolvedMethod[]>): string {
         '2. A new kind of action needs a family module in wiki/world/model/families/ (one file, its registry line), ' +
             'with a test worked by hand from its script.',
         '3. `bun run world`, and read its row here.',
-        '4. Once bots have run it, add a `measured` entry with the figures from conductor/tools/stats.ts (a per-method ' +
-            'view there is coming).',
+        '4. Once bots have run it, paste the entry that `bun conductor/tools/stats.ts <bot> --methods` prints into its ' +
+            '`measured`.',
         '',
     ].join('\n');
 }
