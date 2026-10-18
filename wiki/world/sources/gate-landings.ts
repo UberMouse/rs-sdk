@@ -31,10 +31,11 @@
 // step the collision allows is not one, nor a path that ends so (a pipe in use). A stand with one passage tile
 // gives it, by the way behind a roll when there are several (the dearer, as an account may not meet what skips
 // the roll), with that roll (rollFor); stands that give the same landing, move line and roll make one free row,
-// `act: loc-op`, its source the line of the move the scan counts in the trigger's own script. A stand landing
-// on several passage tiles, or stopped by a construct the run can't read, is unsettled: the build report lists
-// it, never guessed; one stopped only in the door procs (gate-scan.ts DOOR_PROCS) is a door's, which the
-// collision data has open or gates.ts confirms. A loc tile and op a connector row has is refused, a duplicate.
+// `act: loc-op`, its source the line of the path's last move outside a call the scan counts as one move (Path.outer
+// in gate-scan.ts). A stand landing on several passage tiles, or stopped by a construct the run can't read, is
+// unsettled: the build report lists it, never guessed; one stopped only in the door procs (gate-scan.ts
+// DOOR_PROCS) is a door's, which the collision data has open or gates.ts confirms. A loc tile and op a connector
+// row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import { coord, STEPS } from '../reach';

@@ -188,9 +188,9 @@ export interface SeenRoll {
 /**
  * What a move past a gate's check does from one stand, on one path an account meeting the gate's
  * requirements can take (gateLander): lands the player on a tile (`player` when the tile follows the
- * stand; `move` the last move the scan counts in the trigger's own script or a label it jumps to, not inside a
- * call it counts as one move; `roll` the roll it succeeded at, or `unrolled` why a
- * roll it is behind can't be taken: two on the path, or bounds not known offline), opens the loc, or can't be
+ * stand; `move` the last move the scan counts outside every call it counts as one move, Path.outer; `roll` the
+ * roll it succeeded at, or `unrolled` why a roll it is behind can't be taken: two on the path, or bounds not
+ * known offline), opens the loc, or can't be
  * told offline (`why`, with the construct and its script line). A path that failed a roll is a
  * `fail`: where it leaves the player (`tile`, absent when no command moved them), and the ticks and damage it
  * takes (Path.ticks, Path.damage), or why those are not known.
