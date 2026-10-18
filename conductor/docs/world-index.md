@@ -270,14 +270,14 @@ Built per `conductor/docs/world-index-phase3-spec.md`; the hand-written referenc
 
 - **Methods are curated, not enumerated.** `wiki/world/methods.ts` holds one record per method the conductor
   runs or has found (a tile in the site, a family, its params, a sink, its plans); the build resolves each
-  (`model/method.ts`) and fails naming one it can't. Six seed records. There is no site x sink enumeration.
+  (`model/method.ts`) and fails naming one it can't. There is no site x sink enumeration.
 - **The model is the floor.** `model/cycle.ts` rates a method at a profile (levels, tool, food) as the
   tick-perfect rate over the shortest way, with drop, bank and process-bank sinks, eat ticks and tool slots; the
   families (`model/families/`: woodcutting, mining, fishing, pickpocket, stall, cooking) port the game's
   formulas, each citing its script. `server.ts` reads `TICK_MS` and `XP_RATE` from the engine.
-- **No rate grid in world.json.** `methods[]` carries the resolved legs and sinks (WORLD_FORMAT 13); the
-  rates are computed on demand and rendered into `wiki/training/<skill>.md` (a README beside them) as floor
-  XP/hr by level next to the measured figures.
+- **No rate grid in world.json.** `methods[]` carries the resolved legs and sinks (see `WORLD_FORMAT` in
+  `wiki/world/types.ts`); the rates are computed on demand and rendered into `wiki/training/<skill>.md` (a README
+  beside them) as floor XP/hr by level next to the measured figures.
 - **Measured figures are curated.** A record's `measured` is pasted from `stats.ts <bot> --methods`
   when a goal finishes; the build reads no run logs. `--methods` sets each method's plan runs beside the floor
   at each run's start levels and tool, and prints the paste-ready entry only when every counted run started the
@@ -299,5 +299,6 @@ Known gaps:
 - Hitpoints does not enter the floor; stun damage comes from the game's table.
 - A level gained during a run makes a start-level floor understate it.
 - A long-lived process caches world.json until restart.
-- `iron-se-varrock-bank`'s measured figure was assembled by hand from iron-bulk's mine-leg phases.
-- Most promoted plans (23 of 26 at this commit) have no method yet; `bun test conductor/test/plans.test.ts` prints them.
+- `iron-se-varrock-bank`'s measured figure was assembled by hand from iron-bulk's mine-leg phases, and
+  `knight-ardougne-pickpocket`'s from knight-thieve's thieving and Ardougne South bank phases.
+- Most promoted plans have no method yet; `bun test conductor/test/plans.test.ts` prints them.

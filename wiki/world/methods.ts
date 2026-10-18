@@ -104,7 +104,7 @@ export const METHODS: MethodDef[] = [
                 from: 'stats.ts conductor2w1 --task mining (iron, area 3286,3369 r4, onFull drop)',
             },
         ],
-        notes: 'The four iron rocks; the mining task drops each ore as it is mined (02b861cd5). No promoted plan.',
+        notes: 'The four iron rocks; the mining task drops each ore as it is mined. No promoted plan.',
         source: 'conductor/roadmap.md Mining row: iron power-mine, drop each ore, a 4-rock layout',
     },
     {
@@ -166,7 +166,6 @@ export const METHODS: MethodDef[] = [
         params: { npc: 'knight_of_ardougne' },
         food: 'lobster',
         sink: { mode: 'bank' },
-        plans: ['knight-thieve'],
         measured: [
             {
                 xpPerHour: { thieving: 3_711_068 },
@@ -177,7 +176,9 @@ export const METHODS: MethodDef[] = [
                 from: 'stats.ts conductor2w3 --task plan:knight-thieve (thieving and Ardougne South bank phases only)',
             },
         ],
-        notes: "The plan's Catherby lobster phases did not run in the measured runs.",
+        notes:
+            'knight-thieve also fishes and cooks its lobsters at Catherby, so it names no method; the measured figure ' +
+            'comes from its thieving and Ardougne South bank phases.',
     },
     {
         id: 'willow-draynor-bank',

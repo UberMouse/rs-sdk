@@ -15,7 +15,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Sink**: bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 46 + 46 run ticks.
   - **Supplies/hr** at 99: none.
   - **Measured**: 544k at 99 by conductor2 on 2026-10-16, with the Adamant pickaxe.
-- `iron-se-varrock-drop`: Iron at the south-east Varrock mine, dropped as mined. The four iron rocks; the mining task drops each ore as it is mined (02b861cd5). No promoted plan.
+- `iron-se-varrock-drop`: Iron at the south-east Varrock mine, dropped as mined. The four iron rocks; the mining task drops each ore as it is mined. No promoted plan.
   - **Requires**: Reach: none. Levels: Mining 15. Tools: best pickaxe usable (wielded).
   - **Sink**: drop.
   - **Supplies/hr** at 99: none.

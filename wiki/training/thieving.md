@@ -15,7 +15,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Sink**: bank at [Falador East bank (Falador)](../places/falador-east-bank.md) `bank:falador-east-bank:0`; legs 21 + 21 run ticks.
   - **Supplies/hr** at 99: 59 Trout; 1.18k gp.
   - **Measured**: 2.07M at 82 by conductor2 on 2026-10-11.
-- `knight-ardougne-pickpocket`: Pickpocketing the Knights of Ardougne in the market, food from Ardougne South. Plans: knight-thieve. The plan's Catherby lobster phases did not run in the measured runs.
+- `knight-ardougne-pickpocket`: Pickpocketing the Knights of Ardougne in the market, food from Ardougne South. knight-thieve also fishes and cooks its lobsters at Catherby, so it names no method; the measured figure comes from its thieving and Ardougne South bank phases.
   - **Requires**: Reach: none. Levels: Thieving 55. Tools: none. Food: Lobster.
   - **Sink**: bank at [Ardougne South bank (East Ardougne)](../places/ardougne-south-bank.md) `bank:ardougne-south-bank:0`; legs 22 + 22 run ticks.
   - **Supplies/hr** at 99: 51.7 Lobster; 7.75k gp.
