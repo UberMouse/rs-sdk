@@ -14,7 +14,7 @@ export interface FishingParams {
     tool?: string;
 }
 
-export const FISHING_SPOTS = 'skill_fishing/scripts/fishing_spots/';
+const FISHING_SPOTS = 'skill_fishing/scripts/fishing_spots/';
 
 /** One tool's catch at a spot, as its continue label (or op trigger) writes it. */
 export interface Catch {

@@ -1,7 +1,8 @@
 // Stealing from a market stall: skill_thieving/scripts/stalls/stealing.rs2 and ~steal_from_stall
 // (skill_thieving/scripts/thieving.rs2:53-122), on the stealing rows (configs/stalls/stealing.dbrow). A steal has
 // no roll: it fails only when the stall's owner or a guard sees it (~stealing_check_for_guard and _owner,
-// thieving.rs2:98-121), a hazard of the spot and the player's timing, not a rate, so it is not modelled.
+// stealing.rs2:98-121), a hazard of the spot and the player's timing, not a rate, so it is not modelled. The
+// Fremennik stalls (stealing.rs2:34-46) also need The Fremennik Trials, which this does not check.
 import { ModelError, type ActionModel } from '../family';
 import {
     clickTicks,

@@ -40,7 +40,7 @@ Builds on phase 2 (`world-index-phase2-spec.md`, "Phase 2 as built" in `world-in
 | Fishing: per-spot scripts give the tool/fish pairs and levels; per-fish `success_low/high`, `productexp` on the `fishing_struct` param; bait used per catch; spots move every `280+random(250)` ticks, never deplete | `skill_fishing/scripts/fishing_spots/*.rs2`, `fishing.rs2`, `fishing.struct`, `fishing_movement.rs2` |
 | Pickpocket: `stat_random` on `pickpocket.dbrow` `success_chance`; a fail stuns for `stun_ticks` and deals `stun_damage`; loot weighted out of 128 | `skill_thieving/scripts/thieving.rs2`, `configs/pickpocking/pickpocket.dbrow` |
 | Stalls: no roll (fails only when watched); `stealing.dbrow` respawn, xp, weighted loot | `skill_thieving/scripts/stalls/stealing.rs2`, `configs/stalls/stealing.dbrow` |
-| Cooking: one item per click, 3 ticks (`p_delay(1)` holds the player through the next tick's clicks); burn by `stat_random(cooking, successchance)` from `cooking_generic.dbrow` | `skill_cooking/scripts/cooking.rs2:143-190` |
+| Cooking: one item per click, 3 ticks (`p_delay(1)` refuses the next two ticks' clicks); burn by `stat_random(cooking, successchance)` from `cooking_generic.dbrow` | `skill_cooking/scripts/cooking.rs2:143-190` |
 | Banking costs no ticks of its own; the approach and the clicks are the cost | `interface_bank/scripts/bank.rs2:18`, `bank_booth.rs2`, `banker.rs2` |
 | Respawns scale by `scale(4000-players, 4000, base)`, truncated: base - 1 at one player | `~scale_by_playercount` |
 
