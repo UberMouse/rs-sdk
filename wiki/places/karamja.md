@@ -177,16 +177,18 @@
 | `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) | no | no | - |
 | `connector:karamja:14` | (2954, 3141) | Ship's ladder 1 | up (2953, 3141) L1 | yes | no | - |
 | `connector:karamja:15` | (2954, 3141) L1 | Ship's ladder 1 | down (2953, 3141) | yes | no | - |
-| `connector:karamja:16` | (2958, 3141) | Ship's ladder 1 | up (2957, 3141) L1 | yes | no | - |
-| `connector:karamja:17` | (2958, 3141) L1 | Ship's ladder 1 | down (2957, 3141) | yes | no | - |
-| `connector:karamja:18` | (2962, 3141) | Ship's ladder 1 | up (2961, 3141) L1 | yes | no | - |
-| `connector:karamja:19` | (2962, 3141) L1 | Ship's ladder 1 | down (2961, 3141) | yes | no | - |
-| `connector:karamja:20` | (2963, 3139) L1 | Ship's ladder 1 | up (2964, 3139) L2 | yes | no | - |
-| `connector:karamja:21` | (2963, 3139) L2 | Ship's ladder 1 | down (2962, 3139) L1 | yes | no | - |
-| `connector:karamja:22` | (2963, 3143) L1 | Ship's ladder 1 | up (2964, 3143) L2 | yes | no | - |
-| `connector:karamja:23` | (2963, 3143) L2 | Ship's ladder 1 | down (2962, 3143) L1 | yes | no | - |
-| `connector:karamja:24` | (2990, 3068) L1 | Ship's ladder 1 | up (2991, 3068) L2 | no | no | - |
-| `connector:karamja:25` | (2990, 3068) L2 | Ship's ladder 1 | down (2989, 3068) L1 | no | no | - |
+| `connector:karamja:16` | (2956, 3144) L1 | Gangplank 1 | down (2956, 3146) | yes | no | - |
+| `connector:karamja:17` | (2956, 3145) | Gangplank 1 | up (2956, 3143) L1 | yes | no | - |
+| `connector:karamja:18` | (2958, 3141) | Ship's ladder 1 | up (2957, 3141) L1 | yes | no | - |
+| `connector:karamja:19` | (2958, 3141) L1 | Ship's ladder 1 | down (2957, 3141) | yes | no | - |
+| `connector:karamja:20` | (2962, 3141) | Ship's ladder 1 | up (2961, 3141) L1 | yes | no | - |
+| `connector:karamja:21` | (2962, 3141) L1 | Ship's ladder 1 | down (2961, 3141) | yes | no | - |
+| `connector:karamja:22` | (2963, 3139) L1 | Ship's ladder 1 | up (2964, 3139) L2 | yes | no | - |
+| `connector:karamja:23` | (2963, 3139) L2 | Ship's ladder 1 | down (2962, 3139) L1 | yes | no | - |
+| `connector:karamja:24` | (2963, 3143) L1 | Ship's ladder 1 | up (2964, 3143) L2 | yes | no | - |
+| `connector:karamja:25` | (2963, 3143) L2 | Ship's ladder 1 | down (2962, 3143) L1 | yes | no | - |
+| `connector:karamja:26` | (2990, 3068) L1 | Ship's ladder 1 | up (2991, 3068) L2 | no | no | - |
+| `connector:karamja:27` | (2990, 3068) L2 | Ship's ladder 1 | down (2989, 3068) L1 | no | no | - |
 
 ## Areas within
 

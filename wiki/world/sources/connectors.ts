@@ -1,12 +1,16 @@
-// Where each ladder, staircase, trapdoor and manhole puts the player: the landings of every `connector`
-// feature (a loc with an op trigger in classify.ts CONNECTOR_SCRIPTS), read from its op scripts by running
-// them offline for that one loc. The scripts pick a landing three ways (ladders+stairs/scripts/ladders.rs2,
-// stairs.rs2): a jump relative to the player's tile or the loc's (`~climb_ladder(movecoord(coord(), 0, 1,
-// 0), true)`, per op or per `switch_int (loc_angle)`); a table keyed by the loc's tile (`switch_coord
-// (loc_coord) { case 0_50_50_4_7 : p_telejump(1_50_50_5_9); ... }`); and a label several locs call with
-// their coords (`@stair_options(<up>, <down>)`). The parser in runescript.ts reads the RuneScript those
-// use, and an evaluator runs a trigger with `loc_coord` and `loc_angle` known and the player's `coord`
-// symbolic. A condition it can't settle (a dialog choice, a quest varp) is taken both ways, so an op can
+// Where each ladder, staircase, trapdoor, manhole and gangplank puts the player: the landings of every
+// `connector` feature (a loc with an op trigger in classify.ts CONNECTOR_SCRIPTS), read from its op scripts
+// by running them offline for that one loc. The scripts pick a landing three ways (ladders+stairs/scripts/
+// ladders.rs2, stairs.rs2): a jump relative to the player's tile or the loc's (`~climb_ladder(movecoord(
+// coord(), 0, 1, 0), true)`, per op or per `switch_int (loc_angle)`); a table keyed by the loc's tile
+// (`switch_coord (loc_coord) { case 0_50_50_4_7 : p_telejump(1_50_50_5_9); ... }`); and a label several
+// locs call with their coords (`@stair_options(<up>, <down>)`). The parser in runescript.ts reads the
+// RuneScript those use, and an evaluator runs a trigger with `loc_coord`, `loc_angle` and the `^constants`
+// known and the player's `coord` symbolic: a shift of where the op started, moved by each move on the path,
+// so a path lands where its last move leaves the player (a gangplank steps onto the plank, then jumps on
+// by a shift from there, general_use/scripts/gangplank.rs2:15). A proc that can't move the player is run
+// for its value (`~gangplank_dir_mod`, a sign by `loc_angle`). A condition it can't settle (a dialog
+// choice, a quest varp) is taken both ways, so an op can
 // have several landings; a landing it can't compute, an op that never moves the player, or a loop on the
 // way, is reported with the construct that stopped it, never guessed. An op that swaps its loc for another
 // on a path with no condition and no move (general_use/scripts/trapdoors.rs2: Open is
@@ -17,6 +21,7 @@ import { footprint, reachTiles, type SiteCollision, type SiteOptions } from '../
 import type { Connector, Feature, Tile } from '../types';
 import { cmp, push } from '../util';
 import { first, type Config } from './configs';
+import { constantInt, type Constant } from './constants';
 import {
     equal,
     fold,
@@ -82,6 +87,8 @@ export interface ConnectorInput {
     locConfigs: ReadonlyMap<string, Config>;
     collision: ConnectorCollision;
     size: SiteOptions['size'];
+    /** The scripts' `^constants`; none known when absent. */
+    constants?: ReadonlyMap<string, Constant>;
 }
 
 export interface Connectors {
@@ -106,9 +113,20 @@ interface Run {
 }
 
 interface Path {
+    /** The locals, and the player's tile under POS once a move on the path has set it. */
     env: ReadonlyMap<string, Value>;
     notes: readonly string[];
+    /** Where the last move on the path leaves the player, or why it can't be told offline. */
+    landing?: CoordValue | { why: string };
+    /** What a `return` ending the path gives back, for a proc run as a value. */
+    returned?: Value;
 }
+
+/**
+ * The key the player's tile is kept under in a path's locals once a move sets it (no local is named so).
+ * Absent, it is where the op started: the relative coord (0, 0, 0).
+ */
+const POS = 'coord';
 
 /** A path the evaluator can't follow past an expression (a proc that can move the player, as a value). */
 class Unfollowed extends Error {}
@@ -152,8 +170,25 @@ function swapOf(script: Script, self: string): Swap | undefined {
     return swaps.length === 1 ? swaps[0] : undefined;
 }
 
-/** Runs connector op scripts for one loc at a time, over the triggers' callables. */
-function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile, angle: number) => Run {
+/**
+ * Integer arithmetic as `calc` compiles to ADD, SUB, MULTIPLY and DIVIDE: the stack holds ints, so a
+ * quotient truncates (server/engine/src/engine/script/handlers/NumberOps.ts).
+ */
+const ARITHMETIC: Readonly<Record<string, (a: number, b: number) => number>> = {
+    '+': (a, b) => a + b,
+    '-': (a, b) => a - b,
+    '*': (a, b) => a * b,
+    '/': (a, b) => Math.trunc(a / b),
+};
+
+/**
+ * Runs connector op scripts for one loc at a time, over the triggers' callables and the `^constants`
+ * (their whole-number values: `^loc_west`, engine.constant).
+ */
+function evaluator(
+    callables: readonly Callable[],
+    constants: ReadonlyMap<string, Constant>,
+): (trigger: Trigger, loc: Tile, angle: number) => Run {
     const byCall = new Map(callables.map(c => [c.call, c]));
     const scriptOf = scriptCache();
 
@@ -185,6 +220,42 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
 
     return (trigger, loc, angle) => {
         const run: Run = { landings: [], unknown: new Set(), dead: [] };
+        /** How deep procs run as values are nested, against MAX_DEPTH. */
+        let valueDepth = 0;
+
+        /**
+         * A proc that can't move the player, called as a value (`def_int $dir_mod = ~gangplank_dir_mod;`,
+         * general_use/scripts/gangplank.rs2:9): run with its arguments and the player's tile, it is the value
+         * every path through it returns, when they all return one known value; unknown otherwise. What it
+         * runs into on the way (a loop) is not a reason the op's landing is underived, so it isn't kept.
+         */
+        const valueOf = (e: Expr & { t: 'name' }, env: ReadonlyMap<string, Value>, file: string): Value => {
+            const callee = byCall.get(e.name);
+            const script = callee && scriptOf(e.name, callee.file, callee.line, callee.body);
+            if (!script || 'error' in script || valueDepth >= MAX_DEPTH) return unknown(e.text);
+            const args = e.args ?? [];
+            const params = new Map(
+                script.params.map((param, i) => [param, args[i] ? evaluate(args[i]!, env, file) : unknown(param)]),
+            );
+            const pos = env.get(POS);
+            if (pos) params.set(POS, pos);
+            const reasons = new Set(run.unknown);
+            valueDepth++;
+            try {
+                const flow = block(script.body, [{ env: params, notes: [] }], script.file, 0);
+                const values = flow.ended.map(p => p.returned);
+                const [v] = values;
+                // A path that runs off the end returns nothing.
+                if (flow.live.length || !v || v.t === 'unknown') return unknown(e.text);
+                return values.every(w => w && equal(w, v) === true) ? v : unknown(e.text);
+            } catch (err) {
+                if (err instanceof TooManyPaths || err instanceof Unfollowed) return unknown(e.text);
+                throw err;
+            } finally {
+                valueDepth--;
+                run.unknown = reasons;
+            }
+        };
 
         const evaluate = (e: Expr, env: ReadonlyMap<string, Value>, file: string): Value => {
             switch (e.t) {
@@ -199,6 +270,8 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                     const folded = fold(e.op, l, r, e.text);
                     if (folded) return folded;
                     if (l.t !== 'int' || r.t !== 'int') return unknown(e.text);
+                    const arithmetic = ARITHMETIC[e.op];
+                    if (arithmetic) return { t: 'int', n: arithmetic(l.n, r.n) };
                     const b = { '<': l.n < r.n, '>': l.n > r.n, '<=': l.n <= r.n, '>=': l.n >= r.n }[e.op];
                     return b === undefined ? unknown(e.text) : { t: 'bool', b };
                 }
@@ -210,15 +283,22 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                 const v = env.get(e.name);
                 return v && v.t !== 'unknown' ? v : unknown(e.name);
             }
+            if (e.name.startsWith('^') && e.args === null) {
+                const n = constantInt(constants, e.name);
+                return n === undefined ? unknown(e.name) : { t: 'int', n, name: e.name };
+            }
             // Engine commands (server/engine/src/engine/script/handlers): COORD is the player's tile
             // (PlayerOps.ts), LOC_COORD and LOC_ANGLE the active loc's (LocOps.ts), and MOVECOORD adds
-            // (x, level, z) to a coord (ServerOps.ts).
+            // (x, level, z) to a coord (ServerOps.ts). P_TELEJUMP and P_TELEPORT set the player's tile at
+            // once (PathingEntity.ts teleport), so COORD after a move on the path is where it put the player.
             if (e.name === 'coord' && !args.length)
-                return { t: 'coord', relative: true, level: 0, x: 0, z: 0, at: at(file, e) };
+                return env.get(POS) ?? { t: 'coord', relative: true, level: 0, x: 0, z: 0, at: at(file, e) };
             if (e.name === 'loc_coord' && !args.length) return { t: 'coord', relative: false, ...loc, at: at(file, e) };
             if (e.name === 'loc_angle' && !args.length) return { t: 'int', n: angle };
             if ((e.name === 'true' || e.name === 'false') && e.args === null)
                 return { t: 'bool', b: e.name === 'true' };
+            // `calc(x)` is x.
+            if (e.name === 'calc' && args.length === 1) return evaluate(args[0]!, env, file);
             if (e.name === 'movecoord' && args.length === 4) {
                 const [base, dx, dlevel, dz] = args.map(a => evaluate(a, env, file)) as [Value, Value, Value, Value];
                 const off = [dx, dlevel, dz];
@@ -228,9 +308,12 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                 const [x, level, z] = off.map(v => (v as { n: number }).n) as [number, number, number];
                 return { ...base, level: base.level + level, x: base.x + x, z: base.z + z, at: at(file, e) };
             }
-            // A proc's value isn't computed: one that can move the player would land somewhere unseen.
-            if (e.name.startsWith('~') && moves(e.name))
-                throw new Unfollowed(`\`${e.text}\` (${at(file, e)}) moves the player inside a value`);
+            if (e.name.startsWith('~')) {
+                // A proc that can move the player would land somewhere unseen inside a value.
+                if (moves(e.name))
+                    throw new Unfollowed(`\`${e.text}\` (${at(file, e)}) moves the player inside a value`);
+                return valueOf(e, env, file);
+            }
             return unknown(e.text);
         };
 
@@ -272,7 +355,7 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                     return { live: [{ ...p, env }], ended: [] };
                 }
                 case 'return':
-                    return { live: [], ended: [p] };
+                    return { live: [], ended: [s.value ? { ...p, returned: evaluate(s.value, p.env, file) } : p] };
                 case 'if': {
                     const c = evaluate(s.cond, p.env, file);
                     if (c.t === 'bool') return block(c.b ? s.yes : s.no, [p], file, depth);
@@ -303,13 +386,16 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             }
             const { name, args } = s.call;
             if (name === 'p_telejump' || name === 'p_teleport') {
+                // The player is there from here on, and it is the path's landing until a later move.
                 const v = args?.length === 1 ? evaluate(args[0]!, p.env, file) : unknown(s.text);
-                if (v.t === 'coord') run.landings.push(v);
-                else
-                    run.unknown.add(
-                        `\`${s.text}\` (${at(file, s)}): ${v.t === 'unknown' ? v.text : s.text} is not known offline`,
-                    );
-                return { live: [p], ended: [] };
+                const landing =
+                    v.t === 'coord'
+                        ? v
+                        : {
+                              why: `\`${s.text}\` (${at(file, s)}): ${v.t === 'unknown' ? v.text : s.text} is not known offline`,
+                          };
+                const pos = v.t === 'coord' ? v : unknown(`coord after ${at(file, s)}`);
+                return { live: [{ ...p, landing, env: new Map(p.env).set(POS, pos) }], ended: [] };
             }
             const jump = name === 'jump' && args?.[0]?.t === 'name' ? `@${args[0].name}` : undefined;
             const call = jump ?? (name.startsWith('@') || name.startsWith('~') ? name : undefined);
@@ -331,10 +417,17 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
             const env = new Map(
                 script.params.map((param, i) => [param, args?.[i] ? evaluate(args[i]!, p.env, file) : unknown(param)]),
             );
-            const flow = block(script.body, [{ env, notes: p.notes }], script.file, depth + 1);
+            // The callee starts where the player is, and the caller goes on from where it leaves them.
+            const pos = p.env.get(POS);
+            if (pos) env.set(POS, pos);
+            const flow = block(script.body, [{ ...p, env, returned: undefined }], script.file, depth + 1);
             const out = [...flow.live, ...flow.ended];
+            const back = (q: Path): Path => {
+                const moved = q.env.get(POS);
+                return { ...q, env: moved ? new Map(p.env).set(POS, moved) : p.env, returned: undefined };
+            };
             // A label is a jump: the script ends where it does. A proc returns, to the caller's locals.
-            return isLabel ? { live: [], ended: out } : { live: out.map(q => ({ ...q, env: p.env })), ended: [] };
+            return isLabel ? { live: [], ended: out } : { live: out.map(back), ended: [] };
         };
 
         const script = scriptOf(`${trigger.file}:${trigger.line}`, trigger.file, trigger.line, trigger.body);
@@ -353,6 +446,10 @@ function evaluator(callables: readonly Callable[]): (trigger: Trigger, loc: Tile
                 dead: [],
             };
         }
+        // Each path lands where its last move leaves the player.
+        for (const p of [...flow.live, ...flow.ended])
+            if (p.landing && 'why' in p.landing) run.unknown.add(p.landing.why);
+            else if (p.landing) run.landings.push(p.landing);
         if (!run.landings.length && !run.unknown.size)
             run.dead = [
                 ...new Set(
@@ -402,7 +499,7 @@ interface Pending {
  */
 export function deriveConnectors(input: ConnectorInput): Connectors {
     const { features, locConfigs, collision, size } = input;
-    const run = evaluator(input.callables);
+    const run = evaluator(input.callables, input.constants ?? new Map());
     const scriptOf = scriptCache();
     const byTarget = new Map<string, Trigger[]>();
     // Every config's own loc triggers, as `config oploc1` / `config aploc1`, in any script.

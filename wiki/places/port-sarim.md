@@ -7,20 +7,24 @@
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
 |---|---|---|---|---|---|---|
-| `connector:port-sarim:0` | (3032, 3224) L1 | Ship's ladder 1 | up (3032, 3225) L2 | yes | no | - |
-| `connector:port-sarim:1` | (3032, 3224) L2 | Ship's ladder 1 | down (3032, 3223) L1 | yes | no | - |
-| `connector:port-sarim:2` | (3034, 3215) | Ship's ladder 1 | up (3034, 3214) L1 | yes | no | - |
-| `connector:port-sarim:3` | (3034, 3215) L1 | Ship's ladder 1 | down (3034, 3214) | yes | no | - |
-| `connector:port-sarim:4` | (3034, 3219) | Ship's ladder 1 | up (3034, 3218) L1 | yes | no | - |
-| `connector:port-sarim:5` | (3034, 3219) L1 | Ship's ladder 1 | down (3034, 3218) | yes | no | - |
-| `connector:port-sarim:6` | (3034, 3223) | Ship's ladder 1 | up (3034, 3222) L1 | yes | no | - |
-| `connector:port-sarim:7` | (3034, 3223) L1 | Ship's ladder 1 | down (3034, 3222) | yes | no | - |
-| `connector:port-sarim:8` | (3036, 3224) L1 | Ship's ladder 1 | up (3036, 3225) L2 | yes | no | - |
-| `connector:port-sarim:9` | (3036, 3224) L2 | Ship's ladder 1 | down (3036, 3223) L1 | yes | no | - |
-| `connector:port-sarim:10` | (3046, 3227) L1 | Ship's ladder 1 | up (3045, 3227) L2 | yes | no | - |
-| `connector:port-sarim:11` | (3046, 3227) L2 | Ship's ladder 1 | down (3047, 3227) L1 | yes | no | - |
-| `connector:port-sarim:12` | (3046, 3231) L1 | Ship's ladder 1 | up (3045, 3231) L2 | yes | no | - |
-| `connector:port-sarim:13` | (3046, 3231) L2 | Ship's ladder 1 | down (3047, 3231) L1 | yes | no | - |
-| `connector:port-sarim:14` | (3049, 3208) | Ship's ladder 1 | up (3048, 3208) L1 | yes | no | - |
-| `connector:port-sarim:15` | (3052, 3229) | Ship's ladder 1 | up (3051, 3229) L1 | yes | no | - |
-| `connector:port-sarim:16` | (3052, 3229) L1 | Ship's ladder 1 | down (3051, 3229) | yes | no | - |
+| `connector:port-sarim:0` | (3030, 3217) | Gangplank 1 | up (3032, 3217) L1 | yes | no | - |
+| `connector:port-sarim:1` | (3031, 3217) L1 | Gangplank 1 | down (3029, 3217) | yes | no | - |
+| `connector:port-sarim:2` | (3032, 3224) L1 | Ship's ladder 1 | up (3032, 3225) L2 | yes | no | - |
+| `connector:port-sarim:3` | (3032, 3224) L2 | Ship's ladder 1 | down (3032, 3223) L1 | yes | no | - |
+| `connector:port-sarim:4` | (3034, 3215) | Ship's ladder 1 | up (3034, 3214) L1 | yes | no | - |
+| `connector:port-sarim:5` | (3034, 3215) L1 | Ship's ladder 1 | down (3034, 3214) | yes | no | - |
+| `connector:port-sarim:6` | (3034, 3219) | Ship's ladder 1 | up (3034, 3218) L1 | yes | no | - |
+| `connector:port-sarim:7` | (3034, 3219) L1 | Ship's ladder 1 | down (3034, 3218) | yes | no | - |
+| `connector:port-sarim:8` | (3034, 3223) | Ship's ladder 1 | up (3034, 3222) L1 | yes | no | - |
+| `connector:port-sarim:9` | (3034, 3223) L1 | Ship's ladder 1 | down (3034, 3222) | yes | no | - |
+| `connector:port-sarim:10` | (3036, 3224) L1 | Ship's ladder 1 | up (3036, 3225) L2 | yes | no | - |
+| `connector:port-sarim:11` | (3036, 3224) L2 | Ship's ladder 1 | down (3036, 3223) L1 | yes | no | - |
+| `connector:port-sarim:12` | (3046, 3227) L1 | Ship's ladder 1 | up (3045, 3227) L2 | yes | no | - |
+| `connector:port-sarim:13` | (3046, 3227) L2 | Ship's ladder 1 | down (3047, 3227) L1 | yes | no | - |
+| `connector:port-sarim:14` | (3046, 3231) L1 | Ship's ladder 1 | up (3045, 3231) L2 | yes | no | - |
+| `connector:port-sarim:15` | (3046, 3231) L2 | Ship's ladder 1 | down (3047, 3231) L1 | yes | no | - |
+| `connector:port-sarim:16` | (3048, 3232) L1 | Gangplank 1 | down (3048, 3234) | yes | no | - |
+| `connector:port-sarim:17` | (3048, 3233) | Gangplank 1 | up (3048, 3231) L1 | yes | no | - |
+| `connector:port-sarim:18` | (3049, 3208) | Ship's ladder 1 | up (3048, 3208) L1 | yes | no | - |
+| `connector:port-sarim:19` | (3052, 3229) | Ship's ladder 1 | up (3051, 3229) L1 | yes | no | - |
+| `connector:port-sarim:20` | (3052, 3229) L1 | Ship's ladder 1 | down (3051, 3229) | yes | no | - |

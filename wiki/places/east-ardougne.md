@@ -194,6 +194,8 @@
 | `connector:east-ardougne:60` | (2674, 3309) L1 | Ladder 1 | down (2673, 3309) | no | no | - |
 | `connector:east-ardougne:61` | (2682, 3267) | Ship's ladder 1 | up (2681, 3267) L1 | no | no | - |
 | `connector:east-ardougne:62` | (2682, 3267) L1 | Ship's ladder 1 | down (2681, 3267) | no | no | - |
+| `connector:east-ardougne:63` | (2683, 3269) L1 | Gangplank 1 | down (2683, 3271) | no | no | - |
+| `connector:east-ardougne:64` | (2683, 3270) | Gangplank 1 | up (2683, 3268) L1 | no | no | - |
 
 ## Areas within
 

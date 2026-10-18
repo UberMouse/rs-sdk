@@ -3,7 +3,8 @@
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
 // (sources/gate-scan.ts, gates.ts); then prints a report and renders the pages (render.ts). `bun run
-// world` writes them and exits 1 when the report has an error (failed): a site that breaks the COVERED
+// world` writes them, prints the reach fill's report (reach.ts: what a walk from the Lumbridge spawn reaches,
+// reported only, not written to world.json), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
@@ -20,6 +21,7 @@ import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { coord } from './render/common';
 import { buildSites, locSizes, spawnClusters } from './place';
+import { fillReach, formatReach } from './reach';
 import { readConfigs } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } from './sources/connectors';
 import { readDbrows } from './sources/dbrows';
@@ -264,6 +266,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     const npcSpawns = spawnClusters(spawns, resolve, zones);
 
+    const constants = readConstants();
     const { connectors, underived, oneWay } = deriveConnectors({
         features,
         triggers,
@@ -271,6 +274,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         locConfigs,
         collision,
         size: locSizes(locConfigs),
+        constants,
     });
     const row = (i: number): string => {
         const c = connectors[i]!;
@@ -279,7 +283,6 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const byReason = new Map<string, string[]>();
     for (const u of underived) push(byReason, u.reason, named(u));
 
-    const constants = readConstants();
     const quests = deriveQuests({
         scan: scanQuestCalls(scripts),
         constants,
@@ -628,8 +631,8 @@ export function formatReport(report: BuildReport): string[] {
 
 if (import.meta.main) {
     // Imported here only: it parses the collision data the SDK bundles (see collision.ts).
-    const { siteCollision } = await import('./collision');
-    const { world, report } = buildWorld({ generatedFrom: contentHash(), areas: AREAS, collision: siteCollision });
+    const { reachCollision } = await import('./collision');
+    const { world, report } = buildWorld({ generatedFrom: contentHash(), areas: AREAS, collision: reachCollision });
     const files = new Map([
         [relative(ROOT, WORLD_JSON), serializeWorld(world)],
         ...renderWorld(world, readRenderData()),
@@ -652,6 +655,10 @@ if (import.meta.main) {
     } else {
         const removed = writeFiles(files);
         for (const line of formatReport(report)) console.log(line);
+        // Where a walk from the Lumbridge spawn gets to, and what it needs (reach.ts). It is reported only, not
+        // written to world.json, and reports no error, so `--check` leaves it out.
+        const reach = fillReach({ world, collision: reachCollision, size: locSizes(readConfigs('loc')) });
+        for (const line of formatReach(reach.report)) console.log(line);
         console.log(`wrote ${generated}${removed.length ? `, removed ${removed.length} stale` : ''}`);
         if (failed(report)) process.exitCode = 1;
     }

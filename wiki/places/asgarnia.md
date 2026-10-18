@@ -292,7 +292,7 @@
 | [Ice Mountain](ice-mountain.md) | tree 2, npc 2, connector 2 |
 | [Melzar's Maze](melzars-maze.md) | tree 2, npc 6, connector 27 |
 | [Monastery](monastery.md) | water-source 2, tree 1, connector 2 |
-| [Port Sarim](port-sarim.md) | connector 17 |
+| [Port Sarim](port-sarim.md) | connector 21 |
 | [Rimmington](rimmington.md) | shop 2, range 1, fire 1, water-source 1, tree 5, rock 1, pickpocket 1, npc 1, connector 4 |
 | [Taverley](taverley.md) | tree 2, connector 1 |
 | [Troll Stronghold](troll-stronghold.md) | npc 2 |

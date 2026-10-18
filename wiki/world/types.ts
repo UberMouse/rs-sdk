@@ -98,9 +98,9 @@ export interface NpcSpawn {
 }
 
 /**
- * One way a connector loc (a ladder, staircase, trapdoor or manhole, kind `connector`) moves the player:
- * one op and one landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb on a
- * middle floor asks up or down) or a condition the script can't settle offline has a row per landing.
+ * One way a connector loc (a ladder, staircase, trapdoor, manhole or gangplank, kind `connector`) moves the
+ * player: one op and one landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb
+ * on a middle floor asks up or down) or a condition the script can't settle offline has a row per landing.
  */
 export interface Connector {
     /** Index into World.features: the loc. */

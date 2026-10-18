@@ -450,18 +450,22 @@
 | `connector:kandarin:76` | (2750, 3511) L1 | Staircase 1 | down (2750, 3509) | no | no | - |
 | `connector:kandarin:77` | (2767, 3491) L1 | Ladder 1 | up (2766, 3491) L2 | no | no | - |
 | `connector:kandarin:78` | (2767, 3491) L2 | Ladder 1 | down (2766, 3491) L1 | no | no | - |
-| `connector:kandarin:79` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 | no | no | - |
-| `connector:kandarin:80` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) | no | no | - |
-| `connector:kandarin:81` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 | no | no | - |
-| `connector:kandarin:82` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) | no | no | - |
-| `connector:kandarin:83` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 | no | no | - |
-| `connector:kandarin:84` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) | no | no | - |
-| `connector:kandarin:85` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 | no | no | - |
-| `connector:kandarin:86` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 | no | no | - |
-| `connector:kandarin:87` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 | no | no | - |
-| `connector:kandarin:88` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 | no | no | - |
-| `connector:kandarin:89` | (2842, 3424) | Ladder 1 | down (2841, 9824) | no | no | - |
-| `connector:kandarin:90` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 | yes | no | - |
+| `connector:kandarin:79` | (2773, 3234) | Gangplank 1 | up (2775, 3234) L1 | no | no | - |
+| `connector:kandarin:80` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) | no | no | - |
+| `connector:kandarin:81` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 | no | no | - |
+| `connector:kandarin:82` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) | no | no | - |
+| `connector:kandarin:83` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 | no | no | - |
+| `connector:kandarin:84` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) | no | no | - |
+| `connector:kandarin:85` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 | no | no | - |
+| `connector:kandarin:86` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) | no | no | - |
+| `connector:kandarin:87` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) | no | no | - |
+| `connector:kandarin:88` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 | no | no | - |
+| `connector:kandarin:89` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 | no | no | - |
+| `connector:kandarin:90` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 | no | no | - |
+| `connector:kandarin:91` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 | no | no | - |
+| `connector:kandarin:92` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 | no | no | - |
+| `connector:kandarin:93` | (2842, 3424) | Ladder 1 | down (2841, 9824) | no | no | - |
+| `connector:kandarin:94` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 | yes | no | - |
 
 ## Areas within
 
@@ -477,7 +481,7 @@
 | [Catherby](catherby.md) | bank 1, shop 3, range 2, fire 1, water-source 2, tree 1, pickpocket 2, connector 12 |
 | [Coal Trucks](coal-trucks.md) | tree 4, rock 1, npc 2 |
 | [Combat Training Camp](combat-training-camp.md) | tree 1, npc 1 |
-| [East Ardougne](east-ardougne.md) | bank 2, shop 6, furnace 1, range 2, fire 2, pottery-wheel 2, pottery-oven 1, water-source 6, altar 1, tree 17, stall 3, thieving-chest 5, pickpocket 9, npc 8, connector 64 |
+| [East Ardougne](east-ardougne.md) | bank 2, shop 6, furnace 1, range 2, fire 2, pottery-wheel 2, pottery-oven 1, water-source 6, altar 1, tree 17, stall 3, thieving-chest 5, pickpocket 9, npc 8, connector 66 |
 | [Fight Arena](fight-arena.md) | tree 2, npc 1, connector 1 |
 | [Fishing Guild](fishing-guild.md) | bank 1, shop 1, range 1, tree 3, fishing-spot 1, pickpocket 1, npc 8, connector 2 |
 | [Fishing Platform](fishing-platform.md) | connector 1 |
