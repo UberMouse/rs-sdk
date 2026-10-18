@@ -15,7 +15,7 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:0` | (2638, 3676) | (2637, 3676) | 1 | no | no | - | - |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:1` | (2647, 3678) | (2647, 3678) | 1 | no | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:0` | (2638, 3676) | (2637, 3676) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:1` | (2647, 3678) | (2647, 3678) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |

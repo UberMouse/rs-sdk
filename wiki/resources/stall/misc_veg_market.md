@@ -15,6 +15,6 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Miscellania and Etceteria](../../places/miscellania.md) | `stall:miscellania:0` | (2516, 3863) | (2516, 3863) | 1 | no | no | - | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Miscellania and Etceteria](../../places/miscellania.md) | `stall:miscellania:0` | (2516, 3863) | (2516, 3863) | 1 | no | no | - | unreached | - |

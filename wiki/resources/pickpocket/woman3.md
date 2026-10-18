@@ -17,8 +17,8 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 1 | yes | yes | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:7` | (3244, 3211) | (3244, 3211) | 1 | yes | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 1 | yes | yes | - | - | Falador West bank (Falador), 14 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:7` | (3244, 3211) | (3244, 3211) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |

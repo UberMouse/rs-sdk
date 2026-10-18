@@ -85,7 +85,24 @@ export interface Site {
      * there is no stand.
      */
     reach: string[][];
+    /**
+     * On a resource or processor site (distance.ts SINKS), the nearest site of each sink kind it takes its
+     * products to (a bank, and a furnace, range or anvil where phase 3 processes on the way), by run ticks from
+     * this site's stand under its own reach sets (distance.ts); a kind with none such is left out. Absent on other
+     * kinds.
+     */
+    nearest?: Nearest;
 }
+
+/** The nearest sink of one kind: its site id, the run ticks to its stand, and what that way needs. */
+export interface NearestSink {
+    site: string;
+    runTicks: number;
+    /** The requirement set of the way (requirements.ts canonicalSet): its crossings' sets joined, `[]` for none. */
+    requires: string[];
+}
+
+export type Nearest = Partial<Record<'bank' | 'furnace' | 'range' | 'anvil', NearestSink>>;
 
 /**
  * Where one npc config spawns: its map placements clustered as sites are (one level, one leaf area,
@@ -304,7 +321,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 11;
+export const WORLD_FORMAT = 12;
 
 export interface World {
     /** WORLD_FORMAT when written. */

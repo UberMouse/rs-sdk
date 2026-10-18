@@ -19,9 +19,9 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:0` | (2891, 4847) | (2890, 4847) | 1 | yes | no | - | unreached |
-| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:1` | (2893, 4812) | (2892, 4812) | 1 | yes | no | - | unreached |
-| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:2` | (2925, 4848) | (2924, 4848) | 1 | yes | no | - | unreached |
-| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:3` | (2927, 4814) | (2926, 4814) | 1 | yes | no | - | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:0` | (2891, 4847) | (2890, 4847) | 1 | yes | no | - | unreached | - |
+| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:1` | (2893, 4812) | (2892, 4812) | 1 | yes | no | - | unreached | - |
+| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:2` | (2925, 4848) | (2924, 4848) | 1 | yes | no | - | unreached | - |
+| [Rune essence mine](../../places/rune-essence-mine.md) | `rock:rune-essence-mine:3` | (2927, 4814) | (2926, 4814) | 1 | yes | no | - | unreached | - |

@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:5` | (2547, 3116) L1 | (2547, 3116) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:0` | (2547, 3112) L1 | (2547, 3112) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:5` | (2547, 3116) L1 | (2547, 3116) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 51 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:0` | (2547, 3112) L1 | (2547, 3112) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 50 ticks |

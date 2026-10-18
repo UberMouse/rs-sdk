@@ -12,6 +12,7 @@ import {
     coord,
     count,
     GENERATED,
+    nearestLabel,
     reachLabel,
     reachSummary,
     RESOURCE_KINDS,
@@ -245,6 +246,7 @@ const TITLED_BY_NAME: ReadonlySet<ResourceKind> = new Set<ResourceKind>(['pickpo
 export function renderResources(world: World, data: PageData): Page[] {
     const areas = areasOf(world);
     const requires = reachLabel(world, data);
+    const nearestBank = nearestLabel(world, data, 'bank');
     const out = new Map<string, string>();
     for (const kind of RESOURCE_KINDS) {
         const sites = world.sites.filter(s => s.kind === kind);
@@ -273,6 +275,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                 yesNo(s.multiway),
                 wilderness(s.wildernessLevel),
                 requires(s),
+                nearestBank(s),
             ];
             out.set(
                 path,
@@ -289,7 +292,18 @@ export function renderResources(world: World, data: PageData): Page[] {
                     '## Sites',
                     '',
                     ...table(
-                        ['Area', 'Site', 'Centre', 'Stand', 'Count', 'F2P', 'Multiway', 'Wilderness', 'Requires'],
+                        [
+                            'Area',
+                            'Site',
+                            'Centre',
+                            'Stand',
+                            'Count',
+                            'F2P',
+                            'Multiway',
+                            'Wilderness',
+                            'Requires',
+                            'Nearest bank',
+                        ],
                         holding.map(row),
                     ),
                     '',

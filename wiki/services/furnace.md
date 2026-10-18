@@ -3,17 +3,17 @@
 
 12 sites, 5 of them in F2P; 6 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 3 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Falador (Asgarnia)](../places/falador.md) | `furnace:falador:0` | (2975, 3368) | (2974, 3368) | Furnace 1 | yes | - |
-| [Entrana](../places/entrana.md) | `furnace:entrana:0` | (2834, 3351) | (2832, 3351) | Furnace 2 | no | no weapons/armour (Entrana rule) |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `furnace:east-ardougne:0` | (2601, 3310) | (2600, 3310) | Furnace 1 | no | - |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `furnace:rellekka:0` | (2617, 3666) | (2618, 3665) | Furnace 2 | no | - |
-| [Shilo Village (Karamja)](../places/shilo-village.md) | `furnace:shilo-village:0` | (2857, 2966) | (2857, 2965) | Furnace 2 | no | 60 coins + Shilo Village done |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `furnace:al-kharid:0` | (3273, 3185) | (3274, 3184) | Furnace 2 | yes | - |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | `furnace:legends-quest-cavern:0` | (2426, 4726) | (2426, 4725) | Furnace 1 | no | unreached |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `furnace:lumbridge:0` | (3226, 3256) | (3225, 3255) | Furnace 2 | yes | - |
-| [Tutorial Island caves](../places/tutorial-island-caves.md) | `furnace:tutorial-island-caves:0` | (3080, 9496) | (3081, 9497) | Furnace 2 | yes | unreached |
-| [Underground Pass](../places/underground-pass.md) | `furnace:underground-pass:0` | (2454, 9682) | (2454, 9681) | Furnace 1 | no | unreached |
-| [Wilderness](../places/wilderness.md) | `furnace:wilderness:0` | (3144, 3735) | (3145, 3734) | Furnace 2 | yes | - |
-| [Zanaris](../places/zanaris.md) | `furnace:zanaris:0` | (3168, 9592) | (3169, 9591) | Furnace 2 | no | wear Dramen staff |
+| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|
+| [Falador (Asgarnia)](../places/falador.md) | `furnace:falador:0` | (2975, 3368) | (2974, 3368) | Furnace 1 | yes | - | Falador West bank (Falador), 20 ticks |
+| [Entrana](../places/entrana.md) | `furnace:entrana:0` | (2834, 3351) | (2832, 3351) | Furnace 2 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 66 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `furnace:east-ardougne:0` | (2601, 3310) | (2600, 3310) | Furnace 1 | no | - | Ardougne North bank (East Ardougne), 26 ticks |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `furnace:rellekka:0` | (2617, 3666) | (2618, 3665) | Furnace 2 | no | - | Seers' Village bank (Seers' Village), 131 ticks |
+| [Shilo Village (Karamja)](../places/shilo-village.md) | `furnace:shilo-village:0` | (2857, 2966) | (2857, 2965) | Furnace 2 | no | 60 coins + Shilo Village done | Shilo Village bank (Shilo Village), 7 ticks |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `furnace:al-kharid:0` | (3273, 3185) | (3274, 3184) | Furnace 2 | yes | - | Al Kharid bank (Al Kharid), 14 ticks |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | `furnace:legends-quest-cavern:0` | (2426, 4726) | (2426, 4725) | Furnace 1 | no | unreached | - |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `furnace:lumbridge:0` | (3226, 3256) | (3225, 3255) | Furnace 2 | yes | - | Draynor bank (Draynor Village), 69 ticks |
+| [Tutorial Island caves](../places/tutorial-island-caves.md) | `furnace:tutorial-island-caves:0` | (3080, 9496) | (3081, 9497) | Furnace 2 | yes | unreached | - |
+| [Underground Pass](../places/underground-pass.md) | `furnace:underground-pass:0` | (2454, 9682) | (2454, 9681) | Furnace 1 | no | unreached | - |
+| [Wilderness](../places/wilderness.md) | `furnace:wilderness:0` | (3144, 3735) | (3145, 3734) | Furnace 2 | yes | - | Edgeville bank (Edgeville), 124 ticks |
+| [Zanaris](../places/zanaris.md) | `furnace:zanaris:0` | (3168, 9592) | (3169, 9591) | Furnace 2 | no | wear Dramen staff | Zanaris bank (Zanaris), 26 ticks |

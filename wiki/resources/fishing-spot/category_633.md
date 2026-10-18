@@ -15,10 +15,10 @@ The options of each spot config placed in the world (its npc config).
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:3` | (2899, 3119) | (2899, 3118) | 1 | no | no | - | unreached |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:4` | (2912, 3119) | (2912, 3118) | 1 | no | no | - | unreached |
-| [Brimhaven (Karamja)](../../places/brimhaven.md) | `fishing-spot:brimhaven:0` | (2768, 3165) | (2767, 3165) | 1 | no | no | - | 30 coins |
-| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | (2515, 4590) | 1 | no | no | - | unreached |
-| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | (2528, 4590) | 1 | no | no | - | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:3` | (2899, 3119) | (2899, 3118) | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:4` | (2912, 3119) | (2912, 3118) | 1 | no | no | - | unreached | - |
+| [Brimhaven (Karamja)](../../places/brimhaven.md) | `fishing-spot:brimhaven:0` | (2768, 3165) | (2767, 3165) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 73 ticks via 30 coins |
+| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | (2515, 4590) | 1 | no | no | - | unreached | - |
+| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | (2528, 4590) | 1 | no | no | - | unreached | - |

@@ -19,8 +19,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Heroes' Guild mine](../../places/heroes-guild-mine.md) | `rock:heroes-guild-mine:1` | (2939, 9891) | (2940, 9891) | 2 | no | no | - | Hero's Quest done |
-| [Lava Maze dungeon](../../places/lava-maze-dungeon.md) | `rock:lava-maze-dungeon:0` | (3046, 10265) | (3045, 10265) | 1 | no | no | 44 | unreached |
-| [Wilderness](../../places/wilderness.md) | `rock:wilderness:2` | (3060, 3885) | (3060, 3885) | 2 | yes | no | 46 | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Heroes' Guild mine](../../places/heroes-guild-mine.md) | `rock:heroes-guild-mine:1` | (2939, 9891) | (2940, 9891) | 2 | no | no | - | Hero's Quest done | Falador West bank (Falador), 120 ticks via Hero's Quest done |
+| [Lava Maze dungeon](../../places/lava-maze-dungeon.md) | `rock:lava-maze-dungeon:0` | (3046, 10265) | (3045, 10265) | 1 | no | no | 44 | unreached | - |
+| [Wilderness](../../places/wilderness.md) | `rock:wilderness:2` | (3060, 3885) | (3060, 3885) | 2 | yes | no | 46 | - | Edgeville bank (Edgeville), 209 ticks |

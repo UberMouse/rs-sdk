@@ -15,9 +15,9 @@ The options of each spot config placed in the world (its npc config).
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3413) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3438, 3276) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3481, 3434) | (3478, 3434) | 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:3` | (3487, 3447) | (3487, 3445) | 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3413) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 60 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3438, 3276) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 134 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3481, 3434) | (3478, 3434) | 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 62 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:3` | (3487, 3447) | (3487, 3445) | 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 66 ticks via Nature Spirit at stage 1 |

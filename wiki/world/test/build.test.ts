@@ -243,6 +243,9 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // Format 10 was written before sites and npc spawn clusters had their reach.
         writeFileSync(file, serializeWorld({ ...world, format: 10 }));
         expect(() => loadWorld(file)).toThrow(`format 10, this code reads format ${WORLD_FORMAT}`);
+        // Format 11 was written before resource and processor sites had their nearest bank.
+        writeFileSync(file, serializeWorld({ ...world, format: 11 }));
+        expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }
@@ -306,6 +309,15 @@ describe('formatReport', () => {
             offLand: 0,
             bound: { max: 16, tiles: 0, sample: [] },
             skipped: [],
+            ms: 1,
+            bytes: 1024,
+        },
+        distance: {
+            contexts: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            sinks: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            found: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            missing: { bank: 0, furnace: 0, range: 0, anvil: 0 },
+            settled: 10,
             ms: 1,
             bytes: 1024,
         },

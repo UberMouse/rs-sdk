@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | 7 | no | no | - | - |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:1` | (2581, 3289) L1 | (2581, 3287) L1 | 8 | no | no | - | 61 Thieving |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:3` | (2584, 3304) L1 | (2584, 3304) L1 | 5 | no | no | - | 61 Thieving |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:8` | (2659, 3308) | (2659, 3308) | 2 | no | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | 7 | no | no | - | - | Ardougne North bank (East Ardougne), 38 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:1` | (2581, 3289) L1 | (2581, 3287) L1 | 8 | no | no | - | 61 Thieving | Ardougne North bank (East Ardougne), 54 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:3` | (2584, 3304) L1 | (2584, 3304) L1 | 5 | no | no | - | 61 Thieving | Ardougne North bank (East Ardougne), 58 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:8` | (2659, 3308) | (2659, 3308) | 2 | no | no | - | - | Ardougne South bank (East Ardougne), 22 ticks |

@@ -83,6 +83,7 @@ const world: World = {
         feature('tree', 'yew', 'Yew', 'yewtree', 3170, 3170),
         feature('tree', 'yew', 'Yew', 'yewtree', 3180, 3180),
         feature('npc', 'goblin', 'Goblin', 'goblin', 3190, 3190),
+        feature('range', '', 'Range', 'cooking_range', 3205, 3205),
     ],
     sites: [
         site('bank:town-bank:0', ['region', 'town', 'town-bank'], [0, 1, 2], { banker: 1, booth: 2 }),
@@ -104,10 +105,20 @@ const world: World = {
                 centre: { level: 1, x: 3150, z: 3150 },
                 stand: { level: 1, x: 3150, z: 3151 },
                 reach: [['skill:woodcutting:60'], ['coins:30', 'item:dramen_staff:worn']],
+                nearest: { bank: { site: 'bank:town-bank:0', runTicks: 12, requires: ['coins:30'] } },
             },
         ),
-        site('tree:town:10', ['region', 'town'], [8], { yew: 1 }),
-        site('tree:town:2', ['region', 'town'], [7], { yew: 1 }),
+        site('range:town:0', ['region', 'town'], [10], { Range: 1 }, { nearest: {} }),
+        site('tree:town:10', ['region', 'town'], [8], { yew: 1 }, { nearest: {} }),
+        site(
+            'tree:town:2',
+            ['region', 'town'],
+            [7],
+            { yew: 1 },
+            {
+                nearest: { bank: { site: 'bank:town-bank:0', runTicks: 1, requires: [] } },
+            },
+        ),
     ],
     // The ladder's two ops land on one tile, which its row names once.
     connectors: [1, 2].map(op => ({
@@ -202,6 +213,12 @@ describe('renderWorld', () => {
 
           Requires: members.
 
+          ## [Ranges](../services/range.md)
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`range:town:0\` | (3200, 3200) | Range 1 | yes | no | - | - |
+
           ## Trees
 
           | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
@@ -240,7 +257,7 @@ describe('renderWorld', () => {
 
           | Area | Sites in it |
           |---|---|
-          | [Town](town.md) | bank 1, tree 3, connector 1 |
+          | [Town](town.md) | bank 1, range 1, tree 3, connector 1 |
           "
         `);
     });
@@ -275,14 +292,27 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|---|---|
-          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | 1 | no | yes | 12 | unreached |
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff |
-          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - |
-          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | 1 | no | yes | 12 | unreached | - |
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
+          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | Town bank (Town), 1 tick |
+          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
           "
         `);
+    });
+
+    test('a service page of a processor kind has a Nearest bank column, the bank page none', () => {
+        const header = (path: string) =>
+            pages
+                .get(path)!
+                .split('\n')
+                .find(l => l.startsWith('| Area'));
+        expect(header('wiki/services/range.md')).toBe(
+            '| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |',
+        );
+        expect(pages.get('wiki/services/range.md')).toContain('| Range 1 | yes | - | none |');
+        expect(header('wiki/services/bank.md')).toBe('| Area | Site | Centre | Stand | Counts | F2P | Requires |');
     });
 
     test('a resource subtype with no axe rows and no respawnrate says so', () => {
@@ -312,9 +342,9 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|---|---|
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
           "
         `);
     });
@@ -338,7 +368,7 @@ describe('renderWorld', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) down to the hand-written line below. -->
           # World index
 
-          Generated from \`server/content\` at \`abc123\`: 3 areas (1 top level), 10 features, 7 sites, 0 npc spawn clusters, in [wiki/world.json](../world.json).
+          Generated from \`server/content\` at \`abc123\`: 3 areas (1 top level), 11 features, 8 sites, 0 npc spawn clusters, in [wiki/world.json](../world.json).
 
           | Folder | Pages | One page per |
           |---|---|---|
@@ -610,9 +640,9 @@ describe('in-game names and resource data', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|---|---|
-          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
           "
         `);
     });

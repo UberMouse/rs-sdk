@@ -3,7 +3,8 @@
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
 // (sources/gate-scan.ts, gates.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
-// Lumbridge spawn needs to get there); then prints a report and renders the pages (render.ts). `bun run
+// Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
+// (distance.ts); then prints a report and renders the pages (render.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches (the
 // curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
@@ -18,11 +19,12 @@ import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
+import { formatDistance, nearestSinks, SINKS, type DistanceReport } from './distance';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
 import { besideCluster, buildSites, locSizes, spawnClusters, type Placed } from './place';
-import { fillReach, formatReach, type Reach, type ReachCollision, type ReachReport } from './reach';
+import { fillReach, formatReach, reachGraph, type Reach, type ReachCollision, type ReachReport } from './reach';
 import { readConfigs } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
 import { readDbrows } from './sources/dbrows';
@@ -196,6 +198,8 @@ export interface BuildReport {
     };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
+    /** The searches for each resource and processor site's nearest sinks (distance.ts). */
+    distance: DistanceReport;
     /** Sites of COVERED kinds no walk reaches, by area path then id: warnings, the curation to-do list. */
     unreached: Unreached[];
 }
@@ -435,12 +439,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         const staged = gates.stages.get(q.id);
         return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
     });
-    // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built.
-    const fill = fillReach({
+    // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
+    // distances to sinks walk the same graph.
+    const reachInput = {
         world: { features, connectors, gates: landings.gates, transports, quests: questRows },
         collision,
         size: locSizes(locConfigs),
-    });
+    };
+    const graph = reachGraph(reachInput);
+    const fill = fillReach(reachInput, graph);
     // Sites after the fill, so a stand is a tile a walk gets to where one can be (place.ts standTile).
     const log: string[] = [];
     const placedSites = buildSites(features, resolve, zones, collision, {
@@ -448,9 +455,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         log: line => log.push(line),
         walked: fill.reached,
     }).sort((a, b) => cmp(a.id, b.id));
-    const { sites, npcSpawns, unreached } = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c =>
-        besideCluster(c, collision),
-    );
+    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
+    const { npcSpawns, unreached } = reached;
+    // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
+    const distance = nearestSinks(graph, reached.sites);
+    const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
@@ -543,6 +552,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 },
             },
             reach: fill.report,
+            distance: distance.report,
             unreached,
         },
     };
@@ -791,6 +801,7 @@ if (import.meta.main) {
         for (const line of [
             ...formatReport(report),
             ...formatReach(report.reach),
+            ...formatDistance(report.distance),
             ...formatUnreached(report.unreached, world.areas),
         ])
             console.log(line);

@@ -21,17 +21,17 @@ The options of each spot config placed in the world (its npc config).
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:1` | (2876, 3342) | (2876, 3341) | 2 | no | no | - | no weapons/armour (Entrana rule) |
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:2` | (2877, 3331) | (2877, 3332) | 2 | no | no | - | no weapons/armour (Entrana rule) |
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:3` | (2986, 3176) | (2987, 3176) | 1 | yes | no | - | - |
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:4` | (2996, 3158) | (2997, 3158) | 1 | yes | no | - | - |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:7` | (2792, 3277) | (2792, 3277) | 4 | no | no | - | unreached |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2841, 3430) | (2842, 3432) | 2 | no | no | - | - |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 3 | no | no | - | - |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins |
-| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3267, 3148) | (3267, 3149) | 1 | yes | yes | - | - |
-| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:1` | (3276, 3140) | (3276, 3141) | 1 | yes | yes | - | - |
-| [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | 2 | yes | no | - | - |
-| [Wilderness](../../places/wilderness.md) | `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3705) | 1 | yes | yes | 24 | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:1` | (2876, 3342) | (2876, 3341) | 2 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 77 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:2` | (2877, 3331) | (2877, 3332) | 2 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 77 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:3` | (2986, 3176) | (2987, 3176) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 77 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:4` | (2996, 3158) | (2997, 3158) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 86 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:7` | (2792, 3277) | (2792, 3277) | 4 | no | no | - | unreached | - |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2841, 3430) | (2842, 3432) | 2 | no | no | - | - | Catherby bank (Catherby), 19 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 99 ticks via 30 coins |
+| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3267, 3148) | (3267, 3149) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 10 ticks |
+| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:1` | (3276, 3140) | (3276, 3141) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 14 ticks |
+| [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 13 ticks |
+| [Wilderness](../../places/wilderness.md) | `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3705) | 1 | yes | yes | 24 | - | Edgeville bank (Edgeville), 110 ticks |

@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2417, 3437) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | 1 | no | no | - | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2417, 3437) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | 1 | no | no | - | unreached | - |

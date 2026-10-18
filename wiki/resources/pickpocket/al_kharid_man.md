@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:0` | (3277, 3187) | (3277, 3187) | 1 | yes | yes | - | - |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:2` | (3284, 3199) | (3284, 3199) | 1 | yes | yes | - | - |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:3` | (3298, 3203) | (3297, 3203) | 3 | yes | yes | - | - |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:4` | (3294, 3196) | (3294, 3196) | 1 | yes | yes | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:0` | (3277, 3187) | (3277, 3187) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 12 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:2` | (3284, 3199) | (3284, 3199) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:3` | (3298, 3203) | (3297, 3203) | 3 | yes | yes | - | - | Al Kharid bank (Al Kharid), 21 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:4` | (3294, 3196) | (3294, 3196) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |

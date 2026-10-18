@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:4` | (2613, 3317) | (2612, 3317) | 1 | no | no | - | 13 Thieving |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:5` | (2628, 3294) | (2628, 3294) | 1 | no | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:4` | (2613, 3317) | (2612, 3317) | 1 | no | no | - | 13 Thieving | Ardougne North bank (East Ardougne), 20 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:5` | (2628, 3294) | (2628, 3294) | 1 | no | no | - | - | Ardougne South bank (East Ardougne), 14 ticks |

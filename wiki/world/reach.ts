@@ -34,10 +34,13 @@
 // a cheap route before a dear one. Along a route the sets join and are made canonical (requirements.ts
 // canonicalSet: a quest's highest stage, a skill's highest level, the coins of every crossing summed), and they
 // come out canonical and sorted.
+//
+// reachGraph builds the tiles and edges once (ReachGraph); fillReach floods them, and distance.ts walks the same
+// graph for the run ticks to each site's nearest sinks.
 import { reachTiles, type PlacedLoc, type SiteOptions } from './place';
 import { canonicalSet, dominates, minimalSets, questFacts, type QuestFacts } from './requirements';
 import type { ConnectorCollision } from './sources/connectors';
-import type { Gate, Side, Tile, World } from './types';
+import type { Gate, Side, Tile, Transport, World } from './types';
 import { cmp } from './util';
 
 /** Where a new account stands: the Lumbridge spawn. */
@@ -188,7 +191,7 @@ const opOf = (trigger: string): number | undefined => {
  * Interned requirement sets: each canonical (requirements.ts canonicalSet), id 0 the empty set. Union and
  * dominance are cached by id pair, as a fill asks the same few hundred pairs millions of times.
  */
-class SetTable {
+export class SetTable {
     private readonly lists: string[][] = [[]];
     private readonly ids = new Map<string, number>([['', 0]]);
     private readonly unions = new Map<number, number>();
@@ -255,7 +258,7 @@ class SetTable {
 // ---- Tiles -----------------------------------------------------------------------------------------------
 
 /** Where each tile of the collision data's zones sits in the fill's typed arrays. */
-class TileIndex {
+export class TileIndex {
     readonly size: number;
     private readonly x0: number;
     private readonly z0: number;
@@ -307,7 +310,7 @@ class TileIndex {
 }
 
 /** A growable list of ints. */
-class IntList {
+export class IntList {
     data = new Int32Array(1024);
     length = 0;
 
@@ -321,10 +324,50 @@ class IntList {
     }
 }
 
-// ---- The fill ------------------------------------------------------------------------------------------
+// ---- The graph -----------------------------------------------------------------------------------------
+
+/** How an edge moves the player: a connector's climb, a gate's crossing or jump, or a transport's ride by its kind. */
+export type Via = 'connector' | 'gate' | Transport['kind'];
+
+/** An edge besides the neighbour steps: to a tile index, crossed with any one of `alts` (set ids). */
+export interface Edge {
+    to: number;
+    alts: readonly number[];
+    via: Via;
+}
+
+/**
+ * The graph the fill walks (reach.ts header), which distance.ts walks too: the tiles, the edges besides the
+ * neighbour steps, the opened tiles, and each tile's steps, read from the collision with the gated doors walled
+ * and the opened locs cleared. `stepMask` reads the collision, so it is called inside `within`, which makes those
+ * edits for the time `f` runs.
+ */
+export interface ReachGraph {
+    index: TileIndex;
+    sets: SetTable;
+    quests: QuestFacts | undefined;
+    /** The edges by source tile, in the order added. */
+    edgeFrom: ReadonlyMap<number, readonly Edge[]>;
+    /** Each opened loc tile's alternatives: arriving there asks one of them. */
+    openAlts: ReadonlyMap<number, readonly number[]>;
+    /** The id of the alternatives `[[]]`: an edge with no requirement. */
+    free: readonly number[];
+    edges: ReachReport['edges'];
+    /** Rows the graph could not use, as `<what>: <why>`. */
+    skipped: ReadonlySet<string>;
+    /** Tiles a step from a tile asked for leads to that are not land (ReachReport.offLand). */
+    offLand: ReadonlySet<string>;
+    /** The steps open from tile i, a bit per STEPS entry; read inside `within`. */
+    stepMask(i: number): number;
+    within<T>(f: () => T): T;
+    /** Bytes of the index and the step masks. */
+    bytes: number;
+    /** Wall-clock time spent building it. */
+    ms: number;
+}
 
 /** The eight steps, as (dx, dz), by bit of a tile's step mask. */
-const STEPS: readonly (readonly [number, number])[] = [
+export const STEPS: readonly (readonly [number, number])[] = [
     [-1, 0],
     [1, 0],
     [0, -1],
@@ -336,15 +379,11 @@ const STEPS: readonly (readonly [number, number])[] = [
 ];
 /** A step mask's bit for "computed". */
 const KNOWN = 1 << 8;
-/** Slots per block of a tile's overflow chain of sets. */
-const BLOCK = 4;
 
-/** Fills from `start` (reach.ts header) and returns each tile's minimal requirement sets. */
-export function fillReach(input: ReachInput): Reach {
+/** Builds the graph of `input`'s world and collision (reach.ts header). */
+export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size'>): ReachGraph {
     const began = performance.now();
     const { world, collision, size } = input;
-    const start = input.start ?? LUMBRIDGE_SPAWN;
-    const maxSets = input.maxSets ?? MAX_SETS;
     const index = new TileIndex(collision.zones);
     const quests = world.quests && questFacts(world.quests);
     const sets = new SetTable(quests);
@@ -364,19 +403,26 @@ export function fillReach(input: ReachInput): Reach {
     };
     const FREE = alternatives([[]]);
 
-    // Extra edges by source tile: target tile and alternatives, in the order added.
-    const edgeFrom = new Map<number, { to: number; alts: number[] }[]>();
+    // Extra edges by source tile, in the order added.
+    const edgeFrom = new Map<number, Edge[]>();
     const edges = { connectors: 0, gates: 0, transports: 0 };
-    const addEdge = (kind: keyof typeof edges, from: Tile, to: Tile, alts: number[], what: string): boolean => {
+    const KIND: Record<Via, keyof typeof edges> = {
+        connector: 'connectors',
+        gate: 'gates',
+        ship: 'transports',
+        cart: 'transports',
+        sled: 'transports',
+    };
+    const addEdge = (via: Via, from: Tile, to: Tile, alts: number[], what: string): boolean => {
         const [a, b] = [index.of(from.level, from.x, from.z), index.of(to.level, to.x, to.z)];
         if (a < 0 || b < 0) {
             skipped.add(`${what}: ${coord(a < 0 ? from : to)} is not on land`);
             return false;
         }
         const list = edgeFrom.get(a);
-        if (list) list.push({ to: b, alts });
-        else edgeFrom.set(a, [{ to: b, alts }]);
-        edges[kind]++;
+        if (list) list.push({ to: b, alts, via });
+        else edgeFrom.set(a, [{ to: b, alts, via }]);
+        edges[KIND[via]]++;
         return true;
     };
     /** The approach tiles of a placed loc on land (place.ts reachTiles). */
@@ -411,7 +457,7 @@ export function fillReach(input: ReachInput): Reach {
                         skipped.add(
                             `${name}: from ${g.from} does not tell the wall's two tiles apart, gated both ways`,
                         );
-                    addEdge('gates', a, b, side === false ? FREE : gated, name);
+                    addEdge('gate', a, b, side === false ? FREE : gated, name);
                 }
             });
             continue;
@@ -433,12 +479,12 @@ export function fillReach(input: ReachInput): Reach {
             const to = g.to;
             gateEdges.push(() => {
                 for (const stand of approach(loc))
-                    if (!g.from || standOnSide(g.from, g.tile, stand)) addEdge('gates', stand, to, gated, name);
+                    if (!g.from || standOnSide(g.from, g.tile, stand)) addEdge('gate', stand, to, gated, name);
             });
         } else if (g.landings) {
             const landings = g.landings;
             gateEdges.push(() => {
-                for (const l of landings) addEdge('gates', l.stand, l.landing, altsFrom(l.stand), name);
+                for (const l of landings) addEdge('gate', l.stand, l.landing, altsFrom(l.stand), name);
             });
         } else if (g.opens) {
             const s = size(loc);
@@ -454,7 +500,7 @@ export function fillReach(input: ReachInput): Reach {
     }
     const openAlts = new Map([...opened].map(([i, reqs]) => [i, alternatives(reqs)]));
 
-    return collision.edited({ close, open }, () => {
+    collision.edited({ close, open }, () => {
         for (const add of gateEdges) add();
 
         // ---- Connectors ----------------------------------------------------------------------------------
@@ -474,9 +520,9 @@ export function fillReach(input: ReachInput): Reach {
                 return alternatives(ways);
             };
             if (c.relative) {
-                if (c.stand) addEdge('connectors', c.stand, c.landing, altsFrom(c.stand), name);
+                if (c.stand) addEdge('connector', c.stand, c.landing, altsFrom(c.stand), name);
                 else skipped.add(`${name}: a relative landing with no stand`);
-            } else for (const stand of approach(f)) addEdge('connectors', stand, c.landing, altsFrom(stand), name);
+            } else for (const stand of approach(f)) addEdge('connector', stand, c.landing, altsFrom(stand), name);
         }
 
         // ---- Transports ----------------------------------------------------------------------------------
@@ -494,15 +540,59 @@ export function fillReach(input: ReachInput): Reach {
                 )
                     sources.push({ level, x: x + dx, z: z + dz });
             if (!sources.length) skipped.add(`${name}: no walkable tile at or beside the boarding tile`);
-            for (const s of sources) addEdge('transports', s, t.to, alts, name);
+            for (const s of sources) addEdge(t.kind, s, t.to, alts, name);
         }
-
-        return flood();
     });
+
+    const masks = new Uint16Array(index.size);
+    const offLand = new Set<string>();
+    return {
+        index,
+        sets,
+        quests,
+        edgeFrom,
+        openAlts,
+        free: FREE,
+        edges,
+        skipped,
+        offLand,
+        stepMask(i) {
+            let m = masks[i]!;
+            if (m & KNOWN) return m;
+            m = KNOWN;
+            const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
+            STEPS.forEach(([dx, dz], bit) => {
+                if (!collision.canStep(level, x, z, dx, dz)) return;
+                if (index.of(level, x + dx, z + dz) >= 0) m |= 1 << bit;
+                else offLand.add(`${level} ${x + dx} ${z + dz}`);
+            });
+            masks[i] = m;
+            return m;
+        },
+        within: f => collision.edited({ close, open }, f),
+        bytes: index.bytes + masks.byteLength,
+        ms: performance.now() - began,
+    };
+}
+
+// ---- The fill ------------------------------------------------------------------------------------------
+
+/** Slots per block of a tile's overflow chain of sets. */
+const BLOCK = 4;
+
+/**
+ * Fills from `start` (reach.ts header) over `graph`, built from `input` when not given, and returns each tile's
+ * minimal requirement sets.
+ */
+export function fillReach(input: ReachInput, graph: ReachGraph = reachGraph(input)): Reach {
+    const began = performance.now();
+    const { index, sets, quests, edgeFrom, openAlts, edges, skipped, offLand, stepMask } = graph;
+    const start = input.start ?? LUMBRIDGE_SPAWN;
+    const maxSets = input.maxSets ?? MAX_SETS;
+    return graph.within(flood);
 
     function flood(): Reach {
         const n = index.size;
-        const masks = new Uint16Array(n);
         // -1 unreached; a set id when the tile holds one set; -2 - block for a chain of blocks.
         const head = new Int32Array(n).fill(-1);
         let poolSets = new Int32Array(BLOCK * 1024);
@@ -511,7 +601,6 @@ export function fillReach(input: ReachInput): Reach {
         /** The queues' buffers, summed as each bucket is let go: an upper bound on what they held at once. */
         let queueBytes = 0;
         const bound = new Set<number>();
-        const offLand = new Set<string>();
         const queues: IntList[] = [];
         const heads: number[] = [];
 
@@ -602,22 +691,8 @@ export function fillReach(input: ReachInput): Reach {
             if (!alts) return offer(i, s);
             for (const a of alts) offer(i, sets.union(s, a));
         };
-        const stepMask = (i: number): number => {
-            let m = masks[i]!;
-            if (m & KNOWN) return m;
-            m = KNOWN;
-            const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
-            STEPS.forEach(([dx, dz], bit) => {
-                if (!collision.canStep(level, x, z, dx, dz)) return;
-                if (index.of(level, x + dx, z + dz) >= 0) m |= 1 << bit;
-                else offLand.add(`${level} ${x + dx} ${z + dz}`);
-            });
-            masks[i] = m;
-            return m;
-        };
-
         const s0 = index.of(start.level, start.x, start.z);
-        if (s0 < 0 || !collision.walkable(start.level, start.x, start.z))
+        if (s0 < 0 || !input.collision.walkable(start.level, start.x, start.z))
             throw new Error(`the fill's start ${coord(start)} is not a walkable tile on land`);
         arrive(s0, 0);
         for (let k = 0; k < queues.length;) {
@@ -672,14 +747,8 @@ export function fillReach(input: ReachInput): Reach {
             offLand: offLand.size,
             bound: { max: maxSets, tiles: bound.size, sample: boundTiles.slice(0, 10) },
             skipped: [...skipped].sort(cmp),
-            ms: Math.round(performance.now() - began),
-            bytes:
-                index.bytes +
-                masks.byteLength +
-                head.byteLength +
-                poolSets.byteLength +
-                poolNext.byteLength +
-                queueBytes,
+            ms: Math.round(graph.ms + performance.now() - began),
+            bytes: graph.bytes + head.byteLength + poolSets.byteLength + poolNext.byteLength + queueBytes,
         };
         const at = (t: Tile): number => index.of(t.level, t.x, t.z);
         return {

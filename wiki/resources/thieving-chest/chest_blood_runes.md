@@ -15,6 +15,6 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Dungeon north of Ardougne](../../places/dungeon-north-of-ardougne.md) | `thieving-chest:dungeon-north-of-ardougne:0` | (2586, 9736) | (2586, 9736) | 2 | no | no | - | 46 Thieving |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Dungeon north of Ardougne](../../places/dungeon-north-of-ardougne.md) | `thieving-chest:dungeon-north-of-ardougne:0` | (2586, 9736) | (2586, 9736) | 2 | no | no | - | 46 Thieving | Ardougne North bank (East Ardougne), 67 ticks |

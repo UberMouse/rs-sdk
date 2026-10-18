@@ -5,7 +5,7 @@ import { params } from '../classify';
 import { parseRequirement } from '../requirements';
 import { first, type Config } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
-import type { Feature, FeatureKind, Site, Tile, World } from '../types';
+import type { Feature, FeatureKind, Nearest, Site, Tile, World } from '../types';
 import { cmp } from '../util';
 
 /** The comment that opens every generated page. */
@@ -179,6 +179,29 @@ export function reachLabel(
         if (!reach.length) return 'unreached';
         if (reach.some(set => !set.length)) return '-';
         return reach.map(set => set.map(one).join(' + ')).join(' or ');
+    };
+}
+
+/**
+ * How a page reads a site's nearest sink of one kind (Site.nearest, distance.ts): the sink's area label and the
+ * run ticks to it, then `via` what the way needs, read as the Requires column reads a set; `-` for a site with no
+ * stand or none that reaches it, `none` when no sink of the kind is reached under the site's own requirement sets.
+ */
+export function nearestLabel(
+    world: World,
+    data: PageData,
+    kind: keyof Nearest,
+): (site: Pick<Site, 'reach' | 'stand' | 'nearest'>) => string {
+    const areas = areasOf(world);
+    const requires = reachLabel(world, data);
+    const byId = new Map(world.sites.map(s => [s.id, s]));
+    return site => {
+        if (!site.stand || !site.reach.length) return '-';
+        const n = site.nearest?.[kind];
+        if (!n) return 'none';
+        const where = areas.label(byId.get(n.site)?.areaPath ?? []);
+        const via = n.requires.length ? ` via ${requires({ reach: [n.requires], stand: site.stand })}` : '';
+        return `${where === '-' ? n.site : where}, ${count(n.runTicks, 'tick')}${via}`;
     };
 }
 

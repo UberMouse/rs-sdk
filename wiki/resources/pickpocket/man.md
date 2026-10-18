@@ -17,31 +17,31 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:3` | (3006, 3458) | (3006, 3457) | 1 | yes | no | - | - |
-| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:4` | (3014, 3237) | (3014, 3237) | 1 | yes | no | - | - |
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 1 | yes | yes | - | - |
-| [Rimmington (Asgarnia)](../../places/rimmington.md) | `pickpocket:rimmington:0` | (2967, 3212) L1 | (2967, 3212) L1 | 1 | yes | no | - | - |
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:6` | (2571, 3385) | (2571, 3385) | 1 | no | no | - | - |
-| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:0` | (2804, 3430) | (2804, 3430) | 2 | no | no | - | - |
-| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `pickpocket:fishing-guild:0` | (2603, 3421) | (2603, 3421) | 1 | no | no | - | 68 Fishing |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 1 | no | no | - | - |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:1` | (2713, 3480) | (2713, 3480) | 1 | no | no | - | - |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:1` | (2567, 3083) | (2566, 3083) | 1 | no | no | - | - |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:2` | (2596, 3105) | (2596, 3105) | 1 | no | no | - | - |
-| [Karamja](../../places/karamja.md) | `pickpocket:karamja:0` | (2889, 3173) | (2889, 3173) | 1 | yes | no | - | 30 coins |
-| [Karamja](../../places/karamja.md) | `pickpocket:karamja:1` | (2948, 3146) | (2948, 3146) | 1 | yes | no | - | 30 coins |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:0` | (3092, 3515) | (3092, 3515) | 2 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:3` | (3154, 3428) | (3154, 3428) | 1 | yes | no | - | unreached |
-| [Draynor Village (Misthalin)](../../places/draynor-village.md) | `pickpocket:draynor-village:1` | (3100, 3279) | (3100, 3279) | 1 | yes | no | - | - |
-| [Edgeville (Misthalin)](../../places/edgeville.md) | `pickpocket:edgeville:0` | (3098, 3509) | (3098, 3509) | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:0` | (3206, 3219) L1 | (3206, 3219) L1 | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:1` | (3207, 3227) | (3207, 3227) | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:2` | (3219, 3219) | (3219, 3219) | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:5` | (3233, 3207) | (3233, 3207) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:12` | (3238, 3406) | (3238, 3406) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:14` | (3245, 3395) | (3245, 3395) | 1 | yes | no | - | - |
-| [The Forgotten Cemetery (Wilderness)](../../places/the-forgotten-cemetery.md) | `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | (2974, 3742) | 1 | yes | no | 28 | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:3` | (3006, 3458) | (3006, 3457) | 1 | yes | no | - | - | Edgeville bank (Edgeville), 72 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:4` | (3014, 3237) | (3014, 3237) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 51 ticks |
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 1 | yes | yes | - | - | Falador West bank (Falador), 14 ticks |
+| [Rimmington (Asgarnia)](../../places/rimmington.md) | `pickpocket:rimmington:0` | (2967, 3212) L1 | (2967, 3212) L1 | 1 | yes | no | - | - | Draynor bank (Draynor Village), 77 ticks |
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:6` | (2571, 3385) | (2571, 3385) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 36 ticks |
+| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:0` | (2804, 3430) | (2804, 3430) | 2 | no | no | - | - | Catherby bank (Catherby), 6 ticks |
+| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `pickpocket:fishing-guild:0` | (2603, 3421) | (2603, 3421) | 1 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 10 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:1` | (2713, 3480) | (2713, 3480) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 11 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:1` | (2567, 3083) | (2566, 3083) | 1 | no | no | - | - | Yanille bank (Yanille), 29 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:2` | (2596, 3105) | (2596, 3105) | 1 | no | no | - | - | Yanille bank (Yanille), 12 ticks |
+| [Karamja](../../places/karamja.md) | `pickpocket:karamja:0` | (2889, 3173) | (2889, 3173) | 1 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 102 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `pickpocket:karamja:1` | (2948, 3146) | (2948, 3146) | 1 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 70 ticks via 30 coins |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:0` | (3092, 3515) | (3092, 3515) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 13 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:3` | (3154, 3428) | (3154, 3428) | 1 | yes | no | - | unreached | - |
+| [Draynor Village (Misthalin)](../../places/draynor-village.md) | `pickpocket:draynor-village:1` | (3100, 3279) | (3100, 3279) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 19 ticks |
+| [Edgeville (Misthalin)](../../places/edgeville.md) | `pickpocket:edgeville:0` | (3098, 3509) | (3098, 3509) | 1 | yes | no | - | - | Edgeville bank (Edgeville), 11 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:0` | (3206, 3219) L1 | (3206, 3219) L1 | 1 | yes | no | - | - | Draynor bank (Draynor Village), 98 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:1` | (3207, 3227) | (3207, 3227) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 91 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:2` | (3219, 3219) | (3219, 3219) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:5` | (3233, 3207) | (3233, 3207) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | 1 | yes | no | - | - | Varrock West bank (Varrock), 31 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:12` | (3238, 3406) | (3238, 3406) | 1 | yes | no | - | - | Varrock East bank (Varrock), 19 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:14` | (3245, 3395) | (3245, 3395) | 1 | yes | no | - | - | Varrock East bank (Varrock), 24 ticks |
+| [The Forgotten Cemetery (Wilderness)](../../places/the-forgotten-cemetery.md) | `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | (2974, 3742) | 1 | yes | no | 28 | - | Edgeville bank (Edgeville), 126 ticks |

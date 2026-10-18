@@ -15,10 +15,10 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | 1 | no | no | - | 13 Thieving |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:4` | (2673, 3307) | (2674, 3307) | 1 | no | no | - | 1 Thieving |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3654) | 1 | no | no | - | - |
-| [Wilderness](../../places/wilderness.md) | `thieving-chest:wilderness:0` | (3190, 3962) | (3189, 3961) | 3 | no | no | 56 | carry Lockpick + 23 Thieving |
-| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | 2 | no | no | 55 | carry Lockpick + 39 Thieving |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | 1 | no | no | - | 13 Thieving | Ardougne North bank (East Ardougne), 26 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:4` | (2673, 3307) | (2674, 3307) | 1 | no | no | - | 1 Thieving | Ardougne South bank (East Ardougne), 28 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3654) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 128 ticks |
+| [Wilderness](../../places/wilderness.md) | `thieving-chest:wilderness:0` | (3190, 3962) | (3189, 3961) | 3 | no | no | 56 | carry Lockpick + 23 Thieving | Edgeville bank (Edgeville), 238 ticks |
+| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | 2 | no | no | 55 | carry Lockpick + 39 Thieving | Edgeville bank (Edgeville), 276 ticks |

@@ -13,6 +13,6 @@ The options of each spot config placed in the world (its npc config).
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2890, 9767) | 3 | no | no | - | carry Dusty key |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2890, 9767) | 3 | no | no | - | carry Dusty key | Falador West bank (Falador), 223 ticks via carry Dusty key |

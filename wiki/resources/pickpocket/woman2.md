@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | 1 | no | no | - | - |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 2 | no | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | 1 | yes | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | 1 | no | no | - | - | Catherby bank (Catherby), 8 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 2 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | 1 | yes | no | - | - | Varrock West bank (Varrock), 31 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |

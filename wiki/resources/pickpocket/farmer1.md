@@ -17,13 +17,13 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:5` | (3035, 3296) | (3035, 3296) | 1 | yes | no | - | - |
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:7` | (2648, 3360) | (2648, 3360) | 3 | no | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:2` | (3154, 3293) | (3154, 3293) | 1 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:4` | (3165, 3324) | (3165, 3324) | 1 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:5` | (3227, 3290) | (3227, 3290) | 1 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:6` | (3233, 3308) | (3233, 3308) | 1 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:7` | (3240, 3345) | (3240, 3345) | 1 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:8` | (3262, 3325) | (3262, 3325) | 1 | yes | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:5` | (3035, 3296) | (3035, 3296) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 44 ticks |
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:7` | (2648, 3360) | (2648, 3360) | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 28 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:2` | (3154, 3293) | (3154, 3293) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 43 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:4` | (3165, 3324) | (3165, 3324) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 60 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:5` | (3227, 3290) | (3227, 3290) | 1 | yes | no | - | - | Varrock West bank (Varrock), 80 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:6` | (3233, 3308) | (3233, 3308) | 1 | yes | no | - | - | Varrock West bank (Varrock), 69 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:7` | (3240, 3345) | (3240, 3345) | 1 | yes | no | - | - | Varrock East bank (Varrock), 73 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:8` | (3262, 3325) | (3262, 3325) | 1 | yes | no | - | - | Varrock East bank (Varrock), 67 ticks |

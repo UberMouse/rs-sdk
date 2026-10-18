@@ -15,6 +15,6 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Varrock (Misthalin)](../../places/varrock.md) | `stall:varrock:0` | (3269, 3410) | (3268, 3410) | 1 | yes | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Varrock (Misthalin)](../../places/varrock.md) | `stall:varrock:0` | (3269, 3410) | (3268, 3410) | 1 | yes | no | - | - | Varrock East bank (Varrock), 16 ticks |

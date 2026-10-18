@@ -31,10 +31,10 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:59` | (2687, 3491) | (2687, 3492) | 7 | no | yes | - | - |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2410, 3410) | 1 | no | no | - | - |
-| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `tree:gnome-agility-course:0` | (2490, 3414) | (2489, 3414) | 1 | no | no | - | unreached |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | 3 | no | no | - | Regicide at stage 13 + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:28` | (2363, 3409) | (2368, 3411) | 1 | no | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:59` | (2687, 3491) | (2687, 3492) | 7 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2410, 3410) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 123 ticks |
+| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `tree:gnome-agility-course:0` | (2490, 3414) | (2489, 3414) | 1 | no | no | - | unreached | - |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Ardougne North bank (East Ardougne), 283 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:28` | (2363, 3409) | (2368, 3411) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 142 ticks |

@@ -17,30 +17,30 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | (2379, 3482) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | (2383, 3496) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | (2383, 3508) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | (2394, 3451) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | (2399, 3504) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2417, 3437) L1 | 3 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | (2416, 3416) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | (2420, 3484) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | (2418, 3472) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | (2430, 3432) | 2 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | (2438, 3464) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | (2439, 3450) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | (2444, 3407) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | (2449, 3494) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | (2448, 3488) | 2 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | (2450, 3416) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | (2472, 3452) | 2 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | (2474, 3405) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | (2473, 3489) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | (2484, 3470) | 1 | no | no | - | unreached |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | (2482, 3404) L1 | 2 | no | no | - | unreached |
-| [Gnome Ball Field (Tree Gnome Stronghold)](../../places/gnome-ball-field.md) | `pickpocket:gnome-ball-field:1` | (2406, 3476) | (2406, 3476) | 1 | no | no | - | unreached |
-| [Grand Tree (Tree Gnome Stronghold)](../../places/grand-tree.md) | `pickpocket:grand-tree:1` | (2462, 3503) | (2462, 3503) | 1 | no | no | - | unreached |
-| [Grand Tree (Tree Gnome Stronghold)](../../places/grand-tree.md) | `pickpocket:grand-tree:3` | (2476, 3502) | (2476, 3502) | 1 | no | no | - | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | (2379, 3482) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | (2383, 3496) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | (2383, 3508) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | (2394, 3451) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | (2399, 3504) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2417, 3437) L1 | 3 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | (2416, 3416) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | (2420, 3484) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | (2418, 3472) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | (2430, 3432) | 2 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | (2438, 3464) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | (2439, 3450) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | (2444, 3407) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | (2449, 3494) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | (2448, 3488) | 2 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | (2450, 3416) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | (2472, 3452) | 2 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | (2474, 3405) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | (2473, 3489) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | (2484, 3470) | 1 | no | no | - | unreached | - |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | (2482, 3404) L1 | 2 | no | no | - | unreached | - |
+| [Gnome Ball Field (Tree Gnome Stronghold)](../../places/gnome-ball-field.md) | `pickpocket:gnome-ball-field:1` | (2406, 3476) | (2406, 3476) | 1 | no | no | - | unreached | - |
+| [Grand Tree (Tree Gnome Stronghold)](../../places/grand-tree.md) | `pickpocket:grand-tree:1` | (2462, 3503) | (2462, 3503) | 1 | no | no | - | unreached | - |
+| [Grand Tree (Tree Gnome Stronghold)](../../places/grand-tree.md) | `pickpocket:grand-tree:3` | (2476, 3502) | (2476, 3502) | 1 | no | no | - | unreached | - |

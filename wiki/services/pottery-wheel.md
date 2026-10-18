@@ -3,11 +3,11 @@
 
 6 sites, 2 of them in F2P; 3 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 1 it does not reach (unreached), 1 with no stand tile (no stand).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `pottery-wheel:asgarnia:0` | (2937, 3290) | (2938, 3290) | Potter's Wheel 4 | yes | wear Brown apron + 40 Crafting |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:0` | (2587, 3327) | (2587, 3327) | Potter's Wheel 2 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:1` | (2595, 3323) | - | Potter's Wheel 2 | no | no stand |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `pottery-wheel:rellekka:0` | (2620, 3659) | (2619, 3659) | Potter's Wheel 1 | no | - |
-| [Misthalin](../places/misthalin.md) | `pottery-wheel:misthalin:0` | (3358, 3332) | (3357, 3332) | Potter's Wheel 1 | no | unreached |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `pottery-wheel:barbarian-village:0` | (3087, 3410) | (3086, 3410) | Potter's Wheel 2 | yes | - |
+| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `pottery-wheel:asgarnia:0` | (2937, 3290) | (2938, 3290) | Potter's Wheel 4 | yes | wear Brown apron + 40 Crafting | Falador East bank (Falador), 63 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:0` | (2587, 3327) | (2587, 3327) | Potter's Wheel 2 | no | - | Ardougne North bank (East Ardougne), 46 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:1` | (2595, 3323) | - | Potter's Wheel 2 | no | no stand | - |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `pottery-wheel:rellekka:0` | (2620, 3659) | (2619, 3659) | Potter's Wheel 1 | no | - | Seers' Village bank (Seers' Village), 133 ticks |
+| [Misthalin](../places/misthalin.md) | `pottery-wheel:misthalin:0` | (3358, 3332) | (3357, 3332) | Potter's Wheel 1 | no | unreached | - |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `pottery-wheel:barbarian-village:0` | (3087, 3410) | (3086, 3410) | Potter's Wheel 2 | yes | - | Edgeville bank (Edgeville), 43 ticks |

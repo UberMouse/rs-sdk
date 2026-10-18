@@ -28,6 +28,10 @@ A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to 
 `[]` when no walk gets there. The pages show it in a Requires column: `-` for none, the sets joined with
 "or", `unreached`, or `no stand` for a site with no stand tile; so a `-` row on a service or resource
 page is one a fresh account can walk to.
+Resource and processor sites also carry `nearest` (`wiki/world/distance.ts`): the nearest bank, and for ore,
+raw fish and smelted bars the nearest furnace, range or anvil, each as the sink site's id, the run ticks from the
+site's stand tile to the sink's, and what that way needs, under the site's own `reach` sets. Their pages show it in
+a Nearest bank column (`none` when no bank is reached that way).
 `bun run world` lists the sites of covered kinds that read unreached, by area, as the curation to-do
 list; an area's notes say why one is left so.
 

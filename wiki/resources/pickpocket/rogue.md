@@ -17,10 +17,10 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Wilderness](../../places/wilderness.md) | `pickpocket:wilderness:0` | (3078, 3913) | (3078, 3913) | 2 | no | no | 50 | - |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:0` | (3284, 3931) | (3284, 3931) | 10 | no | yes | 53 | - |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:1` | (3282, 3936) L3 | (3282, 3936) L3 | 2 | no | no | 53 | unreached |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:2` | (3290, 3933) L2 | (3290, 3933) L2 | 6 | no | yes | 53 | unreached |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:3` | (3289, 3931) L1 | (3289, 3931) L1 | 2 | no | yes | 52 | unreached |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Wilderness](../../places/wilderness.md) | `pickpocket:wilderness:0` | (3078, 3913) | (3078, 3913) | 2 | no | no | 50 | - | Edgeville bank (Edgeville), 281 ticks |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:0` | (3284, 3931) | (3284, 3931) | 10 | no | yes | 53 | - | Edgeville bank (Edgeville), 248 ticks |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:1` | (3282, 3936) L3 | (3282, 3936) L3 | 2 | no | no | 53 | unreached | - |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:2` | (3290, 3933) L2 | (3290, 3933) L2 | 6 | no | yes | 53 | unreached | - |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:3` | (3289, 3931) L1 | (3289, 3931) L1 | 2 | no | yes | 52 | unreached | - |

@@ -31,18 +31,18 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Morytania](../../places/morytania.md) | `tree:morytania:11` | (3527, 3482) | (3526, 3482) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:13` | (3537, 3467) | (3536, 3467) | 6 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:16` | (3553, 3502) | (3553, 3503) | 6 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:17` | (3550, 3483) | (3549, 3483) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:18` | (3569, 3503) | (3568, 3503) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:19` | (3584, 3475) | (3586, 3476) | 21 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:20` | (3604, 3501) | (3604, 3501) | 7 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:21` | (3619, 3479) | (3619, 3479) | 19 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:22` | (3623, 3502) | (3622, 3502) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:23` | (3635, 3505) | (3634, 3506) | 9 | no | no | - | Priest in Peril at stage 61 |
-| [Morytania](../../places/morytania.md) | `tree:morytania:24` | (3636, 3488) | (3635, 3488) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Haunted Woods (Morytania)](../../places/haunted-woods.md) | `tree:haunted-woods:0` | (3555, 3486) | (3554, 3486) | 1 | no | no | - | Priest in Peril at stage 61 |
-| [Haunted Woods (Morytania)](../../places/haunted-woods.md) | `tree:haunted-woods:1` | (3576, 3497) | (3576, 3497) | 3 | no | no | - | Priest in Peril at stage 61 |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Morytania](../../places/morytania.md) | `tree:morytania:11` | (3527, 3482) | (3526, 3482) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 38 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:13` | (3537, 3467) | (3536, 3467) | 6 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 45 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:16` | (3553, 3502) | (3553, 3503) | 6 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 39 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:17` | (3550, 3483) | (3549, 3483) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 42 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:18` | (3569, 3503) | (3568, 3503) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 46 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:19` | (3584, 3475) | (3586, 3476) | 21 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 56 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:20` | (3604, 3501) | (3604, 3501) | 7 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 64 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:21` | (3619, 3479) | (3619, 3479) | 19 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 72 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:22` | (3623, 3502) | (3622, 3502) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 73 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:23` | (3635, 3505) | (3634, 3506) | 9 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 79 ticks |
+| [Morytania](../../places/morytania.md) | `tree:morytania:24` | (3636, 3488) | (3635, 3488) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 80 ticks |
+| [Haunted Woods (Morytania)](../../places/haunted-woods.md) | `tree:haunted-woods:0` | (3555, 3486) | (3554, 3486) | 1 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 39 ticks |
+| [Haunted Woods (Morytania)](../../places/haunted-woods.md) | `tree:haunted-woods:1` | (3576, 3497) | (3576, 3497) | 3 | no | no | - | Priest in Peril at stage 61 | Canifis bank (Canifis), 50 ticks |

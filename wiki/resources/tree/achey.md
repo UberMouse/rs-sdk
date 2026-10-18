@@ -31,6 +31,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:10` | (2598, 2980) | (2598, 2979) | 24 | no | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:10` | (2598, 2980) | (2598, 2979) | 24 | no | no | - | - | Yanille bank (Yanille), 88 ticks |

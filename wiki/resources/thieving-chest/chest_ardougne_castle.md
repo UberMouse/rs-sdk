@@ -15,7 +15,7 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:0` | (2588, 3291) L1 | (2587, 3291) L1 | 1 | no | no | - | 61 Thieving |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:1` | (2588, 3302) L1 | (2587, 3302) L1 | 1 | no | no | - | 61 Thieving |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:0` | (2588, 3291) L1 | (2587, 3291) L1 | 1 | no | no | - | 61 Thieving | Ardougne North bank (East Ardougne), 57 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:1` | (2588, 3302) L1 | (2587, 3302) L1 | 1 | no | no | - | 61 Thieving | Ardougne North bank (East Ardougne), 60 ticks |

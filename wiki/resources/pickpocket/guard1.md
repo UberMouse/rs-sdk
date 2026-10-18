@@ -17,22 +17,22 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:1` | (2966, 3397) | (2966, 3397) | 3 | yes | yes | - | - |
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:0` | (2952, 3381) | (2952, 3381) | 2 | yes | yes | - | - |
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 3 | yes | yes | - | - |
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:4` | (3006, 3322) | (3006, 3322) | 3 | yes | yes | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:0` | (3092, 3515) | (3092, 3515) | 2 | yes | no | - | - |
-| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:1` | (3112, 3514) | (3112, 3514) | 4 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:0` | (3174, 3427) | (3174, 3427) | 3 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:1` | (3175, 3403) L1 | (3175, 3403) L1 | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:2` | (3175, 3414) L1 | (3175, 3414) L1 | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:3` | (3180, 3401) | (3180, 3401) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:5` | (3203, 3497) L1 | (3203, 3496) L1 | 2 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:6` | (3204, 3496) | (3204, 3496) | 1 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:7` | (3209, 3379) | (3209, 3379) | 3 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:8` | (3212, 3463) | (3212, 3463) | 6 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:13` | (3243, 3501) | (3243, 3501) | 2 | yes | no | - | - |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:16` | (3274, 3427) | (3274, 3427) | 4 | yes | no | - | - |
-| [Varrock Palace (Varrock)](../../places/palace.md) | `pickpocket:palace:1` | (3205, 3493) L1 | (3205, 3493) L1 | 2 | yes | no | - | - |
+| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:1` | (2966, 3397) | (2966, 3397) | 3 | yes | yes | - | - | Falador West bank (Falador), 17 ticks |
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:0` | (2952, 3381) | (2952, 3381) | 2 | yes | yes | - | - | Falador West bank (Falador), 7 ticks |
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 3 | yes | yes | - | - | Falador West bank (Falador), 14 ticks |
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:4` | (3006, 3322) | (3006, 3322) | 3 | yes | yes | - | - | Falador East bank (Falador), 21 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:0` | (3092, 3515) | (3092, 3515) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 13 ticks |
+| [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:1` | (3112, 3514) | (3112, 3514) | 4 | yes | no | - | - | Edgeville bank (Edgeville), 16 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:0` | (3174, 3427) | (3174, 3427) | 3 | yes | no | - | - | Varrock West bank (Varrock), 8 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:1` | (3175, 3403) L1 | (3175, 3403) L1 | 1 | yes | no | - | - | Varrock West bank (Varrock), 19 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:2` | (3175, 3414) L1 | (3175, 3414) L1 | 1 | yes | no | - | - | Varrock West bank (Varrock), 13 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:3` | (3180, 3401) | (3180, 3401) | 1 | yes | no | - | - | Varrock West bank (Varrock), 21 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:5` | (3203, 3497) L1 | (3203, 3496) L1 | 2 | yes | no | - | - | Varrock East bank (Varrock), 49 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:6` | (3204, 3496) | (3204, 3496) | 1 | yes | no | - | - | Varrock East bank (Varrock), 47 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:7` | (3209, 3379) | (3209, 3379) | 3 | yes | no | - | - | Varrock West bank (Varrock), 33 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:8` | (3212, 3463) | (3212, 3463) | 6 | yes | no | - | - | Varrock West bank (Varrock), 31 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:13` | (3243, 3501) | (3243, 3501) | 2 | yes | no | - | - | Varrock East bank (Varrock), 41 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:16` | (3274, 3427) | (3274, 3427) | 4 | yes | no | - | - | Varrock East bank (Varrock), 14 ticks |
+| [Varrock Palace (Varrock)](../../places/palace.md) | `pickpocket:palace:1` | (3205, 3493) L1 | (3205, 3493) L1 | 2 | yes | no | - | - | Varrock East bank (Varrock), 51 ticks |
