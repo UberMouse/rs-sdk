@@ -10,6 +10,10 @@
 import type { Skill } from './model/server';
 import type { Tile } from './types';
 
+/**
+ * A curated method. The floor (model/cycle.ts) assumes axes and pickaxes are wielded and does not check their wield
+ * level (a rune pickaxe needs Attack 40): a conductor reading a level column checks the tool's requirement itself.
+ */
 export interface MethodDef {
     /** Stable, kebab-case; plans name it. */
     id: string;

@@ -322,7 +322,31 @@ describe('a record that does not resolve stops the build, naming it and why', ()
     test('no sink to fall back on: a spot with no nearest range', () => {
         fails(
             { ...lure, sink: { mode: 'process-bank', process: { family: 'cooking', params: { food: 'raw_trout' } } } },
-            /site fishing-spot:river:0 has no nearest range\/fire: give its tile/,
+            /site fishing-spot:river:0 has no nearest range \(phase 3 searches only the first of range\/fire\): give its tile/,
+        );
+    });
+
+    test("a bad model number is the record's failure too, named like the rest", () => {
+        // rate.ts rejects a ticksPerAttempt of 0 with a plain Error; the build must still say which record.
+        const real = ctx.families.get('mining')!;
+        const bad = {
+            ...real,
+            model: (...a: Parameters<typeof real.model>) => ({ ...real.model(...a), ticksPerAttempt: 0 }),
+        };
+        const broken = { ...ctx, families: new Map([...ctx.families, ['mining', bad]]) };
+        expect(() => resolveMethod(mine, broken, finder)).toThrow(MethodError);
+        expect(() => resolveMethod(mine, broken, finder)).toThrow(
+            /^methods\.ts iron-mine-bank: ticksPerAttempt 0 is not finite and > 0/,
+        );
+        expect(resolveMethods([mine], broken, finder).errors).toEqual([
+            'methods.ts iron-mine-bank: ticksPerAttempt 0 is not finite and > 0',
+        ]);
+    });
+
+    test('an out-of-range way names the method', () => {
+        const m = resolve(mine);
+        expect(() => methodRate(m, profileAt('mining', 40, { tools: ctx.tools }), ctx, 3)).toThrow(
+            /^methods\.ts iron-mine-bank: no way 3 \(1 ways\)/,
         );
     });
 

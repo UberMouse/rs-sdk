@@ -41,7 +41,10 @@ export interface ResolvedMethod {
     ways: MethodWay[];
     /** The family's first skill, which a level column trains. */
     skill: Skill;
-    /** The lowest level of `skill` (every other skill at it too) at which the families model the method. */
+    /**
+     * The lowest level of `skill` (every other skill at it too) at which the families model the method. The floor
+     * assumes tools are wielded and does not check their wield level (a rune pickaxe needs Attack 40).
+     */
     minLevel: number;
 }
 
@@ -86,12 +89,18 @@ function familyOf(ctx: MethodContext, id: string): Family {
     return f;
 }
 
-/** The site `nearest` names for the first sink kind of `kinds` the site's kind sinks to, or a ModelError. */
+/**
+ * The site `nearest` names for the first sink kind of `kinds` (a cooking family's ['range', 'fire'] searches ranges
+ * only: phase 3 models ranges, not fires) the site's kind sinks to, or a ModelError.
+ */
 function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly FeatureKind[]): Site {
     const kind = kinds.find((k): k is SinkKind => (SINK_KINDS as readonly string[]).includes(k));
     const id = kind && SINKS[from.kind]?.includes(kind) ? from.nearest?.[kind]?.site : undefined;
     const site = id === undefined ? undefined : world.sites.find(s => s.id === id);
-    if (!site) throw new ModelError(`site ${from.id} has no nearest ${kinds.join('/')}: give its tile`);
+    if (!site)
+        throw new ModelError(
+            `site ${from.id} has no nearest ${kind ?? kinds.join('/')} (phase 3 searches only the first of ${kinds.join('/')}): give its tile`,
+        );
     return site;
 }
 
@@ -168,7 +177,9 @@ function models(
 
 /** The floor of a resolved method at `profile`, over its `way`th way (the shortest by default). */
 export function methodRate(m: ResolvedMethod, profile: Profile, ctx: MethodContext, way = 0): CycleRates {
-    return rate(m, profile, ctx, m.ways[way]!);
+    const chosen = m.ways[way];
+    if (!chosen) throw new MethodError(m.def.id, `no way ${way} (${m.ways.length} ways)`);
+    return rate(m, profile, ctx, chosen);
 }
 
 function rate(
@@ -226,7 +237,9 @@ export function resolveMethod(
         }
         throw new ModelError(`no level models it (at 99: ${reason})`);
     } catch (e) {
-        if (e instanceof ModelError) throw new MethodError(def.id, e.message);
+        if (e instanceof MethodError) throw e;
+        // Any other error (rate.ts rejecting a bad model, say) is the record's failure too: name it.
+        if (e instanceof Error) throw new MethodError(def.id, e.message);
         throw e;
     }
 }

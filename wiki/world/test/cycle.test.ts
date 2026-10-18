@@ -1,5 +1,13 @@
 import { describe, expect, test } from 'bun:test';
-import { BANK_TICKS, cycle, DROP_TICKS, EAT_DELAY, eatTicksPerFail, type CycleInput } from '../model/cycle';
+import {
+    BANK_TICKS,
+    cycle,
+    dropTicks,
+    EAT_DELAY,
+    eatTicksPerFail,
+    RECLICK_PACKETS,
+    type CycleInput,
+} from '../model/cycle';
 import { ModelError, type ActionModel } from '../model/family';
 import { INVENTORY_SLOTS, readItems } from '../model/items';
 import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE } from '../model/server';
@@ -63,10 +71,14 @@ function fails(input: Omit<CycleInput, 'items'>, re: RegExp): void {
 }
 
 describe('constants', () => {
-    test('a drop is a fifth of a tick, a bank visit adds none, an eat 3 ticks of action delay', () => {
+    test('drops go five a tick with the re-click in the pool, a bank visit adds none, an eat 3 ticks', () => {
         // USER_EVENT.limit 5 (ClientGameProtCategory.ts:6); bank.rs2 @openbank has no delay; consume.rs2:3 `2, 3`.
+        // The re-click is MOVE_OPCLICK + OPLOC1, both USER_EVENT.
         expect(USER_EVENTS_PER_TICK).toBe(5);
-        expect(DROP_TICKS).toBe(1 / 5);
+        expect(RECLICK_PACKETS).toBe(2);
+        expect(dropTicks(28)).toBe(6); // ceil(30 / 5)
+        expect(dropTicks(26)).toBe(6); // 28 / 5 = 5.6, ceil 6
+        expect(dropTicks(23)).toBe(5); // 25 / 5
         expect(BANK_TICKS).toBe(0);
         expect(EAT_DELAY).toBe(3);
         expect(INVENTORY_SLOTS).toBe(28);
@@ -74,28 +86,34 @@ describe('constants', () => {
 });
 
 describe('drop sink', () => {
-    test('a spot that never depletes: a fifth of a tick per fish dropped', () => {
-        // ticksPerItem 5 / 0.5 = 10; a fish to drop each success, 1/5 tick: 10.2 a success, one success a "trip".
-        // 9000 / 10.2 = 882.35 fish an hour, 50 XP x 25 each: 1,102,941.2 Fishing XP. A dropped fish keeps no value;
-        // a feather each, 2 gp: 1,764.7 gp of supplies.
+    test('a spot that never depletes: a full inventory of fish dropped in whole ticks with the re-click', () => {
+        // The rod and a feather stack leave 28 - 1 - 1 = 26 slots: 26 catches of 5 / 0.5 = 10 ticks, 260. Dropping 26
+        // fish and re-clicking is 28 packets, ceil(28 / 5) = 6 ticks: a trip of 266 for 26 fish. 9000 / 266 x 26 =
+        // 879.7 fish an hour, 50 XP x 25 each: 1,099,624.1 Fishing XP. A dropped fish keeps no value; a feather each,
+        // 2 gp: 1,759.4 gp of supplies.
         const r = run({ gather: spot, sink: { mode: 'drop' } });
         expect(r.trip).toEqual({
-            successes: 1,
-            gather: 10,
+            successes: 26,
+            gather: 260,
             process: 0,
             travel: 0,
             bank: 0,
-            drop: 0.2,
+            drop: 6,
             eat: 0,
             wait: 0,
-            total: 10.2,
+            total: 266,
         });
         expect(r.binding).toBe('player');
-        expect(r.xpPerHour.fishing).toBeCloseTo((9000 / 10.2) * 50 * 25, 6);
-        expect(r.itemsPerHour).toEqual([{ obj: 'raw', count: 9000 / 10.2 }]);
+        const fish = (9000 / 266) * 26;
+        expect(r.xpPerHour.fishing).toBeCloseTo(fish * 50 * 25, 6);
+        expect(r.itemsPerHour[0]!.count).toBeCloseTo(fish, 9);
         expect(r.gpPerHour).toBe(0);
-        expect(r.suppliesPerHour).toEqual([{ obj: 'feather', count: 9000 / 10.2 }]);
-        expect(r.suppliesGpPerHour).toBeCloseTo((9000 / 10.2) * 2, 9);
+        expect(r.suppliesGpPerHour).toBeCloseTo(fish * 2, 9);
+    });
+
+    test('a model that depletes but names no features is refused, not run at one feature', () => {
+        const { features: _, ...noFeatures } = rock(2, 10);
+        fails({ gather: noFeatures, sink: { mode: 'drop' } }, /depletes but names no features/);
     });
 
     test('a rock that depletes every ore drops as it goes, and two rocks respawning in 10 cap it', () => {

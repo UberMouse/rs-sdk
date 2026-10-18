@@ -12,7 +12,8 @@
 //   damage a success costs (failDamage x fails per success). Food with a non-stackable product (both filling the
 //   inventory) is not modelled. The hitpoints pool and regeneration are left out, which only lowers the floor a
 //   little (a trip lasts somewhat longer than its food).
-// - A drop sink never travels: each non-stackable item takes DROP_TICKS, unless every success depletes the feature
+// - A drop sink never travels: a full inventory of non-stackable items is dropped in dropTicks(free slots), unless every
+//   success depletes the feature
 //   (mining, a stall): the next item needs a fresh click on another feature anyway, and the drop goes out in that
 //   tick ahead of the click, free. Food with a drop sink is not modelled (nothing restocks it).
 import { ModelError, type ActionModel } from './family';
@@ -21,11 +22,22 @@ import { resourceCap, ticksPerItem } from './rate';
 import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE, type Skill } from './server';
 
 /**
- * Ticks a drop takes: a drop is an OpHeld op5 (player/scripts/drop.rs2:1, ~dropslot with no delay), which
- * OpHeldHandler runs as it reads it, and the server reads USER_EVENTS_PER_TICK such packets a tick (5): a fifth of a
- * tick an item.
+ * Packets the re-click after a full drop carries: a MOVE_OPCLICK, then the op (OPLOC1) it pairs with. The client
+ * routes before every op (server/webclient/src/bot/reach.ts:4-7) and MoveClickHandler expects the op packet to follow
+ * (MoveClickHandler.ts:27-29); both decode to the USER_EVENT category (model/MoveClick.ts:5, model/OpLoc.ts:5), so
+ * both count against the tick's USER_EVENTS_PER_TICK.
  */
-export const DROP_TICKS = 1 / USER_EVENTS_PER_TICK;
+export const RECLICK_PACKETS = 2;
+
+/**
+ * Ticks dropping `drops` items and re-clicking the feature takes: a drop is an OpHeld op5 (player/scripts/drop.rs2:1,
+ * ~dropslot with no delay), which OpHeldHandler runs as it reads it, and the server reads at most
+ * USER_EVENTS_PER_TICK user-event packets a tick (5), whole ticks only: the drops and the re-click's RECLICK_PACKETS
+ * share the pool, so 28 drops take ceil(30 / 5) = 6 ticks.
+ */
+export function dropTicks(drops: number): number {
+    return Math.ceil((drops + RECLICK_PACKETS) / USER_EVENTS_PER_TICK);
+}
 
 /**
  * Ticks a bank visit adds to the legs that reach and leave it: none. The booth's Bank op (oploc2,bankbooth,
@@ -142,6 +154,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         return per === undefined ? [] : [{ m, input, per }];
     });
 
+    // A drop sink with a feature every success depletes (mining, a stall) drops ahead of the next click, free.
+    const dropsAsItGoes = sink.mode === 'drop' && gather.deplete?.chance === 1;
     let successes: number;
     let foodPerSuccess = 0;
     if (food) {
@@ -151,7 +165,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         // At a success chance of 1 nothing fails: no food is eaten and the trip never ends.
         foodPerSuccess = (gather.failDamage * failsPerSuccess) / food.heal;
         successes = foodPerSuccess > 0 ? free / foodPerSuccess : Infinity;
-    } else if (sink.mode === 'drop' || slotsPerSuccess === 0) successes = Infinity;
+    } else if (slotsPerSuccess === 0 || dropsAsItGoes) successes = Infinity;
     else successes = free / slotsPerSuccess;
     if (gather.failDamage && p < 1 && !food)
         throw new ModelError(`the action costs ${gather.failDamage} hitpoints a fail: name a food`);
@@ -159,15 +173,16 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const trips = Number.isFinite(successes);
     const n = trips ? successes : 1;
 
-    const dropsAsItGoes = gather.deplete?.chance === 1;
     const gatherTicks = n * tpi;
     const process = steps.reduce((t, s) => t + n * s.per * ticksPerItem(s.m), 0);
     const travel = trips && sink.mode !== 'drop' ? sink.legs.reduce((a, b) => a + b, 0) : 0;
     const bank = trips && sink.mode !== 'drop' ? BANK_TICKS : 0;
-    const drop = sink.mode === 'drop' && !dropsAsItGoes ? n * slotsPerSuccess * DROP_TICKS : 0;
+    const drop = sink.mode === 'drop' && trips ? dropTicks(free) : 0;
     const eat = food ? n * failsPerSuccess * eatTicksPerFail((gather.failDamage ?? 0) / food.heal, p) : 0;
     const active = gatherTicks + process + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.
+    if (gather.deplete && gather.features === undefined)
+        throw new ModelError('the model depletes but names no features: the resource cap needs them');
     const cap = resourceCap(gather, gather.features ?? 1);
     const wait = Math.max(0, n / cap - active);
     const total = active + wait;
