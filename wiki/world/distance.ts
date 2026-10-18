@@ -37,6 +37,9 @@
 // only what the context's edges change (every context meets `{}`, so its ways are never longer). The way's
 // `requires` is the join (SetTable.union) of the alternatives its crossings take; of two ways equally short, the one
 // asking fewer requirements is kept.
+//
+// wayFinder answers one leg point to point (a method's way back from its bank, or to a bank that is not the
+// nearest) with the same search, from the leg's end and stopped once its start settles.
 import { IntList, STEPS, type ReachGraph, type Via } from './reach';
 import { SINK_KINDS, type FeatureKind, type Nearest, type SinkKind, type Site, type Tile } from './types';
 import { cmp } from './util';

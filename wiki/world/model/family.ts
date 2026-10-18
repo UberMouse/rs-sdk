@@ -43,5 +43,5 @@ export interface Family {
     /** The kinds of site it acts at: a method's tile must lie in a site of one of them. */
     kinds: FeatureKind[];
     /** Throws a ModelError when the site, params or profile can't be modelled (an unknown subtype, no tool, a level under the requirement). */
-    model(site: Site, params: unknown, profile: Profile, world: World): ActionModel;
+    model(site: Site, params: unknown, profile: Profile, world: Pick<World, 'features'>): ActionModel;
 }

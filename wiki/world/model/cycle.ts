@@ -107,7 +107,8 @@ function add(into: Map<string, number>, obj: string, count: number): void {
  * %action_delay to the stun's end (thieving.rs2:49), and an eat adds EAT_DELAY to it, not to the clock: from the third
  * attempt after the stun (two successes on, 4 ticks past its end, chance p^2) an eat leaves it in the past and costs
  * nothing; at the second (chance p - p^2) it holds the next attempt 1 tick; at the first, or during the stun, 3. Ideal
- * play eats in the cheapest window a stun offers, one eat per window; eats beyond one per fail cost EAT_DELAY each.
+ * play spends the cheapest windows first, counted at one eat each: the eats per fail past p are charged EAT_DELAY
+ * each (a second eat late in a long window could be free, so this charges a little more than ideal play needs).
  */
 export function eatTicksPerFail(perFail: number, p: number): number {
     const free = p * p;

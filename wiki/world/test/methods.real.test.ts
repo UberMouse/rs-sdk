@@ -67,8 +67,9 @@ describe("each seed is at its plan's sites", () => {
 
 describe('the game data the cycle reads', () => {
     test('food heals and item slots', () => {
-        // consume_normal.dbrow: trout `stat_heal,hitpoints,7,0`, lobster 12.
+        // consume_normal.dbrow: trout `stat_heal,hitpoints,7,0`, salmon 9, lobster 12.
         expect(ctx.foods.get('trout')).toBe(7);
+        expect(ctx.foods.get('salmon')).toBe(9);
         expect(ctx.foods.get('lobster')).toBe(12);
         // Coins and feathers stack; coins have no cost line, so the engine's 1. A pickaxe is wielded, a rod carried.
         expect(ctx.items('coins')).toEqual({ stackable: true, cost: 1, wearable: false });

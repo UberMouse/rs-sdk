@@ -157,7 +157,7 @@ function models(
     profile: Profile,
     ctx: MethodContext,
 ): { gather: ActionModel; process: ActionModel[] } {
-    const world = ctx.world as World;
+    const { world } = ctx;
     const gather = familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world);
     if (m.sink.mode !== 'process-bank' || m.def.sink.mode !== 'process-bank') return { gather, process: [] };
     const step = m.def.sink.process;
