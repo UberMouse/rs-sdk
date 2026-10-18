@@ -72,7 +72,7 @@ const MAX_DEPTH = 16;
 export const MAX_PATHS = 512;
 
 /** Where the door procs are: a call of one that moves the player or changes a loc crosses the loc. */
-const DOOR_PROCS = 'doors/scripts/';
+export const DOOR_PROCS = 'doors/scripts/';
 
 /**
  * Where a move is not passage: a random event takes the player away and back (macro events/), a ring of
@@ -857,8 +857,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
     /**
      * The most an amount (a failed roll's damage) can be: what it evaluates to, or with each `stat` at MAX_STAT
      * and each random draw at its top (`random(n)` n - 1, `randominc(n)` n), through `calc` and the four
-     * operations, written or as ADD, SUB, MULTIPLY and DIVIDE (a difference only of a number known offline); a
-     * local not known offline is the most of the argument passed for it (MOST). Undefined for anything else.
+     * operations, written or as ADD, SUB, MULTIPLY and DIVIDE (a difference or quotient only of a number known
+     * offline); a local not known offline is the most of the argument passed for it (MOST). Undefined for anything
+     * else.
      */
     const most = (e: Expr, env: ReadonlyMap<string, Value>, file: string): number | undefined => {
         const v = evaluate(e, env, file);
@@ -867,7 +868,8 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         const [l, r] = e.t === 'bin' ? [e.l, e.r] : e.t === 'name' ? (e.args ?? []) : [];
         const op = e.t === 'bin' ? e.op : e.t === 'name' ? OPERATORS[e.name] : undefined;
         if (op && l && r) {
-            const [a, b] = [most(l, env, file), op === '-' ? intOf(evaluate(r, env, file)) : most(r, env, file)];
+            const exact = op === '-' || op === '/';
+            const [a, b] = [most(l, env, file), exact ? intOf(evaluate(r, env, file)) : most(r, env, file)];
             if (a === undefined || b === undefined) return undefined;
             if (op === '/') return b ? Math.trunc(a / b) : undefined;
             return { '+': a + b, '-': a - b, '*': a * b }[op];

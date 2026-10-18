@@ -1215,7 +1215,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
     ),
     gate('oploc1,dragonsecretdoor', 'quests/quest_dragon/scripts/crandor.rs2:18', 'quest:dragon', {
         from: 'far',
-        why: "From the Karamja volcano side (far, south of the wall) the secret door opens only once found from Elvarg's lair (%dragon_wall, crandor.rs2:12) or with Dragon Slayer done (:18); the lair is reached only by the quest's ship to Crandor, so an account that has not started the quest never found it. The scan takes %dragon_wall both ways, so it proposes a free crossing.",
+        why: "From the Karamja volcano side (far, south of the wall) the secret door opens only once found from Elvarg's lair (%dragon_wall, crandor.rs2:13) or with Dragon Slayer done (:18); the lair is reached only by the quest's ship to Crandor, so an account that has not started the quest never found it. The scan takes %dragon_wall both ways, so it proposes a free crossing.",
         scan: '83d1dd66',
     }),
     no(

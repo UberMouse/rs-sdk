@@ -32,8 +32,9 @@
 // gives it, by the way behind a roll when there are several (the dearer, as an account may not meet what skips
 // the roll), with that roll (rollFor); stands that give the same landing, move line and roll make one free row,
 // `act: loc-op`, its source the line of the path's last move outside a call the scan counts as one move (Path.outer
-// in gate-scan.ts). A stand landing on several passage tiles, or stopped by a construct the run can't read, is
-// unsettled: the build report lists it, never guessed; one stopped only in the door procs (gate-scan.ts
+// in gate-scan.ts). A stand landing on several passage tiles, off walkable land (a tile the collision data
+// blocks) other than its own, or stopped by a construct the run can't read, is unsettled: the build report lists
+// it, never guessed; one stopped only in the door procs (gate-scan.ts
 // DOOR_PROCS) is a door's, which the collision data has open or gates.ts confirms. A loc tile and op a connector
 // row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
@@ -45,6 +46,7 @@ import { first } from './configs';
 import type { ConnectorCollision } from './connectors';
 import {
     CROSS,
+    DOOR_PROCS,
     gateLander,
     triggerKey,
     type CuratedGate,
@@ -387,9 +389,6 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
 
 const TRIGGER = /^(op|ap)loc([1-5]),(_?)([a-z0-9_]+)$/;
 
-/** Where the door procs are (gate-scan.ts DOOR_PROCS): a stand stopped only in them is a door's. */
-const DOOR_PROCS = 'doors/scripts/';
-
 /** A crossing's act as a sort key. */
 const actKey = (c: Crossing): string => (c.act.kind === 'loc-op' ? `${c.act.loc} ${c.act.op}` : '');
 
@@ -475,9 +474,14 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
     ): { passage: Passage } | { stuck: string[] } | { door: boolean } => {
         const binding = { config: l.config, tile: l.tile, shape: l.shape ?? 10, angle: l.rotation ?? 0, stand };
         const os = land(t, binding, []);
-        const passages = os.flatMap(o => (o.k === 'landing' && onLand(o.tile) && !near(stand, o.tile) ? [o] : []));
+        const moved = os.flatMap(o => (o.k === 'landing' && !near(stand, o.tile) ? [o] : []));
+        const passages = moved.filter(o => onLand(o.tile));
+        // A path landing off walkable land (a tile the collision data blocks) is a landing no row can give.
+        const offLand = moved.flatMap(o =>
+            onLand(o.tile) ? [] : [`lands off walkable land at ${coord(o.tile)} (${o.at})`],
+        );
         const unrolled = passages.flatMap(o => (o.unrolled ? [o.unrolled] : []));
-        if (unrolled.length) return { stuck: [...new Set(unrolled)].sort(cmp) };
+        if (offLand.length || unrolled.length) return { stuck: [...new Set([...offLand, ...unrolled])].sort(cmp) };
         const tiles = [...new Map(passages.map(o => [tileKey(o.tile), o.tile])).values()].sort(byTile);
         if (tiles.length > 1) return { stuck: [`lands on ${tiles.length} tiles: ${tiles.map(coord).join(', ')}`] };
         if (!tiles.length) {

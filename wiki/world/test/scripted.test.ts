@@ -1,6 +1,7 @@
 // The loc op moves no gate row makes (sources/gate-landings.ts deriveScriptedMoves), on scripted triggers: a jump to
 // a literal, a forcemove to a fixed tile, an agility walk behind a roll, a temporary block, and what gives no row (a
-// landing no run settles, a connector's own loc and op, a door, a shuffle beside the loc).
+// landing no run settles, a failure whose damage is not known, a landing off walkable land, a connector's own loc and
+// op, a door, a shuffle beside the loc).
 import { describe, expect, test } from 'bun:test';
 import { locSizes, type LocReach } from '../place';
 import type { ConnectorCollision } from '../sources/connectors';
@@ -54,6 +55,16 @@ p_teleport(movecoord(coord, 2, 0, 0));
 [oploc1,testdoor]
 ~open_test_door;
 
+[oploc1,rubblepile]
+if (stat_random(agility, 100, 200) = false) {
+    ~damage_self(divide(stat(hitpoints), random(5)));
+    return;
+}
+~forcemove(movecoord(coord, 0, 0, 6));
+
+[oploc1,wallgap]
+p_telejump(movecoord(loc_coord, 0, 0, 3));
+
 [proc,forcemove](coord $dest_coord)
 ~walk(calc(coordx($dest_coord) - coordx(coord)), calc(coordz($dest_coord) - coordz(coord)));
 
@@ -101,7 +112,18 @@ const scan: GateScanInput = {
     loadoutProcs: {},
     names: new Set(),
 };
-const CONFIGS = ['jumprock', 'ledge', 'logbalance', 'tripwire', 'citygate', 'sinkhole', 'cellarladder', 'shuffle'];
+const CONFIGS = [
+    'jumprock',
+    'ledge',
+    'logbalance',
+    'tripwire',
+    'citygate',
+    'sinkhole',
+    'cellarladder',
+    'shuffle',
+    'rubblepile',
+    'wallgap',
+];
 const locConfigs = parseConfigs([...CONFIGS, 'testdoor'].map(c => `[${c}]\nop1=Use`).join('\n'));
 
 const at = (x: number, z: number, level = 0): Tile => ({ level, x, z });
@@ -117,6 +139,8 @@ const PLACED: Record<string, Tile> = {
     cellarladder: at(170, 100),
     shuffle: at(180, 100),
     testdoor: at(190, 100),
+    rubblepile: at(120, 100),
+    wallgap: at(125, 100),
 };
 /** Tiles blocked beside a loc so that one stand is left: the one named. */
 const ONLY: Record<string, Tile> = {
@@ -124,6 +148,7 @@ const ONLY: Record<string, Tile> = {
     logbalance: at(130, 99),
     tripwire: at(140, 99),
     citygate: at(150, 101),
+    rubblepile: at(120, 99),
 };
 const RIVER = new Set(
     Array.from({ length: 200 }, (_, i) => [at(i, 102), at(i, 103)])
@@ -245,13 +270,41 @@ describe('deriveScriptedMoves: rows', () => {
 describe('deriveScriptedMoves: no row', () => {
     test('a landing the run cannot settle is reported with the construct and its line, never guessed', () => {
         expect(rowsOf('sinkhole')).toEqual([]);
-        expect(out.unsettled).toEqual([
+        expect(out.unsettled.filter(u => u.loc === 'sinkhole')).toEqual([
             {
                 trigger: 'oploc1,sinkhole',
                 loc: 'sinkhole',
                 tile: PLACED.sinkhole!,
                 reasons: [
                     `\`p_telejump(map_findsquare(0_50_50_1_1, 1, 1, 0))\` (${lineOf('map_findsquare')}): \`map_findsquare(0_50_50_1_1, 1, 1, 0)\` is not known offline`,
+                ],
+            },
+        ]);
+    });
+
+    test('a failure dealing damage divided by a random draw is not known offline: reported, not understated', () => {
+        expect(rowsOf('rubblepile')).toEqual([]);
+        expect(out.unsettled.filter(u => u.loc === 'rubblepile')).toEqual([
+            {
+                trigger: 'oploc1,rubblepile',
+                loc: 'rubblepile',
+                tile: PLACED.rubblepile!,
+                reasons: [
+                    `\`~damage_self(divide(stat(hitpoints), random(5)))\` (${lineOf('random(5)')}): the damage is not known offline`,
+                ],
+            },
+        ]);
+    });
+
+    test('a move onto a tile the collision data blocks is reported as off walkable land, not taken as no passage', () => {
+        expect(rowsOf('wallgap')).toEqual([]);
+        expect(out.unsettled.filter(u => u.loc === 'wallgap')).toEqual([
+            {
+                trigger: 'oploc1,wallgap',
+                loc: 'wallgap',
+                tile: PLACED.wallgap!,
+                reasons: [
+                    `lands off walkable land at (125, 103) (${lineOf('p_telejump(movecoord(loc_coord, 0, 0, 3))')})`,
                 ],
             },
         ]);
@@ -269,13 +322,13 @@ describe('deriveScriptedMoves: no row', () => {
     test('a shuffle beside the loc a short walk makes anyway, and a door the door procs open, are no passage', () => {
         expect(rowsOf('shuffle')).toEqual([]);
         expect(rowsOf('testdoor')).toEqual([]);
-        expect(out.unsettled.map(u => u.loc)).toEqual(['sinkhole']);
+        expect(out.unsettled.map(u => u.loc)).toEqual(['rubblepile', 'sinkhole', 'wallgap']);
     });
 
     test('the counts: triggers and placed locs by outcome', () => {
         expect(out.counts).toEqual({
-            triggers: { door: 1, 'not-a-passage': 1, rows: 6, unsettled: 1 },
-            locs: { rows: 6, unsettled: 1, duplicate: 0, door: 1, 'not-a-passage': 1 },
+            triggers: { door: 1, 'not-a-passage': 1, rows: 6, unsettled: 3 },
+            locs: { rows: 6, unsettled: 3, duplicate: 0, door: 1, 'not-a-passage': 1 },
         });
     });
 });
