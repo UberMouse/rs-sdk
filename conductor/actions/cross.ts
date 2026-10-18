@@ -35,7 +35,7 @@ const NPC_SLACK = 16;
  * Ticks an npc's act waits for the npc to come into sight: after a teleport the client lists the new area's npcs a
  * few ticks after the bot lands (Lumdo on Ape Atoll, conductor/test/integration/smoke/cross-monkey-madness.itest.ts).
  */
-const NPC_SIGHT_TICKS = 5;
+export const NPC_SIGHT_TICKS = 5;
 /** A teleport that lands the bot this far from where it stood, off every landing, has still moved it. */
 const TELEPORT_JUMP = 10;
 /** A choice dialog has more than one option; a lone Continue is the dialog guard's. */
@@ -48,8 +48,11 @@ const CROSS_SEND_TICKS = 2;
 export const crossWaitTicks = (m: Move): number =>
     CROSS_APPROACH_TICKS + CROSS_SLACK * CROSSING_TICKS[m.via] + (m.roll?.fail.ticks ?? 0);
 
-/** The ticks one attempt of `m` takes at its worst: its wait and its sends. */
-export const crossAttemptTicks = (m: Move): number => crossWaitTicks(m) + CROSS_SEND_TICKS;
+/** The ticks the act of `m` may wait before it is sent: an npc's, for the npc to come into sight. */
+const sightTicks = (m: Move): number => (m.act.kind === 'npc-op' ? NPC_SIGHT_TICKS : 0);
+
+/** The ticks one attempt of `m` takes at its worst: the wait for its npc, its wait and its sends. */
+export const crossAttemptTicks = (m: Move): number => sightTicks(m) + crossWaitTicks(m) + CROSS_SEND_TICKS;
 
 /** The ticks a failed roll of `m` waits before it is tried again: the failure's own delays. */
 const retryDelayTicks = (m: Move): number => m.roll?.fail.ticks ?? 1;
@@ -204,7 +207,8 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
             return to && p && sameTile(to, p) ? `moved to the roll's fail tile (${to.x}, ${to.z})` : null;
         };
         const choice = (s: BotWorldState) => s.dialog.isOpen && s.dialog.options.length >= CHOICE_MIN_OPTIONS;
-        const deadline = before.tick + crossWaitTicks(m);
+        // From the send, so an npc's wait to come into sight does not eat the move's.
+        const deadline = ctx.state().tick + crossWaitTicks(m);
         let w = yield* wait(
             `cross ${where(m)}`,
             s => landed(s) || !!refusal(s) || !!fall(s) || choice(s),

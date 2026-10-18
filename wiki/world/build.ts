@@ -49,7 +49,7 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
-import { deriveCuratedCrossings, type CuratedCrossings } from './sources/curated-crossings';
+import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossings } from './sources/curated-crossings';
 import { deriveDbrowTeleports, type DbrowTeleports, type TeleportCollision } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
@@ -846,6 +846,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         collision,
         size: locSizes(locConfigs),
     });
+    refuseDerivedTwins(curatedCrossings.crossings, [
+        ...scripted.crossings,
+        ...teleports.crossings,
+        ...npcTeleports.crossings,
+    ]);
     const rows: Crossing[] = [...scripted.crossings, ...teleports.crossings, ...curatedCrossings.crossings];
     const world0 = { features, connectors, gates: landings.gates, transports, quests: questRows };
     // A way back by the mine's portals asks what got the way in to its wizard (sources/npc-teleports.ts joinWaysIn),

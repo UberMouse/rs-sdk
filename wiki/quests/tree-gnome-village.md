@@ -59,4 +59,6 @@
 - The village's spirit tree (`stronghold_ent`) and the young trees (north of Varrock, Battlefield of Khazard) talk only
   to a player who finished the quest (areas/area_gnome/scripts/spirit_tree.rs2:26, :50), on a members world (:65).
   The village tree's menu, after "Where can I go?": "Battlefield of Khazard.", "Forest north of Varrock.", "Gnome
-  stronghold."; a young tree's "Yes please." goes to the village only. [v 2026-10-19 cross-spirit-tree smoke local]
+  stronghold." (:42); a young tree's "Yes please." goes to the village only (:56).
+- The village tree's "Forest north of Varrock." takes the player to the young tree north of Varrock.
+  [v 2026-10-19 itest-fixture local]

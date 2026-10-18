@@ -1,12 +1,12 @@
 // The curated crossings (sources/curated-crossings.ts) on a scripted world: an npc op's rows by the zones its script
 // checks, with the dialogue choices; an item op done on a zone's tiles, and back from the land a walk inside its zone
 // gets to; a landing on a blocked tile landed beside; a random draw's tiles; an interface click at an npc with its ring;
-// and the entries the scripts refute.
+// the entries the scripts refute; and a curated row a derived one makes too.
 import { describe, expect, test } from 'bun:test';
 import { locSizes } from '../place';
 import { parseConfigs } from '../sources/configs';
 import type { Constant } from '../sources/constants';
-import { deriveCuratedCrossings, type CuratedCrossing } from '../sources/curated-crossings';
+import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossing } from '../sources/curated-crossings';
 import { scanTrigger, type GateScanInput } from '../sources/gate-scan';
 import { parseCallables, parseTriggers } from '../sources/triggers';
 import type { Tile } from '../types';
@@ -206,4 +206,23 @@ describe('deriveCuratedCrossings: what the scripts refute', () => {
         fails({ ...NORTH, to: ['0_50_50_15_31'], source: EAST.source }, /finds no move to 0_50_50_15_31/));
     test('requirements not written canonically', () =>
         fails({ ...EAST, requires: [['quest:test'], ['quest:test', 'members']] }, /write requires as/));
+});
+
+describe('refuseDerivedTwins', () => {
+    const rows = derive([EAST, STAIRS_DOWN]).crossings;
+    const stairs = rows.find(r => r.act.kind === 'loc-op')!;
+    const derived = { ...stairs, landings: [{ tile: at(0, 3230, 3230) }], source: 'derived.rs2:1' };
+
+    test('a curated act a derived row has too is refused, naming both sources', () =>
+        expect(() => refuseDerivedTwins(rows, [derived])).toThrow(
+            `loc-op 1 stairs (${STAIRS_DOWN.source}, derived from derived.rs2:1)`,
+        ));
+    test("the same op on another loc, or another op on the loc, is no twin; nor are curated rows each other's", () => {
+        const other = [
+            { ...derived, act: { kind: 'loc-op' as const, loc: 'ladder', op: 1 } },
+            { ...derived, act: { kind: 'loc-op' as const, loc: 'stairs', op: 2 } },
+        ];
+        expect(() => refuseDerivedTwins(rows, other)).not.toThrow();
+        expect(() => refuseDerivedTwins([...rows, ...rows], [])).not.toThrow();
+    });
 });

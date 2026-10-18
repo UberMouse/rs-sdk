@@ -178,6 +178,12 @@ still does). The conductor's walker (`conductor/lib/walk-graph.ts`) walks script
 roll at the bot's own level rather than the lowest allowed; it does not take transports, nor a crossing its `cross`
 can't make (`crossingRefusal`: an interface click, the gliders', whose interface the row names no op to open).
 
+An `act` is one op, with its dialogue choices. It can't say a move of two loc ops in turn (the Legends' Quest winch:
+op1 turns the bare winch into the roped one, whose op1 climbs down) or a spell cast on a loc (an `oploct` trigger:
+Charge Orb on the quest's magic trial gate), so the Legends' Quest cavern behind them is in `EXPECTED_UNREACHED`
+though players get there. Nor can it say an opener before the act: a glider row is its interface button alone, and the
+walker takes it once an act can carry what opens the interface first (the pilot's op and dialogue).
+
 ### The unreached report
 
 `bun run world` prints, after the build, a warning listing every site of a covered kind (bank, shop, resource,

@@ -10,5 +10,5 @@ Travel to Ape Atoll after the quest (the world index's rows: `CURATED_CROSSINGS`
   the Gnomeball pitch (quest_mm.rs2:656).
 - On Crash Island, Lumdo rows to Ape Atoll with no choice (mm_lumdo.rs2:24), and on the atoll's beach back (:11);
   Waydar on Crash Island flies back to the Gnomeball pitch after "I need to return to your kingdom." (mm_waydar.rs2:47).
-  [v 2026-10-19 cross-monkey-madness smoke local]
+  [v 2026-10-19 itest-fixture local]
 - Ape Atoll's town is behind gates that ask a monkey greegree worn (quest_mm.rs2:1114).

@@ -5,12 +5,14 @@
 // against the scripts: the trigger's header is there, each landing (or a constant whose value it is) is written in the
 // trigger's script or on the move's line, each dialogue choice is an option text of those scripts, each zone is an
 // `inzone` on the line it cites or in the trigger's script, and, for a loc or npc op trigger, the gate scan finds the
-// trigger moving the player to each landing. Each spawn cluster of the npc (beside it, place.ts besideCluster), each
-// placed loc of the loc (its approach tiles, place.ts reachTiles), or the zone's tiles, gets one World.crossings row. A landing the script puts
-// on a tile the collision blocks (the Fisher Realm's, inside a tree) lands on the tiles the player steps out to; one
-// off land, or with no step out, is left out. A placement with no tile on land, or whose every landing is left out,
-// gets no row; the build report lists each, and each landing left out or stepped out of.
+// trigger moving the player to each landing; an act a derived row has too is refused (refuseDerivedTwins). Each spawn
+// cluster of the npc (beside it, place.ts besideCluster), each placed loc of the loc (its approach tiles, place.ts
+// reachTiles), or the zone's tiles, gets one World.crossings row. A landing the script puts on a tile the collision
+// blocks (the Fisher Realm's, inside a tree) lands on the tiles the player steps out to; one off land, or with no step
+// out, is left out. A placement with no tile on land, or whose every landing is left out, gets no row; the build report
+// lists each, and each landing left out or stepped out of.
 import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
+import { actName } from '../reach';
 import { minimalSets, requirementSet } from '../requirements';
 import type { Act, Crossing, NpcSpawn, Tile } from '../types';
 import { byTile, cmp, onLandIn, tileKey, uniqueTiles } from '../util';
@@ -298,4 +300,22 @@ export function deriveCuratedCrossings(input: CuratedCrossingInput): CuratedCros
         });
         return { to: uniqueTiles(to), blocked: true };
     }
+}
+
+/**
+ * Throws on a curated row whose act a derived row (the scripted moves', the dbrow and npc teleports') has too: a
+ * derivation that now settles the trigger would give the walk a second edge at another cost, so the entry goes.
+ */
+export function refuseDerivedTwins(curated: readonly Crossing[], derived: readonly Crossing[]): void {
+    const derivedAt = new Map(derived.map(c => [actName(c), c.source]));
+    const twins = new Set(
+        curated.flatMap(c => {
+            const at = derivedAt.get(actName(c));
+            return at === undefined ? [] : [`${actName(c)} (${c.source}, derived from ${at})`];
+        }),
+    );
+    if (twins.size)
+        throw new Error(
+            `gates.ts CURATED_CROSSINGS: a derived row makes the move too, drop it: ${[...twins].join(', ')}`,
+        );
 }

@@ -2,7 +2,7 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { Items } from '../../../sdk/test/utils/save-generator';
-import { CROSS_MAX_ATTEMPTS, cross, crossWaitTicks } from '../../actions/cross';
+import { CROSS_MAX_ATTEMPTS, NPC_SIGHT_TICKS, cross, crossAttemptTicks, crossWaitTicks } from '../../actions/cross';
 import { type Effect, TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { interpret } from '../../core/interpret';
 import { configId } from '../../lib/packs';
@@ -218,6 +218,33 @@ test("an npc not yet in sight (the client lists a teleport's new area late) is w
     const never = await run(lumdo, alone.build());
     expect(never.result).toMatchObject({ ok: false, reason: 'no-target' });
     expect(never.sends).toEqual([]);
+});
+
+test("the wait for a late npc is the attempt's, not the move's: its window counts from the send", async () => {
+    const GO = 'Yes please.';
+    const lumdo: Move = {
+        via: 'teleport',
+        act: { kind: 'npc-op', npc: 'mm_lumdo', op: 1, choices: [GO] },
+        at: tile(2803, 2707),
+        landings: [tile(2894, 2726)],
+        source: 'mm_lumdo.rs2:11',
+    };
+    expect(crossAttemptTicks(lumdo)).toBe(
+        crossAttemptTicks({ ...lumdo, act: { kind: 'loc-op', loc: 'gnome_areagate', op: 1 } }) + NPC_SIGHT_TICKS,
+    );
+    const alone = world().player({ at: { x: 2802, z: 2707 } });
+    const shown = alone.npc('Lumdo', 2803, 2707, { id: configId('npc', 'mm_lumdo')!, options: ['Talk-to'] });
+    const late = NPC_SIGHT_TICKS - 1;
+    // Shown on the sight wait's last tick; its choice is answered, and the boat never sails.
+    const ticks = [...Array.from({ length: late }, () => alone.build()), shown.build()].map((s, tick) => ({
+        ...s,
+        tick,
+    }));
+    const driver = new TimelineDriver(ticks, { react: reactTo('interactNpc', asks(['No thanks.', GO])) });
+    const r = await interpret(cross(driver, lumdo), { driver });
+    expect(r).toMatchObject({ kind: 'returned', value: { ok: false, reason: 'no-move' } });
+    expect(driver.state().tick).toBe(late + crossWaitTicks(lumdo));
+    expect(driver.state().tick).toBeLessThanOrEqual(crossAttemptTicks(lumdo));
 });
 
 describe('cross: rolled moves', () => {
