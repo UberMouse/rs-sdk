@@ -8,6 +8,7 @@ import {
     dbIndex,
     int,
     lootExpectation,
+    lootRows,
     requireLevel,
     stringParams,
     targetFeatures,
@@ -33,12 +34,11 @@ export const pickpocket: FamilyFactory = data => {
             const row = rows.get(subtype);
             if (!row) throw new ModelError(`no pickpocket row lists npc ${subtype}`);
             requireLevel(profile, 'thieving', int(row, 'level'), `pickpocketing ${subtype}`);
-            const loot = (row.data.loot ?? []).map(([obj, min, max, weight]) => ({
-                obj: obj!,
-                min: Number(min),
-                max: Number(max),
-                weight: Number(weight),
-            }));
+            const loot = lootRows(row);
+            // A stun of 0 or less never blocks the next attempt (the %stunned > map_clock check), so the fail
+            // cadence below would be wrong; every row has 8 or 10.
+            const stun = int(row, 'stun_ticks');
+            if (stun < 1) throw new ModelError(`${row.row} has stun_ticks ${stun}: a fail's cadence needs at least 1`);
             return {
                 // The attempt's p_delay(0) (thieving.rs2:5) holds the player a tick before the roll (:12), so the
                 // next click's op runs clickTicks(0) ticks after this one's.
@@ -55,7 +55,7 @@ export const pickpocket: FamilyFactory = data => {
                 // :43), then sets %stunned to map_clock + stun_ticks, and an attempt while %stunned > map_clock
                 // does nothing (pickpocket.rs2:130-132): the next op runs 3 + stun_ticks after the click, against
                 // a success's clickTicks(0).
-                failTicks: 3 + int(row, 'stun_ticks') - clickTicks(0),
+                failTicks: 3 + stun - clickTicks(0),
                 failDamage: int(row, 'stun_damage'),
             };
         },

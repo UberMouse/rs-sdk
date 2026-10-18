@@ -9,6 +9,7 @@ import {
     dbIndex,
     int,
     lootExpectation,
+    lootRows,
     requireLevel,
     scaleByPlayercount,
     stringParams,
@@ -32,12 +33,7 @@ export const stall: FamilyFactory = data => {
             const row = rows.get(subtype);
             if (!row) throw new ModelError(`no stealing row lists stall ${subtype}`);
             requireLevel(profile, 'thieving', int(row, 'level'), `stealing from ${subtype}`);
-            const loot = (row.data.loot ?? []).map(([obj, min, max, weight]) => ({
-                obj: obj!,
-                min: Number(min),
-                max: Number(max),
-                weight: Number(weight),
-            }));
+            const loot = lootRows(row);
             return {
                 // The steal's p_delay(0) (thieving.rs2:70) holds the player before the loot.
                 ticksPerAttempt: clickTicks(0),

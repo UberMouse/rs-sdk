@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError, type ActionModel, type Family } from '../model/family';
-import { lootExpectation, scaleByPlayercount, type GameData } from '../model/families/common';
+import { lootExpectation, lootRows, scaleByPlayercount, type GameData } from '../model/families/common';
 import { parseCatch, readSpots } from '../model/families/fishing';
 import { buildFamilies, FAMILIES } from '../model/families/index';
 import type { Profile } from '../model/profile';
@@ -441,6 +441,16 @@ describe('fishing', () => {
         });
         // No ~fish_roll (big net's own proc): not a catch, and its tool is unmodelled.
         expect(parseCatch(MEMBERFISH, 'm:1')).toBeNull();
+        // A roll loop with no level check is level 1 only for the listed shrimp net; any other fails.
+        const noCheck = FRESHFISH.split('\n\n')[1]!.replace(/if \(stat\(fishing\) < 20\) \{\s*return;\s*\}\s*/, '');
+        expect(() => parseCatch(noCheck, 'f:4')).toThrow(
+            /f:4: fly_fishing_rod catch of raw_trout has no stat\(fishing\)/,
+        );
+        const shrimp = noCheck
+            .replace(/fly_fishing_rod/g, 'net')
+            .replace(/raw_trout/g, 'raw_shrimp')
+            .replace(/feather/g, 'null');
+        expect(parseCatch(shrimp, 's:1')!.level).toBe(1);
         const spots = readSpots(data.scripts);
         expect([...spots.get('freshfish')!.catches.keys()]).toEqual(['fly_fishing_rod']);
         expect(spots.get('freshfish')!.catches.get('fly_fishing_rod')!.source).toBe(
@@ -511,6 +521,13 @@ describe('pickpocket', () => {
 
     test('fails with a reason', () => {
         fails('pickpocket', guards, {}, profile(39), /needs thieving 40/);
+        // A malformed loot row, or a stun under a tick, fails naming its row rather than modelling NaN or a wrong cadence.
+        expect(() => lootRows(parseDbrows('[r]\ntable=pickpocket\ndata=loot,coins,x,30,128')[0]!)).toThrow(
+            /r has a malformed loot\[0\]: coins,x,30,128/,
+        );
+        const stunless = parseDbrows(DBROWS.replace('data=stun_ticks,8', 'data=stun_ticks,0'));
+        const zero = buildFamilies({ ...data, dbrows: stunless }).get('pickpocket')!;
+        expect(() => zero.model(guards.site, { npc: 'guard1' }, profile(40), guards.world)).toThrow(/stun_ticks 0/);
         fails('pickpocket', at('pickpocket', [['man', 'man']]), {}, profile(40), /no pickpocket row lists npc man/);
     });
 });
@@ -535,6 +552,9 @@ describe('stall', () => {
 
     test('fails with a reason', () => {
         fails('stall', bakery, {}, profile(4), /needs thieving 5/);
+        const bad = parseDbrows(DBROWS.replace('data=loot,cake,1,1,13,a cake', 'data=loot,cake,1,,13,a cake'));
+        const stall = buildFamilies({ ...data, dbrows: bad }).get('stall')!;
+        expect(() => stall.model(bakery.site, {}, profile(5), bakery.world)).toThrow(/malformed loot\[0\]/);
         fails('stall', bakery, { stall: 'tea_stall' }, profile(5), /has no stall tea_stall/);
     });
 });

@@ -16,10 +16,17 @@ export interface FishingParams {
 
 const FISHING_SPOTS = 'skill_fishing/scripts/fishing_spots/';
 
+/**
+ * Catches whose script has no `stat(fishing) < N` check, as `tool:fish1`: the small-net shrimp
+ * (saltfish.rs2:60-79, `fish_shrimp`) is open from level 1. Any other label without a check fails, so one that
+ * moves its check into a proc is not read as level 1.
+ */
+const NO_LEVEL_CHECK = new Set(['net:raw_shrimp']);
+
 /** One tool's catch at a spot, as its continue label (or op trigger) writes it. */
 export interface Catch {
     tool: string;
-    /** The label's `stat(fishing) < <level>` check; 1 when it has none (shrimps). */
+    /** The label's `stat(fishing) < <level>` check; 1 when it has none and is in NO_LEVEL_CHECK (shrimps). */
     level: number;
     /** `%action_delay = calc(map_clock + <delay>)` on the tick after a roll. */
     delay: number;
@@ -58,7 +65,11 @@ export function parseCatch(body: string, source: string): Catch | null {
     });
     if (delay === undefined || tool === undefined || !calls.length) return null;
     if (calls.some(c => c.tool !== null && c.tool !== tool) || new Set(calls.map(c => c.bait)).size > 1) return null;
-    const level = Number(code.match(LEVEL)?.[1] ?? 1);
+    const checked = code.match(LEVEL)?.[1];
+    const first = calls[0]!.fish1;
+    if (checked === undefined && !NO_LEVEL_CHECK.has(`${tool}:${first}`))
+        throw new Error(`${source}: ${tool} catch of ${first} has no stat(fishing) level check`);
+    const level = Number(checked ?? 1);
     const base = { tool, level, delay: Number(delay), bait: calls[0]!.bait, source };
     if (calls.length === 1) {
         const [c] = calls;

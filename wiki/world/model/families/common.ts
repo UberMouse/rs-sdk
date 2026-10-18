@@ -138,6 +138,16 @@ export interface LootRow {
     weight: number;
 }
 
+/** A dbrow's `loot` column (obj, min, max, weight, ...) as rows; throws naming the row when a number is not one. */
+export function lootRows(row: DbRow): LootRow[] {
+    return (row.data.loot ?? []).map((f, i) => {
+        const [min, max, weight] = [1, 2, 3].map(j => Number(f[j]));
+        if (!f[0] || [1, 2, 3].some(j => !f[j]?.trim()) || ![min, max, weight].every(n => Number.isFinite(n)))
+            throw new Error(`${row.row} has a malformed loot[${i}]: ${f.join(',')}`);
+        return { obj: f[0], min: min!, max: max!, weight: weight! };
+    });
+}
+
 /**
  * The expected count of each obj from a loot table the thieving procs roll (skill_thieving/scripts/thieving.rs2):
  * from its last row up, each row rolls `random(remaining)` and wins when the roll is `>= remaining - weight`, then
