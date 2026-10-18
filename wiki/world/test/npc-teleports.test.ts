@@ -103,7 +103,10 @@ const PORTAL = at(0, 3215, 3215);
 const locConfigs = parseConfigs(LOCS);
 // A wall down the west edge of column 3207 cuts wizard_a's back ring; one east of (3220, 3220) the first spot's ring.
 const collision = () => new Grid().wallColumn(3207, 3203, 3207).wall(at(0, 3220, 3220), 1, 0);
-const derive = (entry: NpcTeleport = ENTRY, more: { script?: string; enums?: string } = {}) => {
+const derive = (
+    entry: NpcTeleport = ENTRY,
+    more: { script?: string; enums?: string; quests?: { id: string; varp: string }[] } = {},
+) => {
     const script = more.script ?? SCRIPT;
     return deriveNpcTeleports({
         entries: [entry],
@@ -114,7 +117,7 @@ const derive = (entry: NpcTeleport = ENTRY, more: { script?: string; enums?: str
         enums: parseConfigs(more.enums ?? ENUMS),
         npcConfigs: parseConfigs(NPCS),
         locConfigs,
-        quests: [{ id: 'testquest', varp: 'testquest' }],
+        quests: more.quests ?? [{ id: 'testquest', varp: 'testquest' }],
         spawns: SPAWNS,
         locs: [{ config: 'test_portal', tile: PORTAL, shape: 10, rotation: 0 }],
         collision: collision(),
@@ -202,14 +205,20 @@ describe('deriveNpcTeleports', () => {
     test('refuses an entry the data refutes', () => {
         expect(() => derive({ ...ENTRY, label: 'nowhere' })).toThrow(/no such label/);
         expect(() => derive({ ...ENTRY, source: ENTRY.ring })).toThrow(/is not a p_telejump/);
-        expect(() => derive({ ...ENTRY, ring: ENTRY.source })).toThrow(/has no map_findsquare/);
+        expect(() => derive({ ...ENTRY, ring: ENTRY.source })).toThrow(/has no \$<local> = map_findsquare/);
+        expect(() => derive(ENTRY, { script: SCRIPT.replace('p_telejump($coord);', 'p_telejump($back);') })).toThrow(
+            /is not a p_telejump\(\$coord\)/,
+        );
         expect(() => derive({ ...ENTRY, source: `${FILE}:30` })).toThrow(/is not in skill_test/);
         expect(() => derive({ ...ENTRY, enum: 'other_spots' })).toThrow(/does not draw \$coord from other_spots/);
         expect(() => derive(ENTRY, { enums: ENUMS.replace('outputtype=coord', 'outputtype=int') })).toThrow(
             /does not give coords/,
         );
+        expect(() => derive(ENTRY, { enums: '' })).toThrow(/no such enum test_spots/);
         expect(() => derive({ ...ENTRY, requires: ['quest:otherquest'] })).toThrow(/no quest otherquest/);
         expect(() => derive({ ...ENTRY, checkedAt: ENTRY.source })).toThrow(/does not read %testquest/);
+        // The varp is read as a whole name: %testquest is not %testq.
+        expect(() => derive(ENTRY, { quests: [{ id: 'testquest', varp: 'testq' }] })).toThrow(/does not read %testq$/);
         expect(() => derive({ ...ENTRY, back: { ...ENTRY.back, varp: 'elsewhere' } })).toThrow(
             /does not set %elsewhere to \$back/,
         );
@@ -222,6 +231,12 @@ describe('deriveNpcTeleports', () => {
         expect(() => derive(ENTRY, { script: SCRIPT.replace(/^@test_teleport.*$/gm, 'mes("No.");') })).toThrow(
             /no npc op trigger jumps to it/,
         );
+        // wizard_a's op1 and op3 passing different coords: one way back could not hold both.
+        const twice = SCRIPT.replace(
+            'if (%testquest = ^testquest_complete) @test_teleport(^to_a);',
+            '@test_teleport(^to_b);',
+        );
+        expect(() => derive(ENTRY, { script: twice })).toThrow(/wizard_a's ops pass \^to_b and \^to_a/);
     });
 });
 
@@ -231,7 +246,7 @@ describe('the ways back', () => {
     const fill = { setsAny: (ts: readonly Tile[]) => (ts.some(t => t.x < 3208) ? [[]] : [['skill:magic:66']]) };
 
     test('ask what got the way in: the npc’s teleport, and the sets that reach it', () => {
-        const joined = joinWaysIn(crossings, fill);
+        const joined = joinWaysIn(crossings, fill).crossings;
         expect(backRows(joined).map(c => c.requires)).toEqual([
             [['other:came from wizard_a', 'quest:testquest']],
             [['other:came from wizard_b', 'quest:testquest', 'skill:magic:66']],
@@ -240,9 +255,24 @@ describe('the ways back', () => {
         expect(npcRows(joined)).toEqual(npcRows(crossings));
     });
 
-    test('a way back to an npc no set gets to is left out', () => {
+    test('a way back to an npc no set gets to is left out, and returned for the report', () => {
         const joined = joinWaysIn(crossings, { setsAny: ts => (ts.some(t => t.x < 3208) ? [[]] : []) });
-        expect(backRows(joined).map(c => c.requires)).toEqual([[['other:came from wizard_a', 'quest:testquest']]]);
+        expect(backRows(joined.crossings).map(c => c.requires)).toEqual([
+            [['other:came from wizard_a', 'quest:testquest']],
+        ]);
+        expect(joined.unjoined).toEqual(
+            backRows(crossings).filter(c => c.requires[0]!.includes('other:came from wizard_b')),
+        );
+    });
+
+    test('a teleport row asking `members` gives a way back without it, as no set holds it', () => {
+        const members = crossings.map(c =>
+            c.act.kind === 'npc-op' ? { ...c, requires: [['members', 'quest:testquest']] } : c,
+        );
+        expect(backRows(joinWaysIn(members, fill).crossings).map(c => c.requires)).toEqual([
+            [['other:came from wizard_a', 'quest:testquest']],
+            [['other:came from wizard_b', 'quest:testquest', 'skill:magic:66']],
+        ]);
     });
 
     test("a site's context takes every came-from, so its way out by the portal finds a bank", () => {

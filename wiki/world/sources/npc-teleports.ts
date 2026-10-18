@@ -9,8 +9,8 @@
 // coord that npc passes, under `other:came from <npc>` (requirements.ts cameFrom), which only a way that came in by
 // that npc's op meets. A way that came in by it met what got it to the npc's teleport too, so the build joins that to
 // the way back (joinWaysIn): a fill does not take the portal to Distentor, inside the Magic Guild, without 66 Magic. A
-// cluster or loc no tile on land is used from gets no row, nor does one whose every landing is off walkable land; the
-// build report lists both, and each landing left out.
+// cluster or loc no tile on land is used from gets no row, nor does one whose every landing is off walkable land, nor
+// a way back to an npc no walk gets to the teleport of; the build report lists each, and each landing left out.
 import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import type { Reach } from '../reach';
 import { CAME_FROM, cameFrom, minimalSets, requirementSet, type QuestFacts } from '../requirements';
@@ -101,14 +101,23 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
                 throw fail(`${what} ${at} is not in ${b.file}:${b.line}`);
             return input.scripts.get(file)!.split('\n')[Number(n) - 1]!;
         };
-        /** The `map_findsquare(<arg>, <min>, <max>, <type>)` of a line: its arg, and its ring with the type's value. */
-        const ringOf = (text: string, at: string): { arg: string; ring: string[] } => {
+        /**
+         * The `$<into> = map_findsquare(<arg>, <min>, <max>, <type>)` of a line: the local it sets, its arg, and its
+         * ring with the type's value.
+         */
+        const ringOf = (text: string, at: string): { into: string; arg: string; ring: string[] } => {
             const m = text.match(
-                /\bmap_findsquare\s*\(\s*([$%][a-z0-9_]+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\^[a-z0-9_]+)\s*\)/,
+                /(\$[a-z0-9_]+)\s*=\s*map_findsquare\s*\(\s*([$%][a-z0-9_]+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\^[a-z0-9_]+)\s*\)/,
             );
-            const type = m && constantInt(input.constants, m[4]!);
-            if (!m || type === undefined) throw fail(`${at} has no map_findsquare(<var>, <min>, <max>, ^<type>)`);
-            return { arg: m[1]!, ring: [m[2]!, m[3]!, String(type)] };
+            const type = m && constantInt(input.constants, m[5]!);
+            if (!m || type === undefined)
+                throw fail(`${at} has no $<local> = map_findsquare(<var>, <min>, <max>, ^<type>)`);
+            return { into: m[1]!, arg: m[2]!, ring: [m[3]!, m[4]!, String(type)] };
+        };
+        /** Fails unless the `file:line` `at` of block `b` is `p_telejump(<local>)`, the ring's result. */
+        const jumpsTo = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, local: string, what: string) => {
+            if (!new RegExp(`\\bp_telejump\\s*\\(\\s*${escape(local)}\\s*\\)`).test(lineIn(at, b, what)))
+                throw fail(`${at} is not a p_telejump(${local})`);
         };
         /** The tiles a ring round `literal` can give, each once, and those of them on walkable land. */
         const land = (literal: string, ring: string[]): { all: Tile[]; on: Tile[] } => {
@@ -129,9 +138,8 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         if (!param) throw fail('the label takes no one coord parameter');
         if (!new RegExp(`%${e.back.varp}\\s*=\\s*${escape(param)}\\b`).test(label.body))
             throw fail(`the label does not set %${e.back.varp} to ${param}`);
-        if (!/\bp_telejump\s*\(/.test(lineIn(e.source, label, 'the jump')))
-            throw fail(`${e.source} is not a p_telejump`);
         const ring = ringOf(lineIn(e.ring, label, 'the ring'), e.ring);
+        jumpsTo(e.source, label, ring.into, 'the jump');
         const draw = `${escape(ring.arg)}\\s*=\\s*enum\\(\\s*int\\s*,\\s*coord\\s*,\\s*${e.enum}\\s*,\\s*random\\(\\s*enum_getoutputcount\\(\\s*${e.enum}\\s*\\)\\s*\\)\\s*\\)`;
         if (!new RegExp(draw).test(label.body)) throw fail(`the label does not draw ${ring.arg} from ${e.enum}`);
         const checked = lineIn(e.checkedAt, label, 'the check');
@@ -140,12 +148,13 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
             if (!id) continue;
             const q = input.quests.find(x => x.id === id);
             if (!q) throw fail(`no quest ${id}`);
-            if (!checked.includes(`%${q.varp}`)) throw fail(`${e.checkedAt} does not read %${q.varp}`);
+            if (!new RegExp(`%${q.varp}\\b`).test(checked)) throw fail(`${e.checkedAt} does not read %${q.varp}`);
         }
         const requires = [requirementSet(e.requires)];
         const cfg = input.enums.get(e.enum);
+        if (!cfg) throw fail(`no such enum ${e.enum}`);
         if (first(cfg, 'outputtype') !== 'coord') throw fail(`enum ${e.enum} does not give coords`);
-        const coords = (cfg?.val ?? []).map(v => v.slice(v.indexOf(',') + 1));
+        const coords = (cfg.val ?? []).map(v => v.slice(v.indexOf(',') + 1));
         if (!coords.length || !coords.every(isCoordLiteral)) throw fail(`enum ${e.enum} has no coords, or a non-coord`);
         const drawn = uniqueTiles(coords.flatMap(c => land(c, ring.ring).all));
         const landings = drawn.filter(onLand);
@@ -159,10 +168,18 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
             if (first(input.npcConfigs.get(t.target), `op${t.op}`) === undefined) return [];
             const literal = input.constants.get(passed)?.value;
             if (!literal || !isCoordLiteral(literal)) throw fail(`${triggerKey(t)} passes ${passed}, no coord`);
-            return [{ trigger: t, npc: t.target, back: literal }];
+            return [{ trigger: t, npc: t.target, passed, back: literal }];
         });
         if (!callers.length) throw fail('no npc op trigger jumps to it');
         callers.sort((a, b) => cmp(a.npc, b.npc) || cmp(a.trigger.op, b.trigger.op));
+        // One way back per npc, as the back trigger reads one coord for the npc: two of its ops passing different
+        // coords would need a way back each, and are refused.
+        const backOf = new Map<string, { passed: string; back: string }>();
+        for (const c of callers) {
+            const seen = backOf.get(c.npc);
+            if (seen && seen.back !== c.back) throw fail(`${c.npc}'s ops pass ${seen.passed} and ${c.passed}`);
+            backOf.set(c.npc, c);
+        }
         for (const { trigger, npc } of callers) {
             const clusters = input.spawns.filter(s => s.config === npc);
             if (!clusters.length) throw fail(`${npc} has no spawn`);
@@ -187,17 +204,15 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         const back = input.triggers.find(t => triggerKey(t) === e.back.trigger);
         if (!back || back.on !== 'loc' || back.op === 'u') throw fail(`no loc op trigger ${e.back.trigger}`);
         const backBlock = { file: back.file, line: back.line, body: back.body };
-        if (!/\bp_telejump\s*\(/.test(lineIn(e.back.source, backBlock, 'the jump back')))
-            throw fail(`${e.back.source} is not a p_telejump`);
         const backRing = ringOf(lineIn(e.back.ring, backBlock, 'the ring back'), e.back.ring);
+        jumpsTo(e.back.source, backBlock, backRing.into, 'the jump back');
         if (backRing.arg !== `%${e.back.varp}`) throw fail(`${e.back.ring} rings ${backRing.arg}, not %${e.back.varp}`);
         const covered = new Set(triggerConfigs(input.triggers, input.locConfigs)(back));
         const placed = input.locs
             .filter(l => covered.has(l.config))
             .sort((a, b) => byTile(a.tile, b.tile) || cmp(a.config, b.config));
         if (!placed.length) throw fail(`no placed loc of a config ${e.back.trigger} covers`);
-        // One way back per npc, as a back coord is the npc's.
-        const ways = [...new Map(callers.map(c => [c.npc, land(c.back, backRing.ring)])).entries()];
+        const ways = [...backOf].map(([npc, { back: coord }]) => [npc, land(coord, backRing.ring)] as const);
         for (const l of placed) {
             const miss = { trigger: e.back.trigger, config: l.config, tile: l.tile };
             const from = reachTiles(l, collision, size)
@@ -230,13 +245,13 @@ export const returnsTo = (c: Crossing): string | undefined =>
  * The rows with each way back asking what got the way in (the header comment): a came-from row's sets are its npc's
  * teleport's, each set that `fill` (a fill over the rows without the ways back) gets to a tile the teleport row is done
  * from, joined with one of the row's own and the came-from requirement. A way back to an npc no set gets to is left
- * out. Every other row is as it was.
+ * out, and returned as `unjoined` for the build report. Every other row is as it was.
  */
 export function joinWaysIn(
     crossings: readonly Crossing[],
     fill: Pick<Reach, 'setsAny'>,
     quests?: QuestFacts,
-): Crossing[] {
+): { crossings: Crossing[]; unjoined: Crossing[] } {
     const ways = new Map<string, string[][]>();
     const wayIn = (npc: string): string[][] => {
         let sets = ways.get(npc);
@@ -247,6 +262,7 @@ export function joinWaysIn(
                     .flatMap(c =>
                         fill
                             .setsAny(c.from)
+                            // `members` is met, so no set holds it (reach.ts SetTable.intern); a row's own may.
                             .flatMap(s =>
                                 c.requires.map(r => [...s, ...r, cameFrom(npc)].filter(x => x !== 'members')),
                             ),
@@ -257,21 +273,36 @@ export function joinWaysIn(
         }
         return sets;
     };
-    return crossings.flatMap(c => {
+    const unjoined: Crossing[] = [];
+    const joined = crossings.flatMap(c => {
         const npc = returnsTo(c);
         if (npc === undefined) return [c];
         const requires = wayIn(npc);
+        if (!requires.length) unjoined.push(c);
         return requires.length ? [{ ...c, requires }] : [];
     });
+    return { crossings: joined, unjoined };
 }
 
 /**
  * The requirement context of a site's reach set, for its nearest sinks (distance.ts NearestOptions.context): the set
- * and every came-from requirement of the rows. A way back asks what got the way in too (joinWaysIn), so a context
- * takes only the ways back to the npcs whose teleport it gets to: the mine's portals to the wizards a walk can use,
- * not to Distentor in the Magic Guild without 66 Magic.
+ * and every came-from requirement of the rows. A way back asks what got the way in to its npc too (joinWaysIn), so a
+ * context admits the way back to npc B whenever its set meets B's way in, whatever npc the site's own way came in
+ * by: a way in by A and out by B's portal is admitted too. That is sound where a player who meets B's way in can
+ * come in by B instead, as at the mine's sites, reached with Rune Mysteries: the portals to the wizards a walk gets
+ * to are admitted, the one to Distentor in the Magic Guild not without 66 Magic. For a site outside the mine it is
+ * not: its way could go in by one wizard and out to another's exit. Such a way takes a wizard's teleport, which asks
+ * the quest, and only the mine's sites are reached with it today; npc-teleports.real.test.ts pins that no nearest
+ * way outside the mine takes a portal.
  */
 export function cameFromContext(crossings: readonly Crossing[]): (set: readonly string[]) => string[] {
-    const tokens = [...new Set(crossings.flatMap(c => (returnsTo(c) === undefined ? [] : [cameFrom(returnsTo(c)!)])))];
+    const tokens = [
+        ...new Set(
+            crossings.flatMap(c => {
+                const npc = returnsTo(c);
+                return npc === undefined ? [] : [cameFrom(npc)];
+            }),
+        ),
+    ];
     return set => requirementSet([...set, ...tokens]);
 }

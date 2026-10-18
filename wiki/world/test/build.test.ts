@@ -446,7 +446,7 @@ describe('formatReport', () => {
             duplicates: [],
         },
         teleports: { rows: 0, unstood: [], offLand: [] },
-        npcTeleports: { rows: 0, unstood: [], offLand: [], other: [] },
+        npcTeleports: { rows: 0, unstood: [], offLand: [], unjoined: [], other: [] },
         reach: {
             nodes: 64,
             reached: 10,
@@ -816,11 +816,12 @@ describe('formatReport', () => {
         expect(failed({ ...report, teleports })).toBe(false);
     });
 
-    test('the npc teleports: rows, then the npcs and locs given none, the landings left out and other: requirements', () => {
+    test('the npc teleports: rows, then the npcs and locs given none, the landings and ways back left out and other: requirements', () => {
         const npcTeleports: BuildReport['npcTeleports'] = {
             rows: 3,
             unstood: [{ trigger: 'opnpc3,wizard', config: 'wizard', tile: at(4, 4) }],
             offLand: [{ trigger: 'oploc1,portal', config: 'portal', tile: at(1, 1), landing: at(9, 9) }],
+            unjoined: ['loc-op 1 portal (1, 1): other:came from hermit'],
             other: ['loc-op 1 portal: other:came from wizard'],
         };
         expect(formatNpcTeleports(npcTeleports)).toEqual([
@@ -829,6 +830,8 @@ describe('formatReport', () => {
             '  opnpc3,wizard wizard (4, 4)',
             'warning: 1 npc teleport landings off walkable land, left out:',
             '  oploc1,portal portal (1, 1) -> (9, 9)',
+            'warning: 1 npc teleport ways back to an npc no walk gets to the teleport of, no row:',
+            '  loc-op 1 portal (1, 1): other:came from hermit',
             'warning: 1 npc teleport requirements in no other form:',
             '  loc-op 1 portal: other:came from wizard',
         ]);

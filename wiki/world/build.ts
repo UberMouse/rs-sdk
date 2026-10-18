@@ -303,7 +303,8 @@ export interface BuildReport {
      * written, the spawn clusters and placed locs no tile on land is used from, the landings off walkable land, and
      * the rows' requirements in no other form, as `<act>: <requirement>` (warnings).
      */
-    npcTeleports: Pick<NpcTeleports, 'unstood' | 'offLand'> & { rows: number; other: string[] };
+    /** `unjoined`: the ways back to an npc no walk gets to the teleport of, left out (npc-teleports.ts joinWaysIn). */
+    npcTeleports: Pick<NpcTeleports, 'unstood' | 'offLand'> & { rows: number; unjoined: string[]; other: string[] };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
@@ -819,7 +820,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         collision,
         size: locSizes(locConfigs),
     });
-    const npcRows = joinWaysIn(npcTeleports.crossings, wayIn, questFacts(questRows));
+    const { crossings: npcRows, unjoined } = joinWaysIn(npcTeleports.crossings, wayIn, questFacts(questRows));
     const crossingRows: Crossing[] = [...rows, ...npcRows];
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
     // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
@@ -985,6 +986,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 rows: npcRows.length,
                 unstood: npcTeleports.unstood,
                 offLand: npcTeleports.offLand,
+                unjoined: unjoined.map(c => `${actName(c)} ${coord(c.at)}: ${c.requires[0]!.join(' ')}`),
                 other: [
                     ...new Set(
                         npcRows.flatMap(c =>
@@ -1254,8 +1256,8 @@ export function formatTeleports(r: BuildReport['teleports']): string[] {
 }
 
 /**
- * The npc teleports' section: rows written, then the clusters and locs given none, the landings left out and the
- * requirements in no other form (warnings).
+ * The npc teleports' section: rows written, then the clusters and locs given none, the landings left out, the ways
+ * back left out and the requirements in no other form (warnings).
  */
 export function formatNpcTeleports(r: BuildReport['npcTeleports']): string[] {
     return [
@@ -1267,6 +1269,10 @@ export function formatNpcTeleports(r: BuildReport['npcTeleports']): string[] {
         ...list(
             `warning: ${r.offLand.length} npc teleport landings off walkable land, left out:`,
             r.offLand.map(m => `${m.trigger} ${m.config} ${coord(m.tile)} -> ${coord(m.landing)}`),
+        ),
+        ...list(
+            `warning: ${r.unjoined.length} npc teleport ways back to an npc no walk gets to the teleport of, no row:`,
+            r.unjoined,
         ),
         ...list(`warning: ${r.other.length} npc teleport requirements in no other form:`, r.other),
     ];

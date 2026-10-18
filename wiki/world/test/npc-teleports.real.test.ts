@@ -99,6 +99,14 @@ describe('the mine’s sites', () => {
             ]);
     });
 
+    test('no nearest way of a site outside the mine takes a portal: it could go in by one wizard, out by another', () => {
+        // Only sites have a nearest (distance.ts SINKS); an npc spawn has none to check.
+        const outside = world.sites.filter(s => !s.areaPath.includes('rune-essence-mine'));
+        const ways = outside.flatMap(s => Object.values(s.nearest ?? {}).map(n => [s.id, n.requires] as const));
+        expect(ways.length).toBeGreaterThan(1000);
+        expect(ways.filter(([, requires]) => requires.some(r => r.startsWith(CAME_FROM)))).toEqual([]);
+    });
+
     test('no reach set of a site or npc spawn asks a came-from: a fill takes a portal back only where it walks', () => {
         for (const r of [...world.sites, ...world.npcSpawns].flatMap(s => s.reach.flat()))
             expect(r.startsWith(CAME_FROM)).toBe(false);
