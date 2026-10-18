@@ -100,6 +100,8 @@ export interface PlanDef {
     /**
      * The training method it runs: a method id of wiki/world/methods.ts, whose record lists this plan in its `plans`
      * (conductor/test/plans.test.ts checks both ways). `stats.ts --methods` sets its runs beside the method's floor.
+     * Named only when the plan's whole run IS that method's cycle: a plan that does more (smelts or smiths what it
+     * mines) names none, as its whole-run XP/hr measures another activity.
      */
     method?: string;
 }

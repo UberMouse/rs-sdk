@@ -108,12 +108,20 @@ const RESULTS: TimedResult[] = [
     result(60, 'plan:iron-bulk', { runId: 'run-2', durationMs: HOUR / 2, xpGained: { Mining: 40_000 } }),
 ];
 
-/** The phase runs' starts, by log file: run-1 started at Mining 60 and picked up a rune pickaxe in its second phase. */
+/**
+ * The phase runs' starts, by log file: run-1 started at Mining 60 and picked up a rune pickaxe in its second phase;
+ * run-2 started at Mining 62 holding none.
+ */
 const STARTS: Record<string, RunStart> = {
     'mining-10': { levels: { mining: 60, smithing: 40 }, held: ['Bronze pickaxe'] },
     'bank-20': { levels: { mining: 60 }, held: ['Rune pickaxe', 'Iron ore'] },
     'mining-50': { levels: { mining: 62 }, held: [] },
 };
+/** Both runs started at Mining 60 with the rune pickaxe. */
+const SAME: Record<string, RunStart> = { ...STARTS, 'mining-50': { levels: { mining: 60 }, held: ['Rune pickaxe'] } };
+
+/** A floor of 4,000 XP/h per Mining level the run started at. */
+const perLevel = (_: unknown, m: Measured) => ({ xpPerHour: { mining: m.level.mining! * 4_000 } }) as CycleRates;
 
 function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
     return {
@@ -123,7 +131,7 @@ function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
         results: RESULTS,
         start: r => STARTS[r.logFile],
         tools: TOOLS,
-        floor: () => ({ xpPerHour: { mining: 200_000 } }) as unknown as CycleRates,
+        floor: perLevel,
         ...o,
     };
 }
@@ -136,37 +144,64 @@ describe('methodRuns', () => {
         expect(r!.last).toBe(new Date(60).toISOString().slice(0, 10));
     });
 
-    test("the start levels are the earliest run's first phase run's; the range covers later starts and level-ups", () => {
+    test("each run's start levels are its first phase run's; the range covers later starts and level-ups", () => {
         const [r] = methodRuns(input());
-        expect(r!.start).toEqual({ runId: 'run-1', levels: { mining: 60 } });
+        expect(r!.perRun.map(p => [p.runId, p.levels])).toEqual([
+            ['run-1', { mining: 60 }],
+            ['run-2', { mining: 62 }],
+        ]);
         // run-1 ended at 61, run-2 started at 62.
         expect(r!.levelRange).toEqual({ mining: [60, 62] });
+        expect(methodRuns(input({ start: run => SAME[run.logFile] }))[0]!.levelRange).toEqual({ mining: [60, 61] });
     });
 
-    test('the earliest run with no recording is passed over for the next', () => {
-        const [r] = methodRuns(input({ start: run => (run.partOf === 'run-1' ? undefined : STARTS[run.logFile]) }));
-        expect(r!.start).toEqual({ runId: 'run-2', levels: { mining: 62 } });
-    });
-
-    test('the tool is the best one held at any phase run start that the checker allows at the start level', () => {
-        expect(methodRuns(input())[0]!.tool).toBe('rune_pickaxe');
+    test("a run's tool is the best one held at any of its phase runs' starts that the checker allows at its level", () => {
+        expect(methodRuns(input())[0]!.perRun.map(p => p.tool)).toEqual(['rune_pickaxe', null]);
         // At Mining 35 the rune pickaxe (41) is above the level: the bronze one is the best usable.
         const low: Record<string, RunStart> = {
             ...STARTS,
             'mining-10': { levels: { mining: 35 }, held: ['Bronze pickaxe'] },
         };
-        expect(methodRuns(input({ start: r => low[r.logFile] }))[0]!.tool).toBe('bronze_pickaxe');
-        const none = methodRuns(input({ start: r => ({ ...STARTS[r.logFile]!, held: [] }) }))[0]!;
-        expect([none.toolKind, none.tool, none.entry?.tool]).toEqual(['pickaxe', null, undefined]);
+        expect(methodRuns(input({ start: r => low[r.logFile] }))[0]!.perRun[0]!.tool).toBe('bronze_pickaxe');
     });
 
-    test('the entry is what the floor is rated at, and the gap is measured over floor', () => {
+    test("the gap is the runs' XP over the XP each run's floor at its own start makes in its hours", () => {
+        const [r] = methodRuns(input());
+        // run-1: floor 60 x 4,000 = 240,000/h x 0.5 h = 120,000 XP; measured 60,000 = 50%.
+        // run-2: floor 62 x 4,000 = 248,000/h x 0.5 h = 124,000 XP; measured 40,000 = 32.3%.
+        // All: 100,000 / (120,000 + 124,000) = 40.98% -> 41%. Floor 244,000 XP over 1 h = 244,000/h,
+        // 144,000/h above the measured 100,000/h. (The earliest run's floor alone, 240,000/h, would read 41.7%.)
+        expect(r!.perRun.map(p => [p.floor, p.pct])).toEqual([
+            [{ mining: 240_000 }, { mining: 50 }],
+            [{ mining: 248_000 }, { mining: 32.3 }],
+        ]);
+        expect(r!.floor).toEqual({ mining: 244_000 });
+        expect(r!.gap).toEqual({ mining: { pct: 41, shortfall: 144_000 } });
+    });
+
+    test('runs with no recorded start count in neither side of the gap', () => {
+        const [r] = methodRuns(input({ start: run => (run.partOf === 'run-1' ? undefined : STARTS[run.logFile]) }));
+        // run-2 alone: 40,000 XP / (248,000/h x 0.5 h = 124,000 XP) = 32.3%; 80,000/h measured, 168,000/h short.
+        expect([r!.excluded, r!.counted]).toEqual([1, { runs: 1, hours: 0.5, xpPerHour: { mining: 80_000 } }]);
+        expect(r!.xpPerHour).toEqual({ mining: 100_000 });
+        expect(r!.floor).toEqual({ mining: 248_000 });
+        expect(r!.gap).toEqual({ mining: { pct: 32.3, shortfall: 168_000 } });
+    });
+
+    test('the entry is withheld when the runs started at different levels, or with different tools', () => {
+        expect(methodRuns(input())[0]!.entry).toBeUndefined();
+        const tools: Record<string, RunStart> = { ...SAME, 'mining-50': { levels: { mining: 60 }, held: [] } };
+        expect(methodRuns(input({ start: r => tools[r.logFile] }))[0]!.entry).toBeUndefined();
+    });
+
+    test('the entry is present when every counted run started at the same levels and tool, and is what the floor is rated at', () => {
         const seen: Measured[] = [];
         const [r] = methodRuns(
             input({
-                floor: (_, m) => {
-                    seen.push(m);
-                    return { xpPerHour: { mining: 250_000.4 } } as unknown as CycleRates;
+                start: run => SAME[run.logFile],
+                floor: (m, measured) => {
+                    seen.push(measured);
+                    return perLevel(m, measured);
                 },
             }),
         );
@@ -179,32 +214,43 @@ describe('methodRuns', () => {
             hours: 1,
             from: 'stats.ts tester --methods',
         });
-        expect(seen).toEqual([r!.entry!]);
-        // 100,000 / 250,000 = 40%; 150,000/h short.
-        expect(r!.floor).toEqual({ mining: 250_000 });
-        expect(r!.gap).toEqual({ mining: { pct: 40, shortfall: 150_000 } });
+        // Each run's floor is rated at its own start levels and tool.
+        expect(seen.map(m => [m.level, m.tool])).toEqual([
+            [{ mining: 60 }, 'rune_pickaxe'],
+            [{ mining: 60 }, 'rune_pickaxe'],
+        ]);
+        // 100,000 XP / (240,000/h x 1 h) = 41.7%.
+        expect(r!.gap).toEqual({ mining: { pct: 41.7, shortfall: 140_000 } });
+    });
+
+    test('a run with no tool held leaves the tool out of the entry', () => {
+        const none = methodRuns(input({ start: r => ({ ...SAME[r.logFile]!, held: [] }) }))[0]!;
+        expect([none.toolKind, none.entry?.tool, none.entry?.level]).toEqual(['pickaxe', undefined, { mining: 60 }]);
     });
 
     test('since leaves out the plan runs before it', () => {
         expect(methodRuns(input({ since: 31 }))[0]).toMatchObject({ runs: 1, xpPerHour: { mining: 80_000 } });
     });
 
-    test('a floor that throws is reported, the entry kept', () => {
+    test('a floor that throws is reported with its run; no floor or gap, the entry kept', () => {
         const [r] = methodRuns(
             input({
+                start: run => SAME[run.logFile],
                 floor: () => {
                     throw new Error('mining needs a pickaxe');
                 },
             }),
         );
-        expect(r!.floorError).toBe('mining needs a pickaxe');
+        expect(r!.floorError).toBe('run run-1: mining needs a pickaxe');
+        expect(r!.perRun[1]!.floorError).toBe('mining needs a pickaxe');
+        expect([r!.floor, r!.gap]).toEqual([undefined, {}]);
         expect(r!.entry).toBeDefined();
     });
 
     test('a method with no runs, or none with a recording, has no entry', () => {
         expect(methodRuns(input({ methods: [LURE] }))[0]).toMatchObject({ method: 'lure-cook', runs: 0 });
         const [r] = methodRuns(input({ start: () => undefined }));
-        expect([r!.runs, r!.start, r!.entry]).toEqual([2, undefined, undefined]);
+        expect([r!.runs, r!.excluded, r!.counted, r!.entry]).toEqual([2, 2, undefined, undefined]);
     });
 });
 
@@ -217,6 +263,7 @@ describe('formatMeasured / formatMethodRuns', () => {
         hours: 0.5031,
         from: 'stats.ts conductor2 --methods',
     };
+    const date = new Date(60).toISOString().slice(0, 10);
 
     test('an entry reads as methods.ts writes one', () => {
         expect(formatMeasured(entry, null)).toBe(
@@ -242,16 +289,42 @@ describe('formatMeasured / formatMethodRuns', () => {
         );
     });
 
-    test('the report: a block per method with runs, one line per method without', () => {
-        const lines = formatMethodRuns(methodRuns(input({ methods: [IRON, LURE] })));
+    test('runs at one level and tool: the gap and the entry; the methods without runs on one line', () => {
+        const other = { ...LURE, id: 'other' };
+        const lines = formatMethodRuns(
+            methodRuns(input({ methods: [IRON, LURE, other], start: r => SAME[r.logFile] })),
+        );
         expect(lines.slice(0, 5)).toEqual([
-            `iron-bank (plans: iron-bulk) · runs 2 · 1.00 h · last ${new Date(60).toISOString().slice(0, 10)}`,
-            '  start levels mining 60 (run run-1); changed across the runs: mining 60-62',
-            '  pickaxe rune_pickaxe',
-            '  mining: measured 100,000/h · floor 200,000/h · 50% of floor, 100,000/h short',
+            `iron-bank (plans: iron-bulk) · runs 2 · 1.00 h · last ${date}`,
+            '  mining: measured 100,000/h · floor 240,000/h · 41.7% of floor, 140,000/h short',
+            "  levels moved over the runs: mining 60-61 (each run's floor is at its start levels, so one that levelled understates)",
+            '  every run started at mining 60, rune_pickaxe',
             '  measured entry (methods.ts):',
         ]);
-        expect(lines.at(-1)).toBe('lure-cook: no runs (plans: lure-cook-bank)');
+        expect(lines[5]).toStartWith('    {\n        xpPerHour: { mining: 100_000 },');
+        expect(lines.at(-1)).toBe('no runs: lure-cook, other');
+    });
+
+    test('runs at different levels: a table of the runs and the --since hint, no entry', () => {
+        expect(formatMethodRuns(methodRuns(input()))).toEqual([
+            `iron-bank (plans: iron-bulk) · runs 2 · 1.00 h · last ${date}`,
+            '  mining: measured 100,000/h · floor 244,000/h · 41% of floor, 144,000/h short',
+            "  levels moved over the runs: mining 60-62 (each run's floor is at its start levels, so one that levelled understates)",
+            '  the runs started at different levels or pickaxes:',
+            `    ${date} run-1 · mining 60 · rune_pickaxe · 0.50 h · mining 120,000/h of 240,000/h (50%)`,
+            `    ${date} run-2 · mining 62 · no pickaxe held · 0.50 h · mining 80,000/h of 248,000/h (32.3%)`,
+            '  narrow --since to runs at one level for a pasteable measured entry',
+        ]);
+    });
+
+    test('runs with no recorded start: counted and named, the gap over the rest', () => {
+        const lines = formatMethodRuns(
+            methodRuns(input({ start: run => (run.partOf === 'run-1' ? undefined : STARTS[run.logFile]) })),
+        );
+        expect(lines.slice(1, 3)).toEqual([
+            '  1 run (0.50 h) with no recorded start left out of the floor and gap below; all runs measured mining 100,000/h',
+            '  mining: measured 80,000/h · floor 248,000/h · 32.3% of floor, 168,000/h short',
+        ]);
     });
 
     test('a measured figure above the floor is flagged as a model bug', () => {
@@ -291,6 +364,27 @@ describe('readStartState / runStart', () => {
             const log = recording(dir, { blob: randomBytes(100_000).toString('hex') });
             const start = readStartState(log)!;
             expect(runStart(start)).toEqual({ levels: { mining: 60 }, held: ['Rune pickaxe', 'Bronze axe'] });
+        } finally {
+            rmSync(dir, { recursive: true, force: true });
+        }
+    });
+
+    test('an empty or another-version recording is refused at once', () => {
+        const dir = mkdtempSync(join(tmpdir(), 'methods-start-'));
+        try {
+            const log = join(dir, 'run.ndjson');
+            writeFileSync(join(dir, 'run.ticks.ndjson.gz'), '');
+            expect(() => readStartState(log)).toThrow(/empty recording/);
+            // A short header of version 0 ahead of 200 KB of random hex: more than the first read, refused on it.
+            const lines = [
+                { k: 'h', v: 0, at: 1 },
+                { k: 'p', d: { blob: randomBytes(100_000).toString('hex') } },
+            ];
+            writeFileSync(
+                join(dir, 'run.ticks.ndjson.gz'),
+                gzipSync(lines.map(l => JSON.stringify(l) + '\n').join('')),
+            );
+            expect(() => readStartState(log)).toThrow(/not a version 1 recording/);
         } finally {
             rmSync(dir, { recursive: true, force: true });
         }

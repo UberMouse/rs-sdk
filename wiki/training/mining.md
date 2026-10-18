@@ -10,7 +10,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `iron-se-varrock-bank` | [Varrock East mine (Misthalin)](../places/varrock-east-mine.md) `rock:varrock-east-mine:0` | 529k at 15 | - | 565k | 729k | 925k | 1.17M | 1.23M | 1.25M | 1.25M | 1.25M | 1.25M | 24.4k | travel | 544k at 99 (50%) |
 | `iron-se-varrock-drop` | [Varrock East mine (Misthalin)](../places/varrock-east-mine.md) `rock:varrock-east-mine:0` | 679k at 15 | - | 741k | 1.05M | 1.3M | 1.4M | 1.43M | 1.43M | 1.43M | 1.43M | 1.43M | 0 | resource | 1.17M at 99 (85%) |
 
-- `iron-se-varrock-bank`: Iron at the south-east Varrock mine, banked at Varrock East. Plans: iron-bulk. iron-bulk's mine leg carries the pickaxe and banks 25 ore a trip; the floor wields it and fills 28.
+- `iron-se-varrock-bank`: Iron at the south-east Varrock mine, banked at Varrock East. Measured from iron-bulk's mine leg phases (the plan also smelts and smiths, so names no method): it carries the pickaxe and banks 25 ore a trip; the floor wields it and fills 28.
   - **Requires**: Reach: none. Levels: Mining 15. Tools: best pickaxe usable (wielded).
   - **Sink**: bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 46 + 46 run ticks.
   - **Supplies/hr** at 99: none.

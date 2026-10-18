@@ -110,7 +110,9 @@ export default definePlan({
   when the two disagree either way (a method world.json lacks, or one that doesn't list the plan; a
   method listing a plan that isn't promoted or names another method) and prints the promoted plans
   with no `method` as a to-do list. `stats.ts <bot> --methods` sets each method's plan runs beside
-  its floor at the levels the runs started on.
+  its floor at the levels each run started on. A plan names a method only when its whole run IS
+  that method's cycle: one that does more (iron-bulk mines, then smelts and smiths) names none, as
+  its whole-run XP/hr measures another activity.
 
 ### The view (`v`)
 
@@ -201,9 +203,14 @@ lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, sta
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.
 - `stats.ts <bot> --methods` reads a plan's whole runs per curated method (`method` above): the XP/hr
-  of each skill the method trains over the plans' total run time, the floor at the base levels the
-  earliest run started on (read from its first phase run's recording) and the best axe or pickaxe
-  held at any phase run's start, the gap, and a `measured` entry for `wiki/world/methods.ts`.
+  of each skill the method trains over the plans' total run time, and beside it each run's floor at
+  the base levels it started on (read from its first phase run's recording) and the best axe or
+  pickaxe held at any of its phase runs' starts. The gap is the runs' XP over the XP their floors
+  make in their hours (the floor printed is that, per hour); runs whose recording shows no start count
+  in neither, and the report says how many. A `measured` entry for `wiki/world/methods.ts` is printed
+  when every counted run started at the same levels and tool; otherwise a table of the runs, and
+  `--since` narrowed to runs at one level gives one. A run that levels up trains above its start
+  levels, so its floor understates.
 - A plan killed by a signal (SIGINT, SIGTERM, SIGHUP) ends `error`, `killed by <signal>`, with its
   totals so far in the RESULT and the plan log, the cut phase run counted as `error`; so stats keeps
   its XP and runs although its phase runs (`partOf`) count only with `--phases`. A hard kill

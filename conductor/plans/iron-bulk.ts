@@ -30,7 +30,6 @@ const bankOre = (v: { bank: (i: string) => number | undefined }) => v.bank('Iron
 
 export default definePlan({
     name: 'iron-bulk',
-    method: 'iron-se-varrock-bank',
     description:
         'Bulk iron: mine N ore into the bank (Varrock East), smelt at Al Kharid, smith kiteshields at Varrock West',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },

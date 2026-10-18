@@ -67,10 +67,9 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 3285, z: 3369 },
         params: { rock: 'iron' },
         sink: { mode: 'bank' },
-        plans: ['iron-bulk'],
         measured: [
             {
-                // The mine leg's whole cycle: the mining phase alone (1,048,493/h) leaves out the bank and walk.
+                // iron-bulk's mine leg phases, its whole cycle: the mining phase alone (1,048,493/h) leaves out the bank and walk.
                 xpPerHour: { mining: 543_631 },
                 level: { mining: 99 },
                 tool: 'adamant_pickaxe',
@@ -83,7 +82,9 @@ export const METHODS: MethodDef[] = [
                     '(to 3286,3368) 0.0571 h',
             },
         ],
-        notes: "iron-bulk's mine leg carries the pickaxe and banks 25 ore a trip; the floor wields it and fills 28.",
+        notes:
+            "Measured from iron-bulk's mine leg phases (the plan also smelts and smiths, so names no method): it carries " +
+            'the pickaxe and banks 25 ore a trip; the floor wields it and fills 28.',
     },
     {
         id: 'iron-se-varrock-drop',

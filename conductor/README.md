@@ -162,9 +162,9 @@ bun conductor/run-task.ts conductor1 --plan conductor/plans/chop-burn.ts --until
 per-phase totals (`phases`) and the last phase runs (`recent`); the plan logs to
 `conductor/runs/<bot>/<stamp>-plan-<name>.ndjson` beside a copy of its source, and each phase run
 has its own log and recording, so `replay.ts` works per phase. `stats.ts` counts a plan once as
-`plan:<name>` (`--phases` adds its phase runs). A plan names the training method it runs with
-`method` (a `wiki/world/methods.ts` id, whose record lists the plan back), so `stats.ts --methods`
-sets its runs beside the method's floor.
+`plan:<name>` (`--phases` adds its phase runs). A plan whose whole run is one training method's
+cycle names it with `method` (a `wiki/world/methods.ts` id, whose record lists the plan back), so
+`stats.ts --methods` sets its runs beside the method's floor.
 
 `bun conductor/tools/plan-view.ts` serves a page (http://127.0.0.1:7790/) that follows the plan a
 bot is running (its phases and their `when` answers, a timeline of phase runs, the open run's
