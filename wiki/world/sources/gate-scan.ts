@@ -52,7 +52,8 @@
 // its path says what a failure does, from the delays (Path.ticks) and damage (Path.damage) on it. A
 // condition the scan reads only as other:<text>, or not at all, goes both ways, as which paths are kept
 // (consistent) reads only requirements, refusals and quest stages; but the path keeps its text (Path.passed),
-// and one past any but a wait (a var against `map_clock` taken the way time opens, waits) is not free.
+// and one past any but a wait (a var against `map_clock` taken the way time opens, waits) is not free. A
+// dialogue choice is not kept: the player picks it.
 import { codeOf } from '../classify';
 import { minimalSets, requirementSet, subsetOf } from '../requirements';
 import type { Gate, Quest, Side, Tile } from '../types';
@@ -514,8 +515,8 @@ interface Path {
     within?: number;
     /**
      * A bound run's: the conditions it can't read that the path passed (Cond `passed`), by text, each true when every
-     * path merged into this one took it as a wait. Kept out of the path's key: paths that differ by these alone run
-     * on as one, with both paths' conditions.
+     * path merged into this one that passed it took it as a wait. Kept out of the path's key: paths that differ by
+     * these alone run on as one, with both paths' conditions.
      */
     passed?: ReadonlyMap<string, boolean>;
     /** A bound run's: the last move the scan counts outside every such call, as `move.at` writes it. */
@@ -1596,10 +1597,10 @@ const isClock = (e: Expr | undefined): boolean => e?.t === 'name' && e.name === 
 /**
  * Whether `l op r`, taken `want` way, is a wait: a var compared with MAP_CLOCK, the world's tick (World.currentTick,
  * handlers/ServerOps.ts), which only grows, taken the way that holds once the clock passes the var. The scripts
- * keep an obstacle's last use so: `%barb_obstacle_pipe_used >= map_clock` refuses a player while someone used the
- * pipe a few ticks ago (skill_agility/scripts/barbarian_course.rs2:139, set to `map_clock + 4` at :143), and so
- * the Karamja dungeon pipes (areas/area_karamja/scripts/karam_dungeon.rs2:299, :329) and the lumberyard fence
- * (quests/quest_fluffs/scripts/quest_fluffs.rs2:131): waiting opens it.
+ * keep the tick an obstacle in use frees so: `%barb_obstacle_pipe_used >= map_clock` refuses a player while
+ * someone used the pipe a few ticks ago (skill_agility/scripts/barbarian_course.rs2:139, set to `map_clock + 4`
+ * at :143), and so the Karamja dungeon pipes (areas/area_karamja/scripts/karam_dungeon.rs2:299, :329) and the
+ * lumberyard fence (quests/quest_fluffs/scripts/quest_fluffs.rs2:131): waiting opens it.
  */
 function waits(l: Expr, op: string, r: Expr | undefined, want: boolean): boolean {
     const taken = want ? op : NEGATE[op];
