@@ -129,7 +129,7 @@ export interface Move {
     source: string;
 }
 
-/** A move on the edges of one requirement (`sig`), and for a gate's jump the loc it is made on and from how far. */
+/** A move and the requirements (`sig`) of the edges it makes; for a gate's jump, how far from its loc it is made. */
 interface MoveEdge {
     sigs: ReadonlySet<string>;
     move: Move;

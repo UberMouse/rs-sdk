@@ -452,8 +452,9 @@ const isGnomeGate = (m: Move) => m.act.kind === 'loc-op' && m.act.loc === GNOME_
  * Walks to `dest` hop by hop: plans the way over the world index's graph (lib/walk-graph.ts planWay), walks to its
  * first hop (a connector, a move, a bank detour) and makes it, then plans again from where the bot stands, so a
  * random landing or a failed roll is walked on from wherever it left the bot. A way with no hop is walked on the
- * plane (walkOnPlane), as is a destination the graph has no way to on the bot's own plane. A move the game refuses
- * is given up on for the rest of the walk, a bank obj found missing too.
+ * plane (walkOnPlane), as is a destination the graph has no way to on the bot's own plane, unless the walk gave up on
+ * a move on the way (`cross-failed`). A move the game refuses is given up on for the rest of the walk, a bank obj
+ * found missing too.
  */
 function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
     const start = ctx.state();

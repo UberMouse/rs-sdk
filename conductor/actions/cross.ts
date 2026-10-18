@@ -1,5 +1,5 @@
 // Not ported: sdk/actions.ts has no crossing method; closest upstream is interactLoc, interactNpc and useItemOnLoc
-// @ 4c2069cc0, which a script's move answers with no evidence they wait for.
+// @ 4c2069cc0, which wait for an animation, dialog or interface that a scripted move need not show.
 // Makes one move of the walk graph (lib/walk-graph.ts Move: a crossing row's act, a gate row's op): finds the loc,
 // npc or obj by its config (lib/packs.ts), sends the act, answers the row's dialogue choices as they are shown and
 // waits until the bot stands on one of the move's landings. The walk to the move's approach is the caller's

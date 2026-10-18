@@ -61,8 +61,8 @@ export const BANKS: readonly BankSite[] = WORLD.sites.flatMap(s => {
 /**
  * The bank a task may pick on its own nearest to the point: of the banks not curated out whose `reach` the account
  * meets, the one the fewest run ticks away over the world index's graph, walking as the walker does
- * (lib/walk-graph.ts: through the doors and tolls the account opens and pays, climbing at most MAX_HOPS of the
- * connectors lib/connectors.ts lists). Undefined when none is reached.
+ * (lib/walk-graph.ts: through the doors and tolls the account opens and pays and the moves it makes, climbing at
+ * most MAX_HOPS of the connectors lib/connectors.ts lists). Undefined when none is reached.
  */
 export function nearestBank(
     from: { level?: number; x: number; z: number },
