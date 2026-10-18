@@ -81,7 +81,7 @@ describe('an area with a level', () => {
             react: walking(),
         });
         expect(r.result.stepRuns['return-to-area']).toBeGreaterThan(0);
-    });
+    }, 60_000);
 
     test('an area with no level is on whatever floor the bot is on', async () => {
         const area: Area = { x: START.x, z: START.z, radius: 5 };

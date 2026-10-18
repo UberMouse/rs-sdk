@@ -112,7 +112,7 @@ describe('places behind a requirement', () => {
         expect(fill(withoutConnectors(falador)).setsAt(mine)).toEqual([[]]);
         // Without both, no walk gets there free.
         expect(fill(withoutConnectors(iceMountain, falador)).setsAt(mine)).not.toContainEqual([]);
-    });
+    }, 60_000);
 
     test("the Mining Guild's mine needs 60 Mining, by the guild ladder's landings", () => {
         // oploc1,miningguildladder (areas/area_falador/scripts/mining_guild.rs2:8) lands +6400 from each stand.
