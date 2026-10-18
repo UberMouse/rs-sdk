@@ -96,8 +96,8 @@ leave the trigger's loc as it was. A death's respawn (`[queue,player_death]`) is
 through one (a `damage_player` queue).
 
 A one-sided gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`),
-as most scripts check it, but the scripts disagree (the Shantay Pass and the Barbarian Outpost pipe let a level stand
-through free, the Khazard low wall does not). So a gate row's landing is `free` when the bound run finds a path from
+but the scripts disagree (the Shantay Pass and the Barbarian Outpost pipe let a level stand through free, the Khazard
+low wall does not). So a gate row's landing is `free` when the bound run finds a path from
 that stand that needs nothing (unless every landing of the row is: the run then reads none of its requirement), and
 the fill crosses it free whatever its side: the Shantay Pass's east stand goes out free, and the desert mine's nearest
 bank (the pass's bank chest) needs only the camp's key.
