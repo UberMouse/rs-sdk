@@ -32,9 +32,9 @@
 // gives it, by the way behind a roll when there are several (the dearer, as an account may not meet what skips
 // the roll), with that roll (rollFor); stands that give the same landing, move line and roll make one free row,
 // `act: loc-op`, its source the line of the path's last move outside a call the scan counts as one move (Path.outer
-// in gate-scan.ts). A stand landing on several passage tiles, off walkable land (a tile the collision data
-// blocks) other than its own, or stopped by a construct the run can't read, is unsettled: the build report lists
-// it, never guessed; one stopped only in the door procs (gate-scan.ts
+// in gate-scan.ts). A stand landing on several passage tiles, off walkable land (not land, or blocked) where no
+// short walk from it goes, or stopped by a construct the run can't read, is unsettled: the build report lists it,
+// never guessed; one stopped only in the door procs (gate-scan.ts
 // DOOR_PROCS) is a door's, which the collision data has open or gates.ts confirms. A loc tile and op a connector
 // row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
@@ -476,7 +476,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
         const os = land(t, binding, []);
         const moved = os.flatMap(o => (o.k === 'landing' && !near(stand, o.tile) ? [o] : []));
         const passages = moved.filter(o => onLand(o.tile));
-        // A path landing off walkable land (a tile the collision data blocks) is a landing no row can give.
+        // A path landing off walkable land (not land, or blocked) gives a landing no row can stand for.
         const offLand = moved.flatMap(o =>
             onLand(o.tile) ? [] : [`lands off walkable land at ${coord(o.tile)} (${o.at})`],
         );
