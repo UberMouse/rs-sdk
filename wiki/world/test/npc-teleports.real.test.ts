@@ -1,7 +1,8 @@
 // The rune essence mine in the committed world.json (sources/npc-teleports.ts, gates.ts NPC_TELEPORTS): each wizard
-// teleports into the mine under Rune Mysteries, each portal goes back to every wizard under its came-from and what
-// got the way in to him, the mine's sites are reached with the quest and take their products to a bank by a portal
-// and Aubury's exit, and no reach set elsewhere asks a came-from.
+// teleports into the mine under Rune Mysteries, priced at every landing but the stranded nooks, each portal goes back
+// to every wizard under its came-from and what got the way in to him, the mine's sites are reached with the quest
+// and take their products to a bank by a portal and Aubury's exit, and no reach set or nearest way elsewhere asks a
+// came-from.
 import { describe, expect, test } from 'bun:test';
 import { TRANSPORTS_OUT_OF_SCOPE } from '../gates';
 import { loadWorld } from '../load';
@@ -43,6 +44,14 @@ describe('the essence mine teleports', () => {
         for (const c of teleports) expect(c.landings).toEqual(first!.landings);
         expect(first!.landings.every(l => inMine(l.tile))).toBe(true);
         expect(first!.landings.map(l => l.tile)).toContainEqual(coordTile('0_45_75_32_33'));
+    });
+
+    test('every landing is priced but the five stranded nooks no walk leaves', () => {
+        const NOOKS = ['2895,4838', '2911,4839', '2920,4857', '2921,4857', '2922,4857'];
+        for (const c of teleports) {
+            const unpriced = c.landings.filter(l => l.spread === undefined).map(l => `${l.tile.x},${l.tile.z}`);
+            expect([c.act, unpriced]).toEqual([c.act, NOOKS]);
+        }
     });
 
     test('they are no longer out of scope', () =>

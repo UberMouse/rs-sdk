@@ -12,9 +12,10 @@
 //   stretches between a path's k crossings instead would add up to half a tick per stretch; once does not.
 // - A crossing costs CROSSING_TICKS by how it moves the player (reach.ts Via), a stated constant per kind: no
 //   world.json row carries its own duration. An edge with a cost of its own (reach.ts EdgeCost) adds to it
-//   (crossingTicks): a crossing row's landing its spread, the run ticks from the row's landing farthest from it
-//   (Landing.spread, priceCrossings), so a random landing costs its longest; a rolled move its expected ticks at the
-//   lowest level its requirement allows (roll.ts expectedTicks), failures and the walk back to try again included.
+//   (crossingTicks): a crossing row's landing its spread, the run ticks from the row's landing farthest from it, of
+//   those a walk leaves (Landing.spread, priceCrossings), so a random landing costs its longest; a rolled move its
+//   expected ticks at the lowest level its requirement allows (roll.ts expectedTicks), failures and the walk back to
+//   try again included.
 //   Such a cost is rounded up to a half tick, and an edge the build could not price is not taken.
 // - Stepping onto an opened loc's tiles (Gate.opens) from a tile that is not one costs as a gate crossing.
 //
@@ -459,20 +460,48 @@ export interface Priced {
     gates: Gate[];
     /** What could not be priced, as `<row>: <why>`, sorted: those edges are not taken by a distance. */
     unpriced: string[];
+    /**
+     * The stranded landings (strandedLandings), as `<row> (<source>): <landing>`, sorted: given no spread, so no
+     * distance goes by them, and left out of the others' spreads.
+     */
+    stranded: string[];
+}
+
+/**
+ * The landings of a row no walk leaves for the rest of its landings, by index: with `reached[i]` the landings a walk
+ * from landing i gets to (itself among them), and undefined for one off land. Landings that each walk to the other
+ * make a group; when the largest group (the first of equally large ones) holds most of the landings on land, a
+ * landing on land whose walk gets to none of that group is stranded. With no group that large none is, as no rest
+ * of the set stands out to be stranded from.
+ */
+export function strandedLandings(reached: readonly (ReadonlySet<number> | undefined)[]): Set<number> {
+    const onLand = reached.flatMap((r, i) => (r ? [i] : []));
+    const groupOf = new Map<number, number[]>();
+    let largest: number[] = [];
+    for (const i of onLand) {
+        if (groupOf.has(i)) continue;
+        const group = onLand.filter(j => j === i || (!groupOf.has(j) && reached[i]!.has(j) && reached[j]!.has(i)));
+        for (const j of group) groupOf.set(j, group);
+        if (group.length > largest.length) largest = group;
+    }
+    if (largest.length * 2 <= onLand.length) return new Set();
+    return new Set(onLand.filter(i => !largest.some(g => reached[i]!.has(g))));
 }
 
 /**
  * Prices the crossing rows and rolled gate rows of `graph` (built from `rows`) for the distances: each landing's
- * spread (Landing.spread), and each roll's way back from its failure's tile (Roll.fail.back). Both are run ticks
+ * spread (Landing.spread) from the row's other landings on land that are not stranded (strandedLandings), a stranded
+ * landing getting none, and each roll's way back from its failure's tile (Roll.fail.back). Both are run ticks
  * over the neighbour steps and the free edges that carry no cost of their own (reach.ts Edge.cost), so a price does
  * not depend on another; the build writes them on the rows and builds the graph again from them.
  */
 export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' | 'gates'>): Priced {
     if (!rows.crossings.length && !rows.gates.some(g => g.roll))
-        return { crossings: rows.crossings, gates: rows.gates, unpriced: [] };
+        return { crossings: rows.crossings, gates: rows.gates, unpriced: [], stranded: [] };
     const { index, edgeFrom, openAlts, stepMask } = graph;
     const at = (t: Tile): number => index.of(t.level, t.x, t.z);
     const unpriced: string[] = [];
+    const stranded: string[] = [];
     const mark = new Int32Array(index.size);
     const dist = new Int32Array(index.size);
     let run = 0;
@@ -554,16 +583,24 @@ export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' 
             const tiles = c.landings.map(l => at(l.tile));
             const onLand = new Set(tiles.filter(i => i >= 0));
             // From each landing on land, the half ticks to the others on land. A landing off land has no edge to it
-            // (reach.ts addEdge), so it is reported on its own and the other landings' spreads leave it out.
+            // (reach.ts addEdge), so it is reported on its own and the other landings' spreads leave it out; so is a
+            // stranded one (strandedLandings), which no walk leaves for the rest and would leave every spread unknown.
             const from = tiles.map(j => (j < 0 ? undefined : walk(j, onLand, false)));
+            const out = strandedLandings(
+                from.map(f => f && new Set(tiles.flatMap((t, k) => (t >= 0 && f.has(t) ? [k] : [])))),
+            );
             const landings = c.landings.map((l, i) => {
                 if (tiles[i]! < 0) {
                     unpriced.push(`${name}: its landing ${coord(l.tile)} is not on land`);
                     return l;
                 }
+                if (out.has(i)) {
+                    stranded.push(`${name} (${c.source}): ${coord(l.tile)}`);
+                    return l;
+                }
                 let half = 0;
                 for (let j = 0; j < tiles.length; j++) {
-                    if (tiles[j]! < 0 || j === i) continue;
+                    if (tiles[j]! < 0 || j === i || out.has(j)) continue;
                     const d = from[j]!.get(tiles[i]!);
                     if (d === undefined) {
                         unpriced.push(
@@ -589,6 +626,6 @@ export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' 
                 ? { ...g, roll: priceRoll(g.roll, tried.get(g.roll) ?? [], `${g.trigger} ${g.loc} ${coord(g.tile)}`) }
                 : g,
         );
-        return { crossings, gates, unpriced: unpriced.sort(cmp) };
+        return { crossings, gates, unpriced: unpriced.sort(cmp), stranded: stranded.sort(cmp) };
     });
 }

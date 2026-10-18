@@ -472,6 +472,7 @@ describe('formatReport', () => {
             bytes: 1024,
         },
         unpriced: [],
+        stranded: [],
         unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
     };
     const gatesLine =
@@ -508,6 +509,15 @@ describe('formatReport', () => {
             'warning: 1 crossing costs the distances could not price, those edges not taken:',
             `  ${unpriced[0]}`,
         ]);
+    });
+
+    test('warns of the stranded landings after the unpriced crossing costs', () => {
+        const stranded = ['teleport npc-op 4 aubury (3253, 3402) (essence_mine.rs2:25): (2895, 4838)'];
+        expect(formatReport({ ...report, stranded }).slice(-2)).toEqual([
+            "warning: 1 random landings no walk leaves for the rest of their row's, given no spread:",
+            `  ${stranded[0]}`,
+        ]);
+        expect(failed({ ...report, stranded })).toBe(false);
     });
 
     test('lists the one-way and off-land connectors, and the underived ops by what stopped them', () => {

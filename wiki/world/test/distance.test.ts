@@ -1,5 +1,12 @@
 import { describe, expect, test } from 'bun:test';
-import { CROSSING_TICKS, crossingTicks, formatDistance, nearestSinks, priceCrossings } from '../distance';
+import {
+    CROSSING_TICKS,
+    crossingTicks,
+    formatDistance,
+    nearestSinks,
+    priceCrossings,
+    strandedLandings,
+} from '../distance';
 import { locSizes } from '../place';
 import { fillReach, reachGraph, type ReachInput } from '../reach';
 import type { Connector, Crossing, Feature, FeatureKind, Gate, Roll, Tile, Transport, World } from '../types';
@@ -366,6 +373,9 @@ const walled = () => new Grid().wallColumn(3216, 3200, 3231);
 /** That wall with a gap at z 3220, for the door in it. */
 const gapped = () => new Grid().wallColumn(3216, 3200, 3231, [3220]);
 
+/** Each landing's reached landings as a set, undefined for one off land (strandedLandings). */
+const sets = (...xs: (number[] | undefined)[]) => xs.map(x => x && new Set(x));
+
 describe('a random landing costs its longest landing', () => {
     // Three landings on the island, A and B two steps apart, C 10 east of A: from A the farthest is C, 5 ticks; from
     // B, C at 4; from C, A at 5.
@@ -411,16 +421,42 @@ describe('a random landing costs its longest landing', () => {
     });
 
     test('a landing no other landing walks to is not priced, reported, and taken by no distance', () => {
-        // C in a sealed room: no walk gets in or out of it, so neither C's spread nor A's and B's is known.
-        const sealed = { ...row, landings: [A, B, at(0, 3230, 3220)].map(tile => ({ tile })) };
+        // C in a sealed room: no walk gets in or out of it. With A it is one landing of two, so neither is the rest
+        // the other is stranded from (strandedLandings), and neither spread is known.
+        const sealed = { ...row, landings: [A, C].map(tile => ({ tile })) };
         const p = priced(sealedIsland(), { crossings: [sealed] });
-        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([undefined, undefined, undefined]);
+        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([undefined, undefined]);
         expect(p.unpriced).toEqual([
             'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3220, 3220) from (3230, 3220)',
-            'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3222, 3220) from (3230, 3220)',
             'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3230, 3220) from (3220, 3220)',
         ]);
+        expect(p.stranded).toEqual([]);
         expect(nearest(sealedIsland(), islandSites, { crossings: p.crossings }).nearest.get('tree:a:0')).toEqual({});
+    });
+
+    test('a stranded landing gets no spread and is reported; the others price to their own farthest', () => {
+        // C sealed in, A and B two steps apart: C is stranded from them, so A and B are a tick from each other.
+        const p = priced(sealedIsland(), { crossings: [row] });
+        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([1, 1, undefined]);
+        expect(p.unpriced).toEqual([]);
+        expect(p.stranded).toEqual([
+            'teleport item-on-loc air_talisman ruins (3214, 3221) (runecraft.rs2:45): (3230, 3220)',
+        ]);
+        // The way to the bank goes by A or B at their own spread: 4 steps, the teleport, 1 tick, 5 steps.
+        expect(bank(nearest(sealedIsland(), islandSites, { crossings: p.crossings }), 'tree:a:0')?.runTicks).toBe(
+            Math.ceil((4 + CROSSING_TICKS.teleport * 2 + 2 + 5) / 2),
+        );
+    });
+
+    test('strandedLandings: those that walk to none of the largest group, when it holds most landings on land', () => {
+        // A group of three, and two landings that walk only to each other: both stranded.
+        expect(strandedLandings(sets([0, 1, 2], [0, 1, 2], [0, 1, 2], [3, 4], [3, 4]))).toEqual(new Set([3, 4]));
+        // One that walks into the group but not back is not stranded.
+        expect(strandedLandings(sets([0, 1], [0, 1], [0, 1, 2]))).toEqual(new Set());
+        // Two apart: no group holds most, so neither is.
+        expect(strandedLandings(sets([0], [1]))).toEqual(new Set());
+        // A landing off land counts for neither side.
+        expect(strandedLandings(sets([0, 1], [0, 1], undefined, [3]))).toEqual(new Set([3]));
     });
 
     test("a landing off land is reported on its own; the others' spreads leave it out", () => {

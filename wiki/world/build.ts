@@ -311,6 +311,11 @@ export interface BuildReport {
     distance: DistanceReport;
     /** Crossing and rolled gate rows the distances could not price (distance.ts priceCrossings), as `<row>: <why>`. */
     unpriced: string[];
+    /**
+     * Landings no walk leaves for the rest of their row's (distance.ts strandedLandings), as `<row> (<source>):
+     * <landing>`: given no spread, so no distance goes by them.
+     */
+    stranded: string[];
     /** Sites of COVERED kinds no walk reaches, grouped by pocket: warnings, the curation to-do list. */
     unreached: {
         pockets: Pocket[];
@@ -1001,6 +1006,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             reach: fill.report,
             distance: distance.report,
             unpriced: priced.unpriced,
+            stranded: priced.stranded,
             unreached: { pockets, expected: expected.expected, invalid: expected.invalid, stale: expected.stale },
         },
     };
@@ -1194,6 +1200,10 @@ export function formatReport(report: BuildReport): string[] {
         ...list(
             `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
             report.unpriced,
+        ),
+        ...list(
+            `warning: ${report.stranded.length} random landings no walk leaves for the rest of their row's, given no spread:`,
+            report.stranded,
         ),
         ...list(
             `ERROR unreached: ${report.unreached.invalid.length} areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):`,

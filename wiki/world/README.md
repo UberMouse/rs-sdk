@@ -115,15 +115,18 @@ so each portal has a row to every wizard's exit (the open tiles within 2 with a 
 Distentor's adds 66 Magic, as he stands inside the Magic Guild. A site's nearest-sink search meets every came-from
 requirement (`NearestOptions.context`), so the mine's rocks have a bank (Varrock East, by a portal to Aubury), and a
 fill takes a portal only where a walk already gets, so no reach set asks a came-from. A few landings are nooks the
-cave walls and dead trees close in, which no walk leaves: so no landing's spread is priced, the teleport rows are in
-the build report's unpriced list, and the distances do not take them.
+cave walls and dead trees close in, which no walk leaves: they are stranded (below), so they get no spread and the
+build report lists them, and every other landing of a wizard's row is priced to its farthest among the rest.
 
 The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
 over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:
 
 - a landing's `spread`: the run ticks to it from the row's landing farthest from it. The edge to that landing costs
   the crossing plus its spread, so a random landing counts as its longest one: a way on from any landing costs at
-  least what it would from the worst, and exactly that when the landings are close together;
+  least what it would from the worst, and exactly that when the landings are close together. A landing is stranded
+  when no walk from it gets to the row's largest group of landings that each walk to the other, and that group holds
+  most of the row's landings on land (`strandedLandings`): its distance to the others is unbounded, so it gets no
+  spread, the others' spreads leave it out, and the build report lists it;
 - a roll's `fail.back`: the run ticks from the tile a failure leaves the player on back to the nearest tile the move
   is tried from (0 when a failure leaves them where they tried). A rolled edge costs its expected ticks, the success
   plus (1 - p)/p times the failure's ticks and the way back, with p the engine's `stat_random` chance (`roll.ts`) at

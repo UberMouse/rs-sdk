@@ -358,9 +358,10 @@ export interface Landing {
     tile: Tile;
     /**
      * The run ticks to this landing from the one of the row's landings farthest from it (distance.ts
-     * priceCrossings), 0 for a row's only landing. An edge to this landing costs its crossing plus this, so a way on
-     * from it costs at least what it would from the worst landing. Written at build; absent when some other landing
-     * does not walk here, and then no distance goes by this landing.
+     * priceCrossings), 0 for a row's only landing; a stranded landing, which no walk leaves for the rest (distance.ts
+     * strandedLandings), counts for none. An edge to this landing costs its crossing plus this, so a way on from it
+     * costs at least what it would from the worst landing. Written at build; absent when some other landing does not
+     * walk here, or this one is stranded, and then no distance goes by this landing.
      */
     spread?: number;
 }
