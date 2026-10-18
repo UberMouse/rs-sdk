@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { BANKS } from '../../../conductor/lib/banks';
 import { AREAS } from '../areas';
-import { buildWorld } from '../build';
+import { buildWorld, COVERED } from '../build';
 import { reachCollision, siteCollision } from '../collision';
 import { WIKI } from '../paths';
 import { locSizes } from '../place';
@@ -49,6 +49,33 @@ const pagePlaces = (page: string): string[] =>
 const opens = (inv: string): RegExp => new RegExp(`~openshop\\(\\s*${inv}\\s*,`);
 
 test('the build covers every site it must place', () => expect(report.uncovered).toEqual([]));
+
+describe('the unreached report', () => {
+    const { pockets, expected, stale } = report.unreached;
+    const pocketOf = (site: string) => pockets.find(p => p.sites.some(s => s.id === site));
+
+    test("EXPECTED_UNREACHED matches, and leaves out Tutorial Island's sites, its caves' and its bank's", () => {
+        expect(stale).toEqual([]);
+        const tutorial = world.sites.filter(
+            s => COVERED.has(s.kind) && s.areaPath.some(a => a.startsWith('tutorial-island')),
+        );
+        expect(tutorial.map(s => s.id)).toContain('bank:tutorial-island-bank:0');
+        expect(expected).toBeGreaterThanOrEqual(tutorial.length);
+        const listed = new Set(pockets.flatMap(p => p.sites.map(s => s.id)));
+        expect(tutorial.filter(s => listed.has(s.id))).toEqual([]);
+    });
+
+    test('a pocket per stretch of land: both Gnome Stronghold banks in one, and the gate in among its hints', () => {
+        expect(pockets.length).toBeLessThanOrEqual(160);
+        const stronghold = pocketOf('bank:gnome-stronghold-bank:0');
+        expect(stronghold).toBeDefined();
+        expect(pocketOf('bank:grand-tree-bank:0')).toBe(stronghold!);
+        expect(stronghold!.hints.find(h => h.trigger === 'oploc1,gnome_areagate')).toMatchObject({
+            source: 'areas/area_gnome/scripts/gnome_gate.rs2:2',
+            scan: { k: 'candidate', kind: 'temporary-block', reviewed: true },
+        });
+    });
+});
 
 describe('banks', () => {
     test('Varrock West bank: 6 booths, 6 bankers, level 0', () => {

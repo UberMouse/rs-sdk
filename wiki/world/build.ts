@@ -5,27 +5,46 @@
 // (sources/gate-scan.ts, gates.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
 // (distance.ts); then prints a report and renders the pages (render.ts). `bun run
-// world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches (the
-// curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
+// world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches, by pocket
+// (the curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
-// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does. `--check`
+// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does, or an
+// areas.ts EXPECTED_UNREACHED entry no unreached site matches. `--check`
 // writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
 import { relative } from 'path';
 import { areaResolver } from './area-resolve';
-import { AREAS } from './areas';
+import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { formatDistance, nearestSinks, SINKS, type DistanceReport } from './distance';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
-import { besideCluster, buildSites, locSizes, spawnClusters, type Placed } from './place';
-import { fillReach, formatReach, reachGraph, type Reach, type ReachCollision, type ReachReport } from './reach';
-import { readConfigs } from './sources/configs';
+import {
+    besideCluster,
+    buildSites,
+    footprint,
+    locSizes,
+    spawnClusters,
+    type Placed,
+    type PlacedLoc,
+    type SiteOptions,
+} from './place';
+import {
+    fillReach,
+    formatReach,
+    reachGraph,
+    STEPS,
+    type Reach,
+    type ReachCollision,
+    type ReachGraph,
+    type ReachReport,
+} from './reach';
+import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
@@ -40,12 +59,21 @@ import {
 } from './gates';
 import { readConstants } from './sources/constants';
 import { deriveGateLandings, type GateLandings } from './sources/gate-landings';
-import { placeGates, reviewGates, scanGates, type GateScanInput } from './sources/gate-scan';
+import {
+    CROSS,
+    placeGates,
+    reviewGates,
+    scanGates,
+    scanTrigger,
+    triggerKey,
+    type GateScanInput,
+} from './sources/gate-scan';
 import { toolCheckers } from './sources/conditions';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
-import { parseCallables, parseTriggers, readScripts } from './sources/triggers';
+import { parseCallables, parseTriggers, readScripts, type Trigger } from './sources/triggers';
+import { coordTile } from './sources/runescript';
 import { readZones } from './sources/zones';
 import {
     WORLD_FORMAT,
@@ -104,6 +132,56 @@ export interface Unreached {
 
 /** How far (Chebyshev, in tiles) the unreached report looks for the nearest reached tile. */
 export const NEAREST_RADIUS = 64;
+
+/** The most tiles one pocket's flood takes before it stops and calls the pocket open. */
+export const POCKET_CAP = 1 << 15;
+
+/** A placed loc or npc spawn with triggers on its ops: a hint of the pockets it stands in or beside. */
+export interface OpUser {
+    config: string;
+    tile: Tile;
+    /** Its footprint as placed (place.ts footprint), 1 by 1 for an npc spawn. */
+    w: number;
+    l: number;
+    /** The triggers on it (by config or category) of an op its config has, or of use-item. */
+    triggers: readonly Trigger[];
+}
+
+/**
+ * What the scan made of a hint's trigger: a gate candidate, of the kind gates.ts gives it (`reviewed`) or
+ * else the scan proposes; a move with no condition read before it, to each GateMove.to; or no move found.
+ */
+export type HintScan =
+    | { k: 'candidate'; kind: string; reviewed: boolean }
+    | { k: 'move'; to: string[] }
+    | { k: 'none' };
+
+/** A trigger on a pocket's edge or inside it: the way out (or in) to look at first. */
+export interface Hint {
+    /** As the trigger's header names it (sources/gate-scan.ts triggerKey). */
+    trigger: string;
+    /** The trigger's header line, `file:line`. */
+    source: string;
+    scan: HintScan;
+    /** Its placed locs or spawns in or beside the pocket, by tile. */
+    at: { config: string; tile: Tile }[];
+}
+
+/**
+ * The unreached sites a flood from one of them gets to: the walkable tiles neighbour steps and the graph's
+ * edges lead to, never entering a reached tile (unreachedPockets).
+ */
+export interface Pocket {
+    sites: Unreached[];
+    /** Tiles the flood took. */
+    size: number;
+    /** The flood stopped at POCKET_CAP tiles: the sites are on a large unreached landmass. */
+    open: boolean;
+    /** The nearest of its sites' nearest reached tiles (Unreached.nearest), `off` Chebyshev from `site`'s tile. */
+    nearest: { tile: Tile; site: string; off: number } | null;
+    /** Those the scan found a move in (a candidate, or a move with no condition) first, then by trigger and source. */
+    hints: Hint[];
+}
 
 export interface BuildReport {
     features: Partial<Record<FeatureKind, number>>;
@@ -200,8 +278,14 @@ export interface BuildReport {
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
     distance: DistanceReport;
-    /** Sites of COVERED kinds no walk reaches, by area path then id: warnings, the curation to-do list. */
-    unreached: Unreached[];
+    /** Sites of COVERED kinds no walk reaches, grouped by pocket: warnings, the curation to-do list. */
+    unreached: {
+        pockets: Pocket[];
+        /** Unreached sites areas.ts EXPECTED_UNREACHED leaves out. */
+        expected: number;
+        /** EXPECTED_UNREACHED entries no unreached site matches, as `area <id> (<source>)`: an error. */
+        stale: string[];
+    };
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -215,7 +299,8 @@ export const failed = (r: BuildReport): boolean =>
     r.gates.stale.length > 0 ||
     r.gates.drifted.length > 0 ||
     r.gates.invalid.length > 0 ||
-    r.gates.unnamed.length > 0;
+    r.gates.unnamed.length > 0 ||
+    r.unreached.stale.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -301,6 +386,209 @@ export function addReach(
         })
         .sort((a, b) => cmp(a.areaPath.join('/'), b.areaPath.join('/')) || bySiteId(a.id, b.id));
     return { sites, npcSpawns, unreached };
+}
+
+/** An EXPECTED_UNREACHED entry as the report names it. */
+const expectedName = (e: ExpectedUnreached): string =>
+    `${'site' in e ? `site ${e.site}` : `area ${e.area}`} (${e.source})`;
+
+/**
+ * The unreached sites areas.ts EXPECTED_UNREACHED does not match (an entry by site id, or by an area on the
+ * site's area path), how many it does, and the entries that match none: stale, an error.
+ */
+export function expectedUnreached(
+    unreached: readonly Unreached[],
+    expected: readonly ExpectedUnreached[],
+): { left: Unreached[]; expected: number; stale: string[] } {
+    const used = new Set<ExpectedUnreached>();
+    const left = unreached.filter(u => {
+        const hits = expected.filter(e => ('site' in e ? e.site === u.id : u.areaPath.includes(e.area)));
+        for (const e of hits) used.add(e);
+        return !hits.length;
+    });
+    return {
+        left,
+        expected: unreached.length - left.length,
+        stale: expected.filter(e => !used.has(e)).map(expectedName),
+    };
+}
+
+export interface PocketInput {
+    graph: Pick<ReachGraph, 'index' | 'edgeFrom' | 'stepMask' | 'within'>;
+    /** Whether the fill reached a tile (Reach.reached). */
+    reached: (t: Tile) => boolean;
+    /** In report order: a pocket comes out where its first site is. */
+    unreached: readonly Unreached[];
+    users: readonly OpUser[];
+    /** What the scan makes of a trigger; called once for each trigger the pockets list. */
+    scanOf: (t: Trigger) => HintScan;
+    /** POCKET_CAP by default. */
+    cap?: number;
+}
+
+/**
+ * The unreached sites by pocket (Pocket). Each site floods from its tile (Unreached.at) unless an earlier
+ * flood took it; a flood that steps onto another's tiles joins its pocket, as edges are one way. A site whose
+ * tile is off land, or reached (a centre with no stand), is a pocket of its own with no tiles. Hints are the
+ * users with a tile of their footprint on, or beside (one tile, any direction), a tile of the pocket.
+ */
+export function unreachedPockets(input: PocketInput): Pocket[] {
+    const { graph, reached, unreached, users, scanOf } = input;
+    const { index, edgeFrom, stepMask } = graph;
+    const cap = input.cap ?? POCKET_CAP;
+    return graph.within(() => {
+        // Each tile's pocket (its flood's id; find gives the pocket it joined), -1 when none took it.
+        const owner = new Int32Array(index.size).fill(-1);
+        const parent: number[] = [];
+        const size: number[] = [];
+        const open: boolean[] = [];
+        const find = (p: number): number => {
+            while (parent[p] !== p) p = parent[p] = parent[parent[p]!]!;
+            return p;
+        };
+        // The lower id stays the root, so a pocket keeps its first site's place.
+        const join = (a: number, b: number): void => {
+            const [x, y] = [find(a), find(b)];
+            if (x !== y) parent[Math.max(x, y)] = Math.min(x, y);
+        };
+        const queue = new Int32Array(cap);
+        const pocketOf = unreached.map(u => {
+            const s = index.of(u.at.level, u.at.x, u.at.z);
+            if (s >= 0 && owner[s]! >= 0) return owner[s]!;
+            const p = parent.length;
+            parent.push(p);
+            size.push(0);
+            open.push(false);
+            if (s < 0 || reached(u.at)) return p;
+            owner[s] = p;
+            queue[0] = s;
+            let n = 1;
+            const visit = (j: number): void => {
+                const o = owner[j]!;
+                if (o === p) return;
+                if (o >= 0) return join(o, p);
+                if (reached(index.tile(j))) return;
+                if (n === cap) {
+                    open[p] = true;
+                    return;
+                }
+                owner[j] = p;
+                queue[n++] = j;
+            };
+            for (let h = 0; h < n; h++) {
+                const i = queue[h]!;
+                const m = stepMask(i);
+                const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
+                for (let bit = 0; bit < 8; bit++)
+                    if (m & (1 << bit)) visit(index.of(level, x + STEPS[bit]![0], z + STEPS[bit]![1]));
+                for (const e of edgeFrom.get(i) ?? []) visit(e.to);
+            }
+            size[p] = n;
+            return p;
+        });
+
+        // The hints of each pocket, by root then trigger.
+        const scans = new Map<Trigger, HintScan>();
+        const hints = new Map<number, Map<Trigger, Hint['at']>>();
+        for (const u of users) {
+            const near = new Set<number>();
+            for (let dx = -1; dx <= u.w; dx++)
+                for (let dz = -1; dz <= u.l; dz++) {
+                    const j = index.of(u.tile.level, u.tile.x + dx, u.tile.z + dz);
+                    if (j >= 0 && owner[j]! >= 0) near.add(find(owner[j]!));
+                }
+            for (const root of near) {
+                let byTrigger = hints.get(root);
+                if (!byTrigger) hints.set(root, (byTrigger = new Map()));
+                for (const t of u.triggers) push(byTrigger, t, { config: u.config, tile: u.tile });
+            }
+        }
+        const scanned = (t: Trigger): HintScan => {
+            let s = scans.get(t);
+            if (!s) scans.set(t, (s = scanOf(t)));
+            return s;
+        };
+        const hintsOf = (root: number): Hint[] =>
+            [...(hints.get(root) ?? [])]
+                .map(([t, at]) => ({
+                    trigger: triggerKey(t),
+                    source: `${t.file}:${t.line}`,
+                    scan: scanned(t),
+                    at: at.sort(
+                        (a, b) =>
+                            a.tile.level - b.tile.level ||
+                            a.tile.x - b.tile.x ||
+                            a.tile.z - b.tile.z ||
+                            cmp(a.config, b.config),
+                    ),
+                }))
+                .sort(
+                    (a, b) =>
+                        Number(a.scan.k === 'none') - Number(b.scan.k === 'none') ||
+                        cmp(a.trigger, b.trigger) ||
+                        cmp(a.source, b.source),
+                );
+
+        const byRoot = new Map<number, Unreached[]>();
+        unreached.forEach((u, k) => push(byRoot, find(pocketOf[k]!), u));
+        return [...byRoot].map(([root, sites]): Pocket => {
+            const members = [...new Set(pocketOf)].filter(p => find(p) === root);
+            let nearest: Pocket['nearest'] = null;
+            for (const s of sites) {
+                if (!s.nearest) continue;
+                const off = cheb(s.at, s.nearest);
+                if (!nearest || off < nearest.off) nearest = { tile: s.nearest, site: s.id, off };
+            }
+            return {
+                sites,
+                size: members.reduce((n, p) => n + size[p]!, 0),
+                open: members.some(p => open[p]),
+                nearest,
+                hints: hintsOf(root),
+            };
+        });
+    });
+}
+
+/**
+ * The placed locs and npc spawns with triggers on their ops (OpUser): a trigger on the config or its
+ * category, of an op the config has (`op<n>=`) or of use-item.
+ */
+function opUsers(input: {
+    triggers: readonly Trigger[];
+    configs: Record<'loc' | 'npc', ReadonlyMap<string, Config>>;
+    locs: readonly PlacedLoc[];
+    npcs: readonly { config: string; tile: Tile }[];
+    size: SiteOptions['size'];
+}): OpUser[] {
+    const byTarget = new Map<string, Trigger[]>();
+    for (const t of input.triggers) push(byTarget, `${t.on}:${t.category ? '_' : ''}${t.target}`, t);
+    const cache = new Map<string, Trigger[]>();
+    const triggersOn = (on: 'loc' | 'npc', config: string): Trigger[] => {
+        const key = `${on}:${config}`;
+        let ts = cache.get(key);
+        if (!ts) {
+            const cfg = input.configs[on].get(config);
+            const category = first(cfg, 'category');
+            ts = [...(byTarget.get(key) ?? []), ...(category ? (byTarget.get(`${on}:_${category}`) ?? []) : [])].filter(
+                t => t.op === 'u' || cfg?.[`op${t.op}`],
+            );
+            cache.set(key, ts);
+        }
+        return ts;
+    };
+    const out: OpUser[] = [];
+    for (const l of input.locs) {
+        const triggers = triggersOn('loc', l.config);
+        if (!triggers.length) continue;
+        const { w, l: length } = footprint(l, input.size);
+        out.push({ config: l.config, tile: l.tile, w, l: length, triggers });
+    }
+    for (const n of input.npcs) {
+        const triggers = triggersOn('npc', n.config);
+        if (triggers.length) out.push({ config: n.config, tile: n.tile, w: 1, l: 1, triggers });
+    }
+    return out;
 }
 
 /** An underived connector op as the report lists it: `config (x, z) op<n>`. */
@@ -411,7 +699,9 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         names: new Set([...objConfigs.keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
         tools,
     };
-    const candidates = scanGates(scan);
+    // One run of each trigger, shared by the gate scan and the unreached report's hints.
+    const scanOne = scanTrigger(scan);
+    const candidates = scanGates(scan, scanOne);
     const review = reviewGates(candidates, GATES, new Map(scripts));
     const gates = placeGates({
         curated: GATES,
@@ -464,6 +754,30 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
     );
+    const expected = expectedUnreached(unreached, EXPECTED_UNREACHED);
+    const curatedKind = new Map(GATES.map(e => [e.trigger, e.kind]));
+    const pockets = unreachedPockets({
+        graph,
+        reached: fill.reached,
+        unreached: expected.left,
+        users: opUsers({
+            triggers,
+            configs: { loc: locConfigs, npc: npcConfigs },
+            locs: map.locs.flatMap(l => {
+                const config = packs.loc.name.get(l.id);
+                return config === undefined ? [] : [{ config, tile: l.tile, shape: l.shape, rotation: l.rotation }];
+            }),
+            npcs: spawns,
+            size: locSizes(locConfigs),
+        }),
+        scanOf: t => {
+            const s = scanOne(t);
+            if (!s) return { k: 'none' };
+            if ('moves' in s) return { k: 'move', to: s.moves };
+            const kind = curatedKind.get(s.candidate.trigger);
+            return { k: 'candidate', kind: kind ?? s.candidate.kind, reviewed: kind !== undefined };
+        },
+    });
 
     return {
         world: {
@@ -553,7 +867,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             },
             reach: fill.report,
             distance: distance.report,
-            unreached,
+            unreached: { pockets, expected: expected.expected, stale: expected.stale },
         },
     };
 }
@@ -734,6 +1048,10 @@ export function formatReport(report: BuildReport): string[] {
                 u => `${u.trigger} ${u.loc} ${coord(u.tile)} from ${coord(u.stand)}: ${u.reasons.join('; ')}`,
             ),
         ),
+        ...list(
+            `ERROR unreached: ${report.unreached.stale.length} areas.ts EXPECTED_UNREACHED entries no unreached site matches (reached now, or gone):`,
+            report.unreached.stale,
+        ),
     );
     return lines;
 }
@@ -741,33 +1059,86 @@ export function formatReport(report: BuildReport): string[] {
 /** How far apart two tiles are, Chebyshev, as the unreached report counts it. */
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 
-/** A tile's plane as the unreached report names it: its level, and the underground at z >= 6400. */
-const plane = (t: Tile): string => `level ${t.level}${t.z >= 6400 ? ', underground' : ''}`;
+/** The placed locs or spawns a hint lists at most, after which it counts the rest. */
+const HINT_AT = 4;
+
+/** What the scan made of a hint's trigger, as the report says it. */
+function scanText(s: HintScan): string {
+    if (s.k === 'none') return 'no move found';
+    if (s.k === 'candidate') return `gate candidate: ${s.kind}${s.reviewed ? ' (gates.ts)' : " (the scan's proposal)"}`;
+    // A stair trigger shared by many locs jumps to each one's own tile: the first few, then how many more.
+    const tiles = s.to.filter(to => to !== CROSS);
+    const ways = [
+        ...(s.to.includes(CROSS) ? ['across it'] : []),
+        ...tiles.slice(0, HINT_AT).map(to => `to ${coord(coordTile(to))}`),
+    ];
+    return `unconditional move ${ways.join(', ')}${tiles.length > HINT_AT ? ` and ${tiles.length - HINT_AT} more` : ''}`;
+}
+
+/** A hint's placed locs or spawns: each config with its tiles, the first HINT_AT of them, then how many more. */
+function atText(at: Hint['at']): string {
+    const byConfig = new Map<string, Tile[]>();
+    for (const a of at.slice(0, HINT_AT)) push(byConfig, a.config, a.tile);
+    const shown = [...byConfig].map(([config, tiles]) => `${config} ${tiles.map(coord).join(', ')}`).join(', ');
+    return at.length > HINT_AT ? `${shown} and ${at.length - HINT_AT} more` : shown;
+}
 
 /**
- * The unreached report: the COVERED sites no walk from the Lumbridge spawn reaches, counted by kind, then
- * listed under their deepest area (by id, as areas.ts names it) with the tile looked from, its plane, and the
- * nearest reached tile on that plane. Each is a missing connector, gate or transport, or a pocket the collision
- * data walls in, for gates.ts or areas.ts to add or explain. Warnings: they do not fail the build.
+ * The unreached report: the COVERED sites no walk from the Lumbridge spawn reaches, less those areas.ts
+ * EXPECTED_UNREACHED explains, counted by kind, then by pocket (Pocket), most sites first: each with its areas,
+ * size, nearest reached tile, its sites by kind, and its hints, the triggers that move the player first, then
+ * those with no move found on one line. Each pocket wants a connector, gate or transport, or an
+ * EXPECTED_UNREACHED entry. Warnings: they do not fail the build (a stale entry does, in formatReport).
  */
-export function formatUnreached(unreached: readonly Unreached[], areas: readonly Area[]): string[] {
-    if (!unreached.length) return ['unreached: every site of a covered kind is reached from the Lumbridge spawn'];
+export function formatUnreached(unreached: BuildReport['unreached'], areas: readonly Area[]): string[] {
+    const { pockets, expected } = unreached;
+    if (!pockets.length)
+        return [
+            'unreached: every site of a covered kind is reached from the Lumbridge spawn' +
+                (expected ? `, but the ${expected} areas.ts EXPECTED_UNREACHED leaves out` : ''),
+        ];
+    const left = expected ? `; areas.ts EXPECTED_UNREACHED leaves out ${expected} more` : '';
     const names = new Map(areas.map(a => [a.id, a.name]));
-    const byArea = new Map<string, Unreached[]>();
-    for (const u of unreached) push(byArea, u.areaPath.at(-1) ?? '', u);
+    const sites = pockets.flatMap(p => p.sites);
+    const open = pockets.filter(p => p.open).length;
+    const ordered = pockets
+        .map((p, k) => ({ p, k }))
+        .sort((a, b) => b.p.sites.length - a.p.sites.length || a.k - b.k)
+        .map(({ p }) => p);
     return [
-        `warning: ${unreached.length} sites of covered kinds no walk from the Lumbridge spawn reaches ` +
-            `(${counts(tally(unreached, u => u.kind))}), by area:`,
-        ...[...byArea].flatMap(([area, us]) => [
-            `  ${area ? `${area} (${names.get(area) ?? area})` : 'no area'}:`,
-            ...us.map(
-                u =>
-                    `    ${u.id} ${u.stand ? 'stand' : 'centre (no stand)'} ${coord(u.at)}, ${plane(u.at)}: ` +
-                    (u.nearest
-                        ? `nearest reached ${coord(u.nearest)}, ${cheb(u.at, u.nearest)} tiles off`
-                        : `no reached tile within ${NEAREST_RADIUS} tiles`),
-            ),
-        ]),
+        `warning: ${sites.length} sites of covered kinds no walk from the Lumbridge spawn reaches ` +
+            `(${counts(tally(sites, u => u.kind))}), in ${pockets.length} pockets (${open} open), most sites first${left}:`,
+        ...ordered.flatMap(p => {
+            const leaves = [...new Set(p.sites.map(s => s.areaPath.at(-1) ?? ''))].map(id =>
+                id ? `${id} (${names.get(id) ?? id})` : 'no area',
+            );
+            const byKind = new Map<string, Unreached[]>();
+            for (const s of p.sites) push(byKind, s.kind, s);
+            const moving = p.hints.filter(h => h.scan.k !== 'none');
+            const still = p.hints.filter(h => h.scan.k === 'none');
+            return [
+                `  ${leaves.join(', ')}: ${p.sites.length} site${p.sites.length === 1 ? '' : 's'}, ${p.size} tiles` +
+                    (p.open ? ' and more (open: the flood stopped at its cap)' : '') +
+                    '; ' +
+                    (p.nearest
+                        ? `nearest reached ${coord(p.nearest.tile)}, ${p.nearest.off} tiles off ${p.nearest.site}`
+                        : `no reached tile within ${NEAREST_RADIUS} tiles of its sites`),
+                ...[...byKind]
+                    .sort(([a], [b]) => cmp(a, b))
+                    .map(
+                        ([kind, us]) =>
+                            `    ${kind} ${us.length}: ` +
+                            us.map(u => `${u.id} ${u.stand ? '' : 'centre '}${coord(u.at)}`).join(', '),
+                    ),
+                ...moving.map(h => `    hint ${h.trigger} (${h.source}): ${scanText(h.scan)}; on ${atText(h.at)}`),
+                ...(still.length
+                    ? [
+                          `    no move found: ${still.map(h => `${h.trigger} (${h.source}) on ${h.at.length}`).join(', ')}`,
+                      ]
+                    : []),
+                ...(p.hints.length ? [] : ['    no hints: no trigger on or beside it']),
+            ];
+        }),
     ];
 }
 

@@ -946,7 +946,7 @@ export const AREAS: readonly Area[] = [
         id: 'tutorial-island',
         name: 'Tutorial Island',
         rects: [{ x1: 3053, z1: 3053, x2: 3149, z2: 3135 }],
-        notes: "For new accounts only: finishing the tutorial telejumps the player to Lumbridge (tutorial/scripts/tutorial.rs2:300) and nothing takes them back, so the world index's walk from the Lumbridge spawn never reaches the island or its bank (build.ts unreached report).",
+        notes: "For new accounts only, so the world index's walk from the Lumbridge spawn never reaches the island, its bank or its caves (EXPECTED_UNREACHED in areas.ts says why).",
     },
     {
         id: 'tutorial-island-bank',
@@ -1269,5 +1269,29 @@ export const AREAS: readonly Area[] = [
         name: 'Zanaris bank',
         parent: 'zanaris',
         rects: [{ x1: 3149, z1: 9576, x2: 3155, z2: 9581 }],
+    },
+];
+
+/**
+ * Sites no walk from the Lumbridge spawn reaches on purpose: one site by id, or every site in an area, its
+ * child areas' included. build.ts leaves their sites out of the unreached report, and fails on an entry no
+ * unreached site matches (one now reached, or gone).
+ */
+export type ExpectedUnreached = ({ area: string } | { site: string }) & {
+    reason: string;
+    /** The script line that keeps the player out, `file:line` under server/content/scripts. */
+    source: string;
+};
+
+export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
+    {
+        area: 'tutorial-island',
+        reason: 'the island and its bank are for new accounts only: finishing the tutorial telejumps the player to Lumbridge, and nothing takes them back',
+        source: 'tutorial/scripts/tutorial.rs2:300',
+    },
+    {
+        area: 'tutorial-island-caves',
+        reason: "the island's caves, for new accounts only as the island is: finishing the tutorial telejumps the player to Lumbridge, and nothing takes them back",
+        source: 'tutorial/scripts/tutorial.rs2:300',
     },
 ];

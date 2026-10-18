@@ -5,17 +5,25 @@ import { join } from 'path';
 import {
     addReach,
     byWritten,
+    expectedUnreached,
     failed,
     formatReport,
     formatUnreached,
     nearestReached,
     serializeWorld,
+    unreachedPockets,
     type BuildReport,
+    type HintScan,
+    type OpUser,
+    type Pocket,
     type Unreached,
 } from '../build';
 import { loadWorld } from '../load';
-import { besideCluster, grownBox, type Placed, type StepCollision } from '../place';
+import { besideCluster, grownBox, locSizes, type Placed, type StepCollision } from '../place';
+import { fillReach, reachGraph } from '../reach';
+import type { Trigger } from '../sources/triggers';
 import { WORLD_FORMAT, type Feature, type NpcSpawn, type Site, type Tile, type World } from '../types';
+import { Grid } from './grid';
 
 const tree = (x: number, z: number, config = 'tree'): Feature => ({
     source: 'loc',
@@ -321,7 +329,7 @@ describe('formatReport', () => {
             ms: 1,
             bytes: 1024,
         },
-        unreached: [],
+        unreached: { pockets: [], expected: 0, stale: [] },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -452,8 +460,18 @@ describe('formatReport', () => {
             { ...report, gates: { ...report.gates, drifted: ['x'] } },
             { ...report, gates: { ...report.gates, invalid: ['x'] } },
             { ...report, gates: { ...report.gates, unnamed: ['x'] } },
+            { ...report, unreached: { ...report.unreached, stale: ['x'] } },
         ])
             expect(failed(one)).toBe(true);
+    });
+
+    test('lists the stale EXPECTED_UNREACHED entries as an error', () => {
+        const stale = { ...report, unreached: { pockets: [], expected: 0, stale: ['area isle (i.rs2:1)'] } };
+        expect(formatReport(stale).slice(-2)).toEqual([
+            'ERROR unreached: 1 areas.ts EXPECTED_UNREACHED entries no unreached site matches (reached now, or gone):',
+            '  area isle (i.rs2:1)',
+        ]);
+        expect(failed(stale)).toBe(true);
     });
 
     test('lists the gate errors, warnings, unclear entries and quest windows; warnings alone do not fail', () => {
@@ -727,35 +745,273 @@ describe('reach on sites and npc spawn clusters', () => {
         expect(nearestReached(reached(tile(5, 6400)), tile(5, 6399))).toBeNull();
         expect(nearestReached(reached(tile(5, 9)), tile(5, 5), 3)).toBeNull();
     });
+});
 
-    test('formatUnreached: counts by kind, then each area with its sites, or one line when none', () => {
-        const u = unreachedRow;
-        const areas = [
-            { id: 'isle', name: 'The Isle', rects: [] },
-            { id: 'cave', name: 'Cave', rects: [] },
+/** An op 1 trigger in t.rs2. */
+const trigger = (on: Trigger['on'], target: string, line: number): Trigger => ({
+    file: 't.rs2',
+    on,
+    kind: 'op',
+    op: '1',
+    target,
+    category: false,
+    line,
+    body: '',
+});
+/** A 1 by 1 loc or npc spawn with one trigger. */
+const user = (config: string, where: Tile, t: Trigger): OpUser => ({ config, tile: where, w: 1, l: 1, triggers: [t] });
+/** A pocket of 12 tiles, closed, with no nearest reached tile and no hints but as given. */
+const pocket = (p: Partial<Pocket> & Pick<Pocket, 'sites'>): Pocket => ({
+    size: 12,
+    open: false,
+    nearest: null,
+    hints: [],
+    ...p,
+});
+
+describe('the unreached report', () => {
+    const u = unreachedRow;
+    const areas = [
+        { id: 'isle', name: 'The Isle', rects: [] },
+        { id: 'cave', name: 'Cave', rects: [] },
+    ];
+
+    test('EXPECTED_UNREACHED leaves out its sites, an area entry its child areas too, and names the stale', () => {
+        const rows = [
+            u('bank:isle-bank:0', ['isle', 'isle-bank'], tile(5, 5), null),
+            u('tree:isle:0', ['isle'], tile(6, 6), null),
+            u('rock:cave:0', ['cave'], tile(5, 6405), null),
+            u('shop:town:0', ['town'], tile(9, 9), null),
         ];
         expect(
-            formatUnreached(
-                [
-                    u('bank:isle:0', ['isle'], tile(5, 5, 1), tile(5, 9, 1)),
-                    u('rock:isle:0', ['isle'], tile(5, 5), null, false),
-                    u('rock:cave:0', ['cave'], tile(5, 6405), tile(8, 6405)),
-                    u('tree:unnamed:0', [], tile(1, 1), null),
+            expectedUnreached(rows, [
+                { area: 'isle', reason: 'new accounts only', source: 'i.rs2:1' },
+                { site: 'rock:cave:0', reason: 'a quest step', source: 'c.rs2:2' },
+                { area: 'gone', reason: 'reached now', source: 'g.rs2:3' },
+                { site: 'shop:town:9', reason: 'gone', source: 's.rs2:4' },
+            ]),
+        ).toEqual({
+            left: [rows[3]!],
+            expected: 3,
+            stale: ['area gone (g.rs2:3)', 'site shop:town:9 (s.rs2:4)'],
+        });
+    });
+
+    describe('pockets', () => {
+        // Rooms walled all round: A (3210-3214, 3210-3214) and B (3220-3224, 3220-3224), 25 tiles each, and C
+        // (3204-3206, 3220-3222), 9 tiles, whose ladder lands in A. The walk from (3200, 3200) gets to none.
+        const grid = new Grid().room(3210, 3210, 3214, 3214).room(3220, 3220, 3224, 3224).room(3204, 3220, 3206, 3222);
+        const ladder = tile(3205, 3221);
+        const input = {
+            world: {
+                features: [
+                    {
+                        source: 'loc' as const,
+                        id: 1,
+                        config: 'ladder',
+                        tile: ladder,
+                        shape: 10,
+                        rotation: 0,
+                        kind: 'connector' as const,
+                        subtype: '',
+                        name: 'Ladder',
+                    },
                 ],
-                areas,
-            ),
-        ).toEqual([
-            'warning: 4 sites of covered kinds no walk from the Lumbridge spawn reaches (bank 1, rock 2, tree 1), by area:',
-            '  isle (The Isle):',
-            '    bank:isle:0 stand (5, 5) L1, level 1: nearest reached (5, 9) L1, 4 tiles off',
-            '    rock:isle:0 centre (no stand) (5, 5), level 0: no reached tile within 64 tiles',
-            '  cave (Cave):',
-            '    rock:cave:0 stand (5, 6405), level 0, underground: nearest reached (8, 6405), 3 tiles off',
-            '  no area:',
-            '    tree:unnamed:0 stand (1, 1), level 0: no reached tile within 64 tiles',
+                connectors: [
+                    {
+                        feature: 0,
+                        loc: ladder,
+                        op: 1,
+                        opName: 'Climb-down',
+                        direction: 'down' as const,
+                        stand: null,
+                        landing: tile(3212, 3212),
+                        source: 'ladders.rs2:1',
+                    },
+                ],
+                gates: [],
+                transports: [],
+            },
+            collision: grid,
+            size: locSizes(new Map()),
+            start: tile(3200, 3200),
+        };
+        const graph = reachGraph(input);
+        const reach = fillReach(input, graph);
+        const door = trigger('loc', 'door', 1);
+        const lever = trigger('loc', 'lever', 2);
+        const guard = trigger('npc', 'guard', 3);
+        const users = [
+            // On reached land beside A's west wall; on reached land beside no pocket; inside B.
+            user('door', tile(3209, 3212), door),
+            user('lever', tile(3202, 3202), lever),
+            user('guard', tile(3222, 3222), guard),
+        ];
+        const scans = new Map<Trigger, HintScan>([
+            [door, { k: 'candidate', kind: 'gate', reviewed: true }],
+            [guard, { k: 'move', to: ['cross'] }],
         ]);
-        expect(formatUnreached([], areas)).toEqual([
+        const asked: Trigger[] = [];
+        const scanOf = (t: Trigger): HintScan => {
+            asked.push(t);
+            return scans.get(t) ?? { k: 'none' };
+        };
+        const a0 = u('tree:a:0', ['a'], tile(3211, 3211), tile(3209, 3211));
+        const a1 = u('tree:a:1', ['a'], tile(3213, 3213), null);
+        const b0 = u('rock:b:0', ['b'], tile(3221, 3221), tile(3219, 3219));
+        const c0 = u('fire:c:0', ['c'], tile(3204, 3220), tile(3203, 3220));
+
+        test('sites a flood joins share a pocket, through an edge too; walled-off ones get their own', () => {
+            expect(reach.reached(tile(3212, 3212))).toBe(false);
+            const pockets = unreachedPockets({
+                graph,
+                reached: reach.reached,
+                unreached: [a0, a1, b0, c0],
+                users,
+                scanOf,
+            });
+            expect(pockets).toEqual([
+                {
+                    // C's flood takes its 9 tiles, then the ladder's edge leads onto A's.
+                    sites: [a0, a1, c0],
+                    size: 34,
+                    open: false,
+                    nearest: { tile: tile(3203, 3220), site: 'fire:c:0', off: 1 },
+                    hints: [
+                        {
+                            trigger: 'oploc1,door',
+                            source: 't.rs2:1',
+                            scan: { k: 'candidate', kind: 'gate', reviewed: true },
+                            at: [{ config: 'door', tile: tile(3209, 3212) }],
+                        },
+                    ],
+                },
+                {
+                    sites: [b0],
+                    size: 25,
+                    open: false,
+                    nearest: { tile: tile(3219, 3219), site: 'rock:b:0', off: 2 },
+                    hints: [
+                        {
+                            trigger: 'opnpc1,guard',
+                            source: 't.rs2:3',
+                            scan: { k: 'move', to: ['cross'] },
+                            at: [{ config: 'guard', tile: tile(3222, 3222) }],
+                        },
+                    ],
+                },
+            ]);
+            // The lever, in the reached area beside no pocket, is not a hint, so never scanned.
+            expect(asked).not.toContain(lever);
+        });
+
+        test('a flood that hits the cap is open, with the hints of the tiles it took', () => {
+            const [capped] = unreachedPockets({
+                graph,
+                reached: reach.reached,
+                unreached: [a0],
+                users,
+                scanOf,
+                cap: 10,
+            });
+            expect(capped).toMatchObject({ sites: [a0], size: 10, open: true });
+            // (3211, 3211) first, then breadth first: the door at (3209, 3212) is beside (3210, 3212), taken.
+            expect(capped!.hints.map(h => h.trigger)).toEqual(['oploc1,door']);
+        });
+
+        test('a site whose tile is reached, or off land, is a pocket of its own with no tiles', () => {
+            const out = u('bank:x:0', ['x'], tile(3201, 3201), null, false);
+            const off = u('bank:y:0', ['y'], tile(3201, 3201, 2), null, false);
+            expect(
+                unreachedPockets({ graph, reached: reach.reached, unreached: [out, off], users, scanOf }).map(p => [
+                    p.sites,
+                    p.size,
+                    p.hints,
+                ]),
+            ).toEqual([
+                [[out], 0, []],
+                [[off], 0, []],
+            ]);
+        });
+    });
+
+    test('formatUnreached: counts, then each pocket, most sites first, with its sites by kind and its hints', () => {
+        const isle = pocket({
+            sites: [
+                u('bank:isle:0', ['isle'], tile(5, 5, 1), tile(5, 9, 1)),
+                u('rock:isle:0', ['isle'], tile(5, 5), null, false),
+            ],
+            size: 40,
+            nearest: { tile: tile(5, 9, 1), site: 'bank:isle:0', off: 4 },
+            hints: [
+                {
+                    trigger: 'oploc1,door',
+                    source: 'd.rs2:3',
+                    scan: { k: 'candidate', kind: 'gate', reviewed: true },
+                    at: [{ config: 'door', tile: tile(4, 4) }],
+                },
+                {
+                    trigger: 'oploc1,stairs',
+                    source: 's.rs2:2',
+                    scan: {
+                        k: 'move',
+                        to: ['0_0_0_9_9', '0_0_0_10_9', '0_0_0_11_9', '0_0_0_12_9', '0_0_0_13_9', 'cross'],
+                    },
+                    at: [1, 2, 3, 4, 5, 6].map(z => ({ config: z < 6 ? 'stairs' : 'stairs_top', tile: tile(1, z) })),
+                },
+                {
+                    trigger: 'opnpc1,pilot',
+                    source: 'p.rs2:1',
+                    scan: { k: 'candidate', kind: 'quest-window', reviewed: false },
+                    at: [{ config: 'pilot', tile: tile(6, 6, 1) }],
+                },
+                {
+                    trigger: 'oploc1,_tree',
+                    source: 'w.rs2:1',
+                    scan: { k: 'none' },
+                    at: [tile(7, 7), tile(8, 8)].map(t => ({ config: 'tree', tile: t })),
+                },
+                {
+                    trigger: 'opnpc1,man',
+                    source: 'm.rs2:1',
+                    scan: { k: 'none' },
+                    at: [{ config: 'man', tile: tile(9, 9) }],
+                },
+            ],
+        });
+        const cave = pocket({
+            sites: [
+                u('rock:cave:0', ['cave'], tile(5, 6405), tile(8, 6405)),
+                u('rock:cave:1', ['cave'], tile(6, 6405), null),
+                u('tree:unnamed:0', [], tile(1, 1), null),
+            ],
+            nearest: { tile: tile(8, 6405), site: 'rock:cave:0', off: 3 },
+        });
+        const wide = pocket({ sites: [u('tree:isle:0', ['isle'], tile(7, 7), null)], size: 32768, open: true });
+        expect(formatUnreached({ pockets: [isle, cave, wide], expected: 2, stale: [] }, areas)).toEqual([
+            'warning: 6 sites of covered kinds no walk from the Lumbridge spawn reaches (bank 1, rock 3, tree 2), ' +
+                'in 3 pockets (1 open), most sites first; areas.ts EXPECTED_UNREACHED leaves out 2 more:',
+            '  cave (Cave), no area: 3 sites, 12 tiles; nearest reached (8, 6405), 3 tiles off rock:cave:0',
+            '    rock 2: rock:cave:0 (5, 6405), rock:cave:1 (6, 6405)',
+            '    tree 1: tree:unnamed:0 (1, 1)',
+            '    no hints: no trigger on or beside it',
+            '  isle (The Isle): 2 sites, 40 tiles; nearest reached (5, 9) L1, 4 tiles off bank:isle:0',
+            '    bank 1: bank:isle:0 (5, 5) L1',
+            '    rock 1: rock:isle:0 centre (5, 5)',
+            '    hint oploc1,door (d.rs2:3): gate candidate: gate (gates.ts); on door (4, 4)',
+            '    hint oploc1,stairs (s.rs2:2): unconditional move across it, to (9, 9), to (10, 9), to (11, 9), to (12, 9) and 1 more; ' +
+                'on stairs (1, 1), (1, 2), (1, 3), (1, 4) and 2 more',
+            "    hint opnpc1,pilot (p.rs2:1): gate candidate: quest-window (the scan's proposal); on pilot (6, 6) L1",
+            '    no move found: oploc1,_tree (w.rs2:1) on 2, opnpc1,man (m.rs2:1) on 1',
+            '  isle (The Isle): 1 site, 32768 tiles and more (open: the flood stopped at its cap); no reached tile within 64 tiles of its sites',
+            '    tree 1: tree:isle:0 (7, 7)',
+            '    no hints: no trigger on or beside it',
+        ]);
+        expect(formatUnreached({ pockets: [], expected: 0, stale: [] }, areas)).toEqual([
             'unreached: every site of a covered kind is reached from the Lumbridge spawn',
+        ]);
+        expect(formatUnreached({ pockets: [], expected: 9, stale: [] }, areas)).toEqual([
+            'unreached: every site of a covered kind is reached from the Lumbridge spawn, but the 9 areas.ts EXPECTED_UNREACHED leaves out',
         ]);
     });
 });

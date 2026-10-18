@@ -10,6 +10,7 @@ import {
     proposalText,
     reviewGates,
     scanGates,
+    scanTrigger,
     type CuratedGate,
     type GateCandidate,
     type GateScanInput,
@@ -362,6 +363,22 @@ const scanned = (trigger: string): GateCandidate => {
     return c;
 };
 const move = (trigger: string, to = CROSS) => scanned(trigger).moves.find(m => m.to === to);
+
+describe('scanTrigger', () => {
+    const scan = scanTrigger(INPUT);
+
+    test("a candidate as scanGates has it; a loc or npc op's move with no condition by its tiles; else null", () => {
+        expect(scan(INPUT.triggers.find(t => t.target === 'completedoor')!)).toEqual({
+            candidate: scanned('oploc1,completedoor'),
+        });
+        expect(
+            scan(parseTriggers('t.rs2', '[opnpc1,wizard]\nmes("Off you go.");\np_telejump(0_50_50_11_11);\n')[0]!),
+        ).toEqual({
+            moves: ['0_50_50_11_11'],
+        });
+        expect(scan(parseTriggers('t.rs2', '[oploc1,crate]\nmes("Empty.");\n')[0]!)).toBeNull();
+    });
+});
 
 describe('scanGates: each condition form', () => {
     test('a quest done: quest:<id>', () => {

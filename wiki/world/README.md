@@ -71,14 +71,24 @@ Every curated entry cites its script, and the build fails on a candidate nobody 
 ### The unreached report
 
 `bun run world` prints, after the build, a warning listing every site of a covered kind (bank, shop, resource,
-service) that no walk from the Lumbridge spawn reaches: counted by kind, then by area, each with the tile it
-looked from, its plane and the nearest reached tile on that plane. It is warnings only; `--check` leaves it
-out. Work it as a curation to-do list: for each entry, read the scripts at the nearest reached tile, then
-either add the missing connector, gate or transport (the derivation in `wiki/world/sources/`, or a row in
-`gate-list.ts` / `gates.ts`), or say in the area's `notes` in `areas.ts` why it stays unreached, citing the
-script. Known leftovers are the desert behind the Shantay Pass (a queued move), scripted moves outside
-`ladders+stairs/` (the Mage Arena ladder, the Gnome Stronghold gate and railing, the lighthouse), and unnamed
-underground areas.
+service) that no walk from the Lumbridge spawn reaches, grouped by pocket. A pocket is the land a flood from
+one such site gets to over neighbour steps and the graph's edges without entering a reached tile; sites the
+same flood gets to share it, most sites first. Each pocket gives its areas, its size in tiles, the nearest
+reached tile to any of its sites (on that site's plane), its sites by kind, and its hints: every loc op (an op
+the loc's config has, or use-item) and npc op with a trigger, placed on or one tile beside the pocket, with the
+trigger's script line and what the gate scan made of it: a gate candidate and its kind (from `gate-list.ts`, or
+the scan's proposal for an npc op), an unconditional move, or no move found (these last on one line). A flood
+that takes 32768 tiles stops and calls its pocket open: a large unreached landmass, or an upper floor or an
+instanced room whose empty tiles round it the collision data lists as walkable land.
+
+It is warnings only; `--check` leaves it out. Work it as a curation to-do list, a pocket at a time: read its
+hints' scripts, then either add the missing connector, gate or transport (the derivation in
+`wiki/world/sources/`, or a row in `gate-list.ts` / `gates.ts`), or, when nobody playing walks there, add an
+entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
+the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
+no unreached site matches, so an entry goes once its sites are reached or gone. Some areas' `notes` still say
+why their sites are unreached (the desert behind the Shantay Pass, the Gnome Stronghold, the lighthouse, the
+Mage Arena cellar): those notes go as their pockets are reached.
 
 ## Where corrections go
 
@@ -88,7 +98,7 @@ underground areas.
 | A loc or npc missing, or listed as the wrong kind or subtype | the rule table in `wiki/world/classify.ts` |
 | Sites split or merged wrongly, or a bad stand tile | `wiki/world/place.ts` (`SITE_RADIUS`, the stand rules) |
 | A page's layout or wording | `wiki/world/render/` |
-| A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an area note in `areas.ts` saying why |
+| A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |

@@ -1420,20 +1420,43 @@ function propose(trigger: Trigger, run: Run, completes: Completes): GateCandidat
     };
 }
 
+/** What the scan makes of one trigger (scanTrigger). */
+export type TriggerScan = { candidate: GateCandidate } | { moves: string[] } | null;
+
 /**
  * Every loc op trigger that branched on a condition the scan reads before a move (sources/gate-scan.ts
- * header), with what the scan makes of it, by trigger.
+ * header), with what the scan makes of it, by trigger. `scan` is scanTrigger's, given to share its runs.
  */
-export function scanGates(input: GateScanInput): GateCandidate[] {
-    const walker = gateWalker(input);
-    const completes = new Map(input.quests.map(q => [q.id, q.complete]));
+export function scanGates(input: GateScanInput, scan = scanTrigger(input)): GateCandidate[] {
     const out: GateCandidate[] = [];
     for (const t of input.triggers) {
-        if (t.on !== 'loc' || !walker.bodyMoves(t.body)) continue;
-        const c = propose(t, walker.run(t), completes);
-        if (c) out.push(c);
+        const s = t.on === 'loc' ? scan(t) : null;
+        if (s && 'candidate' in s) out.push(s.candidate);
     }
     return out.sort((a, b) => cmp(a.trigger, b.trigger) || cmp(a.source, b.source));
+}
+
+/**
+ * What the scan makes of one loc or npc op trigger, each run once: the candidate it proposes (scanGates's, for
+ * a loc op), or the tiles (GateMove.to) it moves the player to with no condition read before the move, or null
+ * when it makes no move. The build's unreached report reads it for the triggers in and beside a pocket.
+ */
+export function scanTrigger(input: GateScanInput): (t: Trigger) => TriggerScan {
+    const walker = gateWalker(input);
+    const completes = new Map(input.quests.map(q => [q.id, q.complete]));
+    const seen = new Map<Trigger, TriggerScan>();
+    const scan = (t: Trigger): TriggerScan => {
+        if (!walker.bodyMoves(t.body)) return null;
+        const run = walker.run(t);
+        const candidate = propose(t, run, completes);
+        if (candidate) return { candidate };
+        const moves = [...new Set(run.moves.map(m => m.to))].sort(cmp);
+        return moves.length ? { moves } : null;
+    };
+    return t => {
+        if (!seen.has(t)) seen.set(t, scan(t));
+        return seen.get(t)!;
+    };
 }
 
 // ---- Curation and placement -------------------------------------------------------------------------

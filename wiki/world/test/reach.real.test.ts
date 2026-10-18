@@ -1,6 +1,7 @@
 // The reach fill over the committed world.json and the collision data the SDK bundles: what a walk from the
 // Lumbridge spawn reaches, and what it needs. Each fact cites the rows it rests on.
 import { describe, expect, test } from 'bun:test';
+import { EXPECTED_UNREACHED } from '../areas';
 import { reachCollision } from '../collision';
 import { loadWorld } from '../load';
 import { locSizes } from '../place';
@@ -28,6 +29,9 @@ const withoutConnectors = (...locs: Tile[]): World => ({
 });
 /** Whether an area note explains a site the unreached report lists: it says so, and cites a script line. */
 const explains = (note: string): boolean => note.includes('unreached report') && /\.rs2:\d+/.test(note);
+/** Whether areas.ts EXPECTED_UNREACHED explains a site: an entry for it, or for an area on its path. */
+const expected = (id: string, areaPath: readonly string[]): boolean =>
+    EXPECTED_UNREACHED.some(e => ('site' in e ? e.site === id : areaPath.includes(e.area)));
 const gateAt = (trigger: string, tile: Tile) =>
     world.gates.find(
         g => g.trigger === trigger && g.tile.x === tile.x && g.tile.z === tile.z && g.tile.level === tile.level,
@@ -165,11 +169,12 @@ describe("world.json's reach on sites", () => {
         expect(reach.setsAt(s.stand!)).toEqual([[]]);
     });
 
-    test('each unreached bank and shop is explained, citing a script line, in a note of its area or an ancestor', () => {
+    test('each unreached bank and shop is explained, citing a script line, in a note of its area or an ancestor, or by EXPECTED_UNREACHED', () => {
         const notes = new Map(world.areas.map(a => [a.id, a.notes ?? '']));
+        expect(EXPECTED_UNREACHED.every(e => /\.rs2:\d+$/.test(e.source))).toBe(true);
         const unexplained = world.sites
             .filter(s => (s.kind === 'bank' || s.kind === 'shop') && !s.reach.length)
-            .filter(s => !s.areaPath.some(id => explains(notes.get(id)!)))
+            .filter(s => !s.areaPath.some(id => explains(notes.get(id)!)) && !expected(s.id, s.areaPath))
             .map(s => s.id);
         expect(unexplained).toEqual([]);
     });
