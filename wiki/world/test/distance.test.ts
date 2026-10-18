@@ -432,6 +432,15 @@ describe('a random landing costs its longest landing', () => {
         ]);
     });
 
+    test('a lone landing off land is reported unpriced and gets no spread', () => {
+        const OFF = at(2, 3220, 3220);
+        const p = priced(sea(), { crossings: [{ ...row, landings: [{ tile: OFF }] }] });
+        expect(p.crossings[0]!.landings).toEqual([{ tile: OFF }]);
+        expect(p.unpriced).toEqual([
+            'teleport item-on-loc air_talisman ruins (3214, 3221): its landing (3220, 3220, 2) is not on land',
+        ]);
+    });
+
     test('with no crossing row and no rolled gate row, nothing is priced and the rows come back as they were', () => {
         const rows = { crossings: [], gates: [toll] };
         const p = priced(sea(), rows);
