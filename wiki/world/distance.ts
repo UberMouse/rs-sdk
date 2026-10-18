@@ -64,15 +64,16 @@ const SINK_KINDS: readonly SinkKind[] = ['bank', 'furnace', 'range', 'anvil'];
  * Ticks a crossing takes, by how it moves the player, including the tick the op is clicked from its stand:
  *
  * - connector: `p_arrivedelay` then the climb's `p_delay(0)` before the jump (ladders+stairs/scripts/ladders.rs2:3,
- *   ~climb_ladder at :160), 2 ticks;
+ *   and ~climb_ladder's `p_delay(0)` at :160), 2 ticks;
  * - gate: a gated door's `p_delay(1)` between the two moves through it (doors/scripts/open_and_close_doors.rs2:31),
- *   2 ticks, and the same for a gate's jump or an opened loc, which take at least as long;
+ *   2 ticks; a gate's jump and an opened loc are priced the same, an estimate (their scripts' delays vary);
  * - ship: the sail proc's `p_delay($delay)` at sea, 7 ticks on the sailors' routes (interface_boat/scripts/sail.rs2:22,
  *   areas/area_port_sarim/scripts/sailors.rs2:31; Entrana's monks take 13-14), plus about 5 ticks of talking to the
  *   sailor and paying, 12 ticks;
  * - cart: only dialogue, about 8 pages of it before and after the teleport (areas/area_shilo/scripts/vigroy.rs2:20-31),
  *   8 ticks;
- * - sled: the toboggan ride's op and its teleport (quests/quest_troll_love/scripts/quest_troll_love.rs2:1), 4 ticks.
+ * - sled: the toboggan ride's op and its teleport (quests/quest_troll_love/scripts/quest_troll_love.rs2:1), an
+ *   estimate of 4 ticks.
  */
 export const CROSSING_TICKS: Readonly<Record<Via, number>> = { connector: 2, gate: 2, ship: 12, cart: 8, sled: 4 };
 
