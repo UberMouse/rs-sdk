@@ -13,7 +13,7 @@ const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== nul
 /**
  * Whether `x` is a world.json of this format: its format, a string generatedFrom, the nine lists and
  * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields
- * (crossingProblem).
+ * (crossingModelProblem).
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&

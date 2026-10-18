@@ -475,6 +475,14 @@ describe('formatReport', () => {
             ...tail,
         ]));
 
+    test('warns of the crossing costs the distances could not price, after the gate moves', () => {
+        const unpriced = ['teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3220, 3220)'];
+        expect(formatReport({ ...report, unpriced }).slice(-2)).toEqual([
+            'warning: 1 crossing costs the distances could not price, those edges not taken:',
+            `  ${unpriced[0]}`,
+        ]);
+    });
+
     test('lists the one-way and off-land connectors, and the underived ops by what stopped them', () => {
         const lines = formatReport({
             ...report,
