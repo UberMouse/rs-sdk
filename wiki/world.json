@@ -1,5 +1,5 @@
 {
-  "format": 12,
+  "format": 13,
   "generatedFrom": "882699169a968e667d112006b714348bea4827ec",
   "areas": [
     {"id":"asgarnia","name":"Asgarnia","rects":[{"x1":2968,"z1":3090,"x2":3064,"z2":3467},{"x1":2851,"z1":3206,"x2":2967,"z2":3467},{"x1":2932,"z1":3190,"x2":2967,"z2":3205},{"x1":2823,"z1":3468,"x2":3064,"z2":3519},{"x1":2823,"z1":3520,"x2":2943,"z2":3708}]},
@@ -33208,5 +33208,6 @@
     {"trigger":"oploc1,castlecrumbly","kind":"gate","loc":"castlecrumbly","tile":{"level":3,"x":2907,"z":3330},"shape":0,"angle":1,"requires":[["members","skill:agility:5"]],"from":"west","source":"skill_agility/scripts/shortcuts.rs2:2"},
     {"trigger":"oploc1,castlecrumbly","kind":"gate","loc":"castlecrumbly","tile":{"level":3,"x":2909,"z":3339},"shape":0,"angle":3,"requires":[["members","skill:agility:5"]],"from":"west","source":"skill_agility/scripts/shortcuts.rs2:2"},
     {"trigger":"oploc1,castlecrumbly","kind":"gate","loc":"castlecrumbly","tile":{"level":3,"x":2912,"z":3334},"shape":0,"angle":0,"requires":[["members","skill:agility:5"]],"from":"west","source":"skill_agility/scripts/shortcuts.rs2:2"}
-  ]
+  ],
+  "crossings": []
 }

@@ -20,7 +20,7 @@ import { areaResolver } from './area-resolve';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
-import { formatDistance, nearestSinks, SINKS, type DistanceReport } from './distance';
+import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -78,6 +78,7 @@ import { readZones } from './sources/zones';
 import {
     WORLD_FORMAT,
     type Area,
+    type Crossing,
     type Feature,
     type FeatureKind,
     type NpcSpawn,
@@ -278,6 +279,8 @@ export interface BuildReport {
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
     distance: DistanceReport;
+    /** Crossing and rolled gate rows the distances could not price (distance.ts priceCrossings), as `<row>: <why>`. */
+    unpriced: string[];
     /** Sites of COVERED kinds no walk reaches, grouped by pocket: warnings, the curation to-do list. */
     unreached: {
         pockets: Pocket[];
@@ -736,14 +739,23 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         const staged = gates.stages.get(q.id);
         return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
     });
+    // No source writes crossing rows yet.
+    const crossingRows: Crossing[] = [];
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
-    // distances to sinks walk the same graph.
-    const reachInput = {
-        world: { features, connectors, gates: landings.gates, transports, quests: questRows },
+    // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
+    // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there are any.
+    const unpricedInput = {
+        world: { features, connectors, gates: landings.gates, transports, quests: questRows, crossings: crossingRows },
         collision,
         size: locSizes(locConfigs),
     };
-    const graph = reachGraph(reachInput);
+    const unpricedGraph = reachGraph(unpricedInput);
+    const priced = priceCrossings(unpricedGraph, unpricedInput.world);
+    const repriced = crossingRows.length > 0 || landings.gates.some(g => g.roll);
+    const reachInput = repriced
+        ? { ...unpricedInput, world: { ...unpricedInput.world, gates: priced.gates, crossings: priced.crossings } }
+        : unpricedInput;
+    const graph = repriced ? reachGraph(reachInput) : unpricedGraph;
     const fill = fillReach(reachInput, graph);
     // Sites after the fill, so a stand is a tile a walk gets to where one can be (place.ts standTile).
     const log: string[] = [];
@@ -803,7 +815,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             quests: questRows,
             loadoutRules,
             transports,
-            gates: landings.gates,
+            gates: reachInput.world.gates,
+            crossings: reachInput.world.crossings,
         },
         report: {
             features: tally(features, f => f.kind),
@@ -879,6 +892,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             },
             reach: fill.report,
             distance: distance.report,
+            unpriced: priced.unpriced,
             unreached: { pockets, expected: expected.expected, invalid: expected.invalid, stale: expected.stale },
         },
     };
@@ -901,7 +915,7 @@ const jsonRecord = (key: string, record: Readonly<Record<string, unknown>>): str
 
 /**
  * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule,
- * transport or gate per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
+ * transport, gate or crossing per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
  * and undefined fields are left out as JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
@@ -917,7 +931,8 @@ export function serializeWorld(world: World): string {
         jsonList('quests', world.quests) + ',',
         jsonRecord('loadoutRules', world.loadoutRules) + ',',
         jsonList('transports', world.transports) + ',',
-        jsonList('gates', world.gates),
+        jsonList('gates', world.gates) + ',',
+        jsonList('crossings', world.crossings),
         '}',
         '',
     ].join('\n');
@@ -1059,6 +1074,10 @@ export function formatReport(report: BuildReport): string[] {
             l.unlanded.map(
                 u => `${u.trigger} ${u.loc} ${coord(u.tile)} from ${coord(u.stand)}: ${u.reasons.join('; ')}`,
             ),
+        ),
+        ...list(
+            `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
+            report.unpriced,
         ),
         ...list(
             `ERROR unreached: ${report.unreached.invalid.length} areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):`,

@@ -1,10 +1,12 @@
 import { describe, expect, test } from 'bun:test';
-import { wallTiles } from '../../../wiki/world/reach';
+import { locSizes } from '../../../wiki/world/place';
+import { fillReach, wallTiles } from '../../../wiki/world/reach';
 import { readConfigs } from '../../../wiki/world/sources/configs';
-import type { Gate } from '../../../wiki/world/types';
+import { at, Grid } from '../../../wiki/world/test/grid';
+import type { Crossing, Gate, Transport } from '../../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
-import { doorRefusal, nearestWay } from '../../lib/walk-graph';
+import { doorRefusal, nearestWay, walkGraph, type WalkGraph } from '../../lib/walk-graph';
 import { WORLD } from '../../lib/world-index';
 
 const configs = readConfigs('loc');
@@ -87,5 +89,71 @@ describe('the walk search crosses a door only when the walker opens it', () => {
         const toll = row('border_gate_toll_left');
         expect(across(toll, { ...NO_ACCOUNT, coins: 10 })).toBe(CROSSED);
         expect(across(toll, NO_ACCOUNT)!).toBeGreaterThan(CROSSED);
+    });
+});
+
+/** An island: everything east of a blocked column at x 3216. */
+const sea = () => {
+    const grid = new Grid();
+    for (let z = 3200; z < 3232; z++) grid.block(at(0, 3216, z));
+    return grid;
+};
+/** A search of a scripted world's walk graph, with nothing met but `{}`. */
+const search = (graph: WalkGraph) => ({ account: NO_ACCOUNT, connectors: [], maxHops: MAX_HOPS, graph });
+
+describe('the walk search ignores every edge kind it does not walk', () => {
+    const size = locSizes(new Map());
+    const WEST = at(0, 3205, 3220);
+    const EAST = at(0, 3225, 3220);
+    const ship: Transport = {
+        kind: 'ship',
+        npc: 'sailor',
+        from: at(0, 3210, 3210),
+        to: EAST,
+        fare: 0,
+        requires: [],
+        source: 'sail.rs2:1',
+    };
+    const move = (via: Crossing['via']): Crossing => ({
+        via,
+        act:
+            via === 'scripted'
+                ? { kind: 'loc-op', loc: 'log_balance', op: 1 }
+                : { kind: 'npc-op', npc: 'aubury', op: 4 },
+        at: at(0, 3214, 3220),
+        from: [at(0, 3215, 3220)],
+        landings: [{ tile: EAST, spread: 0 }],
+        requires: [[]],
+        source: 'a.rs2:1',
+    });
+    const empty = { features: [], connectors: [], gates: [], transports: [], crossings: [] };
+
+    test.each([
+        ['a ship', { ...empty, transports: [ship] }],
+        ['a scripted move', { ...empty, crossings: [move('scripted')] }],
+        ['a teleport', { ...empty, crossings: [move('teleport')] }],
+    ])('%s to the island, free: the fill reaches it, the walk does not', (_, world) => {
+        expect(fillReach({ world, collision: sea(), size, start: WEST }).setsAt(EAST)).toEqual([[]]);
+        const graph = walkGraph({ world, collision: sea(), size, opName: () => undefined });
+        expect(nearestWay(WEST, [EAST], search(graph))).toBeUndefined();
+        expect(nearestWay(WEST, [at(0, 3205, 3225)], search(graph))?.runTicks).toBe(3);
+    });
+
+    test('a door it opens, on a graph of its own, is walked through', () => {
+        const DOOR = at(0, 3216, 3220);
+        const gate: Gate = {
+            trigger: 'oploc1,door',
+            kind: 'gate',
+            loc: 'door',
+            tile: DOOR,
+            shape: 0,
+            angle: 0,
+            requires: [[]],
+            source: 't.rs2:1',
+        };
+        const grid = new Grid().wallColumn(3216, 3200, 3231, [3220]);
+        const graph = walkGraph({ world: { ...empty, gates: [gate] }, collision: grid, size, opName: () => 'Open' });
+        // 10 steps to the door's west tile, the crossing, 9 steps on.
+        expect(nearestWay(WEST, [EAST], search(graph))?.runTicks).toBe(Math.ceil((10 + 2 * 2 + 9) / 2));
     });
 });

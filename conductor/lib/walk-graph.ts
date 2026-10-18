@@ -13,9 +13,10 @@
 // - an opened loc's tiles (Gate.opens), when the account meets its requirement.
 //
 // Not a tile in the Wilderness, unless the way starts or ends there (actions/walk.ts refuses such a route). Not a
-// gate's jump (an agility shortcut, the Shantay Pass, the Mining Guild ladder: no walk op makes them) and not a
-// transport (no walk takes a ship or a cart). The tick model is distance.ts's: half a tick a step, CROSSING_TICKS a
-// crossing, summed in half ticks and rounded up once.
+// gate's jump (an agility shortcut, the Shantay Pass, the Mining Guild ladder: no walk op makes them), not a
+// transport (no walk takes a ship or a cart), and no edge of any other kind (reach.ts Via: a scripted move, a
+// teleport), so a kind the graph gains is not walked until the walker learns it. The tick model is distance.ts's:
+// half a tick a step, CROSSING_TICKS a crossing, summed in half ticks and rounded up once.
 //
 // The graph is built on the first search, not at import (about a second: the loc configs from server/content, the
 // tile index; each tile's steps are read from the collision the first time a search reaches it). A search keeps one
@@ -25,7 +26,15 @@
 import { reachCollision } from '../../wiki/world/collision';
 import { CROSSING_TICKS } from '../../wiki/world/distance';
 import { locSizes } from '../../wiki/world/place';
-import { IntList, reachGraph, STEPS, wallTiles, type ReachGraph } from '../../wiki/world/reach';
+import {
+    IntList,
+    reachGraph,
+    STEPS,
+    wallTiles,
+    type ReachCollision,
+    type ReachGraph,
+    type ReachInput,
+} from '../../wiki/world/reach';
 import { minimalSets } from '../../wiki/world/requirements';
 import { readConfigs } from '../../wiki/world/sources/configs';
 import type { Gate } from '../../wiki/world/types';
@@ -78,7 +87,8 @@ export function doorRefusal(g: Gate, opName: (loc: string, op: number) => string
     return NOT_WALKER_DOORS.get(g.loc);
 }
 
-interface Built {
+/** The walker's graph of a world (walkGraph), and the search's arrays. */
+export interface WalkGraph {
     graph: ReachGraph;
     /**
      * The door edges the walker crosses, both ways across a wall: by `pair`, the requirement alternatives (`sig`) of
@@ -89,20 +99,41 @@ interface Built {
     dist: Int32Array;
     hops: Uint8Array;
     node: Int32Array;
+    /** Each connector table's connector edges (connectorEdges), by table. */
+    climbs: WeakMap<readonly Connector[], Map<number, number>>;
 }
 
-let built: Built | undefined;
+let built: WalkGraph | undefined;
 
-/** The graph and the search's arrays, built on the first call. */
-function graphOf(): Built {
+/** The world index's walk graph, built on the first call. */
+function graphOf(): WalkGraph {
     if (built) return built;
     const configs = readConfigs('loc');
-    const graph = reachGraph({ world: WORLD, collision: reachCollision, size: locSizes(configs) });
+    built = walkGraph({
+        world: WORLD,
+        collision: reachCollision,
+        size: locSizes(configs),
+        opName: (loc, op) => configs.get(loc)?.[`op${op}`]?.[0],
+    });
+    return built;
+}
+
+/**
+ * The walk graph of `world` over `collision` (the world index's for nearestWay; a scripted one in a test), `opName`
+ * naming a loc config's op as doorRefusal reads it.
+ */
+export function walkGraph(input: {
+    world: ReachInput['world'];
+    collision: ReachCollision;
+    size: ReachInput['size'];
+    opName: (loc: string, op: number) => string | undefined;
+}): WalkGraph {
+    const { world, collision, size, opName } = input;
+    const graph = reachGraph({ world, collision, size });
     const { index } = graph;
     const at = (t: Tile) => index.of(t.level, t.x, t.z);
-    const opName = (loc: string, op: number) => configs.get(loc)?.[`op${op}`]?.[0];
     const doors = new Map<number, Set<string>>();
-    for (const g of WORLD.gates) {
+    for (const g of world.gates) {
         if (g.kind !== 'gate' || !WALL_SHAPES.has(g.shape) || g.to || doorRefusal(g, opName)) continue;
         const tiles = wallTiles(g);
         if (!tiles) continue;
@@ -118,26 +149,23 @@ function graphOf(): Built {
             doors.set(p, sigs.add(sig(graph, ids)).add(''));
         }
     }
-    built = {
+    return {
         graph,
         doors,
         dist: new Int32Array(index.size).fill(INF),
         hops: new Uint8Array(index.size),
         node: new Int32Array(index.size),
+        climbs: new WeakMap(),
     };
-    return built;
 }
-
-/** A table's connector edges: each graph edge of a connector, by `pair`, to the table row it climbs. */
-const edgesOf = new WeakMap<readonly Connector[], Map<number, number>>();
 
 /**
  * Which row of `table` each connector edge of the graph is: the row that lands where the edge does, with its loc on
  * the edge's level and nearest the edge's source (a loc's approach tiles are beside its footprint, at most a few
  * tiles from its own tile). An edge no row lands on is a connector the table left out.
  */
-function connectorEdges(b: Built, table: readonly Connector[]): Map<number, number> {
-    let m = edgesOf.get(table);
+function connectorEdges(b: WalkGraph, table: readonly Connector[]): Map<number, number> {
+    let m = b.climbs.get(table);
     if (m) return m;
     m = new Map();
     const { index, edgeFrom } = b.graph;
@@ -161,7 +189,7 @@ function connectorEdges(b: Built, table: readonly Connector[]): Map<number, numb
             }
             if (best >= 0) m.set(pair(from, e.to), best);
         }
-    edgesOf.set(table, m);
+    b.climbs.set(table, m);
     return m;
 }
 
@@ -180,6 +208,8 @@ export interface WalkSearch {
     connectors: readonly Connector[];
     /** At most this many of them. */
     maxHops: number;
+    /** The graph searched: the world index's (graphOf) by default. */
+    graph?: WalkGraph;
 }
 
 /**
@@ -187,7 +217,7 @@ export interface WalkSearch {
  * or undefined when none is reached. The first target in `targets` wins a tie on one tile.
  */
 export function nearestWay(from: Tile, targets: readonly Tile[], opts: WalkSearch): Way | undefined {
-    const b = graphOf();
+    const b = opts.graph ?? graphOf();
     const { graph, doors, dist, hops, node } = b;
     const { index, sets, edgeFrom, openAlts, stepMask } = graph;
     const start = index.of(from.level, from.x, from.z);

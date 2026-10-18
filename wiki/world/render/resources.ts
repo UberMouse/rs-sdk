@@ -1,6 +1,7 @@
 // wiki/resources/<kind>/<subtype>.md: what the game data says about one resource subtype (the dbrow the
 // skill script reads, or a fishing spot's options), then every site holding it.
 import { rockSubtype, treeSubtype } from '../classify';
+import { statRandomRule } from '../roll';
 import { first } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
 import type { Feature, Site, World } from '../types';
@@ -68,9 +69,6 @@ function facts(data: PageData) {
     return { objName, npcName, loot, rows };
 }
 
-const STAT_RANDOM = (skill: string): string =>
-    `Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at ${skill} level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).`;
-
 const RESPAWN =
     'Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.md), which the scripts shorten as more players are online (general/scripts/player_count.rs2).';
 
@@ -126,7 +124,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                         : ['The row lists no success chance per axe.']),
                     '',
                 ]),
-                STAT_RANDOM('Woodcutting'),
+                statRandomRule('Woodcutting'),
                 '',
                 'A respawnrate of 0 in the row means 120-199 ticks and a tree that depletes with every log; any other tree depletes 1 in 8 logs (skill_woodcutting/scripts/woodcut.rs2).',
                 '',
@@ -154,7 +152,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                     ]),
                 ),
                 '',
-                `${STAT_RANDOM('Mining')} The pair is the same whatever the pickaxe: mining_table has no pickaxe column.`,
+                `${statRandomRule('Mining')} The pair is the same whatever the pickaxe: mining_table has no pickaxe column.`,
                 '',
                 XP_RATE,
                 '',
@@ -232,7 +230,7 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 '',
                 XP_RATE,
                 '',
-                STAT_RANDOM('Thieving'),
+                statRandomRule('Thieving'),
             ];
         }
     }

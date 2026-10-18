@@ -22,7 +22,7 @@ import { loadWorld } from '../load';
 import { besideCluster, grownBox, locSizes, type Placed, type StepCollision } from '../place';
 import { fillReach, reachGraph } from '../reach';
 import type { Trigger } from '../sources/triggers';
-import { WORLD_FORMAT, type Feature, type NpcSpawn, type Site, type Tile, type World } from '../types';
+import { WORLD_FORMAT, type Crossing, type Feature, type NpcSpawn, type Site, type Tile, type World } from '../types';
 import { Grid } from './grid';
 
 const tree = (x: number, z: number, config = 'tree'): Feature => ({
@@ -142,10 +142,58 @@ const world: World = {
             source: 'quests/quest_legends/scripts/jungle_tree.rs2:8',
         },
     ],
+    crossings: [
+        // A teleport with a random landing of two tiles, and a rolled shortcut that fails onto another tile.
+        {
+            via: 'teleport',
+            act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'airtemple_ruined' },
+            at: { level: 0, x: 2984, z: 3291 },
+            from: [{ level: 0, x: 2984, z: 3290 }],
+            landings: [
+                { tile: { level: 0, x: 2841, z: 4829 }, spread: 1 },
+                { tile: { level: 0, x: 2842, z: 4829 }, spread: 1 },
+            ],
+            requires: [['item:air_talisman:held']],
+            source: 'skill_runecraft/scripts/runecraft.rs2:45',
+        },
+        {
+            via: 'scripted',
+            act: { kind: 'loc-op', loc: 'log_balance', op: 1 },
+            at: { level: 0, x: 2602, z: 3336 },
+            from: [{ level: 0, x: 2603, z: 3336 }],
+            landings: [{ tile: { level: 0, x: 2598, z: 3336 }, spread: 0 }],
+            requires: [['skill:agility:33']],
+            roll: {
+                stat: 'agility',
+                low: 60,
+                high: 250,
+                source: 'agility.rs2:10',
+                fail: { ticks: 4, to: { level: 0, x: 2600, z: 3330 }, damage: 3, back: 4 },
+            },
+            source: 'agility.rs2:12',
+        },
+    ],
+};
+
+/** The message loadWorld refuses `bad` with, less the file's name; `read` when it reads it. */
+const refused = (bad: unknown): string => {
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, JSON.stringify(bad));
+        try {
+            loadWorld(file);
+        } catch (e) {
+            return (e as Error).message.replace(`${file} `, '');
+        }
+        return 'read';
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport or gate per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate or crossing per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -179,6 +227,10 @@ describe('serializeWorld', () => {
                 '    {"trigger":"oploc1,chefdoor","kind":"gate","loc":"chefdoor","tile":{"level":0,"x":3143,"z":3443},"shape":0,"angle":1,"requires":[["item:chefs_hat:worn","skill:cooking:32"]],"from":"far","source":"skill_cooking/scripts/cooking_guild.rs2:4"},',
                 '    {"trigger":"oploc1,miningguildladder","kind":"gate","loc":"miningguildladder","tile":{"level":0,"x":3018,"z":3339},"shape":10,"angle":0,"requires":[["skill:mining:60"]],"landings":[{"stand":{"level":0,"x":3017,"z":3339},"landing":{"level":0,"x":3017,"z":9739}}],"source":"areas/area_falador/scripts/mining_guild.rs2:2"},',
                 '    {"trigger":"oploc1,_jungle_bush","kind":"gate","loc":"kharazi_jungle_plant1","tile":{"level":0,"x":2760,"z":2937},"shape":10,"angle":0,"requires":[["category:weapon_axe:held","item:machette:held","quest:legends"]],"opens":true,"source":"quests/quest_legends/scripts/jungle_tree.rs2:8"}',
+                '  ],',
+                '  "crossings": [',
+                `    ${JSON.stringify(world.crossings[0])},`,
+                `    ${JSON.stringify(world.crossings[1])}`,
                 '  ]',
                 '}',
                 '',
@@ -209,6 +261,19 @@ describe('serializeWorld', () => {
             const file = join(dir, 'world.json');
             writeFileSync(file, serializeWorld(world));
             expect(loadWorld(file)).toEqual(world);
+            // An act, a roll and a transport's act, written and read back.
+            const more: World = {
+                ...world,
+                gates: [{ ...world.gates[0]!, roll: world.crossings[1]!.roll! }],
+                transports: [
+                    {
+                        ...world.transports[0]!,
+                        act: { kind: 'npc-op', npc: 'captain_tobias', op: 1, choices: ['Yes please.'] },
+                    },
+                ],
+            };
+            writeFileSync(file, serializeWorld(more));
+            expect(loadWorld(file)).toEqual(more);
             writeFileSync(file, `{"format":${WORLD_FORMAT},"areas":[]}`);
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
             // A format-3 file written before quests and transports, with its format bumped by hand, is still
@@ -216,16 +281,74 @@ describe('serializeWorld', () => {
             const { quests: _, loadoutRules: _r, transports: _t, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
             expect(() => loadWorld(file)).toThrow(
-                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports and gates/,
+                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates and crossings/,
             );
             const { gates: _g, ...noGates } = world;
             writeFileSync(file, JSON.stringify(noGates));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
             writeFileSync(file, JSON.stringify({ ...world, loadoutRules: [] }));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
+            const { crossings: _c, ...noCrossings } = world;
+            writeFileSync(file, JSON.stringify(noCrossings));
+            expect(() => loadWorld(file)).toThrow(/not a world.json/);
         } finally {
             rmSync(dir, { recursive: true });
         }
+    });
+
+    describe('loadWorld refuses a malformed crossing-model field, naming its row', () => {
+        const [teleport, shortcut] = world.crossings as [Crossing, Crossing];
+        const withCrossing = (c: unknown) => ({ ...world, crossings: [teleport, c] });
+        const roll = shortcut.roll!;
+
+        test.each([
+            ['a via it does not know', { ...shortcut, via: 'ship' }, 'crossings[1]: a via of "ship"'],
+            ['an act of no kind', { ...shortcut, act: { kind: 'swim' } }, 'crossings[1]: an act of kind "swim"'],
+            [
+                'an item-on-loc with both an obj and a category',
+                { ...teleport, act: { kind: 'item-on-loc', obj: 'a', category: 'b', loc: 'c' } },
+                'crossings[1]: an item-on-loc act needs a loc and one of an obj or a category',
+            ],
+            [
+                'a loc-op of op 6',
+                { ...shortcut, act: { kind: 'loc-op', loc: 'x', op: 6 } },
+                'crossings[1]: a loc-op act needs a loc and an op 1-5',
+            ],
+            [
+                'npc-op choices that are not texts',
+                { ...shortcut, act: { kind: 'npc-op', npc: 'aubury', op: 3, choices: [2] } },
+                'crossings[1]: an npc-op act needs an npc, an op 1-5, and choices, when it has them, as option texts',
+            ],
+            ['no landings', { ...teleport, landings: [] }, 'crossings[1]: no landings'],
+            [
+                'a spread that is not run ticks',
+                { ...teleport, landings: [{ tile: teleport.landings[0]!.tile, spread: -1 }] },
+                'crossings[1]: a landing needs a tile, and spread, when it has one, as run ticks',
+            ],
+            [
+                'a roll with no fail',
+                { ...shortcut, roll: { ...roll, fail: undefined } },
+                "crossings[1]: a roll's fail needs ticks and damage",
+            ],
+            [
+                'a way back with no fail tile',
+                { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 0, back: 2 } } },
+                "crossings[1]: a roll's fail.back is run ticks from its fail.to",
+            ],
+        ])('%s', (_, row, why) => {
+            expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
+        });
+
+        test("a gate's roll and a transport's act are checked too", () => {
+            expect(
+                refused({ ...world, gates: [world.gates[0], { ...world.gates[1], roll: { stat: 'agility' } }] }),
+            ).toBe(
+                'is not a world.json: gates[1]: a roll needs a stat, whole low and high bounds, and a source: regenerate it with bun run world',
+            );
+            expect(refused({ ...world, transports: [{ ...world.transports[0], act: { kind: 'interface' } }] })).toBe(
+                'is not a world.json: transports[0]: an interface act needs a component: regenerate it with bun run world',
+            );
+        });
     });
 });
 
@@ -312,7 +435,7 @@ describe('formatReport', () => {
             byLevel: [10, 0, 0, 0],
             sets: 2,
             labels: 11,
-            edges: { connectors: 0, gates: 1, transports: 0 },
+            edges: { connectors: 0, gates: 1, transports: 0, crossings: 0 },
             openTiles: 0,
             offLand: 0,
             bound: { max: 16, tiles: 0, sample: [] },
@@ -329,6 +452,7 @@ describe('formatReport', () => {
             ms: 1,
             bytes: 1024,
         },
+        unpriced: [],
         unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
     };
     const gatesLine =

@@ -59,14 +59,42 @@ Sets are canonical (`canonicalSet`, `dominates`): a requirement another in the s
 Resource and processor sites also carry `nearest` (`wiki/world/distance.ts`): the nearest bank, and for ore,
 raw fish and smelted bars the nearest furnace, range or anvil, each as the sink site's id, the run ticks from the
 site's stand tile to the sink's, and what that way needs, under the site's own `reach` sets. Distances are
-run ticks only, because bots always run; a crossing (a stair, a gate, a ship, a cart, a sled) costs a fixed
-`CROSSING_TICKS` for its kind, an estimate. The pages show it in a Nearest bank column (`none` when no bank is reached that way).
+run ticks only, because bots always run; a crossing (a stair, a gate, a ship, a cart, a sled, a scripted move, a
+teleport) costs a fixed `CROSSING_TICKS` for its kind, an estimate, plus what its row adds (below). The pages show it in a
+Nearest bank column (`none` when no bank is reached that way).
 
 Where the ways come from: connectors (stairs, ladders, trapdoors, manholes, gangplanks) are read from
 `scripts/ladders+stairs/` (`sources/connectors.ts`); gates from the scan of the scripts' door and gate triggers
 (`sources/gate-scan.ts`), each confirmed or rejected in `gate-list.ts` (exported by `gates.ts`); transports
 (ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts`.
 Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
+
+### The crossing model
+
+`crossings` in world.json (`Crossing` in `types.ts`) holds the moves no connector, gate or transport row describes:
+`scripted` (a loc op that moves the player with no condition the gate scan decides) and `teleport` (an item used on a
+loc, an npc's op and dialogue, an item op, an interface click). No source writes them yet, so the list is empty. A row
+says how the move is done (`act`: `loc-op`, `item-on-loc`, `npc-op` with its dialogue `choices`, `item-op` or
+`interface`), the loc or npc it is done on (`at`), the tiles it is done from (`from`), where it lands (`landings`: one
+tile, or the set a random landing draws from), its requirement sets, and its `roll` when the move is behind a
+`stat_random`. A connector's and a gate's act is implied by their rows (the loc's op, the trigger); a transport may
+carry one, and the sail and curated rows do not yet. A gate row may carry a `roll` too.
+
+The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
+over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:
+
+- a landing's `spread`: the run ticks to it from the row's landing farthest from it. The edge to that landing costs
+  the crossing plus its spread, so a random landing counts as its longest one: a way on from any landing costs at
+  least what it would from the worst, and exactly that when the landings are close together;
+- a roll's `fail.back`: the run ticks from the tile a failure leaves the player on back to the nearest tile the move
+  is tried from (0 when a failure leaves them where they tried). A rolled edge costs its expected ticks, the success
+  plus (1 - p)/p times the failure's ticks and the way back, with p the engine's `stat_random` chance (`roll.ts`) at
+  the lowest level the row's requirement allows.
+
+Both are walks over the neighbour steps and the free edges that carry no price of their own. A landing or a way back
+no walk gets to is left unpriced and listed in the build report, and the distances do not take that edge (the fill
+still does). The conductor's walker (`conductor/lib/walk-graph.ts`) does not walk scripted moves, teleports or
+transports.
 
 ### The unreached report
 

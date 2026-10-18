@@ -11,7 +11,11 @@
 //   The half ticks of a path are summed and rounded up once, at the end (`runTicks`). Rounding each of the k + 1
 //   stretches between a path's k crossings instead would add up to half a tick per stretch; once does not.
 // - A crossing costs CROSSING_TICKS by how it moves the player (reach.ts Via), a stated constant per kind: no
-//   world.json row carries its own duration.
+//   world.json row carries its own duration. An edge with a cost of its own (reach.ts EdgeCost) adds to it
+//   (crossingTicks): a crossing row's landing its spread, the run ticks from the row's landing farthest from it
+//   (Landing.spread, priceCrossings), so a random landing costs its longest; a rolled move its expected ticks at the
+//   lowest level its requirement allows (roll.ts expectedTicks), failures and the walk back to try again included.
+//   Such a cost is rounded up to a half tick, and an edge the build could not price is not taken.
 // - Stepping onto an opened loc's tiles (Gate.opens) from a tile that is not one costs as a gate crossing.
 //
 // Under the site's own requirement sets: a site's reach (Site.reach) lists the minimal sets that get a walk from
@@ -37,8 +41,20 @@
 // only what the context's edges change (every context meets `{}`, so its ways are never longer). The way's
 // `requires` is the join (SetTable.union) of the alternatives its crossings take; of two ways equally short, the one
 // asking fewer requirements is kept.
-import { IntList, STEPS, type ReachGraph, type Via } from './reach';
-import { SINK_KINDS, type FeatureKind, type Nearest, type SinkKind, type Site, type Tile } from './types';
+import { actName, coord, IntList, STEPS, type Edge, type ReachGraph, type Via } from './reach';
+import { expectedTicks, lowestLevel, statRandomChance } from './roll';
+import {
+    SINK_KINDS,
+    type Crossing,
+    type FeatureKind,
+    type Gate,
+    type Nearest,
+    type Roll,
+    type SinkKind,
+    type Site,
+    type Tile,
+    type World,
+} from './types';
 import { cmp } from './util';
 
 /**
@@ -64,7 +80,8 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
 };
 
 /**
- * Ticks a crossing takes, by how it moves the player, including the tick the op is clicked from its stand:
+ * Ticks a crossing takes, by how it moves the player, including the tick the op is clicked from its stand. All are
+ * estimates:
  *
  * - connector: `p_arrivedelay` then the climb's `p_delay(0)` before the jump (ladders+stairs/scripts/ladders.rs2:3,
  *   and ~climb_ladder's `p_delay(0)` at :160), 2 ticks;
@@ -76,9 +93,39 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
  * - cart: only dialogue, about 8 pages of it before and after the teleport (areas/area_shilo/scripts/vigroy.rs2:20-31),
  *   8 ticks;
  * - sled: the toboggan ride's op and its teleport (quests/quest_troll_love/scripts/quest_troll_love.rs2:1), an
- *   estimate of 4 ticks.
+ *   estimate of 4 ticks;
+ * - scripted: a loc op's move with no condition, priced as a gate's jump, 2 ticks (its scripts' delays vary);
+ * - teleport: the runecrafting ruins' `p_delay(1)` before the jump (skill_runecraft/scripts/runecraft.rs2:44), 3 ticks;
+ *   an npc's teleport talks first and waits longer (the essence mine's `p_delay(4)`,
+ *   skill_runecraft/scripts/essence_mine.rs2:20), so this is a floor.
  */
-export const CROSSING_TICKS: Readonly<Record<Via, number>> = { connector: 2, gate: 2, ship: 12, cart: 8, sled: 4 };
+export const CROSSING_TICKS: Readonly<Record<Via, number>> = {
+    connector: 2,
+    gate: 2,
+    ship: 12,
+    cart: 8,
+    sled: 4,
+    scripted: 2,
+    teleport: 3,
+};
+
+/**
+ * The ticks an edge's crossing takes: CROSSING_TICKS by its kind, plus its landing's spread, and for a roll the
+ * expected ticks at `level` of the rolled stat (roll.ts). Undefined when the build has not priced the edge (a spread
+ * or a way back it found no walk for), or the roll never succeeds at that level.
+ */
+export function crossingTicks(e: Pick<Edge, 'via' | 'cost'>, level = 1): number | undefined {
+    const base = CROSSING_TICKS[e.via];
+    if (!e.cost) return base;
+    if (e.cost.spread === undefined) return undefined;
+    const success = base + e.cost.spread;
+    const roll = e.cost.roll;
+    if (!roll) return success;
+    const back = roll.fail.to ? roll.fail.back : 0;
+    if (back === undefined) return undefined;
+    const ticks = expectedTicks(success, statRandomChance(roll.low, roll.high, level), roll.fail.ticks, back);
+    return Number.isFinite(ticks) ? ticks : undefined;
+}
 
 /** Half ticks in a tick: a run step is one. */
 const HALVES = 2;
@@ -136,12 +183,16 @@ export function nearestSinks(
     const n = index.size;
     const at = (t: Tile): number => index.of(t.level, t.x, t.z);
 
-    // The edges reversed: by target tile, each source tile with its alternatives and cost in half ticks.
+    // The edges reversed: by target tile, each source tile with its alternatives and cost in half ticks. A roll is
+    // priced at the lowest level any of the edge's alternatives lets through.
     const edgeTo = new Map<number, { from: number; alts: readonly number[]; half: number }[]>();
     for (const [from, out] of graph.edgeFrom)
         for (const e of out) {
+            const roll = e.cost?.roll;
+            const ticks = crossingTicks(e, roll && lowestLevel(e.alts.map(sets.strings), roll.stat));
+            if (ticks === undefined) continue;
             const list = edgeTo.get(e.to) ?? [];
-            list.push({ from, alts: e.alts, half: CROSSING_TICKS[e.via] * HALVES });
+            list.push({ from, alts: e.alts, half: Math.ceil(ticks * HALVES) });
             edgeTo.set(e.to, list);
         }
     const openHalf = CROSSING_TICKS.gate * HALVES;
@@ -378,4 +429,138 @@ export function formatDistance(r: DistanceReport): string[] {
         `distance: ${Object.values(r.contexts).reduce((a, b) => a + b, 0)} searches settled ${r.settled} tiles; ` +
             `${r.ms} ms, ${(r.bytes / 2 ** 20).toFixed(1)} MiB of typed arrays`,
     ];
+}
+
+export interface Priced {
+    /** The rows with their landings' spreads and their rolls' ways back filled in where a walk was found. */
+    crossings: Crossing[];
+    gates: Gate[];
+    /** What could not be priced, as `<row>: <why>`, sorted: those edges are not taken by a distance. */
+    unpriced: string[];
+}
+
+/**
+ * Prices the crossing rows and rolled gate rows of `graph` (built from `rows`) for the distances: each landing's
+ * spread (Landing.spread), and each roll's way back from its failure's tile (Roll.fail.back). Both are run ticks
+ * over the neighbour steps and the free edges that carry no cost of their own (reach.ts Edge.cost), so a price does
+ * not depend on another; the build writes them on the rows and builds the graph again from them.
+ */
+export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' | 'gates'>): Priced {
+    if (!rows.crossings.length && !rows.gates.some(g => g.roll))
+        return { crossings: rows.crossings, gates: rows.gates, unpriced: [] };
+    const { index, edgeFrom, openAlts, stepMask } = graph;
+    const at = (t: Tile): number => index.of(t.level, t.x, t.z);
+    const unpriced: string[] = [];
+    const mark = new Int32Array(index.size);
+    const dist = new Int32Array(index.size);
+    let run = 0;
+    const openHalf = CROSSING_TICKS.gate * HALVES;
+
+    /** Half ticks from tile `start` to each of `targets` it walks to (only the nearest when `first`). */
+    const walk = (start: number, targets: ReadonlySet<number>, first: boolean): Map<number, number> => {
+        run++;
+        const seen = 2 * run;
+        const buckets: (IntList | undefined)[] = [];
+        const found = new Map<number, number>();
+        let queued = 0;
+        const enter = (from: number, j: number, half: number): void => {
+            if (j < 0) return;
+            const opens = openAlts.get(j);
+            if (opens) {
+                if (!opens.includes(0)) return;
+                if (from >= 0 && !openAlts.has(from)) half += openHalf;
+            }
+            if (mark[j] === seen + 1 || (mark[j] === seen && dist[j]! <= half)) return;
+            mark[j] = seen;
+            dist[j] = half;
+            (buckets[half] ??= new IntList()).push(j);
+            queued++;
+        };
+        enter(-1, start, 0);
+        for (let d = 0; queued > 0; d++) {
+            const bucket = buckets[d];
+            if (!bucket) continue;
+            for (let k = 0; k < bucket.length; k++) {
+                const i = bucket.data[k]!;
+                queued--;
+                if (mark[i] !== seen || dist[i] !== d) continue;
+                mark[i] = seen + 1;
+                if (targets.has(i)) {
+                    found.set(i, d);
+                    if (first || found.size === targets.size) return found;
+                }
+                const m = stepMask(i);
+                const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
+                for (let bit = 0; bit < 8; bit++)
+                    if (m & (1 << bit)) enter(i, index.of(level, x + STEPS[bit]![0], z + STEPS[bit]![1]), d + 1);
+                for (const e of edgeFrom.get(i) ?? [])
+                    if (!e.cost && e.alts.includes(0)) enter(i, e.to, d + CROSSING_TICKS[e.via] * HALVES);
+            }
+        }
+        return found;
+    };
+    const ticks = (half: number): number => Math.ceil(half / HALVES);
+
+    /** The tiles each rolled gate row's checked edges go from, by its roll. */
+    const tried = new Map<Roll, number[]>();
+    for (const [from, out] of edgeFrom)
+        for (const e of out) {
+            const roll = e.cost?.roll;
+            if (roll) tried.set(roll, [...(tried.get(roll) ?? []), from]);
+        }
+
+    return graph.within(() => {
+        /** A roll with its way back, when it fails onto another tile and a walk gets back from there. */
+        const priceRoll = (roll: Roll, from: readonly number[], name: string): Roll => {
+            if (!roll.fail.to) return roll;
+            const start = at(roll.fail.to);
+            const back = start < 0 ? undefined : walk(start, new Set(from), true).values().next().value;
+            if (back === undefined) {
+                unpriced.push(
+                    `${name}: no walk from its failure's tile ${coord(roll.fail.to)} back to where it is tried`,
+                );
+                return roll;
+            }
+            return { ...roll, fail: { ...roll.fail, back: ticks(back) } };
+        };
+        const crossings = rows.crossings.map(c => {
+            const name = `${c.via} ${actName(c)} ${coord(c.at)}`;
+            const tiles = c.landings.map(l => at(l.tile));
+            const onLand = new Set(tiles.filter(i => i >= 0));
+            // From each landing, the half ticks to every landing (its own tile 0).
+            const from =
+                c.landings.length === 1
+                    ? []
+                    : tiles.map(j => (j < 0 ? new Map<number, number>() : walk(j, onLand, false)));
+            const landings = c.landings.map((l, i) => {
+                if (c.landings.length === 1) return { ...l, spread: 0 };
+                let half = 0;
+                for (let j = 0; j < tiles.length; j++) {
+                    const d = tiles[i]! < 0 ? undefined : from[j]!.get(tiles[i]!);
+                    if (d === undefined) {
+                        unpriced.push(
+                            `${name}: no walk to its landing ${coord(l.tile)} from ${coord(c.landings[j]!.tile)}`,
+                        );
+                        return l;
+                    }
+                    half = Math.max(half, d);
+                }
+                return { ...l, spread: ticks(half) };
+            });
+            const roll =
+                c.roll &&
+                priceRoll(
+                    c.roll,
+                    c.from.map(at).filter(i => i >= 0),
+                    name,
+                );
+            return roll ? { ...c, landings, roll } : { ...c, landings };
+        });
+        const gates = rows.gates.map(g =>
+            g.roll
+                ? { ...g, roll: priceRoll(g.roll, tried.get(g.roll) ?? [], `${g.trigger} ${g.loc} ${coord(g.tile)}`) }
+                : g,
+        );
+        return { crossings, gates, unpriced: unpriced.sort(cmp) };
+    });
 }

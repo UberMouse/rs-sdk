@@ -11,14 +11,95 @@ type Parsed = { [key: string]: unknown };
 const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== null && !Array.isArray(x);
 
 /**
- * Whether `x` is a world.json of this format: its format, a string generatedFrom, the eight lists and
- * the loadoutRules object. Their items are taken as build.ts wrote them.
+ * Whether `x` is a world.json of this format: its format, a string generatedFrom, the nine lists and
+ * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields
+ * (crossingProblem).
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&
     typeof x.generatedFrom === 'string' &&
-    [x.areas, x.features, x.sites, x.npcSpawns, x.connectors, x.quests, x.transports, x.gates].every(Array.isArray) &&
+    [x.areas, x.features, x.sites, x.npcSpawns, x.connectors, x.quests, x.transports, x.gates, x.crossings].every(
+        Array.isArray,
+    ) &&
     isObject(x.loadoutRules);
+
+const isInt = (x: unknown): x is number => Number.isInteger(x);
+const isCount = (x: unknown): x is number => isInt(x) && x >= 0;
+const isOp = (x: unknown): boolean => isInt(x) && x >= 1 && x <= 5;
+const isName = (x: unknown): boolean => typeof x === 'string' && x !== '';
+const isTile = (x: unknown): boolean => isObject(x) && isInt(x.level) && isInt(x.x) && isInt(x.z);
+const isSets = (x: unknown): boolean =>
+    Array.isArray(x) && x.every(set => Array.isArray(set) && set.every(r => typeof r === 'string'));
+
+/** What is wrong with an Act, or undefined. */
+function actProblem(a: unknown): string | undefined {
+    if (!isObject(a)) return 'an act that is not an object';
+    switch (a.kind) {
+        case 'loc-op':
+            return isName(a.loc) && isOp(a.op) ? undefined : 'a loc-op act needs a loc and an op 1-5';
+        case 'item-on-loc':
+            return isName(a.loc) && isName(a.obj) !== isName(a.category)
+                ? undefined
+                : 'an item-on-loc act needs a loc and one of an obj or a category';
+        case 'npc-op':
+            return isName(a.npc) &&
+                isOp(a.op) &&
+                (a.choices === undefined || (Array.isArray(a.choices) && a.choices.every(isName)))
+                ? undefined
+                : 'an npc-op act needs an npc, an op 1-5, and choices, when it has them, as option texts';
+        case 'item-op':
+            return isName(a.obj) && isOp(a.op) ? undefined : 'an item-op act needs an obj and an op 1-5';
+        case 'interface':
+            return isName(a.component) ? undefined : 'an interface act needs a component';
+        default:
+            return `an act of kind ${JSON.stringify(a.kind)}`;
+    }
+}
+
+/** What is wrong with a Roll, or undefined. */
+function rollProblem(r: unknown): string | undefined {
+    if (!isObject(r)) return 'a roll that is not an object';
+    if (!isName(r.stat) || !isInt(r.low) || !isInt(r.high) || !isName(r.source))
+        return 'a roll needs a stat, whole low and high bounds, and a source';
+    const f = r.fail;
+    if (!isObject(f) || !isCount(f.ticks) || !isCount(f.damage)) return "a roll's fail needs ticks and damage";
+    if (f.to !== undefined && !isTile(f.to)) return "a roll's fail.to is not a tile";
+    if (f.back !== undefined && (f.to === undefined || !isCount(f.back)))
+        return "a roll's fail.back is run ticks from its fail.to";
+    return undefined;
+}
+
+/** What is wrong with a World.crossings row, or undefined. */
+function crossingProblem(c: unknown): string | undefined {
+    if (!isObject(c)) return 'not an object';
+    if (c.via !== 'scripted' && c.via !== 'teleport') return `a via of ${JSON.stringify(c.via)}`;
+    const act = actProblem(c.act);
+    if (act) return act;
+    if (!isTile(c.at)) return 'its at is not a tile';
+    if (!Array.isArray(c.from) || !c.from.every(isTile)) return 'its from is not a list of tiles';
+    if (!Array.isArray(c.landings) || !c.landings.length) return 'no landings';
+    for (const l of c.landings)
+        if (!isObject(l) || !isTile(l.tile) || (l.spread !== undefined && !isCount(l.spread)))
+            return 'a landing needs a tile, and spread, when it has one, as run ticks';
+    if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
+    if (c.roll !== undefined) return rollProblem(c.roll);
+    return isName(c.source) ? undefined : 'no source';
+}
+
+/** The first malformed crossing-model field of `world`, as `<list>[<i>]: <what>`, or undefined. */
+function crossingModelProblem(world: World): string | undefined {
+    const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
+        ['crossings', world.crossings, crossingProblem],
+        ['gates', world.gates, g => (g.roll === undefined ? undefined : rollProblem(g.roll))],
+        ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],
+    ];
+    for (const [list, items, problem] of rows)
+        for (const [i, item] of items.entries()) {
+            const why = isObject(item) ? problem(item) : 'not an object';
+            if (why) return `${list}[${i}]: ${why}`;
+        }
+    return undefined;
+}
 
 /** The world in `file` (default wiki/world.json); throws when it is not a world.json of this format. */
 export function loadWorld(file: string = WORLD_JSON): World {
@@ -36,8 +117,10 @@ export function loadWorld(file: string = WORLD_JSON): World {
         );
     if (!isWorld(world))
         throw new Error(
-            `${file} is not a world.json: it needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports and gates`,
+            `${file} is not a world.json: it needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates and crossings`,
         );
+    const problem = crossingModelProblem(world);
+    if (problem) throw new Error(`${file} is not a world.json: ${problem}: regenerate it with bun run world`);
     return world;
 }
 

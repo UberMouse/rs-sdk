@@ -1,0 +1,46 @@
+// The engine's stat_random roll and what a crossing behind one costs: the resource pages state the chance
+// (render/resources.ts), distance.ts prices a rolled crossing with it at the lowest level its requirement allows,
+// and a walker can price one at a bot's own level.
+import { parseRequirement } from './requirements';
+
+/**
+ * The chance `stat_random(stat, low, high)` succeeds at a level of the stat, as the engine rolls it
+ * (server/engine/src/engine/script/handlers/PlayerOps.ts:591): it compares
+ * `floor(low * (99 - L) / 98) + floor(high * (L - 1) / 98) + 1`, L the level capped at 99, with a draw of 0-255.
+ */
+export function statRandomChance(low: number, high: number, level: number): number {
+    const l = Math.min(level, 99);
+    const value = Math.floor((low * (99 - l)) / 98) + Math.floor((high * (l - 1)) / 98) + 1;
+    return Math.min(Math.max(value, 0), 256) / 256;
+}
+
+/** The pages' statement of statRandomChance, for the stat named `skill`. */
+export const statRandomRule = (skill: string): string =>
+    `Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at ${skill} level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).`;
+
+/**
+ * The lowest level of `stat` any of the alternative requirement sets lets through: each set's `skill:<stat>:<n>`,
+ * or 1 for a set that asks none.
+ */
+export function lowestLevel(requires: readonly (readonly string[])[], stat: string): number {
+    let lowest = Infinity;
+    for (const set of requires) {
+        let level = 1;
+        for (const s of set) {
+            const r = parseRequirement(s);
+            if (r.kind === 'skill' && r.skill === stat) level = Math.max(level, r.level);
+        }
+        lowest = Math.min(lowest, level);
+    }
+    return lowest === Infinity ? 1 : lowest;
+}
+
+/**
+ * The expected ticks of a crossing that takes `success` ticks when it succeeds, with chance `chance`: each failure
+ * takes `fail` ticks and `back` more to get back to where it is tried from, and (1 - p)/p of them come before the
+ * success on average. Infinity when it never succeeds.
+ */
+export function expectedTicks(success: number, chance: number, fail: number, back: number): number {
+    if (chance <= 0) return Infinity;
+    return success + ((1 - chance) / chance) * (fail + back);
+}

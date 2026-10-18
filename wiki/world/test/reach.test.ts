@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { locSizes } from '../place';
 import { fillReach, formatReach, MAX_SETS, wallTiles, type ReachInput } from '../reach';
 import { at, Grid } from './grid';
-import type { Connector, Feature, Gate, Tile, Transport } from '../types';
+import type { Connector, Crossing, Feature, Gate, Tile, Transport } from '../types';
 
 const START = at(0, 3200, 3200);
 const size = locSizes(new Map());
@@ -478,6 +478,67 @@ describe('transports', () => {
     });
 });
 
+const crossing = (c: Partial<Crossing> & Pick<Crossing, 'from' | 'landings'>): Crossing => ({
+    via: 'teleport',
+    act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'ruins' },
+    at: at(0, 3210, 3211),
+    requires: [['item:air_talisman:held']],
+    source: 'runecraft.rs2:45',
+    ...c,
+});
+
+/** Three sealed rooms on the island, so a room is entered only by the edge that lands in it. */
+const rooms = () => sea().room(3220, 3220, 3222, 3222).room(3226, 3226, 3228, 3228).room(3226, 3204, 3228, 3206);
+
+describe('crossings', () => {
+    const ISLAND = [at(0, 3221, 3221), at(0, 3227, 3227), at(0, 3227, 3205)];
+    const FROM = [at(0, 3210, 3210), at(0, 3211, 3210)];
+
+    test('every landing of a random landing is reached from every from tile, under the same alternatives', () => {
+        const reach = fill(rooms(), {
+            crossings: [crossing({ from: FROM, landings: ISLAND.map(tile => ({ tile })) })],
+        });
+        for (const t of ISLAND) expect(reach.setsAt(t)).toEqual([['item:air_talisman:held']]);
+        expect(reach.setsAt(at(0, 3231, 3231))).toEqual([]);
+        expect(reach.report.edges.crossings).toBe(FROM.length * ISLAND.length);
+        const scripted = fill(rooms(), {
+            crossings: [
+                crossing({
+                    via: 'scripted',
+                    act: { kind: 'loc-op', loc: 'log_balance', op: 1 },
+                    from: [at(0, 3205, 3205)],
+                    landings: [{ tile: at(0, 3230, 3230), spread: 0 }],
+                    requires: [['skill:agility:30'], ['quest:x', 'members']],
+                }),
+            ],
+        });
+        expect(scripted.setsAt(at(0, 3231, 3231))).toEqual([['quest:x'], ['skill:agility:30']]);
+        expect(scripted.setsAt(ISLAND[0]!)).toEqual([]);
+    });
+
+    test('a row with no tile it is done from adds no edge and is reported; a landing off land is reported', () => {
+        const reach = fill(sea(), {
+            crossings: [
+                crossing({ from: [], landings: [{ tile: EAST }] }),
+                crossing({ from: FROM, landings: [{ tile: at(0, 3235, 3220) }] }),
+            ],
+        });
+        expect(reach.setsAt(EAST)).toEqual([]);
+        expect(reach.report.skipped).toEqual([
+            'teleport item-on-loc air_talisman ruins (3210, 3211): (3235, 3220) is not on land',
+            'teleport item-on-loc air_talisman ruins (3210, 3211): no tile it is done from',
+        ]);
+    });
+
+    test("a rolled gate's requirement is as without its roll: the roll prices the edge, it gates nothing", () => {
+        const roll = { stat: 'agility', low: 10, high: 200, source: 'a.rs2:1', fail: { ticks: 3, damage: 2 } };
+        const gates = [gate({ tile: DOOR, requires: [['skill:agility:5']] })];
+        const rolled = fill(split(), { gates: [{ ...gates[0]!, roll }] });
+        expect(rolled.setsAt(EAST)).toEqual(fill(split(), { gates }).setsAt(EAST));
+        expect(rolled.setsAt(EAST)).toEqual([['skill:agility:5']]);
+    });
+});
+
 describe('formatReach', () => {
     test('counts, edges and cost, then the bound and the rows not used', () => {
         const report = fill(split(), {
@@ -491,7 +552,7 @@ describe('formatReach', () => {
         });
         expect(lines).toEqual([
             'reach: 1024 of 2048 tiles from the Lumbridge spawn, 1024 with no requirement (by level 1024 / 0 / 0 / 0); 1 requirement sets on 1024 labels',
-            'reach edges: 0 connector, 0 gate, 0 transport; 0 opened loc tiles; 32 tiles beside reached land not land (not entered); 12 ms, 3.0 MiB of typed arrays',
+            'reach edges: 0 connector, 0 gate, 0 transport, 0 crossing; 0 opened loc tiles; 32 tiles beside reached land not land (not entered); 12 ms, 3.0 MiB of typed arrays',
             'warning: 1 tiles would hold more than 16 minimal sets, so results there may be incomplete; the first few:',
             '  (3225, 3220)',
             'warning: 1 rows the fill could not use:',

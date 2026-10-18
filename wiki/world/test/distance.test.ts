@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test';
-import { CROSSING_TICKS, formatDistance, nearestSinks } from '../distance';
+import { CROSSING_TICKS, crossingTicks, formatDistance, nearestSinks, priceCrossings } from '../distance';
 import { locSizes } from '../place';
 import { reachGraph, type ReachInput } from '../reach';
-import type { Connector, Feature, FeatureKind, Gate, Tile, Transport } from '../types';
+import type { Connector, Crossing, Feature, FeatureKind, Gate, Roll, Tile, Transport, World } from '../types';
 import { at, Grid } from './grid';
 
 const size = locSizes(new Map());
@@ -329,5 +329,190 @@ describe('which sites get which sinks', () => {
                 'anvil 1 sites with a nearest, 0 without (1 sinks, 1 contexts)',
         );
         expect(lines[1]).toMatch(/^distance: 4 searches settled \d+ tiles; \d+ ms, [\d.]+ MiB of typed arrays$/);
+    });
+});
+
+/** An island: everything east of a blocked column at x 3216. */
+const sea = () => {
+    const grid = new Grid();
+    for (let z = 3200; z < 3232; z++) grid.block(at(0, 3216, z));
+    return grid;
+};
+
+/** A row's landings and rolls priced over the grid (priceCrossings), as the build writes them. */
+const priced = (grid: Grid, world: Pick<World, 'crossings'> & Partial<Pick<World, 'gates'>>) =>
+    priceCrossings(
+        reachGraph({
+            world: { features: [], connectors: [], transports: [], gates: [], ...world },
+            collision: grid,
+            size,
+        }),
+        { gates: [], ...world },
+    );
+
+const crossing = (c: Partial<Crossing> & Pick<Crossing, 'from' | 'landings'>): Crossing => ({
+    via: 'teleport',
+    act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'ruins' },
+    at: at(0, 3214, 3221),
+    requires: [['item:air_talisman:held']],
+    source: 'runecraft.rs2:45',
+    ...c,
+});
+
+/** The island with a sealed room round (3230, 3220): no walk gets in or out of it. */
+const sealedIsland = () => sea().room(3229, 3219, 3231, 3221);
+/** A whole wall down the west edge of column 3216. */
+const walled = () => new Grid().wallColumn(3216, 3200, 3231);
+/** That wall with a gap at z 3220, for the door in it. */
+const gapped = () => new Grid().wallColumn(3216, 3200, 3231, [3220]);
+
+describe('a random landing costs its longest landing', () => {
+    // Three landings on the island, A and B two steps apart, C 10 east of A: from A the farthest is C, 5 ticks; from
+    // B, C at 4; from C, A at 5.
+    const A = at(0, 3220, 3220);
+    const B = at(0, 3222, 3220);
+    const C = at(0, 3230, 3220);
+    const FROM = at(0, 3214, 3220);
+    const row = crossing({ from: [FROM], landings: [A, B, C].map(tile => ({ tile })) });
+    // The tree is 4 steps from the ruins; the bank on the island 5 steps from A and from B, 8 from C.
+    const islandSites = [
+        { id: 'bank:island:0', stand: at(0, 3222, 3225) },
+        { id: 'tree:a:0', stand: at(0, 3210, 3220), reach: [['item:air_talisman:held']] },
+    ];
+
+    test("priceCrossings stores each landing's spread: the run ticks from the landing farthest from it", () => {
+        const p = priced(sea(), { crossings: [row] });
+        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([5, 4, 5]);
+        expect(p.unpriced).toEqual([]);
+        // A single landing's spread is 0.
+        expect(priced(sea(), { crossings: [{ ...row, landings: [{ tile: A }] }] }).crossings[0]!.landings).toEqual([
+            { tile: A, spread: 0 },
+        ]);
+    });
+
+    test('the way through landing i costs the crossing plus its spread: here through B, the landing with the least', () => {
+        const r = nearest(sea(), islandSites, { crossings: priced(sea(), { crossings: [row] }).crossings });
+        // 4 steps, the teleport, B's 4 ticks of spread, 5 steps: 4 + 6 + 8 + 5 half ticks, rounded up.
+        expect(bank(r, 'tree:a:0')).toEqual({
+            site: 'bank:island:0',
+            runTicks: Math.ceil((4 + CROSSING_TICKS.teleport * 2 + 8 + 5) / 2),
+            requires: ['item:air_talisman:held'],
+        });
+    });
+
+    test('the distances read the stored spread, whatever it says: one of 0 on C makes C the way', () => {
+        const landings = [
+            { tile: A, spread: 9 },
+            { tile: B, spread: 30 },
+            { tile: C, spread: 0 },
+        ];
+        const r = nearest(sea(), islandSites, { crossings: [{ ...row, landings }] });
+        expect(bank(r, 'tree:a:0')?.runTicks).toBe(Math.ceil((4 + CROSSING_TICKS.teleport * 2 + 0 + 8) / 2));
+    });
+
+    test('a landing no other landing walks to is not priced, reported, and taken by no distance', () => {
+        // C in a sealed room: no walk gets in or out of it, so neither C's spread nor A's and B's is known.
+        const sealed = { ...row, landings: [A, B, at(0, 3230, 3220)].map(tile => ({ tile })) };
+        const p = priced(sealedIsland(), { crossings: [sealed] });
+        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([undefined, undefined, undefined]);
+        expect(p.unpriced).toEqual([
+            'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3220, 3220) from (3230, 3220)',
+            'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3222, 3220) from (3230, 3220)',
+            'teleport item-on-loc air_talisman ruins (3214, 3221): no walk to its landing (3230, 3220) from (3220, 3220)',
+        ]);
+        expect(nearest(sealedIsland(), islandSites, { crossings: p.crossings }).nearest.get('tree:a:0')).toEqual({});
+    });
+});
+
+describe('a rolled crossing costs its expected ticks at the lowest level its requirement allows', () => {
+    // A whole wall down the west edge of column 3216, and a shortcut over it from W to E at Agility 30: stat_random
+    // bounds 50 and 200 succeed 95 times in 256 at 30 (roll.test.ts). A failure takes 4 ticks and drops the player
+    // 6 steps west of W, 3 ticks from it.
+    const W = at(0, 3215, 3220);
+    const E = at(0, 3216, 3220);
+    const roll: Roll = {
+        stat: 'agility',
+        low: 50,
+        high: 200,
+        source: 'agility.rs2:10',
+        fail: { ticks: 4, to: at(0, 3209, 3220), damage: 2 },
+    };
+    const shortcut = crossing({
+        via: 'scripted',
+        act: { kind: 'loc-op', loc: 'log_balance', op: 1 },
+        at: W,
+        from: [W],
+        landings: [{ tile: E }],
+        requires: [['skill:agility:30'], ['quest:x', 'skill:agility:60']],
+        roll,
+    });
+    const shortcutSites = [
+        { id: 'bank:east:0', stand: E },
+        { id: 'tree:west:0', stand: W, reach: [['skill:agility:30']] },
+    ];
+    const p = 95 / 256;
+
+    test("priceCrossings stores the way back from the failure's tile to where the move is tried", () => {
+        expect(priced(walled(), { crossings: [shortcut] }).crossings[0]!.roll!.fail.back).toBe(3);
+    });
+
+    test('the expected cost: success, plus (1 - p)/p failures, each its ticks and the way back', () => {
+        const r = nearest(walled(), shortcutSites, {
+            crossings: priced(walled(), { crossings: [shortcut] }).crossings,
+        });
+        // 2 + (161/95) * (4 + 3) = 13.86 ticks: 28 half ticks.
+        const expected = CROSSING_TICKS.scripted + ((1 - p) / p) * (4 + 3);
+        expect(Math.ceil(expected * 2)).toBe(28);
+        expect(bank(r, 'tree:west:0')).toEqual({ site: 'bank:east:0', runTicks: 14, requires: ['skill:agility:30'] });
+    });
+
+    test('a failure that leaves the player where they tried has no way back: 2 + (161/95) * 4 = 8.78 ticks', () => {
+        const here = { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 2 } } };
+        const r = nearest(walled(), shortcutSites, { crossings: priced(walled(), { crossings: [here] }).crossings });
+        expect(bank(r, 'tree:west:0')?.runTicks).toBe(Math.ceil(Math.ceil((2 + ((1 - p) / p) * 4) * 2) / 2));
+        expect(bank(r, 'tree:west:0')?.runTicks).toBe(9);
+    });
+
+    test('crossingTicks prices it at any level, for a walker at its own; unpriced or never succeeding, undefined', () => {
+        const back = { ...roll, fail: { ...roll.fail, back: 3 } };
+        expect(crossingTicks({ via: 'scripted', cost: { spread: 0, roll: back } }, 30)).toBeCloseTo(2 + 1127 / 95, 10);
+        // At 99, 201 in 256: 2 + (55/201) * 7.
+        expect(crossingTicks({ via: 'scripted', cost: { spread: 0, roll: back } }, 99)).toBeCloseTo(2 + 385 / 201, 10);
+        expect(crossingTicks({ via: 'scripted', cost: { spread: 0, roll } }, 99)).toBeUndefined();
+        expect(crossingTicks({ via: 'scripted', cost: { spread: undefined } })).toBeUndefined();
+        expect(
+            crossingTicks({ via: 'scripted', cost: { spread: 0, roll: { ...back, low: -1, high: 0 } } }, 1),
+        ).toBeUndefined();
+        expect(crossingTicks({ via: 'gate' })).toBe(CROSSING_TICKS.gate);
+    });
+
+    test('an unpriced roll is taken by no distance', () => {
+        const r = nearest(walled(), shortcutSites, {
+            crossings: [{ ...shortcut, landings: [{ tile: E, spread: 0 }] }],
+        });
+        expect(r.nearest.get('tree:west:0')).toEqual({});
+    });
+
+    test("a rolled gate's checked edges are priced the same, the way back to the nearest tile it is tried from", () => {
+        // The wall with a gap at z 3220 and the door in it: its two tiles are (3216, 3220) and (3215, 3220).
+        const door: Gate = {
+            ...toll,
+            requires: [['skill:agility:30']],
+            roll: { ...roll, fail: { ticks: 4, to: at(0, 3210, 3220), damage: 2 } },
+        };
+        const pg = priced(gapped(), { crossings: [], gates: [door] });
+        // 5 steps back to the door's west tile: 3 ticks.
+        expect(pg.gates[0]!.roll!.fail.back).toBe(3);
+        const r = nearest(
+            gapped(),
+            [
+                { id: 'bank:east:0', stand: DOOR },
+                { id: 'tree:west:0', stand: at(0, 3215, 3220), reach: [['skill:agility:30']] },
+            ],
+            {
+                gates: pg.gates,
+            },
+        );
+        expect(bank(r, 'tree:west:0')?.runTicks).toBe(14);
     });
 });

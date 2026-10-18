@@ -23,7 +23,12 @@
 //   sideOf). A quest window is never crossed (its wall stays walled), and a gate on a connector's loc tile
 //   and op puts its requirements on that connector's edges;
 // - a transport (World.transports) from its boarding npc's or loc's tile, and from each neighbour that can
-//   step onto it (any neighbour when the tile itself is blocked), to its landing.
+//   step onto it (any neighbour when the tile itself is blocked), to its landing;
+// - a crossing (World.crossings) from each of its `from` tiles to each of its landings, under the same
+//   alternatives.
+//
+// An edge of a crossing row, or a checked edge of a gate row with a roll, carries what distance.ts prices it by
+// beyond its kind's CROSSING_TICKS (EdgeCost): its landing's spread, its roll.
 //
 // Every edge's requirement is a list of alternative sets, any one of which crosses it. Bots always play on
 // members worlds, so `members` is met and never added to a set. The fill is a
@@ -40,7 +45,7 @@
 import { reachTiles, type PlacedLoc, type SiteOptions } from './place';
 import { canonicalSet, dominates, minimalSets, questFacts, type QuestFacts } from './requirements';
 import type { ConnectorCollision } from './sources/connectors';
-import type { Gate, Side, Tile, Transport, World } from './types';
+import type { Crossing, Gate, Roll, Side, Tile, Transport, World } from './types';
 import { cmp } from './util';
 
 /** Where a new account stands: the Lumbridge spawn. */
@@ -75,7 +80,8 @@ export interface ReachCollision extends ConnectorCollision {
 
 export interface ReachInput {
     /** `quests`, when given, lets a set's canonical form and dominance read completion (requirements.ts QuestFacts). */
-    world: Pick<World, 'features' | 'connectors' | 'gates' | 'transports'> & Partial<Pick<World, 'quests'>>;
+    world: Pick<World, 'features' | 'connectors' | 'gates' | 'transports'> &
+        Partial<Pick<World, 'quests' | 'crossings'>>;
     collision: ReachCollision;
     /** A loc's size and approach, from its config (place.ts locSizes). */
     size: SiteOptions['size'];
@@ -96,8 +102,8 @@ export interface ReachReport {
     /** Distinct requirement sets the reached tiles hold, and labels (tile, set) held. */
     sets: number;
     labels: number;
-    /** Edges added: connector, gate (walls crossed, jumps, landings) and transport ones; opened loc tiles. */
-    edges: { connectors: number; gates: number; transports: number };
+    /** Edges added: connector, gate (walls crossed, jumps, landings), transport and crossing ones; opened loc tiles. */
+    edges: { connectors: number; gates: number; transports: number; crossings: number };
     openTiles: number;
     /**
      * Tiles a reached tile steps to that are not land: the mainland zones sdk/pathfinding.ts allocates as
@@ -175,8 +181,24 @@ function standOnSide(from: Side, loc: Tile, stand: Tile): boolean {
     return (stand[axis] - loc[axis]) * sign >= 0;
 }
 
+/** A crossing row's act and what it is done with, for the report: `loc-op 1 ladder`, `item-on-loc air_talisman ruins`. */
+export const actName = ({ act }: Pick<Crossing, 'act'>): string => {
+    switch (act.kind) {
+        case 'loc-op':
+            return `loc-op ${act.op} ${act.loc}`;
+        case 'item-on-loc':
+            return `item-on-loc ${'obj' in act ? act.obj : act.category} ${act.loc}`;
+        case 'npc-op':
+            return `npc-op ${act.op} ${act.npc}`;
+        case 'item-op':
+            return `item-op ${act.op} ${act.obj}`;
+        case 'interface':
+            return `interface ${act.component}`;
+    }
+};
+
 const sameTile = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
-const coord = (t: Tile): string => `(${t.x}, ${t.z}${t.level ? `, ${t.level}` : ''})`;
+export const coord = (t: Tile): string => `(${t.x}, ${t.z}${t.level ? `, ${t.level}` : ''})`;
 const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 
 /** A trigger's op number (`oploc1,x` -> 1); undefined for a use-item trigger. */
@@ -326,14 +348,28 @@ export class IntList {
 
 // ---- The graph -----------------------------------------------------------------------------------------
 
-/** How an edge moves the player: a connector's climb, a gate's crossing or jump, or a transport's ride by its kind. */
-export type Via = 'connector' | 'gate' | Transport['kind'];
+/**
+ * How an edge moves the player: a connector's climb, a gate's crossing or jump, a transport's ride by its kind, or a
+ * crossing row's move by its `via`.
+ */
+export type Via = 'connector' | 'gate' | Transport['kind'] | Crossing['via'];
+
+/**
+ * What an edge's crossing costs beyond CROSSING_TICKS for its kind (distance.ts crossingTicks): its landing's
+ * `spread` (Landing.spread, undefined while the build has not priced it), and the row's roll.
+ */
+export interface EdgeCost {
+    spread: number | undefined;
+    roll?: Roll;
+}
 
 /** An edge besides the neighbour steps: to a tile index, crossed with any one of `alts` (set ids). */
 export interface Edge {
     to: number;
     alts: readonly number[];
     via: Via;
+    /** On a crossing row's edges and a rolled gate's checked ones; another edge costs CROSSING_TICKS[via]. */
+    cost?: EdgeCost;
 }
 
 /**
@@ -405,23 +441,26 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
 
     // Extra edges by source tile, in the order added.
     const edgeFrom = new Map<number, Edge[]>();
-    const edges = { connectors: 0, gates: 0, transports: 0 };
+    const edges = { connectors: 0, gates: 0, transports: 0, crossings: 0 };
     const KIND: Record<Via, keyof typeof edges> = {
         connector: 'connectors',
         gate: 'gates',
         ship: 'transports',
         cart: 'transports',
         sled: 'transports',
+        scripted: 'crossings',
+        teleport: 'crossings',
     };
-    const addEdge = (via: Via, from: Tile, to: Tile, alts: number[], what: string): boolean => {
+    const addEdge = (via: Via, from: Tile, to: Tile, alts: number[], what: string, cost?: EdgeCost): boolean => {
         const [a, b] = [index.of(from.level, from.x, from.z), index.of(to.level, to.x, to.z)];
         if (a < 0 || b < 0) {
             skipped.add(`${what}: ${coord(a < 0 ? from : to)} is not on land`);
             return false;
         }
+        const edge: Edge = cost ? { to: b, alts, via, cost } : { to: b, alts, via };
         const list = edgeFrom.get(a);
-        if (list) list.push({ to: b, alts, via });
-        else edgeFrom.set(a, [{ to: b, alts, via }]);
+        if (list) list.push(edge);
+        else edgeFrom.set(a, [edge]);
         edges[KIND[via]]++;
         return true;
     };
@@ -450,6 +489,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
             close.push({ tile: g.tile, shape: g.shape, angle: g.angle });
             if (g.kind !== 'gate') continue;
             const gated = alternatives(g.requires);
+            const rolled = g.roll && { spread: 0, roll: g.roll };
             gateEdges.push(() => {
                 for (const [a, b] of [tiles, [tiles[1], tiles[0]]] as [Tile, Tile][]) {
                     const side = g.from && startsOnSide(g.from, tiles, a, b);
@@ -457,7 +497,8 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                         skipped.add(
                             `${name}: from ${g.from} does not tell the wall's two tiles apart, gated both ways`,
                         );
-                    addEdge('gate', a, b, side === false ? FREE : gated, name);
+                    if (side === false) addEdge('gate', a, b, FREE, name);
+                    else addEdge('gate', a, b, gated, name, rolled);
                 }
             });
             continue;
@@ -472,19 +513,21 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
         if (g.kind !== 'gate') continue;
         const loc: PlacedLoc = { config: g.loc, tile: g.tile, shape: g.shape, rotation: g.angle };
         const gated = alternatives(g.requires);
-        const altsFrom = (stand: Tile) => (g.from && !standOnSide(g.from, g.tile, stand) ? FREE : gated);
+        const rolled = g.roll && { spread: 0, roll: g.roll };
+        const checked = (stand: Tile) => !g.from || standOnSide(g.from, g.tile, stand);
         if (g.to) {
             // `to` is where the checked move lands; from the other side the script makes some other move
             // (the Zanaris shed door just opens from inside), so no jump from there.
             const to = g.to;
             gateEdges.push(() => {
-                for (const stand of approach(loc))
-                    if (!g.from || standOnSide(g.from, g.tile, stand)) addEdge('gate', stand, to, gated, name);
+                for (const stand of approach(loc)) if (checked(stand)) addEdge('gate', stand, to, gated, name, rolled);
             });
         } else if (g.landings) {
             const landings = g.landings;
             gateEdges.push(() => {
-                for (const l of landings) addEdge('gate', l.stand, l.landing, altsFrom(l.stand), name);
+                for (const l of landings)
+                    if (checked(l.stand)) addEdge('gate', l.stand, l.landing, gated, name, rolled);
+                    else addEdge('gate', l.stand, l.landing, FREE, name);
             });
         } else if (g.opens) {
             const s = size(loc);
@@ -541,6 +584,17 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                     sources.push({ level, x: x + dx, z: z + dz });
             if (!sources.length) skipped.add(`${name}: no walkable tile at or beside the boarding tile`);
             for (const s of sources) addEdge(t.kind, s, t.to, alts, name);
+        }
+
+        // ---- Crossings -----------------------------------------------------------------------------------
+        for (const c of world.crossings ?? []) {
+            const name = `${c.via} ${actName(c)} ${coord(c.at)}`;
+            if (!c.from.length) skipped.add(`${name}: no tile it is done from`);
+            const alts = alternatives(c.requires);
+            for (const l of c.landings) {
+                const cost: EdgeCost = c.roll ? { spread: l.spread, roll: c.roll } : { spread: l.spread };
+                for (const from of c.from) addEdge(c.via, from, l.tile, alts, name, cost);
+            }
         }
     });
 
@@ -769,7 +823,8 @@ export function formatReach(r: ReachReport): string[] {
     const lines = [
         `reach: ${r.reached} of ${r.nodes} tiles from the Lumbridge spawn, ${r.free} with no requirement ` +
             `(by level ${r.byLevel.join(' / ')}); ${r.sets} requirement sets on ${r.labels} labels`,
-        `reach edges: ${r.edges.connectors} connector, ${r.edges.gates} gate, ${r.edges.transports} transport; ` +
+        `reach edges: ${r.edges.connectors} connector, ${r.edges.gates} gate, ${r.edges.transports} transport, ` +
+            `${r.edges.crossings} crossing; ` +
             `${r.openTiles} opened loc tiles; ${r.offLand} tiles beside reached land not land (not entered); ` +
             `${r.ms} ms, ${(r.bytes / 2 ** 20).toFixed(1)} MiB of typed arrays`,
     ];

@@ -246,6 +246,11 @@ export interface Transport {
     source: string;
     /** The script lines that take the fare and any consumed objs, as `file:line`; absent when none do. */
     paidAt?: string[];
+    /**
+     * How it is boarded (Act), when the row says: the sail and curated rows name the npc or loc but not the op or
+     * the dialogue, and leave it out.
+     */
+    act?: Act;
     notes?: string;
 }
 
@@ -320,12 +325,97 @@ export interface Gate {
     opens?: true;
     /** The script line that makes the check, as `file:line`. */
     source: string;
+    /**
+     * The move is behind a stat_random roll (an agility shortcut): it prices the checked move's edges, and the
+     * other side of a `from` row is not rolled.
+     */
+    roll?: Roll;
     /** A gate's notes (gates.ts), or what a quest window is open for. */
     notes?: string;
 }
 
+/**
+ * How a crossing is done: the op the player sends. A connector's (its loc's op) and a gate's (its trigger's) are
+ * implied by their rows, so those rows carry none.
+ *
+ * - `loc-op`: op `op` (1-5) of the loc config `loc`;
+ * - `item-on-loc`: the obj `obj`, or any obj of the category `category`, used on the loc config `loc`;
+ * - `npc-op`: op `op` (1-5) of the npc config `npc`, then `choices`, the dialogue options picked in order (by their
+ *   text), when the move is behind some;
+ * - `item-op`: op `op` (1-5) of the obj `obj` in the inventory;
+ * - `interface`: a click on the interface component `component` (a glider's destination).
+ */
+export type Act =
+    | { kind: 'loc-op'; loc: string; op: number }
+    | { kind: 'item-on-loc'; obj: string; loc: string }
+    | { kind: 'item-on-loc'; category: string; loc: string }
+    | { kind: 'npc-op'; npc: string; op: number; choices?: string[] }
+    | { kind: 'item-op'; obj: string; op: number }
+    | { kind: 'interface'; component: string };
+
+/** One tile a crossing lands on. */
+export interface Landing {
+    tile: Tile;
+    /**
+     * The run ticks to this landing from the one of the row's landings farthest from it (distance.ts
+     * priceCrossings), 0 for a row's only landing. An edge to this landing costs its crossing plus this, so a way on
+     * from it costs at least what it would from the worst landing. Written at build; absent when some other landing
+     * does not walk here, and then no distance goes by this landing.
+     */
+    spread?: number;
+}
+
+/** A move behind `stat_random(stat, low, high)` (roll.ts statRandomChance), and what a failed roll does. */
+export interface Roll {
+    /** The stat rolled, as a `skill:` requirement names it (`agility`). */
+    stat: string;
+    low: number;
+    high: number;
+    /** The stat_random call, as `file:line`. */
+    source: string;
+    fail: {
+        /** Ticks a failed attempt takes, its delays summed. */
+        ticks: number;
+        /** Where it leaves the player: absent, the tile they tried from; else that tile (a river bank). */
+        to?: Tile;
+        /** Hitpoints a failure takes, the most when the script rolls the damage. */
+        damage: number;
+        /**
+         * With `to`, the run ticks from it back to the nearest tile the move is tried from (distance.ts
+         * priceCrossings). Written at build; absent when no walk gets back, and then no distance takes the move.
+         */
+        back?: number;
+    };
+}
+
+/**
+ * A move no connector, gate or transport row describes, made by an op on a placed loc or npc (or an item op or
+ * interface click done there): a `scripted` loc op move with no condition the gate scan decides, or a `teleport`
+ * (an item used on a loc, an npc's op and dialogue, an item op, an interface click). Its edges go from each tile
+ * of `from` to each landing, with any one of `requires`.
+ */
+export interface Crossing {
+    via: 'scripted' | 'teleport';
+    act: Act;
+    /** The placed loc's or npc spawn's tile the act is done on. */
+    at: Tile;
+    /** The walkable tiles on land the act is done from: the loc's approach tiles, or the tiles beside the npc. */
+    from: Tile[];
+    /**
+     * Where it lands: one tile, or a random set (an enum or dbrow of coords the script draws from), the walk going on
+     * from wherever it lands.
+     */
+    landings: Landing[];
+    /** The minimal requirement sets (requirements.ts), any one of which makes the move. */
+    requires: string[][];
+    roll?: Roll;
+    /** The script line that makes the move, as `file:line`. */
+    source: string;
+    notes?: string;
+}
+
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 12;
+export const WORLD_FORMAT = 13;
 
 export interface World {
     /** WORLD_FORMAT when written. */
@@ -340,4 +430,5 @@ export interface World {
     loadoutRules: Record<string, LoadoutRule>;
     transports: Transport[];
     gates: Gate[];
+    crossings: Crossing[];
 }
