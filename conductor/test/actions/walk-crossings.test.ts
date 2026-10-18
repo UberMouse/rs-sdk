@@ -72,11 +72,12 @@ const moveTo =
         world(s).player({ at: to }).build();
 
 /**
- * The game's answers: the ruins teleport (to `landing`), the log balance (or a fall off it, `slip`), the bank (holding
- * `banked`), and `also`'s own.
+ * The game's answers: the ruins teleport (to `landing`, taking the talisman when it is `spent`), the log balance (or a
+ * fall off it, `slip`), the bank (holding `banked`), and `also`'s own.
  */
 function game(opts: {
     landing?: { x: number; z: number };
+    spent?: boolean;
     refuse?: boolean;
     slip?: boolean;
     banked?: { name: string; count: number }[];
@@ -87,7 +88,13 @@ function game(opts: {
         if (a.type === 'useItemOnLoc' && a.locId === RUINS_ID)
             return opts.refuse
                 ? t => world(t).message('Nothing interesting happens.').build()
-                : moveTo(opts.landing ?? EAST);
+                : opts.spent
+                  ? t =>
+                        world(t)
+                            .player({ at: opts.landing ?? EAST })
+                            .inv('Air talisman', 0)
+                            .build()
+                  : moveTo(opts.landing ?? EAST);
         if (a.type === 'interactLoc' && a.locId === LOG_ID)
             return opts.slip ? t => world(t).message('You slip and fall.').build() : moveTo({ x: 3217, z: 3231 });
         return opts.also?.(a) ?? bank(a, s);
@@ -190,6 +197,20 @@ describe("a move's stand the walk cannot walk to", () => {
         expect(w.sends).toEqual([]);
         expect(w.at).toEqual(EAST);
     });
+
+    test('a walk on the plane that then fails says why the move was given up', async () => {
+        const nowhere = fakePaths((from, to) =>
+            to.x === 3215 && to.z === 3220
+                ? { success: false, waypoints: [], error: 'no route to the ruins' }
+                : to.x === EAST.x && to.z === EAST.z
+                  ? { success: false, waypoints: [], error: 'no route east' }
+                  : { success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] },
+        );
+        const w = await walk(base.inv('Air talisman').build(), island([talisman()]), game({}), { paths: nowhere });
+        expect(w.result.ok).toBe(false);
+        expect(w.result).not.toMatchObject({ reason: 'cross-failed' });
+        expect(w.result.message).toMatch(/no route east.*; no way left to .*: walking to the .*no route to the ruins/);
+    });
 });
 
 describe('a rolled move that keeps failing', () => {
@@ -249,6 +270,25 @@ describe('the wizard on record', () => {
 
 describe('walkTo with a bank detour', () => {
     const TALISMAN = [{ name: 'Air talisman', count: 1 }];
+    /** East, back west, east again: three walks in one run. */
+    const walks = defineTask({
+        name: 'walks',
+        description: 'east, back west, east again',
+        params: z.object({}),
+        steps: [
+            {
+                name: 'walks',
+                when: () => true,
+                *run(ctx) {
+                    for (const to of [EAST, START, EAST]) {
+                        const r = yield* walkTo(ctx, to.x, to.z, 0);
+                        if (!r.ok) return { fail: r.message };
+                    }
+                    return { done: 'walked' };
+                },
+            },
+        ],
+    });
 
     test('the bank holds the talisman: to the bank, withdraw it, then the teleport', async () => {
         const w = await walk(base.build(), island([talisman(), logBalance]), game({ banked: TALISMAN }), {
@@ -277,24 +317,6 @@ describe('walkTo with a bank detour', () => {
     });
 
     test("a later walk in the same run plans on what the run saw in the bank, not the plan's record", async () => {
-        const walks = defineTask({
-            name: 'walks',
-            description: 'east, back west, east again',
-            params: z.object({}),
-            steps: [
-                {
-                    name: 'walks',
-                    when: () => true,
-                    *run(ctx) {
-                        for (const to of [EAST, START, EAST]) {
-                            const r = yield* walkTo(ctx, to.x, to.z, 0);
-                            if (!r.ok) return { fail: r.message };
-                        }
-                        return { done: 'walked' };
-                    },
-                },
-            ],
-        });
         const sim = await simulate(walks, {
             timeline: [base.build()],
             react: game({ banked: [] }),
@@ -304,5 +326,21 @@ describe('walkTo with a bank detour', () => {
         expect(sim.result.status).toBe('done');
         expect(sim.sends.filter(s => s === 'Use Bank booth')).toHaveLength(1);
         expect(sim.sends.filter(s => s === 'Walk-across Log balance')).toHaveLength(2);
+    });
+
+    test('a later walk in the same run plans on the count the withdraw left: the one spent talisman, none', async () => {
+        const spent = talisman();
+        spent.requires = [['consume:air_talisman:1']];
+        const sim = await simulate(walks, {
+            timeline: [base.build()],
+            react: game({ banked: [...TALISMAN, { name: 'Logs', count: 5 }], spent: true }),
+            walkWorld: island([spent, logBalance]),
+            bank: { 'Air talisman': 1 },
+        });
+        expect(sim.result.status).toBe('done');
+        expect(sim.sends.filter(s => s === 'Use Bank booth')).toHaveLength(1);
+        expect(sim.sends.filter(s => s === 'withdraw Air talisman')).toHaveLength(1);
+        expect(sim.sends.filter(s => s === 'use Air talisman on Mysterious ruins')).toHaveLength(1);
+        expect(sim.sends.filter(s => s === 'Walk-across Log balance')).toHaveLength(1);
     });
 });

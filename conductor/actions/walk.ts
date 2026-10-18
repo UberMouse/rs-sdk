@@ -510,7 +510,10 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                     maxTicks: deadline - s.tick,
                     reserveTicks: reserve,
                 });
-                return last.ok ? last : failedLeg(last, hop > 0);
+                if (last.ok) return last;
+                // A fallback after the graph's way was given up on says why it was, as cross-failed would.
+                const why = !way && rec.failed ? `; no way left to ${what}: ${rec.failed}` : '';
+                return failedLeg({ ...last, message: last.message + why }, hop > 0);
             }
             return {
                 ok: false,

@@ -37,7 +37,7 @@ const TELEPORT_JUMP = 10;
 const CHOICE_MIN_OPTIONS = 2;
 
 /** The sends of a move besides its act: its dialogue choices. */
-export const CROSS_SEND_TICKS = 2;
+const CROSS_SEND_TICKS = 2;
 
 /** The ticks one attempt of `m` waits for its move: the approach, the move's slack, a failed roll's delays. */
 export const crossWaitTicks = (m: Move): number =>
