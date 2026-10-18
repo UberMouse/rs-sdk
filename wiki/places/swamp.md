@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:swamp:0` | (2409, 3505) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:swamp:1` | (2414, 3523) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:swamp:2` | (2426, 3501) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:swamp:3` | (2427, 3524) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:swamp:0` | (2409, 3505) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:swamp:1` | (2414, 3523) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:swamp:2` | (2426, 3501) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:swamp:3` | (2427, 3524) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:swamp:0` | (2417, 3517) | [Gnome woman](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:swamp:0` | (2417, 3517) | [Gnome woman](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:swamp:0` | (2409, 3507) | Gnome troop 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:swamp:0` | (2409, 3507) | Gnome troop 1 | no | no | - | unreached |

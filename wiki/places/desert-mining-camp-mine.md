@@ -5,22 +5,22 @@ Tourist Trap (quests/quest_desertrescue), below the Desert Mining Camp.
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:desert-mining-camp-mine:0` | (3288, 9439) | [copper](../resources/rock/copper.md) 4, [rock](../resources/rock/rock.md) 63 | no | no | - |
-| `rock:desert-mining-camp-mine:1` | (3309, 9466) | [adamantite](../resources/rock/adamantite.md) 6, [copper](../resources/rock/copper.md) 6, [mithril](../resources/rock/mithril.md) 6, [tin](../resources/rock/tin.md) 4 | no | no | - |
-| `rock:desert-mining-camp-mine:2` | (3296, 9413) | [tin](../resources/rock/tin.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:desert-mining-camp-mine:0` | (3288, 9439) | [copper](../resources/rock/copper.md) 4, [rock](../resources/rock/rock.md) 63 | no | no | - | unreached |
+| `rock:desert-mining-camp-mine:1` | (3309, 9466) | [adamantite](../resources/rock/adamantite.md) 6, [copper](../resources/rock/copper.md) 6, [mithril](../resources/rock/mithril.md) 6, [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
+| `rock:desert-mining-camp-mine:2` | (3296, 9413) | [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:desert-mining-camp-mine:0` | (3268, 9417) | Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:1` | (3277, 9452) | Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:2` | (3279, 9415) | Mercenary (desertminingmercenary2) 2 | no | no | - |
-| `npc:desert-mining-camp-mine:3` | (3286, 9466) | Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:4` | (3287, 9415) | Mercenary (desertminingmercenary1) 1, Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:5` | (3291, 9423) | Mercenary (desertminingmercenary2) 1 | no | no | - |
-| `npc:desert-mining-camp-mine:6` | (3296, 9434) | Mercenary (desertminingmercenary2) 1, Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp-mine:7` | (3299, 9467) | Mercenary (desertminingmercenary1) 1 | no | no | - |
-| `npc:desert-mining-camp-mine:8` | (3317, 9441) | Rowdy Guard 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:desert-mining-camp-mine:0` | (3268, 9417) | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:1` | (3277, 9452) | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:2` | (3279, 9415) | Mercenary (desertminingmercenary2) 2 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:3` | (3286, 9466) | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:4` | (3287, 9415) | Mercenary (desertminingmercenary1) 1, Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:5` | (3291, 9423) | Mercenary (desertminingmercenary2) 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:6` | (3296, 9434) | Mercenary (desertminingmercenary2) 1, Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:7` | (3299, 9467) | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:8` | (3317, 9441) | Rowdy Guard 1 | no | no | - | unreached |

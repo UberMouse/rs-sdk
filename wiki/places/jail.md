@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:jail:0` | (3124, 3246) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 6 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:jail:0` | (3124, 3246) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:jail:0` | (3120, 3238) | Jail guard 1 | yes | yes | - |
-| `npc:jail:1` | (3124, 3249) | Jail guard 2 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:jail:0` | (3120, 3238) | Jail guard 1 | yes | yes | - | - |
+| `npc:jail:1` | (3124, 3249) | Jail guard 2 | yes | yes | - | - |

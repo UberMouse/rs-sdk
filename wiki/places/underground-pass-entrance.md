@@ -7,12 +7,12 @@ The world map's "Underground Pass" label; the pass itself is the underground are
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:underground-pass-entrance:0` | (2443, 3314) | [normal](../resources/tree/normal.md) 49 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:underground-pass-entrance:0` | (2443, 3314) | [normal](../resources/tree/normal.md) 49 | no | no | - | Biohazard done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:underground-pass-entrance:0` | (2453, 3307) | Woman 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:underground-pass-entrance:0` | (2453, 3307) | Woman 1 | no | no | - | Biohazard done |

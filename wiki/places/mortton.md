@@ -5,20 +5,20 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:mortton:0` | (3489, 3296) | Razmire General Store. (razmiregeneralstore) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:mortton:0` | (3489, 3296) | Razmire General Store. (razmiregeneralstore) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:mortton:0` | (3495, 3288) | Sink 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:mortton:0` | (3495, 3288) | Sink 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:mortton:0` | (3486, 3284) | [normal](../resources/tree/normal.md) 46 | no | no | - |
-| `tree:mortton:1` | (3505, 3265) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:mortton:2` | (3509, 3300) | [normal](../resources/tree/normal.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:mortton:0` | (3486, 3284) | [normal](../resources/tree/normal.md) 46 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:mortton:1` | (3505, 3265) | [normal](../resources/tree/normal.md) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:mortton:2` | (3509, 3300) | [normal](../resources/tree/normal.md) 4 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |

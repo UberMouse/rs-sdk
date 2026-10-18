@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:varrock-oaks:0` | (3192, 3460) | [oak](../resources/tree/oak.md) 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:varrock-oaks:0` | (3192, 3460) | [oak](../resources/tree/oak.md) 3 | yes | no | - | - |

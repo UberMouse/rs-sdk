@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:falador-east-bank:0` | (3013, 3354) | Bank booth 5, Banker 5 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:falador-east-bank:0` | (3013, 3354) | Bank booth 5, Banker 5 | yes | no | - | - |

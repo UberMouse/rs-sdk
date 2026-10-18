@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:tyras-camp:0` | (2172, 3141) | [normal](../resources/tree/normal.md) 6 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:tyras-camp:0` | (2172, 3141) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | unreached |

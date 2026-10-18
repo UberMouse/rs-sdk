@@ -3,8 +3,10 @@
 
 [Kandarin](kandarin.md) › Lighthouse
 
+Past the broken bridge (oploc1,horror_broken_bridge_left_spot, quests/quest_horror/scripts/quest_horror.rs2:63), which the player jumps, or walks once Horror from the Deep has it mended, by a scripted move no connector, gate or transport row models; inside, the doorway needs Horror from the Deep (quest_horror.rs2:3) and the stairs up are scripted there too (quest_horror.rs2:186, outside ladders+stairs/, so no connector row). So the world index's walk from the Lumbridge spawn does not reach the lighthouse or its shop (build.ts unreached report).
+
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:lighthouse:0` | (2509, 3639) L1 | The Lighthouse Store (lighthouseshop) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:lighthouse:0` | (2509, 3639) L1 | The Lighthouse Store (lighthouseshop) 1 | no | no | - | unreached |

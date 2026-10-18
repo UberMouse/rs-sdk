@@ -5,20 +5,20 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:lava-maze:0` | (3073, 3848) | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 8 | yes | no | 43 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:lava-maze:0` | (3073, 3848) | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 8 | yes | no | 43 | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:lava-maze:0` | (3071, 3839) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:lava-maze:0` | (3071, 3839) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:lava-maze:0` | (3070, 3836) | King Scorpion 1 | yes | no | 40 |
-| `npc:lava-maze:1` | (3075, 3848) | King Scorpion 1 | yes | no | 42 |
-| `npc:lava-maze:2` | (3090, 3841) | King Scorpion 1 | yes | no | 41 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:lava-maze:0` | (3070, 3836) | King Scorpion 1 | yes | no | 40 | - |
+| `npc:lava-maze:1` | (3075, 3848) | King Scorpion 1 | yes | no | 42 | - |
+| `npc:lava-maze:2` | (3090, 3841) | King Scorpion 1 | yes | no | 41 | - |

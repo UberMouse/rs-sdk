@@ -7,12 +7,12 @@ Fadli, and the two closed bank chests beside him that open into bank chests (min
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:duel-arena-bank:0` | (3382, 3269) | Closed chest 2, Fadli 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:duel-arena-bank:0` | (3382, 3269) | Closed chest 2, Fadli 1 | no | no | - | - |
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:duel-arena-bank:0` | (3383, 3269) | Shop of Distaste (duel_rottenfruitshop) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:duel-arena-bank:0` | (3383, 3269) | Shop of Distaste (duel_rottenfruitshop) 1 | no | no | - | - |

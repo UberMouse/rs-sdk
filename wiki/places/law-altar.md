@@ -5,6 +5,6 @@ Inside the law ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:law-altar:0` | (2463, 4831) | law 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:law-altar:0` | (2463, 4831) | law 1 | no | no | - | unreached |

@@ -2,9 +2,20 @@ import { describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { byWritten, failed, formatReport, serializeWorld, type BuildReport } from '../build';
+import {
+    addReach,
+    byWritten,
+    failed,
+    formatReport,
+    formatUnreached,
+    nearestReached,
+    serializeWorld,
+    type BuildReport,
+    type Unreached,
+} from '../build';
 import { loadWorld } from '../load';
-import { WORLD_FORMAT, type Feature, type World } from '../types';
+import { besideCluster, grownBox, type Placed, type StepCollision } from '../place';
+import { WORLD_FORMAT, type Feature, type NpcSpawn, type Site, type Tile, type World } from '../types';
 
 const tree = (x: number, z: number, config = 'tree'): Feature => ({
     source: 'loc',
@@ -32,6 +43,7 @@ const world: World = {
             bbox: { x1: 4, z1: 5, x2: 6, z2: 5, level: 0 },
             count: 2,
             f2p: true,
+            reach: [[]],
         },
     ],
     connectors: [
@@ -140,7 +152,7 @@ describe('serializeWorld', () => {
                 '  ],',
                 '  "sites": [],',
                 '  "npcSpawns": [',
-                '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true}',
+                '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true,"reach":[[]]}',
                 '  ],',
                 '  "connectors": [',
                 '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"},',
@@ -228,9 +240,12 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         const { format: _, ...old } = world;
         writeFileSync(file, JSON.stringify(old));
         expect(() => loadWorld(file)).toThrow(/format none.*regenerate it with bun run world/);
-        // Format 9 was written before gate rows had landings or opens.
-        writeFileSync(file, serializeWorld({ ...world, format: 9 }));
-        expect(() => loadWorld(file)).toThrow(`format 9, this code reads format ${WORLD_FORMAT}`);
+        // Format 10 was written before sites and npc spawn clusters had their reach.
+        writeFileSync(file, serializeWorld({ ...world, format: 10 }));
+        expect(() => loadWorld(file)).toThrow(`format 10, this code reads format ${WORLD_FORMAT}`);
+        // Format 11 was written before resource and processor sites had their nearest bank.
+        writeFileSync(file, serializeWorld({ ...world, format: 11 }));
+        expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }
@@ -282,6 +297,31 @@ describe('formatReport', () => {
                 unlanded: [],
             },
         },
+        reach: {
+            nodes: 64,
+            reached: 10,
+            free: 8,
+            byLevel: [10, 0, 0, 0],
+            sets: 2,
+            labels: 11,
+            edges: { connectors: 0, gates: 1, transports: 0 },
+            openTiles: 0,
+            offLand: 0,
+            bound: { max: 16, tiles: 0, sample: [] },
+            skipped: [],
+            ms: 1,
+            bytes: 1024,
+        },
+        distance: {
+            contexts: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            sinks: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            found: { bank: 1, furnace: 0, range: 0, anvil: 0 },
+            missing: { bank: 0, furnace: 0, range: 0, anvil: 0 },
+            settled: 10,
+            ms: 1,
+            bytes: 1024,
+        },
+        unreached: [],
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -527,4 +567,195 @@ test('loadWorld names a file that is not valid JSON and says how to regenerate i
     } finally {
         rmSync(dir, { recursive: true });
     }
+});
+
+const tile = (x: number, z: number, level = 0): Tile => ({ level, x, z });
+const key = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
+/** A fill that reaches exactly these tiles. */
+const reachedOnly =
+    (...ts: Tile[]) =>
+    (t: Tile) =>
+        ts.some(r => key(r) === key(t));
+/** An unreached row of a site with an id of the form `kind:area:n`. */
+const unreachedRow = (id: string, areaPath: string[], from: Tile, nearest: Tile | null, stand = true): Unreached => ({
+    id,
+    kind: id.slice(0, id.indexOf(':')) as Site['kind'],
+    areaPath,
+    at: from,
+    stand,
+    nearest,
+});
+
+/** With no walls about, every tile of a cluster's bbox grown by one is beside it. */
+const open = (c: Placed<NpcSpawn>): Tile[] => grownBox(c.bbox, c.centre.level);
+/** Whether two tiles share an edge. */
+const edge = (a: Tile, b: Tile): boolean => Math.abs(a.x - b.x) + Math.abs(a.z - b.z) === 1;
+/** A wall between x 30 and 31: whether a move from `from` to column `x` crosses it westward. */
+const across31 = (from: Tile, x: number): boolean => from.x === 31 && x === 30;
+
+describe('reach on sites and npc spawn clusters', () => {
+    /** A fill that reaches (0..9, 0..9) on level 0 with no requirement, (20, 0) with 40 Mining, nothing else. */
+    const sets = new Map<string, string[][]>([[key(tile(20, 0)), [['skill:mining:40']]]]);
+    for (let x = 0; x < 10; x++) for (let z = 0; z < 10; z++) sets.set(key(tile(x, z)), [[]]);
+    const fake = {
+        setsAt: (t: Tile) => sets.get(key(t)) ?? [],
+        setsAny: (ts: readonly Tile[]) => {
+            const all = ts.flatMap(t => sets.get(key(t)) ?? []);
+            return all.some(s => !s.length) ? [[]] : all;
+        },
+        reached: (t: Tile) => sets.has(key(t)),
+    };
+    const site = (id: string, stand: Tile | null, rest: Partial<Placed<Site>> = {}): Placed<Site> => ({
+        id,
+        kind: id.slice(0, id.indexOf(':')) as Site['kind'],
+        areaPath: ['town'],
+        centre: stand ?? tile(30, 30),
+        bbox: { x1: 0, z1: 0, x2: 0, z2: 0, level: 0 },
+        stand,
+        counts: {},
+        features: [],
+        f2p: false,
+        multiway: false,
+        wildernessLevel: 0,
+        ...rest,
+    });
+    const cluster = (x1: number, x2: number): Placed<NpcSpawn> => ({
+        config: 'goblin',
+        areaPath: ['town'],
+        centre: tile(Math.round((x1 + x2) / 2), 0),
+        bbox: { x1, z1: 0, x2, z2: 0, level: 0 },
+        count: 2,
+        f2p: false,
+    });
+
+    test("a site's reach is its stand's sets; one with no stand, or a stand no set reaches, has none", () => {
+        const { sites } = addReach(
+            {
+                sites: [
+                    site('bank:town:0', tile(1, 1)),
+                    site('rock:town:0', tile(20, 0)),
+                    site('tree:town:0', tile(15, 15)),
+                    site('furnace:town:0', null),
+                ],
+                npcSpawns: [],
+            },
+            fake,
+            open,
+        );
+        expect(sites.map(s => [s.id, s.reach])).toEqual([
+            ['bank:town:0', [[]]],
+            ['rock:town:0', [['skill:mining:40']]],
+            ['tree:town:0', []],
+            ['furnace:town:0', []],
+        ]);
+    });
+
+    test("an npc cluster's reach is the cheapest over the tiles beside it, not its nearest tile's", () => {
+        // Spawns at x 11-21: the tile beside x 11 (x 10) is not reached, but x 9 is not beside it either; x 20
+        // is, with 40 Mining. A cluster at x 10-20 has x 9 beside it, reached free.
+        const { npcSpawns } = addReach(
+            { sites: [], npcSpawns: [cluster(11, 21), cluster(10, 20), cluster(40, 41)] },
+            fake,
+            open,
+        );
+        expect(npcSpawns.map(c => c.reach)).toEqual([[['skill:mining:40']], [[]], []]);
+    });
+
+    test('a cluster behind a wall keeps [] though the tile across the wall is reached', () => {
+        // A goblin at (30, 5); (31, 5), east of it across a wall, is the one tile the walk gets to.
+        const across = tile(31, 5);
+        const only = {
+            setsAt: () => [],
+            setsAny: (ts: readonly Tile[]) => (ts.some(t => key(t) === key(across)) ? [[]] : []),
+            reached: () => false,
+        };
+        // The engine's entity test: from a tile sharing an edge with the npc, but not through the wall.
+        const walled: StepCollision = {
+            walkable: () => true,
+            reached: (from, npc) => edge(from, npc) && !across31(from, npc.x),
+            canStep: (_l, x, z, dx, _dz) => !across31({ level: 0, x, z }, x + dx),
+        };
+        const goblin = { ...cluster(30, 30), centre: tile(30, 5), bbox: { x1: 30, z1: 5, x2: 30, z2: 5, level: 0 } };
+        const reachBeside = (collision: StepCollision) =>
+            addReach({ sites: [], npcSpawns: [goblin] }, only, c => besideCluster(c, collision)).npcSpawns[0]!.reach;
+        expect(besideCluster(goblin, walled)).not.toContainEqual(across);
+        expect(reachBeside(walled)).toEqual([]);
+        // With no wall, the same tile is beside the goblin: the entity test passes, or the step does.
+        expect(reachBeside({ ...walled, reached: edge })).toEqual([[]]);
+        expect(reachBeside({ ...walled, canStep: () => true })).toEqual([[]]);
+    });
+
+    test('lists the covered sites no set reaches, by area path then id, with the nearest reached tile', () => {
+        const { unreached } = addReach(
+            {
+                sites: [
+                    site('shop:town:10', tile(12, 5)),
+                    site('shop:town:2', tile(11, 5), { areaPath: ['town', 'square'] }),
+                    site('shop:town:1', tile(13, 5)),
+                    site('npc:town:0', tile(15, 15)),
+                    site('connector:town:0', null),
+                    site('bank:town:0', null, { centre: tile(200, 200) }),
+                ],
+                npcSpawns: [],
+            },
+            fake,
+            open,
+        );
+        expect(unreached).toEqual([
+            { id: 'bank:town:0', kind: 'bank', areaPath: ['town'], at: tile(200, 200), stand: false, nearest: null },
+            { id: 'shop:town:1', kind: 'shop', areaPath: ['town'], at: tile(13, 5), stand: true, nearest: tile(9, 5) },
+            { id: 'shop:town:10', kind: 'shop', areaPath: ['town'], at: tile(12, 5), stand: true, nearest: tile(9, 5) },
+            {
+                id: 'shop:town:2',
+                kind: 'shop',
+                areaPath: ['town', 'square'],
+                at: tile(11, 5),
+                stand: true,
+                nearest: tile(9, 5),
+            },
+        ]);
+    });
+
+    test('the nearest reached tile: the first ring that has one, then the straightest, then by x and z', () => {
+        const reached = reachedOnly;
+        expect(nearestReached(reached(tile(5, 5)), tile(5, 5))).toEqual(tile(5, 5));
+        // Ring 2 holds (7, 7) and (7, 6); (7, 6) is the straighter. (3, 6) ties with it and has the lower x.
+        expect(nearestReached(reached(tile(7, 7), tile(7, 6)), tile(5, 5))).toEqual(tile(7, 6));
+        expect(nearestReached(reached(tile(7, 6), tile(3, 6)), tile(5, 5))).toEqual(tile(3, 6));
+        // Another level, or the other plane (the underground at z >= 6400), is not looked at.
+        expect(nearestReached(reached(tile(5, 6, 1)), tile(5, 5))).toBeNull();
+        expect(nearestReached(reached(tile(5, 6400)), tile(5, 6399))).toBeNull();
+        expect(nearestReached(reached(tile(5, 9)), tile(5, 5), 3)).toBeNull();
+    });
+
+    test('formatUnreached: counts by kind, then each area with its sites, or one line when none', () => {
+        const u = unreachedRow;
+        const areas = [
+            { id: 'isle', name: 'The Isle', rects: [] },
+            { id: 'cave', name: 'Cave', rects: [] },
+        ];
+        expect(
+            formatUnreached(
+                [
+                    u('bank:isle:0', ['isle'], tile(5, 5, 1), tile(5, 9, 1)),
+                    u('rock:isle:0', ['isle'], tile(5, 5), null, false),
+                    u('rock:cave:0', ['cave'], tile(5, 6405), tile(8, 6405)),
+                    u('tree:unnamed:0', [], tile(1, 1), null),
+                ],
+                areas,
+            ),
+        ).toEqual([
+            'warning: 4 sites of covered kinds no walk from the Lumbridge spawn reaches (bank 1, rock 2, tree 1), by area:',
+            '  isle (The Isle):',
+            '    bank:isle:0 stand (5, 5) L1, level 1: nearest reached (5, 9) L1, 4 tiles off',
+            '    rock:isle:0 centre (no stand) (5, 5), level 0: no reached tile within 64 tiles',
+            '  cave (Cave):',
+            '    rock:cave:0 stand (5, 6405), level 0, underground: nearest reached (8, 6405), 3 tiles off',
+            '  no area:',
+            '    tree:unnamed:0 stand (1, 1), level 0: no reached tile within 64 tiles',
+        ]);
+        expect(formatUnreached([], areas)).toEqual([
+            'unreached: every site of a covered kind is reached from the Lumbridge spawn',
+        ]);
+    });
 });

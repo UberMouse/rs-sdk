@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:catherby-bank:0` | (2809, 3443) | Bank booth 4, Banker 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:catherby-bank:0` | (2809, 3443) | Bank booth 4, Banker 4 | no | no | - | - |

@@ -5,14 +5,14 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:camelot-castle:0` | (2757, 3498) | Fountain 1 | no | no | - |
-| `water-source:camelot-castle:1` | (2771, 3515) | Fountain 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:camelot-castle:0` | (2757, 3498) | Fountain 1 | no | no | - | - |
+| `water-source:camelot-castle:1` | (2771, 3515) | Fountain 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:camelot-castle:0` | (2769, 3493) | Ladder 1 | up (2768, 3493) L1 | no | no | - |
-| `connector:camelot-castle:1` | (2769, 3493) L1 | Ladder 1 | down (2768, 3493) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:camelot-castle:0` | (2769, 3493) | Ladder 1 | up (2768, 3493) L1 by Climb-up | no | no | - | - |
+| `connector:camelot-castle:1` | (2769, 3493) L1 | Ladder 1 | down (2768, 3493) by Climb-down | no | no | - | - |

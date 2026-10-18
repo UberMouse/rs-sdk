@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:agility-arena:0` | (2806, 3185) | Pirate 1 | no | no | - |
-| `npc:agility-arena:1` | (2811, 3198) | Pirate 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:agility-arena:0` | (2806, 3185) | Pirate 1 | no | no | - | 30 coins |
+| `npc:agility-arena:1` | (2811, 3198) | Pirate 1 | no | no | - | 30 coins |

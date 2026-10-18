@@ -51,9 +51,11 @@ const onFloor = (level: number, x = LANDING.x, z = LANDING.z) => ({
 });
 const castleGround = () => ({ ...ground.build(), nearbyLocs: floorLocs(0) });
 
+// The destinations upstairs are in the castle's south-west part, which the south-west staircase (the scripted castle)
+// serves; the north end is up the north tower's stairs (test/lib/connectors.test.ts).
 describe('walkTo across levels: Lumbridge castle', () => {
     test('to the first floor: walks to the stairs, climbs once, walks on up there', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1 });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1 });
         expect(w.result).toEqual({ ok: true, message: 'Arrived' });
         expect(w.options).toEqual([1]);
         expect(w.at.level).toBe(1);
@@ -99,24 +101,24 @@ describe('walkTo across levels: failures', () => {
     });
 
     test('a staircase the server refuses is climb-failed', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1, react: castle({ stuck: true }) });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1, react: castle({ stuck: true }) });
         expect(w.result).toMatchObject({ ok: false, reason: 'climb-failed' });
         expect(w.result.message).toContain('Lumbridge castle stairs');
         expect(w.options).toEqual([1]);
     });
 
     test('a staircase out of sight is climb-failed, saying no loc', async () => {
-        const w = await walk({ ...castleGround(), nearbyLocs: [] }, 3205, 3228, { level: 1 });
+        const w = await walk({ ...castleGround(), nearbyLocs: [] }, 3207, 3212, { level: 1 });
         expect(w.result).toMatchObject({ ok: false, reason: 'climb-failed' });
         expect(w.result.message).toContain('in sight');
     });
 
     test('a step with no ticks left is no-time; running out on the way is an advancing timeout', async () => {
-        const none = await walk(castleGround(), 3205, 3228, { level: 1, stepBudget: 3 });
+        const none = await walk(castleGround(), 3207, 3212, { level: 1, stepBudget: 3 });
         expect(none.result).toMatchObject({ ok: false, reason: 'no-time' });
         expect(none.sends).toEqual([]);
         // Room for the leg to the stairs but not for the climb: the walk keeps CLIMB_MAX_TICKS back.
-        const short = await walk(castleGround(), 3205, 3228, { level: 1, maxTicks: 4 });
+        const short = await walk(castleGround(), 3207, 3212, { level: 1, maxTicks: 4 });
         expect(short.result).toMatchObject({ ok: false, reason: 'timeout', advancing: true });
         expect(timedOutAdvancing(short.result, 1, 2)).toBe(true);
         expect(short.options).toEqual([]);
@@ -124,7 +126,7 @@ describe('walkTo across levels: failures', () => {
 
     test('the climb is reserved out of the walk to the stairs, not of the last leg', async () => {
         // A step budget covering the leg to the stairs plus the climb and the last leg.
-        const w = await walk(castleGround(), 3205, 3228, { level: 1, stepBudget: 200, reserveTicks: 3 });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1, stepBudget: 200, reserveTicks: 3 });
         expect(w.result.ok).toBe(true);
         expect(CLIMB_MAX_TICKS).toBeGreaterThan(10);
     });
@@ -147,10 +149,10 @@ const intoMine: Run['react'] = action =>
         : undefined;
 
 describe('walkTo into and out of underground areas', () => {
-    test('Nurmof from the surface: to the Falador stairs, down, then along the mine (no level given)', async () => {
+    test("Nurmof from beside the Falador stairs' house: to the stairs, down, then along the mine (no level given)", async () => {
         const start = stairsDown(
             world()
-                .player({ at: { x: 3070, z: 3380, level: 0 } })
+                .player({ at: { x: 3062, z: 3380, level: 0 } })
                 .build(),
         );
         const w = await walk(start, 2998, 9844, { react: intoMine });
@@ -171,7 +173,7 @@ describe('walkTo into and out of underground areas', () => {
     test('going down the mine stairs logs the scorpion warning before the climb', async () => {
         const start = stairsDown(
             world()
-                .player({ at: { x: 3070, z: 3380, level: 0 } })
+                .player({ at: { x: 3062, z: 3380, level: 0 } })
                 .build(),
         );
         const w = await walk(start, 2998, 9844, { react: intoMine });
@@ -182,7 +184,7 @@ describe('walkTo into and out of underground areas', () => {
     });
 
     test('the lowest-risk stairs log nothing: Lumbridge castle has no hazard', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1 });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1 });
         expect(w.driver.commands.some(c => c.type === 'log' && /WARNING/.test(c.msg))).toBe(false);
     });
 
@@ -262,12 +264,12 @@ describe('walkTo out of the mine and to the tower basement', () => {
 
 describe('a timeout on the way to the stairs: advancing only when it made progress', () => {
     test('closing in on the stand tile is advancing', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1, maxTicks: 4 });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1, maxTicks: 4 });
         expect(w.result).toMatchObject({ ok: false, reason: 'timeout', advancing: true });
     });
 
     test('a bot that cannot move leaves it unset, so callers count the failure', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1, maxTicks: 4, blocked: () => true });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1, maxTicks: 4, blocked: () => true });
         expect(w.result).toMatchObject({ ok: false, reason: 'timeout' });
         expect((w.result as { advancing?: boolean }).advancing).toBeUndefined();
         expect(timedOutAdvancing(w.result, 17, 17)).toBe(false);
@@ -281,7 +283,41 @@ describe('a timeout on the way to the stairs: advancing only when it made progre
     });
 
     test('a timeout that made no progress and no-time at the start stay as they are', async () => {
-        const w = await walk(castleGround(), 3205, 3228, { level: 1, stepBudget: 3 });
+        const w = await walk(castleGround(), 3207, 3212, { level: 1, stepBudget: 3 });
         expect(w.result).toMatchObject({ ok: false, reason: 'no-time' });
+    });
+});
+
+// The Fishing Guild's ladder is behind its Fishing 68 door: the walk plans over the bot's own levels, as nearestBank
+// picks a bank, so a bot with the level is led through the door to the ladder and one without has no way up.
+const GUILD_LADDER = { x: 2615, z: 3394 };
+const GUILD_UPSTAIRS = { x: 2614, z: 3394 };
+const outsideGuild = (fishing: number) =>
+    world()
+        .player({ at: { x: 2611, z: 3390, level: 0 } })
+        .skill('Fishing', fishing)
+        .loc('Ladder', GUILD_LADDER.x, GUILD_LADDER.z, { options: ['Climb-up'] })
+        .build();
+const guildLadder: Run['react'] = action =>
+    action.type === 'interactLoc' && action.x === GUILD_LADDER.x && action.z === GUILD_LADDER.z
+        ? s => ({
+              ...world(s)
+                  .player({ at: { ...GUILD_UPSTAIRS, level: 1 } })
+                  .build(),
+              nearbyLocs: [],
+          })
+        : undefined;
+
+describe("walkTo plans over the bot's account", () => {
+    test('a ladder behind a skill door: no-connector below the level, climbed at it', async () => {
+        const below = await walk(outsideGuild(67), 2614, 3395, { level: 1, react: guildLadder });
+        expect(below.result).toMatchObject({ ok: false, reason: 'no-connector' });
+        expect(below.sends).toEqual([]);
+
+        const at = await walk(outsideGuild(68), 2614, 3395, { level: 1, react: guildLadder });
+        expect(at.result.ok).toBe(true);
+        expect(at.paths.queries[0]).toMatchObject({ to: GUILD_UPSTAIRS });
+        expect(at.options).toEqual([1]);
+        expect(at.at.level).toBe(1);
     });
 });

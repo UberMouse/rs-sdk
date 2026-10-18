@@ -5,18 +5,18 @@ Ladder up into Lumbridge castle at (3209, 3216).
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:lumbridge-castle-cellar:0` | (3212, 9625) | Sink 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:lumbridge-castle-cellar:0` | (3212, 9625) | Sink 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:lumbridge-castle-cellar:0` | (3213, 9620) | Spider 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:lumbridge-castle-cellar:0` | (3213, 9620) | Spider 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:lumbridge-castle-cellar:0` | (3209, 9616) | Ladder 1 | up (3208, 3216) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:lumbridge-castle-cellar:0` | (3209, 9616) | Ladder 1 | up (3208, 3216) by Climb-up | yes | no | - | - |

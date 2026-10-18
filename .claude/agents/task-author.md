@@ -211,9 +211,11 @@ never moves the bot.
 
 `yield* walkTo(ctx, x, z, tolerance)` (`actions/walk.ts`) walks to within `tolerance` tiles
 (Chebyshev, default 3), opening the doors and gates on its route. It changes plane (a floor, an
-underground area) through the curated connectors of `conductor/lib/connectors.ts`: pass the destination's
-`opts.level` (default: the bot's own level, or 0 across the surface/underground divide), and add a
-connector to that table for a staircase or ladder it lacks. It refuses (`no-path`) a route that crosses
+underground area) through the connectors of `conductor/lib/connectors.ts`, a view of the world index
+(`wiki/world.json`), chosen by the shortest way over its graph: pass the destination's `opts.level` (default:
+the bot's own level, or 0 across the surface/underground divide). A staircase or ladder it lacks is a gap in
+the index's connector reader (`wiki/world/sources/connectors.ts`, then `bun run world`); a name or hazard
+note goes in `OVERRIDES` in `conductor/lib/connectors.ts`. It refuses (`no-path`) a route that crosses
 the Wilderness to a destination outside it (`lib/wilderness.ts`). Its result's `reason` says why it
 stopped short (`no-path`, `no-connector`, `climb-failed`, `dead-end`, `stuck`, `gave-up`, `timeout`,
 `no-time`, `no-blade`: a slashable web on the route and no wielded slash weapon, final, do not retry, ...); `message` is what to put in a fail reason. Walk opens doors and slashes spider webs (`SLASH_WEBS` in `actions/paths.ts`) on its own. One walk

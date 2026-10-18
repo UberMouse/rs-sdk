@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:tutorial-island-bank:0` | (3121, 3125) | Bank booth 2, Banker 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:tutorial-island-bank:0` | (3121, 3125) | Bank booth 2, Banker 2 | yes | no | - | unreached |

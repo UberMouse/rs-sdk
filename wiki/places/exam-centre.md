@@ -5,8 +5,8 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:exam-centre:0` | (3349, 3354) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:exam-centre:1` | (3368, 3347) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:exam-centre:2` | (3371, 3334) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:exam-centre:0` | (3349, 3354) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:exam-centre:1` | (3368, 3347) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:exam-centre:2` | (3371, 3334) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |

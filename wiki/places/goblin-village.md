@@ -5,20 +5,20 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:goblin-village:0` | (2956, 3505) | Fire 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:goblin-village:0` | (2956, 3505) | Fire 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:goblin-village:0` | (2951, 3513) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:goblin-village:1` | (2953, 3499) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:goblin-village:2` | (2969, 3505) | [normal](../resources/tree/normal.md) 8 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:goblin-village:0` | (2951, 3513) | [normal](../resources/tree/normal.md) 1 | yes | no | - | no stand |
+| `tree:goblin-village:1` | (2953, 3499) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:goblin-village:2` | (2969, 3505) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:goblin-village:0` | (2956, 3502) | Goblin (goblin_greenarmour) 7, Goblin (goblin_redarmour) 8 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:goblin-village:0` | (2956, 3502) | Goblin (goblin_greenarmour) 7, Goblin (goblin_redarmour) 8 | yes | no | - | - |

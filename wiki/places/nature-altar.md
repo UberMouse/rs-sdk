@@ -5,12 +5,12 @@ Inside the nature ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:nature-altar:0` | (2399, 4840) | nature 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:nature-altar:0` | (2399, 4840) | nature 1 | no | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:nature-altar:0` | (2401, 4841) | [normal](../resources/tree/normal.md) 103, [oak](../resources/tree/oak.md) 44 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:nature-altar:0` | (2401, 4841) | [normal](../resources/tree/normal.md) 103, [oak](../resources/tree/oak.md) 44 | no | no | - | unreached |

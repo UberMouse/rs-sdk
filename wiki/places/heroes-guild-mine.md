@@ -5,23 +5,23 @@ Ladder up into the Heroes' Guild at (2892, 3507).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:heroes-guild-mine:0` | (2922, 9910) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 5, [mithril](../resources/rock/mithril.md) 2 | no | no | - |
-| `rock:heroes-guild-mine:1` | (2939, 9891) | [coal](../resources/rock/coal.md) 6, [runite](../resources/rock/runite.md) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:heroes-guild-mine:0` | (2922, 9910) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 5, [mithril](../resources/rock/mithril.md) 2 | no | no | - | Hero's Quest done |
+| `rock:heroes-guild-mine:1` | (2939, 9891) | [coal](../resources/rock/coal.md) 6, [runite](../resources/rock/runite.md) 2 | no | no | - | Hero's Quest done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:heroes-guild-mine:0` | (2889, 9907) | Giant bat 1 | no | no | - |
-| `npc:heroes-guild-mine:1` | (2896, 9911) | Giant bat 1 | no | no | - |
-| `npc:heroes-guild-mine:2` | (2908, 9905) | Blue dragon 1 | no | no | - |
-| `npc:heroes-guild-mine:3` | (2936, 9892) | Giant bat 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:heroes-guild-mine:0` | (2889, 9907) | Giant bat 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:1` | (2896, 9911) | Giant bat 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:2` | (2908, 9905) | Blue dragon 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:3` | (2936, 9892) | Giant bat 3 | no | no | - | Hero's Quest done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:heroes-guild-mine:0` | (2892, 9907) | Ladder 1 | up (2893, 3507) | no | no | - |
-| `connector:heroes-guild-mine:1` | (2907, 9876) | Ladder 1 | up (2906, 3476) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:heroes-guild-mine:0` | (2892, 9907) | Ladder 1 | up (2893, 3507) by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heroes-guild-mine:1` | (2907, 9876) | Ladder 1 | up (2906, 3476) by Climb-up | no | no | - | unreached |

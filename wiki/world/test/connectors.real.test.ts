@@ -1,14 +1,15 @@
 // Facts about the real connectors (sources/connectors.ts), checked against one in-memory build of the
-// game data, and the curated table the conductor walks by, row by row.
+// game data. conductor/lib/connectors.ts is a view of these rows; its curated names and hazards (OVERRIDES) are on
+// connectors whose way back the build report must find.
 import { describe, expect, test } from 'bun:test';
-import { CONNECTORS } from '../../../conductor/lib/connectors';
+import { OVERRIDES } from '../../../conductor/lib/connectors';
 import { AREAS } from '../areas';
 import { buildWorld } from '../build';
-import { siteCollision } from '../collision';
+import { reachCollision, siteCollision } from '../collision';
 import type { Connector, Tile } from '../types';
 
 // Built when the file loads, where no timeout applies (as world.real.test.ts does).
-const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: siteCollision });
+const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: reachCollision });
 
 const same = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
@@ -19,59 +20,12 @@ const line = (c: Connector): string =>
     `op${c.op} ${c.direction} ${show(c.landing)} from ${c.stand ? show(c.stand) : '-'}${c.relative ? ' relative' : ''}`;
 const onLand = (t: Tile): boolean => siteCollision.land(t.level, t.x, t.z) && siteCollision.walkable(t.level, t.x, t.z);
 
-/** A curated row the scripts contradict: one field's curated value, the derived one, and why. */
-interface Contradicted {
-    row: { name: string; direction: 'up' | 'down'; loc: Tile };
-    /** The curated field, and the derived row's field it is checked against. */
-    field: 'to' | 'stand';
-    curated: Tile;
-    derived: Tile;
-    evidence: string;
-}
-
-/**
- * Curated rows the scripts contradict. Each entry fails once conductor/lib/connectors.ts corrects its row,
- * and must then be removed. Task 6, which makes that table a view of the derived rows, clears this list.
- */
-const CONTRADICTED: readonly Contradicted[] = [
-    {
-        row: { name: 'Edgeville Dungeon trapdoor', direction: 'down', loc: { level: 0, x: 3097, z: 3468 } },
-        field: 'to',
-        curated: { level: 0, x: 3097, z: 9868 },
-        derived: { level: 0, x: 3096, z: 9868 },
-        evidence:
-            "trapdoors.rs2:11 moves the player's own tile 6400 north and the trapdoor's only reach tile is (3096, 3468), " +
-            "so the landing is (3096, 9868); the curated (3097, 9868) is pair() copying the ladder's stand",
-    },
-];
-
-const contradiction = (row: (typeof CONNECTORS)[number]): Contradicted | undefined =>
-    CONTRADICTED.find(c => c.row.name === row.name && c.row.direction === row.direction && same(c.row.loc, row.loc));
-
-describe('conductor/lib/connectors.ts is reproduced: loc tile and landing exact, stand within 1 tile', () => {
-    for (const [i, row] of CONNECTORS.entries())
-        test(`${i}: ${row.direction} ${row.name} at ${show(row.loc)}`, () => {
-            const derived = rowsAt(row.loc).filter(c => c.direction === row.direction);
-            const wrong = contradiction(row);
-            if (wrong) {
-                // Still wrong in the table, and still what the scripts give.
-                expect(show(row[wrong.field])).toBe(show(wrong.curated));
-                const field = wrong.field === 'to' ? 'landing' : 'stand';
-                expect(derived.map(c => (c[field] ? show(c[field]) : '-'))).toContain(show(wrong.derived));
-            }
-            // The list excuses only its field: every other field keeps the exact check.
-            const landing = wrong?.field === 'to' ? wrong.derived : row.to;
-            if (wrong?.field !== 'to') expect(derived.map(c => show(c.landing))).toContain(show(row.to));
-            if (wrong?.field !== 'stand') {
-                const stands = derived.filter(c => same(c.landing, landing)).map(c => c.stand);
-                expect(stands.some(s => s !== null && s.level === row.stand.level && cheb(s, row.stand) <= 1)).toBe(
-                    true,
-                );
-            }
-        });
-
-    test('every contradicted entry names a curated row', () => {
-        expect(CONTRADICTED.filter(c => !CONNECTORS.some(r => contradiction(r) === c))).toEqual([]);
+describe('the Edgeville Dungeon trapdoor', () => {
+    test("lands where its script moves the player's own tile (the curated table had (3097, 9868))", () => {
+        // trapdoors.rs2:11 moves the player's own tile 6400 north and the trapdoor is reached from (3096, 3468) only.
+        expect(rowsAt({ level: 0, x: 3097, z: 3468 }).map(line)).toEqual([
+            'op1 down (3096, 9868) from (3096, 3468) relative',
+        ]);
     });
 });
 
@@ -198,7 +152,11 @@ describe('every row', () => {
 
 describe('the build report', () => {
     test('has a way back for every curated connector', () => {
-        const curated = report.connectors.oneWay.filter(l => CONNECTORS.some(r => l.includes(` ${show(r.loc)} op`)));
+        const locs = [...OVERRIDES.keys()].map(k => {
+            const [level, x, z] = k.split(' ')[0]!.split(',').map(Number);
+            return show({ level: level!, x: x!, z: z! });
+        });
+        const curated = report.connectors.oneWay.filter(l => locs.some(loc => l.includes(` ${loc} op`)));
         expect(curated).toEqual([]);
     });
 

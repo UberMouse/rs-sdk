@@ -79,7 +79,34 @@ export interface Site {
     f2p: boolean;
     multiway: boolean;
     wildernessLevel: number;
+    /**
+     * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to this site's
+     * chosen stand tile (reach.ts), and to no other tile of it: `[[]]` with none, `[]` when no set gets there or
+     * there is no stand.
+     */
+    reach: string[][];
+    /**
+     * On a resource or processor site (distance.ts SINKS), the nearest site of each sink kind it takes its
+     * products to (a bank, and a furnace, range or anvil where phase 3 processes on the way), by run ticks from
+     * this site's stand under its own reach sets (distance.ts); a kind with none such is left out. Absent on other
+     * kinds.
+     */
+    nearest?: Nearest;
 }
+
+/** The nearest sink of one kind: its site id, the run ticks to its stand, and what that way needs. */
+export interface NearestSink {
+    site: string;
+    runTicks: number;
+    /** The requirement set of the way (requirements.ts canonicalSet): its crossings' sets joined, `[]` for none. */
+    requires: string[];
+}
+
+/** The kinds of sink a site's nearest is found for (distance.ts SINKS). */
+export const SINK_KINDS = ['bank', 'furnace', 'range', 'anvil'] as const;
+export type SinkKind = (typeof SINK_KINDS)[number];
+
+export type Nearest = Partial<Record<SinkKind, NearestSink>>;
 
 /**
  * Where one npc config spawns: its map placements clustered as sites are (one level, one leaf area,
@@ -95,12 +122,19 @@ export interface NpcSpawn {
     /** Placements in the cluster. */
     count: number;
     f2p: boolean;
+    /**
+     * The minimal requirement sets a walk from the Lumbridge spawn needs to get beside the cluster (reach.ts): the
+     * cheapest over the tiles its npcs are used from (place.ts besideCluster: its bbox, and the tiles round it
+     * that step onto it or the engine's entity reach test passes from), not one tile's; `[]` when none of them is
+     * reached.
+     */
+    reach: string[][];
 }
 
 /**
- * One way a connector loc (a ladder, staircase, trapdoor or manhole, kind `connector`) moves the player:
- * one op and one landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb on a
- * middle floor asks up or down) or a condition the script can't settle offline has a row per landing.
+ * One way a connector loc (a ladder, staircase, trapdoor, manhole or gangplank, kind `connector`) moves the
+ * player: one op and one landing its script gives that loc (sources/connectors.ts). An op with a choice (Climb
+ * on a middle floor asks up or down) or a condition the script can't settle offline has a row per landing.
  */
 export interface Connector {
     /** Index into World.features: the loc. */
@@ -291,7 +325,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 10;
+export const WORLD_FORMAT = 12;
 
 export interface World {
     /** WORLD_FORMAT when written. */

@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:kharazi-jungle:0` | (2852, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:kharazi-jungle:0` | (2852, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:kharazi-jungle:0` | (2837, 2918) | Jungle Savage 1 | no | no | - |
-| `npc:kharazi-jungle:1` | (2845, 2928) | Jungle Savage 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:kharazi-jungle:0` | (2837, 2918) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:kharazi-jungle:1` | (2845, 2928) | Jungle Savage 1 | no | no | - | unreached |

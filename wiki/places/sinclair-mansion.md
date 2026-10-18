@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:sinclair-mansion:0` | (2734, 3545) | [normal](../resources/tree/normal.md) 12 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:sinclair-mansion:0` | (2734, 3545) | [normal](../resources/tree/normal.md) 12 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:sinclair-mansion:0` | (2736, 3561) | Chicken 3, Cow 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:sinclair-mansion:0` | (2736, 3561) | Chicken 3, Cow 1 | no | no | - | - |

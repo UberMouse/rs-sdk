@@ -9,7 +9,10 @@ import {
     GENERATED,
     kindTitle,
     labeller,
+    nearestLabel,
     parts,
+    reachLabel,
+    reachSummary,
     SERVICE_KINDS,
     servicePath,
     table,
@@ -21,6 +24,8 @@ import {
 /** One page per service kind, as its repo-relative path and text. */
 export function renderServices(world: World, data: PageData): Page[] {
     const areas = areasOf(world);
+    const requires = reachLabel(world, data);
+    const nearestBank = nearestLabel(world, data, 'bank');
     const out: Page[] = [];
     for (const kind of SERVICE_KINDS) {
         const path = servicePath(kind);
@@ -28,16 +33,27 @@ export function renderServices(world: World, data: PageData): Page[] {
         const held = sites.map(s => parts(s, world, data));
         const label = labeller(held.flat().map(p => [kind, p] as const));
         const f2p = sites.filter(s => s.f2p).length;
+        // Processor kinds carry their nearest bank (distance.ts SINKS); the rest have no such column.
+        const banked = sites.some(s => s.nearest);
         out.push([
             path,
             [
                 GENERATED,
                 `# ${kindTitle(kind)}`,
                 '',
-                `${count(sites.length, 'site')}, ${f2p} of them in F2P.`,
+                `${count(sites.length, 'site')}, ${f2p} of them in F2P; ${reachSummary(sites)}.`,
                 '',
                 ...table(
-                    ['Area', 'Site', 'Centre', 'Stand', 'Counts', 'F2P'],
+                    [
+                        'Area',
+                        'Site',
+                        'Centre',
+                        'Stand',
+                        'Counts',
+                        'F2P',
+                        'Requires',
+                        ...(banked ? ['Nearest bank'] : []),
+                    ],
                     sites.map((s, i) => [
                         areaCell(path, areas, s.areaPath),
                         `\`${s.id}\``,
@@ -45,6 +61,8 @@ export function renderServices(world: World, data: PageData): Page[] {
                         s.stand ? coord(s.stand) : '-',
                         held[i]!.map(p => `${label(kind, p)} ${p.n}`).join(', '),
                         yesNo(s.f2p),
+                        requires(s),
+                        ...(banked ? [nearestBank(s)] : []),
                     ]),
                 ),
                 '',

@@ -5,12 +5,12 @@
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:chaos-temple:0` | (3239, 3608) | Chaos altar 1 | yes | yes | 12 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:chaos-temple:0` | (3239, 3608) | Chaos altar 1 | yes | yes | 12 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:chaos-temple:0` | (3234, 3620) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 13 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:chaos-temple:0` | (3234, 3620) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 13 | - |

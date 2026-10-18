@@ -3,24 +3,24 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:crandor:0` | (2821, 3245) | [mithril](../resources/rock/mithril.md) 7 | yes | no | - |
-| `rock:crandor:1` | (2834, 3293) | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - |
-| `rock:crandor:2` | (2837, 3245) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - |
-| `rock:crandor:3` | (2861, 3287) | [gold](../resources/rock/gold.md) 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:crandor:0` | (2821, 3245) | [mithril](../resources/rock/mithril.md) 7 | yes | no | - | unreached |
+| `rock:crandor:1` | (2834, 3293) | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - | unreached |
+| `rock:crandor:2` | (2837, 3245) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - | unreached |
+| `rock:crandor:3` | (2861, 3287) | [gold](../resources/rock/gold.md) 3 | yes | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - |
-| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - |
-| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - |
-| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - |
-| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - |
-| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - |
-| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - |
-| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - |
-| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - |
-| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - | unreached |
+| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - | unreached |
+| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - | unreached |
+| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - | unreached |
+| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - | unreached |
+| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - | unreached |
+| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - | unreached |
+| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - | unreached |
+| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - | unreached |
+| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - | unreached |

@@ -238,7 +238,9 @@ Look out for "I can't reach" messages - the solution is often to open closed gat
 Read and grep in the learnings/ and wiki/ folder for tips, skill guides, item and npc locations, and shop information.
 To choose where to bank, shop, train or fight, use the world index: `wiki/services/` (banks, furnaces,
 anvils, ranges, altars, ...), `wiki/resources/` (trees, rocks, fishing spots, stalls, pickpocket
-targets) and `wiki/places/` (one page per area); `wiki/world/README.md` explains them.
+targets) and `wiki/places/` (one page per area); `wiki/world/README.md` explains them. Their rows carry
+a Requires column (what a walk from the Lumbridge spawn needs there: quests, coins, `members`, ...) and
+resource and processor rows a Nearest bank column, so filter for what the account can reach.
 
 These folders are the knowledge base, and agents keep it current. `wiki/items/`, `wiki/npcs/`,
 `wiki/shops/`, `wiki/places/`, `wiki/resources/`, `wiki/services/` and `wiki/world.json` are

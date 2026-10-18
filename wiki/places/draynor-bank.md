@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:draynor-bank:0` | (3090, 3243) | Bank booth 3, Banker 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:draynor-bank:0` | (3090, 3243) | Bank booth 3, Banker 4 | yes | no | - | - |

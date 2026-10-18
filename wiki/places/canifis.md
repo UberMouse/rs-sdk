@@ -5,40 +5,40 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:canifis:0` | (3475, 3497) | General Store (werewolfgeneralstore) 1 | no | no | - |
-| `shop:canifis:1` | (3499, 3506) | Barkers' Habidashery (werewolfstore2) 1 | no | no | - |
-| `shop:canifis:2` | (3507, 3496) | Rufus' Meat Emporium (werewolfstore1) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:canifis:0` | (3475, 3497) | General Store (werewolfgeneralstore) 1 | no | no | - | Priest in Peril at stage 61 |
+| `shop:canifis:1` | (3499, 3506) | Barkers' Habidashery (werewolfstore2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `shop:canifis:2` | (3507, 3496) | Rufus' Meat Emporium (werewolfstore1) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## [Tanners](../services/tanner.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tanner:canifis:0` | (3490, 3503) | Sbott 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tanner:canifis:0` | (3490, 3503) | Sbott 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:canifis:0` | (3474, 3474) | Man (canafis_man2) 1 | no | no | - |
-| `npc:canifis:1` | (3483, 3493) | Man (canafis_man1) 1, Man (canafis_man2) 1, Man (canafis_man3) 1, Woman (canafis_woman2) 1, Woman (canafis_woman3) 1 | no | no | - |
-| `npc:canifis:2` | (3479, 3498) L1 | Woman (canafis_woman3) 1 | no | no | - |
-| `npc:canifis:3` | (3483, 3478) | Man (canafis_man1) 1 | no | no | - |
-| `npc:canifis:4` | (3490, 3472) L1 | Woman (canafis_woman2) 1 | no | no | - |
-| `npc:canifis:5` | (3493, 3474) | Man (canafis_man2) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
-| `npc:canifis:6` | (3501, 3492) | Man (canafis_man1) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
-| `npc:canifis:7` | (3499, 3473) L1 | Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - |
-| `npc:canifis:8` | (3511, 3482) | Man (canafis_man2) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:canifis:0` | (3474, 3474) | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:1` | (3483, 3493) | Man (canafis_man1) 1, Man (canafis_man2) 1, Man (canafis_man3) 1, Woman (canafis_woman2) 1, Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:2` | (3479, 3498) L1 | Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:3` | (3483, 3478) | Man (canafis_man1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:4` | (3490, 3472) L1 | Woman (canafis_woman2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:5` | (3493, 3474) | Man (canafis_man2) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:6` | (3501, 3492) | Man (canafis_man1) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:7` | (3499, 3473) L1 | Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:8` | (3511, 3482) | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:canifis:0` | (3478, 3500) | Ladder 1 | up (3477, 3500) L1 | no | no | - |
-| `connector:canifis:1` | (3478, 3500) L1 | Ladder 1 | down (3477, 3500) | no | no | - |
-| `connector:canifis:2` | (3501, 3475) | Staircase 1 | up (3500, 3476) L1 | no | no | - |
-| `connector:canifis:3` | (3501, 3476) L1 | Staircase 1 | down (3501, 3477) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:canifis:0` | (3478, 3500) | Ladder 1 | up (3477, 3500) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:1` | (3478, 3500) L1 | Ladder 1 | down (3477, 3500) by Climb-down | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:2` | (3501, 3475) | Staircase 1 | up (3500, 3476) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:3` | (3501, 3476) L1 | Staircase 1 | down (3501, 3477) by Climb-down | no | no | - | Priest in Peril at stage 61 |
 
 ## Areas within
 

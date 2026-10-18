@@ -7,13 +7,13 @@ Fishing spots on the river south of the bank.
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:al-kharid-river:0` | (3267, 3148) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - |
-| `fishing-spot:al-kharid-river:1` | (3276, 3140) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:al-kharid-river:0` | (3267, 3148) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - | - |
+| `fishing-spot:al-kharid-river:1` | (3276, 3140) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:al-kharid-river:0` | (3280, 3145) | Scorpion 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:al-kharid-river:0` | (3280, 3145) | Scorpion 1 | yes | yes | - | - |

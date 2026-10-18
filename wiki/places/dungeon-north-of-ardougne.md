@@ -5,25 +5,25 @@ Ladder up to a cellar at (2562, 3356); ogres and a blood-rune thieving chest. De
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:dungeon-north-of-ardougne:0` | (2585, 9742) | Fire 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:dungeon-north-of-ardougne:0` | (2585, 9742) | Fire 1 | no | no | - | 46 Thieving |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `thieving-chest:dungeon-north-of-ardougne:0` | (2586, 9736) | [chest_blood_runes](../resources/thieving-chest/chest_blood_runes.md) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `thieving-chest:dungeon-north-of-ardougne:0` | (2586, 9736) | [chest_blood_runes](../resources/thieving-chest/chest_blood_runes.md) 2 | no | no | - | 46 Thieving |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dungeon-north-of-ardougne:0` | (2567, 9753) | Giant bat 5 | no | no | - |
-| `npc:dungeon-north-of-ardougne:1` | (2585, 9737) | Ogre 7 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dungeon-north-of-ardougne:0` | (2567, 9753) | Giant bat 5 | no | no | - | 46 Thieving |
+| `npc:dungeon-north-of-ardougne:1` | (2585, 9737) | Ogre 7 | no | no | - | 46 Thieving |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:dungeon-north-of-ardougne:0` | (2562, 9756) | Ladder 1 | up (2561, 3356) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:dungeon-north-of-ardougne:0` | (2562, 9756) | Ladder 1 | up (2561, 3356) by Climb-up | no | no | - | 46 Thieving |

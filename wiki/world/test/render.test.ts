@@ -6,13 +6,14 @@ import {
     drift,
     HAND_WRITTEN,
     openshopTitles,
+    questListNames,
     README,
     readmeBody,
     renderWorld,
     writeFiles,
     type RenderData,
 } from '../render';
-import { bySiteId, link, slug } from '../render/common';
+import { bySiteId, link, reachLabel, slug } from '../render/common';
 import type { Config } from '../sources/configs';
 import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } from '../types';
 
@@ -47,12 +48,14 @@ const site = (
         f2p: true,
         multiway: false,
         wildernessLevel: 0,
+        reach: [[]],
         ...rest,
     } satisfies Site;
 };
 
-// A region holding a town holding a bank; a tree site in the town on level 1, one in the region in the
-// Wilderness, two more in the town to show sites sort by their number, and sites of kinds without pages.
+// A region holding a town holding a bank; a tree site in the town on level 1 behind two requirement sets, one
+// in the region in the Wilderness that no walk reaches, two more in the town to show sites sort by their
+// number, and sites of kinds without pages.
 const world: World = {
     format: WORLD_FORMAT,
     generatedFrom: 'abc123',
@@ -80,21 +83,42 @@ const world: World = {
         feature('tree', 'yew', 'Yew', 'yewtree', 3170, 3170),
         feature('tree', 'yew', 'Yew', 'yewtree', 3180, 3180),
         feature('npc', 'goblin', 'Goblin', 'goblin', 3190, 3190),
+        feature('range', '', 'Range', 'cooking_range', 3205, 3205),
     ],
     sites: [
         site('bank:town-bank:0', ['region', 'town', 'town-bank'], [0, 1, 2], { banker: 1, booth: 2 }),
         site('connector:town:0', ['region', 'town'], [6], { connector: 1 }, { stand: null }),
         site('npc:unnamed:0', [], [9], { goblin: 1 }),
-        site('tree:region:0', ['region'], [5], { yew: 1 }, { f2p: false, multiway: true, wildernessLevel: 12 }),
+        site(
+            'tree:region:0',
+            ['region'],
+            [5],
+            { yew: 1 },
+            { f2p: false, multiway: true, wildernessLevel: 12, reach: [] },
+        ),
         site(
             'tree:town:0',
             ['region', 'town'],
             [3, 4],
             { oak: 1, yew: 1 },
-            { centre: { level: 1, x: 3150, z: 3150 }, stand: { level: 1, x: 3150, z: 3151 } },
+            {
+                centre: { level: 1, x: 3150, z: 3150 },
+                stand: { level: 1, x: 3150, z: 3151 },
+                reach: [['skill:woodcutting:60'], ['coins:30', 'item:dramen_staff:worn']],
+                nearest: { bank: { site: 'bank:town-bank:0', runTicks: 12, requires: ['coins:30'] } },
+            },
         ),
-        site('tree:town:10', ['region', 'town'], [8], { yew: 1 }),
-        site('tree:town:2', ['region', 'town'], [7], { yew: 1 }),
+        site('range:town:0', ['region', 'town'], [10], { Range: 1 }, { nearest: {} }),
+        site('tree:town:10', ['region', 'town'], [8], { yew: 1 }, { nearest: {} }),
+        site(
+            'tree:town:2',
+            ['region', 'town'],
+            [7],
+            { yew: 1 },
+            {
+                nearest: { bank: { site: 'bank:town-bank:0', runTicks: 1, requires: [] } },
+            },
+        ),
     ],
     // The ladder's two ops land on one tile, which its row names once.
     connectors: [1, 2].map(op => ({
@@ -141,8 +165,10 @@ const data: RenderData = {
         ['yew_logs', { name: ['Yew logs'] }],
         ['bronze_axe', { name: ['Bronze axe'] }],
         ['rune_axe', { name: ['Rune axe'] }],
+        ['dramen_staff', { name: ['Dramen staff'] }],
     ]),
     shopTitles: new Map(),
+    questNames: new Map(),
     readmeBody: '\nHand-written.\n',
 };
 
@@ -187,19 +213,25 @@ describe('renderWorld', () => {
 
           Requires: members.
 
+          ## [Ranges](../services/range.md)
+
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`range:town:0\` | (3200, 3200) | Range 1 | yes | no | - | - |
+
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`tree:town:0\` | (3150, 3150) L1 | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | yes | no | - |
-          | \`tree:town:2\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - |
-          | \`tree:town:10\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`tree:town:0\` | (3150, 3150) L1 | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff |
+          | \`tree:town:2\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+          | \`tree:town:10\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
 
           ## Ladders and stairs
 
-          | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|---|
-          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 | yes | no | - |
+          | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|
+          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 by Climb or Climb-up | yes | no | - | no stand |
 
           ## Areas within
 
@@ -217,15 +249,15 @@ describe('renderWorld', () => {
 
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`tree:region:0\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | no | yes | 12 |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`tree:region:0\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | no | yes | 12 | unreached |
 
           ## Areas within
 
           | Area | Sites in it |
           |---|---|
-          | [Town](town.md) | bank 1, tree 3, connector 1 |
+          | [Town](town.md) | bank 1, range 1, tree 3, connector 1 |
           "
         `);
     });
@@ -235,7 +267,7 @@ describe('renderWorld', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Tree: yew
 
-          In-game name: Yew. 4 sites with 4 placed in all; 3 of the sites in F2P.
+          In-game name: Yew. 4 sites with 4 placed in all; 3 of the sites in F2P; 2 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 1 it does not reach (unreached).
 
           ## Data
 
@@ -260,14 +292,27 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|---|---|
-          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | 1 | no | yes | 12 |
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - |
-          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - |
-          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | 1 | no | yes | 12 | unreached | - |
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
+          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | Town bank (Town), 1 tick |
+          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
           "
         `);
+    });
+
+    test('a service page of a processor kind has a Nearest bank column, the bank page none', () => {
+        const header = (path: string) =>
+            pages
+                .get(path)!
+                .split('\n')
+                .find(l => l.startsWith('| Area'));
+        expect(header('wiki/services/range.md')).toBe(
+            '| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |',
+        );
+        expect(pages.get('wiki/services/range.md')).toContain('| Range 1 | yes | - | none |');
+        expect(header('wiki/services/bank.md')).toBe('| Area | Site | Centre | Stand | Counts | F2P | Requires |');
     });
 
     test('a resource subtype with no axe rows and no respawnrate says so', () => {
@@ -275,7 +320,7 @@ describe('renderWorld', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Tree: oak
 
-          In-game name: Oak. 1 site with 1 placed in all; 1 of the sites in F2P.
+          In-game name: Oak. 1 site with 1 placed in all; 1 of the sites in F2P; 0 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 0 it does not reach (unreached).
 
           ## Data
 
@@ -297,9 +342,9 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|---|---|
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
           "
         `);
     });
@@ -309,11 +354,11 @@ describe('renderWorld', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Banks
 
-          1 site, 1 of them in F2P.
+          1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P |
-          |---|---|---|---|---|---|
-          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | Bank booth 2, Banker 1 | yes |
+          | Area | Site | Centre | Stand | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|
+          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | Bank booth 2, Banker 1 | yes | - |
           "
         `);
     });
@@ -323,7 +368,7 @@ describe('renderWorld', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) down to the hand-written line below. -->
           # World index
 
-          Generated from \`server/content\` at \`abc123\`: 3 areas (1 top level), 10 features, 7 sites, 0 npc spawn clusters, in [wiki/world.json](../world.json).
+          Generated from \`server/content\` at \`abc123\`: 3 areas (1 top level), 11 features, 8 sites, 0 npc spawn clusters, in [wiki/world.json](../world.json).
 
           | Folder | Pages | One page per |
           |---|---|---|
@@ -474,6 +519,7 @@ const namedData: RenderData = {
         ['bronze_axe', { name: ['Bronze axe'] }],
     ]),
     shopTitles: new Map([['rottenshop', 'Shop of Distaste']]),
+    questNames: new Map(),
     readmeBody: '',
 };
 
@@ -493,57 +539,57 @@ describe('in-game names and resource data', () => {
 
           ## [Banks](../services/bank.md)
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`bank:town:0\` | (3200, 3200) | Bank booth 1, Banker 2 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`bank:town:0\` | (3200, 3200) | Bank booth 1, Banker 2 | yes | no | - | - |
 
           ## [Shops](../services/shop.md)
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`shop:town:0\` | (3200, 3200) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`shop:town:0\` | (3200, 3200) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | no | - | - |
 
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`tree:town:0\` | (3200, 3200) | [willow](../resources/tree/willow.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`tree:town:0\` | (3200, 3200) | [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
 
           ## Rocks
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`rock:town:0\` | (3200, 3200) | [iron](../resources/rock/iron.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`rock:town:0\` | (3200, 3200) | [iron](../resources/rock/iron.md) 1 | yes | no | - | - |
 
           ## Fishing spots
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`fishing-spot:town:0\` | (3200, 3200) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`fishing-spot:town:0\` | (3200, 3200) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
 
           ## Stalls
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`stall:town:0\` | (3200, 3200) | [Baker's stall](../resources/stall/bakerystall.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`stall:town:0\` | (3200, 3200) | [Baker's stall](../resources/stall/bakerystall.md) 1 | yes | no | - | - |
 
           ## Thieving chests
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`thieving-chest:town:0\` | (3200, 3200) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`thieving-chest:town:0\` | (3200, 3200) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | yes | no | - | - |
 
           ## Pickpocket targets
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`pickpocket:town:0\` | (3200, 3200) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`pickpocket:town:0\` | (3200, 3200) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
 
           ## Monsters
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|
-          | \`npc:town:0\` | (3200, 3200) | Goblin 1, Man (man3) 1 | yes | no | - |
+          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|
+          | \`npc:town:0\` | (3200, 3200) | Goblin 1, Man (man3) 1 | yes | no | - | - |
           "
         `);
     });
@@ -553,22 +599,22 @@ describe('in-game names and resource data', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Shops
 
-          1 site, 1 of them in F2P.
+          1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P |
-          |---|---|---|---|---|---|
-          | [Town](../places/town.md) | \`shop:town:0\` | (3200, 3200) | (3200, 3199) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes |
+          | Area | Site | Centre | Stand | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`shop:town:0\` | (3200, 3200) | (3200, 3199) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | - |
           "
         `);
         expect(namedPages.get('wiki/services/bank.md')).toMatchInlineSnapshot(`
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Banks
 
-          1 site, 1 of them in F2P.
+          1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P |
-          |---|---|---|---|---|---|
-          | [Town](../places/town.md) | \`bank:town:0\` | (3200, 3200) | (3200, 3199) | Bank booth 1, Banker 2 | yes |
+          | Area | Site | Centre | Stand | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`bank:town:0\` | (3200, 3200) | (3200, 3199) | Bank booth 1, Banker 2 | yes | - |
           "
         `);
     });
@@ -578,7 +624,7 @@ describe('in-game names and resource data', () => {
           "<!-- Generated by wiki/world/build.ts (bun run world) from the game data. Do not edit. -->
           # Pickpocket target: Man (man2)
 
-          In-game name: Man. 1 site with 1 placed in all; 1 of the sites in F2P.
+          In-game name: Man. 1 site with 1 placed in all; 1 of the sites in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -), 0 it does not reach (unreached).
 
           ## Data
 
@@ -594,9 +640,9 @@ describe('in-game names and resource data', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness |
-          |---|---|---|---|---|---|---|---|
-          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - |
+          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|
+          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
           "
         `);
     });
@@ -817,4 +863,119 @@ describe('writeFiles and drift', () => {
         expect(existsSync(missing)).toBe(false);
         expect(existsSync(join(root, 'wiki/resources/rock/old.md'))).toBe(true);
     });
+});
+
+describe('reachLabel', () => {
+    const cell = reachLabel(
+        {
+            loadoutRules: {
+                entrana: { forbidCategories: { weapon_axe: 'both', armour_body: 'both' }, source: 'm.rs2:26' },
+                mage_arena: { forbidCategories: { armour_body: 'both', arrows: 'both' }, source: 'm.rs2:100' },
+            },
+        },
+        {
+            ...data,
+            questNames: new Map([['zanaris', 'Lost City']]),
+            objConfigs: new Map([
+                ['dramen_staff', { name: ['Dramen staff'] }],
+                ['shantay_pass', { name: ['Shantay pass'] }],
+            ]),
+        },
+    );
+    /** A site's cell, the site standing somewhere. */
+    const label = (reach: string[][]): string => cell({ reach, stand: { level: 0, x: 1, z: 1 } });
+
+    test('`-` for no requirement, `unreached` for no set, `no stand` with no stand, else the sets joined with or', () => {
+        expect(label([[]])).toBe('-');
+        expect(label([])).toBe('unreached');
+        expect(cell({ reach: [], stand: null })).toBe('no stand');
+        expect(label([['coins:10'], ['quest:zanaris', 'skill:mining:60']])).toBe(
+            '10 coins or Lost City done + 60 Mining',
+        );
+    });
+
+    test('every requirement form reads as the quest list and the objs name it', () => {
+        expect(
+            [
+                'quest:zanaris',
+                'quest:unknownquest>=3',
+                'skill:woodcutting:60',
+                'item:dramen_staff:worn',
+                'item:rope:held',
+                'category:weapon_axe:held',
+                'questpoints:32',
+                'coins:30',
+                'consume:shantay_pass:1',
+                'members',
+                'loadout:entrana',
+                'loadout:mage_arena',
+                'other:the bridge mended',
+            ].map(r => label([[r]])),
+        ).toEqual([
+            'Lost City done',
+            'unknownquest at stage 3',
+            '60 Woodcutting',
+            'wear Dramen staff',
+            'carry rope',
+            'carry any weapon axe',
+            '32 quest points',
+            '30 coins',
+            '1 Shantay pass (used up)',
+            'members',
+            'no weapons/armour (Entrana rule)',
+            'no armour (Mage arena rule)',
+            'the bridge mended',
+        ]);
+    });
+});
+
+test("a connector's row says which ops lead where, an op that swaps the loc first as `<op>, then <op>`", () => {
+    const trapdoor = feature('connector', '', 'Trapdoor', 'trapdoor', 3150, 3150);
+    const tiny: World = {
+        ...world,
+        areas: [world.areas[0]!],
+        features: [trapdoor],
+        sites: [site('connector:region:0', ['region'], [0], { connector: 1 })],
+        connectors: [
+            {
+                feature: 0,
+                loc: trapdoor.tile,
+                op: 1,
+                opName: 'Open',
+                direction: 'down',
+                landing: { level: 0, x: 3150, z: 9550 },
+                stand: { level: 0, x: 3151, z: 3150 },
+                source: 'general_use/scripts/trapdoors.rs2:11',
+                thenOp: { op: 1, opName: 'Climb-down' },
+            },
+            {
+                feature: 0,
+                loc: trapdoor.tile,
+                op: 2,
+                opName: 'Squeeze',
+                direction: 'other',
+                landing: { level: 0, x: 3152, z: 3150 },
+                stand: { level: 0, x: 3151, z: 3150 },
+                source: 't.rs2:1',
+            },
+        ],
+    };
+    expect(
+        renderWorld(tiny, data)
+            .get('wiki/places/region.md')!
+            .split('\n')
+            .find(l => l.startsWith('| `connector')),
+    ).toBe(
+        '| `connector:region:0` | (3200, 3200) | Trapdoor 1 | down (3150, 9550) by Open, then Climb-down; to (3152, 3150) by Squeeze | yes | no | - | - |',
+    );
+});
+
+test("questListNames: each questlist component's text by its id", () => {
+    expect([
+        ...questListNames(
+            ['[zanaris]', 'type=text', 'text=Lost City', 'option=Lost City', '', '[title]', 'type=layer', ''].join(
+                '\n',
+            ),
+        ),
+    ]).toEqual([['zanaris', 'Lost City']]);
 });

@@ -5,7 +5,7 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:wilderness-agility-course:0` | (2997, 3940) | [normal](../resources/tree/normal.md) 3 | no | no | 53 |
-| `tree:wilderness-agility-course:1` | (2999, 3956) | [normal](../resources/tree/normal.md) 3 | no | no | 55 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:wilderness-agility-course:0` | (2997, 3940) | [normal](../resources/tree/normal.md) 3 | no | no | 53 | unreached |
+| `tree:wilderness-agility-course:1` | (2999, 3956) | [normal](../resources/tree/normal.md) 3 | no | no | 55 | 52 Agility |

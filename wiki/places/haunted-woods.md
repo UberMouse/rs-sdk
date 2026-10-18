@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:haunted-woods:0` | (3555, 3486) | [hollow](../resources/tree/hollow.md) 1 | no | no | - |
-| `tree:haunted-woods:1` | (3576, 3497) | [hollow](../resources/tree/hollow.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:haunted-woods:0` | (3555, 3486) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:haunted-woods:1` | (3576, 3497) | [hollow](../resources/tree/hollow.md) 3 | no | no | - | Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:haunted-woods:0` | (3567, 3481) | Bat 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:haunted-woods:0` | (3567, 3481) | Bat 1 | no | no | - | Priest in Peril at stage 61 |

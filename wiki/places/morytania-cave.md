@@ -5,16 +5,16 @@ Bats and copper and tin veins; descriptive name, not settled from the data.
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:morytania-cave:0` | (3419, 9644) | [copper](../resources/rock/copper.md) 7 | no | no | - |
-| `rock:morytania-cave:1` | (3421, 9631) | [tin](../resources/rock/tin.md) 5 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:morytania-cave:0` | (3419, 9644) | [copper](../resources/rock/copper.md) 7 | no | no | - | unreached |
+| `rock:morytania-cave:1` | (3421, 9631) | [tin](../resources/rock/tin.md) 5 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:morytania-cave:0` | (3413, 9641) | Bat 6, Giant bat 1 | no | no | - |
-| `npc:morytania-cave:1` | (3414, 9620) | Giant bat 2 | no | no | - |
-| `npc:morytania-cave:2` | (3422, 9631) | Bat 3, Giant bat 1 | no | no | - |
-| `npc:morytania-cave:3` | (3434, 9637) | Bat 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:morytania-cave:0` | (3413, 9641) | Bat 6, Giant bat 1 | no | no | - | unreached |
+| `npc:morytania-cave:1` | (3414, 9620) | Giant bat 2 | no | no | - | unreached |
+| `npc:morytania-cave:2` | (3422, 9631) | Bat 3, Giant bat 1 | no | no | - | unreached |
+| `npc:morytania-cave:3` | (3434, 9637) | Bat 3 | no | no | - | unreached |

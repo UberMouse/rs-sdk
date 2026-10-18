@@ -5,13 +5,13 @@
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:druids-circle:0` | (2925, 3483) | Altar of Guthix 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:druids-circle:0` | (2925, 3483) | Altar of Guthix 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:druids-circle:0` | (2916, 3473) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:druids-circle:1` | (2932, 3469) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:druids-circle:0` | (2916, 3473) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:druids-circle:1` | (2932, 3469) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |

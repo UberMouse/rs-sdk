@@ -164,13 +164,6 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
  */
 export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; reason: string; sailSite?: true }[] = [
     {
-        script: 'general_use/scripts/gangplank.rs2:8',
-        what: 'gangplanks (loc categories gangplank_board, gangplank_disembark)',
-        reason:
-            'the sail routes land on a ship deck (level 1) and a gangplank loc moves the player to the quay; its landing is the ' +
-            "player's tile shifted by a computed offset (calc on ~gangplank_dir_mod), which no source here derives",
-    },
-    {
         script: 'skill_runecraft/scripts/essence_mine.rs2:1',
         what: 'the rune essence mine teleport (Aubury, Sedridor, Cromperty, Distentor, Brimstail) and its exit portals',
         reason:

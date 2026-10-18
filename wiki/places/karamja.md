@@ -3,190 +3,192 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:karamja:0` | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | no | - |
-| `shop:karamja:1` | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - |
-| `shop:karamja:2` | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | no | - |
-| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - |
-| `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - |
-| `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:karamja:0` | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | no | - | 30 coins |
+| `shop:karamja:1` | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done |
+| `shop:karamja:2` | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | no | - | 30 coins |
+| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - | 40 coins + Shilo Village done |
+| `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - | 30 coins |
+| `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - | 30 coins |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `anvil:karamja:0` | (2790, 3101) | Anvil 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `anvil:karamja:0` | (2790, 3101) | Anvil 1 | no | no | - | 30 coins |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:karamja:0` | (2814, 3161) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:karamja:0` | (2814, 3161) | Range 1 | no | no | - | 30 coins |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:karamja:0` | (2790, 3048) | Fire 2 | no | no | - |
-| `fire:karamja:1` | (2791, 3199) | Fireplace 1 | no | no | - |
-| `fire:karamja:2` | (2969, 2975) | Fire 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:karamja:0` | (2790, 3048) | Fire 2 | no | no | - | 30 coins |
+| `fire:karamja:1` | (2791, 3199) | Fireplace 1 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 |
+| `fire:karamja:2` | (2969, 2975) | Fire 1 | no | no | - | unreached |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:karamja:0` | (2868, 3018) | nature 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:karamja:0` | (2868, 3018) | nature 1 | no | no | - | 30 coins |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:karamja:0` | (2762, 2939) | [jungle](../resources/tree/jungle.md) 35 | no | no | - |
-| `tree:karamja:1` | (2783, 2923) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
-| `tree:karamja:2` | (2795, 2940) | [jungle](../resources/tree/jungle.md) 52 | no | no | - |
-| `tree:karamja:3` | (2793, 2901) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:4` | (2809, 2914) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:5` | (2813, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:6` | (2819, 2937) | [jungle](../resources/tree/jungle.md) 26 | no | no | - |
-| `tree:karamja:7` | (2827, 2900) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:8` | (2844, 3174) | [normal](../resources/tree/normal.md) 42 | yes | no | - |
-| `tree:karamja:9` | (2857, 2907) | [jungle](../resources/tree/jungle.md) 3 | no | no | - |
-| `tree:karamja:10` | (2866, 2937) | [jungle](../resources/tree/jungle.md) 50 | no | no | - |
-| `tree:karamja:11` | (2883, 2911) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
-| `tree:karamja:12` | (2895, 2926) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
-| `tree:karamja:13` | (2919, 3001) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:karamja:14` | (2916, 2916) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:15` | (2923, 2903) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
-| `tree:karamja:16` | (2936, 2940) | [jungle](../resources/tree/jungle.md) 42 | no | no | - |
-| `tree:karamja:17` | (2942, 3148) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:karamja:18` | (2949, 2912) | [jungle](../resources/tree/jungle.md) 4 | no | no | - |
-| `tree:karamja:19` | (2948, 2927) | [jungle](../resources/tree/jungle.md) 2 | no | no | - |
-| `tree:karamja:20` | (2956, 2897) | [jungle](../resources/tree/jungle.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:karamja:0` | (2762, 2939) | [jungle](../resources/tree/jungle.md) 35 | no | no | - | 30 coins |
+| `tree:karamja:1` | (2783, 2923) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:2` | (2795, 2940) | [jungle](../resources/tree/jungle.md) 52 | no | no | - | 30 coins |
+| `tree:karamja:3` | (2793, 2901) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:4` | (2809, 2914) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:5` | (2813, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:6` | (2819, 2937) | [jungle](../resources/tree/jungle.md) 26 | no | no | - | 30 coins |
+| `tree:karamja:7` | (2827, 2900) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:8` | (2844, 3174) | [normal](../resources/tree/normal.md) 42 | yes | no | - | 30 coins |
+| `tree:karamja:9` | (2857, 2907) | [jungle](../resources/tree/jungle.md) 3 | no | no | - | unreached |
+| `tree:karamja:10` | (2866, 2937) | [jungle](../resources/tree/jungle.md) 50 | no | no | - | 30 coins |
+| `tree:karamja:11` | (2883, 2911) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:12` | (2895, 2926) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:13` | (2919, 3001) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:karamja:14` | (2916, 2916) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:15` | (2923, 2903) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:16` | (2936, 2940) | [jungle](../resources/tree/jungle.md) 42 | no | no | - | 30 coins |
+| `tree:karamja:17` | (2942, 3148) | [normal](../resources/tree/normal.md) 3 | yes | no | - | 30 coins |
+| `tree:karamja:18` | (2949, 2912) | [jungle](../resources/tree/jungle.md) 4 | no | no | - | unreached |
+| `tree:karamja:19` | (2948, 2927) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:20` | (2956, 2897) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:karamja:0` | (2744, 3151) | [gold](../resources/rock/gold.md) 6 | no | no | - |
-| `rock:karamja:1` | (2822, 2999) | [gems](../resources/rock/gems.md) 5 | no | no | - |
-| `rock:karamja:2` | (2848, 3033) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 1, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:karamja:0` | (2744, 3151) | [gold](../resources/rock/gold.md) 6 | no | no | - | 30 coins |
+| `rock:karamja:1` | (2822, 2999) | [gems](../resources/rock/gems.md) 5 | no | no | - | 40 coins + Shilo Village done |
+| `rock:karamja:2` | (2848, 3033) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 1, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 1 | no | no | - | 30 coins |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:karamja:0` | (2791, 3019) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:1` | (2801, 3010) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:2` | (2807, 3021) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - |
-| `fishing-spot:karamja:3` | (2899, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
-| `fishing-spot:karamja:4` | (2912, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - |
-| `fishing-spot:karamja:5` | (2925, 3180) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 3, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:karamja:0` | (2791, 3019) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins |
+| `fishing-spot:karamja:1` | (2801, 3010) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins |
+| `fishing-spot:karamja:2` | (2807, 3021) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins |
+| `fishing-spot:karamja:3` | (2899, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | unreached |
+| `fishing-spot:karamja:4` | (2912, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | unreached |
+| `fishing-spot:karamja:5` | (2925, 3180) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 3, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | yes | no | - | 30 coins |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:karamja:0` | (2889, 3173) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:karamja:1` | (2948, 3146) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:karamja:0` | (2889, 3173) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins |
+| `pickpocket:karamja:1` | (2948, 3146) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:karamja:0` | (2767, 3204) | Jungle spider 1 | no | no | - |
-| `npc:karamja:1` | (2772, 3016) | Tribesman 2 | no | no | - |
-| `npc:karamja:2` | (2776, 2905) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:3` | (2777, 3198) | Pirate Guard 2 | no | no | - |
-| `npc:karamja:4` | (2779, 3066) | Chicken 1, Tribesman 1 | no | no | - |
-| `npc:karamja:5` | (2777, 3116) | Jungle spider 1 | no | no | - |
-| `npc:karamja:6` | (2780, 3030) | Jungle spider 2 | no | no | - |
-| `npc:karamja:7` | (2783, 2920) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:8` | (2784, 2908) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:9` | (2785, 2955) | Scorpion 1 | no | no | - |
-| `npc:karamja:10` | (2787, 2948) | Scorpion 2 | no | no | - |
-| `npc:karamja:11` | (2797, 3111) | Jungle spider 5 | no | no | - |
-| `npc:karamja:12` | (2802, 2903) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:13` | (2802, 2913) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:14` | (2809, 3169) | Rat 2 | no | no | - |
-| `npc:karamja:15` | (2808, 3067) | Chicken 1 | no | no | - |
-| `npc:karamja:16` | (2809, 2912) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:17` | (2810, 2984) | Jungle spider 2 | no | no | - |
-| `npc:karamja:18` | (2813, 2998) | Jungle spider 2 | no | no | - |
-| `npc:karamja:19` | (2821, 2927) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:20` | (2824, 2907) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:21` | (2832, 3170) | Imp 1 | yes | no | - |
-| `npc:karamja:22` | (2832, 3177) | Imp 1 | yes | no | - |
-| `npc:karamja:23` | (2837, 3184) | Imp 1 | yes | no | - |
-| `npc:karamja:24` | (2840, 2899) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:25` | (2841, 3163) | Imp 1 | yes | no | - |
-| `npc:karamja:26` | (2842, 3017) | Tribesman 1 | no | no | - |
-| `npc:karamja:27` | (2843, 3156) | Scorpion 1 | yes | no | - |
-| `npc:karamja:28` | (2847, 3062) | Jungle spider 2 | no | no | - |
-| `npc:karamja:29` | (2849, 3186) | Imp 1 | yes | no | - |
-| `npc:karamja:30` | (2852, 3162) | Imp 1, Scorpion 1 | yes | no | - |
-| `npc:karamja:31` | (2853, 3054) | Jungle spider 1 | no | no | - |
-| `npc:karamja:32` | (2861, 3085) | Jungle spider 13 | no | no | - |
-| `npc:karamja:33` | (2859, 3179) | Imp 2, Scorpion 1 | yes | no | - |
-| `npc:karamja:34` | (2859, 2923) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:35` | (2862, 3167) | Scorpion 2 | yes | no | - |
-| `npc:karamja:36` | (2862, 2904) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:37` | (2868, 3158) | Scorpion 2 | yes | no | - |
-| `npc:karamja:38` | (2866, 3061) | Tribesman 1 | no | no | - |
-| `npc:karamja:39` | (2868, 3054) | Tribesman 1 | no | no | - |
-| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - |
-| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - |
-| `npc:karamja:42` | (2890, 3001) | Jungle spider 10 | no | no | - |
-| `npc:karamja:43` | (2887, 2914) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:44` | (2892, 2946) | Jogre 1, Jungle spider 3 | no | no | - |
-| `npc:karamja:45` | (2901, 2907) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:46` | (2903, 2945) | Jogre 1 | no | no | - |
-| `npc:karamja:47` | (2906, 3095) | The Shaikahan 1 | no | no | - |
-| `npc:karamja:48` | (2925, 3049) | Jogre 7, Jungle spider 12 | no | no | - |
-| `npc:karamja:49` | (2916, 2914) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:50` | (2916, 3062) | Jogre 1 | no | no | - |
-| `npc:karamja:51` | (2921, 2959) | Jogre 3 | no | no | - |
-| `npc:karamja:52` | (2921, 2986) | Jogre 1, Tribesman 1 | no | no | - |
-| `npc:karamja:53` | (2925, 2923) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:54` | (2930, 2903) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:55` | (2938, 2992) | Jogre 1, Tribesman 4 | no | no | - |
-| `npc:karamja:56` | (2932, 3032) | Jungle spider 2 | no | no | - |
-| `npc:karamja:57` | (2939, 2914) | Jungle Savage 1 | no | no | - |
-| `npc:karamja:58` | (2955, 3029) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:59` | (2957, 3055) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:60` | (2969, 3042) | Shipyard worker 1 | no | no | - |
-| `npc:karamja:61` | (2976, 3064) | Shipyard worker 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:karamja:0` | (2767, 3204) | Jungle spider 1 | no | no | - | 30 coins |
+| `npc:karamja:1` | (2772, 3016) | Tribesman 2 | no | no | - | 30 coins |
+| `npc:karamja:2` | (2776, 2905) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:3` | (2777, 3198) | Pirate Guard 2 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 |
+| `npc:karamja:4` | (2779, 3066) | Chicken 1, Tribesman 1 | no | no | - | 30 coins |
+| `npc:karamja:5` | (2777, 3116) | Jungle spider 1 | no | no | - | 30 coins |
+| `npc:karamja:6` | (2780, 3030) | Jungle spider 2 | no | no | - | 30 coins |
+| `npc:karamja:7` | (2783, 2920) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:8` | (2784, 2908) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:9` | (2785, 2955) | Scorpion 1 | no | no | - | 30 coins |
+| `npc:karamja:10` | (2787, 2948) | Scorpion 2 | no | no | - | 30 coins |
+| `npc:karamja:11` | (2797, 3111) | Jungle spider 5 | no | no | - | 30 coins |
+| `npc:karamja:12` | (2802, 2903) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:13` | (2802, 2913) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:14` | (2809, 3169) | Rat 2 | no | no | - | 30 coins |
+| `npc:karamja:15` | (2808, 3067) | Chicken 1 | no | no | - | 30 coins |
+| `npc:karamja:16` | (2809, 2912) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:17` | (2810, 2984) | Jungle spider 2 | no | no | - | 30 coins |
+| `npc:karamja:18` | (2813, 2998) | Jungle spider 2 | no | no | - | 30 coins |
+| `npc:karamja:19` | (2821, 2927) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:20` | (2824, 2907) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:21` | (2832, 3170) | Imp 1 | yes | no | - | 30 coins |
+| `npc:karamja:22` | (2832, 3177) | Imp 1 | yes | no | - | 30 coins |
+| `npc:karamja:23` | (2837, 3184) | Imp 1 | yes | no | - | 30 coins |
+| `npc:karamja:24` | (2840, 2899) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:25` | (2841, 3163) | Imp 1 | yes | no | - | 30 coins |
+| `npc:karamja:26` | (2842, 3017) | Tribesman 1 | no | no | - | 30 coins |
+| `npc:karamja:27` | (2843, 3156) | Scorpion 1 | yes | no | - | 30 coins |
+| `npc:karamja:28` | (2847, 3062) | Jungle spider 2 | no | no | - | 30 coins |
+| `npc:karamja:29` | (2849, 3186) | Imp 1 | yes | no | - | 30 coins |
+| `npc:karamja:30` | (2852, 3162) | Imp 1, Scorpion 1 | yes | no | - | 30 coins |
+| `npc:karamja:31` | (2853, 3054) | Jungle spider 1 | no | no | - | 30 coins |
+| `npc:karamja:32` | (2861, 3085) | Jungle spider 13 | no | no | - | 30 coins |
+| `npc:karamja:33` | (2859, 3179) | Imp 2, Scorpion 1 | yes | no | - | 30 coins |
+| `npc:karamja:34` | (2859, 2923) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:35` | (2862, 3167) | Scorpion 2 | yes | no | - | 30 coins |
+| `npc:karamja:36` | (2862, 2904) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:37` | (2868, 3158) | Scorpion 2 | yes | no | - | 30 coins |
+| `npc:karamja:38` | (2866, 3061) | Tribesman 1 | no | no | - | 30 coins |
+| `npc:karamja:39` | (2868, 3054) | Tribesman 1 | no | no | - | 30 coins |
+| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - | 40 coins + Shilo Village done |
+| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - | 40 coins + Shilo Village done |
+| `npc:karamja:42` | (2890, 3001) | Jungle spider 10 | no | no | - | 30 coins |
+| `npc:karamja:43` | (2887, 2914) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:44` | (2892, 2946) | Jogre 1, Jungle spider 3 | no | no | - | 30 coins |
+| `npc:karamja:45` | (2901, 2907) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:46` | (2903, 2945) | Jogre 1 | no | no | - | 30 coins |
+| `npc:karamja:47` | (2906, 3095) | The Shaikahan 1 | no | no | - | unreached |
+| `npc:karamja:48` | (2925, 3049) | Jogre 7, Jungle spider 12 | no | no | - | unreached |
+| `npc:karamja:49` | (2916, 2914) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:50` | (2916, 3062) | Jogre 1 | no | no | - | unreached |
+| `npc:karamja:51` | (2921, 2959) | Jogre 3 | no | no | - | unreached |
+| `npc:karamja:52` | (2921, 2986) | Jogre 1, Tribesman 1 | no | no | - | unreached |
+| `npc:karamja:53` | (2925, 2923) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:54` | (2930, 2903) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:55` | (2938, 2992) | Jogre 1, Tribesman 4 | no | no | - | unreached |
+| `npc:karamja:56` | (2932, 3032) | Jungle spider 2 | no | no | - | unreached |
+| `npc:karamja:57` | (2939, 2914) | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:58` | (2955, 3029) | Shipyard worker 1 | no | no | - | unreached |
+| `npc:karamja:59` | (2957, 3055) | Shipyard worker 1 | no | no | - | unreached |
+| `npc:karamja:60` | (2969, 3042) | Shipyard worker 1 | no | no | - | unreached |
+| `npc:karamja:61` | (2976, 3064) | Shipyard worker 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:karamja:0` | (2763, 2952) | Ladder 1 | up (2763, 2951) L1 | no | no | - |
-| `connector:karamja:1` | (2763, 2952) L1 | Ladder 1 | down (2763, 2951) | no | no | - |
-| `connector:karamja:2` | (2766, 3121) | Ladder 1 | up (2765, 3121) L1 | no | no | - |
-| `connector:karamja:3` | (2766, 3121) L1 | Ladder 1 | down (2765, 3121) | no | no | - |
-| `connector:karamja:4` | (2782, 3087) | Ladder 1 | up (2781, 3087) L1 | no | no | - |
-| `connector:karamja:5` | (2782, 3087) L1 | Ladder 1 | down (2781, 3087) | no | no | - |
-| `connector:karamja:6` | (2789, 2979) | Ladder 1 | up (2788, 2979) L1 | no | no | - |
-| `connector:karamja:7` | (2789, 2979) L1 | Ladder 1 | down (2788, 2979) | no | no | - |
-| `connector:karamja:8` | (2808, 3161) | Ladder 1 | up (2808, 3162) L1 | no | no | - |
-| `connector:karamja:9` | (2808, 3161) L1 | Ladder 1 | down (2808, 3162) | no | no | - |
-| `connector:karamja:10` | (2809, 3065) | Ladder 1 | up (2808, 3065) L1 | no | no | - |
-| `connector:karamja:11` | (2809, 3065) L1 | Ladder 1 | down (2808, 3065) | no | no | - |
-| `connector:karamja:12` | (2824, 2958) | Ladder 1 | up (2824, 2957) L1 | no | no | - |
-| `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) | no | no | - |
-| `connector:karamja:14` | (2954, 3141) | Ship's ladder 1 | up (2953, 3141) L1 | yes | no | - |
-| `connector:karamja:15` | (2954, 3141) L1 | Ship's ladder 1 | down (2953, 3141) | yes | no | - |
-| `connector:karamja:16` | (2958, 3141) | Ship's ladder 1 | up (2957, 3141) L1 | yes | no | - |
-| `connector:karamja:17` | (2958, 3141) L1 | Ship's ladder 1 | down (2957, 3141) | yes | no | - |
-| `connector:karamja:18` | (2962, 3141) | Ship's ladder 1 | up (2961, 3141) L1 | yes | no | - |
-| `connector:karamja:19` | (2962, 3141) L1 | Ship's ladder 1 | down (2961, 3141) | yes | no | - |
-| `connector:karamja:20` | (2963, 3139) L1 | Ship's ladder 1 | up (2964, 3139) L2 | yes | no | - |
-| `connector:karamja:21` | (2963, 3139) L2 | Ship's ladder 1 | down (2962, 3139) L1 | yes | no | - |
-| `connector:karamja:22` | (2963, 3143) L1 | Ship's ladder 1 | up (2964, 3143) L2 | yes | no | - |
-| `connector:karamja:23` | (2963, 3143) L2 | Ship's ladder 1 | down (2962, 3143) L1 | yes | no | - |
-| `connector:karamja:24` | (2990, 3068) L1 | Ship's ladder 1 | up (2991, 3068) L2 | no | no | - |
-| `connector:karamja:25` | (2990, 3068) L2 | Ship's ladder 1 | down (2989, 3068) L1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:karamja:0` | (2763, 2952) | Ladder 1 | up (2763, 2951) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:karamja:1` | (2763, 2952) L1 | Ladder 1 | down (2763, 2951) by Climb-down | no | no | - | 30 coins |
+| `connector:karamja:2` | (2766, 3121) | Ladder 1 | up (2765, 3121) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:karamja:3` | (2766, 3121) L1 | Ladder 1 | down (2765, 3121) by Climb-down | no | no | - | 30 coins |
+| `connector:karamja:4` | (2782, 3087) | Ladder 1 | up (2781, 3087) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:karamja:5` | (2782, 3087) L1 | Ladder 1 | down (2781, 3087) by Climb-down | no | no | - | 30 coins |
+| `connector:karamja:6` | (2789, 2979) | Ladder 1 | up (2788, 2979) L1 by Climb-up | no | no | - | 30 coins + 15 Agility |
+| `connector:karamja:7` | (2789, 2979) L1 | Ladder 1 | down (2788, 2979) by Climb-down | no | no | - | 30 coins + 15 Agility |
+| `connector:karamja:8` | (2808, 3161) | Ladder 1 | up (2808, 3162) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:karamja:9` | (2808, 3161) L1 | Ladder 1 | down (2808, 3162) by Climb-down | no | no | - | 30 coins |
+| `connector:karamja:10` | (2809, 3065) | Ladder 1 | up (2808, 3065) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:karamja:11` | (2809, 3065) L1 | Ladder 1 | down (2808, 3065) by Climb-down | no | no | - | 30 coins |
+| `connector:karamja:12` | (2824, 2958) | Ladder 1 | up (2824, 2957) L1 by Climb-up | no | no | - | 40 coins + Shilo Village done |
+| `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) by Climb-down | no | no | - | 40 coins + Shilo Village done |
+| `connector:karamja:14` | (2954, 3141) | Ship's ladder 1 | up (2953, 3141) L1 by Climb-up | yes | no | - | 30 coins |
+| `connector:karamja:15` | (2954, 3141) L1 | Ship's ladder 1 | down (2953, 3141) by Climb-down | yes | no | - | 30 coins |
+| `connector:karamja:16` | (2956, 3144) L1 | Gangplank 1 | down (2956, 3146) by Cross | yes | no | - | 30 coins |
+| `connector:karamja:17` | (2956, 3145) | Gangplank 1 | up (2956, 3143) L1 by Cross | yes | no | - | 30 coins |
+| `connector:karamja:18` | (2958, 3141) | Ship's ladder 1 | up (2957, 3141) L1 by Climb-up | yes | no | - | 30 coins |
+| `connector:karamja:19` | (2958, 3141) L1 | Ship's ladder 1 | down (2957, 3141) by Climb-down | yes | no | - | 30 coins |
+| `connector:karamja:20` | (2962, 3141) | Ship's ladder 1 | up (2961, 3141) L1 by Climb-up | yes | no | - | 30 coins |
+| `connector:karamja:21` | (2962, 3141) L1 | Ship's ladder 1 | down (2961, 3141) by Climb-down | yes | no | - | 30 coins |
+| `connector:karamja:22` | (2963, 3139) L1 | Ship's ladder 1 | up (2964, 3139) L2 by Climb-up | yes | no | - | 30 coins |
+| `connector:karamja:23` | (2963, 3139) L2 | Ship's ladder 1 | down (2962, 3139) L1 by Climb-down | yes | no | - | 30 coins |
+| `connector:karamja:24` | (2963, 3143) L1 | Ship's ladder 1 | up (2964, 3143) L2 by Climb-up | yes | no | - | 30 coins |
+| `connector:karamja:25` | (2963, 3143) L2 | Ship's ladder 1 | down (2962, 3143) L1 by Climb-down | yes | no | - | 30 coins |
+| `connector:karamja:26` | (2990, 3068) L1 | Ship's ladder 1 | up (2991, 3068) L2 by Climb-up | no | no | - | unreached |
+| `connector:karamja:27` | (2990, 3068) L2 | Ship's ladder 1 | down (2989, 3068) L1 by Climb-down | no | no | - | unreached |
 
 ## Areas within
 

@@ -5,15 +5,15 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:demonic-ruins:0` | (3300, 3874) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 45 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:demonic-ruins:0` | (3300, 3874) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 45 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:demonic-ruins:0` | (3282, 3880) | Greater demon 1 | yes | yes | 46 |
-| `npc:demonic-ruins:1` | (3287, 3894) | Greater demon 1 | yes | yes | 47 |
-| `npc:demonic-ruins:2` | (3296, 3872) | Greater demon 1 | yes | yes | 45 |
-| `npc:demonic-ruins:3` | (3304, 3886) | Greater demon 1 | yes | yes | 46 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:demonic-ruins:0` | (3282, 3880) | Greater demon 1 | yes | yes | 46 | - |
+| `npc:demonic-ruins:1` | (3287, 3894) | Greater demon 1 | yes | yes | 47 | - |
+| `npc:demonic-ruins:2` | (3296, 3872) | Greater demon 1 | yes | yes | 45 | - |
+| `npc:demonic-ruins:3` | (3304, 3886) | Greater demon 1 | yes | yes | 46 | - |

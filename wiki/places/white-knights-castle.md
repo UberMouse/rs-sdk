@@ -5,25 +5,25 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:white-knights-castle:0` | (2959, 3338) | White Knight 2 | yes | yes | - |
-| `npc:white-knights-castle:1` | (2957, 3341) L2 | White Knight 1 | yes | yes | - |
-| `npc:white-knights-castle:2` | (2963, 3338) L1 | White Knight 3 | yes | yes | - |
-| `npc:white-knights-castle:3` | (2962, 3339) L3 | White Knight 2 | yes | yes | - |
-| `npc:white-knights-castle:4` | (2961, 3351) L1 | White Knight 1 | yes | yes | - |
-| `npc:white-knights-castle:5` | (2964, 3352) L2 | White Knight 1 | yes | yes | - |
-| `npc:white-knights-castle:6` | (2969, 3346) | Chicken 1, White Knight 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:white-knights-castle:0` | (2959, 3338) | White Knight 2 | yes | yes | - | - |
+| `npc:white-knights-castle:1` | (2957, 3341) L2 | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:2` | (2963, 3338) L1 | White Knight 3 | yes | yes | - | - |
+| `npc:white-knights-castle:3` | (2962, 3339) L3 | White Knight 2 | yes | yes | - | - |
+| `npc:white-knights-castle:4` | (2961, 3351) L1 | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:5` | (2964, 3352) L2 | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:6` | (2969, 3346) | Chicken 1, White Knight 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:white-knights-castle:0` | (2954, 3338) | Staircase 1 | up (2956, 3338) L1 | yes | yes | - |
-| `connector:white-knights-castle:1` | (2955, 3338) L1 | Staircase 1 | down (2955, 3337) | yes | yes | - |
-| `connector:white-knights-castle:2` | (2957, 3338) L2 | Staircase 1 | up (2956, 3339) L3 | yes | yes | - |
-| `connector:white-knights-castle:3` | (2957, 3339) L3 | Staircase 1 | down (2957, 3340) L2 | yes | yes | - |
-| `connector:white-knights-castle:4` | (2960, 3338) L1 | Staircase 1 | up (2959, 3339) L2 | yes | yes | - |
-| `connector:white-knights-castle:5` | (2960, 3339) L2 | Staircase 1 | down (2960, 3340) L1 | yes | yes | - |
-| `connector:white-knights-castle:6` | (2968, 3347) L1 | Staircase 1 | down (2971, 3347) | yes | yes | - |
-| `connector:white-knights-castle:7` | (2970, 3347) | Staircase 1 | up (2968, 3348) L1 | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:white-knights-castle:0` | (2954, 3338) | Staircase 1 | up (2956, 3338) L1 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:1` | (2955, 3338) L1 | Staircase 1 | down (2955, 3337) by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:2` | (2957, 3338) L2 | Staircase 1 | up (2956, 3339) L3 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:3` | (2957, 3339) L3 | Staircase 1 | down (2957, 3340) L2 by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:4` | (2960, 3338) L1 | Staircase 1 | up (2959, 3339) L2 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:5` | (2960, 3339) L2 | Staircase 1 | down (2960, 3340) L1 by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:6` | (2968, 3347) L1 | Staircase 1 | down (2971, 3347) by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:7` | (2970, 3347) | Staircase 1 | up (2968, 3348) L1 by Climb-up | yes | yes | - | - |

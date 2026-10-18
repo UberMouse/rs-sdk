@@ -5,22 +5,22 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:tai-bwo-wannai:0` | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:tai-bwo-wannai:0` | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:tai-bwo-wannai:0` | (2788, 3061) | Chicken 1 | no | no | - |
-| `npc:tai-bwo-wannai:1` | (2803, 3066) | Chicken 1, Tribesman 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:tai-bwo-wannai:0` | (2788, 3061) | Chicken 1 | no | no | - | 30 coins |
+| `npc:tai-bwo-wannai:1` | (2803, 3066) | Chicken 1, Tribesman 1 | no | no | - | 30 coins |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:tai-bwo-wannai:0` | (2796, 3076) | Ladder 1 | up (2795, 3076) L1 | no | no | - |
-| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | Ladder 1 | down (2795, 3076) | no | no | - |
-| `connector:tai-bwo-wannai:2` | (2804, 3075) | Ladder 1 | up (2803, 3075) L1 | no | no | - |
-| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | Ladder 1 | down (2803, 3075) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:tai-bwo-wannai:0` | (2796, 3076) | Ladder 1 | up (2795, 3076) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | Ladder 1 | down (2795, 3076) by Climb-down | no | no | - | 30 coins |
+| `connector:tai-bwo-wannai:2` | (2804, 3075) | Ladder 1 | up (2803, 3075) L1 by Climb-up | no | no | - | 30 coins |
+| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | Ladder 1 | down (2803, 3075) by Climb-down | no | no | - | 30 coins |

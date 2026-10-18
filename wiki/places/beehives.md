@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:beehives:0` | (2769, 3443) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 4, [yew](../resources/tree/yew.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:beehives:0` | (2769, 3443) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 4, [yew](../resources/tree/yew.md) 4 | no | no | - | - |

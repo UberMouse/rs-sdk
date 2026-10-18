@@ -5,15 +5,15 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:lumber-yard:0` | (3300, 3499) | [normal](../resources/tree/normal.md) 4 | yes | no | - |
-| `tree:lumber-yard:1` | (3304, 3516) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:lumber-yard:2` | (3317, 3513) | [normal](../resources/tree/normal.md) 9 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:lumber-yard:0` | (3300, 3499) | [normal](../resources/tree/normal.md) 4 | yes | no | - | unreached |
+| `tree:lumber-yard:1` | (3304, 3516) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:lumber-yard:2` | (3317, 3513) | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:lumber-yard:0` | (3310, 3509) | Ladder 1 | up (3309, 3509) L1 | yes | no | - |
-| `connector:lumber-yard:1` | (3310, 3509) L1 | Ladder 1 | down (3309, 3509) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:lumber-yard:0` | (3310, 3509) | Ladder 1 | up (3309, 3509) L1 by Climb-up | yes | no | - | unreached |
+| `connector:lumber-yard:1` | (3310, 3509) L1 | Ladder 1 | down (3309, 3509) by Climb-down | yes | no | - | unreached |

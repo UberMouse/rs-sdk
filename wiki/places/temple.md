@@ -5,23 +5,23 @@
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:temple:0` | (3416, 3488) | Altar 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:temple:0` | (3416, 3488) | Altar 1 | no | no | - | Priest in Peril at stage 4 |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:temple:0` | (3430, 3498) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:temple:0` | (3430, 3498) | [normal](../resources/tree/normal.md) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:temple:0` | (3410, 3485) L1 | Ladder 1 | up (3409, 3485) L2 | no | no | - |
-| `connector:temple:1` | (3410, 3485) L2 | Ladder 1 | down (3409, 3485) L1 | no | no | - |
-| `connector:temple:2` | (3417, 3484) | Staircase 1 | up (3416, 3485) L1 | no | no | - |
-| `connector:temple:3` | (3417, 3485) L1 | Staircase 1 | down (3417, 3486) | no | no | - |
-| `connector:temple:4` | (3417, 3492) | Staircase 1 | up (3416, 3493) L1 | no | no | - |
-| `connector:temple:5` | (3417, 3493) L1 | Staircase 1 | down (3417, 3494) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:temple:0` | (3410, 3485) L1 | Ladder 1 | up (3409, 3485) L2 by Climb-up | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:1` | (3410, 3485) L2 | Ladder 1 | down (3409, 3485) L1 by Climb-down | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:2` | (3417, 3484) | Staircase 1 | up (3416, 3485) L1 by Climb-up | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:3` | (3417, 3485) L1 | Staircase 1 | down (3417, 3486) by Climb-down | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:4` | (3417, 3492) | Staircase 1 | up (3416, 3493) L1 by Climb-up | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:5` | (3417, 3493) L1 | Staircase 1 | down (3417, 3494) by Climb-down | no | no | - | Priest in Peril at stage 4 |

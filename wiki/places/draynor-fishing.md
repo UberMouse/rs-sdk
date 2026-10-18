@@ -5,6 +5,6 @@
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:draynor-fishing:0` | (3086, 3229) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:draynor-fishing:0` | (3086, 3229) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |

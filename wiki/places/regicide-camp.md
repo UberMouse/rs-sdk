@@ -5,15 +5,15 @@ quests/quest_regicide/scripts/quest_regicide.rs2:542 teleports here; descriptive
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:regicide-camp:0` | (2341, 4575) | [normal](../resources/tree/normal.md) 175, [yew](../resources/tree/yew.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:regicide-camp:0` | (2341, 4575) | [normal](../resources/tree/normal.md) 175, [yew](../resources/tree/yew.md) 4 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:regicide-camp:0` | (2307, 4584) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 5, Rabbit (regicide_rabbit) 5 | no | no | - |
-| `npc:regicide-camp:1` | (2314, 4558) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - |
-| `npc:regicide-camp:2` | (2335, 4604) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - |
-| `npc:regicide-camp:3` | (2363, 4575) | Rabbit (regicide_rabbit) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:regicide-camp:0` | (2307, 4584) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 5, Rabbit (regicide_rabbit) 5 | no | no | - | unreached |
+| `npc:regicide-camp:1` | (2314, 4558) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | unreached |
+| `npc:regicide-camp:2` | (2335, 4604) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
+| `npc:regicide-camp:3` | (2363, 4575) | Rabbit (regicide_rabbit) 2 | no | no | - | unreached |

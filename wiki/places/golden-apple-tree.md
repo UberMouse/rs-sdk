@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:golden-apple-tree:0` | (2760, 3602) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:golden-apple-tree:0` | (2760, 3602) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |

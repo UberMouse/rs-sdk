@@ -5,6 +5,6 @@ Inside the cosmic ruins, which are in Zanaris.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:cosmic-altar:0` | (2141, 4832) | cosmic 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:cosmic-altar:0` | (2141, 4832) | cosmic 1 | no | no | - | unreached |

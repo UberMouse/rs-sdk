@@ -1,10 +1,11 @@
 // What every rendered page shares: tile and flag formats (as the shop pages print coordinates), tables,
-// the order and titles of kinds, area labels, the in-game names counts read by, and the paths pages
-// link by.
+// the order and titles of kinds, area labels, the in-game names counts read by, how a site's reach reads,
+// and the paths pages link by.
 import { params } from '../classify';
-import type { Config } from '../sources/configs';
+import { parseRequirement } from '../requirements';
+import { first, type Config } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
-import type { Feature, FeatureKind, Site, Tile, World } from '../types';
+import type { Feature, FeatureKind, SinkKind, Site, Tile, World } from '../types';
 import { cmp } from '../util';
 
 /** The comment that opens every generated page. */
@@ -118,6 +119,104 @@ export interface PageData {
     objConfigs: ReadonlyMap<string, Config>;
     /** The title each explicit `~openshop(<inv>, ..., "<title>")` call gives its inv (openshopTitles). */
     shopTitles: ReadonlyMap<string, string>;
+    /** Each quest's name in the quest list, by its questlist component (`zanaris` -> `Lost City`). */
+    questNames: ReadonlyMap<string, string>;
+}
+
+/** `weapon_axe` -> `weapon axe`; `glarials_tomb` -> `Glarials tomb` with `capital`. */
+const words = (id: string, capital = false): string => {
+    const w = id.replace(/_/g, ' ');
+    return capital ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+};
+
+/**
+ * How a page reads a site's reach (Site.reach): `no stand` for a site with no stand tile, `-` for no
+ * requirement (`[[]]`), `unreached` for none (`[]`), else each minimal set's requirements joined with ` + `,
+ * the sets with ` or `. The sets are canonical as world.json has them (requirements.ts canonicalSet), and a
+ * requirement reads as requirements.ts names it, with the quest list's names and the objs' names.
+ */
+export function reachLabel(
+    world: Pick<World, 'loadoutRules'>,
+    data: PageData,
+): (site: Pick<Site, 'reach' | 'stand'>) => string {
+    const quest = (id: string): string => data.questNames.get(id) ?? id;
+    const obj = (id: string): string => first(data.objConfigs.get(id), 'name') ?? id;
+    const loadout = (id: string): string => {
+        const cats = Object.keys(world.loadoutRules[id]?.forbidCategories ?? {});
+        const banned = [
+            ...(cats.some(c => c.startsWith('weapon_')) ? ['weapons'] : []),
+            ...(cats.some(c => c.startsWith('armour_')) ? ['armour'] : []),
+        ];
+        return `no ${banned.length ? banned.join('/') : 'banned items'} (${words(id, true)} rule)`;
+    };
+    const one = (s: string): string => {
+        const r = parseRequirement(s);
+        switch (r.kind) {
+            case 'quest':
+                return r.stage === undefined ? `${quest(r.quest)} done` : `${quest(r.quest)} at stage ${r.stage}`;
+            case 'skill':
+                return `${r.level} ${words(r.skill, true)}`;
+            case 'item':
+                return `${r.how === 'worn' ? 'wear' : 'carry'} ${obj(r.obj)}`;
+            case 'category':
+                return `${r.how === 'worn' ? 'wear' : 'carry'} any ${words(r.category)}`;
+            case 'questpoints':
+                return `${r.n} quest points`;
+            case 'coins':
+                return `${r.n} coins`;
+            case 'consume':
+                return `${r.n} ${obj(r.obj)} (used up)`;
+            case 'members':
+                return 'members';
+            case 'loadout':
+                return loadout(r.rule);
+            case 'other':
+                return r.text;
+        }
+    };
+    return ({ reach, stand }) => {
+        if (!stand) return 'no stand';
+        if (!reach.length) return 'unreached';
+        if (reach.some(set => !set.length)) return '-';
+        return reach.map(set => set.map(one).join(' + ')).join(' or ');
+    };
+}
+
+/**
+ * How a page reads a site's nearest sink of one kind (Site.nearest, distance.ts): the sink's area label and the
+ * run ticks to it, then `via` what the way needs, read as the Requires column reads a set; `-` for a site with no
+ * stand or none that reaches it, `none` when no sink of the kind is reached under the site's own requirement sets.
+ */
+export function nearestLabel(
+    world: World,
+    data: PageData,
+    kind: SinkKind,
+): (site: Pick<Site, 'reach' | 'stand' | 'nearest'>) => string {
+    const areas = areasOf(world);
+    const requires = reachLabel(world, data);
+    const byId = new Map(world.sites.map(s => [s.id, s]));
+    return site => {
+        if (!site.stand || !site.reach.length) return '-';
+        const n = site.nearest?.[kind];
+        if (!n) return 'none';
+        const where = areas.label(byId.get(n.site)?.areaPath ?? []);
+        const via = n.requires.length ? ` via ${requires({ reach: [n.requires], stand: site.stand })}` : '';
+        return `${where === '-' ? n.site : where}, ${count(n.runTicks, 'tick')}${via}`;
+    };
+}
+
+/**
+ * How many of `sites` a walk from the Lumbridge spawn gets to with no requirement, how many have a stand it
+ * does not reach, and how many have no stand tile (when any).
+ */
+export function reachSummary(sites: readonly Pick<Site, 'reach' | 'stand'>[]): string {
+    const free = sites.filter(s => s.reach.some(set => !set.length)).length;
+    const unreached = sites.filter(s => s.stand && !s.reach.length).length;
+    const noStand = sites.filter(s => !s.stand).length;
+    return (
+        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -), ${unreached} it does ` +
+        `not reach (unreached)${noStand ? `, ${noStand} with no stand tile (no stand)` : ''}`
+    );
 }
 
 /** One thing a site holds and how many. */

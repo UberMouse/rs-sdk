@@ -5,206 +5,206 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:varrock:0` | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | no | - |
-| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - |
-| `shop:varrock:2` | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - |
-| `shop:varrock:3` | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | no | - |
-| `shop:varrock:4` | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | no | - |
-| `shop:varrock:5` | (3232, 3423) | Lowe's Archery Emporium (archeryshop) 1 | yes | no | - |
-| `shop:varrock:6` | (3253, 3402) | Aubury's Rune Shop. (runeshop) 1 | yes | no | - |
-| `shop:varrock:7` | (3271, 3411) | Ye Olde Tea Shoppe (teashop) 1 | yes | no | - |
-| `shop:varrock:8` | (3281, 3398) | Fancy Clothes Store (fancyclothesstore) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:varrock:0` | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | no | - | - |
+| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - | - |
+| `shop:varrock:2` | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - | - |
+| `shop:varrock:3` | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | no | - | - |
+| `shop:varrock:4` | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | no | - | - |
+| `shop:varrock:5` | (3232, 3423) | Lowe's Archery Emporium (archeryshop) 1 | yes | no | - | - |
+| `shop:varrock:6` | (3253, 3402) | Aubury's Rune Shop. (runeshop) 1 | yes | no | - | - |
+| `shop:varrock:7` | (3271, 3411) | Ye Olde Tea Shoppe (teashop) 1 | yes | no | - | - |
+| `shop:varrock:8` | (3281, 3398) | Fancy Clothes Store (fancyclothesstore) 1 | yes | no | - | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `anvil:varrock:0` | (3188, 3424) | Anvil 3 | yes | no | - |
-| `anvil:varrock:1` | (3228, 3435) | Anvil 2 | yes | no | - |
-| `anvil:varrock:2` | (3231, 3441) | Anvil 2 | yes | no | - |
-| `anvil:varrock:3` | (3247, 3404) | Anvil 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `anvil:varrock:0` | (3188, 3424) | Anvil 3 | yes | no | - | - |
+| `anvil:varrock:1` | (3228, 3435) | Anvil 2 | yes | no | - | - |
+| `anvil:varrock:2` | (3231, 3441) | Anvil 2 | yes | no | - | - |
+| `anvil:varrock:3` | (3247, 3404) | Anvil 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:varrock:0` | (3202, 3401) L1 | Range 1 | yes | no | - |
-| `range:varrock:1` | (3219, 3388) | Range 1 | yes | no | - |
-| `range:varrock:2` | (3222, 3497) | Range 2 | yes | no | - |
-| `range:varrock:3` | (3229, 3401) | Range 1 | yes | no | - |
-| `range:varrock:4` | (3236, 3382) | Range 1 | yes | no | - |
-| `range:varrock:5` | (3237, 3403) | Range 1 | yes | no | - |
-| `range:varrock:6` | (3237, 3409) | Range 1 | yes | no | - |
-| `range:varrock:7` | (3286, 3488) | Range 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:varrock:0` | (3202, 3401) L1 | Range 1 | yes | no | - | - |
+| `range:varrock:1` | (3219, 3388) | Range 1 | yes | no | - | - |
+| `range:varrock:2` | (3222, 3497) | Range 2 | yes | no | - | - |
+| `range:varrock:3` | (3229, 3401) | Range 1 | yes | no | - | - |
+| `range:varrock:4` | (3236, 3382) | Range 1 | yes | no | - | - |
+| `range:varrock:5` | (3237, 3403) | Range 1 | yes | no | - | - |
+| `range:varrock:6` | (3237, 3409) | Range 1 | yes | no | - | - |
+| `range:varrock:7` | (3286, 3488) | Range 2 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:varrock:0` | (3219, 3403) | Fireplace 1 | yes | no | - |
-| `fire:varrock:1` | (3240, 3454) | Fireplace 1 | yes | no | - |
-| `fire:varrock:2` | (3243, 3394) | Cooking pot 1, Fireplace 1 | yes | no | - |
-| `fire:varrock:3` | (3271, 3380) | Fireplace 1 | yes | no | - |
-| `fire:varrock:4` | (3275, 3500) | Fireplace 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:varrock:0` | (3219, 3403) | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:1` | (3240, 3454) | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:2` | (3243, 3394) | Cooking pot 1, Fireplace 1 | yes | no | - | - |
+| `fire:varrock:3` | (3271, 3380) | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:4` | (3275, 3500) | Fireplace 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:varrock:0` | (3190, 3470) | Fountain 2 | yes | no | - |
-| `water-source:varrock:1` | (3206, 3463) | Fountain 1 | yes | no | - |
-| `water-source:varrock:2` | (3218, 3463) | Fountain 1 | yes | no | - |
-| `water-source:varrock:3` | (3238, 3434) | Fountain 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:varrock:0` | (3190, 3470) | Fountain 2 | yes | no | - | - |
+| `water-source:varrock:1` | (3206, 3463) | Fountain 1 | yes | no | - | - |
+| `water-source:varrock:2` | (3218, 3463) | Fountain 1 | yes | no | - | - |
+| `water-source:varrock:3` | (3238, 3434) | Fountain 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:varrock:0` | (3253, 3486) | Altar 1 | yes | no | - |
-| `altar:varrock:1` | (3259, 3381) | Chaos altar 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:varrock:0` | (3253, 3486) | Altar 1 | yes | no | - | - |
+| `altar:varrock:1` | (3259, 3381) | Chaos altar 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:varrock:0` | (3182, 3484) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 2 | yes | no | - |
-| `tree:varrock:1` | (3187, 3402) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:2` | (3201, 3410) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:varrock:3` | (3201, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:4` | (3212, 3448) | [normal](../resources/tree/normal.md) 8 | yes | no | - |
-| `tree:varrock:5` | (3225, 3414) | [normal](../resources/tree/normal.md) 8 | yes | no | - |
-| `tree:varrock:6` | (3225, 3378) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:varrock:7` | (3221, 3504) | [yew](../resources/tree/yew.md) 1 | yes | no | - |
-| `tree:varrock:8` | (3223, 3434) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:varrock:9` | (3233, 3463) | [normal](../resources/tree/normal.md) 9 | yes | no | - |
-| `tree:varrock:10` | (3238, 3441) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:varrock:11` | (3240, 3501) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:varrock:12` | (3249, 3404) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:varrock:13` | (3247, 3378) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:14` | (3248, 3472) | [yew](../resources/tree/yew.md) 1 | yes | no | - |
-| `tree:varrock:15` | (3249, 3505) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:16` | (3258, 3397) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:17` | (3278, 3482) | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 9, [yew](../resources/tree/yew.md) 2 | yes | no | - |
-| `tree:varrock:18` | (3259, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:19` | (3262, 3431) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:varrock:20` | (3279, 3434) | [normal](../resources/tree/normal.md) 24, [oak](../resources/tree/oak.md) 5 | yes | no | - |
-| `tree:varrock:21` | (3291, 3452) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:varrock:22` | (3291, 3380) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:varrock:0` | (3182, 3484) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
+| `tree:varrock:1` | (3187, 3402) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:2` | (3201, 3410) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:3` | (3201, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:4` | (3212, 3448) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| `tree:varrock:5` | (3225, 3414) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| `tree:varrock:6` | (3225, 3378) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:7` | (3221, 3504) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:varrock:8` | (3223, 3434) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:varrock:9` | (3233, 3463) | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
+| `tree:varrock:10` | (3238, 3441) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| `tree:varrock:11` | (3240, 3501) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:varrock:12` | (3249, 3404) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:13` | (3247, 3378) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:14` | (3248, 3472) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:varrock:15` | (3249, 3505) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:16` | (3258, 3397) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:17` | (3278, 3482) | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 9, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
+| `tree:varrock:18` | (3259, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:19` | (3262, 3431) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:20` | (3279, 3434) | [normal](../resources/tree/normal.md) 24, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
+| `tree:varrock:21` | (3291, 3452) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| `tree:varrock:22` | (3291, 3380) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Stalls
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `stall:varrock:0` | (3269, 3410) | [Tea stall](../resources/stall/tea_stall.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `stall:varrock:0` | (3269, 3410) | [Tea stall](../resources/stall/tea_stall.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:varrock:0` | (3174, 3427) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - |
-| `pickpocket:varrock:1` | (3175, 3403) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:2` | (3175, 3414) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:3` | (3180, 3401) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:4` | (3194, 3396) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:5` | (3203, 3497) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - |
-| `pickpocket:varrock:6` | (3204, 3496) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - |
-| `pickpocket:varrock:7` | (3209, 3379) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - |
-| `pickpocket:varrock:8` | (3212, 3463) | [Guard](../resources/pickpocket/guard1.md) 6 | yes | no | - |
-| `pickpocket:varrock:9` | (3223, 3400) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - |
-| `pickpocket:varrock:10` | (3231, 3399) L1 | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:11` | (3234, 3385) L1 | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
-| `pickpocket:varrock:12` | (3238, 3406) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:varrock:13` | (3243, 3501) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - |
-| `pickpocket:varrock:14` | (3245, 3395) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:varrock:15` | (3261, 3402) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
-| `pickpocket:varrock:16` | (3274, 3427) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - |
-| `pickpocket:varrock:17` | (3280, 3500) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:varrock:0` | (3174, 3427) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
+| `pickpocket:varrock:1` | (3175, 3403) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:2` | (3175, 3414) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:3` | (3180, 3401) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:4` | (3194, 3396) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:5` | (3203, 3497) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
+| `pickpocket:varrock:6` | (3204, 3496) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:7` | (3209, 3379) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
+| `pickpocket:varrock:8` | (3212, 3463) | [Guard](../resources/pickpocket/guard1.md) 6 | yes | no | - | - |
+| `pickpocket:varrock:9` | (3223, 3400) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:10` | (3231, 3399) L1 | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:11` | (3234, 3385) L1 | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:12` | (3238, 3406) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:13` | (3243, 3501) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
+| `pickpocket:varrock:14` | (3245, 3395) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:15` | (3261, 3402) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:16` | (3274, 3427) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - | - |
+| `pickpocket:varrock:17` | (3280, 3500) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - |
-| `npc:varrock:1` | (3177, 3405) | Imp 1 | yes | no | - |
-| `npc:varrock:2` | (3213, 3502) | Imp 1 | yes | no | - |
-| `npc:varrock:3` | (3225, 3395) | Barbarian woman 1 | yes | no | - |
-| `npc:varrock:4` | (3235, 3401) | Tramp 1 | yes | no | - |
-| `npc:varrock:5` | (3242, 3392) | Imp 1, Mugger 1, Rat 1, Spider 1 | yes | no | - |
-| `npc:varrock:6` | (3246, 3384) L1 | Weaponsmaster 1 | yes | no | - |
-| `npc:varrock:7` | (3246, 3458) | Imp 1 | yes | no | - |
-| `npc:varrock:8` | (3277, 3505) | Black Knight 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - | Temple of Ikov at stage 10 |
+| `npc:varrock:1` | (3177, 3405) | Imp 1 | yes | no | - | - |
+| `npc:varrock:2` | (3213, 3502) | Imp 1 | yes | no | - | - |
+| `npc:varrock:3` | (3225, 3395) | Barbarian woman 1 | yes | no | - | - |
+| `npc:varrock:4` | (3235, 3401) | Tramp 1 | yes | no | - | - |
+| `npc:varrock:5` | (3242, 3392) | Imp 1, Mugger 1, Rat 1, Spider 1 | yes | no | - | - |
+| `npc:varrock:6` | (3246, 3384) L1 | Weaponsmaster 1 | yes | no | - | carry Key |
+| `npc:varrock:7` | (3246, 3458) | Imp 1 | yes | no | - | - |
+| `npc:varrock:8` | (3277, 3505) | Black Knight 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:varrock:0` | (3175, 3420) | Staircase 1 | up (3175, 3419) L1 | yes | no | - |
-| `connector:varrock:1` | (3175, 3420) L1 | Staircase 1 | down (3175, 3423) | yes | no | - |
-| `connector:varrock:2` | (3177, 3401) | Staircase 1 | up (3176, 3401) L1 | yes | no | - |
-| `connector:varrock:3` | (3177, 3401) L1 | Staircase 1 | down (3180, 3401) | yes | no | - |
-| `connector:varrock:4` | (3183, 3447) | Ladder 1 | up (3183, 3446) L1 | yes | no | - |
-| `connector:varrock:5` | (3183, 3447) L1 | Ladder 1 | down (3183, 3446) | yes | no | - |
-| `connector:varrock:6` | (3187, 3414) L1 | Ladder 1 | down (3186, 3414) | yes | no | - |
-| `connector:varrock:7` | (3187, 3433) | Staircase 1 | down (3190, 9833) | yes | no | - |
-| `connector:varrock:8` | (3188, 3389) | Staircase 1 | up (3188, 3392) L1 | yes | no | - |
-| `connector:varrock:9` | (3188, 3390) L1 | Staircase 1 | down (3188, 3388) | yes | no | - |
-| `connector:varrock:10` | (3202, 3416) | Ladder 1 | up (3202, 3417) L1 | yes | no | - |
-| `connector:varrock:11` | (3202, 3416) L1 | Ladder 1 | down (3202, 3417) | yes | no | - |
-| `connector:varrock:12` | (3202, 3434) | Ladder 1 | up (3201, 3434) L1 | yes | no | - |
-| `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | down (3201, 3434) | yes | no | - |
-| `connector:varrock:14` | (3202, 3497) | Staircase 1 | up (3203, 3496) L1 | yes | no | - |
-| `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | down (3203, 3496), up (3204, 3497) L2 | yes | no | - |
-| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 | yes | no | - |
-| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) | yes | no | - |
-| `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | down (3203, 3496) L1 | yes | no | - |
-| `connector:varrock:19` | (3205, 3395) | Ladder 1 | up (3204, 3395) L1 | yes | no | - |
-| `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | down (3204, 3395) | yes | no | - |
-| `connector:varrock:21` | (3205, 3497) L2 | Ladder 1 | up (3204, 3497) L3 | yes | no | - |
-| `connector:varrock:22` | (3205, 3497) L3 | Ladder 1 | down (3204, 3497) L2 | yes | no | - |
-| `connector:varrock:23` | (3214, 3410) | Ladder 1 | up (3214, 3411) L1 | yes | no | - |
-| `connector:varrock:24` | (3214, 3410) L1 | Ladder 1 | down (3214, 3411) | yes | no | - |
-| `connector:varrock:25` | (3218, 3496) | Staircase 1 | up (3220, 3496) L1 | yes | no | - |
-| `connector:varrock:26` | (3219, 3496) L1 | Staircase 1 | down (3220, 3496) | yes | no | - |
-| `connector:varrock:27` | (3224, 3388) | Ladder 1 | up (3223, 3388) L1 | yes | no | - |
-| `connector:varrock:28` | (3224, 3388) L1 | Ladder 1 | down (3223, 3388) | yes | no | - |
-| `connector:varrock:29` | (3225, 3472) L1 | Ladder 1 | up (3224, 3472) L2 | yes | no | - |
-| `connector:varrock:30` | (3225, 3472) L2 | Ladder 1 | down (3224, 3472) L1 | yes | no | - |
-| `connector:varrock:31` | (3227, 3393) | Staircase 1 | up (3230, 3393) L1 | yes | no | - |
-| `connector:varrock:32` | (3228, 3393) L1 | Staircase 1 | down (3226, 3393) | yes | no | - |
-| `connector:varrock:33` | (3230, 3383) | Staircase 1 | up (3230, 3382) L1 | yes | no | - |
-| `connector:varrock:34` | (3230, 3383) L1 | Staircase 1 | down (3230, 3386) | yes | no | - |
-| `connector:varrock:35` | (3230, 3504) | Ladder 1 | down (3229, 9904) | yes | no | - |
-| `connector:varrock:36` | (3231, 3401) | Ladder 1 | down (3230, 9801) | yes | no | - |
-| `connector:varrock:37` | (3233, 3424) | Ladder 1 | up (3232, 3424) L1 | yes | no | - |
-| `connector:varrock:38` | (3233, 3424) L1 | Ladder 1 | down (3232, 3424) | yes | no | - |
-| `connector:varrock:39` | (3237, 3447) | Staircase 1 | up (3239, 3447) L1 | yes | no | - |
-| `connector:varrock:40` | (3237, 3458) | Manhole 1 | down (3236, 9858) | yes | no | - |
-| `connector:varrock:41` | (3238, 3447) L1 | Staircase 1 | down (3239, 3447) | yes | no | - |
-| `connector:varrock:42` | (3239, 3489) | Staircase 1 | up (3242, 3489) L1 | yes | no | - |
-| `connector:varrock:43` | (3240, 3489) L1 | Staircase 1 | down (3238, 3489) | yes | no | - |
-| `connector:varrock:44` | (3242, 3505) L2 | Trapdoor 1 | down (3241, 9905) L2 | yes | no | - |
-| `connector:varrock:45` | (3244, 3383) | Ladder 1 | down (3244, 9782) | yes | no | - |
-| `connector:varrock:46` | (3247, 3409) | Ladder 1 | up (3246, 3409) L1 | yes | no | - |
-| `connector:varrock:47` | (3247, 3409) L1 | Ladder 1 | down (3246, 3409) | yes | no | - |
-| `connector:varrock:48` | (3252, 3384) | Ladder 1 | up (3251, 3384) L1 | yes | no | - |
-| `connector:varrock:49` | (3252, 3384) L1 | Ladder 1 | down (3251, 3384) | yes | no | - |
-| `connector:varrock:50` | (3255, 3421) | Staircase 1 | up (3255, 3420) L1 | yes | no | - |
-| `connector:varrock:51` | (3255, 3421) L1 | Staircase 1 | down (3254, 3421) | yes | no | - |
-| `connector:varrock:52` | (3258, 3487) | Staircase 1 | up (3258, 3486) L1 | yes | no | - |
-| `connector:varrock:53` | (3258, 3487) L1 | Staircase 1 | down (3258, 3486), up (3258, 3486) L2 | yes | no | - |
-| `connector:varrock:54` | (3258, 3487) L2 | Staircase 1 | down (3258, 3486) L1, up (3258, 3486) L3 | yes | no | - |
-| `connector:varrock:55` | (3258, 3487) L3 | Staircase 1 | down (3258, 3486) L2 | yes | no | - |
-| `connector:varrock:56` | (3259, 3446) | Staircase 1 | up (3259, 3449) L1 | yes | no | - |
-| `connector:varrock:57` | (3259, 3447) L1 | Staircase 1 | down (3259, 3445) | yes | no | - |
-| `connector:varrock:58` | (3262, 3403) | Ladder 1 | up (3261, 3403) L1 | yes | no | - |
-| `connector:varrock:59` | (3262, 3403) L1 | Ladder 1 | down (3261, 3403) | yes | no | - |
-| `connector:varrock:60` | (3278, 3434) L2 | Trapdoor 1 | down (3277, 9834) L2 | yes | no | - |
-| `connector:varrock:61` | (3283, 3398) | Ladder 1 | up (3282, 3398) L1 | yes | no | - |
-| `connector:varrock:62` | (3283, 3398) L1 | Ladder 1 | down (3282, 3398) | yes | no | - |
-| `connector:varrock:63` | (3285, 3493) | Staircase 1 | up (3285, 3492) L1 | yes | no | - |
-| `connector:varrock:64` | (3285, 3493) L1 | Staircase 1 | down (3285, 3496) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:varrock:0` | (3175, 3420) | Staircase 1 | up (3175, 3419) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:1` | (3175, 3420) L1 | Staircase 1 | down (3175, 3423) by Climb-down | yes | no | - | - |
+| `connector:varrock:2` | (3177, 3401) | Staircase 1 | up (3176, 3401) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:3` | (3177, 3401) L1 | Staircase 1 | down (3180, 3401) by Climb-down | yes | no | - | - |
+| `connector:varrock:4` | (3183, 3447) | Ladder 1 | up (3183, 3446) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:5` | (3183, 3447) L1 | Ladder 1 | down (3183, 3446) by Climb-down | yes | no | - | - |
+| `connector:varrock:6` | (3187, 3414) L1 | Ladder 1 | down (3186, 3414) by Climb-down | yes | no | - | unreached |
+| `connector:varrock:7` | (3187, 3433) | Staircase 1 | down (3190, 9833) by Climb-down | yes | no | - | - |
+| `connector:varrock:8` | (3188, 3389) | Staircase 1 | up (3188, 3392) L1 by Climb-up | yes | no | - | Shield of Arrav at stage 3 |
+| `connector:varrock:9` | (3188, 3390) L1 | Staircase 1 | down (3188, 3388) by Climb-down | yes | no | - | Shield of Arrav at stage 3 |
+| `connector:varrock:10` | (3202, 3416) | Ladder 1 | up (3202, 3417) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:11` | (3202, 3416) L1 | Ladder 1 | down (3202, 3417) by Climb-down | yes | no | - | - |
+| `connector:varrock:12` | (3202, 3434) | Ladder 1 | up (3201, 3434) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | down (3201, 3434) by Climb-down | yes | no | - | - |
+| `connector:varrock:14` | (3202, 3497) | Staircase 1 | up (3203, 3496) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | down (3203, 3496) by Climb or Climb-down; up (3204, 3497) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 by Climb-up | yes | no | - | unreached |
+| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) by Climb-down | yes | no | - | unreached |
+| `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | down (3203, 3496) L1 by Climb-down | yes | no | - | - |
+| `connector:varrock:19` | (3205, 3395) | Ladder 1 | up (3204, 3395) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | down (3204, 3395) by Climb-down | yes | no | - | - |
+| `connector:varrock:21` | (3205, 3497) L2 | Ladder 1 | up (3204, 3497) L3 by Climb-up | yes | no | - | - |
+| `connector:varrock:22` | (3205, 3497) L3 | Ladder 1 | down (3204, 3497) L2 by Climb-down | yes | no | - | - |
+| `connector:varrock:23` | (3214, 3410) | Ladder 1 | up (3214, 3411) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:24` | (3214, 3410) L1 | Ladder 1 | down (3214, 3411) by Climb-down | yes | no | - | - |
+| `connector:varrock:25` | (3218, 3496) | Staircase 1 | up (3220, 3496) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:26` | (3219, 3496) L1 | Staircase 1 | down (3220, 3496) by Climb-down | yes | no | - | - |
+| `connector:varrock:27` | (3224, 3388) | Ladder 1 | up (3223, 3388) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:28` | (3224, 3388) L1 | Ladder 1 | down (3223, 3388) by Climb-down | yes | no | - | - |
+| `connector:varrock:29` | (3225, 3472) L1 | Ladder 1 | up (3224, 3472) L2 by Climb-up | yes | no | - | - |
+| `connector:varrock:30` | (3225, 3472) L2 | Ladder 1 | down (3224, 3472) L1 by Climb-down | yes | no | - | - |
+| `connector:varrock:31` | (3227, 3393) | Staircase 1 | up (3230, 3393) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:32` | (3228, 3393) L1 | Staircase 1 | down (3226, 3393) by Climb-down | yes | no | - | - |
+| `connector:varrock:33` | (3230, 3383) | Staircase 1 | up (3230, 3382) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:34` | (3230, 3383) L1 | Staircase 1 | down (3230, 3386) by Climb-down | yes | no | - | - |
+| `connector:varrock:35` | (3230, 3504) | Ladder 1 | down (3229, 9904) by Climb-down | yes | no | - | - |
+| `connector:varrock:36` | (3231, 3401) | Ladder 1 | down (3230, 9801) by Climb-down | yes | no | - | - |
+| `connector:varrock:37` | (3233, 3424) | Ladder 1 | up (3232, 3424) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:38` | (3233, 3424) L1 | Ladder 1 | down (3232, 3424) by Climb-down | yes | no | - | - |
+| `connector:varrock:39` | (3237, 3447) | Staircase 1 | up (3239, 3447) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:40` | (3237, 3458) | Manhole 1 | down (3236, 9858) by Open, then Climb down | yes | no | - | - |
+| `connector:varrock:41` | (3238, 3447) L1 | Staircase 1 | down (3239, 3447) by Climb-down | yes | no | - | - |
+| `connector:varrock:42` | (3239, 3489) | Staircase 1 | up (3242, 3489) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:43` | (3240, 3489) L1 | Staircase 1 | down (3238, 3489) by Climb-down | yes | no | - | - |
+| `connector:varrock:44` | (3242, 3505) L2 | Trapdoor 1 | down (3241, 9905) L2 by Open, then Climb-down | yes | no | - | unreached |
+| `connector:varrock:45` | (3244, 3383) | Ladder 1 | down (3244, 9782) by Climb-down | yes | no | - | - |
+| `connector:varrock:46` | (3247, 3409) | Ladder 1 | up (3246, 3409) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:47` | (3247, 3409) L1 | Ladder 1 | down (3246, 3409) by Climb-down | yes | no | - | - |
+| `connector:varrock:48` | (3252, 3384) | Ladder 1 | up (3251, 3384) L1 by Climb-up | yes | no | - | carry Key |
+| `connector:varrock:49` | (3252, 3384) L1 | Ladder 1 | down (3251, 3384) by Climb-down | yes | no | - | carry Key |
+| `connector:varrock:50` | (3255, 3421) | Staircase 1 | up (3255, 3420) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:51` | (3255, 3421) L1 | Staircase 1 | down (3254, 3421) by Climb-down | yes | no | - | - |
+| `connector:varrock:52` | (3258, 3487) | Staircase 1 | up (3258, 3486) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:53` | (3258, 3487) L1 | Staircase 1 | down (3258, 3486) by Climb or Climb-down; up (3258, 3486) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:54` | (3258, 3487) L2 | Staircase 1 | down (3258, 3486) L1 by Climb or Climb-down; up (3258, 3486) L3 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:55` | (3258, 3487) L3 | Staircase 1 | down (3258, 3486) L2 by Climb-down | yes | no | - | - |
+| `connector:varrock:56` | (3259, 3446) | Staircase 1 | up (3259, 3449) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:57` | (3259, 3447) L1 | Staircase 1 | down (3259, 3445) by Climb-down | yes | no | - | - |
+| `connector:varrock:58` | (3262, 3403) | Ladder 1 | up (3261, 3403) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:59` | (3262, 3403) L1 | Ladder 1 | down (3261, 3403) by Climb-down | yes | no | - | - |
+| `connector:varrock:60` | (3278, 3434) L2 | Trapdoor 1 | down (3277, 9834) L2 by Open, then Climb-down | yes | no | - | unreached |
+| `connector:varrock:61` | (3283, 3398) | Ladder 1 | up (3282, 3398) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:62` | (3283, 3398) L1 | Ladder 1 | down (3282, 3398) by Climb-down | yes | no | - | - |
+| `connector:varrock:63` | (3285, 3493) | Staircase 1 | up (3285, 3492) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:64` | (3285, 3493) L1 | Staircase 1 | down (3285, 3496) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

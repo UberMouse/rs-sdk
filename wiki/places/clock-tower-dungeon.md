@@ -5,37 +5,37 @@ Ladders up to the Clock Tower south of Ardougne, (2566-2575, 3222-3255).
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:clock-tower-dungeon:0` | (2588, 9613) | Fire 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:clock-tower-dungeon:0` | (2588, 9613) | Fire 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:clock-tower-dungeon:0` | (2565, 9656) | Goblin (goblin) 3, Goblin (goblin_armed) 2, Goblin (goblin_helmet) 2 | no | no | - |
-| `npc:clock-tower-dungeon:1` | (2568, 9608) | Head Thief 1, Rat 1, Thief 2 | no | no | - |
-| `npc:clock-tower-dungeon:2` | (2567, 9623) | Goblin (goblin) 1, Rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:3` | (2569, 9633) | Goblin (goblin) 1 | no | no | - |
-| `npc:clock-tower-dungeon:4` | (2587, 9622) | Ogre 3, Rat 14 | no | no | - |
-| `npc:clock-tower-dungeon:5` | (2580, 9600) | Rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:6` | (2591, 9621) | Rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:7` | (2605, 9622) | Goblin (goblin) 1, Goblin (goblin_armed) 4, Rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:8` | (2608, 9643) | Giant spider 15, Rat 4 | no | no | - |
-| `npc:clock-tower-dungeon:9` | (2608, 9628) | Rat 1 | no | no | - |
-| `npc:clock-tower-dungeon:10` | (2617, 9632) | Rat 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:clock-tower-dungeon:0` | (2565, 9656) | Goblin (goblin) 3, Goblin (goblin_armed) 2, Goblin (goblin_helmet) 2 | no | no | - | - |
+| `npc:clock-tower-dungeon:1` | (2568, 9608) | Head Thief 1, Rat 1, Thief 2 | no | no | - | unreached |
+| `npc:clock-tower-dungeon:2` | (2567, 9623) | Goblin (goblin) 1, Rat 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:3` | (2569, 9633) | Goblin (goblin) 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:4` | (2587, 9622) | Ogre 3, Rat 14 | no | no | - | - |
+| `npc:clock-tower-dungeon:5` | (2580, 9600) | Rat 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:6` | (2591, 9621) | Rat 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:7` | (2605, 9622) | Goblin (goblin) 1, Goblin (goblin_armed) 4, Rat 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:8` | (2608, 9643) | Giant spider 15, Rat 4 | no | no | - | - |
+| `npc:clock-tower-dungeon:9` | (2608, 9628) | Rat 1 | no | no | - | - |
+| `npc:clock-tower-dungeon:10` | (2617, 9632) | Rat 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:clock-tower-dungeon:0` | (2561, 9622) | Ladder 1 | up (2561, 3221) | no | no | - |
-| `connector:clock-tower-dungeon:1` | (2566, 9627) | Ladder 1 | up (2565, 3227) | no | no | - |
-| `connector:clock-tower-dungeon:2` | (2566, 9631) | Ladder 1 | up (2565, 3231) | no | no | - |
-| `connector:clock-tower-dungeon:3` | (2566, 9642) | Ladder 1 | up (2565, 3242) | no | no | - |
-| `connector:clock-tower-dungeon:4` | (2569, 9627) | Ladder 1 | up (2568, 3227) | no | no | - |
-| `connector:clock-tower-dungeon:5` | (2569, 9631) | Ladder 1 | up (2568, 3231) | no | no | - |
-| `connector:clock-tower-dungeon:6` | (2572, 9627) | Ladder 1 | up (2571, 3227) | no | no | - |
-| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | up (2571, 3231) | no | no | - |
-| `connector:clock-tower-dungeon:8` | (2575, 9655) | Ladder 1 | up (2575, 3256) | no | no | - |
-| `connector:clock-tower-dungeon:9` | (2621, 9661) | Ladder 1 | up (2620, 3261) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:clock-tower-dungeon:0` | (2561, 9622) | Ladder 1 | up (2561, 3221) by Climb-up | no | no | - | unreached |
+| `connector:clock-tower-dungeon:1` | (2566, 9627) | Ladder 1 | up (2565, 3227) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:2` | (2566, 9631) | Ladder 1 | up (2565, 3231) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:3` | (2566, 9642) | Ladder 1 | up (2565, 3242) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:4` | (2569, 9627) | Ladder 1 | up (2568, 3227) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:5` | (2569, 9631) | Ladder 1 | up (2568, 3231) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:6` | (2572, 9627) | Ladder 1 | up (2571, 3227) by Climb-up | no | no | - | - |
+| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | up (2571, 3231) by Climb-up | no | no | - | unreached |
+| `connector:clock-tower-dungeon:8` | (2575, 9655) | Ladder 1 | up (2575, 3256) by Climb-up | no | no | - | the rats killed with the poisoned trough (bit ^quest_cog_rat_door_bit of %cogquest, set at quests/quest_cog/scripts/locs/quest_cog_food_trough.rs2:4) or Clock Tower done |
+| `connector:clock-tower-dungeon:9` | (2621, 9661) | Ladder 1 | up (2620, 3261) by Climb-up | no | no | - | - |

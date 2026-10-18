@@ -5,61 +5,61 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:catherby:0` | (2800, 3439) | Candle Shop (candleshop) 1 | no | no | - |
-| `shop:catherby:1` | (2803, 3430) | Arhein Store (arheinstore) 1 | no | no | - |
-| `shop:catherby:2` | (2822, 3442) | Hicktons Archery Emporium. (archeryshop2) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:catherby:0` | (2800, 3439) | Candle Shop (candleshop) 1 | no | no | - | - |
+| `shop:catherby:1` | (2803, 3430) | Arhein Store (arheinstore) 1 | no | no | - | - |
+| `shop:catherby:2` | (2822, 3442) | Hicktons Archery Emporium. (archeryshop2) 1 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:catherby:0` | (2817, 3444) | Range 1 | no | no | - |
-| `range:catherby:1` | (2818, 3455) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:catherby:0` | (2817, 3444) | Range 1 | no | no | - | - |
+| `range:catherby:1` | (2818, 3455) | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:catherby:0` | (2798, 3442) | Cooking pot 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:catherby:0` | (2798, 3442) | Cooking pot 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:catherby:0` | (2818, 3449) | Sink 1 | no | no | - |
-| `water-source:catherby:1` | (2830, 3440) | Sink 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:catherby:0` | (2818, 3449) | Sink 1 | no | no | - | - |
+| `water-source:catherby:1` | (2830, 3440) | Sink 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:catherby:0` | (2787, 3442) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:catherby:0` | (2787, 3442) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:catherby:0` | (2804, 3430) | [Man (man)](../resources/pickpocket/man.md) 2 | no | no | - |
-| `pickpocket:catherby:1` | (2817, 3443) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman](../resources/pickpocket/woman2.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:catherby:0` | (2804, 3430) | [Man (man)](../resources/pickpocket/man.md) 2 | no | no | - | - |
+| `pickpocket:catherby:1` | (2817, 3443) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman](../resources/pickpocket/woman2.md) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:catherby:0` | (2807, 3454) | Ladder 1 | up (2807, 3453) L1 | no | no | - |
-| `connector:catherby:1` | (2807, 3454) L1 | Ladder 1 | down (2807, 3453) | no | no | - |
-| `connector:catherby:2` | (2808, 3423) L1 | Ship's ladder 1 | up (2808, 3424) L2 | no | no | - |
-| `connector:catherby:3` | (2808, 3423) L2 | Ship's ladder 1 | down (2808, 3422) L1 | no | no | - |
-| `connector:catherby:4` | (2810, 3419) | Ship's ladder 1 | up (2810, 3418) L1 | no | no | - |
-| `connector:catherby:5` | (2810, 3419) L1 | Ship's ladder 1 | down (2810, 3418) | no | no | - |
-| `connector:catherby:6` | (2811, 3423) L1 | Ship's ladder 1 | up (2811, 3424) L2 | no | no | - |
-| `connector:catherby:7` | (2811, 3423) L2 | Ship's ladder 1 | down (2811, 3422) L1 | no | no | - |
-| `connector:catherby:8` | (2812, 3450) | Ladder 1 | up (2812, 3451) L1 | no | no | - |
-| `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | down (2812, 3451) | no | no | - |
-| `connector:catherby:10` | (2825, 3445) | Ladder 1 | up (2824, 3445) L1 | no | no | - |
-| `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | down (2824, 3445) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:catherby:0` | (2807, 3454) | Ladder 1 | up (2807, 3453) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:1` | (2807, 3454) L1 | Ladder 1 | down (2807, 3453) by Climb-down | no | no | - | - |
+| `connector:catherby:2` | (2808, 3423) L1 | Ship's ladder 1 | up (2808, 3424) L2 by Climb-up | no | no | - | unreached |
+| `connector:catherby:3` | (2808, 3423) L2 | Ship's ladder 1 | down (2808, 3422) L1 by Climb-down | no | no | - | unreached |
+| `connector:catherby:4` | (2810, 3419) | Ship's ladder 1 | up (2810, 3418) L1 by Climb-up | no | no | - | unreached |
+| `connector:catherby:5` | (2810, 3419) L1 | Ship's ladder 1 | down (2810, 3418) by Climb-down | no | no | - | unreached |
+| `connector:catherby:6` | (2811, 3423) L1 | Ship's ladder 1 | up (2811, 3424) L2 by Climb-up | no | no | - | unreached |
+| `connector:catherby:7` | (2811, 3423) L2 | Ship's ladder 1 | down (2811, 3422) L1 by Climb-down | no | no | - | unreached |
+| `connector:catherby:8` | (2812, 3450) | Ladder 1 | up (2812, 3451) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | down (2812, 3451) by Climb-down | no | no | - | - |
+| `connector:catherby:10` | (2825, 3445) | Ladder 1 | up (2824, 3445) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | down (2824, 3445) by Climb-down | no | no | - | - |
 
 ## Areas within
 

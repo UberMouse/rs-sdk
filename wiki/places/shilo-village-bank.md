@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - | 40 coins + Shilo Village done |

@@ -5,32 +5,32 @@
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:lumbridge-swamp:0` | (3230, 3196) | Range 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:lumbridge-swamp:0` | (3230, 3196) | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:lumbridge-swamp:0` | (3237, 3151) | Fireplace 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:lumbridge-swamp:0` | (3237, 3151) | Fireplace 1 | yes | no | - | - |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:lumbridge-swamp:0` | (3184, 3164) | water 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:lumbridge-swamp:0` | (3184, 3164) | water 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:lumbridge-swamp:0` | (3145, 3197) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:lumbridge-swamp:1` | (3155, 3177) | [normal](../resources/tree/normal.md) 6 | yes | no | - |
-| `tree:lumbridge-swamp:2` | (3190, 3165) | [normal](../resources/tree/normal.md) 7 | yes | no | - |
-| `tree:lumbridge-swamp:3` | (3211, 3189) | [normal](../resources/tree/normal.md) 10 | yes | no | - |
-| `tree:lumbridge-swamp:4` | (3219, 3174) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:lumbridge-swamp:5` | (3253, 3196) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:lumbridge-swamp:0` | (3145, 3197) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:lumbridge-swamp:1` | (3155, 3177) | [normal](../resources/tree/normal.md) 6 | yes | no | - | - |
+| `tree:lumbridge-swamp:2` | (3190, 3165) | [normal](../resources/tree/normal.md) 7 | yes | no | - | - |
+| `tree:lumbridge-swamp:3` | (3211, 3189) | [normal](../resources/tree/normal.md) 10 | yes | no | - | - |
+| `tree:lumbridge-swamp:4` | (3219, 3174) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:lumbridge-swamp:5` | (3253, 3196) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
 
 ## Areas within
 

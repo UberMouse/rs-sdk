@@ -5,33 +5,33 @@ Ladder up to East Ardougne at (2632, 3294) and to (2570, 3267); the Hazeel Cult 
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:ardougne-sewers:0` | (2607, 9671) | Fire 5 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:ardougne-sewers:0` | (2607, 9671) | Fire 5 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:ardougne-sewers:0` | (2671, 9681) | [coal](../resources/rock/coal.md) 5, [iron](../resources/rock/iron.md) 5 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:ardougne-sewers:0` | (2671, 9681) | [coal](../resources/rock/coal.md) 5, [iron](../resources/rock/iron.md) 5 | no | no | - | 31 Thieving |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - |
-| `npc:ardougne-sewers:1` | (2576, 9689) | Rat 5 | no | no | - |
-| `npc:ardougne-sewers:2` | (2601, 9710) | Rat 3 | no | no | - |
-| `npc:ardougne-sewers:3` | (2606, 9678) | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - |
-| `npc:ardougne-sewers:4` | (2618, 9725) | Rat 3 | no | no | - |
-| `npc:ardougne-sewers:5` | (2641, 9698) | Rat 1 | no | no | - |
-| `npc:ardougne-sewers:6` | (2645, 9711) | Rat 1 | no | no | - |
-| `npc:ardougne-sewers:7` | (2674, 9682) | Rat 2, Zombie 3 | no | no | - |
-| `npc:ardougne-sewers:8` | (2680, 9701) | Rat 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - | unreached |
+| `npc:ardougne-sewers:1` | (2576, 9689) | Rat 5 | no | no | - | unreached |
+| `npc:ardougne-sewers:2` | (2601, 9710) | Rat 3 | no | no | - | unreached |
+| `npc:ardougne-sewers:3` | (2606, 9678) | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - | unreached |
+| `npc:ardougne-sewers:4` | (2618, 9725) | Rat 3 | no | no | - | unreached |
+| `npc:ardougne-sewers:5` | (2641, 9698) | Rat 1 | no | no | - | - |
+| `npc:ardougne-sewers:6` | (2645, 9711) | Rat 1 | no | no | - | - |
+| `npc:ardougne-sewers:7` | (2674, 9682) | Rat 2, Zombie 3 | no | no | - | 31 Thieving |
+| `npc:ardougne-sewers:8` | (2680, 9701) | Rat 1 | no | no | - | 31 Thieving |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:ardougne-sewers:0` | (2570, 9667) | Ladder 1 | up (2570, 3268) | no | no | - |
-| `connector:ardougne-sewers:1` | (2632, 9694) | Ladder 1 | up (2631, 3294) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:ardougne-sewers:0` | (2570, 9667) | Ladder 1 | up (2570, 3268) by Climb-up | no | no | - | - |
+| `connector:ardougne-sewers:1` | (2632, 9694) | Ladder 1 | up (2631, 3294) by Climb-up | no | no | - | - |

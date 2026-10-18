@@ -40,6 +40,9 @@ export const SITE_RADIUS: Record<FeatureKind, number> = {
     connector: 0,
 };
 
+/** A site or npc spawn cluster as placed, before the build adds its reach (reach.ts). */
+export type Placed<T extends Site | NpcSpawn> = Omit<T, 'reach'>;
+
 /** A loc's size and approach as its config gives them: unrotated, as the engine's Loc carries them. */
 export interface LocSize {
     width: number;
@@ -76,6 +79,11 @@ export interface SiteOptions {
     size: (f: PlacedLoc) => LocSize;
     /** Where a site with no stand tile is reported. */
     log: (line: string) => void;
+    /**
+     * Whether a walk from the Lumbridge spawn gets to a tile (reach.ts): a stand candidate it gets to beats every
+     * one it does not, before any other preference. Absent: every candidate is taken as reached.
+     */
+    walked?: (t: Tile) => boolean;
 }
 
 // The packer's forceapproach bits (server/engine/tools/pack/config/LocConfig.ts:149): every side
@@ -218,9 +226,48 @@ const bboxOf = (tiles: Tile[]): Rect => {
     );
 };
 
+/** The tiles of a box grown by one tile, on `level`: by x, then by z. */
+export function grownBox(b: Rect, level: number): Tile[] {
+    const out: Tile[] = [];
+    for (let x = b.x1 - 1; x <= b.x2 + 1; x++) for (let z = b.z1 - 1; z <= b.z2 + 1; z++) out.push({ level, x, z });
+    return out;
+}
+
+/** SiteCollision with the one-tile step test the walker routes by (reach.ts ReachCollision.canStep). */
+export interface StepCollision extends SiteCollision {
+    canStep(level: number, x: number, z: number, dx: number, dz: number): boolean;
+}
+
 /**
- * A site's stand tile. With locs: a tile that reaches one of them, nearest the centre; at a bank,
- * first the one on the side facing away from the bankers. A booth reaches from every open side
+ * The tiles an npc of a cluster is used from (NpcSpawn.reach): every tile of its bbox, where its spawns stand
+ * and wander, and each tile of the ring round it that can step onto a bbox tile, or from which the engine's
+ * entity reach test passes to one (reachedEntity, server/engine/src/engine/GameMap.ts:446, which
+ * Player.ts:1201 asks of an npc target): a ring tile across a wall from the box is not one. An npc used by an
+ * approach op from further off (a banker across its booth, interface_bank/scripts/banker.rs2:7) is not
+ * modelled: such a cluster reads as its beside tiles do.
+ */
+export function besideCluster(c: Pick<NpcSpawn, 'bbox' | 'centre'>, collision: StepCollision): Tile[] {
+    const { bbox } = c;
+    const inside = (x: number, z: number): boolean => x >= bbox.x1 && x <= bbox.x2 && z >= bbox.z1 && z <= bbox.z2;
+    return grownBox(bbox, c.centre.level).filter(t => {
+        if (inside(t.x, t.z)) return true;
+        for (let dx = -1; dx <= 1; dx++)
+            for (let dz = -1; dz <= 1; dz++) {
+                const [x, z] = [t.x + dx, t.z + dz];
+                if (!inside(x, z)) continue;
+                if (collision.canStep(t.level, t.x, t.z, dx, dz)) return true;
+                // An npc as a 1x1 rectangle (shape -2, GameMap.ts:447).
+                const npc = { level: t.level, x, z, width: 1, length: 1, forceapproach: 0, shape: -2, rotation: 0 };
+                if (collision.reached(t, npc)) return true;
+            }
+        return false;
+    });
+}
+
+/**
+ * A site's stand tile: first a tile a walk gets to (SiteOptions.walked), as a tile walled in with the locs
+ * (the bankers' side of a counter) is no stand. With locs: a tile that reaches one of them, nearest the centre;
+ * at a bank, first the one on the side facing away from the bankers. A booth reaches from every open side
  * (bankbooth has no forceapproach), the bankers' side included, so the side matters. It is taken as
  * the direction from the locs' mean to the bankers' mean, not as the distance to the nearest banker:
  * past the end of a long row with one banker behind its middle, a tile is further from that banker
@@ -235,7 +282,7 @@ function standTile(
     centre: Tile,
     bbox: Rect,
     collision: SiteCollision,
-    size: SiteOptions['size'],
+    { size, walked = () => true }: Pick<SiteOptions, 'size' | 'walked'>,
 ): Tile | null {
     const locs = members.filter(i => features[i]!.source === 'loc');
     let found: Candidate[];
@@ -248,14 +295,14 @@ function standTile(
         }
         found = locCandidates(features, locs, collision, size, toward);
     } else {
-        found = [];
-        for (let x = bbox.x1 - 1; x <= bbox.x2 + 1; x++)
-            for (let z = bbox.z1 - 1; z <= bbox.z2 + 1; z++)
-                if (collision.walkable(centre.level, x, z))
-                    found.push({ tile: { level: centre.level, x, z }, away: 0 });
+        found = grownBox(bbox, centre.level)
+            .filter(t => collision.walkable(t.level, t.x, t.z))
+            .map(tile => ({ tile, away: 0 }));
     }
+    const unwalked = (c: Candidate): number => (walked(c.tile) ? 0 : 1);
     found.sort(
         (a, b) =>
+            unwalked(a) - unwalked(b) ||
             b.away - a.away ||
             dist2(a.tile, centre) - dist2(b.tile, centre) ||
             a.tile.x - b.tile.x ||
@@ -283,8 +330,8 @@ export function buildSites(
     resolve: (t: Tile) => string[],
     zones: Zones,
     collision: SiteCollision,
-    { size, log }: SiteOptions,
-): Site[] {
+    { size, log, walked }: SiteOptions,
+): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
     features.forEach((f, i) => push(groups, `${f.kind}\0${paths[i]!.at(-1) ?? ''}\0${f.tile.level}`, i));
@@ -298,7 +345,7 @@ export function buildSites(
         byArea.set(area, [...(byArea.get(area) ?? []), ...clusters]);
     }
 
-    const sites: Site[] = [];
+    const sites: Placed<Site>[] = [];
     for (const area of [...byArea.keys()].sort()) {
         const clusters = byArea.get(area)!.sort((a, b) => {
             for (let k = 0; k < Math.min(a.length, b.length); k++) {
@@ -315,7 +362,7 @@ export function buildSites(
             const id = `${kind}:${areaPath.at(-1) ?? 'unnamed'}:${n}`;
             const centre = centreOf(tiles);
             const bbox = bboxOf(tiles);
-            const stand = standTile(features, members, kind, centre, bbox, collision, size);
+            const stand = standTile(features, members, kind, centre, bbox, collision, { size, walked });
             if (!stand) log(`place: site ${id} has no stand tile`);
             sites.push({
                 id,
@@ -347,11 +394,11 @@ export function spawnClusters(
     spawns: readonly { config: string; tile: Tile }[],
     resolve: (t: Tile) => string[],
     zones: Zones,
-): NpcSpawn[] {
+): Placed<NpcSpawn>[] {
     const paths = spawns.map(s => resolve(s.tile));
     const groups = new Map<string, number[]>();
     spawns.forEach((s, i) => push(groups, `${s.config}\0${paths[i]!.at(-1) ?? ''}\0${s.tile.level}`, i));
-    const out: { first: Tile; spawn: NpcSpawn }[] = [];
+    const out: { first: Tile; spawn: Placed<NpcSpawn> }[] = [];
     for (const members of groups.values())
         for (const c of cluster(spawns, members, SITE_RADIUS.npc)) {
             const tiles = c.map(i => spawns[i]!.tile).sort(byTile);

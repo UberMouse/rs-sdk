@@ -5,50 +5,50 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:melzars-maze:0` | (2919, 3251) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:melzars-maze:1` | (2921, 3236) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:melzars-maze:0` | (2919, 3251) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:melzars-maze:1` | (2921, 3236) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:melzars-maze:0` | (2927, 3251) L2 | Rat 2, Skeleton (dragonslayer_skeleton) 1, Skeleton (skeleton_armed) 5 | yes | no | - |
-| `npc:melzars-maze:1` | (2928, 3251) | Rat 3 | yes | no | - |
-| `npc:melzars-maze:2` | (2927, 3252) L1 | Ghost (dragonslayer_ghost) 1, Ghost (ghost) 4 | yes | no | - |
-| `npc:melzars-maze:3` | (2930, 3243) | Rat 1 | yes | no | - |
-| `npc:melzars-maze:4` | (2933, 3241) L1 | Rat 2 | yes | no | - |
-| `npc:melzars-maze:5` | (2940, 3239) | Imp 1, Rat 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:melzars-maze:0` | (2927, 3251) L2 | Rat 2, Skeleton (dragonslayer_skeleton) 1, Skeleton (skeleton_armed) 5 | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `npc:melzars-maze:1` | (2928, 3251) | Rat 3 | yes | no | - | carry Maze key |
+| `npc:melzars-maze:2` | (2927, 3252) L1 | Ghost (dragonslayer_ghost) 1, Ghost (ghost) 4 | yes | no | - | 1 Key (used up) + carry Maze key |
+| `npc:melzars-maze:3` | (2930, 3243) | Rat 1 | yes | no | - | carry Maze key |
+| `npc:melzars-maze:4` | (2933, 3241) L1 | Rat 2 | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `npc:melzars-maze:5` | (2940, 3239) | Imp 1, Rat 1 | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:melzars-maze:0` | (2923, 3240) | Ladder 1 | up (2923, 3241) L1 | yes | no | - |
-| `connector:melzars-maze:1` | (2923, 3240) L1 | Ladder 1 | down (2923, 3241) | yes | no | - |
-| `connector:melzars-maze:2` | (2923, 3248) | Ladder 1 | up (2923, 3247) L1 | yes | no | - |
-| `connector:melzars-maze:3` | (2923, 3248) L1 | Ladder 1 | down (2923, 3247) | yes | no | - |
-| `connector:melzars-maze:4` | (2924, 3250) | Ladder 1 | down (2923, 9650) | yes | no | - |
-| `connector:melzars-maze:5` | (2925, 3258) L1 | Ladder 1 | down (2926, 3258) | yes | no | - |
-| `connector:melzars-maze:6` | (2928, 3256) | Ladder 1 | up (2927, 3256) L1 | yes | no | - |
-| `connector:melzars-maze:7` | (2928, 3256) L1 | Ladder 1 | down (2927, 3256) | yes | no | - |
-| `connector:melzars-maze:8` | (2929, 3240) L1 | Ladder 1 | down (2928, 3240) | yes | no | - |
-| `connector:melzars-maze:9` | (2929, 3245) L2 | Ladder 1 | down (2928, 3245) L1 | yes | no | - |
-| `connector:melzars-maze:10` | (2930, 3258) L2 | Ladder 1 | down (2929, 3258) L1 | yes | no | - |
-| `connector:melzars-maze:11` | (2932, 3244) L1 | Ladder 1 | up (2931, 3244) L2 | yes | no | - |
-| `connector:melzars-maze:12` | (2932, 3244) L2 | Ladder 1 | down (2931, 3244) L1 | yes | no | - |
-| `connector:melzars-maze:13` | (2934, 3243) L2 | Ladder 1 | down (2933, 3243) L1 | yes | no | - |
-| `connector:melzars-maze:14` | (2934, 3244) L1 | Ladder 1 | up (2934, 3245) L2 | yes | no | - |
-| `connector:melzars-maze:15` | (2934, 3244) L2 | Ladder 1 | down (2934, 3245) L1 | yes | no | - |
-| `connector:melzars-maze:16` | (2934, 3254) L1 | Ladder 1 | up (2933, 3254) L2 | yes | no | - |
-| `connector:melzars-maze:17` | (2934, 3254) L2 | Ladder 1 | down (2933, 3254) L1 | yes | no | - |
-| `connector:melzars-maze:18` | (2937, 3240) L1 | Ladder 1 | down (2937, 3239) | yes | no | - |
-| `connector:melzars-maze:19` | (2937, 3247) L2 | Ladder 1 | down (2936, 3247) L1 | yes | no | - |
-| `connector:melzars-maze:20` | (2938, 3250) L1 | Ladder 1 | up (2937, 3250) L2 | yes | no | - |
-| `connector:melzars-maze:21` | (2938, 3250) L2 | Ladder 1 | down (2937, 3250) L1 | yes | no | - |
-| `connector:melzars-maze:22` | (2938, 3255) L2 | Ladder 1 | down (2937, 3255) L1 | yes | no | - |
-| `connector:melzars-maze:23` | (2939, 3257) | Ladder 1 | down (2938, 9657) | yes | no | - |
-| `connector:melzars-maze:24` | (2940, 3240) L2 | Ladder 1 | down (2939, 3240) L1 | yes | no | - |
-| `connector:melzars-maze:25` | (2940, 3257) L1 | Ladder 1 | up (2939, 3257) L2 | yes | no | - |
-| `connector:melzars-maze:26` | (2940, 3257) L2 | Ladder 1 | down (2939, 3257) L1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:melzars-maze:0` | (2923, 3240) | Ladder 1 | up (2923, 3241) L1 by Climb-up | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:1` | (2923, 3240) L1 | Ladder 1 | down (2923, 3241) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:2` | (2923, 3248) | Ladder 1 | up (2923, 3247) L1 by Climb-up | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:3` | (2923, 3248) L1 | Ladder 1 | down (2923, 3247) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:4` | (2924, 3250) | Ladder 1 | down (2923, 9650) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:5` | (2925, 3258) L1 | Ladder 1 | down (2926, 3258) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:6` | (2928, 3256) | Ladder 1 | up (2927, 3256) L1 by Climb-up | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:7` | (2928, 3256) L1 | Ladder 1 | down (2927, 3256) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:8` | (2929, 3240) L1 | Ladder 1 | down (2928, 3240) by Climb-down | yes | no | - | 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:9` | (2929, 3245) L2 | Ladder 1 | down (2928, 3245) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:10` | (2930, 3258) L2 | Ladder 1 | down (2929, 3258) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:11` | (2932, 3244) L1 | Ladder 1 | up (2931, 3244) L2 by Climb-up | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:12` | (2932, 3244) L2 | Ladder 1 | down (2931, 3244) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:13` | (2934, 3243) L2 | Ladder 1 | down (2933, 3243) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:14` | (2934, 3244) L1 | Ladder 1 | up (2934, 3245) L2 by Climb-up | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:15` | (2934, 3244) L2 | Ladder 1 | down (2934, 3245) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:16` | (2934, 3254) L1 | Ladder 1 | up (2933, 3254) L2 by Climb-up | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:17` | (2934, 3254) L2 | Ladder 1 | down (2933, 3254) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:18` | (2937, 3240) L1 | Ladder 1 | down (2937, 3239) by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:19` | (2937, 3247) L2 | Ladder 1 | down (2936, 3247) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:20` | (2938, 3250) L1 | Ladder 1 | up (2937, 3250) L2 by Climb-up | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:21` | (2938, 3250) L2 | Ladder 1 | down (2937, 3250) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:22` | (2938, 3255) L2 | Ladder 1 | down (2937, 3255) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:23` | (2939, 3257) | Ladder 1 | down (2938, 9657) by Climb-down | yes | no | - | carry Maze key |
+| `connector:melzars-maze:24` | (2940, 3240) L2 | Ladder 1 | down (2939, 3240) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:25` | (2940, 3257) L1 | Ladder 1 | up (2939, 3257) L2 by Climb-up | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |
+| `connector:melzars-maze:26` | (2940, 3257) L2 | Ladder 1 | down (2939, 3257) L1 by Climb-down | yes | no | - | 1 Key (used up) + 1 Key (used up) + carry Maze key |

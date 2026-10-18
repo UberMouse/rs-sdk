@@ -5,20 +5,20 @@ Ladder up at (2556, 3444); moss giants, skeletons and zombies. Descriptive name,
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:dungeon-below-2556-3444:0` | (2541, 9818) | [normal](../resources/tree/normal.md) 5 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:dungeon-below-2556-3444:0` | (2541, 9818) | [normal](../resources/tree/normal.md) 5 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | Moss giant 1, Skeleton (skeleton_armed) 2 | no | no | - |
-| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | Moss giant 1, Skeleton (skeleton_armed) 2, Skeleton (skeleton_unarmed) 1, Zombie 1 | no | no | - |
-| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | Moss giant 1, Skeleton (skeleton_armed) 1, Zombie 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | Moss giant 1, Skeleton (skeleton_armed) 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | Moss giant 1, Skeleton (skeleton_armed) 2, Skeleton (skeleton_unarmed) 1, Zombie 1 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | Moss giant 1, Skeleton (skeleton_armed) 1, Zombie 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | Ladder 1 | up (2557, 3444) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | Ladder 1 | up (2557, 3444) by Climb-up | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |

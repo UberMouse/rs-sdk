@@ -4,6 +4,7 @@ import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { type Area, AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { accountOf } from '../lib/account';
 import { type BankSite, bankArea, nearestBank } from '../lib/banks';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS } from '../lib/util';
@@ -204,12 +205,12 @@ const offSurface = (ctx: Ctx): boolean => {
     return !!p && (p.level !== 0 || p.worldZ >= UNDERGROUND_Z);
 };
 
-/** The bank to walk to without an `area`: the one already chosen, else the nearest to the bot; undefined (no walk) with a bank in view, off the surface or no player. */
+/** The bank to walk to without an `area`: the one already chosen (until a walk to it fails), else the nearest to the bot; undefined (no walk) with a bank in view, off the surface or no player. */
 function chosenSiteOf(ctx: Ctx): BankSite | undefined {
     if (ctx.memory.chosen) return ctx.memory.chosen;
     if (bankInView(ctx) || offSurface(ctx)) return undefined;
     const p = ctx.state().player;
-    return p ? nearestBank({ x: p.worldX, z: p.worldZ }) : undefined;
+    return p ? nearestBank({ level: p.level, x: p.worldX, z: p.worldZ }, accountOf(ctx.state())) : undefined;
 }
 
 /** Where to bank: the `area` param, else the nearest bank (see `chosenSiteOf`). */
@@ -223,9 +224,9 @@ function bankAreaOf(ctx: Ctx): Area | undefined {
 export default defineTask({
     name: 'bank',
     description:
-        'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the nearest of Varrock West/East, Falador West/East and Edgeville by straight-line distance, ' +
-        'never Draynor (dark wizards; it works with an explicit area {x:3092,z:3243,radius:3}) or Al Kharid (toll); fails if the walk cannot get there, and refuses off the surface without an area). ' +
-        'The no-area walk can be long (Lumbridge to Varrock East is ~80 tiles, and an NPC attacks unarmed low-level bots on that road, learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
+        'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, members ones included, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), ' +
+        'never Draynor (dark wizards; it works with an explicit area {x:3092,z:3243,radius:3}); fails if the walk cannot get there, and without an area refuses off the surface or where no walk reaches a bank, e.g. inside an agility course). ' +
+        'The no-area walk can be long (from Lumbridge: Varrock West, ~120 run ticks, without coins; Al Kharid, ~56, with them), and NPCs attack unarmed low-level bots on the walks out of Lumbridge (learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
         'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count, what the bank holds and what the inventory can take (free slots; an item already stacked in the inventory needs none), and none held or no room is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge castle or anywhere in Lumbridge on this server: its map data has no booth or banker on any floor (learnings/banking.md).',
     params: Params,
@@ -242,6 +243,9 @@ export default defineTask({
         if (!area && !bankInView(ctx) && offSurface(ctx))
             return 'not on the surface and no bank in view: pass an explicit `area` for the bank to walk to';
         const s = ctx.state();
+        // A walk the world index sees no way out of (an agility course entered by a jump), or a point no bot stands on.
+        if (!area && s.player && !bankInView(ctx) && !chosenSiteOf(ctx))
+            return 'no bank a walk reaches from here (lib/banks.ts): pass an explicit `area` for the bank to walk to';
         const requested = new Map<string, { entries: number; all: boolean; total: number }>();
         for (const t of deposits) {
             const have = countItems(s, exactName(t.item));
@@ -280,7 +284,12 @@ export default defineTask({
                         yield* log(`no area given: walking to the nearest bank, ${site.name} (${area.x},${area.z})`);
                     }
                 }
-                const failure = yield* walkToArea(ctx, area);
+                // The pick depends on the account (the Al Kharid toll needs the coins carried): a walk to it that
+                // fails re-picks on the next attempt, with the account as it is then. walkToArea's one failure
+                // count still bounds the attempts across picks.
+                const failure = yield* walkToArea(ctx, area, () => {
+                    if (!ctx.params.area) ctx.memory.chosen = null;
+                });
                 if (failure) return { fail: ctx.params.area ? failure : `no reachable bank: ${failure}` };
             },
         },

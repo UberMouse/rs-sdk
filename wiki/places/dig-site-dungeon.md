@@ -5,16 +5,16 @@ The Dig Site quest (quests/quest_itexam).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:dig-site-dungeon:0` | (3367, 9751) | [silver](../resources/rock/silver.md) 3 | no | no | - |
-| `rock:dig-site-dungeon:1` | (3367, 9815) | [silver](../resources/rock/silver.md) 3 | no | no | - |
-| `rock:dig-site-dungeon:2` | (3385, 9752) | [silver](../resources/rock/silver.md) 2 | no | no | - |
-| `rock:dig-site-dungeon:3` | (3385, 9816) | [silver](../resources/rock/silver.md) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:dig-site-dungeon:0` | (3367, 9751) | [silver](../resources/rock/silver.md) 3 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `rock:dig-site-dungeon:1` | (3367, 9815) | [silver](../resources/rock/silver.md) 3 | no | no | - | unreached |
+| `rock:dig-site-dungeon:2` | (3385, 9752) | [silver](../resources/rock/silver.md) 2 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `rock:dig-site-dungeon:3` | (3385, 9816) | [silver](../resources/rock/silver.md) 2 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dig-site-dungeon:0` | (3378, 9751) | Skeleton 10 | no | no | - |
-| `npc:dig-site-dungeon:1` | (3378, 9815) | Skeleton 10 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dig-site-dungeon:0` | (3378, 9751) | Skeleton 10 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `npc:dig-site-dungeon:1` | (3378, 9815) | Skeleton 10 | no | no | - | unreached |

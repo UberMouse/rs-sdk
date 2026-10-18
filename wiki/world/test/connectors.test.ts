@@ -8,6 +8,7 @@ import {
     type ConnectorCollision,
     type Connectors,
 } from '../sources/connectors';
+import { parseConstants } from '../sources/constants';
 import { coordTile, tileCoord } from '../sources/runescript';
 import { parseCallables, parseTriggers } from '../sources/triggers';
 import type { Feature, Tile } from '../types';
@@ -612,5 +613,85 @@ while (true) { p_telejump(coord); }
         expect(out.underived.map(u => u.reason)).toEqual([
             `the landing is the player's tile shifted (${lineOf(LADDERS_FILE, LADDERS, 'case default : ~climb_ladder')}), and no tile on land reaches the loc`,
         ]);
+    });
+});
+
+describe('gangplanks: moves that chain, a value proc and constants (general_use/scripts/gangplank.rs2)', () => {
+    // The generic gangplank scripts as the game has them: a step onto the plank, then a jump on from there,
+    // by a sign `~gangplank_dir_mod` reads off the loc's angle.
+    const file = 'general_use/scripts/gangplank.rs2';
+    const text = `[proc,gangplank_dir_mod]()(int)
+switch_int (loc_angle) {
+    case ^loc_west,^loc_north : return (1);
+    case ^loc_east,^loc_south : return (-1);
+}
+return (0);
+
+[oploc1,_gangplank_board]
+def_int $dir_mod = ~gangplank_dir_mod;
+def_string $board_mes = loc_param(board_message);
+switch_int (loc_angle) {
+    case ^loc_west,^loc_east :
+        p_teleport(movecoord(coord, $dir_mod, 0, 0));
+        p_delay(0);
+        p_telejump(movecoord(coord, calc(2 * $dir_mod), 1, 0));
+    case ^loc_north,^loc_south :
+        p_teleport(movecoord(coord, 0, 0, calc(-1 * $dir_mod)));
+        p_delay(0);
+        p_telejump(movecoord(coord, 0, 1, calc(-2 * $dir_mod)));
+}
+if(string_length($board_mes) ! 0) {
+    mes($board_mes);
+}
+
+[oploc1,_gangplank_disembark]
+def_int $dir_mod = ~gangplank_dir_mod;
+switch_int (loc_angle) {
+    case ^loc_west,^loc_east :
+        p_teleport(movecoord(coord, calc(-1 * $dir_mod), 0, 0));
+        p_delay(0);
+        p_telejump(movecoord(coord, calc(-2 * $dir_mod), -1, 0));
+    case ^loc_north,^loc_south :
+        p_teleport(movecoord(coord, 0, 0, $dir_mod));
+        p_delay(0);
+        p_telejump(movecoord(coord, 0, -1, calc(2 * $dir_mod)));
+}
+`;
+    const constants = parseConstants('engine.constant', '^loc_west = 0\n^loc_north = 1\n^loc_east = 2\n^loc_south = 3');
+    const planks = new Map<string, Config>([
+        ['plank_on', { op1: ['Cross'], category: ['gangplank_board'] }],
+        ['plank_off', { op1: ['Cross'], category: ['gangplank_disembark'] }],
+    ]);
+    const run = (features: Feature[], withConstants = true): Connectors =>
+        deriveConnectors({
+            features,
+            triggers: parseTriggers(file, text),
+            callables: parseCallables(file, text),
+            locConfigs: planks,
+            collision: stub(footprints(features)),
+            size: locSizes(planks),
+            ...(withConstants ? { constants } : {}),
+        });
+
+    test('boarding lands where the second move leaves the player: the stand shifted 3 off the quay, a level up', () => {
+        // A ship moored south of the quay: the plank at angle 1 (north) on the quay, its partner on the deck.
+        const out = run([loc('plank_on', at(0, 3030, 3217), 1), loc('plank_off', at(1, 3030, 3216), 1)]);
+        expect(rowsOf(out, 0)).toEqual(['op1 Cross up 1,3030,3215 from 0,3030,3218 relative']);
+        expect(rowsOf(out, 1)).toEqual(['op1 Cross down 0,3030,3218 from 1,3030,3215 relative']);
+        expect(out.connectors[0]!.source).toBe(lineOf(file, text, 'p_telejump(movecoord(coord, 0, 1, calc(-2'));
+        expect(out.oneWay).toEqual([]);
+        expect(out.underived).toEqual([]);
+    });
+
+    test("the value proc's sign follows the angle: at angle 0 (west) boarding goes 3 east", () => {
+        const out = run([loc('plank_on', at(0, 3030, 3217), 0)]);
+        expect(rowsOf(out, 0)).toEqual(['op1 Cross up 1,3032,3217 from 0,3029,3217 relative']);
+    });
+
+    test('without the angle constants the sign is not known, and the op is underived, never guessed', () => {
+        const out = run([loc('plank_on', at(0, 3030, 3217), 1)], false);
+        expect(out.connectors).toEqual([]);
+        expect(out.underived.length).toBeGreaterThan(0);
+        expect(out.underived.every(u => u.op === 1 && u.reason.includes('is not known offline'))).toBe(true);
     });
 });

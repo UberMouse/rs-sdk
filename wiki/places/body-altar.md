@@ -5,6 +5,6 @@ Inside the body ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:body-altar:0` | (2524, 4831) | body 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:body-altar:0` | (2524, 4831) | body 1 | yes | no | - | unreached |

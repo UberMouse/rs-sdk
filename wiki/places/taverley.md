@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:taverley:0` | (2889, 3465) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:taverley:1` | (2910, 3465) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:taverley:0` | (2889, 3465) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:taverley:1` | (2910, 3465) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:taverley:0` | (2906, 3469) | Staircase 1 | up (2906, 3472) L1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:taverley:0` | (2906, 3469) | Staircase 1 | up (2906, 3472) L1 by Walk-up | no | no | - | unreached |

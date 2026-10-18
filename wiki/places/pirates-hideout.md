@@ -5,25 +5,25 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:pirates-hideout:0` | (3034, 3937) | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 |
-| `tree:pirates-hideout:1` | (3053, 3950) | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:pirates-hideout:0` | (3034, 3937) | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
+| `tree:pirates-hideout:1` | (3053, 3950) | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:pirates-hideout:0` | (3053, 3944) | [coal](../resources/rock/coal.md) 1, [mithril](../resources/rock/mithril.md) 1 | no | no | 54 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:pirates-hideout:0` | (3053, 3944) | [coal](../resources/rock/coal.md) 1, [mithril](../resources/rock/mithril.md) 1 | no | no | 54 | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `thieving-chest:pirates-hideout:0` | (3043, 3952) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 2, [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | 55 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `thieving-chest:pirates-hideout:0` | (3043, 3952) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 2, [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | 55 | carry Lockpick + 39 Thieving |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:pirates-hideout:0` | (3041, 3954) | Pirate 12 | no | no | 55 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:pirates-hideout:0` | (3041, 3954) | Pirate 12 | no | no | 55 | carry Lockpick + 39 Thieving |
