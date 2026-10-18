@@ -198,16 +198,22 @@ describe('bank: no area walks to the nearest bank', () => {
         expect(r.result.reason).toStartWith("walk-to-bank: no reachable bank: can't walk to area");
     });
 
-    test('the bank picked at the first walk is kept when the bot ends up nearer another', async () => {
-        // Lumbridge (nearest: Varrock West) for the first ticks, then beside Falador East while the walk keeps failing.
+    test('a failed walk to the picked bank re-picks with the account as it is then: the toll coins gone', async () => {
+        // Al Kharid is picked with the 10 coins the toll takes; the coins are gone by the time the walk fails, so the
+        // next attempt picks Varrock West. The failures still count across picks: the run ends at the limit.
         const r = await simulate(bank, {
             params: { deposit: [{ item: 'Logs' }] },
-            timeline: lumbridge.series(12, (w, i) => (i < 3 ? w : w.player({ at: { x: 3014, z: 3356 } }))),
+            timeline: lumbridge.inv('Coins', 10).series(12, (w, i) => (i < 1 ? w : w.inv('Coins', 0))),
             pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
         });
+        expect(logged(r).filter(m => m.startsWith('no area given'))).toEqual([
+            'no area given: walking to the nearest bank, Al Kharid (3269,3167)',
+            'no area given: walking to the nearest bank, Varrock West (3185,3436)',
+            'no area given: walking to the nearest bank, Varrock West (3185,3436)',
+        ]);
         expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith("walk-to-bank: no reachable bank: can't walk to area");
         expect(r.result.reason).toContain('(3185, 3436)');
-        expect(logged(r).filter(m => m.startsWith('no area given'))).toHaveLength(1);
     });
 
     test('with no area where no walk reaches a bank it is refused: the Barbarian Outpost course, left by its pipe', async () => {

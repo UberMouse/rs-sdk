@@ -205,7 +205,7 @@ const offSurface = (ctx: Ctx): boolean => {
     return !!p && (p.level !== 0 || p.worldZ >= UNDERGROUND_Z);
 };
 
-/** The bank to walk to without an `area`: the one already chosen, else the nearest to the bot; undefined (no walk) with a bank in view, off the surface or no player. */
+/** The bank to walk to without an `area`: the one already chosen (until a walk to it fails), else the nearest to the bot; undefined (no walk) with a bank in view, off the surface or no player. */
 function chosenSiteOf(ctx: Ctx): BankSite | undefined {
     if (ctx.memory.chosen) return ctx.memory.chosen;
     if (bankInView(ctx) || offSurface(ctx)) return undefined;
@@ -284,7 +284,12 @@ export default defineTask({
                         yield* log(`no area given: walking to the nearest bank, ${site.name} (${area.x},${area.z})`);
                     }
                 }
-                const failure = yield* walkToArea(ctx, area);
+                // The pick depends on the account (the Al Kharid toll needs the coins carried): a walk to it that
+                // fails re-picks on the next attempt, with the account as it is then. walkToArea's one failure
+                // count still bounds the attempts across picks.
+                const failure = yield* walkToArea(ctx, area, () => {
+                    if (!ctx.params.area) ctx.memory.chosen = null;
+                });
                 if (failure) return { fail: ctx.params.area ? failure : `no reachable bank: ${failure}` };
             },
         },
