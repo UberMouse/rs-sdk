@@ -167,6 +167,12 @@ export interface NearestOptions {
      * where it betters the base layer; the results must not differ.
      */
     full?: boolean;
+    /**
+     * The tiles a walk from the Lumbridge spawn reaches, by index (Reach.reachedAt): the searches enter no other.
+     * Every tile of a way from a reached stand to a sink is reached, so this changes no distance; it keeps the
+     * searches off the land no walk gets to, which a crossing out of it joins to the sinks. Absent: every tile.
+     */
+    reached?: (i: number) => boolean;
 }
 
 /** Offers or expands a label: a tile, half ticks to the sink, the sink's index, the way's set id. */
@@ -188,6 +194,7 @@ export function nearestSinks(
 ): { nearest: Map<string, Nearest>; report: DistanceReport } {
     const began = performance.now();
     const { index, sets, openAlts, stepMask } = graph;
+    const { reached } = options;
     const n = index.size;
     const at = (t: Tile): number => index.of(t.level, t.x, t.z);
 
@@ -266,7 +273,7 @@ export function nearestSinks(
         let lo = INF;
         let hi = 0;
         const relaxTo: Relax = (p, half, sink, set) => {
-            if (mark[p] === seen + 1) return;
+            if (mark[p] === seen + 1 || (reached && !reached(p))) return;
             const [have, haveSet] = mark[p] === seen ? [dist[p]!, setOf[p]!] : [base ? baseDist[p]! : INF, 0];
             if (half > have || (half === have && !asksLess(set, haveSet))) return;
             mark[p] = seen;

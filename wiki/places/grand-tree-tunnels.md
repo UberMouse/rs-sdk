@@ -7,26 +7,26 @@ Ladder up into the Grand Tree at (2463, 3497).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rock:grand-tree-tunnels:0` | (2443, 9907) | [clay](../resources/rock/clay.md) 5, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 4 | no | no | - | unreached |
-| `rock:grand-tree-tunnels:1` | (2472, 9905) | [coal](../resources/rock/coal.md) 1 | no | no | - | unreached |
-| `rock:grand-tree-tunnels:2` | (2489, 9913) | [adamantite](../resources/rock/adamantite.md) 3, [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 10, [gold](../resources/rock/gold.md) 4, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2 | no | no | - | unreached |
+| `rock:grand-tree-tunnels:0` | (2443, 9907) | [clay](../resources/rock/clay.md) 5, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 4 | no | no | - | The Grand Tree done |
+| `rock:grand-tree-tunnels:1` | (2472, 9905) | [coal](../resources/rock/coal.md) 1 | no | no | - | The Grand Tree done |
+| `rock:grand-tree-tunnels:2` | (2489, 9913) | [adamantite](../resources/rock/adamantite.md) 3, [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 10, [gold](../resources/rock/gold.md) 4, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2 | no | no | - | The Grand Tree done |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:grand-tree-tunnels:0` | (2445, 9888) | Rat 5 | no | no | - | unreached |
-| `npc:grand-tree-tunnels:1` | (2443, 9862) | Giant bat 1 | no | no | - | unreached |
-| `npc:grand-tree-tunnels:2` | (2457, 9860) | Giant bat 2, Rat 2 | no | no | - | unreached |
-| `npc:grand-tree-tunnels:3` | (2455, 9878) | Rat 5 | no | no | - | unreached |
-| `npc:grand-tree-tunnels:4` | (2467, 9892) | Gnome guard 3, Rat 3 | no | no | - | unreached |
-| `npc:grand-tree-tunnels:5` | (2479, 9864) | Giant bat 1, Rat 6 | no | no | - | unreached |
+| `npc:grand-tree-tunnels:0` | (2445, 9888) | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:1` | (2443, 9862) | Giant bat 1 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:2` | (2457, 9860) | Giant bat 2, Rat 2 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:3` | (2455, 9878) | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:4` | (2467, 9892) | Gnome guard 3, Rat 3 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:5` | (2479, 9864) | Giant bat 1, Rat 6 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
 
 ## Ladders and stairs
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|
-| `connector:grand-tree-tunnels:0` | (2463, 9897) | Ladder 1 | up (2464, 3497) by Climb-up | no | no | - | unreached |
+| `connector:grand-tree-tunnels:0` | (2463, 9897) | Ladder 1 | up (2464, 3497) by Climb-up | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
 | `connector:grand-tree-tunnels:1` | (2492, 9864) L1 | Ladder 1 | down (2491, 9864) by Climb or Climb-down; up (2491, 9864) L2 by Climb or Climb-up | no | no | - | unreached |
 | `connector:grand-tree-tunnels:2` | (2492, 9864) L2 | Ladder 1 | down (2491, 9864) L1 by Climb or Climb-down; up (2491, 9864) L3 by Climb or Climb-up | no | no | - | unreached |
 | `connector:grand-tree-tunnels:3` | (2492, 9864) L3 | Ladder 1 | down (2491, 9864) L2 by Climb or Climb-down; up (2491, 9864) L4 by Climb or Climb-up | no | no | - | unreached |

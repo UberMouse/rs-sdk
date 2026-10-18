@@ -93,7 +93,7 @@
 |---|---|---|---|---|---|---|
 | `thieving-chest:rellekka:0` | (2630, 3655) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - | - |
 | `thieving-chest:rellekka:1` | (2650, 3659) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
-| `thieving-chest:rellekka:2` | (2668, 3693) L1 | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | unreached |
+| `thieving-chest:rellekka:2` | (2668, 3693) L1 | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 

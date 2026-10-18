@@ -19,7 +19,7 @@ Ladder up to East Ardougne at (2632, 3294) and to (2570, 3267); the Hazeel Cult 
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - | unreached |
+| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - | - |
 | `npc:ardougne-sewers:1` | (2576, 9689) | Rat 5 | no | no | - | unreached |
 | `npc:ardougne-sewers:2` | (2601, 9710) | Rat 3 | no | no | - | unreached |
 | `npc:ardougne-sewers:3` | (2606, 9678) | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - | unreached |

@@ -3,13 +3,13 @@
 
 [Kandarin](kandarin.md) › Tree Gnome Village
 
-Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnome/scripts/gnomevillage_fence.rs2:1), an agility move with no condition that no connector, gate or transport row models, so the world index's walk from the Lumbridge spawn does not reach the village or its shop (build.ts unreached report).
+Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnome/scripts/gnomevillage_fence.rs2:1), a squeeze with no condition, one tile either way; the world index has it as a scripted crossing row (sources/gate-landings.ts).
 
 ## [Shops](../services/shop.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `shop:tree-gnome-village:0` | (2527, 3161) L1 | Bolkoy's Village Shop (gnomeshop) 1 | no | no | - | unreached |
+| `shop:tree-gnome-village:0` | (2527, 3161) L1 | Bolkoy's Village Shop (gnomeshop) 1 | no | no | - | - |
 
 ## Trees
 
@@ -22,7 +22,7 @@ Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnom
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `pickpocket:tree-gnome-village:0` | (2526, 3169) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 4 | no | no | - | unreached |
+| `pickpocket:tree-gnome-village:0` | (2526, 3169) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 4 | no | no | - | - |
 
 ## Monsters
 
@@ -34,13 +34,13 @@ Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnom
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|
-| `connector:tree-gnome-village:0` | (2515, 3173) | Ladder 1 | up (2516, 3173) L1 by Climb-up | no | no | - | unreached |
-| `connector:tree-gnome-village:1` | (2515, 3173) L1 | Ladder 1 | down (2516, 3173) by Climb-down | no | no | - | unreached |
-| `connector:tree-gnome-village:2` | (2516, 3165) | Ladder 1 | up (2516, 3166) L1 by Climb-up | no | no | - | unreached |
-| `connector:tree-gnome-village:3` | (2516, 3165) L1 | Ladder 1 | down (2516, 3166) by Climb-down | no | no | - | unreached |
-| `connector:tree-gnome-village:4` | (2521, 3162) | Ladder 1 | up (2521, 3163) L1 by Climb-up | no | no | - | unreached |
-| `connector:tree-gnome-village:5` | (2521, 3162) L1 | Ladder 1 | down (2521, 3163) by Climb-down | no | no | - | unreached |
-| `connector:tree-gnome-village:6` | (2525, 3162) | Ladder 1 | up (2526, 3162) L1 by Climb-up | no | no | - | unreached |
-| `connector:tree-gnome-village:7` | (2525, 3162) L1 | Ladder 1 | down (2526, 3162) by Climb-down | no | no | - | unreached |
-| `connector:tree-gnome-village:8` | (2525, 3172) | Ladder 1 | up (2526, 3172) L1 by Climb-up | no | no | - | unreached |
-| `connector:tree-gnome-village:9` | (2525, 3172) L1 | Ladder 1 | down (2526, 3172) by Climb-down | no | no | - | unreached |
+| `connector:tree-gnome-village:0` | (2515, 3173) | Ladder 1 | up (2516, 3173) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:1` | (2515, 3173) L1 | Ladder 1 | down (2516, 3173) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:2` | (2516, 3165) | Ladder 1 | up (2516, 3166) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:3` | (2516, 3165) L1 | Ladder 1 | down (2516, 3166) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:4` | (2521, 3162) | Ladder 1 | up (2521, 3163) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:5` | (2521, 3162) L1 | Ladder 1 | down (2521, 3163) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:6` | (2525, 3162) | Ladder 1 | up (2526, 3162) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:7` | (2525, 3162) L1 | Ladder 1 | down (2526, 3162) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:8` | (2525, 3172) | Ladder 1 | up (2526, 3172) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:9` | (2525, 3172) L1 | Ladder 1 | down (2526, 3172) by Climb-down | no | no | - | - |

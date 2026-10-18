@@ -73,6 +73,11 @@ const derived = deriveGateLandings(input);
 
 const WALL_SHAPES = new Set([0, 1, 2, 3, 9]);
 const walls = (gs: Gate[]): Gate[] => gs.filter(g => WALL_SHAPES.has(g.shape));
+/** A gate row without its roll. */
+const unrolled = (g: Gate): Gate => {
+    const { roll: _, ...rest } = g;
+    return rest;
+};
 const rowsOf = (trigger: string): Gate[] => derived.gates.filter(g => g.trigger === trigger);
 const same = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 /** The text of a script line, `file:line` under server/content/scripts. */
@@ -95,8 +100,24 @@ describe('every gate row on an object has an outcome', () => {
         expect(to + landings + opens + none + windows).toBe(inScope.length);
     });
 
-    test('walls are left as the scan placed them', () => {
-        expect(walls(derived.gates)).toEqual(walls(placed.gates));
+    test('walls are left as the scan placed them, but for the roll a skill check gives some', () => {
+        expect(walls(derived.gates).map(unrolled)).toEqual(walls(placed.gates));
+    });
+
+    test("the Underground Pass railing's lock pick is behind its thieving roll; a failure leaves the player there", () => {
+        expect(lineAt('quests/quest_upass/scripts/quest_upass.rs2:254')).toBe(
+            'if (stat_random(thieving, 128, 400) = false) {',
+        );
+        const rows = rowsOf('oploc1,cave_railings5');
+        expect(rows.length).toBeGreaterThan(0);
+        for (const g of rows)
+            expect(g.roll).toEqual({
+                stat: 'thieving',
+                low: 128,
+                high: 400,
+                source: 'quests/quest_upass/scripts/quest_upass.rs2:254',
+                fail: { ticks: 0, damage: 0 },
+            });
     });
 });
 

@@ -54,7 +54,7 @@
 | `fire:kandarin:18` | (2746, 3468) | Fireplace 1 | no | no | - | - |
 | `fire:kandarin:19` | (2747, 3580) | Fireplace 1 | no | no | - | - |
 | `fire:kandarin:20` | (2802, 3503) | Fire 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `fire:kandarin:21` | (2820, 3555) | Fire 1 | no | no | - | Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Death Plateau done |
+| `fire:kandarin:21` | (2820, 3555) | Fire 1 | no | no | - | wear Climbing boots or Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Death Plateau done or Troll Stronghold at stage 10 + 15 Agility |
 
 ## [Sand pits](../services/sand-pit.md)
 
@@ -101,10 +101,10 @@
 | `tree:kandarin:0` | (2470, 3236) | [normal](../resources/tree/normal.md) 1098, [oak](../resources/tree/oak.md) 138, [willow](../resources/tree/willow.md) 38 | no | yes | - | - |
 | `tree:kandarin:1` | (2374, 3275) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
 | `tree:kandarin:2` | (2375, 3400) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:kandarin:3` | (2373, 3422) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:kandarin:3` | (2373, 3422) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
 | `tree:kandarin:4` | (2374, 3467) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
 | `tree:kandarin:5` | (2374, 3503) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:kandarin:6` | (2376, 3446) | [willow](../resources/tree/willow.md) 1 | no | no | - | unreached |
+| `tree:kandarin:6` | (2376, 3446) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
 | `tree:kandarin:7` | (2377, 3355) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 | `tree:kandarin:8` | (2379, 3342) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 | `tree:kandarin:9` | (2383, 3066) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
@@ -142,17 +142,17 @@
 | `tree:kandarin:41` | (2556, 3146) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:42` | (2561, 3174) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
 | `tree:kandarin:43` | (2561, 3192) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:44` | (2563, 3616) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:kandarin:44` | (2563, 3616) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:45` | (2566, 3512) | [willow](../resources/tree/willow.md) 2 | no | no | - | unreached |
 | `tree:kandarin:46` | (2569, 3156) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:47` | (2571, 3604) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:kandarin:47` | (2571, 3604) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:48` | (2576, 3170) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
 | `tree:kandarin:49` | (2576, 3116) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:50` | (2579, 3148) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:51` | (2579, 3253) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:52` | (2584, 3605) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:kandarin:52` | (2584, 3605) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
 | `tree:kandarin:53` | (2587, 3350) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:54` | (2592, 3593) | [maple](../resources/tree/maple.md) 1 | no | no | - | unreached |
+| `tree:kandarin:54` | (2592, 3593) | [maple](../resources/tree/maple.md) 1 | no | no | - | - |
 | `tree:kandarin:55` | (2596, 3149) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:56` | (2601, 3179) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:57` | (2607, 3348) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
@@ -177,7 +177,7 @@
 | `tree:kandarin:76` | (2754, 3548) | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
 | `tree:kandarin:77` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - | unreached |
 | `tree:kandarin:78` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - | - |
-| `tree:kandarin:79` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - | unreached |
+| `tree:kandarin:79` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - | wear Sled + Troll Stronghold at stage 20 + 28 Agility |
 | `tree:kandarin:80` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
 | `tree:kandarin:81` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - | no weapons/armour (Entrana rule) |
 | `tree:kandarin:82` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
@@ -221,7 +221,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `pickpocket:kandarin:0` | (2377, 3442) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | unreached |
+| `pickpocket:kandarin:0` | (2377, 3442) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | - |
 | `pickpocket:kandarin:1` | (2400, 3356) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1 | no | no | - | - |
 | `pickpocket:kandarin:2` | (2506, 3229) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | yes | - | - |
 | `pickpocket:kandarin:3` | (2534, 3216) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 26, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 13, [Gnome (gnome)](../resources/pickpocket/gnome.md) 15 | no | yes | - | - |
@@ -357,12 +357,12 @@
 | `npc:kandarin:120` | (2768, 3210) | Jungle spider 1 | no | no | - | 30 coins |
 | `npc:kandarin:121` | (2804, 3507) | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `npc:kandarin:122` | (2811, 3506) | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:123` | (2818, 3561) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | Death Plateau done or Death Plateau: Tenzing's map got (~death_get_map >= ^death_got_map, quests/quest_death/scripts/quest_death.rs2:65) + Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) |
+| `npc:kandarin:123` | (2818, 3561) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | wear Climbing boots or Death Plateau done or Death Plateau: Tenzing's map got (~death_get_map >= ^death_got_map, quests/quest_death/scripts/quest_death.rs2:65) + Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Troll Stronghold at stage 10 + 15 Agility |
 | `npc:kandarin:124` | (2817, 3514) | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:125` | (2824, 3237) | Skeleton 1 | yes | no | - | unreached |
-| `npc:kandarin:126` | (2832, 3234) | Skeleton 1 | yes | no | - | unreached |
-| `npc:kandarin:127` | (2834, 3305) | Skeleton 1 | yes | no | - | unreached |
-| `npc:kandarin:128` | (2840, 3238) | Skeleton 1 | yes | no | - | unreached |
+| `npc:kandarin:125` | (2824, 3237) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:kandarin:126` | (2832, 3234) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:kandarin:127` | (2834, 3305) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:kandarin:128` | (2840, 3238) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
 
 ## Ladders and stairs
 
@@ -370,8 +370,8 @@
 |---|---|---|---|---|---|---|---|
 | `connector:kandarin:0` | (2374, 3131) L2 | Staircase 1 | up (2373, 3133) L3 by Climb | no | yes | - | unreached |
 | `connector:kandarin:1` | (2374, 3133) L3 | Staircase 1 | down (2374, 3130) L2 by Climb | no | yes | - | unreached |
-| `connector:kandarin:2` | (2376, 3489) | Staircase 1 | up (2378, 3489) L1 by Climb-up | no | no | - | unreached |
-| `connector:kandarin:3` | (2377, 3489) L1 | Staircase 1 | down (2377, 3488) by Climb-down | no | no | - | unreached |
+| `connector:kandarin:2` | (2376, 3489) | Staircase 1 | up (2378, 3489) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:3` | (2377, 3489) L1 | Staircase 1 | down (2377, 3488) by Climb-down | no | no | - | - |
 | `connector:kandarin:4` | (2378, 3134) | Ladder 1 | up (2378, 3133) L1 by Climb-up | no | yes | - | unreached |
 | `connector:kandarin:5` | (2378, 3134) L1 | Ladder 1 | down (2378, 3133) by Climb-down | no | yes | - | unreached |
 | `connector:kandarin:6` | (2380, 3127) | Staircase 1 | up (2379, 3127) L1 by Climb | no | yes | - | unreached |
@@ -460,7 +460,7 @@
 | `connector:kandarin:89` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:90` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:91` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
-| `connector:kandarin:92` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | unreached |
+| `connector:kandarin:92` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done |
 
 ## Areas within
 

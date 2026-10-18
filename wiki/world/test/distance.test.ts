@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { CROSSING_TICKS, crossingTicks, formatDistance, nearestSinks, priceCrossings } from '../distance';
 import { locSizes } from '../place';
-import { reachGraph, type ReachInput } from '../reach';
+import { fillReach, reachGraph, type ReachInput } from '../reach';
 import type { Connector, Crossing, Feature, FeatureKind, Gate, Roll, Tile, Transport, World } from '../types';
 import { at, Grid } from './grid';
 
@@ -564,4 +564,33 @@ describe('a rolled crossing costs its expected ticks at the lowest level its req
             'scripted loc-op 1 log_balance (3215, 3220): no tile on land it is tried from, so no way back to price',
         ]);
     });
+});
+
+test('kept to the tiles a walk reaches, the searches find the same ways and settle fewer tiles', () => {
+    // A one-way crossing over the whole wall, from the west half into the east, where the spawn (3222, 3218) and
+    // the bank are: no walk gets to the west half, but every tile of it gets to the bank.
+    const row = crossing({
+        via: 'scripted',
+        act: { kind: 'loc-op', loc: 'rope', op: 1 },
+        from: [at(0, 3210, 3210)],
+        landings: [{ tile: at(0, 3220, 3210), spread: 0 }],
+        requires: [[]],
+    });
+    const input = {
+        world: { features: [], connectors: [], gates: [], transports: [], crossings: [row] },
+        collision: walled(),
+        size,
+    };
+    const graph = reachGraph(input);
+    const fill = fillReach(input, graph);
+    const targets = [
+        { id: 'bank:east:0', kind: 'bank' as const, stand: at(0, 3225, 3225), reach: [[]] },
+        { id: 'tree:east:0', kind: 'tree' as const, stand: at(0, 3218, 3205), reach: [[]] },
+    ];
+    const all = nearestSinks(graph, targets);
+    const kept = nearestSinks(graph, targets, { reached: fill.reachedAt });
+    expect(kept.nearest).toEqual(all.nearest);
+    expect(kept.nearest.get('tree:east:0')?.bank?.site).toBe('bank:east:0');
+    expect(fill.reached(at(0, 3210, 3210))).toBe(false);
+    expect(kept.report.settled).toBeLessThan(all.report.settled);
 });

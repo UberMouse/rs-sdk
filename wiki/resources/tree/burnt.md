@@ -35,119 +35,119 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 |---|---|---|---|---|---|---|---|---|---|
 | [Death altar](../../places/death-altar.md) | `tree:death-altar:0` | (2207, 4837) | (2209, 4834) | 40 | no | no | - | unreached | - |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:7` | (2987, 3686) | (2985, 3681) | 7 | yes | yes | 28 | - | Edgeville bank (Edgeville), 96 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:10` | (3036, 3919) | (3036, 3919) | 25 | no | yes | 55 | - | Edgeville bank (Edgeville), 264 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:19` | (3010, 3925) | (3009, 3925) | 1 | no | no | 51 | - | Edgeville bank (Edgeville), 256 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:20` | (3017, 3841) | (3016, 3841) | 1 | no | no | 41 | - | Edgeville bank (Edgeville), 185 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:21` | (3032, 3856) | (3034, 3853) | 8 | yes | yes | 45 | - | Edgeville bank (Edgeville), 185 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:22` | (3022, 3937) | (3021, 3937) | 1 | no | no | 53 | - | Edgeville bank (Edgeville), 262 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:24` | (3043, 3819) | (3046, 3823) | 14 | yes | no | 40 | - | Edgeville bank (Edgeville), 166 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:10` | (3036, 3919) | (3036, 3919) | 25 | no | yes | 55 | - | Mage Arena bank (Mage Arena chamber), 41 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:19` | (3010, 3925) | (3009, 3925) | 1 | no | no | 51 | - | Mage Arena bank (Mage Arena chamber), 54 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:20` | (3017, 3841) | (3016, 3841) | 1 | no | no | 41 | - | Mage Arena bank (Mage Arena chamber), 135 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:21` | (3032, 3856) | (3034, 3853) | 8 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 151 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:22` | (3022, 3937) | (3021, 3937) | 1 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 48 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:24` | (3043, 3819) | (3046, 3823) | 14 | yes | no | 40 | - | Mage Arena bank (Mage Arena chamber), 152 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:27` | (3038, 3665) | (3037, 3665) | 1 | yes | yes | 19 | - | Edgeville bank (Edgeville), 87 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:28` | (3040, 3676) | (3039, 3676) | 1 | yes | yes | 20 | - | Edgeville bank (Edgeville), 93 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:30` | (3043, 3650) | (3042, 3650) | 1 | yes | yes | 17 | - | Edgeville bank (Edgeville), 80 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:31` | (3086, 3656) | (3086, 3656) | 2 | yes | yes | 24 | - | Edgeville bank (Edgeville), 83 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:33` | (3051, 3842) | (3050, 3842) | 1 | yes | no | 41 | - | Edgeville bank (Edgeville), 200 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:34` | (3052, 3885) | (3051, 3884) | 2 | yes | no | 46 | - | Edgeville bank (Edgeville), 204 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:35` | (3054, 3860) | (3053, 3860) | 1 | yes | no | 43 | - | Edgeville bank (Edgeville), 194 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:36` | (3084, 3804) | (3084, 3809) | 17 | yes | no | 40 | - | Edgeville bank (Edgeville), 159 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:37` | (3060, 3841) | (3059, 3841) | 1 | yes | no | 41 | - | Edgeville bank (Edgeville), 202 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:39` | (3073, 3867) | (3073, 3869) | 3 | yes | no | 44 | - | Edgeville bank (Edgeville), 263 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:40` | (3071, 3883) | (3069, 3883) | 2 | yes | yes | 46 | - | Edgeville bank (Edgeville), 213 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:43` | (3082, 3893) | (3081, 3893) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 212 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:45` | (3087, 3957) | (3087, 3958) | 2 | no | no | 55 | - | Edgeville bank (Edgeville), 277 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:46` | (3091, 3888) | (3090, 3888) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 208 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:47` | (3093, 3874) | (3092, 3874) | 1 | yes | no | 45 | - | Edgeville bank (Edgeville), 254 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:48` | (3093, 3900) | (3092, 3900) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 207 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:51` | (3107, 3859) | (3107, 3859) | 10 | yes | no | 44 | - | Edgeville bank (Edgeville), 254 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:54` | (3121, 3842) | (3121, 3842) | 9 | yes | yes | 42 | - | Edgeville bank (Edgeville), 176 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:55` | (3101, 3889) | (3100, 3889) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 203 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:58` | (3114, 3958) | (3115, 3957) | 5 | no | no | 56 | - | Edgeville bank (Edgeville), 263 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:60` | (3105, 3900) | (3104, 3900) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 205 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:61` | (3117, 3892) | (3119, 3894) | 2 | yes | yes | 47 | - | Edgeville bank (Edgeville), 202 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:62` | (3123, 3878) | (3122, 3878) | 1 | yes | yes | 45 | - | Edgeville bank (Edgeville), 194 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:63` | (3128, 3861) | (3127, 3861) | 1 | yes | no | 43 | - | Edgeville bank (Edgeville), 185 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:64` | (3128, 3899) | (3127, 3899) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 204 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:66` | (3132, 3876) | (3131, 3876) | 1 | yes | yes | 45 | - | Edgeville bank (Edgeville), 193 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:67` | (3132, 3889) | (3131, 3889) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 199 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:33` | (3051, 3842) | (3050, 3842) | 1 | yes | no | 41 | - | Mage Arena bank (Mage Arena chamber), 166 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:34` | (3052, 3885) | (3051, 3884) | 2 | yes | no | 46 | - | Mage Arena bank (Mage Arena chamber), 150 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:35` | (3054, 3860) | (3053, 3860) | 1 | yes | no | 43 | - | Mage Arena bank (Mage Arena chamber), 160 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:36` | (3084, 3804) | (3084, 3809) | 17 | yes | no | 40 | - | Mage Arena bank (Mage Arena chamber), 146 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:37` | (3060, 3841) | (3059, 3841) | 1 | yes | no | 41 | - | Mage Arena bank (Mage Arena chamber), 168 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:39` | (3073, 3867) | (3073, 3869) | 3 | yes | no | 44 | - | Mage Arena bank (Mage Arena chamber), 229 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:40` | (3071, 3883) | (3069, 3883) | 2 | yes | yes | 46 | - | Mage Arena bank (Mage Arena chamber), 153 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:43` | (3082, 3893) | (3081, 3893) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 147 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:45` | (3087, 3957) | (3087, 3958) | 2 | no | no | 55 | - | Mage Arena bank (Mage Arena chamber), 15 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:46` | (3091, 3888) | (3090, 3888) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 143 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:47` | (3093, 3874) | (3092, 3874) | 1 | yes | no | 45 | - | Mage Arena bank (Mage Arena chamber), 220 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:48` | (3093, 3900) | (3092, 3900) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 142 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:51` | (3107, 3859) | (3107, 3859) | 10 | yes | no | 44 | - | Mage Arena bank (Mage Arena chamber), 220 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:54` | (3121, 3842) | (3121, 3842) | 9 | yes | yes | 42 | - | Mage Arena bank (Mage Arena chamber), 127 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:55` | (3101, 3889) | (3100, 3889) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 138 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:58` | (3114, 3958) | (3115, 3957) | 5 | no | no | 56 | - | Mage Arena bank (Mage Arena chamber), 19 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:60` | (3105, 3900) | (3104, 3900) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 136 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:61` | (3117, 3892) | (3119, 3894) | 2 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 128 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:62` | (3123, 3878) | (3122, 3878) | 1 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 127 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:63` | (3128, 3861) | (3127, 3861) | 1 | yes | no | 43 | - | Mage Arena bank (Mage Arena chamber), 124 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:64` | (3128, 3899) | (3127, 3899) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 124 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:66` | (3132, 3876) | (3131, 3876) | 1 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 122 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:67` | (3132, 3889) | (3131, 3889) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 122 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:68` | (3187, 3772) | (3190, 3769) | 38 | yes | yes | 36 | - | Edgeville bank (Edgeville), 140 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:69` | (3151, 3840) | (3153, 3838) | 2 | yes | yes | 42 | - | Edgeville bank (Edgeville), 174 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:70` | (3138, 3914) | (3137, 3914) | 1 | no | no | 50 | - | Edgeville bank (Edgeville), 252 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:71` | (3138, 3927) | (3137, 3927) | 1 | no | no | 51 | - | Edgeville bank (Edgeville), 254 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:72` | (3141, 3941) | (3139, 3940) | 2 | no | no | 53 | - | Edgeville bank (Edgeville), 253 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:74` | (3141, 3866) | (3140, 3866) | 1 | yes | yes | 44 | - | Edgeville bank (Edgeville), 188 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:75` | (3144, 3893) | (3141, 3895) | 2 | yes | yes | 48 | - | Edgeville bank (Edgeville), 202 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:69` | (3151, 3840) | (3153, 3838) | 2 | yes | yes | 42 | - | Mage Arena bank (Mage Arena chamber), 122 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:70` | (3138, 3914) | (3137, 3914) | 1 | no | no | 50 | - | Mage Arena bank (Mage Arena chamber), 40 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:71` | (3138, 3927) | (3137, 3927) | 1 | no | no | 51 | - | Mage Arena bank (Mage Arena chamber), 34 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:72` | (3141, 3941) | (3139, 3940) | 2 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 31 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:74` | (3141, 3866) | (3140, 3866) | 1 | yes | yes | 44 | - | Mage Arena bank (Mage Arena chamber), 118 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:75` | (3144, 3893) | (3141, 3895) | 2 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 117 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:77` | (3225, 3690) | (3225, 3690) | 4 | yes | yes | 26 | - | Edgeville bank (Edgeville), 106 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:79` | (3147, 3908) | (3146, 3908) | 1 | no | no | 49 | - | Edgeville bank (Edgeville), 247 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:81` | (3148, 3956) | (3147, 3956) | 1 | no | no | 55 | - | Edgeville bank (Edgeville), 247 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:82` | (3153, 3859) | (3152, 3859) | 1 | yes | yes | 43 | - | Edgeville bank (Edgeville), 184 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:86` | (3158, 3898) | (3157, 3898) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 204 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:87` | (3159, 3872) | (3158, 3872) | 1 | yes | yes | 45 | - | Edgeville bank (Edgeville), 191 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:89` | (3162, 3907) | (3161, 3907) | 1 | no | no | 49 | - | Edgeville bank (Edgeville), 240 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:90` | (3164, 3815) | (3164, 3812) | 2 | yes | yes | 38 | - | Edgeville bank (Edgeville), 161 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:91` | (3169, 3832) | (3170, 3831) | 3 | yes | yes | 40 | - | Edgeville bank (Edgeville), 170 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:92` | (3172, 3874) | (3169, 3876) | 1 | yes | yes | 45 | - | Edgeville bank (Edgeville), 193 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:94` | (3175, 3942) | (3174, 3941) | 5 | no | no | 55 | - | Edgeville bank (Edgeville), 233 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:96` | (3173, 3861) | (3172, 3861) | 1 | yes | yes | 43 | - | Edgeville bank (Edgeville), 195 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:97` | (3186, 3916) | (3186, 3917) | 10 | no | no | 51 | - | Edgeville bank (Edgeville), 227 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:99` | (3185, 3887) | (3180, 3887) | 3 | yes | yes | 47 | - | Edgeville bank (Edgeville), 199 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:101` | (3186, 3813) | (3185, 3812) | 3 | no | yes | 38 | - | Edgeville bank (Edgeville), 228 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:103` | (3186, 3943) | (3185, 3943) | 1 | no | no | 53 | - | Edgeville bank (Edgeville), 229 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:105` | (3188, 3934) | (3187, 3934) | 1 | no | no | 52 | - | Edgeville bank (Edgeville), 227 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:106` | (3195, 3865) | (3194, 3865) | 1 | yes | yes | 44 | - | Edgeville bank (Edgeville), 206 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:107` | (3196, 3896) | (3195, 3896) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 206 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:108` | (3201, 3948) | (3200, 3948) | 1 | no | yes | 54 | - | Edgeville bank (Edgeville), 230 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:109` | (3204, 3876) | (3203, 3876) | 1 | yes | yes | 45 | - | Edgeville bank (Edgeville), 204 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:111` | (3211, 3843) | (3210, 3843) | 5 | no | yes | 42 | - | Edgeville bank (Edgeville), 212 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:112` | (3207, 3900) | (3206, 3900) | 1 | yes | yes | 48 | - | Edgeville bank (Edgeville), 205 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:113` | (3208, 3921) | (3207, 3921) | 1 | no | yes | 51 | - | Edgeville bank (Edgeville), 218 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:114` | (3210, 3861) | (3209, 3861) | 1 | yes | yes | 43 | - | Edgeville bank (Edgeville), 201 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:115` | (3212, 3888) | (3211, 3888) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 200 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:116` | (3221, 3804) | (3221, 3805) | 4 | yes | yes | 37 | - | Edgeville bank (Edgeville), 157 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:117` | (3214, 3935) | (3213, 3935) | 1 | no | yes | 52 | - | Edgeville bank (Edgeville), 224 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:120` | (3237, 3847) | (3237, 3847) | 11 | yes | yes | 43 | - | Edgeville bank (Edgeville), 179 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:121` | (3222, 3920) | (3221, 3920) | 1 | no | yes | 51 | - | Edgeville bank (Edgeville), 216 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:122` | (3223, 3911) | (3222, 3911) | 1 | no | yes | 49 | - | Edgeville bank (Edgeville), 212 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:123` | (3235, 3877) | (3238, 3874) | 1 | yes | yes | 46 | - | Edgeville bank (Edgeville), 192 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:124` | (3234, 3924) | (3233, 3924) | 1 | no | yes | 51 | - | Edgeville bank (Edgeville), 218 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:79` | (3147, 3908) | (3146, 3908) | 1 | no | no | 49 | - | Mage Arena bank (Mage Arena chamber), 43 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:81` | (3148, 3956) | (3147, 3956) | 1 | no | no | 55 | - | Mage Arena bank (Mage Arena chamber), 35 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:82` | (3153, 3859) | (3152, 3859) | 1 | yes | yes | 43 | - | Mage Arena bank (Mage Arena chamber), 112 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:86` | (3158, 3898) | (3157, 3898) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 109 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:87` | (3159, 3872) | (3158, 3872) | 1 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 109 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:89` | (3162, 3907) | (3161, 3907) | 1 | no | no | 49 | - | Mage Arena bank (Mage Arena chamber), 48 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:90` | (3164, 3815) | (3164, 3812) | 2 | yes | yes | 38 | - | Mage Arena bank (Mage Arena chamber), 135 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:91` | (3169, 3832) | (3170, 3831) | 3 | yes | yes | 40 | - | Mage Arena bank (Mage Arena chamber), 126 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:92` | (3172, 3874) | (3169, 3876) | 1 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 103 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:94` | (3175, 3942) | (3174, 3941) | 5 | no | no | 55 | - | Mage Arena bank (Mage Arena chamber), 51 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:96` | (3173, 3861) | (3172, 3861) | 1 | yes | yes | 43 | - | Mage Arena bank (Mage Arena chamber), 102 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:97` | (3186, 3916) | (3186, 3917) | 10 | no | no | 51 | - | Mage Arena bank (Mage Arena chamber), 61 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:99` | (3185, 3887) | (3180, 3887) | 3 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 98 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:101` | (3186, 3813) | (3185, 3812) | 3 | no | yes | 38 | - | Mage Arena bank (Mage Arena chamber), 123 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:103` | (3186, 3943) | (3185, 3943) | 1 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 54 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:105` | (3188, 3934) | (3187, 3934) | 1 | no | no | 52 | - | Mage Arena bank (Mage Arena chamber), 55 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:106` | (3195, 3865) | (3194, 3865) | 1 | yes | yes | 44 | - | Mage Arena bank (Mage Arena chamber), 95 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:107` | (3196, 3896) | (3195, 3896) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 90 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:108` | (3201, 3948) | (3200, 3948) | 1 | no | yes | 54 | - | Mage Arena bank (Mage Arena chamber), 61 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:109` | (3204, 3876) | (3203, 3876) | 1 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 89 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:111` | (3211, 3843) | (3210, 3843) | 5 | no | yes | 42 | - | Mage Arena bank (Mage Arena chamber), 107 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:112` | (3207, 3900) | (3206, 3900) | 1 | yes | yes | 48 | - | Mage Arena bank (Mage Arena chamber), 85 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:113` | (3208, 3921) | (3207, 3921) | 1 | no | yes | 51 | - | Mage Arena bank (Mage Arena chamber), 65 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:114` | (3210, 3861) | (3209, 3861) | 1 | yes | yes | 43 | - | Mage Arena bank (Mage Arena chamber), 97 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:115` | (3212, 3888) | (3211, 3888) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 83 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:116` | (3221, 3804) | (3221, 3805) | 4 | yes | yes | 37 | - | Mage Arena bank (Mage Arena chamber), 127 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:117` | (3214, 3935) | (3213, 3935) | 1 | no | yes | 52 | - | Mage Arena bank (Mage Arena chamber), 68 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:120` | (3237, 3847) | (3237, 3847) | 11 | yes | yes | 43 | - | Mage Arena bank (Mage Arena chamber), 110 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:121` | (3222, 3920) | (3221, 3920) | 1 | no | yes | 51 | - | Mage Arena bank (Mage Arena chamber), 72 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:122` | (3223, 3911) | (3222, 3911) | 1 | no | yes | 49 | - | Mage Arena bank (Mage Arena chamber), 72 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:123` | (3235, 3877) | (3238, 3874) | 1 | yes | yes | 46 | - | Mage Arena bank (Mage Arena chamber), 90 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:124` | (3234, 3924) | (3233, 3924) | 1 | no | yes | 51 | - | Mage Arena bank (Mage Arena chamber), 78 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:125` | (3299, 3597) | (3299, 3596) | 10 | yes | yes | 17 | - | Varrock East bank (Varrock), 89 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:126` | (3238, 3627) | (3238, 3627) | 3 | yes | yes | 15 | - | Edgeville bank (Edgeville), 91 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:127` | (3240, 3892) | (3239, 3892) | 1 | yes | yes | 47 | - | Edgeville bank (Edgeville), 201 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:128` | (3242, 3914) | (3240, 3911) | 2 | no | yes | 50 | - | Edgeville bank (Edgeville), 216 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:129` | (3241, 3816) | (3240, 3816) | 1 | yes | yes | 38 | - | Edgeville bank (Edgeville), 163 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:130` | (3246, 3931) | (3245, 3931) | 1 | no | yes | 52 | - | Edgeville bank (Edgeville), 222 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:133` | (3257, 3864) | (3256, 3864) | 1 | yes | yes | 44 | - | Edgeville bank (Edgeville), 187 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:134` | (3258, 3922) | (3257, 3922) | 1 | no | yes | 51 | - | Edgeville bank (Edgeville), 224 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:135` | (3258, 3937) | (3257, 3937) | 1 | no | yes | 53 | - | Edgeville bank (Edgeville), 225 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:137` | (3269, 3837) | (3266, 3837) | 4 | yes | yes | 41 | - | Edgeville bank (Edgeville), 173 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:140` | (3275, 3865) | (3275, 3866) | 3 | yes | yes | 44 | - | Edgeville bank (Edgeville), 192 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:127` | (3240, 3892) | (3239, 3892) | 1 | yes | yes | 47 | - | Mage Arena bank (Mage Arena chamber), 83 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:128` | (3242, 3914) | (3240, 3911) | 2 | no | yes | 50 | - | Mage Arena bank (Mage Arena chamber), 81 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:129` | (3241, 3816) | (3240, 3816) | 1 | yes | yes | 38 | - | Mage Arena bank (Mage Arena chamber), 119 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:130` | (3246, 3931) | (3245, 3931) | 1 | no | yes | 52 | - | Mage Arena bank (Mage Arena chamber), 84 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:133` | (3257, 3864) | (3256, 3864) | 1 | yes | yes | 44 | - | Mage Arena bank (Mage Arena chamber), 95 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:134` | (3258, 3922) | (3257, 3922) | 1 | no | yes | 51 | - | Mage Arena bank (Mage Arena chamber), 90 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:135` | (3258, 3937) | (3257, 3937) | 1 | no | yes | 53 | - | Mage Arena bank (Mage Arena chamber), 90 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:137` | (3269, 3837) | (3266, 3837) | 4 | yes | yes | 41 | - | Mage Arena bank (Mage Arena chamber), 114 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:140` | (3275, 3865) | (3275, 3866) | 3 | yes | yes | 44 | - | Mage Arena bank (Mage Arena chamber), 101 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:142` | (3284, 3663) | (3285, 3662) | 3 | yes | yes | 19 | - | Edgeville bank (Edgeville), 114 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:143` | (3282, 3853) | (3281, 3853) | 1 | yes | yes | 42 | - | Edgeville bank (Edgeville), 181 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:144` | (3289, 3835) | (3288, 3835) | 1 | yes | yes | 40 | - | Edgeville bank (Edgeville), 172 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:143` | (3282, 3853) | (3281, 3853) | 1 | yes | yes | 42 | - | Mage Arena bank (Mage Arena chamber), 121 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:144` | (3289, 3835) | (3288, 3835) | 1 | yes | yes | 40 | - | Mage Arena bank (Mage Arena chamber), 125 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:145` | (3298, 3691) | (3294, 3690) | 4 | yes | yes | 23 | - | Edgeville bank (Edgeville), 118 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:146` | (3295, 3858) | (3296, 3858) | 2 | yes | yes | 43 | - | Edgeville bank (Edgeville), 184 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:146` | (3295, 3858) | (3296, 3858) | 2 | yes | yes | 43 | - | Mage Arena bank (Mage Arena chamber), 129 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:147` | (3300, 3664) | (3299, 3664) | 3 | yes | yes | 19 | - | Varrock East bank (Varrock), 123 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:149` | (3302, 3838) | (3301, 3838) | 1 | yes | yes | 40 | - | Edgeville bank (Edgeville), 174 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:150` | (3302, 3847) | (3301, 3847) | 1 | yes | yes | 41 | - | Edgeville bank (Edgeville), 178 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:152` | (3314, 3879) | (3314, 3880) | 4 | yes | yes | 46 | - | Edgeville bank (Edgeville), 195 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:149` | (3302, 3838) | (3301, 3838) | 1 | yes | yes | 40 | - | Mage Arena bank (Mage Arena chamber), 131 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:150` | (3302, 3847) | (3301, 3847) | 1 | yes | yes | 41 | - | Mage Arena bank (Mage Arena chamber), 131 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:152` | (3314, 3879) | (3314, 3880) | 4 | yes | yes | 46 | - | Mage Arena bank (Mage Arena chamber), 120 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:153` | (3310, 3858) | (3309, 3858) | 1 | yes | yes | 43 | unreached | - |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:154` | (3319, 3837) | (3319, 3837) | 3 | yes | yes | 40 | - | Edgeville bank (Edgeville), 174 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:154` | (3319, 3837) | (3319, 3837) | 3 | yes | yes | 40 | - | Mage Arena bank (Mage Arena chamber), 137 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:156` | (3318, 3660) | (3317, 3660) | 1 | yes | yes | 18 | - | Varrock East bank (Varrock), 126 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:157` | (3318, 3690) | (3317, 3690) | 1 | yes | yes | 22 | - | Edgeville bank (Edgeville), 130 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:158` | (3323, 3848) | (3322, 3848) | 1 | yes | yes | 42 | - | Edgeville bank (Edgeville), 179 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:158` | (3323, 3848) | (3322, 3848) | 1 | yes | yes | 42 | - | Mage Arena bank (Mage Arena chamber), 131 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:159` | (3333, 3906) | (3333, 3906) | 12 | no | no | 49 | unreached | - |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:160` | (3332, 3656) | (3332, 3656) | 4 | yes | no | 18 | - | Varrock East bank (Varrock), 119 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:161` | (3336, 3818) | (3335, 3818) | 5 | yes | no | 38 | - | Edgeville bank (Edgeville), 168 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:161` | (3336, 3818) | (3335, 3818) | 5 | yes | no | 38 | - | Mage Arena bank (Mage Arena chamber), 146 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:162` | (3334, 3709) | (3334, 3710) | 2 | yes | no | 24 | - | Edgeville bank (Edgeville), 138 ticks |
 | [Wilderness](../../places/wilderness.md) | `tree:wilderness:163` | (3339, 3741) | (3341, 3740) | 17 | yes | no | 30 | - | Edgeville bank (Edgeville), 142 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:164` | (3337, 3786) | (3337, 3788) | 8 | yes | no | 35 | - | Edgeville bank (Edgeville), 159 ticks |
-| [Wilderness](../../places/wilderness.md) | `tree:wilderness:165` | (3335, 3802) | (3334, 3802) | 1 | yes | no | 36 | - | Edgeville bank (Edgeville), 165 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:164` | (3337, 3786) | (3337, 3788) | 8 | yes | no | 35 | - | Mage Arena bank (Mage Arena chamber), 149 ticks |
+| [Wilderness](../../places/wilderness.md) | `tree:wilderness:165` | (3335, 3802) | (3334, 3802) | 1 | yes | no | 36 | - | Mage Arena bank (Mage Arena chamber), 148 ticks |
 | [Bandit Camp (Wilderness)](../../places/bandit-camp.md) | `tree:bandit-camp:0` | (3032, 3682) | (3031, 3680) | 3 | yes | yes | 21 | - | Edgeville bank (Edgeville), 95 ticks |
 | [Chaos Temple (Wilderness)](../../places/chaos-temple.md) | `tree:chaos-temple:0` | (3234, 3620) | (3233, 3620) | 1 | yes | yes | 13 | - | Edgeville bank (Edgeville), 95 ticks |
-| [Demonic Ruins (Wilderness)](../../places/demonic-ruins.md) | `tree:demonic-ruins:0` | (3300, 3874) | (3297, 3875) | 2 | yes | yes | 45 | - | Edgeville bank (Edgeville), 198 ticks |
-| [Deserted Keep (Wilderness)](../../places/deserted-keep.md) | `tree:deserted-keep:0` | (3145, 3948) | (3144, 3948) | 1 | no | no | 54 | - | Edgeville bank (Edgeville), 249 ticks |
-| [Deserted Keep (Wilderness)](../../places/deserted-keep.md) | `tree:deserted-keep:1` | (3157, 3938) | (3157, 3938) | 5 | no | no | 54 | - | Edgeville bank (Edgeville), 250 ticks |
-| [Lava Maze (Wilderness)](../../places/lava-maze.md) | `tree:lava-maze:0` | (3073, 3848) | (3074, 3847) | 8 | yes | no | 43 | - | Edgeville bank (Edgeville), 231 ticks |
-| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `tree:pirates-hideout:0` | (3034, 3937) | (3033, 3937) | 1 | no | no | 53 | - | Edgeville bank (Edgeville), 263 ticks |
-| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `tree:pirates-hideout:1` | (3053, 3950) | (3052, 3950) | 1 | no | no | 54 | - | Edgeville bank (Edgeville), 272 ticks |
-| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:0` | (3198, 3819) | (3197, 3819) | 4 | no | yes | 39 | - | Edgeville bank (Edgeville), 224 ticks |
-| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:1` | (3197, 3833) | (3196, 3833) | 1 | no | yes | 40 | - | Edgeville bank (Edgeville), 217 ticks |
-| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:2` | (3207, 3831) | (3206, 3831) | 1 | no | yes | 39 | - | Edgeville bank (Edgeville), 218 ticks |
+| [Demonic Ruins (Wilderness)](../../places/demonic-ruins.md) | `tree:demonic-ruins:0` | (3300, 3874) | (3297, 3875) | 2 | yes | yes | 45 | - | Mage Arena bank (Mage Arena chamber), 112 ticks |
+| [Deserted Keep (Wilderness)](../../places/deserted-keep.md) | `tree:deserted-keep:0` | (3145, 3948) | (3144, 3948) | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 33 ticks |
+| [Deserted Keep (Wilderness)](../../places/deserted-keep.md) | `tree:deserted-keep:1` | (3157, 3938) | (3157, 3938) | 5 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 49 ticks |
+| [Lava Maze (Wilderness)](../../places/lava-maze.md) | `tree:lava-maze:0` | (3073, 3848) | (3074, 3847) | 8 | yes | no | 43 | - | Mage Arena bank (Mage Arena chamber), 197 ticks |
+| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `tree:pirates-hideout:0` | (3034, 3937) | (3033, 3937) | 1 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 42 ticks |
+| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `tree:pirates-hideout:1` | (3053, 3950) | (3052, 3950) | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 33 ticks |
+| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:0` | (3198, 3819) | (3197, 3819) | 4 | no | yes | 39 | - | Mage Arena bank (Mage Arena chamber), 119 ticks |
+| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:1` | (3197, 3833) | (3196, 3833) | 1 | no | yes | 40 | - | Mage Arena bank (Mage Arena chamber), 112 ticks |
+| [Red Dragon Isle (Wilderness)](../../places/red-dragon-isle.md) | `tree:red-dragon-isle:2` | (3207, 3831) | (3206, 3831) | 1 | no | yes | 39 | - | Mage Arena bank (Mage Arena chamber), 113 ticks |

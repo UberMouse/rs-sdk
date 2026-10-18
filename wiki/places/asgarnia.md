@@ -45,8 +45,8 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fire:asgarnia:0` | (2848, 3677) | Fire 1 | no | no | - | unreached |
-| `fire:asgarnia:1` | (2851, 3684) | Fire 1 | no | no | - | unreached |
+| `fire:asgarnia:0` | (2848, 3677) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `fire:asgarnia:1` | (2851, 3684) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 | `fire:asgarnia:2` | (2919, 3557) | Fireplace 1 | no | no | - | - |
 | `fire:asgarnia:3` | (2923, 3573) | Fireplace 1 | no | no | - | - |
 | `fire:asgarnia:4` | (2926, 3545) L1 | Fireplace 1 | no | no | - | - |
@@ -177,11 +177,11 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `npc:asgarnia:0` | (2824, 3510) | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:asgarnia:1` | (2851, 3678) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - | unreached |
+| `npc:asgarnia:1` | (2851, 3678) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 | `npc:asgarnia:2` | (2851, 3598) | Thrower Troll (death_troll_thrower5) 1 | no | no | - | - |
 | `npc:asgarnia:3` | (2852, 3591) | Mountain Troll (death_troll_melee1) 1 | no | no | - | - |
-| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - | unreached |
-| `npc:asgarnia:5` | (2894, 3698) | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - | unreached |
+| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:asgarnia:5` | (2894, 3698) | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - | Troll Stronghold at stage 20 + 15 Agility |
 | `npc:asgarnia:6` | (2902, 3604) | Troll Spectator (troll_spectator7) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
 | `npc:asgarnia:7` | (2907, 3642) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 | `npc:asgarnia:8` | (2906, 3623) | Troll Spectator (troll_spectator1) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
@@ -247,7 +247,7 @@
 | `connector:asgarnia:31` | (3011, 3235) L1 | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
 | `connector:asgarnia:32` | (3013, 3203) | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
 | `connector:asgarnia:33` | (3013, 3203) L1 | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:34` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | unreached |
+| `connector:asgarnia:34` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
 | `connector:asgarnia:35` | (3023, 3261) | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
 | `connector:asgarnia:36` | (3024, 3261) L1 | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
 | `connector:asgarnia:37` | (3026, 3248) | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |

@@ -11,7 +11,7 @@ Haunted Mine quest (quests/quest_hauntedmine).
 | `rock:haunted-mine:1` | (2724, 4435) | [coal](../resources/rock/coal.md) 8 | no | no | - | unreached |
 | `rock:haunted-mine:2` | (2749, 4437) | [iron](../resources/rock/iron.md) 9 | no | no | - | unreached |
 | `rock:haunted-mine:3` | (2764, 4439) | [coal](../resources/rock/coal.md) 4 | no | yes | - | unreached |
-| `rock:haunted-mine:4` | (2778, 4594) | [adamantite](../resources/rock/adamantite.md) 5, [coal](../resources/rock/coal.md) 8, [mithril](../resources/rock/mithril.md) 5 | no | no | - | unreached |
+| `rock:haunted-mine:4` | (2778, 4594) | [adamantite](../resources/rock/adamantite.md) 5, [coal](../resources/rock/coal.md) 8, [mithril](../resources/rock/mithril.md) 5 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 | `rock:haunted-mine:5` | (2774, 4421) | [adamantite](../resources/rock/adamantite.md) 13 | no | yes | - | unreached |
 | `rock:haunted-mine:6` | (2788, 4437) | [coal](../resources/rock/coal.md) 6 | no | yes | - | unreached |
 | `rock:haunted-mine:7` | (2803, 4444) | [mithril](../resources/rock/mithril.md) 8 | no | yes | - | unreached |
@@ -21,8 +21,8 @@ Haunted Mine quest (quests/quest_hauntedmine).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:haunted-mine:0` | (2777, 4580) | Rat 2 | no | no | - | unreached |
-| `npc:haunted-mine:1` | (2782, 4593) | Rat 2 | no | no | - | unreached |
-| `npc:haunted-mine:2` | (2786, 4579) | Rat 3 | no | no | - | unreached |
-| `npc:haunted-mine:3` | (2802, 4599) | Rat 1 | no | no | - | unreached |
+| `npc:haunted-mine:0` | (2777, 4580) | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:1` | (2782, 4593) | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:2` | (2786, 4579) | Rat 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:3` | (2802, 4599) | Rat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 | `npc:haunted-mine:4` | (2812, 4577) | Rat 1 | no | no | - | unreached |

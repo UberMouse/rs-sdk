@@ -36,6 +36,6 @@ Ladders up to the Clock Tower south of Ardougne, (2566-2575, 3222-3255).
 | `connector:clock-tower-dungeon:4` | (2569, 9627) | Ladder 1 | up (2568, 3227) by Climb-up | no | no | - | - |
 | `connector:clock-tower-dungeon:5` | (2569, 9631) | Ladder 1 | up (2568, 3231) by Climb-up | no | no | - | - |
 | `connector:clock-tower-dungeon:6` | (2572, 9627) | Ladder 1 | up (2571, 3227) by Climb-up | no | no | - | - |
-| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | up (2571, 3231) by Climb-up | no | no | - | unreached |
+| `connector:clock-tower-dungeon:7` | (2572, 9631) | Ladder 1 | up (2571, 3231) by Climb-up | no | no | - | - |
 | `connector:clock-tower-dungeon:8` | (2575, 9655) | Ladder 1 | up (2575, 3256) by Climb-up | no | no | - | the rats killed with the poisoned trough (bit ^quest_cog_rat_door_bit of %cogquest, set at quests/quest_cog/scripts/locs/quest_cog_food_trough.rs2:4) or Clock Tower done |
 | `connector:clock-tower-dungeon:9` | (2621, 9661) | Ladder 1 | up (2620, 3261) by Climb-up | no | no | - | - |

@@ -25,4 +25,4 @@
 | [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:0` | (3075, 9498) | (3075, 9498) | Anvil 2 | yes | unreached | - |
 | [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:1` | (3083, 9498) | (3083, 9498) | Anvil 2 | yes | unreached | - |
 | [Wilderness](../places/wilderness.md) | `anvil:wilderness:0` | (2991, 3689) | (2990, 3689) | Anvil 1 | yes | - | Edgeville bank (Edgeville), 99 ticks |
-| [Wilderness](../places/wilderness.md) | `anvil:wilderness:1` | (3062, 3952) | (3062, 3951) | Anvil 1 | no | - | Edgeville bank (Edgeville), 279 ticks |
+| [Wilderness](../places/wilderness.md) | `anvil:wilderness:1` | (3062, 3952) | (3062, 3951) | Anvil 1 | no | - | Mage Arena bank (Mage Arena chamber), 28 ticks |

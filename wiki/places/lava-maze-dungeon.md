@@ -7,16 +7,16 @@ Ladder in the Lava Maze at (3017, 3849) (ladders+stairs/scripts/ladders.rs2:109,
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rock:lava-maze-dungeon:0` | (3046, 10265) | [runite](../resources/rock/runite.md) 1 | no | no | 44 | unreached |
+| `rock:lava-maze-dungeon:0` | (3046, 10265) | [runite](../resources/rock/runite.md) 1 | no | no | 44 | - |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:lava-maze-dungeon:0` | (3028, 10250) | Greater demon 1 | no | no | 42 | unreached |
-| `npc:lava-maze-dungeon:1` | (3030, 10259) | Greater demon 1 | no | no | 43 | unreached |
-| `npc:lava-maze-dungeon:2` | (3035, 10245) | Greater demon 1 | no | no | 41 | unreached |
-| `npc:lava-maze-dungeon:3` | (3046, 10265) | Black dragon 2, Poison spider 2 | no | no | 44 | unreached |
-| `npc:lava-maze-dungeon:4` | (3044, 10252) | Poison spider 1 | no | no | 42 | unreached |
-| `npc:lava-maze-dungeon:5` | (3053, 10255) | Poison spider 2 | no | no | 43 | unreached |
+| `npc:lava-maze-dungeon:0` | (3028, 10250) | Greater demon 1 | no | no | 42 | - |
+| `npc:lava-maze-dungeon:1` | (3030, 10259) | Greater demon 1 | no | no | 43 | - |
+| `npc:lava-maze-dungeon:2` | (3035, 10245) | Greater demon 1 | no | no | 41 | - |
+| `npc:lava-maze-dungeon:3` | (3046, 10265) | Black dragon 2, Poison spider 2 | no | no | 44 | - |
+| `npc:lava-maze-dungeon:4` | (3044, 10252) | Poison spider 1 | no | no | 42 | - |
+| `npc:lava-maze-dungeon:5` | (3053, 10255) | Poison spider 2 | no | no | 43 | - |
 | `npc:lava-maze-dungeon:6` | (3068, 10256) | Poison spider 5 | no | no | 43 | - |

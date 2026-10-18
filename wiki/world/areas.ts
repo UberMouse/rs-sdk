@@ -330,7 +330,7 @@ export const AREAS: readonly Area[] = [
         name: 'Lighthouse',
         parent: 'kandarin',
         rects: [{ x1: 2502, z1: 3616, x2: 2525, z2: 3639 }],
-        notes: "Past the broken bridge (oploc1,horror_broken_bridge_left_spot, quests/quest_horror/scripts/quest_horror.rs2:63), which the player jumps, or walks once Horror from the Deep has it mended, by a scripted move no connector, gate or transport row models; inside, the doorway needs Horror from the Deep (quest_horror.rs2:3) and the stairs up are scripted there too (quest_horror.rs2:186, outside ladders+stairs/, so no connector row). So the world index's walk from the Lumbridge spawn does not reach the lighthouse or its shop (build.ts unreached report).",
+        notes: 'Past the broken bridge (oploc1,horror_broken_bridge_left_spot, quests/quest_horror/scripts/quest_horror.rs2:63), which the player jumps, a failed jump still landing across (:102), or walks once Horror from the Deep has it mended; inside, the doorway needs Horror from the Deep done (quest_horror.rs2:3) and the stairs up are a script of their own (quest_horror.rs2:186, outside ladders+stairs/). The world index has the bridge and the stairs as scripted crossing rows (sources/gate-landings.ts), so the shop reads Horror from the Deep.',
     },
     {
         id: 'mcgrubors-wood',
@@ -408,7 +408,7 @@ export const AREAS: readonly Area[] = [
         name: 'Tree Gnome Stronghold',
         parent: 'kandarin',
         rects: [{ x1: 2378, z1: 3380, x2: 2500, z2: 3528 }],
-        notes: "The world index's walk from the Lumbridge spawn does not get in (build.ts unreached report), so its banks and shops read unreached, not for a requirement: the entrance gate (oploc1,gnome_areagate, areas/area_gnome/scripts/gnome_gate.rs2:2) lets a settled account through by a scripted forcemove (gates.ts: a temporary block, so no gate row), while the collision data has the gate shut. The Grand Tree's doors (oploc1,treedoorl and treedoorr, gnome_gate.rs2:63) also move the player by script.",
+        notes: "The entrance gate (oploc1,gnome_areagate, areas/area_gnome/scripts/gnome_gate.rs2:2) lets a settled account through by a scripted forcemove, either way (:57, :59), while the collision data has it shut; gates.ts has it a temporary block, so the world index crosses it by scripted crossing rows (sources/gate-landings.ts), as it does the Grand Tree's doors (oploc1,treedoorl and treedoorr, gnome_gate.rs2:63), which move the player by script too.",
     },
     {
         id: 'gnome-agility-course',
@@ -457,7 +457,7 @@ export const AREAS: readonly Area[] = [
         // Down to z 3158 and out to x 2514 and 2547: the village's walled ground, with the general store
         // upstairs at (2527, 3161).
         rects: [{ x1: 2514, z1: 3158, x2: 2547, z2: 3185 }],
-        notes: "Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnome/scripts/gnomevillage_fence.rs2:1), an agility move with no condition that no connector, gate or transport row models, so the world index's walk from the Lumbridge spawn does not reach the village or its shop (build.ts unreached report).",
+        notes: 'Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnome/scripts/gnomevillage_fence.rs2:1), a squeeze with no condition, one tile either way; the world index has it as a scripted crossing row (sources/gate-landings.ts).',
     },
     {
         id: 'underground-pass-entrance',
@@ -828,7 +828,7 @@ export const AREAS: readonly Area[] = [
         id: 'tirannwn',
         name: 'Tirannwn',
         rects: [{ x1: 2152, z1: 3070, x2: 2372, z2: 3519 }],
-        notes: "The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide's forest crossings (oploc1,_regicide_cross_over, quests/quest_regicide/scripts/quest_regicide.rs2:389) but nothing within 43 tiles of the Tyras camp's general store at (2194, 3140) (build.ts unreached report): the camp's own crossings at (2187, 3163) to (2187, 3169) are not joined to the reached forest, and the one at its west edge, regicide_cross_over3 at (2173, 3156), has no landing on walkable land (the build report's gate rows with no landing).",
+        notes: "The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide's forest crossings (oploc1,_regicide_cross_over, quests/quest_regicide/scripts/quest_regicide.rs2:389), and the Tyras camp's general store at (2194, 3140) over the woodspring trap at (2200, 3169) (oploc1,regicide_trap_woodspring, quest_regicide.rs2:31, an agility roll with no condition: a scripted crossing row). The crossing at the camp's west edge, regicide_cross_over3 at (2173, 3156), has no landing on walkable land (the build report's gate rows with no landing).",
     },
     { id: 'arandar', name: 'Arandar', parent: 'tirannwn', rects: [{ x1: 2316, z1: 3272, x2: 2363, z2: 3319 }] },
     { id: 'elf-camp', name: 'Elf Camp', parent: 'tirannwn', rects: [{ x1: 2184, z1: 3244, x2: 2207, z2: 3267 }] },
@@ -1065,7 +1065,7 @@ export const AREAS: readonly Area[] = [
         id: 'mage-arena-chamber',
         name: 'Mage Arena chamber',
         rects: [{ x1: 2496, z1: 4672, x2: 2559, z2: 4735 }],
-        notes: "Below the Mage Arena; areas/area_mage_arena/scripts/chamber.rs2 places the god capes here. Its cellar, with the bank and the rune shop, is the landing of the ladder in the Mage Arena house at (3091, 3957) (oploc1,magearena_ladder_to_cellar, areas/area_mage_arena/scripts/mage_arena.rs2:1, the move at :6), a script outside ladders+stairs/ and so no connector row; the god statues and the staff shop beyond are the sparkling pool's (oploc1,magearena_waterportal1 at (2541, 4719), mage_arena.rs2:15) once the Mage Arena miniquest is done. So the world index's walk from the Lumbridge spawn, which reaches the ladder with no requirement, does not reach the cellar, its bank or the shops (build.ts unreached report).",
+        notes: "Below the Mage Arena; areas/area_mage_arena/scripts/chamber.rs2 places the god capes here. Its cellar, with the bank and the rune shop, is the landing of the ladder in the Mage Arena house at (3091, 3957) (oploc1,magearena_ladder_to_cellar, areas/area_mage_arena/scripts/mage_arena.rs2:1, the move at :6), with no condition: a scripted crossing row in the world index, outside ladders+stairs/. The god statues and the staff shop beyond are the sparkling pool's (oploc1,magearena_waterportal1 at (2541, 4719), mage_arena.rs2:15) once the Mage Arena miniquest is done (:59), a gate row in gates.ts.",
     },
     {
         id: 'mage-arena-bank',

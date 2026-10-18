@@ -264,7 +264,7 @@
 | `npc:wilderness:12` | (2981, 3699) | Rat 1 | yes | no | 23 | - |
 | `npc:wilderness:13` | (2988, 3685) | Giant spider 5, Spider 6 | yes | no | 22 | - |
 | `npc:wilderness:14` | (2984, 3933) | Ice warrior 1 | no | no | 52 | - |
-| `npc:wilderness:15` | (2991, 3943) | Skeleton (skeleton_armed) 2 | no | no | 54 | unreached |
+| `npc:wilderness:15` | (2991, 3943) | Skeleton (skeleton_armed) 2 | no | no | 54 | 52 Agility |
 | `npc:wilderness:16` | (2990, 3755) | Ghost 1 | yes | no | 30 | - |
 | `npc:wilderness:17` | (2998, 3701) | Rat 4 | yes | no | 23 | - |
 | `npc:wilderness:18` | (3017, 3593) | Skeleton (skeleton_unarmed) 13 | yes | yes | 11 | - |

@@ -256,6 +256,27 @@ export const GATE_LIST: readonly CuratedGate[] = [
             scan: '6f25d0ff',
         },
     ),
+    ...(
+        [
+            ['oploc1,magearena_waterportal1', '0_39_73_13_17', 'e4ce3c0d'],
+            ['oploc1,magearena_waterportal2', '0_39_73_46_46', '0486c9bd'],
+        ] as const
+    ).map(([trigger, to, scan]) =>
+        gate(
+            trigger,
+            'areas/area_mage_arena/scripts/mage_arena.rs2:59',
+            [
+                [
+                    'other:Mage Arena miniquest done (%magearena >= ^mage_arena_complete, areas/area_mage_arena/scripts/mage_arena.rs2:85)',
+                ],
+            ],
+            {
+                to,
+                why: 'The sparkling pool jumps the player to the god chamber and back (@jump_in_sparkling_pool, mage_arena.rs2:76) only once the Mage Arena miniquest is done (%magearena, not a quest varp, which the scan does not read); before, the player steps in and back out with wet boots (:59). The scan sees both as moves, so proposes no requirement.',
+                scan,
+            },
+        ),
+    ),
     gate(
         'oploc1,monasteryladder',
         'areas/monastery/scripts/prayer_guild.rs2:6',
@@ -1192,13 +1213,11 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'The distance check only walks the player to the foot of the rocks first (quest_desertrescue.rs2:233); the climb itself follows a yes or no choice.',
         '2c0e7903',
     ),
-    no(
-        'side-effect',
-        'oploc1,dragonsecretdoor',
-        'quests/quest_dragon/scripts/crandor.rs2:18',
-        'The Crandor secret door, once found from inside or with Dragon Slayer done, stays open: the check only records it (%dragon_wall).',
-        '83d1dd66',
-    ),
+    gate('oploc1,dragonsecretdoor', 'quests/quest_dragon/scripts/crandor.rs2:18', 'quest:dragon', {
+        from: 'far',
+        why: "From the Karamja volcano side (far, south of the wall) the secret door opens only once found from Elvarg's lair (%dragon_wall, crandor.rs2:12) or with Dragon Slayer done (:18); the lair is reached only by the quest's ship to Crandor, so an account that has not started the quest never found it. The scan takes %dragon_wall both ways, so it proposes a free crossing.",
+        scan: '83d1dd66',
+    }),
     no(
         'quest-window',
         'oploc1,elvarg_gate_right',
@@ -1484,7 +1503,8 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'item:grip_keys:held quest:hero>=11',
     ),
     gate('oploc1,horror_lighthouse_doorway', 'quests/quest_horror/scripts/quest_horror.rs2:3', 'quest:horror', {
-        from: 'loc',
+        why: "Only Horror from the Deep done crosses the door, from either side (quest_horror.rs2:3). The free crossing the scan reads from outside, with the door unlocked and the bridge mended (%horrorlighthouseentrance and the bridge varps, which it does not read, :22), teleports into the quest's copy of the lighthouse (0_38_71_13_51, :24) and steps on from there, not through this door.",
+        scan: 'c6929dd7',
     }),
     gate('oploc1,horror_ladder_top', 'quests/quest_horror/scripts/quest_horror.rs2:172', 'quest:horror', {
         to: '1_39_156_22_10',

@@ -66,19 +66,32 @@ Nearest bank column (`none` when no bank is reached that way).
 Where the ways come from: connectors (stairs, ladders, trapdoors, manholes, gangplanks) are read from
 `scripts/ladders+stairs/` (`sources/connectors.ts`); gates from the scan of the scripts' door and gate triggers
 (`sources/gate-scan.ts`), each confirmed or rejected in `gate-list.ts` (exported by `gates.ts`); transports
-(ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts`.
-Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
+(ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts`;
+scripted crossings from the loc op moves no gate row makes (`deriveScriptedMoves` in `sources/gate-landings.ts`,
+below). Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
 
 ### The crossing model
 
 `crossings` in world.json (`Crossing` in `types.ts`) holds the moves no connector, gate or transport row describes:
 `scripted` (a loc op that moves the player with no condition the gate scan decides) and `teleport` (an item used on a
-loc, an npc's op and dialogue, an item op, an interface click). The build reads them from no source, so the list is
-empty. A row says how the move is done (`act`: `loc-op`, `item-on-loc`, `npc-op` with its dialogue `choices`,
+loc, an npc's op and dialogue, an item op, an interface click). The build reads no teleport rows yet. A row says how the move is done (`act`: `loc-op`, `item-on-loc`, `npc-op` with its dialogue `choices`,
 `item-op` or `interface`), the loc or npc it is done on (`at`), the tiles it is done from (`from`), where it lands
 (`landings`: one tile, or the set a random landing draws from), its requirement sets, and its `roll` when the move is
 behind a `stat_random`. A connector's and a gate's act is implied by their rows (the loc's op, the trigger); a
 transport may carry one, and the sail and curated rows carry none. A gate row may carry a `roll` too.
+
+The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
+reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is
+run, as a gate row's trigger is, for every placed loc of an op its config has and every tile on land it is used from
+(`gateLander`). A stand gives a row when its move lands on walkable land the stand could not walk to in a few steps
+(a passage, not a shuffle beside the loc, a stay put or a door's swing), on one tile; stands landing alike make one free
+row, `act: loc-op`. A `stat_random` roll on the way is followed both ways: the failed paths give the row's `roll`, their
+delays' ticks, the most damage they deal (a stat read as 99, a random draw at its top) and the tile they leave the
+player on, unless that tile is a short walk from the landing (the failure gets the player across all the same). Gate
+rows with a skill requirement get their roll the same way. What no run settles (a `map_findsquare` landing, a coord kept
+in a varp, a stand landing on two passages) is listed in the build report, never guessed; stands stopped only in the
+door procs (`doors/scripts/`) are a door's, which the collision data or `gate-list.ts` has. A move on a loc tile and op
+that has a connector row is refused, and the build fails on one.
 
 The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
 over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:
@@ -117,8 +130,8 @@ entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, 
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
 reached or gone. Some areas' `notes` still say
-why their sites are unreached (the desert behind the Shantay Pass, the Gnome Stronghold, the lighthouse, the
-Mage Arena cellar): those notes go as their pockets are reached.
+why their sites are unreached (the desert behind the Shantay Pass, Ape Atoll, Miscellania, the Burthorpe games
+room): those notes go as their pockets are reached.
 
 ## Where corrections go
 

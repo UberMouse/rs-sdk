@@ -13,4 +13,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | unreached |
+| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |

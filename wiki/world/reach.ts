@@ -126,6 +126,8 @@ export interface Reach {
     setsAny(tiles: readonly Tile[]): string[][];
     /** Whether some set reaches the tile. */
     reached(t: Tile): boolean;
+    /** Whether some set reaches the tile of the graph's index `i` (TileIndex.of). */
+    reachedAt(i: number): boolean;
     report: ReachReport;
 }
 
@@ -813,6 +815,7 @@ export function fillReach(input: ReachInput, graph: ReachGraph = reachGraph(inpu
                 return minimalSets([...ids].map(sets.strings), quests);
             },
             reached: t => at(t) >= 0 && head[at(t)] !== -1,
+            reachedAt: i => head[i] !== -1,
             report,
         };
     }

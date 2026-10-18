@@ -42,8 +42,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | 4 | no | no | - | - | Catherby bank (Catherby), 22 ticks |
 | [Flax (Kandarin)](../../places/flax.md) | `tree:flax:0` | (2754, 3433) | (2753, 3433) | 1 | no | no | - | - | Catherby bank (Catherby), 31 ticks |
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2410, 3410) | 7 | no | no | - | - | Ardougne North bank (East Ardougne), 123 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:6` | (2486, 3490) | (2496, 3489) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 127 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | 7 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:6` | (2486, 3490) | (2485, 3490) | 1 | no | no | - | - | Grand Tree bank (Tree Gnome Stronghold), 27 ticks |
 | [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | 3 | yes | no | - | - | Draynor bank (Draynor Village), 33 ticks |
 | [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | 2 | yes | no | - | - | Varrock East bank (Varrock), 76 ticks |
 | [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:1` | (3085, 3468) | (3085, 3471) | 1 | yes | no | - | - | Edgeville bank (Edgeville), 15 ticks |
@@ -55,7 +55,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:14` | (3248, 3472) | (3247, 3472) | 1 | yes | no | - | - | Varrock East bank (Varrock), 27 ticks |
 | [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:17` | (3278, 3482) | (3278, 3482) | 2 | yes | no | - | - | Varrock East bank (Varrock), 40 ticks |
 | [Regicide camp](../../places/regicide-camp.md) | `tree:regicide-camp:0` | (2341, 4575) | (2339, 4573) | 4 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2209, 3204) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Ardougne North bank (East Ardougne), 352 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2197, 3174) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 332 ticks via Regicide at stage 13 + 56 Agility |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:6` | (3193, 9584) | (3193, 9585) | 1 | no | no | - | wear Dramen staff | Zanaris bank (Zanaris), 20 ticks |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:9` | (3233, 9546) | (3232, 9546) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 47 ticks via 1 Diamond (used up) |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:10` | (3238, 9570) | (3238, 9570) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 51 ticks via 1 Diamond (used up) |

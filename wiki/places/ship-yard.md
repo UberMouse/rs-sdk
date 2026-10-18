@@ -7,10 +7,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - | unreached |
-| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - | unreached |
-| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - | unreached |
-| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - | unreached |
+| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - | 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - | 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - | 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - | 30 coins + The Grand Tree at stage 80 |
 
 ## Ladders and stairs
 

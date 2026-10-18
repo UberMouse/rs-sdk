@@ -7,10 +7,10 @@ Trolls of quests/quest_troll and quests/quest_death; descriptive name.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fire:troll-caves:0` | (2923, 10033) | Fire 1 | no | no | - | unreached |
+| `fire:troll-caves:0` | (2923, 10033) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - | unreached |
+| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |

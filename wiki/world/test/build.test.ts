@@ -8,6 +8,7 @@ import {
     expectedUnreached,
     failed,
     formatReport,
+    formatScripted,
     formatUnreached,
     nearestReached,
     serializeWorld,
@@ -432,7 +433,15 @@ describe('formatReport', () => {
                 underived: [],
                 offLand: [],
                 unlanded: [],
+                rolled: 0,
+                unrolled: [],
             },
+        },
+        scripted: {
+            rows: 0,
+            counts: { triggers: {}, locs: { rows: 0, unsettled: 0, duplicate: 0, door: 0, 'not-a-passage': 0 } },
+            unsettled: [],
+            duplicates: [],
         },
         reach: {
             nodes: 64,
@@ -464,12 +473,16 @@ describe('formatReport', () => {
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
     const landingsLine =
-        'gate moves on objects: 0 to, 0 landings, 0 opens, 0 underived (rows; 0 quest windows left as they are)';
+        'gate moves on objects: 0 to, 0 landings, 0 opens, 0 underived (rows; 0 quest windows left as they are); ' +
+        '0 gate rows behind a roll';
+    const scriptedLine =
+        'scripted moves: 0 crossing rows; triggers ; placed locs rows 0, unsettled 0, duplicate 0, door 0, not-a-passage 0';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
         gatesLine,
         landingsLine,
+        scriptedLine,
     ];
 
     test('counts, then coverage, then connectors, quests, transports and gates', () =>
@@ -585,6 +598,7 @@ describe('formatReport', () => {
             '  gliders (glider.rs2:7): a menu',
             gatesLine,
             landingsLine,
+            scriptedLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -598,6 +612,7 @@ describe('formatReport', () => {
             { ...report, gates: { ...report.gates, drifted: ['x'] } },
             { ...report, gates: { ...report.gates, invalid: ['x'] } },
             { ...report, gates: { ...report.gates, unnamed: ['x'] } },
+            { ...report, scripted: { ...report.scripted, duplicates: ['x'] } },
             { ...report, unreached: { ...report.unreached, invalid: ['x'] } },
             { ...report, unreached: { ...report.unreached, stale: ['x'] } },
         ])
@@ -642,7 +657,7 @@ describe('formatReport', () => {
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
         };
-        expect(formatReport({ ...report, gates }).slice(-22)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-23)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -665,6 +680,7 @@ describe('formatReport', () => {
             'quest windows, kept out of the fill: 1',
             '  oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought',
             landingsLine,
+            scriptedLine,
         ]);
         expect(
             failed({
@@ -677,6 +693,8 @@ describe('formatReport', () => {
     test('counts the gate moves on objects, lists the underived rows by trigger and the landings off land', () => {
         const landings: BuildReport['gates']['landings'] = {
             counts: { to: 1, landings: 2, opens: 3, underived: 3, windows: 1 },
+            rolled: 0,
+            unrolled: [],
             underived: [
                 { trigger: 'oploc1,pipe', loc: 'pipe', tile: at(1, 1), reasons: ['no path moves (p.rs2:2)'] },
                 {
@@ -713,8 +731,9 @@ describe('formatReport', () => {
             ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-10)).toEqual([
-            'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are)',
+        expect(lines.slice(-11)).toEqual([
+            'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
+                '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
             '  oploc1,bridge: 2 (bridge (5, 5), bridge (5, 6))',
             '    no tile on land reaches the loc',
@@ -724,9 +743,47 @@ describe('formatReport', () => {
             '  oploc1,rock rock (9, 9) from (8, 9) -> (10, 9) (r.rs2:7)',
             'warning: 1 stands of gate rows with landings that give no landing, left out:',
             '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
+            scriptedLine,
         ]);
         // Warnings: they do not fail the build.
         expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);
+    });
+
+    test('the scripted moves: rows and counts, duplicates of a connector (an error), then the unsettled by trigger', () => {
+        const scripted: BuildReport['scripted'] = {
+            rows: 3,
+            counts: {
+                triggers: { rows: 2, unsettled: 2 },
+                locs: { rows: 2, unsettled: 6, duplicate: 1, door: 0, 'not-a-passage': 0 },
+            },
+            duplicates: ['oploc1,ladder ladder (5, 5) op1'],
+            unsettled: [
+                { trigger: 'oploc1,pit', loc: 'pit', tile: at(1, 1), reasons: ['`x` (p.rs2:2) is not known offline'] },
+                ...[1, 2, 3, 4, 5].map(x => ({
+                    trigger: 'oploc1,rope',
+                    loc: 'rope',
+                    tile: at(x, 9),
+                    stand: at(x, 8),
+                    reasons: [`lands on 2 tiles: (${x}, 10), (${x}, 11)`],
+                })),
+            ],
+        };
+        expect(formatScripted(scripted)).toEqual([
+            'scripted moves: 3 crossing rows; triggers rows 2, unsettled 2; placed locs rows 2, unsettled 6, duplicate 1, door 0, not-a-passage 0',
+            "ERROR scripted: 1 moves on a connector's loc and op, refused:",
+            '  oploc1,ladder ladder (5, 5) op1',
+            'warning: 6 scripted moves whose landing no bound run settles, by trigger:',
+            '  oploc1,rope: 5 (rope (1, 9) from (1, 8), rope (2, 9) from (2, 8), rope (3, 9) from (3, 8), rope (4, 9) from (4, 8) and 1 more)',
+            '    lands on 2 tiles: (1, 10), (1, 11)',
+            '    lands on 2 tiles: (2, 10), (2, 11)',
+            '    lands on 2 tiles: (3, 10), (3, 11)',
+            '    lands on 2 tiles: (4, 10), (4, 11)',
+            '    lands on 2 tiles: (5, 10), (5, 11)',
+            '  oploc1,pit: 1 (pit (1, 1))',
+            '    `x` (p.rs2:2) is not known offline',
+        ]);
+        expect(failed({ ...report, scripted })).toBe(true);
+        expect(failed({ ...report, scripted: { ...scripted, duplicates: [] } })).toBe(false);
     });
 });
 

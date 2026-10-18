@@ -257,6 +257,6 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
   graph (`lib/walk-graph.ts`) and crosses only doors it can open.
 
 Known gaps, listed by the build's unreached report: the Shantay Pass queued move (the desert is
-unreached); unconditional scripted moves outside `ladders+stairs/` (the Mage Arena ladder, the Gnome
-Stronghold gate, the lighthouse); banker clusters across booths; unnamed underground areas outside
+unreached); the scripted moves whose landing no bound run settles (a `map_findsquare`, a coord kept in a
+varp; the build report lists them); banker clusters across booths; unnamed underground areas outside
 the walker's `planeOf`.

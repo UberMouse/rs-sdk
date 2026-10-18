@@ -7,4 +7,4 @@ Big Chompy Bird Hunting (quests/quest_chompybird).
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fire:rantzs-cave:0` | (2647, 9395) | Fire 1 | no | no | - | unreached |
+| `fire:rantzs-cave:0` | (2647, 9395) | Fire 1 | no | no | - | - |

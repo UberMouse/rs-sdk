@@ -37,6 +37,9 @@ const shopSubtypesOf = (npc: string): string[] =>
         .filter(f => f.config === npc)
         .map(f => f.subtype);
 const spawnsOf = (config: string) => world.npcSpawns.filter(s => s.config === config);
+const reachOf = (id: string) => world.sites.find(s => s.id === id)?.reach;
+/** The crossing rows done by an op on a loc config. */
+const rowsOn = (loc: string) => world.crossings.filter(c => c.act.kind === 'loc-op' && c.act.loc === loc);
 /** The place-page ids the Locations rows of an npc page link, in page order. */
 const pagePlaces = (page: string): string[] =>
     [
@@ -65,15 +68,88 @@ describe('the unreached report', () => {
         expect(tutorial.filter(s => listed.has(s.id))).toEqual([]);
     });
 
-    test('a pocket per stretch of land: both Gnome Stronghold banks in one, and the gate in among its hints', () => {
+    test('a pocket per stretch of land, none of them the places the scripted moves reach', () => {
         expect(pockets.length).toBeLessThanOrEqual(160);
-        const stronghold = pocketOf('bank:gnome-stronghold-bank:0');
-        expect(stronghold).toBeDefined();
-        expect(pocketOf('bank:grand-tree-bank:0')).toBe(stronghold!);
-        expect(stronghold!.hints.find(h => h.trigger === 'oploc1,gnome_areagate')).toMatchObject({
-            source: 'areas/area_gnome/scripts/gnome_gate.rs2:2',
-            scan: { k: 'candidate', kind: 'temporary-block', reviewed: true },
+        const gone = [
+            'tree-gnome-stronghold',
+            'gnome-stronghold-bank',
+            'grand-tree',
+            'grand-tree-bank',
+            'gnome-ball-field',
+            'gnome-agility-course',
+            'tree-gnome-village',
+            'mage-arena-chamber',
+            'mage-arena-bank',
+            'lighthouse',
+        ];
+        // By leaf area, as the report names pockets: the swamp inside the stronghold's bounds is walled in on its own.
+        expect(pockets.flatMap(p => p.sites).filter(s => gone.includes(s.areaPath.at(-1)!))).toEqual([]);
+        expect(pocketOf('bank:gnome-stronghold-bank:0')).toBeUndefined();
+    });
+});
+
+describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', () => {
+    test('reach the Gnome Stronghold, Grand Tree and Mage Arena banks free, and the lighthouse shop with the quest', () => {
+        expect(reachOf('bank:gnome-stronghold-bank:0')).toEqual([[]]);
+        expect(reachOf('bank:grand-tree-bank:0')).toEqual([[]]);
+        expect(reachOf('bank:mage-arena-bank:0')).toEqual([[]]);
+        // Over the broken bridge (quest_horror.rs2:63), through the doorway only with the quest done (:3).
+        expect(reachOf('shop:lighthouse:0')).toEqual([['quest:horror']]);
+    });
+
+    test("the Gnome Stronghold gate's forcemove crosses it each way, its gates.ts why as the rows' notes", () => {
+        const rows = rowsOn('gnome_areagate');
+        expect(rows.map(r => [r.landings.map(l => l.tile), r.source])).toEqual([
+            [[{ level: 0, x: 2461, z: 3382 }], 'areas/area_gnome/scripts/gnome_gate.rs2:57'],
+            [[{ level: 0, x: 2461, z: 3385 }], 'areas/area_gnome/scripts/gnome_gate.rs2:59'],
+        ]);
+        expect(rows.every(r => r.via === 'scripted' && r.requires.length === 1 && !r.requires[0]!.length)).toBe(true);
+        expect(rows[0]!.notes).toStartWith('Shut only while The Grand Tree');
+    });
+
+    test('the Grand Tree doors, the Gnome Village railing, the Mage Arena ladders and the lighthouse stairs have rows', () => {
+        for (const loc of [
+            'treedoorl',
+            'treedoorr',
+            'treegnomelooserailing',
+            'magearena_ladder_to_cellar',
+            'magearena_ladder_from_cellar',
+            'horror_broken_bridge_left_spot',
+            'horror_broken_bridge_right_spot',
+            'horror_lighthouse_spiralstairs_base',
+        ])
+            expect(rowsOn(loc).length).toBeGreaterThan(0);
+        // The railing squeezes the player through it, one tile either way (gnomevillage_fence.rs2:12).
+        expect(rowsOn('treegnomelooserailing').map(r => [r.from, r.landings[0]!.tile])).toEqual([
+            [
+                [
+                    { level: 0, x: 2515, z: 3161 },
+                    { level: 0, x: 2516, z: 3161 },
+                ],
+                { level: 0, x: 2515, z: 3160 },
+            ],
+            [[{ level: 0, x: 2515, z: 3160 }], { level: 0, x: 2515, z: 3161 }],
+        ]);
+    });
+
+    test('an agility walk behind a roll carries it and its failure: the Wilderness course log', () => {
+        const [row] = rowsOn('wilderness_log_balance1');
+        expect(row!.roll).toMatchObject({
+            stat: 'agility',
+            low: 200,
+            high: 250,
+            source: 'skill_agility/scripts/wilderness_course.rs2:136',
+            fail: { to: { level: 0, x: 2998, z: 10345 } },
         });
+    });
+
+    test('no move is a duplicate of a connector row, and every row is written', () => {
+        expect(report.scripted.duplicates).toEqual([]);
+        expect(report.scripted.rows).toBe(world.crossings.length);
+    });
+
+    test("Crandor up the rope from Elvarg's lair asks Dragon Slayer: the secret door from the volcano side", () => {
+        expect(reachOf('rock:crandor:0')).toEqual([['coins:30', 'quest:dragon']]);
     });
 });
 

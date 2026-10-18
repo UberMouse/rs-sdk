@@ -9,7 +9,7 @@
 | [Entrana](../places/entrana.md) | `furnace:entrana:0` | (2834, 3351) | (2832, 3351) | Furnace 2 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 66 ticks |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | `furnace:east-ardougne:0` | (2601, 3310) | (2600, 3310) | Furnace 1 | no | - | Ardougne North bank (East Ardougne), 26 ticks |
 | [Rellekka (Kandarin)](../places/rellekka.md) | `furnace:rellekka:0` | (2617, 3666) | (2618, 3665) | Furnace 2 | no | - | Seers' Village bank (Seers' Village), 131 ticks |
-| [Shilo Village (Karamja)](../places/shilo-village.md) | `furnace:shilo-village:0` | (2857, 2966) | (2857, 2965) | Furnace 2 | no | 60 coins + Shilo Village done | Shilo Village bank (Shilo Village), 7 ticks |
+| [Shilo Village (Karamja)](../places/shilo-village.md) | `furnace:shilo-village:0` | (2857, 2966) | (2857, 2965) | Furnace 2 | no | 50 coins + Shilo Village done | Shilo Village bank (Shilo Village), 7 ticks |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `furnace:al-kharid:0` | (3273, 3185) | (3274, 3184) | Furnace 2 | yes | - | Al Kharid bank (Al Kharid), 14 ticks |
 | [Legends' Quest cavern](../places/legends-quest-cavern.md) | `furnace:legends-quest-cavern:0` | (2426, 4726) | (2426, 4725) | Furnace 1 | no | unreached | - |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | `furnace:lumbridge:0` | (3226, 3256) | (3225, 3255) | Furnace 2 | yes | - | Draynor bank (Draynor Village), 69 ticks |

@@ -7,10 +7,10 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:tyras-camp:0` | (2172, 3141) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
+| `tree:tyras-camp:0` | (2172, 3141) | [normal](../resources/tree/normal.md) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | unreached |
+| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | Regicide at stage 13 + 56 Agility |

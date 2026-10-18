@@ -91,6 +91,17 @@ if (stat(agility) < 10) {
 }
 ~forcewalk(movecoord(loc_coord, 0, 0, 3));
 
+[oploc1,steppingstone]
+if (stat(agility) < 30) {
+    return;
+}
+if (stat_random(agility, 50, 150) = false) {
+    p_delay(1);
+    p_telejump(0_50_50_2_2);
+    return;
+}
+p_telejump(0_50_50_3_3);
+
 [proc,climb_ladder](coord $coord, boolean $up)
 p_delay(0);
 p_telejump($coord);
@@ -151,6 +162,7 @@ const locConfigs = parseConfigs(
         '[trapdoor]',
         '[logbalance]',
         '[bars]',
+        '[steppingstone]',
     ].join('\n'),
 );
 
@@ -368,5 +380,40 @@ describe('deriveGateLandings: stands and landings', () => {
             'source',
             'notes',
         ]);
+    });
+});
+
+describe('deriveGateLandings: rolls', () => {
+    test("a gated move behind a roll gets it after its source: the failure's ticks and the tile it leaves the player on", () => {
+        const { gate, out } = one(row('steppingstone', 200, [['skill:agility:30']], { to: coordTile('0_50_50_3_3') }));
+        expect(gate.roll).toEqual({
+            stat: 'agility',
+            low: 50,
+            high: 150,
+            source: lineOf('stat_random(agility, 50, 150)'),
+            fail: { ticks: 2, to: coordTile('0_50_50_2_2'), damage: 0 },
+        });
+        expect(Object.keys(gate).slice(-2)).toEqual(['source', 'roll']);
+        expect(out.rolled).toBe(1);
+        expect(out.unrolled).toEqual([]);
+    });
+
+    test("a failure that leaves each stand on a tile of its own can't be one roll: reported, the row left without one", () => {
+        const { gate, out } = one(row('rockpile', 110, [['skill:agility:15']]));
+        expect(gate.roll).toBeUndefined();
+        expect(out.unrolled).toEqual([
+            {
+                trigger: 'oploc1,rockpile',
+                loc: 'rockpile',
+                tile: at(110, 100),
+                reasons: ['the stands give different rolls or failure tiles'],
+            },
+        ]);
+    });
+
+    test('a row with no skill requirement is not run for a roll', () => {
+        const { gate, out } = one(row('shed', 130, [['quest:cook']]));
+        expect(gate.roll).toBeUndefined();
+        expect(out.rolled + out.unrolled.length).toBe(0);
     });
 });

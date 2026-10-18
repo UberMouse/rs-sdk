@@ -6,7 +6,7 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `fire:feldip-hills:0` | (2552, 3045) | Fire 1 | no | no | - | unreached |
-| `fire:feldip-hills:1` | (2573, 3032) | Fire 3 | no | no | - | unreached |
+| `fire:feldip-hills:1` | (2573, 3032) | Fire 3 | no | no | - | - |
 | `fire:feldip-hills:2` | (2582, 2967) | Fire 1 | no | no | - | - |
 
 ## Trees
@@ -53,7 +53,7 @@
 | `npc:feldip-hills:15` | (2561, 3020) | Ogre (ogre) 1 | no | no | - | - |
 | `npc:feldip-hills:16` | (2567, 3046) | Ogre (ogre) 1 | no | no | - | - |
 | `npc:feldip-hills:17` | (2571, 2990) | Ogre (ogre) 2 | no | no | - | - |
-| `npc:feldip-hills:18` | (2575, 3027) | Gorad 1, Ogre (ogre2) 4 | no | no | - | unreached |
+| `npc:feldip-hills:18` | (2575, 3027) | Gorad 1, Ogre (ogre2) 4 | no | no | - | - |
 | `npc:feldip-hills:19` | (2584, 2967) | Ogre (ogre) 1 | no | no | - | - |
 | `npc:feldip-hills:20` | (2585, 2977) | Ogre (ogre) 1 | no | no | - | - |
 | `npc:feldip-hills:21` | (2592, 2965) | Ogre (ogre) 1 | no | no | - | - |

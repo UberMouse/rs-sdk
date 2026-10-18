@@ -58,7 +58,12 @@ import {
     TRANSPORTS_OUT_OF_SCOPE,
 } from './gates';
 import { readConstants } from './sources/constants';
-import { deriveGateLandings, type GateLandings } from './sources/gate-landings';
+import {
+    deriveGateLandings,
+    deriveScriptedMoves,
+    type GateLandings,
+    type ScriptedMoves,
+} from './sources/gate-landings';
 import {
     CROSS,
     placeGates,
@@ -273,8 +278,14 @@ export interface BuildReport {
          * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land, and
          * stands of rows with landings that give none.
          */
-        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand' | 'unlanded'>;
+        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand' | 'unlanded' | 'rolled' | 'unrolled'>;
     };
+    /**
+     * The loc op moves no gate row makes (sources/gate-landings.ts deriveScriptedMoves): the World.crossings rows
+     * written, what came of each trigger and placed loc, the moves whose landing no run settles (warnings), and the
+     * duplicates of a connector row (an error).
+     */
+    scripted: Pick<ScriptedMoves, 'counts' | 'unsettled' | 'duplicates'> & { rows: number };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
@@ -305,6 +316,7 @@ export const failed = (r: BuildReport): boolean =>
     r.gates.drifted.length > 0 ||
     r.gates.invalid.length > 0 ||
     r.gates.unnamed.length > 0 ||
+    r.scripted.duplicates.length > 0 ||
     r.unreached.invalid.length > 0 ||
     r.unreached.stale.length > 0;
 
@@ -700,6 +712,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         }),
     );
     const transports = [...sails.transports, ...curated].sort(byTransport);
+    const placedLocs = map.locs.flatMap(l => {
+        const config = packs.loc.name.get(l.id);
+        return config === undefined ? [] : [{ config, tile: l.tile, shape: l.shape, rotation: l.rotation }];
+    });
     const scan: GateScanInput = {
         triggers,
         callables,
@@ -718,10 +734,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         candidates,
         triggers,
         locConfigs,
-        locs: map.locs.flatMap(l => {
-            const config = packs.loc.name.get(l.id);
-            return config === undefined ? [] : [{ config, tile: l.tile, shape: l.shape, rotation: l.rotation }];
-        }),
+        locs: placedLocs,
         quests: quests.quests,
         constants,
     });
@@ -739,8 +752,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         const staged = gates.stages.get(q.id);
         return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
     });
-    // The build reads crossing rows from no source, so it writes none.
-    const crossingRows: Crossing[] = [];
+    // The loc op moves no gate row makes: the crossing rows.
+    const scripted = deriveScriptedMoves({
+        scan,
+        scanOf: scanOne,
+        curated: GATES,
+        locConfigs,
+        locs: placedLocs,
+        collision,
+        size: locSizes(locConfigs),
+        connectors,
+    });
+    const crossingRows: Crossing[] = scripted.crossings;
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
     // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
     // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there was anything
@@ -768,7 +791,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
-    const distance = nearestSinks(graph, reached.sites);
+    const distance = nearestSinks(graph, reached.sites, { reached: fill.reachedAt });
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
@@ -788,10 +811,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         users: opUsers({
             triggers,
             configs: { loc: locConfigs, npc: npcConfigs },
-            locs: map.locs.flatMap(l => {
-                const config = packs.loc.name.get(l.id);
-                return config === undefined ? [] : [{ config, tile: l.tile, shape: l.shape, rotation: l.rotation }];
-            }),
+            locs: placedLocs,
             npcs: spawns,
             size: locSizes(locConfigs),
         }),
@@ -889,7 +909,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     underived: landings.underived,
                     offLand: landings.offLand,
                     unlanded: landings.unlanded,
+                    rolled: landings.rolled,
+                    unrolled: landings.unrolled,
                 },
+            },
+            scripted: {
+                rows: scripted.crossings.length,
+                counts: scripted.counts,
+                unsettled: scripted.unsettled,
+                duplicates: scripted.duplicates,
             },
             reach: fill.report,
             distance: distance.report,
@@ -1043,7 +1071,8 @@ export function formatReport(report: BuildReport): string[] {
     const l = g.landings;
     lines.push(
         `gate moves on objects: ${l.counts.to} to, ${l.counts.landings} landings, ${l.counts.opens} opens, ` +
-            `${l.counts.underived} underived (rows; ${l.counts.windows} quest windows left as they are)`,
+            `${l.counts.underived} underived (rows; ${l.counts.windows} quest windows left as they are); ` +
+            `${l.rolled} gate rows behind a roll`,
     );
     // The underived rows by trigger: how many, then each construct that stopped one, with its script line.
     const byTrigger = new Map<string, { rows: string[]; reasons: Set<string> }>();
@@ -1077,6 +1106,11 @@ export function formatReport(report: BuildReport): string[] {
             ),
         ),
         ...list(
+            `warning: ${l.unrolled.length} gate rows behind a roll the row can't take, left without one:`,
+            l.unrolled.map(u => `${u.trigger} ${u.loc} ${coord(u.tile)}: ${u.reasons.join('; ')}`),
+        ),
+        ...formatScripted(report.scripted),
+        ...list(
             `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
             report.unpriced,
         ),
@@ -1090,6 +1124,39 @@ export function formatReport(report: BuildReport): string[] {
         ),
     );
     return lines;
+}
+
+/** The unsettled scripted moves a trigger lists at most, after which it counts the rest. */
+const UNSETTLED_AT = 4;
+
+/**
+ * The scripted moves' section: rows written, triggers and placed locs by outcome, then the duplicates of a
+ * connector row (an error) and the unsettled moves by trigger, most locs first, each with its first locs and
+ * every reason.
+ */
+export function formatScripted(r: BuildReport['scripted']): string[] {
+    const byTrigger = new Map<string, { at: string[]; reasons: Set<string> }>();
+    for (const u of r.unsettled) {
+        const entry = byTrigger.get(u.trigger) ?? { at: [], reasons: new Set<string>() };
+        byTrigger.set(u.trigger, entry);
+        entry.at.push(`${u.loc} ${coord(u.tile)}${u.stand ? ` from ${coord(u.stand)}` : ''}`);
+        for (const why of u.reasons) entry.reasons.add(why);
+    }
+    return [
+        `scripted moves: ${r.rows} crossing rows; triggers ${counts(r.counts.triggers)}; placed locs ${counts(r.counts.locs)}`,
+        ...list(`ERROR scripted: ${r.duplicates.length} moves on a connector's loc and op, refused:`, r.duplicates),
+        ...(byTrigger.size
+            ? [
+                  `warning: ${r.unsettled.length} scripted moves whose landing no bound run settles, by trigger:`,
+                  ...[...byTrigger]
+                      .sort(([a, x], [b, y]) => y.at.length - x.at.length || cmp(a, b))
+                      .flatMap(([trigger, { at, reasons }]) => [
+                          `  ${trigger}: ${at.length} (${at.slice(0, UNSETTLED_AT).join(', ')}${at.length > UNSETTLED_AT ? ` and ${at.length - UNSETTLED_AT} more` : ''})`,
+                          ...[...reasons].sort(cmp).map(why => `    ${why}`),
+                      ]),
+              ]
+            : []),
+    ];
 }
 
 /** How far apart two tiles are, Chebyshev, as the unreached report counts it. */

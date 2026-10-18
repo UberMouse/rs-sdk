@@ -15,14 +15,14 @@ Entered west of West Ardougne (underground-pass-entrance); quests/quest_upass np
 |---|---|---|---|---|---|---|
 | `fire:underground-pass:0` | (2424, 9720) | Fire 1 | no | no | - | unreached |
 | `fire:underground-pass:1` | (2439, 9697) | Fire 1 | no | no | - | unreached |
-| `fire:underground-pass:2` | (2451, 9715) | Fire 1 | no | no | - | unreached |
+| `fire:underground-pass:2` | (2451, 9715) | Fire 1 | no | no | - | Underground Pass started with King Lathas (bit ^upass_started_bit of %ibanmulti, quests/quest_upass/scripts/quest_upass.rs2:85) and Koftik spoken to at the entrance (%upass > ^upass_not_started, quests/quest_upass/scripts/quest_upass.rs2:89) + Biohazard done |
 | `fire:underground-pass:3` | (2454, 9678) | Fire 1 | no | no | - | unreached |
 
 ## [Prayer altars](../services/altar.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `altar:underground-pass:0` | (2341, 9629) | Altar 1 | no | no | - | unreached |
+| `altar:underground-pass:0` | (2341, 9629) | Altar 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `altar:underground-pass:1` | (2414, 9680) | Chaos altar 1 | no | no | - | unreached |
 
 ## Monsters

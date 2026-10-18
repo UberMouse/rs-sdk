@@ -7,5 +7,5 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:troll-stronghold:0` | (2843, 3675) | Mountain Troll (death_troll_melee2) 1 | no | no | - | unreached |
-| `npc:troll-stronghold:1` | (2844, 3683) | Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1 | no | no | - | unreached |
+| `npc:troll-stronghold:0` | (2843, 3675) | Mountain Troll (death_troll_melee2) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:troll-stronghold:1` | (2844, 3683) | Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
