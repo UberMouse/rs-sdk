@@ -335,6 +335,12 @@ describe('serializeWorld', () => {
                 { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 0, back: 2 } } },
                 "crossings[1]: a roll's fail.back is run ticks from its fail.to",
             ],
+            ['a rolled row with no source', { ...shortcut, source: undefined }, 'crossings[1]: no source'],
+            [
+                'requires with no set (the free form is [[]])',
+                { ...teleport, requires: [] },
+                'crossings[1]: its requires has no set, so nothing makes the move ([[]] asks for nothing)',
+            ],
         ])('%s', (_, row, why) => {
             expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
         });

@@ -739,11 +739,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         const staged = gates.stages.get(q.id);
         return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
     });
-    // No source writes crossing rows yet.
+    // The build reads crossing rows from no source, so it writes none.
     const crossingRows: Crossing[] = [];
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
     // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
-    // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there are any.
+    // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there was anything
+    // to price (priceCrossings returns new rows only then).
     const unpricedInput = {
         world: { features, connectors, gates: landings.gates, transports, quests: questRows, crossings: crossingRows },
         collision,
@@ -751,7 +752,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     };
     const unpricedGraph = reachGraph(unpricedInput);
     const priced = priceCrossings(unpricedGraph, unpricedInput.world);
-    const repriced = crossingRows.length > 0 || landings.gates.some(g => g.roll);
+    const repriced = priced.crossings !== crossingRows || priced.gates !== landings.gates;
     const reachInput = repriced
         ? { ...unpricedInput, world: { ...unpricedInput.world, gates: priced.gates, crossings: priced.crossings } }
         : unpricedInput;

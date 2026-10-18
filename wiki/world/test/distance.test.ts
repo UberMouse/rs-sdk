@@ -422,6 +422,24 @@ describe('a random landing costs its longest landing', () => {
         ]);
         expect(nearest(sealedIsland(), islandSites, { crossings: p.crossings }).nearest.get('tree:a:0')).toEqual({});
     });
+
+    test("a landing off land is reported on its own; the others' spreads leave it out", () => {
+        const OFF = at(2, 3220, 3220);
+        const p = priced(sea(), { crossings: [{ ...row, landings: [A, B, OFF].map(tile => ({ tile })) }] });
+        expect(p.crossings[0]!.landings.map(l => l.spread)).toEqual([1, 1, undefined]);
+        expect(p.unpriced).toEqual([
+            'teleport item-on-loc air_talisman ruins (3214, 3221): its landing (3220, 3220, 2) is not on land',
+        ]);
+    });
+
+    test('with no crossing row and no rolled gate row, nothing is priced and the rows come back as they were', () => {
+        const rows = { crossings: [], gates: [toll] };
+        const p = priced(sea(), rows);
+        expect(p.crossings).toBe(rows.crossings);
+        expect(p.gates).toBe(rows.gates);
+        // A crossing row is something to price: the gates come back as a new list.
+        expect(priced(sea(), { ...rows, crossings: [row] }).gates).not.toBe(rows.gates);
+    });
 });
 
 describe('a rolled crossing costs its expected ticks at the lowest level its requirement allows', () => {
@@ -473,6 +491,16 @@ describe('a rolled crossing costs its expected ticks at the lowest level its req
         expect(bank(r, 'tree:west:0')?.runTicks).toBe(9);
     });
 
+    test('an expected cost exactly on a half tick is not rounded up past it: 2 + (216/40) * 45 = 245 ticks', () => {
+        // Free, so at level 1, where low 39 succeeds 40 times in 256; the float comes out an ulp above 245.
+        const exact = { ...shortcut, requires: [[]], roll: { ...roll, low: 39, fail: { ticks: 45, damage: 0 } } };
+        expect(crossingTicks({ via: 'scripted', cost: { spread: 0, roll: exact.roll } }, 1)).toBeGreaterThan(245);
+        const r = nearest(walled(), [shortcutSites[0]!, { id: 'tree:west:0', stand: W }], {
+            crossings: priced(walled(), { crossings: [exact] }).crossings,
+        });
+        expect(bank(r, 'tree:west:0')).toEqual({ site: 'bank:east:0', runTicks: 245, requires: [] });
+    });
+
     test('crossingTicks prices it at any level, for a walker at its own; unpriced or never succeeding, undefined', () => {
         const back = { ...roll, fail: { ...roll.fail, back: 3 } };
         expect(crossingTicks({ via: 'scripted', cost: { spread: 0, roll: back } }, 30)).toBeCloseTo(2 + 1127 / 95, 10);
@@ -514,5 +542,17 @@ describe('a rolled crossing costs its expected ticks at the lowest level its req
             },
         );
         expect(bank(r, 'tree:west:0')?.runTicks).toBe(14);
+    });
+
+    test('a roll tried from no tile on land has no way back to price, and is reported without a walk', () => {
+        // An object gate with no derived landing has no edges; a crossing done from no tile has none either.
+        const bush: Gate = { ...toll, shape: 10, roll };
+        const unrolled = priced(walled(), { crossings: [{ ...shortcut, from: [] }], gates: [bush] });
+        expect(unrolled.gates[0]!.roll!.fail.back).toBeUndefined();
+        expect(unrolled.crossings[0]!.roll!.fail.back).toBeUndefined();
+        expect(unrolled.unpriced).toEqual([
+            'oploc1,door door (3216, 3220): no tile on land it is tried from, so no way back to price',
+            'scripted loc-op 1 log_balance (3215, 3220): no tile on land it is tried from, so no way back to price',
+        ]);
     });
 });

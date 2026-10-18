@@ -130,6 +130,13 @@ export function crossingTicks(e: Pick<Edge, 'via' | 'cost'>, level = 1): number 
 /** Half ticks in a tick: a run step is one. */
 const HALVES = 2;
 
+/**
+ * `ticks` in half ticks, rounded up. A rolled crossing's expected ticks (crossingTicks) are a float that, when exactly
+ * on a half tick, can come out an ulp above it, so 1e-9 is taken off before rounding up. Off a half tick they are at
+ * least 1/256 of one above it: success, failure and way back are whole ticks, and the chance is v/256 with v ≤ 256.
+ */
+const halfTicks = (ticks: number): number => Math.ceil(ticks * HALVES - 1e-9);
+
 /** A way to a sink as one search found it: half ticks, the sink's index among the sources, the way's set id. */
 interface Found {
     half: number;
@@ -192,7 +199,7 @@ export function nearestSinks(
             const ticks = crossingTicks(e, roll && lowestLevel(e.alts.map(sets.strings), roll.stat));
             if (ticks === undefined) continue;
             const list = edgeTo.get(e.to) ?? [];
-            list.push({ from, alts: e.alts, half: Math.ceil(ticks * HALVES) });
+            list.push({ from, alts: e.alts, half: halfTicks(ticks) });
             edgeTo.set(e.to, list);
         }
     const openHalf = CROSSING_TICKS.gate * HALVES;
@@ -432,7 +439,10 @@ export function formatDistance(r: DistanceReport): string[] {
 }
 
 export interface Priced {
-    /** The rows with their landings' spreads and their rolls' ways back filled in where a walk was found. */
+    /**
+     * The rows with their landings' spreads and their rolls' ways back filled in where a walk was found; the input
+     * arrays themselves when there is nothing to price (no crossing row and no rolled gate row).
+     */
     crossings: Crossing[];
     gates: Gate[];
     /** What could not be priced, as `<row>: <why>`, sorted: those edges are not taken by a distance. */
@@ -513,6 +523,10 @@ export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' 
         /** A roll with its way back, when it fails onto another tile and a walk gets back from there. */
         const priceRoll = (roll: Roll, from: readonly number[], name: string): Roll => {
             if (!roll.fail.to) return roll;
+            if (!from.length) {
+                unpriced.push(`${name}: no tile on land it is tried from, so no way back to price`);
+                return roll;
+            }
             const start = at(roll.fail.to);
             const back = start < 0 ? undefined : walk(start, new Set(from), true).values().next().value;
             if (back === undefined) {
@@ -527,16 +541,18 @@ export function priceCrossings(graph: ReachGraph, rows: Pick<World, 'crossings' 
             const name = `${c.via} ${actName(c)} ${coord(c.at)}`;
             const tiles = c.landings.map(l => at(l.tile));
             const onLand = new Set(tiles.filter(i => i >= 0));
-            // From each landing, the half ticks to every landing (its own tile 0).
-            const from =
-                c.landings.length === 1
-                    ? []
-                    : tiles.map(j => (j < 0 ? new Map<number, number>() : walk(j, onLand, false)));
+            // From each landing on land, the half ticks to the others on land. A landing off land has no edge to it
+            // (reach.ts addEdge), so it is reported on its own and the other landings' spreads leave it out.
+            const from = tiles.map(j => (j < 0 ? undefined : walk(j, onLand, false)));
             const landings = c.landings.map((l, i) => {
-                if (c.landings.length === 1) return { ...l, spread: 0 };
+                if (tiles[i]! < 0) {
+                    unpriced.push(`${name}: its landing ${coord(l.tile)} is not on land`);
+                    return l;
+                }
                 let half = 0;
                 for (let j = 0; j < tiles.length; j++) {
-                    const d = tiles[i]! < 0 ? undefined : from[j]!.get(tiles[i]!);
+                    if (tiles[j]! < 0 || j === i) continue;
+                    const d = from[j]!.get(tiles[i]!);
                     if (d === undefined) {
                         unpriced.push(
                             `${name}: no walk to its landing ${coord(l.tile)} from ${coord(c.landings[j]!.tile)}`,

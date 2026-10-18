@@ -28,7 +28,7 @@ const isCount = (x: unknown): x is number => isInt(x) && x >= 0;
 const isOp = (x: unknown): boolean => isInt(x) && x >= 1 && x <= 5;
 const isName = (x: unknown): boolean => typeof x === 'string' && x !== '';
 const isTile = (x: unknown): boolean => isObject(x) && isInt(x.level) && isInt(x.x) && isInt(x.z);
-const isSets = (x: unknown): boolean =>
+const isSets = (x: unknown): x is string[][] =>
     Array.isArray(x) && x.every(set => Array.isArray(set) && set.every(r => typeof r === 'string'));
 
 /** What is wrong with an Act, or undefined. */
@@ -82,7 +82,9 @@ function crossingProblem(c: unknown): string | undefined {
         if (!isObject(l) || !isTile(l.tile) || (l.spread !== undefined && !isCount(l.spread)))
             return 'a landing needs a tile, and spread, when it has one, as run ticks';
     if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
-    if (c.roll !== undefined) return rollProblem(c.roll);
+    if (!c.requires.length) return 'its requires has no set, so nothing makes the move ([[]] asks for nothing)';
+    const roll = c.roll === undefined ? undefined : rollProblem(c.roll);
+    if (roll) return roll;
     return isName(c.source) ? undefined : 'no source';
 }
 
