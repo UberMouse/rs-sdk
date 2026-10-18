@@ -58,6 +58,21 @@ export function readTools(objs: ReadonlyMap<string, Config>): Tools {
     return { axe: AXES.map(obj => ({ obj, level: 0 })), pickaxe };
 }
 
+/** The skill whose level picks each kind of tool: the woodcutting checker reads the axe, the mining one the pickaxe. */
+export const TOOL_SKILL: Record<keyof Tools, Skill> = { axe: 'woodcutting', pickaxe: 'mining' };
+
+const TOOL_KINDS = Object.keys(TOOL_SKILL) as (keyof Tools)[];
+
+/** The kind of tool `skill` reads from the profile, or null for a skill that reads none. */
+export function toolKindOfSkill(skill: Skill): keyof Tools | null {
+    return TOOL_KINDS.find(k => TOOL_SKILL[k] === skill) ?? null;
+}
+
+/** The kind of tool `obj` is, by its tier in `tools`, or null for an obj in neither. */
+export function toolKindOfObj(tools: Tools, obj: string): keyof Tools | null {
+    return TOOL_KINDS.find(k => tools[k].some(t => t.obj === obj)) ?? null;
+}
+
 /** The best tool of a tier usable at `level`, or null when none is. */
 export function bestTool(tier: readonly Tool[], level: number): string | null {
     return tier.find(t => level >= t.level)?.obj ?? null;
@@ -72,12 +87,8 @@ export interface ProfileOptions {
 
 /** The profile at `levels`, with the best axe and pickaxe usable there. */
 export function profileOf(levels: Record<Skill, number>, opts: Omit<ProfileOptions, 'atLeast'>): Profile {
-    return {
-        levels,
-        axe: bestTool(opts.tools.axe, levels.woodcutting),
-        pickaxe: bestTool(opts.tools.pickaxe, levels.mining),
-        glory: opts.glory ?? false,
-    };
+    const best = (kind: keyof Tools): string | null => bestTool(opts.tools[kind], levels[TOOL_SKILL[kind]]);
+    return { levels, axe: best('axe'), pickaxe: best('pickaxe'), glory: opts.glory ?? false };
 }
 
 /**

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { ActionModel } from '../model/family';
-import { bestTool, profileAt, readTools, type Tools } from '../model/profile';
+import { bestTool, profileAt, readTools, toolKindOfObj, toolKindOfSkill, type Tools } from '../model/profile';
 import { gatherRate, resourceCap, ticksPerItem } from '../model/rate';
 import { statRandomChance } from '../model/roll';
 import { levelForXp, readDefault, xpForLevel } from '../model/server';
@@ -118,6 +118,17 @@ describe('profile', () => {
         expect(p.axe).toBe('rune_axe');
         expect(p.glory).toBe(false);
         expect(profileAt('mining', 30, { tools, glory: true }).glory).toBe(true);
+    });
+
+    test('a tool kind: the one its skill reads, and the tier an obj is in', () => {
+        expect([toolKindOfSkill('woodcutting'), toolKindOfSkill('mining'), toolKindOfSkill('fishing')]).toEqual([
+            'axe',
+            'pickaxe',
+            null,
+        ]);
+        expect(toolKindOfObj(tools, 'rune_axe')).toBe('axe');
+        expect(toolKindOfObj(tools, 'iron_pickaxe')).toBe('pickaxe');
+        expect(toolKindOfObj(tools, 'harpoon')).toBeNull();
     });
 });
 

@@ -13,7 +13,7 @@ import type { BotWorldState } from '../../sdk/types';
 import type { Measured } from '../../wiki/world/methods';
 import type { CycleRates } from '../../wiki/world/model/cycle';
 import { measuredProfile, type MethodModel } from '../../wiki/world/model/method';
-import { bestTool, type Tools } from '../../wiki/world/model/profile';
+import { bestTool, toolKindOfSkill, type Tools } from '../../wiki/world/model/profile';
 import { SKILLS, type Skill } from '../../wiki/world/model/server';
 import { methodQuery } from '../../wiki/world/query';
 import type { World, WorldMethod } from '../../wiki/world/types';
@@ -104,7 +104,7 @@ export interface MethodRuns {
     /** Each trained skill whose level changed over the counted runs: the lowest start, the highest start or end. */
     levelRange: Partial<Record<Skill, [number, number]>>;
     /** The tool kind the method's family reads from the profile, or null when it reads none. */
-    toolKind: 'axe' | 'pickaxe' | null;
+    toolKind: keyof Tools | null;
     /** The counted runs' floor, each run's weighed by its hours; absent with no counted run, or one whose floor failed. */
     floor?: Partial<Record<Skill, number>>;
     /** The first counted run whose floor could not be rated, and why. */
@@ -157,7 +157,7 @@ function methodRunsOf(
     input: MethodRunsInput,
 ): MethodRuns {
     const skills = Object.keys(m.levels) as Skill[];
-    const toolKind = m.skill === 'mining' ? 'pickaxe' : m.skill === 'woodcutting' ? 'axe' : null;
+    const toolKind = toolKindOfSkill(m.skill);
     const names = new Set((m.plans ?? []).map(p => `plan:${p}`));
     const runs = results.filter(r => names.has(r.task));
     const out: MethodRuns = {

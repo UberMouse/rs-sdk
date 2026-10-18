@@ -13,7 +13,7 @@ import {
     type MethodModel,
     type ResolvedMethod,
 } from '../model/method';
-import { profileAt, type Profile } from '../model/profile';
+import { profileAt, toolKindOfObj, type Profile, type Tools } from '../model/profile';
 import { SKILLS, XP_RATE, type Skill } from '../model/server';
 import { first } from '../sources/configs';
 import type { Site, World } from '../types';
@@ -73,9 +73,6 @@ export function renderTraining(world: World, data: TrainingData): Page[] {
     return out;
 }
 
-/** The tool tiers a page's columns pick the best of, by the obj that is one. */
-type Tier = 'axe' | 'pickaxe';
-
 function skillPage(
     skill: Skill,
     methods: readonly ResolvedMethod[],
@@ -93,8 +90,8 @@ function skillPage(
         profileAt(skill, level, { tools: ctx.tools, atLeast: m.levels });
     const xp = (m: ResolvedMethod, profile: Profile): number => methodRate(m, profile, ctx).xpPerHour[skill] ?? 0;
     const where = (s: Site): string => `${areaCell(path, areas, s.areaPath)} \`${s.id}\``;
-    const tier = (t: string): Tier | undefined =>
-        ctx.tools.axe.some(x => x.obj === t) ? 'axe' : ctx.tools.pickaxe.some(x => x.obj === t) ? 'pickaxe' : undefined;
+    // The tool tier a page's columns pick the best of, by the obj that is one.
+    const tier = (t: string): keyof Tools | null => toolKindOfObj(ctx.tools, t);
 
     // The tools the method carries at 99: a tier stands for the best of it usable at each column.
     const held = (m: ResolvedMethod): string[] => {

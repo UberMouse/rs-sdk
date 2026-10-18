@@ -18,7 +18,7 @@ import { cycle, type CycleRates, type CycleSink } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
 import { buildFamilies, type GameData } from './families/index';
 import { readFoods, readItems, type Items } from './items';
-import { profileAt, profileOf, readTools, type Profile, type Tools } from './profile';
+import { profileAt, profileOf, readTools, toolKindOfObj, type Profile, type Tools } from './profile';
 import { SKILLS, type Skill } from './server';
 
 /** A method record the build can't resolve: the message names the record and the reason. */
@@ -350,9 +350,11 @@ export function measuredProfile(m: Pick<ResolvedMethod, 'def' | 'skill'>, measur
         throw new MethodError(m.def.id, `a measured figure (${measured.bot} ${measured.date}) has no ${m.skill} level`);
     const levels = Object.fromEntries(SKILLS.map(s => [s, measured.level[s] ?? level])) as Record<Skill, number>;
     const profile = profileOf(levels, { tools });
-    if (measured.tool?.endsWith('_pickaxe')) profile.pickaxe = measured.tool;
-    else if (measured.tool?.endsWith('_axe')) profile.axe = measured.tool;
-    else if (measured.tool) throw new MethodError(m.def.id, `measured tool ${measured.tool} is no axe or pickaxe`);
+    if (measured.tool !== undefined) {
+        const kind = toolKindOfObj(tools, measured.tool);
+        if (kind === null) throw new MethodError(m.def.id, `measured tool ${measured.tool} is no axe or pickaxe`);
+        profile[kind] = measured.tool;
+    }
     return profile;
 }
 
