@@ -42,7 +42,7 @@ import { CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import { coord, STEPS } from '../reach';
 import type { Connector, Crossing, Gate, Roll, Tile } from '../types';
-import { cmp, push } from '../util';
+import { byTile, cmp, onLandIn, push, tileKey, uniqueTiles } from '../util';
 import type { ConnectorCollision } from './connectors';
 import {
     blocksWalk,
@@ -130,8 +130,6 @@ const noLanding = (os: readonly LandingOutcome[]): string[] => {
     return why.length ? [...new Set(why)].sort(cmp) : [NO_MOVE];
 };
 
-const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
-const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a.z - b.z;
 const sameTile = (a: Tile, b: Tile): boolean => tileKey(a) === tileKey(b);
 const sameRoll = (a: SeenRoll, b: SeenRoll): boolean => JSON.stringify(a) === JSON.stringify(b);
 
@@ -235,7 +233,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
     // The rows here stand for the scan's crossing (they have no `to`); where the scan finds none, its row
     // in gates.ts overrides the scan's moves (a jump the scan sees as fixed tiles), and stands for them all.
     const crosses = new Set(input.candidates.filter(c => c.moves.some(m => m.to === CROSS)).map(c => c.trigger));
-    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const onLand = onLandIn(collision);
     const counts = { to: 0, landings: 0, opens: 0, underived: 0, windows: 0 };
     let rolled = 0;
     const underived: UnderivedGate[] = [];
@@ -463,7 +461,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
     const configsOf = triggerConfigs(input.scan.triggers, locConfigs);
     const byConfig = new Map<string, PlacedLoc[]>();
     for (const l of input.locs) push(byConfig, l.config, l);
-    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const onLand = onLandIn(collision);
     const near = (a: Tile, b: Tile) => walksTo(collision.canStep, a, b);
 
     /** What one stand's paths do: a passage, why none can be told (`stuck`), or nothing (`door` when a door's). */
@@ -487,7 +485,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
         );
         const unrolled = passages.flatMap(o => (o.unrolled ? [o.unrolled] : []));
         if (offLand.length || unrolled.length) return { stuck: [...new Set([...offLand, ...unrolled])].sort(cmp) };
-        const tiles = [...new Map(passages.map(o => [tileKey(o.tile), o.tile])).values()].sort(byTile);
+        const tiles = uniqueTiles(passages.map(o => o.tile));
         if (tiles.length > 1) return { stuck: [`lands on ${tiles.length} tiles: ${tiles.map(coord).join(', ')}`] };
         if (!tiles.length) {
             const why = os.flatMap(o =>

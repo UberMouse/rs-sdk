@@ -19,7 +19,7 @@
 import { codeOf, CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { footprint, reachTiles, type SiteCollision, type SiteOptions } from '../place';
 import type { Connector, Feature, Tile } from '../types';
-import { cmp, push } from '../util';
+import { cmp, onLandIn, push, tileKey } from '../util';
 import { first, type Config } from './configs';
 import { constantInt, type Constant } from './constants';
 import {
@@ -468,7 +468,6 @@ function evaluator(
 
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 const dist2 = (a: { x: number; z: number }, b: { x: number; z: number }): number => (a.x - b.x) ** 2 + (a.z - b.z) ** 2;
-const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
 /** A tile moved by a relative coord. */
 const shift = (t: Tile, v: CoordValue): Tile => ({ level: t.level + v.level, x: t.x + v.x, z: t.z + v.z });
 
@@ -567,7 +566,7 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
     for (const p of pending)
         if (!p.landing.relative) push(arrivals, p.landing.level, { feature: p.feature, tile: p.landing });
 
-    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const onLand = onLandIn(collision);
     // The tiles on land each connector is used from, and all of them together.
     const reach = new Map<number, Tile[]>();
     features.forEach((f, i) => {

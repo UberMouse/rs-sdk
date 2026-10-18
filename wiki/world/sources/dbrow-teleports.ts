@@ -13,7 +13,7 @@
 import { reachTiles, type PlacedLoc, type SiteOptions } from '../place';
 import { requirementSet } from '../requirements';
 import type { Act, Crossing, Tile } from '../types';
-import { cmp } from '../util';
+import { byTile, cmp, onLandIn, uniqueTiles } from '../util';
 import { first, type Config } from './configs';
 import type { ConnectorCollision } from './connectors';
 import type { DbRow } from './dbrows';
@@ -86,9 +86,6 @@ export interface DbrowTeleports {
     offLand: DbrowTeleportOffLand[];
 }
 
-const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
-const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a.z - b.z;
-
 /** The loc param `name` of a config (`param=rune_type,1`), or undefined. */
 const paramOf = (cfg: Config | undefined, name: string): string | undefined =>
     cfg?.param?.find(p => p.startsWith(`${name},`))?.slice(name.length + 1);
@@ -137,7 +134,7 @@ export function findsquareTiles(
 /** The World.crossings rows of gates.ts DBROW_TELEPORTS (the header comment). Throws on an entry the data refutes. */
 export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports {
     const { collision, size } = input;
-    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const onLand = onLandIn(collision);
     const crossings: Crossing[] = [];
     const unstood: DbrowTeleportMiss[] = [];
     const offLand: DbrowTeleportOffLand[] = [];
@@ -176,7 +173,7 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
                 throw fail(`${row.row}.${e.landings}: ${(err as Error).message}`);
             }
             if (!tiles.length) throw fail(`${row.row} has no ${e.landings}`);
-            const landings = [...new Map(tiles.map(t => [tileKey(t), t])).values()].sort(byTile);
+            const landings = uniqueTiles(tiles);
             const miss = { trigger: e.trigger, loc: l.config, tile: l.tile };
             for (const t of landings) if (!onLand(t)) offLand.push({ ...miss, landing: t });
             const from = reachTiles(l, collision, size)

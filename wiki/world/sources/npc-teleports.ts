@@ -15,7 +15,7 @@ import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOption
 import type { Reach } from '../reach';
 import { CAME_FROM, cameFrom, minimalSets, requirementSet, type QuestFacts } from '../requirements';
 import type { Crossing, NpcSpawn, Quest, Tile } from '../types';
-import { cmp } from '../util';
+import { byTile, cmp, onLandIn, uniqueTiles } from '../util';
 import { first, type Config } from './configs';
 import { constantInt, type Constant } from './constants';
 import { findsquareTiles, type TeleportCollision } from './dbrow-teleports';
@@ -82,14 +82,12 @@ export interface NpcTeleports {
     offLand: NpcTeleportOffLand[];
 }
 
-const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
-const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a.z - b.z;
 const escape = (s: string): string => s.replace(/[$^]/g, '\\$&');
 
 /** The World.crossings rows of gates.ts NPC_TELEPORTS (the header comment). Throws on an entry the data refutes. */
 export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
     const { collision, size } = input;
-    const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
+    const onLand = onLandIn(collision);
     const crossings: Crossing[] = [];
     const unstood: NpcTeleportMiss[] = [];
     const offLand: NpcTeleportOffLand[] = [];
@@ -120,7 +118,7 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
             } catch (err) {
                 throw fail((err as Error).message);
             }
-            const all = [...new Map(tiles.map(t => [tileKey(t), t])).values()].sort(byTile);
+            const all = uniqueTiles(tiles);
             return { all, on: all.filter(onLand) };
         };
 
@@ -149,9 +147,7 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         if (first(cfg, 'outputtype') !== 'coord') throw fail(`enum ${e.enum} does not give coords`);
         const coords = (cfg?.val ?? []).map(v => v.slice(v.indexOf(',') + 1));
         if (!coords.length || !coords.every(isCoordLiteral)) throw fail(`enum ${e.enum} has no coords, or a non-coord`);
-        const drawn = [...new Map(coords.flatMap(c => land(c, ring.ring).all).map(t => [tileKey(t), t])).values()].sort(
-            byTile,
-        );
+        const drawn = uniqueTiles(coords.flatMap(c => land(c, ring.ring).all));
         const landings = drawn.filter(onLand);
 
         // The npc op triggers that jump to the label and nothing else, with the coord constant they pass.
