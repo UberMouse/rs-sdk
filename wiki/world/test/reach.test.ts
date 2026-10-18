@@ -139,6 +139,19 @@ describe('gated doors (wall rows with no `to`)', () => {
         expect(fill(split(), { gates: sided('west') }, { start: EAST }).setsAt(WEST)).toEqual([[]]);
         expect(fill(split(), { gates: oneWay }, { start: EAST }).setsAt(WEST)).toEqual([]);
         expect(fill(split(), { gates: oneWay }).report.edges.gates).toBe(1);
+        // A side the two tiles don't differ on refuses neither: gated both ways, as without `oneWay`.
+        const level = sided('north').map(g => ({ ...g, oneWay: true as const }));
+        expect(fill(split(), { gates: level }).setsAt(EAST)).toEqual([['skill:agility:5']]);
+        expect(fill(split(), { gates: level }, { start: EAST }).setsAt(WEST)).toEqual([['skill:agility:5']]);
+    });
+
+    test('a row with no requirement set adds no edge, not a free one; with `from` the other side stays free', () => {
+        const none = fill(split(), { gates: [gate({ tile: DOOR, requires: [] })] });
+        expect(none.setsAt(EAST)).toEqual([]);
+        expect(none.report.edges.gates).toBe(0);
+        const west = [gate({ tile: DOOR, requires: [], from: 'west' })];
+        expect(fill(split(), { gates: west }).setsAt(EAST)).toEqual([]);
+        expect(fill(split(), { gates: west }, { start: EAST }).setsAt(WEST)).toEqual([[]]);
     });
 
     test('a quest window is never crossed', () => {
@@ -235,22 +248,15 @@ describe('gate moves on objects', () => {
         // A line of trees down column 3216; the one at z 3220 is cut through.
         const grid = new Grid();
         for (let z = 3200; z < 3232; z++) grid.block(at(0, 3216, z));
-        const reach = fill(grid, {
-            gates: [
-                gate({
-                    trigger: 'oploc1,tree',
-                    loc: 'tree',
-                    tile: DOOR,
-                    shape: 10,
-                    opens: true,
-                    requires: [['category:weapon_axe:held']],
-                }),
-            ],
-        });
+        const tree = (requires: string[][]) =>
+            gate({ trigger: 'oploc1,tree', loc: 'tree', tile: DOOR, shape: 10, opens: true, requires });
+        const reach = fill(grid, { gates: [tree([['category:weapon_axe:held']])] });
         expect(reach.setsAt(DOOR)).toEqual([['category:weapon_axe:held']]);
         expect(reach.setsAt(EAST)).toEqual([['category:weapon_axe:held']]);
         expect(reach.report.openTiles).toBe(1);
         expect(grid.walkable(0, 3216, 3220)).toBe(false);
+        // With no requirement set no set meets it, not every one.
+        expect(fill(grid, { gates: [tree([])] }).setsAt(EAST)).toEqual([]);
     });
 
     test('a row with no landing is reported', () => {
@@ -545,6 +551,14 @@ describe('crossings', () => {
         });
         expect(scripted.setsAt(at(0, 3231, 3231))).toEqual([['quest:x'], ['skill:agility:30']]);
         expect(scripted.setsAt(ISLAND[0]!)).toEqual([]);
+    });
+
+    test('a row with no requirement set adds no edge: nothing makes the move ([[]] asks for nothing)', () => {
+        const reach = fill(rooms(), {
+            crossings: [crossing({ from: FROM, landings: [{ tile: ISLAND[0]! }], requires: [] })],
+        });
+        expect(reach.setsAt(ISLAND[0]!)).toEqual([]);
+        expect(reach.report.edges.crossings).toBe(0);
     });
 
     test('a row with no tile it is done from adds no edge and is reported; a landing off land is reported', () => {

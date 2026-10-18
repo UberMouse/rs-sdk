@@ -362,7 +362,7 @@ describe('serializeWorld', () => {
             expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
         });
 
-        test("a gate's roll, act, landings and oneWay and a transport's act are checked too", () => {
+        test("a gate's requires, roll, act, landings and oneWay and a transport's act are checked too", () => {
             expect(
                 refused({ ...world, gates: [world.gates[0], { ...world.gates[1], roll: { stat: 'agility' } }] }),
             ).toBe(
@@ -403,6 +403,16 @@ describe('serializeWorld', () => {
                 expect(refused({ ...world, gates: [g, world.gates[1]] })).toBe(
                     'is not a world.json: gates[0]: oneWay, when it has it, is true, on a row with from: regenerate it with bun run world',
                 );
+            // A gate's requires has a set (the free form is [[]]); a quest window's is [].
+            expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], requires: [] }] })).toBe(
+                'is not a world.json: gates[1]: a gate whose requires has no set, so nothing opens it ([[]] asks for nothing): regenerate it with bun run world',
+            );
+            expect(
+                refused({
+                    ...world,
+                    gates: [world.gates[0], { ...world.gates[1], kind: 'quest-window', requires: [] }],
+                }),
+            ).toBe('read');
             expect(refused({ ...world, transports: [{ ...world.transports[0], act: { kind: 'interface' } }] })).toBe(
                 'is not a world.json: transports[0]: an interface act needs a component: regenerate it with bun run world',
             );

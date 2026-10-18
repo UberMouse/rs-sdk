@@ -96,14 +96,16 @@ or the active script resumes); the build report lists each moving script queued 
 queued script has no active loc, so its loc commands leave the trigger's loc as it was. A death's respawn
 (`[queue,player_death]`) is not passage, nor is a move only through one (a `damage_player` queue).
 
-A one-sided gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`),
-but the scripts disagree (the Shantay Pass and the Barbarian Outpost pipe let a level stand through free, the Khazard
-low wall does not). So a gate row's landing is `free` when the bound run finds a path from that stand that needs
-nothing (unless every landing of the row is: no path the run took then reads its requirement), and the fill crosses
-it free whatever its side: the Shantay Pass's east stand goes out free, and the desert mine's nearest bank (the
-pass's bank chest) needs only the camp's key. A path past a condition the bound run can't read (an npc nearby) is not
-free, but for a wait: a var compared with `map_clock` the way the clock opens, an obstacle someone used a few ticks
-ago (the agility pipes, the lumberyard fence); the build report lists each free landing reached past one.
+A gate row with `from` checks the move only from that side, and a curated `oneWay` gate gives no edge from the other,
+where its script refuses the player (the castle crumbly wall, `skill_agility/scripts/shortcuts.rs2:6`). A one-sided
+gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`), but the scripts
+disagree (the Shantay Pass and the Barbarian Outpost pipe let a level stand through free, the Khazard low wall does
+not). So a gate row's landing is `free` when the bound run finds a path from that stand that needs nothing (unless
+every landing of the row is: no path the run took then reads its requirement), and the fill crosses it free whatever
+its side: the Shantay Pass's east stand goes out free, and the desert mine's nearest bank (the pass's bank chest)
+needs only the camp's key. A path past a condition the bound run can't read (an npc nearby) is not free, but for a
+wait: a var compared with `map_clock` the way the clock opens, an obstacle someone used a few ticks ago (the agility
+pipes, the lumberyard fence); the build report lists each free landing reached past one.
 
 The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
 reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is

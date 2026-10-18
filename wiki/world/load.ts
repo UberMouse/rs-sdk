@@ -97,8 +97,14 @@ const opOfTrigger = (trigger: unknown): number | undefined => {
     return m ? Number(m[1]) : undefined;
 };
 
-/** What is wrong with a World.gates row's crossing-model fields (its roll, act, landings and oneWay), or undefined. */
+/**
+ * What is wrong with a World.gates row's crossing-model fields (its roll, act, landings and oneWay, and a gate's
+ * requires), or undefined.
+ */
 function gateProblem(g: Parsed): string | undefined {
+    // A quest window's requires is [], never met; a gate's has the sets that open it.
+    if (g.kind === 'gate' && Array.isArray(g.requires) && !g.requires.length)
+        return 'a gate whose requires has no set, so nothing opens it ([[]] asks for nothing)';
     const roll = g.roll === undefined ? undefined : rollProblem(g.roll);
     if (roll) return roll;
     if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))

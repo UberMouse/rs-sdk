@@ -638,7 +638,7 @@ describe('reviewGates', () => {
         ]);
     });
 
-    test('a rejection needs its reason, and no requirements; a gate needs canonical sets and a real source line', () => {
+    test('a rejection needs its reason, and no requirements; a gate needs a set, canonical sets and a real source line', () => {
         const review = reviewGates(
             candidates,
             [
@@ -647,6 +647,7 @@ describe('reviewGates', () => {
                 gate('oploc1,tollgate', [['quest:cook', 'coins:10']], { why: 'unsorted' }),
                 gate('oploc1,membergate', [['members']], { source: 'quests/test.rs2:999' }),
                 gate('oploc1,keydoor', [['item:brasskey:held']], { source: 'quests/test.rs2' }),
+                gate('oploc1,completedoor', []),
             ],
             files,
         );
@@ -656,6 +657,7 @@ describe('reviewGates', () => {
             'oploc1,tollgate (quests/test.rs2:2): write requires as [["coins:10","quest:cook"]]',
             'oploc1,membergate (quests/test.rs2:999): source quests/test.rs2:999 is not a line of code',
             'oploc1,keydoor (quests/test.rs2): source quests/test.rs2 is not file:line',
+            'oploc1,completedoor (quests/test.rs2:2): a gate needs its requirement sets',
         ]);
     });
 });

@@ -820,7 +820,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
     gate('oploc1,castlecrumbly', 'skill_agility/scripts/shortcuts.rs2:2', 'members skill:agility:5', {
         from: 'west',
         oneWay: true,
-        notes: 'Climbed west to east only: from the east the script refuses (shortcuts.rs2:6).',
+        notes: "Climbed west to east only: from the east the script refuses (shortcuts.rs2:6). Its level-3 north and south walls are gated both ways: both their tiles are at the loc's x, and the script refuses only a player east of it.",
     }),
     gate('oploc1,_island_rope_swing', 'skill_agility/scripts/shortcuts.rs2:121', 'skill:agility:10', {
         why: "The 10 Agility check skips tree_ropeswing2, the inner Brimhaven / Ogre Isle swing (shortcuts.rs2:121), a loc_type test the scan doesn't read.",

@@ -429,9 +429,13 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
     const sets = new SetTable(quests);
     const skipped = new Set<string>();
 
-    /** Alternatives (each a set id, minimal among them) of a requirement list, interned once. */
+    /**
+     * Alternatives (each a set id, minimal among them) of a requirement list, interned once; none for a list
+     * with no set, which no way meets (it would key as `[[]]` does, free), and under which addEdge adds no edge.
+     */
     const altIds = new Map<string, number[]>();
     const alternatives = (reqs: readonly (readonly string[])[]): number[] => {
+        if (!reqs.length) return [];
         const minimal = minimalSets(
             reqs.map(set => set.filter(r => r !== 'members')),
             quests,
@@ -456,6 +460,8 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
         teleport: 'crossings',
     };
     const addEdge = (via: Via, from: Tile, to: Tile, alts: number[], what: string, cost?: EdgeCost): boolean => {
+        // No alternative, no way across: no edge.
+        if (!alts.length) return false;
         const [a, b] = [index.of(from.level, from.x, from.z), index.of(to.level, to.x, to.z)];
         if (a < 0 || b < 0) {
             skipped.add(`${what}: ${coord(a < 0 ? from : to)} is not on land`);
@@ -496,6 +502,11 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
             const rolled = g.roll && { spread: 0, roll: g.roll };
             gateEdges.push(() => {
                 for (const [a, b] of [tiles, [tiles[1], tiles[0]]] as [Tile, Tile][]) {
+                    // A side that doesn't tell the two tiles apart (an x side on a north or south wall, a z side on
+                    // a west or east one) finds both level with the loc on its axis, which counts as on it as a stand
+                    // does (standOnSide), so both ways are gated, `oneWay` or not: the castle crumbly wall's script
+                    // refuses only a player east of the loc's x (shortcuts.rs2:6), and so neither tile of its level-3
+                    // north and south walls.
                     const side = g.from && startsOnSide(g.from, tiles, a, b);
                     if (g.from && side === undefined)
                         skipped.add(
@@ -569,16 +580,13 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                 if (!gates.length) return FREE;
                 // Each gate row is a way to make the move; one whose side the stand is not on is free, or with
                 // `oneWay` no way.
-                const ways = gates.flatMap(g =>
-                    g.from && !standOnSide(g.from, g.tile, stand) ? (g.oneWay ? [] : [[]]) : g.requires,
+                return alternatives(
+                    gates.flatMap(g =>
+                        g.from && !standOnSide(g.from, g.tile, stand) ? (g.oneWay ? [] : [[]]) : g.requires,
+                    ),
                 );
-                // No way, no edge (alternatives keys [] as it does [[]], free).
-                return ways.length ? alternatives(ways) : [];
             };
-            const connect = (stand: Tile) => {
-                const alts = altsFrom(stand);
-                if (alts.length) addEdge('connector', stand, c.landing, alts, name);
-            };
+            const connect = (stand: Tile) => addEdge('connector', stand, c.landing, altsFrom(stand), name);
             if (c.relative) {
                 if (c.stand) connect(c.stand);
                 else skipped.add(`${name}: a relative landing with no stand`);
