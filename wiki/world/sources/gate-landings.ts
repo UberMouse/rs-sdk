@@ -34,7 +34,8 @@
 // `act: loc-op`, its source the line of the path's last move outside a call the scan counts as one move (Path.outer
 // in gate-scan.ts). A stand landing on several passage tiles, off walkable land (not land, or blocked) where no
 // short walk from it goes, or stopped by a construct the run can't read, is unsettled: the build report lists it,
-// never guessed; one stopped only in the door procs (gate-scan.ts
+// never guessed. A landing off walkable land on the tile of a loc that blocks nothing (gate-scan.ts blocksWalk: a
+// plant picked) crosses nothing of the loc's and is no passage. One stopped only in the door procs (gate-scan.ts
 // DOOR_PROCS) is a door's, which the collision data has open or gates.ts confirms. A loc tile and op a connector
 // row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
@@ -45,6 +46,7 @@ import { cmp, push } from '../util';
 import { first } from './configs';
 import type { ConnectorCollision } from './connectors';
 import {
+    blocksWalk,
     CROSS,
     DOOR_PROCS,
     gateLander,
@@ -476,9 +478,14 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
         const os = land(t, binding, []);
         const moved = os.flatMap(o => (o.k === 'landing' && !near(stand, o.tile) ? [o] : []));
         const passages = moved.filter(o => onLand(o.tile));
-        // A path landing off walkable land (not land, or blocked) gives a landing no row can stand for.
+        // A path landing off walkable land (not land, or blocked) gives a landing no row can stand for; but a move
+        // onto the tile of a loc that blocks nothing (a plant picked, general_use/scripts/pickables.rs2:6 and
+        // player/scripts/pickup.rs2:30) crosses nothing of the loc's, whatever else blocks that tile.
+        const open = blocksWalk(locConfigs.get(l.config), binding.shape) === false;
         const offLand = moved.flatMap(o =>
-            onLand(o.tile) ? [] : [`lands off walkable land at ${coord(o.tile)} (${o.at})`],
+            onLand(o.tile) || (open && sameTile(o.tile, l.tile))
+                ? []
+                : [`lands off walkable land at ${coord(o.tile)} (${o.at})`],
         );
         const unrolled = passages.flatMap(o => (o.unrolled ? [o.unrolled] : []));
         if (offLand.length || unrolled.length) return { stuck: [...new Set([...offLand, ...unrolled])].sort(cmp) };

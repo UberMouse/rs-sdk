@@ -1,7 +1,7 @@
 // The loc op moves no gate row makes (sources/gate-landings.ts deriveScriptedMoves), on scripted triggers: a jump to
 // a literal, a forcemove to a fixed tile, an agility walk behind a roll, a temporary block, and what gives no row (a
-// landing no run settles, a failure whose damage is not known, a landing off walkable land, a connector's own loc and
-// op, a door, a shuffle beside the loc).
+// landing no run settles, a failure whose damage is not known, a landing off walkable land, alone or beside one on
+// land, a step onto a plant that blocks nothing, a connector's own loc and op, a door, a shuffle beside the loc).
 import { describe, expect, test } from 'bun:test';
 import { locSizes, type LocReach } from '../place';
 import type { ConnectorCollision } from '../sources/connectors';
@@ -65,6 +65,29 @@ if (stat_random(agility, 100, 200) = false) {
 [oploc1,wallgap]
 p_telejump(movecoord(loc_coord, 0, 0, 3));
 
+[oploc1,ferrystone]
+if (random(2) = 0) {
+    p_telejump(movecoord(loc_coord, 0, 0, 2));
+} else {
+    p_telejump(movecoord(loc_coord, 0, 0, 5));
+}
+
+[oploc2,potatoplant]
+p_arrivedelay;
+if (inv_freespace(inv) = 0) {
+    mes("You don't have room for this potato.");
+    p_teleport(loc_coord);
+    p_delay(0);
+} else {
+    p_teleport(loc_coord);
+    p_delay(0);
+    loc_del(50);
+    inv_add(inv, potato, 1);
+}
+
+[oploc1,steppingstone]
+p_telejump(loc_coord);
+
 [proc,forcemove](coord $dest_coord)
 ~walk(calc(coordx($dest_coord) - coordx(coord)), calc(coordz($dest_coord) - coordz(coord)));
 
@@ -123,8 +146,13 @@ const CONFIGS = [
     'shuffle',
     'rubblepile',
     'wallgap',
+    'ferrystone',
+    'steppingstone',
 ];
-const locConfigs = parseConfigs([...CONFIGS, 'testdoor'].map(c => `[${c}]\nop1=Use`).join('\n'));
+// The plant blocks nothing (blockwalk=no); every other config blocks its tile.
+const locConfigs = parseConfigs(
+    [...[...CONFIGS, 'testdoor'].map(c => `[${c}]\nop1=Use`), '[potatoplant]\nop2=Pick\nblockwalk=no'].join('\n'),
+);
 
 const at = (x: number, z: number, level = 0): Tile => ({ level, x, z });
 const key = (t: Tile): string => `${t.level},${t.x},${t.z}`;
@@ -141,6 +169,9 @@ const PLACED: Record<string, Tile> = {
     testdoor: at(190, 100),
     rubblepile: at(120, 100),
     wallgap: at(125, 100),
+    ferrystone: at(135, 100),
+    potatoplant: at(145, 100),
+    steppingstone: at(155, 100),
 };
 /** Tiles blocked beside a loc so that one stand is left: the one named. */
 const ONLY: Record<string, Tile> = {
@@ -310,6 +341,33 @@ describe('deriveScriptedMoves: no row', () => {
         ]);
     });
 
+    test('a stand with one path landing across on land and one off walkable land: no row, the off-land landing reported', () => {
+        expect(rowsOf('ferrystone')).toEqual([]);
+        expect(out.unsettled.filter(u => u.loc === 'ferrystone')).toEqual([
+            {
+                trigger: 'oploc1,ferrystone',
+                loc: 'ferrystone',
+                tile: PLACED.ferrystone!,
+                reasons: [
+                    `lands off walkable land at (135, 102) (${lineOf('p_telejump(movecoord(loc_coord, 0, 0, 2))')})`,
+                ],
+            },
+        ]);
+    });
+
+    test("a move onto a blocked tile of a loc that blocks nothing (a plant picked, room or none) is no passage; onto a blocking loc's, reported", () => {
+        expect(rowsOf('potatoplant')).toEqual([]);
+        expect(out.unsettled.some(u => u.loc === 'potatoplant')).toBe(false);
+        expect(out.unsettled.filter(u => u.loc === 'steppingstone')).toEqual([
+            {
+                trigger: 'oploc1,steppingstone',
+                loc: 'steppingstone',
+                tile: PLACED.steppingstone!,
+                reasons: [`lands off walkable land at (155, 100) (${lineOf('p_telejump(loc_coord)')})`],
+            },
+        ]);
+    });
+
     test("a move on a connector row's loc tile and op is refused as a duplicate", () => {
         const withLadder = derive([{ loc: PLACED.cellarladder!, op: 1 }]);
         expect(withLadder.crossings.some(c => c.act.kind === 'loc-op' && c.act.loc === 'cellarladder')).toBe(false);
@@ -322,13 +380,19 @@ describe('deriveScriptedMoves: no row', () => {
     test('a shuffle beside the loc a short walk makes anyway, and a door the door procs open, are no passage', () => {
         expect(rowsOf('shuffle')).toEqual([]);
         expect(rowsOf('testdoor')).toEqual([]);
-        expect(out.unsettled.map(u => u.loc)).toEqual(['rubblepile', 'sinkhole', 'wallgap']);
+        expect(out.unsettled.map(u => u.loc)).toEqual([
+            'ferrystone',
+            'rubblepile',
+            'sinkhole',
+            'steppingstone',
+            'wallgap',
+        ]);
     });
 
     test('the counts: triggers and placed locs by outcome', () => {
         expect(out.counts).toEqual({
-            triggers: { door: 1, 'not-a-passage': 1, rows: 6, unsettled: 3 },
-            locs: { rows: 6, unsettled: 3, duplicate: 0, door: 1, 'not-a-passage': 1 },
+            triggers: { door: 1, 'not-a-passage': 2, rows: 6, unsettled: 5 },
+            locs: { rows: 6, unsettled: 5, duplicate: 0, door: 1, 'not-a-passage': 2 },
         });
     });
 });
