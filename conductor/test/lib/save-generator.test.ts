@@ -1,8 +1,8 @@
 // createSaveData's varps, read back as the engine reads its version 6 save: by index, as many as the count says
 // (conductor/lib/saves.ts decodeSave mirrors PlayerLoading.load).
 import { describe, expect, test } from 'bun:test';
-import { decodeSave } from '../../conductor/lib/saves';
-import { createSaveData } from './utils/save-generator';
+import { createSaveData } from '../../../sdk/test/utils/save-generator';
+import { decodeSave } from '../../lib/saves';
 
 describe('createSaveData varps', () => {
     test('a varp past the 309 written by default survives the round trip', () => {
