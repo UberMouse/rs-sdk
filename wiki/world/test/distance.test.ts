@@ -7,7 +7,11 @@ import { at, Grid } from './grid';
 
 const size = locSizes(new Map());
 
-/** The nearest sinks of `sites` over the grid and the world's rows. */
+/**
+ * The nearest sinks of `sites` over the grid and the world's rows. Every call also searches each context in full
+ * (NearestOptions.full) and checks the improvement-only searches found the same, so each scenario below is an
+ * equivalence test too.
+ */
 const nearest = (
     grid: Grid,
     sites: { id: string; stand: Tile | null; reach?: string[][] }[],
@@ -18,15 +22,15 @@ const nearest = (
         collision: grid,
         size,
     });
-    return nearestSinks(
-        graph,
-        sites.map(s => ({
-            id: s.id,
-            kind: s.id.slice(0, s.id.indexOf(':')) as FeatureKind,
-            stand: s.stand,
-            reach: s.reach ?? [[]],
-        })),
-    );
+    const input = sites.map(s => ({
+        id: s.id,
+        kind: s.id.slice(0, s.id.indexOf(':')) as FeatureKind,
+        stand: s.stand,
+        reach: s.reach ?? [[]],
+    }));
+    const result = nearestSinks(graph, input);
+    expect(nearestSinks(graph, input, { full: true }).nearest).toEqual(result.nearest);
+    return result;
 };
 
 /** A site's nearest bank. */
@@ -163,6 +167,14 @@ describe("under the site's own requirement sets", () => {
         expect(r.report.contexts.bank).toBe(4);
     });
 
+    test('a gate elsewhere the context also meets does not hide the one on the way', () => {
+        // A 10-coin gate on open ground at (3202, 3228), off the way and first of the gated tiles by index: the
+        // context's search starts from every gated tile, so the toll door still shortens the tree's way.
+        const elsewhere: Gate = { ...toll, tile: at(0, 3202, 3228) };
+        const r = nearest(doorGrid(), sites({ 'tree:toll:0': [['coins:10']] }), { gates: [elsewhere, toll] });
+        expect(bank(r, 'tree:toll:0')).toEqual({ site: 'bank:west:0', runTicks: through, requires: ['coins:10'] });
+    });
+
     test('of two ways equally short, the one asking fewer requirements', () => {
         // The bank 5 tiles further west: through the door 9 + 4 + 10 = 23 half ticks, round by the gap 11 + 1 + 11.
         const r = nearest(
@@ -222,6 +234,48 @@ describe("under the site's own requirement sets", () => {
             requires: ['category:weapon_axe:held'],
         });
         expect(bank(r, 'tree:free:0')).toBeUndefined();
+    });
+});
+
+/** Walls down columns 3212 and 3220, open at each of `gaps` (z): doors at z 3220, a long way round at z 3231. */
+const twoWalls = (gaps: number[]) => new Grid().wallColumn(3212, 3200, 3231, gaps).wallColumn(3220, 3200, 3231, gaps);
+const doorAt = (x: number, requires: string[][]): Gate => ({ ...toll, tile: at(0, x, 3220), requires });
+/** The bank west of both walls, the tree east of them, reached with `reach`. */
+const across = (reach: string[][]) => [
+    { id: 'bank:west:0', stand: at(0, 3205, 3220) },
+    { id: 'tree:east:0', stand: at(0, 3226, 3220), reach },
+];
+// Through both doors: 6 steps, a crossing, 7 steps, a crossing, 6 steps.
+const BOTH_DOORS = Math.ceil((19 + 2 * CROSSING_TICKS.gate * 2) / 2);
+
+describe('ways through more than one gate', () => {
+    test('two doors asking different things: a context with both takes both, and asks the two joined', () => {
+        const gates = [doorAt(3212, [['coins:10']]), doorAt(3220, [['quest:a']])];
+        const r = nearest(twoWalls([3220, 3231]), across([['coins:10', 'quest:a']]), { gates });
+        expect(bank(r, 'tree:east:0')).toEqual({
+            site: 'bank:west:0',
+            runTicks: BOTH_DOORS,
+            requires: ['coins:10', 'quest:a'],
+        });
+        // With only one of the two, the way round both (31 steps) is shorter than one door and round the other (33).
+        const one = nearest(twoWalls([3220, 3231]), across([['coins:10']]), { gates });
+        expect(bank(one, 'tree:east:0')).toEqual({ site: 'bank:west:0', runTicks: 16, requires: [] });
+    });
+
+    test('two 20-coin tolls in series under {coins:30}: never both, so the way round, or no bank', () => {
+        const gates = [doorAt(3212, [['coins:20']]), doorAt(3220, [['coins:20']])];
+        const r = nearest(twoWalls([3220, 3231]), across([['coins:30']]), { gates });
+        const b = bank(r, 'tree:east:0')!;
+        expect(b.runTicks).toBeGreaterThan(BOTH_DOORS);
+        expect(['[]', '["coins:20"]']).toContain(JSON.stringify(b.requires));
+        // With no way round, no bank.
+        expect(bank(nearest(twoWalls([3220]), across([['coins:30']]), { gates }), 'tree:east:0')).toBeUndefined();
+        // 40 coins pay both.
+        expect(bank(nearest(twoWalls([3220]), across([['coins:40']]), { gates }), 'tree:east:0')).toEqual({
+            site: 'bank:west:0',
+            runTicks: BOTH_DOORS,
+            requires: ['coins:40'],
+        });
     });
 });
 

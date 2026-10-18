@@ -5,7 +5,7 @@ import { params } from '../classify';
 import { parseRequirement } from '../requirements';
 import { first, type Config } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
-import type { Feature, FeatureKind, Nearest, Site, Tile, World } from '../types';
+import type { Feature, FeatureKind, SinkKind, Site, Tile, World } from '../types';
 import { cmp } from '../util';
 
 /** The comment that opens every generated page. */
@@ -190,7 +190,7 @@ export function reachLabel(
 export function nearestLabel(
     world: World,
     data: PageData,
-    kind: keyof Nearest,
+    kind: SinkKind,
 ): (site: Pick<Site, 'reach' | 'stand' | 'nearest'>) => string {
     const areas = areasOf(world);
     const requires = reachLabel(world, data);

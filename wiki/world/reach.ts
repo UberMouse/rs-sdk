@@ -26,7 +26,7 @@
 //   step onto it (any neighbour when the tile itself is blocked), to its landing.
 //
 // Every edge's requirement is a list of alternative sets, any one of which crosses it. Bots always play on
-// members worlds (user, 2026-10-16), so `members` is met and never added to a set. The fill is a
+// members worlds, so `members` is met and never added to a set. The fill is a
 // multi-label BFS: each tile keeps the antichain of minimal sets that reach it (a set is dropped when one that
 // dominates it, asking no more, already reaches the tile, and drops the sets it dominates; requirements.ts
 // dominates), at most `maxSets` of them; a tile that would hold more evicts its largest set for a smaller new one

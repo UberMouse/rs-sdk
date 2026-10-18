@@ -102,7 +102,11 @@ export interface NearestSink {
     requires: string[];
 }
 
-export type Nearest = Partial<Record<'bank' | 'furnace' | 'range' | 'anvil', NearestSink>>;
+/** The kinds of sink a site's nearest is found for (distance.ts SINKS). */
+export const SINK_KINDS = ['bank', 'furnace', 'range', 'anvil'] as const;
+export type SinkKind = (typeof SINK_KINDS)[number];
+
+export type Nearest = Partial<Record<SinkKind, NearestSink>>;
 
 /**
  * Where one npc config spawns: its map placements clustered as sites are (one level, one leaf area,

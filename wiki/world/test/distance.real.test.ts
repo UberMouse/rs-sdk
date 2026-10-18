@@ -25,6 +25,13 @@ test("world.json's nearest is what distance.ts computes from its graph", () => {
     for (const s of world.sites) expect([s.id, s.nearest]).toEqual([s.id, nearest.get(s.id)]);
 });
 
+test('searching every context in full finds what the improvement-only searches find', () => {
+    // All four sink kinds and all their contexts (65 searches), each run from the sinks until its targets settle.
+    const full = nearestSinks(graph, world.sites, { full: true });
+    expect(full.report.contexts).toEqual(nearestSinks(graph, world.sites).report.contexts);
+    for (const s of world.sites) expect([s.id, full.nearest.get(s.id)]).toEqual([s.id, nearest.get(s.id)]);
+}, 60_000);
+
 // Walk legs bots ran between a site and its bank, from the per-tick positions of conductor run recordings
 // (conductor/runs/<bot>/*.ticks.ndjson.gz, local server, run energy 100 throughout): the tiles the route took and
 // the ticks it took. A leg measured `ticks` runs 0-11 over ceil(route / 2), for the walker's pauses and turns, and

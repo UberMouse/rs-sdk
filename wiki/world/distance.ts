@@ -1,6 +1,6 @@
 // How far each resource and processor site is from the sinks a method takes its products to: the nearest bank,
 // and for the kinds phase 3 processes on the way, the nearest furnace, range or anvil (SINKS). A distance is the
-// travel time in run ticks (bots always run, user 2026-10-16) from the site's stand tile to the sink site's stand,
+// travel time in run ticks (bots always run) from the site's stand tile to the sink site's stand,
 // over the reach fill's graph (reach.ts reachGraph: the neighbour steps, connectors, gates, opened locs and
 // transports), so a door, a staircase or a boat on the way counts.
 //
@@ -8,18 +8,26 @@
 //
 // - A neighbour step, straight or diagonal, is half a tick: a running player moves two tiles a tick
 //   (server/engine/src/engine/entity/PathingEntity.ts:147, processMovement takes a second step when running).
-//   The half ticks of a path are summed and rounded up once, at the end (`runTicks`), not per stretch between
-//   two crossings, so a path with k crossings may read up to (k + 1) / 2 ticks short of the walk.
+//   The half ticks of a path are summed and rounded up once, at the end (`runTicks`). Rounding each of the k + 1
+//   stretches between a path's k crossings instead would add up to half a tick per stretch; once does not.
 // - A crossing costs CROSSING_TICKS by how it moves the player (reach.ts Via), a stated constant per kind: no
 //   world.json row carries its own duration.
 // - Stepping onto an opened loc's tiles (Gate.opens) from a tile that is not one costs as a gate crossing.
 //
 // Under the site's own requirement sets: a site's reach (Site.reach) lists the minimal sets that get a walk from
-// the Lumbridge spawn to it; each is a context. In a context only the edges (and opened tiles) one of whose
-// alternatives that set dominates are crossed (requirements.ts dominates: asks no more than it), so a site
-// reached with `{}` gets a distance over `{}` edges alone, and a site reached with `{coins:30}` may cross a 30-coin
-// fare, each crossing judged on its own (two tolls on the way read `coins:20` in `requires`, as canonicalSet sums
-// them). A site takes the shortest over its contexts, then the one whose way asks fewest requirements.
+// the Lumbridge spawn to it; each is a context. A way's `requires` is the join (SetTable.union, canonical: coins
+// and consumed objs summed) of the alternatives its crossings take, and an edge or opened tile is crossed only
+// when that join, the crossing's alternative added, is still dominated by the context (requirements.ts dominates:
+// asks no more than it). So a site reached with `{}` gets a distance over `{}` edges alone, a site reached with
+// `{coins:30}` may pay one 30-coin fare but not two 20-coin tolls, and no way asks more than its context. A site
+// takes the shortest over its contexts, then the one whose way asks fewest requirements.
+//
+// Each tile keeps one label (its shortest way found, and of ways equally short the one asking less), so the search
+// is exact for the path cost wherever whether a crossing is allowed does not depend on the way so far: a context
+// with no coins or consume, where every requirement of a join is one of its parts' and a part the context meets
+// keeps meeting it. With coins or consume a crossing can depend on what the way already paid, and one label per
+// tile is then a heuristic: a shorter way that spent the context's coins can hide a longer one that kept them for a
+// later toll, and the site reads a longer way or none.
 //
 // One search per sink kind and context, not a path per site: a multi-source Dijkstra (buckets by distance, as
 // every cost is a small whole number) from every reachable sink site's stand at once, over the edges reversed, so a
@@ -30,11 +38,8 @@
 // `requires` is the join (SetTable.union) of the alternatives its crossings take; of two ways equally short, the one
 // asking fewer requirements is kept.
 import { IntList, STEPS, type ReachGraph, type Via } from './reach';
-import type { FeatureKind, NearestSink, Site, Tile } from './types';
+import { SINK_KINDS, type FeatureKind, type Nearest, type SinkKind, type Site, type Tile } from './types';
 import { cmp } from './util';
-
-/** The kinds of site a nearest is found for. */
-export type SinkKind = 'bank' | 'furnace' | 'range' | 'anvil';
 
 /**
  * The sinks each kind of site gets a nearest of. Every gathering, thieving and processing kind takes its products
@@ -57,8 +62,6 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     'pottery-wheel': ['bank'],
     'pottery-oven': ['bank'],
 };
-
-const SINK_KINDS: readonly SinkKind[] = ['bank', 'furnace', 'range', 'anvil'];
 
 /**
  * Ticks a crossing takes, by how it moves the player, including the tick the op is clicked from its stand:
@@ -103,6 +106,14 @@ export interface DistanceReport {
 
 type SiteIn = Pick<Site, 'id' | 'kind' | 'stand' | 'reach'>;
 
+export interface NearestOptions {
+    /**
+     * For tests: search each context other than `{}` in full from the sinks, as the base search is, instead of only
+     * where it betters the base layer; the results must not differ.
+     */
+    full?: boolean;
+}
+
 /** Offers or expands a label: a tile, half ticks to the sink, the sink's index, the way's set id. */
 type Relax = (tile: number, half: number, sink: number, set: number) => void;
 
@@ -118,7 +129,8 @@ const INF = 0x7fffffff;
 export function nearestSinks(
     graph: ReachGraph,
     sites: readonly SiteIn[],
-): { nearest: Map<string, Partial<Record<SinkKind, NearestSink>>>; report: DistanceReport } {
+    options: NearestOptions = {},
+): { nearest: Map<string, Nearest>; report: DistanceReport } {
     const began = performance.now();
     const { index, sets, openAlts, stepMask } = graph;
     const n = index.size;
@@ -163,23 +175,41 @@ export function nearestSinks(
         for (const a of alts) if (sets.dominates(a, ctx)) return a;
         return -1;
     };
+    /** The join of `set` with the first of `alts` that keeps it within the context `ctx`, or -1. */
+    const join = (set: number, alts: readonly number[], ctx: number): number => {
+        for (const a of alts) {
+            const u = sets.union(set, a);
+            if (sets.dominates(u, ctx)) return u;
+        }
+        return -1;
+    };
+    /** Whether `set` asks less than `have`, of two ways equally short: fewer requirements, or no more of any. */
+    const asksLess = (set: number, have: number): boolean =>
+        sets.size(set) < sets.size(have) ||
+        (set !== have && sets.size(set) === sets.size(have) && sets.dominates(set, have));
 
     /**
      * A Dijkstra over the reversed graph under context `ctx`, on the search layer, from the labels `seed` gives; it
      * returns the run's `seen` mark. With `base`, a tile takes a label only when it betters the base layer's: the
      * first search of a kind (ctx `{}`, no base) finds every tile's way over `{}` edges; a later one (a context that
      * asks more) only the tiles whose way it shortens, starting from the gated tiles' base labels, so it walks no
-     * further than the context changes things.
+     * further than the context changes things. With `stop`, it ends once every tile of it is settled.
      */
-    const search = (ctx: number, base: boolean, seed: (from: Relax, to: Relax) => void): number => {
+    const search = (
+        ctx: number,
+        base: boolean,
+        seed: (from: Relax, to: Relax) => void,
+        stop?: ReadonlySet<number>,
+    ): number => {
         run++;
         const seen = 2 * run;
         let queued = 0;
         let lo = INF;
+        let hi = 0;
         const relaxTo: Relax = (p, half, sink, set) => {
             if (mark[p] === seen + 1) return;
             const [have, haveSet] = mark[p] === seen ? [dist[p]!, setOf[p]!] : [base ? baseDist[p]! : INF, 0];
-            if (half > have || (half === have && sets.size(set) >= sets.size(haveSet))) return;
+            if (half > have || (half === have && !asksLess(set, haveSet))) return;
             mark[p] = seen;
             dist[p] = half;
             sinkOf[p] = sink;
@@ -187,47 +217,56 @@ export function nearestSinks(
             (buckets[half] ??= new IntList()).push(p);
             queued++;
             if (half < lo) lo = half;
+            if (half > hi) hi = half;
         };
         /** Every way into tile i, which is `d` half ticks from sink `sink` by a way asking `set`. */
         const relaxFrom: Relax = (i, d, sink, set) => {
-            // An opened tile asks its requirement of any way onto it, and costs a crossing from a tile that is not one.
-            const enter = opened[i] ? admit(openAlts.get(i)!, ctx) : 0;
-            if (enter < 0) return;
+            // An opened tile asks its requirement of any way onto it, and costs a crossing from a tile that is not one;
+            // from one of its own tiles the way has crossed it already.
+            const opens = opened[i] ? openAlts.get(i)! : undefined;
+            if (opens && admit(opens, ctx) < 0) return;
+            const stepped = opens ? join(set, opens, ctx) : set;
             const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
             for (let bit = 0; bit < 8; bit++) {
                 const [dx, dz] = STEPS[bit]!;
                 const p = index.of(level, x - dx, z - dz);
                 if (p < 0 || !(stepMask(p) & (1 << bit))) continue;
-                if (opened[i] && !opened[p]) relaxTo(p, d + 1 + openHalf, sink, sets.union(set, enter));
-                else relaxTo(p, d + 1, sink, set);
+                if (opens && !opened[p]) {
+                    if (stepped >= 0) relaxTo(p, d + 1 + openHalf, sink, stepped);
+                } else relaxTo(p, d + 1, sink, set);
             }
             if (!hasIn[i]) return;
             for (const e of edgeTo.get(i)!) {
-                const a = admit(e.alts, ctx);
-                if (a < 0) continue;
-                const way = sets.union(set, a);
-                if (opened[i] && !opened[e.from]) relaxTo(e.from, d + e.half + openHalf, sink, sets.union(way, enter));
-                else relaxTo(e.from, d + e.half, sink, way);
+                const way = join(set, e.alts, ctx);
+                if (way < 0) continue;
+                if (opens && !opened[e.from]) {
+                    const onto = join(way, opens, ctx);
+                    if (onto >= 0) relaxTo(e.from, d + e.half + openHalf, sink, onto);
+                } else relaxTo(e.from, d + e.half, sink, way);
             }
         };
         seed(relaxFrom, relaxTo);
-        for (let d = lo; queued > 0; d++) {
+        let left = stop?.size ?? INF;
+        for (let d = lo; queued > 0 && left > 0; d++) {
             const bucket = buckets[d];
             if (!bucket) continue;
-            for (let k = 0; k < bucket.length; k++) {
+            for (let k = 0; k < bucket.length && left > 0; k++) {
                 const i = bucket.data[k]!;
                 queued--;
                 if (mark[i] !== seen || dist[i] !== d) continue;
                 mark[i] = seen + 1;
                 settled++;
+                if (stop?.has(i)) left--;
                 relaxFrom(i, d, sinkOf[i]!, setOf[i]!);
             }
             bucket.length = 0;
         }
+        // An early stop leaves later buckets full.
+        for (let d = lo; d <= hi; d++) if (buckets[d]) buckets[d]!.length = 0;
         return seen;
     };
 
-    const nearest = new Map<string, Partial<Record<SinkKind, NearestSink>>>();
+    const nearest = new Map<string, Nearest>();
     for (const s of sites) if (SINKS[s.kind]) nearest.set(s.id, {});
     const report: DistanceReport = {
         contexts: perKind(),
@@ -275,18 +314,23 @@ export function nearestSinks(
                     baseSink[i] = sinkOf[i]!;
                 }
                 report.contexts[kind] = new Set([0, ...contexts.keys()]).size;
+                const fromSinks = (_: Relax, to: Relax) => sinks.forEach((s, k) => to(at(s.stand!), 0, k, 0));
                 for (const [c, tiles] of contexts) {
                     const ran =
                         c === 0
                             ? seen
-                            : search(c, true, from => {
-                                  for (const g of gated) if (baseDist[g]! < INF) from(g, baseDist[g]!, baseSink[g]!, 0);
-                              });
+                            : options.full
+                              ? search(c, false, fromSinks, tiles)
+                              : search(c, true, from => {
+                                    for (const g of gated)
+                                        if (baseDist[g]! < INF) from(g, baseDist[g]!, baseSink[g]!, 0);
+                                });
                     const got = new Map<number, Found>();
                     for (const t of tiles)
                         if (c !== 0 && mark[t]! >= ran)
                             got.set(t, { half: dist[t]!, sink: sinkOf[t]!, set: setOf[t]! });
-                        else if (baseDist[t]! < INF) got.set(t, { half: baseDist[t]!, sink: baseSink[t]!, set: 0 });
+                        else if ((c === 0 || !options.full) && baseDist[t]! < INF)
+                            got.set(t, { half: baseDist[t]!, sink: baseSink[t]!, set: 0 });
                     found.set(c, got);
                 }
             }
