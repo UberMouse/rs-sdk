@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { locSizes } from '../../../wiki/world/place';
-import { fillReach, wallTiles } from '../../../wiki/world/reach';
+import { fillReach, type ReachCollision, wallTiles } from '../../../wiki/world/reach';
 import { readConfigs } from '../../../wiki/world/sources/configs';
 import { at, Grid } from '../../../wiki/world/test/grid';
 import { CROSSING_TICKS } from '../../../wiki/world/distance';
@@ -420,5 +420,80 @@ describe('bank detours for an obj a crossing needs', () => {
 
     test('skipped with no free slot for the obj', () => {
         expect(plan(detour(1, [NEAR_BANK], 0))).toEqual(free);
+    });
+});
+
+/** A way's bank detour hop. */
+const withdrawn = (way: ReturnType<typeof planWay>) => way?.hops.find(h => h.kind === 'bank');
+/** A talisman teleport across the column at x, from the tile west of it to the one east. */
+const ruins = (x: number): Crossing =>
+    move({
+        via: 'teleport',
+        act: { kind: 'item-on-loc', obj: 'air_talisman', loc: 'airtemple_ruined' },
+        at: at(0, x - 2, 3220),
+        from: [at(0, x - 1, 3220)],
+        landings: [{ tile: at(0, x + 1, 3220), spread: 0 }],
+        requires: [['item:air_talisman:held']],
+    });
+
+describe('what a bank detour withdraws', () => {
+    const START = at(0, 3210, 3220);
+    const NEAR_BANK = at(0, 3210, 3216);
+    const banked = (obj: string, count: number): Detour => ({
+        bank: o => (o === obj ? count : undefined),
+        banks: [NEAR_BANK],
+        free: 27,
+        stackable: () => false,
+    });
+
+    test('an obj two crossings ask to be held is withdrawn once', () => {
+        // Two blocked columns, each crossed by a talisman teleport: the way to the far shore makes both.
+        const grid = new Grid();
+        for (const x of [3216, 3222]) for (let tz = 3200; tz < 3232; tz++) grid.block(at(0, x, tz));
+        const graph = graphOf({ crossings: [ruins(3216), ruins(3222)] }, grid);
+        const way = planWay(START, [at(0, 3226, 3220)], { ...search(graph), detour: banked('air_talisman', 3) });
+        expect(way?.hops.filter(h => h.kind === 'cross')).toHaveLength(2);
+        expect(withdrawn(way)).toMatchObject({ withdraw: [{ obj: 'air_talisman', count: 1 }] });
+    });
+
+    test('an obj a crossing spends is withdrawn less what the bot carries', () => {
+        const passes = move({ requires: [['consume:shantay_pass:2']] });
+        const graph = graphOf({ crossings: [passes] });
+        const carrying: Account = { ...NO_ACCOUNT, held: new Map([['shantay_pass', 1]]) };
+        const way = planWay(START, [EAST], { ...search(graph, carrying), detour: banked('shantay_pass', 5) });
+        expect(withdrawn(way)).toMatchObject({ withdraw: [{ obj: 'shantay_pass', count: 1 }] });
+    });
+});
+
+describe('the Wilderness: a move into it is planned only when the way starts or ends there', () => {
+    // The island moved north by DZ tiles, so the Wilderness's south edge (z 3520) crosses it: the grid's z 3216 and up.
+    const DZ = 304;
+    const down = <T extends { z: number }>(t: T): T => ({ ...t, z: t.z - DZ });
+    const north = (g: Grid): ReachCollision => ({
+        zones: g.zones.map(([level, x, z]) => [level, x, z + DZ] as const),
+        canStep: (level, x, z, dx, dz) => g.canStep(level, x, z - DZ, dx, dz),
+        walkable: (level, x, z) => g.walkable(level, x, z - DZ),
+        land: (level, x, z) => g.land(level, x, z - DZ),
+        reached: (from, loc) => g.reached(down(from), down(loc)),
+        edited: (edits, f) =>
+            g.edited(
+                {
+                    close: edits.close.map(e => ({ ...e, tile: down(e.tile) })),
+                    open: edits.open.map(e => ({ ...e, tile: down(e.tile) })),
+                },
+                f,
+            ),
+    });
+    // From the west shore south of the edge, a teleport lands on the island north of it.
+    const FROM = at(0, 3210, 3510);
+    const teleport = move({ via: 'teleport', landings: [{ tile: at(0, 3220, 3530), spread: 0 }] }, 3510);
+    const graph = walkGraph({ world: { ...empty, crossings: [teleport] }, collision: north(sea()), size, opName });
+
+    test('to the island south of the edge: no way, the teleport lands in the Wilderness', () => {
+        expect(nearestWay(FROM, [at(0, 3220, 3510)], search(graph))).toBeUndefined();
+    });
+
+    test('to a tile in the Wilderness: through the teleport', () => {
+        expect(crossed(nearestWay(FROM, [at(0, 3225, 3530)], search(graph)))).toEqual([teleport.act]);
     });
 });

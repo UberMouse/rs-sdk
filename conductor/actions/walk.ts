@@ -44,7 +44,7 @@ import { BANK_TRANSFER_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS, 
 import { CLIMB_MAX_TICKS, climb } from './climb';
 import type { ActionContext } from './context';
 import { courseSectionOf, leaveCourse } from './course';
-import { cross, crossWaitTicks } from './cross';
+import { cross, crossAttemptTicks } from './cross';
 import { GATE_ATTEMPT_TICKS, GATE_MAX_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
 import { interactLoc } from './interact';
 import { canPayToll, isEastOfToll, isTollGate, payToll, TOLL_GATE_LOCS, TOLL_LEVEL, TOLL_MAX_TICKS } from './toll';
@@ -61,8 +61,6 @@ export const GATE_OUT_TICKS = GATE_OUT_ATTEMPTS * GATE_ATTEMPT_TICKS;
 const MAX_WALK_HOPS = 16;
 /** A plan's targets are the tiles within the walk's tolerance of its destination, at most this far. */
 const PLAN_RADIUS = 3;
-/** The sends of a move besides its act: its dialogue choices. */
-const CROSS_SEND_TICKS = 2;
 /** A bank detour's hop at its worst: the open, a withdrawal, the close. */
 const BANK_HOP_TICKS = OPEN_BANK_WAIT_TICKS + BANK_TRANSFER_WAIT_TICKS + CLOSE_BANK_WAIT_TICKS;
 /** The Gnome Stronghold gate's loc config (gate.ts GNOME_GATE). */
@@ -384,6 +382,17 @@ interface Learned {
     absent: Set<string>;
     /** The last hop that failed, for the message when no way is left. */
     failed?: string;
+    /** A hop's stand the walk could not walk to: with no way left on the plane, the walk falls back to walkOnPlane. */
+    unreached?: boolean;
+}
+
+/** A leg's failures that end the walk however optional its hop: the budget spent, a web, no player. */
+const FINAL_LEG: ReadonlySet<string> = new Set(['timeout', 'no-time', 'no-blade', 'no-player']);
+
+/** Gives up on a move or a bank detour for the rest of the walk: the move avoided, the detour's objs absent. */
+function giveUp(h: Extract<Hop, { kind: 'cross' | 'bank' }>, rec: Learned): void {
+    if (h.kind === 'cross') rec.avoid.add(moveKey(h.move));
+    else for (const w of h.withdraw) rec.absent.add(w.obj);
 }
 
 /** A move's key: its act on its tile, and its source line. */
@@ -442,7 +451,7 @@ function hopTicks(h: Exclude<Hop, { kind: 'door' }>): number {
     if (h.kind === 'climb') return CLIMB_MAX_TICKS;
     if (h.kind === 'bank') return BANK_HOP_TICKS;
     if (isGnomeGate(h.move)) return GATE_MAX_TICKS;
-    return crossWaitTicks(h.move) + CROSS_SEND_TICKS;
+    return crossAttemptTicks(h.move);
 }
 
 /** The Gnome Stronghold gate, which gate.ts passes (Femi's dialog asks a choice its rows do not carry). */
@@ -454,7 +463,9 @@ const isGnomeGate = (m: Move) => m.act.kind === 'loc-op' && m.act.loc === GNOME_
  * random landing or a failed roll is walked on from wherever it left the bot. A way with no hop is walked on the
  * plane (walkOnPlane), as is a destination the graph has no way to on the bot's own plane, unless the walk gave up on
  * a move on the way (`cross-failed`). A move the game refuses is given up on for the rest of the walk, a bank obj
- * found missing too.
+ * found missing too, and so is a move or a bank whose stand the walk could not walk to (then a destination on the
+ * plane with no way left is walked on the plane). Inside a step a hop starts only with its ticks (hopTicks) left
+ * before the walk's reserve, else the walk ends `no-time` (an advancing `timeout` once it has moved).
  */
 function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
     const start = ctx.state();
@@ -490,8 +501,9 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         const next = firstHop(way?.hops);
         if (!next) {
             // A walk that gave up on a move and finds no way left ends; one with no hop to make, or a destination the
-            // graph does not reach, is walked on the plane.
-            if (!way && rec.failed)
+            // graph does not reach, is walked on the plane, as is one whose graph planned a way to a stand the
+            // pathfinder could not walk to (the graph's way there is not the collision's).
+            if (!way && rec.failed && !(samePlane && rec.unreached))
                 return { ok: false, reason: 'cross-failed', message: `No way left to ${what}: ${rec.failed}` };
             if (samePlane) {
                 const last = yield* walkOnPlane(ctx, dest.x, dest.z, tolerance, {
@@ -513,10 +525,21 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             maxTicks: deadline - s.tick,
             reserveTicks: reserve + hopTicks(next),
         });
+        const now = ctx.state().player;
+        const progressed = hop > 0 || (!!now && chebyshev(posOf(now), stand) < chebyshev(here, stand));
         if (!walked.ok) {
-            const now = ctx.state().player;
-            const nearer = !!now && chebyshev(posOf(now), stand) < chebyshev(here, stand);
-            return failedLeg(walked, hop > 0 || nearer, `walking to the ${name}: `);
+            if (next.kind === 'climb' || FINAL_LEG.has(walked.reason))
+                return failedLeg(walked, progressed, `walking to the ${name}: `);
+            giveUp(next, rec);
+            rec.failed = `walking to the ${name}: ${walked.message}`;
+            rec.unreached = true;
+            yield* log(`walk: ${rec.failed}; planning without it`);
+            continue;
+        }
+        const left = ctx.stepTicksLeft?.();
+        if (left !== undefined && left - reserve < hopTicks(next)) {
+            const message = `No time for the ${name}: the step has ${left} ticks left and needs ${hopTicks(next) + reserve}`;
+            return failedLeg({ ok: false, reason: 'no-time', message }, progressed);
         }
         if (next.kind === 'climb') {
             const c = next.connector;
@@ -526,7 +549,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             yield* log(`walk: climbed ${c.direction} the ${c.name}`);
         } else if (next.kind === 'bank') yield* bankHop(ctx, next, rec);
         else
-            yield* crossHop(ctx, next, rec, () => {
+            yield* crossHop(ctx, next, rec, deadline, () => {
                 const again = firstHop(planRoute(ctx, ctx.state(), dest, tolerance, rec)?.hops);
                 return again?.kind === 'cross' && moveKey(again.move) === moveKey(next.move);
             });
@@ -536,13 +559,15 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
 
 /**
  * Makes a move of the way (cross.ts; the Gnome Stronghold gate by gate.ts's passGate), noting what the walk learns:
- * the wizard it came in by, a move refused (given up on for the rest of the walk). A failed roll is tried again
- * where it leaves the bot while `stillBest` holds; one that leaves it elsewhere is planned again from there.
+ * the wizard it came in by (an npc the graph's came-from requirements name), a move refused (given up on for the rest
+ * of the walk). A failed roll is tried again where it leaves the bot while `stillBest` holds and another attempt ends
+ * by `deadline`; one that leaves it elsewhere is planned again from there.
  */
 function* crossHop(
     ctx: ActionContext,
     h: Extract<Hop, { kind: 'cross' }>,
     rec: Learned,
+    deadline: number,
     stillBest: () => boolean,
 ): Op<void> {
     const m = h.move;
@@ -557,11 +582,12 @@ function* crossHop(
         }
         return;
     }
-    const r = yield* cross(ctx, m, { retry: () => !m.roll?.fail.to && stillBest() });
+    const r = yield* cross(ctx, m, { deadline, retry: () => !m.roll?.fail.to && stillBest() });
     if (r.ok) {
-        if (m.act.kind === 'npc-op') {
+        const came = m.act.kind === 'npc-op' ? cameFrom(m.act.npc) : undefined;
+        if (came && (ctx.walkWorld ?? defaultWorld()).graph.cameFrom.has(came)) {
             for (const t of rec.met) if (t.startsWith(CAME_FROM)) rec.met.delete(t);
-            rec.met.add(cameFrom(m.act.npc));
+            rec.met.add(came);
         }
         yield* log(`walk: crossed ${name}${r.attempts > 1 ? ` in ${r.attempts} attempts` : ''}`);
         return;

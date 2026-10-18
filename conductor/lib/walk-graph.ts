@@ -39,12 +39,12 @@ import {
     type ReachGraph,
     type ReachInput,
 } from '../../wiki/world/reach';
-import { minimalSets } from '../../wiki/world/requirements';
+import { CAME_FROM, minimalSets } from '../../wiki/world/requirements';
 import { readConfigs } from '../../wiki/world/sources/configs';
 import type { Act, Gate, Roll } from '../../wiki/world/types';
 import { isTollGate } from '../actions/toll';
 import { type Account, currentLevel, meetsSet } from './account';
-import type { Connector, Tile } from './connectors';
+import { type Connector, sameTile, type Tile } from './connectors';
 import { isInWilderness } from './wilderness';
 import { WORLD } from './world-index';
 
@@ -59,7 +59,6 @@ const BASE_HITPOINTS = 10;
 const wild = (t: Tile): boolean => isInWilderness(t.level, t.x, t.z);
 /** A key for the edge from tile index a to b (indexes are below 2^24). */
 const pair = (a: number, b: number): number => a * 0x1000000 + b;
-const sameTile = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 /** A requirement's alternatives (set ids) as one string; `''` for none asked (`[[]]`, a door's free side). */
 const sig = (graph: ReachGraph, alts: readonly number[]): string =>
     alts
@@ -152,6 +151,8 @@ export interface WalkGraph {
     jumps: ReadonlyMap<number, readonly JumpEdge[]>;
     /** The objs a requirement of the graph names (`item:<obj>:held`, `consume:<obj>:<n>`): what a bank may supply. */
     bankable: readonly string[];
+    /** The `other:came from <npc>` tokens a requirement of the graph names: the npcs whose moves a walk records. */
+    cameFrom: ReadonlySet<string>;
     /** Per tile: half ticks of the way found, connectors climbed on it, its chain node; reset after each search. */
     dist: Int32Array;
     hops: Uint8Array;
@@ -270,10 +271,12 @@ export function walkGraph(input: {
         for (const from of c.from) for (const l of c.landings) addMove(from, l.tile, sigs, move);
     }
     const bankable = new Set<string>();
+    const cameFrom = new Set<string>();
     for (let id = 0; id < graph.sets.count; id++)
         for (const r of graph.sets.strings(id)) {
             const obj = /^(?:item:([a-z0-9_]+):held|consume:([a-z0-9_]+):\d+)$/.exec(r);
             if (obj) bankable.add(obj[1] ?? obj[2]!);
+            if (r.startsWith(CAME_FROM)) cameFrom.add(r);
         }
     return {
         graph,
@@ -281,6 +284,7 @@ export function walkGraph(input: {
         moves,
         jumps,
         bankable: [...bankable].sort(),
+        cameFrom,
         dist: new Int32Array(index.size).fill(INF),
         hops: new Uint8Array(index.size),
         node: new Int32Array(index.size),
@@ -580,18 +584,28 @@ export function planWay(from: Tile, targets: readonly Tile[], opts: WalkSearch &
     if (!onward) return plain;
     const total = toBank.runTicks + BANK_DETOUR_TICKS + onward.runTicks;
     if (plain && plain.runTicks <= total) return plain;
-    const withdraw = new Map<string, number>();
+    // What the way on needs of each obj: the most one crossing asks to be held, and what the crossings spend (consume,
+    // coins) summed; less what the bot carries.
+    const kept = new Map<string, number>();
+    const spent = new Map<string, number>();
     for (const hop of onward.hops) {
         if (hop.requires.some(set => meetsSet(account, set))) continue;
         const set = hop.requires.find(s => meetsSet(rich, s));
         for (const r of set ?? []) {
             const m = /^(?:item:([a-z0-9_]+):held|consume:([a-z0-9_]+):(\d+)|coins:(\d+))$/.exec(r);
-            if (!m || meetsSet(account, [r])) continue;
-            const [obj, count] = m[4] ? ['coins', Number(m[4])] : [m[1] ?? m[2]!, Number(m[3] ?? 1)];
-            withdraw.set(obj, (withdraw.get(obj) ?? 0) + count);
+            if (!m) continue;
+            if (m[1]) kept.set(m[1], 1);
+            else if (m[4]) spent.set('coins', (spent.get('coins') ?? 0) + Number(m[4]));
+            else spent.set(m[2]!, (spent.get(m[2]!) ?? 0) + Number(m[3]));
         }
     }
-    if (!withdraw.size) return plain;
+    const withdraw: { obj: string; count: number }[] = [];
+    for (const obj of new Set([...kept.keys(), ...spent.keys()])) {
+        const carried = obj === 'coins' ? account.coins : (account.held?.get(obj) ?? 0);
+        const count = Math.max(kept.get(obj) ?? 0, spent.get(obj) ?? 0) - carried;
+        if (count > 0) withdraw.push({ obj, count });
+    }
+    if (!withdraw.length) return plain;
     return {
         target: onward.target,
         runTicks: total,
@@ -601,7 +615,7 @@ export function planWay(from: Tile, targets: readonly Tile[], opts: WalkSearch &
             {
                 kind: 'bank',
                 stand: bank,
-                withdraw: [...withdraw].map(([obj, count]) => ({ obj, count })),
+                withdraw,
                 requires: [[]],
             },
             ...onward.hops,

@@ -10,7 +10,7 @@ import { CROSSING_TICKS } from '../../wiki/world/distance';
 import { actName } from '../../wiki/world/reach';
 import { type Op, scan, send, ticks, wait } from '../core/op';
 import { configId, configName, objInfo } from '../lib/packs';
-import type { Tile } from '../lib/connectors';
+import { chebyshev, sameTile, type Tile } from '../lib/connectors';
 import type { Move } from '../lib/walk-graph';
 import type { ActionContext } from './context';
 import { cleanText } from './dismiss';
@@ -36,9 +36,18 @@ const TELEPORT_JUMP = 10;
 /** A choice dialog has more than one option; a lone Continue is the dialog guard's. */
 const CHOICE_MIN_OPTIONS = 2;
 
+/** The sends of a move besides its act: its dialogue choices. */
+export const CROSS_SEND_TICKS = 2;
+
 /** The ticks one attempt of `m` waits for its move: the approach, the move's slack, a failed roll's delays. */
 export const crossWaitTicks = (m: Move): number =>
     CROSS_APPROACH_TICKS + CROSS_SLACK * CROSSING_TICKS[m.via] + (m.roll?.fail.ticks ?? 0);
+
+/** The ticks one attempt of `m` takes at its worst: its wait and its sends. */
+export const crossAttemptTicks = (m: Move): number => crossWaitTicks(m) + CROSS_SEND_TICKS;
+
+/** The ticks a failed roll of `m` waits before it is tried again: the failure's own delays. */
+const retryDelayTicks = (m: Move): number => m.roll?.fail.ticks ?? 1;
 
 export type CrossResult =
     | { ok: true; at: Tile; attempts: number }
@@ -56,13 +65,15 @@ export type CrossResult =
 export interface CrossOptions {
     /** After a failed roll: whether to try again (the walk's plan still prices the move as the better way). */
     retry?(): boolean;
+    /**
+     * The tick the move is to be over by (a walk's deadline): a failed roll is tried again only when the retry's
+     * delay and another attempt at its worst (crossAttemptTicks) end by it.
+     */
+    deadline?: number;
 }
 
 const here = (s: BotWorldState): Tile | undefined =>
     s.player ? { level: s.player.level, x: s.player.worldX, z: s.player.worldZ } : undefined;
-const gap = (a: { x: number; z: number }, b: { x: number; z: number }) =>
-    Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
-const sameTile = (a: Tile, b: Tile) => a.level === b.level && a.x === b.x && a.z === b.z;
 /** A dialog's options as one string. */
 const shown = (s: BotWorldState) => s.dialog.options.map(o => cleanText(o.text)).join(' / ');
 const where = (m: Move) => `${actName(m)} at (${m.at.x}, ${m.at.z})`;
@@ -70,9 +81,9 @@ const where = (m: Move) => `${actName(m)} at (${m.at.x}, ${m.at.z})`;
 /** The move's loc in `locs`: by config id on its level within LOC_SLACK of its tile, else whatever is on its tile. */
 function findLoc(locs: readonly NearbyLoc[], m: Move, loc: string): NearbyLoc | undefined {
     const id = configId('loc', loc);
-    const near = locs.filter(l => l.level === m.at.level && gap(l, m.at) <= LOC_SLACK);
+    const near = locs.filter(l => l.level === m.at.level && chebyshev(l, m.at) <= LOC_SLACK);
     return (
-        near.filter(l => l.id === id).sort((a, b) => gap(a, m.at) - gap(b, m.at))[0] ??
+        near.filter(l => l.id === id).sort((a, b) => chebyshev(a, m.at) - chebyshev(b, m.at))[0] ??
         near.find(l => l.x === m.at.x && l.z === m.at.z)
     );
 }
@@ -81,7 +92,7 @@ function findLoc(locs: readonly NearbyLoc[], m: Move, loc: string): NearbyLoc | 
 function findNpc(s: BotWorldState, m: Move, npc: string): NearbyNpc | undefined {
     const id = configId('npc', npc);
     return s.nearbyNpcs
-        .filter(n => n.id === id && gap(n, m.at) <= NPC_SLACK && n.reachable !== false)
+        .filter(n => n.id === id && chebyshev(n, m.at) <= NPC_SLACK && n.reachable !== false)
         .sort((a, b) => a.distance - b.distance)[0];
 }
 
@@ -146,12 +157,12 @@ function* sendAct(ctx: ActionContext, m: Move): Op<Sent> {
 
 /**
  * Makes the move `m`: sends its act, answers its choices (Act `choices`, in order, by their text) as they are shown,
- * and waits until the bot stands on one of its landings, or for a teleport has been carried off (another plane, or
- * TELEPORT_JUMP tiles from where it stood). `refused` is the game turning it down (obstacle.ts's refusals, "I can't
- * reach that!", a refusal message, a discarded op, a choice dialog the row has no answer for); `fell` a failed roll
- * (obstacle.ts's fall messages, or the bot moved to the roll's fail tile), which is tried again while `opts.retry`
- * holds, up to CROSS_MAX_ATTEMPTS; `no-move` nothing in crossWaitTicks. The bot should stand on or near the move's
- * approach (walkTo there first).
+ * and waits until the bot stands on one of its landings, or, for a teleport, until it has carried the bot off (another
+ * plane, or TELEPORT_JUMP tiles from where it stood). `refused` is the game turning it down (obstacle.ts's refusals,
+ * "I can't reach that!", a refusal message, a discarded op, a choice dialog the row has no answer for); `fell` a
+ * failed roll (obstacle.ts's fall messages, or the bot moved to the roll's fail tile), which is tried again while
+ * `opts.retry` holds and another attempt fits before `opts.deadline`, up to CROSS_MAX_ATTEMPTS; `no-move` nothing in
+ * crossWaitTicks. The bot should stand on or near the move's approach (walkTo there first).
  */
 export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op<CrossResult> {
     for (let attempt = 1; ; attempt++) {
@@ -168,7 +179,7 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
             const p = here(s);
             if (!p) return false;
             if (m.landings.some(l => sameTile(l, p))) return true;
-            return m.via === 'teleport' && (p.level !== start.level || gap(p, start) >= TELEPORT_JUMP);
+            return m.via === 'teleport' && (p.level !== start.level || chebyshev(p, start) >= TELEPORT_JUMP);
         };
         const refusal = (s: BotWorldState): string | null =>
             messageSince(s, cursor, OBSTACLE_REFUSED) ??
@@ -217,10 +228,13 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
         if (no) return { ok: false, reason: 'refused', message: `${where(m)}: ${no}` };
         const slip = fall(w.state);
         if (slip) {
-            if (attempt >= CROSS_MAX_ATTEMPTS || !opts.retry?.())
+            const fits =
+                opts.deadline === undefined ||
+                ctx.state().tick + retryDelayTicks(m) + crossAttemptTicks(m) <= opts.deadline;
+            if (attempt >= CROSS_MAX_ATTEMPTS || !fits || !opts.retry?.())
                 return { ok: false, reason: 'fell', message: `${where(m)}: ${slip}` };
             // The failure's own delays, before the next try is sent.
-            yield* ticks(m.roll?.fail.ticks ?? 1);
+            yield* ticks(retryDelayTicks(m));
             continue;
         }
         if ((w.state.opFeedback?.opRejectedCount ?? 0) > rejected)

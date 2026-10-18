@@ -10,6 +10,7 @@ import type { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
+import { bankMemory, watchBank } from './bank-memory';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { guardLabel } from './interrupts';
 import { checkStops, describeStop, type StopCondition, validateStops } from './stop';
@@ -299,48 +300,19 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const say = (msg: string) => sinks.print(`[plan:${def.name}] ${msg}`);
 
     /** The bank as last seen open in any state the plan or a phase read: item name -> count. */
-    let bankCounts: Map<string, number> | null = null;
+    const bankSeen = bankMemory();
     let seen: BotWorldState | null = null;
-    /**
-     * The client empties the bank's item list for the tick before it reports the bank closed, so the last
-     * state seen open is empty whatever the bank holds. An empty list after a listed one is therefore
-     * taken only once a second open tick confirms it (a bank emptied on purpose stays open at least that
-     * long under withBank's close wait; one closed straight after its last withdrawal reads as before).
-     */
-    let sessionListed = false;
-    let emptyOpenTicks = 0;
-    let lastOpenTick = -1;
     const observe = (s: BotWorldState): BotWorldState => {
-        if (s === seen) return s;
         seen = s;
-        if (!s.bank.isOpen) {
-            sessionListed = false;
-            emptyOpenTicks = 0;
-            return s;
-        }
-        if (s.tick === lastOpenTick && s.bank.items.length === 0) return s;
-        lastOpenTick = s.tick;
-        if (s.bank.items.length > 0) {
-            sessionListed = true;
-            emptyOpenTicks = 0;
-        } else if (sessionListed && ++emptyOpenTicks < 2) {
-            return s;
-        }
-        const counts = new Map<string, number>();
-        for (const i of s.bank.items) counts.set(i.name, (counts.get(i.name) ?? 0) + i.count);
-        bankCounts = counts;
-        return s;
+        return bankSeen.observe(s);
     };
     /** A phase's driver, with every state it hands out observed for the bank memory. */
-    const watched = (d: Driver): Driver => ({
-        state: () => observe(d.state()),
-        nextTick: () => d.nextTick().then(observe),
-        send: action => d.send(action),
-        scan: radius => d.scan(radius),
-        log: (msg, data) => d.log(msg, data),
-        screenshot: label => d.screenshot(label),
-        now: () => d.now(),
-    });
+    const watched = (d: Driver): Driver => watchBank(d, { ...bankSeen, observe });
+    /** The bank memory as a record (an event's, a phase run's); null before the bank has been seen open. */
+    const bankRecord = () => {
+        const counts = bankSeen.counts();
+        return counts && Object.fromEntries(counts);
+    };
 
     const first = observe(opts.state());
     const now = opts.now ?? (() => (seen ?? first).tick * TICK_MS);
@@ -387,7 +359,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     } | null = null;
 
     const view = (s: BotWorldState): PlanView => {
-        const known = bankCounts;
+        const known = bankSeen.counts();
         return {
             state: s,
             inv: item => countItems(s, pattern(item)),
@@ -607,7 +579,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 last,
                 inventory: inventoryCounts(s),
                 free: v.free,
-                bank: bankCounts ? Object.fromEntries(bankCounts) : null,
+                bank: bankRecord(),
             });
             if (!entry)
                 return finish(
@@ -655,7 +627,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             say(`phase ${index + 1}: ${chosen.name}`);
             running = chosen;
             // The bank as last seen open, for the phase's walks to plan a detour on (ExecuteOptions.bank).
-            const bank = bankCounts ? Object.fromEntries(bankCounts) : undefined;
+            const bank = bankRecord() ?? undefined;
             const run = opts.newPhaseRun(chosen, index, bank && { bank });
             // Names the phase's own log while it runs; phase-end alone would leave a live viewer guessing.
             emit({ type: 'phase-start', phase: chosen.name, index, runId: run.runId, logFile: run.logFile });

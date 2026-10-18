@@ -62,8 +62,8 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     /** Where the walkTo op plans its way (ActionContext); unset, the world index's. */
     readonly walkWorld?: WalkWorld;
     /**
-     * The bank's count of an item by name as the plan last saw it open before this run (ActionContext); unset when
-     * no plan has seen the bank open.
+     * The bank's count of an item by name as last seen open: the plan's record before this run, then what the run's
+     * own states show (ActionContext); unset when no plan has seen the bank open.
      */
     bank?(item: string): number | undefined;
     /**

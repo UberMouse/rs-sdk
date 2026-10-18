@@ -75,6 +75,8 @@ const lumped = (plane: string) => plane.endsWith('u');
 /** The distance in tiles (Chebyshev) between two points. */
 export const chebyshev = (a: { x: number; z: number }, b: { x: number; z: number }) =>
     Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
+/** The same tile: level and coordinates. */
+export const sameTile = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 
 /** What the table lays over a generated row: a curated name and hazard. */
 export interface Override {

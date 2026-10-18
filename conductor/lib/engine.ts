@@ -13,6 +13,7 @@ import { clearStrayChoice, dismiss, leftoverModal, strayChoice } from '../action
 import { eat } from '../actions/eat';
 import { closeModalUntil } from '../actions/modal';
 import { type Command, log, type Op } from '../core/op';
+import { type BankMemory, bankMemory, watchBank } from './bank-memory';
 import { sleep } from './env';
 import { findFood, guardLabel, GUARDS, isAttacked, lowHpGuard, underFire, wildernessGuard } from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
@@ -99,8 +100,9 @@ export interface ExecuteOptions {
     /** Where the walkTo op plans its way (TaskContext.walkWorld); default the world index's. */
     walkWorld?: WalkWorld;
     /**
-     * The bank as the plan last saw it open before this run, item name -> count (TaskContext.bank); absent when no
-     * plan has seen it. Recorded with the run's inputs, so a replay plans as the run did.
+     * The bank as the plan last saw it open before this run, item name -> count (TaskContext.bank, which the run's
+     * own states showing the bank open update); absent when no plan has seen it. Recorded with the run's inputs, so
+     * a replay plans as the run did.
      */
     bank?: Readonly<Record<string, number>>;
     botName: string;
@@ -120,13 +122,13 @@ export interface ExecuteOptions {
     partOf?: string;
 }
 
-/** A bank record's count of an item by name, case aside: 0 for one the record does not hold. */
+/** The bank memory's count of an item by name, case aside: 0 for one it does not hold. */
 const bankCount =
-    (bank: Readonly<Record<string, number>>) =>
+    (bank: BankMemory) =>
     (item: string): number => {
         const name = item.toLowerCase();
         let n = 0;
-        for (const [k, count] of Object.entries(bank)) if (k.toLowerCase() === name) n += count;
+        for (const [k, count] of bank.counts() ?? []) if (k.toLowerCase() === name) n += count;
         return n;
     };
 
@@ -218,7 +220,11 @@ function* capped<T>(op: Op<T>, count: () => boolean): Op<T> {
 type AnyTaskDef = TaskDef<TaskDef['params'], object>;
 
 export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promise<TaskResult> {
-    const { driver, sinks, botName, runId, logFile, stops } = opts;
+    const { sinks, botName, runId, logFile, stops } = opts;
+    // The bank from the plan's record on, as last seen open: what the run's own banking shows replaces it, so a
+    // later walk does not detour for an item the run has withdrawn or found missing.
+    const bankSeen = opts.bank && bankMemory(new Map(Object.entries(opts.bank)));
+    const driver = bankSeen ? watchBank(opts.driver, bankSeen) : opts.driver;
     const now = opts.now ?? (() => driver.now());
     const startedAt = now();
     const screenshots: string[] = [];
@@ -283,7 +289,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         },
         ...(opts.pathfinder && { pathfinder: opts.pathfinder }),
         ...(opts.walkWorld && { walkWorld: opts.walkWorld }),
-        ...(opts.bank && { bank: bankCount(opts.bank) }),
+        ...(bankSeen && { bank: bankCount(bankSeen) }),
         stepTicksLeft: () => (opStartTick === null ? undefined : opStartTick + stepBudgetTicks - driver.state().tick),
         inventoryFull: () => driver.state().inventory.length >= INVENTORY_SLOTS,
         distanceTo: (x, z) => {
