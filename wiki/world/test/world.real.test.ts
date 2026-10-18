@@ -13,7 +13,8 @@ import { readDbrows } from '../sources/dbrows';
 import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
 import { readCallables, readTriggers } from '../sources/triggers';
-import type { Feature, Site } from '../types';
+import { coord } from '../reach';
+import type { Feature, Site, Tile } from '../types';
 
 // Built when the file loads, where no timeout applies: the build reads all the game data, 3-4s here,
 // too close to the 5s bun gives a beforeAll hook (and bun-types 1.2 declares no hook timeout).
@@ -38,6 +39,9 @@ const shopSubtypesOf = (npc: string): string[] =>
         .map(f => f.subtype);
 const spawnsOf = (config: string) => world.npcSpawns.filter(s => s.config === config);
 const reachOf = (id: string) => world.sites.find(s => s.id === id)?.reach;
+/** A gate landing as the build report writes one. */
+const shown = (g: { trigger: string; tile: Tile }, stand: Tile, landing: Tile) =>
+    `${g.trigger} ${coord(g.tile)} from ${coord(stand)} -> ${coord(landing)}`;
 /** The crossing rows done by an op on a loc config. */
 const rowsOn = (loc: string) => world.crossings.filter(c => c.act.kind === 'loc-op' && c.act.loc === loc);
 /** The place-page ids the Locations rows of an npc page link, in page order. */
@@ -194,6 +198,50 @@ describe('the Shantay Pass, a move the trigger queues ([queue,shantay_pass_enter
             runTicks: 60,
             requires: ['item:metal_key:held'],
         });
+    });
+});
+
+describe('free gate landings (sources/gate-landings.ts)', () => {
+    test('every one: a side the script lets through, past nothing the bound run cannot read but a wait', () => {
+        // A new one, or one gone, is a change to what a stand crosses free: read its script.
+        const free = world.gates.flatMap(g =>
+            (g.landings ?? []).filter(l => l.free).map(l => shown(g, l.stand, l.landing)),
+        );
+        expect(free).toEqual([
+            // South of the gate, the Regicide guard lets the player out (regicide_arandar_gate_guard.rs2:5).
+            'oploc1,overpass_gate_left (2384, 3334) from (2384, 3333) -> (2385, 3335)',
+            'oploc1,overpass_gate_left (2384, 3334) from (2385, 3333) -> (2385, 3335)',
+            'oploc1,overpass_gate_right (2386, 3334) from (2386, 3333) -> (2385, 3335)',
+            'oploc1,overpass_gate_right (2386, 3334) from (2387, 3333) -> (2387, 3335)',
+            // The pipes ask Agility from one end only, then wait out a player in the pipe (barbarian_course.rs2:126,
+            // :139; karam_dungeon.rs2:289, :299, :319, :329).
+            'oploc1,barbarian_obstacle_pipe (2552, 3559) from (2551, 3559) -> (2552, 3561)',
+            'oploc1,barbarian_obstacle_pipe (2552, 3559) from (2552, 3558) -> (2552, 3561)',
+            'oploc1,barbarian_obstacle_pipe (2552, 3559) from (2553, 3559) -> (2552, 3561)',
+            'oploc1,karam_dungeon_pipe2 (2655, 9567) from (2655, 9569) -> (2655, 9563)',
+            'oploc1,karam_dungeon_pipe2 (2655, 9567) from (2656, 9568) -> (2655, 9563)',
+            'oploc1,karam_dungeon_pipe2 (2655, 9571) from (2654, 9572) -> (2655, 9566)',
+            'oploc1,karam_dungeon_pipe2 (2655, 9571) from (2655, 9573) -> (2655, 9566)',
+            'oploc1,karam_dungeon_pipe (2698, 9493) from (2697, 9493) -> (2698, 9500)',
+            'oploc1,karam_dungeon_pipe (2698, 9493) from (2698, 9492) -> (2698, 9500)',
+            'oploc1,karam_dungeon_pipe (2698, 9493) from (2699, 9493) -> (2698, 9500)',
+            'oploc1,karam_dungeon_pipe (2698, 9498) from (2697, 9498) -> (2698, 9503)',
+            'oploc1,karam_dungeon_pipe (2698, 9498) from (2698, 9497) -> (2698, 9503)',
+            'oploc1,karam_dungeon_pipe (2698, 9498) from (2699, 9498) -> (2698, 9503)',
+            // South of the Shantay Pass, and level with it, the player goes north scot-free (shantay_pass.rs2:70).
+            'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3303, 3115) -> (3303, 3118)',
+            'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3304, 3115) -> (3304, 3118)',
+            'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3306, 3116) -> (3306, 3119)',
+            // North of the lumberyard fence, members only from the south, the player waits out a climber
+            // (quest_fluffs.rs2:117, :131).
+            'oploc1,gertrudefence (3305, 3493) from (3304, 3493) -> (3305, 3492)',
+            'oploc1,gertrudefence (3305, 3493) from (3305, 3494) -> (3305, 3492)',
+            'oploc1,gertrudefence (3305, 3493) from (3306, 3493) -> (3305, 3492)',
+        ]);
+        // Those past a wait, each listed in the build report: the pipes and the fence.
+        expect(report.gates.landings.waited.map(w => shown(w, w.stand, w.landing))).toEqual(
+            free.filter(f => /pipe|gertrudefence/.test(f)),
+        );
     });
 });
 

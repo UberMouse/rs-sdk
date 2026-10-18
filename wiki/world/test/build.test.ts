@@ -483,6 +483,7 @@ describe('formatReport', () => {
                 unlanded: [],
                 rolled: 0,
                 unrolled: [],
+                waited: [],
             },
         },
         scripted: {
@@ -768,7 +769,7 @@ describe('formatReport', () => {
         ).toBe(false);
     });
 
-    test('counts the gate moves on objects, lists the underived rows by trigger and the landings off land', () => {
+    test('counts the gate moves on objects, lists the underived rows by trigger, the landings off land and those past a wait', () => {
         const landings: BuildReport['gates']['landings'] = {
             counts: { to: 1, landings: 2, opens: 3, underived: 3, windows: 1 },
             rolled: 0,
@@ -807,9 +808,19 @@ describe('formatReport', () => {
                     reasons: ['a (r.rs2:2)', 'b (r.rs2:3)'],
                 },
             ],
+            waited: [
+                {
+                    trigger: 'oploc1,pipe',
+                    loc: 'pipe',
+                    tile: at(1, 1),
+                    stand: at(1, 0),
+                    landing: at(1, 3),
+                    waits: ['`%pipe_used >= map_clock` (p.rs2:5)'],
+                },
+            ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-13)).toEqual([
+        expect(lines.slice(-15)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
                 '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
@@ -821,6 +832,8 @@ describe('formatReport', () => {
             '  oploc1,rock rock (9, 9) from (8, 9) -> (10, 9) (r.rs2:7)',
             'warning: 1 stands of gate rows with landings that give no landing, left out:',
             '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
+            'warning: 1 free gate landings reached past a wait only (a var against map_clock), read as free:',
+            '  oploc1,pipe pipe (1, 1) from (1, 0) -> (1, 3): `%pipe_used >= map_clock` (p.rs2:5)',
             scriptedLine,
             teleportsLine,
             npcTeleportsLine,

@@ -14,12 +14,13 @@
 // - a `queue*` command names a `[queue,name]` script (GateScanInput.queues) the engine runs once the
 //   trigger's script ends, however it ended: each path runs the moving scripts it queued then, and their
 //   moves are the trigger's, under every condition the path took (the Shantay Pass's way in,
-//   areas/area_alkharid/scripts/shantay_pass.rs2:97, moves in [queue,shantay_pass_enter], :103). They run in
-//   the order queued, which is the engine's for equal delays (Player.ts processQueue runs one once its delay
-//   is spent); a weakqueue is followed as if it ran, though the engine drops one when a modal closes or the
-//   active script resumes (Player.ts closeModal, executeScript). The build reports each moving script queued
-//   with a delay other than 0 or on the weak queue (untimedQueues). processQueue starts a queued script with
-//   no active loc, so its loc commands leave the trigger's loc as it was.
+//   areas/area_alkharid/scripts/shantay_pass.rs2:97, moves in [queue,shantay_pass_enter], :103). The engine
+//   runs queued scripts in the order queued within the main queue list, as delays allow; the weak queue runs
+//   after it (Player.ts processQueues). The walker runs a path's in the order queued, which differs only where
+//   one has a delay or a weakqueue comes before another queue, and follows a weakqueue as if it ran, though the
+//   engine drops one when a modal closes or the active script resumes (Player.ts closeModal, executeScript): the
+//   build reports each moving script queued with a delay other than 0 or on the weak queue (untimedQueues).
+//   processQueue starts a queued script with no active loc, so its loc commands leave the trigger's loc as it was.
 // - a condition on a quest varp, `%qp`, `stat`/`stat_base`, `inv_total(inv|worn, obj)`,
 //   `inv_totalcat(inv|worn, category)`, `inv_getobj(worn, slot)`, `last_useitem`, `map_members`, a
 //   loadout proc (gates.ts LOADOUT_PROCS) or a tool checker's result against null (`~pickaxe_checker`,
@@ -49,8 +50,9 @@
 // the last one leaves the player; `loc_del`, and `loc_change` to a loc whose collision does not block,
 // open the loc. A `stat_random` roll is followed both ways, each path marked: a slip is not the move, but
 // its path says what a failure does, from the delays (Path.ticks) and damage (Path.damage) on it. A
-// condition the scan reads only as other:<text>, or not at all, goes both ways unrecorded, as which paths
-// are kept (consistent) reads only requirements, refusals and quest stages.
+// condition the scan reads only as other:<text>, or not at all, goes both ways, as which paths are kept
+// (consistent) reads only requirements, refusals and quest stages; but the path keeps its text (Path.passed),
+// and one past any but a wait (a var against `map_clock` taken the way time opens, waits) is not free.
 import { codeOf } from '../classify';
 import { minimalSets, requirementSet, subsetOf } from '../requirements';
 import type { Gate, Quest, Side, Tile } from '../types';
@@ -214,7 +216,8 @@ export interface SeenRoll {
  * requirements can take (gateLander): lands the player on a tile (`player` when the tile follows the
  * stand; `move` the last move the scan counts outside every call it counts as one move, Path.outer; `roll` the
  * roll it succeeded at, or `unrolled` why a roll it is behind can't be taken: two on the path, or bounds not
- * known offline; `free` when the path needs nothing, a side the script lets through), opens the loc, or can't be
+ * known offline; `free` when the path needs nothing, a side the script lets through, with `waits` the waits it
+ * passed on the way, as `` `text` (file:line) ``), opens the loc, or can't be
  * told offline (`why`, with the construct and its script line). A path that failed a roll is a
  * `fail`: where it leaves the player (`tile`, absent when no command moved them), and the ticks and damage it
  * takes (Path.ticks, Path.damage), or why those are not known.
@@ -229,6 +232,7 @@ export type LandingOutcome =
           roll?: SeenRoll;
           unrolled?: string;
           free?: true;
+          waits?: string[];
       }
     | { k: 'opens'; at: string }
     | { k: 'underived'; why: string }
@@ -271,6 +275,11 @@ type Cond =
     | { k: 'side'; side: string }
     /** A condition the scan can't read, taken `want` way: it needs nothing, but can make the trigger a candidate. */
     | { k: 'unread'; text: string; want: boolean }
+    /**
+     * A bound run's condition it can't read, taken either way (meaning): it settles nothing, so it goes onto the path
+     * (Path.passed) rather than its conditions, `wait` when taken so it is a wait (waits).
+     */
+    | { k: 'passed'; text: string; wait: boolean }
     /**
      * A bound run's `stat_random` roll, taken the way it succeeds (`ok`) or fails; `low` and `high` undefined
      * when they are not known offline.
@@ -503,6 +512,12 @@ interface Path {
     move?: { at: string; tos: readonly string[] };
     /** A bound run's: how many calls the scan counts as one move the path is inside. */
     within?: number;
+    /**
+     * A bound run's: the conditions it can't read that the path passed (Cond `passed`), by text, each true when every
+     * path merged into this one took it as a wait. Kept out of the path's key: paths that differ by these alone run
+     * on as one, with both paths' conditions.
+     */
+    passed?: ReadonlyMap<string, boolean>;
     /** A bound run's: the last move the scan counts outside every such call, as `move.at` writes it. */
     outer?: string;
     /** A bound run's: where the last position-setting command left the player, or why that isn't known offline. */
@@ -573,6 +588,8 @@ const condKey = (c: Cond): string => {
             return `unread ${c.want} ${c.text}`;
         case 'roll':
             return `roll ${c.ok} ${c.text}`;
+        case 'passed':
+            return `passed ${c.wait} ${c.text}`;
         default:
             return `${c.k} ${c.text}`;
     }
@@ -580,16 +597,33 @@ const condKey = (c: Cond): string => {
 
 /**
  * The ways, each once (as sets of conditions): a condition the scan doesn't read adds nothing, so a long
- * `&`/`|` of them is one way, not a product of them. Throws past MAX_PATHS.
+ * `&`/`|` of them is one way, not a product of them; ways that differ only by a bound run's `passed` marks are one,
+ * with the marks of both. Throws past MAX_PATHS.
  */
 function distinct(ways: readonly Cond[][]): Cond[][] {
     const out = new Map<string, Cond[]>();
     for (const w of ways) {
         const unique = [...new Map(w.map(c => [condKey(c), c])).values()];
-        out.set(unique.map(condKey).sort(cmp).join('\n'), unique);
+        const key = unique
+            .filter(c => c.k !== 'passed')
+            .map(condKey)
+            .sort(cmp)
+            .join('\n');
+        const had = out.get(key);
+        out.set(key, had ? [...new Map([...had, ...unique].map(c => [condKey(c), c])).values()] : unique);
     }
     if (out.size > MAX_PATHS) throw new TooManyPaths();
     return [...out.values()];
+}
+
+/** Path.passed with more conditions passed: a text stays a wait only while each time it is passed is one. */
+function joinPassed(
+    passed: ReadonlyMap<string, boolean> | undefined,
+    more: Iterable<readonly [string, boolean]>,
+): ReadonlyMap<string, boolean> {
+    const out = new Map(passed);
+    for (const [text, wait] of more) out.set(text, (out.get(text) ?? true) && wait);
+    return out;
 }
 
 /** A value as a key. */
@@ -616,7 +650,8 @@ const keyOf = <T extends object>(part: T, key: (part: T) => string): string => {
 
 /**
  * The paths, each state once: two that took the same conditions, paid the same, moved alike and hold the
- * same locals go on the same way, so dialogue the scan doesn't read doesn't multiply them.
+ * same locals go on the same way, so dialogue the scan doesn't read doesn't multiply them; the one kept has
+ * the conditions both passed (Path.passed).
  */
 function distinctPaths(paths: readonly Path[]): Path[] {
     const out = new Map<string, Path>();
@@ -632,12 +667,24 @@ function distinctPaths(paths: readonly Path[]): Path[] {
             keyOf(p.conds, cs => cs.map(condKey).join('\n')),
             keyOf(p.env, env => [...env].map(([k, v]) => `${k}=${valueKey(v)}`).join('\n')),
         ].join('\t');
-        if (!out.has(key)) out.set(key, p);
+        const had = out.get(key);
+        if (!had) out.set(key, p);
+        else if (p.passed) out.set(key, { ...had, passed: joinPassed(had.passed, p.passed) });
     }
     return [...out.values()];
 }
 
-const branch = (p: Path, ways: readonly Cond[][]): Path[] => ways.map(cs => ({ ...p, conds: [...p.conds, ...cs] }));
+/** The paths that take each way: its `passed` marks go to Path.passed, the rest onto the conditions. */
+const branch = (p: Path, ways: readonly Cond[][]): Path[] =>
+    ways.map(cs => {
+        const passed = cs.flatMap(c => (c.k === 'passed' ? [[c.text, c.wait] as const] : []));
+        const conds = passed.length ? cs.filter(c => c.k !== 'passed') : cs;
+        return {
+            ...p,
+            conds: [...p.conds, ...conds],
+            ...(passed.length ? { passed: joinPassed(p.passed, passed) } : {}),
+        };
+    });
 
 const sideUnknown = (text: string): Value => ({ t: 'unknown', text, side: true });
 const isSide = (v: Value): boolean => v.t === 'unknown' && v.side === true;
@@ -1038,9 +1085,10 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                         ];
                     }
                 }
-                // A bound run goes both ways without noting it: which paths it keeps (consistent) reads only
-                // the conditions above, and paths that differ by these alone run on as one.
-                if (bound) return [[]];
+                // A bound run goes both ways, marking the path (Path.passed): which paths it keeps (consistent)
+                // reads only the conditions above, and paths that differ by these alone run on as one, but a path
+                // past one needs nothing only when it is a wait (needsNothing).
+                if (bound) return [[{ k: 'passed', text, wait: waits(l, op0, r, want) }]];
                 // Taken false, it says so: two paths that differ only by it hold either way (minimalOptions).
                 if (reading.subject) return [[{ k: 'other', text: want ? text : `not ${text}` }]];
                 // A random draw (in the condition, or held in a local it tests: `$rand = random(20)`) goes
@@ -1509,7 +1557,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         return [
             ...kept.map(p => {
                 const o = landingOf(p);
-                return o.k === 'landing' && needsNothing(p) ? { ...o, free: true as const } : o;
+                if (o.k !== 'landing' || !needsNothing(p)) return o;
+                const passed = waitsOf(p);
+                return { ...o, free: true as const, ...(passed.length ? { waits: passed } : {}) };
             }),
             ...run.ends.filter(p => failed(p) && takes(p)).flatMap(fallOf),
             ...run.why.map((why): LandingOutcome => ({ k: 'underived', why })),
@@ -1542,20 +1592,43 @@ export const untimedQueues = (input: GateScanInput): string[] =>
         .untimedQueues([...input.triggers, ...input.callables, ...(input.queues ?? [])])
         .sort(cmp);
 
+const isVar = (e: Expr | undefined): boolean => e?.t === 'name' && e.name.startsWith('%') && e.args === null;
+const isClock = (e: Expr | undefined): boolean => e?.t === 'name' && e.name === 'map_clock' && !e.args?.length;
+
+/**
+ * Whether `l op r`, taken `want` way, is a wait: a var compared with MAP_CLOCK, the world's tick (World.currentTick,
+ * handlers/ServerOps.ts), which only grows, taken the way that holds once the clock passes the var. The scripts
+ * keep an obstacle's last use so: `%barb_obstacle_pipe_used >= map_clock` refuses a player while someone used the
+ * pipe a few ticks ago (skill_agility/scripts/barbarian_course.rs2:139, set to `map_clock + 4` at :143), and so
+ * the Karamja dungeon pipes (areas/area_karamja/scripts/karam_dungeon.rs2:299, :329) and the lumberyard fence
+ * (quests/quest_fluffs/scripts/quest_fluffs.rs2:131): waiting opens it.
+ */
+function waits(l: Expr, op: string, r: Expr | undefined, want: boolean): boolean {
+    const taken = want ? op : NEGATE[op];
+    if (!taken) return false;
+    const varFirst = isVar(l) && isClock(r) ? taken : isClock(l) && isVar(r) ? FLIP[taken] : undefined;
+    return varFirst === '<' || varFirst === '<=';
+}
+
 /**
  * Whether a bound run's path needs nothing an account on a members world lacks, whatever its quests: it met no
  * requirement (`met`), took no roll and no side left unsettled, and pays and consumes nothing. A condition a
- * bound run doesn't read goes both ways unnoted (meaning), so a path past one (a pipe in use,
- * skill_agility/scripts/barbarian_course.rs2:139) is judged by the rest.
+ * bound run can't read is on the path (Path.passed): a path past one needs nothing only when each is a wait
+ * (waits), as any other (an npc nearby, areas/area_alkharid/scripts/shantay_pass.rs2:76) may be what lets the
+ * player through.
  */
 function needsNothing(p: Path): boolean {
     const s = settle(p.conds, p.fare, p.taken);
     return (
         p.conds.every(c => c.k === 'free' || c.k === 'quest') &&
+        [...(p.passed?.values() ?? [])].every(wait => wait) &&
         s.requires.every(r => r === 'members') &&
         !s.before.length
     );
 }
+
+/** The waits a bound run's path passed (Path.passed), sorted. */
+const waitsOf = (p: Path): string[] => [...(p.passed ?? [])].flatMap(([text, wait]) => (wait ? [text] : [])).sort(cmp);
 
 /** What a bound run's path that made the move does (LandingOutcome). */
 function landingOf(p: Path): LandingOutcome {

@@ -12,13 +12,13 @@
 // - `landings`, when a landing follows the stand (`movecoord(coord, ...)`, a step picked by the player's
 //   side), some stand gives none, or some stand's landing is free and another's is not: each stand with the
 //   landings it gives that are walkable land; the stands landing off land (offLand) and those giving no landing
-//   (unlanded) are reported. A landing is `free` when a path that needs nothing (gate-scan.ts LandingOutcome)
-//   lands there from that stand: the side a script lets through, which the row's `from` may not say (the
+//   (unlanded) are reported. A landing is `free` when a path that needs nothing (gate-scan.ts LandingOutcome),
+//   or nothing but a wait (gate-scan.ts waits; each landing so is reported, waited), lands there from that
+//   stand: the side a script lets through, which the row's `from` may not say (the
 //   Shantay Pass lets a player level with it out free, areas/area_alkharid/scripts/shantay_pass.rs2:70, where
 //   `from: north` takes the level stands for the checked side). Every free landing is marked, but none when
-//   all of the row's are: then the bound run reads none of the requirement (a varp only gates.ts reads, the
-//   monastery ladder's %prayer_guild, areas/monastery/scripts/prayer_guild.rs2:6), so it says nothing of the
-//   stands;
+//   all of the row's are: then no path the bound run took reads the row's requirement, so it says nothing of
+//   the stands;
 // - `opens`, when no landing is derived and a path deleted the loc or swapped it for one that doesn't
 //   block (the Kharazi jungle's `loc_change`, quests/quest_legends/scripts/jungle_tree.rs2:135, after which
 //   it teleports the player two tiles on by a value proc, :141, :161, which is not read). LOC_DEL and
@@ -113,6 +113,17 @@ export interface UnlandedStand {
     reasons: string[];
 }
 
+/** A landing written `free` that every path free to it reaches past a wait (gate-scan.ts waits): reported. */
+export interface WaitedLanding {
+    trigger: string;
+    loc: string;
+    tile: Tile;
+    stand: Tile;
+    landing: Tile;
+    /** The waits, as `` `text` (file:line) ``; sorted. */
+    waits: string[];
+}
+
 export interface GateLandings {
     /** The rows of `gates`, in order, those on objects with what their move does, and rolled ones their roll. */
     gates: Gate[];
@@ -123,6 +134,7 @@ export interface GateLandings {
     underived: UnderivedGate[];
     offLand: OffLandLanding[];
     unlanded: UnlandedStand[];
+    waited: WaitedLanding[];
     /** Gate rows whose move is behind a roll the row can't take (rollFor), with why: left without one. */
     unrolled: UnderivedGate[];
 }
@@ -247,6 +259,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
     const unrolled: UnderivedGate[] = [];
     const offLand: OffLandLanding[] = [];
     const unlanded: UnlandedStand[] = [];
+    const waited: WaitedLanding[] = [];
 
     /**
      * A gate row with a skill requirement whose move, from the stands that make it, is behind one roll: the row
@@ -335,6 +348,13 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
             // lands there from that stand (header), unless every landing is.
             const keyOf = (l: (typeof landed)[number]) => `${tileKey(l.stand)} ${tileKey(l.tile)}`;
             const freeKeys = new Set(landed.flatMap(l => (l.free ? [keyOf(l)] : [])));
+            // The waits (gate-scan.ts waits) each free landing is reached past; null when a path free to it passes none.
+            const waitsAt = new Map<string, Set<string> | null>();
+            for (const l of landed) {
+                const had = waitsAt.get(keyOf(l));
+                if (!l.free || had === null) continue;
+                waitsAt.set(keyOf(l), l.waits?.length ? new Set([...(had ?? []), ...l.waits]) : null);
+            }
             const seen = new Set<string>();
             const unique = landed.filter(l => {
                 const key = keyOf(l);
@@ -369,10 +389,23 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
                 return write({ to: one!.tile });
             }
             const landings: NonNullable<Gate['landings']> = [];
-            for (const l of unique)
-                if (onLand(l.tile))
-                    landings.push({ stand: l.stand, landing: l.tile, ...(isFree(l) ? { free: true } : {}) });
-                else offLand.push(offLandOf(l));
+            for (const l of unique) {
+                if (!onLand(l.tile)) {
+                    offLand.push(offLandOf(l));
+                    continue;
+                }
+                landings.push({ stand: l.stand, landing: l.tile, ...(isFree(l) ? { free: true } : {}) });
+                const passed = isFree(l) && waitsAt.get(keyOf(l));
+                if (passed)
+                    waited.push({
+                        trigger: g.trigger,
+                        loc: g.loc,
+                        tile: g.tile,
+                        stand: l.stand,
+                        landing: l.tile,
+                        waits: [...passed].sort(cmp),
+                    });
+            }
             if (!landings.length) return fail(['every landing is off walkable land']);
             landings.sort((a, b) => byTile(a.stand, b.stand) || byTile(a.landing, b.landing));
             // The stands that give no landing: left out of the row, and reported.
@@ -396,7 +429,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
         return fail(reasons.length ? reasons : [NO_MOVE]);
     });
     const out = gates.map(withRoll);
-    return { gates: out, counts, rolled, underived, offLand, unlanded, unrolled };
+    return { gates: out, counts, rolled, underived, offLand, unlanded, unrolled, waited };
 }
 
 // ---- Scripted moves -----------------------------------------------------------------------------------

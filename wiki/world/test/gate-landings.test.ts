@@ -143,6 +143,47 @@ if (%plank_fixed = 0) {
 }
 p_telejump(0_50_50_4_4);
 
+[oploc1,guardgate]
+if (coordx(coord) < coordx(loc_coord)) {
+    if (npc_find(coord, guard, 5, 0) = true) {
+        return;
+    }
+    p_telejump(movecoord(coord, 3, 0, 0));
+    return;
+}
+if (stat(agility) < 5) {
+    return;
+}
+p_telejump(movecoord(coord, -3, 0, 0));
+
+[oploc1,pipe]
+if (coordx(coord) < coordx(loc_coord)) {
+    if (%pipe_used >= map_clock) {
+        mes("The pipe is being used.");
+        return;
+    }
+    %pipe_used = calc(map_clock + 4);
+    p_telejump(movecoord(coord, 3, 0, 0));
+    return;
+}
+if (stat(agility) < 5) {
+    return;
+}
+p_telejump(movecoord(coord, -3, 0, 0));
+
+[oploc1,pipe2]
+if (coordx(coord) < coordx(loc_coord)) {
+    if (map_clock <= %pipe_used) {
+        return;
+    }
+    p_telejump(movecoord(coord, 3, 0, 0));
+    return;
+}
+if (stat(agility) < 5) {
+    return;
+}
+p_telejump(movecoord(coord, -3, 0, 0));
+
 [oploc1,longgate]
 if (stat(agility) < 5) {
     return;
@@ -266,6 +307,9 @@ const locConfigs = parseConfigs(
         '[lowwall]',
         '[turnstile]',
         '[plank]',
+        '[guardgate]',
+        '[pipe]',
+        '[pipe2]',
         '[longgate]',
         '[longstargate]',
         '[stronggate]',
@@ -547,10 +591,56 @@ describe('deriveGateLandings: free landings', () => {
     });
 
     test('a row every landing of which is free marks none: the bound run reads none of its requirement', () => {
-        // The plank's varp is no quest's: a bound run takes it both ways unnoted, so every stand's path needs nothing.
-        const { gate } = one(row('plank', 250, [['other:%plank_fixed = 1']]));
+        // The pass gate's level and south stands step out free and nothing else lands; but for the gated north
+        // stand, every stand's landing is free.
+        const { gate } = one(row('passgate', 250, [['consume:pass_ticket:1']], { from: 'north' }), [at(250, 101)]);
+        expect(gate.landings).toEqual([
+            { stand: at(249, 100), landing: at(249, 103) },
+            { stand: at(250, 99), landing: at(250, 102) },
+            { stand: at(251, 100), landing: at(251, 103) },
+        ]);
+    });
+
+    test('a condition the bound run cannot read gates the move: a path past it is not free', () => {
+        // The plank's varp is no quest's, so the bound run reads it as nothing it can settle: every stand lands,
+        // none free.
+        const { gate } = one(row('plank', 255, [['other:%plank_fixed = 1']]));
         expect(gate.to).toEqual(coordTile('0_50_50_4_4'));
         expect(gate.landings).toBeUndefined();
+        // From the west the guard gate asks only that no guard is near: an npc the run can't see, so that stand's
+        // landing is no freer than the others', which need Agility.
+        const guard = one(row('guardgate', 280, [['skill:agility:5']]));
+        expect(guard.gate.landings?.filter(l => l.free)).toEqual([]);
+        expect(guard.gate.landings?.find(l => l.stand.x === 279)).toEqual({
+            stand: at(279, 100),
+            landing: at(282, 100),
+        });
+        expect(guard.out.waited).toEqual([]);
+    });
+
+    test('a pipe in use a moment ago is a wait: its stand lands free, and the build lists it', () => {
+        // `%pipe_used >= map_clock` taken false, and `map_clock <= %pipe_used` taken false, hold once the clock
+        // passes the var.
+        for (const [config, x] of [
+            ['pipe', 290],
+            ['pipe2', 300],
+        ] as const) {
+            const { gate, out } = one(row(config, x, [['skill:agility:5']]));
+            expect(gate.landings?.filter(l => l.free)).toEqual([
+                { stand: at(x - 1, 100), landing: at(x + 2, 100), free: true },
+            ]);
+            const text = config === 'pipe' ? '%pipe_used >= map_clock' : 'map_clock <= %pipe_used';
+            expect(out.waited).toEqual([
+                {
+                    trigger: `oploc1,${config}`,
+                    loc: config,
+                    tile: at(x, 100),
+                    stand: at(x - 1, 100),
+                    landing: at(x + 2, 100),
+                    waits: [`\`${text}\` (${lineOf(text)})`],
+                },
+            ]);
+        }
     });
 });
 

@@ -288,10 +288,13 @@ export interface BuildReport {
         untimedQueues: string[];
         /**
          * Gate rows on objects whose move is not a coord literal (sources/gate-landings.ts): counted by
-         * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land, and
-         * stands of rows with landings that give none.
+         * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land,
+         * stands of rows with landings that give none, and free landings reached past a wait only.
          */
-        landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand' | 'unlanded' | 'rolled' | 'unrolled'>;
+        landings: Pick<
+            GateLandings,
+            'counts' | 'underived' | 'offLand' | 'unlanded' | 'rolled' | 'unrolled' | 'waited'
+        >;
     };
     /**
      * The loc op moves no gate row makes (sources/gate-landings.ts deriveScriptedMoves): the World.crossings rows
@@ -986,6 +989,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     unlanded: landings.unlanded,
                     rolled: landings.rolled,
                     unrolled: landings.unrolled,
+                    waited: landings.waited,
                 },
             },
             scripted: {
@@ -1205,6 +1209,13 @@ export function formatReport(report: BuildReport): string[] {
         ...list(
             `warning: ${l.unrolled.length} gate rows behind a roll the row can't take, left without one:`,
             l.unrolled.map(u => `${u.trigger} ${u.loc} ${coord(u.tile)}: ${u.reasons.join('; ')}`),
+        ),
+        ...list(
+            `warning: ${l.waited.length} free gate landings reached past a wait only (a var against map_clock), read as free:`,
+            l.waited.map(
+                w =>
+                    `${w.trigger} ${w.loc} ${coord(w.tile)} from ${coord(w.stand)} -> ${coord(w.landing)}: ${w.waits.join('; ')}`,
+            ),
         ),
         ...formatScripted(report.scripted),
         ...formatTeleports(report.teleports),
