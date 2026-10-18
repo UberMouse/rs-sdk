@@ -125,8 +125,8 @@ over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them
   the crossing plus its spread, so a random landing counts as its longest one: a way on from any landing costs at
   least what it would from the worst, and exactly that when the landings are close together. A landing is stranded
   when no walk from it gets to the row's largest group of landings that each walk to the other, and that group holds
-  most of the row's landings on land (`strandedLandings`): its distance to the others is unbounded, so it gets no
-  spread, the others' spreads leave it out, and the build report lists it;
+  most of the row's landings on land (`strandedLandings`): no walk takes it to the rest, so it gets no spread, the
+  others' spreads leave it out, and the build report lists it;
 - a roll's `fail.back`: the run ticks from the tile a failure leaves the player on back to the nearest tile the move
   is tried from (0 when a failure leaves them where they tried). A rolled edge costs its expected ticks, the success
   plus (1 - p)/p times the failure's ticks and the way back, with p the engine's `stat_random` chance (`roll.ts`) at

@@ -262,7 +262,8 @@ export function joinWaysIn(
                     .flatMap(c =>
                         fill
                             .setsAny(c.from)
-                            // `members` is met, so no set holds it (reach.ts SetTable.intern); a row's own may.
+                            // `members` is met: a teleport row's own set may hold it, but reach.ts drops it from
+                            // every set (SetTable.intern).
                             .flatMap(s =>
                                 c.requires.map(r => [...s, ...r, cameFrom(npc)].filter(x => x !== 'members')),
                             ),
