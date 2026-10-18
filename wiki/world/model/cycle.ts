@@ -3,8 +3,8 @@
 // the best ideal play can do; a measured rate sits at or below it.
 //
 // The load. A trip lasts until the inventory is full or, for a method that eats, until the food is gone:
-// - Slots: INVENTORY_SLOTS less the tools carried (a tool with a `wearpos` is wielded instead, as ideal play does;
-//   its wield level is not checked), one slot per supply the gather uses (bait, feathers: a non-stackable supply is
+// - Slots: INVENTORY_SLOTS less the tools carried, the gather's and the process steps' (a tool with a `wearpos` is
+//   wielded instead, as ideal play does; its wield level is not checked), one slot per supply the gather uses (bait, feathers: a non-stackable supply is
 //   not modelled), and one per stackable product (coins never fill the inventory).
 // - Without food, the load is the free slots over the non-stackable products a success gives (fractional: gems).
 //   No non-stackable product means the inventory never fills: the sink is never visited.
@@ -134,8 +134,10 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const p = gather.success;
     const failsPerSuccess = (1 - p) / p;
 
-    // Slots the trip can't fill: tools not worn, a slot per supply, a slot per stackable product.
-    const toolSlots = new Set((gather.tools ?? []).filter(t => !items(t).wearable)).size;
+    // Slots the trip can't fill: tools not worn (the gather's and the process steps', each once), a slot per supply, a
+    // slot per stackable product.
+    const actions = [gather, ...(sink.mode === 'process-bank' ? sink.process : [])];
+    const toolSlots = new Set(actions.flatMap(a => a.tools ?? []).filter(t => !items(t).wearable)).size;
     for (const c of gather.consumes)
         if (!items(c.obj).stackable) throw new ModelError(`the supply ${c.obj} is not stackable: not modelled`);
     const supplySlots = new Set(gather.consumes.map(c => c.obj)).size;

@@ -15,13 +15,18 @@ One page per skill a curated method trains: 6 methods in [wiki/world/methods.ts]
 
 The floor is the tick-perfect rate: the game's own formulas (wiki/world/model/) for ideal play, no tick wasted, every leg run over the shortest way, banking at its minimum tick cost. It is not a forecast: what a bot measures sits at or below it, and the gap is the headroom a tick-perfect pass works on. A measured figure above its floor is a model bug, not a figure to edit.
 
-- **Requires**: what a walk from the Lumbridge spawn needs to get to every site of the method (as the place pages read Requires); each skill at its own lowest level, the others at 99; the tools (an axe or pickaxe is the best usable at the level, wielded, its Attack level not checked); the food it eats.
-- **Sink**: drop, bank, or a process step then bank, with the run ticks of each leg.
 - **Min** and the level columns: game XP/hr (XP rate included) of the page's skill. Min is the level every skill of the method needs together; a level column has the page's skill at that level, the others at it or their own level, the best tools usable there, no amulet of glory; `-` under the page's skill's own level.
-- **gp/hr**: the products kept, at item value (`cost`), at 99; a drop sink keeps only stackable ones. **Supplies/hr**: bait, feathers and food used, and their value, at 99.
+- **gp/hr**: the products kept, at item value (`cost`), at 99; a drop sink keeps only stackable ones.
 - **Binding**, at 99: `player` (the actions are most of a trip), `travel` (the legs and drops are), or `resource` (the features can't respawn fast enough).
-- **Measured**: XP/hr from conductor/tools/stats.ts at the level the runs started at; **Of floor**: it over the floor at those levels and that tool.
+- **Measured**: XP/hr from conductor/tools/stats.ts at the level the runs started at, and in brackets it over the floor at those levels and that tool (`-` where the floor gives the skill no XP).
 - Rows are by Min, then method id.
+
+Below the table, each method has its name, plans and notes, then:
+
+- **Requires**: what a walk from the Lumbridge spawn needs to get to every site of the method (as the place pages read Requires; `none` for nothing); each skill at its own lowest level, the others at 99, and the level every skill needs at once (Min); the tools (an axe or pickaxe is the best usable at the level, wielded, its Attack level not checked); the food it eats.
+- **Sink**: drop, bank, or a process step then bank, with the run ticks of each leg.
+- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99.
+- **Measured**: each figure with the bot that ran it, the date, and the axe or pickaxe it used, if any.
 
 ## Adding a method
 

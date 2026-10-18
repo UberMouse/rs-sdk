@@ -4,9 +4,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
 import { ROOT, SCRIPTS, WORLD_JSON } from './paths';
-import { buildFamilies } from './model/families/index';
-import { readFoods, readItems } from './model/items';
-import { readTools } from './model/profile';
+import type { MethodModel } from './model/method';
 import { link } from './render/common';
 import { renderPlaces } from './render/places';
 import { renderResources } from './render/resources';
@@ -14,7 +12,7 @@ import { renderServices } from './render/services';
 import { renderTraining, type TrainingData } from './render/training';
 import { first, parseConfigs, readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
-import { readCallables, readScripts, readTriggers } from './sources/triggers';
+import { readCallables, readTriggers } from './sources/triggers';
 import { refuseSymlink } from './stale';
 import type { World } from './types';
 import { cmp } from './util';
@@ -118,25 +116,16 @@ export function questListNames(text: string): Map<string, string> {
 }
 
 /**
- * Reads the game data the pages need, the model the training pages rate methods with, and the README's hand-written
- * part (empty if no README), from ROOT.
+ * Reads the game data the pages need and the README's hand-written part (empty if no README), from ROOT; the training
+ * pages rate methods with `model`, the one buildWorld resolved them with.
  */
-export function readRenderData(): RenderData {
+export function readRenderData(model: MethodModel): RenderData {
     const file = join(ROOT, README);
-    const dbrows = readDbrows();
-    const objConfigs = readConfigs('obj');
-    const families = buildFamilies({
-        dbrows,
-        objs: objConfigs,
-        locs: readConfigs('loc'),
-        structs: readConfigs('struct'),
-        scripts: readScripts(),
-    });
     return {
-        dbrows,
+        dbrows: readDbrows(),
         npcConfigs: readConfigs('npc'),
-        objConfigs,
-        model: { families, items: readItems(objConfigs), foods: readFoods(dbrows), tools: readTools(objConfigs) },
+        objConfigs: readConfigs('obj'),
+        model,
         shopTitles: openshopTitles([...readTriggers(), ...readCallables()].map(s => s.body)),
         questNames: questListNames(readFileSync(join(SCRIPTS, QUESTLIST), 'utf8')),
         readmeBody: existsSync(file) ? readmeBody(readFileSync(file, 'utf8')) : '',

@@ -6,10 +6,8 @@ import { reachCollision } from '../collision';
 import { wayFinder } from '../distance';
 import { loadWorld } from '../load';
 import { METHODS } from '../methods';
-import { buildFamilies, readGameData } from '../model/families/index';
-import { readFoods, readItems } from '../model/items';
-import { measuredProfile, methodRate, resolveMethods, type MethodContext } from '../model/method';
-import { readTools } from '../model/profile';
+import { readGameData } from '../model/families/index';
+import { measuredProfile, methodModel, methodRate, resolveMethods, type MethodContext } from '../model/method';
 import type { Skill } from '../model/server';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
@@ -21,10 +19,7 @@ const graph = reachGraph({ world, collision: reachCollision, size: locSizes(read
 const data = readGameData();
 const ctx: MethodContext = {
     world,
-    families: buildFamilies(data),
-    items: readItems(data.objs),
-    foods: readFoods(data.dbrows),
-    tools: readTools(data.objs),
+    ...methodModel(data),
     quests: questFacts(world.quests),
 };
 const { methods, errors } = resolveMethods(METHODS, ctx, wayFinder(graph));

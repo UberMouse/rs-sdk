@@ -229,6 +229,22 @@ describe('process-bank sink', () => {
         expect(r.gpPerHour).toBeCloseTo(fish * (0.75 * 30 + 0.25 * 1), 6);
     });
 
+    test("a process step's carried tool takes a slot too, once when the gather carries it as well", () => {
+        // The jug (no wearpos) as the step's tool: 25 fish a trip, 250 + 75 + 100 = 425 ticks. The rod again: no extra
+        // slot.
+        const jug: ActionModel = { ...cook, tools: ['jug'] };
+        expect(
+            run({ gather: spot, sink: { mode: 'process-bank', process: [jug], legs: [10, 50, 40] } }).trip,
+        ).toMatchObject({
+            successes: 25,
+            total: 425,
+        });
+        const rod: ActionModel = { ...cook, tools: ['rod'] };
+        expect(
+            run({ gather: spot, sink: { mode: 'process-bank', process: [rod], legs: [10, 50, 40] } }).trip.successes,
+        ).toBe(26);
+    });
+
     test('a step whose input the gather does not give does nothing; the raw fish is banked as caught', () => {
         const other: ActionModel = { ...cook, consumes: [{ obj: 'ore', count: 1 }] };
         const r = run({ gather: spot, sink: { mode: 'process-bank', process: [other], legs: [10, 50, 40] } });

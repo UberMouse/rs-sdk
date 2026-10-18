@@ -5,6 +5,7 @@ import { renderWorld, type RenderData } from '../render';
 import { compact, percent, renderTraining, type TrainingData } from '../render/training';
 import { ModelError, type Family } from '../model/family';
 import type { Item } from '../model/items';
+import { XP_RATE } from '../model/server';
 import { WORLD_FORMAT, type Site, type Tile, type World, type WorldMethod } from '../types';
 
 const tile = (x: number, z: number): Tile => ({ level: 0, x, z });
@@ -61,7 +62,22 @@ const firemaking: Family = {
     },
 };
 
+// Shaking a tree for coins: 2 ticks, 10 XP, no tool, a stackable product (the inventory never fills).
+const shaking: Family = {
+    id: 'shaking',
+    skills: ['thieving'],
+    kinds: ['tree'],
+    model: () => ({
+        ticksPerAttempt: 2,
+        success: 1,
+        xpTenths: { thieving: 100 },
+        products: [{ obj: 'coins', count: 1 }],
+        consumes: [],
+    }),
+};
+
 const ITEMS: Record<string, Item> = {
+    coins: { stackable: true, cost: 1, wearable: false },
     logs: { stackable: false, cost: 10, wearable: false },
     ashes: { stackable: false, cost: 5, wearable: false },
     bronze_axe: { stackable: false, cost: 16, wearable: true },
@@ -72,6 +88,7 @@ const model: TrainingData['model'] = {
     families: new Map([
         ['woodcutting', woodcutting],
         ['firemaking', firemaking],
+        ['shaking', shaking],
     ]),
     items: obj => {
         const item = ITEMS[obj];
@@ -184,6 +201,13 @@ const pages = new Map(renderTraining(world, data));
 const times = (n: number, cell: string): string[] => Array.from({ length: n }, () => cell);
 /** The method ids of a page's table rows, in order. */
 const ids = (page: string) => [...pages.get(page)!.matchAll(/^\| `([a-z-]+)`/gm)].map(m => m[1]);
+/** The bullet of `id` below a page's table and its sub-bullets, as lines. */
+const bullets = (page: string, id: string): string[] => {
+    const lines = pages.get(page)!.split('\n');
+    const at = lines.indexOf(lines.find(l => l.startsWith(`- \`${id}\``))!);
+    const end = lines.findIndex((l, i) => i > at && !l.startsWith('  - '));
+    return lines.slice(at, end);
+};
 /** The table row of `id` on a page, as cells. */
 const row = (page: string, id: string): string[] =>
     pages
@@ -220,18 +244,19 @@ describe('the training pages', () => {
         expect(row('wiki/training/woodcutting.md', 'tree-drop')).toEqual([
             '`tree-drop`',
             '[Town](../places/town.md) `tree:town:0`',
-            'Reach: 10 Agility. Levels: 20 Woodcutting. Tools: best axe (wielded).',
-            'drop',
             '534k at 20',
             '-',
             ...times(3, '534k'),
             ...times(6, '1.02M'),
             '0',
-            '-',
             'player',
             '-',
-            '-',
-            '-',
+        ]);
+        expect(bullets('wiki/training/woodcutting.md', 'tree-drop')).toEqual([
+            '- `tree-drop`: Trees, dropped.',
+            '  - **Requires**: Reach: 10 Agility. Levels: Woodcutting 20. Tools: best axe (wielded).',
+            '  - **Sink**: drop.',
+            '  - **Supplies/hr** at 99: none.',
         ]);
     });
 
@@ -244,25 +269,28 @@ describe('the training pages', () => {
         expect(row('wiki/training/woodcutting.md', 'tree-burn-bank')).toEqual([
             '`tree-burn-bank`',
             '[Town](../places/town.md) `tree:town:0`',
-            'Reach: -. Levels: 20 Woodcutting + 30 Firemaking. Tools: best axe (wielded).',
-            'firemaking at [Town](../places/town.md) `range:town:0`, then bank at [Town bank (Town)](../places/town-bank.md) `bank:town-bank:0`; legs 10 + 5 + 15 run ticks',
             '279k at 30',
             '-',
             ...times(3, '279k'),
             ...times(6, '371k'),
             '7.41k',
-            '-',
             'player',
-            '185k at 35 (Bronze axe)',
-            '66%',
-            'w1, 2026-10-01',
+            '185k at 35 (66%)',
+        ]);
+        expect(bullets('wiki/training/woodcutting.md', 'tree-burn-bank')).toEqual([
+            '- `tree-burn-bank`: Trees, burnt, ashes banked. Plans: burn-plan. A note.',
+            '  - **Requires**: Reach: none. Levels: Woodcutting 20, Firemaking 30, each with the other skills at 99; ' +
+                'every skill at once: 30. Tools: best axe (wielded).',
+            '  - **Sink**: firemaking at [Town](../places/town.md) `range:town:0`, then bank at [Town bank (Town)](../places/town-bank.md) `bank:town-bank:0`; legs 10 + 5 + 15 run ticks.',
+            '  - **Supplies/hr** at 99: none.',
+            '  - **Measured**: 185k at 35 by w1 on 2026-10-01, with the Bronze axe.',
         ]);
     });
 
     test("the same method on its process skill's page: that skill's XP, `-` under its own level", () => {
         // Firemaking from the rates above: 1.12M with Woodcutting under 41 (columns 30 and 40), 1.48M from 50. Measured
         // 700,000 / 1,115,044 = 63%.
-        expect(row('wiki/training/firemaking.md', 'tree-burn-bank').slice(4)).toEqual([
+        expect(row('wiki/training/firemaking.md', 'tree-burn-bank').slice(2)).toEqual([
             '1.12M at 30',
             '-',
             '-',
@@ -270,23 +298,28 @@ describe('the training pages', () => {
             '1.12M',
             ...times(6, '1.48M'),
             '7.41k',
-            '-',
             'player',
-            '700k at 40 (Bronze axe)',
-            '63%',
-            'w1, 2026-10-01',
+            '700k at 40 (63%)',
         ]);
     });
 
-    test('the header, the Min note, and each method named with its plans and notes below the table', () => {
+    test('the header with the units, the Min note naming only the tool tiers the page uses, and the table', () => {
         const page = pages.get('wiki/training/woodcutting.md')!;
         expect(page).toContain('2 methods train Woodcutting');
-        expect(page).toContain("`-` under the method's Woodcutting level");
+        expect(page).toContain(`XP/hr is game XP, the server's XP rate (x${XP_RATE}) included; gp/hr is the products`);
+        expect(page).toContain('item value (obj `cost`); Supplies/hr is how many of each supply an hour uses');
+        expect(page).toContain("whichever is higher, with the best axe usable there, and `-` under the method's");
         expect(page).toContain(
-            '| Method | Where | Requires | Sink | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Supplies/hr | Binding | Measured XP/hr | Of floor | Bot, date |',
+            '| Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |',
         );
-        expect(page).toContain('- `tree-drop`: Trees, dropped.\n');
-        expect(page).toContain('- `tree-burn-bank`: Trees, burnt, ashes banked. Plans: burn-plan. A note.\n');
+        // Firemaking's page has the same chopping method, so the axe: a page with no tiered tool says none.
+        expect(pages.get('wiki/training/firemaking.md')).toContain('with the best axe usable there');
+        const shake: WorldMethod = { ...drop, id: 'tree-shake', family: 'shaking', skill: 'thieving' };
+        const toolless = new Map(
+            renderTraining({ ...world, methods: [{ ...shake, minLevel: 1, levels: { thieving: 1 } }] }, data),
+        ).get('wiki/training/thieving.md')!;
+        expect(toolless).toContain('whichever is higher, and `-` under');
+        expect(toolless).toContain('Tools: none.');
         expect(pages.get('wiki/training/firemaking.md')).toContain('1 method trains Firemaking');
     });
 
@@ -303,7 +336,7 @@ describe('the training pages', () => {
 
     test('a method naming a site world.json has not, or a stand that moved, throws naming it', () => {
         expect(() => renderTraining({ ...world, methods: [{ ...drop, site: 'tree:town:9' }] }, data)).toThrow(
-            /^methods\.ts tree-drop: world\.json names no method site tree:town:9/,
+            /^methods\.ts tree-drop: world\.json names no method site tree:town:9; world\.json is stale or hand-edited: run `bun run world`$/,
         );
         expect(() => renderTraining({ ...world, methods: [{ ...drop, stand: tile(1, 1) }] }, data)).toThrow(
             /^methods\.ts tree-drop: site tree:town:0's stand is not the method's/,
@@ -311,6 +344,13 @@ describe('the training pages', () => {
         expect(() => renderTraining({ ...world, methods: [{ ...burn, bank: undefined }] }, data)).toThrow(
             /^methods\.ts tree-burn-bank: world\.json names no bank site/,
         );
+    });
+
+    test('a level column a family refuses (never rated by the build) throws naming the method', () => {
+        // world.json claiming Woodcutting 10 where the family needs 20: the column at 10 is the first to throw.
+        expect(() =>
+            renderTraining({ ...world, methods: [{ ...drop, minLevel: 10, levels: { woodcutting: 10 } }] }, data),
+        ).toThrow(/^methods\.ts tree-drop: Woodcutting 20$/);
     });
 
     test('no methods: the README alone', () => {
@@ -338,5 +378,8 @@ describe('number formats', () => {
     test('percent is a whole percent', () => {
         expect(percent(185_000, 278_761)).toBe('66%');
         expect(percent(1, 2)).toBe('50%');
+        // A floor of 0 (the model gives the skill no XP) has no ratio.
+        expect(percent(1, 0)).toBe('-');
+        expect(percent(0, 0)).toBe('-');
     });
 });

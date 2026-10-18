@@ -16,8 +16,9 @@ import {
 import { cmp } from '../util';
 import { cycle, type CycleRates, type CycleSink } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
-import type { Items } from './items';
-import { profileAt, type Profile, type Tools } from './profile';
+import { buildFamilies, type GameData } from './families/index';
+import { readFoods, readItems, type Items } from './items';
+import { profileAt, readTools, type Profile, type Tools } from './profile';
 import type { Skill } from './server';
 
 /** A method record the build can't resolve: the message names the record and the reason. */
@@ -72,6 +73,17 @@ export interface MethodContext {
     tools: Tools;
     quests?: QuestFacts;
 }
+
+/** What the model reads besides the world and the quests: the families, items, foods and tool tiers. */
+export type MethodModel = Omit<MethodContext, 'world' | 'quests'>;
+
+/** The model from the game data; build.ts builds it once, for resolving the methods and for the training pages. */
+export const methodModel = (data: GameData): MethodModel => ({
+    families: buildFamilies(data),
+    items: readItems(data.objs),
+    foods: readFoods(data.dbrows),
+    tools: readTools(data.objs),
+});
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const coord = (t: Tile): string => `(${t.x}, ${t.z}, ${t.level})`;
@@ -316,6 +328,9 @@ export function toWorldMethod(m: ResolvedMethod): WorldMethod {
     };
 }
 
+/** What fromWorldMethod's errors end with: the fix. */
+const STALE = '; world.json is stale or hand-edited: run `bun run world`';
+
 /**
  * A world.json method back as a ResolvedMethod over `world`'s sites, for the model to rate. Throws when it names a
  * site world.json has not, or one whose stand has moved: the file is not one build.ts wrote.
@@ -324,12 +339,13 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): R
     const { site, stand, bank, processor, skill, minLevel, levels, ways, ...def } = wm;
     const byId = (id: string | undefined, what: string): Site => {
         const s = id === undefined ? undefined : world.sites.find(x => x.id === id);
-        if (!s) throw new MethodError(wm.id, `world.json names no ${what} site${id === undefined ? '' : ` ${id}`}`);
+        if (!s)
+            throw new MethodError(wm.id, `world.json names no ${what} site${id === undefined ? '' : ` ${id}`}${STALE}`);
         return s;
     };
     const at = byId(site, 'method');
     if (!at.stand || at.stand.x !== stand.x || at.stand.z !== stand.z || at.stand.level !== stand.level)
-        throw new MethodError(wm.id, `site ${site}'s stand is not the method's ${coord(stand)}`);
+        throw new MethodError(wm.id, `site ${site}'s stand is not the method's ${coord(stand)}${STALE}`);
     const sink: ResolvedMethod['sink'] =
         def.sink.mode === 'drop'
             ? { mode: 'drop' }

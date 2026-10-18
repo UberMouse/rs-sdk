@@ -1,19 +1,19 @@
 import { describe, expect, test } from 'bun:test';
 import { wayFinder } from '../distance';
 import type { MethodDef } from '../methods';
-import { buildFamilies, type GameData } from '../model/families/index';
-import { readFoods, readItems } from '../model/items';
+import type { GameData } from '../model/families/index';
 import {
     fromWorldMethod,
     measuredProfile,
     MethodError,
+    methodModel,
     methodRate,
     resolveMethod,
     resolveMethods,
     toWorldMethod,
     type MethodContext,
 } from '../model/method';
-import { profileAt, readTools } from '../model/profile';
+import { profileAt } from '../model/profile';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { parseConfigs } from '../sources/configs';
@@ -203,10 +203,7 @@ const sites: Site[] = [
 
 const ctx: MethodContext = {
     world: { sites, features },
-    families: buildFamilies(data),
-    items: readItems(data.objs),
-    foods: readFoods(data.dbrows),
-    tools: readTools(data.objs),
+    ...methodModel(data),
 };
 const finder = wayFinder(
     reachGraph({

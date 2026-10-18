@@ -23,10 +23,7 @@ import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { formatDistance, nearestSinks, SINKS, wayFinder, type DistanceReport } from './distance';
 import { METHODS } from './methods';
-import { buildFamilies } from './model/families/index';
-import { readFoods, readItems } from './model/items';
-import { resolveMethods, toWorldMethod } from './model/method';
-import { readTools } from './model/profile';
+import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -317,7 +314,12 @@ export function addReach(
 const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
 
 /** Reads the game data and builds the world, without writing anything. */
-export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { world: World; report: BuildReport } {
+export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
+    world: World;
+    report: BuildReport;
+    /** The model the methods were resolved with, which the training pages rate them with (readRenderData). */
+    model: MethodModel;
+} {
     const locConfigs = readConfigs('loc');
     const npcConfigs = readConfigs('npc');
     const scripts = readScripts();
@@ -472,17 +474,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const distance = nearestSinks(graph, reached.sites);
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
-    const gameData = { dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts };
+    // The model is built once: the training pages rate the methods with it too.
+    const model = methodModel({ dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts });
     const methods = resolveMethods(
         METHODS,
-        {
-            world: { sites, features },
-            families: buildFamilies(gameData),
-            items: readItems(objConfigs),
-            foods: readFoods(dbrows),
-            tools: readTools(objConfigs),
-            quests: graph.quests,
-        },
+        { world: { sites, features }, ...model, quests: graph.quests },
         wayFinder(graph),
     );
     const sailSiteCheck = outOfScopeSites(
@@ -491,6 +487,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     );
 
     return {
+        model,
         world: {
             format: WORLD_FORMAT,
             generatedFrom,
@@ -810,10 +807,14 @@ export function formatUnreached(unreached: readonly Unreached[], areas: readonly
 if (import.meta.main) {
     // Imported here only: it parses the collision data the SDK bundles (see collision.ts).
     const { reachCollision } = await import('./collision');
-    const { world, report } = buildWorld({ generatedFrom: contentHash(), areas: AREAS, collision: reachCollision });
+    const { world, report, model } = buildWorld({
+        generatedFrom: contentHash(),
+        areas: AREAS,
+        collision: reachCollision,
+    });
     const files = new Map([
         [relative(ROOT, WORLD_JSON), serializeWorld(world)],
-        ...renderWorld(world, readRenderData()),
+        ...renderWorld(world, readRenderData(model)),
     ]);
     // Every file but world.json is a page, the README included.
     const generated = `world.json and ${files.size - 1} pages (README.md among them)`;
