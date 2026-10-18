@@ -12,13 +12,14 @@
 // - `landings`, when a landing follows the stand (`movecoord(coord, ...)`, a step picked by the player's
 //   side), some stand gives none, or some stand's landing is free and another's is not: each stand with the
 //   landings it gives that are walkable land; the stands landing off land (offLand) and those giving no landing
-//   (unlanded) are reported. A landing is `free` when a path that needs nothing (gate-scan.ts LandingOutcome),
-//   or nothing but a wait (gate-scan.ts waits; each landing so is reported, waited), lands there from that
-//   stand: the side a script lets through, which the row's `from` may not say (the
-//   Shantay Pass lets a player level with it out free, areas/area_alkharid/scripts/shantay_pass.rs2:70, where
-//   `from: north` takes the level stands for the checked side). Every free landing is marked, but none when
-//   all of the row's are: then no path the bound run took reads the row's requirement, so it says nothing of
-//   the stands;
+//   (unlanded) are reported. A move onto a tile of the loc itself, which blocks it, lands on the tiles of
+//   walkable land a step from that tile goes to, as the player walks off it (stepped, reported). A landing is
+//   `free` when a path that needs nothing (gate-scan.ts LandingOutcome), or nothing but a wait (gate-scan.ts
+//   waits; each landing so is reported, waited), lands there from that stand: the side a script lets through,
+//   which the row's `from` may not say (the Shantay Pass lets a player level with it out free,
+//   areas/area_alkharid/scripts/shantay_pass.rs2:70, where `from: north` takes the level stands for the checked
+//   side). Every free landing is marked, but none when all of the row's are: then no path the bound run took
+//   reads the row's requirement, so it says nothing of the stands;
 // - `opens`, when no landing is derived and a path deleted the loc or swapped it for one that doesn't
 //   block (the Kharazi jungle's `loc_change`, quests/quest_legends/scripts/jungle_tree.rs2:135, after which
 //   it teleports the player two tiles on by a value proc, :141, :161, which is not read). LOC_DEL and
@@ -46,7 +47,7 @@
 // DOOR_PROCS) is a door's, which the collision data has open or gates.ts confirms. A loc tile and op a connector
 // row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
-import { reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
+import { footprint, reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import { coord, STEPS } from '../reach';
 import type { Connector, Crossing, Gate, Roll, Tile } from '../types';
 import { byTile, cmp, onLandIn, push, tileKey, uniqueTiles } from '../util';
@@ -124,6 +125,17 @@ export interface WaitedLanding {
     waits: string[];
 }
 
+/** A stand whose move lands on a tile of the loc itself, which blocks it: the row lands on the tiles stepped out to. */
+export interface SteppedLanding {
+    trigger: string;
+    loc: string;
+    tile: Tile;
+    stand: Tile;
+    landing: Tile;
+    /** The tiles of walkable land a step from `landing` goes to, in byTile order. */
+    to: Tile[];
+}
+
 export interface GateLandings {
     /** The rows of `gates`, in order, those on objects with what their move does, and rolled ones their roll. */
     gates: Gate[];
@@ -135,6 +147,7 @@ export interface GateLandings {
     offLand: OffLandLanding[];
     unlanded: UnlandedStand[];
     waited: WaitedLanding[];
+    stepped: SteppedLanding[];
     /** Gate rows whose move is behind a roll the row can't take (rollFor), with why: left without one. */
     unrolled: UnderivedGate[];
 }
@@ -260,6 +273,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
     const offLand: OffLandLanding[] = [];
     const unlanded: UnlandedStand[] = [];
     const waited: WaitedLanding[] = [];
+    const stepped: SteppedLanding[] = [];
 
     /**
      * A gate row with a skill requirement whose move, from the stands that make it, is behind one roll: the row
@@ -341,7 +355,36 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
         }
         const byStand = stands.map(stand => ({ stand, outcomes: run(stand) }));
         const outcomes = byStand.flatMap(({ stand, outcomes: os }) => os.map(o => ({ stand, o })));
-        const landed = outcomes.flatMap(({ stand, o }) => (o.k === 'landing' ? [{ stand, ...o }] : []));
+        // A move onto a tile of the loc itself, which blocks it (the Lumber Yard fence climbed from the south,
+        // quests/quest_fluffs/scripts/quest_fluffs.rs2:127, 136), leaves the player there to walk off: it lands on
+        // each tile of walkable land a step from it goes to.
+        const { w, l: length } = footprint(loc, size);
+        const ofLoc = (t: Tile) =>
+            t.level === g.tile.level &&
+            t.x >= g.tile.x &&
+            t.x < g.tile.x + w &&
+            t.z >= g.tile.z &&
+            t.z < g.tile.z + length;
+        const steppedOut = new Map<string, Tile[]>();
+        const stepOut = (stand: Tile, t: Tile): Tile[] => {
+            if (!canStep || onLand(t) || !collision.land(t.level, t.x, t.z) || !ofLoc(t)) return [t];
+            const key = `${tileKey(stand)} ${tileKey(t)}`;
+            let to = steppedOut.get(key);
+            if (!to) {
+                to = uniqueTiles(
+                    STEPS.flatMap(([dx, dz]) => {
+                        const n = { level: t.level, x: t.x + dx, z: t.z + dz };
+                        return onLand(n) && canStep(t.level, t.x, t.z, dx, dz) ? [n] : [];
+                    }),
+                );
+                steppedOut.set(key, to);
+                if (to.length) stepped.push({ trigger: g.trigger, loc: g.loc, tile: g.tile, stand, landing: t, to });
+            }
+            return to.length ? to : [t];
+        };
+        const landed = outcomes.flatMap(({ stand, o }) =>
+            o.k === 'landing' ? stepOut(stand, o.tile).map(tile => ({ stand, ...o, tile })) : [],
+        );
         // One way the row reads, by the section header's order: a landing, then an opening.
         if (landed.length) {
             // Each landing once per stand, with the line that lands there; free when a path that needs nothing
@@ -429,7 +472,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
         return fail(reasons.length ? reasons : [NO_MOVE]);
     });
     const out = gates.map(withRoll);
-    return { gates: out, counts, rolled, underived, offLand, unlanded, unrolled, waited };
+    return { gates: out, counts, rolled, underived, offLand, unlanded, unrolled, waited, stepped };
 }
 
 // ---- Scripted moves -----------------------------------------------------------------------------------

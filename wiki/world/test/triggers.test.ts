@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { parseCallables, parseTriggers } from '../sources/triggers';
+import { approachRange, parseCallables, parseTriggers } from '../sources/triggers';
 
 const rs2 = `[oploc1,bankbooth]
 def_npc $n = npc_find(coord, _bank_teller, 1);
@@ -65,5 +65,51 @@ describe('parseTriggers', () => {
         expect(u.map(x => x.op)).toEqual(['1', '3']);
         expect(u[0]!.body).toContain('@a;');
         expect(u[0]!.body).not.toContain('@b;');
+    });
+});
+
+describe('approachRange', () => {
+    const range = approachRange(
+        parseTriggers(
+            'f.rs2',
+            [
+                '[apnpc1,barmaid]',
+                'if (npc_range(coord) > 3) {',
+                '    p_aprange(3); // across the bar',
+                '    return;',
+                '}',
+                '@talk;',
+                '[apnpc3,barmaid] // trade',
+                'if (npc_range(coord) > 2) { p_aprange(2); return; }',
+                '[apnpc1,_teller]',
+                'if (npc_range(coord) > 2) {',
+                '    p_aprange(2);',
+                '    return;',
+                '}',
+                '[apnpc1,own_teller]',
+                '@talk;',
+                '[apnpc1,seer]',
+                'if (lineofsight(coord, npc_coord) = false) {',
+                '    p_aprange(3);',
+                '    return;',
+                '}',
+                '[opnpc1,man]',
+                'if (npc_range(coord) > 4) { p_aprange(4); return; }',
+            ].join('\n'),
+        ),
+    );
+
+    test("the least range an npc's approach triggers widen to, comments left out", () => {
+        expect(range('barmaid', undefined)).toBe(2);
+    });
+
+    test("a category's range, unless the config has its own trigger for that op", () => {
+        expect(range('teller', 'teller')).toBe(2);
+        expect(range('own_teller', 'teller')).toBeUndefined();
+    });
+
+    test('none for a range not opened as written, nor for an op trigger', () => {
+        expect(range('seer', undefined)).toBeUndefined();
+        expect(range('man', undefined)).toBeUndefined();
     });
 });

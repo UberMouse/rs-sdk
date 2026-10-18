@@ -116,6 +116,12 @@ const BANK_TO_MINE = [
   reached only through them. A second shut pair stands at (3213, 3220) and (3213, 3221). The
   conductor `walkTo` op opens the front pair on its way in, and `bot.walkTo` gets back out through
   them shut again. [v 2026-10-10 integration-tests local]
+- A diagonal door (shape 9, e.g. the Varrock house door at (3160, 3440)) opens with op1 and the
+  script steps the player aside; the SDK's own pathfinder still reads its tile blocked, so
+  `bot.walkTo` finds no path through it, but a raw `sdk.sendWalk` after opening walks in (the
+  conductor's walker knows these doors, `conductor/actions/paths.ts` EXTRA_DOORS). [v 2026-10-19 t9check1 local]
+- The Lumber Yard's broken fence at (3305, 3493), climbed from the south (members), leaves the
+  player standing on the fence's own tile; from there a walk goes on into the yard. [v 2026-10-19 t9check1 local]
 
 `bot.walkTo()` attempts to open doors and gates on its route. If a route fails,
 inspect nearby objects and open the specific obstacle before retrying:

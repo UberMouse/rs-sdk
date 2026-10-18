@@ -83,6 +83,39 @@ export function parseTriggers(file: string, text: string): Trigger[] {
     });
 }
 
+/** An approach trigger that opens by widening its range: `if (npc_range(coord) > n) { p_aprange(n); return; }`. */
+const AP_RANGE =
+    /^\s*if\s*\(\s*npc_range\(\s*coord\s*\)\s*>\s*(\d+)\s*\)\s*\{\s*p_aprange\(\s*(\d+)\s*\);\s*return;\s*\}/;
+
+/**
+ * The range an npc's approach ops are used from (the Burthorpe Games Room barmaid across her bar,
+ * minigames/game_gamesroom/general/scripts/boardgames_barmaid.rs2:3): for each op, the trigger the engine runs (the
+ * config's own, else its category's) when its body, comments left out, opens as AP_RANGE writes it; the least over
+ * the ops. Undefined for an npc none of whose approach triggers widens its range.
+ */
+export function approachRange(
+    triggers: readonly Trigger[],
+): (config: string, category: string | undefined) => number | undefined {
+    // By `<target> <op>`, the target `_<category>` for a category's trigger: its range, or null for one without.
+    const byOp = new Map<string, number | null>();
+    const ops = new Set<string>();
+    for (const t of triggers) {
+        if (t.on !== 'npc' || t.kind !== 'ap') continue;
+        const m = t.body.replace(/\/\/[^\n]*/g, '').match(AP_RANGE);
+        byOp.set(`${t.category ? '_' : ''}${t.target} ${t.op}`, m && m[1] === m[2] ? Number(m[1]) : null);
+        ops.add(t.op);
+    }
+    return (config, category) => {
+        let least: number | undefined;
+        for (const op of ops) {
+            const own = byOp.get(`${config} ${op}`);
+            const range = own !== undefined ? own : category === undefined ? undefined : byOp.get(`_${category} ${op}`);
+            if (typeof range === 'number') least = Math.min(least ?? range, range);
+        }
+        return least;
+    };
+}
+
 export function parseCallables(file: string, text: string): Callable[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(/^\[(label|proc),([a-z0-9_]+)\]$/);

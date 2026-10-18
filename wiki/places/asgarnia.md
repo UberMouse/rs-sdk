@@ -83,7 +83,7 @@
 | `water-source:asgarnia:6` | (3026, 3262) | Sink 1 | yes | no | - | - |
 | `water-source:asgarnia:7` | (3038, 3353) | Fountain 1 | yes | no | - | - |
 | `water-source:asgarnia:8` | (3048, 3494) | Fountain 1 | yes | no | - | - |
-| `water-source:asgarnia:9` | (3051, 3347) | Sink 1 | yes | no | - | unreached |
+| `water-source:asgarnia:9` | (3051, 3347) | Sink 1 | yes | no | - | - |
 | `water-source:asgarnia:10` | (3054, 3494) | Fountain 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)

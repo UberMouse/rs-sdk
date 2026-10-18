@@ -9,7 +9,7 @@ The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to t
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `anvil:hemenster:0` | (2637, 3418) | Anvil 3 | no | no | - | unreached |
+| `anvil:hemenster:0` | (2637, 3418) | Anvil 3 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 

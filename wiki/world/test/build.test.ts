@@ -503,6 +503,7 @@ describe('formatReport', () => {
                 rolled: 0,
                 unrolled: [],
                 waited: [],
+                stepped: [],
             },
         },
         scripted: {
@@ -793,7 +794,7 @@ describe('formatReport', () => {
         ).toBe(false);
     });
 
-    test('counts the gate moves on objects, lists the underived rows by trigger, the landings off land and those past a wait', () => {
+    test('counts the gate moves on objects, lists the underived rows by trigger, the landings off land, past a wait and stepped out of', () => {
         const landings: BuildReport['gates']['landings'] = {
             counts: { to: 1, landings: 2, opens: 3, underived: 3, windows: 1 },
             rolled: 0,
@@ -842,9 +843,19 @@ describe('formatReport', () => {
                     waits: ['`%pipe_used >= map_clock` (p.rs2:5)'],
                 },
             ],
+            stepped: [
+                {
+                    trigger: 'oploc1,fence',
+                    loc: 'fence',
+                    tile: at(3, 3),
+                    stand: at(3, 2),
+                    landing: at(3, 3),
+                    to: [at(3, 2), at(3, 4)],
+                },
+            ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-16)).toEqual([
+        expect(lines.slice(-18)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
                 '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
@@ -858,6 +869,8 @@ describe('formatReport', () => {
             '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
             'warning: 1 free gate landings reached past a wait only (a var against map_clock), read as free:',
             '  oploc1,pipe pipe (1, 1) from (1, 0) -> (1, 3): `%pipe_used >= map_clock` (p.rs2:5)',
+            'warning: 1 gate landings on a tile of the loc itself, landed on the tiles stepped out to:',
+            '  oploc1,fence fence (3, 3) from (3, 2) -> (3, 3): (3, 2), (3, 4)',
             scriptedLine,
             teleportsLine,
             npcTeleportsLine,

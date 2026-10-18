@@ -40,8 +40,11 @@ import {
     actName,
     fillReach,
     formatReach,
+    gateName,
+    NO_LANDING,
     reachGraph,
     STEPS,
+    type LocEdit,
     type Reach,
     type ReachCollision,
     type ReachGraph,
@@ -87,7 +90,14 @@ import { toolCheckers } from './sources/conditions';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
-import { parseCallables, parseQueues, parseTriggers, readScripts, type Trigger } from './sources/triggers';
+import {
+    approachRange,
+    parseCallables,
+    parseQueues,
+    parseTriggers,
+    readScripts,
+    type Trigger,
+} from './sources/triggers';
 import { coordTile } from './sources/runescript';
 import { readZones } from './sources/zones';
 import {
@@ -291,11 +301,12 @@ export interface BuildReport {
         /**
          * Gate rows on objects whose move is not a coord literal (sources/gate-landings.ts): counted by
          * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land,
-         * stands of rows with landings that give none, and free landings reached past a wait only.
+         * stands of rows with landings that give none, free landings reached past a wait only, and moves onto the
+         * loc's own tiles landed on the tiles stepped out to.
          */
         landings: Pick<
             GateLandings,
-            'counts' | 'underived' | 'offLand' | 'unlanded' | 'rolled' | 'unrolled' | 'waited'
+            'counts' | 'underived' | 'offLand' | 'unlanded' | 'rolled' | 'unrolled' | 'waited' | 'stepped'
         >;
     };
     /**
@@ -653,6 +664,40 @@ function opUsers(input: {
     return out;
 }
 
+/**
+ * Whether a player on one tile sees another, for the stand rule's approach ops (place.ts SiteOptions.approach): a line
+ * of walk between them with the locs that block walking but not sight cleared (blockrange=no: the Burthorpe Games
+ * Room's bar pumps), as the collision data has no sight flags (rsmod's LOC_PROJ_BLOCKER and wall ones), so its own
+ * line of sight passes every loc. Every wall and every other loc that blocks walking is taken to block sight.
+ */
+function sightOf(
+    collision: BuildInput['collision'],
+    locs: readonly PlacedLoc[],
+    configs: Map<string, Config>,
+): (from: Tile, to: Tile) => boolean {
+    const size = locSizes(configs);
+    // The footprint of each centrepiece that blocks walking but not sight, by every tile of it.
+    const clear = new Map<string, LocEdit[]>();
+    for (const l of locs) {
+        const cfg = configs.get(l.config);
+        if ((l.shape !== 10 && l.shape !== 11) || first(cfg, 'blockrange') !== 'no' || first(cfg, 'blockwalk') === 'no')
+            continue;
+        const { w, l: length } = footprint(l, size);
+        const edit: LocEdit = { tile: l.tile, width: w, length };
+        for (let dx = 0; dx < w; dx++)
+            for (let dz = 0; dz < length; dz++) push(clear, `${l.tile.level} ${l.tile.x + dx} ${l.tile.z + dz}`, edit);
+    }
+    return (from, to) => {
+        const open = new Set<LocEdit>();
+        for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x++)
+            for (let z = Math.min(from.z, to.z); z <= Math.max(from.z, to.z); z++)
+                for (const e of clear.get(`${from.level} ${x} ${z}`) ?? []) open.add(e);
+        return collision.edited({ close: [], open: [...open] }, () =>
+            collision.line('walk', from.level, from.x, from.z, to.x, to.z),
+        );
+    };
+}
+
 /** An underived connector op as the report lists it: `config (x, z) op<n>`. */
 const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
 
@@ -881,10 +926,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const fill = fillReach(reachInput, graph);
     // Sites after the fill, so a stand is a tile a walk gets to where one can be (place.ts standTile).
     const log: string[] = [];
+    const apRange = approachRange(triggers);
     const placedSites = buildSites(features, resolve, zones, collision, {
         size: locSizes(locConfigs),
         log: line => log.push(line),
         walked: fill.reached,
+        approach: {
+            range: config => apRange(config, first(npcConfigs.get(config), 'category')),
+            inSight: sightOf(collision, placedLocs, locConfigs),
+        },
     }).sort((a, b) => cmp(a.id, b.id));
     const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
     const { npcSpawns, unreached } = reached;
@@ -903,6 +953,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         areas: new Set(areas.map(a => a.id)),
         sites: new Set(reached.sites.map(x => x.id)),
     });
+    const noLanding = new Map(landings.underived.map(u => [`${gateName(u)}: ${NO_LANDING}`, u.reasons]));
     const curatedKind = new Map(GATES.map(e => [e.trigger, e.kind]));
     // The pocket flood reads steps through graph.stepMask, which adds to graph.offLand; the fill's report took
     // its offLand count already, so this has to stay after fillReach.
@@ -1015,6 +1066,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     rolled: landings.rolled,
                     unrolled: landings.unrolled,
                     waited: landings.waited,
+                    stepped: landings.stepped,
                 },
             },
             scripted: {
@@ -1046,7 +1098,14 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     ),
                 ],
             },
-            reach: fill.report,
+            // A gate row skipped for want of a landing says what stopped its derivation (sources/gate-landings.ts).
+            reach: {
+                ...fill.report,
+                skipped: fill.report.skipped.map(line => {
+                    const why = noLanding.get(line);
+                    return why ? `${line}: ${why.join('; ')}` : line;
+                }),
+            },
             distance: distance.report,
             unpriced: priced.unpriced,
             stranded: priced.stranded,
@@ -1246,6 +1305,13 @@ export function formatReport(report: BuildReport): string[] {
             l.waited.map(
                 w =>
                     `${w.trigger} ${w.loc} ${coord(w.tile)} from ${coord(w.stand)} -> ${coord(w.landing)}: ${w.waits.join('; ')}`,
+            ),
+        ),
+        ...list(
+            `warning: ${l.stepped.length} gate landings on a tile of the loc itself, landed on the tiles stepped out to:`,
+            l.stepped.map(
+                m =>
+                    `${m.trigger} ${m.loc} ${coord(m.tile)} from ${coord(m.stand)} -> ${coord(m.landing)}: ${m.to.map(coord).join(', ')}`,
             ),
         ),
         ...formatScripted(report.scripted),

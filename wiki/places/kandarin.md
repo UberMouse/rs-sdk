@@ -380,8 +380,8 @@
 | `connector:kandarin:9` | (2399, 3099) | Trapdoor 1 | down (2399, 9500) by Open, then Climb-down | no | yes | - | unreached |
 | `connector:kandarin:10` | (2458, 3310) | Ladder 1 | up (2457, 3310) L1 by Climb-up | no | no | - | Biohazard done |
 | `connector:kandarin:11` | (2458, 3310) L1 | Ladder 1 | down (2457, 3310) by Climb-down | no | no | - | Biohazard done |
-| `connector:kandarin:12` | (2503, 3252) | Ladder 1 | up (2502, 3252) L1 by Climb-up | no | no | - | locked from outside at every stage (quests/quest_tree/scripts/quest_tree.rs2:37) |
-| `connector:kandarin:13` | (2503, 3252) L1 | Ladder 1 | down (2502, 3252) by Climb-down | no | no | - | locked from outside at every stage (quests/quest_tree/scripts/quest_tree.rs2:37) |
+| `connector:kandarin:12` | (2503, 3252) | Ladder 1 | up (2502, 3252) L1 by Climb-up | no | no | - | locked from outside at every stage (quests/quest_tree/scripts/quest_tree.rs2:37) or Tree Gnome Village at stage 5 |
+| `connector:kandarin:13` | (2503, 3252) L1 | Ladder 1 | down (2502, 3252) by Climb-down | no | no | - | locked from outside at every stage (quests/quest_tree/scripts/quest_tree.rs2:37) or Tree Gnome Village at stage 5 |
 | `connector:kandarin:14` | (2516, 3424) | Staircase 1 | up (2517, 3426) L1 by Climb-up | no | no | - | - |
 | `connector:kandarin:15` | (2516, 3425) L1 | Staircase 1 | down (2516, 3423) by Climb-down | no | no | - | - |
 | `connector:kandarin:16` | (2517, 3429) | Staircase 1 | up (2518, 3431) L1 by Climb-up | no | no | - | - |

@@ -7,7 +7,7 @@ import type { Config } from './sources/configs';
 import { first } from './sources/configs';
 import { isF2p, isMultiway, wildernessLevel, type Zones } from './sources/zones';
 import type { Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
-import { cmp, push } from './util';
+import { cmp, push, uniqueTiles } from './util';
 
 /**
  * How far apart (in tiles, Chebyshev as the engine's CoordGrid.distanceTo, CoordGrid.ts:60) two
@@ -84,6 +84,14 @@ export interface SiteOptions {
      * one it does not, before any other preference. Absent: every candidate is taken as reached.
      */
     walked?: (t: Tile) => boolean;
+    /**
+     * An npc used by approach ops from further off than beside it (sources/triggers.ts approachRange): its range by
+     * config, and whether a player on one tile sees another (the engine's line of sight). Absent: none is.
+     */
+    approach?: {
+        range: (config: string) => number | undefined;
+        inSight: (from: Tile, to: Tile) => boolean;
+    };
 }
 
 // The packer's forceapproach bits (server/engine/tools/pack/config/LocConfig.ts:149): every side
@@ -273,7 +281,10 @@ export function besideCluster(c: Pick<NpcSpawn, 'bbox' | 'centre'>, collision: S
  * past the end of a long row with one banker behind its middle, a tile is further from that banker
  * than any tile in front of the row. Without locs: the walkable tile nearest the centre in the bbox
  * grown by one tile, as an npc op is used from an adjacent tile and a fishing spot's own tiles are
- * water.
+ * water; for an npc used by approach ops from further off (SiteOptions.approach), also each walkable tile
+ * within its range of a spawn (Chebyshev, the spawn's own tile left out) in sight of it, as
+ * PathingEntity.inApproachDistance (server/engine/src/engine/entity/PathingEntity.ts:422) takes an approach op:
+ * the Burthorpe Games Room barmaid is traded with across her bar.
  */
 function standTile(
     features: readonly Feature[],
@@ -282,7 +293,7 @@ function standTile(
     centre: Tile,
     bbox: Rect,
     collision: SiteCollision,
-    { size, walked = () => true }: Pick<SiteOptions, 'size' | 'walked'>,
+    { size, walked = () => true, approach }: Pick<SiteOptions, 'size' | 'walked' | 'approach'>,
 ): Tile | null {
     const locs = members.filter(i => features[i]!.source === 'loc');
     let found: Candidate[];
@@ -295,9 +306,22 @@ function standTile(
         }
         found = locCandidates(features, locs, collision, size, toward);
     } else {
-        found = grownBox(bbox, centre.level)
-            .filter(t => collision.walkable(t.level, t.x, t.z))
-            .map(tile => ({ tile, away: 0 }));
+        const far = members.flatMap(i => {
+            const { config, tile: npc } = features[i]!;
+            const range = approach?.range(config);
+            if (!approach || range === undefined) return [];
+            const out: Tile[] = [];
+            for (let dx = -range; dx <= range; dx++)
+                for (let dz = -range; dz <= range; dz++) {
+                    const t = { level: npc.level, x: npc.x + dx, z: npc.z + dz };
+                    if ((dx || dz) && collision.walkable(t.level, t.x, t.z) && approach.inSight(t, npc)) out.push(t);
+                }
+            return out;
+        });
+        found = uniqueTiles([
+            ...grownBox(bbox, centre.level).filter(t => collision.walkable(t.level, t.x, t.z)),
+            ...far,
+        ]).map(tile => ({ tile, away: 0 }));
     }
     const unwalked = (c: Candidate): number => (walked(c.tile) ? 0 : 1);
     found.sort(
@@ -330,7 +354,7 @@ export function buildSites(
     resolve: (t: Tile) => string[],
     zones: Zones,
     collision: SiteCollision,
-    { size, log, walked }: SiteOptions,
+    { size, log, walked, approach }: SiteOptions,
 ): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
@@ -362,7 +386,7 @@ export function buildSites(
             const id = `${kind}:${areaPath.at(-1) ?? 'unnamed'}:${n}`;
             const centre = centreOf(tiles);
             const bbox = bboxOf(tiles);
-            const stand = standTile(features, members, kind, centre, bbox, collision, { size, walked });
+            const stand = standTile(features, members, kind, centre, bbox, collision, { size, walked, approach });
             if (!stand) log(`place: site ${id} has no stand tile`);
             sites.push({
                 id,

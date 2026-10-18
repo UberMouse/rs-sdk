@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|---|
 | `range:misthalin:0` | (3144, 3452) L1 | Range 2 | yes | no | - | wear Chef's hat + 32 Cooking |
 | `range:misthalin:1` | (3156, 3410) | Range 1 | yes | no | - | - |
-| `range:misthalin:2` | (3160, 3427) | Range 1 | yes | no | - | unreached |
+| `range:misthalin:2` | (3160, 3427) | Range 1 | yes | no | - | - |
 | `range:misthalin:3` | (3188, 3352) | Range 1 | yes | no | - | 32 quest points |
 
 ## [Fires](../services/fire.md)
@@ -115,7 +115,7 @@
 | `pickpocket:misthalin:0` | (3092, 3515) | [Guard](../resources/pickpocket/guard1.md) 2, [Man](../resources/pickpocket/man.md) 2 | yes | no | - | - |
 | `pickpocket:misthalin:1` | (3112, 3514) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - | - |
 | `pickpocket:misthalin:2` | (3154, 3293) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
-| `pickpocket:misthalin:3` | (3154, 3428) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | unreached |
+| `pickpocket:misthalin:3` | (3154, 3428) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | - |
 | `pickpocket:misthalin:4` | (3165, 3324) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
 | `pickpocket:misthalin:5` | (3227, 3290) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
 | `pickpocket:misthalin:6` | (3233, 3308) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
@@ -192,8 +192,8 @@
 | `connector:misthalin:0` | (3083, 3513) | Ladder 1 | up (3082, 3513) L1 by Climb-up | yes | no | - | - |
 | `connector:misthalin:1` | (3083, 3513) L1 | Ladder 1 | down (3082, 3513) by Climb-down | yes | no | - | - |
 | `connector:misthalin:2` | (3116, 3452) | Ladder 1 | down (3115, 9852) by Climb-down | yes | yes | - | - |
-| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | up (3155, 3435) L1 by Climb-up | yes | no | - | unreached |
-| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | down (3159, 3435) by Climb-down | yes | no | - | unreached |
+| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | up (3155, 3435) L1 by Climb-up | yes | no | - | - |
+| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | down (3159, 3435) by Climb-down | yes | no | - | - |
 | `connector:misthalin:5` | (3164, 3307) | Ladder 1 | up (3164, 3306) L1 by Climb-up | yes | no | - | - |
 | `connector:misthalin:6` | (3164, 3307) L1 | Ladder 1 | down (3164, 3306) by Climb or Climb-down; up (3164, 3306) L2 by Climb or Climb-up | yes | no | - | - |
 | `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | down (3164, 3306) L1 by Climb-down | yes | no | - | - |

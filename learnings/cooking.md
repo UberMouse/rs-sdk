@@ -21,6 +21,8 @@ if (raw && range) {
 | Lumbridge Castle kitchen | (3212, 3215) | `Cooking range` | **REQUIRES Cook's Assistant quest completion.** The Cook stands next to it at (3209, 3215). |
 | Al Kharid (Karim's kebab shop) | (3271, 3180) | `Range` | No quest needed, but 10gp toll gate to get there. |
 
+**Unusable fireplaces** (`wiki/services/fire.md` lists them unreached): raw shrimps used on Elena's house's `Cooking pot` (2594, 3335) in East Ardougne and on the West Ardougne house `Fireplace` (2570, 3254) give "I can't reach that!" — each is used only from a nook its furniture closes in. [v 2026-10-19 t9check1 local]
+
 **COMMON MISTAKE**: The range inside Lumbridge Castle kitchen — **(3212, 3215)**, ground floor, SW corner where the Cook stands — is locked behind the Cook's Assistant quest. Without the quest the Cook says *"Hey! Who said you could use that?"* and nothing cooks. Use the Cooking pot at (3232, 3238) instead.
 
 **Name gotcha**: the quest-gated castle range is named `Cooking range`, not `Range`, so `/^range$/i` deliberately skips it. Usable cooking sources are `Range` (loc 2728-2731), `Fireplace` (2724-2726), `Cooking pot` (2727), and `Fire` (2732) — a wider match is:

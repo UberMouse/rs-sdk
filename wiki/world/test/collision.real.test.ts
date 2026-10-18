@@ -1,5 +1,9 @@
 import { expect, test } from 'bun:test';
+import { collisionPaths } from '../../../conductor/actions/paths';
 import { siteCollision } from '../collision';
+import { first, readConfigs } from '../sources/configs';
+import { readAllMapSquares } from '../sources/maps';
+import { readPack } from '../sources/packs';
 
 // A Varrock West bank booth: `0 50 44: 2213 10 3` in server/content/maps/m49_53.jm2 (loc 2213 is
 // bankbooth in server/content/pack/loc.pack), a 1x1 centrepiece turned to angle 3, with no forceapproach.
@@ -28,4 +32,21 @@ test('a loc with forceapproach is refused from the sides it forbids', () => {
 
 test('a tile in a zone with no collision data is not walkable', () => {
     expect(siteCollision.walkable(0, 1000, 1000)).toBe(false);
+});
+
+test('every placed closed diagonal door is a door the walk knows', () => {
+    // The collision data's door list has no shape-9 door (conductor/actions/paths.ts EXTRA_DOORS), whose tile stays
+    // blocked unless listed; the plain door script opens every door_closed loc (doors/scripts/doors.rs2:1).
+    const locs = readConfigs('loc');
+    const names = readPack('loc').name;
+    const placed = readAllMapSquares().locs.filter(l => {
+        const config = l.shape === 9 ? names.get(l.id) : undefined;
+        return config !== undefined && first(locs.get(config), 'category') === 'door_closed';
+    });
+    expect(placed.length).toBeGreaterThan(10);
+    for (const { tile, rotation } of placed)
+        expect(collisionPaths.doorAt(tile.level, tile.x, tile.z), JSON.stringify(tile)).toMatchObject({
+            shape: 9,
+            angle: rotation,
+        });
 });

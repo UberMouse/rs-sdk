@@ -90,6 +90,39 @@ describe('the unreached report', () => {
         expect(pockets.flatMap(p => p.sites).filter(s => gone.includes(s.areaPath.at(-1)!))).toEqual([]);
         expect(pocketOf('bank:gnome-stronghold-bank:0')).toBeUndefined();
     });
+
+    test('no pocket is left within 5 tiles of a reached tile but those EXPECTED_UNREACHED explains', () => {
+        expect(pockets.filter(p => p.nearest && p.nearest.off <= 5).map(p => p.sites.map(s => s.id))).toEqual([]);
+    });
+});
+
+describe('the near misses', () => {
+    test('a diagonal door the collision data lacks opens: the Varrock house and the Hemenster anvil are reached', () => {
+        // loc_1533 at (3160, 3440), loc_1530 at (2639, 3415): conductor/actions/paths.ts EXTRA_DOORS.
+        expect(reachOf('pickpocket:misthalin:3')).toEqual([[]]);
+        expect(reachOf('range:misthalin:2')).toEqual([[]]);
+        expect(reachOf('anvil:hemenster:0')).toEqual([[]]);
+    });
+
+    test('the Games Room barmaid is stood for across her bar, in front of its pumps', () => {
+        // boardgames_barmaid.rs2:11: Trade from up to 3 tiles off; the pumps block walking, not sight.
+        const shop = world.sites.find(s => s.id === 'shop:burthorpe-games-room:0');
+        expect([shop?.stand, shop?.reach]).toEqual([{ level: 0, x: 2203, z: 4942 }, [[]]]);
+    });
+
+    test("the Lumber Yard's fence climbed from the south lands on the fence, and the yard is reached", () => {
+        expect(reachOf('tree:lumber-yard:0')).toEqual([[]]);
+        expect(reachOf('tree:lumber-yard:1')).toEqual([[]]);
+        expect(report.gates.landings.stepped.map(s => shown(s, s.stand, s.landing))).toContain(
+            'oploc1,gertrudefence (3305, 3493) from (3305, 3492) -> (3305, 3493)',
+        );
+    });
+
+    test('a gate row the fill skips for want of a landing says what stopped its derivation', () => {
+        const skipped = report.reach.skipped.filter(s => s.includes('a gate row with no derived landing'));
+        expect(skipped.length).toBeGreaterThan(0);
+        expect(skipped.filter(s => !/a gate row with no derived landing: \S/.test(s))).toEqual([]);
+    });
 });
 
 describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', () => {
@@ -238,9 +271,19 @@ describe('free gate landings (sources/gate-landings.ts)', () => {
             'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3303, 3115) -> (3303, 3118)',
             'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3304, 3115) -> (3304, 3118)',
             'oploc1,shantay_pass_henge_doorway (3302, 3116) from (3306, 3116) -> (3306, 3119)',
-            // North of the lumberyard fence, members only from the south, the player waits out a climber
-            // (quest_fluffs.rs2:117, :131).
+            // The lumberyard fence, members only from the south, where the climb ends on the fence and the player
+            // walks off it (quest_fluffs.rs2:117, :127, :136); from either side the player waits out a climber (:131).
             'oploc1,gertrudefence (3305, 3493) from (3304, 3493) -> (3305, 3492)',
+            ...[
+                [3304, 3492],
+                [3304, 3493],
+                [3304, 3494],
+                [3305, 3492],
+                [3305, 3494],
+                [3306, 3492],
+                [3306, 3493],
+                [3306, 3494],
+            ].map(([x, z]) => `oploc1,gertrudefence (3305, 3493) from (3305, 3492) -> (${x}, ${z})`),
             'oploc1,gertrudefence (3305, 3493) from (3305, 3494) -> (3305, 3492)',
             'oploc1,gertrudefence (3305, 3493) from (3306, 3493) -> (3305, 3492)',
         ]);

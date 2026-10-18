@@ -50,14 +50,31 @@ export interface Pathfinder {
  * the whole class of shape-9 ground-layer doors (diagonal, not walls), so their tiles stay blocked. The
  * ones known: the Wizards' Tower door into the stairs-and-ladder room (loc 1536 in maps/m48_49.jm2), without
  * which no route into the room (the basement ladder, Sedridor) exists, and the two Rogues' Castle doors into
- * its stair room (loc 1530 in maps/m51_61.jm2:4790, :4913), without which no route up the castle exists. Here
- * their tiles are unblocked and the doors are known.
+ * its stair room (loc 1530 in maps/m51_61.jm2:4790, :4913), without which no route up the castle exists; then
+ * every other closed diagonal door the plain door script opens (category door_closed, doors/scripts/doors.rs2:1),
+ * by map square. Here their tiles are unblocked and the doors are known. wiki/world/test/collision.real.test.ts
+ * checks that every placed one is listed.
  * A stopgap patch of sdk/collision-data.json: delete this list once that file lists these doors.
  */
 export const EXTRA_DOORS: readonly DoorInfo[] = [
     { level: 0, x: 3107, z: 3162, shape: 9, angle: 3, blockrange: true },
     { level: 0, x: 3279, z: 3939, shape: 9, angle: 2, blockrange: true },
     { level: 0, x: 3282, z: 3934, shape: 9, angle: 0, blockrange: true },
+    // m39_50, m41_51 (East Ardougne), m41_53 (Hemenster), m41_73 and m43_73 (the Fisher Realm's castles).
+    { level: 0, x: 2505, z: 3256, shape: 9, angle: 3, blockrange: true },
+    { level: 0, x: 2650, z: 3297, shape: 9, angle: 0, blockrange: true },
+    { level: 0, x: 2669, z: 3316, shape: 9, angle: 1, blockrange: true },
+    { level: 0, x: 2639, z: 3415, shape: 9, angle: 2, blockrange: true },
+    { level: 0, x: 2638, z: 4688, shape: 9, angle: 2, blockrange: true },
+    { level: 1, x: 2638, z: 4688, shape: 9, angle: 0, blockrange: true },
+    { level: 1, x: 2766, z: 4688, shape: 9, angle: 0, blockrange: true },
+    // m47_52 (Falador), m48_51 (Draynor), m48_53 (Barbarian Village), m49_53 and m50_52 (Varrock), m54_51 (Morytania).
+    { level: 0, x: 3046, z: 3348, shape: 9, angle: 2, blockrange: true },
+    { level: 0, x: 3092, z: 3274, shape: 9, angle: 2, blockrange: true },
+    { level: 0, x: 3077, z: 3415, shape: 9, angle: 1, blockrange: true },
+    { level: 0, x: 3160, z: 3440, shape: 9, angle: 1, blockrange: true },
+    { level: 0, x: 3206, z: 3385, shape: 9, angle: 2, blockrange: true },
+    { level: 0, x: 3484, z: 3290, shape: 9, angle: 3, blockrange: true },
 ];
 /**
  * Every closed slashable web (loc 733 `bigweb_slashable`, from server/content/maps/*.jm2; the `webwall` loc 1810

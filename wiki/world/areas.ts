@@ -1027,7 +1027,7 @@ export const AREAS: readonly Area[] = [
         id: 'burthorpe-games-room',
         name: 'Burthorpe Games Room',
         rects: [{ x1: 2176, z1: 4928, x2: 2239, z2: 4991 }],
-        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:485), which land on one of six tiles at random (stairs.rs2:491), so sources/connectors.ts derives no landing: gates.ts CURATED_CROSSINGS has the stairs each way. The bar's shop reads unreached in the build.ts unreached report: the barmaid is traded with from 3 tiles off, across her counter (minigames/game_gamesroom/general/scripts/boardgames_barmaid.rs2:12), which place.ts's stand tiles do not model.",
+        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:485), which land on one of six tiles at random (stairs.rs2:491), so sources/connectors.ts derives no landing: gates.ts CURATED_CROSSINGS has the stairs each way. The barmaid is traded with from up to 3 tiles off, across her bar (minigames/game_gamesroom/general/scripts/boardgames_barmaid.rs2:12), so the shop's stand is in front of it.",
     },
     {
         id: 'fisher-realm',
@@ -1351,6 +1351,111 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: "walled in by collision south of the gliders' beach: no loc or npc op on or beside its pocket moves the player (the report's hints are its tree's own)",
         source: 'quests/quest_mm/scripts/mm_waydar.rs2:116',
     },
+    // North Tirannwn and the forest north of the Arandar pass: one stretch of land the grand wall round Prifddinas
+    // (grandwall1) and the forest close in.
+    ...[
+        'tree:kandarin:7',
+        'tree:kandarin:8',
+        ...[3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 23, 24, 25].map(i => `tree:tirannwn:${i}`),
+        'tree:arandar:1',
+        'tree:prifddinas:0',
+    ].map((site): ExpectedUnreached => ({
+        site,
+        reason: "walled in round Prifddinas: the city's gates turn every player away (@prif_guard_halt, prif_city_guard.rs2:7), the wall's tower ladders only climb to the towers' tops, and no other loc or npc op is on or beside the land (the report calls it open, as the towers' empty upper floors read as land)",
+        source: 'quests/quest_regicide/scripts/prif_city_guard.rs2:12',
+    })),
+    // The forest north of the Tree Gnome Stronghold, past its north fence (gnomefence).
+    ...[5, 10, 13, 15, 17, 18, 23]
+        .map(i => `tree:kandarin:${i}`)
+        .concat(['tree:swamp:1', 'tree:swamp:3'])
+        .map((site): ExpectedUnreached => ({
+            site,
+            reason: "walled in by collision north of the Tree Gnome Stronghold's fence: no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
+            source: 'skill_woodcutting/scripts/woodcut.rs2:1',
+        })),
+    ...['range:west-ardougne:0', 'water-source:kandarin:2'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "in the mourner headquarters, whose door lets a player in only at two Biohazard stages wearing a doctor's gown (^biohazard_poisoned_stew, ^biohazard_found_distillator) and is locked at every other, the quest done included (doors.rs2:69)",
+        source: 'areas/area_ardougne_west/scripts/doors.rs2:57',
+    })),
+    ...['tree:fight-arena:0', 'tree:fight-arena:1'].map((site): ExpectedUnreached => ({
+        site,
+        reason: 'inside the Fight Arena, whose door opens only at two of its stages (^arena_entered_ogre_fight, ^arena_defeated_ogre); after the quest it is locked, and a guard by it attacks the player (khazard_guard.rs2:132)',
+        source: 'quests/quest_arena/scripts/quest_arena.rs2:95',
+    })),
+    // Locs no tile a walk gets to can use: walled in by collision, with no loc or npc op on or beside their pockets that
+    // moves the player but their own.
+    ...(
+        [
+            [
+                'tree:asgarnia:6',
+                "in the railed garden of Entrana's church, whose only op is a ladder up to a floor with no way down",
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:asgarnia:23',
+                'a dead tree every tile beside which blocks',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:goblin-village:0',
+                'a dead tree every tile beside which blocks',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            ['tree:arandar:2', 'a dead tree every tile beside which blocks', 'skill_woodcutting/scripts/woodcut.rs2:1'],
+            [
+                'tree:arandar:3',
+                'a dead tree used only from a nook the other dead trees close in',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:taverley:1',
+                "in a strip between two of the Witch's House garden's hedges, closed at both ends",
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            ['tree:kandarin:22', 'in a railed pit of lava', 'skill_woodcutting/scripts/woodcut.rs2:1'],
+            [
+                'tree:wilderness:153',
+                'in a field of lava the lava itself closes in',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:kharidian-desert:0',
+                "in a fenced flower bed by the Exam Centre's south hedge",
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:kharidian-desert:1',
+                "in a fenced flower bed by the Exam Centre's south hedge",
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:exam-centre:2',
+                "in a strip behind the Exam Centre's east hedge",
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'fire:kandarin:9',
+                "a fireplace used only from a nook its room's table and chairs close in",
+                'skill_cooking/scripts/cooking.rs2:2',
+            ],
+            [
+                'fire:east-ardougne:1',
+                "Elena's house's cooking pot, used only from nooks the stairs, chairs and walls close in",
+                'skill_cooking/scripts/cooking.rs2:2',
+            ],
+            [
+                'pottery-wheel:east-ardougne:1',
+                "two wheels whose forceapproach (east, turned with the loc to south) puts the tile they are used from under the house's wall and a table",
+                'skill_crafting/scripts/pottery/pottery.rs2:8',
+            ],
+            [
+                'pottery-wheel:misthalin:0',
+                'a wheel whose forceapproach (east, turned to west) puts the tile it is used from in a nook a crate and a potted plant close in',
+                'skill_crafting/scripts/pottery/pottery.rs2:8',
+            ],
+        ] as const
+    ).map(([site, why, source]): ExpectedUnreached => ({ site, reason: `walled in by collision: ${why}`, source })),
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
     ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(
         (site): ExpectedUnreached => ({

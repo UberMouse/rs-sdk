@@ -156,8 +156,8 @@
 | `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | down (3201, 3434) by Climb-down | yes | no | - | - |
 | `connector:varrock:14` | (3202, 3497) | Staircase 1 | up (3203, 3496) L1 by Climb-up | yes | no | - | - |
 | `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | down (3203, 3496) by Climb or Climb-down; up (3204, 3497) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 by Climb-up | yes | no | - | unreached |
-| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) by Climb-down | yes | no | - | unreached |
+| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) by Climb-down | yes | no | - | - |
 | `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | down (3203, 3496) L1 by Climb-down | yes | no | - | - |
 | `connector:varrock:19` | (3205, 3395) | Ladder 1 | up (3204, 3395) L1 by Climb-up | yes | no | - | - |
 | `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | down (3204, 3395) by Climb-down | yes | no | - | - |

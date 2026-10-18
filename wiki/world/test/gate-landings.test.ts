@@ -240,6 +240,16 @@ p_telejump(0_50_50_7_7);
 [queue,lastword_jump]
 p_telejump(0_50_50_8_8);
 
+[oploc1,brokenfence]
+if (stat(agility) < 5) {
+    return;
+}
+def_coord $end = movecoord(loc_coord, 0, 0, -1);
+if (coordz(coord) < coordz(loc_coord)) {
+    $end = loc_coord;
+}
+p_exactmove(coord, $end, 0, 30, 0);
+
 [proc,climb_ladder](coord $coord, boolean $up)
 p_delay(0);
 p_telejump($coord);
@@ -327,6 +337,7 @@ const locConfigs = parseConfigs(
         '[stargate]',
         '[rubble]',
         '[squareladder]',
+        '[brokenfence]',
     ].join('\n'),
 );
 
@@ -491,6 +502,43 @@ describe('deriveGateLandings: stands and landings', () => {
                 at: lineOf('p_telejump($coord)'),
             },
         ]);
+    });
+
+    test("a move onto the loc's own tile lands on the tiles a step from it goes to, reported; with no steps, off land", () => {
+        // From the south the fence's climb ends on the fence, which blocks its tile; from any other side, south of it.
+        const fence = row('brokenfence', 300, [['skill:agility:5']]);
+        const stepping = { ...stub([fence.tile]), canStep: () => true };
+        const out = deriveGateLandings({
+            gates: [fence],
+            scan,
+            candidates: scanGates(scan),
+            locConfigs,
+            collision: stepping,
+            size: locSizes(locConfigs),
+        });
+        const off = [-1, 0, 1].flatMap(dx => [-1, 0, 1].flatMap(dz => (dx || dz ? [at(300 + dx, 100 + dz)] : [])));
+        const landings = out.gates[0]!.landings!;
+        expect(landings.filter(l => l.stand.z === 99).map(l => l.landing)).toEqual(off);
+        expect(landings.filter(l => l.stand.z !== 99).map(l => l.landing)).toEqual([
+            at(300, 99),
+            at(300, 99),
+            at(300, 99),
+        ]);
+        expect(out.stepped).toEqual([
+            {
+                trigger: 'oploc1,brokenfence',
+                loc: 'brokenfence',
+                tile: at(300, 100),
+                stand: at(300, 99),
+                landing: at(300, 100),
+                to: off,
+            },
+        ]);
+        expect(out.offLand).toEqual([]);
+        // Without the step test, the fence's tile is a landing off walkable land, as before.
+        const { out: flat } = one(fence);
+        expect(flat.stepped).toEqual([]);
+        expect(flat.offLand.map(o => o.landing)).toEqual([at(300, 100)]);
     });
 
     test('a stand that gives no landing makes the row landings, not to, and is reported', () => {

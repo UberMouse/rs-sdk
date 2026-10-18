@@ -203,6 +203,10 @@ export const actName = ({ act }: Pick<Crossing, 'act'>): string => {
 
 const sameTile = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 export const coord = (t: Tile): string => `(${t.x}, ${t.z}${t.level ? `, ${t.level}` : ''})`;
+/** A gate row as the fill's skipped rows name it. */
+export const gateName = (g: Pick<Gate, 'trigger' | 'loc' | 'tile'>): string => `${g.trigger} ${g.loc} ${coord(g.tile)}`;
+/** Why the fill skips a gate row on an object that has no `to`, `landings` or `opens`. */
+export const NO_LANDING = 'a gate row with no derived landing';
 const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 
 /** A trigger's op number (`oploc1,x` -> 1); undefined for a use-item trigger. */
@@ -488,7 +492,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
     const connectorAt = new Set(world.connectors.map(c => `${c.loc.level} ${c.loc.x} ${c.loc.z} ${c.op}`));
     const gateEdges: (() => void)[] = [];
     for (const g of world.gates) {
-        const name = `${g.trigger} ${g.loc} ${coord(g.tile)}`;
+        const name = gateName(g);
         const wall = WALL_SHAPES.has(g.shape);
         if (wall && !g.to) {
             const tiles = wallTiles(g);
@@ -559,7 +563,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                     if (i < 0) continue;
                     opened.set(i, [...(opened.get(i) ?? []), ...g.requires]);
                 }
-        } else skipped.add(`${name}: a gate row with no derived landing`);
+        } else skipped.add(`${name}: ${NO_LANDING}`);
     }
     const openAlts = new Map([...opened].map(([i, reqs]) => [i, alternatives(reqs)]));
 

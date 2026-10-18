@@ -57,6 +57,15 @@ const blockedBy = (fs: Feature[]): Tile[] => fs.filter(f => f.source === 'loc').
 const build = (fs: Feature[], resolve: (t: Tile) => string[] = oneArea): Placed<Site>[] =>
     buildSites(fs, resolve, noZones, stubCollision(blockedBy(fs)), quiet);
 
+/** The tiles a walk gets to round a bar at x 99 to 101: x 103 and up, and x 97 and down. */
+const pastTheBar = (t: Tile): boolean => t.x >= 103 || t.x <= 97;
+
+/** SiteOptions.approach for an npc config `barmaid` with that range, seen from the tiles `inSight` passes. */
+const barmaidRange = (range: number | undefined, inSight: (from: Tile, to: Tile) => boolean = () => true) => ({
+    range: (config: string) => (config === 'barmaid' ? range : undefined),
+    inSight,
+});
+
 const splitAt101 = (t: Tile): string[] => (t.x < 101 ? ['varrock', 'west-bank'] : ['varrock', 'east-bank']);
 
 /** Sites with their member features in place of indexes, comparable across input orders. */
@@ -181,6 +190,29 @@ describe('buildSites: stand tiles', () => {
         expect(buildSites(fs, oneArea, noZones, blocked, quiet)[0]!.stand).toEqual({ level: 0, x: 99, z: 100 });
         const [site] = buildSites(fs, oneArea, noZones, blocked, { ...quiet, walked: t => t.z < 100 });
         expect(site!.stand).toEqual({ level: 0, x: 100, z: 99 });
+    });
+
+    test('an npc used by approach ops from further off stands on a walked tile within its range in sight of it', () => {
+        // A barmaid at (100, 100) behind a bar: the bar's tiles (99 and 101, 99..101) block, the tiles beside it are
+        // walled off from the walk, and the walk gets only to x >= 103 and x <= 97.
+        const fs = [npc('shop', 'barmaid', 100, 100)];
+        const bar = [99, 101].flatMap(x => [99, 100, 101].map(z => ({ level: 0, x, z })));
+        const collision = stubCollision(bar);
+        const walked = pastTheBar;
+        // Without the rule, no walked tile is in the grown box: the stand is the nearest one, the barmaid's own.
+        expect(buildSites(fs, oneArea, noZones, collision, { ...quiet, walked })[0]!.stand).toEqual({
+            level: 0,
+            x: 100,
+            z: 100,
+        });
+        const standWith = (approach: ReturnType<typeof barmaidRange>) =>
+            buildSites(fs, oneArea, noZones, collision, { ...quiet, walked, approach })[0]!.stand;
+        // Range 3: the walked tiles 3 off, nearest the centre and then by x: the west one.
+        expect(standWith(barmaidRange(3))).toEqual({ level: 0, x: 97, z: 100 });
+        // Out of sight from the west, the east one.
+        expect(standWith(barmaidRange(3, from => from.x > 100))).toEqual({ level: 0, x: 103, z: 100 });
+        // Range 2 reaches no walked tile: as without the rule.
+        expect(standWith(barmaidRange(2))).toEqual({ level: 0, x: 100, z: 100 });
     });
 
     test('a loc site stands on the reachable tile nearest the centre', () => {

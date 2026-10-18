@@ -20,8 +20,13 @@ are committed with the code. Never edit them by hand: the next build overwrites 
 from a fresh build. The build also deletes pages it no longer renders from those three folders.
 
 A site is a cluster of same-kind features (locs or npc spawns) in one area: its id is
-`kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it. Coordinates are
-`(x, z)`, with ` L<n>` above level 0; underground areas sit at z + 6400.
+`kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it, a walk's first.
+An npc whose approach ops widen their range (`if (npc_range(coord) > n) { p_aprange(n); ... }`,
+`approachRange` in `sources/triggers.ts`) may also be stood for from any tile within that range in
+sight of it, as the engine takes an approach op: the Burthorpe Games Room barmaid is traded with across
+her bar. The collision data has no sight flags, so a line of sight there is a line of walk with the locs
+that block walking but not sight (`blockrange=no`, the bar's pumps) cleared. Coordinates are `(x, z)`,
+with ` L<n>` above level 0; underground areas sit at z + 6400.
 
 `npcSpawns` in world.json clusters every placed npc's spawns the same way, per config, whether or
 not a feature kind takes it. The npc pages (`wiki/generate-npcs.ts`) read their Locations from it
@@ -72,7 +77,10 @@ Miscellania longship among them, whose own sail proc sets no journey); scripted 
 gate row makes (`deriveScriptedMoves` in `sources/gate-landings.ts`, below); teleports to a dbrow's coords from
 `DBROW_TELEPORTS` in `gates.ts` (`sources/dbrow-teleports.ts`, below), and the curated teleports and moves of
 `CURATED_CROSSINGS` (`sources/curated-crossings.ts`, below).
-Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
+Every curated entry cites its script, and the build fails on a candidate nobody reviewed. The doors the collision
+data lists are walked through as the walker opens them; its list has no diagonal (shape 9) door, so every placed
+one the plain door script opens is in `EXTRA_DOORS` (`conductor/actions/paths.ts`), shared by the walker and the
+fill, and `test/collision.real.test.ts` fails on one left out.
 
 ### The crossing model
 
@@ -107,7 +115,9 @@ every landing of the row is: no path the run took then reads its requirement), a
 its side: the Shantay Pass's east stand goes out free, and the desert mine's nearest bank (the pass's bank chest)
 needs only the camp's key. A path past a condition the bound run can't read (an npc nearby) is not free, but for a
 wait: a var compared with `map_clock` the way the clock opens, an obstacle someone used a few ticks ago (the agility
-pipes, the lumberyard fence); the build report lists each free landing reached past one.
+pipes, the lumberyard fence); the build report lists each free landing reached past one. A move onto a tile of the
+row's own loc, which blocks it (the Lumber Yard's broken fence climbed from the south), leaves the player there to
+walk off, so it lands on each tile of walkable land a step from that tile goes to; the build report lists each.
 
 The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
 reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is
@@ -205,7 +215,13 @@ hints' scripts, then either add the missing connector, gate or transport (the de
 entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
-reached or gone.
+reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
+but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes.
+
+The fill's own warning before it, the rows it could not use, says why each is left out: a landing not on land (a
+middle ladder on the top level), a wall whose side the row can't read, or a gate row with no derived landing, with
+what stopped the derivation (no tile on land reaches the loc, every landing off walkable land, a construct not
+known offline).
 
 ## Where corrections go
 
