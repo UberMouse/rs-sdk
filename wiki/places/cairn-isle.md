@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:cairn-isle:0` | (2767, 2979) | Scorpion 2 | no | no | - | 30 coins + 15 Agility |
+| `npc:cairn-isle:0` | (2767, 2979) | Scorpion 2 | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |

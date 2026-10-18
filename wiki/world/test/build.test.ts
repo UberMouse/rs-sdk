@@ -9,6 +9,7 @@ import {
     failed,
     formatReport,
     formatScripted,
+    formatCurated,
     formatNpcTeleports,
     formatTeleports,
     formatUnreached,
@@ -512,6 +513,7 @@ describe('formatReport', () => {
         },
         teleports: { rows: 0, unstood: [], offLand: [] },
         npcTeleports: { rows: 0, unstood: [], offLand: [], unjoined: [], other: [] },
+        curated: { rows: 0, unstood: [], offLand: [], stepped: [] },
         reach: {
             nodes: 64,
             reached: 10,
@@ -549,6 +551,7 @@ describe('formatReport', () => {
         'scripted moves: 0 crossing rows; triggers ; placed locs rows 0, unsettled 0, duplicate 0, door 0, not-a-passage 0';
     const teleportsLine = 'dbrow teleports: 0 crossing rows (gates.ts DBROW_TELEPORTS)';
     const npcTeleportsLine = 'npc teleports: 0 crossing rows (gates.ts NPC_TELEPORTS)';
+    const curatedLine = 'curated crossings: 0 crossing rows (gates.ts CURATED_CROSSINGS)';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
@@ -557,6 +560,7 @@ describe('formatReport', () => {
         scriptedLine,
         teleportsLine,
         npcTeleportsLine,
+        curatedLine,
     ];
 
     test('counts, then coverage, then connectors, quests, transports and gates', () =>
@@ -684,6 +688,7 @@ describe('formatReport', () => {
             scriptedLine,
             teleportsLine,
             npcTeleportsLine,
+            curatedLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -743,7 +748,7 @@ describe('formatReport', () => {
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
             untimedQueues: ['`weakqueue(ferry_ride, 0)` (f.rs2:7)'],
         };
-        expect(formatReport({ ...report, gates }).slice(-27)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-28)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -771,6 +776,7 @@ describe('formatReport', () => {
             scriptedLine,
             teleportsLine,
             npcTeleportsLine,
+            curatedLine,
         ]);
         expect(
             failed({
@@ -838,7 +844,7 @@ describe('formatReport', () => {
             ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-15)).toEqual([
+        expect(lines.slice(-16)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
                 '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
@@ -855,6 +861,7 @@ describe('formatReport', () => {
             scriptedLine,
             teleportsLine,
             npcTeleportsLine,
+            curatedLine,
         ]);
         // Warnings: they do not fail the build.
         expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);
@@ -933,6 +940,27 @@ describe('formatReport', () => {
             '  loc-op 1 portal: other:came from wizard',
         ]);
         expect(failed({ ...report, npcTeleports })).toBe(false);
+    });
+
+    test('the curated crossings: rows, then the placements given none, the landings left out and those stepped out of', () => {
+        const curated: BuildReport['curated'] = {
+            rows: 2,
+            unstood: [{ trigger: 'opnpc1,pilot', config: 'pilot', tile: at(4, 4) }],
+            offLand: [{ trigger: 'oploc1,tree', config: 'tree', tile: at(1, 1), landing: at(9, 9) }],
+            stepped: [
+                { trigger: 'opheld1,whistle', config: 'zone', tile: at(2, 2), landing: at(5, 5), to: [at(5, 6)] },
+            ],
+        };
+        expect(formatCurated(curated)).toEqual([
+            'curated crossings: 2 crossing rows (gates.ts CURATED_CROSSINGS)',
+            'warning: 1 curated crossing placements no tile on land is used from, no row:',
+            '  opnpc1,pilot pilot (4, 4)',
+            'warning: 1 curated crossing landings off walkable land, left out:',
+            '  oploc1,tree tree (1, 1) -> (9, 9)',
+            'warning: 1 curated crossing landings on a blocked tile, landed on the tiles stepped out to:',
+            '  opheld1,whistle zone (2, 2) -> (5, 5): (5, 6)',
+        ]);
+        expect(failed({ ...report, curated })).toBe(false);
     });
 });
 

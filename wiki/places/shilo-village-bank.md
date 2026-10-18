@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - | 30 coins + Shilo Village done |
+| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |

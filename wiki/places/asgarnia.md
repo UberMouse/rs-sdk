@@ -180,7 +180,7 @@
 | `npc:asgarnia:1` | (2851, 3678) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 | `npc:asgarnia:2` | (2851, 3598) | Thrower Troll (death_troll_thrower5) 1 | no | no | - | - |
 | `npc:asgarnia:3` | (2852, 3591) | Mountain Troll (death_troll_melee1) 1 | no | no | - | - |
-| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 | `npc:asgarnia:5` | (2894, 3698) | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - | Troll Stronghold at stage 20 + 15 Agility |
 | `npc:asgarnia:6` | (2902, 3604) | Troll Spectator (troll_spectator7) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
 | `npc:asgarnia:7` | (2907, 3642) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |

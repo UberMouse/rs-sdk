@@ -23,11 +23,11 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 |---|---|---|---|---|---|---|---|---|---|
 | [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:1` | (2941, 3283) | (2941, 3283) | 7 | yes | no | - | wear Brown apron + 40 Crafting | Falador East bank (Falador), 66 ticks |
 | [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | 2 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
-| [Crandor](../../places/crandor.md) | `rock:crandor:3` | (2861, 3287) | (2861, 3286) | 3 | yes | no | - | 30 coins + Dragon Slayer done | Ardougne South bank (East Ardougne), 229 ticks via 30 coins |
+| [Crandor](../../places/crandor.md) | `rock:crandor:3` | (2861, 3287) | (2861, 3286) | 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done | Ardougne South bank (East Ardougne), 229 ticks via 30 coins |
 | [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | 2 | yes | no | - | - | Falador East bank (Falador), 43 ticks |
 | [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:10` | (2733, 3225) | (2732, 3225) | 10 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 87 ticks via 30 coins |
-| [Karamja](../../places/karamja.md) | `rock:karamja:0` | (2744, 3151) | (2743, 3151) | 6 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 81 ticks via 30 coins |
-| [Karamja Volcano dungeon](../../places/karamja-volcano-dungeon.md) | `rock:karamja-volcano-dungeon:0` | (2861, 9578) | (2861, 9578) | 4 | yes | no | - | 30 coins | Ardougne South bank (East Ardougne), 102 ticks via 30 coins |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:10` | (2733, 3225) | (2732, 3225) | 10 | no | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 87 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `rock:karamja:0` | (2744, 3151) | (2743, 3151) | 6 | no | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 81 ticks via 30 coins |
+| [Karamja Volcano dungeon](../../places/karamja-volcano-dungeon.md) | `rock:karamja-volcano-dungeon:0` | (2861, 9578) | (2861, 9578) | 4 | yes | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 102 ticks via 30 coins |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | 2 | yes | no | - | - | Al Kharid bank (Al Kharid), 63 ticks |
 | [Witchaven dungeon](../../places/witchaven-dungeon.md) | `rock:witchaven-dungeon:0` | (2738, 9687) | (2737, 9688) | 4 | no | no | - | - | Ardougne South bank (East Ardougne), 62 ticks |

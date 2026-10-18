@@ -253,4 +253,7 @@ test('the curated transports land on the spawns of their npcs and the placed loc
             to,
             ['item:trollromance_toboggon_waxed:worn', 'skill:agility:28'],
         ]),
+        // The Miscellania longship, each way (viking_sailor.rs2:24, misc_sailor.rs2:11).
+        ['viking_sailor', { level: 0, x: 2629, z: 3693 }, { level: 0, x: 2580, z: 3845 }, ['quest:viking']],
+        ['misc_sailor', { level: 0, x: 2581, z: 3847 }, { level: 0, x: 2629, z: 3692 }, []],
     ]));

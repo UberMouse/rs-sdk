@@ -3,7 +3,7 @@
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
 // (sources/gate-scan.ts, gates.ts), the crossings (sources/gate-landings.ts, sources/dbrow-teleports.ts,
-// sources/npc-teleports.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
+// sources/npc-teleports.ts, sources/curated-crossings.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
 // (distance.ts); then prints a report and renders the pages (render.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches, by pocket
@@ -49,12 +49,14 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
+import { deriveCuratedCrossings, type CuratedCrossings } from './sources/curated-crossings';
 import { deriveDbrowTeleports, type DbrowTeleports, type TeleportCollision } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { cameFromContext, deriveNpcTeleports, joinWaysIn, returnsTo, type NpcTeleports } from './sources/npc-teleports';
 import { readPack } from './sources/packs';
 import {
+    CURATED_CROSSINGS,
     CURATED_TRANSPORTS,
     DBROW_TELEPORTS,
     GATES,
@@ -314,6 +316,11 @@ export interface BuildReport {
      */
     /** `unjoined`: the ways back to an npc no walk gets to the teleport of, left out (npc-teleports.ts joinWaysIn). */
     npcTeleports: Pick<NpcTeleports, 'unstood' | 'offLand'> & { rows: number; unjoined: string[]; other: string[] };
+    /**
+     * The curated crossings (sources/curated-crossings.ts): the World.crossings rows written, the placements no tile
+     * on land is used from, the landings off walkable land, and those on a blocked tile landed beside (warnings).
+     */
+    curated: Pick<CuratedCrossings, 'unstood' | 'offLand' | 'stepped'> & { rows: number };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
@@ -827,7 +834,19 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         collision,
         size: locSizes(locConfigs),
     });
-    const rows: Crossing[] = [...scripted.crossings, ...teleports.crossings];
+    // The curated teleports and moves (gates.ts CURATED_CROSSINGS), each checked against its script.
+    const curatedCrossings = deriveCuratedCrossings({
+        entries: CURATED_CROSSINGS,
+        triggers,
+        scripts: new Map(scripts),
+        constants,
+        scanOf: scanOne,
+        spawns: placedSpawns,
+        locs: placedLocs,
+        collision,
+        size: locSizes(locConfigs),
+    });
+    const rows: Crossing[] = [...scripted.crossings, ...teleports.crossings, ...curatedCrossings.crossings];
     const world0 = { features, connectors, gates: landings.gates, transports, quests: questRows };
     // A way back by the mine's portals asks what got the way in to its wizard (sources/npc-teleports.ts joinWaysIn),
     // read off a fill without the ways back.
@@ -1000,6 +1019,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 duplicates: scripted.duplicates,
             },
             teleports: { rows: teleports.crossings.length, unstood: teleports.unstood, offLand: teleports.offLand },
+            curated: {
+                rows: curatedCrossings.crossings.length,
+                unstood: curatedCrossings.unstood,
+                offLand: curatedCrossings.offLand,
+                stepped: curatedCrossings.stepped,
+            },
             npcTeleports: {
                 rows: npcRows.length,
                 unstood: npcTeleports.unstood,
@@ -1221,6 +1246,7 @@ export function formatReport(report: BuildReport): string[] {
         ...formatScripted(report.scripted),
         ...formatTeleports(report.teleports),
         ...formatNpcTeleports(report.npcTeleports),
+        ...formatCurated(report.curated),
         ...list(
             `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
             report.unpriced,
@@ -1309,6 +1335,28 @@ export function formatNpcTeleports(r: BuildReport['npcTeleports']): string[] {
             r.unjoined,
         ),
         ...list(`warning: ${r.other.length} npc teleport requirements in no other form:`, r.other),
+    ];
+}
+
+/** The curated crossings' section: rows written, then the placements given none and the landings left out or moved. */
+export function formatCurated(r: BuildReport['curated']): string[] {
+    return [
+        `curated crossings: ${r.rows} crossing rows (gates.ts CURATED_CROSSINGS)`,
+        ...list(
+            `warning: ${r.unstood.length} curated crossing placements no tile on land is used from, no row:`,
+            r.unstood.map(m => `${m.trigger} ${m.config} ${coord(m.tile)}`),
+        ),
+        ...list(
+            `warning: ${r.offLand.length} curated crossing landings off walkable land, left out:`,
+            r.offLand.map(m => `${m.trigger} ${m.config} ${coord(m.tile)} -> ${coord(m.landing)}`),
+        ),
+        ...list(
+            `warning: ${r.stepped.length} curated crossing landings on a blocked tile, landed on the tiles stepped out to:`,
+            r.stepped.map(
+                m =>
+                    `${m.trigger} ${m.config} ${coord(m.tile)} -> ${coord(m.landing)}: ${(m.to ?? []).map(coord).join(', ')}`,
+            ),
+        ),
     ];
 }
 

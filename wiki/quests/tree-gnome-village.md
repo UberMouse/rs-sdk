@@ -53,3 +53,10 @@
 | Gnome Trackers (3) | Scattered across the battlefield |
 | Khazard Commanders (level 48) | NW building, Khazard stronghold |
 | Khazard Warlord (level 112) | North of Tree Gnome Village |
+
+## After the quest
+
+- The village's spirit tree (`stronghold_ent`) and the young trees (north of Varrock, Battlefield of Khazard) talk only
+  to a player who finished the quest (areas/area_gnome/scripts/spirit_tree.rs2:26, :50), on a members world (:65).
+  The village tree's menu, after "Where can I go?": "Battlefield of Khazard.", "Forest north of Varrock.", "Gnome
+  stronghold."; a young tree's "Yes please." goes to the village only. [v 2026-10-19 cross-spirit-tree smoke local]

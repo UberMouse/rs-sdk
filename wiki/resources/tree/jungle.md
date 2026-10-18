@@ -25,21 +25,21 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `tree:karamja:0` | (2762, 2939) | (2762, 2943) | 35 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 195 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `tree:karamja:0` | (2762, 2939) | (2762, 2943) | 35 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 154 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:1` | (2783, 2923) | (2781, 2923) | 2 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:2` | (2795, 2940) | (2795, 2943) | 52 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 185 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `tree:karamja:2` | (2795, 2940) | (2795, 2943) | 52 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 144 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:3` | (2793, 2901) | (2793, 2901) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:4` | (2809, 2914) | (2809, 2914) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:5` | (2813, 2925) | (2813, 2925) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | 26 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 193 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | 26 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 152 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:7` | (2827, 2900) | (2827, 2900) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:9` | (2857, 2907) | (2857, 2906) | 3 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:10` | (2866, 2937) | (2866, 2941) | 50 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 216 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `tree:karamja:10` | (2866, 2937) | (2866, 2941) | 50 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 175 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:11` | (2883, 2911) | (2883, 2909) | 2 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:12` | (2895, 2926) | (2894, 2925) | 2 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:14` | (2916, 2916) | (2916, 2916) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:15` | (2923, 2903) | (2923, 2903) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:16` | (2936, 2940) | (2936, 2943) | 42 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 251 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `tree:karamja:16` | (2936, 2940) | (2936, 2943) | 42 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 210 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:18` | (2949, 2912) | (2947, 2912) | 4 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:19` | (2948, 2927) | (2947, 2927) | 2 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:20` | (2956, 2897) | (2956, 2897) | 1 | no | no | - | unreached | - |

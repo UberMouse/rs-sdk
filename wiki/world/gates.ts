@@ -9,6 +9,7 @@
 // digest no longer matches the scan's proposal.
 import { GATE_LIST } from './gate-list';
 import type { DbrowTeleport } from './sources/dbrow-teleports';
+import type { CuratedCrossing } from './sources/curated-crossings';
 import type { CuratedGate } from './sources/gate-scan';
 import type { LoadoutProc } from './sources/loadout';
 import type { NpcTeleport } from './sources/npc-teleports';
@@ -158,6 +159,29 @@ export const CURATED_TRANSPORTS: readonly CuratedTransport[] = [
             '(~trollromance_first_sled_ride, quest_troll_love.rs2:219; ~trollromance_second_sled_ride, :288). The first ride ' +
             'crashes 1 time in 250 (random(250), :144) and drops the player at 0_43_59_47_18 instead.',
     },
+    {
+        // The Miscellania longship: its own sail proc (~misc_longship_sail, areas/area_miscellania/scripts/misc_sailor.rs2:13)
+        // sets no %journey_number, so the sail scripts don't give it. The Rellekka sailor takes a player who finished The
+        // Fremennik Trials (%viking = ^viking_complete, viking_sailor.rs2:14).
+        kind: 'ship',
+        npc: 'viking_sailor',
+        to: '0_40_60_20_5',
+        fare: 0,
+        requires: ['quest:viking'],
+        source: 'quests/quest_viking/scripts/viking_sailor.rs2:24',
+        paidAt: [],
+        notes: 'Rellekka to Miscellania, after "Let\'s go!" (viking_sailor.rs2:17); the landing is ^to_miscellania_tele_coord.',
+    },
+    {
+        kind: 'ship',
+        npc: 'misc_sailor',
+        to: '0_41_57_5_44',
+        fare: 0,
+        requires: [],
+        source: 'areas/area_miscellania/scripts/misc_sailor.rs2:11',
+        paidAt: [],
+        notes: 'Miscellania to Rellekka, after "Let\'s go!" (misc_sailor.rs2:4), with no check; the landing is ^from_miscellania_tele_coord.',
+    },
 ];
 
 /**
@@ -220,27 +244,239 @@ export const NPC_TELEPORTS: readonly NpcTeleport[] = [
     },
 ];
 
+/** The gnome glider landings (areas/area_gnome/configs/glider.constant) and the button that flies to each. */
+const GLIDERS = [
+    { button: 'com_21', dest: '^gandius', line: 1 },
+    { button: 'com_22', dest: '^ta_quir_priw', line: 2 },
+    { button: 'com_23', dest: '^sindarpos', line: 3 },
+    { button: 'com_24', dest: '^lemanto_andra', line: 4 },
+    { button: 'com_25', dest: '^kar_hewo', line: 5 },
+] as const;
+/**
+ * Where a flight starts (~calc_gliderstart, gnome_glider.rs2:26): the box 8 tiles round the start's landing the player
+ * stands in, by the line that checks it. Lemanto Andra is no start.
+ */
+const GLIDER_STARTS = [
+    { dest: '^ta_quir_priw', box: ['3_38_54_25_37', '3_38_54_41_53'], line: 27 },
+    { dest: '^gandius', box: ['0_46_46_19_17', '0_46_46_35_33'], line: 29 },
+    { dest: '^kar_hewo', box: ['0_51_50_12_3', '0_51_50_28_19'], line: 31 },
+    { dest: '^sindarpos', box: ['0_44_54_26_33', '0_44_54_42_49'], line: 33 },
+] as const;
+const GLIDER_LANDINGS: Readonly<Record<string, string>> = {
+    '^gandius': '0_46_46_27_25',
+    '^ta_quir_priw': '3_38_54_33_45',
+    '^sindarpos': '0_44_54_34_41',
+    '^lemanto_andra': '0_51_53_56_38',
+    '^kar_hewo': '0_51_50_20_11',
+};
+
+/** The spirit trees' landings (areas/area_gnome/configs/spirit_tree.constant). */
+const SPIRIT_TREES: Readonly<Record<string, string>> = {
+    '^khazard_tree': '0_39_50_59_59',
+    '^varrock_tree': '0_49_54_43_51',
+    '^village_tree': '0_39_49_46_33',
+    '^stronghold_tree': '0_38_53_29_52',
+};
+/** A spirit tree's menu (spirit_tree.rs2): its loc, the quest it asks, the line it asks it on, and its choices. */
+const SPIRIT_TREE_MENUS = [
+    {
+        loc: 'ent',
+        quest: 'quest:grandtree',
+        checked: 2,
+        menu: [
+            ['Tree Gnome Village.', '^village_tree'],
+            ['Forest north of Varrock.', '^varrock_tree'],
+            ['Battlefield of Khazard.', '^khazard_tree'],
+        ],
+    },
+    {
+        loc: 'stronghold_ent',
+        quest: 'quest:tree',
+        checked: 26,
+        menu: [
+            ['Battlefield of Khazard.', '^khazard_tree'],
+            ['Forest north of Varrock.', '^varrock_tree'],
+            ['Gnome stronghold.', '^stronghold_tree'],
+        ],
+    },
+] as const;
+
+/**
+ * Teleports and scripted moves no derivation gives, each checked against its script (sources/curated-crossings.ts):
+ * Monkey Madness's rides to Ape Atoll and back, the spirit trees, the gnome gliders and the Fisher Realm's whistle.
+ * Each spawn of the npc, placed loc or zone's tiles gets a World.crossings row.
+ */
+export const CURATED_CROSSINGS: readonly CuratedCrossing[] = [
+    // Monkey Madness. Every check on the way reads the quest's own varps (%mm_daero, %mm_lumdo, %mm_waydar), set on the
+    // way through it and never set back, so a finished quest meets them: the rides need `quest:mm`. Daero takes a
+    // player who finished the training after it (%mm_main = ^mm_complete_training, mm_daero.rs2:8) to the hangar,
+    // where the code is broken (mm_daero.rs2:234), and talks of it from inside the hangars (the zones at :2).
+    {
+        via: 'teleport',
+        trigger: 'opnpc1,mm_daero',
+        act: { kind: 'npc-op', npc: 'mm_daero', op: 1 },
+        where: {
+            placed: {
+                notIn: [
+                    ['0_37_154_0_0', '0_37_154_63_63'],
+                    ['0_40_70_0_0', '0_41_71_63_63'],
+                ],
+                at: 'quests/quest_mm/scripts/mm_daero.rs2:2',
+            },
+        },
+        to: ['0_41_70_25_36'],
+        requires: [['quest:mm>=10']],
+        source: 'quests/quest_mm/scripts/mm_daero.rs2:235',
+    },
+    {
+        // Waydar outside Crash Island (the hangars) flies there once %mm_daero = ^daero_complete (mm_waydar.rs2:5).
+        via: 'teleport',
+        trigger: 'opnpc1,mm_waydar',
+        act: { kind: 'npc-op', npc: 'mm_waydar', op: 1, choices: ['Yes'] },
+        where: { placed: { notIn: [['0_45_42_0_0', '0_45_42_63_63']], at: 'quests/quest_mm/scripts/mm_waydar.rs2:2' } },
+        to: ['0_45_42_13_37'],
+        requires: [['quest:mm']],
+        source: 'quests/quest_mm/scripts/mm_waydar.rs2:116',
+    },
+    {
+        // Waydar on Crash Island flies back to the Gnomeball pitch for a player past ^mm_shown_seal (mm_waydar.rs2:46).
+        via: 'teleport',
+        trigger: 'opnpc1,mm_waydar',
+        act: { kind: 'npc-op', npc: 'mm_waydar', op: 1, choices: ['I need to return to your kingdom.'] },
+        where: { placed: { in: ['0_45_42_0_0', '0_45_42_63_63'], at: 'quests/quest_mm/scripts/mm_waydar.rs2:2' } },
+        to: ['0_37_54_25_10'],
+        requires: [['quest:mm']],
+        source: 'quests/quest_mm/scripts/mm_waydar.rs2:125',
+    },
+    {
+        // Lumdo on Crash Island rows to Ape Atoll once %mm_lumdo = ^lumdo_travelled (mm_lumdo.rs2:18).
+        via: 'teleport',
+        trigger: 'opnpc1,mm_lumdo',
+        act: { kind: 'npc-op', npc: 'mm_lumdo', op: 1 },
+        where: {
+            placed: {
+                notIn: [
+                    ['0_42_143_0_0', '2_42_143_63_63'],
+                    ['0_43_42_0_0', '0_43_42_63_63'],
+                ],
+                at: 'quests/quest_mm/scripts/mm_lumdo.rs2:2',
+            },
+        },
+        to: ['0_43_42_50_19'],
+        requires: [['quest:mm']],
+        source: 'quests/quest_mm/scripts/mm_lumdo.rs2:24',
+    },
+    {
+        // Lumdo on Ape Atoll rows back to Crash Island with no check.
+        via: 'teleport',
+        trigger: 'opnpc1,mm_lumdo',
+        act: { kind: 'npc-op', npc: 'mm_lumdo', op: 1 },
+        where: { placed: { in: ['0_43_42_0_0', '0_43_42_63_63'], at: 'quests/quest_mm/scripts/mm_lumdo.rs2:5' } },
+        to: ['0_45_42_14_38'],
+        requires: [[]],
+        source: 'quests/quest_mm/scripts/mm_lumdo.rs2:11',
+    },
+    // The spirit trees: each tree asks its quest (spirit_tree.rs2:2, :26, :50) and a members world (:65), and its menu
+    // names the trees it sends the player to; the young trees send them to Tree Gnome Village only (:59).
+    ...SPIRIT_TREE_MENUS.flatMap(({ loc, quest, menu }) =>
+        menu.map(([choice, dest]): CuratedCrossing => ({
+            via: 'teleport',
+            trigger: `oploc1,${loc}`,
+            act: { kind: 'loc-op', loc, op: 1, choices: ['Where can I go?', choice] },
+            to: [SPIRIT_TREES[dest]!],
+            requires: [['members', quest]],
+            source: 'areas/area_gnome/scripts/spirit_tree.rs2:74',
+        })),
+    ),
+    {
+        via: 'teleport',
+        trigger: 'oploc1,loc_1317',
+        act: { kind: 'loc-op', loc: 'loc_1317', op: 1, choices: ['Yes please.'] },
+        to: [SPIRIT_TREES['^village_tree']!],
+        requires: [['members', 'quest:tree']],
+        source: 'areas/area_gnome/scripts/spirit_tree.rs2:74',
+    },
+    // The gnome gliders: a pilot asked "Can you take me on the glider?" opens the map on a members world once The Grand
+    // Tree is done (gnome_glider.rs2:116, :125); its buttons fly from the start the player stands at (~calc_gliderstart,
+    // :26) to a landing round the button's, but only to or from Ta Quir Priw (:14), and not to the start itself (:10).
+    ...GLIDER_STARTS.flatMap(start =>
+        GLIDERS.filter(
+            g => g.dest !== start.dest && (start.dest === '^ta_quir_priw' || g.dest === '^ta_quir_priw'),
+        ).map((g): CuratedCrossing => ({
+            via: 'teleport',
+            trigger: `if_button,glidermap:${g.button}`,
+            act: { kind: 'interface', component: `glidermap:${g.button}` },
+            where: {
+                placed: {
+                    npc: 'gnomepilot',
+                    in: start.box,
+                    at: `areas/area_gnome/scripts/gnome_glider.rs2:${start.line}`,
+                },
+            },
+            to: [GLIDER_LANDINGS[g.dest]!],
+            ring: [0, 1, 0],
+            requires: [['members', 'quest:grandtree']],
+            source: 'areas/area_gnome/scripts/gnome_glider.rs2:22',
+            notes: `Opened by the pilot's Talk-to and "Can you take me on the glider?" (gnome_glider.rs2:116).`,
+        })),
+    ),
+    // The Fisher Realm: the whistle blown at the six heads takes a player who gave Percival one (%grail >=
+    // ^grail_given_whistle, quest_grail.rs2:38) to the restored realm, and blown anywhere in the realm back out (:45).
+    // It is not used up (quest_grail.rs2:36-49).
+    {
+        via: 'teleport',
+        trigger: 'opheld1,magic_whistle',
+        act: { kind: 'item-op', obj: 'magic_whistle', op: 1 },
+        where: {
+            zone: { in: ['0_42_50_52_34', '0_42_50_55_37'], at: 'quests/quest_grail/scripts/quest_grail.rs2:37' },
+        },
+        to: ['0_41_73_54_43'],
+        requires: [['item:magic_whistle:held', 'members', 'quest:grail']],
+        source: 'quests/quest_grail/scripts/quest_grail.rs2:41',
+    },
+    {
+        via: 'teleport',
+        trigger: 'opheld1,magic_whistle',
+        act: { kind: 'item-op', obj: 'magic_whistle', op: 1 },
+        where: {
+            zone: {
+                in: ['0_41_73_0_0', '2_43_73_63_63'],
+                seed: '0_41_73_54_43',
+                at: 'quests/quest_grail/scripts/quest_grail.rs2:45',
+            },
+        },
+        to: ['0_42_50_53_35'],
+        requires: [['item:magic_whistle:held', 'members']],
+        source: 'quests/quest_grail/scripts/quest_grail.rs2:46',
+    },
+    // The Burthorpe Games Room stairs land at random: x by ~random_range(-1, 1), z by random(2) (stairs.rs2:489,
+    // :513), round the coord each one's switch_coord case moves to; sources/connectors.ts reads no random landing.
+    {
+        via: 'scripted',
+        trigger: 'oploc1,board_game_stairs_grey_all',
+        act: { kind: 'loc-op', loc: 'board_game_stairs_grey_all', op: 1 },
+        to: ['1_34_77_30_5'],
+        draw: { x: [-1, 1], z: [0, 1] },
+        requires: [[]],
+        source: 'ladders+stairs/scripts/stairs.rs2:491',
+    },
+    {
+        via: 'scripted',
+        trigger: 'oploc1,board_game_stairs_grey_base2',
+        act: { kind: 'loc-op', loc: 'board_game_stairs_grey_base2', op: 1 },
+        to: ['0_45_55_19_44'],
+        draw: { x: [-1, 1], z: [0, 1] },
+        requires: [[]],
+        source: 'ladders+stairs/scripts/stairs.rs2:515',
+    },
+];
+
 /**
  * Transports neither derived nor curated, and why; the build report lists them. An entry with `sailSite`
  * names a sail site (sources/transports.ts sailSites) no npc op reaches, which the build then does not
  * fail on; the build fails on such an entry once its site is gone or an npc op reaches it.
  */
 export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; reason: string; sailSite?: true }[] = [
-    {
-        script: 'areas/area_gnome/scripts/gnome_glider.rs2:7',
-        what: 'gnome gliders',
-        reason: 'the destination is an interface button (glidermap), not an npc op',
-    },
-    {
-        script: 'areas/area_gnome/scripts/spirit_tree.rs2:64',
-        what: 'spirit trees',
-        reason: 'loc ops whose destination is a menu choice; each tree needs its quest (spirit_tree.rs2:2)',
-    },
-    {
-        script: 'areas/area_miscellania/scripts/misc_sailor.rs2:13',
-        what: 'the Miscellania longship',
-        reason: 'its own sail proc (~misc_longship_sail), not the interface_boat routes',
-    },
     {
         script: 'minigames/game_trawler/scripts/trawler_start.rs2:36',
         sailSite: true,
@@ -257,10 +493,5 @@ export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; r
         script: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:91',
         what: 'Holgart’s boats to the fishing platform and back',
         reason: "Holgart's dialogue goes by %seaslugquest stage (holgart_ardougne.rs2:2): quest boats are out of scope",
-    },
-    {
-        script: 'areas/area_yanille/scripts/magic_guild.rs2:19',
-        what: 'the Magic Guild portals',
-        reason: 'loc ops, not npc ops; the guild door needs 66 Magic (magic_guild.rs2:11)',
     },
 ];

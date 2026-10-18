@@ -10,6 +10,7 @@ import { type Account, NO_ACCOUNT } from '../../lib/account';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
 import {
     BANK_DETOUR_TICKS,
+    crossingRefusal,
     type Detour,
     doorRefusal,
     moveRefusal,
@@ -246,6 +247,18 @@ describe('the walk search makes scripted moves and teleports', () => {
         expect(way?.runTicks).toBe(ticks(10 + 8, CROSSING_TICKS.scripted + 8));
         // The walk lands on one and plans again from there: either reaches the target in 8 steps.
         for (const landed of [north, south]) expect(nearestWay(landed, [EAST], search(graph))?.runTicks).toBe(4);
+    });
+
+    test("an interface click the row opens nothing for is left out: a glider's button, though the fill takes it", () => {
+        const glider = move({ via: 'teleport', act: { kind: 'interface', component: 'glidermap:com_21' } });
+        expect(crossingRefusal(glider)).toMatch(/interface no op of the row opens/);
+        const world = { ...empty, crossings: [glider] };
+        expect(fillReach({ world, collision: sea(), size, start: WEST }).setsAt(EAST)).toEqual([[]]);
+        expect(nearestWay(WEST, [EAST], search(graphOf({ crossings: [glider] })))).toBeUndefined();
+        // Every other act is made: an item op, the whistle's.
+        const whistle = move({ via: 'teleport', act: { kind: 'item-op', obj: 'magic_whistle', op: 1 } });
+        expect(crossingRefusal(whistle)).toBeUndefined();
+        expect(crossed(nearestWay(WEST, [EAST], search(graphOf({ crossings: [whistle] }))))).toEqual([whistle.act]);
     });
 
     test('a move given up on (avoid) is not taken', () => {

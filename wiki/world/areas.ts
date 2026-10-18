@@ -536,7 +536,7 @@ export const AREAS: readonly Area[] = [
         id: 'ape-atoll',
         name: 'Ape Atoll',
         rects: [{ x1: 2688, z1: 2688, x2: 2815, z2: 2815 }],
-        notes: "Marim and the Monkey Madness jungle (quests/quest_mm npcs). Reached by Monkey Madness's rides, Waydar's glider to Crash Island (quests/quest_mm/scripts/mm_waydar.rs2:116) then Lumdo's boat (mm_lumdo.rs2:24), which teleport from npc dialogue rather than a sail proc, so the transport table has no row for them and the world index's walk from the Lumbridge spawn does not reach the island (build.ts unreached report).",
+        notes: "Marim and the Monkey Madness jungle (quests/quest_mm npcs). Reached by Monkey Madness's rides, which teleport from npc dialogue rather than a sail proc (gates.ts CURATED_CROSSINGS): Daero's blindfold to the glider hangar for a player past the quest's training (quests/quest_mm/scripts/mm_daero.rs2:235), Waydar's glider to Crash Island (mm_waydar.rs2:116), then Lumdo's boat (mm_lumdo.rs2:24).",
     },
     {
         id: 'crash-island',
@@ -933,7 +933,7 @@ export const AREAS: readonly Area[] = [
         id: 'miscellania',
         name: 'Miscellania and Etceteria',
         rects: [{ x1: 2490, z1: 3835, x2: 2630, z2: 3910 }],
-        notes: "The two islands of areas/area_miscellania. Reached by the longship from Rellekka, which gates.ts lists out of scope (TRANSPORTS_OUT_OF_SCOPE: its own sail proc, areas/area_miscellania/scripts/misc_sailor.rs2:13), so the world index's walk from the Lumbridge spawn does not reach the islands, their bank or their shops (build.ts unreached report).",
+        notes: "The two islands of areas/area_miscellania. Reached by the longship from Rellekka once The Fremennik Trials is done (gates.ts CURATED_TRANSPORTS: its own sail proc, areas/area_miscellania/scripts/misc_sailor.rs2:13, which the sail scripts don't give).",
     },
     {
         id: 'miscellania-bank',
@@ -1027,7 +1027,7 @@ export const AREAS: readonly Area[] = [
         id: 'burthorpe-games-room',
         name: 'Burthorpe Games Room',
         rects: [{ x1: 2176, z1: 4928, x2: 2239, z2: 4991 }],
-        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:485), which land on a random tile (stairs.rs2:491), so sources/connectors.ts derives no landing and the world index's walk from the Lumbridge spawn does not reach the room or its bars (build.ts unreached report).",
+        notes: "minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_grey_all at (2899, 3566), ladders+stairs/scripts/stairs.rs2:485), which land on one of six tiles at random (stairs.rs2:491), so sources/connectors.ts derives no landing: gates.ts CURATED_CROSSINGS has the stairs each way. The bar's shop reads unreached in the build.ts unreached report: the barmaid is traded with from 3 tiles off, across her counter (minigames/game_gamesroom/general/scripts/boardgames_barmaid.rs2:12), which place.ts's stand tiles do not model.",
     },
     {
         id: 'fisher-realm',
@@ -1297,6 +1297,54 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         area: 'death-altar',
         reason: 'no way into the death temple: the only way into a temple is a talisman on its ruins, and the death ruins (skill_runecraft/configs/runecraft.loc:284) have no rc_ruins category, so this trigger is not theirs, and are never placed',
         source: 'skill_runecraft/scripts/runecraft.rs2:19',
+    },
+    {
+        area: 'watchtower-quest-area',
+        reason: "a copy of Yanille and the Watchtower whose ground and first floors no script puts a player on: the finished quest's ladder lands on its top floor, whose only way down is the ladder to the real tower (quest_itwatchtower.rs2:268)",
+        source: 'quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:263',
+    },
+    {
+        area: 'tai-bwo-wannai-trio-area',
+        reason: "the quest's hunt cutscene, shown only while Tamayu hunts the Shaikahan (%tbwt_tamayu at ^tbwt_tamayu_slay_shaikahan or ^tbwt_tamayu_watched_cutscene), which puts the player back at the camp when it ends",
+        source: 'quests/quest_tbwt/scripts/tbwt_tamayu.rs2:20',
+    },
+    {
+        area: 'horror-from-the-deep',
+        reason: 'the lighthouse copy the quest plays in: a finished quest opens the real doorway instead (%horrorquest = ^horror_complete), and the door is locked to a player who never started it (quest_horror.rs2:48)',
+        source: 'quests/quest_horror/scripts/quest_horror.rs2:3',
+    },
+    {
+        area: 'regicide-camp',
+        reason: 'the burning camp cutscene, played only at ^regicide_spoken_iorwerth2 (refused at ^regicide_killed_tyras and past), which puts the player back outside when it ends (quest_regicide.rs2:594)',
+        source: 'quests/quest_regicide/scripts/quest_regicide.rs2:505',
+    },
+    // The Fisher Realm's blighted copy, the quest's: the whistle sends a player who gave Percival one to the restored
+    // realm.
+    ...[
+        'range:fisher-realm:1',
+        'tree:fisher-realm:8',
+        'tree:fisher-realm:9',
+        'tree:fisher-realm:10',
+        'tree:fisher-realm:11',
+    ].map((site): ExpectedUnreached => ({
+        site,
+        reason: "the blighted Fisher Realm, the quest's: the whistle takes a player who gave Percival one (%grail >= ^grail_given_whistle) to the restored realm",
+        source: 'quests/quest_grail/scripts/quest_grail.rs2:38',
+    })),
+    {
+        site: 'tree:fisher-realm:6',
+        reason: "walled in by collision on the restored realm's south edge, past a drystone wall: no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
+        source: 'quests/quest_grail/scripts/quest_grail.rs2:41',
+    },
+    {
+        site: 'pickpocket:rogues-castle:2',
+        reason: "walled in on the castle's second floor: the stairs land beside their own loc, and the map places no door on that floor (maps/m51_61.jm2), so no walk gets from the landing to the rogues' room",
+        source: 'ladders+stairs/scripts/stairs.rs2:249',
+    },
+    {
+        site: 'tree:crash-island:1',
+        reason: "walled in by collision south of the gliders' beach: no loc or npc op on or beside its pocket moves the player (the report's hints are its tree's own)",
+        source: 'quests/quest_mm/scripts/mm_waydar.rs2:116',
     },
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
     ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(

@@ -48,12 +48,17 @@ export interface Pathfinder {
 /**
  * Doors sdk/collision-data.json lacks, which the walk opens like the others. The data's door list misses
  * the whole class of shape-9 ground-layer doors (diagonal, not walls), so their tiles stay blocked. The
- * one known: the Wizards' Tower door into the stairs-and-ladder room (loc 1536 in maps/m48_49.jm2), without
- * which no route into the room (the basement ladder, Sedridor) exists. Here its tile is unblocked and the
- * door is known.
- * A stopgap patch of sdk/collision-data.json: delete this list once that file lists loc 1536 at (3107,3162).
+ * ones known: the Wizards' Tower door into the stairs-and-ladder room (loc 1536 in maps/m48_49.jm2), without
+ * which no route into the room (the basement ladder, Sedridor) exists, and the two Rogues' Castle doors into
+ * its stair room (loc 1530 in maps/m51_61.jm2:4790, :4913), without which no route up the castle exists. Here
+ * their tiles are unblocked and the doors are known.
+ * A stopgap patch of sdk/collision-data.json: delete this list once that file lists these doors.
  */
-export const EXTRA_DOORS: readonly DoorInfo[] = [{ level: 0, x: 3107, z: 3162, shape: 9, angle: 3, blockrange: true }];
+export const EXTRA_DOORS: readonly DoorInfo[] = [
+    { level: 0, x: 3107, z: 3162, shape: 9, angle: 3, blockrange: true },
+    { level: 0, x: 3279, z: 3939, shape: 9, angle: 2, blockrange: true },
+    { level: 0, x: 3282, z: 3934, shape: 9, angle: 0, blockrange: true },
+];
 /**
  * Every closed slashable web (loc 733 `bigweb_slashable`, from server/content/maps/*.jm2; the `webwall` loc 1810
  * is placed on no map). A web fills its tile (ground-layer collision, blockwalk) until slashed, when it becomes

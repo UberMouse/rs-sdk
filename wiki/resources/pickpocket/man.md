@@ -30,8 +30,8 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:1` | (2713, 3480) | (2713, 3480) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 11 ticks |
 | [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:1` | (2567, 3083) | (2566, 3083) | 1 | no | no | - | - | Yanille bank (Yanille), 29 ticks |
 | [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:2` | (2596, 3105) | (2596, 3105) | 1 | no | no | - | - | Yanille bank (Yanille), 12 ticks |
-| [Karamja](../../places/karamja.md) | `pickpocket:karamja:0` | (2889, 3173) | (2889, 3173) | 1 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 102 ticks via 30 coins |
-| [Karamja](../../places/karamja.md) | `pickpocket:karamja:1` | (2948, 3146) | (2948, 3146) | 1 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 70 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `pickpocket:karamja:0` | (2889, 3173) | (2889, 3173) | 1 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 102 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `pickpocket:karamja:1` | (2948, 3146) | (2948, 3146) | 1 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 70 ticks via 30 coins |
 | [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:0` | (3092, 3515) | (3092, 3515) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 13 ticks |
 | [Misthalin](../../places/misthalin.md) | `pickpocket:misthalin:3` | (3154, 3428) | (3154, 3428) | 1 | yes | no | - | unreached | - |
 | [Draynor Village (Misthalin)](../../places/draynor-village.md) | `pickpocket:draynor-village:1` | (3100, 3279) | (3100, 3279) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 19 ticks |

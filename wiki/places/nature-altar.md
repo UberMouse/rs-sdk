@@ -7,7 +7,7 @@ Inside the nature ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:nature-altar:0` | (2399, 4840) | nature 1 | no | no | - | 30 coins + carry Nature talisman |
+| `rc-altar:nature-altar:0` | (2399, 4840) | nature 1 | no | no | - | 30 coins + carry Nature talisman or carry Nature talisman + The Grand Tree done |
 
 ## Trees
 

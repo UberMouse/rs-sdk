@@ -59,3 +59,16 @@
 | Fisher King             | Fisher King's Castle                               |
 | Sir Percival            | Goblin Village, north of Falador                   |
 | Holy Grail              | East tower top floor, Fisher King's Castle         |
+
+## After the quest
+
+- The Magic Whistle (`magic_whistle`, members) still travels: blown on the six-heads spot on Karamja (x 2740-2743, z
+  3234-3237) it takes a player past `%grail >= ^grail_given_whistle` to the restored Fisher Realm, landing inside an oak
+  at (2678, 4715) that the player steps out of; blown anywhere in the realm it lands at (2741, 3235). It is not used up
+  (quests/quest_grail/scripts/quest_grail.rs2:36-49). [v 2026-10-19 cross-whistle smoke local]
+- More whistles come from the Draynor Manor door on the top floor (`whistledoor`, quest_grail.rs2:30) only while
+  carrying Brother Galahad's napkin, which he hands out only before the quest is done (from `^grail_spoken_crone`,
+  areas/area_seers/scripts/brother_galahad.rs2:33, :74; once it is done he only makes tea, :2): after the quest a lost
+  whistle and napkin are gone for good.
+- The blighted Fisher Realm (the Fisher King's) is the quest's own: the whistle sends a player who gave Percival one to
+  the restored realm (quest_grail.rs2:38).

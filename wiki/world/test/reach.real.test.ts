@@ -91,14 +91,15 @@ describe('places behind a requirement', () => {
         expect(noBoat.setsAt(stand('fishing-spot:entrana:0'))).toEqual([]);
     });
 
-    test('Musa Point on Karamja by boat and gangplank, for the 30 coin fare', () => {
+    test('Musa Point on Karamja by boat and gangplank, for the 30 coin fare, or by the glider to Gandius', () => {
         // port_sarim_to_karamja (areas/area_port_sarim/scripts/sailors.rs2:31, 30 coins) lands on the deck at
         // (2956, 3143, 1), the stand of the sarimshipplank_off gangplank, which crosses to the quay at
         // (2956, 3146) (gangplank.rs2:38).
         const plank = world.connectors.find(c => c.loc.level === 1 && c.loc.x === 2956 && c.loc.z === 3144);
         expect(plank).toMatchObject({ stand: at(1, 2956, 3143), landing: at(0, 2956, 3146), relative: true });
+        // The glider to Gandius (gnome_glider.rs2:1) gets there too once The Grand Tree is done, and up the gangplank.
         for (const t of [at(1, 2956, 3143), at(0, 2956, 3146), stand('fishing-spot:karamja:5')])
-            expect(reach.setsAt(t)).toEqual([['coins:30']]);
+            expect(reach.setsAt(t)).toEqual([['coins:30'], ['quest:grandtree']]);
     });
 
     test('the Dwarven Mine with no requirement, through the Ice Mountain trapdoor or the Falador stairs', () => {

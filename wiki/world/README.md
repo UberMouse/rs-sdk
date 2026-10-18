@@ -34,7 +34,7 @@ A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to 
 (`wiki/world/reach.ts`, `reachGraph` then `fillReach`): its minimal requirement sets, `[[]]` for none and
 `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
 `place.ts`, with a wall check), because a bot talks to an npc from beside it. The fill keeps at most
-`MAX_SETS` (16) sets per tile.
+`MAX_SETS` (24) sets per tile.
 
 The pages show it in a Requires column: `-` for none, the sets joined with "or", `unreached`, or `no stand`
 for a site with no stand tile; so a `-` row on a service or resource page is one a fresh account can walk to.
@@ -67,9 +67,11 @@ Nearest bank column (`none` when no bank is reached that way).
 Where the ways come from: connectors (stairs, ladders, trapdoors, manholes, gangplanks) are read from
 `scripts/ladders+stairs/` (`sources/connectors.ts`); gates from the scan of the scripts' door and gate triggers
 (`sources/gate-scan.ts`), each confirmed or rejected in `gate-list.ts` (exported by `gates.ts`); transports
-(ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts`;
-scripted crossings from the loc op moves no gate row makes (`deriveScriptedMoves` in `sources/gate-landings.ts`,
-below); teleports to a dbrow's coords from `DBROW_TELEPORTS` in `gates.ts` (`sources/dbrow-teleports.ts`, below).
+(ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts` (the
+Miscellania longship among them, whose own sail proc sets no journey); scripted crossings from the loc op moves no
+gate row makes (`deriveScriptedMoves` in `sources/gate-landings.ts`, below); teleports to a dbrow's coords from
+`DBROW_TELEPORTS` in `gates.ts` (`sources/dbrow-teleports.ts`, below), and the curated teleports and moves of
+`CURATED_CROSSINGS` (`sources/curated-crossings.ts`, below).
 Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
 
 ### The crossing model
@@ -118,7 +120,9 @@ player on, unless that tile is a short walk from the landing (the failure gets t
 rows with a skill requirement get their roll the same way. What no run settles (a `map_findsquare` landing, a coord kept
 in a varp, a stand landing on two passages) is listed in the build report, never guessed; stands stopped only in the
 door procs (`doors/scripts/`) are a door's, which the collision data or `gate-list.ts` has. A move on a loc tile and op
-that has a connector row is refused, and the build fails on one.
+that has a connector row is refused, and the build fails on one. A call of a proc that only sets locals and returns
+a value is that value, a coord computed from the player's tile marked so: the Haunted Mine's ladders
+(`~setcoord_mapsquare`, the stand's own tile in another mapsquare) settle that way.
 
 The runecrafting ruins and their temples' exit portals are `DBROW_TELEPORTS` rows: the trigger's dbrow row, found by
 the loc's `rune_type`, gives the landing coords and the talisman, which the gate scan does not read. Each placed
@@ -142,6 +146,18 @@ fill takes a portal only where a walk already gets, so no reach set asks a came-
 cave walls and dead trees close in, which no walk leaves: they are stranded (below), so they get no spread and the
 build report lists them, and every other landing of a wizard's row is priced to its farthest among the rest.
 
+The moves the derivations don't give are `CURATED_CROSSINGS` rows, each checked against its script
+(`sources/curated-crossings.ts`): the trigger's header is in the scripts, each landing (or a constant naming it) is
+written in the trigger's script or on the move's line, each dialogue choice is an option text there, each zone is an
+`inzone` the scripts check, and for a loc or npc op trigger the gate scan finds the move to each landing. They are
+Monkey Madness's rides (Daero to the glider hangar for a player past the quest's training, Waydar's glider to Crash
+Island and back, Lumdo's boat to Ape Atoll and back, each npc's rows by the zone its script checks `npc_coord`
+against), the spirit trees (a row per menu choice), the gnome gliders (a row per start and button, each landing a
+`map_findsquare` ring), the Fisher Realm's whistle (an item op done on the zone's tiles; the way back from the realm
+land a walk from the landing gets to) and the Burthorpe Games Room stairs (every tile of their random draw). A landing
+the script puts on a tile the collision blocks (the whistle's, inside an oak) lands on the tiles the player steps out
+to, and the build report lists it.
+
 The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
 over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:
 
@@ -159,7 +175,8 @@ over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them
 Both are walks over the neighbour steps and the free edges that carry no price of their own. A landing or a way back
 no walk gets to is left unpriced and listed in the build report, and the distances do not take that edge (the fill
 still does). The conductor's walker (`conductor/lib/walk-graph.ts`) walks scripted moves and teleports, and prices a
-roll at the bot's own level rather than the lowest allowed; it does not take transports.
+roll at the bot's own level rather than the lowest allowed; it does not take transports, nor a crossing its `cross`
+can't make (`crossingRefusal`: an interface click, the gliders', whose interface the row names no op to open).
 
 ### The unreached report
 
@@ -181,9 +198,7 @@ hints' scripts, then either add the missing connector, gate or transport (the de
 entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
-reached or gone. Some areas' `notes` still say
-why their sites are unreached (Ape Atoll, Miscellania, the Burthorpe games room): those notes go as their pockets
-are reached.
+reached or gone.
 
 ## Where corrections go
 
@@ -195,6 +210,7 @@ are reached.
 | A page's layout or wording | `wiki/world/render/` |
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
+| A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |
 

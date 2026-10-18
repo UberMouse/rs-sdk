@@ -50,7 +50,7 @@
 | `fire:kandarin:14` | (2612, 3145) L2 | Fireplace 1 | no | no | - | unreached |
 | `fire:kandarin:15` | (2615, 3214) | Fireplace 1 | no | no | - | - |
 | `fire:kandarin:16` | (2648, 3355) | Cooking pot 1 | no | no | - | - |
-| `fire:kandarin:17` | (2727, 3161) | Fire 4 | no | no | - | 30 coins |
+| `fire:kandarin:17` | (2727, 3161) | Fire 4 | no | no | - | 30 coins or The Grand Tree done |
 | `fire:kandarin:18` | (2746, 3468) | Fireplace 1 | no | no | - | - |
 | `fire:kandarin:19` | (2747, 3580) | Fireplace 1 | no | no | - | - |
 | `fire:kandarin:20` | (2802, 3503) | Fire 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
@@ -201,7 +201,7 @@
 | `rock:kandarin:7` | (2640, 3152) | [copper](../resources/rock/copper.md) 2, [mithril](../resources/rock/mithril.md) 1 | no | no | - | - |
 | `rock:kandarin:8` | (2703, 3331) | [coal](../resources/rock/coal.md) 13, [iron](../resources/rock/iron.md) 11 | no | no | - | - |
 | `rock:kandarin:9` | (2725, 3693) | [iron](../resources/rock/iron.md) 9, [mithril](../resources/rock/mithril.md) 2 | no | no | - | - |
-| `rock:kandarin:10` | (2733, 3225) | [gold](../resources/rock/gold.md) 10 | no | no | - | 30 coins |
+| `rock:kandarin:10` | (2733, 3225) | [gold](../resources/rock/gold.md) 10 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Fishing spots
 
@@ -342,27 +342,27 @@
 | `npc:kandarin:105` | (2676, 3090) | Jungle spider 18 | no | no | - | - |
 | `npc:kandarin:106` | (2672, 3728) | Hobgoblin 2 | no | yes | - | - |
 | `npc:kandarin:107` | (2676, 3110) | Jungle spider 3, Spider 2 | no | no | - | - |
-| `npc:kandarin:108` | (2695, 3211) | Moss giant 5 | no | no | - | 30 coins + 10 Agility |
+| `npc:kandarin:108` | (2695, 3211) | Moss giant 5 | no | no | - | 30 coins + 10 Agility or The Grand Tree done + 10 Agility |
 | `npc:kandarin:109` | (2692, 3274) | Chicken (chicken) 4 | no | no | - | - |
-| `npc:kandarin:110` | (2720, 3218) | Poison Scorpion 5 | no | no | - | 30 coins |
+| `npc:kandarin:110` | (2720, 3218) | Poison Scorpion 5 | no | no | - | 30 coins or The Grand Tree done |
 | `npc:kandarin:111` | (2720, 3583) | Rat 1 | no | no | - | - |
-| `npc:kandarin:112` | (2727, 3160) | Tribesman 9 | no | no | - | 30 coins |
+| `npc:kandarin:112` | (2727, 3160) | Tribesman 9 | no | no | - | 30 coins or The Grand Tree done |
 | `npc:kandarin:113` | (2728, 3575) | Rat 4 | no | no | - | - |
-| `npc:kandarin:114` | (2731, 3225) | Poison Scorpion 2 | no | no | - | 30 coins |
+| `npc:kandarin:114` | (2731, 3225) | Poison Scorpion 2 | no | no | - | 30 coins or The Grand Tree done |
 | `npc:kandarin:115` | (2735, 3521) | Highwayman 1 | no | no | - | - |
 | `npc:kandarin:116` | (2738, 3636) | Bunny (viking_bunny_1) 3, Bunny (viking_bunny_2) 5 | no | no | - | - |
 | `npc:kandarin:117` | (2749, 3521) | Highwayman 1 | no | no | - | - |
 | `npc:kandarin:118` | (2752, 3409) | Giant bat 1 | no | no | - | - |
 | `npc:kandarin:119` | (2753, 3396) | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:120` | (2768, 3210) | Jungle spider 1 | no | no | - | 30 coins |
+| `npc:kandarin:120` | (2768, 3210) | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
 | `npc:kandarin:121` | (2804, 3507) | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `npc:kandarin:122` | (2811, 3506) | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `npc:kandarin:123` | (2818, 3561) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | wear Climbing boots or Death Plateau done or Death Plateau: Tenzing's map got (~death_get_map >= ^death_got_map, quests/quest_death/scripts/quest_death.rs2:65) + Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Troll Stronghold at stage 10 + 15 Agility |
 | `npc:kandarin:124` | (2817, 3514) | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:125` | (2824, 3237) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:kandarin:126` | (2832, 3234) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:kandarin:127` | (2834, 3305) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:kandarin:128` | (2840, 3238) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:kandarin:125` | (2824, 3237) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:kandarin:126` | (2832, 3234) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:kandarin:127` | (2834, 3305) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:kandarin:128` | (2840, 3238) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Ladders and stairs
 
@@ -445,10 +445,10 @@
 | `connector:kandarin:74` | (2750, 3511) L1 | Staircase 1 | down (2750, 3509) by Climb-down | no | no | - | - |
 | `connector:kandarin:75` | (2767, 3491) L1 | Ladder 1 | up (2766, 3491) L2 by Climb-up | no | no | - | - |
 | `connector:kandarin:76` | (2767, 3491) L2 | Ladder 1 | down (2766, 3491) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:77` | (2773, 3234) | Gangplank 1 | up (2775, 3234) L1 by Cross | no | no | - | 30 coins |
-| `connector:kandarin:78` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins |
-| `connector:kandarin:79` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins |
-| `connector:kandarin:80` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins |
+| `connector:kandarin:77` | (2773, 3234) | Gangplank 1 | up (2775, 3234) L1 by Cross | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:78` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:79` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:80` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
 | `connector:kandarin:81` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:82` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:83` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
@@ -460,7 +460,7 @@
 | `connector:kandarin:89` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:90` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
 | `connector:kandarin:91` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
-| `connector:kandarin:92` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done |
+| `connector:kandarin:92` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Areas within
 

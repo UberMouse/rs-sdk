@@ -57,7 +57,7 @@
 | [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:0` | (2549, 3101) | (2549, 3100) | Sink 1 | no | - |
 | [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:1` | (2556, 3113) | (2555, 3113) | Fountain 1 | no | - |
 | [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:2` | (2566, 3093) | (2566, 3094) | Sink 1 | no | - |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | `water-source:brimhaven:0` | (2792, 3193) | (2791, 3192) | Sink 2 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | `water-source:brimhaven:0` | (2792, 3193) | (2791, 3192) | Sink 2 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `water-source:al-kharid:0` | (3292, 3172) | (3291, 3172) | Fountain 1 | yes | - |
 | [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | `water-source:lumbridge-castle-cellar:0` | (3212, 9625) | (3212, 9624) | Sink 1 | yes | - |
 | [Misthalin](../places/misthalin.md) | `water-source:misthalin:0` | (3116, 3167) | (3115, 3167) | Fountain 1 | yes | - |

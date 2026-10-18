@@ -15,6 +15,6 @@ The options of each spot config placed in the world (its npc config).
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:0` | (2791, 3019) | (2791, 3020) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 148 ticks via 30 coins |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:1` | (2801, 3010) | (2801, 3009) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 158 ticks via 30 coins |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:2` | (2807, 3021) | (2807, 3022) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 150 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:0` | (2791, 3019) | (2791, 3020) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 132 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:1` | (2801, 3010) | (2801, 3009) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 121 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:2` | (2807, 3021) | (2807, 3022) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 118 ticks via The Grand Tree done |

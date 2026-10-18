@@ -7,12 +7,12 @@ Below the volcano; lesser demons and deadly red spiders. Descriptive name, not s
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | [gold](../resources/rock/gold.md) 4 | yes | no | - | 30 coins |
+| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | [gold](../resources/rock/gold.md) 4 | yes | no | - | 30 coins or The Grand Tree done |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - | 30 coins |
-| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - | 30 coins |
-| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - | 30 coins |
+| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - | 30 coins or The Grand Tree done |

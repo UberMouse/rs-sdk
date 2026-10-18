@@ -245,7 +245,18 @@ p_delay(0);
 p_telejump($coord);
 
 [proc,step_through](coord $from, coord $to)(coord)
-return(movecoord($to, 1, 0, 0));
+return(movecoord($to, %step_dx, 0, 0));
+
+[oploc1,squareladder]
+if (stat(mining) < 5) {
+    return;
+}
+p_telejump(~setcoord_mapsquare(coord, 2, 0, 3));
+
+[proc,setcoord_mapsquare](coord $coord, int $mapx, int $mapy, int $mapz)(coord)
+def_int $relx = modulo(coordx($coord), 64);
+def_int $relz = modulo(coordz($coord), 64);
+return(movecoord(0_0_0_0_0, add(multiply($mapx, 64), $relx), $mapy, add(multiply($mapz, 64), $relz)));
 
 [proc,forcewalk](coord $dest)
 ~walk(calc(coordx($dest) - coordx(coord)), calc(coordz($dest) - coordz(coord)));
@@ -315,6 +326,7 @@ const locConfigs = parseConfigs(
         '[stronggate]',
         '[stargate]',
         '[rubble]',
+        '[squareladder]',
     ].join('\n'),
 );
 
@@ -419,7 +431,19 @@ describe('deriveGateLandings: one outcome per row', () => {
         expect(gate.landings).toEqual(around(170).map(stand => ({ stand, landing: { ...stand, x: stand.x + 4 } })));
     });
 
-    test('a swap for a loc that does not block, then a landing a value proc computes: opens', () => {
+    test('a proc that only sets locals and returns a value gives it: a jump to the same tile of another mapsquare', () => {
+        // As the Haunted Mine's ladders (general/scripts/misc/coord_procs.rs2:253): each stand's own tile, moved to
+        // mapsquare (2, 3).
+        const { gate } = one(row('squareladder', 190, [['skill:mining:5']]));
+        expect(gate.landings).toEqual(
+            around(190).map(stand => ({
+                stand,
+                landing: { level: 0, x: 128 + (stand.x % 64), z: 192 + (stand.z % 64) },
+            })),
+        );
+    });
+
+    test('a swap for a loc that does not block, then a landing a value proc computes from a var: opens', () => {
         const { gate, out } = one(row('bush', 140, [['item:machete:held']]));
         expect(gate.opens).toBe(true);
         expect(gate.to).toBeUndefined();

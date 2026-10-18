@@ -748,6 +748,7 @@ const ARITHMETIC: Readonly<Record<string, (a: number, b: number) => number>> = {
     sub: (a, b) => a - b,
     multiply: (a, b) => a * b,
     divide: (a, b) => Math.trunc(a / b),
+    modulo: (a, b) => a % b,
 };
 
 /**
@@ -862,7 +863,7 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
     const known = (name: string): boolean =>
         name === 'inv' || name === 'worn' || input.names.has(name) || byCall.has(`@${name}`);
 
-    const evaluate = (e: Expr, env: ReadonlyMap<string, Value>, file: string): Value => {
+    const evaluate = (e: Expr, env: ReadonlyMap<string, Value>, file: string, depth = 0): Value => {
         switch (e.t) {
             case 'num':
                 return { t: 'int', n: e.n };
@@ -871,7 +872,7 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             case 'str':
                 return unknown(e.text);
             case 'bin': {
-                const [l, r] = [evaluate(e.l, env, file), evaluate(e.r, env, file)];
+                const [l, r] = [evaluate(e.l, env, file, depth), evaluate(e.r, env, file, depth)];
                 const side = isSide(l) || isSide(r);
                 // About the loc alone: a loc fact against a loc fact or a value fixed offline.
                 const loc = !side && locOrKnown(l) && locOrKnown(r) && (isLoc(l) || isLoc(r));
@@ -905,7 +906,7 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         const param = e.args[0];
         if (bound && e.name === 'loc_param' && param?.t === 'name' && param.args === null)
             return bound.params.get(param.name) ?? unknown(e.text);
-        const args = e.args.map(a => evaluate(a, env, file));
+        const args = e.args.map(a => evaluate(a, env, file, depth));
         if (SIDE_COMMANDS.has(e.name) && args.some(isSide)) return sideUnknown(e.text);
         if (SIDE_COMMANDS.has(e.name) && args.every(locOrKnown) && args.some(isLoc)) return locUnknown(e.text);
         const [a0, a1, a2, a3] = args;
@@ -944,7 +945,39 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         // `$min + randominc($max - $min)`: min to max inclusive (general/scripts/misc/random_range.rs2:2).
         if (e.name === '~random_range' && a0?.t === 'int' && a1?.t === 'int') return { t: 'range', lo: a0.n, hi: a1.n };
         if (e.name.startsWith('~p_choice')) return unknown(e.text, true);
-        return unknown(e.text);
+        return valueOf(e.name, args, depth) ?? unknown(e.text);
+    };
+
+    /**
+     * What a call of a proc that only sets locals and returns one value gives (`~setcoord_mapsquare`,
+     * general/scripts/misc/coord_procs.rs2:253): its return value, when every set and the return settle with the
+     * arguments `args`, a coord marked computed from the player's or the loc's tile when an argument is; undefined
+     * for any other callable, or past BOUND_DEPTH calls deep.
+     */
+    const valueOf = (call: string, args: readonly Value[], depth: number): Value | undefined => {
+        const c = byCall.get(call);
+        if (!c || !call.startsWith('~') || depth >= BOUND_DEPTH) return undefined;
+        const s = scriptOf(call, c.file, c.line, c.body);
+        if ('error' in s || s.params.length !== args.length) return undefined;
+        const last = s.body.at(-1);
+        if (
+            last?.t !== 'return' ||
+            !last.value ||
+            !s.body.slice(0, -1).every(x => x.t === 'set' && x.name.startsWith('$'))
+        )
+            return undefined;
+        const env = new Map<string, Value>(s.params.map((p, i) => [p, args[i]!]));
+        for (const x of s.body.slice(0, -1)) {
+            if (x.t !== 'set') return undefined;
+            const v = evaluate(x.value, env, c.file, depth + 1);
+            if (v.t === 'unknown') return undefined;
+            env.set(x.name, v);
+        }
+        const v = evaluate(last.value, env, c.file, depth + 1);
+        if (v.t === 'unknown') return undefined;
+        // A coord computed from the player's tile or the loc's is still one: another stand gives another tile.
+        const from = args.find((a): a is CoordValue => a.t === 'coord' && a.from !== undefined)?.from;
+        return v.t === 'coord' && from && !v.from ? { ...v, from } : v;
     };
 
     /**

@@ -5,22 +5,22 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rock:crandor:0` | (2821, 3245) | [mithril](../resources/rock/mithril.md) 7 | yes | no | - | 30 coins + Dragon Slayer done |
-| `rock:crandor:1` | (2834, 3293) | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `rock:crandor:2` | (2837, 3245) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - | 30 coins + Dragon Slayer done |
-| `rock:crandor:3` | (2861, 3287) | [gold](../resources/rock/gold.md) 3 | yes | no | - | 30 coins + Dragon Slayer done |
+| `rock:crandor:0` | (2821, 3245) | [mithril](../resources/rock/mithril.md) 7 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:1` | (2834, 3293) | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:2` | (2837, 3245) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:3` | (2861, 3287) | [gold](../resources/rock/gold.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
-| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done |
+| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |

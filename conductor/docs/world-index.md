@@ -257,7 +257,8 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
   that graph (`lib/walk-graph.ts` `planWay`): the doors it can open, the connectors `climb` uses, and
   the moves `actions/cross.ts` makes (scripted moves, teleports, gate jumps; a roll priced at the bot's
   current level, one whose failure can take its hitpoints left refused), with a bank detour for an obj
-  a move needs when the plan's bank record holds it. It does not take transports.
+  a move needs when the plan's bank record holds it. It does not take transports, nor a crossing `cross` can't
+  make (`crossingRefusal`: the gnome gliders' interface clicks).
 
 Known gaps, listed by the build's unreached report: the scripted moves whose landing no bound run settles (a
 `map_findsquare`, a coord kept in a varp; the build report lists them); banker clusters across booths; unnamed

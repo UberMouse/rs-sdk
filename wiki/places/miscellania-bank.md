@@ -7,4 +7,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `bank:miscellania-bank:0` | (2621, 3895) | Banker 1 | no | no | - | unreached |
+| `bank:miscellania-bank:0` | (2621, 3895) | Banker 1 | no | no | - | The Fremennik Trials done |

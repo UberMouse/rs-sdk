@@ -28,6 +28,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:3` | (3385, 9816) | (3385, 9816) | 2 | no | no | - | unreached | - |
 | [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | 3 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
 | [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 139 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 98 ticks via The Grand Tree done |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 5 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
 | [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |

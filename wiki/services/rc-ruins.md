@@ -9,7 +9,7 @@
 | [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:1` | (2984, 3291) | (2983, 3291) | air 1 | yes | - |
 | [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:2` | (3052, 3444) | (3051, 3444) | body 1 | yes | - |
 | [Entrana](../places/entrana.md) | `rc-ruins:entrana:0` | (2857, 3380) | (2857, 3379) | law 1 | no | no weapons/armour (Entrana rule) |
-| [Karamja](../places/karamja.md) | `rc-ruins:karamja:0` | (2868, 3018) | (2867, 3018) | nature 1 | no | 30 coins |
+| [Karamja](../places/karamja.md) | `rc-ruins:karamja:0` | (2868, 3018) | (2867, 3018) | nature 1 | no | 30 coins or The Grand Tree done |
 | [Kharidian Desert](../places/kharidian-desert.md) | `rc-ruins:kharidian-desert:0` | (3312, 3254) | (3312, 3253) | fire 1 | yes | - |
 | [Misthalin](../places/misthalin.md) | `rc-ruins:misthalin:0` | (3305, 3473) | (3305, 3472) | earth 1 | yes | - |
 | [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | `rc-ruins:lumbridge-swamp:0` | (3184, 3164) | (3183, 3164) | water 1 | yes | - |

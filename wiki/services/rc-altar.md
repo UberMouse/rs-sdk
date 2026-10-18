@@ -14,5 +14,5 @@
 | [Fire altar](../places/fire-altar.md) | `rc-altar:fire-altar:0` | (2584, 4837) | (2583, 4837) | fire 1 | yes | carry Fire talisman |
 | [Law altar](../places/law-altar.md) | `rc-altar:law-altar:0` | (2463, 4831) | (2462, 4831) | law 1 | no | carry Law talisman + no weapons/armour (Entrana rule) |
 | [Mind altar](../places/mind-altar.md) | `rc-altar:mind-altar:0` | (2785, 4840) | (2784, 4840) | mind 1 | yes | carry Mind talisman |
-| [Nature altar](../places/nature-altar.md) | `rc-altar:nature-altar:0` | (2399, 4840) | (2399, 4839) | nature 1 | no | 30 coins + carry Nature talisman |
+| [Nature altar](../places/nature-altar.md) | `rc-altar:nature-altar:0` | (2399, 4840) | (2399, 4839) | nature 1 | no | 30 coins + carry Nature talisman or carry Nature talisman + The Grand Tree done |
 | [Water altar](../places/water-altar.md) | `rc-altar:water-altar:0` | (2715, 4835) | (2714, 4835) | water 1 | yes | carry Water talisman |

@@ -52,7 +52,7 @@ import { cmp } from './util';
 export const LUMBRIDGE_SPAWN: Tile = { level: 0, x: 3222, z: 3218 };
 
 /** The default bound on the minimal sets a tile keeps. */
-export const MAX_SETS = 16;
+export const MAX_SETS = 24;
 
 /** A gated door to wall while the fill runs, where the bundle has it open (a door it lists). */
 export interface WallEdit {
@@ -718,7 +718,11 @@ export function fillReach(input: ReachInput, graph: ReachGraph = reachGraph(inpu
             for (let k = 0; k < kept.length; k += BLOCK) {
                 for (let j = 0; j < BLOCK; j++) poolSets[b * BLOCK + j] = kept[k + j] ?? -1;
                 if (k + BLOCK < kept.length) {
-                    if (poolNext[b] === -1) poolNext[b] = newBlock();
+                    // newBlock may grow the pool into new arrays: take the block first, then link it in the new one.
+                    if (poolNext[b] === -1) {
+                        const added = newBlock();
+                        poolNext[b] = added;
+                    }
                     b = poolNext[b]!;
                 }
             }

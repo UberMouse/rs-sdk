@@ -12,7 +12,8 @@
 //   at most `maxHops` of them;
 // - a move (Move): a crossing row's (World.crossings: a scripted move, a teleport), or a gate row's that is not a
 //   door the walker opens (a jump, a door crossed by another op than Open, a rolled door), when the account meets
-//   its requirement and moveRefusal does not refuse the row; actions/cross.ts makes it;
+//   its requirement and moveRefusal (a gate row's) or crossingRefusal (a crossing row's) does not refuse the row;
+//   actions/cross.ts makes it;
 // - an opened loc's tiles (Gate.opens), when the account meets its requirement.
 //
 // Not a tile in the Wilderness, unless the way starts or ends there (actions/walk.ts refuses such a route), and not a
@@ -41,7 +42,7 @@ import {
 } from '../../wiki/world/reach';
 import { CAME_FROM, minimalSets } from '../../wiki/world/requirements';
 import { readConfigs } from '../../wiki/world/sources/configs';
-import type { Act, Gate, Roll } from '../../wiki/world/types';
+import type { Act, Crossing, Gate, Roll } from '../../wiki/world/types';
 import { isTollGate } from '../actions/toll';
 import { type Account, currentLevel, meetsSet } from './account';
 import { type Connector, sameTile, type Tile } from './connectors';
@@ -110,6 +111,17 @@ export function moveRefusal(g: Gate): string | undefined {
     if (triggerOp(g.trigger) === undefined) return `a ${g.trigger.split(',')[0]} trigger (an item used on it)`;
     if (pays(g) && !g.act?.choices?.length) return 'a payment asked in a dialogue the row has no choices for';
     return NOT_WALKER_DOORS.get(g.loc);
+}
+
+/**
+ * Why actions/cross.ts does not make a crossing row's move (World.crossings), or undefined when it does: it sends the
+ * act and answers its choices, and an interface click (a gnome glider's button) is sent with nothing opening the
+ * interface first, as the row names no op that does (the glider map opens from the pilot's dialogue).
+ */
+export function crossingRefusal(c: Pick<Crossing, 'act'>): string | undefined {
+    if (c.act.kind === 'interface')
+        return `an interface click (${c.act.component}) on an interface no op of the row opens`;
+    return undefined;
 }
 
 /**
@@ -258,7 +270,7 @@ export function walkGraph(input: {
         }
     }
     for (const c of world.crossings ?? []) {
-        if (!c.requires.length) continue;
+        if (!c.requires.length || crossingRefusal(c)) continue;
         const sigs = new Set([sigOf(c.requires)]);
         const move: Move = {
             via: c.via,

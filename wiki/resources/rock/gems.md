@@ -21,5 +21,5 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `rock:karamja:1` | (2822, 2999) | (2822, 2999) | 5 | no | no | - | 30 coins + Shilo Village done | Shilo Village bank (Shilo Village), 26 ticks |
-| [Shilo Village (Karamja)](../../places/shilo-village.md) | `rock:shilo-village:0` | (2825, 3002) | (2825, 3002) | 2 | no | no | - | 30 coins + Shilo Village done | Shilo Village bank (Shilo Village), 28 ticks |
+| [Karamja](../../places/karamja.md) | `rock:karamja:1` | (2822, 2999) | (2822, 2999) | 5 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 26 ticks |
+| [Shilo Village (Karamja)](../../places/shilo-village.md) | `rock:shilo-village:0` | (2825, 3002) | (2825, 3002) | 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 28 ticks |

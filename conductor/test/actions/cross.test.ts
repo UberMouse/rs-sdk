@@ -199,6 +199,27 @@ describe('cross: teleports', () => {
     });
 });
 
+test("an npc not yet in sight (the client lists a teleport's new area late) is waited for, a few ticks", async () => {
+    const lumdo: Move = {
+        via: 'teleport',
+        act: { kind: 'npc-op', npc: 'mm_lumdo', op: 1 },
+        at: tile(2803, 2707),
+        landings: [tile(2894, 2726)],
+        source: 'mm_lumdo.rs2:11',
+    };
+    const alone = world().player({ at: { x: 2802, z: 2707 } });
+    const shown = alone.npc('Lumdo', 2803, 2707, { id: configId('npc', 'mm_lumdo')!, options: ['Talk-to'] });
+    const driver = new TimelineDriver([alone.build(), alone.build(), shown.build()], {
+        react: reactTo('interactNpc', moveTo(tile(2894, 2726))),
+    });
+    const r = await interpret(cross(driver, lumdo), { driver });
+    expect(r).toMatchObject({ kind: 'returned', value: { ok: true, at: tile(2894, 2726) } });
+    // Never shown: no-target once the wait is out, nothing sent.
+    const never = await run(lumdo, alone.build());
+    expect(never.result).toMatchObject({ ok: false, reason: 'no-target' });
+    expect(never.sends).toEqual([]);
+});
+
 describe('cross: rolled moves', () => {
     const shortcut: Move = {
         ...gateMove,

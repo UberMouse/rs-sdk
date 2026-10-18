@@ -7,47 +7,47 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `shop:brimhaven:0` | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no | no | - | 30 coins |
+| `shop:brimhaven:0` | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## [Ranges](../services/range.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `range:brimhaven:0` | (2787, 3191) | Range 1 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 |
+| `range:brimhaven:0` | (2787, 3191) | Range 1 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 |
 
 ## [Fires](../services/fire.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fire:brimhaven:0` | (2800, 3184) | Fireplace 1 | no | no | - | 30 coins |
+| `fire:brimhaven:0` | (2800, 3184) | Fireplace 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## [Water sources](../services/water-source.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `water-source:brimhaven:0` | (2792, 3193) | Sink 2 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 |
+| `water-source:brimhaven:0` | (2792, 3193) | Sink 2 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 |
 
 ## Fishing spots
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fishing-spot:brimhaven:0` | (2768, 3165) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins |
+| `fishing-spot:brimhaven:0` | (2768, 3165) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:brimhaven:0` | (2762, 3189) | Pirate 1, Pirate Guard 1 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 |
-| `npc:brimhaven:1` | (2775, 3193) | Grip 1, Pirate Guard 3 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 |
-| `npc:brimhaven:2` | (2795, 3185) | Pirate 6 | no | no | - | 30 coins |
-| `npc:brimhaven:3` | (2796, 3162) | Pirate 9 | no | no | - | 30 coins |
-| `npc:brimhaven:4` | (2802, 3195) | Pirate Guard 1 | no | no | - | 30 coins |
+| `npc:brimhaven:0` | (2762, 3189) | Pirate 1, Pirate Guard 1 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
+| `npc:brimhaven:1` | (2775, 3193) | Grip 1, Pirate Guard 3 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
+| `npc:brimhaven:2` | (2795, 3185) | Pirate 6 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:brimhaven:3` | (2796, 3162) | Pirate 9 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:brimhaven:4` | (2802, 3195) | Pirate Guard 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Ladders and stairs
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|
-| `connector:brimhaven:0` | (2759, 3196) | Staircase 1 | up (2759, 3195) L1 by Climb-up | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 |
-| `connector:brimhaven:1` | (2759, 3196) L1 | Staircase 1 | down (2759, 3199) by Climb-down | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 |
-| `connector:brimhaven:2` | (2796, 3195) | Staircase 1 | up (2796, 3198) L1 by Climb-up | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 |
-| `connector:brimhaven:3` | (2796, 3196) L1 | Staircase 1 | down (2796, 3194) by Climb-down | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 |
+| `connector:brimhaven:0` | (2759, 3196) | Staircase 1 | up (2759, 3195) L1 by Climb-up | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
+| `connector:brimhaven:1` | (2759, 3196) L1 | Staircase 1 | down (2759, 3199) by Climb-down | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
+| `connector:brimhaven:2` | (2796, 3195) | Staircase 1 | up (2796, 3198) L1 by Climb-up | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 4 |
+| `connector:brimhaven:3` | (2796, 3196) L1 | Staircase 1 | down (2796, 3194) by Climb-down | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 4 |

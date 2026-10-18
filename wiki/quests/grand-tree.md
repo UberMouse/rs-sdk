@@ -66,3 +66,15 @@
 | Anita | Gnome Stronghold |
 | Foreman | Karamja shipyard |
 | Black Demon (level 172) | Grand Tree roots |
+
+## After the quest
+
+- Gnome gliders: any gnome pilot asked "Can you take me on the glider?" opens the glider map once the quest is done, on
+  a members world (areas/area_gnome/scripts/gnome_glider.rs2:116). Ta Quir Priw (top of the Grand Tree) is the hub:
+  from it to Gandius (Karamja), Sindarpos (White Wolf Mountain), Lemanto Andra (east of Varrock) and Kar-Hewo (Al
+  Kharid), and from Gandius, Sindarpos and Kar-Hewo back to it only (:14); the start is the box 8 tiles round the
+  pilot's landing the player stands in (:26), so Lemanto Andra is one-way. Each flight lands within a tile of its
+  landing (:22).
+- The Gnome Stronghold spirit tree (`ent`, south of the Grand Tree) talks only to a player who finished the quest
+  (areas/area_gnome/scripts/spirit_tree.rs2:2); its menu, after "Where can I go?": "Tree Gnome Village.", "Forest
+  north of Varrock.", "Battlefield of Khazard.", members only (:65).

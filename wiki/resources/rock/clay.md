@@ -28,5 +28,5 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | 5 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
 | [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 4 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `rock:rellekka:0` | (2683, 3706) | (2684, 3706) | 4 | no | no | - | The Fremennik Trials done | Seers' Village bank (Seers' Village), 142 ticks via The Fremennik Trials done |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `rock:rellekka:0` | (2683, 3706) | (2684, 3706) | 4 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 95 ticks via The Fremennik Trials done |
 | [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |

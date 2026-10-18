@@ -31,6 +31,11 @@ export const CROSS_MAX_ATTEMPTS = 10;
 /** How far from the row's tile a loc or npc may be found: a multi-tile loc reports one tile, an npc wanders. */
 const LOC_SLACK = 3;
 const NPC_SLACK = 16;
+/**
+ * Ticks an npc's act waits for the npc to come into sight: after a teleport the client lists the new area's npcs a
+ * few ticks after the bot lands (Lumdo on Ape Atoll, conductor/test/integration/smoke/cross-monkey-madness.itest.ts).
+ */
+const NPC_SIGHT_TICKS = 5;
 /** A teleport that lands the bot this far from where it stood, off every landing, has still moved it. */
 const TELEPORT_JUMP = 10;
 /** A choice dialog has more than one option; a lone Continue is the dialog guard's. */
@@ -135,7 +140,13 @@ function* sendAct(ctx: ActionContext, m: Move): Op<Sent> {
             return sent.success ? { ok: true } : { ok: false, reason: 'send-failed', message: sent.message };
         }
         case 'npc-op': {
-            const npc = findNpc(s, m, act.npc);
+            const npc =
+                findNpc(s, m, act.npc) ??
+                findNpc(
+                    (yield* wait(`${act.npc} in sight`, st => !!findNpc(st, m, act.npc), NPC_SIGHT_TICKS)).state,
+                    m,
+                    act.npc,
+                );
             if (!npc)
                 return { ok: false, reason: 'no-target', message: `No reachable ${act.npc} in sight for ${where(m)}` };
             return sentOrFailed(yield* interactNpc(npc, act.op));

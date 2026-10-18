@@ -21,15 +21,15 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `pickpocket:rogues-castle:0` | (3284, 3931) | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 | - |
-| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 | unreached |
+| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 | - |
 | `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 | unreached |
-| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 | unreached |
+| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 | - |
 
 ## Ladders and stairs
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|
-| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 by Climb-up | no | yes | 53 | unreached |
-| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936) by Climb or Climb-down; up (3282, 3936) L2 by Climb or Climb-up | no | yes | 53 | unreached |
-| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1 by Climb or Climb-down; up (3281, 3936) L3 by Climb or Climb-up | no | yes | 53 | unreached |
-| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 by Climb-down | no | no | 53 | unreached |
+| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 by Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936) by Climb or Climb-down; up (3282, 3936) L2 by Climb or Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1 by Climb or Climb-down; up (3281, 3936) L3 by Climb or Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 by Climb-down | no | no | 53 | - |

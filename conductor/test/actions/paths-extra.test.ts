@@ -13,6 +13,17 @@ describe('collisionPaths: doors the data lacks', () => {
         expect(collisionPaths.doorsAlong(r.waypoints)).toContainEqual(door);
     });
 
+    test("a route into the Rogues' Castle stair room exists and passes one of its two diagonal doors", () => {
+        const from = { x: 3284, z: 3931, level: 0 };
+        const r = collisionPaths.findPath(from, { x: 3282, z: 3936 }, []);
+        expect(r.reachedDestination).toBe(true);
+        const castle = EXTRA_DOORS.filter(d => d.x === 3279 || d.x === 3282);
+        expect(castle).toHaveLength(2);
+        expect(collisionPaths.doorsAlong(r.waypoints).some(d => castle.some(c => c.x === d.x && c.z === d.z))).toBe(
+            true,
+        );
+    });
+
     test('the door is known by its tile', () => {
         expect(collisionPaths.doorAt(0, door.x, door.z)).toEqual(door);
     });

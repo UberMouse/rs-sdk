@@ -345,6 +345,18 @@ describe('requirement sets', () => {
         expect(reach.report.labels).toBe(reach.report.reached - 9 + 9 * 2);
     });
 
+    test('a tile holding sets in several blocks keeps them all while the block pool grows', () => {
+        // Ten incomparable ways onto level 1: each of its 1024 tiles holds ten sets, three blocks of the pool, so
+        // the pool grows (past 1024 blocks) while a tile is linking a block it took.
+        const ways = Array.from({ length: 10 }, (_, i) =>
+            crossing({ from: [START], landings: [{ tile: at(1, 3200, 3200) }], requires: [[`quest:q${i}`]] }),
+        );
+        const reach = fill(new Grid(), { crossings: ways });
+        const all = ways.map((_, i) => [`quest:q${i}`]);
+        expect(reach.setsAt(at(1, 3231, 3231))).toEqual(all);
+        expect(reach.setsAt(at(1, 3215, 3200))).toEqual(all);
+    });
+
     test('a set arriving first is dropped when a subset reaches the tile later', () => {
         // The dear door is nearer the start; both reach the room while the empty set floods, the cheap one
         // after it is taken.

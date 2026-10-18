@@ -143,11 +143,15 @@ describe('the nearest bank against walks bots ran', () => {
 });
 
 describe("under the site's own requirement sets", () => {
-    test('Karamja reached by the 30-coin ship banks by a ship back, paying its fare', () => {
-        // The Karamja fishing spots need coins:30, the Port Sarim sailors' fare (World.transports); Karamja's one bank,
-        // Shilo Village's, needs Zombie Queen and the cart fare besides.
-        expect(site('fishing-spot:karamja:0').reach).toEqual([['coins:30']]);
-        expect(bankOf('fishing-spot:karamja:0')?.requires).toEqual(['coins:30']);
+    test('Karamja, reached by the 30-coin ship or the glider, banks by the glider back to the Grand Tree', () => {
+        // The Karamja fishing spots need coins:30, the Port Sarim sailors' fare (World.transports), or The Grand Tree
+        // for the glider to Gandius; Karamja's one bank, Shilo Village's, needs Zombie Queen and the cart fare besides,
+        // so the nearest is the Grand Tree's, by the glider back (gnome_glider.rs2:2).
+        expect(site('fishing-spot:karamja:0').reach).toEqual([['coins:30'], ['quest:grandtree']]);
+        expect(bankOf('fishing-spot:karamja:0')).toMatchObject({
+            site: 'bank:grand-tree-bank:0',
+            requires: ['quest:grandtree'],
+        });
     });
 
     test('Zanaris, reached with the dramen staff worn, banks inside Zanaris with no further requirement', () => {

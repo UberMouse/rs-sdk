@@ -309,9 +309,11 @@ export function createSaveData(config: SaveConfig): Uint8Array {
         writer.p1(level); // Current level
     }
 
-    // Variables (varps) - write count of 309 (typical)
+    // Variables (varps) - write count of 309 (typical), or up to the highest custom varp id, which the
+    // engine reads back one by one (PlayerLoading.ts, save versions below 7)
     // Set tutorial progress (varp 281) to 1000 to mark tutorial complete
-    const varpCount = 309;
+    const ids = Object.keys(config.varps ?? {}).map(id => parseInt(id)).filter(id => id >= 0);
+    const varpCount = Math.max(309, ...ids.map(id => id + 1));
     const varps = new Array(varpCount).fill(0);
     varps[281] = 1000;  // Tutorial complete
 

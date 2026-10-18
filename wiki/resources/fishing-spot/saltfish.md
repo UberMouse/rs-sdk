@@ -30,7 +30,7 @@ The options of each spot config placed in the world (its npc config).
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:7` | (2792, 3277) | (2792, 3277) | 4 | no | no | - | unreached | - |
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2841, 3430) | (2842, 3432) | 2 | no | no | - | - | Catherby bank (Catherby), 19 ticks |
 | [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins | Draynor bank (Draynor Village), 99 ticks via 30 coins |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
 | [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3267, 3148) | (3267, 3149) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 10 ticks |
 | [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:1` | (3276, 3140) | (3276, 3141) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 14 ticks |
 | [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 13 ticks |
