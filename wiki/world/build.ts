@@ -760,7 +760,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         names: new Set([...objConfigs.keys(), ...locConfigs.keys(), ...npcConfigs.keys()]),
         tools,
     };
-    // One run of each trigger, shared by the gate scan and the unreached report's hints.
+    // One walker and one run of each trigger, shared by the gate scan, the unreached report's hints and the
+    // untimed queues.
     const scanOne = scanTrigger(scan);
     const candidates = scanGates(scan, scanOne);
     const review = reviewGates(candidates, GATES, new Map(scripts));
@@ -981,7 +982,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
                 ),
                 skippedCheckers,
-                untimedQueues: untimedQueues(scan),
+                untimedQueues: untimedQueues(scan, scanOne),
                 landings: {
                     counts: landings.counts,
                     underived: landings.underived,

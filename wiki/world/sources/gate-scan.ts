@@ -1585,12 +1585,10 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
 /**
  * The queue commands in the triggers and callables that queue a moving script with a delay other than 0, or on
  * the weak queue (gate-scan.ts header), as `` `command(script, delay)` (file:line) ``, sorted: the build reports
- * them.
+ * them. `scan` is scanTrigger's, given to share its walker.
  */
-export const untimedQueues = (input: GateScanInput): string[] =>
-    gateWalker(input)
-        .untimedQueues([...input.triggers, ...input.callables, ...(input.queues ?? [])])
-        .sort(cmp);
+export const untimedQueues = (input: GateScanInput, scan = scanTrigger(input)): string[] =>
+    scan.untimedQueues([...input.triggers, ...input.callables, ...(input.queues ?? [])]).sort(cmp);
 
 const isVar = (e: Expr | undefined): boolean => e?.t === 'name' && e.name.startsWith('%') && e.args === null;
 const isClock = (e: Expr | undefined): boolean => e?.t === 'name' && e.name === 'map_clock' && !e.args?.length;
@@ -1814,6 +1812,12 @@ function propose(trigger: Trigger, run: Run, completes: Completes): GateCandidat
 /** What the scan makes of one trigger (scanTrigger). */
 export type TriggerScan = { candidate: GateCandidate } | { moves: string[] } | null;
 
+/** scanTrigger's: what the scan makes of a trigger, and its walker's untimed queues in some scripts (untimedQueues). */
+export interface TriggerScanner {
+    (t: Trigger): TriggerScan;
+    untimedQueues(scripts: readonly { file: string; line: number; body: string }[]): string[];
+}
+
 /**
  * Every loc op trigger that branched on a condition the scan reads before a move (sources/gate-scan.ts
  * header), with what the scan makes of it, by trigger. `scan` is scanTrigger's, given to share its runs.
@@ -1830,9 +1834,10 @@ export function scanGates(input: GateScanInput, scan = scanTrigger(input)): Gate
 /**
  * What the scan makes of one loc or npc op trigger, each run once: the candidate it proposes (scanGates's, for
  * a loc op), or the tiles (GateMove.to) it moves the player to with no condition read before the move, or null
- * when it makes no move. The build's unreached report reads it for the triggers in and beside a pocket.
+ * when it makes no move. The build's unreached report reads it for the triggers in and beside a pocket, and
+ * untimedQueues its walker.
  */
-export function scanTrigger(input: GateScanInput): (t: Trigger) => TriggerScan {
+export function scanTrigger(input: GateScanInput): TriggerScanner {
     const walker = gateWalker(input);
     const completes = new Map(input.quests.map(q => [q.id, q.complete]));
     const seen = new Map<Trigger, TriggerScan>();
@@ -1844,10 +1849,11 @@ export function scanTrigger(input: GateScanInput): (t: Trigger) => TriggerScan {
         const moves = [...new Set(run.moves.map(m => m.to))].sort(cmp);
         return moves.length ? { moves } : null;
     };
-    return t => {
+    const scanner = (t: Trigger): TriggerScan => {
         if (!seen.has(t)) seen.set(t, scan(t));
         return seen.get(t)!;
     };
+    return Object.assign(scanner, { untimedQueues: walker.untimedQueues });
 }
 
 // ---- Curation and placement -------------------------------------------------------------------------
