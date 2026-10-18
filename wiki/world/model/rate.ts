@@ -7,7 +7,7 @@ function check(ok: boolean, field: string, value: number, want: string): void {
 }
 
 /** Rejects a model whose numbers would give a NaN, negative or silently wrong rate. */
-function validate(m: Pick<ActionModel, 'ticksPerAttempt' | 'success' | 'failTicks'>): void {
+function validate(m: Pick<ActionModel, 'ticksPerAttempt' | 'success' | 'failTicks' | 'successTicks'>): void {
     check(
         Number.isFinite(m.ticksPerAttempt) && m.ticksPerAttempt > 0,
         'ticksPerAttempt',
@@ -17,6 +17,8 @@ function validate(m: Pick<ActionModel, 'ticksPerAttempt' | 'success' | 'failTick
     check(m.success > 0 && m.success <= 1, 'success', m.success, 'in (0, 1]');
     const f = m.failTicks ?? 0;
     check(Number.isFinite(f) && f >= 0, 'failTicks', f, 'finite and >= 0');
+    const s = m.successTicks ?? 0;
+    check(Number.isFinite(s) && s >= 0, 'successTicks', s, 'finite and >= 0');
 }
 
 /** Rejects a `deplete` whose chance is outside (0, 1] or whose respawn is negative or not finite. */
@@ -31,13 +33,15 @@ function validateDeplete(d: NonNullable<ActionModel['deplete']>): void {
 }
 
 /**
- * Expected ticks per success (one item taken). A success needs 1/success attempts, each `ticksPerAttempt`, and
- * the (1 - success)/success failures among them each add `failTicks`.
+ * Expected ticks per success (one item taken). A success needs 1/success attempts, each `ticksPerAttempt`, the
+ * (1 - success)/success failures among them each add `failTicks`, and the success itself adds `successTicks`.
  */
-export function ticksPerItem(m: Pick<ActionModel, 'ticksPerAttempt' | 'success' | 'failTicks'>): number {
+export function ticksPerItem(
+    m: Pick<ActionModel, 'ticksPerAttempt' | 'success' | 'failTicks' | 'successTicks'>,
+): number {
     validate(m);
     const p = m.success;
-    return (m.ticksPerAttempt + (1 - p) * (m.failTicks ?? 0)) / p;
+    return (m.ticksPerAttempt + (1 - p) * (m.failTicks ?? 0)) / p + (m.successTicks ?? 0);
 }
 
 /**

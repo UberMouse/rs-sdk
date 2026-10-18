@@ -18,6 +18,13 @@ export interface ActionModel {
     consumes: { obj: string; count: number }[];
     /** Extra ticks a failed attempt costs (a stun). */
     failTicks?: number;
+    /** Extra ticks a success costs (a `p_delay` after it, during which the next click is refused). */
+    successTicks?: number;
+    /**
+     * Hitpoints a failed attempt costs (a pickpocket stun's hit). Food per hour is the damage per hour over the
+     * food's heal, so the method that names the food turns it into a supply.
+     */
+    failDamage?: number;
     /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
 }

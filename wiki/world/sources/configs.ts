@@ -1,4 +1,4 @@
-// INI-style configs (.loc/.npc/.obj/.varbit): `[name]` then `key=value`. A key may repeat (data=, param=).
+// INI-style configs (.loc/.npc/.obj/.struct/.varbit): `[name]` then `key=value`. A key may repeat (data=, param=).
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Glob } from 'bun';
@@ -44,7 +44,7 @@ export function collectConfigs(files: [file: string, text: string][]): Map<strin
 }
 
 /** Every config of a kind: all `_unpack/<rev>` dumps and the hand-written configs, skipping `_test/`. */
-export function readConfigs(ext: 'loc' | 'npc' | 'obj' | 'varbit'): Map<string, Config> {
+export function readConfigs(ext: 'loc' | 'npc' | 'obj' | 'struct' | 'varbit'): Map<string, Config> {
     const files = [...new Glob(`**/*.${ext}`).scanSync(SCRIPTS)].filter(f => !f.startsWith('_test/')).sort();
     return collectConfigs(files.map((f): [string, string] => [f, readFileSync(join(SCRIPTS, f), 'utf8')]));
 }

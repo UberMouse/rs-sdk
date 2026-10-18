@@ -142,6 +142,13 @@ describe('rate', () => {
         expect(() => ticksPerItem(model({ success: 0 }))).toThrow(/not in/);
     });
 
+    test('ticksPerItem: a success adds its successTicks once', () => {
+        // A normal rock: 4 attempts of 4 ticks for one ore at success 1/4, then its 1-tick p_delay: 16 + 1 = 17.
+        expect(ticksPerItem(model({ ticksPerAttempt: 4, success: 0.25, successTicks: 1 }))).toBe(17);
+        expect(() => ticksPerItem(model({ successTicks: -1 }))).toThrow(/successTicks -1/);
+        expect(() => ticksPerItem(model({ successTicks: NaN }))).toThrow(/successTicks NaN/);
+    });
+
     test('one feature that depletes every success binds the player to its respawn', () => {
         // A rock: 1 ore in 3 ticks, then down 9 ticks: 1 ore per 12 ticks, though the player could take 1 per 3.
         const m = model({ deplete: { chance: 1, respawnTicks: 9 } });
