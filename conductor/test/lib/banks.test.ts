@@ -94,7 +94,7 @@ describe('nearestBank: the fewest run ticks a walk takes, to a bank the account 
     });
 });
 
-describe("the walk's ticks are Task 5's", () => {
+describe("the walk's ticks are wiki/world/distance.ts's", () => {
     // wiki/world/distance.ts computed each site's nearest bank over the same graph; the walk agrees where its way
     // takes only what a walk does. The banks as world.json has them (no curated stand).
     const stands = WORLD.sites.filter(s => s.kind === 'bank' && s.stand && s.reach.length).map(s => s.stand!);

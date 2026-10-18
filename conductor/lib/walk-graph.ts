@@ -1,4 +1,4 @@
-// The world index's travel graph (wiki/world/reach.ts reachGraph, the graph Task 5's distances walk) as the walker
+// The world index's travel graph (wiki/world/reach.ts reachGraph, the graph wiki/world/distance.ts walks) as the walker
 // can use it: the shortest way in run ticks from where a bot stands to the nearest of some tiles, with the
 // connectors it climbs on the way. lib/connectors.ts plans a walk's climbs with it and lib/banks.ts finds the nearest
 // bank.
