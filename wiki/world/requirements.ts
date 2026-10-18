@@ -15,7 +15,8 @@
 //   questpoints:<n>        at least n quest points (`%qp >= n`, the Champions' Guild door)
 //   coins:<n>              n coins taken per crossing (a toll, a fare); in a set, the coins of every crossing
 //                          on the way summed, as each spends its own
-//   consume:<obj>:<n>      n of the obj taken per crossing (a Shantay pass, a ship ticket)
+//   consume:<obj>:<n>      n of the obj taken per crossing (a Shantay pass, a ship ticket); in a set, as coins,
+//                          each obj's count over every crossing on the way summed
 //   members                a members world
 //   loadout:<id>           carrying none of a loadout rule's categories (World.loadoutRules)
 //   other:<text>           a condition none of these forms fit; the build report lists each one
@@ -134,8 +135,8 @@ export const questFacts = (quests: readonly { id: string; complete: number; or?:
 
 /**
  * A set with the requirements another of it implies merged away, as world.json writes it (requirementSet's
- * order): of a quest's stages the highest, of a skill's levels, the quest points and an obj's consume the
- * largest, the coins summed (each crossing on the way takes its own). With `quests`, a stage at or below
+ * order): of a quest's stages the highest, of a skill's levels and the quest points the largest, the coins
+ * and each obj's consume summed (each crossing on the way takes its own). With `quests`, a stage at or below
  * complete beside `quest:<id>` goes, as completion meets it, and `quest:<id>` beside a stage at or above
  * complete, as the stage meets it. A quest done by another varp too (QuestFacts.or) keeps a stage below
  * complete beside `quest:<id>`, which the other varp may meet instead; for any other, `quest:<id>>=<complete>`
@@ -144,6 +145,7 @@ export const questFacts = (quests: readonly { id: string; complete: number; or?:
 export function canonicalSet(rs: readonly (Requirement | string)[], quests?: QuestFacts): string[] {
     const parsed = rs.map(r => (typeof r === 'string' ? parseRequirement(r) : r));
     let coins = 0;
+    const consumed = new Map<string, number>();
     const most = new Map<string, Requirement>();
     const keepMost = (key: string, r: Requirement, n: number, of: (x: Requirement) => number): void => {
         const had = most.get(key);
@@ -164,7 +166,7 @@ export function canonicalSet(rs: readonly (Requirement | string)[], quests?: Que
                 keepMost('questpoints', r, r.n, x => (x.kind === 'questpoints' ? x.n : 0));
                 break;
             case 'consume':
-                keepMost(`consume:${r.obj}`, r, r.n, x => (x.kind === 'consume' ? x.n : 0));
+                consumed.set(r.obj, (consumed.get(r.obj) ?? 0) + r.n);
                 break;
             case 'quest':
                 if (r.stage === undefined) done.add(r.quest);
@@ -175,6 +177,7 @@ export function canonicalSet(rs: readonly (Requirement | string)[], quests?: Que
         }
     const out: Requirement[] = [...rest, ...most.values()];
     if (coins > 0) out.push({ kind: 'coins', n: coins });
+    for (const [obj, n] of consumed) if (n > 0) out.push({ kind: 'consume', obj, n });
     for (const id of new Set([...done, ...stage.keys()])) {
         const facts = quests?.get(id);
         let [isDone, at] = [done.has(id), stage.get(id)];

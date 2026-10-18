@@ -439,6 +439,33 @@ describe('requirement sets', () => {
         expect(twoDoors([['skill:agility:5']], [['skill:agility:15']])).toEqual([['skill:agility:15']]);
     });
 
+    test('a join whose canonical form shrinks is taken from its lower bucket, and walks on from there', () => {
+        // Quest a is done by another varp too, so {quest:a, quest:a>=3} stays two requirements (bucket 2). Past the
+        // second door, at quest:a>=5 (past complete), the join is {quest:a>=5}: one requirement, bucket 1, which
+        // the fill had already let go. The far corner of the inner room is reached only by walking on from there.
+        const quests = [
+            {
+                id: 'a',
+                varp: 'a',
+                varpId: 1,
+                complete: 4,
+                or: [{ varp: 'b', varpId: 2, complete: 1 }],
+                stages: {},
+                source: 'a.rs2:1',
+            },
+        ];
+        const reach = fill(sealed().room(3221, 3221, 3222, 3222), {
+            gates: [
+                westDoor(3220, [['quest:a', 'quest:a>=3']]),
+                gate({ tile: at(0, 3221, 3221), requires: [['quest:a>=5']] }),
+            ],
+            quests,
+        });
+        expect(reach.setsAt(at(0, 3220, 3220))).toEqual([['quest:a', 'quest:a>=3']]);
+        expect(reach.setsAt(at(0, 3221, 3221))).toEqual([['quest:a>=5']]);
+        expect(reach.setsAt(at(0, 3222, 3222))).toEqual([['quest:a>=5']]);
+    });
+
     test('along a route the coins of every crossing add up, the same toll twice included', () => {
         expect(twoDoors([['coins:10']], [['coins:30']])).toEqual([['coins:40']]);
         expect(twoDoors([['coins:10']], [['coins:10']])).toEqual([['coins:20']]);

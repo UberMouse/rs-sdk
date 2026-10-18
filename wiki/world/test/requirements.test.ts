@@ -103,7 +103,7 @@ describe('requirement sets', () => {
         { id: 'arrav', complete: 4, or: [{}] },
     ]);
 
-    test("canonicalSet: a quest's highest stage, a skill's highest level, the most quest points and consumed, coins summed", () => {
+    test("canonicalSet: a quest's highest stage, a skill's highest level, the most quest points, coins and consume summed", () => {
         expect(
             canonicalSet([
                 'quest:pp>=5',
@@ -124,7 +124,7 @@ describe('requirement sets', () => {
         ).toEqual([
             'coins:40',
             'consume:plank:1',
-            'consume:rope:2',
+            'consume:rope:3',
             'members',
             'quest:pp>=61',
             'questpoints:32',
