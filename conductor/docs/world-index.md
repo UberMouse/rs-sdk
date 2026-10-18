@@ -257,6 +257,5 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
   graph (`lib/walk-graph.ts`) and crosses only doors it can open.
 
 Known gaps, listed by the build's unreached report: the scripted moves whose landing no bound run settles (a
-`map_findsquare`, a coord kept in a varp; the build report lists them); a one-sided gate's stand level with
-its loc counted on the checked side (the Shantay Pass's free east way out priced as taking a pass); banker
-clusters across booths; unnamed underground areas outside the walker's `planeOf`.
+`map_findsquare`, a coord kept in a varp; the build report lists them); banker clusters across booths; unnamed
+underground areas outside the walker's `planeOf`.

@@ -313,9 +313,10 @@ export interface Gate {
      * ...)`, a step picked by the player's side; sources/gate-landings.ts): from each `stand` (a walkable
      * tile on land the loc is reached from) it lands on `landing`, walkable land. A stand may have several
      * (a dialogue choice), and a stand the move can't be derived from, or lands off land from, has none (the
-     * build report lists those stands).
+     * build report lists those stands). A `free` landing is one the script makes from that stand needing
+     * nothing, whatever `from` says of the stand's side (the Shantay Pass lets a player level with it out free).
      */
-    landings?: { stand: Tile; landing: Tile }[];
+    landings?: { stand: Tile; landing: Tile; free?: true }[];
     /**
      * On an object, the move deletes the loc or swaps it for one whose collision does not block
      * (sources/gate-landings.ts): once `requires` is met, the op makes the loc's tiles walkable for a while.
@@ -328,7 +329,7 @@ export interface Gate {
      * trigger's op, with the dialogue options picked on the way. A choice the script asks only on some paths (the
      * Shantay Pass poster, asked of a player holding no disclaimer) is answered when it is shown.
      */
-    act?: Act;
+    act?: Extract<Act, { kind: 'loc-op' }>;
     /** The script line that makes the check, as `file:line`. */
     source: string;
     /**
@@ -341,8 +342,8 @@ export interface Gate {
 }
 
 /**
- * How a crossing is done: the op the player sends. A connector's (its loc's op) and a gate's (its trigger's) are
- * implied by their rows, so those rows carry none, but for a gate whose move is behind dialogue (Gate.act).
+ * How a crossing is done: the op the player sends. A connector row's act is its loc's op and a gate row's its
+ * trigger's, so those rows carry none; a gate whose move is behind dialogue carries the choices in Gate.act.
  *
  * - `loc-op`: op `op` (1-5) of the loc config `loc`, then `choices`, the dialogue options picked in order (by their
  *   text), when the move is behind some;

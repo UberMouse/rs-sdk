@@ -264,13 +264,16 @@ describe('serializeWorld', () => {
             const file = join(dir, 'world.json');
             writeFileSync(file, serializeWorld(world));
             expect(loadWorld(file)).toEqual(world);
-            // An act, a roll, a gate's act with its choices and a transport's act, written and read back.
+            // An act, a roll, a gate's act with its choices, a free landing and a transport's act, written and
+            // read back.
+            const ladder = world.gates[1]!;
             const more: World = {
                 ...world,
                 gates: [
                     { ...world.gates[0]!, roll: world.crossings[1]!.roll! },
                     {
-                        ...world.gates[1]!,
+                        ...ladder,
+                        landings: [{ ...ladder.landings![0]!, free: true }],
                         act: { kind: 'loc-op', loc: 'miningguildladder', op: 1, choices: ['Yes, let me down.'] },
                     },
                 ],
@@ -359,7 +362,7 @@ describe('serializeWorld', () => {
             expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
         });
 
-        test("a gate's roll and act and a transport's act are checked too", () => {
+        test("a gate's roll, act and landings and a transport's act are checked too", () => {
             expect(
                 refused({ ...world, gates: [world.gates[0], { ...world.gates[1], roll: { stat: 'agility' } }] }),
             ).toBe(
@@ -376,6 +379,22 @@ describe('serializeWorld', () => {
             ).toBe(
                 'is not a world.json: gates[1]: a loc-op act needs a loc, an op 1-5, and choices, when it has them, as option texts: regenerate it with bun run world',
             );
+            // A gate's act is a loc-op of its own loc and its trigger's op.
+            for (const act of [
+                { kind: 'npc-op', npc: 'dwarf', op: 1 },
+                { kind: 'loc-op', loc: 'chefdoor', op: 1 },
+                { kind: 'loc-op', loc: 'miningguildladder', op: 2 },
+            ])
+                expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], act }] })).toBe(
+                    "is not a world.json: gates[1]: its act is not a loc-op of the row's loc and its trigger's op: regenerate it with bun run world",
+                );
+            const landing = world.gates[1]!.landings![0]!;
+            for (const landings of [[{ ...landing, free: false }], [{ stand: landing.stand }], 'here'])
+                expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], landings }] })).toBe(
+                    landings === 'here'
+                        ? 'is not a world.json: gates[1]: its landings is not a list: regenerate it with bun run world'
+                        : 'is not a world.json: gates[1]: a landing needs a stand and a landing tile, and free, when it has it, as true: regenerate it with bun run world',
+                );
             expect(refused({ ...world, transports: [{ ...world.transports[0], act: { kind: 'interface' } }] })).toBe(
                 'is not a world.json: transports[0]: an interface act needs a component: regenerate it with bun run world',
             );
@@ -408,7 +427,8 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // Format 11 was written before resource and processor sites had their nearest bank.
         writeFileSync(file, serializeWorld({ ...world, format: 11 }));
         expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
-        // Format 13 was written before a gate row could carry its act and a loc-op act its choices.
+        // Format 13 was written before a gate row could carry its act, a loc-op act its choices and a gate's
+        // landing that it is free.
         writeFileSync(file, serializeWorld({ ...world, format: 13 }));
         expect(() => loadWorld(file)).toThrow(`format 13, this code reads format ${WORLD_FORMAT}`);
     } finally {
@@ -455,6 +475,7 @@ describe('formatReport', () => {
             windows: [],
             other: [],
             skippedCheckers: [],
+            untimedQueues: [],
             landings: {
                 counts: { to: 0, landings: 0, opens: 0, underived: 0, windows: 0 },
                 underived: [],
@@ -701,8 +722,9 @@ describe('formatReport', () => {
             unclear: ['oploc1,maze (m.rs2:1): too many paths'],
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
+            untimedQueues: ['`weakqueue(ferry_ride, 0)` (f.rs2:7)'],
         };
-        expect(formatReport({ ...report, gates }).slice(-25)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-27)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -720,6 +742,8 @@ describe('formatReport', () => {
             '  oploc1,odd: other:`x = 1` (o.rs2:3)',
             'warning: 1 *_checker procs not read as tool checkers (a script testing one reads as unread):',
             '  ~god_staff_checker (c.rs2:51): returns a staff under a cape check',
+            'warning: 1 moving scripts queued with a delay or on the weak queue, run by the scan in the order queued and as if they ran:',
+            '  `weakqueue(ferry_ride, 0)` (f.rs2:7)',
             "gates the scan can't settle (unclear): 1",
             '  oploc1,maze (m.rs2:1): too many paths',
             'quest windows, kept out of the fill: 1',
@@ -732,7 +756,14 @@ describe('formatReport', () => {
         expect(
             failed({
                 ...report,
-                gates: { ...report.gates, unplaced: ['x'], other: ['y'], unclear: ['z'], skippedCheckers: ['w'] },
+                gates: {
+                    ...report.gates,
+                    unplaced: ['x'],
+                    other: ['y'],
+                    unclear: ['z'],
+                    skippedCheckers: ['w'],
+                    untimedQueues: ['v'],
+                },
             }),
         ).toBe(false);
     });

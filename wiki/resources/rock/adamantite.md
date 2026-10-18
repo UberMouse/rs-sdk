@@ -32,6 +32,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 2 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 139 ticks via 30 coins |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 2 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
 | [Lumbridge Swamp mine (Lumbridge Swamp)](../../places/lumbridge-swamp-mine.md) | `rock:lumbridge-swamp-mine:0` | (3240, 3164) | (3239, 3164) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 80 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `rock:tirannwn:0` | (2279, 3158) | (2279, 3158) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 312 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `rock:tirannwn:0` | (2279, 3158) | (2279, 3158) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 312 ticks via Regicide at stage 8 + 56 Agility |
 | [Wilderness](../../places/wilderness.md) | `rock:wilderness:1` | (3057, 3945) | (3057, 3945) | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 30 ticks |
 | [Wilderness](../../places/wilderness.md) | `rock:wilderness:3` | (3087, 3762) | (3087, 3763) | 7 | yes | no | 32 | - | Edgeville bank (Edgeville), 136 ticks |

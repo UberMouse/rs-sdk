@@ -78,6 +78,7 @@ import {
     scanGates,
     scanTrigger,
     triggerKey,
+    untimedQueues,
     type GateScanInput,
 } from './sources/gate-scan';
 import { toolCheckers } from './sources/conditions';
@@ -280,6 +281,11 @@ export interface BuildReport {
         other: string[];
         /** `*_checker` procs not read as tool checkers (sources/conditions.ts toolCheckers), with why. */
         skippedCheckers: string[];
+        /**
+         * Moving scripts queued with a delay other than 0 or on the weak queue, which the scan runs in the order
+         * queued and as if they ran (sources/gate-scan.ts untimedQueues).
+         */
+        untimedQueues: string[];
         /**
          * Gate rows on objects whose move is not a coord literal (sources/gate-landings.ts): counted by
          * outcome, the rows no path derives (Task 3's unreached list), stands whose landing is off land, and
@@ -972,6 +978,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     (e.requires ?? []).flat().flatMap(r => (r.startsWith('other:') ? [`${e.trigger}: ${r}`] : [])),
                 ),
                 skippedCheckers,
+                untimedQueues: untimedQueues(scan),
                 landings: {
                     counts: landings.counts,
                     underived: landings.underived,
@@ -1150,6 +1157,10 @@ export function formatReport(report: BuildReport): string[] {
         ...list(
             `warning: ${g.skippedCheckers.length} *_checker procs not read as tool checkers (a script testing one reads as unread):`,
             g.skippedCheckers,
+        ),
+        ...list(
+            `warning: ${g.untimedQueues.length} moving scripts queued with a delay or on the weak queue, run by the scan in the order queued and as if they ran:`,
+            g.untimedQueues,
         ),
         ...list(`gates the scan can't settle (unclear): ${g.unclear.length}`, g.unclear),
         ...list(`quest windows, kept out of the fill: ${g.windows.length}`, g.windows),

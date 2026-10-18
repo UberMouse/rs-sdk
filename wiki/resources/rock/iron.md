@@ -39,7 +39,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - | 30 coins | Ardougne South bank (East Ardougne), 139 ticks via 30 coins |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 7 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | 2 | yes | no | - | - | Al Kharid bank (Al Kharid), 63 ticks |
-| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via 1 Shantay pass (used up) + carry Metal key |
+| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
 | [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | 4 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
 | [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |
 | [Wilderness](../../places/wilderness.md) | `rock:wilderness:1` | (3057, 3945) | (3057, 3945) | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 30 ticks |

@@ -115,6 +115,76 @@ inv_del(inv, pass_ticket, 1);
 queue(passgate_enter, 0, 0);
 mes("In you go.");
 
+[oploc1,lowwall]
+if (coordz(coord) > coordz(loc_coord)) {
+    mes("You can't climb the wall from this side.");
+    return;
+}
+if (stat(agility) < 5) {
+    return;
+}
+p_telejump(movecoord(coord, 0, 0, 2));
+
+[oploc1,turnstile]
+if (coordx(coord) < coordx(loc_coord)) {
+    p_telejump(0_50_50_9_9);
+    return;
+}
+if (inv_total(inv, coins) < 5) {
+    return;
+}
+inv_del(inv, coins, 5);
+p_telejump(0_50_50_9_9);
+
+[oploc1,plank]
+if (%plank_fixed = 0) {
+    mes("The plank is broken.");
+    return;
+}
+p_telejump(0_50_50_4_4);
+
+[oploc1,longgate]
+if (stat(agility) < 5) {
+    return;
+}
+longqueue(queue_jump, 0, 0_50_50_12_12, 0);
+
+[oploc1,longstargate]
+if (stat(agility) < 5) {
+    return;
+}
+longqueue*(queue_jump2, 0, 0)(0_50_50_13_13, 1);
+
+[oploc1,stronggate]
+if (stat(agility) < 5) {
+    return;
+}
+strongqueue(queue_jump, 0, 0_50_50_14_14);
+
+[oploc1,stargate]
+if (stat(agility) < 5) {
+    return;
+}
+queue*(queue_jump2, 0)(0_50_50_15_15, 1);
+
+[oploc1,rubble]
+if (stat(agility) < 5) {
+    return;
+}
+queue(clear_rubble, 0, 0);
+
+[queue,queue_jump](coord $to)
+p_telejump($to);
+
+[queue,queue_jump2](coord $to, int $n)
+p_telejump($to);
+
+[queue,clear_rubble]
+if (loc_find(coord, rubble) = true) {
+    loc_del(50);
+}
+p_telejump(map_findsquare(0_50_50_2_2, 1, 1, 0));
+
 [queue,passgate_enter]
 p_teleport(0_1_1_20_40);
 p_telejump(movecoord(coord, 0, 0, -3));
@@ -193,6 +263,14 @@ const locConfigs = parseConfigs(
         '[steppingstone]',
         '[passgate]',
         '[lastword]',
+        '[lowwall]',
+        '[turnstile]',
+        '[plank]',
+        '[longgate]',
+        '[longstargate]',
+        '[stronggate]',
+        '[stargate]',
+        '[rubble]',
     ].join('\n'),
 );
 
@@ -448,17 +526,73 @@ describe('deriveGateLandings: rolls', () => {
     });
 });
 
+describe('deriveGateLandings: free landings', () => {
+    test('a stand level with the loc that the script gates stays checked: no landing is free', () => {
+        const { gate } = one(row('lowwall', 230, [['skill:agility:5']], { from: 'south' }));
+        expect(gate.landings).toEqual([
+            { stand: at(229, 100), landing: at(229, 102) },
+            { stand: at(230, 99), landing: at(230, 101) },
+            { stand: at(231, 100), landing: at(231, 102) },
+        ]);
+    });
+
+    test('one tile from every stand, but free from some: landings, not to, so the free stands can say so', () => {
+        const { gate, out } = one(row('turnstile', 240, [['coins:5']]));
+        const turnstile = coordTile('0_50_50_9_9');
+        expect(gate.to).toBeUndefined();
+        expect(gate.landings).toEqual(
+            around(240).map(stand => ({ stand, landing: turnstile, ...(stand.x < 240 ? { free: true } : {}) })),
+        );
+        expect(out.counts.landings).toBe(1);
+    });
+
+    test('a row every landing of which is free marks none: the bound run reads none of its requirement', () => {
+        // The plank's varp is no quest's: a bound run takes it both ways unnoted, so every stand's path needs nothing.
+        const { gate } = one(row('plank', 250, [['other:%plank_fixed = 1']]));
+        expect(gate.to).toEqual(coordTile('0_50_50_4_4'));
+        expect(gate.landings).toBeUndefined();
+    });
+});
+
 describe('deriveGateLandings: a move the trigger queues', () => {
     test('behind a check and an obj taken before the queue: from the gated side it lands where the queued script ends', () => {
         // The queued script jumps to its literal, then steps three south of it: a step from the player's tile,
         // which the scan reads as the crossing the row stands for. From the south the trigger steps out free.
         const inside = { ...coordTile('0_1_1_20_40'), z: coordTile('0_1_1_20_40').z - 3 };
+        // The stands level with the gate, which `from: north` takes for the gated side, step out free.
         const { gate } = one(row('passgate', 210, [['consume:pass_ticket:1']], { from: 'north' }));
         expect(gate.landings).toEqual([
-            { stand: at(209, 100), landing: at(209, 103) },
-            { stand: at(210, 99), landing: at(210, 102) },
+            { stand: at(209, 100), landing: at(209, 103), free: true },
+            { stand: at(210, 99), landing: at(210, 102), free: true },
             { stand: at(210, 101), landing: inside },
-            { stand: at(211, 100), landing: at(211, 103) },
+            { stand: at(211, 100), landing: at(211, 103), free: true },
+        ]);
+    });
+
+    test("each queue form's arguments are the queued script's: a long queue's logout action, and a `*` form's own list", () => {
+        // longqueue(name, delay, arg, logout), longqueue*(name, delay, logout)(args), strongqueue(name, delay, arg),
+        // queue*(name, delay)(args) (Player.ts processQueue drops a long queue's logout action before the script).
+        const forms: [string, string][] = [
+            ['longgate', '0_50_50_12_12'],
+            ['longstargate', '0_50_50_13_13'],
+            ['stronggate', '0_50_50_14_14'],
+            ['stargate', '0_50_50_15_15'],
+        ];
+        for (const [config, to] of forms) {
+            const { gate } = one(row(config, 260, [['skill:agility:5']]));
+            expect(gate.to).toEqual(coordTile(to));
+        }
+    });
+
+    test("a queued script's loc command leaves the trigger's loc alone: it runs with no active loc", () => {
+        // [queue,clear_rubble] deletes the loc it finds, not the rubble its trigger was on: no opens, and its move
+        // to a tile the engine finds at run time is underived.
+        const { gate, out } = one(row('rubble', 270, [['skill:agility:5']]));
+        expect(gate.opens).toBeUndefined();
+        expect(out.underived.map(u => u.reasons)).toEqual([
+            [
+                `\`p_telejump(map_findsquare(0_50_50_2_2, 1, 1, 0))\` (${lineOf('map_findsquare(0_50_50_2_2')}): \`map_findsquare(0_50_50_2_2, 1, 1, 0)\` is not known offline`,
+            ],
         ]);
     });
 

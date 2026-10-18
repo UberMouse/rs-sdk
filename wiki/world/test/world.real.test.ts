@@ -179,6 +179,22 @@ describe('the Shantay Pass, a move the trigger queues ([queue,shantay_pass_enter
         // The camp's gates open with the metal key held (quest_desertrescue.rs2:119).
         expect(reachOf('rock:desert-mining-camp:0')).toEqual([['consume:shantay_pass:1', 'item:metal_key:held']]);
     });
+
+    test('a stand level with the gate goes out free, as `from: north` alone would not say', () => {
+        // `coordz(coord) <= coordz(loc_coord)` steps the player three north scot-free (shantay_pass.rs2:70, :72).
+        const east = pass!.landings!.find(l => l.stand.x === 3306 && l.stand.z === pass!.tile.z);
+        expect(east).toEqual({
+            stand: { level: 0, x: 3306, z: 3116 },
+            landing: { level: 0, x: 3306, z: 3119 },
+            free: true,
+        });
+        // So the way back north to the Shantay chest takes no pass: only the camp's key.
+        expect(world.sites.find(s => s.id === 'rock:desert-mining-camp:0')?.nearest?.bank).toEqual({
+            site: 'bank:shantay-pass-bank-chest:0',
+            runTicks: 60,
+            requires: ['item:metal_key:held'],
+        });
+    });
 });
 
 describe('banks', () => {

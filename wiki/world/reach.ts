@@ -174,7 +174,9 @@ function startsOnSide(from: Side, wall: [Tile, Tile], tile: Tile, other: Tile): 
 
 /**
  * Whether a stand of a jump off a loc is on side `from`: false only when it is strictly on the other side
- * of the loc's tile on that side's axis (a wall side, `loc` or `far`, says nothing of an object's stands).
+ * of the loc's tile on that side's axis (a wall side, `loc` or `far`, says nothing of an object's stands). A
+ * stand level with the loc counts as on it, as most scripts check it; a landing the script lets through from
+ * one (Gate.landings `free`) is free all the same.
  */
 function standOnSide(from: Side, loc: Tile, stand: Tile): boolean {
     const compass = COMPASS[from];
@@ -527,8 +529,9 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
         } else if (g.landings) {
             const landings = g.landings;
             gateEdges.push(() => {
+                // A free landing is free whatever side its stand is on (a level stand the script lets through).
                 for (const l of landings)
-                    if (checked(l.stand)) addEdge('gate', l.stand, l.landing, gated, name, rolled);
+                    if (!l.free && checked(l.stand)) addEdge('gate', l.stand, l.landing, gated, name, rolled);
                     else addEdge('gate', l.stand, l.landing, FREE, name);
             });
         } else if (g.opens) {

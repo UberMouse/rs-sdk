@@ -194,6 +194,17 @@ describe('gate moves on objects', () => {
         expect(reach.setsAt(INNER)).toEqual([[]]);
     });
 
+    test('a `free` landing lands free from a stand level with the loc, which `from` takes for the checked side', () => {
+        const landing = at(0, 3221, 3222);
+        const level = at(0, 3204, 3210);
+        const free = fill(room(), {
+            gates: [rock({ landings: [{ stand: level, landing, free: true }], from: 'north' })],
+        });
+        expect(free.setsAt(INNER)).toEqual([[]]);
+        const checked = fill(room(), { gates: [rock({ landings: [{ stand: level, landing }], from: 'north' })] });
+        expect(checked.setsAt(INNER)).toEqual([['skill:agility:10']]);
+    });
+
     test('`landings` jump from each stand to its landing; another approach tile does not', () => {
         const unreachable = at(0, 3221, 3220);
         const reach = fill(room().block(at(0, 3204, 3210)), {

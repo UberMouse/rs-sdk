@@ -91,17 +91,37 @@ function crossingProblem(c: unknown): string | undefined {
     return isName(c.source) ? undefined : 'no source';
 }
 
+/** A gate trigger's op (`oploc1,x` -> 1); undefined for a use-item trigger. */
+const opOfTrigger = (trigger: unknown): number | undefined => {
+    const m = typeof trigger === 'string' ? trigger.match(/^(?:op|ap)loc([1-5]),/) : null;
+    return m ? Number(m[1]) : undefined;
+};
+
+/** What is wrong with a World.gates row's crossing-model fields (its roll, act and landings), or undefined. */
+function gateProblem(g: Parsed): string | undefined {
+    const roll = g.roll === undefined ? undefined : rollProblem(g.roll);
+    if (roll) return roll;
+    if (g.act !== undefined) {
+        const act = actProblem(g.act);
+        if (act) return act;
+        const a = g.act as Parsed;
+        if (a.kind !== 'loc-op' || a.loc !== g.loc || a.op !== opOfTrigger(g.trigger))
+            return "its act is not a loc-op of the row's loc and its trigger's op";
+    }
+    if (g.landings !== undefined) {
+        if (!Array.isArray(g.landings)) return 'its landings is not a list';
+        for (const l of g.landings)
+            if (!isObject(l) || !isTile(l.stand) || !isTile(l.landing) || (l.free !== undefined && l.free !== true))
+                return 'a landing needs a stand and a landing tile, and free, when it has it, as true';
+    }
+    return undefined;
+}
+
 /** The first malformed crossing-model field of `world`, as `<list>[<i>]: <what>`, or undefined. */
 function crossingModelProblem(world: World): string | undefined {
     const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
         ['crossings', world.crossings, crossingProblem],
-        [
-            'gates',
-            world.gates,
-            g =>
-                (g.roll === undefined ? undefined : rollProblem(g.roll)) ??
-                (g.act === undefined ? undefined : actProblem(g.act)),
-        ],
+        ['gates', world.gates, gateProblem],
         ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],
     ];
     for (const [list, items, problem] of rows)

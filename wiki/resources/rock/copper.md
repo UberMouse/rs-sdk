@@ -35,6 +35,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 2 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
 | [Kandarin](../../places/kandarin.md) | `rock:kandarin:7` | (2640, 3152) | (2640, 3152) | 2 | no | no | - | - | Yanille bank (Yanille), 55 ticks |
 | [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 3 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
-| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 4 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via 1 Shantay pass (used up) + carry Metal key |
+| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 4 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
 | [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | 9 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
 | [Morytania cave](../../places/morytania-cave.md) | `rock:morytania-cave:0` | (3419, 9644) | (3419, 9645) | 7 | no | no | - | unreached | - |

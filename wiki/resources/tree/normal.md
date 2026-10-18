@@ -475,14 +475,14 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Shilo Village quest dungeon](../../places/shilo-village-quest-dungeon.md) | `tree:shilo-village-quest-dungeon:1` | (2931, 9346) | (2931, 9347) | 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility | none |
 | [Shilo Village quest dungeon](../../places/shilo-village-quest-dungeon.md) | `tree:shilo-village-quest-dungeon:2` | (2932, 9355) | (2932, 9354) | 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility | none |
 | [Taverley Dungeon](../../places/taverley-dungeon.md) | `tree:taverley-dungeon:0` | (2893, 9831) | (2891, 9829) | 4 | no | no | - | - | Falador West bank (Falador), 99 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2197, 3174) | 282 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 332 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2197, 3174) | 282 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 332 ticks via Regicide at stage 8 + 56 Agility |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:1` | (2166, 3091) | (2165, 3091) | 1 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:2` | (2176, 3276) | (2176, 3276) | 19 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 284 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:2` | (2176, 3276) | (2176, 3276) | 19 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 284 ticks via Regicide at stage 8 + 56 Agility |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:3` | (2208, 3285) | (2208, 3285) | 4 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:4` | (2229, 3257) | (2224, 3255) | 40 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 258 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:4` | (2229, 3257) | (2224, 3255) | 40 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 258 ticks via Regicide at stage 8 + 56 Agility |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:5` | (2226, 3284) | (2226, 3283) | 2 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:6` | (2238, 3283) | (2237, 3283) | 1 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | 302 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 214 ticks via Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | 302 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 214 ticks via Regicide at stage 8 + 56 Agility |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:8` | (2247, 3281) | (2246, 3281) | 1 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:9` | (2266, 3284) | (2264, 3282) | 2 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:10` | (2269, 3371) | (2268, 3371) | 1 | no | no | - | unreached | - |
@@ -497,7 +497,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:19` | (2337, 3135) | (2337, 3133) | 55 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:20` | (2328, 3265) | (2328, 3264) | 4 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:21` | (2341, 3093) | (2343, 3094) | 2 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:22` | (2344, 3271) | (2344, 3270) | 1 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 140 ticks via Regicide at stage 13 |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:22` | (2344, 3271) | (2344, 3270) | 1 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 140 ticks |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:23` | (2347, 3486) | (2346, 3485) | 5 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:24` | (2349, 3368) | (2348, 3370) | 2 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:25` | (2350, 3468) | (2350, 3468) | 4 | no | no | - | unreached | - |
@@ -510,7 +510,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:32` | (2369, 3164) | (2368, 3164) | 1 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:33` | (2371, 3221) | (2370, 3221) | 6 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:34` | (2370, 3246) | (2369, 3246) | 7 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:35` | (2371, 3322) | (2371, 3322) | 11 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 81 ticks via Regicide at stage 13 |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:35` | (2371, 3322) | (2371, 3322) | 11 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 81 ticks |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:36` | (2370, 3469) | (2370, 3469) | 2 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:37` | (2370, 3070) | (2369, 3070) | 1 | no | no | - | unreached | - |
 | [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:38` | (2372, 3277) | (2371, 3277) | 2 | no | no | - | unreached | - |
@@ -518,11 +518,11 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Arandar (Tirannwn)](../../places/arandar.md) | `tree:arandar:1` | (2326, 3313) | (2325, 3313) | 6 | no | no | - | unreached | - |
 | [Arandar (Tirannwn)](../../places/arandar.md) | `tree:arandar:2` | (2345, 3272) | - | 1 | no | no | - | no stand | - |
 | [Arandar (Tirannwn)](../../places/arandar.md) | `tree:arandar:3` | (2350, 3305) | (2350, 3307) | 6 | no | no | - | unreached | - |
-| [Arandar (Tirannwn)](../../places/arandar.md) | `tree:arandar:4` | (2351, 3286) | (2349, 3285) | 2 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 118 ticks via Regicide at stage 13 |
-| [Elf Camp (Tirannwn)](../../places/elf-camp.md) | `tree:elf-camp:0` | (2188, 3265) | (2188, 3265) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 275 ticks via Regicide at stage 13 + 56 Agility |
-| [Isafdar (Tirannwn)](../../places/isafdar.md) | `tree:isafdar:0` | (2241, 3185) | (2239, 3184) | 112 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 278 ticks via Regicide at stage 13 + 56 Agility |
+| [Arandar (Tirannwn)](../../places/arandar.md) | `tree:arandar:4` | (2351, 3286) | (2349, 3285) | 2 | no | no | - | Regicide at stage 13 | Gnome Stronghold south bank (Tree Gnome Stronghold), 118 ticks |
+| [Elf Camp (Tirannwn)](../../places/elf-camp.md) | `tree:elf-camp:0` | (2188, 3265) | (2188, 3265) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 275 ticks via Regicide at stage 8 + 56 Agility |
+| [Isafdar (Tirannwn)](../../places/isafdar.md) | `tree:isafdar:0` | (2241, 3185) | (2239, 3184) | 112 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 278 ticks via Regicide at stage 8 + 56 Agility |
 | [Prifddinas (Tirannwn)](../../places/prifddinas.md) | `tree:prifddinas:0` | (2235, 3287) | (2235, 3287) | 8 | no | no | - | unreached | - |
-| [Tyras Camp (Tirannwn)](../../places/tyras-camp.md) | `tree:tyras-camp:0` | (2172, 3141) | (2175, 3139) | 6 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 356 ticks via Regicide at stage 13 + 56 Agility |
+| [Tyras Camp (Tirannwn)](../../places/tyras-camp.md) | `tree:tyras-camp:0` | (2172, 3141) | (2175, 3139) | 6 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 356 ticks via Regicide at stage 9 + 56 Agility |
 | [Varrock Sewers](../../places/varrock-sewers.md) | `tree:varrock-sewers:0` | (3253, 9915) | (3256, 9916) | 3 | yes | yes | - | - | Varrock East bank (Varrock), 75 ticks |
 | [Watchtower quest area](../../places/watchtower-quest-area.md) | `tree:watchtower-quest-area:0` | (2911, 4721) | (2909, 4721) | 53 | no | no | - | unreached | - |
 | [Watchtower quest area](../../places/watchtower-quest-area.md) | `tree:watchtower-quest-area:1` | (2924, 4687) | (2923, 4687) | 1 | no | no | - | unreached | - |

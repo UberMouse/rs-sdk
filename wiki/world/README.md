@@ -85,14 +85,22 @@ implied by their rows (the loc's op, the trigger), but a gate row whose move is 
 is answered when shown. A transport may carry one, and the sail and curated rows carry none. A gate row may carry a
 `roll` too.
 
-The gate scan and every bound run follow a `queue`, `strongqueue`, `weakqueue` or `longqueue` the trigger issues: the
-`[queue,name]` script runs once the trigger's script ends, however it ended, and its moves are the trigger's, under
-every condition the path took. That is the Shantay Pass's way in: its gate row lands each north stand south of the
-pass under `consume:shantay_pass:1` (the `inv_del` before the queue), so the desert behind it is reached. A death's
-respawn (`[queue,player_death]`) is not passage, nor is a move only through one (a `damage_player` queue). A
-one-sided gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`),
-so the Shantay Pass's east stand, which the script lets out free, is priced as taking a pass, and the desert mine's
-nearest bank (the pass's bank chest) reads `consume:shantay_pass:1`.
+The gate scan and every bound run follow a `queue`, `strongqueue`, `weakqueue` or `longqueue` the trigger issues
+that queues a moving `[queue,name]` script: it runs once the trigger's script ends, however it ended, and its moves
+are the trigger's, under every condition the path took. That is the Shantay Pass's way in: its gate row lands each
+north stand south of the pass under `consume:shantay_pass:1` (the `inv_del` before the queue), so the desert behind
+it is reached. Queued scripts run in the order queued, which is the engine's for equal delays, and a weakqueue is
+followed as if it ran (the engine drops one when a modal closes or the active script resumes); the build report lists
+each moving script queued with a delay or on the weak queue. A queued script has no active loc, so its loc commands
+leave the trigger's loc as it was. A death's respawn (`[queue,player_death]`) is not passage, nor is a move only
+through one (a `damage_player` queue).
+
+A one-sided gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`),
+as most scripts check it, but the scripts disagree (the Shantay Pass and the Barbarian Outpost pipe let a level stand
+through free, the Khazard low wall does not). So a gate row's landing is `free` when the bound run finds a path from
+that stand that needs nothing (unless every landing of the row is: the run then reads none of its requirement), and
+the fill crosses it free whatever its side: the Shantay Pass's east stand goes out free, and the desert mine's nearest
+bank (the pass's bank chest) needs only the camp's key.
 
 The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
 reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is

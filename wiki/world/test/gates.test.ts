@@ -11,6 +11,7 @@ import {
     reviewGates,
     scanGates,
     scanTrigger,
+    untimedQueues,
     type CuratedGate,
     type GateCandidate,
     type GateScanInput,
@@ -649,8 +650,21 @@ inv_del(inv, ticket, 1);
 queue(passgate_enter, 0, 0);
 
 [queue,passgate_enter]
+mes("You go through the gate.");
 p_teleport(0_50_50_30_12);
 p_telejump(movecoord(coord, 0, 0, -3));
+
+[oploc1,slowgate]
+if (stat(agility) < 5) {
+    return;
+}
+queue(passgate_enter, 2, 0);
+
+[oploc1,weakgate]
+if (stat(agility) < 5) {
+    return;
+}
+weakqueue*(passgate_enter, 0)(0);
 
 [oploc1,deathpit]
 if (stat(agility) < 5) {
@@ -709,13 +723,22 @@ if (stat(agility) < 5) {
         scan: proposalDigest(pass!),
     });
 
-    test('a choice the gate entry names is a string its source file writes', () => {
+    test("a choice the gate entry names is an option a dialogue in the trigger's file offers", () => {
         expect(reviewGates([pass!], [entry(['Yes, let me through.'])], files).invalid).toEqual([]);
-        expect(reviewGates([pass!], [entry(['Yes please.'])], files).invalid).toEqual([
-            'oploc1,passgate (quests/pass.rs2:5): choice "Yes please." is not a string quests/pass.rs2 writes',
-        ]);
+        // Not a string the file writes; a message it shows; the dialogue's header, which is no option.
+        for (const choice of ['Yes please.', 'You go through the gate.', 'Go in?'])
+            expect(reviewGates([pass!], [entry([choice])], files).invalid).toEqual([
+                `oploc1,passgate (quests/pass.rs2:5): choice ${JSON.stringify(choice)} is not an option a dialogue in quests/pass.rs2 offers`,
+            ]);
         expect(reviewGates([pass!], [entry([])], files).invalid).toEqual([
             'oploc1,passgate (quests/pass.rs2:5): choices is empty',
+        ]);
+    });
+
+    test('a moving script queued with a delay, or on the weak queue, is reported: the scan runs it as if at once', () => {
+        expect(untimedQueues(input)).toEqual([
+            '`queue(passgate_enter, 2)` (quests/pass.rs2:25)',
+            '`weakqueue(passgate_enter, 0)` (quests/pass.rs2:31)',
         ]);
     });
 

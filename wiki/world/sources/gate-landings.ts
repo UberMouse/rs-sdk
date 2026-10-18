@@ -10,8 +10,15 @@
 //   `movecoord(loc_coord, ...)`, or a tile each of several stands' walks ends on); off land, each stand is
 //   reported and the row is underived;
 // - `landings`, when a landing follows the stand (`movecoord(coord, ...)`, a step picked by the player's
-//   side), or some stand gives none: each stand with the landings it gives that are walkable land; the
-//   stands landing off land (offLand) and those giving no landing (unlanded) are reported;
+//   side), some stand gives none, or some stand's landing is free and another's is not: each stand with the
+//   landings it gives that are walkable land; the stands landing off land (offLand) and those giving no landing
+//   (unlanded) are reported. A landing is `free` when a path that needs nothing (gate-scan.ts LandingOutcome)
+//   lands there from that stand: the side a script lets through, which the row's `from` may not say (the
+//   Shantay Pass lets a player level with it out free, areas/area_alkharid/scripts/shantay_pass.rs2:70, where
+//   `from: north` takes the level stands for the checked side). Every free landing is marked, but none when
+//   all of the row's are: then the bound run reads none of the requirement (a varp only gates.ts reads, the
+//   monastery ladder's %prayer_guild, areas/monastery/scripts/prayer_guild.rs2:6), so it says nothing of the
+//   stands;
 // - `opens`, when no landing is derived and a path deleted the loc or swapped it for one that doesn't
 //   block (the Kharazi jungle's `loc_change`, quests/quest_legends/scripts/jungle_tree.rs2:135, after which
 //   it teleports the player two tiles on by a value proc, :141, :161, which is not read). LOC_DEL and
@@ -324,14 +331,18 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
         const landed = outcomes.flatMap(({ stand, o }) => (o.k === 'landing' ? [{ stand, ...o }] : []));
         // One way the row reads, by the section header's order: a landing, then an opening.
         if (landed.length) {
-            // Each landing once per stand, with the line that lands there.
+            // Each landing once per stand, with the line that lands there; free when a path that needs nothing
+            // lands there from that stand (header), unless every landing is.
+            const keyOf = (l: (typeof landed)[number]) => `${tileKey(l.stand)} ${tileKey(l.tile)}`;
+            const freeKeys = new Set(landed.flatMap(l => (l.free ? [keyOf(l)] : [])));
             const seen = new Set<string>();
             const unique = landed.filter(l => {
-                const key = `${tileKey(l.stand)} ${tileKey(l.tile)}`;
+                const key = keyOf(l);
                 if (seen.has(key)) return false;
                 seen.add(key);
                 return true;
             });
+            const isFree = (l: (typeof landed)[number]) => freeKeys.size < unique.length && freeKeys.has(keyOf(l));
             const offLandOf = (l: (typeof landed)[number]): OffLandLanding => ({
                 trigger: g.trigger,
                 loc: g.loc,
@@ -341,12 +352,14 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
                 at: l.at,
             });
             // One tile from every stand: a fixed landing, or one the player's tile led to but every stand
-            // shares (a walk to a fixed start first, as the monkey bars do).
+            // shares (a walk to a fixed start first, as the monkey bars do). A row some of whose landings are
+            // free keeps them as landings, which say which.
             const [one] = unique;
             if (
                 byStand.every(b => b.outcomes.some(o => o.k === 'landing')) &&
                 unique.every(l => tileKey(l.tile) === tileKey(one!.tile)) &&
-                (stands.length > 1 || unique.every(l => !l.player))
+                (stands.length > 1 || unique.every(l => !l.player)) &&
+                !unique.some(isFree)
             ) {
                 if (!onLand(one!.tile)) {
                     offLand.push(...unique.map(offLandOf));
@@ -357,7 +370,8 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
             }
             const landings: NonNullable<Gate['landings']> = [];
             for (const l of unique)
-                if (onLand(l.tile)) landings.push({ stand: l.stand, landing: l.tile });
+                if (onLand(l.tile))
+                    landings.push({ stand: l.stand, landing: l.tile, ...(isFree(l) ? { free: true } : {}) });
                 else offLand.push(offLandOf(l));
             if (!landings.length) return fail(['every landing is off walkable land']);
             landings.sort((a, b) => byTile(a.stand, b.stand) || byTile(a.landing, b.landing));

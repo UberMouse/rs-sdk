@@ -12,9 +12,14 @@
 //   the loc or the player) crosses the loc. Moves inside a random event, the ring of life, equipping or a
 //   death (INCIDENTAL) are not passage.
 // - a `queue*` command names a `[queue,name]` script (GateScanInput.queues) the engine runs once the
-//   trigger's script ends, however it ended: each path runs the scripts it queued then, in order, and their
+//   trigger's script ends, however it ended: each path runs the moving scripts it queued then, and their
 //   moves are the trigger's, under every condition the path took (the Shantay Pass's way in,
-//   areas/area_alkharid/scripts/shantay_pass.rs2:97, moves in [queue,shantay_pass_enter], :103).
+//   areas/area_alkharid/scripts/shantay_pass.rs2:97, moves in [queue,shantay_pass_enter], :103). They run in
+//   the order queued, which is the engine's for equal delays (Player.ts processQueue runs one once its delay
+//   is spent); a weakqueue is followed as if it ran, though the engine drops one when a modal closes or the
+//   active script resumes (Player.ts closeModal, executeScript). The build reports each moving script queued
+//   with a delay other than 0 or on the weak queue (untimedQueues). processQueue starts a queued script with
+//   no active loc, so its loc commands leave the trigger's loc as it was.
 // - a condition on a quest varp, `%qp`, `stat`/`stat_base`, `inv_total(inv|worn, obj)`,
 //   `inv_totalcat(inv|worn, category)`, `inv_getobj(worn, slot)`, `last_useitem`, `map_members`, a
 //   loadout proc (gates.ts LOADOUT_PROCS) or a tool checker's result against null (`~pickaxe_checker`,
@@ -102,7 +107,11 @@ const PAYS = /\binv_del\s*\(/;
 const CALL = /[@~][a-z0-9_]+|\bjump\(\s*([a-z0-9_]+)/g;
 /** The commands that queue a script for the player (handlers/PlayerOps.ts); `.queue`, the other player's, is not one. */
 const QUEUE_COMMANDS: ReadonlySet<string> = new Set(['queue', 'strongqueue', 'weakqueue', 'longqueue']);
-const QUEUES = /(?<![\w.])(?:queue|strongqueue|weakqueue|longqueue)\s*\*?\(\s*([a-z0-9_]+)/g;
+/** A queue command, its `*` form too: the command, the script it queues, and its delay as written. */
+const QUEUES = new RegExp(
+    `(?<![\\w.])(${[...QUEUE_COMMANDS].join('|')})\\s*\\*?\\(\\s*([a-z0-9_]+)\\s*(?:,\\s*([^,()]*))?`,
+    'g',
+);
 /** A random draw (an agility or thieving roll, a chance): it goes both ways and gates nothing. */
 const RANDOM = /\b(?:random|randominc|stat_random)\s*\(|~random_range\b|~chance\b/;
 
@@ -205,13 +214,22 @@ export interface SeenRoll {
  * requirements can take (gateLander): lands the player on a tile (`player` when the tile follows the
  * stand; `move` the last move the scan counts outside every call it counts as one move, Path.outer; `roll` the
  * roll it succeeded at, or `unrolled` why a roll it is behind can't be taken: two on the path, or bounds not
- * known offline), opens the loc, or can't be
+ * known offline; `free` when the path needs nothing, a side the script lets through), opens the loc, or can't be
  * told offline (`why`, with the construct and its script line). A path that failed a roll is a
  * `fail`: where it leaves the player (`tile`, absent when no command moved them), and the ticks and damage it
  * takes (Path.ticks, Path.damage), or why those are not known.
  */
 export type LandingOutcome =
-    | { k: 'landing'; tile: Tile; player: boolean; at: string; move: string; roll?: SeenRoll; unrolled?: string }
+    | {
+          k: 'landing';
+          tile: Tile;
+          player: boolean;
+          at: string;
+          move: string;
+          roll?: SeenRoll;
+          unrolled?: string;
+          free?: true;
+      }
     | { k: 'opens'; at: string }
     | { k: 'underived'; why: string }
     | { k: 'fail'; roll: SeenRoll; tile?: Tile; ticks: number; damage: number }
@@ -227,7 +245,7 @@ const returns = (x: Stmt | undefined, b: string): boolean =>
 /** The callables a body's code calls, by `@label` / `~proc`, and the queue scripts it queues, by `queue,name`. */
 const calls = (code: string): string[] => [
     ...[...code.matchAll(CALL)].map(m => (m[1] ? `@${m[1]}` : m[0])),
-    ...[...code.matchAll(QUEUES)].map(m => `queue,${m[1]}`),
+    ...[...code.matchAll(QUEUES)].map(m => `queue,${m[2]}`),
 ];
 
 // ---- Conditions ---------------------------------------------------------------------------------------
@@ -242,6 +260,11 @@ type Cond =
     | { k: 'coins'; n: number; text: string }
     /** Read, and says only that the player lacks something: a path for that player, no requirement. */
     | { k: 'free'; text: string }
+    /**
+     * A bound run's condition taken the way a requirement other than `members` meets, the requirement in
+     * `passing`: the path needs something.
+     */
+    | { k: 'met'; text: string }
     /** About a subject the scan reads, with a value it can't: other:<text>. */
     | { k: 'other'; text: string }
     /** The side of the loc the player stands on (Side), or the condition when it names none. */
@@ -907,8 +930,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
 
     /**
      * What a condition the walker can't settle means, taken `want` way (meaning): in a bound run, a requirement
-     * goes into `passing` rather than onto the path, as that is all `consistent` reads of it, and paths that
-     * met the same condition by different requirements (an axe held or worn) run on as one.
+     * goes into `passing` rather than onto the path, as that is all `consistent` reads of it, and leaves only a
+     * `met` mark (none for `members`, met on a members world), so paths that met the same condition by different
+     * requirements (an axe held or worn) run on as one.
      */
     const classify = (e: Expr, want: boolean, env: ReadonlyMap<string, Value>, file: string): Cond[][] => {
         const ways = meaning(e, want, env, file);
@@ -918,7 +942,15 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             const req = c.k === 'req' ? c.req : `coins:${c.n}`;
             if (!bound.passing.get(c.text)?.includes(req)) push(bound.passing, c.text, req);
         }
-        return ways.map(w => w.filter(c => c.k !== 'req' && c.k !== 'coins'));
+        return ways.map(w =>
+            w.flatMap((c): Cond[] =>
+                c.k === 'req' && c.req === 'members'
+                    ? []
+                    : c.k === 'req' || c.k === 'coins'
+                      ? [{ k: 'met', text: c.text }]
+                      : [c],
+            ),
+        );
     };
 
     /**
@@ -1239,8 +1271,10 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                 return { live: [reposition({ ...p, moved: true, ...counts }, v)], ended: [] };
             }
             // LOC_DEL removes the active loc and LOC_CHANGE swaps it in place, keeping its shape (LocOps.ts):
-            // the loc's tiles are open once nothing there blocks.
+            // the loc's tiles are open once nothing there blocks. A queued script's active loc is one it found
+            // (`loc_find`), never the trigger's.
             if (bound && (name === 'loc_del' || name === 'loc_change')) {
+                if (stack[0]?.startsWith('queue,')) return { live: [p], ended: [] };
                 const into = name === 'loc_change' && raw[0] ? evaluate(raw[0], p.env, file) : undefined;
                 const opens =
                     name === 'loc_del' ||
@@ -1269,14 +1303,13 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                     ended: [],
                 };
             }
-            // A queued script that can move the player (or, in a bound run, change a loc) runs once the trigger
-            // ends (runQueued). Its arguments follow the name and delay; a long queue's logout action, its
-            // fourth argument or the third of a `*` form, is not one (Player.ts processQueue).
+            // A queued script that can move the player runs once the trigger ends (runQueued). Its arguments
+            // follow the name and delay; a long queue's logout action, its fourth argument or the third of a `*`
+            // form, is not one (Player.ts processQueue).
             if (QUEUE_COMMANDS.has(name)) {
                 const target = nameOf(raw[0], p.env);
                 const call = target && `queue,${target}`;
-                if (!call || !byCall.has(call) || !(moves(call) || (bound && changingLoc.has(call))))
-                    return { live: [p], ended: [] };
+                if (!call || !byCall.has(call) || !moves(call)) return { live: [p], ended: [] };
                 const starred = s.text.startsWith(`${name}*`);
                 const given = name === 'longqueue' ? (starred ? raw.slice(3) : raw.slice(2, 3)) : raw.slice(2);
                 const queued = { call, args: given.map(a => evaluate(a, p.env, file)) };
@@ -1363,7 +1396,8 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             }
             const env = new Map(script.params.map((param, i) => [param, next.args[i] ?? unknown(param)]));
             if (bound) env.set(POS, p.env.get(POS)!);
-            const flow = block(script.body, [{ ...p, env, queued: rest }], script.file, [next.call]);
+            // It starts outside every call the scan counts as one move, wherever the trigger's path ended.
+            const flow = block(script.body, [{ ...p, env, queued: rest, within: 0 }], script.file, [next.call]);
             return [...flow.live, ...flow.ended];
         };
 
@@ -1391,8 +1425,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             };
             const flow = block(script.body, [start], script.file, []);
             let ends = [...flow.live, ...flow.ended];
-            // The scripts each path queued, once the trigger has ended however it ended, first queued first; one
-            // a queued script queues runs after them. MAX_DEPTH rounds, so queues that queue each other end.
+            // The scripts each path queued, once the trigger has ended however it ended, in the order queued (the
+            // header); one a queued script queues runs after them. MAX_DEPTH rounds, so queues that queue each
+            // other end.
             for (let round = 0; ends.some(p => p.queued?.length); round++) {
                 if (round === MAX_DEPTH) {
                     stop(`${trigger.file}:${trigger.line}: its queued scripts queue more past ${MAX_DEPTH} rounds`);
@@ -1472,12 +1507,54 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             p => p.move && (to === undefined || p.move.tos.includes(to)) && !failed(p) && takes(p),
         );
         return [
-            ...kept.map(landingOf),
+            ...kept.map(p => {
+                const o = landingOf(p);
+                return o.k === 'landing' && needsNothing(p) ? { ...o, free: true as const } : o;
+            }),
             ...run.ends.filter(p => failed(p) && takes(p)).flatMap(fallOf),
             ...run.why.map((why): LandingOutcome => ({ k: 'underived', why })),
         ];
     };
-    return { bodyMoves, run: runTrigger, land };
+    /**
+     * The queue commands of `scripts` that queue a moving script with a delay other than 0, or on the weak
+     * queue, as `` `command(script, delay)` (file:line) ``: the walker runs those in the order queued and the
+     * weak ones as if they ran (the header), which the engine may not.
+     */
+    const untimedQueues = (scripts: readonly { file: string; line: number; body: string }[]): string[] =>
+        scripts.flatMap(t => {
+            const code = codeOf(t.body);
+            return [...code.matchAll(QUEUES)].flatMap(m => {
+                if (!moves(`queue,${m[2]}`) || (m[1] !== 'weakqueue' && m[3]?.trim() === '0')) return [];
+                const line = t.line + code.slice(0, m.index).split('\n').length - 1;
+                return [`\`${m[1]}(${m[2]}, ${m[3]?.trim() ?? ''})\` (${t.file}:${line})`];
+            });
+        });
+    return { bodyMoves, run: runTrigger, land, untimedQueues };
+}
+
+/**
+ * The queue commands in the triggers and callables that queue a moving script with a delay other than 0, or on
+ * the weak queue (gate-scan.ts header), as `` `command(script, delay)` (file:line) ``, sorted: the build reports
+ * them.
+ */
+export const untimedQueues = (input: GateScanInput): string[] =>
+    gateWalker(input)
+        .untimedQueues([...input.triggers, ...input.callables, ...(input.queues ?? [])])
+        .sort(cmp);
+
+/**
+ * Whether a bound run's path needs nothing an account on a members world lacks, whatever its quests: it met no
+ * requirement (`met`), took no roll and no side left unsettled, and pays and consumes nothing. A condition a
+ * bound run doesn't read goes both ways unnoted (meaning), so a path past one (a pipe in use,
+ * skill_agility/scripts/barbarian_course.rs2:139) is judged by the rest.
+ */
+function needsNothing(p: Path): boolean {
+    const s = settle(p.conds, p.fare, p.taken);
+    return (
+        p.conds.every(c => c.k === 'free' || c.k === 'quest') &&
+        s.requires.every(r => r === 'members') &&
+        !s.before.length
+    );
 }
 
 /** What a bound run's path that made the move does (LandingOutcome). */
@@ -1822,6 +1899,47 @@ export function proposalDigest(c: GateCandidate): string {
     return h.toString(16).padStart(8, '0');
 }
 
+/** A dialogue-option call: `~p_choice2(...)`, `~p_choice3_header(...)`, `@multi4(...)`, by its option count. */
+const OPTION_CALL = /(?:~p_choice|@multi)([2-5])(?:_header)?\s*\(/g;
+
+/** The top-level arguments of the call whose list opens just before `from` in `code`, as written. */
+function argsAt(code: string, from: number): string[] {
+    const args: string[] = [];
+    let [depth, quoted, start] = [0, false, from];
+    for (let i = from; i < code.length; i++) {
+        const ch = code[i]!;
+        if (quoted) {
+            if (ch === '\\') i++;
+            else if (ch === '"') quoted = false;
+        } else if (ch === '"') quoted = true;
+        else if (ch === '(') depth++;
+        else if (ch === ')') {
+            if (depth === 0) return [...args, code.slice(start, i).trim()];
+            depth--;
+        } else if (ch === ',' && depth === 0) {
+            args.push(code.slice(start, i).trim());
+            start = i + 1;
+        }
+    }
+    return args;
+}
+
+/**
+ * The option texts the dialogue-option calls in `code` offer: each call's strings in its option places (text,
+ * then what picking it returns or jumps to, chat.rs2 `[proc,p_choice2]`), the header of a `_header` form left out.
+ */
+export function optionTexts(code: string): Set<string> {
+    const out = new Set<string>();
+    for (const m of code.matchAll(OPTION_CALL)) {
+        const args = argsAt(code, m.index + m[0].length);
+        for (let i = 0; i < Number(m[1]); i++) {
+            const a = args[2 * i];
+            if (a && /^"(?:[^"\\]|\\.)*"$/.test(a)) out.add(a.slice(1, -1));
+        }
+    }
+    return out;
+}
+
 /** A candidate's gated requirement sets on one move: the minimal sets of its options that need something. */
 export const gatedSets = (move: GateMove | undefined): string[][] =>
     minimalSets((move?.options ?? []).filter(o => o.requires.length).map(o => o.requires));
@@ -1837,6 +1955,12 @@ export function reviewGates(
     files?: ReadonlyMap<string, string>,
 ): GateReview {
     const byTrigger = new Map(candidates.map(c => [c.trigger, c]));
+    const options = new Map<string, Set<string>>();
+    const optionsIn = (file: string): Set<string> => {
+        let o = options.get(file);
+        if (!o) options.set(file, (o = optionTexts(files?.get(file) ?? '')));
+        return o;
+    };
     const lines = new Map<string, string[]>();
     const lineAt = (file: string, n: number): string | undefined => {
         let ls = lines.get(file);
@@ -1889,9 +2013,11 @@ export function reviewGates(
         for (const t of e.at ?? []) if (!isCoordLiteral(t)) fail(`at ${t} is not a coord literal`);
         if (e.choices && !/^(?:op|ap)loc[1-5],/.test(e.trigger)) fail('choices follow an op 1-5 of the loc');
         if (e.choices && !e.choices.length) fail('choices is empty');
+        // A choice is an option a dialogue-option call in the trigger's file offers.
+        const file = c.source.replace(/:\d+$/, '');
         for (const choice of e.choices ?? [])
-            if (files && at && !files.get(at[1]!)?.includes(`"${choice}"`))
-                fail(`choice ${JSON.stringify(choice)} is not a string ${at[1]} writes`);
+            if (files && !optionsIn(file).has(choice))
+                fail(`choice ${JSON.stringify(choice)} is not an option a dialogue in ${file} offers`);
         const targets = e.to === undefined ? [CROSS] : typeof e.to === 'string' ? [e.to] : Object.values(e.to);
         for (const t of [...targets, ...(typeof e.to === 'object' ? Object.keys(e.to) : [])])
             if (t !== CROSS && !isCoordLiteral(t)) fail(`to ${t} is not a coord literal`);

@@ -105,8 +105,8 @@
 | [Varrock (Misthalin)](../places/varrock.md) | `fire:varrock:3` | (3271, 3380) | (3272, 3380) | Fireplace 1 | yes | - | Varrock East bank (Varrock), 33 ticks |
 | [Varrock (Misthalin)](../places/varrock.md) | `fire:varrock:4` | (3275, 3500) | (3276, 3500) | Fireplace 1 | yes | - | Varrock East bank (Varrock), 64 ticks |
 | [Rantz's cave](../places/rantzs-cave.md) | `fire:rantzs-cave:0` | (2647, 9395) | (2647, 9395) | Fire 1 | no | - | Yanille bank (Yanille), 111 ticks |
-| [Elf Camp (Tirannwn)](../places/elf-camp.md) | `fire:elf-camp:0` | (2194, 3254) | (2194, 3254) | Fire 1 | no | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 272 ticks via Regicide at stage 13 + 56 Agility |
-| [Elf Camp (Tirannwn)](../places/elf-camp.md) | `fire:elf-camp:1` | (2204, 3250) | (2204, 3250) | Fire 1 | no | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 267 ticks via Regicide at stage 13 + 56 Agility |
+| [Elf Camp (Tirannwn)](../places/elf-camp.md) | `fire:elf-camp:0` | (2194, 3254) | (2194, 3254) | Fire 1 | no | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 272 ticks via Regicide at stage 8 + 56 Agility |
+| [Elf Camp (Tirannwn)](../places/elf-camp.md) | `fire:elf-camp:1` | (2204, 3250) | (2204, 3250) | Fire 1 | no | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 267 ticks via Regicide at stage 8 + 56 Agility |
 | [Troll caves](../places/troll-caves.md) | `fire:troll-caves:0` | (2923, 10033) | (2923, 10033) | Fire 1 | no | Troll Stronghold at stage 20 + 15 Agility | Falador West bank (Falador), 249 ticks via Troll Stronghold at stage 20 + 15 Agility |
 | [Tutorial Island](../places/tutorial-island.md) | `fire:tutorial-island:0` | (3089, 3121) | (3089, 3120) | Fireplace 1 | yes | unreached | - |
 | [Tutorial Island](../places/tutorial-island.md) | `fire:tutorial-island:1` | (3095, 3102) | (3095, 3101) | Fireplace 1 | yes | unreached | - |
