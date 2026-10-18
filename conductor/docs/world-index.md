@@ -226,7 +226,37 @@ Each phase is usable when it lands.
 1. **Extract, classify, place.** `areas.ts` first draft; features, sites and areas in
    `world.json`; `places/`, `resources/`, `services/` pages; NPC and shop pages on exact sites
    (fixes the wrong names).
-2. **Reachability and travel.** Generated connectors, `gates.ts` and transports, the flood fill,
-   access flags on every site; `connectors.ts` and `banks.ts` become views.
+2. **Reachability and travel (built).** Generated connectors, `gates.ts` and transports, the flood fill,
+   access flags on every site; `connectors.ts` and `banks.ts` become views. See "Phase 2 as built".
 3. **Rate model and methods.** Gathering, processing and thieving first, then combat (formulas plus
    player profile); `training/` pages, `query.ts`, calibration against `stats.ts`.
+
+## Phase 2 as built
+
+Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written reference is
+`wiki/world/README.md`. Where it differs from the design above:
+
+- **Requirement sets are canonical.** `wiki/world/requirements.ts` merges a requirement another in
+  the set implies and drops a set another dominates (`canonicalSet`, `dominates`); coins and consume
+  are summed per crossing, so a way with two tolls needs `coins:20`; quest stages merge into the
+  strongest. The fill keeps at most `MAX_SETS` sets per tile (`reach.ts`).
+- **Gates are scanned, then reviewed.** `sources/gate-scan.ts` finds every door or gate trigger that
+  moves the player, and `gate-list.ts` confirms or rejects each, so the build fails on an unreviewed
+  one; `gates.ts` holds the curated transports and quest overrides. Transports cover ships, carts
+  and sleds (`sources/transports.ts`).
+- **Connectors are derived, including trapdoors, manholes and gangplanks**, with `thenOp`,
+  `relative` and one-way rows (`sources/connectors.ts`).
+- **An npc cluster's reach** is that of the tiles beside it with a wall check (`besideCluster`,
+  `place.ts`), not the nearest walkable tile.
+- **Distances are run ticks.** `nearest.{bank,furnace,range,anvil}` (`distance.ts`) counts run ticks
+  only, bots always run, with a fixed `CROSSING_TICKS` per crossing kind.
+- **The conductor views are generated.** `conductor/lib/connectors.ts` builds its table from
+  `world.json` (loaded once by `lib/world-index.ts`, which fails loudly when stale), with curated
+  `OVERRIDES` (names, hazards) and `LEFT_OUT`; it is not hand-curated. `lib/banks.ts` `nearestBank`
+  picks the fewest run ticks over the graph, not the straight line. The walker plans over that
+  graph (`lib/walk-graph.ts`) and crosses only doors it can open.
+
+Known gaps, listed by the build's unreached report: the Shantay Pass queued move (the desert is
+unreached); unconditional scripted moves outside `ladders+stairs/` (the Mage Arena ladder, the Gnome
+Stronghold gate, the lighthouse); banker clusters across booths; unnamed underground areas outside
+the walker's `planeOf`.
