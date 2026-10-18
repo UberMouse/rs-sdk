@@ -79,14 +79,16 @@ the loc's config has, or use-item) and npc op with a trigger, placed on or one t
 trigger's script line and what the gate scan made of it: a gate candidate and its kind (from `gate-list.ts`, or
 the scan's proposal for an npc op), an unconditional move, or no move found (these last on one line). A flood
 that takes 32768 tiles stops and calls its pocket open: a large unreached landmass, or an upper floor or an
-instanced room whose empty tiles round it the collision data lists as walkable land.
+instanced room whose empty tiles round it the collision data lists as walkable land; its hints are only
+those of the tiles taken.
 
 It is warnings only; `--check` leaves it out. Work it as a curation to-do list, a pocket at a time: read its
 hints' scripts, then either add the missing connector, gate or transport (the derivation in
 `wiki/world/sources/`, or a row in `gate-list.ts` / `gates.ts`), or, when nobody playing walks there, add an
 entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
-no unreached site matches, so an entry goes once its sites are reached or gone. Some areas' `notes` still say
+that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
+reached or gone. Some areas' `notes` still say
 why their sites are unreached (the desert behind the Shantay Pass, the Gnome Stronghold, the lighthouse, the
 Mage Arena cellar): those notes go as their pockets are reached.
 

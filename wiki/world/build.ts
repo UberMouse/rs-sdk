@@ -175,7 +175,7 @@ export interface Pocket {
     sites: Unreached[];
     /** Tiles the flood took. */
     size: number;
-    /** The flood stopped at POCKET_CAP tiles: the sites are on a large unreached landmass. */
+    /** The flood stopped at POCKET_CAP tiles: the sites are on a large unreached landmass, and the hints are only those of the tiles taken. */
     open: boolean;
     /** The nearest of its sites' nearest reached tiles (Unreached.nearest), `off` Chebyshev from `site`'s tile. */
     nearest: { tile: Tile; site: string; off: number } | null;
@@ -283,7 +283,9 @@ export interface BuildReport {
         pockets: Pocket[];
         /** Unreached sites areas.ts EXPECTED_UNREACHED leaves out. */
         expected: number;
-        /** EXPECTED_UNREACHED entries no unreached site matches, as `area <id> (<source>)`: an error. */
+        /** EXPECTED_UNREACHED entries naming no such area or site, as `area <id> (<source>)`: an error. */
+        invalid: string[];
+        /** EXPECTED_UNREACHED entries of an existing area or site no unreached site matches, named the same: an error. */
         stale: string[];
     };
 }
@@ -300,6 +302,7 @@ export const failed = (r: BuildReport): boolean =>
     r.gates.drifted.length > 0 ||
     r.gates.invalid.length > 0 ||
     r.gates.unnamed.length > 0 ||
+    r.unreached.invalid.length > 0 ||
     r.unreached.stale.length > 0;
 
 export interface BuildInput {
@@ -394,12 +397,15 @@ const expectedName = (e: ExpectedUnreached): string =>
 
 /**
  * The unreached sites areas.ts EXPECTED_UNREACHED does not match (an entry by site id, or by an area on the
- * site's area path), how many it does, and the entries that match none: stale, an error.
+ * site's area path), how many it does, the entries naming no area or site in `known`: invalid, and the other
+ * entries that match no unreached site: stale. Both are errors.
  */
 export function expectedUnreached(
     unreached: readonly Unreached[],
     expected: readonly ExpectedUnreached[],
-): { left: Unreached[]; expected: number; stale: string[] } {
+    known: { areas: ReadonlySet<string>; sites: ReadonlySet<string> },
+): { left: Unreached[]; expected: number; invalid: string[]; stale: string[] } {
+    const exists = (e: ExpectedUnreached): boolean => ('site' in e ? known.sites.has(e.site) : known.areas.has(e.area));
     const used = new Set<ExpectedUnreached>();
     const left = unreached.filter(u => {
         const hits = expected.filter(e => ('site' in e ? e.site === u.id : u.areaPath.includes(e.area)));
@@ -409,7 +415,8 @@ export function expectedUnreached(
     return {
         left,
         expected: unreached.length - left.length,
-        stale: expected.filter(e => !used.has(e)).map(expectedName),
+        invalid: expected.filter(e => !exists(e)).map(expectedName),
+        stale: expected.filter(e => exists(e) && !used.has(e)).map(expectedName),
     };
 }
 
@@ -754,8 +761,13 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
     );
-    const expected = expectedUnreached(unreached, EXPECTED_UNREACHED);
+    const expected = expectedUnreached(unreached, EXPECTED_UNREACHED, {
+        areas: new Set(areas.map(a => a.id)),
+        sites: new Set(reached.sites.map(x => x.id)),
+    });
     const curatedKind = new Map(GATES.map(e => [e.trigger, e.kind]));
+    // The pocket flood reads steps through graph.stepMask, which adds to graph.offLand; the fill's report took
+    // its offLand count already, so this has to stay after fillReach.
     const pockets = unreachedPockets({
         graph,
         reached: fill.reached,
@@ -867,7 +879,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             },
             reach: fill.report,
             distance: distance.report,
-            unreached: { pockets, expected: expected.expected, stale: expected.stale },
+            unreached: { pockets, expected: expected.expected, invalid: expected.invalid, stale: expected.stale },
         },
     };
 }
@@ -1047,6 +1059,10 @@ export function formatReport(report: BuildReport): string[] {
             l.unlanded.map(
                 u => `${u.trigger} ${u.loc} ${coord(u.tile)} from ${coord(u.stand)}: ${u.reasons.join('; ')}`,
             ),
+        ),
+        ...list(
+            `ERROR unreached: ${report.unreached.invalid.length} areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):`,
+            report.unreached.invalid,
         ),
         ...list(
             `ERROR unreached: ${report.unreached.stale.length} areas.ts EXPECTED_UNREACHED entries no unreached site matches (reached now, or gone):`,

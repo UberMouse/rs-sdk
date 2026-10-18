@@ -329,7 +329,7 @@ describe('formatReport', () => {
             ms: 1,
             bytes: 1024,
         },
-        unreached: { pockets: [], expected: 0, stale: [] },
+        unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -460,18 +460,34 @@ describe('formatReport', () => {
             { ...report, gates: { ...report.gates, drifted: ['x'] } },
             { ...report, gates: { ...report.gates, invalid: ['x'] } },
             { ...report, gates: { ...report.gates, unnamed: ['x'] } },
+            { ...report, unreached: { ...report.unreached, invalid: ['x'] } },
             { ...report, unreached: { ...report.unreached, stale: ['x'] } },
         ])
             expect(failed(one)).toBe(true);
     });
 
     test('lists the stale EXPECTED_UNREACHED entries as an error', () => {
-        const stale = { ...report, unreached: { pockets: [], expected: 0, stale: ['area isle (i.rs2:1)'] } };
+        const stale = {
+            ...report,
+            unreached: { pockets: [], expected: 0, invalid: [], stale: ['area isle (i.rs2:1)'] },
+        };
         expect(formatReport(stale).slice(-2)).toEqual([
             'ERROR unreached: 1 areas.ts EXPECTED_UNREACHED entries no unreached site matches (reached now, or gone):',
             '  area isle (i.rs2:1)',
         ]);
         expect(failed(stale)).toBe(true);
+    });
+
+    test('lists the EXPECTED_UNREACHED entries naming no area or site as their own error', () => {
+        const invalid = {
+            ...report,
+            unreached: { pockets: [], expected: 0, invalid: ['site rock:cvae:0 (c.rs2:2)'], stale: [] },
+        };
+        expect(formatReport(invalid).slice(-2)).toEqual([
+            'ERROR unreached: 1 areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):',
+            '  site rock:cvae:0 (c.rs2:2)',
+        ]);
+        expect(failed(invalid)).toBe(true);
     });
 
     test('lists the gate errors, warnings, unclear entries and quest windows; warnings alone do not fail', () => {
@@ -776,7 +792,7 @@ describe('the unreached report', () => {
         { id: 'cave', name: 'Cave', rects: [] },
     ];
 
-    test('EXPECTED_UNREACHED leaves out its sites, an area entry its child areas too, and names the stale', () => {
+    test('EXPECTED_UNREACHED leaves out its sites, an area entry its child areas too, and names the stale and the invalid', () => {
         const rows = [
             u('bank:isle-bank:0', ['isle', 'isle-bank'], tile(5, 5), null),
             u('tree:isle:0', ['isle'], tile(6, 6), null),
@@ -784,15 +800,25 @@ describe('the unreached report', () => {
             u('shop:town:0', ['town'], tile(9, 9), null),
         ];
         expect(
-            expectedUnreached(rows, [
-                { area: 'isle', reason: 'new accounts only', source: 'i.rs2:1' },
-                { site: 'rock:cave:0', reason: 'a quest step', source: 'c.rs2:2' },
-                { area: 'gone', reason: 'reached now', source: 'g.rs2:3' },
-                { site: 'shop:town:9', reason: 'gone', source: 's.rs2:4' },
-            ]),
+            expectedUnreached(
+                rows,
+                [
+                    { area: 'isle', reason: 'new accounts only', source: 'i.rs2:1' },
+                    { site: 'rock:cave:0', reason: 'a quest step', source: 'c.rs2:2' },
+                    { area: 'gone', reason: 'reached now', source: 'g.rs2:3' },
+                    { site: 'shop:town:9', reason: 'gone', source: 's.rs2:4' },
+                    { area: 'isel', reason: 'a typo', source: 't.rs2:5' },
+                    { site: 'rock:cvae:0', reason: 'a typo', source: 't.rs2:6' },
+                ],
+                {
+                    areas: new Set(['isle', 'cave', 'gone']),
+                    sites: new Set([...rows.map(r => r.id), 'shop:town:9']),
+                },
+            ),
         ).toEqual({
             left: [rows[3]!],
             expected: 3,
+            invalid: ['area isel (t.rs2:5)', 'site rock:cvae:0 (t.rs2:6)'],
             stale: ['area gone (g.rs2:3)', 'site shop:town:9 (s.rs2:4)'],
         });
     });
@@ -988,7 +1014,7 @@ describe('the unreached report', () => {
             nearest: { tile: tile(8, 6405), site: 'rock:cave:0', off: 3 },
         });
         const wide = pocket({ sites: [u('tree:isle:0', ['isle'], tile(7, 7), null)], size: 32768, open: true });
-        expect(formatUnreached({ pockets: [isle, cave, wide], expected: 2, stale: [] }, areas)).toEqual([
+        expect(formatUnreached({ pockets: [isle, cave, wide], expected: 2, invalid: [], stale: [] }, areas)).toEqual([
             'warning: 6 sites of covered kinds no walk from the Lumbridge spawn reaches (bank 1, rock 3, tree 2), ' +
                 'in 3 pockets (1 open), most sites first; areas.ts EXPECTED_UNREACHED leaves out 2 more:',
             '  cave (Cave), no area: 3 sites, 12 tiles; nearest reached (8, 6405), 3 tiles off rock:cave:0',
@@ -1007,10 +1033,10 @@ describe('the unreached report', () => {
             '    tree 1: tree:isle:0 (7, 7)',
             '    no hints: no trigger on or beside it',
         ]);
-        expect(formatUnreached({ pockets: [], expected: 0, stale: [] }, areas)).toEqual([
+        expect(formatUnreached({ pockets: [], expected: 0, invalid: [], stale: [] }, areas)).toEqual([
             'unreached: every site of a covered kind is reached from the Lumbridge spawn',
         ]);
-        expect(formatUnreached({ pockets: [], expected: 9, stale: [] }, areas)).toEqual([
+        expect(formatUnreached({ pockets: [], expected: 9, invalid: [], stale: [] }, areas)).toEqual([
             'unreached: every site of a covered kind is reached from the Lumbridge spawn, but the 9 areas.ts EXPECTED_UNREACHED leaves out',
         ]);
     });
