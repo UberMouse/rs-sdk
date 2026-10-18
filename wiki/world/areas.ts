@@ -1294,4 +1294,17 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: "the island's caves, for new accounts only as the island is: finishing the tutorial telejumps the player to Lumbridge, and nothing takes them back",
         source: 'tutorial/scripts/tutorial.rs2:300',
     },
+    {
+        area: 'death-altar',
+        reason: 'no way into the death temple: the only way into a temple is a talisman on its ruins, and the death ruins (skill_runecraft/configs/runecraft.loc:284) have no rc_ruins category, so this trigger is not theirs, and are never placed',
+        source: 'skill_runecraft/scripts/runecraft.rs2:19',
+    },
+    // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
+    ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(
+        (site): ExpectedUnreached => ({
+            site,
+            reason: "decoration outside the temple: the ruins' teleport lands in the temple, and no walk from there gets beside the tree",
+            source: 'skill_runecraft/scripts/runecraft.rs2:45',
+        }),
+    ),
 ];

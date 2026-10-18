@@ -68,17 +68,19 @@ Where the ways come from: connectors (stairs, ladders, trapdoors, manholes, gang
 (`sources/gate-scan.ts`), each confirmed or rejected in `gate-list.ts` (exported by `gates.ts`); transports
 (ships, carts, sleds) from the sail scripts (`sources/transports.ts`) plus `CURATED_TRANSPORTS` in `gates.ts`;
 scripted crossings from the loc op moves no gate row makes (`deriveScriptedMoves` in `sources/gate-landings.ts`,
-below). Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
+below); teleports to a dbrow's coords from `DBROW_TELEPORTS` in `gates.ts` (`sources/dbrow-teleports.ts`, below).
+Every curated entry cites its script, and the build fails on a candidate nobody reviewed.
 
 ### The crossing model
 
 `crossings` in world.json (`Crossing` in `types.ts`) holds the moves no connector, gate or transport row describes:
 `scripted` (a loc op that moves the player with no condition the gate scan decides) and `teleport` (an item used on a
-loc, an npc's op and dialogue, an item op, an interface click). The build reads no teleport rows yet. A row says how the move is done (`act`: `loc-op`, `item-on-loc`, `npc-op` with its dialogue `choices`,
-`item-op` or `interface`), the loc or npc it is done on (`at`), the tiles it is done from (`from`), where it lands
-(`landings`: one tile, or the set a random landing draws from), its requirement sets, and its `roll` when the move is
-behind a `stat_random`. A connector's and a gate's act is implied by their rows (the loc's op, the trigger); a
-transport may carry one, and the sail and curated rows carry none. A gate row may carry a `roll` too.
+loc, an npc's op and dialogue, an item op, an interface click). A row says how the move is done (`act`: `loc-op`,
+`item-on-loc`, `npc-op` with its dialogue `choices`, `item-op` or `interface`), the loc or npc it is done on (`at`),
+the tiles it is done from (`from`), where it lands (`landings`: one tile, or the set a random landing draws from),
+its requirement sets, and its `roll` when the move is behind a `stat_random`. A connector's and a gate's act is
+implied by their rows (the loc's op, the trigger); a transport may carry one, and the sail and curated rows carry
+none. A gate row may carry a `roll` too.
 
 The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
 reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is
@@ -92,6 +94,15 @@ rows with a skill requirement get their roll the same way. What no run settles (
 in a varp, a stand landing on two passages) is listed in the build report, never guessed; stands stopped only in the
 door procs (`doors/scripts/`) are a door's, which the collision data or `gate-list.ts` has. A move on a loc tile and op
 that has a connector row is refused, and the build fails on one.
+
+The runecrafting ruins and their temples' exit portals are `DBROW_TELEPORTS` rows: the trigger's dbrow row, found by
+the loc's `rune_type`, gives the landing coords and the talisman, which the gate scan does not read. Each placed
+ruins gets a `teleport` row, `act: item-on-loc` with its talisman and `item:<talisman>:held` (and `members` on a
+members row), and each portal a free `scripted` row back out. A row lands on every tile its coords can give: one of
+several coords (the cosmic temple's four entrances, the chaos portals' eight tiles round the ruins), and with a
+radius (`map_findsquare`, the body temple's) any open tile of the coord's ring. Ten altars are reached this way; the
+death temple has no ruins in this revision, so its altar is in `EXPECTED_UNREACHED`, and so are the decoration trees
+round the air, nature and water temples that no walk from the landing gets beside.
 
 The fill adds an edge from every `from` tile to every landing, under the row's alternatives. The build prices the rows
 over the graph (`priceCrossings` in `distance.ts`) and writes the prices on them:

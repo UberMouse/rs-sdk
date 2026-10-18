@@ -9,6 +9,7 @@ import {
     failed,
     formatReport,
     formatScripted,
+    formatTeleports,
     formatUnreached,
     nearestReached,
     serializeWorld,
@@ -443,6 +444,7 @@ describe('formatReport', () => {
             unsettled: [],
             duplicates: [],
         },
+        teleports: { rows: 0, unstood: [], offLand: [] },
         reach: {
             nodes: 64,
             reached: 10,
@@ -477,12 +479,14 @@ describe('formatReport', () => {
         '0 gate rows behind a roll';
     const scriptedLine =
         'scripted moves: 0 crossing rows; triggers ; placed locs rows 0, unsettled 0, duplicate 0, door 0, not-a-passage 0';
+    const teleportsLine = 'dbrow teleports: 0 crossing rows (gates.ts DBROW_TELEPORTS)';
     const tail = [
         'quests: 68, 2 of them from gates.ts overrides (cog, ikov)',
         'transports: 19 ship rows on 9 routes, 2 curated rows',
         gatesLine,
         landingsLine,
         scriptedLine,
+        teleportsLine,
     ];
 
     test('counts, then coverage, then connectors, quests, transports and gates', () =>
@@ -599,6 +603,7 @@ describe('formatReport', () => {
             gatesLine,
             landingsLine,
             scriptedLine,
+            teleportsLine,
         ]);
         expect(failed(bad)).toBe(true);
         for (const one of [
@@ -657,7 +662,7 @@ describe('formatReport', () => {
             windows: ['oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought'],
             skippedCheckers: ['~god_staff_checker (c.rs2:51): returns a staff under a cape check'],
         };
-        expect(formatReport({ ...report, gates }).slice(-23)).toEqual([
+        expect(formatReport({ ...report, gates }).slice(-24)).toEqual([
             gatesLine,
             'ERROR gates: 1 candidates gates.ts does not review (confirm or reject each):',
             '  oploc1,newdoor (d.rs2:1): gate',
@@ -681,6 +686,7 @@ describe('formatReport', () => {
             '  oploc1,dragonshipgangplank_on (l.rs2:1): open only while the ship is bought',
             landingsLine,
             scriptedLine,
+            teleportsLine,
         ]);
         expect(
             failed({
@@ -731,7 +737,7 @@ describe('formatReport', () => {
             ],
         };
         const lines = formatReport({ ...report, gates: { ...report.gates, landings } });
-        expect(lines.slice(-11)).toEqual([
+        expect(lines.slice(-12)).toEqual([
             'gate moves on objects: 1 to, 2 landings, 3 opens, 3 underived (rows; 1 quest windows left as they are); ' +
                 '0 gate rows behind a roll',
             'warning: 3 gate rows on objects with no landing derived, by trigger:',
@@ -744,6 +750,7 @@ describe('formatReport', () => {
             'warning: 1 stands of gate rows with landings that give no landing, left out:',
             '  oploc1,rock rock (9, 9) from (9, 8): a (r.rs2:2); b (r.rs2:3)',
             scriptedLine,
+            teleportsLine,
         ]);
         // Warnings: they do not fail the build.
         expect(failed({ ...report, gates: { ...report.gates, landings } })).toBe(false);
@@ -784,6 +791,22 @@ describe('formatReport', () => {
         ]);
         expect(failed({ ...report, scripted })).toBe(true);
         expect(failed({ ...report, scripted: { ...scripted, duplicates: [] } })).toBe(false);
+    });
+
+    test('the dbrow teleports: rows, then the locs given none and the landings left out, as warnings', () => {
+        const teleports: BuildReport['teleports'] = {
+            rows: 2,
+            unstood: [{ trigger: 'oploc1,_rc_exit_portal', loc: 'portal', tile: at(4, 4) }],
+            offLand: [{ trigger: 'oplocu,_rc_ruins', loc: 'ruins', tile: at(1, 1), landing: at(9, 9) }],
+        };
+        expect(formatTeleports(teleports)).toEqual([
+            'dbrow teleports: 2 crossing rows (gates.ts DBROW_TELEPORTS)',
+            'warning: 1 dbrow teleport locs no tile on land is used from, no row:',
+            '  oploc1,_rc_exit_portal portal (4, 4)',
+            'warning: 1 dbrow teleport landings off walkable land, left out:',
+            '  oplocu,_rc_ruins ruins (1, 1) -> (9, 9)',
+        ]);
+        expect(failed({ ...report, teleports })).toBe(false);
     });
 });
 

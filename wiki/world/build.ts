@@ -46,11 +46,13 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
+import { deriveDbrowTeleports, type DbrowTeleports } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
 import {
     CURATED_TRANSPORTS,
+    DBROW_TELEPORTS,
     GATES,
     LOADOUT_PROCS,
     QUEST_OVERRIDES,
@@ -286,6 +288,11 @@ export interface BuildReport {
      * duplicates of a connector row (an error).
      */
     scripted: Pick<ScriptedMoves, 'counts' | 'unsettled' | 'duplicates'> & { rows: number };
+    /**
+     * The loc teleports to a dbrow's coords (sources/dbrow-teleports.ts): the World.crossings rows written, the placed
+     * locs no tile on land is used from, and the landings off walkable land (warnings).
+     */
+    teleports: Pick<DbrowTeleports, 'unstood' | 'offLand'> & { rows: number };
     /** The reach fill's own report (reach.ts). */
     reach: ReachReport;
     /** The searches for each resource and processor site's nearest sinks (distance.ts). */
@@ -623,10 +630,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const scripts = readScripts();
     const triggers = scripts.flatMap(([f, text]) => parseTriggers(f, text));
     const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
+    const dbrows = readDbrows();
     const classify = classifier({
         locConfigs,
         npcConfigs,
-        dbrows: readDbrows(),
+        dbrows,
         triggers,
         callables,
     });
@@ -763,7 +771,19 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         size: locSizes(locConfigs),
         connectors,
     });
-    const crossingRows: Crossing[] = scripted.crossings;
+    // The loc teleports to a dbrow's coords: the runecrafting ruins and their temples' exit portals.
+    const teleports = deriveDbrowTeleports({
+        entries: DBROW_TELEPORTS,
+        triggers,
+        scripts: new Map(scripts),
+        dbrows,
+        locConfigs,
+        objConfigs,
+        locs: placedLocs,
+        collision,
+        size: locSizes(locConfigs),
+    });
+    const crossingRows: Crossing[] = [...scripted.crossings, ...teleports.crossings];
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built; the
     // distances to sinks walk the same graph. The crossing and rolled gate rows' costs are priced over a first
     // graph (distance.ts priceCrossings), and the graph is built again from the priced rows when there was anything
@@ -919,6 +939,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 unsettled: scripted.unsettled,
                 duplicates: scripted.duplicates,
             },
+            teleports: { rows: teleports.crossings.length, unstood: teleports.unstood, offLand: teleports.offLand },
             reach: fill.report,
             distance: distance.report,
             unpriced: priced.unpriced,
@@ -1110,6 +1131,7 @@ export function formatReport(report: BuildReport): string[] {
             l.unrolled.map(u => `${u.trigger} ${u.loc} ${coord(u.tile)}: ${u.reasons.join('; ')}`),
         ),
         ...formatScripted(report.scripted),
+        ...formatTeleports(report.teleports),
         ...list(
             `warning: ${report.unpriced.length} crossing costs the distances could not price, those edges not taken:`,
             report.unpriced,
@@ -1156,6 +1178,21 @@ export function formatScripted(r: BuildReport['scripted']): string[] {
                       ]),
               ]
             : []),
+    ];
+}
+
+/** The dbrow teleports' section: rows written, then the placed locs given none and the landings left out (warnings). */
+export function formatTeleports(r: BuildReport['teleports']): string[] {
+    return [
+        `dbrow teleports: ${r.rows} crossing rows (gates.ts DBROW_TELEPORTS)`,
+        ...list(
+            `warning: ${r.unstood.length} dbrow teleport locs no tile on land is used from, no row:`,
+            r.unstood.map(m => `${m.trigger} ${m.loc} ${coord(m.tile)}`),
+        ),
+        ...list(
+            `warning: ${r.offLand.length} dbrow teleport landings off walkable land, left out:`,
+            r.offLand.map(m => `${m.trigger} ${m.loc} ${coord(m.tile)} -> ${coord(m.landing!)}`),
+        ),
     ];
 }
 

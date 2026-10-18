@@ -7,4 +7,4 @@ Inside the mind ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:mind-altar:0` | (2785, 4840) | mind 1 | yes | no | - | unreached |
+| `rc-altar:mind-altar:0` | (2785, 4840) | mind 1 | yes | no | - | carry Mind talisman |

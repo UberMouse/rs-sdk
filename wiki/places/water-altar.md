@@ -7,7 +7,7 @@ Inside the water ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:water-altar:0` | (2715, 4835) | water 1 | yes | no | - | unreached |
+| `rc-altar:water-altar:0` | (2715, 4835) | water 1 | yes | no | - | carry Water talisman |
 
 ## Trees
 

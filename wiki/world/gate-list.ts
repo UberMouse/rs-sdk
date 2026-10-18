@@ -814,7 +814,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'not-a-gate',
         'oplocu,_rc_ruins',
         'skill_runecraft/scripts/runecraft.rs2:20',
-        'A talisman on the runecrafting ruins: a transport, out of scope (gates.ts TRANSPORTS_OUT_OF_SCOPE).',
+        'A talisman on the runecrafting ruins: a teleport to a coord of its runecraft_table row, which gates.ts DBROW_TELEPORTS gives as crossing rows.',
         '1208fd69',
     ),
     ...['chest_10_coins', 'chest_nature_rune', 'chest_50_coins', 'chest_blood_runes', 'chest_ardougne_castle'].map(
@@ -887,7 +887,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'not-a-gate',
         'oploc1,_rc_exit_portal',
         'skill_runecraft/scripts/runecraft.rs2:1',
-        "A runecrafting altar's exit portal, a transport out of scope (gates.ts TRANSPORTS_OUT_OF_SCOPE).",
+        "A runecrafting temple's exit portal: a teleport to a coord of its runecraft_table row, which gates.ts DBROW_TELEPORTS gives as crossing rows.",
         '71c06a11',
     ),
     // quests/ (Fight Arena to Dragon Slayer)

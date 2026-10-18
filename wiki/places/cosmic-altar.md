@@ -7,4 +7,4 @@ Inside the cosmic ruins, which are in Zanaris.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:cosmic-altar:0` | (2141, 4832) | cosmic 1 | no | no | - | unreached |
+| `rc-altar:cosmic-altar:0` | (2141, 4832) | cosmic 1 | no | no | - | carry Cosmic talisman + wear Dramen staff |

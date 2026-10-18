@@ -7,4 +7,4 @@ Inside the body ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:body-altar:0` | (2524, 4831) | body 1 | yes | no | - | unreached |
+| `rc-altar:body-altar:0` | (2524, 4831) | body 1 | yes | no | - | carry Body talisman |

@@ -7,4 +7,4 @@ Inside the law ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:law-altar:0` | (2463, 4831) | law 1 | no | no | - | unreached |
+| `rc-altar:law-altar:0` | (2463, 4831) | law 1 | no | no | - | carry Law talisman + no weapons/armour (Entrana rule) |

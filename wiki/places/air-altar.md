@@ -7,7 +7,7 @@ Inside the air ruins.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `rc-altar:air-altar:0` | (2843, 4833) | air 1 | yes | no | - | unreached |
+| `rc-altar:air-altar:0` | (2843, 4833) | air 1 | yes | no | - | carry Air talisman |
 
 ## Trees
 
