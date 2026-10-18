@@ -1305,12 +1305,12 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     },
     {
         area: 'tai-bwo-wannai-trio-area',
-        reason: "the quest's hunt cutscene, which Tamayu takes the player on only while he hunts the Shaikahan (%tbwt_tamayu at ^tbwt_tamayu_slay_shaikahan or ^tbwt_tamayu_watched_cutscene, tbwt_tamayu.rs2:20), and which puts the player back beside him when it ends (:261, or :290 on the hunt that kills it)",
+        reason: "the quest's hunt cutscene, which Tamayu takes the player on only while he hunts the Shaikahan (%tbwt_tamayu at ^tbwt_tamayu_slay_shaikahan or ^tbwt_tamayu_watched_cutscene, tbwt_tamayu.rs2:20), and which puts the player back beside him when it ends (:261, or :290 and :329 on the hunt that kills it)",
         source: 'quests/quest_tbwt/scripts/tbwt_tamayu.rs2:209',
     },
     {
         area: 'legends-quest-cavern',
-        reason: "players do reach it in game, but no row expresses the way: behind the Kharazi Jungle shaman caves, which no walk reaches either, Charge Orb cast on the magic trial gate (a spell on a loc, oploct, skill_magic/scripts/spells/charge_orb.rs2:1, :16; the move at quest_legends.rs2:1551), then the winch's two loc ops: op1 on lg_winchdown_norope turns it into lg_winchdown_rope (quest_legends.rs2:1556, :1559), and op1 on that climbs down (:1581)",
+        reason: "players do reach it in game, but no row expresses the way: behind the Kharazi Jungle shaman caves, which no walk reaches either, Charge Orb cast on the magic trial gate (a spell on a loc, oploct, skill_magic/scripts/spells/charge_orb.rs2:1, :16; the move at quest_legends.rs2:1551), then the winch's two loc ops: once a rope is tied on (quest_legends.rs2:1566), op1 on lg_winchdown_norope turns it into lg_winchdown_rope (:1556, :1559), and op1 on that climbs down (:1581)",
         source: 'quests/quest_legends/scripts/quest_legends.rs2:1618',
     },
     {
