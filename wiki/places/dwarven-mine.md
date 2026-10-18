@@ -5,64 +5,64 @@ Staircase up east of Falador at (3059, 3376) (learnings/walking.md); its other w
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:dwarven-mine:0` | (2993, 9828) | Dwarven shopping store (generaldwarf) 1 | yes | no | - |
-| `shop:dwarven-mine:1` | (2998, 9844) | Nurmof's Pickaxe Shop. (pickaxeshop) 1 | yes | no | - |
-| `shop:dwarven-mine:2` | (3036, 9846) | Drogo's Mining Emporium. (miningstore) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:dwarven-mine:0` | (2993, 9828) | Dwarven shopping store (generaldwarf) 1 | yes | no | - | - |
+| `shop:dwarven-mine:1` | (2998, 9844) | Nurmof's Pickaxe Shop. (pickaxeshop) 1 | yes | no | - | - |
+| `shop:dwarven-mine:2` | (3036, 9846) | Drogo's Mining Emporium. (miningstore) 1 | yes | no | - | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `anvil:dwarven-mine:0` | (3012, 9813) | Anvil 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `anvil:dwarven-mine:0` | (3012, 9813) | Anvil 2 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:dwarven-mine:0` | (2999, 9812) | Fire 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:dwarven-mine:0` | (2999, 9812) | Fire 3 | yes | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:dwarven-mine:0` | (3027, 9804) | [clay](../resources/rock/clay.md) 3, [copper](../resources/rock/copper.md) 4 | yes | no | - |
-| `rock:dwarven-mine:1` | (3032, 9825) | [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 2, [tin](../resources/rock/tin.md) 2 | yes | no | - |
-| `rock:dwarven-mine:2` | (3044, 9773) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 8, [copper](../resources/rock/copper.md) 4, [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 5, [mithril](../resources/rock/mithril.md) 2, [tin](../resources/rock/tin.md) 5 | yes | no | - |
-| `rock:dwarven-mine:3` | (3038, 9799) | [coal](../resources/rock/coal.md) 3 | yes | no | - |
-| `rock:dwarven-mine:4` | (3053, 9819) | [clay](../resources/rock/clay.md) 2, [iron](../resources/rock/iron.md) 2, [tin](../resources/rock/tin.md) 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:dwarven-mine:0` | (3027, 9804) | [clay](../resources/rock/clay.md) 3, [copper](../resources/rock/copper.md) 4 | yes | no | - | - |
+| `rock:dwarven-mine:1` | (3032, 9825) | [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 2, [tin](../resources/rock/tin.md) 2 | yes | no | - | - |
+| `rock:dwarven-mine:2` | (3044, 9773) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 8, [copper](../resources/rock/copper.md) 4, [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 5, [mithril](../resources/rock/mithril.md) 2, [tin](../resources/rock/tin.md) 5 | yes | no | - | - |
+| `rock:dwarven-mine:3` | (3038, 9799) | [coal](../resources/rock/coal.md) 3 | yes | no | - | - |
+| `rock:dwarven-mine:4` | (3053, 9819) | [clay](../resources/rock/clay.md) 2, [iron](../resources/rock/iron.md) 2, [tin](../resources/rock/tin.md) 3 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dwarven-mine:0` | (2956, 9778) | Magic axe 2 | no | no | - |
-| `npc:dwarven-mine:1` | (2960, 9791) | Magic axe 4 | no | no | - |
-| `npc:dwarven-mine:2` | (2966, 9775) | Magic axe 1 | no | no | - |
-| `npc:dwarven-mine:3` | (2984, 9807) | Dwarf 1 | yes | no | - |
-| `npc:dwarven-mine:4` | (2997, 9843) | Dwarf 3 | yes | no | - |
-| `npc:dwarven-mine:5` | (2999, 9827) | Dwarf 3 | yes | no | - |
-| `npc:dwarven-mine:6` | (2998, 9807) | Dwarf 2 | yes | no | - |
-| `npc:dwarven-mine:7` | (2999, 9817) | Dwarf 1 | yes | no | - |
-| `npc:dwarven-mine:8` | (3003, 9798) | Dwarf 2 | yes | no | - |
-| `npc:dwarven-mine:9` | (3018, 9815) | Dwarf 8 | yes | no | - |
-| `npc:dwarven-mine:10` | (3020, 9849) | Dwarf 4 | yes | no | - |
-| `npc:dwarven-mine:11` | (3018, 9835) | Dwarf 1 | yes | no | - |
-| `npc:dwarven-mine:12` | (3026, 9833) | Dwarf 2, Rat 1 | yes | no | - |
-| `npc:dwarven-mine:13` | (3033, 9827) | Rat 1 | yes | no | - |
-| `npc:dwarven-mine:14` | (3036, 9846) | Dwarf 2 | yes | no | - |
-| `npc:dwarven-mine:15` | (3045, 9779) | King Scorpion 2, Scorpion 11 | yes | no | - |
-| `npc:dwarven-mine:16` | (3041, 9801) | Scorpion 2 | yes | no | - |
-| `npc:dwarven-mine:17` | (3048, 9821) | Dwarf 7, Rat 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dwarven-mine:0` | (2956, 9778) | Magic axe 2 | no | no | - | - |
+| `npc:dwarven-mine:1` | (2960, 9791) | Magic axe 4 | no | no | - | - |
+| `npc:dwarven-mine:2` | (2966, 9775) | Magic axe 1 | no | no | - | - |
+| `npc:dwarven-mine:3` | (2984, 9807) | Dwarf 1 | yes | no | - | - |
+| `npc:dwarven-mine:4` | (2997, 9843) | Dwarf 3 | yes | no | - | - |
+| `npc:dwarven-mine:5` | (2999, 9827) | Dwarf 3 | yes | no | - | - |
+| `npc:dwarven-mine:6` | (2998, 9807) | Dwarf 2 | yes | no | - | - |
+| `npc:dwarven-mine:7` | (2999, 9817) | Dwarf 1 | yes | no | - | - |
+| `npc:dwarven-mine:8` | (3003, 9798) | Dwarf 2 | yes | no | - | - |
+| `npc:dwarven-mine:9` | (3018, 9815) | Dwarf 8 | yes | no | - | - |
+| `npc:dwarven-mine:10` | (3020, 9849) | Dwarf 4 | yes | no | - | - |
+| `npc:dwarven-mine:11` | (3018, 9835) | Dwarf 1 | yes | no | - | - |
+| `npc:dwarven-mine:12` | (3026, 9833) | Dwarf 2, Rat 1 | yes | no | - | - |
+| `npc:dwarven-mine:13` | (3033, 9827) | Rat 1 | yes | no | - | - |
+| `npc:dwarven-mine:14` | (3036, 9846) | Dwarf 2 | yes | no | - | - |
+| `npc:dwarven-mine:15` | (3045, 9779) | King Scorpion 2, Scorpion 11 | yes | no | - | - |
+| `npc:dwarven-mine:16` | (3041, 9801) | Scorpion 2 | yes | no | - | - |
+| `npc:dwarven-mine:17` | (3048, 9821) | Dwarf 7, Rat 2 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:dwarven-mine:0` | (3019, 9850) | Ladder 1 | up (3018, 3450) | yes | no | - |
-| `connector:dwarven-mine:1` | (3059, 9776) | Staircase 1 | up (3062, 3376) | yes | no | - |
-| `connector:dwarven-mine:2` | (3060, 9776) L1 | Staircase 1 | - | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:dwarven-mine:0` | (3019, 9850) | Ladder 1 | up (3018, 3450) by Climb-up | yes | no | - | - |
+| `connector:dwarven-mine:1` | (3059, 9776) | Staircase 1 | up (3062, 3376) by Climb-up | yes | no | - | - |
+| `connector:dwarven-mine:2` | (3060, 9776) L1 | Staircase 1 | - | yes | no | - | unreached |
 
 ## Areas within
 

@@ -5,12 +5,12 @@ Trolls of quests/quest_troll and quests/quest_death; descriptive name.
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:troll-caves:0` | (2923, 10033) | Fire 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:troll-caves:0` | (2923, 10033) | Fire 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - | unreached |

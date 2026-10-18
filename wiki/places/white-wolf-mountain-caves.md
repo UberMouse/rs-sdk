@@ -5,31 +5,31 @@ Ladders up onto White Wolf Mountain at (2823-2859, 3507-3519); descriptive name.
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:white-wolf-mountain-caves:0` | (2865, 9875) | Fire 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:white-wolf-mountain-caves:0` | (2865, 9875) | Fire 2 | no | no | - | Fishing Contest done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:white-wolf-mountain-caves:0` | (2822, 9901) | Ice warrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:1` | (2836, 9905) | Ice warrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:2` | (2838, 9917) | Ice warrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:3` | (2847, 9919) | Ice warrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:4` | (2848, 9912) | Ice warrior 1 | no | no | - |
-| `npc:white-wolf-mountain-caves:5` | (2865, 9876) | Dwarf 8 | no | no | - |
-| `npc:white-wolf-mountain-caves:6` | (2869, 9912) | Ice spider 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:white-wolf-mountain-caves:0` | (2822, 9901) | Ice warrior 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:white-wolf-mountain-caves:1` | (2836, 9905) | Ice warrior 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:white-wolf-mountain-caves:2` | (2838, 9917) | Ice warrior 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:white-wolf-mountain-caves:3` | (2847, 9919) | Ice warrior 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:white-wolf-mountain-caves:4` | (2848, 9912) | Ice warrior 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:white-wolf-mountain-caves:5` | (2865, 9876) | Dwarf 8 | no | no | - | Fishing Contest done |
+| `npc:white-wolf-mountain-caves:6` | (2869, 9912) | Ice spider 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:white-wolf-mountain-caves:0` | (2823, 9913) | Ladder 1 | up (2824, 3513) | no | no | - |
-| `connector:white-wolf-mountain-caves:1` | (2824, 9907) | Ladder 1 | up (2825, 3507) | no | no | - |
-| `connector:white-wolf-mountain-caves:2` | (2827, 9910) | Ladder 1 | up (2828, 3510) | no | no | - |
-| `connector:white-wolf-mountain-caves:3` | (2845, 9916) | Ladder 1 | up (2846, 3516) | no | no | - |
-| `connector:white-wolf-mountain-caves:4` | (2848, 9913) | Ladder 1 | up (2849, 3513) | no | no | - |
-| `connector:white-wolf-mountain-caves:5` | (2848, 9919) | Ladder 1 | up (2849, 3519) | no | no | - |
-| `connector:white-wolf-mountain-caves:6` | (2857, 9917) | Ladder 1 | up (2858, 3517) | no | no | - |
-| `connector:white-wolf-mountain-caves:7` | (2859, 9919) | Ladder 1 | up (2860, 3519) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:white-wolf-mountain-caves:0` | (2823, 9913) | Ladder 1 | up (2824, 3513) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:1` | (2824, 9907) | Ladder 1 | up (2825, 3507) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:2` | (2827, 9910) | Ladder 1 | up (2828, 3510) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:3` | (2845, 9916) | Ladder 1 | up (2846, 3516) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:4` | (2848, 9913) | Ladder 1 | up (2849, 3513) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:5` | (2848, 9919) | Ladder 1 | up (2849, 3519) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:6` | (2857, 9917) | Ladder 1 | up (2858, 3517) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain-caves:7` | (2859, 9919) | Ladder 1 | up (2860, 3519) by Climb-up | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |

@@ -399,6 +399,25 @@ describe('requirement sets', () => {
         expect(reach.report.labels).toBe(reach.report.reached);
     });
 
+    test('setsAny: the minimal sets over several tiles; reached: whether any set gets to a tile', () => {
+        // Two sealed rooms, one behind 10 coins and one behind a quest; a pocket no door opens.
+        const grid = sealed().room(3225, 3225, 3226, 3226).room(3229, 3229, 3229, 3229);
+        const reach = fill(grid, {
+            gates: [westDoor(3221, [['coins:10']]), gate({ tile: at(0, 3225, 3225), requires: [['quest:a']] })],
+        });
+        const [coins, quest, pocket] = [INNER, at(0, 3225, 3225), at(0, 3229, 3229)];
+        expect(reach.setsAny([coins, quest])).toEqual([['coins:10'], ['quest:a']]);
+        expect(reach.setsAny([coins, quest, START])).toEqual([[]]);
+        expect(reach.setsAny([pocket, at(1, 9999, 9999)])).toEqual([]);
+        expect([coins, quest, START, pocket, at(1, 9999, 9999)].map(reach.reached)).toEqual([
+            true,
+            true,
+            true,
+            false,
+            false,
+        ]);
+    });
+
     test('requirements add up along a route', () => {
         const inner = sealed().room(3221, 3221, 3221, 3221);
         const reach = fill(inner, {

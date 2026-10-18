@@ -5,19 +5,19 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:fight-arena:0` | (2585, 3157) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:fight-arena:1` | (2587, 3169) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:fight-arena:0` | (2585, 3157) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:fight-arena:1` | (2587, 3169) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:fight-arena:0` | (2593, 3163) L3 | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:fight-arena:0` | (2593, 3163) L3 | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:fight-arena:0` | (2593, 3162) L3 | Trapdoor 1 | down (2592, 9562) L3 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:fight-arena:0` | (2593, 3162) L3 | Trapdoor 1 | down (2592, 9562) L3 by Open, then Climb-down | no | no | - | unreached |

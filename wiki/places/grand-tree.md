@@ -5,35 +5,35 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:grand-tree:0` | (2470, 3503) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:grand-tree:0` | (2470, 3503) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | no | no | - | unreached |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:grand-tree:0` | (2457, 3498) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - |
-| `pickpocket:grand-tree:1` | (2462, 3503) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:grand-tree:2` | (2470, 3503) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:grand-tree:3` | (2476, 3502) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:grand-tree:4` | (2476, 3501) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome child](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:grand-tree:0` | (2457, 3498) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | unreached |
+| `pickpocket:grand-tree:1` | (2462, 3503) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | unreached |
+| `pickpocket:grand-tree:2` | (2470, 3503) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | unreached |
+| `pickpocket:grand-tree:3` | (2476, 3502) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | unreached |
+| `pickpocket:grand-tree:4` | (2476, 3501) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome child](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:grand-tree:0` | (2460, 3506) | Gnome guard (gnomekingsguard) 2 | no | no | - |
-| `npc:grand-tree:1` | (2466, 3502) L2 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 3, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - |
-| `npc:grand-tree:2` | (2468, 3495) L1 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 1 | no | no | - |
-| `npc:grand-tree:3` | (2474, 3502) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - |
-| `npc:grand-tree:4` | (2477, 3512) | Gnome guard (gnomekingsguard) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:grand-tree:0` | (2460, 3506) | Gnome guard (gnomekingsguard) 2 | no | no | - | unreached |
+| `npc:grand-tree:1` | (2466, 3502) L2 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 3, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | unreached |
+| `npc:grand-tree:2` | (2468, 3495) L1 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 1 | no | no | - | unreached |
+| `npc:grand-tree:3` | (2474, 3502) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - | unreached |
+| `npc:grand-tree:4` | (2477, 3512) | Gnome guard (gnomekingsguard) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:grand-tree:0` | (2466, 3495) | Ladder 1 | up (2465, 3495) L1 | no | no | - |
-| `connector:grand-tree:1` | (2466, 3495) L1 | Ladder 1 | down (2465, 3495), up (2465, 3495) L2 | no | no | - |
-| `connector:grand-tree:2` | (2466, 3495) L2 | Ladder 1 | down (2465, 3495) L1, up (2465, 3495) L3 | no | no | - |
-| `connector:grand-tree:3` | (2466, 3495) L3 | Ladder 1 | down (2465, 3495) L2 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:grand-tree:0` | (2466, 3495) | Ladder 1 | up (2465, 3495) L1 by Climb-up | no | no | - | unreached |
+| `connector:grand-tree:1` | (2466, 3495) L1 | Ladder 1 | down (2465, 3495) by Climb or Climb-down; up (2465, 3495) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:grand-tree:2` | (2466, 3495) L2 | Ladder 1 | down (2465, 3495) L1 by Climb or Climb-down; up (2465, 3495) L3 by Climb or Climb-up | no | no | - | unreached |
+| `connector:grand-tree:3` | (2466, 3495) L3 | Ladder 1 | down (2465, 3495) L2 by Climb-down | no | no | - | unreached |

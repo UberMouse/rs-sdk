@@ -5,14 +5,14 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:red-dragon-isle:0` | (3198, 3819) | [burnt](../resources/tree/burnt.md) 4 | no | yes | 39 |
-| `tree:red-dragon-isle:1` | (3197, 3833) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 40 |
-| `tree:red-dragon-isle:2` | (3207, 3831) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 39 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:red-dragon-isle:0` | (3198, 3819) | [burnt](../resources/tree/burnt.md) 4 | no | yes | 39 | - |
+| `tree:red-dragon-isle:1` | (3197, 3833) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 40 | - |
+| `tree:red-dragon-isle:2` | (3207, 3831) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 39 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:red-dragon-isle:0` | (3190, 3834) | Red dragon 1 | no | yes | 40 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:red-dragon-isle:0` | (3190, 3834) | Red dragon 1 | no | yes | 40 | - |

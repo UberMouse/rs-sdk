@@ -5,16 +5,16 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - |
-| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - |
-| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - |
-| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - | unreached |
+| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - | unreached |
+| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - | unreached |
+| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:ship-yard:0` | (2990, 3066) L1 | Ship's ladder 1 | up (2991, 3066) L2 | no | no | - |
-| `connector:ship-yard:1` | (2990, 3066) L2 | Ship's ladder 1 | down (2989, 3066) L1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:ship-yard:0` | (2990, 3066) L1 | Ship's ladder 1 | up (2991, 3066) L2 by Climb-up | no | no | - | unreached |
+| `connector:ship-yard:1` | (2990, 3066) L2 | Ship's ladder 1 | down (2989, 3066) L1 by Climb-down | no | no | - | unreached |

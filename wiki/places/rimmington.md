@@ -5,57 +5,57 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:rimmington:0` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - |
-| `shop:rimmington:1` | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:rimmington:0` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - | - |
+| `shop:rimmington:1` | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:rimmington:0` | (2970, 3209) | Range 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:rimmington:0` | (2970, 3209) | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:rimmington:0` | (2967, 3203) | Fireplace 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:rimmington:0` | (2967, 3203) | Fireplace 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:rimmington:0` | (2966, 3209) | Sink 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:rimmington:0` | (2966, 3209) | Sink 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:rimmington:0` | (2955, 3233) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 4 | yes | no | - |
-| `tree:rimmington:1` | (2975, 3200) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 9 | yes | no | - |
-| `tree:rimmington:2` | (2978, 3221) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:rimmington:0` | (2955, 3233) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 4 | yes | no | - | - |
+| `tree:rimmington:1` | (2975, 3200) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 9 | yes | no | - | - |
+| `tree:rimmington:2` | (2978, 3221) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:rimmington:0` | (2967, 3212) L1 | [Man](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:rimmington:0` | (2967, 3212) L1 | [Man](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:rimmington:0` | (2957, 3203) | Rat 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:rimmington:0` | (2957, 3203) | Rat 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:rimmington:0` | (2948, 3213) | Ladder 1 | up (2947, 3213) L1 | yes | no | - |
-| `connector:rimmington:1` | (2948, 3213) L1 | Ladder 1 | down (2947, 3213) | yes | no | - |
-| `connector:rimmington:2` | (2965, 3215) | Staircase 1 | up (2968, 3215) L1 | yes | no | - |
-| `connector:rimmington:3` | (2966, 3215) L1 | Staircase 1 | down (2964, 3215) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:rimmington:0` | (2948, 3213) | Ladder 1 | up (2947, 3213) L1 by Climb-up | yes | no | - | - |
+| `connector:rimmington:1` | (2948, 3213) L1 | Ladder 1 | down (2947, 3213) by Climb-down | yes | no | - | - |
+| `connector:rimmington:2` | (2965, 3215) | Staircase 1 | up (2968, 3215) L1 by Climb-up | yes | no | - | - |
+| `connector:rimmington:3` | (2966, 3215) L1 | Staircase 1 | down (2964, 3215) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

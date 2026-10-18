@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:isafdar:0` | (2241, 3185) | [normal](../resources/tree/normal.md) 112 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:isafdar:0` | (2241, 3185) | [normal](../resources/tree/normal.md) 112 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | unreached |

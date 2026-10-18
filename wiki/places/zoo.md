@@ -5,20 +5,20 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:zoo:0` | (2608, 3261) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:zoo:1` | (2622, 3270) | [normal](../resources/tree/normal.md) 8 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:zoo:0` | (2608, 3261) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:zoo:1` | (2622, 3270) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:zoo:0` | (2605, 3269) | Pit Scorpion 3, Scorpion 3 | no | no | - |
-| `npc:zoo:1` | (2622, 3272) | Jogre 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:zoo:0` | (2605, 3269) | Pit Scorpion 3, Scorpion 3 | no | no | - | - |
+| `npc:zoo:1` | (2622, 3272) | Jogre 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:zoo:0` | (2621, 3261) | Ladder 1 | down (2620, 9661) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:zoo:0` | (2621, 3261) | Ladder 1 | down (2620, 9661) by Climb-down | no | no | - | - |

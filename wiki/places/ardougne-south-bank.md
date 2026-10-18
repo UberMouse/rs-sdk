@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:ardougne-south-bank:0` | (2657, 3284) | Bank booth 2, Banker 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:ardougne-south-bank:0` | (2657, 3284) | Bank booth 2, Banker 3 | no | no | - | - |

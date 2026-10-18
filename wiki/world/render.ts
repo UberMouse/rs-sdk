@@ -3,12 +3,12 @@
 // the game data it needs, writes the pages and removes stale ones, or lists what differs (--check).
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
-import { ROOT, WORLD_JSON } from './paths';
+import { ROOT, SCRIPTS, WORLD_JSON } from './paths';
 import { link, type PageData } from './render/common';
 import { renderPlaces } from './render/places';
 import { renderResources } from './render/resources';
 import { renderServices } from './render/services';
-import { readConfigs } from './sources/configs';
+import { first, parseConfigs, readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
 import { readCallables, readTriggers } from './sources/triggers';
 import { refuseSymlink } from './stale';
@@ -98,6 +98,19 @@ export function openshopTitles(bodies: readonly string[]): Map<string, string> {
     return new Map([...titles].sort(([a], [b]) => cmp(a, b)));
 }
 
+/** The quest list's interface, whose components are the quests by id with their names as `text`. */
+export const QUESTLIST = 'player/interfaces/questlist.if';
+
+/** Each questlist component's `text`, the quest's name in the list, by component id. */
+export function questListNames(text: string): Map<string, string> {
+    return new Map(
+        [...parseConfigs(text)].flatMap(([id, c]): [string, string][] => {
+            const name = first(c, 'text');
+            return name === undefined ? [] : [[id, name]];
+        }),
+    );
+}
+
 /** Reads the game data the pages need and the README's hand-written part (empty if no README), from ROOT. */
 export function readRenderData(): RenderData {
     const file = join(ROOT, README);
@@ -106,6 +119,7 @@ export function readRenderData(): RenderData {
         npcConfigs: readConfigs('npc'),
         objConfigs: readConfigs('obj'),
         shopTitles: openshopTitles([...readTriggers(), ...readCallables()].map(s => s.body)),
+        questNames: questListNames(readFileSync(join(SCRIPTS, QUESTLIST), 'utf8')),
         readmeBody: existsSync(file) ? readmeBody(readFileSync(file, 'utf8')) : '',
     };
 }

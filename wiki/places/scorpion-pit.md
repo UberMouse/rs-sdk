@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:scorpion-pit:0` | (3233, 3943) | Scorpion 4 | no | yes | 54 |
-| `npc:scorpion-pit:1` | (3246, 3945) | Scorpion 1 | no | yes | 54 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:scorpion-pit:0` | (3233, 3943) | Scorpion 4 | no | yes | 54 | - |
+| `npc:scorpion-pit:1` | (3246, 3945) | Scorpion 1 | no | yes | 54 | - |

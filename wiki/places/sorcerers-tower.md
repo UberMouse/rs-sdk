@@ -5,12 +5,12 @@
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:sorcerers-tower:0` | (2706, 3404) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:sorcerers-tower:0` | (2706, 3404) | Range 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:sorcerers-tower:0` | (2717, 3413) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:sorcerers-tower:0` | (2717, 3413) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | no | no | - | - |

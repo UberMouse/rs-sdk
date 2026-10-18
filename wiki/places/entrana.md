@@ -3,53 +3,53 @@
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:entrana:0` | (2834, 3351) | Furnace 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:entrana:0` | (2834, 3351) | Furnace 2 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:entrana:0` | (2822, 3351) | Range 1 | no | no | - |
-| `range:entrana:1` | (2844, 3367) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:entrana:0` | (2822, 3351) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `range:entrana:1` | (2844, 3367) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:entrana:0` | (2818, 3347) | Fountain 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:entrana:0` | (2818, 3347) | Fountain 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:entrana:0` | (2853, 3348) | Altar 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:entrana:0` | (2853, 3348) | Altar 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:entrana:0` | (2857, 3380) | law 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:entrana:0` | (2857, 3380) | law 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:entrana:0` | (2843, 3375) | [normal](../resources/tree/normal.md) 22, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - |
-| `tree:entrana:1` | (2824, 3348) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:entrana:2` | (2863, 3350) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:entrana:3` | (2879, 3402) | [normal](../resources/tree/normal.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:entrana:0` | (2843, 3375) | [normal](../resources/tree/normal.md) 22, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:1` | (2824, 3348) | [normal](../resources/tree/normal.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:2` | (2863, 3350) | [normal](../resources/tree/normal.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:3` | (2879, 3402) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:entrana:0` | (2844, 3358) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:entrana:0` | (2844, 3358) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:entrana:0` | (2851, 3371) | Chicken 6 | no | no | - |
-| `npc:entrana:1` | (2847, 3386) | Entrana Fire Bird 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:entrana:0` | (2851, 3371) | Chicken 6 | no | no | - | no weapons/armour (Entrana rule) |
+| `npc:entrana:1` | (2847, 3386) | Entrana Fire Bird 1 | no | no | - | no weapons/armour (Entrana rule) |

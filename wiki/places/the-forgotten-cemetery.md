@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:the-forgotten-cemetery:0` | (2977, 3753) | [normal](../resources/tree/normal.md) 7 | yes | no | 30 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:the-forgotten-cemetery:0` | (2977, 3753) | [normal](../resources/tree/normal.md) 7 | yes | no | 30 | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | [Man](../resources/pickpocket/man.md) 1 | yes | no | 28 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | [Man](../resources/pickpocket/man.md) 1 | yes | no | 28 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:the-forgotten-cemetery:0` | (2968, 3749) | Ghost 1 | yes | no | 29 |
-| `npc:the-forgotten-cemetery:1` | (2968, 3761) | Ghost 1 | yes | no | 31 |
-| `npc:the-forgotten-cemetery:2` | (2977, 3753) | Skeleton 1 | yes | no | 30 |
-| `npc:the-forgotten-cemetery:3` | (2983, 3762) | Ghost 1, Skeleton 1 | yes | no | 31 |
-| `npc:the-forgotten-cemetery:4` | (2985, 3749) | Ghost 1 | yes | no | 29 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:the-forgotten-cemetery:0` | (2968, 3749) | Ghost 1 | yes | no | 29 | - |
+| `npc:the-forgotten-cemetery:1` | (2968, 3761) | Ghost 1 | yes | no | 31 | - |
+| `npc:the-forgotten-cemetery:2` | (2977, 3753) | Skeleton 1 | yes | no | 30 | - |
+| `npc:the-forgotten-cemetery:3` | (2983, 3762) | Ghost 1, Skeleton 1 | yes | no | 31 | - |
+| `npc:the-forgotten-cemetery:4` | (2985, 3749) | Ghost 1 | yes | no | 29 | - |

@@ -1,8 +1,9 @@
 // What every rendered page shares: tile and flag formats (as the shop pages print coordinates), tables,
-// the order and titles of kinds, area labels, the in-game names counts read by, and the paths pages
-// link by.
+// the order and titles of kinds, area labels, the in-game names counts read by, how a site's reach reads,
+// and the paths pages link by.
 import { params } from '../classify';
-import type { Config } from '../sources/configs';
+import { parseRequirement } from '../requirements';
+import { first, type Config } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
 import type { Feature, FeatureKind, Site, Tile, World } from '../types';
 import { cmp } from '../util';
@@ -118,7 +119,88 @@ export interface PageData {
     objConfigs: ReadonlyMap<string, Config>;
     /** The title each explicit `~openshop(<inv>, ..., "<title>")` call gives its inv (openshopTitles). */
     shopTitles: ReadonlyMap<string, string>;
+    /** Each quest's name in the quest list, by its questlist component (`zanaris` -> `Lost City`). */
+    questNames: ReadonlyMap<string, string>;
 }
+
+/** `weapon_axe` -> `weapon axe`; `glarials_tomb` -> `Glarials tomb` with `capital`. */
+const words = (id: string, capital = false): string => {
+    const w = id.replace(/_/g, ' ');
+    return capital ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+};
+
+/**
+ * How a page reads a reach (Site.reach): `-` for no requirement (`[[]]`), `unreached` for none (`[]`), else
+ * each minimal set's requirements joined with ` + `, the sets with ` or `. A requirement reads as
+ * requirements.ts names it, with the quest list's names and the objs' names. In a set, of a quest's stage
+ * requirements only the highest shows, as it implies the lower, and none at or below complete beside the
+ * quest itself (unless the quest is done by another varp too, Quest.or, which the stage does not read).
+ */
+export function reachLabel(
+    world: Pick<World, 'quests' | 'loadoutRules'>,
+    data: PageData,
+): (reach: readonly (readonly string[])[]) => string {
+    const quests = new Map(world.quests.map(q => [q.id, q]));
+    const quest = (id: string): string => data.questNames.get(id) ?? id;
+    const obj = (id: string): string => first(data.objConfigs.get(id), 'name') ?? id;
+    const loadout = (id: string): string => {
+        const cats = Object.keys(world.loadoutRules[id]?.forbidCategories ?? {});
+        const banned = [
+            ...(cats.some(c => c.startsWith('weapon_')) ? ['weapons'] : []),
+            ...(cats.some(c => c.startsWith('armour_')) ? ['armour'] : []),
+        ];
+        return `no ${banned.length ? banned.join('/') : 'banned items'} (${words(id, true)} rule)`;
+    };
+    const one = (s: string): string => {
+        const r = parseRequirement(s);
+        switch (r.kind) {
+            case 'quest':
+                return r.stage === undefined ? `${quest(r.quest)} done` : `${quest(r.quest)} at stage ${r.stage}`;
+            case 'skill':
+                return `${r.level} ${words(r.skill, true)}`;
+            case 'item':
+                return `${r.how === 'worn' ? 'wear' : 'carry'} ${obj(r.obj)}`;
+            case 'category':
+                return `${r.how === 'worn' ? 'wear' : 'carry'} any ${words(r.category)}`;
+            case 'questpoints':
+                return `${r.n} quest points`;
+            case 'coins':
+                return `${r.n} coins`;
+            case 'consume':
+                return `${r.n} ${obj(r.obj)} (used up)`;
+            case 'members':
+                return 'members';
+            case 'loadout':
+                return loadout(r.rule);
+            case 'other':
+                return r.text;
+        }
+    };
+    /** A set without the stage requirements another of its requirements implies. */
+    const shown = (set: readonly string[]): string[] => {
+        const parsed = set.map(s => [s, parseRequirement(s)] as const);
+        const top = new Map<string, number>();
+        for (const [, r] of parsed)
+            if (r.kind === 'quest' && r.stage !== undefined) top.set(r.quest, Math.max(top.get(r.quest) ?? 0, r.stage));
+        const done = new Set(parsed.flatMap(([, r]) => (r.kind === 'quest' && r.stage === undefined ? [r.quest] : [])));
+        return parsed.flatMap(([s, r]) => {
+            if (r.kind !== 'quest' || r.stage === undefined) return [s];
+            if (r.stage < top.get(r.quest)!) return [];
+            const q = quests.get(r.quest);
+            return done.has(r.quest) && q && !q.or && r.stage <= q.complete ? [] : [s];
+        });
+    };
+    return reach => {
+        if (!reach.length) return 'unreached';
+        if (reach.some(set => !set.length)) return '-';
+        return reach.map(set => shown(set).map(one).join(' + ')).join(' or ');
+    };
+}
+
+/** How many of `sites` a walk from the Lumbridge spawn gets to with no requirement, and how many it does not reach. */
+export const reachSummary = (sites: readonly Pick<Site, 'reach'>[]): string =>
+    `${sites.filter(s => s.reach.some(set => !set.length)).length} a walk from the Lumbridge spawn reaches with no ` +
+    `requirement (Requires -), ${sites.filter(s => !s.reach.length).length} it does not reach (unreached)`;
 
 /** One thing a site holds and how many. */
 export interface Part {

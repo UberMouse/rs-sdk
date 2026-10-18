@@ -5,13 +5,13 @@ The mining and combat instructors of Tutorial Island.
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:tutorial-island-caves:0` | (3080, 9496) | Furnace 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:tutorial-island-caves:0` | (3080, 9496) | Furnace 2 | yes | no | - | unreached |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `anvil:tutorial-island-caves:0` | (3075, 9498) | Anvil 2 | yes | no | - |
-| `anvil:tutorial-island-caves:1` | (3083, 9498) | Anvil 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `anvil:tutorial-island-caves:0` | (3075, 9498) | Anvil 2 | yes | no | - | unreached |
+| `anvil:tutorial-island-caves:1` | (3083, 9498) | Anvil 2 | yes | no | - | unreached |

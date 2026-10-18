@@ -5,24 +5,24 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:white-wolf-mountain:0` | (2840, 3479) | [normal](../resources/tree/normal.md) 12 | no | yes | - |
-| `tree:white-wolf-mountain:1` | (2834, 3503) | [normal](../resources/tree/normal.md) 5 | no | yes | - |
-| `tree:white-wolf-mountain:2` | (2850, 3515) | [normal](../resources/tree/normal.md) 1 | no | yes | - |
-| `tree:white-wolf-mountain:3` | (2860, 3506) | [normal](../resources/tree/normal.md) 6 | no | yes | - |
-| `tree:white-wolf-mountain:4` | (2868, 3472) | [normal](../resources/tree/normal.md) 3 | no | yes | - |
-| `tree:white-wolf-mountain:5` | (2871, 3497) | [normal](../resources/tree/normal.md) 1 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:white-wolf-mountain:0` | (2840, 3479) | [normal](../resources/tree/normal.md) 12 | no | yes | - | - |
+| `tree:white-wolf-mountain:1` | (2834, 3503) | [normal](../resources/tree/normal.md) 5 | no | yes | - | - |
+| `tree:white-wolf-mountain:2` | (2850, 3515) | [normal](../resources/tree/normal.md) 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `tree:white-wolf-mountain:3` | (2860, 3506) | [normal](../resources/tree/normal.md) 6 | no | yes | - | - |
+| `tree:white-wolf-mountain:4` | (2868, 3472) | [normal](../resources/tree/normal.md) 3 | no | yes | - | - |
+| `tree:white-wolf-mountain:5` | (2871, 3497) | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:white-wolf-mountain:0` | (2849, 3513) | Ice warrior 2 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:white-wolf-mountain:0` | (2849, 3513) | Ice warrior 2 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:white-wolf-mountain:0` | (2827, 3510) | Ladder 1 | down (2828, 9910) | no | yes | - |
-| `connector:white-wolf-mountain:1` | (2848, 3513) | Ladder 1 | down (2849, 9913) | no | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:white-wolf-mountain:0` | (2827, 3510) | Ladder 1 | down (2828, 9910) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain:1` | (2848, 3513) | Ladder 1 | down (2849, 9913) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |

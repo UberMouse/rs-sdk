@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:mcgrubors-wood:0` | (2647, 3478) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 13 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:mcgrubors-wood:0` | (2647, 3478) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 13 | no | no | - | - |

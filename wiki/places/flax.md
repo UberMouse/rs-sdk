@@ -5,7 +5,7 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:flax:0` | (2754, 3433) | [yew](../resources/tree/yew.md) 1 | no | no | - |
-| `tree:flax:1` | (2754, 3454) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:flax:0` | (2754, 3433) | [yew](../resources/tree/yew.md) 1 | no | no | - | - |
+| `tree:flax:1` | (2754, 3454) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |

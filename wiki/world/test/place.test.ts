@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { buildSites, locSizes, spawnClusters, type LocReach, type SiteCollision } from '../place';
+import { buildSites, locSizes, spawnClusters, type LocReach, type Placed, type SiteCollision } from '../place';
 import type { Config } from '../sources/configs';
 import type { Zones } from '../sources/zones';
 import { zoneKey } from '../sources/zones';
@@ -54,7 +54,7 @@ const quiet = { size, log: () => {} };
 /** Booths and trees block their own tile, as their collision does. */
 const blockedBy = (fs: Feature[]): Tile[] => fs.filter(f => f.source === 'loc').map(f => f.tile);
 
-const build = (fs: Feature[], resolve: (t: Tile) => string[] = oneArea): Site[] =>
+const build = (fs: Feature[], resolve: (t: Tile) => string[] = oneArea): Placed<Site>[] =>
     buildSites(fs, resolve, noZones, stubCollision(blockedBy(fs)), quiet);
 
 const splitAt101 = (t: Tile): string[] => (t.x < 101 ? ['varrock', 'west-bank'] : ['varrock', 'east-bank']);
@@ -155,6 +155,32 @@ describe('buildSites: stand tiles', () => {
         const sites = buildSites(fs, oneArea, noZones, collision, quiet);
         // East and west of the booth tie on side; the nearer the centre (100, 101) wins, then lower x.
         expect(sites[0]!.stand).toEqual({ level: 0, x: 99, z: 100 });
+    });
+
+    test('a tile a walk gets to beats every other preference: the far end of the counter, walled in, is no stand', () => {
+        // The bankers stand well south of the counter's middle, so its north end (100, 103) faces furthest away
+        // from them; with that end walled off from the walk (as Ardougne South bank's is, inside the bankers'
+        // side), the stand is the tile in front of the counter nearest the centre (100, 100).
+        const fs = [booth(100, 100), booth(100, 101), booth(100, 102), banker(101, 97), banker(101, 98)];
+        const collision = stubCollision(blockedBy(fs));
+        expect(build(fs)[0]!.stand).toEqual({ level: 0, x: 100, z: 103 });
+        const [site] = buildSites(fs, oneArea, noZones, collision, {
+            ...quiet,
+            walked: t => t.x !== 100 || t.z !== 103,
+        });
+        expect(site!.stand).toEqual({ level: 0, x: 99, z: 100 });
+        // With no tile walked to, the preferences stand as they were.
+        const none = buildSites(fs, oneArea, noZones, collision, { ...quiet, walked: () => false });
+        expect(none[0]!.stand).toEqual({ level: 0, x: 100, z: 103 });
+    });
+
+    test('an npc-only site prefers a walkable tile a walk gets to over a nearer one it does not', () => {
+        const fs = [npc('shop', 'shopkeeper', 100, 100)];
+        const blocked = stubCollision([{ level: 0, x: 100, z: 100 }]);
+        // Without the walk, (99, 100) wins: as near the centre as (100, 99), and its x is lower.
+        expect(buildSites(fs, oneArea, noZones, blocked, quiet)[0]!.stand).toEqual({ level: 0, x: 99, z: 100 });
+        const [site] = buildSites(fs, oneArea, noZones, blocked, { ...quiet, walked: t => t.z < 100 });
+        expect(site!.stand).toEqual({ level: 0, x: 100, z: 99 });
     });
 
     test('a loc site stands on the reachable tile nearest the centre', () => {

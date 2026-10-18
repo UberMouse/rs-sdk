@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:ice-mountain:0` | (3007, 3489) | [normal](../resources/tree/normal.md) 43 | yes | no | - |
-| `tree:ice-mountain:1` | (3030, 3464) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:ice-mountain:0` | (3007, 3489) | [normal](../resources/tree/normal.md) 43 | yes | no | - | - |
+| `tree:ice-mountain:1` | (3030, 3464) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:ice-mountain:0` | (3026, 3507) L2 | Black Knight 1 | yes | no | - |
-| `npc:ice-mountain:1` | (3031, 3502) | Black Knight 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:ice-mountain:0` | (3026, 3507) L2 | Black Knight 1 | yes | no | - | unreached |
+| `npc:ice-mountain:1` | (3031, 3502) | Black Knight 3 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:ice-mountain:0` | (3029, 3506) L2 | Staircase 1 | up (3028, 3507) L3 | yes | no | - |
-| `connector:ice-mountain:1` | (3029, 3507) L3 | Staircase 1 | down (3028, 3507) L2 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:ice-mountain:0` | (3029, 3506) L2 | Staircase 1 | up (3028, 3507) L3 by Climb-up | yes | no | - | unreached |
+| `connector:ice-mountain:1` | (3029, 3507) L3 | Staircase 1 | down (3028, 3507) L2 by Climb-down | yes | no | - | unreached |

@@ -5,20 +5,20 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:ruins-2:0` | (3168, 3734) | Sink 1 | yes | no | 27 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:ruins-2:0` | (3168, 3734) | Sink 1 | yes | no | 27 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:ruins-2:0` | (3166, 3746) | [normal](../resources/tree/normal.md) 1 | yes | no | 29 |
-| `tree:ruins-2:1` | (3169, 3723) | [normal](../resources/tree/normal.md) 1 | yes | no | 26 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:ruins-2:0` | (3166, 3746) | [normal](../resources/tree/normal.md) 1 | yes | no | 29 | - |
+| `tree:ruins-2:1` | (3169, 3723) | [normal](../resources/tree/normal.md) 1 | yes | no | 26 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:ruins-2:0` | (3157, 3740) | Deadly red spider 1 | yes | no | 28 |
-| `npc:ruins-2:1` | (3169, 3736) | Deadly red spider 4 | yes | no | 28 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:ruins-2:0` | (3157, 3740) | Deadly red spider 1 | yes | no | 28 | - |
+| `npc:ruins-2:1` | (3169, 3736) | Deadly red spider 4 | yes | no | 28 | - |

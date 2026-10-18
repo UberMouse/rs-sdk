@@ -19,7 +19,6 @@
 | [Isafdar (Tirannwn)](../places/isafdar.md) | (2247, 3180) | 3 | no |
 | [Isafdar (Tirannwn)](../places/isafdar.md) | (2253, 3176) | 5 | no |
 | [Kandarin](../places/kandarin.md) | (2375, 3468) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2540, 3167) | 1 | no |
 | [Kandarin](../places/kandarin.md) | (2549, 3139) | 1 | no |
 | [Kandarin](../places/kandarin.md) | (2556, 3444) | 1 | no |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3168, 3258) | 1 | yes |
@@ -93,6 +92,7 @@
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2450, 3419) | 1 | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2470, 3397) | 1 | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2479, 3396) | 1 | no |
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2540, 3167) | 1 | no |
 | [Tutorial Island](../places/tutorial-island.md) | (3082, 3077) | 1 | yes |
 | [Tutorial Island](../places/tutorial-island.md) | (3092, 3082) | 1 | yes |
 | [Tutorial Island](../places/tutorial-island.md) | (3095, 3086) | 2 | yes |

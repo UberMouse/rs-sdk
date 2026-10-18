@@ -5,70 +5,70 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:barbarian-village:0` | (3076, 3429) | Helmet Shop. (helmetshop) 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:barbarian-village:0` | (3076, 3429) | Helmet Shop. (helmetshop) 1 | yes | yes | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:barbarian-village:0` | (3079, 3445) | Fire 2 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:barbarian-village:0` | (3079, 3445) | Fire 2 | yes | yes | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `spinning-wheel:barbarian-village:0` | (3081, 3430) | Spinning wheel 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `spinning-wheel:barbarian-village:0` | (3081, 3430) | Spinning wheel 1 | yes | yes | - | - |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-wheel:barbarian-village:0` | (3087, 3410) | Potter's Wheel 2 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pottery-wheel:barbarian-village:0` | (3087, 3410) | Potter's Wheel 2 | yes | yes | - | - |
 
 ## [Pottery ovens](../services/pottery-oven.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-oven:barbarian-village:0` | (3084, 3407) | Pottery Oven 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pottery-oven:barbarian-village:0` | (3084, 3407) | Pottery Oven 1 | yes | yes | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:barbarian-village:0` | (3065, 3442) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:barbarian-village:1` | (3090, 3402) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | yes | - |
-| `tree:barbarian-village:2` | (3073, 3433) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:barbarian-village:3` | (3074, 3422) | [oak](../resources/tree/oak.md) 1 | yes | yes | - |
-| `tree:barbarian-village:4` | (3075, 3449) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:barbarian-village:5` | (3087, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:barbarian-village:6` | (3092, 3431) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:barbarian-village:7` | (3111, 3446) | [normal](../resources/tree/normal.md) 8 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:barbarian-village:0` | (3065, 3442) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:barbarian-village:1` | (3090, 3402) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
+| `tree:barbarian-village:2` | (3073, 3433) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:barbarian-village:3` | (3074, 3422) | [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
+| `tree:barbarian-village:4` | (3075, 3449) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:barbarian-village:5` | (3087, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:barbarian-village:6` | (3092, 3431) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:barbarian-village:7` | (3111, 3446) | [normal](../resources/tree/normal.md) 8 | yes | yes | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:barbarian-village:0` | (3087, 3425) | [coal](../resources/rock/coal.md) 4, [tin](../resources/rock/tin.md) 5 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:barbarian-village:0` | (3087, 3425) | [coal](../resources/rock/coal.md) 4, [tin](../resources/rock/tin.md) 5 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:barbarian-village:0` | (3081, 3419) | Barbarian 6, Barbarian woman 3 | yes | yes | - |
-| `npc:barbarian-village:1` | (3079, 3441) | Barbarian 5, Barbarian woman 2, Gunthor the brave 1 | yes | yes | - |
-| `npc:barbarian-village:2` | (3096, 3428) L2 | Barbarian 1 | yes | no | - |
-| `npc:barbarian-village:3` | (3096, 3432) | Barbarian 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:barbarian-village:0` | (3081, 3419) | Barbarian 6, Barbarian woman 3 | yes | yes | - | - |
+| `npc:barbarian-village:1` | (3079, 3441) | Barbarian 5, Barbarian woman 2, Gunthor the brave 1 | yes | yes | - | - |
+| `npc:barbarian-village:2` | (3096, 3428) L2 | Barbarian 1 | yes | no | - | - |
+| `npc:barbarian-village:3` | (3096, 3432) | Barbarian 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:barbarian-village:0` | (3096, 3433) | Ladder 1 | up (3096, 3432) L1 | yes | yes | - |
-| `connector:barbarian-village:1` | (3096, 3433) L1 | Ladder 1 | down (3096, 3432) | yes | no | - |
-| `connector:barbarian-village:2` | (3097, 3433) L1 | Ladder 1 | up (3097, 3432) L2 | yes | no | - |
-| `connector:barbarian-village:3` | (3097, 3433) L2 | Ladder 1 | down (3097, 3432) L1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:barbarian-village:0` | (3096, 3433) | Ladder 1 | up (3096, 3432) L1 by Climb-up | yes | yes | - | - |
+| `connector:barbarian-village:1` | (3096, 3433) L1 | Ladder 1 | down (3096, 3432) by Climb-down | yes | no | - | - |
+| `connector:barbarian-village:2` | (3097, 3433) L1 | Ladder 1 | up (3097, 3432) L2 by Climb-up | yes | no | - | - |
+| `connector:barbarian-village:3` | (3097, 3433) L2 | Ladder 1 | down (3097, 3432) L1 by Climb-down | yes | no | - | - |
 
 ## Areas within
 

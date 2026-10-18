@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:baxtorian-falls:0` | (2510, 3463) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:baxtorian-falls:0` | (2510, 3463) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |

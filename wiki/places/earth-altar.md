@@ -5,6 +5,6 @@ Inside the earth ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:earth-altar:0` | (2657, 4840) | earth 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:earth-altar:0` | (2657, 4840) | earth 1 | yes | no | - | unreached |

@@ -5,26 +5,26 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:draynor-market:0` | (3079, 3250) | Diango's Toy Store (aprilfoolshorseshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:draynor-market:0` | (3079, 3250) | Diango's Toy Store (aprilfoolshorseshop) 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:draynor-market:0` | (3100, 3256) | Fireplace 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:draynor-market:0` | (3100, 3256) | Fireplace 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:draynor-market:0` | (3085, 3243) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:draynor-market:1` | (3100, 3247) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:draynor-market:0` | (3085, 3243) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:draynor-market:1` | (3100, 3247) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:draynor-market:0` | (3090, 3251) | Staircase 1 | up (3093, 3251) L1 | yes | no | - |
-| `connector:draynor-market:1` | (3091, 3251) L1 | Staircase 1 | down (3089, 3251) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:draynor-market:0` | (3090, 3251) | Staircase 1 | up (3093, 3251) L1 by Climb-up | yes | no | - | - |
+| `connector:draynor-market:1` | (3091, 3251) L1 | Staircase 1 | down (3089, 3251) by Climb-down | yes | no | - | - |

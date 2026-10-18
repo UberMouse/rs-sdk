@@ -5,19 +5,19 @@ Inside the water ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:water-altar:0` | (2715, 4835) | water 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:water-altar:0` | (2715, 4835) | water 1 | yes | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:water-altar:0` | (2694, 4811) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:water-altar:1` | (2701, 4847) | [normal](../resources/tree/normal.md) 5 | yes | no | - |
-| `tree:water-altar:2` | (2701, 4825) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:water-altar:3` | (2709, 4810) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:water-altar:4` | (2726, 4820) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:water-altar:5` | (2732, 4851) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:water-altar:6` | (2733, 4806) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:water-altar:7` | (2738, 4828) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:water-altar:0` | (2694, 4811) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:1` | (2701, 4847) | [normal](../resources/tree/normal.md) 5 | yes | no | - | unreached |
+| `tree:water-altar:2` | (2701, 4825) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:3` | (2709, 4810) | [normal](../resources/tree/normal.md) 3 | yes | no | - | unreached |
+| `tree:water-altar:4` | (2726, 4820) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:5` | (2732, 4851) | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |
+| `tree:water-altar:6` | (2733, 4806) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:7` | (2738, 4828) | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |

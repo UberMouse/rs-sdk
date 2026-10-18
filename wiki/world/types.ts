@@ -79,6 +79,11 @@ export interface Site {
     f2p: boolean;
     multiway: boolean;
     wildernessLevel: number;
+    /**
+     * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to the stand
+     * tile (reach.ts), canonical and sorted: `[[]]` with none, `[]` when no set gets there or there is no stand.
+     */
+    reach: string[][];
 }
 
 /**
@@ -95,6 +100,12 @@ export interface NpcSpawn {
     /** Placements in the cluster. */
     count: number;
     f2p: boolean;
+    /**
+     * The minimal requirement sets a walk from the Lumbridge spawn needs to get beside the cluster (reach.ts): the
+     * minimal ones among the sets that reach any tile of its bbox grown by one, the tiles place.ts takes an npc
+     * site's stand from; `[]` when none is reached.
+     */
+    reach: string[][];
 }
 
 /**
@@ -291,7 +302,7 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 10;
+export const WORLD_FORMAT = 11;
 
 export interface World {
     /** WORLD_FORMAT when written. */

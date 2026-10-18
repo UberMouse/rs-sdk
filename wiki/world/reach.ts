@@ -109,6 +109,10 @@ export interface ReachReport {
 export interface Reach {
     /** The minimal requirement sets that reach the tile, in minimalSets order; [] when none does. */
     setsAt(t: Tile): string[][];
+    /** The minimal sets that reach any one of the tiles, in minimalSets order; [] when none reaches one. */
+    setsAny(tiles: readonly Tile[]): string[][];
+    /** Whether some set reaches the tile. */
+    reached(t: Tile): boolean;
     report: ReachReport;
 }
 
@@ -672,12 +676,15 @@ export function fillReach(input: ReachInput): Reach {
                 poolNext.byteLength +
                 queueBytes,
         };
+        const at = (t: Tile): number => index.of(t.level, t.x, t.z);
         return {
-            setsAt(t) {
-                const i = index.of(t.level, t.x, t.z);
-                if (i < 0) return [];
-                return minimalSets(held(i).map(sets.strings));
+            setsAt: t => (at(t) < 0 ? [] : minimalSets(held(at(t)).map(sets.strings))),
+            setsAny(tiles) {
+                const ids = new Set<number>();
+                for (const t of tiles) if (at(t) >= 0) for (const s of held(at(t))) ids.add(s);
+                return minimalSets([...ids].map(sets.strings));
             },
+            reached: t => at(t) >= 0 && head[at(t)] !== -1,
             report,
         };
     }

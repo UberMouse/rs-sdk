@@ -5,7 +5,7 @@ import { join } from 'path';
 import { BANKS } from '../../../conductor/lib/banks';
 import { AREAS } from '../areas';
 import { buildWorld } from '../build';
-import { siteCollision } from '../collision';
+import { reachCollision, siteCollision } from '../collision';
 import { WIKI } from '../paths';
 import { locSizes } from '../place';
 import { readConfigs } from '../sources/configs';
@@ -17,7 +17,7 @@ import type { Feature, Site } from '../types';
 
 // Built when the file loads, where no timeout applies: the build reads all the game data, 3-4s here,
 // too close to the 5s bun gives a beforeAll hook (and bun-types 1.2 declares no hook timeout).
-const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: siteCollision });
+const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: reachCollision });
 
 /** Lower case, letters and digits only: a shop page's slug against an inventory name. */
 const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -331,6 +331,7 @@ describe('npc locations', () => {
                 bbox: { x1: 2660, z1: 3653, x2: 2660, z2: 3653, level: 0 },
                 count: 1,
                 f2p: false,
+                reach: [[]],
             },
         ]);
         expect(pagePlaces('sigli-the-huntsman.md')).toEqual(['rellekka']);

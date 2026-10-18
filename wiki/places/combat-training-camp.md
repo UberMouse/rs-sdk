@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:combat-training-camp:0` | (2527, 3380) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:combat-training-camp:0` | (2527, 3380) | [normal](../resources/tree/normal.md) 1 | no | no | - | Biohazard done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:combat-training-camp:0` | (2526, 3375) | Ogre 6 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:combat-training-camp:0` | (2526, 3375) | Ogre 6 | no | no | - | Biohazard done |

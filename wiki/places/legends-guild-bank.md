@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:legends-guild-bank:0` | (2732, 3379) L2 | Banker 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:legends-guild-bank:0` | (2732, 3379) L2 | Banker 4 | no | no | - | Legends Quest at stage 50 |

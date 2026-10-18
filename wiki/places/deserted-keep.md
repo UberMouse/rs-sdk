@@ -5,7 +5,7 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:deserted-keep:0` | (3145, 3948) | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 |
-| `tree:deserted-keep:1` | (3157, 3938) | [burnt](../resources/tree/burnt.md) 5 | no | no | 54 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:deserted-keep:0` | (3145, 3948) | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 | - |
+| `tree:deserted-keep:1` | (3157, 3938) | [burnt](../resources/tree/burnt.md) 5 | no | no | 54 | - |

@@ -13,7 +13,7 @@
 | Area | Centre | Spawns | F2P |
 |------|--------|--------|-----|
 | [Kandarin](../places/kandarin.md) | (2504, 3191) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2514, 3159) | 1 | no |
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2514, 3159) | 1 | no |
 
 ## Interactions
 

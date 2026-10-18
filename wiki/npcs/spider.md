@@ -98,7 +98,7 @@
 | [Ape Atoll](../places/ape-atoll.md) | (2806, 2787) L1 | 1 | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2749, 2768) L2 | 1 | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2752, 2798) L2 | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2543, 3187) | 5 | no |
+| [Kandarin](../places/kandarin.md) | (2544, 3189) | 4 | no |
 | [Kandarin](../places/kandarin.md) | (2672, 3108) | 2 | no |
 | [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | (3213, 9620) | 4 | yes |
 | [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3169, 3244) | 2 | yes |
@@ -110,7 +110,7 @@
 | [Morytania](../places/morytania.md) | (3620, 3500) | 1 | no |
 | [Morytania](../places/morytania.md) | (3636, 3484) | 1 | no |
 | [Taverley Dungeon](../places/taverley-dungeon.md) | (2893, 9832) | 3 | no |
-| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2536, 3182) | 4 | no |
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2537, 3182) | 5 | no |
 | [Varrock (Misthalin)](../places/varrock.md) | (3238, 3392) | 1 | yes |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3206, 9879) | 2 | yes |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3211, 9890) | 4 | yes |

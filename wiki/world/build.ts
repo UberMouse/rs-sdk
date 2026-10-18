@@ -2,9 +2,10 @@
 // sites named by the curated areas, every npc spawn clustered per config (npcSpawns, which the npc
 // pages read), every connector's landings (sources/connectors.ts), the quest table (sources/quests.ts),
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
-// (sources/gate-scan.ts, gates.ts); then prints a report and renders the pages (render.ts). `bun run
-// world` writes them, prints the reach fill's report (reach.ts: what a walk from the Lumbridge spawn reaches,
-// reported only, not written to world.json), and exits 1 when the report has an error (failed): a site that breaks the COVERED
+// (sources/gate-scan.ts, gates.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
+// Lumbridge spawn needs to get there); then prints a report and renders the pages (render.ts). `bun run
+// world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches (the
+// curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
@@ -19,11 +20,11 @@ import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
-import { coord } from './render/common';
-import { buildSites, locSizes, spawnClusters } from './place';
-import { fillReach, formatReach } from './reach';
+import { bySiteId, coord } from './render/common';
+import { buildSites, locSizes, spawnClusters, type Placed } from './place';
+import { fillReach, formatReach, type Reach, type ReachCollision, type ReachReport } from './reach';
 import { readConfigs } from './sources/configs';
-import { deriveConnectors, WAY_BACK, type ConnectorCollision, type Underived } from './sources/connectors';
+import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
 import { readDbrows } from './sources/dbrows';
 import { readAllMapSquares } from './sources/maps';
 import { readPack } from './sources/packs';
@@ -44,7 +45,16 @@ import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
 import { parseCallables, parseTriggers, readScripts } from './sources/triggers';
 import { readZones } from './sources/zones';
-import { WORLD_FORMAT, type Area, type Feature, type FeatureKind, type Site, type World } from './types';
+import {
+    WORLD_FORMAT,
+    type Area,
+    type Feature,
+    type FeatureKind,
+    type NpcSpawn,
+    type Site,
+    type Tile,
+    type World,
+} from './types';
 import { cmp, push } from './util';
 
 /**
@@ -76,6 +86,22 @@ export const COVERED: ReadonlySet<FeatureKind> = new Set<FeatureKind>([
     'thieving-chest',
     'pickpocket',
 ]);
+
+/** A site of a COVERED kind no walk from the Lumbridge spawn reaches (Site.reach `[]`): a curation to-do. */
+export interface Unreached {
+    id: string;
+    kind: FeatureKind;
+    /** The site's area path, as Site.areaPath. */
+    areaPath: string[];
+    /** Its stand tile, or its centre when it has none (`stand` false). */
+    at: Tile;
+    stand: boolean;
+    /** The reached tile nearest `at` on its level and plane, within NEAREST_RADIUS; null when none is. */
+    nearest: Tile | null;
+}
+
+/** How far (Chebyshev, in tiles) the unreached report looks for the nearest reached tile. */
+export const NEAREST_RADIUS = 64;
 
 export interface BuildReport {
     features: Partial<Record<FeatureKind, number>>;
@@ -168,6 +194,10 @@ export interface BuildReport {
          */
         landings: Pick<GateLandings, 'counts' | 'underived' | 'offLand' | 'unlanded'>;
     };
+    /** The reach fill's own report (reach.ts). */
+    reach: ReachReport;
+    /** Sites of COVERED kinds no walk reaches, by area path then id: warnings, the curation to-do list. */
+    unreached: Unreached[];
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -186,7 +216,7 @@ export const failed = (r: BuildReport): boolean =>
 export interface BuildInput {
     generatedFrom: string;
     areas: readonly Area[];
-    collision: ConnectorCollision;
+    collision: ReachCollision;
 }
 
 /** The written order: kind, x, z, level, config, then the rest of a feature's identity. */
@@ -212,6 +242,69 @@ const tally = <T>(xs: readonly T[], key: (x: T) => string): Record<string, numbe
     }
     return Object.fromEntries([...counted].sort(([a], [b]) => cmp(a, b)));
 };
+
+/**
+ * The reached tile nearest `t` on its level and plane (the surface, or the underground at z >= 6400): the
+ * first Chebyshev ring out to `radius` that holds one, and in it the nearest in a straight line, then by x and
+ * z; null when none is.
+ */
+export function nearestReached(reached: (t: Tile) => boolean, t: Tile, radius = NEAREST_RADIUS): Tile | null {
+    const underground = t.z >= 6400;
+    for (let r = 0; r <= radius; r++) {
+        let best: Tile | null = null;
+        let bestD = Infinity;
+        for (let dx = -r; dx <= r; dx++)
+            for (let dz = -r; dz <= r; dz++) {
+                if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+                const c = { level: t.level, x: t.x + dx, z: t.z + dz };
+                if (c.z >= 6400 !== underground || !reached(c)) continue;
+                const d = dx * dx + dz * dz;
+                if (d < bestD || (d === bestD && best && (c.x < best.x || (c.x === best.x && c.z < best.z)))) {
+                    best = c;
+                    bestD = d;
+                }
+            }
+        if (best) return best;
+    }
+    return null;
+}
+
+/** The tiles of an npc spawn cluster's bbox grown by one, on its level. */
+function besideCluster(c: Placed<NpcSpawn>): Tile[] {
+    const out: Tile[] = [];
+    for (let x = c.bbox.x1 - 1; x <= c.bbox.x2 + 1; x++)
+        for (let z = c.bbox.z1 - 1; z <= c.bbox.z2 + 1; z++) out.push({ level: c.centre.level, x, z });
+    return out;
+}
+
+/**
+ * Each site's reach, the sets of its stand tile, and each npc spawn cluster's, the minimal sets over the tiles
+ * of its bbox grown by one (types.ts NpcSpawn.reach): the cheapest way beside any of its spawns, not the
+ * nearest tile's, which may sit behind a door the cheapest way does not need. Also the COVERED sites none
+ * reaches, by area path then id.
+ */
+export function addReach(
+    placed: { sites: readonly Placed<Site>[]; npcSpawns: readonly Placed<NpcSpawn>[] },
+    reach: Pick<Reach, 'setsAt' | 'setsAny' | 'reached'>,
+): { sites: Site[]; npcSpawns: NpcSpawn[]; unreached: Unreached[] } {
+    const sites = placed.sites.map(s => ({ ...s, reach: s.stand ? reach.setsAt(s.stand) : [] }));
+    const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(besideCluster(c)) }));
+    const unreached = sites
+        .filter(s => COVERED.has(s.kind) && !s.reach.length)
+        .map(s => {
+            const at = s.stand ?? s.centre;
+            return {
+                id: s.id,
+                kind: s.kind,
+                areaPath: s.areaPath,
+                at,
+                stand: s.stand !== null,
+                nearest: nearestReached(reach.reached, at),
+            };
+        })
+        .sort((a, b) => cmp(a.areaPath.join('/'), b.areaPath.join('/')) || bySiteId(a.id, b.id));
+    return { sites, npcSpawns, unreached };
+}
 
 /** An underived connector op as the report lists it: `config (x, z) op<n>`. */
 const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
@@ -251,20 +344,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     // Sorted before buildSites, as a site's `features` are indexes into this array.
     features.sort(byWritten);
 
-    const log: string[] = [];
     const resolve = areaResolver(areas);
     const zones = readZones();
-    const sites: Site[] = buildSites(features, resolve, zones, collision, {
-        size: locSizes(locConfigs),
-        log: line => log.push(line),
-    }).sort((a, b) => cmp(a.id, b.id));
     // Every placed npc, classified or not, so an npc page can say where any npc stands. A spawn with no
     // config is in `unpacked` already.
     const spawns = map.npcs.flatMap(n => {
         const config = packs.npc.name.get(n.id);
         return config === undefined ? [] : [{ config, tile: n.tile }];
     });
-    const npcSpawns = spawnClusters(spawns, resolve, zones);
+    const placedSpawns = spawnClusters(spawns, resolve, zones);
 
     const constants = readConstants();
     const { connectors, underived, oneWay } = deriveConnectors({
@@ -354,6 +442,20 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         const staged = gates.stages.get(q.id);
         return staged ? { ...q, stages: Object.fromEntries([...staged].sort(([a], [b]) => cmp(a, b))) } : q;
     });
+    // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built.
+    const fill = fillReach({
+        world: { features, connectors, gates: landings.gates, transports },
+        collision,
+        size: locSizes(locConfigs),
+    });
+    // Sites after the fill, so a stand is a tile a walk gets to where one can be (place.ts standTile).
+    const log: string[] = [];
+    const placedSites = buildSites(features, resolve, zones, collision, {
+        size: locSizes(locConfigs),
+        log: line => log.push(line),
+        walked: fill.reached,
+    }).sort((a, b) => cmp(a.id, b.id));
+    const { sites, npcSpawns, unreached } = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill);
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
@@ -445,6 +547,8 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                     unlanded: landings.unlanded,
                 },
             },
+            reach: fill.report,
+            unreached,
         },
     };
 }
@@ -629,6 +733,39 @@ export function formatReport(report: BuildReport): string[] {
     return lines;
 }
 
+/** How far apart two tiles are, Chebyshev, as the unreached report counts it. */
+const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
+
+/** A tile's plane as the unreached report names it: its level, and the underground at z >= 6400. */
+const plane = (t: Tile): string => `level ${t.level}${t.z >= 6400 ? ', underground' : ''}`;
+
+/**
+ * The unreached report: the COVERED sites no walk from the Lumbridge spawn reaches, counted by kind, then
+ * listed under their deepest area (by id, as areas.ts names it) with the tile looked from, its plane, and the
+ * nearest reached tile on that plane. Each is a missing connector, gate or transport, or a pocket the collision
+ * data walls in, for gates.ts or areas.ts to add or explain. Warnings: they do not fail the build.
+ */
+export function formatUnreached(unreached: readonly Unreached[], areas: readonly Area[]): string[] {
+    if (!unreached.length) return ['unreached: every site of a covered kind is reached from the Lumbridge spawn'];
+    const names = new Map(areas.map(a => [a.id, a.name]));
+    const byArea = new Map<string, Unreached[]>();
+    for (const u of unreached) push(byArea, u.areaPath.at(-1) ?? '', u);
+    return [
+        `warning: ${unreached.length} sites of covered kinds no walk from the Lumbridge spawn reaches ` +
+            `(${counts(tally(unreached, u => u.kind))}), by area:`,
+        ...[...byArea].flatMap(([area, us]) => [
+            `  ${area ? `${area} (${names.get(area) ?? area})` : 'no area'}:`,
+            ...us.map(
+                u =>
+                    `    ${u.id} ${u.stand ? 'stand' : 'centre (no stand)'} ${coord(u.at)}, ${plane(u.at)}: ` +
+                    (u.nearest
+                        ? `nearest reached ${coord(u.nearest)}, ${cheb(u.at, u.nearest)} tiles off`
+                        : `no reached tile within ${NEAREST_RADIUS} tiles`),
+            ),
+        ]),
+    ];
+}
+
 if (import.meta.main) {
     // Imported here only: it parses the collision data the SDK bundles (see collision.ts).
     const { reachCollision } = await import('./collision');
@@ -654,11 +791,14 @@ if (import.meta.main) {
         }
     } else {
         const removed = writeFiles(files);
-        for (const line of formatReport(report)) console.log(line);
-        // Where a walk from the Lumbridge spawn gets to, and what it needs (reach.ts). It is reported only, not
-        // written to world.json, and reports no error, so `--check` leaves it out.
-        const reach = fillReach({ world, collision: reachCollision, size: locSizes(readConfigs('loc')) });
-        for (const line of formatReach(reach.report)) console.log(line);
+        // The report, then where a walk from the Lumbridge spawn gets to (reach.ts) and the covered sites it
+        // does not: warnings only, so `--check` leaves them out.
+        for (const line of [
+            ...formatReport(report),
+            ...formatReach(report.reach),
+            ...formatUnreached(report.unreached, world.areas),
+        ])
+            console.log(line);
         console.log(`wrote ${generated}${removed.length ? `, removed ${removed.length} stale` : ''}`);
         if (failed(report)) process.exitCode = 1;
     }

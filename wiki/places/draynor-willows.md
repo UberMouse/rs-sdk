@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:draynor-willows:0` | (3086, 3233) | [willow](../resources/tree/willow.md) 5 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:draynor-willows:0` | (3086, 3233) | [willow](../resources/tree/willow.md) 5 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:draynor-willows:0` | (3085, 3237) | Dark wizard 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:draynor-willows:0` | (3085, 3237) | Dark wizard 2 | yes | no | - | - |

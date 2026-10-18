@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:gnome-ball-field:0` | (2407, 3498) | [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:gnome-ball-field:1` | (2410, 3478) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:gnome-ball-field:0` | (2407, 3498) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:gnome-ball-field:1` | (2410, 3478) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:gnome-ball-field:0` | (2392, 3476) | [Gnome child](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
-| `pickpocket:gnome-ball-field:1` | (2406, 3476) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - |
-| `pickpocket:gnome-ball-field:2` | (2410, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:gnome-ball-field:0` | (2392, 3476) | [Gnome child](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | unreached |
+| `pickpocket:gnome-ball-field:1` | (2406, 3476) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | unreached |
+| `pickpocket:gnome-ball-field:2` | (2410, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:gnome-ball-field:0` | (2396, 3475) L1 | Staircase 1 | down (2397, 3475) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:gnome-ball-field:0` | (2396, 3475) L1 | Staircase 1 | down (2397, 3475) by Climb-down | no | no | - | unreached |

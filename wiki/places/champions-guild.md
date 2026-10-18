@@ -5,22 +5,22 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:champions-guild:0` | (3191, 3351) L1 | Scavvo's Rune Store. (runiteshop) 1 | yes | no | - |
-| `shop:champions-guild:1` | (3193, 3361) L1 | Valaine's Shop of Champions. (championshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:champions-guild:0` | (3191, 3351) L1 | Scavvo's Rune Store. (runiteshop) 1 | yes | no | - | 32 quest points |
+| `shop:champions-guild:1` | (3193, 3361) L1 | Valaine's Shop of Champions. (championshop) 1 | yes | no | - | 32 quest points |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:champions-guild:0` | (3197, 3346) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:champions-guild:1` | (3204, 3361) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:champions-guild:0` | (3197, 3346) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:champions-guild:1` | (3204, 3361) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - |
-| `npc:champions-guild:1` | (3197, 3353) | Chicken 5 | yes | no | - |
-| `npc:champions-guild:2` | (3205, 3355) | Imp 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - | unreached |
+| `npc:champions-guild:1` | (3197, 3353) | Chicken 5 | yes | no | - | 32 quest points |
+| `npc:champions-guild:2` | (3205, 3355) | Imp 1 | yes | no | - | - |

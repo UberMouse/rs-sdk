@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:cooks-guild:0` | (3136, 3436) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 2 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:cooks-guild:0` | (3136, 3436) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:cooks-guild:0` | (3126, 3431) | Goblin 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:cooks-guild:0` | (3126, 3431) | Goblin 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:cooks-guild:0` | (3144, 3446) L1 | Ladder 1 | up (3144, 3447) L2 | yes | no | - |
-| `connector:cooks-guild:1` | (3144, 3446) L2 | Ladder 1 | down (3143, 3446) L1 | yes | no | - |
-| `connector:cooks-guild:2` | (3144, 3447) | Staircase 1 | up (3143, 3448) L1 | yes | no | - |
-| `connector:cooks-guild:3` | (3144, 3448) L1 | Staircase 1 | down (3143, 3448) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:cooks-guild:0` | (3144, 3446) L1 | Ladder 1 | up (3144, 3447) L2 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:1` | (3144, 3446) L2 | Ladder 1 | down (3143, 3446) L1 by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:2` | (3144, 3447) | Staircase 1 | up (3143, 3448) L1 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:3` | (3144, 3448) L1 | Staircase 1 | down (3143, 3448) by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |

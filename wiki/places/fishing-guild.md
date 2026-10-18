@@ -5,55 +5,55 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:fishing-guild:0` | (2596, 3400) | Fishing Guild Shop. (fishingguild) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:fishing-guild:0` | (2596, 3400) | Fishing Guild Shop. (fishingguild) 1 | no | no | - | 68 Fishing |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:fishing-guild:0` | (2616, 3396) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:fishing-guild:0` | (2616, 3396) | Range 1 | no | no | - | 68 Fishing |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:fishing-guild:0` | (2583, 3401) | [normal](../resources/tree/normal.md) 11 | no | no | - |
-| `tree:fishing-guild:1` | (2579, 3426) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:fishing-guild:2` | (2618, 3399) | [normal](../resources/tree/normal.md) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:fishing-guild:0` | (2583, 3401) | [normal](../resources/tree/normal.md) 11 | no | no | - | - |
+| `tree:fishing-guild:1` | (2579, 3426) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:fishing-guild:2` | (2618, 3399) | [normal](../resources/tree/normal.md) 2 | no | no | - | 68 Fishing |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:fishing-guild:0` | (2605, 3418) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 6, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 11 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:fishing-guild:0` | (2605, 3418) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 6, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 11 | no | no | - | 68 Fishing |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:fishing-guild:0` | (2603, 3421) | [Man](../resources/pickpocket/man.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:fishing-guild:0` | (2603, 3421) | [Man](../resources/pickpocket/man.md) 1 | no | no | - | 68 Fishing |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:fishing-guild:0` | (2580, 3398) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
-| `npc:fishing-guild:1` | (2582, 3413) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
-| `npc:fishing-guild:2` | (2585, 3427) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - |
-| `npc:fishing-guild:3` | (2592, 3416) | Rat 1 | no | no | - |
-| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - |
-| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - |
-| `npc:fishing-guild:6` | (2619, 3407) | Duck (duck) 4, Duck (duck_female) 4 | no | no | - |
-| `npc:fishing-guild:7` | (2620, 3394) | Goblin (goblin) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:fishing-guild:0` | (2580, 3398) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:1` | (2582, 3413) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:2` | (2585, 3427) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:3` | (2592, 3416) | Rat 1 | no | no | - | 68 Fishing |
+| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - | unreached |
+| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - | unreached |
+| `npc:fishing-guild:6` | (2619, 3407) | Duck (duck) 4, Duck (duck_female) 4 | no | no | - | 68 Fishing |
+| `npc:fishing-guild:7` | (2620, 3394) | Goblin (goblin) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:fishing-guild:0` | (2615, 3394) | Ladder 1 | up (2614, 3394) L1 | no | no | - |
-| `connector:fishing-guild:1` | (2615, 3394) L1 | Ladder 1 | down (2614, 3394) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:fishing-guild:0` | (2615, 3394) | Ladder 1 | up (2614, 3394) L1 by Climb-up | no | no | - | 68 Fishing |
+| `connector:fishing-guild:1` | (2615, 3394) L1 | Ladder 1 | down (2614, 3394) by Climb-down | no | no | - | 68 Fishing |
 
 ## Areas within
 

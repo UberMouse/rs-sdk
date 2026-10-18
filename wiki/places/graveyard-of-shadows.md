@@ -5,17 +5,17 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:graveyard-of-shadows:0` | (3155, 3661) | [normal](../resources/tree/normal.md) 1 | yes | no | 18 |
-| `tree:graveyard-of-shadows:1` | (3155, 3681) | [normal](../resources/tree/normal.md) 1 | yes | no | 21 |
-| `tree:graveyard-of-shadows:2` | (3172, 3662) | [normal](../resources/tree/normal.md) 4 | yes | no | 18 |
-| `tree:graveyard-of-shadows:3` | (3168, 3676) | [normal](../resources/tree/normal.md) 1 | yes | no | 20 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:graveyard-of-shadows:0` | (3155, 3661) | [normal](../resources/tree/normal.md) 1 | yes | no | 18 | - |
+| `tree:graveyard-of-shadows:1` | (3155, 3681) | [normal](../resources/tree/normal.md) 1 | yes | no | 21 | - |
+| `tree:graveyard-of-shadows:2` | (3172, 3662) | [normal](../resources/tree/normal.md) 4 | yes | no | 18 | - |
+| `tree:graveyard-of-shadows:3` | (3168, 3676) | [normal](../resources/tree/normal.md) 1 | yes | no | 20 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:graveyard-of-shadows:0` | (3165, 3667) | Zombie 2 | yes | no | 19 |
-| `npc:graveyard-of-shadows:1` | (3171, 3675) | Zombie 1 | yes | no | 20 |
-| `npc:graveyard-of-shadows:2` | (3176, 3682) | Zombie 1 | yes | no | 21 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:graveyard-of-shadows:0` | (3165, 3667) | Zombie 2 | yes | no | 19 | - |
+| `npc:graveyard-of-shadows:1` | (3171, 3675) | Zombie 1 | yes | no | 20 | - |
+| `npc:graveyard-of-shadows:2` | (3176, 3682) | Zombie 1 | yes | no | 21 | - |

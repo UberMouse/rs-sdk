@@ -5,12 +5,12 @@ Inside the air ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:air-altar:0` | (2843, 4833) | air 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:air-altar:0` | (2843, 4833) | air 1 | yes | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:air-altar:0` | (2845, 4830) | [normal](../resources/tree/normal.md) 240, [oak](../resources/tree/oak.md) 41 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:air-altar:0` | (2845, 4830) | [normal](../resources/tree/normal.md) 240, [oak](../resources/tree/oak.md) 41 | yes | no | - | unreached |

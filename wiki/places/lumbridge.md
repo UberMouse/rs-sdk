@@ -5,114 +5,114 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:lumbridge:0` | (3211, 3247) | Lumbridge General Store (generalshop1) 2 | yes | no | - |
-| `shop:lumbridge:1` | (3232, 3203) | Bob's Brilliant Axes. (axeshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:lumbridge:0` | (3211, 3247) | Lumbridge General Store (generalshop1) 2 | yes | no | - | - |
+| `shop:lumbridge:1` | (3232, 3203) | Bob's Brilliant Axes. (axeshop) 1 | yes | no | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:lumbridge:0` | (3226, 3256) | Furnace 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:lumbridge:0` | (3226, 3256) | Furnace 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:lumbridge:0` | (3212, 3215) | Cooking range 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:lumbridge:0` | (3212, 3215) | Cooking range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:lumbridge:0` | (3205, 3220) | Fireplace 1 | yes | no | - |
-| `fire:lumbridge:1` | (3214, 3249) | Fireplace 1 | yes | no | - |
-| `fire:lumbridge:2` | (3232, 3238) | Cooking pot 1 | yes | no | - |
-| `fire:lumbridge:3` | (3245, 3246) | Fire 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:lumbridge:0` | (3205, 3220) | Fireplace 1 | yes | no | - | - |
+| `fire:lumbridge:1` | (3214, 3249) | Fireplace 1 | yes | no | - | - |
+| `fire:lumbridge:2` | (3232, 3238) | Cooking pot 1 | yes | no | - | - |
+| `fire:lumbridge:3` | (3245, 3246) | Fire 1 | yes | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | Spinning wheel 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | Spinning wheel 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:lumbridge:0` | (3205, 3215) | Sink 1 | yes | no | - |
-| `water-source:lumbridge:1` | (3221, 3210) | Fountain 1 | yes | no | - |
-| `water-source:lumbridge:2` | (3221, 3226) | Fountain 1 | yes | no | - |
-| `water-source:lumbridge:3` | (3230, 3206) | Sink 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:lumbridge:0` | (3205, 3215) | Sink 1 | yes | no | - | - |
+| `water-source:lumbridge:1` | (3221, 3210) | Fountain 1 | yes | no | - | - |
+| `water-source:lumbridge:2` | (3221, 3226) | Fountain 1 | yes | no | - | - |
+| `water-source:lumbridge:3` | (3230, 3206) | Sink 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:lumbridge:0` | (3243, 3205) | Altar 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:lumbridge:0` | (3243, 3205) | Altar 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:lumbridge:0` | (3185, 3252) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | no | - |
-| `tree:lumbridge:1` | (3243, 3244) | [normal](../resources/tree/normal.md) 34, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 2 | yes | no | - |
-| `tree:lumbridge:2` | (3218, 3205) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:lumbridge:3` | (3219, 3260) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:lumbridge:4` | (3249, 3201) | [yew](../resources/tree/yew.md) 1 | yes | no | - |
-| `tree:lumbridge:5` | (3258, 3221) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:lumbridge:0` | (3185, 3252) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | no | - | - |
+| `tree:lumbridge:1` | (3243, 3244) | [normal](../resources/tree/normal.md) 34, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
+| `tree:lumbridge:2` | (3218, 3205) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:lumbridge:3` | (3219, 3260) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:lumbridge:4` | (3249, 3201) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:lumbridge:5` | (3258, 3221) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:lumbridge:0` | (3238, 3252) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:lumbridge:0` | (3238, 3252) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:lumbridge:0` | (3206, 3219) L1 | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:1` | (3207, 3227) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:2` | (3219, 3219) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:3` | (3217, 3205) | [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:4` | (3225, 3239) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:5` | (3233, 3207) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:6` | (3235, 3219) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - |
-| `pickpocket:lumbridge:7` | (3244, 3211) | [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:lumbridge:0` | (3206, 3219) L1 | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:1` | (3207, 3227) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:2` | (3219, 3219) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:3` | (3217, 3205) | [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:4` | (3225, 3239) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:5` | (3233, 3207) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:6` | (3235, 3219) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:7` | (3244, 3211) | [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:lumbridge:0` | (3170, 3248) | Giant spider 1 | yes | no | - |
-| `npc:lumbridge:1` | (3173, 3204) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:lumbridge:2` | (3185, 3246) | Goblin (goblin) 3 | yes | no | - |
-| `npc:lumbridge:3` | (3194, 3204) | Rat 3 | yes | no | - |
-| `npc:lumbridge:4` | (3204, 3253) | Goblin (goblin) 2 | yes | no | - |
-| `npc:lumbridge:5` | (3206, 3205) | Rat 8 | yes | no | - |
-| `npc:lumbridge:6` | (3217, 3226) | Imp 1 | yes | no | - |
-| `npc:lumbridge:7` | (3222, 3215) | Rat 1 | yes | no | - |
-| `npc:lumbridge:8` | (3231, 3226) | Rat 2 | yes | no | - |
-| `npc:lumbridge:9` | (3235, 3259) | Duck (duck) 1 | yes | no | - |
-| `npc:lumbridge:10` | (3236, 3222) | Rat 1 | yes | no | - |
-| `npc:lumbridge:11` | (3250, 3239) | Cow 3, Duck (duck) 5, Duck (duck_female) 3, Giant spider 2, Goblin (goblin) 21 | yes | no | - |
-| `npc:lumbridge:12` | (3248, 3221) | Duck (duck) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:lumbridge:0` | (3170, 3248) | Giant spider 1 | yes | no | - | - |
+| `npc:lumbridge:1` | (3173, 3204) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:lumbridge:2` | (3185, 3246) | Goblin (goblin) 3 | yes | no | - | - |
+| `npc:lumbridge:3` | (3194, 3204) | Rat 3 | yes | no | - | - |
+| `npc:lumbridge:4` | (3204, 3253) | Goblin (goblin) 2 | yes | no | - | - |
+| `npc:lumbridge:5` | (3206, 3205) | Rat 8 | yes | no | - | - |
+| `npc:lumbridge:6` | (3217, 3226) | Imp 1 | yes | no | - | - |
+| `npc:lumbridge:7` | (3222, 3215) | Rat 1 | yes | no | - | - |
+| `npc:lumbridge:8` | (3231, 3226) | Rat 2 | yes | no | - | - |
+| `npc:lumbridge:9` | (3235, 3259) | Duck (duck) 1 | yes | no | - | unreached |
+| `npc:lumbridge:10` | (3236, 3222) | Rat 1 | yes | no | - | - |
+| `npc:lumbridge:11` | (3250, 3239) | Cow 3, Duck (duck) 5, Duck (duck_female) 3, Giant spider 2, Goblin (goblin) 21 | yes | no | - | - |
+| `npc:lumbridge:12` | (3248, 3221) | Duck (duck) 2 | yes | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:lumbridge:0` | (3205, 3208) L2 | Staircase 1 | down (3205, 3209) L1 | yes | no | - |
-| `connector:lumbridge:1` | (3205, 3229) L2 | Staircase 1 | down (3205, 3228) L1 | yes | no | - |
-| `connector:lumbridge:2` | (3209, 3216) | Trapdoor 1 | down (3208, 9616) | yes | no | - |
-| `connector:lumbridge:3` | (3229, 3213) | Ladder 1 | up (3228, 3213) L1 | yes | no | - |
-| `connector:lumbridge:4` | (3229, 3213) L1 | Ladder 1 | down (3228, 3213), up (3228, 3213) L2 | yes | no | - |
-| `connector:lumbridge:5` | (3229, 3213) L2 | Ladder 1 | down (3228, 3213) L1 | yes | no | - |
-| `connector:lumbridge:6` | (3229, 3224) | Ladder 1 | up (3228, 3224) L1 | yes | no | - |
-| `connector:lumbridge:7` | (3229, 3224) L1 | Ladder 1 | down (3228, 3224), up (3228, 3224) L2 | yes | no | - |
-| `connector:lumbridge:8` | (3229, 3224) L2 | Ladder 1 | down (3228, 3224) L1 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:lumbridge:0` | (3205, 3208) L2 | Staircase 1 | down (3205, 3209) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:1` | (3205, 3229) L2 | Staircase 1 | down (3205, 3228) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:2` | (3209, 3216) | Trapdoor 1 | down (3208, 9616) by Open, then Climb-down | yes | no | - | - |
+| `connector:lumbridge:3` | (3229, 3213) | Ladder 1 | up (3228, 3213) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge:4` | (3229, 3213) L1 | Ladder 1 | down (3228, 3213) by Climb or Climb-down; up (3228, 3213) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:lumbridge:5` | (3229, 3213) L2 | Ladder 1 | down (3228, 3213) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:6` | (3229, 3224) | Ladder 1 | up (3228, 3224) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge:7` | (3229, 3224) L1 | Ladder 1 | down (3228, 3224) by Climb or Climb-down; up (3228, 3224) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:lumbridge:8` | (3229, 3224) L2 | Ladder 1 | down (3228, 3224) L1 by Climb-down | yes | no | - | - |
 
 ## Areas within
 

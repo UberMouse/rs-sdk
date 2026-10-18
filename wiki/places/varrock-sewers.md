@@ -5,34 +5,34 @@ Ladders up into Varrock at (3237, 3458) and (3230, 3504).
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:varrock-sewers:0` | (3253, 9915) | [normal](../resources/tree/normal.md) 3 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:varrock-sewers:0` | (3253, 9915) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:varrock-sewers:0` | (3177, 9884) | Deadly red spider 8 | yes | yes | - |
-| `npc:varrock-sewers:1` | (3186, 9892) | Deadly red spider 1 | yes | yes | - |
-| `npc:varrock-sewers:2` | (3206, 9879) | Spider 2 | yes | yes | - |
-| `npc:varrock-sewers:3` | (3211, 9890) | Spider 4 | yes | yes | - |
-| `npc:varrock-sewers:4` | (3211, 9907) | Skeleton (skeleton_armed) 2 | yes | yes | - |
-| `npc:varrock-sewers:5` | (3229, 9865) | Rat 15 | yes | yes | - |
-| `npc:varrock-sewers:6` | (3220, 9886) | Giant spider 2 | yes | yes | - |
-| `npc:varrock-sewers:7` | (3228, 9905) | Zombie 4 | yes | yes | - |
-| `npc:varrock-sewers:8` | (3248, 9913) | Ghost 3, Scorpion 2, Skeleton (skeleton_unagressive) 3 | yes | yes | - |
-| `npc:varrock-sewers:9` | (3242, 9894) | Rat 2 | yes | yes | - |
-| `npc:varrock-sewers:10` | (3244, 9875) | Rat 1 | yes | yes | - |
-| `npc:varrock-sewers:11` | (3244, 9886) | Rat 1 | yes | yes | - |
-| `npc:varrock-sewers:12` | (3252, 9893) | Rat 2 | yes | yes | - |
-| `npc:varrock-sewers:13` | (3259, 9869) | Rat 2, Spider 3 | yes | yes | - |
-| `npc:varrock-sewers:14` | (3275, 9869) | Rat 6 | yes | yes | - |
-| `npc:varrock-sewers:15` | (3274, 9912) | Skeleton (skeleton_unagressive) 4 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:varrock-sewers:0` | (3177, 9884) | Deadly red spider 8 | yes | yes | - | - |
+| `npc:varrock-sewers:1` | (3186, 9892) | Deadly red spider 1 | yes | yes | - | - |
+| `npc:varrock-sewers:2` | (3206, 9879) | Spider 2 | yes | yes | - | - |
+| `npc:varrock-sewers:3` | (3211, 9890) | Spider 4 | yes | yes | - | - |
+| `npc:varrock-sewers:4` | (3211, 9907) | Skeleton (skeleton_armed) 2 | yes | yes | - | - |
+| `npc:varrock-sewers:5` | (3229, 9865) | Rat 15 | yes | yes | - | - |
+| `npc:varrock-sewers:6` | (3220, 9886) | Giant spider 2 | yes | yes | - | - |
+| `npc:varrock-sewers:7` | (3228, 9905) | Zombie 4 | yes | yes | - | - |
+| `npc:varrock-sewers:8` | (3248, 9913) | Ghost 3, Scorpion 2, Skeleton (skeleton_unagressive) 3 | yes | yes | - | - |
+| `npc:varrock-sewers:9` | (3242, 9894) | Rat 2 | yes | yes | - | - |
+| `npc:varrock-sewers:10` | (3244, 9875) | Rat 1 | yes | yes | - | - |
+| `npc:varrock-sewers:11` | (3244, 9886) | Rat 1 | yes | yes | - | - |
+| `npc:varrock-sewers:12` | (3252, 9893) | Rat 2 | yes | yes | - | - |
+| `npc:varrock-sewers:13` | (3259, 9869) | Rat 2, Spider 3 | yes | yes | - | - |
+| `npc:varrock-sewers:14` | (3275, 9869) | Rat 6 | yes | yes | - | - |
+| `npc:varrock-sewers:15` | (3274, 9912) | Skeleton (skeleton_unagressive) 4 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:varrock-sewers:0` | (3230, 9904) | Ladder 1 | up (3229, 3504) | yes | yes | - |
-| `connector:varrock-sewers:1` | (3237, 9858) | Ladder 1 | up (3236, 3458) | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:varrock-sewers:0` | (3230, 9904) | Ladder 1 | up (3229, 3504) by Climb-up | yes | yes | - | - |
+| `connector:varrock-sewers:1` | (3237, 9858) | Ladder 1 | up (3236, 3458) by Climb-up | yes | yes | - | - |

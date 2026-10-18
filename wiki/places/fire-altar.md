@@ -5,12 +5,12 @@ Inside the fire ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:fire-altar:0` | (2584, 4837) | fire 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:fire-altar:0` | (2584, 4837) | fire 1 | yes | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:fire-altar:0` | (2589, 4835) | [normal](../resources/tree/normal.md) 193 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:fire-altar:0` | (2589, 4835) | [normal](../resources/tree/normal.md) 193 | yes | no | - | unreached |

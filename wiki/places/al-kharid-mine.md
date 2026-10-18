@@ -5,14 +5,14 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:al-kharid-mine:0` | (3300, 3309) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 3, [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 5, [tin](../resources/rock/tin.md) 1 | yes | no | - |
-| `rock:al-kharid-mine:1` | (3298, 3286) | [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:al-kharid-mine:0` | (3300, 3309) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 3, [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 5, [tin](../resources/rock/tin.md) 1 | yes | no | - | - |
+| `rock:al-kharid-mine:1` | (3298, 3286) | [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:al-kharid-mine:0` | (3298, 3305) | Scorpion 6 | yes | no | - |
-| `npc:al-kharid-mine:1` | (3301, 3290) | Scorpion 2 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:al-kharid-mine:0` | (3298, 3305) | Scorpion 6 | yes | no | - | - |
+| `npc:al-kharid-mine:1` | (3301, 3290) | Scorpion 2 | yes | no | - | - |

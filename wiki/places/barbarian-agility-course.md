@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:barbarian-agility-course:0` | (2533, 3538) | [normal](../resources/tree/normal.md) 6 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:barbarian-agility-course:0` | (2533, 3538) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |

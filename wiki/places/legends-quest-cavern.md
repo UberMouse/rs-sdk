@@ -5,23 +5,23 @@ Legends' Quest npcs (quests/quest_legends).
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:legends-quest-cavern:0` | (2426, 4726) | Furnace 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:legends-quest-cavern:0` | (2426, 4726) | Furnace 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:legends-quest-cavern:0` | (2384, 4706) | San Tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:1` | (2393, 4713) | San Tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:2` | (2394, 4731) | San Tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:3` | (2395, 4721) | San Tojalon 1 | no | no | - |
-| `npc:legends-quest-cavern:4` | (2401, 4705) | Irvig Senay 1 | no | no | - |
-| `npc:legends-quest-cavern:5` | (2405, 4712) | Irvig Senay 1 | no | no | - |
-| `npc:legends-quest-cavern:6` | (2408, 4698) | Ranalph Devere 1 | no | no | - |
-| `npc:legends-quest-cavern:7` | (2414, 4681) | Lesser demon 3 | no | no | - |
-| `npc:legends-quest-cavern:8` | (2412, 4723) | Irvig Senay 1 | no | no | - |
-| `npc:legends-quest-cavern:9` | (2414, 4731) | Irvig Senay 1 | no | no | - |
-| `npc:legends-quest-cavern:10` | (2417, 4699) | Ranalph Devere 1 | no | no | - |
-| `npc:legends-quest-cavern:11` | (2426, 4699) | Ranalph Devere 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:legends-quest-cavern:0` | (2384, 4706) | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:1` | (2393, 4713) | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:2` | (2394, 4731) | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:3` | (2395, 4721) | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:4` | (2401, 4705) | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:5` | (2405, 4712) | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:6` | (2408, 4698) | Ranalph Devere 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:7` | (2414, 4681) | Lesser demon 3 | no | no | - | unreached |
+| `npc:legends-quest-cavern:8` | (2412, 4723) | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:9` | (2414, 4731) | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:10` | (2417, 4699) | Ranalph Devere 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:11` | (2426, 4699) | Ranalph Devere 2 | no | no | - | unreached |

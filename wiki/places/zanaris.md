@@ -5,80 +5,80 @@ Members: the shed door in Lumbridge Swamp at (3202, 3169) with a dramen staff wi
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:zanaris:0` | (3145, 9567) | Zanaris General Store (generalshop8) 2 | no | no | - |
-| `shop:zanaris:1` | (3247, 9589) | irksol (cheapringshop) 1 | no | no | - |
-| `shop:zanaris:2` | (3252, 9572) | jakut (dragonswordshop) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:zanaris:0` | (3145, 9567) | Zanaris General Store (generalshop8) 2 | no | no | - | wear Dramen staff |
+| `shop:zanaris:1` | (3247, 9589) | irksol (cheapringshop) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `shop:zanaris:2` | (3252, 9572) | jakut (dragonswordshop) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:zanaris:0` | (3168, 9592) | Furnace 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:zanaris:0` | (3168, 9592) | Furnace 2 | no | no | - | wear Dramen staff |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:zanaris:0` | (3151, 9558) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:zanaris:0` | (3151, 9558) | Range 1 | no | no | - | wear Dramen staff |
 
 ## [Sand pits](../services/sand-pit.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `sand-pit:zanaris:0` | (3207, 9562) | Sand pit 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `sand-pit:zanaris:0` | (3207, 9562) | Sand pit 1 | no | no | - | wear Dramen staff |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:zanaris:0` | (3178, 9562) | Fountain 1 | no | no | - |
-| `water-source:zanaris:1` | (3178, 9570) | Fountain 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:zanaris:0` | (3178, 9562) | Fountain 1 | no | no | - | wear Dramen staff |
+| `water-source:zanaris:1` | (3178, 9570) | Fountain 1 | no | no | - | wear Dramen staff |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:zanaris:0` | (3175, 9496) | cosmic 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:zanaris:0` | (3175, 9496) | cosmic 1 | no | no | - | wear Dramen staff |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:zanaris:0` | (3142, 9568) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:zanaris:1` | (3156, 9548) | [normal](../resources/tree/normal.md) 4 | no | no | - |
-| `tree:zanaris:2` | (3161, 9582) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:zanaris:3` | (3166, 9529) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:zanaris:4` | (3183, 9494) | [normal](../resources/tree/normal.md) 11 | no | no | - |
-| `tree:zanaris:5` | (3174, 9505) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:zanaris:6` | (3193, 9584) | [normal](../resources/tree/normal.md) 12, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 1 | no | no | - |
-| `tree:zanaris:7` | (3193, 9552) | [normal](../resources/tree/normal.md) 9 | no | no | - |
-| `tree:zanaris:8` | (3221, 9588) | [normal](../resources/tree/normal.md) 6 | no | no | - |
-| `tree:zanaris:9` | (3233, 9546) | [yew](../resources/tree/yew.md) 1 | no | no | - |
-| `tree:zanaris:10` | (3238, 9570) | [normal](../resources/tree/normal.md) 2, [yew](../resources/tree/yew.md) 1 | no | no | - |
-| `tree:zanaris:11` | (3241, 9555) | [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:zanaris:12` | (3242, 9542) | [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:zanaris:13` | (3253, 9585) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:zanaris:14` | (3257, 9543) | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:zanaris:0` | (3142, 9568) | [normal](../resources/tree/normal.md) 3 | no | no | - | wear Dramen staff |
+| `tree:zanaris:1` | (3156, 9548) | [normal](../resources/tree/normal.md) 4 | no | no | - | wear Dramen staff |
+| `tree:zanaris:2` | (3161, 9582) | [normal](../resources/tree/normal.md) 1 | no | no | - | wear Dramen staff |
+| `tree:zanaris:3` | (3166, 9529) | [normal](../resources/tree/normal.md) 1 | no | no | - | wear Dramen staff |
+| `tree:zanaris:4` | (3183, 9494) | [normal](../resources/tree/normal.md) 11 | no | no | - | wear Dramen staff |
+| `tree:zanaris:5` | (3174, 9505) | [normal](../resources/tree/normal.md) 1 | no | no | - | wear Dramen staff |
+| `tree:zanaris:6` | (3193, 9584) | [normal](../resources/tree/normal.md) 12, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 1 | no | no | - | wear Dramen staff |
+| `tree:zanaris:7` | (3193, 9552) | [normal](../resources/tree/normal.md) 9 | no | no | - | wear Dramen staff |
+| `tree:zanaris:8` | (3221, 9588) | [normal](../resources/tree/normal.md) 6 | no | no | - | wear Dramen staff |
+| `tree:zanaris:9` | (3233, 9546) | [yew](../resources/tree/yew.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `tree:zanaris:10` | (3238, 9570) | [normal](../resources/tree/normal.md) 2, [yew](../resources/tree/yew.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `tree:zanaris:11` | (3241, 9555) | [oak](../resources/tree/oak.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `tree:zanaris:12` | (3242, 9542) | [oak](../resources/tree/oak.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `tree:zanaris:13` | (3253, 9585) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
+| `tree:zanaris:14` | (3257, 9543) | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:zanaris:0` | (3153, 9544) | Otherworldly being 6 | no | no | - |
-| `npc:zanaris:1` | (3206, 9565) | Cow 2 | no | no | - |
-| `npc:zanaris:2` | (3207, 9577) | Cow 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:zanaris:0` | (3153, 9544) | Otherworldly being 6 | no | no | - | wear Dramen staff |
+| `npc:zanaris:1` | (3206, 9565) | Cow 2 | no | no | - | wear Dramen staff |
+| `npc:zanaris:2` | (3207, 9577) | Cow 1 | no | no | - | wear Dramen staff |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:zanaris:0` | (3171, 9578) | Ladder 1 | up (3170, 9578) L1 | no | no | - |
-| `connector:zanaris:1` | (3171, 9578) L1 | Ladder 1 | down (3170, 9578) | no | no | - |
-| `connector:zanaris:2` | (3222, 9588) | Ladder 1 | up (3201, 3169) | no | no | - |
-| `connector:zanaris:3` | (3253, 9591) L1 | Ladder 1 | up (3253, 9590) L2 | no | no | - |
-| `connector:zanaris:4` | (3253, 9591) L2 | Ladder 1 | up (3253, 9590) L3 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:zanaris:0` | (3171, 9578) | Ladder 1 | up (3170, 9578) L1 by Climb-up | no | no | - | wear Dramen staff |
+| `connector:zanaris:1` | (3171, 9578) L1 | Ladder 1 | down (3170, 9578) by Climb-down | no | no | - | wear Dramen staff |
+| `connector:zanaris:2` | (3222, 9588) | Ladder 1 | up (3201, 3169) by Climb-up | no | no | - | wear Dramen staff |
+| `connector:zanaris:3` | (3253, 9591) L1 | Ladder 1 | up (3253, 9590) L2 by Climb-up | no | no | - | unreached |
+| `connector:zanaris:4` | (3253, 9591) L2 | Ladder 1 | up (3253, 9590) L3 by Climb-up | no | no | - | unreached |
 
 ## Areas within
 

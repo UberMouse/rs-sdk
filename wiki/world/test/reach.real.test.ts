@@ -117,6 +117,71 @@ describe('places behind a requirement', () => {
     });
 });
 
+describe("world.json's reach on sites", () => {
+    const banks = world.sites.filter(s => s.kind === 'bank');
+    const reachOf = (id: string) => world.sites.find(s => s.id === id)?.reach;
+
+    test('every bank site has its reach; the mainland banks a walk gets to free are [[]]', () => {
+        expect(banks).toHaveLength(25);
+        for (const b of banks) expect(Array.isArray(b.reach)).toBe(true);
+        expect(
+            banks
+                .filter(b => b.reach.length === 1 && b.reach[0]!.length === 0)
+                .map(b => b.areaPath.at(-1))
+                .sort(),
+        ).toEqual([
+            'al-kharid-bank',
+            'ardougne-north-bank',
+            'ardougne-south-bank',
+            'castle-wars-bank',
+            'catherby-bank',
+            'draynor-bank',
+            'duel-arena-bank',
+            'edgeville-bank',
+            'falador-east-bank',
+            'falador-west-bank',
+            'seers-village-bank',
+            'shantay-pass-bank-chest',
+            'varrock-east-bank',
+            'varrock-west-bank',
+            'yanille-bank',
+        ]);
+    });
+
+    test('a bank behind a requirement carries it: Zanaris the worn dramen staff, the Fishing Guild 68 Fishing', () => {
+        expect(reachOf('bank:zanaris-bank:0')).toEqual([['item:dramen_staff:worn']]);
+        // The guild door checks the level (oploc1,loc_2025, skill_fishing/scripts/fishing_guild.rs2:5).
+        expect(reachOf('bank:fishing-guild-bank:0')).toEqual([['skill:fishing:68']]);
+    });
+
+    test("a stand is a tile the walk gets to: Ardougne South bank's in front of its booths, not in the bankers' pen", () => {
+        // The booths stand at x 2656 with the bankers east of them; the stand used to be the counter's north end
+        // (2656, 3287), walled in with the bankers.
+        const s = world.sites.find(site => site.id === 'bank:ardougne-south-bank:0')!;
+        expect(s.stand!.x).toBeLessThan(2656);
+        expect(s.reach).toEqual([[]]);
+        expect(reach.setsAt(s.stand!)).toEqual([[]]);
+    });
+
+    test('each unreached bank and shop is explained in a note of its area or an ancestor (areas.ts)', () => {
+        const notes = new Map(world.areas.map(a => [a.id, a.notes ?? '']));
+        const unexplained = world.sites
+            .filter(s => (s.kind === 'bank' || s.kind === 'shop') && !s.reach.length)
+            .filter(s => !s.areaPath.some(id => notes.get(id)!.includes('unreached report')))
+            .map(s => s.id);
+        expect(unexplained).toEqual([]);
+    });
+
+    test("an npc cluster's reach is over the tiles beside its spawns: the Lumbridge men free, Zanaris's behind the staff", () => {
+        const spawn = (config: string, leaf: string) =>
+            world.npcSpawns.find(c => c.config === config && c.areaPath.at(-1) === leaf);
+        expect(spawn('man', 'lumbridge')?.reach).toEqual([[]]);
+        expect(world.npcSpawns.filter(c => c.areaPath[0] === 'zanaris').map(c => c.reach)).toContainEqual([
+            ['item:dramen_staff:worn'],
+        ]);
+    });
+});
+
 describe('the fill', () => {
     test('the mainland zones the walker allocates as open are not land, and the fill never enters one', () => {
         let fillZone: Tile | undefined;

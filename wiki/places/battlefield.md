@@ -5,14 +5,14 @@
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:battlefield:0` | (2515, 3230) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | yes | - |
-| `pickpocket:battlefield:1` | (2528, 3222) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:battlefield:0` | (2515, 3230) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | yes | - | - |
+| `pickpocket:battlefield:1` | (2528, 3222) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:battlefield:0` | (2523, 3237) | Khazard trooper (khazard_troop) 8, Khazard trooper (khazard_troop_spearmen) 11, Mounted terrorbird gnome 1 | no | yes | - |
-| `npc:battlefield:1` | (2531, 3226) | Gnome troop (d_skingnomeknight) 5, Gnome troop (gnomeknight) 4 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:battlefield:0` | (2523, 3237) | Khazard trooper (khazard_troop) 8, Khazard trooper (khazard_troop_spearmen) 11, Mounted terrorbird gnome 1 | no | yes | - | - |
+| `npc:battlefield:1` | (2531, 3226) | Gnome troop (d_skingnomeknight) 5, Gnome troop (gnomeknight) 4 | no | yes | - | - |

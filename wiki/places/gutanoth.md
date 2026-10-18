@@ -5,15 +5,15 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:gutanoth:0` | (2518, 3035) | Dal's General Ogre Supplies (generalshopogre) 1 | no | no | - |
-| `shop:gutanoth:1` | (2528, 3048) | Grud's Herblore Stall. (herbloreshopogre) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:gutanoth:0` | (2518, 3035) | Dal's General Ogre Supplies (generalshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| `shop:gutanoth:1` | (2528, 3048) | Grud's Herblore Stall. (herbloreshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:gutanoth:0` | (2519, 3044) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - |
-| `npc:gutanoth:1` | (2523, 3056) | Ogre (ogre) 2 | no | no | - |
-| `npc:gutanoth:2` | (2527, 3042) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:gutanoth:0` | (2519, 3044) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| `npc:gutanoth:1` | (2523, 3056) | Ogre (ogre) 2 | no | no | - | unreached |
+| `npc:gutanoth:2` | (2527, 3042) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |

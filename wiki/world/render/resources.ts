@@ -12,6 +12,8 @@ import {
     coord,
     count,
     GENERATED,
+    reachLabel,
+    reachSummary,
     RESOURCE_KINDS,
     resourcePath,
     table,
@@ -242,6 +244,7 @@ const TITLED_BY_NAME: ReadonlySet<ResourceKind> = new Set<ResourceKind>(['pickpo
 /** One page per subtype of each resource kind, as its repo-relative path and text. */
 export function renderResources(world: World, data: PageData): Page[] {
     const areas = areasOf(world);
+    const requires = reachLabel(world, data);
     const out = new Map<string, string>();
     for (const kind of RESOURCE_KINDS) {
         const sites = world.sites.filter(s => s.kind === kind);
@@ -269,6 +272,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                 yesNo(s.f2p),
                 yesNo(s.multiway),
                 wilderness(s.wildernessLevel),
+                requires(s.reach),
             ];
             out.set(
                 path,
@@ -276,7 +280,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                     GENERATED,
                     `# ${SINGULAR[kind]}: ${title}`,
                     '',
-                    `In-game name: ${name}. ${count(holding.length, 'site')} with ${features.length} placed in all; ${f2p} of the sites in F2P.`,
+                    `In-game name: ${name}. ${count(holding.length, 'site')} with ${features.length} placed in all; ${f2p} of the sites in F2P; ${reachSummary(holding)}.`,
                     '',
                     '## Data',
                     '',
@@ -285,7 +289,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                     '## Sites',
                     '',
                     ...table(
-                        ['Area', 'Site', 'Centre', 'Stand', 'Count', 'F2P', 'Multiway', 'Wilderness'],
+                        ['Area', 'Site', 'Centre', 'Stand', 'Count', 'F2P', 'Multiway', 'Wilderness', 'Requires'],
                         holding.map(row),
                     ),
                     '',

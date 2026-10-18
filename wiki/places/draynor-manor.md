@@ -5,39 +5,39 @@
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:draynor-manor:0` | (3097, 3367) | Range 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:draynor-manor:0` | (3097, 3367) | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:draynor-manor:0` | (3104, 3357) | Fireplace 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:draynor-manor:0` | (3104, 3357) | Fireplace 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:draynor-manor:0` | (3106, 3342) | [normal](../resources/tree/normal.md) 328 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:draynor-manor:0` | (3106, 3342) | [normal](../resources/tree/normal.md) 328 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:draynor-manor:0` | (3098, 3357) L1 | Ghost 3 | yes | no | - |
-| `npc:draynor-manor:1` | (3099, 3366) | Rat 1 | yes | no | - |
-| `npc:draynor-manor:2` | (3101, 3355) | Rat 1 | yes | no | - |
-| `npc:draynor-manor:3` | (3108, 3358) L1 | Ghost 1 | yes | no | - |
-| `npc:draynor-manor:4` | (3110, 3367) | Skeleton 1 | yes | no | - |
-| `npc:draynor-manor:5` | (3123, 3356) L1 | Ghost 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:draynor-manor:0` | (3098, 3357) L1 | Ghost 3 | yes | no | - | - |
+| `npc:draynor-manor:1` | (3099, 3366) | Rat 1 | yes | no | - | - |
+| `npc:draynor-manor:2` | (3101, 3355) | Rat 1 | yes | no | - | - |
+| `npc:draynor-manor:3` | (3108, 3358) L1 | Ghost 1 | yes | no | - | - |
+| `npc:draynor-manor:4` | (3110, 3367) | Skeleton 1 | yes | no | - | carry Key |
+| `npc:draynor-manor:5` | (3123, 3356) L1 | Ghost 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:draynor-manor:0` | (3104, 3362) L1 | Staircase 1 | up (3105, 3364) L2 | yes | no | - |
-| `connector:draynor-manor:1` | (3105, 3363) L2 | Staircase 1 | down (3106, 3363) L1 | yes | no | - |
-| `connector:draynor-manor:2` | (3108, 3363) | Staircase 1 | up (3108, 3366) L1 | yes | no | - |
-| `connector:draynor-manor:3` | (3108, 3364) L1 | Staircase 1 | down (3108, 3362) | yes | no | - |
-| `connector:draynor-manor:4` | (3115, 3357) | Stairs 1 | down (3077, 9771) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:draynor-manor:0` | (3104, 3362) L1 | Staircase 1 | up (3105, 3364) L2 by Climb-up | yes | no | - | - |
+| `connector:draynor-manor:1` | (3105, 3363) L2 | Staircase 1 | down (3106, 3363) L1 by Climb-down | yes | no | - | - |
+| `connector:draynor-manor:2` | (3108, 3363) | Staircase 1 | up (3108, 3366) L1 by Walk-up | yes | no | - | - |
+| `connector:draynor-manor:3` | (3108, 3364) L1 | Staircase 1 | down (3108, 3362) by Walk-down | yes | no | - | - |
+| `connector:draynor-manor:4` | (3115, 3357) | Stairs 1 | down (3077, 9771) by Walk-Down | yes | no | - | - |

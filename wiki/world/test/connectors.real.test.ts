@@ -4,11 +4,11 @@ import { describe, expect, test } from 'bun:test';
 import { CONNECTORS } from '../../../conductor/lib/connectors';
 import { AREAS } from '../areas';
 import { buildWorld } from '../build';
-import { siteCollision } from '../collision';
+import { reachCollision, siteCollision } from '../collision';
 import type { Connector, Tile } from '../types';
 
 // Built when the file loads, where no timeout applies (as world.real.test.ts does).
-const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: siteCollision });
+const { world, report } = buildWorld({ generatedFrom: 'test', areas: AREAS, collision: reachCollision });
 
 const same = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b.x && a.z === b.z;
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));

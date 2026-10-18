@@ -5,15 +5,15 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:shantay-pass:0` | (3304, 3123) | Shantay Pass Shop (shantayshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:shantay-pass:0` | (3304, 3123) | Shantay Pass Shop (shantayshop) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:shantay-pass:0` | (3304, 3125) | Shantay Guard 3 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:shantay-pass:0` | (3304, 3125) | Shantay Guard 3 | yes | no | - | - |
 
 ## Areas within
 

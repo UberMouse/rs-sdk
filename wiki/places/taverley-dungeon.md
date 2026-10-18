@@ -5,86 +5,86 @@ Ladder up south of Taverley at (2884, 3397).
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:taverley-dungeon:0` | (2922, 9713) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:taverley-dungeon:0` | (2922, 9713) | Range 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:taverley-dungeon:0` | (2925, 9708) | Sink 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:taverley-dungeon:0` | (2925, 9708) | Sink 2 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:taverley-dungeon:0` | (2893, 9831) | [normal](../resources/tree/normal.md) 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:taverley-dungeon:0` | (2893, 9831) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fishing-spot:taverley-dungeon:0` | (2890, 9766) | [Fishing spot (0_45_152_lavafish)](../resources/fishing-spot/0_45_152_lavafish.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:taverley-dungeon:0` | (2890, 9766) | [Fishing spot (0_45_152_lavafish)](../resources/fishing-spot/0_45_152_lavafish.md) 3 | no | no | - | carry Dusty key |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:taverley-dungeon:0` | (2832, 9825) | Black dragon 2 | no | no | - |
-| `npc:taverley-dungeon:1` | (2845, 9761) | Zombie 5 | no | no | - |
-| `npc:taverley-dungeon:2` | (2850, 9808) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:3` | (2857, 9779) | Black Demon 2 | no | no | - |
-| `npc:taverley-dungeon:4` | (2857, 9822) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:5` | (2859, 9802) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:6` | (2862, 9817) | Poison spider 2 | no | no | - |
-| `npc:taverley-dungeon:7` | (2862, 9749) | Greater demon 2 | no | no | - |
-| `npc:taverley-dungeon:8` | (2863, 9769) | Black Demon 1 | no | no | - |
-| `npc:taverley-dungeon:9` | (2869, 9776) | Black Demon 1 | no | no | - |
-| `npc:taverley-dungeon:10` | (2870, 9799) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:11` | (2871, 9792) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:12` | (2876, 9806) | Poison spider 1 | no | no | - |
-| `npc:taverley-dungeon:13` | (2885, 9820) | Skeleton (skeleton_unarmed) 6 | no | no | - |
-| `npc:taverley-dungeon:14` | (2884, 9836) | Skeleton (skeleton_armed) 1 | no | no | - |
-| `npc:taverley-dungeon:15` | (2891, 9849) | Ghost 2 | no | no | - |
-| `npc:taverley-dungeon:16` | (2891, 9701) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:17` | (2893, 9832) | Spider 3 | no | no | - |
-| `npc:taverley-dungeon:18` | (2895, 9678) | Black Knight 1, Lord Daquarius 1 | no | no | - |
-| `npc:taverley-dungeon:19` | (2892, 9710) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:20` | (2902, 9801) | Baby blue dragon 4, Blue dragon 3 | no | no | - |
-| `npc:taverley-dungeon:21` | (2897, 9766) | Baby blue dragon 3 | no | no | - |
-| `npc:taverley-dungeon:22` | (2902, 9689) | Black Knight 3 | no | no | - |
-| `npc:taverley-dungeon:23` | (2899, 9709) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:24` | (2900, 9701) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:25` | (2900, 9819) | Ghost 1 | no | no | - |
-| `npc:taverley-dungeon:26` | (2910, 9849) | Ghost 5 | no | no | - |
-| `npc:taverley-dungeon:27` | (2915, 9832) | Giant bat 9 | no | no | - |
-| `npc:taverley-dungeon:28` | (2907, 9676) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:29` | (2907, 9711) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:30` | (2910, 9819) | Ghost 2 | no | no | - |
-| `npc:taverley-dungeon:31` | (2914, 9799) | Baby blue dragon 2 | no | no | - |
-| `npc:taverley-dungeon:32` | (2918, 9703) | Black Knight 2 | no | no | - |
-| `npc:taverley-dungeon:33` | (2915, 9760) | Chaos dwarf 1 | no | no | - |
-| `npc:taverley-dungeon:34` | (2917, 9680) | Black Knight 2 | no | no | - |
-| `npc:taverley-dungeon:35` | (2917, 9695) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:36` | (2920, 9818) | Ghost 1 | no | no | - |
-| `npc:taverley-dungeon:37` | (2925, 9759) | Chaos dwarf 2 | no | no | - |
-| `npc:taverley-dungeon:38` | (2923, 9710) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:39` | (2925, 9769) | Chaos dwarf 1 | no | no | - |
-| `npc:taverley-dungeon:40` | (2932, 9797) | Chaos dwarf 2, Lesser demon 5 | no | no | - |
-| `npc:taverley-dungeon:41` | (2932, 9755) | Poison Scorpion 2 | no | no | - |
-| `npc:taverley-dungeon:42` | (2931, 9696) | Dwarf 2, Jailer 1, Rat 4 | no | no | - |
-| `npc:taverley-dungeon:43` | (2930, 9822) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:44` | (2936, 9837) | Ghost 2 | no | no | - |
-| `npc:taverley-dungeon:45` | (2935, 9772) | Poison Scorpion 2 | no | no | - |
-| `npc:taverley-dungeon:46` | (2936, 9829) | Ghost 1 | no | no | - |
-| `npc:taverley-dungeon:47` | (2939, 9812) | Black Knight 1 | no | no | - |
-| `npc:taverley-dungeon:48` | (2941, 9779) | Poison Scorpion 1 | no | no | - |
-| `npc:taverley-dungeon:49` | (2943, 9801) | Black Knight 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:taverley-dungeon:0` | (2832, 9825) | Black dragon 2 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:1` | (2845, 9761) | Zombie 5 | no | no | - | unreached |
+| `npc:taverley-dungeon:2` | (2850, 9808) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:3` | (2857, 9779) | Black Demon 2 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:4` | (2857, 9822) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:5` | (2859, 9802) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:6` | (2862, 9817) | Poison spider 2 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:7` | (2862, 9749) | Greater demon 2 | no | no | - | unreached |
+| `npc:taverley-dungeon:8` | (2863, 9769) | Black Demon 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:9` | (2869, 9776) | Black Demon 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:10` | (2870, 9799) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:11` | (2871, 9792) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:12` | (2876, 9806) | Poison spider 1 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:13` | (2885, 9820) | Skeleton (skeleton_unarmed) 6 | no | no | - | - |
+| `npc:taverley-dungeon:14` | (2884, 9836) | Skeleton (skeleton_armed) 1 | no | no | - | - |
+| `npc:taverley-dungeon:15` | (2891, 9849) | Ghost 2 | no | no | - | - |
+| `npc:taverley-dungeon:16` | (2891, 9701) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:17` | (2893, 9832) | Spider 3 | no | no | - | - |
+| `npc:taverley-dungeon:18` | (2895, 9678) | Black Knight 1, Lord Daquarius 1 | no | no | - | - |
+| `npc:taverley-dungeon:19` | (2892, 9710) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:20` | (2902, 9801) | Baby blue dragon 4, Blue dragon 3 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:21` | (2897, 9766) | Baby blue dragon 3 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:22` | (2902, 9689) | Black Knight 3 | no | no | - | - |
+| `npc:taverley-dungeon:23` | (2899, 9709) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:24` | (2900, 9701) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:25` | (2900, 9819) | Ghost 1 | no | no | - | - |
+| `npc:taverley-dungeon:26` | (2910, 9849) | Ghost 5 | no | no | - | - |
+| `npc:taverley-dungeon:27` | (2915, 9832) | Giant bat 9 | no | no | - | - |
+| `npc:taverley-dungeon:28` | (2907, 9676) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:29` | (2907, 9711) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:30` | (2910, 9819) | Ghost 2 | no | no | - | - |
+| `npc:taverley-dungeon:31` | (2914, 9799) | Baby blue dragon 2 | no | no | - | carry Dusty key |
+| `npc:taverley-dungeon:32` | (2918, 9703) | Black Knight 2 | no | no | - | - |
+| `npc:taverley-dungeon:33` | (2915, 9760) | Chaos dwarf 1 | no | no | - | - |
+| `npc:taverley-dungeon:34` | (2917, 9680) | Black Knight 2 | no | no | - | - |
+| `npc:taverley-dungeon:35` | (2917, 9695) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:36` | (2920, 9818) | Ghost 1 | no | no | - | - |
+| `npc:taverley-dungeon:37` | (2925, 9759) | Chaos dwarf 2 | no | no | - | - |
+| `npc:taverley-dungeon:38` | (2923, 9710) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:39` | (2925, 9769) | Chaos dwarf 1 | no | no | - | - |
+| `npc:taverley-dungeon:40` | (2932, 9797) | Chaos dwarf 2, Lesser demon 5 | no | no | - | - |
+| `npc:taverley-dungeon:41` | (2932, 9755) | Poison Scorpion 2 | no | no | - | - |
+| `npc:taverley-dungeon:42` | (2931, 9696) | Dwarf 2, Jailer 1, Rat 4 | no | no | - | carry Jail key |
+| `npc:taverley-dungeon:43` | (2930, 9822) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:44` | (2936, 9837) | Ghost 2 | no | no | - | - |
+| `npc:taverley-dungeon:45` | (2935, 9772) | Poison Scorpion 2 | no | no | - | - |
+| `npc:taverley-dungeon:46` | (2936, 9829) | Ghost 1 | no | no | - | - |
+| `npc:taverley-dungeon:47` | (2939, 9812) | Black Knight 1 | no | no | - | - |
+| `npc:taverley-dungeon:48` | (2941, 9779) | Poison Scorpion 1 | no | no | - | - |
+| `npc:taverley-dungeon:49` | (2943, 9801) | Black Knight 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:taverley-dungeon:0` | (2842, 9824) | Ladder 1 | up (2841, 3424) | no | no | - |
-| `connector:taverley-dungeon:1` | (2884, 9797) | Ladder 1 | up (2885, 3397) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:taverley-dungeon:0` | (2842, 9824) | Ladder 1 | up (2841, 3424) by Climb-up | no | no | - | carry Dusty key |
+| `connector:taverley-dungeon:1` | (2884, 9797) | Ladder 1 | up (2885, 3397) by Climb-up | no | no | - | - |

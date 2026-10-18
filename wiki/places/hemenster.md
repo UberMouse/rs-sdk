@@ -7,39 +7,39 @@ The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to t
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `anvil:hemenster:0` | (2637, 3418) | Anvil 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `anvil:hemenster:0` | (2637, 3418) | Anvil 3 | no | no | - | unreached |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:hemenster:0` | (2637, 3432) | Range 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:hemenster:0` | (2637, 3432) | Range 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:hemenster:0` | (2639, 3411) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 3, [willow](../resources/tree/willow.md) 7 | no | yes | - |
-| `tree:hemenster:1` | (2633, 3432) | [willow](../resources/tree/willow.md) 1 | no | no | - |
-| `tree:hemenster:2` | (2656, 3449) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:hemenster:0` | (2639, 3411) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 3, [willow](../resources/tree/willow.md) 7 | no | yes | - | - |
+| `tree:hemenster:1` | (2633, 3432) | [willow](../resources/tree/willow.md) 1 | no | no | - | carry Fishing pass |
+| `tree:hemenster:2` | (2656, 3449) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | yes | - | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `thieving-chest:hemenster:0` | (2639, 3424) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `thieving-chest:hemenster:0` | (2639, 3424) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:hemenster:0` | (2651, 3442) | Chicken 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:hemenster:0` | (2651, 3442) | Chicken 4 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:hemenster:0` | (2642, 3428) | Ladder 1 | up (2642, 3429) L1 | no | no | - |
-| `connector:hemenster:1` | (2642, 3428) L1 | Ladder 1 | down (2642, 3429) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:hemenster:0` | (2642, 3428) | Ladder 1 | up (2642, 3429) L1 by Climb-up | no | no | - | - |
+| `connector:hemenster:1` | (2642, 3428) L1 | Ladder 1 | down (2642, 3429) by Climb-down | no | no | - | - |

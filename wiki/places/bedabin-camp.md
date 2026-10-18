@@ -3,15 +3,17 @@
 
 [Kharidian Desert](kharidian-desert.md) › Bedabin Camp
 
+The world index's walk from the Lumbridge spawn does not reach the desert south of the Shantay Pass, so the camp's shop reads unreached (build.ts unreached report): the pass's way in (oploc1,shantay_pass_henge_doorway, areas/area_alkharid/scripts/shantay_pass.rs2:79) moves the player in [queue,shantay_pass_enter] (shantay_pass.rs2:103), which sources/gate-landings.ts does not follow (gates.ts says so), so only the free way out has landings.
+
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:bedabin-camp:0` | (3169, 3037) | Bedabin Village Bartering (bedabincampshop) 8 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:bedabin-camp:0` | (3169, 3037) | Bedabin Village Bartering (bedabincampshop) 8 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:bedabin-camp:0` | (3162, 3032) | Bedabin Nomad Fighter 3 | no | no | - |
-| `npc:bedabin-camp:1` | (3178, 3032) | Bedabin Nomad Fighter 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:bedabin-camp:0` | (3162, 3032) | Bedabin Nomad Fighter 3 | no | no | - | unreached |
+| `npc:bedabin-camp:1` | (3178, 3032) | Bedabin Nomad Fighter 3 | no | no | - | unreached |

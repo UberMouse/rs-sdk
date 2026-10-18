@@ -3,203 +3,203 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:misthalin:0` | (3069, 3517) | oziach (runeplateshop) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:misthalin:0` | (3069, 3517) | oziach (runeplateshop) 1 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:misthalin:0` | (3144, 3452) L1 | Range 2 | yes | no | - |
-| `range:misthalin:1` | (3156, 3410) | Range 1 | yes | no | - |
-| `range:misthalin:2` | (3160, 3427) | Range 1 | yes | no | - |
-| `range:misthalin:3` | (3188, 3352) | Range 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:misthalin:0` | (3144, 3452) L1 | Range 2 | yes | no | - | wear Chef's hat + 32 Cooking |
+| `range:misthalin:1` | (3156, 3410) | Range 1 | yes | no | - | - |
+| `range:misthalin:2` | (3160, 3427) | Range 1 | yes | no | - | unreached |
+| `range:misthalin:3` | (3188, 3352) | Range 1 | yes | no | - | 32 quest points |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:misthalin:0` | (3147, 3201) | Fire 4 | yes | no | - |
-| `fire:misthalin:1` | (3225, 3290) | Cooking pot 1 | yes | no | - |
-| `fire:misthalin:2` | (3373, 3386) | Fire 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:misthalin:0` | (3147, 3201) | Fire 4 | yes | no | - | - |
+| `fire:misthalin:1` | (3225, 3290) | Cooking pot 1 | yes | no | - | - |
+| `fire:misthalin:2` | (3373, 3386) | Fire 2 | no | no | - | - |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-wheel:misthalin:0` | (3358, 3332) | Potter's Wheel 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pottery-wheel:misthalin:0` | (3358, 3332) | Potter's Wheel 1 | no | no | - | unreached |
 
 ## [Pottery ovens](../services/pottery-oven.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pottery-oven:misthalin:0` | (3359, 3332) | Pottery Oven 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pottery-oven:misthalin:0` | (3359, 3332) | Pottery Oven 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:misthalin:0` | (3116, 3167) | Fountain 1 | yes | yes | - |
-| `water-source:misthalin:1` | (3146, 3451) | Sink 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:misthalin:0` | (3116, 3167) | Fountain 1 | yes | yes | - | - |
+| `water-source:misthalin:1` | (3146, 3451) | Sink 1 | yes | no | - | wear Chef's hat + 32 Cooking |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:misthalin:0` | (3305, 3473) | earth 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:misthalin:0` | (3305, 3473) | earth 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:misthalin:0` | (3066, 3332) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 2 | yes | no | - |
-| `tree:misthalin:1` | (3106, 3355) | [normal](../resources/tree/normal.md) 409, [oak](../resources/tree/oak.md) 11 | yes | yes | - |
-| `tree:misthalin:2` | (3070, 3253) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:3` | (3068, 3281) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:4` | (3080, 3457) | [normal](../resources/tree/normal.md) 8 | yes | yes | - |
-| `tree:misthalin:5` | (3073, 3483) | [normal](../resources/tree/normal.md) 3 | yes | no | - |
-| `tree:misthalin:6` | (3086, 3517) | [normal](../resources/tree/normal.md) 4 | yes | no | - |
-| `tree:misthalin:7` | (3097, 3214) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:8` | (3105, 3170) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:misthalin:9` | (3174, 3491) | [normal](../resources/tree/normal.md) 216, [oak](../resources/tree/oak.md) 20 | yes | yes | - |
-| `tree:misthalin:10` | (3111, 3215) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:11` | (3138, 3407) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | yes | yes | - |
-| `tree:misthalin:12` | (3152, 3233) | [normal](../resources/tree/normal.md) 86, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 7, [yew](../resources/tree/yew.md) 3 | yes | no | - |
-| `tree:misthalin:13` | (3146, 3274) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:14` | (3164, 3393) | [normal](../resources/tree/normal.md) 36, [oak](../resources/tree/oak.md) 5 | yes | no | - |
-| `tree:misthalin:15` | (3168, 3332) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:16` | (3190, 3321) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | yes | no | - |
-| `tree:misthalin:17` | (3180, 3359) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:18` | (3186, 3292) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:19` | (3190, 3302) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:20` | (3295, 3398) | [normal](../resources/tree/normal.md) 263, [oak](../resources/tree/oak.md) 41, [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 2 | yes | no | - |
-| `tree:misthalin:21` | (3206, 3263) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:22` | (3210, 3309) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:23` | (3219, 3303) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | yes | no | - |
-| `tree:misthalin:24` | (3217, 3289) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | yes | no | - |
-| `tree:misthalin:25` | (3234, 3270) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 3 | yes | no | - |
-| `tree:misthalin:26` | (3219, 3322) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
-| `tree:misthalin:27` | (3238, 3329) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 2 | yes | no | - |
-| `tree:misthalin:28` | (3258, 3326) | [normal](../resources/tree/normal.md) 2 | yes | no | - |
-| `tree:misthalin:29` | (3259, 3300) | [oak](../resources/tree/oak.md) 1 | yes | no | - |
-| `tree:misthalin:30` | (3265, 3226) | [normal](../resources/tree/normal.md) 5 | yes | no | - |
-| `tree:misthalin:31` | (3322, 3514) | [normal](../resources/tree/normal.md) 5 | yes | no | - |
-| `tree:misthalin:32` | (3343, 3353) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:misthalin:33` | (3340, 3432) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:misthalin:34` | (3345, 3399) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:misthalin:35` | (3355, 3484) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:misthalin:36` | (3356, 3389) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:misthalin:37` | (3368, 3365) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:misthalin:38` | (3373, 3332) | [normal](../resources/tree/normal.md) 3 | no | no | - |
-| `tree:misthalin:39` | (3371, 3484) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:misthalin:40` | (3378, 3431) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:misthalin:41` | (3384, 3386) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | no | no | - |
-| `tree:misthalin:42` | (3384, 3479) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:misthalin:43` | (3385, 3369) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - |
-| `tree:misthalin:44` | (3385, 3418) | [normal](../resources/tree/normal.md) 2 | no | no | - |
-| `tree:misthalin:45` | (3386, 3490) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:misthalin:46` | (3387, 3405) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:misthalin:47` | (3388, 3433) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:misthalin:0` | (3066, 3332) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 2 | yes | no | - | - |
+| `tree:misthalin:1` | (3106, 3355) | [normal](../resources/tree/normal.md) 409, [oak](../resources/tree/oak.md) 11 | yes | yes | - | - |
+| `tree:misthalin:2` | (3070, 3253) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:3` | (3068, 3281) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:4` | (3080, 3457) | [normal](../resources/tree/normal.md) 8 | yes | yes | - | - |
+| `tree:misthalin:5` | (3073, 3483) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| `tree:misthalin:6` | (3086, 3517) | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
+| `tree:misthalin:7` | (3097, 3214) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:8` | (3105, 3170) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:misthalin:9` | (3174, 3491) | [normal](../resources/tree/normal.md) 216, [oak](../resources/tree/oak.md) 20 | yes | yes | - | - |
+| `tree:misthalin:10` | (3111, 3215) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:11` | (3138, 3407) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | yes | yes | - | - |
+| `tree:misthalin:12` | (3152, 3233) | [normal](../resources/tree/normal.md) 86, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 7, [yew](../resources/tree/yew.md) 3 | yes | no | - | - |
+| `tree:misthalin:13` | (3146, 3274) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:14` | (3164, 3393) | [normal](../resources/tree/normal.md) 36, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
+| `tree:misthalin:15` | (3168, 3332) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:16` | (3190, 3321) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | yes | no | - | - |
+| `tree:misthalin:17` | (3180, 3359) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:18` | (3186, 3292) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:19` | (3190, 3302) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:20` | (3295, 3398) | [normal](../resources/tree/normal.md) 263, [oak](../resources/tree/oak.md) 41, [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
+| `tree:misthalin:21` | (3206, 3263) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:22` | (3210, 3309) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:23` | (3219, 3303) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | yes | no | - | - |
+| `tree:misthalin:24` | (3217, 3289) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
+| `tree:misthalin:25` | (3234, 3270) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 3 | yes | no | - | - |
+| `tree:misthalin:26` | (3219, 3322) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:misthalin:27` | (3238, 3329) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 2 | yes | no | - | - |
+| `tree:misthalin:28` | (3258, 3326) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:misthalin:29` | (3259, 3300) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:misthalin:30` | (3265, 3226) | [normal](../resources/tree/normal.md) 5 | yes | no | - | - |
+| `tree:misthalin:31` | (3322, 3514) | [normal](../resources/tree/normal.md) 5 | yes | no | - | - |
+| `tree:misthalin:32` | (3343, 3353) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:misthalin:33` | (3340, 3432) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:misthalin:34` | (3345, 3399) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:misthalin:35` | (3355, 3484) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:misthalin:36` | (3356, 3389) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:misthalin:37` | (3368, 3365) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:misthalin:38` | (3373, 3332) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:misthalin:39` | (3371, 3484) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:misthalin:40` | (3378, 3431) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:misthalin:41` | (3384, 3386) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | no | no | - | - |
+| `tree:misthalin:42` | (3384, 3479) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:misthalin:43` | (3385, 3369) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:misthalin:44` | (3385, 3418) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:misthalin:45` | (3386, 3490) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:misthalin:46` | (3387, 3405) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:misthalin:47` | (3388, 3433) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:misthalin:0` | (3372, 3500) | [limestone](../resources/rock/limestone.md) 8 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:misthalin:0` | (3372, 3500) | [limestone](../resources/rock/limestone.md) 8 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:misthalin:0` | (3092, 3515) | [Guard](../resources/pickpocket/guard1.md) 2, [Man](../resources/pickpocket/man.md) 2 | yes | no | - |
-| `pickpocket:misthalin:1` | (3112, 3514) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - |
-| `pickpocket:misthalin:2` | (3154, 3293) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:3` | (3154, 3428) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - |
-| `pickpocket:misthalin:4` | (3165, 3324) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:5` | (3227, 3290) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:6` | (3233, 3308) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:7` | (3240, 3345) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
-| `pickpocket:misthalin:8` | (3262, 3325) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:misthalin:0` | (3092, 3515) | [Guard](../resources/pickpocket/guard1.md) 2, [Man](../resources/pickpocket/man.md) 2 | yes | no | - | - |
+| `pickpocket:misthalin:1` | (3112, 3514) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - | - |
+| `pickpocket:misthalin:2` | (3154, 3293) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| `pickpocket:misthalin:3` | (3154, 3428) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | unreached |
+| `pickpocket:misthalin:4` | (3165, 3324) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| `pickpocket:misthalin:5` | (3227, 3290) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| `pickpocket:misthalin:6` | (3233, 3308) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| `pickpocket:misthalin:7` | (3240, 3345) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| `pickpocket:misthalin:8` | (3262, 3325) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:misthalin:0` | (3073, 3250) | Imp 1 | yes | no | - |
-| `npc:misthalin:1` | (3073, 3498) | Imp 1 | yes | no | - |
-| `npc:misthalin:2` | (3075, 3366) | Giant spider 1 | yes | no | - |
-| `npc:misthalin:3` | (3078, 3461) | Imp 1 | yes | no | - |
-| `npc:misthalin:4` | (3099, 3370) | Witch 1 | yes | no | - |
-| `npc:misthalin:5` | (3110, 3295) | Highwayman 1 | yes | no | - |
-| `npc:misthalin:6` | (3111, 3167) | Wizard 2 | yes | yes | - |
-| `npc:misthalin:7` | (3114, 3310) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:misthalin:8` | (3118, 3432) | Goblin (goblin_armed) 1 | yes | yes | - |
-| `npc:misthalin:9` | (3119, 3444) | Goblin (goblin_armed) 1 | yes | yes | - |
-| `npc:misthalin:10` | (3121, 3422) | Goblin (goblin_armed) 1 | yes | yes | - |
-| `npc:misthalin:11` | (3126, 3450) | Goblin (goblin_armed) 1 | yes | yes | - |
-| `npc:misthalin:12` | (3134, 3487) | Imp 1 | yes | no | - |
-| `npc:misthalin:13` | (3135, 3340) | Giant spider 1 | yes | no | - |
-| `npc:misthalin:14` | (3147, 3377) | Duck (duck) 7, Duck (duck_female) 6 | yes | no | - |
-| `npc:misthalin:15` | (3142, 3297) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:misthalin:16` | (3145, 3232) | Goblin (goblin) 4 | yes | no | - |
-| `npc:misthalin:17` | (3145, 3260) | Goblin (goblin) 2 | yes | no | - |
-| `npc:misthalin:18` | (3147, 3480) | Giant spider 3 | yes | no | - |
-| `npc:misthalin:19` | (3151, 3414) | Rat 1 | yes | no | - |
-| `npc:misthalin:20` | (3152, 3357) | Duck (duck_female) 1 | yes | no | - |
-| `npc:misthalin:21` | (3154, 3325) | Cow 1 | yes | no | - |
-| `npc:misthalin:22` | (3160, 3318) | Cow 1 | yes | no | - |
-| `npc:misthalin:23` | (3162, 3277) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:misthalin:24` | (3166, 3247) | Giant spider 3, Spider 2 | yes | no | - |
-| `npc:misthalin:25` | (3167, 3205) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:misthalin:26` | (3173, 3323) | Cow 1 | yes | no | - |
-| `npc:misthalin:27` | (3182, 3329) | Cow 1 | yes | no | - |
-| `npc:misthalin:28` | (3183, 3348) | Duck (duck) 1 | yes | no | - |
-| `npc:misthalin:29` | (3188, 3278) | Chicken 5 | yes | no | - |
-| `npc:misthalin:30` | (3195, 3340) | Duck (duck) 2 | yes | no | - |
-| `npc:misthalin:31` | (3197, 3320) | Cow 1 | yes | no | - |
-| `npc:misthalin:32` | (3197, 3331) | Cow 1 | yes | no | - |
-| `npc:misthalin:33` | (3214, 3317) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - |
-| `npc:misthalin:34` | (3218, 3282) | Duck (duck) 2, Duck (duck_female) 2, Goblin (goblin_armed) 2, Imp 1 | yes | no | - |
-| `npc:misthalin:35` | (3215, 3303) | Duck (duck_female) 1 | yes | no | - |
-| `npc:misthalin:36` | (3227, 3369) | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 9 | yes | no | - |
-| `npc:misthalin:37` | (3224, 3262) | Goblin (goblin) 1 | yes | no | - |
-| `npc:misthalin:38` | (3230, 3299) | Chicken 9 | yes | no | - |
-| `npc:misthalin:39` | (3226, 3515) | Black Knight 1 | yes | no | - |
-| `npc:misthalin:40` | (3233, 3268) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - |
-| `npc:misthalin:41` | (3234, 3506) | Imp 1 | yes | no | - |
-| `npc:misthalin:42` | (3234, 3518) | Black Knight 1 | yes | no | - |
-| `npc:misthalin:43` | (3240, 3307) | Imp 1 | yes | no | - |
-| `npc:misthalin:44` | (3245, 3289) | Cow 3 | yes | no | - |
-| `npc:misthalin:45` | (3255, 3278) | Cow 1 | yes | no | - |
-| `npc:misthalin:46` | (3259, 3292) | Cow 2 | yes | no | - |
-| `npc:misthalin:47` | (3259, 3338) | Goblin (goblin_armed) 1 | yes | no | - |
-| `npc:misthalin:48` | (3261, 3270) | Cow 1 | yes | no | - |
-| `npc:misthalin:49` | (3261, 3514) | Imp 1 | yes | no | - |
-| `npc:misthalin:50` | (3311, 3375) | Goblin (goblin_armed) 1 | no | no | - |
-| `npc:misthalin:51` | (3343, 3482) | Bat 3 | no | no | - |
-| `npc:misthalin:52` | (3352, 3494) | Bat 2 | no | no | - |
-| `npc:misthalin:53` | (3363, 3487) | Bat 2 | no | no | - |
-| `npc:misthalin:54` | (3370, 3497) | Bat 1 | no | no | - |
-| `npc:misthalin:55` | (3379, 3481) | Bat 2 | no | no | - |
-| `npc:misthalin:56` | (3388, 3483) | Bat 2 | no | no | - |
-| `npc:misthalin:57` | (3388, 3494) | Bat 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:misthalin:0` | (3073, 3250) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:1` | (3073, 3498) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:2` | (3075, 3366) | Giant spider 1 | yes | no | - | - |
+| `npc:misthalin:3` | (3078, 3461) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:4` | (3099, 3370) | Witch 1 | yes | no | - | - |
+| `npc:misthalin:5` | (3110, 3295) | Highwayman 1 | yes | no | - | - |
+| `npc:misthalin:6` | (3111, 3167) | Wizard 2 | yes | yes | - | - |
+| `npc:misthalin:7` | (3114, 3310) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:misthalin:8` | (3118, 3432) | Goblin (goblin_armed) 1 | yes | yes | - | - |
+| `npc:misthalin:9` | (3119, 3444) | Goblin (goblin_armed) 1 | yes | yes | - | - |
+| `npc:misthalin:10` | (3121, 3422) | Goblin (goblin_armed) 1 | yes | yes | - | - |
+| `npc:misthalin:11` | (3126, 3450) | Goblin (goblin_armed) 1 | yes | yes | - | - |
+| `npc:misthalin:12` | (3134, 3487) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:13` | (3135, 3340) | Giant spider 1 | yes | no | - | - |
+| `npc:misthalin:14` | (3147, 3377) | Duck (duck) 7, Duck (duck_female) 6 | yes | no | - | - |
+| `npc:misthalin:15` | (3142, 3297) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:misthalin:16` | (3145, 3232) | Goblin (goblin) 4 | yes | no | - | - |
+| `npc:misthalin:17` | (3145, 3260) | Goblin (goblin) 2 | yes | no | - | - |
+| `npc:misthalin:18` | (3147, 3480) | Giant spider 3 | yes | no | - | - |
+| `npc:misthalin:19` | (3151, 3414) | Rat 1 | yes | no | - | - |
+| `npc:misthalin:20` | (3152, 3357) | Duck (duck_female) 1 | yes | no | - | unreached |
+| `npc:misthalin:21` | (3154, 3325) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:22` | (3160, 3318) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:23` | (3162, 3277) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:misthalin:24` | (3166, 3247) | Giant spider 3, Spider 2 | yes | no | - | - |
+| `npc:misthalin:25` | (3167, 3205) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:misthalin:26` | (3173, 3323) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:27` | (3182, 3329) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:28` | (3183, 3348) | Duck (duck) 1 | yes | no | - | unreached |
+| `npc:misthalin:29` | (3188, 3278) | Chicken 5 | yes | no | - | - |
+| `npc:misthalin:30` | (3195, 3340) | Duck (duck) 2 | yes | no | - | unreached |
+| `npc:misthalin:31` | (3197, 3320) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:32` | (3197, 3331) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:33` | (3214, 3317) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - | - |
+| `npc:misthalin:34` | (3218, 3282) | Duck (duck) 2, Duck (duck_female) 2, Goblin (goblin_armed) 2, Imp 1 | yes | no | - | - |
+| `npc:misthalin:35` | (3215, 3303) | Duck (duck_female) 1 | yes | no | - | unreached |
+| `npc:misthalin:36` | (3227, 3369) | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 9 | yes | no | - | - |
+| `npc:misthalin:37` | (3224, 3262) | Goblin (goblin) 1 | yes | no | - | - |
+| `npc:misthalin:38` | (3230, 3299) | Chicken 9 | yes | no | - | - |
+| `npc:misthalin:39` | (3226, 3515) | Black Knight 1 | yes | no | - | - |
+| `npc:misthalin:40` | (3233, 3268) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - | - |
+| `npc:misthalin:41` | (3234, 3506) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:42` | (3234, 3518) | Black Knight 1 | yes | no | - | - |
+| `npc:misthalin:43` | (3240, 3307) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:44` | (3245, 3289) | Cow 3 | yes | no | - | - |
+| `npc:misthalin:45` | (3255, 3278) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:46` | (3259, 3292) | Cow 2 | yes | no | - | - |
+| `npc:misthalin:47` | (3259, 3338) | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:misthalin:48` | (3261, 3270) | Cow 1 | yes | no | - | - |
+| `npc:misthalin:49` | (3261, 3514) | Imp 1 | yes | no | - | - |
+| `npc:misthalin:50` | (3311, 3375) | Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:misthalin:51` | (3343, 3482) | Bat 3 | no | no | - | - |
+| `npc:misthalin:52` | (3352, 3494) | Bat 2 | no | no | - | - |
+| `npc:misthalin:53` | (3363, 3487) | Bat 2 | no | no | - | - |
+| `npc:misthalin:54` | (3370, 3497) | Bat 1 | no | no | - | - |
+| `npc:misthalin:55` | (3379, 3481) | Bat 2 | no | no | - | - |
+| `npc:misthalin:56` | (3388, 3483) | Bat 2 | no | no | - | - |
+| `npc:misthalin:57` | (3388, 3494) | Bat 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:misthalin:0` | (3083, 3513) | Ladder 1 | up (3082, 3513) L1 | yes | no | - |
-| `connector:misthalin:1` | (3083, 3513) L1 | Ladder 1 | down (3082, 3513) | yes | no | - |
-| `connector:misthalin:2` | (3116, 3452) | Ladder 1 | down (3115, 9852) | yes | yes | - |
-| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | up (3155, 3435) L1 | yes | no | - |
-| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | down (3159, 3435) | yes | no | - |
-| `connector:misthalin:5` | (3164, 3307) | Ladder 1 | up (3164, 3306) L1 | yes | no | - |
-| `connector:misthalin:6` | (3164, 3307) L1 | Ladder 1 | down (3164, 3306), up (3164, 3306) L2 | yes | no | - |
-| `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | down (3164, 3306) L1 | yes | no | - |
-| `connector:misthalin:8` | (3188, 3355) | Staircase 1 | up (3188, 3354) L1 | yes | no | - |
-| `connector:misthalin:9` | (3188, 3355) L1 | Staircase 1 | down (3188, 3358) | yes | no | - |
-| `connector:misthalin:10` | (3206, 3371) L2 | Trapdoor 1 | down (3205, 9771) L2 | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:misthalin:0` | (3083, 3513) | Ladder 1 | up (3082, 3513) L1 by Climb-up | yes | no | - | - |
+| `connector:misthalin:1` | (3083, 3513) L1 | Ladder 1 | down (3082, 3513) by Climb-down | yes | no | - | - |
+| `connector:misthalin:2` | (3116, 3452) | Ladder 1 | down (3115, 9852) by Climb-down | yes | yes | - | - |
+| `connector:misthalin:3` | (3156, 3435) | Staircase 1 | up (3155, 3435) L1 by Climb-up | yes | no | - | unreached |
+| `connector:misthalin:4` | (3156, 3435) L1 | Staircase 1 | down (3159, 3435) by Climb-down | yes | no | - | unreached |
+| `connector:misthalin:5` | (3164, 3307) | Ladder 1 | up (3164, 3306) L1 by Climb-up | yes | no | - | - |
+| `connector:misthalin:6` | (3164, 3307) L1 | Ladder 1 | down (3164, 3306) by Climb or Climb-down; up (3164, 3306) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:misthalin:7` | (3164, 3307) L2 | Ladder 1 | down (3164, 3306) L1 by Climb-down | yes | no | - | - |
+| `connector:misthalin:8` | (3188, 3355) | Staircase 1 | up (3188, 3354) L1 by Climb-up | yes | no | - | 32 quest points |
+| `connector:misthalin:9` | (3188, 3355) L1 | Staircase 1 | down (3188, 3358) by Climb-down | yes | no | - | 32 quest points |
+| `connector:misthalin:10` | (3206, 3371) L2 | Trapdoor 1 | down (3205, 9771) L2 by Open, then Climb-down | yes | no | - | unreached |
 
 ## Areas within
 

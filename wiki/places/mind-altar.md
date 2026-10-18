@@ -5,6 +5,6 @@ Inside the mind ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-altar:mind-altar:0` | (2785, 4840) | mind 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-altar:mind-altar:0` | (2785, 4840) | mind 1 | yes | no | - | unreached |

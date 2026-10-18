@@ -5,15 +5,15 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:desert-mining-camp:0` | (3294, 3017) | [coal](../resources/rock/coal.md) 4, [copper](../resources/rock/copper.md) 4, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:desert-mining-camp:0` | (3294, 3017) | [coal](../resources/rock/coal.md) 4, [copper](../resources/rock/copper.md) 4, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:desert-mining-camp:0` | (3280, 3026) | Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp:1` | (3287, 3030) | Rowdy Guard 1 | no | no | - |
-| `npc:desert-mining-camp:2` | (3288, 3018) | Mercenary 1 | no | no | - |
-| `npc:desert-mining-camp:3` | (3298, 3022) | Mercenary 2, Rowdy Guard 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:desert-mining-camp:0` | (3280, 3026) | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp:1` | (3287, 3030) | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp:2` | (3288, 3018) | Mercenary 1 | no | no | - | unreached |
+| `npc:desert-mining-camp:3` | (3298, 3022) | Mercenary 2, Rowdy Guard 1 | no | no | - | unreached |

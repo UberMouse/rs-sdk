@@ -7,21 +7,21 @@ The world map's "Dwarven Mine" label, on Ice Mountain; the mine itself is the un
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:dwarven-mine-entrance:0` | (3006, 3444) | [normal](../resources/tree/normal.md) 1 | yes | yes | - |
-| `tree:dwarven-mine-entrance:1` | (3015, 3442) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:dwarven-mine-entrance:0` | (3006, 3444) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:dwarven-mine-entrance:1` | (3015, 3442) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dwarven-mine-entrance:0` | (3008, 3436) | Dwarf (dwarf_normal) 1 | yes | no | - |
-| `npc:dwarven-mine-entrance:1` | (3018, 3436) | Dwarf (dwarf_normal) 2 | yes | no | - |
-| `npc:dwarven-mine-entrance:2` | (3018, 3448) | Dwarf (mcannonguard) 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dwarven-mine-entrance:0` | (3008, 3436) | Dwarf (dwarf_normal) 1 | yes | no | - | - |
+| `npc:dwarven-mine-entrance:1` | (3018, 3436) | Dwarf (dwarf_normal) 2 | yes | no | - | - |
+| `npc:dwarven-mine-entrance:2` | (3018, 3448) | Dwarf (mcannonguard) 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:dwarven-mine-entrance:0` | (3019, 3450) | Trapdoor 1 | down (3018, 9850) | yes | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:dwarven-mine-entrance:0` | (3019, 3450) | Trapdoor 1 | down (3018, 9850) by Climb-down | yes | no | - | - |

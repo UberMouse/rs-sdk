@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:dark-wizards-tower:0` | (2910, 3336) | [normal](../resources/tree/normal.md) 53 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:dark-wizards-tower:0` | (2910, 3336) | [normal](../resources/tree/normal.md) 53 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:dark-wizards-tower:0` | (2908, 3334) | Dark wizard (bearded_dark_wizard) 5, Dark wizard (young_dark_wizard) 2 | no | no | - |
-| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - |
-| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:dark-wizards-tower:0` | (2908, 3334) | Dark wizard (bearded_dark_wizard) 5, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
+| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
+| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:dark-wizards-tower:0` | (2907, 3334) | Staircase 1 | up (2908, 3336) L1 | no | no | - |
-| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | Staircase 1 | down (2908, 3336), up (2908, 3336) L2 | no | no | - |
-| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | Staircase 1 | down (2908, 3336) L1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:dark-wizards-tower:0` | (2907, 3334) | Staircase 1 | up (2908, 3336) L1 by Climb-up | no | no | - | - |
+| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | Staircase 1 | down (2908, 3336) by Climb or Climb-down; up (2908, 3336) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | Staircase 1 | down (2908, 3336) L1 by Climb-down | no | no | - | - |

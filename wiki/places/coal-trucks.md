@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:coal-trucks:0` | (2590, 3498) | [willow](../resources/tree/willow.md) 3 | no | no | - |
-| `tree:coal-trucks:1` | (2592, 3483) | [normal](../resources/tree/normal.md) 5 | no | no | - |
-| `tree:coal-trucks:2` | (2606, 3497) | [normal](../resources/tree/normal.md) 2, [willow](../resources/tree/willow.md) 3 | no | no | - |
-| `tree:coal-trucks:3` | (2606, 3482) | [normal](../resources/tree/normal.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:coal-trucks:0` | (2590, 3498) | [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:coal-trucks:1` | (2592, 3483) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
+| `tree:coal-trucks:2` | (2606, 3497) | [normal](../resources/tree/normal.md) 2, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:coal-trucks:3` | (2606, 3482) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:coal-trucks:0` | (2588, 3482) | [coal](../resources/rock/coal.md) 2 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:coal-trucks:0` | (2588, 3482) | [coal](../resources/rock/coal.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:coal-trucks:0` | (2592, 3482) | Giant bat 2 | no | no | - |
-| `npc:coal-trucks:1` | (2610, 3479) | Rat 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:coal-trucks:0` | (2592, 3482) | Giant bat 2 | no | no | - | - |
+| `npc:coal-trucks:1` | (2610, 3479) | Rat 1 | no | no | - | - |

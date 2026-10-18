@@ -5,6 +5,6 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:death-plateau:0` | (2867, 3593) | Kraka 1, Mountain Troll (death_troll_melee1) 2, Mountain Troll (death_troll_melee2) 2, Mountain Troll (death_troll_melee3) 2, Mountain Troll (death_troll_melee4) 2, Mountain Troll (death_troll_melee5) 2, Mountain Troll (death_troll_melee6) 2, Mountain Troll (death_troll_melee7) 2, Pee Hat 1, Rock 1, Stick 1, Thrower Troll (death_troll_thrower1) 1, Thrower Troll (death_troll_thrower2) 1, Thrower Troll (death_troll_thrower3) 1, Thrower Troll (death_troll_thrower4) 1, Thrower Troll (death_troll_thrower5) 1 | no | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:death-plateau:0` | (2867, 3593) | Kraka 1, Mountain Troll (death_troll_melee1) 2, Mountain Troll (death_troll_melee2) 2, Mountain Troll (death_troll_melee3) 2, Mountain Troll (death_troll_melee4) 2, Mountain Troll (death_troll_melee5) 2, Mountain Troll (death_troll_melee6) 2, Mountain Troll (death_troll_melee7) 2, Pee Hat 1, Rock 1, Stick 1, Thrower Troll (death_troll_thrower1) 1, Thrower Troll (death_troll_thrower2) 1, Thrower Troll (death_troll_thrower3) 1, Thrower Troll (death_troll_thrower4) 1, Thrower Troll (death_troll_thrower5) 1 | no | yes | - | - |

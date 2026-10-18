@@ -5,23 +5,23 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:wizards-tower:0` | (3104, 3150) | [oak](../resources/tree/oak.md) 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:wizards-tower:0` | (3104, 3150) | [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:wizards-tower:0` | (3110, 3157) L1 | Wizard 2 | yes | yes | - |
-| `npc:wizards-tower:1` | (3109, 3158) | Wizard 2 | yes | yes | - |
-| `npc:wizards-tower:2` | (3110, 3157) L2 | Lesser demon 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:wizards-tower:0` | (3110, 3157) L1 | Wizard 2 | yes | yes | - | - |
+| `npc:wizards-tower:1` | (3109, 3158) | Wizard 2 | yes | yes | - | - |
+| `npc:wizards-tower:2` | (3110, 3157) L2 | Lesser demon 1 | yes | yes | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:wizards-tower:0` | (3103, 3159) | Staircase 1 | up (3105, 3160) L1 | yes | yes | - |
-| `connector:wizards-tower:1` | (3103, 3159) L1 | Staircase 1 | down (3105, 3160), up (3104, 3161) L2 | yes | yes | - |
-| `connector:wizards-tower:2` | (3104, 3160) L2 | Staircase 1 | down (3105, 3160) L1 | yes | yes | - |
-| `connector:wizards-tower:3` | (3104, 3162) | Ladder 1 | down (3104, 9576) | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:wizards-tower:0` | (3103, 3159) | Staircase 1 | up (3105, 3160) L1 by Climb-up | yes | yes | - | - |
+| `connector:wizards-tower:1` | (3103, 3159) L1 | Staircase 1 | down (3105, 3160) by Climb or Climb-down; up (3104, 3161) L2 by Climb or Climb-up | yes | yes | - | - |
+| `connector:wizards-tower:2` | (3104, 3160) L2 | Staircase 1 | down (3105, 3160) L1 by Climb-down | yes | yes | - | - |
+| `connector:wizards-tower:3` | (3104, 3162) | Ladder 1 | down (3104, 9576) by Climb-down | yes | yes | - | - |

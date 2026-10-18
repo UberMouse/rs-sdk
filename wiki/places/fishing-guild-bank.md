@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `bank:fishing-guild-bank:0` | (2585, 3420) | Bank booth 4, Banker 4 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `bank:fishing-guild-bank:0` | (2585, 3420) | Bank booth 4, Banker 4 | no | no | - | 68 Fishing |

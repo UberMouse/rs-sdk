@@ -5,18 +5,18 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:asgarnia-chaos-temple:0` | (2932, 3537) | Fireplace 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:asgarnia-chaos-temple:0` | (2932, 3537) | Fireplace 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:asgarnia-chaos-temple:0` | (2926, 3526) | [normal](../resources/tree/normal.md) 5 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:asgarnia-chaos-temple:0` | (2926, 3526) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | Hygd 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | Hygd 1 | no | no | - | - |

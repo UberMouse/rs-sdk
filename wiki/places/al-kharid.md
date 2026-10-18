@@ -5,74 +5,74 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:al-kharid:0` | (3288, 3190) | Zeke's Superior Scimitars. (scimitarshop) 1 | yes | yes | - |
-| `shop:al-kharid:1` | (3288, 3212) | Gem Trader. (gemshop2) 1 | yes | no | - |
-| `shop:al-kharid:2` | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes | yes | - |
-| `shop:al-kharid:3` | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes | yes | - |
-| `shop:al-kharid:4` | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes | yes | - |
-| `shop:al-kharid:5` | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:al-kharid:0` | (3288, 3190) | Zeke's Superior Scimitars. (scimitarshop) 1 | yes | yes | - | - |
+| `shop:al-kharid:1` | (3288, 3212) | Gem Trader. (gemshop2) 1 | yes | no | - | - |
+| `shop:al-kharid:2` | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes | yes | - | - |
+| `shop:al-kharid:3` | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes | yes | - | - |
+| `shop:al-kharid:4` | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes | yes | - | - |
+| `shop:al-kharid:5` | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes | yes | - | - |
 
 ## [Tanners](../services/tanner.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tanner:al-kharid:0` | (3276, 3193) | Tanner 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tanner:al-kharid:0` | (3276, 3193) | Tanner 1 | yes | yes | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `furnace:al-kharid:0` | (3273, 3185) | Furnace 2 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `furnace:al-kharid:0` | (3273, 3185) | Furnace 2 | yes | yes | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:al-kharid:0` | (3271, 3180) | Range 1 | yes | yes | - |
-| `range:al-kharid:1` | (3292, 3202) | Range 1 | yes | no | - |
-| `range:al-kharid:2` | (3318, 3138) | Range 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:al-kharid:0` | (3271, 3180) | Range 1 | yes | yes | - | - |
+| `range:al-kharid:1` | (3292, 3202) | Range 1 | yes | no | - | - |
+| `range:al-kharid:2` | (3318, 3138) | Range 1 | yes | yes | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `water-source:al-kharid:0` | (3292, 3172) | Fountain 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `water-source:al-kharid:0` | (3292, 3172) | Fountain 1 | yes | yes | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:al-kharid:0` | (3265, 3215) | [normal](../resources/tree/normal.md) 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:al-kharid:0` | (3265, 3215) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:al-kharid:0` | (3277, 3187) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
-| `pickpocket:al-kharid:1` | (3292, 3172) | [Al-Kharid warrior](../resources/pickpocket/al_kharid_warrior.md) 9 | yes | yes | - |
-| `pickpocket:al-kharid:2` | (3284, 3199) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
-| `pickpocket:al-kharid:3` | (3298, 3203) | [Man](../resources/pickpocket/al_kharid_man.md) 3 | yes | yes | - |
-| `pickpocket:al-kharid:4` | (3294, 3196) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:al-kharid:0` | (3277, 3187) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - | - |
+| `pickpocket:al-kharid:1` | (3292, 3172) | [Al-Kharid warrior](../resources/pickpocket/al_kharid_warrior.md) 9 | yes | yes | - | - |
+| `pickpocket:al-kharid:2` | (3284, 3199) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - | - |
+| `pickpocket:al-kharid:3` | (3298, 3203) | [Man](../resources/pickpocket/al_kharid_man.md) 3 | yes | yes | - | - |
+| `pickpocket:al-kharid:4` | (3294, 3196) | [Man](../resources/pickpocket/al_kharid_man.md) 1 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:al-kharid:0` | (3322, 3139) | Spider 3, Witch 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:al-kharid:0` | (3322, 3139) | Spider 3, Witch 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:al-kharid:0` | (3284, 3165) | Ladder 1 | up (3283, 3165) L1 | yes | yes | - |
-| `connector:al-kharid:1` | (3284, 3165) L1 | Ladder 1 | down (3283, 3165) | yes | yes | - |
-| `connector:al-kharid:2` | (3286, 3192) | Ladder 1 | up (3286, 3191) L1 | yes | yes | - |
-| `connector:al-kharid:3` | (3286, 3192) L1 | Ladder 1 | down (3286, 3191), up (3286, 3191) L2 | yes | yes | - |
-| `connector:al-kharid:4` | (3286, 3192) L2 | Ladder 1 | down (3286, 3191) L1 | yes | no | - |
-| `connector:al-kharid:5` | (3312, 3185) | Staircase 1 | up (3314, 3185) L1 | yes | yes | - |
-| `connector:al-kharid:6` | (3313, 3185) L1 | Staircase 1 | down (3313, 3184) | yes | yes | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:al-kharid:0` | (3284, 3165) | Ladder 1 | up (3283, 3165) L1 by Climb-up | yes | yes | - | - |
+| `connector:al-kharid:1` | (3284, 3165) L1 | Ladder 1 | down (3283, 3165) by Climb-down | yes | yes | - | - |
+| `connector:al-kharid:2` | (3286, 3192) | Ladder 1 | up (3286, 3191) L1 by Climb-up | yes | yes | - | - |
+| `connector:al-kharid:3` | (3286, 3192) L1 | Ladder 1 | down (3286, 3191) by Climb or Climb-down; up (3286, 3191) L2 by Climb or Climb-up | yes | yes | - | - |
+| `connector:al-kharid:4` | (3286, 3192) L2 | Ladder 1 | down (3286, 3191) L1 by Climb-down | yes | no | - | - |
+| `connector:al-kharid:5` | (3312, 3185) | Staircase 1 | up (3314, 3185) L1 by Climb-up | yes | yes | - | - |
+| `connector:al-kharid:6` | (3313, 3185) L1 | Staircase 1 | down (3313, 3184) by Climb-down | yes | yes | - | - |
 
 ## Areas within
 

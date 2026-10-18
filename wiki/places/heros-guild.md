@@ -5,28 +5,28 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `shop:heros-guild:0` | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `shop:heros-guild:0` | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | no | - | Hero's Quest done |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `altar:heros-guild:0` | (2889, 3510) L1 | Altar 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `altar:heros-guild:0` | (2889, 3510) L1 | Altar 1 | no | no | - | Hero's Quest done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:heros-guild:0` | (2891, 3501) | [normal](../resources/tree/normal.md) 16 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:heros-guild:0` | (2891, 3501) | [normal](../resources/tree/normal.md) 16 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:heros-guild:0` | (2890, 3508) L1 | Ladder 1 | up (2889, 3508) L2 | no | no | - |
-| `connector:heros-guild:1` | (2890, 3508) L2 | Ladder 1 | down (2889, 3508) L1 | no | no | - |
-| `connector:heros-guild:2` | (2892, 3507) | Ladder 1 | down (2893, 9907) | no | no | - |
-| `connector:heros-guild:3` | (2895, 3505) L1 | Ladder 1 | up (2894, 3505) L2 | no | no | - |
-| `connector:heros-guild:4` | (2895, 3505) L2 | Ladder 1 | down (2894, 3505) L1 | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:heros-guild:0` | (2890, 3508) L1 | Ladder 1 | up (2889, 3508) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heros-guild:1` | (2890, 3508) L2 | Ladder 1 | down (2889, 3508) L1 by Climb-down | no | no | - | Hero's Quest done |
+| `connector:heros-guild:2` | (2892, 3507) | Ladder 1 | down (2893, 9907) by Climb-down | no | no | - | Hero's Quest done |
+| `connector:heros-guild:3` | (2895, 3505) L1 | Ladder 1 | up (2894, 3505) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heros-guild:4` | (2895, 3505) L2 | Ladder 1 | down (2894, 3505) L1 by Climb-down | no | no | - | Hero's Quest done |

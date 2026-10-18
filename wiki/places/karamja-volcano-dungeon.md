@@ -5,14 +5,14 @@ Below the volcano; lesser demons and deadly red spiders. Descriptive name, not s
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | [gold](../resources/rock/gold.md) 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | [gold](../resources/rock/gold.md) 4 | yes | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - |
-| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - |
-| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - | unreached |
+| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - | unreached |
+| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - | unreached |

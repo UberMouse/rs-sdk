@@ -5,31 +5,31 @@
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `range:rogues-castle:0` | (3280, 3929) | Range 1 | no | yes | 52 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `range:rogues-castle:0` | (3280, 3929) | Range 1 | no | yes | 52 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:rogues-castle:0` | (3278, 3921) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 |
-| `tree:rogues-castle:1` | (3294, 3922) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:rogues-castle:0` | (3278, 3921) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
+| `tree:rogues-castle:1` | (3294, 3922) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `pickpocket:rogues-castle:0` | (3284, 3931) | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 |
-| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 |
-| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 |
-| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `pickpocket:rogues-castle:0` | (3284, 3931) | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 | - |
+| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 | unreached |
+| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 | unreached |
+| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 | no | yes | 53 |
-| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936), up (3282, 3936) L2 | no | yes | 53 |
-| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1, up (3281, 3936) L3 | no | yes | 53 |
-| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 | no | no | 53 |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 by Climb-up | no | yes | 53 | unreached |
+| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936) by Climb or Climb-down; up (3282, 3936) L2 by Climb or Climb-up | no | yes | 53 | unreached |
+| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1 by Climb or Climb-down; up (3281, 3936) L3 by Climb or Climb-up | no | yes | 53 | unreached |
+| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 by Climb-down | no | no | 53 | unreached |

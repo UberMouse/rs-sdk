@@ -3,48 +3,48 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `fire:kharidian-desert:0` | (3321, 3137) | Fireplace 1 | yes | yes | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fire:kharidian-desert:0` | (3321, 3137) | Fireplace 1 | yes | yes | - | - |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rc-ruins:kharidian-desert:0` | (3312, 3254) | fire 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rc-ruins:kharidian-desert:0` | (3312, 3254) | fire 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `tree:kharidian-desert:0` | (3335, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - |
-| `tree:kharidian-desert:1` | (3373, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `tree:kharidian-desert:0` | (3335, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:kharidian-desert:1` | (3373, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `rock:kharidian-desert:0` | (3304, 3023) | [tin](../resources/rock/tin.md) 3 | no | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `rock:kharidian-desert:0` | (3304, 3023) | [tin](../resources/rock/tin.md) 3 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|
-| `npc:kharidian-desert:0` | (3270, 3029) | Mercenary (desertminingmercenary1) 4, Mercenary (desertminingmercenary2) 2, Mercenary Captain 1 | no | no | - |
-| `npc:kharidian-desert:1` | (3286, 3036) L1 | Mercenary (desertminingmercenary1) 1 | no | no | - |
-| `npc:kharidian-desert:2` | (3291, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - |
-| `npc:kharidian-desert:3` | (3300, 3276) | Imp 1, Scorpion 1 | yes | no | - |
-| `npc:kharidian-desert:4` | (3303, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - |
-| `npc:kharidian-desert:5` | (3319, 3250) | Rat 1 | yes | no | - |
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:kharidian-desert:0` | (3270, 3029) | Mercenary (desertminingmercenary1) 4, Mercenary (desertminingmercenary2) 2, Mercenary Captain 1 | no | no | - | unreached |
+| `npc:kharidian-desert:1` | (3286, 3036) L1 | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
+| `npc:kharidian-desert:2` | (3291, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
+| `npc:kharidian-desert:3` | (3300, 3276) | Imp 1, Scorpion 1 | yes | no | - | - |
+| `npc:kharidian-desert:4` | (3303, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
+| `npc:kharidian-desert:5` | (3319, 3250) | Rat 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness |
-|---|---|---|---|---|---|---|
-| `connector:kharidian-desert:0` | (3188, 2987) | Ladder 1 | up (3188, 2986) L1 | no | no | - |
-| `connector:kharidian-desert:1` | (3188, 2987) L1 | Ladder 1 | down (3188, 2986) | no | no | - |
-| `connector:kharidian-desert:2` | (3290, 3036) | Ladder 1 | up (3289, 3036) L1 | no | no | - |
-| `connector:kharidian-desert:3` | (3290, 3036) L1 | Ladder 1 | down (3289, 3036) | no | no | - |
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:kharidian-desert:0` | (3188, 2987) | Ladder 1 | up (3188, 2986) L1 by Climb-up | no | no | - | unreached |
+| `connector:kharidian-desert:1` | (3188, 2987) L1 | Ladder 1 | down (3188, 2986) by Climb-down | no | no | - | unreached |
+| `connector:kharidian-desert:2` | (3290, 3036) | Ladder 1 | up (3289, 3036) L1 by Climb-up | no | no | - | unreached |
+| `connector:kharidian-desert:3` | (3290, 3036) L1 | Ladder 1 | down (3289, 3036) by Climb-down | no | no | - | unreached |
 
 ## Areas within
 
