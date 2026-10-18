@@ -1,10 +1,18 @@
 // A curated method (methods.ts) resolved against the world: its site, its sink sites, the legs of its cycle in run
 // ticks under each requirement set that gets to all of them, and the lowest level its families can model it at;
 // then its floor at a profile (cycle.ts).
-import type { MethodDef } from '../methods';
+import type { Measured, MethodDef } from '../methods';
 import { SINKS, type wayFinder } from '../distance';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
-import { SINK_KINDS, type FeatureKind, type SinkKind, type Site, type Tile, type World } from '../types';
+import {
+    SINK_KINDS,
+    type FeatureKind,
+    type SinkKind,
+    type Site,
+    type Tile,
+    type World,
+    type WorldMethod,
+} from '../types';
 import { cmp } from '../util';
 import { cycle, type CycleRates, type CycleSink } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
@@ -46,6 +54,12 @@ export interface ResolvedMethod {
      * assumes tools are wielded and does not check their wield level (a rune pickaxe needs Attack 40).
      */
     minLevel: number;
+    /**
+     * Each skill the method trains (the gather family's, then the process step's), and the lowest level of it at which
+     * the families model the method with the other skills of the method at 99: what each skill itself needs (fly
+     * fishing and cooking trout and salmon: Fishing 20, Cooking 25). The highest of them is `minLevel`.
+     */
+    levels: Partial<Record<Skill, number>>;
 }
 
 /** What resolving and modelling a method reads. */
@@ -161,7 +175,7 @@ function locate(
 const paramList = (params: unknown): unknown[] => (Array.isArray(params) ? params : [params]);
 
 /** The gather and process models of a located method at `profile`; throws a ModelError when a family can't. */
-function models(
+export function methodModels(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink'>,
     profile: Profile,
     ctx: MethodContext,
@@ -188,7 +202,7 @@ function rate(
     ctx: MethodContext,
     way: MethodWay,
 ): CycleRates {
-    const { gather, process } = models(m, profile, ctx);
+    const { gather, process } = methodModels(m, profile, ctx);
     const legs = way.legs.map(l => l.runTicks);
     const sink: CycleSink =
         m.sink.mode === 'drop'
@@ -220,28 +234,109 @@ export function resolveMethod(
         const located = locate(def, ctx, finder);
         const skill = familyOf(ctx, def.family).skills[0]!;
         // A process step whose input the gather never gives (a misnamed food) would do nothing at every level.
-        const top = models({ def, ...located }, profileAt(skill, 99, { tools: ctx.tools }), ctx);
+        const top = methodModels({ def, ...located }, profileAt(skill, 99, { tools: ctx.tools }), ctx);
         for (const step of top.process)
             for (const c of step.consumes)
                 if (!top.gather.products.some(x => x.obj === c.obj))
                     throw new ModelError(`a process step takes ${c.obj}, which the gather does not give at 99`);
-        let reason = '';
-        for (let level = 1; level <= 99; level++) {
-            try {
-                rate({ def, ...located }, profileAt(skill, level, { tools: ctx.tools }), ctx, located.ways[0]!);
-                return { def, ...located, skill, minLevel: level };
-            } catch (e) {
-                if (!(e instanceof ModelError)) throw e;
-                reason = e.message;
+        // The lowest level of `skill` at which it models, the skills of `atLeast` raised to theirs; with the reason the
+        // last level failed when none does.
+        const lowest = (s: Skill, atLeast: Partial<Record<Skill, number>>): { level?: number; reason: string } => {
+            let reason = '';
+            for (let level = 1; level <= 99; level++) {
+                try {
+                    rate(
+                        { def, ...located },
+                        profileAt(s, level, { tools: ctx.tools, atLeast }),
+                        ctx,
+                        located.ways[0]!,
+                    );
+                    return { level, reason };
+                } catch (e) {
+                    if (!(e instanceof ModelError)) throw e;
+                    reason = e.message;
+                }
             }
+            return { reason };
+        };
+        const all = lowest(skill, {});
+        if (all.level === undefined) throw new ModelError(`no level models it (at 99: ${all.reason})`);
+        const skills = [...new Set([skill, ...methodSkills(def, ctx)])];
+        const levels: Partial<Record<Skill, number>> = {};
+        for (const s of skills) {
+            // It models at minLevel with every skill there, so with the others at 99 some level of `s` does too.
+            const own = lowest(s, Object.fromEntries(skills.filter(o => o !== s).map(o => [o, 99])));
+            if (own.level === undefined)
+                throw new ModelError(`no ${s} level models it with the others at 99 (${own.reason})`);
+            levels[s] = own.level;
         }
-        throw new ModelError(`no level models it (at 99: ${reason})`);
+        return { def, ...located, skill, minLevel: all.level, levels };
     } catch (e) {
         if (e instanceof MethodError) throw e;
         // Any other error (rate.ts rejecting a bad model, say) is the record's failure too: name it.
         if (e instanceof Error) throw new MethodError(def.id, e.message);
         throw e;
     }
+}
+
+/** The skills a record trains: its family's, then its process step's, each once. */
+function methodSkills(def: MethodDef, ctx: MethodContext): Skill[] {
+    const step = def.sink.mode === 'process-bank' ? [def.sink.process.family] : [];
+    return [...new Set([def.family, ...step].flatMap(f => familyOf(ctx, f).skills))];
+}
+
+/**
+ * The profile a measured figure was taken at: the method's skill at its measured level, every other skill at that
+ * level raised to its measured one (profileAt), and the axe or pickaxe the runs used in place of the best one.
+ * Throws when the figure has no level for the method's skill or names a tool that is neither.
+ */
+export function measuredProfile(m: Pick<ResolvedMethod, 'def' | 'skill'>, measured: Measured, tools: Tools): Profile {
+    const level = measured.level[m.skill];
+    if (level === undefined)
+        throw new MethodError(m.def.id, `a measured figure (${measured.bot} ${measured.date}) has no ${m.skill} level`);
+    const profile = profileAt(m.skill, level, { tools, atLeast: measured.level });
+    if (measured.tool?.endsWith('_pickaxe')) profile.pickaxe = measured.tool;
+    else if (measured.tool?.endsWith('_axe')) profile.axe = measured.tool;
+    else if (measured.tool) throw new MethodError(m.def.id, `measured tool ${measured.tool} is no axe or pickaxe`);
+    return profile;
+}
+
+/** A resolved method as world.json holds it: the record, then what the build resolved (WorldMethod). */
+export function toWorldMethod(m: ResolvedMethod): WorldMethod {
+    return {
+        ...m.def,
+        site: m.site.id,
+        stand: m.site.stand!,
+        ...(m.sink.mode === 'drop' ? {} : { bank: m.sink.bank.id }),
+        ...(m.sink.mode === 'process-bank' ? { processor: m.sink.processor.id } : {}),
+        skill: m.skill,
+        minLevel: m.minLevel,
+        levels: m.levels,
+        ways: m.ways,
+    };
+}
+
+/**
+ * A world.json method back as a ResolvedMethod over `world`'s sites, for the model to rate. Throws when it names a
+ * site world.json has not, or one whose stand has moved: the file is not one build.ts wrote.
+ */
+export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): ResolvedMethod {
+    const { site, stand, bank, processor, skill, minLevel, levels, ways, ...def } = wm;
+    const byId = (id: string | undefined, what: string): Site => {
+        const s = id === undefined ? undefined : world.sites.find(x => x.id === id);
+        if (!s) throw new MethodError(wm.id, `world.json names no ${what} site${id === undefined ? '' : ` ${id}`}`);
+        return s;
+    };
+    const at = byId(site, 'method');
+    if (!at.stand || at.stand.x !== stand.x || at.stand.z !== stand.z || at.stand.level !== stand.level)
+        throw new MethodError(wm.id, `site ${site}'s stand is not the method's ${coord(stand)}`);
+    const sink: ResolvedMethod['sink'] =
+        def.sink.mode === 'drop'
+            ? { mode: 'drop' }
+            : def.sink.mode === 'bank'
+              ? { mode: 'bank', bank: byId(bank, 'bank') }
+              : { mode: 'process-bank', processor: byId(processor, 'processor'), bank: byId(bank, 'bank') };
+    return { def, site: at, sink, ways, skill, minLevel, levels };
 }
 
 /** Every record resolved, and the failures as MethodError messages; two records with one id fail both. */

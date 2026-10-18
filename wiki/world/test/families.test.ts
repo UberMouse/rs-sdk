@@ -249,6 +249,7 @@ function at(kind: FeatureKind, features: [config: string, subtype: string][]): {
         loadoutRules: {},
         transports: [],
         gates: [],
+        methods: [],
     };
     return { site, world };
 }

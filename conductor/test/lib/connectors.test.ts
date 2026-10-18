@@ -173,6 +173,7 @@ describe('connectorTable on a scripted world', () => {
         loadoutRules: {},
         transports: [],
         gates: [],
+        methods: [],
     };
 
     test('one row per loc, direction and landing, named by the loc and its place', () => {

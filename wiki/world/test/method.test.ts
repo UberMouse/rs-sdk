@@ -3,7 +3,16 @@ import { wayFinder } from '../distance';
 import type { MethodDef } from '../methods';
 import { buildFamilies, type GameData } from '../model/families/index';
 import { readFoods, readItems } from '../model/items';
-import { MethodError, methodRate, resolveMethod, resolveMethods, type MethodContext } from '../model/method';
+import {
+    fromWorldMethod,
+    measuredProfile,
+    MethodError,
+    methodRate,
+    resolveMethod,
+    resolveMethods,
+    toWorldMethod,
+    type MethodContext,
+} from '../model/method';
 import { profileAt, readTools } from '../model/profile';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
@@ -260,6 +269,7 @@ describe('resolving a record', () => {
             },
         ]);
         expect([m.skill, m.minLevel]).toEqual(['mining', 15]);
+        expect(m.levels).toEqual({ mining: 15 });
     });
 
     test('an explicit bank tile banks there, not at the nearest', () => {
@@ -284,6 +294,9 @@ describe('resolving a record', () => {
             ['bank:a:0', 'fishing-spot:river:0', 10],
         ]);
         expect([m.skill, m.minLevel]).toEqual(['fishing', 25]);
+        // Each skill's own level, the other at 99: fly fishing starts at 20 (trout; freshfish's `stat(fishing) < 20`),
+        // and with Fishing 99 the salmon come, which cooking takes from 25 (cooking_generic_salmon levelrequired).
+        expect(m.levels).toEqual({ fishing: 20, cooking: 25 });
         // Its floor: the cooking step's XP comes with the fishing.
         const rate = methodRate(m, profileAt('fishing', 40, { tools: ctx.tools }), ctx);
         expect(Object.keys(rate.xpPerHour).sort()).toEqual(['cooking', 'fishing']);
@@ -301,6 +314,34 @@ describe('resolving a record', () => {
     test("a sink behind a requirement: the method asks it, joined with the site's", () => {
         const m = resolve({ ...mine, sink: { mode: 'bank', bank: at(0, 3225, 3205) } });
         expect(m.ways.map(w => w.reach)).toEqual([['quest:x']]);
+    });
+});
+
+describe('world.json and measured figures', () => {
+    test('a resolved method goes to world.json as the record and its sites, and comes back the same', () => {
+        for (const def of [mine, lure, guards]) {
+            const m = resolve(def);
+            const wm = toWorldMethod(m);
+            expect(wm).toMatchObject({ ...def, site: m.site.id, stand: m.site.stand, levels: m.levels });
+            expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites })).toEqual(m);
+        }
+        expect(toWorldMethod(resolve(lure))).toMatchObject({ bank: 'bank:a:0', processor: 'fire:camp:0' });
+        expect(toWorldMethod(resolve({ ...mine, sink: { mode: 'drop' } }))).not.toHaveProperty('bank');
+    });
+
+    test("a measured figure's profile: its levels, other skills at the method's skill's, its tool", () => {
+        const m = resolve(mine);
+        const measured = { xpPerHour: {}, level: { mining: 60 }, bot: 'b', date: '2026-01-01', hours: 1, from: 'x' };
+        const p = measuredProfile(m, { ...measured, tool: 'iron_pickaxe' }, ctx.tools);
+        expect([p.levels.mining, p.levels.cooking, p.pickaxe]).toEqual([60, 60, 'iron_pickaxe']);
+        // No tool named: the best usable at 60 (rune from 41 in these rows).
+        expect(measuredProfile(m, measured, ctx.tools).pickaxe).toBe('rune_pickaxe');
+        expect(() => measuredProfile(m, { ...measured, level: { cooking: 60 } }, ctx.tools)).toThrow(
+            /^methods\.ts iron-mine-bank: a measured figure \(b 2026-01-01\) has no mining level/,
+        );
+        expect(() => measuredProfile(m, { ...measured, tool: 'harpoon' }, ctx.tools)).toThrow(
+            /measured tool harpoon is no axe or pickaxe/,
+        );
     });
 });
 

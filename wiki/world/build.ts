@@ -25,7 +25,7 @@ import { formatDistance, nearestSinks, SINKS, wayFinder, type DistanceReport } f
 import { METHODS } from './methods';
 import { buildFamilies } from './model/families/index';
 import { readFoods, readItems } from './model/items';
-import { resolveMethods } from './model/method';
+import { resolveMethods, toWorldMethod } from './model/method';
 import { readTools } from './model/profile';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
@@ -503,6 +503,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             loadoutRules,
             transports,
             gates: landings.gates,
+            methods: methods.methods.map(toWorldMethod),
         },
         report: {
             features: tally(features, f => f.kind),
@@ -601,7 +602,7 @@ const jsonRecord = (key: string, record: Readonly<Record<string, unknown>>): str
 
 /**
  * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule,
- * transport or gate per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
+ * transport, gate or method per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
  * and undefined fields are left out as JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
@@ -617,7 +618,8 @@ export function serializeWorld(world: World): string {
         jsonList('quests', world.quests) + ',',
         jsonRecord('loadoutRules', world.loadoutRules) + ',',
         jsonList('transports', world.transports) + ',',
-        jsonList('gates', world.gates),
+        jsonList('gates', world.gates) + ',',
+        jsonList('methods', world.methods),
         '}',
         '',
     ].join('\n');

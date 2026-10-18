@@ -1,3 +1,7 @@
+import type { MethodDef } from './methods';
+import type { MethodWay } from './model/method';
+import type { Skill } from './model/server';
+
 export interface Tile {
     level: number;
     x: number;
@@ -325,7 +329,30 @@ export interface Gate {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 12;
+export const WORLD_FORMAT = 13;
+
+/**
+ * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the
+ * site's stand, its sink sites, the levels it needs and its legs under each requirement set that walks them. No rates:
+ * a page or a query computes them from a profile (model/cycle.ts), so a model fix shows without a format change.
+ */
+export interface WorldMethod extends MethodDef {
+    /** The site `at` lies in, and its stand. */
+    site: string;
+    stand: Tile;
+    /** The bank site of a bank or process-bank sink. */
+    bank?: string;
+    /** The processor site of a process-bank sink. */
+    processor?: string;
+    /** The gather family's first skill. */
+    skill: Skill;
+    /** The lowest level at which it models with every skill of `levels` at that level (ResolvedMethod.minLevel). */
+    minLevel: number;
+    /** Each skill it trains, and the lowest level of it that models with the others at 99 (ResolvedMethod.levels). */
+    levels: Partial<Record<Skill, number>>;
+    /** One per minimal requirement set that walks every leg, shortest travel first. */
+    ways: MethodWay[];
+}
 
 export interface World {
     /** WORLD_FORMAT when written. */
@@ -340,4 +367,5 @@ export interface World {
     loadoutRules: Record<string, LoadoutRule>;
     transports: Transport[];
     gates: Gate[];
+    methods: WorldMethod[];
 }

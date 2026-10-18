@@ -135,6 +135,17 @@ const world: World = {
     loadoutRules: {},
     transports: [],
     gates: [],
+    methods: [],
+};
+
+// A world with no methods needs no model.
+const NO_MODEL: RenderData['model'] = {
+    families: new Map(),
+    items: () => {
+        throw new Error('no items');
+    },
+    foods: new Map(),
+    tools: { axe: [], pickaxe: [] },
 };
 
 const data: RenderData = {
@@ -170,6 +181,7 @@ const data: RenderData = {
     shopTitles: new Map(),
     questNames: new Map(),
     readmeBody: '\nHand-written.\n',
+    model: NO_MODEL,
 };
 
 const pages = renderWorld(world, data);
@@ -197,6 +209,7 @@ describe('renderWorld', () => {
             'wiki/services/spinning-wheel.md',
             'wiki/services/tanner.md',
             'wiki/services/water-source.md',
+            'wiki/training/README.md',
             'wiki/world/README.md',
         ]));
 
@@ -375,6 +388,7 @@ describe('renderWorld', () => {
           | [wiki/places/](../places/) | 3 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
           | [wiki/resources/](../resources/) | 2 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |
           | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
+          | [wiki/training/](../training/) | 1 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
           <!-- Hand-written below this line: build.ts keeps it as it is. -->
 
@@ -411,6 +425,7 @@ const named: World = {
     loadoutRules: {},
     transports: [],
     gates: [],
+    methods: [],
     areas: [{ id: 'town', name: 'Town', rects: [{ x1: 3000, z1: 3000, x2: 3500, z2: 3500 }] }],
     features: [
         feature('rock', 'iron', 'Rocks', 'ironrock1', 3200, 3200),
@@ -521,6 +536,7 @@ const namedData: RenderData = {
     shopTitles: new Map([['rottenshop', 'Shop of Distaste']]),
     questNames: new Map(),
     readmeBody: '',
+    model: NO_MODEL,
 };
 
 const namedPages = renderWorld(named, namedData);

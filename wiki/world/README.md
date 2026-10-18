@@ -8,16 +8,17 @@ Generated from `server/content` at `882699169a968e667d112006b714348bea4827ec`: 2
 | [wiki/places/](../places/) | 225 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
 | [wiki/resources/](../resources/) | 91 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |
 | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
+| [wiki/training/](../training/) | 6 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
 <!-- Hand-written below this line: build.ts keeps it as it is. -->
 
 ## What is generated
 
-`wiki/world.json` and every page in `wiki/places/`, `wiki/resources/` and `wiki/services/` are
-written by `bun run world` (`wiki/world/build.ts`) from `server/content` and the curated areas, and
-are committed with the code. Never edit them by hand: the next build overwrites the edit, and
-`bun wiki/world/build.ts --check` (part of `bun run verify:conductor`) fails while a page differs
-from a fresh build. The build also deletes pages it no longer renders from those three folders.
+`wiki/world.json` and every page in `wiki/places/`, `wiki/resources/`, `wiki/services/` and `wiki/training/`
+are written by `bun run world` (`wiki/world/build.ts`) from `server/content`, the curated areas and the curated
+methods (`wiki/world/methods.ts`), and are committed with the code. Never edit them by hand: the next build
+overwrites the edit, and `bun wiki/world/build.ts --check` (part of `bun run verify:conductor`) fails while a page
+differs from a fresh build. The build also deletes pages it no longer renders from those four folders.
 
 A site is a cluster of same-kind features (locs or npc spawns) in one area: its id is
 `kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it. Coordinates are

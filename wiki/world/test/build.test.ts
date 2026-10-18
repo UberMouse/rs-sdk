@@ -135,10 +135,26 @@ const world: World = {
             source: 'quests/quest_legends/scripts/jungle_tree.rs2:8',
         },
     ],
+    methods: [
+        {
+            id: 'tree-drop',
+            name: 'Trees, dropped',
+            family: 'woodcutting',
+            at: { level: 0, x: 1, z: 2 },
+            params: { tree: 'normal' },
+            sink: { mode: 'drop' },
+            site: 'tree:town:0',
+            stand: { level: 0, x: 1, z: 3 },
+            skill: 'woodcutting',
+            minLevel: 1,
+            levels: { woodcutting: 1 },
+            ways: [{ reach: [], legs: [] }],
+        },
+    ],
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport or gate per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate or method per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -172,6 +188,9 @@ describe('serializeWorld', () => {
                 '    {"trigger":"oploc1,chefdoor","kind":"gate","loc":"chefdoor","tile":{"level":0,"x":3143,"z":3443},"shape":0,"angle":1,"requires":[["item:chefs_hat:worn","skill:cooking:32"]],"from":"far","source":"skill_cooking/scripts/cooking_guild.rs2:4"},',
                 '    {"trigger":"oploc1,miningguildladder","kind":"gate","loc":"miningguildladder","tile":{"level":0,"x":3018,"z":3339},"shape":10,"angle":0,"requires":[["skill:mining:60"]],"landings":[{"stand":{"level":0,"x":3017,"z":3339},"landing":{"level":0,"x":3017,"z":9739}}],"source":"areas/area_falador/scripts/mining_guild.rs2:2"},',
                 '    {"trigger":"oploc1,_jungle_bush","kind":"gate","loc":"kharazi_jungle_plant1","tile":{"level":0,"x":2760,"z":2937},"shape":10,"angle":0,"requires":[["category:weapon_axe:held","item:machette:held","quest:legends"]],"opens":true,"source":"quests/quest_legends/scripts/jungle_tree.rs2:8"}',
+                '  ],',
+                '  "methods": [',
+                '    {"id":"tree-drop","name":"Trees, dropped","family":"woodcutting","at":{"level":0,"x":1,"z":2},"params":{"tree":"normal"},"sink":{"mode":"drop"},"site":"tree:town:0","stand":{"level":0,"x":1,"z":3},"skill":"woodcutting","minLevel":1,"levels":{"woodcutting":1},"ways":[{"reach":[],"legs":[]}]}',
                 '  ]',
                 '}',
                 '',
@@ -209,10 +228,14 @@ describe('serializeWorld', () => {
             const { quests: _, loadoutRules: _r, transports: _t, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
             expect(() => loadWorld(file)).toThrow(
-                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports and gates/,
+                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates and methods/,
             );
             const { gates: _g, ...noGates } = world;
             writeFileSync(file, JSON.stringify(noGates));
+            expect(() => loadWorld(file)).toThrow(/not a world.json/);
+            // A format-12 one, written before the methods, with its format bumped by hand.
+            const { methods: _m, ...noMethods } = world;
+            writeFileSync(file, JSON.stringify(noMethods));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
             writeFileSync(file, JSON.stringify({ ...world, loadoutRules: [] }));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
@@ -247,6 +270,9 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // Format 11 was written before resource and processor sites had their nearest bank.
         writeFileSync(file, serializeWorld({ ...world, format: 11 }));
         expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
+        // Format 12 was written before the curated methods.
+        writeFileSync(file, serializeWorld({ ...world, format: 12 }));
+        expect(() => loadWorld(file)).toThrow(`format 12, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }

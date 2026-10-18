@@ -8,8 +8,8 @@ import { loadWorld } from '../load';
 import { METHODS } from '../methods';
 import { buildFamilies, readGameData } from '../model/families/index';
 import { readFoods, readItems } from '../model/items';
-import { methodRate, resolveMethods, type MethodContext } from '../model/method';
-import { profileAt, readTools } from '../model/profile';
+import { measuredProfile, methodRate, resolveMethods, type MethodContext } from '../model/method';
+import { readTools } from '../model/profile';
 import type { Skill } from '../model/server';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
@@ -65,6 +65,13 @@ describe("each seed is at its plan's sites", () => {
     });
 });
 
+test("each skill's own level, the others at 99, and the whole method's", () => {
+    // freshfish.rs2 fly fishing: `stat(fishing) < 20` returns, salmon from 30; cooking_generic trout 15, salmon 25.
+    expect(method('lure-lumbridge-cook-bank')).toMatchObject({ minLevel: 25, levels: { fishing: 20, cooking: 25 } });
+    // mine.dbrow iron rock_level 15.
+    expect(method('iron-se-varrock-bank')).toMatchObject({ minLevel: 15, levels: { mining: 15 } });
+});
+
 describe('the game data the cycle reads', () => {
     test('food heals and item slots', () => {
         // consume_normal.dbrow: trout `stat_heal,hitpoints,7,0`, salmon 9, lobster 12.
@@ -84,13 +91,7 @@ describe('the floor at the measured levels is at or above every measured figure'
         for (const [i, measured] of (def.measured ?? []).entries())
             test(`${def.id} #${i} (${measured.bot} ${measured.date})`, () => {
                 const m = method(def.id);
-                const level = measured.level[m.skill];
-                if (level === undefined) throw new Error(`${def.id}: no ${m.skill} level measured`);
-                const profile = profileAt(m.skill, level, { tools: ctx.tools, atLeast: measured.level });
-                if (measured.tool?.endsWith('_pickaxe')) profile.pickaxe = measured.tool;
-                else if (measured.tool?.endsWith('_axe')) profile.axe = measured.tool;
-                else if (measured.tool) throw new Error(`${def.id}: tool ${measured.tool} is no axe or pickaxe`);
-                const floor = methodRate(m, profile, ctx);
+                const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx);
                 for (const [skill, xp] of Object.entries(measured.xpPerHour) as [Skill, number][]) {
                     const at = floor.xpPerHour[skill] ?? 0;
                     expect({ skill, floor: at, measured: xp, atOrAbove: at >= xp }).toMatchObject({ atOrAbove: true });
