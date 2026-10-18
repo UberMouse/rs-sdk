@@ -13,15 +13,15 @@
 //   `to` is the door walled again (collision edit) and crossed as an edge between its two tiles: a straight
 //   wall's own tile and the one its angle faces, or a diagonal door's two diagonal neighbours (the Ranging
 //   Guild door at angle 0 moves the player from its north-west neighbour to its south-east one,
-//   minigames/game_ranging/scripts/ranging_guild_door.rs2:24, 34, and back, :4, :14). A row with `to`
-//   jumps there from the loc's approach tiles, the loc as the collision data has it; `landings` jump from
-//   each stand; `opens` makes the loc's tiles walkable to a set that meets it (collision edit; `from` is not read for it, and
-//   no such row has one). With `from`
-//   the requirement applies only from that side and the move is free from the other, but a `to` is the
-//   checked move's landing, so it is jumped to from that side only; for a stand, one level with the loc on
-//   the side's axis counts as on that side, as the scan names `<` and `<=` alike (sources/gate-scan.ts
-//   sideOf). A quest window is never crossed (its wall stays walled), and a gate on a connector's loc tile
-//   and op puts its requirements on that connector's edges;
+//   minigames/game_ranging/scripts/ranging_guild_door.rs2:24, 34, and back, :4, :14). A row with `to` jumps there
+//   from the loc's approach tiles, the loc as the collision data has it; `landings` jump from each stand; `opens`
+//   makes the loc's tiles walkable to a set that meets it (collision edit; `from` is not read for it, and no such
+//   row has one). With `from` the requirement applies only from that side and the move is free from the other
+//   (refused with `oneWay`, where the script turns that side away: the castle crumbly wall,
+//   skill_agility/scripts/shortcuts.rs2:6), but a `to` is the checked move's landing, so it is jumped to from that
+//   side only; for a stand, one level with the loc on the side's axis counts as on that side, as the scan names
+//   `<` and `<=` alike (sources/gate-scan.ts sideOf). A quest window is never crossed (its wall stays walled), and
+//   a gate on a connector's loc tile and op puts its requirements on that connector's edges;
 // - a transport (World.transports) from its boarding npc's or loc's tile, and from each neighbour that can
 //   step onto it (any neighbour when the tile itself is blocked), to its landing;
 // - a crossing (World.crossings) from each of its `from` tiles to each of its landings, under the same
@@ -501,8 +501,10 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                         skipped.add(
                             `${name}: from ${g.from} does not tell the wall's two tiles apart, gated both ways`,
                         );
-                    if (side === false) addEdge('gate', a, b, FREE, name);
-                    else addEdge('gate', a, b, gated, name, rolled);
+                    // The other side is free, or with `oneWay` refused.
+                    if (side === false) {
+                        if (!g.oneWay) addEdge('gate', a, b, FREE, name);
+                    } else addEdge('gate', a, b, gated, name, rolled);
                 }
             });
             continue;
@@ -529,10 +531,12 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
         } else if (g.landings) {
             const landings = g.landings;
             gateEdges.push(() => {
-                // A free landing is free whatever side its stand is on (a level stand the script lets through).
+                // A free landing is free whatever side its stand is on (a level stand the script lets through); any
+                // other from the other side is free, or with `oneWay` refused.
                 for (const l of landings)
-                    if (!l.free && checked(l.stand)) addEdge('gate', l.stand, l.landing, gated, name, rolled);
-                    else addEdge('gate', l.stand, l.landing, FREE, name);
+                    if (l.free) addEdge('gate', l.stand, l.landing, FREE, name);
+                    else if (checked(l.stand)) addEdge('gate', l.stand, l.landing, gated, name, rolled);
+                    else if (!g.oneWay) addEdge('gate', l.stand, l.landing, FREE, name);
             });
         } else if (g.opens) {
             const s = size(loc);
@@ -563,14 +567,22 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
             }
             const altsFrom = (stand: Tile): number[] => {
                 if (!gates.length) return FREE;
-                // Each gate row is a way to make the move; one whose side the stand is not on is free.
-                const ways = gates.flatMap(g => (g.from && !standOnSide(g.from, g.tile, stand) ? [[]] : g.requires));
-                return alternatives(ways);
+                // Each gate row is a way to make the move; one whose side the stand is not on is free, or with
+                // `oneWay` no way.
+                const ways = gates.flatMap(g =>
+                    g.from && !standOnSide(g.from, g.tile, stand) ? (g.oneWay ? [] : [[]]) : g.requires,
+                );
+                // No way, no edge (alternatives keys [] as it does [[]], free).
+                return ways.length ? alternatives(ways) : [];
+            };
+            const connect = (stand: Tile) => {
+                const alts = altsFrom(stand);
+                if (alts.length) addEdge('connector', stand, c.landing, alts, name);
             };
             if (c.relative) {
-                if (c.stand) addEdge('connector', c.stand, c.landing, altsFrom(c.stand), name);
+                if (c.stand) connect(c.stand);
                 else skipped.add(`${name}: a relative landing with no stand`);
-            } else for (const stand of approach(f)) addEdge('connector', stand, c.landing, altsFrom(stand), name);
+            } else for (const stand of approach(f)) connect(stand);
         }
 
         // ---- Transports ----------------------------------------------------------------------------------

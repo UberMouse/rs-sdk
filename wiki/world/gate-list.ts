@@ -9,7 +9,7 @@
 // check only advances a quest or picks a message; `temporary-block` shut only during a quest stage;
 // `quest-window` open only between two stages (left out of the fill); `not-a-gate` the move is not passage
 // a bot walks (inside a minigame, a transport out of scope, a quest step or a trap, a loc never placed);
-// `unclear` the script's meaning is not settled here, with what is unclear. A gate's `from`, `to`, `at`,
+// `unclear` the script's meaning is not settled here, with what is unclear. A gate's `from`, `oneWay`, `to`, `at`,
 // `byConfig`, `stages` and `choices` are sources/gate-scan.ts CuratedGate's.
 import type { CuratedGate, CuratedKind } from './sources/gate-scan';
 import type { Side } from './types';
@@ -28,6 +28,7 @@ const gate = (
     requires: string | string[][],
     more: {
         from?: Side;
+        oneWay?: true;
         to?: string | Record<string, string>;
         why?: string;
         notes?: string;
@@ -816,7 +817,11 @@ export const GATE_LIST: readonly CuratedGate[] = [
     gate('oploc1,barbarian_obstacle_pipe', 'skill_agility/scripts/barbarian_course.rs2:126', 'skill:agility:35', {
         from: 'north',
     }),
-    gate('oploc1,castlecrumbly', 'skill_agility/scripts/shortcuts.rs2:2', 'members skill:agility:5', { from: 'west' }),
+    gate('oploc1,castlecrumbly', 'skill_agility/scripts/shortcuts.rs2:2', 'members skill:agility:5', {
+        from: 'west',
+        oneWay: true,
+        notes: 'Climbed west to east only: from the east the script refuses (shortcuts.rs2:6).',
+    }),
     gate('oploc1,_island_rope_swing', 'skill_agility/scripts/shortcuts.rs2:121', 'skill:agility:10', {
         why: "The 10 Agility check skips tree_ropeswing2, the inner Brimhaven / Ogre Isle swing (shortcuts.rs2:121), a loc_type test the scan doesn't read.",
         byConfig: { tree_ropeswing2: '' },
@@ -1600,6 +1605,7 @@ export const GATE_LIST: readonly CuratedGate[] = [
         ],
         {
             from: 'south',
+            oneWay: true,
             why: 'The strange wall opens once the six items are placed in it (varps the quest sets and never clears, @placeobj_horror_door at quest_horror.rs2:332); the scan does not read them. From the north it does not open (quest_horror.rs2:313).',
             scan: '2fc8c576',
         },
@@ -2466,9 +2472,13 @@ export const GATE_LIST: readonly CuratedGate[] = [
     ),
     gate('oploc1,viking_seers_door2', 'quests/quest_viking/scripts/viking_peer.rs2:1036', 'item:viking_key:held', {
         from: 'far',
+        oneWay: true,
+        notes: "Unlocked from the far side only: from the door's own tile it stays locked (viking_peer.rs2:1036, :1039).",
     }),
     gate('oplocu,viking_seers_door2', 'quests/quest_viking/scripts/viking_peer.rs2:1042', 'item:viking_key:held', {
         from: 'far',
+        oneWay: true,
+        notes: "Unlocked from the far side only: from the door's own tile the key does nothing (viking_peer.rs2:1042).",
     }),
     no(
         'quest-window',

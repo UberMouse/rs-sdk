@@ -302,6 +302,11 @@ export interface Gate {
      */
     from?: Side;
     /**
+     * With `from`: crossing from the other side is not free but refused, as the script turns that side away (the
+     * castle crumbly wall, skill_agility/scripts/shortcuts.rs2:6).
+     */
+    oneWay?: true;
+    /**
      * The gated move is a jump to this tile (the Zanaris shed's teleport), not a crossing of the loc; the
      * loc itself is passable as the collision data has it. On an object (not a wall: shapes 0-3 and 9) it
      * can also be read from the script (sources/gate-landings.ts): from every tile the loc is used from, the

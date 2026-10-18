@@ -1868,6 +1868,11 @@ export interface CuratedGate {
     /** For a gate: the side the check applies from, when only one. */
     from?: Side;
     /**
+     * For a gate with `from`: the script refuses a player on the other side outright (the castle crumbly wall,
+     * skill_agility/scripts/shortcuts.rs2:6), so the move is made from `from` only, not free from the other side.
+     */
+    oneWay?: true;
+    /**
      * For a gate: the coord literal of the jump it gates, when it gates a jump rather than the crossing; or,
      * when each placed loc jumps elsewhere (a `loc_coord` table), the landing by the loc's tile literal.
      */
@@ -2068,8 +2073,8 @@ export function reviewGates(
         if (!overrides && e.scan !== undefined) fail('scan pins an override: a gate that matches the scan has none');
         if (e.why !== undefined && !e.why.trim()) fail('why is empty');
         if (e.kind !== 'gate') {
-            if (e.requires || e.from || e.to || e.notes || e.byConfig || e.stages || e.at || e.choices)
-                fail(`a ${e.kind} has no requires, from, to, notes, byConfig, stages, at or choices`);
+            if (e.requires || e.from || e.oneWay || e.to || e.notes || e.byConfig || e.stages || e.at || e.choices)
+                fail(`a ${e.kind} has no requires, from, oneWay, to, notes, byConfig, stages, at or choices`);
             if (!e.why?.trim()) fail(`a ${e.kind} needs its reason in why`);
             continue;
         }
@@ -2094,6 +2099,14 @@ export function reviewGates(
         const targets = e.to === undefined ? [CROSS] : typeof e.to === 'string' ? [e.to] : Object.values(e.to);
         for (const t of [...targets, ...(typeof e.to === 'object' ? Object.keys(e.to) : [])])
             if (t !== CROSS && !isCoordLiteral(t)) fail(`to ${t} is not a coord literal`);
+        // One way: no move the scan finds lets a player off the `from` side through.
+        if (e.oneWay && !e.from) fail('oneWay needs from');
+        const from = e.oneWay ? e.from : undefined;
+        for (const m of from ? c.moves.filter(x => targets.includes(x.to)) : [])
+            for (const o of m.options.filter(x => !x.sides.includes(from!)))
+                fail(
+                    `oneWay, but the scan moves ${m.to} from off ${from}: ${JSON.stringify(o.requires)} on ${o.sides.join(' & ') || 'any side'}`,
+                );
         if (overrides) continue;
         for (const to of targets) {
             const move = c.moves.find(m => m.to === to);
@@ -2235,6 +2248,7 @@ export function placeGates(input: GatePlacementInput): GatePlacement {
                     ...(width !== 1 || length !== 1 ? { width, length } : {}),
                     requires: configRequires,
                     ...(e.from ? { from: e.from } : {}),
+                    ...(e.oneWay ? { oneWay: true as const } : {}),
                     ...(landing ? { to: coordTile(landing) } : {}),
                     ...(e.choices
                         ? { act: { kind: 'loc-op' as const, loc: config, op: Number(op), choices: e.choices } }

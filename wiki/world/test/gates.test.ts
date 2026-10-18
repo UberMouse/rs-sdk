@@ -139,6 +139,16 @@ if (stat(agility) < 5) {
 }
 p_teleport(movecoord(loc_coord, -1, 0, 0));
 
+[oploc1,crumblywall]
+if (coordx(coord) > coordx(loc_coord)) {
+    mes("You cannot climb the wall from this side.");
+    return;
+}
+if (stat(agility) < 5) {
+    return;
+}
+p_teleport(movecoord(loc_coord, 1, 0, 0));
+
 [oploc1,shed]
 def_boolean $entering = ~check_axis(coord, loc_coord, loc_angle);
 ~open_and_close_door(next, $entering, false);
@@ -611,6 +621,23 @@ describe('reviewGates', () => {
         ).toHaveLength(1);
     });
 
+    test('oneWay: needs from, and no move the scan finds from off that side', () => {
+        // The crumbly wall refuses a player east of it; the west wall lets one west of it through free.
+        const review = reviewGates(
+            candidates,
+            [
+                gate('oploc1,crumblywall', [['skill:agility:5']], { from: 'west', oneWay: true }),
+                gate('oploc1,westwall', [['skill:agility:5']], { from: 'east', oneWay: true }),
+                gate('oploc1,guilddoor', [['skill:cooking:32']], { oneWay: true }),
+            ],
+            files,
+        );
+        expect(review.invalid).toEqual([
+            'oploc1,westwall (quests/test.rs2:2): oneWay, but the scan moves cross from off east: [] on west',
+            'oploc1,guilddoor (quests/test.rs2:2): oneWay needs from',
+        ]);
+    });
+
     test('a rejection needs its reason, and no requirements; a gate needs canonical sets and a real source line', () => {
         const review = reviewGates(
             candidates,
@@ -625,7 +652,7 @@ describe('reviewGates', () => {
         );
         expect(review.invalid).toEqual([
             'oploc1,sidecave (quests/test.rs2:2): a side-effect needs its reason in why',
-            'oploc1,blockdoor (quests/test.rs2:2): a temporary-block has no requires, from, to, notes, byConfig, stages, at or choices',
+            'oploc1,blockdoor (quests/test.rs2:2): a temporary-block has no requires, from, oneWay, to, notes, byConfig, stages, at or choices',
             'oploc1,tollgate (quests/test.rs2:2): write requires as [["coins:10","quest:cook"]]',
             'oploc1,membergate (quests/test.rs2:999): source quests/test.rs2:999 is not a line of code',
             'oploc1,keydoor (quests/test.rs2): source quests/test.rs2 is not file:line',
@@ -899,6 +926,23 @@ inv_del(inv, coins, 10);
             },
         ]);
         expect(gates.map(g => [g.loc, g.requires])).toEqual([['tolldoor_c', [['coins:20']]]]);
+    });
+
+    test('a one-way side is written with its side', () => {
+        const { gates } = place([
+            {
+                trigger: 'oploc1,_tolldoor',
+                kind: 'gate',
+                requires: [['coins:10']],
+                from: 'west',
+                oneWay: true,
+                source: 'quests/category.rs2:2',
+            },
+        ]);
+        expect(gates.map(g => [g.loc, g.from, g.oneWay])).toEqual([
+            ['tolldoor_a', 'west', true],
+            ['tolldoor_c', 'west', true],
+        ]);
     });
 
     test('at: only the locs on those tiles are gates', () => {

@@ -133,6 +133,14 @@ describe('gated doors (wall rows with no `to`)', () => {
         expect(fill(split(), { gates: sided('north') }).setsAt(EAST)).toEqual([['skill:agility:5']]);
     });
 
+    test('with `oneWay`, the other side is refused, not free', () => {
+        const oneWay = sided('west').map(g => ({ ...g, oneWay: true as const }));
+        expect(fill(split(), { gates: oneWay }).setsAt(EAST)).toEqual([['skill:agility:5']]);
+        expect(fill(split(), { gates: sided('west') }, { start: EAST }).setsAt(WEST)).toEqual([[]]);
+        expect(fill(split(), { gates: oneWay }, { start: EAST }).setsAt(WEST)).toEqual([]);
+        expect(fill(split(), { gates: oneWay }).report.edges.gates).toBe(1);
+    });
+
     test('a quest window is never crossed', () => {
         const reach = fill(split(), { gates: [gate({ tile: DOOR, kind: 'quest-window', requires: [] })] });
         expect(reach.setsAt(EAST)).toEqual([]);
@@ -192,6 +200,11 @@ describe('gate moves on objects', () => {
             gates: [rock({ landings: [{ stand: at(0, 3205, 3209), landing }], from: 'north' })],
         });
         expect(reach.setsAt(INNER)).toEqual([[]]);
+        // With `oneWay` it lands nowhere: the script turns that side away.
+        const refused = fill(room(), {
+            gates: [rock({ landings: [{ stand: at(0, 3205, 3209), landing }], from: 'north', oneWay: true })],
+        });
+        expect(refused.setsAt(INNER)).toEqual([]);
     });
 
     test('a `free` landing lands free from a stand level with the loc, which `from` takes for the checked side', () => {
@@ -283,6 +296,13 @@ describe('connectors', () => {
         expect(fill(grid(), world({}, [guard])).setsAt(UP)).toEqual([['quest:mcannon>=2']]);
         // On another op it is another move.
         expect(fill(grid(), world({}, [{ ...guard, trigger: 'oploc2,ladder' }])).setsAt(UP)).toEqual([[]]);
+        // From north of it only: free from the south, or with `oneWay` not climbed from there.
+        const north = fill(grid(), world({}, [{ ...guard, from: 'north' }]));
+        expect(north.setsAt(UP)).toEqual([[]]);
+        expect(north.report.edges.connectors).toBe(4);
+        const oneWay = fill(grid(), world({}, [{ ...guard, from: 'north', oneWay: true }]));
+        expect(oneWay.setsAt(UP)).toEqual([['quest:mcannon>=2']]);
+        expect(oneWay.report.edges.connectors).toBe(3);
         const window = fill(grid(), world({}, [{ ...guard, kind: 'quest-window', requires: [] }]));
         expect(window.setsAt(UP)).toEqual([]);
         expect(window.report.skipped).toEqual(['connector ladder (3210, 3210) op1: a quest window, never crossed']);

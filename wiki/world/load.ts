@@ -97,10 +97,12 @@ const opOfTrigger = (trigger: unknown): number | undefined => {
     return m ? Number(m[1]) : undefined;
 };
 
-/** What is wrong with a World.gates row's crossing-model fields (its roll, act and landings), or undefined. */
+/** What is wrong with a World.gates row's crossing-model fields (its roll, act, landings and oneWay), or undefined. */
 function gateProblem(g: Parsed): string | undefined {
     const roll = g.roll === undefined ? undefined : rollProblem(g.roll);
     if (roll) return roll;
+    if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))
+        return 'oneWay, when it has it, is true, on a row with from';
     if (g.act !== undefined) {
         const act = actProblem(g.act);
         if (act) return act;

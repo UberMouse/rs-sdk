@@ -362,7 +362,7 @@ describe('serializeWorld', () => {
             expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
         });
 
-        test("a gate's roll, act and landings and a transport's act are checked too", () => {
+        test("a gate's roll, act, landings and oneWay and a transport's act are checked too", () => {
             expect(
                 refused({ ...world, gates: [world.gates[0], { ...world.gates[1], roll: { stat: 'agility' } }] }),
             ).toBe(
@@ -394,6 +394,14 @@ describe('serializeWorld', () => {
                     landings === 'here'
                         ? 'is not a world.json: gates[1]: its landings is not a list: regenerate it with bun run world'
                         : 'is not a world.json: gates[1]: a landing needs a stand and a landing tile, and free, when it has it, as true: regenerate it with bun run world',
+                );
+            // oneWay is true, and only on a row with from (gates[0] has one, gates[1] none).
+            for (const g of [
+                { ...world.gates[0], oneWay: 'yes' },
+                { ...world.gates[1], oneWay: true },
+            ])
+                expect(refused({ ...world, gates: [g, world.gates[1]] })).toBe(
+                    'is not a world.json: gates[0]: oneWay, when it has it, is true, on a row with from: regenerate it with bun run world',
                 );
             expect(refused({ ...world, transports: [{ ...world.transports[0], act: { kind: 'interface' } }] })).toBe(
                 'is not a world.json: transports[0]: an interface act needs a component: regenerate it with bun run world',
