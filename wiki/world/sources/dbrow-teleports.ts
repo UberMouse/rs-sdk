@@ -40,7 +40,6 @@ export interface DbrowTeleport {
     members?: string;
     /** The script line that makes the move, as `file:line`. */
     source: string;
-    notes?: string;
 }
 
 export interface DbrowTeleportInput {
@@ -116,20 +115,22 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
         const text = input.scripts.get(file!)?.split('\n')[Number(line) - 1] ?? '';
         if (!/\bp_telejump\s*\(\s*map_findsquare\s*\(/.test(text) || !text.includes(`${e.table}:${e.landings}`))
             throw fail(`the line is not a p_telejump(map_findsquare(...)) of ${e.table}:${e.landings}`);
-        if (e.use && trigger.op !== 'u') throw fail('a use obj on a trigger that is not a use-item one');
+        if (!e.use !== (trigger.op !== 'u')) throw fail('a use-item trigger needs a use obj, and only one does');
         const rows = new Map<string, DbRow>();
         for (const r of input.dbrows.filter(d => d.table === e.table))
             for (const [v] of r.data[e.key.column] ?? []) rows.set(v!, r);
-        // A category trigger covers the configs of its category with no trigger of their own of the same op.
+        // A category trigger covers the configs of its category with no trigger of their own of the same op; an op
+        // trigger, only the configs that have the op.
         const own = new Set(
             input.triggers
                 .filter(t => t.on === 'loc' && !t.category && t.kind === trigger.kind && t.op === trigger.op)
                 .map(t => t.target),
         );
         const covers = (config: string, cfg: Config): boolean =>
-            trigger.category
+            (trigger.op === 'u' || first(cfg, `op${trigger.op}`) !== undefined) &&
+            (trigger.category
                 ? first(cfg, 'category') === trigger.target && !own.has(config)
-                : config === trigger.target;
+                : config === trigger.target);
         const placed = input.locs
             .filter(l => covers(l.config, input.locConfigs.get(l.config) ?? {}))
             .sort((a, b) => byTile(a.tile, b.tile) || cmp(a.config, b.config));
@@ -178,7 +179,6 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
                 landings: on.map(tile => ({ tile })),
                 requires: [requirementSet(needs)],
                 source: e.source,
-                ...(e.notes ? { notes: e.notes } : {}),
             });
         }
     }

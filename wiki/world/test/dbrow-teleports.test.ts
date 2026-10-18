@@ -1,7 +1,7 @@
 // The loc teleports to a dbrow's coords (sources/dbrow-teleports.ts) on a scripted world: a use-item trigger whose
 // row's obj is the act and is held, with members from its row; a loc-op one landing on a findsquare ring; a config
-// with its own trigger left to it; a landing off land and a loc used from no land reported; and the entries the data
-// refutes.
+// with its own trigger, or without the op, left out; a landing off land and a loc used from no land reported; and the
+// entries the data refutes.
 import { describe, expect, test } from 'bun:test';
 import { locSizes } from '../place';
 import { parseConfigs } from '../sources/configs';
@@ -67,6 +67,10 @@ param=rune_type,2
 op1=Use
 category=test_portal
 param=rune_type,1
+
+[opless_portal]
+category=test_portal
+param=rune_type,1
 `;
 const OBJS = `[air_talisman]
 category=talismans
@@ -103,6 +107,7 @@ const placed = [
     { config: 'air_portal', tile: at(0, 3236, 3220), shape: 10, rotation: 0 },
     { config: 'law_portal', tile: at(0, 3225, 3225), shape: 10, rotation: 0 },
     { config: 'own_portal', tile: at(0, 3200, 3220), shape: 10, rotation: 0 },
+    { config: 'opless_portal', tile: at(0, 3200, 3228), shape: 10, rotation: 0 },
 ];
 const collision = () =>
     new Grid().block(...placed.filter(l => l.config.endsWith('ruins')).map(l => l.tile), at(0, 3204, 3204));
@@ -179,7 +184,10 @@ describe('deriveDbrowTeleports', () => {
         );
     });
 
-    test('a config with its own trigger of the op is left to it', () => expect(row('own_portal')).toEqual([]));
+    test('a config with its own trigger of the op is left to it, and one without the op is not used by it', () => {
+        expect(row('own_portal')).toEqual([]);
+        expect(row('opless_portal')).toEqual([]);
+    });
 
     test('a loc used from no tile on land, and a landing off land, are reported and given no row', () => {
         expect(unstood).toEqual([{ trigger: 'oploc1,_test_portal', loc: 'air_portal', tile: at(0, 3236, 3220) }]);
@@ -192,6 +200,8 @@ describe('deriveDbrowTeleports', () => {
     test('refuses an entry the data refutes', () => {
         expect(() => derive([{ ...PORTAL, source: `${FILE}:2` }])).toThrow(/not a p_telejump\(map_findsquare/);
         expect(() => derive([{ ...PORTAL, trigger: 'oploc2,_test_portal' }])).toThrow(/no such loc trigger/);
+        expect(() => derive([{ ...RUINS, use: undefined }])).toThrow(/a use-item trigger needs a use obj/);
+        expect(() => derive([{ ...PORTAL, use: RUINS.use }])).toThrow(/a use-item trigger needs a use obj/);
         expect(() =>
             derive([RUINS], { objs: '[air_talisman]\ncategory=talismans\n[law_talisman]\ncategory=other' }),
         ).toThrow(/law_talisman is not of category talismans/);
