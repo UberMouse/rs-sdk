@@ -18,8 +18,8 @@ import { cycle, type CycleRates, type CycleSink } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
 import { buildFamilies, type GameData } from './families/index';
 import { readFoods, readItems, type Items } from './items';
-import { profileAt, readTools, type Profile, type Tools } from './profile';
-import type { Skill } from './server';
+import { profileAt, profileOf, readTools, type Profile, type Tools } from './profile';
+import { SKILLS, type Skill } from './server';
 
 /** A method record the build can't resolve: the message names the record and the reason. */
 export class MethodError extends Error {
@@ -339,15 +339,17 @@ function methodSkills(def: MethodDef, ctx: MethodContext): Skill[] {
 }
 
 /**
- * The profile a measured figure was taken at: the method's skill at its measured level, every other skill at that
- * level raised to its measured one (profileAt), and the axe or pickaxe the runs used in place of the best one.
- * Throws when the figure has no level for the method's skill or names a tool that is neither.
+ * The profile a measured figure was taken at: each skill the figure names at exactly its measured level (one below
+ * the method's skill stays below it), every other skill at the method's skill's level, and the axe or pickaxe the
+ * runs used in place of the best one usable at those levels. Throws when the figure has no level for the method's
+ * skill or names a tool that is neither.
  */
 export function measuredProfile(m: Pick<ResolvedMethod, 'def' | 'skill'>, measured: Measured, tools: Tools): Profile {
     const level = measured.level[m.skill];
     if (level === undefined)
         throw new MethodError(m.def.id, `a measured figure (${measured.bot} ${measured.date}) has no ${m.skill} level`);
-    const profile = profileAt(m.skill, level, { tools, atLeast: measured.level });
+    const levels = Object.fromEntries(SKILLS.map(s => [s, measured.level[s] ?? level])) as Record<Skill, number>;
+    const profile = profileOf(levels, { tools });
     if (measured.tool?.endsWith('_pickaxe')) profile.pickaxe = measured.tool;
     else if (measured.tool?.endsWith('_axe')) profile.axe = measured.tool;
     else if (measured.tool) throw new MethodError(m.def.id, `measured tool ${measured.tool} is no axe or pickaxe`);

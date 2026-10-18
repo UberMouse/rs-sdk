@@ -70,6 +70,16 @@ export interface ProfileOptions {
     glory?: boolean;
 }
 
+/** The profile at `levels`, with the best axe and pickaxe usable there. */
+export function profileOf(levels: Record<Skill, number>, opts: Omit<ProfileOptions, 'atLeast'>): Profile {
+    return {
+        levels,
+        axe: bestTool(opts.tools.axe, levels.woodcutting),
+        pickaxe: bestTool(opts.tools.pickaxe, levels.mining),
+        glory: opts.glory ?? false,
+    };
+}
+
 /**
  * The profile a training page's level column models: `skill` at `level`, every other skill at the same level
  * raised to its `atLeast` floor, and the best axe and pickaxe usable at those levels.
@@ -78,10 +88,5 @@ export function profileAt(skill: Skill, level: number, opts: ProfileOptions): Pr
     const levels = Object.fromEntries(
         SKILLS.map(s => [s, s === skill ? level : Math.max(level, opts.atLeast?.[s] ?? 0)]),
     ) as Record<Skill, number>;
-    return {
-        levels,
-        axe: bestTool(opts.tools.axe, levels.woodcutting),
-        pickaxe: bestTool(opts.tools.pickaxe, levels.mining),
-        glory: opts.glory ?? false,
-    };
+    return profileOf(levels, opts);
 }

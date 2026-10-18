@@ -340,6 +340,20 @@ describe('world.json and measured figures', () => {
             /measured tool harpoon is no axe or pickaxe/,
         );
     });
+
+    test("a measured skill below the method's skill stays at its measured level; unnamed ones take the skill's", () => {
+        const m = resolve(lure);
+        const measured = {
+            xpPerHour: {},
+            level: { fishing: 67, cooking: 40 },
+            bot: 'b',
+            date: '2026-01-01',
+            hours: 1,
+            from: 'x',
+        };
+        const p = measuredProfile(m, measured, ctx.tools);
+        expect([p.levels.fishing, p.levels.cooking, p.levels.mining]).toEqual([67, 40, 67]);
+    });
 });
 
 describe('a record that does not resolve stops the build, naming it and why', () => {
