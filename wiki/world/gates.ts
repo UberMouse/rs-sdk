@@ -3,10 +3,10 @@
 // scripts don't give, the loc teleports to a dbrow's coords, the npc teleports to an enum's coords, the transports
 // left out of scope, and every gate candidate confirmed or rejected. Every entry cites its script. The build reads
 // these together with what it derives (sources/quests.ts, sources/loadout.ts, sources/transports.ts,
-// sources/dbrow-teleports.ts, sources/npc-teleports.ts, sources/gate-scan.ts) and fails on a quest in neither, a quest override the scan no longer needs, a gate
-// candidate GATES does not review, a GATES entry the scan no longer finds, a gate at odds with the scan without
-// a why, and an override (a rejection, or a gate with a why) whose scan digest no longer matches the scan's
-// proposal.
+// sources/dbrow-teleports.ts, sources/npc-teleports.ts, sources/gate-scan.ts) and fails on a quest in neither, a
+// quest override the scan no longer needs, a gate candidate GATES does not review, a GATES entry the scan no longer
+// finds, a gate at odds with the scan without a why, and an override (a rejection, or a gate with a why) whose scan
+// digest no longer matches the scan's proposal.
 import { GATE_LIST } from './gate-list';
 import type { DbrowTeleport } from './sources/dbrow-teleports';
 import type { CuratedGate } from './sources/gate-scan';
