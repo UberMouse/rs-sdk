@@ -76,7 +76,7 @@ export interface MethodRun {
     xpPerHour: Partial<Record<Skill, number>>;
     /** The trained skills' base levels at its first phase run's start; absent when its recording shows none. */
     levels?: Partial<Record<Skill, number>>;
-    /** The best tool of the method's kind it held at a phase run's start, at its start level; null when none. */
+    /** The best tool of the method's kind it held at any of its phase runs' starts, at its start level; null when none. */
     tool: string | null;
     /** The floor's XP/hr at its start levels and tool (rounded), or why there is none. */
     floor?: Partial<Record<Skill, number>>;
@@ -105,7 +105,7 @@ export interface MethodRuns {
     levelRange: Partial<Record<Skill, [number, number]>>;
     /** The tool kind the method's family reads from the profile, or null when it reads none. */
     toolKind: 'axe' | 'pickaxe' | null;
-    /** The counted runs' floor, each run's weighed by its hours; absent when a run's floor could not be rated. */
+    /** The counted runs' floor, each run's weighed by its hours; absent with no counted run, or one whose floor failed. */
     floor?: Partial<Record<Skill, number>>;
     /** The first counted run whose floor could not be rated, and why. */
     floorError?: string;
@@ -292,7 +292,7 @@ function runOf(
         for (const s of skills) {
             const floor = rates[s] ?? 0;
             figures.floor[s] = Math.round(floor);
-            if (floor > 0) figures.pct[s] = Math.round(((xp[s] ?? 0) / (floor * hours)) * 1000) / 10;
+            if (floor > 0 && hours > 0) figures.pct[s] = Math.round(((xp[s] ?? 0) / (floor * hours)) * 1000) / 10;
         }
         return { figures, rates };
     } catch (e) {

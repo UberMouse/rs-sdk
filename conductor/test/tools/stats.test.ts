@@ -82,7 +82,7 @@ describe('stats.ts --methods', () => {
         const r = stats('--methods', '--json');
         expect(r.code).toBe(0);
         expect(r.stderr).toMatch(
-            /^stats: 2 unreadable recording\(s\) in .*conductor\/runs\/tbot, their runs counted as having no recorded start; first: /m,
+            /^stats: 2 unreadable recording\(s\) in .*conductor\/runs\/tbot read as missing; first: /m,
         );
         const list = JSON.parse(r.stdout) as MethodRuns[];
         const m = list.find(x => x.method === METHOD)!;

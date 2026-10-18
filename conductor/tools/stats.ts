@@ -69,7 +69,8 @@ if (values.methods) {
     // Imported here: the world index loads world.json on import, which only --methods needs.
     const { WORLD } = await import('../lib/world-index');
     const model = methodModel(readGameData());
-    // A recording that can't be read (empty, another version) leaves its run with no recorded start.
+    // A recording that can't be read (empty, another version) reads as missing: a plan run whose first phase run's it
+    // is has no recorded start.
     const unreadable = new Map<string, string>();
     const list = methodRuns({
         bot,
@@ -91,8 +92,8 @@ if (values.methods) {
     });
     if (unreadable.size)
         console.error(
-            `stats: ${unreadable.size} unreadable recording(s) in ${runsDir}, their runs counted as having no ` +
-                `recorded start; first: ${unreadable.values().next().value}`,
+            `stats: ${unreadable.size} unreadable recording(s) in ${runsDir} read as missing; first: ` +
+                unreadable.values().next().value,
         );
     if (values.json) console.log(JSON.stringify(list, null, 2));
     else for (const line of formatMethodRuns(list)) console.log(line);
