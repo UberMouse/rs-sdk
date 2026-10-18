@@ -340,13 +340,14 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
         expect(walk.success && walk.reachedDestination).toBe(true);
     });
 
-    test("the dungeon's ladder into the brass-key house is a way out only with the key (edgeville_dungeon.rs2:6)", () => {
-        // The house's door asks for the key from inside too: without it the ladder up would leave the bot shut in.
+    test("the dungeon's ladder into the brass-key house is never a way out (edgeville_dungeon.rs2:6)", () => {
+        // The house's door opens only to the key used on it, from inside too, and a walk uses no item on a door:
+        // the ladder up would leave the bot shut in, key or not.
         const varrock = at(0, 3185, 3436);
         expect(names(planConnectors(at(0, 3108, 9835), varrock))).toEqual(['up Edgeville Dungeon trapdoor']);
         const key = { levels: {}, coins: 0, met: new Set(['item:edgevilledungeonkey:held']) };
-        expect(planConnectors(at(0, 3108, 9835), varrock, CONNECTORS, key)?.map(c => show(c.loc))).toEqual([
-            '0:3116,9852',
+        expect(names(planConnectors(at(0, 3108, 9835), varrock, CONNECTORS, key))).toEqual([
+            'up Edgeville Dungeon trapdoor',
         ]);
     });
 

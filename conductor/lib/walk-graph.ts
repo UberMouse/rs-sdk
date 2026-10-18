@@ -6,8 +6,8 @@
 // A walk crosses only what actions/walk.ts and actions/climb.ts do:
 //
 // - a neighbour step the collision allows (the gated doors walled, as reach.ts walls them);
-// - a gated door (a wall row of World.gates: guild doors, the Al Kharid toll gate), when the account meets its
-//   requirement: the walk opens doors and pays the toll (actions/toll.ts);
+// - a gated door (a wall row of World.gates) the walker opens, when the account meets its requirement: one whose
+//   checked op is the Open the walk sends (guild doors), or the Al Kharid toll gate it pays (doorRefusal);
 // - a connector edge, when it is one of the table's rows (lib/connectors.ts CONNECTORS: the rows climb can use),
 //   at most `maxHops` of them;
 // - an opened loc's tiles (Gate.opens), when the account meets its requirement.
@@ -26,7 +26,10 @@ import { reachCollision } from '../../wiki/world/collision';
 import { CROSSING_TICKS } from '../../wiki/world/distance';
 import { locSizes } from '../../wiki/world/place';
 import { IntList, reachGraph, STEPS, wallTiles, type ReachGraph } from '../../wiki/world/reach';
+import { minimalSets } from '../../wiki/world/requirements';
 import { readConfigs } from '../../wiki/world/sources/configs';
+import type { Gate } from '../../wiki/world/types';
+import { isTollGate } from '../actions/toll';
 import { type Account, meetsSet } from './account';
 import type { Connector, Tile } from './connectors';
 import { isInWilderness } from './wilderness';
@@ -41,11 +44,47 @@ const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 const wild = (t: Tile): boolean => isInWilderness(t.level, t.x, t.z);
 /** A key for the edge from tile index a to b (indexes are below 2^24). */
 const pair = (a: number, b: number): number => a * 0x1000000 + b;
+/** A requirement's alternatives (set ids) as one string; `''` for none asked (`[[]]`, a door's free side). */
+const sig = (graph: ReachGraph, alts: readonly number[]): string =>
+    alts
+        .map(id => graph.sets.strings(id).join('\n'))
+        .sort()
+        .join('\0');
+
+/** The op actions/walk.ts sends on a closed door (its `OPEN`); actions/toll.ts handles the Al Kharid toll gate. */
+const WALKER_OPENS = /^open$/i;
+
+/**
+ * Doors whose Open the walker sends but whose script then needs what a walk does not do, by loc config: answering a
+ * choice (the walker's dialog guard answers no choice).
+ */
+export const NOT_WALKER_DOORS: ReadonlyMap<string, string> = new Map([
+    ['lgstrengthtrialgater', 'asks to force the doors (quests/quest_legends/scripts/quest_legends.rs2:466)'],
+    ['lgstrengthtrialgatel', 'asks to force the doors (quests/quest_legends/scripts/quest_legends.rs2:466)'],
+]);
+
+/**
+ * Why a walk does not cross a gated door row (World.gates, a wall with no `to`), or undefined when it does: the walker
+ * sends Open (actions/walk.ts openDoorAt) and pays only the Al Kharid toll (actions/toll.ts). `opName` is the loc
+ * config's name for an op (`op1=Open`).
+ */
+export function doorRefusal(g: Gate, opName: (loc: string, op: number) => string | undefined): string | undefined {
+    if (isTollGate(g.tile)) return undefined;
+    const op = /^(?:op|ap)loc([1-5]),/.exec(g.trigger)?.[1];
+    if (!op) return `a ${g.trigger.split(',')[0]} trigger (an item used on it)`;
+    const name = opName(g.loc, Number(op));
+    if (!name || !WALKER_OPENS.test(name)) return `op ${name ?? op}, not Open`;
+    if (g.requires.some(set => set.some(r => /^(coins|consume):/.test(r)))) return 'a payment other than the toll';
+    return NOT_WALKER_DOORS.get(g.loc);
+}
 
 interface Built {
     graph: ReachGraph;
-    /** The door edges: both ways across every gated wall. */
-    doors: ReadonlySet<number>;
+    /**
+     * The door edges the walker crosses, both ways across a wall: by `pair`, the requirement alternatives (`sig`) of
+     * each row on it the walker opens, and `''` for the free side.
+     */
+    doors: ReadonlyMap<number, ReadonlySet<string>>;
     /** Per tile: half ticks of the way found, connectors climbed on it, its chain node; reset after each search. */
     dist: Int32Array;
     hops: Uint8Array;
@@ -57,16 +96,27 @@ let built: Built | undefined;
 /** The graph and the search's arrays, built on the first call. */
 function graphOf(): Built {
     if (built) return built;
-    const graph = reachGraph({ world: WORLD, collision: reachCollision, size: locSizes(readConfigs('loc')) });
+    const configs = readConfigs('loc');
+    const graph = reachGraph({ world: WORLD, collision: reachCollision, size: locSizes(configs) });
     const { index } = graph;
     const at = (t: Tile) => index.of(t.level, t.x, t.z);
-    const doors = new Set<number>();
+    const opName = (loc: string, op: number) => configs.get(loc)?.[`op${op}`]?.[0];
+    const doors = new Map<number, Set<string>>();
     for (const g of WORLD.gates) {
-        if (g.kind !== 'gate' || !WALL_SHAPES.has(g.shape) || g.to) continue;
+        if (g.kind !== 'gate' || !WALL_SHAPES.has(g.shape) || g.to || doorRefusal(g, opName)) continue;
         const tiles = wallTiles(g);
         if (!tiles) continue;
         const [a, b] = tiles.map(at) as [number, number];
-        if (a >= 0 && b >= 0) doors.add(pair(a, b)).add(pair(b, a));
+        if (a < 0 || b < 0) continue;
+        // As reach.ts interns a row's requirement (`alternatives`): its minimal sets, `members` met.
+        const ids = minimalSets(
+            g.requires.map(set => set.filter(r => r !== 'members')),
+            graph.quests,
+        ).map(s => graph.sets.intern(s));
+        for (const p of [pair(a, b), pair(b, a)]) {
+            const sigs = doors.get(p) ?? new Set<string>();
+            doors.set(p, sigs.add(sig(graph, ids)).add(''));
+        }
     }
     built = {
         graph,
@@ -213,7 +263,7 @@ export function nearestWay(from: Tile, targets: readonly Tile[], opts: WalkSearc
                             nodeRow.push(row);
                             nodeUp.push(n);
                             enter(i, e.to, d + CROSSING_TICKS.connector * HALVES, h + 1, nodeRow.length - 1);
-                        } else if (e.via === 'gate' && doors.has(pair(i, e.to)) && met(e.alts))
+                        } else if (e.via === 'gate' && doors.get(pair(i, e.to))?.has(sig(graph, e.alts)) && met(e.alts))
                             enter(i, e.to, d + gateHalf, h, n);
                     }
                 }
