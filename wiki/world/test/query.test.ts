@@ -1,0 +1,304 @@
+// The method query on a synthetic world: made-up families with round numbers (training.test.ts's), so each floor is
+// worked by hand from cycle.ts in the comments, and every filter is shown letting a method through and keeping one out.
+import { describe, expect, test } from 'bun:test';
+import { ModelError, type Family } from '../model/family';
+import type { Item } from '../model/items';
+import { MethodError, type MethodModel } from '../model/method';
+import { profileAt, type Profile } from '../model/profile';
+import type { Skill } from '../model/server';
+import { methodHazard, methodQuery, type BestOptions } from '../query';
+import { WORLD_FORMAT, type Site, type Tile, type World, type WorldMethod } from '../types';
+
+const tile = (x: number, z: number): Tile => ({ level: 0, x, z });
+
+const site = (id: string, x: number, hazard: Partial<Pick<Site, 'wildernessLevel' | 'multiway'>> = {}): Site => ({
+    id,
+    kind: id.slice(0, id.indexOf(':')) as Site['kind'],
+    areaPath: [],
+    centre: tile(x, 3200),
+    bbox: { x1: x, z1: 3200, x2: x, z2: 3200, level: 0 },
+    stand: tile(x, 3201),
+    counts: {},
+    features: [],
+    f2p: false,
+    multiway: false,
+    wildernessLevel: 0,
+    reach: [[]],
+    ...hazard,
+});
+
+// Chopping: 4 ticks a log with the bronze axe, 2 with the rune axe (usable from Woodcutting 41 here), always a
+// success, 10 XP (100 tenths) a log; needs Woodcutting 20 and an axe.
+const woodcutting: Family = {
+    id: 'woodcutting',
+    skills: ['woodcutting'],
+    kinds: ['tree'],
+    model: (_site, _params, profile) => {
+        if (profile.levels.woodcutting < 20) throw new ModelError('Woodcutting 20');
+        if (!profile.axe) throw new ModelError('no axe');
+        return {
+            ticksPerAttempt: profile.axe === 'rune_axe' ? 2 : 4,
+            success: 1,
+            xpTenths: { woodcutting: 100 },
+            products: [{ obj: 'logs', count: 1 }],
+            consumes: [],
+            tools: [profile.axe],
+        };
+    },
+};
+
+// Burning a log at the processor: 3 ticks, 40 XP (400 tenths), leaves ashes; needs Firemaking 30.
+const firemaking: Family = {
+    id: 'firemaking',
+    skills: ['firemaking'],
+    kinds: ['range'],
+    model: (_site, _params, profile) => {
+        if (profile.levels.firemaking < 30) throw new ModelError('Firemaking 30');
+        return {
+            ticksPerAttempt: 3,
+            success: 1,
+            xpTenths: { firemaking: 400 },
+            products: [{ obj: 'ashes', count: 1 }],
+            consumes: [{ obj: 'logs', count: 1 }],
+        };
+    },
+};
+
+const ITEMS: Record<string, Item> = {
+    logs: { stackable: false, cost: 10, wearable: false },
+    ashes: { stackable: false, cost: 5, wearable: false },
+    bronze_axe: { stackable: false, cost: 16, wearable: true },
+    rune_axe: { stackable: false, cost: 12800, wearable: true },
+};
+
+const model: MethodModel = {
+    families: new Map([
+        ['woodcutting', woodcutting],
+        ['firemaking', firemaking],
+    ]),
+    items: obj => {
+        const item = ITEMS[obj];
+        if (!item) throw new ModelError(`no obj ${obj}`);
+        return item;
+    },
+    foods: new Map(),
+    tools: {
+        axe: [
+            { obj: 'rune_axe', level: 41 },
+            { obj: 'bronze_axe', level: 1 },
+        ],
+        pickaxe: [],
+    },
+};
+
+const tree = site('tree:town:0', 3200);
+const range = site('range:town:0', 3210);
+const bank = site('bank:town:0', 3220);
+const wildTree = site('tree:wild:0', 3300, { wildernessLevel: 5 });
+const multiBank = site('bank:multi:0', 3230, { multiway: true });
+
+/** A chopping method at `at`, Woodcutting 20. */
+const chop = (id: string, at: Site, rest: Partial<WorldMethod>): WorldMethod => ({
+    id,
+    name: id,
+    family: 'woodcutting',
+    at: at.centre,
+    params: {},
+    sink: { mode: 'drop' },
+    site: at.id,
+    stand: at.stand!,
+    skill: 'woodcutting',
+    minLevel: 20,
+    levels: { woodcutting: 20 },
+    ways: [{ reach: [], legs: [] }],
+    ...rest,
+});
+
+const leg = (from: Site, to: Site, runTicks: number) => ({ from: from.id, to: to.id, runTicks, requires: [] });
+
+// Dropped; behind Agility 10. A trip is 28 logs (the axe wielded), then dropTicks(28) = ceil(30 / 5) = 6 ticks.
+// Bronze: 28 x 4 + 6 = 118 ticks, 28 x 9000 / 118 = 2135.59 logs/h x 10 XP x 25 = 533,898. Rune: 56 + 6 = 62 ticks,
+// 4064.52 logs/h, 1,016,129.
+const drop = chop('tree-drop', tree, { ways: [{ reach: ['skill:agility:10'], legs: [] }] });
+// The same at a tree in Wilderness level 5, needing nothing: the same floor, so it ties with tree-drop.
+const wild = chop('wild-drop', wildTree, {});
+// Banked at a multiway bank over a quest shortcut (legs 5 + 5) or the long way (20 + 20); banking adds no ticks
+// (cycle.ts BANK_TICKS). Rune: 56 + 10 = 66 ticks, 28 x 9000 / 66 = 3818.18 logs/h, 954,545; the long way 56 + 40 =
+// 96 ticks, 2625 logs/h, 656,250.
+const banked = chop('tree-bank', tree, {
+    sink: { mode: 'bank' },
+    bank: multiBank.id,
+    ways: [
+        { reach: ['quest:shortcut'], legs: [leg(tree, multiBank, 5), leg(multiBank, tree, 5)] },
+        { reach: [], legs: [leg(tree, multiBank, 20), leg(multiBank, tree, 20)] },
+    ],
+});
+// Chopped, burnt at the range, banked: legs 10 + 5 + 15 = 30. Rune: 56 + 28 x 3 + 30 = 170 ticks, 28 x 9000 / 170 =
+// 1482.35 logs/h: Woodcutting x 10 x 25 = 370,588, Firemaking x 40 x 25 = 1,482,353. Bronze: 112 + 84 + 30 = 226
+// ticks, 1115.04 logs/h: 278,761 and 1,115,044.
+const burn = chop('tree-burn-bank', tree, {
+    sink: { mode: 'process-bank', process: { family: 'firemaking', at: range.centre, params: {} } },
+    bank: bank.id,
+    processor: range.id,
+    minLevel: 30,
+    levels: { woodcutting: 20, firemaking: 30 },
+    measured: [
+        {
+            xpPerHour: { woodcutting: 185_000, firemaking: 700_000 },
+            level: { woodcutting: 35, firemaking: 40 },
+            tool: 'bronze_axe',
+            bot: 'w1',
+            date: '2026-10-01',
+            hours: 0.5,
+            from: 'stats.ts w1',
+        },
+    ],
+    ways: [{ reach: [], legs: [leg(tree, range, 10), leg(range, bank, 5), leg(bank, tree, 15)] }],
+});
+
+const world: Pick<World, 'format' | 'sites' | 'features' | 'methods'> = {
+    format: WORLD_FORMAT,
+    sites: [bank, multiBank, range, tree, wildTree],
+    features: [],
+    methods: [burn, banked, wild, drop],
+};
+const query = methodQuery(world, model);
+
+/** A `met` that accepts no token. */
+const none = () => false;
+/** Every skill at `level` (profileAt), with the best axe usable there. */
+const at = (skill: Skill, level: number): Profile => profileAt(skill, level, { tools: model.tools });
+/** The ranking as [id, way, XP/hr rounded]. */
+const rank = (skill: Skill, profile: Profile, opts?: BestOptions) =>
+    query.bestMethods(skill, profile, opts).map(r => [r.method.def.id, r.way, Math.round(r.xpPerHour)]);
+
+describe('bestMethods', () => {
+    test('ranks by floor XP/hr of the skill, highest first; a tie by id', () => {
+        // Woodcutting 50: the rune axe. tree-drop and wild-drop tie at 1,016,129: by id.
+        expect(rank('woodcutting', at('woodcutting', 50))).toEqual([
+            ['tree-drop', 0, 1_016_129],
+            ['wild-drop', 0, 1_016_129],
+            ['tree-bank', 0, 954_545],
+            ['tree-burn-bank', 0, 370_588],
+        ]);
+        // The order of world.json's methods does not change it.
+        const reversed = methodQuery({ ...world, methods: world.methods.toReversed() }, model);
+        expect(reversed.bestMethods('woodcutting', at('woodcutting', 50))).toEqual(
+            query.bestMethods('woodcutting', at('woodcutting', 50)),
+        );
+    });
+
+    test('only methods that train the skill, on their process skill too', () => {
+        // Firemaking 50 (Woodcutting 50 too, the rune axe): 1,482,353.
+        expect(rank('firemaking', at('firemaking', 50))).toEqual([['tree-burn-bank', 0, 1_482_353]]);
+        expect(rank('thieving', at('thieving', 99))).toEqual([]);
+    });
+
+    test('reach: the shortest way whose every token `met` accepts; none, and the method is out', () => {
+        // tree-drop needs Agility 10; tree-bank's short way the quest, so the long way's 656,250.
+        expect(rank('woodcutting', at('woodcutting', 50), { met: none })).toEqual([
+            ['wild-drop', 0, 1_016_129],
+            ['tree-bank', 1, 656_250],
+            ['tree-burn-bank', 0, 370_588],
+        ]);
+        const met = new Set(['skill:agility:10', 'quest:shortcut']);
+        expect(rank('woodcutting', at('woodcutting', 50), { met: t => met.has(t) })).toEqual(
+            rank('woodcutting', at('woodcutting', 50)),
+        );
+    });
+
+    test('met omitted: every token met, each method over its shortest way', () => {
+        const all = query.bestMethods('woodcutting', at('woodcutting', 50));
+        expect(all.map(r => [r.method.def.id, r.method.ways[r.way]!.reach])).toEqual([
+            ['tree-drop', ['skill:agility:10']],
+            ['wild-drop', []],
+            ['tree-bank', ['quest:shortcut']],
+            ['tree-burn-bank', []],
+        ]);
+    });
+
+    test('levels: a method a family refuses at the profile is out', () => {
+        // Woodcutting 25 and Firemaking 25: the bronze axe (533,898; the long-way bank 414,474: 112 + 40 = 152 ticks,
+        // 1657.89 logs/h); burning needs Firemaking 30.
+        expect(rank('woodcutting', at('woodcutting', 25), { met: none })).toEqual([
+            ['wild-drop', 0, 533_898],
+            ['tree-bank', 1, 414_474],
+        ]);
+        expect(rank('woodcutting', at('woodcutting', 19))).toEqual([]);
+        // Firemaking 30 lets it in: bronze, 278,761.
+        const both = { ...at('woodcutting', 25), levels: { ...at('woodcutting', 25).levels, firemaking: 30 } };
+        expect(rank('woodcutting', both, { met: none }).map(r => r[0])).toContain('tree-burn-bank');
+    });
+
+    test('tools: no axe, no chopping method', () => {
+        expect(rank('woodcutting', { ...at('woodcutting', 50), axe: null })).toEqual([]);
+    });
+
+    test('hazards: the deepest Wilderness level and any multiway site of the method, its sink sites included', () => {
+        const ids = (opts: BestOptions) => rank('woodcutting', at('woodcutting', 50), opts).map(r => r[0]);
+        expect(ids({ maxWilderness: 4 })).toEqual(['tree-drop', 'tree-bank', 'tree-burn-bank']);
+        expect(ids({ maxWilderness: 5 })).toEqual(['tree-drop', 'wild-drop', 'tree-bank', 'tree-burn-bank']);
+        // tree-bank's tree is single-way; its bank is not.
+        expect(ids({ multiway: false })).toEqual(['tree-drop', 'wild-drop', 'tree-burn-bank']);
+        expect(ids({ multiway: true })).toEqual(['tree-drop', 'wild-drop', 'tree-bank', 'tree-burn-bank']);
+        const r = query.bestMethods('woodcutting', at('woodcutting', 50));
+        expect(r.map(x => [x.method.def.id, x.hazard])).toEqual([
+            ['tree-drop', { wildernessLevel: 0, multiway: false }],
+            ['wild-drop', { wildernessLevel: 5, multiway: false }],
+            ['tree-bank', { wildernessLevel: 0, multiway: true }],
+            ['tree-burn-bank', { wildernessLevel: 0, multiway: false }],
+        ]);
+    });
+
+    test('each result has its whole floor and its measured figures for the skill, each beside its own floor', () => {
+        const [r] = query.bestMethods('firemaking', at('firemaking', 50));
+        expect(r!.rates).toEqual(query.methodRate('tree-burn-bank', at('firemaking', 50)));
+        // Measured at Woodcutting 35, Firemaking 40, the bronze axe: the floor there is 278,761 Woodcutting and
+        // 1,115,044 Firemaking (above).
+        expect(r!.measured.map(x => [x.xpPerHour, Math.round(x.floor), x.measured.bot])).toEqual([
+            [700_000, 1_115_044, 'w1'],
+        ]);
+        const [wc] = query.bestMethods('woodcutting', at('woodcutting', 50), { maxWilderness: 0, multiway: false });
+        expect(wc!.measured).toEqual([]);
+        const burnt = query
+            .bestMethods('woodcutting', at('woodcutting', 50))
+            .find(x => x.method.def.id === 'tree-burn-bank')!;
+        expect(burnt.measured.map(x => [x.xpPerHour, Math.round(x.floor)])).toEqual([[185_000, 278_761]]);
+    });
+
+    test('an error that is not a family refusing the profile stops the query, naming the method', () => {
+        const zero: Family = { ...woodcutting, model: (...a) => ({ ...woodcutting.model(...a), ticksPerAttempt: 0 }) };
+        const broken = methodQuery(world, { ...model, families: new Map([...model.families, ['woodcutting', zero]]) });
+        expect(() => broken.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(MethodError);
+        expect(() => broken.bestMethods('woodcutting', at('woodcutting', 50))).toThrow(
+            /^methods\.ts tree-burn-bank: ticksPerAttempt 0 is not finite and > 0/,
+        );
+    });
+});
+
+describe('methodRate', () => {
+    test("one method's floor over its shortest way", () => {
+        const r = query.methodRate('tree-bank', at('woodcutting', 50));
+        expect(Math.round(r.xpPerHour.woodcutting!)).toBe(954_545);
+        expect(r.trip.travel).toBe(10);
+    });
+
+    test('an unknown id, or a profile the model refuses, throws naming it', () => {
+        expect(() => query.methodRate('nope', at('woodcutting', 50))).toThrow(
+            /^No method nope in world\.json \(it has tree-burn-bank, tree-bank, wild-drop, tree-drop\)$/,
+        );
+        expect(() => query.methodRate('tree-drop', { ...at('woodcutting', 50), axe: null })).toThrow(MethodError);
+        expect(() => query.methodRate('tree-drop', { ...at('woodcutting', 50), axe: null })).toThrow(
+            /^methods\.ts tree-drop: no axe$/,
+        );
+    });
+});
+
+describe('methodHazard', () => {
+    test('a drop method: its site alone', () => {
+        expect(methodHazard({ site: wildTree, sink: { mode: 'drop' } })).toEqual({
+            wildernessLevel: 5,
+            multiway: false,
+        });
+    });
+});

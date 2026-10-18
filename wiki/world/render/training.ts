@@ -3,11 +3,12 @@
 // fix shows in the pages without a world.json change; beside it what the bots measured. wiki/training/README.md lists
 // the pages and says what the columns mean and how to add a method.
 import {
+    forMethod,
     fromWorldMethod,
-    measuredProfile,
-    MethodError,
+    measuredFigures,
     methodModels,
     methodRate,
+    trains,
     type MethodContext,
     type MethodModel,
     type ResolvedMethod,
@@ -55,7 +56,7 @@ function bySkill(methods: readonly ResolvedMethod[]): Map<Skill, ResolvedMethod[
     const out = new Map<Skill, ResolvedMethod[]>();
     for (const skill of [...SKILLS].sort(cmp)) {
         const ms = methods
-            .filter(m => m.levels[skill] !== undefined)
+            .filter(m => trains(m, skill))
             .sort((a, b) => a.minLevel - b.minLevel || cmp(a.def.id, b.def.id));
         if (ms.length) out.set(skill, ms);
     }
@@ -70,19 +71,6 @@ export function renderTraining(world: World, data: TrainingData): Page[] {
     const out: Page[] = [...pages].map(([skill, ms]) => [trainingPath(skill), skillPage(skill, ms, world, data, ctx)]);
     out.push([TRAINING_README, readme(pages)]);
     return out;
-}
-
-/**
- * `f()`, naming the method in what it throws: a page rates combinations of levels the build never did (the page's
- * skill at a column, the others raised to their own levels), so a family can refuse one here first.
- */
-function forMethod<T>(m: ResolvedMethod, f: () => T): T {
-    try {
-        return f();
-    } catch (e) {
-        if (e instanceof MethodError || !(e instanceof Error)) throw e;
-        throw new MethodError(m.def.id, e.message);
-    }
 }
 
 /** The tool tiers a page's columns pick the best of, by the obj that is one. */
@@ -147,15 +135,13 @@ function skillPage(
     };
     // Each measured figure with the page's skill in it: the table cell (XP/hr, level, it over its floor) and who ran it.
     const measured = (m: ResolvedMethod): { cell: string; by: string }[] =>
-        (m.def.measured ?? []).flatMap(x => {
-            const got = x.xpPerHour[skill];
-            if (got === undefined) return [];
+        measuredFigures(m, skill, ctx).map(({ measured: x, xpPerHour: got, floor }) => {
             const at = x.level[skill] === undefined ? '' : ` at ${x.level[skill]}`;
-            const of = percent(got, xp(m, measuredProfile(m, x, ctx.tools)));
             const tool = x.tool ? `, with the ${obj(x.tool)}` : '';
-            return [
-                { cell: `${compact(got)}${at} (${of})`, by: `${compact(got)}${at} by ${x.bot} on ${x.date}${tool}` },
-            ];
+            return {
+                cell: `${compact(got)}${at} (${percent(got, floor)})`,
+                by: `${compact(got)}${at} by ${x.bot} on ${x.date}${tool}`,
+            };
         });
 
     const rated = methods.map(m =>

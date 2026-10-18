@@ -130,6 +130,10 @@ function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly Fe
     return site;
 }
 
+/** The sites a sink stops at, in the order the cycle visits them: none, the bank, or the processor then the bank. */
+export const sinkSites = (sink: ResolvedMethod['sink']): Site[] =>
+    sink.mode === 'drop' ? [] : sink.mode === 'bank' ? [sink.bank] : [sink.processor, sink.bank];
+
 /** The method's sites and its legs under each requirement set, before the levels are checked. */
 function locate(
     def: MethodDef,
@@ -155,7 +159,7 @@ function locate(
             : nearestOf(ctx.world, processor, ['bank']);
         sink = { mode: 'process-bank', processor, bank };
     }
-    const stops = sink.mode === 'drop' ? [] : sink.mode === 'bank' ? [sink.bank] : [sink.processor, sink.bank];
+    const stops = sinkSites(sink);
     for (const s of stops)
         if (!s.stand || !s.reach.length) throw new ModelError(`sink site ${s.id} has no stand a walk reaches`);
     // Every set that gets to all the method's sites: one reach set of each, joined, the minimal ones kept.
@@ -199,6 +203,40 @@ export function methodModels(
     const family = familyOf(ctx, step.family);
     const processor = m.sink.processor;
     return { gather, process: paramList(step.params).map(p => family.model(processor, p, profile, world)) };
+}
+
+/** Whether a method trains `skill`: its `levels` name it (the gather family's skills, then the process step's). */
+export const trains = (m: Pick<ResolvedMethod, 'levels'>, skill: Skill): boolean => m.levels[skill] !== undefined;
+
+/**
+ * `f()`, naming the method in what it throws: rating a resolved method at a profile the build never rated (a page's
+ * level column, a query's profile) can fail in a family or in rate.ts, and the error says which record.
+ */
+export function forMethod<T>(m: Pick<ResolvedMethod, 'def'>, f: () => T): T {
+    try {
+        return f();
+    } catch (e) {
+        if (e instanceof MethodError || !(e instanceof Error)) throw e;
+        throw new MethodError(m.def.id, e.message);
+    }
+}
+
+/** A measured figure's XP/hr of one skill, beside the floor's XP/hr of it at the figure's profile. */
+export interface MeasuredFigure {
+    measured: Measured;
+    xpPerHour: number;
+    /** The floor at measuredProfile (the figure's levels and tool), over the shortest way; 0 when it gives none. */
+    floor: number;
+}
+
+/** The method's measured figures that have an XP/hr for `skill`, in the record's order, each with its floor. */
+export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodContext): MeasuredFigure[] {
+    return (m.def.measured ?? []).flatMap(measured => {
+        const xpPerHour = measured.xpPerHour[skill];
+        if (xpPerHour === undefined) return [];
+        const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx).xpPerHour[skill] ?? 0;
+        return [{ measured, xpPerHour, floor }];
+    });
 }
 
 /** The floor of a resolved method at `profile`, over its `way`th way (the shortest by default). */
