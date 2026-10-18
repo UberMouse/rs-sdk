@@ -27,12 +27,15 @@
 //
 // Every edge's requirement is a list of alternative sets, any one of which crosses it. Bots always play on
 // members worlds (user, 2026-10-16), so `members` is met and never added to a set. The fill is a
-// multi-label BFS: each tile keeps the antichain of minimal sets that reach it (a set is dropped when a
-// subset already reaches the tile, and drops the supersets it finds), at most `maxSets` of them; a tile that
-// would hold more evicts its largest set for a smaller new one (else drops the new one) and is reported. Sets are taken in order of size, smallest first, so
-// a tile hears of a cheap route before a dear one. Sets come out canonical and sorted (requirementSet).
+// multi-label BFS: each tile keeps the antichain of minimal sets that reach it (a set is dropped when one that
+// dominates it, asking no more, already reaches the tile, and drops the sets it dominates; requirements.ts
+// dominates), at most `maxSets` of them; a tile that would hold more evicts its largest set for a smaller new one
+// (else drops the new one) and is reported. Sets are taken in order of size, smallest first, so a tile hears of
+// a cheap route before a dear one. Along a route the sets join and are made canonical (requirements.ts
+// canonicalSet: a quest's highest stage, a skill's highest level, the coins of every crossing summed), and they
+// come out canonical and sorted.
 import { reachTiles, type PlacedLoc, type SiteOptions } from './place';
-import { minimalSets, requirementSet } from './requirements';
+import { canonicalSet, dominates, minimalSets, questFacts, type QuestFacts } from './requirements';
 import type { ConnectorCollision } from './sources/connectors';
 import type { Gate, Side, Tile, World } from './types';
 import { cmp } from './util';
@@ -68,7 +71,8 @@ export interface ReachCollision extends ConnectorCollision {
 }
 
 export interface ReachInput {
-    world: Pick<World, 'features' | 'connectors' | 'gates' | 'transports'>;
+    /** `quests`, when given, lets a set's canonical form and dominance read completion (requirements.ts QuestFacts). */
+    world: Pick<World, 'features' | 'connectors' | 'gates' | 'transports'> & Partial<Pick<World, 'quests'>>;
     collision: ReachCollision;
     /** A loc's size and approach, from its config (place.ts locSizes). */
     size: SiteOptions['size'];
@@ -181,38 +185,27 @@ const opOf = (trigger: string): number | undefined => {
 // ---- Requirement sets ----------------------------------------------------------------------------------
 
 /**
- * Interned requirement sets: each a sorted list of token ids, id 0 the empty set. Union and subset are
- * cached by id pair, as a fill asks the same few hundred pairs millions of times.
+ * Interned requirement sets: each canonical (requirements.ts canonicalSet), id 0 the empty set. Union and
+ * dominance are cached by id pair, as a fill asks the same few hundred pairs millions of times.
  */
 class SetTable {
-    private readonly tokens: string[] = [];
-    private readonly tokenIds = new Map<string, number>();
-    private readonly lists: number[][] = [[]];
+    private readonly lists: string[][] = [[]];
     private readonly ids = new Map<string, number>([['', 0]]);
     private readonly unions = new Map<number, number>();
-    private readonly subsets = new Map<number, boolean>();
+    private readonly dominance = new Map<number, boolean>();
 
-    /** The id of a set of canonical requirement strings; `members` is met, so left out. */
+    constructor(private readonly quests?: QuestFacts) {}
+
+    /** The id of a set of requirement strings, made canonical; `members` is met, so left out. */
     intern(set: readonly string[]): number {
-        const ids = set
-            .filter(r => r !== 'members')
-            .map(r => {
-                let id = this.tokenIds.get(r);
-                if (id === undefined) {
-                    id = this.tokens.length;
-                    this.tokens.push(r);
-                    this.tokenIds.set(r, id);
-                }
-                return id;
-            });
-        return this.of([...new Set(ids)].sort((a, b) => a - b));
-    }
-
-    private of(list: number[]): number {
-        const key = list.join(',');
+        const list = canonicalSet(
+            set.filter(r => r !== 'members'),
+            this.quests,
+        );
+        const key = list.join('\n');
         let id = this.ids.get(key);
         if (id === undefined) {
-            // The union and subset cache keys pack two ids into `a * 65536 + b`.
+            // The union and dominance cache keys pack two ids into `a * 65536 + b`.
             if (this.lists.length > 65535) throw new Error('reach: more than 65535 interned requirement sets');
             id = this.lists.length;
             this.lists.push(list);
@@ -227,33 +220,36 @@ class SetTable {
         return this.lists.length;
     }
 
+    /**
+     * Both sets met along one way: their requirements together, made canonical, so the coins of two crossings
+     * add up (a set joined with itself is not itself when it takes coins).
+     */
     union(a: number, b: number): number {
-        if (a === b || b === 0) return a;
+        if (b === 0) return a;
         if (a === 0) return b;
         const key = a < b ? a * 65536 + b : b * 65536 + a;
         let id = this.unions.get(key);
         if (id === undefined) {
-            id = this.of([...new Set([...this.lists[a]!, ...this.lists[b]!])].sort((x, y) => x - y));
+            id = this.intern([...this.lists[a]!, ...this.lists[b]!]);
             this.unions.set(key, id);
         }
         return id;
     }
 
-    /** Whether set a asks for no more than set b. */
-    subset(a: number, b: number): boolean {
+    /** Whether set a asks for no more than set b (requirements.ts dominates). */
+    dominates(a: number, b: number): boolean {
         if (a === b || a === 0) return true;
         const key = a * 65536 + b;
-        let is = this.subsets.get(key);
+        let is = this.dominance.get(key);
         if (is === undefined) {
-            const have = new Set(this.lists[b]!);
-            is = this.lists[a]!.every(t => have.has(t));
-            this.subsets.set(key, is);
+            is = dominates(this.lists[a]!, this.lists[b]!, this.quests);
+            this.dominance.set(key, is);
         }
         return is;
     }
 
     /** A set as world.json writes it. */
-    strings = (id: number): string[] => requirementSet(this.lists[id]!.map(t => this.tokens[t]!));
+    strings = (id: number): string[] => this.lists[id]!;
 }
 
 // ---- Tiles -----------------------------------------------------------------------------------------------
@@ -350,13 +346,17 @@ export function fillReach(input: ReachInput): Reach {
     const start = input.start ?? LUMBRIDGE_SPAWN;
     const maxSets = input.maxSets ?? MAX_SETS;
     const index = new TileIndex(collision.zones);
-    const sets = new SetTable();
+    const quests = world.quests && questFacts(world.quests);
+    const sets = new SetTable(quests);
     const skipped = new Set<string>();
 
     /** Alternatives (each a set id, minimal among them) of a requirement list, interned once. */
     const altIds = new Map<string, number[]>();
     const alternatives = (reqs: readonly (readonly string[])[]): number[] => {
-        const minimal = minimalSets(reqs.map(set => set.filter(r => r !== 'members')));
+        const minimal = minimalSets(
+            reqs.map(set => set.filter(r => r !== 'members')),
+            quests,
+        );
         const key = minimal.map(s => s.join('\n')).join('\0');
         let ids = altIds.get(key);
         if (!ids) altIds.set(key, (ids = minimal.map(s => sets.intern(s))));
@@ -565,7 +565,7 @@ export function fillReach(input: ReachInput): Reach {
             }
             queues[k]!.push(i, s);
         };
-        /** Offers set `s` to tile `i`: kept unless a subset is there, and then drops the supersets there. */
+        /** Offers set `s` to tile `i`: kept unless a set there dominates it, and then drops the sets it dominates. */
         const offer = (i: number, s: number): void => {
             const h = head[i]!;
             if (h === -1) {
@@ -574,10 +574,10 @@ export function fillReach(input: ReachInput): Reach {
                 return;
             }
             // The common case: the set the tile holds, or one it asks no more than, arrives again.
-            if (h >= 0 && sets.subset(h, s)) return;
+            if (h >= 0 && sets.dominates(h, s)) return;
             const have = held(i);
-            if (have.some(o => sets.subset(o, s))) return;
-            const kept = have.filter(o => !sets.subset(s, o));
+            if (have.some(o => sets.dominates(o, s))) return;
+            const kept = have.filter(o => !sets.dominates(s, o));
             if (kept.length >= maxSets) {
                 // Full: a set that sorts before the largest held (by size, then canonical string) evicts it, so the sets
                 // kept do not depend on the order they arrive in. Either way the tile is reported.
@@ -620,13 +620,13 @@ export function fillReach(input: ReachInput): Reach {
         if (s0 < 0 || !collision.walkable(start.level, start.x, start.z))
             throw new Error(`the fill's start ${coord(start)} is not a walkable tile on land`);
         arrive(s0, 0);
-        for (let k = 0; k < queues.length; k++) {
+        for (let k = 0; k < queues.length;) {
             const q = queues[k]!;
             while (heads[k]! < q.length) {
                 const at = heads[k]!;
                 const [i, s] = [q.data[at]!, q.data[at + 1]!];
                 heads[k] = at + 2;
-                // A set dropped since it was queued (a subset arrived) goes no further.
+                // A set dropped since it was queued (one that dominates it arrived) goes no further.
                 if (head[i] !== s && (head[i]! >= 0 || !held(i).includes(s))) continue;
                 const m = stepMask(i);
                 const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
@@ -636,8 +636,13 @@ export function fillReach(input: ReachInput): Reach {
                 if (out) for (const e of out) for (const a of e.alts) arrive(e.to, sets.union(s, a));
             }
             queueBytes += q.data.byteLength;
-            // A bucket is done once taken: no union is smaller than the sets it joins.
             queues[k] = new IntList();
+            heads[k] = 0;
+            // A join is seldom smaller than the sets it joins, but its canonical form can be (a stage at or past
+            // complete takes the place of `quest:<id>` and a stage below it, for a quest done by two varps;
+            // requirements.ts canonicalSet): then a lower bucket has work again, and is taken next.
+            const lower = queues.findIndex((b, j) => j < k && heads[j]! < b.length);
+            k = lower >= 0 ? lower : k + 1;
         }
 
         let reached = 0;
@@ -678,11 +683,11 @@ export function fillReach(input: ReachInput): Reach {
         };
         const at = (t: Tile): number => index.of(t.level, t.x, t.z);
         return {
-            setsAt: t => (at(t) < 0 ? [] : minimalSets(held(at(t)).map(sets.strings))),
+            setsAt: t => (at(t) < 0 ? [] : minimalSets(held(at(t)).map(sets.strings), quests)),
             setsAny(tiles) {
                 const ids = new Set<number>();
                 for (const t of tiles) if (at(t) >= 0) for (const s of held(at(t))) ids.add(s);
-                return minimalSets([...ids].map(sets.strings));
+                return minimalSets([...ids].map(sets.strings), quests);
             },
             reached: t => at(t) >= 0 && head[at(t)] !== -1,
             report,

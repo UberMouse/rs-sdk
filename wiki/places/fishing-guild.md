@@ -43,8 +43,8 @@
 | `npc:fishing-guild:1` | (2582, 3413) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
 | `npc:fishing-guild:2` | (2585, 3427) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
 | `npc:fishing-guild:3` | (2592, 3416) | Rat 1 | no | no | - | 68 Fishing |
-| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - | unreached |
-| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - | unreached |
+| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - | no stand |
+| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - | no stand |
 | `npc:fishing-guild:6` | (2619, 3407) | Duck (duck) 4, Duck (duck_female) 4 | no | no | - | 68 Fishing |
 | `npc:fishing-guild:7` | (2620, 3394) | Goblin (goblin) 1 | no | no | - | - |
 

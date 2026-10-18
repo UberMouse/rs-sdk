@@ -21,6 +21,6 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - | unreached |
+| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - | no stand |
 | `npc:champions-guild:1` | (3197, 3353) | Chicken 5 | yes | no | - | 32 quest points |
 | `npc:champions-guild:2` | (3205, 3355) | Imp 1 | yes | no | - | - |

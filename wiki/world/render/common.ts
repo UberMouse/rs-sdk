@@ -130,17 +130,15 @@ const words = (id: string, capital = false): string => {
 };
 
 /**
- * How a page reads a reach (Site.reach): `-` for no requirement (`[[]]`), `unreached` for none (`[]`), else
- * each minimal set's requirements joined with ` + `, the sets with ` or `. A requirement reads as
- * requirements.ts names it, with the quest list's names and the objs' names. In a set, of a quest's stage
- * requirements only the highest shows, as it implies the lower, and none at or below complete beside the
- * quest itself (unless the quest is done by another varp too, Quest.or, which the stage does not read).
+ * How a page reads a site's reach (Site.reach): `no stand` for a site with no stand tile, `-` for no
+ * requirement (`[[]]`), `unreached` for none (`[]`), else each minimal set's requirements joined with ` + `,
+ * the sets with ` or `. The sets are canonical as world.json has them (requirements.ts canonicalSet), and a
+ * requirement reads as requirements.ts names it, with the quest list's names and the objs' names.
  */
 export function reachLabel(
-    world: Pick<World, 'quests' | 'loadoutRules'>,
+    world: Pick<World, 'loadoutRules'>,
     data: PageData,
-): (reach: readonly (readonly string[])[]) => string {
-    const quests = new Map(world.quests.map(q => [q.id, q]));
+): (site: Pick<Site, 'reach' | 'stand'>) => string {
     const quest = (id: string): string => data.questNames.get(id) ?? id;
     const obj = (id: string): string => first(data.objConfigs.get(id), 'name') ?? id;
     const loadout = (id: string): string => {
@@ -176,31 +174,27 @@ export function reachLabel(
                 return r.text;
         }
     };
-    /** A set without the stage requirements another of its requirements implies. */
-    const shown = (set: readonly string[]): string[] => {
-        const parsed = set.map(s => [s, parseRequirement(s)] as const);
-        const top = new Map<string, number>();
-        for (const [, r] of parsed)
-            if (r.kind === 'quest' && r.stage !== undefined) top.set(r.quest, Math.max(top.get(r.quest) ?? 0, r.stage));
-        const done = new Set(parsed.flatMap(([, r]) => (r.kind === 'quest' && r.stage === undefined ? [r.quest] : [])));
-        return parsed.flatMap(([s, r]) => {
-            if (r.kind !== 'quest' || r.stage === undefined) return [s];
-            if (r.stage < top.get(r.quest)!) return [];
-            const q = quests.get(r.quest);
-            return done.has(r.quest) && q && !q.or && r.stage <= q.complete ? [] : [s];
-        });
-    };
-    return reach => {
+    return ({ reach, stand }) => {
+        if (!stand) return 'no stand';
         if (!reach.length) return 'unreached';
         if (reach.some(set => !set.length)) return '-';
-        return reach.map(set => shown(set).map(one).join(' + ')).join(' or ');
+        return reach.map(set => set.map(one).join(' + ')).join(' or ');
     };
 }
 
-/** How many of `sites` a walk from the Lumbridge spawn gets to with no requirement, and how many it does not reach. */
-export const reachSummary = (sites: readonly Pick<Site, 'reach'>[]): string =>
-    `${sites.filter(s => s.reach.some(set => !set.length)).length} a walk from the Lumbridge spawn reaches with no ` +
-    `requirement (Requires -), ${sites.filter(s => !s.reach.length).length} it does not reach (unreached)`;
+/**
+ * How many of `sites` a walk from the Lumbridge spawn gets to with no requirement, how many have a stand it
+ * does not reach, and how many have no stand tile (when any).
+ */
+export function reachSummary(sites: readonly Pick<Site, 'reach' | 'stand'>[]): string {
+    const free = sites.filter(s => s.reach.some(set => !set.length)).length;
+    const unreached = sites.filter(s => s.stand && !s.reach.length).length;
+    const noStand = sites.filter(s => !s.stand).length;
+    return (
+        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -), ${unreached} it does ` +
+        `not reach (unreached)${noStand ? `, ${noStand} with no stand tile (no stand)` : ''}`
+    );
+}
 
 /** One thing a site holds and how many. */
 export interface Part {

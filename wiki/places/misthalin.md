@@ -146,7 +146,7 @@
 | `npc:misthalin:17` | (3145, 3260) | Goblin (goblin) 2 | yes | no | - | - |
 | `npc:misthalin:18` | (3147, 3480) | Giant spider 3 | yes | no | - | - |
 | `npc:misthalin:19` | (3151, 3414) | Rat 1 | yes | no | - | - |
-| `npc:misthalin:20` | (3152, 3357) | Duck (duck_female) 1 | yes | no | - | unreached |
+| `npc:misthalin:20` | (3152, 3357) | Duck (duck_female) 1 | yes | no | - | no stand |
 | `npc:misthalin:21` | (3154, 3325) | Cow 1 | yes | no | - | - |
 | `npc:misthalin:22` | (3160, 3318) | Cow 1 | yes | no | - | - |
 | `npc:misthalin:23` | (3162, 3277) | Goblin (goblin_armed) 1 | yes | no | - | - |
@@ -154,14 +154,14 @@
 | `npc:misthalin:25` | (3167, 3205) | Goblin (goblin_armed) 1 | yes | no | - | - |
 | `npc:misthalin:26` | (3173, 3323) | Cow 1 | yes | no | - | - |
 | `npc:misthalin:27` | (3182, 3329) | Cow 1 | yes | no | - | - |
-| `npc:misthalin:28` | (3183, 3348) | Duck (duck) 1 | yes | no | - | unreached |
+| `npc:misthalin:28` | (3183, 3348) | Duck (duck) 1 | yes | no | - | no stand |
 | `npc:misthalin:29` | (3188, 3278) | Chicken 5 | yes | no | - | - |
-| `npc:misthalin:30` | (3195, 3340) | Duck (duck) 2 | yes | no | - | unreached |
+| `npc:misthalin:30` | (3195, 3340) | Duck (duck) 2 | yes | no | - | no stand |
 | `npc:misthalin:31` | (3197, 3320) | Cow 1 | yes | no | - | - |
 | `npc:misthalin:32` | (3197, 3331) | Cow 1 | yes | no | - | - |
 | `npc:misthalin:33` | (3214, 3317) | Duck (duck) 4, Duck (duck_female) 2 | yes | no | - | - |
 | `npc:misthalin:34` | (3218, 3282) | Duck (duck) 2, Duck (duck_female) 2, Goblin (goblin_armed) 2, Imp 1 | yes | no | - | - |
-| `npc:misthalin:35` | (3215, 3303) | Duck (duck_female) 1 | yes | no | - | unreached |
+| `npc:misthalin:35` | (3215, 3303) | Duck (duck_female) 1 | yes | no | - | no stand |
 | `npc:misthalin:36` | (3227, 3369) | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 9 | yes | no | - | - |
 | `npc:misthalin:37` | (3224, 3262) | Goblin (goblin) 1 | yes | no | - | - |
 | `npc:misthalin:38` | (3230, 3299) | Chicken 9 | yes | no | - | - |

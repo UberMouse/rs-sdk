@@ -62,7 +62,7 @@ Staircase up east of Falador at (3059, 3376) (learnings/walking.md); its other w
 |---|---|---|---|---|---|---|---|
 | `connector:dwarven-mine:0` | (3019, 9850) | Ladder 1 | up (3018, 3450) by Climb-up | yes | no | - | - |
 | `connector:dwarven-mine:1` | (3059, 9776) | Staircase 1 | up (3062, 3376) by Climb-up | yes | no | - | - |
-| `connector:dwarven-mine:2` | (3060, 9776) L1 | Staircase 1 | - | yes | no | - | unreached |
+| `connector:dwarven-mine:2` | (3060, 9776) L1 | Staircase 1 | - | yes | no | - | no stand |
 
 ## Areas within
 

@@ -21,7 +21,7 @@ import { contentHash } from './content-hash';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
-import { buildSites, locSizes, spawnClusters, type Placed } from './place';
+import { besideCluster, buildSites, locSizes, spawnClusters, type Placed } from './place';
 import { fillReach, formatReach, type Reach, type ReachCollision, type ReachReport } from './reach';
 import { readConfigs } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
@@ -269,26 +269,19 @@ export function nearestReached(reached: (t: Tile) => boolean, t: Tile, radius = 
     return null;
 }
 
-/** The tiles of an npc spawn cluster's bbox grown by one, on its level. */
-function besideCluster(c: Placed<NpcSpawn>): Tile[] {
-    const out: Tile[] = [];
-    for (let x = c.bbox.x1 - 1; x <= c.bbox.x2 + 1; x++)
-        for (let z = c.bbox.z1 - 1; z <= c.bbox.z2 + 1; z++) out.push({ level: c.centre.level, x, z });
-    return out;
-}
-
 /**
  * Each site's reach, the sets of its stand tile, and each npc spawn cluster's, the minimal sets over the tiles
- * of its bbox grown by one (types.ts NpcSpawn.reach): the cheapest way beside any of its spawns, not the
- * nearest tile's, which may sit behind a door the cheapest way does not need. Also the COVERED sites none
- * reaches, by area path then id.
+ * `beside` gives it (place.ts besideCluster; types.ts NpcSpawn.reach): the cheapest way beside any of its
+ * spawns, not the nearest tile's, which may sit behind a door the cheapest way does not need. Also the COVERED
+ * sites none reaches, by area path then id.
  */
 export function addReach(
     placed: { sites: readonly Placed<Site>[]; npcSpawns: readonly Placed<NpcSpawn>[] },
     reach: Pick<Reach, 'setsAt' | 'setsAny' | 'reached'>,
+    beside: (c: Placed<NpcSpawn>) => Tile[],
 ): { sites: Site[]; npcSpawns: NpcSpawn[]; unreached: Unreached[] } {
     const sites = placed.sites.map(s => ({ ...s, reach: s.stand ? reach.setsAt(s.stand) : [] }));
-    const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(besideCluster(c)) }));
+    const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(beside(c)) }));
     const unreached = sites
         .filter(s => COVERED.has(s.kind) && !s.reach.length)
         .map(s => {
@@ -444,7 +437,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
     // What a walk from the Lumbridge spawn needs to get to each tile (reach.ts), over the rows just built.
     const fill = fillReach({
-        world: { features, connectors, gates: landings.gates, transports },
+        world: { features, connectors, gates: landings.gates, transports, quests: questRows },
         collision,
         size: locSizes(locConfigs),
     });
@@ -455,7 +448,9 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         log: line => log.push(line),
         walked: fill.reached,
     }).sort((a, b) => cmp(a.id, b.id));
-    const { sites, npcSpawns, unreached } = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill);
+    const { sites, npcSpawns, unreached } = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c =>
+        besideCluster(c, collision),
+    );
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),

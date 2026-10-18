@@ -17,7 +17,7 @@
 | [Gnome Stronghold south bank (Tree Gnome Stronghold)](../places/gnome-stronghold-bank.md) | `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | (2445, 3425) L1 | Bank booth 4, Gnome banker 5 | no | unreached |
 | [Grand Tree bank (Tree Gnome Stronghold)](../places/grand-tree-bank.md) | `bank:grand-tree-bank:0` | (2445, 3484) L1 | (2448, 3482) L1 | Bank booth 6, Gnome banker 4 | no | unreached |
 | [Yanille bank (Yanille)](../places/yanille-bank.md) | `bank:yanille-bank:0` | (2615, 3092) | (2613, 3092) | Bank booth 3, Banker 3 | no | - |
-| [Shilo Village bank (Shilo Village)](../places/shilo-village-bank.md) | `bank:shilo-village-bank:0` | (2852, 2955) | (2852, 2955) | Banker 2 | no | 10 coins + 30 coins + Shilo Village done |
+| [Shilo Village bank (Shilo Village)](../places/shilo-village-bank.md) | `bank:shilo-village-bank:0` | (2852, 2955) | (2852, 2955) | Banker 2 | no | 40 coins + Shilo Village done |
 | [Al Kharid bank (Al Kharid)](../places/al-kharid-bank.md) | `bank:al-kharid-bank:0` | (3268, 3167) | (3269, 3167) | Bank booth 5, Banker 5 | yes | - |
 | [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `bank:duel-arena-bank:0` | (3382, 3269) | (3381, 3268) | Closed chest 2, Fadli 1 | no | - |
 | [Shantay Pass bank chest (Shantay Pass)](../places/shantay-pass-bank-chest.md) | `bank:shantay-pass-bank-chest:0` | (3309, 3120) | (3308, 3120) | Shantay chest 1 | yes | - |

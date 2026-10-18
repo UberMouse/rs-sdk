@@ -9,7 +9,7 @@
 |---|---|---|---|---|---|---|
 | `tree:arandar:0` | (2322, 3274) | [normal](../resources/tree/normal.md) 10 | no | no | - | unreached |
 | `tree:arandar:1` | (2326, 3313) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
-| `tree:arandar:2` | (2345, 3272) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:arandar:2` | (2345, 3272) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
 | `tree:arandar:3` | (2350, 3305) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
 | `tree:arandar:4` | (2351, 3286) | [normal](../resources/tree/normal.md) 2 | no | no | - | Regicide at stage 13 |
 

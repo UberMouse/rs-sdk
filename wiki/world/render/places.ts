@@ -134,7 +134,7 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                             yesNo(s.f2p),
                             yesNo(s.multiway),
                             wilderness(s.wildernessLevel),
-                            requires(s.reach),
+                            requires(s),
                         ]),
                 ),
                 '',

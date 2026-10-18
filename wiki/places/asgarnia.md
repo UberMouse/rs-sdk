@@ -129,7 +129,7 @@
 | `tree:asgarnia:20` | (2925, 3540) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:asgarnia:21` | (2931, 3552) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
 | `tree:asgarnia:22` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:23` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:asgarnia:23` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
 | `tree:asgarnia:24` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
 | `tree:asgarnia:25` | (2996, 3191) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - | - |
 | `tree:asgarnia:26` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |

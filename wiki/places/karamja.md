@@ -8,7 +8,7 @@
 | `shop:karamja:0` | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | no | - | 30 coins |
 | `shop:karamja:1` | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done |
 | `shop:karamja:2` | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | no | - | 30 coins |
-| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - | 10 coins + 30 coins + Shilo Village done |
+| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - | 40 coins + Shilo Village done |
 | `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - | 30 coins |
 | `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - | 30 coins |
 
@@ -69,7 +69,7 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `rock:karamja:0` | (2744, 3151) | [gold](../resources/rock/gold.md) 6 | no | no | - | 30 coins |
-| `rock:karamja:1` | (2822, 2999) | [gems](../resources/rock/gems.md) 5 | no | no | - | 10 coins + 30 coins + Shilo Village done |
+| `rock:karamja:1` | (2822, 2999) | [gems](../resources/rock/gems.md) 5 | no | no | - | 40 coins + Shilo Village done |
 | `rock:karamja:2` | (2848, 3033) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 1, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 1 | no | no | - | 30 coins |
 
 ## Fishing spots
@@ -134,8 +134,8 @@
 | `npc:karamja:37` | (2868, 3158) | Scorpion 2 | yes | no | - | 30 coins |
 | `npc:karamja:38` | (2866, 3061) | Tribesman 1 | no | no | - | 30 coins |
 | `npc:karamja:39` | (2868, 3054) | Tribesman 1 | no | no | - | 30 coins |
-| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - | 10 coins + 30 coins + Shilo Village done |
-| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - | 10 coins + 30 coins + Shilo Village done |
+| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - | 40 coins + Shilo Village done |
+| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - | 40 coins + Shilo Village done |
 | `npc:karamja:42` | (2890, 3001) | Jungle spider 10 | no | no | - | 30 coins |
 | `npc:karamja:43` | (2887, 2914) | Jungle Savage 1 | no | no | - | unreached |
 | `npc:karamja:44` | (2892, 2946) | Jogre 1, Jungle spider 3 | no | no | - | 30 coins |
@@ -173,8 +173,8 @@
 | `connector:karamja:9` | (2808, 3161) L1 | Ladder 1 | down (2808, 3162) by Climb-down | no | no | - | 30 coins |
 | `connector:karamja:10` | (2809, 3065) | Ladder 1 | up (2808, 3065) L1 by Climb-up | no | no | - | 30 coins |
 | `connector:karamja:11` | (2809, 3065) L1 | Ladder 1 | down (2808, 3065) by Climb-down | no | no | - | 30 coins |
-| `connector:karamja:12` | (2824, 2958) | Ladder 1 | up (2824, 2957) L1 by Climb-up | no | no | - | 10 coins + 30 coins + Shilo Village done |
-| `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) by Climb-down | no | no | - | 10 coins + 30 coins + Shilo Village done |
+| `connector:karamja:12` | (2824, 2958) | Ladder 1 | up (2824, 2957) L1 by Climb-up | no | no | - | 40 coins + Shilo Village done |
+| `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) by Climb-down | no | no | - | 40 coins + Shilo Village done |
 | `connector:karamja:14` | (2954, 3141) | Ship's ladder 1 | up (2953, 3141) L1 by Climb-up | yes | no | - | 30 coins |
 | `connector:karamja:15` | (2954, 3141) L1 | Ship's ladder 1 | down (2953, 3141) by Climb-down | yes | no | - | 30 coins |
 | `connector:karamja:16` | (2956, 3144) L1 | Gangplank 1 | down (2956, 3146) by Cross | yes | no | - | 30 coins |

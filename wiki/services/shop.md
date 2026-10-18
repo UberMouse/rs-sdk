@@ -69,11 +69,11 @@
 | [Karamja](../places/karamja.md) | `shop:karamja:0` | (2767, 3122) | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | 30 coins |
 | [Karamja](../places/karamja.md) | `shop:karamja:1` | (2781, 3057) | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | 30 coins + Tai Bwo Wannai Trio done |
 | [Karamja](../places/karamja.md) | `shop:karamja:2` | (2803, 3152) | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | 30 coins |
-| [Karamja](../places/karamja.md) | `shop:karamja:3` | (2824, 2959) | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | 10 coins + 30 coins + Shilo Village done |
+| [Karamja](../places/karamja.md) | `shop:karamja:3` | (2824, 2959) | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | 40 coins + Shilo Village done |
 | [Karamja](../places/karamja.md) | `shop:karamja:4` | (2902, 3148) | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | 30 coins |
 | [Karamja](../places/karamja.md) | `shop:karamja:5` | (2925, 3143) | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | 30 coins |
 | [Brimhaven (Karamja)](../places/brimhaven.md) | `shop:brimhaven:0` | (2793, 3188) | (2793, 3188) | The Shrimp and Parrot (karamja_fishrestaurant) 1 | no | 30 coins |
-| [Shilo Village (Karamja)](../places/shilo-village.md) | `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no | 10 coins + 30 coins + Shilo Village done |
+| [Shilo Village (Karamja)](../places/shilo-village.md) | `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no | 40 coins + Shilo Village done |
 | [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | `shop:tai-bwo-wannai:0` | (2800, 3057) | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | 30 coins + Tai Bwo Wannai Trio done |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:0` | (3288, 3190) | (3288, 3190) | Zeke's Superior Scimitars. (scimitarshop) 1 | yes | - |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:1` | (3288, 3212) | (3288, 3212) | Gem Trader. (gemshop2) 1 | yes | - |

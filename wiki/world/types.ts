@@ -80,8 +80,9 @@ export interface Site {
     multiway: boolean;
     wildernessLevel: number;
     /**
-     * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to the stand
-     * tile (reach.ts), canonical and sorted: `[[]]` with none, `[]` when no set gets there or there is no stand.
+     * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to this site's
+     * chosen stand tile (reach.ts), and to no other tile of it: `[[]]` with none, `[]` when no set gets there or
+     * there is no stand.
      */
     reach: string[][];
 }
@@ -102,8 +103,9 @@ export interface NpcSpawn {
     f2p: boolean;
     /**
      * The minimal requirement sets a walk from the Lumbridge spawn needs to get beside the cluster (reach.ts): the
-     * minimal ones among the sets that reach any tile of its bbox grown by one, the tiles place.ts takes an npc
-     * site's stand from; `[]` when none is reached.
+     * cheapest over the tiles its npcs are used from (place.ts besideCluster: its bbox, and the tiles round it
+     * that step onto it or the engine's entity reach test passes from), not one tile's; `[]` when none of them is
+     * reached.
      */
     reach: string[][];
 }

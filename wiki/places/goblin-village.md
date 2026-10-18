@@ -13,7 +13,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:goblin-village:0` | (2951, 3513) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:goblin-village:0` | (2951, 3513) | [normal](../resources/tree/normal.md) 1 | yes | no | - | no stand |
 | `tree:goblin-village:1` | (2953, 3499) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
 | `tree:goblin-village:2` | (2969, 3505) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
 

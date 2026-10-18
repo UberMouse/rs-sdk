@@ -34,11 +34,11 @@ The options of each spot config placed in the world (its npc config).
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:5` | (2564, 3372) | (2563, 3372) | 2 | no | no | - | - |
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2716, 3531) | (2716, 3531) | 4 | no | no | - | - |
 | [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | (2386, 3406) | 7 | no | no | - | - |
-| [Shilo Village (Karamja)](../../places/shilo-village.md) | `fishing-spot:shilo-village:0` | (2855, 2974) | (2855, 2972) | 3 | no | no | - | 10 coins + 30 coins + Shilo Village done |
+| [Shilo Village (Karamja)](../../places/shilo-village.md) | `fishing-spot:shilo-village:0` | (2855, 2974) | (2855, 2972) | 3 | no | no | - | 40 coins + Shilo Village done |
 | [Barbarian Village fishing (Barbarian Village)](../../places/barbarian-village-fishing.md) | `fishing-spot:barbarian-village-fishing:0` | (3104, 3424) | (3103, 3424) | 1 | yes | yes | - | - |
 | [Barbarian Village fishing (Barbarian Village)](../../places/barbarian-village-fishing.md) | `fishing-spot:barbarian-village-fishing:1` | (3110, 3434) | (3109, 3434) | 1 | yes | yes | - | - |
 | [Lumbridge (Misthalin)](../../places/lumbridge.md) | `fishing-spot:lumbridge:0` | (3238, 3252) | (3239, 3252) | 2 | yes | no | - | - |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:2` | (2212, 3235) | (2210, 3238) | 2 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:3` | (2215, 3248) | (2215, 3249) | 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:4` | (2225, 3243) | (2226, 3243) | 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:5` | (2272, 3249) | (2271, 3249) | 5 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:2` | (2212, 3235) | (2210, 3238) | 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:3` | (2215, 3248) | (2215, 3249) | 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:4` | (2225, 3243) | (2226, 3243) | 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:5` | (2272, 3249) | (2271, 3249) | 5 | no | no | - | Regicide at stage 13 + 56 Agility |

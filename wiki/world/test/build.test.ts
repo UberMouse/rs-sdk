@@ -14,7 +14,7 @@ import {
     type Unreached,
 } from '../build';
 import { loadWorld } from '../load';
-import type { Placed } from '../place';
+import { besideCluster, grownBox, type Placed, type StepCollision } from '../place';
 import { WORLD_FORMAT, type Feature, type NpcSpawn, type Site, type Tile, type World } from '../types';
 
 const tree = (x: number, z: number, config = 'tree'): Feature => ({
@@ -574,6 +574,13 @@ const unreachedRow = (id: string, areaPath: string[], from: Tile, nearest: Tile 
     nearest,
 });
 
+/** With no walls about, every tile of a cluster's bbox grown by one is beside it. */
+const open = (c: Placed<NpcSpawn>): Tile[] => grownBox(c.bbox, c.centre.level);
+/** Whether two tiles share an edge. */
+const edge = (a: Tile, b: Tile): boolean => Math.abs(a.x - b.x) + Math.abs(a.z - b.z) === 1;
+/** A wall between x 30 and 31: whether a move from `from` to column `x` crosses it westward. */
+const across31 = (from: Tile, x: number): boolean => from.x === 31 && x === 30;
+
 describe('reach on sites and npc spawn clusters', () => {
     /** A fill that reaches (0..9, 0..9) on level 0 with no requirement, (20, 0) with 40 Mining, nothing else. */
     const sets = new Map<string, string[][]>([[key(tile(20, 0)), [['skill:mining:40']]]]);
@@ -621,6 +628,7 @@ describe('reach on sites and npc spawn clusters', () => {
                 npcSpawns: [],
             },
             fake,
+            open,
         );
         expect(sites.map(s => [s.id, s.reach])).toEqual([
             ['bank:town:0', [[]]],
@@ -630,14 +638,39 @@ describe('reach on sites and npc spawn clusters', () => {
         ]);
     });
 
-    test("an npc cluster's reach is the cheapest over its bbox grown by one, not its nearest tile's", () => {
+    test("an npc cluster's reach is the cheapest over the tiles beside it, not its nearest tile's", () => {
         // Spawns at x 11-21: the tile beside x 11 (x 10) is not reached, but x 9 is not beside it either; x 20
         // is, with 40 Mining. A cluster at x 10-20 has x 9 beside it, reached free.
         const { npcSpawns } = addReach(
             { sites: [], npcSpawns: [cluster(11, 21), cluster(10, 20), cluster(40, 41)] },
             fake,
+            open,
         );
         expect(npcSpawns.map(c => c.reach)).toEqual([[['skill:mining:40']], [[]], []]);
+    });
+
+    test('a cluster behind a wall keeps [] though the tile across the wall is reached', () => {
+        // A goblin at (30, 5); (31, 5), east of it across a wall, is the one tile the walk gets to.
+        const across = tile(31, 5);
+        const only = {
+            setsAt: () => [],
+            setsAny: (ts: readonly Tile[]) => (ts.some(t => key(t) === key(across)) ? [[]] : []),
+            reached: () => false,
+        };
+        // The engine's entity test: from a tile sharing an edge with the npc, but not through the wall.
+        const walled: StepCollision = {
+            walkable: () => true,
+            reached: (from, npc) => edge(from, npc) && !across31(from, npc.x),
+            canStep: (_l, x, z, dx, _dz) => !across31({ level: 0, x, z }, x + dx),
+        };
+        const goblin = { ...cluster(30, 30), centre: tile(30, 5), bbox: { x1: 30, z1: 5, x2: 30, z2: 5, level: 0 } };
+        const reachBeside = (collision: StepCollision) =>
+            addReach({ sites: [], npcSpawns: [goblin] }, only, c => besideCluster(c, collision)).npcSpawns[0]!.reach;
+        expect(besideCluster(goblin, walled)).not.toContainEqual(across);
+        expect(reachBeside(walled)).toEqual([]);
+        // With no wall, the same tile is beside the goblin: the entity test passes, or the step does.
+        expect(reachBeside({ ...walled, reached: edge })).toEqual([[]]);
+        expect(reachBeside({ ...walled, canStep: () => true })).toEqual([[]]);
     });
 
     test('lists the covered sites no set reaches, by area path then id, with the nearest reached tile', () => {
@@ -654,6 +687,7 @@ describe('reach on sites and npc spawn clusters', () => {
                 npcSpawns: [],
             },
             fake,
+            open,
         );
         expect(unreached).toEqual([
             { id: 'bank:town:0', kind: 'bank', areaPath: ['town'], at: tile(200, 200), stand: false, nearest: null },

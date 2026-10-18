@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:isafdar:0` | (2241, 3185) | [normal](../resources/tree/normal.md) 112 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:isafdar:0` | (2241, 3185) | [normal](../resources/tree/normal.md) 112 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 

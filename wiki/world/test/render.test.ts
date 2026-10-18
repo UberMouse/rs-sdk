@@ -214,7 +214,7 @@ describe('renderWorld', () => {
 
           | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
           |---|---|---|---|---|---|---|---|
-          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 by Climb or Climb-up | yes | no | - | - |
+          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 by Climb or Climb-up | yes | no | - | no stand |
 
           ## Areas within
 
@@ -836,21 +836,8 @@ describe('writeFiles and drift', () => {
 });
 
 describe('reachLabel', () => {
-    const label = reachLabel(
+    const cell = reachLabel(
         {
-            quests: [
-                { id: 'zanaris', varp: 'zanaris', varpId: 147, complete: 6, stages: {}, source: 'q.rs2:1' },
-                { id: 'priestperil', varp: 'priestperil', varpId: 302, complete: 60, stages: {}, source: 'q.rs2:2' },
-                {
-                    id: 'phoenix',
-                    varp: 'blackarmgang',
-                    varpId: 145,
-                    complete: 4,
-                    or: [{ varp: 'phoenixgang', varpId: 146, complete: 10 }],
-                    stages: {},
-                    source: 'q.rs2:3',
-                },
-            ],
             loadoutRules: {
                 entrana: { forbidCategories: { weapon_axe: 'both', armour_body: 'both' }, source: 'm.rs2:26' },
                 mage_arena: { forbidCategories: { armour_body: 'both', arrows: 'both' }, source: 'm.rs2:100' },
@@ -858,21 +845,20 @@ describe('reachLabel', () => {
         },
         {
             ...data,
-            questNames: new Map([
-                ['zanaris', 'Lost City'],
-                ['priestperil', 'Priest in Peril'],
-            ]),
+            questNames: new Map([['zanaris', 'Lost City']]),
             objConfigs: new Map([
                 ['dramen_staff', { name: ['Dramen staff'] }],
                 ['shantay_pass', { name: ['Shantay pass'] }],
             ]),
         },
     );
+    /** A site's cell, the site standing somewhere. */
+    const label = (reach: string[][]): string => cell({ reach, stand: { level: 0, x: 1, z: 1 } });
 
-    test('`-` for no requirement, `unreached` for no set, else the sets joined with or', () => {
+    test('`-` for no requirement, `unreached` for no set, `no stand` with no stand, else the sets joined with or', () => {
         expect(label([[]])).toBe('-');
-        expect(label([[], ['coins:10']])).toBe('-');
         expect(label([])).toBe('unreached');
+        expect(cell({ reach: [], stand: null })).toBe('no stand');
         expect(label([['coins:10'], ['quest:zanaris', 'skill:mining:60']])).toBe(
             '10 coins or Lost City done + 60 Mining',
         );
@@ -910,19 +896,6 @@ describe('reachLabel', () => {
             'no armour (Mage arena rule)',
             'the bridge mended',
         ]);
-    });
-
-    test("of a quest's stages only the highest shows, and none at or below complete beside the quest itself", () => {
-        expect(label([['quest:priestperil>=5', 'quest:priestperil>=61', 'quest:priestperil>=8']])).toBe(
-            'Priest in Peril at stage 61',
-        );
-        expect(label([['quest:priestperil', 'quest:priestperil>=5']])).toBe('Priest in Peril done');
-        // A stage above complete is a step after it (requirements.ts), so it stays.
-        expect(label([['quest:priestperil', 'quest:priestperil>=61']])).toBe(
-            'Priest in Peril done + Priest in Peril at stage 61',
-        );
-        // A quest done by another varp too: the stage reads the first varp, which completion may not have set.
-        expect(label([['quest:phoenix', 'quest:phoenix>=3']])).toBe('phoenix done + phoenix at stage 3');
     });
 });
 

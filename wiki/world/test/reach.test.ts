@@ -375,6 +375,17 @@ describe('connectors', () => {
     });
 });
 
+/** The sealed room's west door, then a door into its middle tile alone: a route through both. */
+const twoDoors = (outer: string[][], inner: string[][], quests?: ReachInput['world']['quests']) =>
+    fill(sealed().room(3221, 3221, 3221, 3221), {
+        gates: [westDoor(3220, outer), gate({ tile: at(0, 3221, 3221), requires: inner })],
+        quests,
+    }).setsAt(INNER);
+
+/** The sealed room through doors in its west wall, each at a z with its requirement sets. */
+const into = (...doors: [number, string[][]][]) =>
+    fill(sealed(), { gates: doors.map(([z, r]) => westDoor(z, r)) }).setsAt(INNER);
+
 describe('requirement sets', () => {
     test('two gates with overlapping requirements: the superset is dropped, an incomparable set kept', () => {
         const reach = fill(sealed(), {
@@ -418,6 +429,35 @@ describe('requirement sets', () => {
         ]);
     });
 
+    test("along a route a quest's stages merge to the highest, and completion to `quest:<id>`", () => {
+        expect(twoDoors([['quest:a>=3']], [['quest:a>=5']])).toEqual([['quest:a>=5']]);
+        const quests = [{ id: 'a', varp: 'a', varpId: 1, complete: 5, stages: {}, source: 'a.rs2:1' }];
+        expect(twoDoors([['quest:a>=3']], [['quest:a>=5']], quests)).toEqual([['quest:a']]);
+        expect(twoDoors([['quest:a']], [['quest:a>=3']], quests)).toEqual([['quest:a']]);
+        // A stage past complete (a step after the quest) meets completion too.
+        expect(twoDoors([['quest:a']], [['quest:a>=7']], quests)).toEqual([['quest:a>=7']]);
+        expect(twoDoors([['skill:agility:5']], [['skill:agility:15']])).toEqual([['skill:agility:15']]);
+    });
+
+    test('along a route the coins of every crossing add up, the same toll twice included', () => {
+        expect(twoDoors([['coins:10']], [['coins:30']])).toEqual([['coins:40']]);
+        expect(twoDoors([['coins:10']], [['coins:10']])).toEqual([['coins:20']]);
+    });
+
+    test('across two routes a set another dominates is dropped: a lower stage, level or total wins', () => {
+        expect(into([3220, [['quest:a>=8']]], [3222, [['quest:a>=3']]])).toEqual([['quest:a>=3']]);
+        expect(into([3220, [['skill:agility:30']]], [3222, [['skill:agility:10']]])).toEqual([['skill:agility:10']]);
+        expect(into([3220, [['coins:30']]], [3222, [['coins:10']]])).toEqual([['coins:10']]);
+        // A larger total asking nothing else is still dominated; one asking less elsewhere is kept beside it.
+        expect(into([3220, [['coins:30', 'quest:a']]], [3222, [['coins:10', 'quest:a']]])).toEqual([
+            ['coins:10', 'quest:a'],
+        ]);
+        expect(into([3220, [['coins:30']]], [3222, [['coins:10', 'quest:a']]])).toEqual([
+            ['coins:30'],
+            ['coins:10', 'quest:a'],
+        ]);
+    });
+
     test('requirements add up along a route', () => {
         const inner = sealed().room(3221, 3221, 3221, 3221);
         const reach = fill(inner, {
@@ -427,7 +467,7 @@ describe('requirement sets', () => {
     });
 
     test('a tile keeps at most maxSets minimal sets, and the tiles that would hold more are reported', () => {
-        const gates = [westDoor(3220, [['coins:1']]), westDoor(3221, [['coins:2']]), westDoor(3222, [['coins:3']])];
+        const gates = [westDoor(3220, [['quest:a']]), westDoor(3221, [['quest:b']]), westDoor(3222, [['quest:c']])];
         const reach = fill(sealed(), { gates }, { maxSets: 2 });
         expect(reach.setsAt(INNER)).toHaveLength(2);
         expect(reach.report.bound.tiles).toBeGreaterThan(0);

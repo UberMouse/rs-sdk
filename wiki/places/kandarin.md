@@ -306,7 +306,7 @@
 | `npc:kandarin:69` | (2589, 3193) | Khazard Guard (arena_guard4) 1 | no | no | - | - |
 | `npc:kandarin:70` | (2593, 3139) | Khazard Guard (arena_guard1) 2 | no | no | - | - |
 | `npc:kandarin:71` | (2594, 3181) | Khazard Guard (arena_guard4) 6 | no | no | - | - |
-| `npc:kandarin:72` | (2598, 3442) | Duck (duck) 7, Duck (duck_female) 18 | no | no | - | unreached |
+| `npc:kandarin:72` | (2598, 3442) | Duck (duck) 7, Duck (duck_female) 18 | no | no | - | no stand |
 | `npc:kandarin:73` | (2594, 3474) | Giant bat 1 | no | no | - | - |
 | `npc:kandarin:74` | (2595, 3131) | Imp 1 | no | no | - | - |
 | `npc:kandarin:75` | (2597, 3120) | Imp 1 | no | no | - | - |
@@ -319,14 +319,14 @@
 | `npc:kandarin:82` | (2610, 3193) | Khazard Guard (arena_guard3) 1 | no | no | - | - |
 | `npc:kandarin:83` | (2613, 3477) | Rat 2 | no | no | - | - |
 | `npc:kandarin:84` | (2614, 3116) | Imp 1 | no | no | - | - |
-| `npc:kandarin:85` | (2618, 3448) | Duck (duck) 5, Duck (duck_female) 7 | no | no | - | unreached |
+| `npc:kandarin:85` | (2618, 3448) | Duck (duck) 5, Duck (duck_female) 7 | no | no | - | no stand |
 | `npc:kandarin:86` | (2615, 3141) | Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
 | `npc:kandarin:87` | (2616, 3126) | Imp 1 | no | no | - | - |
 | `npc:kandarin:88` | (2617, 3168) | Khazard Guard (arena_guard1) 2 | no | no | - | unreached |
 | `npc:kandarin:89` | (2618, 3159) | Khazard Guard (arena_guard1) 1 | no | no | - | unreached |
 | `npc:kandarin:90` | (2621, 3133) | Imp 1 | no | no | - | - |
 | `npc:kandarin:91` | (2622, 3395) | Goblin (goblin) 1, Goblin (goblin_armed) 2 | no | no | - | - |
-| `npc:kandarin:92` | (2621, 3408) | Duck (duck_female) 2 | no | no | - | unreached |
+| `npc:kandarin:92` | (2621, 3408) | Duck (duck_female) 2 | no | no | - | no stand |
 | `npc:kandarin:93` | (2622, 3118) | Imp 1 | no | no | - | - |
 | `npc:kandarin:94` | (2625, 3203) | Imp 1 | no | no | - | - |
 | `npc:kandarin:95` | (2625, 3217) | Imp 1 | no | no | - | - |
@@ -336,8 +336,8 @@
 | `npc:kandarin:99` | (2633, 3222) | Imp 1 | no | no | - | - |
 | `npc:kandarin:100` | (2633, 3243) | Imp 1 | no | no | - | - |
 | `npc:kandarin:101` | (2639, 3230) | Imp 1 | no | no | - | - |
-| `npc:kandarin:102` | (2656, 3720) | Hobgoblin 1 | no | yes | - | unreached |
-| `npc:kandarin:103` | (2659, 3729) | Hobgoblin 2 | no | yes | - | unreached |
+| `npc:kandarin:102` | (2656, 3720) | Hobgoblin 1 | no | yes | - | no stand |
+| `npc:kandarin:103` | (2659, 3729) | Hobgoblin 2 | no | yes | - | no stand |
 | `npc:kandarin:104` | (2666, 3351) | Cow 5 | no | no | - | - |
 | `npc:kandarin:105` | (2676, 3090) | Jungle spider 18 | no | no | - | - |
 | `npc:kandarin:106` | (2672, 3728) | Hobgoblin 2 | no | yes | - | - |

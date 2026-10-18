@@ -26,5 +26,5 @@ The options of each spot config placed in the world (its npc config).
 | [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:8` | (2841, 3430) | (2842, 3432) | 1 | no | no | - | - |
 | [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | 6 | no | no | - | 68 Fishing |
 | [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2647, 3710) | 4 | no | no | - | - |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3267) | (2166, 3267) | 2 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:1` | (2165, 3286) | (2166, 3286) | 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3267) | (2166, 3267) | 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:1` | (2165, 3286) | (2166, 3286) | 1 | no | no | - | Regicide at stage 13 + 56 Agility |

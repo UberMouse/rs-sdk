@@ -55,7 +55,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:14` | (3248, 3472) | (3247, 3472) | 1 | yes | no | - | - |
 | [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:17` | (3278, 3482) | (3278, 3482) | 2 | yes | no | - | - |
 | [Regicide camp](../../places/regicide-camp.md) | `tree:regicide-camp:0` | (2341, 4575) | (2339, 4573) | 4 | no | no | - | unreached |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2209, 3204) | 4 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2209, 3204) | 4 | no | no | - | Regicide at stage 13 + 56 Agility |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:6` | (3193, 9584) | (3193, 9585) | 1 | no | no | - | wear Dramen staff |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:9` | (3233, 9546) | (3232, 9546) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |
 | [Zanaris](../../places/zanaris.md) | `tree:zanaris:10` | (3238, 9570) | (3238, 9570) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff |

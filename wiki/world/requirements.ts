@@ -1,6 +1,7 @@
 // What a way through the world needs: a gate's condition, a transport's fare, a quest. A requirement has
 // a canonical string form, which world.json writes; a set of them is written sorted and each once
-// (requirementSet), so two sets compare as string lists:
+// (requirementSet), with the requirements another of the set implies merged away (canonicalSet), and one set
+// asks no more than another when each of its requirements is implied by one of the other's (dominates):
 //
 //   quest:<id>             the quest is done: its varp >= complete (World.quests)
 //   quest:<id>>=<stage>    the quest's varp has reached <stage>: a stage below complete opens part-way
@@ -12,7 +13,8 @@
 //                          wearing, or carrying, any obj of an obj-config category: an `inv_totalcat`
 //                          check, or a tool-checker proc's objs (`~pickaxe_checker` returns a weapon_pickaxe)
 //   questpoints:<n>        at least n quest points (`%qp >= n`, the Champions' Guild door)
-//   coins:<n>              n coins taken per crossing (a toll, a fare)
+//   coins:<n>              n coins taken per crossing (a toll, a fare); in a set, the coins of every crossing
+//                          on the way summed, as each spends its own
 //   consume:<obj>:<n>      n of the obj taken per crossing (a Shantay pass, a ship ticket)
 //   members                a members world
 //   loadout:<id>           carrying none of a loadout rule's categories (World.loadoutRules)
@@ -118,22 +120,129 @@ export function requirementSet(rs: readonly (Requirement | string)[]): string[] 
     return [...new Set(strings)].sort(cmp);
 }
 
-/** Whether set `a` asks for no more than set `b` (both canonical, as requirementSet gives them). */
+/** Whether every string of `a` is in `b`. */
 export const subsetOf = (a: readonly string[], b: readonly string[]): boolean => a.every(x => b.includes(x));
 
 /**
- * The minimal sets among `sets`: each canonical (requirementSet), each once, without any set that
- * another one asks less than (a strict superset of another is dropped). Sorted by size, then by the
- * strings, so the result is deterministic.
+ * What a set's canonical form needs to know of a quest (World.quests): the progress it is done at, and
+ * whether another varp shows it done too (Quest.or), so that `quest:<id>` does not imply a stage of its varp.
  */
-export function minimalSets(sets: readonly (readonly (Requirement | string)[])[]): string[][] {
+export type QuestFacts = ReadonlyMap<string, { complete: number; or: boolean }>;
+
+export const questFacts = (quests: readonly { id: string; complete: number; or?: readonly unknown[] }[]): QuestFacts =>
+    new Map(quests.map(q => [q.id, { complete: q.complete, or: (q.or?.length ?? 0) > 0 }]));
+
+/**
+ * A set with the requirements another of it implies merged away, as world.json writes it (requirementSet's
+ * order): of a quest's stages the highest, of a skill's levels, the quest points and an obj's consume the
+ * largest, the coins summed (each crossing on the way takes its own). With `quests`, a stage at or below
+ * complete beside `quest:<id>` goes, as completion meets it, and `quest:<id>` beside a stage at or above
+ * complete, as the stage meets it. A quest done by another varp too (QuestFacts.or) keeps a stage below
+ * complete beside `quest:<id>`, which the other varp may meet instead; for any other, `quest:<id>>=<complete>`
+ * is `quest:<id>`.
+ */
+export function canonicalSet(rs: readonly (Requirement | string)[], quests?: QuestFacts): string[] {
+    const parsed = rs.map(r => (typeof r === 'string' ? parseRequirement(r) : r));
+    let coins = 0;
+    const most = new Map<string, Requirement>();
+    const keepMost = (key: string, r: Requirement, n: number, of: (x: Requirement) => number): void => {
+        const had = most.get(key);
+        if (!had || n > of(had)) most.set(key, r);
+    };
+    const done = new Set<string>();
+    const stage = new Map<string, number>();
+    const rest: Requirement[] = [];
+    for (const r of parsed)
+        switch (r.kind) {
+            case 'coins':
+                coins += r.n;
+                break;
+            case 'skill':
+                keepMost(`skill:${r.skill}`, r, r.level, x => (x.kind === 'skill' ? x.level : 0));
+                break;
+            case 'questpoints':
+                keepMost('questpoints', r, r.n, x => (x.kind === 'questpoints' ? x.n : 0));
+                break;
+            case 'consume':
+                keepMost(`consume:${r.obj}`, r, r.n, x => (x.kind === 'consume' ? x.n : 0));
+                break;
+            case 'quest':
+                if (r.stage === undefined) done.add(r.quest);
+                else stage.set(r.quest, Math.max(stage.get(r.quest) ?? 0, r.stage));
+                break;
+            default:
+                rest.push(r);
+        }
+    const out: Requirement[] = [...rest, ...most.values()];
+    if (coins > 0) out.push({ kind: 'coins', n: coins });
+    for (const id of new Set([...done, ...stage.keys()])) {
+        const facts = quests?.get(id);
+        let [isDone, at] = [done.has(id), stage.get(id)];
+        if (facts && at !== undefined) {
+            if (!facts.or && at === facts.complete) [isDone, at] = [true, undefined];
+            else if (isDone && !facts.or && at < facts.complete) at = undefined;
+            else if (at >= facts.complete) isDone = false;
+        }
+        if (isDone) out.push({ kind: 'quest', quest: id });
+        if (at !== undefined) out.push({ kind: 'quest', quest: id, stage: at });
+    }
+    return requirementSet(out);
+}
+
+/** Whether requirement `b` is met whenever `a` is (canonical strings; `quests` as canonicalSet takes them). */
+function implies(a: Requirement, b: Requirement, quests?: QuestFacts): boolean {
+    switch (b.kind) {
+        case 'quest': {
+            if (a.kind !== 'quest' || a.quest !== b.quest) return false;
+            const facts = quests?.get(b.quest);
+            if (b.stage === undefined)
+                return a.stage === undefined || (facts !== undefined && a.stage >= facts.complete);
+            if (a.stage !== undefined) return a.stage >= b.stage;
+            return facts !== undefined && !facts.or && b.stage <= facts.complete;
+        }
+        case 'skill':
+            return a.kind === 'skill' && a.skill === b.skill && a.level >= b.level;
+        case 'questpoints':
+            return a.kind === 'questpoints' && a.n >= b.n;
+        case 'coins':
+            return a.kind === 'coins' && a.n >= b.n;
+        case 'consume':
+            return a.kind === 'consume' && a.obj === b.obj && a.n >= b.n;
+        default:
+            return formatRequirement(a) === formatRequirement(b);
+    }
+}
+
+/**
+ * Whether set `a` asks for no more than set `b` (both canonical): each requirement of `a` is implied by one of
+ * `b`'s (the same quest at a stage as high or done, the same skill as high, as many coins or more, an
+ * identical requirement).
+ */
+export function dominates(a: readonly string[], b: readonly string[], quests?: QuestFacts): boolean {
+    const bs = b.map(parseRequirement);
+    return a.every(x => {
+        const r = parseRequirement(x);
+        return bs.some(y => implies(y, r, quests));
+    });
+}
+
+/** Sets by size, then by their strings. */
+const bySizeThenStrings = (a: readonly string[], b: readonly string[]): number =>
+    a.length - b.length || cmp(a.join('\n'), b.join('\n'));
+
+/**
+ * The minimal sets among `sets`: each canonical (canonicalSet), each once, without any set another dominates.
+ * Sorted by size, then by the strings, so the result is deterministic.
+ */
+export function minimalSets(sets: readonly (readonly (Requirement | string)[])[], quests?: QuestFacts): string[][] {
     const unique = new Map<string, string[]>();
     for (const s of sets) {
-        const set = requirementSet(s);
+        const set = canonicalSet(s, quests);
         unique.set(set.join('\n'), set);
     }
-    const all = [...unique.values()];
-    return all
-        .filter(s => !all.some(o => o !== s && o.length < s.length && subsetOf(o, s)))
-        .sort((a, b) => a.length - b.length || cmp(a.join('\n'), b.join('\n')));
+    const all = [...unique.values()].sort(bySizeThenStrings);
+    // Two canonical sets that dominate each other keep the first in that order.
+    return all.filter(
+        (s, i) => !all.some((o, j) => j !== i && dominates(o, s, quests) && (j < i || !dominates(s, o, quests))),
+    );
 }

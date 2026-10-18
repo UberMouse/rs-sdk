@@ -110,7 +110,7 @@ The world index's walk from the Lumbridge spawn does not get in (build.ts unreac
 | `npc:tree-gnome-stronghold:10` | (2415, 3473) L3 | Gnome guard (gnomekingsguard) 2, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | unreached |
 | `npc:tree-gnome-stronghold:11` | (2413, 3397) | Mounted terrorbird gnome 1 | no | no | - | - |
 | `npc:tree-gnome-stronghold:12` | (2421, 3410) | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1, Mounted terrorbird gnome 1 | no | no | - | unreached |
-| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | Gnome troop (gnomeknight) 1 | no | no | - | unreached |
+| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | Gnome troop (gnomeknight) 1 | no | no | - | no stand |
 | `npc:tree-gnome-stronghold:14` | (2418, 3466) L1 | Gnome guard (gnomekingsguard) 2 | no | no | - | unreached |
 | `npc:tree-gnome-stronghold:15` | (2420, 3435) | Gnome guard (gnomekingsguard2) 1 | no | no | - | unreached |
 | `npc:tree-gnome-stronghold:16` | (2420, 3447) | Gnome guard (gnomekingsguard2) 1 | no | no | - | unreached |

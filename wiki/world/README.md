@@ -26,7 +26,8 @@ A site is a cluster of same-kind features (locs or npc spawns) in one area: its 
 A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to get to its stand tile
 (`wiki/world/reach.ts`): its minimal requirement sets (`wiki/world/requirements.ts`), `[[]]` for none and
 `[]` when no walk gets there. The pages show it in a Requires column: `-` for none, the sets joined with
-"or", or `unreached`; so a `-` row on a service or resource page is one a fresh account can walk to.
+"or", `unreached`, or `no stand` for a site with no stand tile; so a `-` row on a service or resource
+page is one a fresh account can walk to.
 `bun run world` lists the sites of covered kinds that read unreached, by area, as the curation to-do
 list; an area's notes say why one is left so.
 

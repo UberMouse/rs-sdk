@@ -26,6 +26,8 @@ const withoutConnectors = (...locs: Tile[]): World => ({
         c => !locs.some(l => l.x === c.loc.x && l.z === c.loc.z && l.level === c.loc.level),
     ),
 });
+/** Whether an area note explains a site the unreached report lists: it says so, and cites a script line. */
+const explains = (note: string): boolean => note.includes('unreached report') && /\.rs2:\d+/.test(note);
 const gateAt = (trigger: string, tile: Tile) =>
     world.gates.find(
         g => g.trigger === trigger && g.tile.x === tile.x && g.tile.z === tile.z && g.tile.level === tile.level,
@@ -163,11 +165,11 @@ describe("world.json's reach on sites", () => {
         expect(reach.setsAt(s.stand!)).toEqual([[]]);
     });
 
-    test('each unreached bank and shop is explained in a note of its area or an ancestor (areas.ts)', () => {
+    test('each unreached bank and shop is explained, citing a script line, in a note of its area or an ancestor', () => {
         const notes = new Map(world.areas.map(a => [a.id, a.notes ?? '']));
         const unexplained = world.sites
             .filter(s => (s.kind === 'bank' || s.kind === 'shop') && !s.reach.length)
-            .filter(s => !s.areaPath.some(id => notes.get(id)!.includes('unreached report')))
+            .filter(s => !s.areaPath.some(id => explains(notes.get(id)!)))
             .map(s => s.id);
         expect(unexplained).toEqual([]);
     });

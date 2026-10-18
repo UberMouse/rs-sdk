@@ -95,10 +95,10 @@
 | `npc:lumbridge:6` | (3217, 3226) | Imp 1 | yes | no | - | - |
 | `npc:lumbridge:7` | (3222, 3215) | Rat 1 | yes | no | - | - |
 | `npc:lumbridge:8` | (3231, 3226) | Rat 2 | yes | no | - | - |
-| `npc:lumbridge:9` | (3235, 3259) | Duck (duck) 1 | yes | no | - | unreached |
+| `npc:lumbridge:9` | (3235, 3259) | Duck (duck) 1 | yes | no | - | no stand |
 | `npc:lumbridge:10` | (3236, 3222) | Rat 1 | yes | no | - | - |
 | `npc:lumbridge:11` | (3250, 3239) | Cow 3, Duck (duck) 5, Duck (duck_female) 3, Giant spider 2, Goblin (goblin) 21 | yes | no | - | - |
-| `npc:lumbridge:12` | (3248, 3221) | Duck (duck) 2 | yes | no | - | unreached |
+| `npc:lumbridge:12` | (3248, 3221) | Duck (duck) 2 | yes | no | - | no stand |
 
 ## Ladders and stairs
 

@@ -48,7 +48,7 @@ export function renderServices(world: World, data: PageData): Page[] {
                         s.stand ? coord(s.stand) : '-',
                         held[i]!.map(p => `${label(kind, p)} ${p.n}`).join(', '),
                         yesNo(s.f2p),
-                        requires(s.reach),
+                        requires(s),
                     ]),
                 ),
                 '',

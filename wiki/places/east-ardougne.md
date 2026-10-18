@@ -39,7 +39,7 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `pottery-wheel:east-ardougne:0` | (2587, 3327) | Potter's Wheel 2 | no | no | - | - |
-| `pottery-wheel:east-ardougne:1` | (2595, 3323) | Potter's Wheel 2 | no | no | - | unreached |
+| `pottery-wheel:east-ardougne:1` | (2595, 3323) | Potter's Wheel 2 | no | no | - | no stand |
 
 ## [Pottery ovens](../services/pottery-oven.md)
 

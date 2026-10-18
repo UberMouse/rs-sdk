@@ -19,14 +19,14 @@ The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:tirannwn:0` | (2197, 3175) | [normal](../resources/tree/normal.md) 282, [yew](../resources/tree/yew.md) 4 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:tirannwn:0` | (2197, 3175) | [normal](../resources/tree/normal.md) 282, [yew](../resources/tree/yew.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `tree:tirannwn:1` | (2166, 3091) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:2` | (2176, 3276) | [normal](../resources/tree/normal.md) 19 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:tirannwn:2` | (2176, 3276) | [normal](../resources/tree/normal.md) 19 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `tree:tirannwn:3` | (2208, 3285) | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
-| `tree:tirannwn:4` | (2229, 3257) | [normal](../resources/tree/normal.md) 40 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:tirannwn:4` | (2229, 3257) | [normal](../resources/tree/normal.md) 40 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `tree:tirannwn:5` | (2226, 3284) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
 | `tree:tirannwn:6` | (2238, 3283) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:7` | (2285, 3206) | [magic](../resources/tree/magic.md) 3, [normal](../resources/tree/normal.md) 302 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:tirannwn:7` | (2285, 3206) | [magic](../resources/tree/magic.md) 3, [normal](../resources/tree/normal.md) 302 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `tree:tirannwn:8` | (2247, 3281) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 | `tree:tirannwn:9` | (2266, 3284) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
 | `tree:tirannwn:10` | (2269, 3371) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
@@ -70,31 +70,31 @@ The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fishing-spot:tirannwn:0` | (2165, 3267) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fishing-spot:tirannwn:1` | (2165, 3286) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fishing-spot:tirannwn:2` | (2212, 3235) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fishing-spot:tirannwn:3` | (2215, 3248) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fishing-spot:tirannwn:4` | (2225, 3243) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fishing-spot:tirannwn:5` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `fishing-spot:tirannwn:0` | (2165, 3267) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:1` | (2165, 3286) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:2` | (2212, 3235) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:3` | (2215, 3248) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:4` | (2225, 3243) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:5` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:tirannwn:0` | (2185, 3279) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 6 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `npc:tirannwn:1` | (2189, 3223) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:tirannwn:0` | (2185, 3279) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:1` | (2189, 3223) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `npc:tirannwn:2` | (2188, 3171) | Tyras guard (regicide_tyras_camp_guard) 1 | no | no | - | unreached |
-| `npc:tirannwn:3` | (2188, 3242) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:tirannwn:3` | (2188, 3242) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `npc:tirannwn:4` | (2192, 3150) | Tyras guard (regicide_tyras_guard) 1 | no | no | - | unreached |
 | `npc:tirannwn:5` | (2207, 3196) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
-| `npc:tirannwn:6` | (2209, 3256) | Elf warrior 2 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `npc:tirannwn:7` | (2210, 3239) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:tirannwn:6` | (2209, 3256) | Elf warrior 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:7` | (2210, 3239) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `npc:tirannwn:8` | (2230, 3238) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 4 | no | no | - | unreached |
 | `npc:tirannwn:9` | (2243, 3161) | Rabbit (regicide_rabbit) 1 | no | no | - | unreached |
 | `npc:tirannwn:10` | (2265, 3141) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | unreached |
-| `npc:tirannwn:11` | (2273, 3182) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:tirannwn:11` | (2273, 3182) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `npc:tirannwn:12` | (2277, 3161) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
-| `npc:tirannwn:13` | (2279, 3219) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:tirannwn:13` | (2279, 3219) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 | `npc:tirannwn:14` | (2296, 3176) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | unreached |
 | `npc:tirannwn:15` | (2296, 3250) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 |
 | `npc:tirannwn:16` | (2371, 3377) | Giant spider 2 | no | no | - | - |

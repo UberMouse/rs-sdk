@@ -7,17 +7,17 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fire:elf-camp:0` | (2194, 3254) | Fire 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
-| `fire:elf-camp:1` | (2204, 3250) | Fire 1 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `fire:elf-camp:0` | (2194, 3254) | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fire:elf-camp:1` | (2204, 3250) | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Trees
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:elf-camp:0` | (2188, 3265) | [normal](../resources/tree/normal.md) 3 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `tree:elf-camp:0` | (2188, 3265) | [normal](../resources/tree/normal.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:elf-camp:0` | (2198, 3253) | Elf warrior (regicide_darkelf) 2, Elf warrior (regicide_darkelf2) 6 | no | no | - | Regicide at stage 13 + 45 Agility + 56 Agility |
+| `npc:elf-camp:0` | (2198, 3253) | Elf warrior (regicide_darkelf) 2, Elf warrior (regicide_darkelf2) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
