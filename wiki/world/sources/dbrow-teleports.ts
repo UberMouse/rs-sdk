@@ -17,7 +17,7 @@ import { first, type Config } from './configs';
 import type { ConnectorCollision } from './connectors';
 import type { DbRow } from './dbrows';
 import { coordTile, isCoordLiteral } from './runescript';
-import { triggerKey } from './gate-scan';
+import { triggerConfigs, triggerKey } from './gate-scan';
 import type { Trigger } from './triggers';
 
 /** A loc trigger that teleports to a coord drawn from its dbrow (the header comment). */
@@ -56,13 +56,16 @@ export interface DbrowTeleportInput {
     size: SiteOptions['size'];
 }
 
-/** A placed loc a row is left out for, or a landing left out of its row. */
+/** A placed loc no tile on land is used from, given no row. */
 export interface DbrowTeleportMiss {
     trigger: string;
     loc: string;
     tile: Tile;
-    /** A landing off walkable land; absent for a loc no tile on land is used from. */
-    landing?: Tile;
+}
+
+/** A landing off walkable land, left out of its loc's row. */
+export interface DbrowTeleportOffLand extends DbrowTeleportMiss {
+    landing: Tile;
 }
 
 export interface DbrowTeleports {
@@ -70,7 +73,7 @@ export interface DbrowTeleports {
     crossings: Crossing[];
     /** Placed locs no tile on land is used from, and landings off walkable land (every one, for a loc given no row). */
     unstood: DbrowTeleportMiss[];
-    offLand: DbrowTeleportMiss[];
+    offLand: DbrowTeleportOffLand[];
 }
 
 const tileKey = (t: Tile): string => `${t.level} ${t.x} ${t.z}`;
@@ -80,9 +83,14 @@ const byTile = (a: Tile, b: Tile): number => a.level - b.level || a.x - b.x || a
 const paramOf = (cfg: Config | undefined, name: string): string | undefined =>
     cfg?.param?.find(p => p.startsWith(`${name},`))?.slice(name.length + 1);
 
+/** The tiles the engine draws from at most (server/engine/src/engine/script/handlers/ServerOps.ts:298). */
+const FINDSQUARE_MAX_TILES = 100;
+
 /**
  * The tiles `map_findsquare(coord, min, max, type)` can give (the header comment): of type 0 only (no line of walk
- * or sight to trace).
+ * or sight to trace), and of a ring of at most FINDSQUARE_MAX_TILES tiles, as the engine stops at that many open
+ * ones, x-major, and a bigger ring could leave some out (ServerOps.ts:301-324). Throws on a radius the engine
+ * refuses (a negative one, ServerOps.ts:278-279), on a radius that is no integer, and on min above max.
  */
 export function findsquareTiles(
     [literal, lo = '0', hi = '0', type = '0']: readonly string[],
@@ -91,7 +99,14 @@ export function findsquareTiles(
     if (!literal || !isCoordLiteral(literal)) throw new Error(`${literal} is not a coord literal`);
     if (type !== '0') throw new Error(`map_findsquare type ${type} (a line of walk or sight) is not read`);
     const o = coordTile(literal);
+    if (!/^\d+$/.test(lo) || !/^\d+$/.test(hi) || Number(lo) > Number(hi))
+        throw new Error(`map_findsquare radius ${lo} to ${hi} is not 0 <= min <= max in integers`);
     const [min, max] = [Number(lo), Number(hi)];
+    const ring = (2 * max + 1) ** 2 - (min ? (2 * min - 1) ** 2 : 0);
+    if (ring > FINDSQUARE_MAX_TILES)
+        throw new Error(
+            `map_findsquare ring ${min} to ${max} has ${ring} tiles, past the engine's ${FINDSQUARE_MAX_TILES}`,
+        );
     const out: Tile[] = [];
     for (let x = o.x - max; x <= o.x + max; x++)
         for (let z = o.z - max; z <= o.z + max; z++)
@@ -106,7 +121,7 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
     const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
     const crossings: Crossing[] = [];
     const unstood: DbrowTeleportMiss[] = [];
-    const offLand: DbrowTeleportMiss[] = [];
+    const offLand: DbrowTeleportOffLand[] = [];
     for (const e of input.entries) {
         const fail = (why: string) => new Error(`gates.ts DBROW_TELEPORTS ${e.trigger} (${e.source}): ${why}`);
         const trigger = input.triggers.find(t => triggerKey(t) === e.trigger);
@@ -117,22 +132,17 @@ export function deriveDbrowTeleports(input: DbrowTeleportInput): DbrowTeleports 
             throw fail(`the line is not a p_telejump(map_findsquare(...)) of ${e.table}:${e.landings}`);
         if (!e.use !== (trigger.op !== 'u')) throw fail('a use-item trigger needs a use obj, and only one does');
         const rows = new Map<string, DbRow>();
+        // db_find then db_findnext takes a key's first row (server/engine/src/engine/script/handlers/DbOps.ts
+        // DB_FINDNEXT); a second row of the key is refused, as the entry then needs a look.
         for (const r of input.dbrows.filter(d => d.table === e.table))
-            for (const [v] of r.data[e.key.column] ?? []) rows.set(v!, r);
-        // A category trigger covers the configs of its category with no trigger of their own of the same op; an op
-        // trigger, only the configs that have the op.
-        const own = new Set(
-            input.triggers
-                .filter(t => t.on === 'loc' && !t.category && t.kind === trigger.kind && t.op === trigger.op)
-                .map(t => t.target),
-        );
-        const covers = (config: string, cfg: Config): boolean =>
-            (trigger.op === 'u' || first(cfg, `op${trigger.op}`) !== undefined) &&
-            (trigger.category
-                ? first(cfg, 'category') === trigger.target && !own.has(config)
-                : config === trigger.target);
+            for (const [v] of r.data[e.key.column] ?? []) {
+                const seen = rows.get(v!);
+                if (seen) throw fail(`${seen.row} and ${r.row} both have ${e.key.column} ${v}`);
+                rows.set(v!, r);
+            }
+        const covered = new Set(triggerConfigs(input.triggers, input.locConfigs)(trigger));
         const placed = input.locs
-            .filter(l => covers(l.config, input.locConfigs.get(l.config) ?? {}))
+            .filter(l => covered.has(l.config))
             .sort((a, b) => byTile(a.tile, b.tile) || cmp(a.config, b.config));
         if (!placed.length) throw fail('no placed loc of a config it covers');
         for (const l of placed) {

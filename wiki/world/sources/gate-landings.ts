@@ -43,13 +43,13 @@ import { reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from
 import { coord, STEPS } from '../reach';
 import type { Connector, Crossing, Gate, Roll, Tile } from '../types';
 import { cmp, push } from '../util';
-import { first } from './configs';
 import type { ConnectorCollision } from './connectors';
 import {
     blocksWalk,
     CROSS,
     DOOR_PROCS,
     gateLander,
+    triggerConfigs,
     triggerKey,
     type CuratedGate,
     type GateCandidate,
@@ -460,9 +460,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
     const land = gateLander(input.scan, { locConfigs, mapBlocked: t => !collision.walkable(t.level, t.x, t.z) });
     const blocks = new Map(input.curated.filter(e => e.kind === 'temporary-block').map(e => [e.trigger, e]));
     const connectorAt = new Set(input.connectors.map(c => `${tileKey(c.loc)} ${c.op}`));
-    const own = new Set(
-        input.scan.triggers.filter(t => t.on === 'loc' && !t.category).map(t => `${t.target} ${t.kind}${t.op}`),
-    );
+    const configsOf = triggerConfigs(input.scan.triggers, locConfigs);
     const byConfig = new Map<string, PlacedLoc[]>();
     for (const l of input.locs) push(byConfig, l.config, l);
     const onLand = (t: Tile) => collision.land(t.level, t.x, t.z) && collision.walkable(t.level, t.x, t.z);
@@ -532,15 +530,8 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
             tally('connector-scripts');
             continue;
         }
-        const [, kind, op, category, target] = m as unknown as [string, string, string, string, string];
-        const configs = (
-            category
-                ? [...locConfigs]
-                      .filter(([name, cfg]) => first(cfg, 'category') === target && !own.has(`${name} ${kind}${op}`))
-                      .map(([name]) => name)
-                : [target]
-        ).filter(c => first(locConfigs.get(c), `op${op}`) !== undefined);
-        const placed = configs.flatMap(c => byConfig.get(c) ?? []);
+        const op = m[2]!;
+        const placed = configsOf(t).flatMap(c => byConfig.get(c) ?? []);
         if (!placed.length) {
             tally('unplaced');
             continue;

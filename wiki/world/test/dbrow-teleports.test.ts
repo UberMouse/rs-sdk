@@ -111,13 +111,13 @@ const placed = [
 ];
 const collision = () =>
     new Grid().block(...placed.filter(l => l.config.endsWith('ruins')).map(l => l.tile), at(0, 3204, 3204));
-const derive = (entries: DbrowTeleport[], more: { objs?: string; locs?: string } = {}) => {
+const derive = (entries: DbrowTeleport[], more: { objs?: string; locs?: string; dbrows?: string } = {}) => {
     const configs = more.locs ? parseConfigs(more.locs) : locConfigs;
     return deriveDbrowTeleports({
         entries,
         triggers: parseTriggers(FILE, SCRIPT),
         scripts: new Map([[FILE, SCRIPT]]),
-        dbrows: parseDbrows(DBROWS),
+        dbrows: parseDbrows(more.dbrows ?? DBROWS),
         locConfigs: configs,
         objConfigs: parseConfigs(more.objs ?? OBJS),
         locs: placed,
@@ -142,6 +142,24 @@ describe('findsquareTiles', () => {
         expect(findsquareTiles(['0_50_50_5_5', '0', '2', '0'], () => false)).toEqual([at(0, 3205, 3205)]));
     test('a line of walk or sight is not read', () =>
         expect(() => findsquareTiles(['0_50_50_5_5', '0', '2', '1'], open)).toThrow(/type 1/));
+    test('a radius that is negative, no integer, or min above max is refused', () => {
+        for (const [lo, hi] of [
+            ['-1', '1'],
+            ['0', '-1'],
+            ['0', '1.5'],
+            ['x', '1'],
+            ['', '1'],
+            ['2', '1'],
+        ])
+            expect(() => findsquareTiles(['0_50_50_5_5', lo!, hi!, '0'], open)).toThrow(/is not 0 <= min <= max/);
+    });
+    test('a ring of more tiles than the engine draws from is refused', () => {
+        // 9x9 is 81 tiles, 11x11 is 121, and 11x11 less its 3x3 middle is 112; 11x11 less 5x5 is 96.
+        expect(findsquareTiles(['0_50_50_5_5', '0', '4', '0'], open)).toHaveLength(81);
+        expect(findsquareTiles(['0_50_50_5_5', '3', '5', '0'], open)).toHaveLength(96);
+        expect(() => findsquareTiles(['0_50_50_5_5', '0', '5', '0'], open)).toThrow(/has 121 tiles, past the/);
+        expect(() => findsquareTiles(['0_50_50_5_5', '2', '5', '0'], open)).toThrow(/has 112 tiles, past the/);
+    });
 });
 
 describe('deriveDbrowTeleports', () => {
@@ -210,6 +228,9 @@ describe('deriveDbrowTeleports', () => {
         );
         expect(() => derive([RUINS], { locs: LOCS.replace('param=rune_type,2\n', '') })).toThrow(
             /law_ruins has no param rune_type/,
+        );
+        expect(() => derive([RUINS], { dbrows: DBROWS.replace('data=type,2', 'data=type,1') })).toThrow(
+            /test_air and test_law both have type 1/,
         );
     });
 });

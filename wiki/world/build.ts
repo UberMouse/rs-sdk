@@ -1191,7 +1191,7 @@ export function formatTeleports(r: BuildReport['teleports']): string[] {
         ),
         ...list(
             `warning: ${r.offLand.length} dbrow teleport landings off walkable land, left out:`,
-            r.offLand.map(m => `${m.trigger} ${m.loc} ${coord(m.tile)} -> ${coord(m.landing!)}`),
+            r.offLand.map(m => `${m.trigger} ${m.loc} ${coord(m.tile)} -> ${coord(m.landing)}`),
         ),
     ];
 }

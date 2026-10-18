@@ -1864,6 +1864,26 @@ export interface GatePlacement {
 const TRIGGER = /^(op|ap)loc([1-5u]),(_?)([a-z0-9_]+)$/;
 
 /**
+ * The loc configs a loc trigger runs for that have its op (a use-item trigger, op `u`, needs none): a config
+ * trigger's own config, or every config of a category trigger's category but those with their own trigger of the
+ * same kind and op, which the engine runs instead (server/engine/src/engine/script/ScriptProvider.ts getByTrigger).
+ * In locConfigs order.
+ */
+export function triggerConfigs(
+    triggers: readonly Trigger[],
+    locConfigs: ReadonlyMap<string, Config>,
+): (t: Trigger) => string[] {
+    const own = new Set(triggers.filter(t => t.on === 'loc' && !t.category).map(t => `${t.target} ${t.kind}${t.op}`));
+    return t =>
+        (t.category
+            ? [...locConfigs]
+                  .filter(([name, cfg]) => first(cfg, 'category') === t.target && !own.has(`${name} ${t.kind}${t.op}`))
+                  .map(([name]) => name)
+            : [t.target]
+        ).filter(c => t.op === 'u' || first(locConfigs.get(c), `op${t.op}`) !== undefined);
+}
+
+/**
  * The placed locs of the gates and quest windows gates.ts confirms, each with what it needs. A category
  * trigger covers every config of the category but those with their own trigger of the same kind and op,
  * which the engine runs instead (server/engine/src/engine/script/ScriptProvider.ts getByTrigger).
