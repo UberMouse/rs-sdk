@@ -641,11 +641,20 @@ const valueKey = (v: Value): string =>
                 ? `c${v.relative}${v.from ?? ''}${v.level},${v.x},${v.z}`
                 : `u${v.choice ?? ''}${v.side ?? ''}${v.text}`;
 
-/** Each path part's key, once: a path's locals, conditions and objs taken are never changed, only replaced. */
-const partKeys = new WeakMap<object, string>();
-const keyOf = <T extends object>(part: T, key: (part: T) => string): string => {
+/**
+ * Each path part's key, once, as a number standing for the key string: a path's locals, conditions and objs taken
+ * are never changed, only replaced, and the number keeps a path's key short.
+ */
+const partKeys = new WeakMap<object, number>();
+const keyIds = new Map<string, number>();
+const keyOf = <T extends object>(part: T, key: (part: T) => string): number => {
     let k = partKeys.get(part);
-    if (k === undefined) partKeys.set(part, (k = key(part)));
+    if (k === undefined) {
+        const s = key(part);
+        k = keyIds.get(s);
+        if (k === undefined) keyIds.set(s, (k = keyIds.size));
+        partKeys.set(part, k);
+    }
     return k;
 };
 

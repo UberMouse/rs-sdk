@@ -42,11 +42,11 @@
 //
 // reachGraph builds the tiles and edges once (ReachGraph); fillReach floods them, and distance.ts walks the same
 // graph for the run ticks to each site's nearest sinks.
-import { reachTiles, type PlacedLoc, type SiteOptions } from './place';
+import { reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from './place';
 import { canonicalSet, dominates, minimalSets, questFacts, type QuestFacts } from './requirements';
 import type { ConnectorCollision } from './sources/connectors';
 import type { Crossing, Gate, Roll, Side, Tile, Transport, World } from './types';
-import { cmp } from './util';
+import { cmp, uniqueTiles } from './util';
 
 /** Where a new account stands: the Lumbridge spawn. */
 export const LUMBRIDGE_SPAWN: Tile = { level: 0, x: 3222, z: 3218 };
@@ -205,8 +205,9 @@ const sameTile = (a: Tile, b: Tile): boolean => a.level === b.level && a.x === b
 export const coord = (t: Tile): string => `(${t.x}, ${t.z}${t.level ? `, ${t.level}` : ''})`;
 /** A gate row as the fill's skipped rows name it. */
 export const gateName = (g: Pick<Gate, 'trigger' | 'loc' | 'tile'>): string => `${g.trigger} ${g.loc} ${coord(g.tile)}`;
-/** Why the fill skips a gate row on an object that has no `to`, `landings` or `opens`. */
-export const NO_LANDING = 'a gate row with no derived landing';
+/** The fill's skipped line for a gate row on an object that has no `to`, `landings` or `opens`. */
+export const noLandingLine = (g: Pick<Gate, 'trigger' | 'loc' | 'tile'>): string =>
+    `${gateName(g)}: a gate row with no derived landing`;
 const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 
 /** A trigger's op number (`oploc1,x` -> 1); undefined for a use-item trigger. */
@@ -421,6 +422,16 @@ export const STEPS: readonly (readonly [number, number])[] = [
     [1, -1],
     [1, 1],
 ];
+
+/** The tiles `onLand` accepts that a step from `t` the collision allows reaches, each once in byTile order. */
+export function stepsOutOf(t: Tile, onLand: (t: Tile) => boolean, canStep: StepCollision['canStep']): Tile[] {
+    return uniqueTiles(
+        STEPS.flatMap(([dx, dz]) => {
+            const n = { level: t.level, x: t.x + dx, z: t.z + dz };
+            return onLand(n) && canStep(t.level, t.x, t.z, dx, dz) ? [n] : [];
+        }),
+    );
+}
 /** A step mask's bit for "computed". */
 const KNOWN = 1 << 8;
 
@@ -563,7 +574,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
                     if (i < 0) continue;
                     opened.set(i, [...(opened.get(i) ?? []), ...g.requires]);
                 }
-        } else skipped.add(`${name}: ${NO_LANDING}`);
+        } else skipped.add(noLandingLine(g));
     }
     const openAlts = new Map([...opened].map(([i, reqs]) => [i, alternatives(reqs)]));
 

@@ -48,7 +48,7 @@
 // row has is refused, a duplicate.
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { footprint, reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
-import { coord, STEPS } from '../reach';
+import { coord, STEPS, stepsOutOf } from '../reach';
 import type { Connector, Crossing, Gate, Roll, Tile } from '../types';
 import { byTile, cmp, onLandIn, push, tileKey, uniqueTiles } from '../util';
 import type { ConnectorCollision } from './connectors';
@@ -371,12 +371,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
             const key = `${tileKey(stand)} ${tileKey(t)}`;
             let to = steppedOut.get(key);
             if (!to) {
-                to = uniqueTiles(
-                    STEPS.flatMap(([dx, dz]) => {
-                        const n = { level: t.level, x: t.x + dx, z: t.z + dz };
-                        return onLand(n) && canStep(t.level, t.x, t.z, dx, dz) ? [n] : [];
-                    }),
-                );
+                to = stepsOutOf(t, onLand, canStep);
                 steppedOut.set(key, to);
                 if (to.length) stepped.push({ trigger: g.trigger, loc: g.loc, tile: g.tile, stand, landing: t, to });
             }

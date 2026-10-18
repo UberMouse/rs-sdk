@@ -1370,7 +1370,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         .concat(['tree:swamp:1', 'tree:swamp:3'])
         .map((site): ExpectedUnreached => ({
             site,
-            reason: "walled in by collision north of the Tree Gnome Stronghold's fence: no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
+            reason: "walled in by collision north of the Tree Gnome Stronghold's fence (gnomefence, as maps/m37_54.jm2:4631): no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
             source: 'skill_woodcutting/scripts/woodcut.rs2:1',
         })),
     ...['range:west-ardougne:0', 'water-source:kandarin:2'].map((site): ExpectedUnreached => ({
@@ -1384,78 +1384,105 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         source: 'quests/quest_arena/scripts/quest_arena.rs2:95',
     })),
     // Locs no tile a walk gets to can use: walled in by collision, with no loc or npc op on or beside their pockets that
-    // moves the player but their own.
+    // moves the player but their own; the reason names a loc or map flag that walls each, with its map square line.
     ...(
         [
             [
                 'tree:asgarnia:6',
                 "in the railed garden of Entrana's church, whose only op is a ladder up to a floor with no way down",
+                'its south rail, woodenrailing at maps/m44_52.jm2:6673',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:asgarnia:23',
-                'a dead tree every tile beside which blocks',
+                'a dead tree all eight tiles beside which the map flags blocked',
+                'f1, as maps/m45_55.jm2:3825',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:goblin-village:0',
-                'a dead tree every tile beside which blocks',
+                'a dead tree all eight tiles beside which the map flags blocked',
+                'f1, as maps/m46_54.jm2:506',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
-            ['tree:arandar:2', 'a dead tree every tile beside which blocks', 'skill_woodcutting/scripts/woodcut.rs2:1'],
+            [
+                'tree:arandar:2',
+                'a dead tree all eight tiles beside which the map flags blocked',
+                'f1, as maps/m36_51.jm2:2633',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
             [
                 'tree:arandar:3',
                 'a dead tree used only from a nook the other dead trees close in',
+                'deadtree6 at maps/m36_51.jm2:4925',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:taverley:1',
                 "in a strip between two of the Witch's House garden's hedges, closed at both ends",
+                'hedge at maps/m45_54.jm2:5352',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
-            ['tree:kandarin:22', 'in a railed pit of lava', 'skill_woodcutting/scripts/woodcut.rs2:1'],
+            [
+                'tree:kandarin:22',
+                "a dead tree used only from a pit north of the lava's railings, whose rim the map flags blocked",
+                'f1, as maps/m38_50.jm2:1849',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
             [
                 'tree:wilderness:153',
-                'in a field of lava the lava itself closes in',
+                'in a field of lava whose lava tiles the map flags blocked',
+                'f1, as maps/m51_60.jm2:2644',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:kharidian-desert:0',
                 "in a fenced flower bed by the Exam Centre's south hedge",
+                'fencing at maps/m52_52.jm2:4448',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:kharidian-desert:1',
                 "in a fenced flower bed by the Exam Centre's south hedge",
+                'fencing at maps/m52_52.jm2:5994',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'tree:exam-centre:2',
                 "in a strip behind the Exam Centre's east hedge",
+                'hedge at maps/m52_52.jm2:5877',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
                 'fire:kandarin:9',
                 "a fireplace used only from a nook its room's table and chairs close in",
+                'bigtable at maps/m40_50.jm2:4662',
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
                 'fire:east-ardougne:1',
                 "Elena's house's cooking pot, used only from nooks the stairs, chairs and walls close in",
+                'stairs at maps/m40_52.jm2:5505',
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
                 'pottery-wheel:east-ardougne:1',
                 "two wheels whose forceapproach (east, turned with the loc to south) puts the tile they are used from under the house's wall and a table",
+                'potters_wheels.loc:5; paintedbrickwall at maps/m40_51.jm2:7098, bigtable at :7101',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
             [
                 'pottery-wheel:misthalin:0',
                 'a wheel whose forceapproach (east, turned to west) puts the tile it is used from in a nook a crate and a potted plant close in',
+                'potters_wheels.loc:5; crate3 at maps/m52_52.jm2:5351, egypt_plantpotted at :5392',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
         ] as const
-    ).map(([site, why, source]): ExpectedUnreached => ({ site, reason: `walled in by collision: ${why}`, source })),
+    ).map(([site, why, wall, source]): ExpectedUnreached => ({
+        site,
+        reason: `walled in by collision: ${why} (${wall})`,
+        source,
+    })),
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
     ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(
         (site): ExpectedUnreached => ({

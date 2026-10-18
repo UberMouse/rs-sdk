@@ -216,7 +216,8 @@ entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, 
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
 reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
-but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes.
+but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes,
+and its reason names a loc or map flag that walls it with the map square line (`hedge at maps/m45_54.jm2:5352`).
 
 The fill's own warning before it, the rows it could not use, says why each is left out: a landing not on land (a
 middle ladder on the top level), a wall whose side the row can't read, or a gate row with no derived landing, with

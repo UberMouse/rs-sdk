@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { locSizes } from '../place';
-import { fillReach, formatReach, MAX_SETS, wallTiles, type ReachInput } from '../reach';
+import { fillReach, formatReach, MAX_SETS, stepsOutOf, wallTiles, type ReachInput } from '../reach';
 import { at, Grid } from './grid';
 import type { Connector, Crossing, Feature, Gate, Tile, Transport } from '../types';
 
@@ -184,6 +184,20 @@ describe('wallTiles', () => {
         expect(wallTiles({ tile: t, shape: 9, angle: 0 })).toEqual([at(0, 9, 11), at(0, 11, 9)]);
         expect(wallTiles({ tile: t, shape: 9, angle: 1 })).toEqual([at(0, 11, 11), at(0, 9, 9)]);
         expect(wallTiles({ tile: t, shape: 2, angle: 0 })).toBeUndefined();
+    });
+});
+
+describe('stepsOutOf', () => {
+    test('the walkable land a step from a blocked tile reaches, in tile order, past no wall or blocked tile', () => {
+        const t = at(0, 3210, 3210);
+        const grid = new Grid().block(t, at(0, 3209, 3211)).wall(t, 1, 0);
+        const onLand = (n: Tile) => grid.land(n.level, n.x, n.z) && grid.walkable(n.level, n.x, n.z);
+        expect(stepsOutOf(t, onLand, grid.canStep)).toEqual([
+            at(0, 3209, 3209),
+            at(0, 3209, 3210),
+            at(0, 3210, 3209),
+            at(0, 3210, 3211),
+        ]);
     });
 });
 

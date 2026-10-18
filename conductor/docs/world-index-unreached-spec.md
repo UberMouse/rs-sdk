@@ -57,7 +57,7 @@ Root causes, from reading the report against the scripts and the build report's 
   script citation (file and line) for every curated or derived row, format changes bump
   `WORLD_FORMAT` and update `load.ts` and its tests.
 - **Tests:** `bun test wiki/world` and `bun test conductor` both pass at every task's commit.
-- **Performance budget:** `bun run world` under ~15 s, `world.json` under ~10 MB. Report both in
+- **Performance budget:** `bun run world` under ~25 s, `world.json` under ~10 MB. Report both in
   every task that changes them.
 - **Each task reports the unreached count before and after**, by bucket, and the sites it moved
   from unreached to reached. A task that reaches a site nobody in game can stand on is a bug.

@@ -40,8 +40,7 @@ import {
     actName,
     fillReach,
     formatReach,
-    gateName,
-    NO_LANDING,
+    noLandingLine,
     reachGraph,
     STEPS,
     type LocEdit,
@@ -953,7 +952,9 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         areas: new Set(areas.map(a => a.id)),
         sites: new Set(reached.sites.map(x => x.id)),
     });
-    const noLanding = new Map(landings.underived.map(u => [`${gateName(u)}: ${NO_LANDING}`, u.reasons]));
+    // By the fill's own line for the row; rows the line can't tell apart share it, with every reason each gives.
+    const noLanding = new Map<string, string[]>();
+    for (const u of landings.underived) for (const r of u.reasons) push(noLanding, noLandingLine(u), r);
     const curatedKind = new Map(GATES.map(e => [e.trigger, e.kind]));
     // The pocket flood reads steps through graph.stepMask, which adds to graph.offLand; the fill's report took
     // its offLand count already, so this has to stay after fillReach.
@@ -1103,7 +1104,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
                 ...fill.report,
                 skipped: fill.report.skipped.map(line => {
                     const why = noLanding.get(line);
-                    return why ? `${line}: ${why.join('; ')}` : line;
+                    return why ? `${line}: ${[...new Set(why)].sort(cmp).join('; ')}` : line;
                 }),
             },
             distance: distance.report,

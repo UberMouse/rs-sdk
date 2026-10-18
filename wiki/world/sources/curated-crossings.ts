@@ -12,7 +12,7 @@
 // out, is left out. A placement with no tile on land, or whose every landing is left out, gets no row; the build report
 // lists each, and each landing left out or stepped out of.
 import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
-import { actName } from '../reach';
+import { actName, STEPS, stepsOutOf } from '../reach';
 import { minimalSets, requirementSet } from '../requirements';
 import type { Act, Crossing, NpcSpawn, Tile } from '../types';
 import { byTile, cmp, onLandIn, tileKey, uniqueTiles } from '../util';
@@ -94,18 +94,6 @@ export interface CuratedCrossings {
     offLand: CuratedCrossingLanding[];
     stepped: CuratedCrossingLanding[];
 }
-
-/** The eight steps round a tile. */
-const AROUND: readonly (readonly [number, number])[] = [
-    [-1, -1],
-    [-1, 0],
-    [-1, 1],
-    [0, -1],
-    [0, 1],
-    [1, -1],
-    [1, 0],
-    [1, 1],
-];
 
 /** Whether `t` is inside the inclusive box `z` on every axis, its level too (ServerOps.ts INZONE). */
 function inZone(z: Zone, t: Tile): boolean {
@@ -202,7 +190,7 @@ export function deriveCuratedCrossings(input: CuratedCrossingInput): CuratedCros
                 const queue = seeds.filter(t => seen.has(tileKey(t)));
                 while (queue.length) {
                     const t = queue.pop()!;
-                    for (const [dx, dz] of AROUND) {
+                    for (const [dx, dz] of STEPS) {
                         const n = { level: t.level, x: t.x + dx, z: t.z + dz };
                         const k = tileKey(n);
                         if (inside.has(k) && !seen.has(k) && collision.canStep(t.level, t.x, t.z, dx, dz)) {
@@ -294,11 +282,7 @@ export function deriveCuratedCrossings(input: CuratedCrossingInput): CuratedCros
     function landed(t: Tile): { to: Tile[]; blocked?: true } {
         if (onLand(t)) return { to: [t] };
         if (!collision.land(t.level, t.x, t.z)) return { to: [] };
-        const to = AROUND.flatMap(([dx, dz]) => {
-            const n = { level: t.level, x: t.x + dx, z: t.z + dz };
-            return onLand(n) && collision.canStep(t.level, t.x, t.z, dx, dz) ? [n] : [];
-        });
-        return { to: uniqueTiles(to), blocked: true };
+        return { to: stepsOutOf(t, onLand, collision.canStep), blocked: true };
     }
 }
 
