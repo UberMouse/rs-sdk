@@ -80,8 +80,19 @@ loc, an npc's op and dialogue, an item op, an interface click). A row says how t
 `item-on-loc`, `npc-op` with its dialogue `choices`, `item-op` or `interface`), the loc or npc it is done on (`at`),
 the tiles it is done from (`from`), where it lands (`landings`: one tile, or the set a random landing draws from),
 its requirement sets, and its `roll` when the move is behind a `stat_random`. A connector's and a gate's act is
-implied by their rows (the loc's op, the trigger); a transport may carry one, and the sail and curated rows carry
-none. A gate row may carry a `roll` too.
+implied by their rows (the loc's op, the trigger), but a gate row whose move is behind dialogue carries one with its
+`choices` (`gate-list.ts`): the Shantay Pass's poster, which the script asks only of a player holding no disclaimer,
+is answered when shown. A transport may carry one, and the sail and curated rows carry none. A gate row may carry a
+`roll` too.
+
+The gate scan and every bound run follow a `queue`, `strongqueue`, `weakqueue` or `longqueue` the trigger issues: the
+`[queue,name]` script runs once the trigger's script ends, however it ended, and its moves are the trigger's, under
+every condition the path took. That is the Shantay Pass's way in: its gate row lands each north stand south of the
+pass under `consume:shantay_pass:1` (the `inv_del` before the queue), so the desert behind it is reached. A death's
+respawn (`[queue,player_death]`) is not passage, nor is a move only through one (a `damage_player` queue). A
+one-sided gate on an object counts a stand level with the loc on its checked side (`standOnSide` in `reach.ts`),
+so the Shantay Pass's east stand, which the script lets out free, is priced as taking a pass, and the desert mine's
+nearest bank (the pass's bank chest) reads `consume:shantay_pass:1`.
 
 The `scripted` rows are the moves of the loc op triggers the gate scan finds moving the player with no condition it
 reads before the move, and of the temporary blocks (the Gnome Stronghold gate), outside the connector scripts: each is
@@ -158,8 +169,8 @@ entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, 
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
 reached or gone. Some areas' `notes` still say
-why their sites are unreached (the desert behind the Shantay Pass, Ape Atoll, Miscellania, the Burthorpe games
-room): those notes go as their pockets are reached.
+why their sites are unreached (Ape Atoll, Miscellania, the Burthorpe games room): those notes go as their pockets
+are reached.
 
 ## Where corrections go
 

@@ -15,7 +15,7 @@ import {
     type GateCandidate,
     type GateScanInput,
 } from '../sources/gate-scan';
-import { parseCallables, parseTriggers } from '../sources/triggers';
+import { parseCallables, parseQueues, parseTriggers } from '../sources/triggers';
 import type { Quest, Tile } from '../types';
 
 // The door procs as doors/scripts/door_procs.rs2 and open_and_close_doors.rs2 have them, cut down: a call
@@ -624,10 +624,113 @@ describe('reviewGates', () => {
         );
         expect(review.invalid).toEqual([
             'oploc1,sidecave (quests/test.rs2:2): a side-effect needs its reason in why',
-            'oploc1,blockdoor (quests/test.rs2:2): a temporary-block has no requires, from, to, notes, byConfig, stages or at',
+            'oploc1,blockdoor (quests/test.rs2:2): a temporary-block has no requires, from, to, notes, byConfig, stages, at or choices',
             'oploc1,tollgate (quests/test.rs2:2): write requires as [["coins:10","quest:cook"]]',
             'oploc1,membergate (quests/test.rs2:999): source quests/test.rs2:999 is not a line of code',
             'oploc1,keydoor (quests/test.rs2): source quests/test.rs2 is not file:line',
+        ]);
+    });
+});
+
+describe('scanGates: a script the trigger queues', () => {
+    const PASS = `[oploc1,passgate]
+if (coordz(coord) <= coordz(loc_coord)) {
+    p_telejump(movecoord(coord, 0, 0, 3));
+    return;
+}
+if (inv_total(inv, ticket) < 1) {
+    return;
+}
+def_int $choice = ~p_choice2_header("Yes, let me through.", 1, "No.", 2, "Go in?");
+if ($choice = 2) {
+    return;
+}
+inv_del(inv, ticket, 1);
+queue(passgate_enter, 0, 0);
+
+[queue,passgate_enter]
+p_teleport(0_50_50_30_12);
+p_telejump(movecoord(coord, 0, 0, -3));
+
+[oploc1,deathpit]
+if (stat(agility) < 5) {
+    return;
+}
+queue(player_death, 0, 0);
+
+[oploc1,otherplayer]
+if (stat(agility) < 5) {
+    return;
+}
+.queue(passgate_enter, 0, 0);
+`;
+    // A death respawns the player: not passage (gate-scan.ts INCIDENTAL).
+    const DEATH = '[queue,player_death]\np_teleport(0_50_50_9_9);\n';
+    const input: GateScanInput = {
+        ...INPUT,
+        triggers: parseTriggers('quests/pass.rs2', PASS),
+        callables: [],
+        queues: [...parseQueues('quests/pass.rs2', PASS), ...parseQueues('player/scripts/death.rs2', DEATH)],
+        names: new Set(['ticket']),
+    };
+    const [pass] = scanGates(input);
+    const scan = scanTrigger(input);
+    const trigger = (target: string) => input.triggers.find(t => t.target === target)!;
+
+    test("its moves are the trigger's, under the conditions before the queue and with the obj taken before it consumed", () => {
+        expect(pass!.trigger).toBe('oploc1,passgate');
+        expect(pass!.kind).toBe('gate');
+        // The step from the queued literal crosses; the way out from the south is free.
+        const cross = pass!.moves.find(m => m.to === CROSS)!;
+        expect(cross.options).toEqual([
+            { requires: [], sides: ['south'] },
+            { requires: ['consume:ticket:1'], sides: ['north'] },
+        ]);
+        expect(gatedSets(cross)).toEqual([['consume:ticket:1']]);
+        expect(pass!.moves.find(m => m.to === '0_50_50_30_12')?.options).toEqual([
+            { requires: ['consume:ticket:1'], sides: ['north'] },
+        ]);
+    });
+
+    test("a death queued is no passage, nor is another player's queue (`.queue`)", () => {
+        expect(scan(trigger('deathpit'))).toBeNull();
+        expect(scan(trigger('otherplayer'))).toBeNull();
+    });
+
+    const files = new Map([['quests/pass.rs2', PASS]]);
+    const entry = (choices: string[]): CuratedGate => ({
+        trigger: 'oploc1,passgate',
+        kind: 'gate',
+        requires: [['consume:ticket:1']],
+        from: 'north',
+        choices,
+        source: 'quests/pass.rs2:5',
+        why: 'a test',
+        scan: proposalDigest(pass!),
+    });
+
+    test('a choice the gate entry names is a string its source file writes', () => {
+        expect(reviewGates([pass!], [entry(['Yes, let me through.'])], files).invalid).toEqual([]);
+        expect(reviewGates([pass!], [entry(['Yes please.'])], files).invalid).toEqual([
+            'oploc1,passgate (quests/pass.rs2:5): choice "Yes please." is not a string quests/pass.rs2 writes',
+        ]);
+        expect(reviewGates([pass!], [entry([])], files).invalid).toEqual([
+            'oploc1,passgate (quests/pass.rs2:5): choices is empty',
+        ]);
+    });
+
+    test("placed, the row's act is the trigger's op on its loc, then the choices", () => {
+        const { gates } = placeGates({
+            curated: [entry(['Yes, let me through.'])],
+            candidates: [pass!],
+            triggers: input.triggers,
+            locConfigs: parseConfigs('[passgate]\nop1=Go-through'),
+            locs: [{ config: 'passgate', tile: at(100, 100), shape: 10, rotation: 0 }],
+            quests: QUEST_TABLE,
+            constants,
+        });
+        expect(gates.map(g => g.act)).toEqual([
+            { kind: 'loc-op', loc: 'passgate', op: 1, choices: ['Yes, let me through.'] },
         ]);
     });
 });

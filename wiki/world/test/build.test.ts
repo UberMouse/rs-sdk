@@ -264,10 +264,16 @@ describe('serializeWorld', () => {
             const file = join(dir, 'world.json');
             writeFileSync(file, serializeWorld(world));
             expect(loadWorld(file)).toEqual(world);
-            // An act, a roll and a transport's act, written and read back.
+            // An act, a roll, a gate's act with its choices and a transport's act, written and read back.
             const more: World = {
                 ...world,
-                gates: [{ ...world.gates[0]!, roll: world.crossings[1]!.roll! }],
+                gates: [
+                    { ...world.gates[0]!, roll: world.crossings[1]!.roll! },
+                    {
+                        ...world.gates[1]!,
+                        act: { kind: 'loc-op', loc: 'miningguildladder', op: 1, choices: ['Yes, let me down.'] },
+                    },
+                ],
                 transports: [
                     {
                         ...world.transports[0]!,
@@ -315,7 +321,12 @@ describe('serializeWorld', () => {
             [
                 'a loc-op of op 6',
                 { ...shortcut, act: { kind: 'loc-op', loc: 'x', op: 6 } },
-                'crossings[1]: a loc-op act needs a loc and an op 1-5',
+                'crossings[1]: a loc-op act needs a loc, an op 1-5, and choices, when it has them, as option texts',
+            ],
+            [
+                'loc-op choices that are not texts',
+                { ...shortcut, act: { kind: 'loc-op', loc: 'x', op: 1, choices: [''] } },
+                'crossings[1]: a loc-op act needs a loc, an op 1-5, and choices, when it has them, as option texts',
             ],
             [
                 'npc-op choices that are not texts',
@@ -348,11 +359,22 @@ describe('serializeWorld', () => {
             expect(refused(withCrossing(row))).toBe(`is not a world.json: ${why}: regenerate it with bun run world`);
         });
 
-        test("a gate's roll and a transport's act are checked too", () => {
+        test("a gate's roll and act and a transport's act are checked too", () => {
             expect(
                 refused({ ...world, gates: [world.gates[0], { ...world.gates[1], roll: { stat: 'agility' } }] }),
             ).toBe(
                 'is not a world.json: gates[1]: a roll needs a stat, whole low and high bounds, and a source: regenerate it with bun run world',
+            );
+            expect(
+                refused({
+                    ...world,
+                    gates: [
+                        world.gates[0],
+                        { ...world.gates[1], act: { kind: 'loc-op', loc: 'x', op: 1, choices: 'Yes' } },
+                    ],
+                }),
+            ).toBe(
+                'is not a world.json: gates[1]: a loc-op act needs a loc, an op 1-5, and choices, when it has them, as option texts: regenerate it with bun run world',
             );
             expect(refused({ ...world, transports: [{ ...world.transports[0], act: { kind: 'interface' } }] })).toBe(
                 'is not a world.json: transports[0]: an interface act needs a component: regenerate it with bun run world',
@@ -386,6 +408,9 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // Format 11 was written before resource and processor sites had their nearest bank.
         writeFileSync(file, serializeWorld({ ...world, format: 11 }));
         expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
+        // Format 13 was written before a gate row could carry its act and a loc-op act its choices.
+        writeFileSync(file, serializeWorld({ ...world, format: 13 }));
+        expect(() => loadWorld(file)).toThrow(`format 13, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }

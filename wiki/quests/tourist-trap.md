@@ -17,7 +17,7 @@
 ## Items Needed
 
 - Desert robes or waterskins (desert heat protection)
-- 5 gp (Shantay Pass fee)
+- 5 gp for a Shantay pass, which the pass takes on the way in
 - 100 gp (cart bribe)
 - Feathers (for dart crafting)
 - Bronze bar (for dart crafting)
@@ -36,7 +36,7 @@
 ### Getting Started
 
 1. Speak to **Irena** south of the Shantay Pass. Her daughter Ana has gone missing in the desert.
-2. Pay **5 gp** to pass through the Shantay Pass into the desert.
+2. Buy a **Shantay pass** from Shantay for 5 gp (`areas/area_alkharid/scripts/shantay.rs2:128`), then Go-through the pass from the north: it takes the pass (`shantay_pass.rs2:96`), and going back north is free (`shantay_pass.rs2:70`). Without a disclaimer the poster asks "Go into Desert?": answer "Yeah, that poster doesn't scare me!" (`shantay_pass.rs2:88`); the guard then hands over a disclaimer, and the poster is not asked again while you hold it (`shantay_pass.rs2:84`, `:98`).
 
 ### Infiltrating the Camp
 

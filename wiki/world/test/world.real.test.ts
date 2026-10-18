@@ -153,6 +153,34 @@ describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', ()
     });
 });
 
+describe('the Shantay Pass, a move the trigger queues ([queue,shantay_pass_enter])', () => {
+    const [pass, ...more] = world.gates.filter(g => g.trigger === 'oploc1,shantay_pass_henge_doorway');
+
+    test('from the north it takes a pass and lands south of the gate, where the queued script steps the player', () => {
+        expect(more).toEqual([]);
+        expect(pass!.requires).toEqual([['consume:shantay_pass:1', 'members']]);
+        expect(pass!.from).toBe('north');
+        const north = pass!.landings!.filter(l => l.stand.z > pass!.tile.z);
+        expect(north.length).toBeGreaterThan(0);
+        // p_teleport(0_51_48_40_46), then p_telejump(movecoord(coord, 0, 0, -3)) (shantay_pass.rs2:105, :109).
+        for (const l of north) expect(l.landing).toEqual({ level: 0, x: 3304, z: 3115 });
+    });
+
+    test('its act answers the poster, asked only of a player holding no disclaimer', () =>
+        expect(pass!.act).toEqual({
+            kind: 'loc-op',
+            loc: 'shantay_pass_henge_doorway',
+            op: 1,
+            choices: ["Yeah, that poster doesn't scare me!"],
+        }));
+
+    test('the desert south of it is reached with a pass: the Bedabin camp shop, and the mining camp with its key', () => {
+        expect(reachOf('shop:bedabin-camp:0')).toEqual([['consume:shantay_pass:1']]);
+        // The camp's gates open with the metal key held (quest_desertrescue.rs2:119).
+        expect(reachOf('rock:desert-mining-camp:0')).toEqual([['consume:shantay_pass:1', 'item:metal_key:held']]);
+    });
+});
+
 describe('banks', () => {
     test('Varrock West bank: 6 booths, 6 bankers, level 0', () => {
         const [site, ...rest] = inLeaf('bank', 'varrock-west-bank');

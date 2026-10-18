@@ -5,7 +5,7 @@
 // trigger run once per tile the loc is used from (place.ts reachTiles, on land), with the loc and that tile
 // bound (gate-scan.ts gateLander), down the paths that make the row's move (the scan's crossing; every move
 // when the scan sees none, as for a jump gates.ts reads as a crossing) and that an account meeting the
-// row's requirements takes. The row gets:
+// row's requirements takes, each with the scripts it queued run once it ends (gate-scan.ts). The row gets:
 // - `to`, when every stand lands, and every landing is one tile of walkable land (a literal,
 //   `movecoord(loc_coord, ...)`, or a tile each of several stands' walks ends on); off land, each stand is
 //   reported and the row is underived;

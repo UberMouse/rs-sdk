@@ -10,7 +10,7 @@
 // `quest-window` open only between two stages (left out of the fill); `not-a-gate` the move is not passage
 // a bot walks (inside a minigame, a transport out of scope, a quest step or a trap, a loc never placed);
 // `unclear` the script's meaning is not settled here, with what is unclear. A gate's `from`, `to`, `at`,
-// `byConfig` and `stages` are sources/gate-scan.ts CuratedGate's.
+// `byConfig`, `stages` and `choices` are sources/gate-scan.ts CuratedGate's.
 import type { CuratedGate, CuratedKind } from './sources/gate-scan';
 import type { Side } from './types';
 
@@ -34,6 +34,7 @@ const gate = (
         byConfig?: Record<string, string | string[][]>;
         stages?: Record<string, string>;
         at?: string[];
+        choices?: string[];
         scan?: string;
     } = {},
 ): CuratedGate => {
@@ -89,8 +90,11 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'consume:shantay_pass:1 members',
         {
             from: 'north',
-            why: 'From the north the pass is taken (shantay_pass.rs2:96) and [queue,shantay_pass_enter] makes the move, which the walker does not follow; from the south it lets members out free (shantay_pass.rs2:70).',
-            scan: '51e3b185',
+            choices: ["Yeah, that poster doesn't scare me!"],
+            why:
+                "The scan's crossing joins two moves: from the south the pass lets members out free (shantay_pass.rs2:70), and from the north it takes a Shantay pass (shantay_pass.rs2:96) and [queue,shantay_pass_enter] jumps the player to its literal, then three tiles south (shantay_pass.rs2:105, :109), one move, which the row stands for. So the gate is the pass from the north, not members alone. " +
+                'The poster asks "Go into Desert?" only of a player holding no disclaimer (shantay_pass.rs2:84, :88). `npc_find(coord, shantay_guard_still, 5, 0)` (shantay_pass.rs2:76) finds the guard who stands beside the pass, so it gates nothing.',
+            scan: 'ea523400',
         },
     ),
     no(
@@ -614,6 +618,41 @@ export const GATE_LIST: readonly CuratedGate[] = [
         'minigames/game_duelarena/scripts/duel_arena_lean.rs2:5',
         'Leaning on the Duel Arena wall to watch the fights: the player steps onto the wall (@lean_on_wall, duel_arena_lean.rs2:9-18); not passage.',
         '66aa916a',
+    ),
+    no(
+        'not-a-gate',
+        'oploc1,flag_entrance_angled',
+        'minigames/game_duelarena/scripts/duel_forfeit.rs2:8',
+        "Forfeiting a duel: the Duel Arena's flags and trapdoor (@duel_forfeit, duel_forfeit.rs2:7) queue [queue,duel_finish], which puts the duellists outside the arena (~duel_reset_all, duel_arena_finish.rs2:75); inside the minigame, not passage a bot walks.",
+        '57a0c6b5',
+    ),
+    no(
+        'not-a-gate',
+        'oploc1,flag_entrance2_angled',
+        'minigames/game_duelarena/scripts/duel_forfeit.rs2:8',
+        'Forfeiting a duel, as flag_entrance_angled.',
+        '57a0c6b5',
+    ),
+    no(
+        'not-a-gate',
+        'oploc1,flag_entrancel_angled',
+        'minigames/game_duelarena/scripts/duel_forfeit.rs2:8',
+        'Forfeiting a duel, as flag_entrance_angled.',
+        '57a0c6b5',
+    ),
+    no(
+        'not-a-gate',
+        'oploc1,flag_entrance2l_angled',
+        'minigames/game_duelarena/scripts/duel_forfeit.rs2:8',
+        'Forfeiting a duel, as flag_entrance_angled.',
+        '57a0c6b5',
+    ),
+    no(
+        'not-a-gate',
+        'oploc1,arena_trapdoor',
+        'minigames/game_duelarena/scripts/duel_forfeit.rs2:8',
+        'Forfeiting a duel, as flag_entrance_angled.',
+        '57a0c6b5',
     ),
     no(
         'not-a-gate',
@@ -1327,6 +1366,13 @@ export const GATE_LIST: readonly CuratedGate[] = [
         why: "Free from the loc's own tile (`coord = 0_44_157_53_37`, quest_eadgar.rs2:489), a test the scan does not name as a side.",
         scan: 'b047dbee',
     }),
+    no(
+        'not-a-gate',
+        'oploc1,eadgar_crate_goutweed',
+        'quests/quest_eadgar/scripts/quest_eadgar.rs2:550',
+        "Taking goutweed from the Troll Stronghold storeroom crate, an Eadgar's Ruse step: a guard who sees it knocks the player out ([queue,troll_guard_knockout], quest_eadgar.rs2:570) and drops them elsewhere in the stronghold ([queue,troll_guard_teleport], quest_eadgar.rs2:588); a trap, not passage a bot walks.",
+        '14278329',
+    ),
     gate(
         'oplocu,elemental_workshop_oddwall_l',
         'quests/quest_elemental_workshop/scripts/quest_elemental_workshop.rs2:29',

@@ -21,10 +21,10 @@ export interface Trigger {
     body: string;
 }
 
-/** A label or proc: a script a trigger body calls, by `@name` or `~name`. */
+/** A label or proc: a script a trigger body calls, by `@name` or `~name`; or a queue script a body queues. */
 export interface Callable {
     file: string;
-    /** How a body calls it: `@name` for a label, `~name` for a proc. */
+    /** How a body calls it: `@name` for a label, `~name` for a proc, `queue,name` for a queue script (parseQueues). */
     call: string;
     /** The header's line in the file, from 1. */
     line: number;
@@ -87,6 +87,17 @@ export function parseCallables(file: string, text: string): Callable[] {
     return blocks(file, text).flatMap(b => {
         const m = b.header.match(/^\[(label|proc),([a-z0-9_]+)\]$/);
         return m ? [{ file, call: (m[1] === 'label' ? '@' : '~') + m[2], line: b.line, body: b.body }] : [];
+    });
+}
+
+/**
+ * The `[queue,name]` scripts, which a `queue`, `strongqueue`, `weakqueue` or `longqueue` command names: the engine
+ * runs one once the script that queued it ends (server/engine/src/engine/entity/Player.ts processQueue).
+ */
+export function parseQueues(file: string, text: string): Callable[] {
+    return blocks(file, text).flatMap(b => {
+        const m = b.header.match(/^\[queue,([a-z0-9_]+)\]$/);
+        return m ? [{ file, call: `queue,${m[1]}`, line: b.line, body: b.body }] : [];
     });
 }
 

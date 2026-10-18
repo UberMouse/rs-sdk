@@ -323,6 +323,12 @@ export interface Gate {
      * `$respawnrate`), so the tiles are not open for good.
      */
     opens?: true;
+    /**
+     * How the move is done, when the trigger's op is not all of it (gates.ts): a `loc-op` of the row's loc and the
+     * trigger's op, with the dialogue options picked on the way. A choice the script asks only on some paths (the
+     * Shantay Pass poster, asked of a player holding no disclaimer) is answered when it is shown.
+     */
+    act?: Act;
     /** The script line that makes the check, as `file:line`. */
     source: string;
     /**
@@ -336,9 +342,10 @@ export interface Gate {
 
 /**
  * How a crossing is done: the op the player sends. A connector's (its loc's op) and a gate's (its trigger's) are
- * implied by their rows, so those rows carry none.
+ * implied by their rows, so those rows carry none, but for a gate whose move is behind dialogue (Gate.act).
  *
- * - `loc-op`: op `op` (1-5) of the loc config `loc`;
+ * - `loc-op`: op `op` (1-5) of the loc config `loc`, then `choices`, the dialogue options picked in order (by their
+ *   text), when the move is behind some;
  * - `item-on-loc`: the obj `obj`, or any obj of the category `category`, used on the loc config `loc`;
  * - `npc-op`: op `op` (1-5) of the npc config `npc`, then `choices`, the dialogue options picked in order (by their
  *   text), when the move is behind some;
@@ -346,7 +353,7 @@ export interface Gate {
  * - `interface`: a click on the interface component `component` (a glider's destination).
  */
 export type Act =
-    | { kind: 'loc-op'; loc: string; op: number }
+    | { kind: 'loc-op'; loc: string; op: number; choices?: string[] }
     | { kind: 'item-on-loc'; obj: string; loc: string }
     | { kind: 'item-on-loc'; category: string; loc: string }
     | { kind: 'npc-op'; npc: string; op: number; choices?: string[] }
@@ -416,7 +423,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 13;
+export const WORLD_FORMAT = 14;
 
 export interface World {
     /** WORLD_FORMAT when written. */

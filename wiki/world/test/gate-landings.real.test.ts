@@ -16,7 +16,7 @@ import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
 import { deriveQuests, scanQuestCalls } from '../sources/quests';
 import { coordTile } from '../sources/runescript';
-import { parseCallables, parseTriggers, readScripts } from '../sources/triggers';
+import { parseCallables, parseQueues, parseTriggers, readScripts } from '../sources/triggers';
 import type { Gate, Tile } from '../types';
 
 // Built when the file loads, where no timeout applies (as world.real.test.ts does).
@@ -41,6 +41,7 @@ const { tools } = toolCheckers(
 const scan: GateScanInput = {
     triggers,
     callables,
+    queues: scripts.flatMap(([f, t]) => parseQueues(f, t)),
     constants,
     quests,
     loadoutProcs: LOADOUT_PROCS,

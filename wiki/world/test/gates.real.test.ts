@@ -9,7 +9,7 @@ import { CROSS, gatedSets, placeGates, reviewGates, scanGates, type CuratedGate 
 import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
 import { deriveQuests, scanQuestCalls } from '../sources/quests';
-import { parseCallables, parseTriggers, readScripts } from '../sources/triggers';
+import { parseCallables, parseQueues, parseTriggers, readScripts } from '../sources/triggers';
 
 const scripts = readScripts();
 const triggers = scripts.flatMap(([f, t]) => parseTriggers(f, t));
@@ -32,6 +32,7 @@ const { tools, skipped } = toolCheckers(
 const candidates = scanGates({
     triggers,
     callables,
+    queues: scripts.flatMap(([f, t]) => parseQueues(f, t)),
     constants,
     quests,
     loadoutProcs: LOADOUT_PROCS,

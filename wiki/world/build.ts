@@ -84,7 +84,7 @@ import { toolCheckers } from './sources/conditions';
 import { deriveLoadoutRules } from './sources/loadout';
 import { deriveQuests, scanQuestCalls } from './sources/quests';
 import { byTransport, curatedTransports, deriveSails, outOfScopeSites } from './sources/transports';
-import { parseCallables, parseTriggers, readScripts, type Trigger } from './sources/triggers';
+import { parseCallables, parseQueues, parseTriggers, readScripts, type Trigger } from './sources/triggers';
 import { coordTile } from './sources/runescript';
 import { readZones } from './sources/zones';
 import {
@@ -744,6 +744,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const scan: GateScanInput = {
         triggers,
         callables,
+        queues: scripts.flatMap(([f, text]) => parseQueues(f, text)),
         constants,
         quests: quests.quests,
         loadoutProcs: LOADOUT_PROCS,

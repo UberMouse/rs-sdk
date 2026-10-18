@@ -9,7 +9,7 @@ import { collectConstants } from '../sources/constants';
 import { deriveGateLandings, type GateLandings } from '../sources/gate-landings';
 import { scanGates, type GateScanInput } from '../sources/gate-scan';
 import { coordTile } from '../sources/runescript';
-import { parseCallables, parseTriggers } from '../sources/triggers';
+import { parseCallables, parseQueues, parseTriggers } from '../sources/triggers';
 import type { Gate, Quest, Tile } from '../types';
 
 const SCRIPT = `[oploc1,guildladder]
@@ -102,6 +102,33 @@ if (stat_random(agility, 50, 150) = false) {
 }
 p_telejump(0_50_50_3_3);
 
+[oploc1,passgate]
+if (coordz(coord) <= coordz(loc_coord)) {
+    p_telejump(movecoord(coord, 0, 0, 3));
+    return;
+}
+if (inv_total(inv, pass_ticket) < 1) {
+    mes("You need a ticket.");
+    return;
+}
+inv_del(inv, pass_ticket, 1);
+queue(passgate_enter, 0, 0);
+mes("In you go.");
+
+[queue,passgate_enter]
+p_teleport(0_1_1_20_40);
+p_telejump(movecoord(coord, 0, 0, -3));
+
+[oploc1,lastword]
+if (stat(agility) < 5) {
+    return;
+}
+queue(lastword_jump, 0, 0);
+p_telejump(0_50_50_7_7);
+
+[queue,lastword_jump]
+p_telejump(0_50_50_8_8);
+
 [proc,climb_ladder](coord $coord, boolean $up)
 p_delay(0);
 p_telejump($coord);
@@ -143,10 +170,11 @@ const quest: Quest = { id: 'cook', varp: 'cookquest', varpId: 1, complete: 3, st
 const scan: GateScanInput = {
     triggers: parseTriggers(FILE, SCRIPT),
     callables: parseCallables(FILE, SCRIPT),
+    queues: parseQueues(FILE, SCRIPT),
     constants: collectConstants([['quest.constant', '^cook_complete = 3']]),
     quests: [quest],
     loadoutProcs: {},
-    names: new Set(['machete', 'guard']),
+    names: new Set(['machete', 'guard', 'pass_ticket']),
 };
 const locConfigs = parseConfigs(
     [
@@ -163,6 +191,8 @@ const locConfigs = parseConfigs(
         '[logbalance]',
         '[bars]',
         '[steppingstone]',
+        '[passgate]',
+        '[lastword]',
     ].join('\n'),
 );
 
@@ -415,5 +445,25 @@ describe('deriveGateLandings: rolls', () => {
         const { gate, out } = one(row('shed', 130, [['quest:cook']]));
         expect(gate.roll).toBeUndefined();
         expect(out.rolled + out.unrolled.length).toBe(0);
+    });
+});
+
+describe('deriveGateLandings: a move the trigger queues', () => {
+    test('behind a check and an obj taken before the queue: from the gated side it lands where the queued script ends', () => {
+        // The queued script jumps to its literal, then steps three south of it: a step from the player's tile,
+        // which the scan reads as the crossing the row stands for. From the south the trigger steps out free.
+        const inside = { ...coordTile('0_1_1_20_40'), z: coordTile('0_1_1_20_40').z - 3 };
+        const { gate } = one(row('passgate', 210, [['consume:pass_ticket:1']], { from: 'north' }));
+        expect(gate.landings).toEqual([
+            { stand: at(209, 100), landing: at(209, 103) },
+            { stand: at(210, 99), landing: at(210, 102) },
+            { stand: at(210, 101), landing: inside },
+            { stand: at(211, 100), landing: at(211, 103) },
+        ]);
+    });
+
+    test('the queued script runs once the trigger has ended, so its move is the landing, not the move after the queue', () => {
+        const { gate } = one(row('lastword', 220, [['skill:agility:5']]));
+        expect(gate.to).toEqual(coordTile('0_50_50_8_8'));
     });
 });

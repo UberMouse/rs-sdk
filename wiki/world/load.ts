@@ -31,20 +31,23 @@ const isTile = (x: unknown): boolean => isObject(x) && isInt(x.level) && isInt(x
 const isSets = (x: unknown): x is string[][] =>
     Array.isArray(x) && x.every(set => Array.isArray(set) && set.every(r => typeof r === 'string'));
 
+/** Whether an act's `choices` are absent or option texts. */
+const isChoices = (x: unknown): boolean => x === undefined || (Array.isArray(x) && x.every(isName));
+
 /** What is wrong with an Act, or undefined. */
 function actProblem(a: unknown): string | undefined {
     if (!isObject(a)) return 'an act that is not an object';
     switch (a.kind) {
         case 'loc-op':
-            return isName(a.loc) && isOp(a.op) ? undefined : 'a loc-op act needs a loc and an op 1-5';
+            return isName(a.loc) && isOp(a.op) && isChoices(a.choices)
+                ? undefined
+                : 'a loc-op act needs a loc, an op 1-5, and choices, when it has them, as option texts';
         case 'item-on-loc':
             return isName(a.loc) && isName(a.obj) !== isName(a.category)
                 ? undefined
                 : 'an item-on-loc act needs a loc and one of an obj or a category';
         case 'npc-op':
-            return isName(a.npc) &&
-                isOp(a.op) &&
-                (a.choices === undefined || (Array.isArray(a.choices) && a.choices.every(isName)))
+            return isName(a.npc) && isOp(a.op) && isChoices(a.choices)
                 ? undefined
                 : 'an npc-op act needs an npc, an op 1-5, and choices, when it has them, as option texts';
         case 'item-op':
@@ -92,7 +95,13 @@ function crossingProblem(c: unknown): string | undefined {
 function crossingModelProblem(world: World): string | undefined {
     const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
         ['crossings', world.crossings, crossingProblem],
-        ['gates', world.gates, g => (g.roll === undefined ? undefined : rollProblem(g.roll))],
+        [
+            'gates',
+            world.gates,
+            g =>
+                (g.roll === undefined ? undefined : rollProblem(g.roll)) ??
+                (g.act === undefined ? undefined : actProblem(g.act)),
+        ],
         ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],
     ];
     for (const [list, items, problem] of rows)
