@@ -37,9 +37,9 @@ export interface ActionModel {
 export class ModelError extends Error {}
 
 /**
- * The ModelError a family throws when the profile can't do the action: a level under its requirement, no axe or
- * pickaxe, or one the action can't use. A query drops the method for that profile; any other ModelError is a fault in
- * the data or the record, and stops it.
+ * The ModelError a family throws when the profile can't do the action: a level under its requirement (requireLevel,
+ * a pickaxe above the profile's Mining level among them), or no axe or pickaxe. A query drops the method for that
+ * profile; any other ModelError is a fault in the data or the record, and stops it.
  */
 export class ProfileError extends ModelError {}
 
@@ -50,8 +50,8 @@ export interface Family {
     /** The kinds of site it acts at: a method's tile must lie in a site of one of them. */
     kinds: FeatureKind[];
     /**
-     * Throws a ModelError when the site or params can't be modelled (an unknown subtype), and a ProfileError when the
-     * profile can't do it (no tool, a level under the requirement).
+     * Throws a ModelError when the site, params or game data can't be modelled (an unknown subtype, no row), and a
+     * ProfileError when the profile can't do it (no axe or pickaxe, a level under the requirement).
      */
     model(site: Site, params: unknown, profile: Profile, world: Pick<World, 'features'>): ActionModel;
 }

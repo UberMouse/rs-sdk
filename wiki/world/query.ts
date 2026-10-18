@@ -112,8 +112,8 @@ export function methodQuery(world: Pick<World, 'sites' | 'features' | 'methods'>
                     try {
                         return rateMethod(m, profile, ctx, way);
                     } catch (e) {
-                        // A family refusing the profile (a level under its requirement, no axe or pickaxe, or one
-                        // above the profile's level) drops the method; any other error is a fault, named by forMethod.
+                        // A family refusing the profile (a level under its requirement, no axe or pickaxe, a pickaxe
+                        // above its Mining level) drops the method; any other error is a fault, named by forMethod.
                         if (e instanceof ProfileError) return undefined;
                         throw e;
                     }
