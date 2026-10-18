@@ -1,6 +1,6 @@
 // The contract a formula module implements: one kind of action (chop, mine, fish, pickpocket, cook ...) at a site,
 // turned into what one attempt costs and yields. rate.ts and the cycle model take it from there.
-import type { Site, World } from '../types';
+import type { FeatureKind, Site, World } from '../types';
 import type { Profile } from './profile';
 import type { Skill } from './server';
 
@@ -27,6 +27,10 @@ export interface ActionModel {
     failDamage?: number;
     /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
+    /** With `deplete`: the site's features of the target, which the player works in turn (the resource cap's k). */
+    features?: number;
+    /** Objs the action needs held, worn or in the inventory (an axe, a pickaxe, a fishing rod); bait is in `consumes`. */
+    tools?: string[];
 }
 
 /** Thrown by `Family.model` when it can't model the case, with the reason. */
@@ -36,6 +40,8 @@ export interface Family {
     /** `woodcutting`, `fishing`, ... */
     id: string;
     skills: Skill[];
+    /** The kinds of site it acts at: a method's tile must lie in a site of one of them. */
+    kinds: FeatureKind[];
     /** Throws a ModelError when the site, params or profile can't be modelled (an unknown subtype, no tool, a level under the requirement). */
     model(site: Site, params: unknown, profile: Profile, world: World): ActionModel;
 }

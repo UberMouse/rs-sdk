@@ -3,7 +3,17 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { AXES, PICKAXES, readTools } from '../model/profile';
 import { statRandomChance } from '../model/roll';
-import { TICK_MS, TICK_MS_DEFAULT, TICKS_PER_HOUR, XP_RATE, XP_RATE_DEFAULT, xpForLevel } from '../model/server';
+import { INVENTORY_SLOTS } from '../model/items';
+import {
+    TICK_MS,
+    TICK_MS_DEFAULT,
+    TICKS_PER_HOUR,
+    USER_EVENTS_PER_TICK,
+    USER_EVENTS_PER_TICK_DEFAULT,
+    XP_RATE,
+    XP_RATE_DEFAULT,
+    xpForLevel,
+} from '../model/server';
 import { ENGINE_SRC, SCRIPTS } from '../paths';
 import { readConfigs } from '../sources/configs';
 import { readDbrows } from '../sources/dbrows';
@@ -26,6 +36,24 @@ describe('server constants from the engine', () => {
         expect(TICKS_PER_HOUR).toBe(9000);
         expect(XP_RATE).toBe(25);
         expect(XP_RATE_DEFAULT.at).toMatch(/^util\/WorldConfig\.ts:\d+$/);
+    });
+
+    test('the server takes 5 user events (drops, bank buttons, clicks) a tick, read from the category', () => {
+        expect(USER_EVENTS_PER_TICK).toBe(5);
+        expect(USER_EVENTS_PER_TICK_DEFAULT.at).toMatch(/^network\/game\/client\/ClientGameProtCategory\.ts:\d+$/);
+        // decodeIn reads packets until userLimit reaches the limit, and counts each accepted user event.
+        const player = engine('engine/entity/NetworkPlayer.ts');
+        expect(player).toContain('while (this.userLimit < ClientGameProtCategory.USER_EVENT.limit');
+        expect(player).toContain('if (success && message.category === ClientGameProtCategory.USER_EVENT) {');
+        // A drop and a bank button are user events.
+        for (const model of ['OpHeld', 'InvButton'])
+            expect(engine(`network/game/client/model/${model}.ts`)).toContain(
+                'category = ClientGameProtCategory.USER_EVENT;',
+            );
+    });
+
+    test('the inventory has 28 slots (player/configs/player.inv)', () => {
+        expect(INVENTORY_SLOTS).toBe(28);
     });
 
     test('the world ticks at NODE_TICKRATE and addXp multiplies by node.xpRate', () => {

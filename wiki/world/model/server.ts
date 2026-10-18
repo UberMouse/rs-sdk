@@ -45,6 +45,10 @@ export const TICK_RATE_SOURCE = {
     line: /^\s*NODE_TICKRATE:\s*tryParseInt\(process\.env\.NODE_TICKRATE,\s*(\d+)\),\s*$/,
 };
 export const XP_RATE_SOURCE = { file: 'util/WorldConfig.ts', line: /^\s*xpRate:\s*(\d+),/ };
+export const USER_EVENTS_SOURCE = {
+    file: 'network/game/client/ClientGameProtCategory.ts',
+    line: /^\s*static readonly USER_EVENT = new ClientGameProtCategory\(\d+, (\d+)\);\s*$/,
+};
 
 /** The value on the one line of `text` that `line` matches; throws when none or more than one does. */
 export function readDefault(file: string, text: string, line: RegExp): ServerDefault {
@@ -75,3 +79,13 @@ export const TICKS_PER_HOUR = 3_600_000 / TICK_MS;
  */
 export const XP_RATE_DEFAULT = fromEngine(XP_RATE_SOURCE);
 export const XP_RATE = XP_RATE_DEFAULT.value;
+
+/**
+ * The most user-event packets (an item op, an interface button, a move or op click) the server takes from a player in
+ * a tick: `NetworkPlayer.decodeIn` stops reading once `userLimit` reaches `USER_EVENT.limit`
+ * (engine/entity/NetworkPlayer.ts:69), counting each one its handler accepted (:141-142), and the rest wait for the
+ * next tick. The handlers run the op at once (OpHeldHandler, InvButtonHandler), so a drop or a bank deposit is this
+ * many to a tick.
+ */
+export const USER_EVENTS_PER_TICK_DEFAULT = fromEngine(USER_EVENTS_SOURCE);
+export const USER_EVENTS_PER_TICK = USER_EVENTS_PER_TICK_DEFAULT.value;

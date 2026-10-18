@@ -27,9 +27,10 @@ export const stall: FamilyFactory = data => {
     return {
         id: 'stall',
         skills: ['thieving'],
+        kinds: ['stall'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'stall', ['stall']);
-            const { subtype } = targetFeatures(site, world, 'stall', p.stall);
+            const { subtype, features } = targetFeatures(site, world, 'stall', p.stall);
             const row = rows.get(subtype);
             if (!row) throw new ModelError(`no stealing row lists stall ${subtype}`);
             requireLevel(profile, 'thieving', int(row, 'level'), `stealing from ${subtype}`);
@@ -44,6 +45,7 @@ export const stall: FamilyFactory = data => {
                 // Every steal swaps the stall for its empty loc for ~scale_by_playercount(respawn_ticks)
                 // (thieving.rs2:64, :116).
                 deplete: { chance: 1, respawnTicks: scaleByPlayercount(int(row, 'respawn_ticks')) },
+                features: features.length,
             };
         },
     };

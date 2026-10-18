@@ -4,13 +4,15 @@
 // the loadout rules (sources/loadout.ts), the transports (sources/transports.ts, gates.ts) and the gates
 // (sources/gate-scan.ts, gates.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
-// (distance.ts); then prints a report and renders the pages (render.ts). `bun run
+// (distance.ts), and resolves every curated method (methods.ts, model/method.ts); then prints a report and renders
+// the pages (render.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches (the
 // curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
-// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does. `--check`
+// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does, or a method
+// record that does not resolve. `--check`
 // writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
@@ -19,7 +21,12 @@ import { areaResolver } from './area-resolve';
 import { AREAS } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
-import { formatDistance, nearestSinks, SINKS, type DistanceReport } from './distance';
+import { formatDistance, nearestSinks, SINKS, wayFinder, type DistanceReport } from './distance';
+import { METHODS } from './methods';
+import { buildFamilies } from './model/families/index';
+import { readFoods, readItems } from './model/items';
+import { resolveMethods } from './model/method';
+import { readTools } from './model/profile';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -202,6 +209,8 @@ export interface BuildReport {
     distance: DistanceReport;
     /** Sites of COVERED kinds no walk reaches, by area path then id: warnings, the curation to-do list. */
     unreached: Unreached[];
+    /** The methods.ts records resolved, and the ones that do not, as `methods.ts <id>: <reason>`: an error. */
+    methods: { resolved: number; errors: string[] };
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -215,7 +224,8 @@ export const failed = (r: BuildReport): boolean =>
     r.gates.stale.length > 0 ||
     r.gates.drifted.length > 0 ||
     r.gates.invalid.length > 0 ||
-    r.gates.unnamed.length > 0;
+    r.gates.unnamed.length > 0 ||
+    r.methods.errors.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -313,10 +323,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     const scripts = readScripts();
     const triggers = scripts.flatMap(([f, text]) => parseTriggers(f, text));
     const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
+    const dbrows = readDbrows();
     const classify = classifier({
         locConfigs,
         npcConfigs,
-        dbrows: readDbrows(),
+        dbrows,
         triggers,
         callables,
     });
@@ -460,6 +471,20 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
     const distance = nearestSinks(graph, reached.sites);
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
+    // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
+    const gameData = { dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts };
+    const methods = resolveMethods(
+        METHODS,
+        {
+            world: { sites, features },
+            families: buildFamilies(gameData),
+            items: readItems(objConfigs),
+            foods: readFoods(dbrows),
+            tools: readTools(objConfigs),
+            quests: graph.quests,
+        },
+        wayFinder(graph),
+    );
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
@@ -554,6 +579,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             reach: fill.report,
             distance: distance.report,
             unreached,
+            methods: { resolved: methods.methods.length, errors: methods.errors },
         },
     };
 }
@@ -738,6 +764,14 @@ export function formatReport(report: BuildReport): string[] {
     return lines;
 }
 
+/** The methods' section of the build report: how many resolved, and an error per record that did not. */
+export function formatMethods(r: BuildReport['methods']): string[] {
+    return [
+        `methods: ${r.resolved} resolved`,
+        ...list(`ERROR methods: ${r.errors.length} records methods.ts does not resolve:`, r.errors),
+    ];
+}
+
 /** How far apart two tiles are, Chebyshev, as the unreached report counts it. */
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 
@@ -791,7 +825,7 @@ if (import.meta.main) {
         // A fresh world.json can still have a report error: `bun run world` fails on it, so the check
         // does too.
         if (failed(report)) {
-            for (const line of formatReport(report)) console.log(line);
+            for (const line of [...formatReport(report), ...formatMethods(report.methods)]) console.log(line);
             process.exitCode = 1;
         }
     } else {
@@ -802,6 +836,7 @@ if (import.meta.main) {
             ...formatReport(report),
             ...formatReach(report.reach),
             ...formatDistance(report.distance),
+            ...formatMethods(report.methods),
             ...formatUnreached(report.unreached, world.areas),
         ])
             console.log(line);

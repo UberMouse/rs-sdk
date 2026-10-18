@@ -56,6 +56,7 @@ export const mining: FamilyFactory = data => {
     return {
         id: 'mining',
         skills: ['mining'],
+        kinds: ['rock'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'mining', ['rock']);
             const { subtype, features } = targetFeatures(site, world, 'rock', p.rock);
@@ -81,7 +82,14 @@ export const mining: FamilyFactory = data => {
             const ore = row.data.rock_output![0]![0]!;
             // ~get_ore_essence (:217-227): an essence every swing, no roll, no depletion.
             if (label === 'essence')
-                return { ticksPerAttempt, success: 1, xpTenths, products: [{ obj: ore, count: 1 }], consumes: [] };
+                return {
+                    ticksPerAttempt,
+                    success: 1,
+                    xpTenths,
+                    products: [{ obj: ore, count: 1 }],
+                    consumes: [],
+                    tools: [pickaxe],
+                };
             // A gem roll first, random(256) = 1, or random(86) wearing a charged glory on a members world
             // (:133-139, :188-194); it takes the swing whether or not ~mining_gem_table gives a gem. Else the ore
             // roll, whose success always depletes the rock for ~scale_by_playercount(rock_respawnrate) (:155-161,
@@ -107,6 +115,8 @@ export const mining: FamilyFactory = data => {
                 // p_delay(0) (:157) holds it to clickTicks(0) ticks after: one tick more per ore.
                 ...(label === 'normal' ? { successTicks: clickTicks(0) - 1 } : {}),
                 deplete: { chance: 1, respawnTicks: scaleByPlayercount(int(row, 'rock_respawnrate')) },
+                features: features.length,
+                tools: [pickaxe],
             };
         },
     };

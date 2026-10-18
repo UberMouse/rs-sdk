@@ -47,6 +47,7 @@ export const cooking: FamilyFactory = data => {
     return {
         id: 'cooking',
         skills: ['cooking'],
+        kinds: ['range', 'fire'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'cooking', ['food']);
             if (site.kind !== 'range' && site.kind !== 'fire')

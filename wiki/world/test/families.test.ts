@@ -328,6 +328,8 @@ describe('woodcutting', () => {
             products: [{ obj: 'yew_logs', count: 1 }],
             consumes: [],
             deplete: { chance: 1 / 8, respawnTicks: 199 },
+            features: 1,
+            tools: ['rune_axe'],
         });
     });
 
@@ -370,6 +372,8 @@ describe('mining', () => {
         expect(m.ticksPerAttempt).toBe(4);
         expect(m.success).toBe(success);
         expect(m.xpTenths).toEqual({ mining: 350 });
+        // One iron rock at the site shares the load; the pickaxe is the profile's.
+        expect([m.features, m.tools]).toEqual([1, ['adamant_pickaxe']]);
         expect(m.successTicks).toBeUndefined();
         expect(m.deplete).toEqual({ chance: 1, respawnTicks: 19 });
         expect(m.products[0]).toEqual({ obj: 'iron_ore', count: 1 });
@@ -409,6 +413,7 @@ describe('mining', () => {
             xpTenths: { mining: 50 },
             products: [{ obj: 'blankrune', count: 1 }],
             consumes: [],
+            tools: ['rune_pickaxe'],
         });
     });
 
@@ -484,6 +489,7 @@ describe('fishing', () => {
         expect(m.success).toBe(77 / 256);
         expect(m.products).toEqual([{ obj: 'raw_trout', count: 1 }]);
         expect(m.xpTenths).toEqual({ fishing: 500 });
+        expect(m.tools).toEqual(['fly_fishing_rod']);
     });
 
     test('fails with a reason', () => {
@@ -618,5 +624,16 @@ describe('registry', () => {
     test('every family is registered under its own id', () => {
         expect([...families.keys()]).toEqual(Object.keys(FAMILIES));
         for (const [id, f] of families) expect(f.id).toBe(id);
+    });
+
+    test('the kinds of site each family acts at', () => {
+        expect(Object.fromEntries([...families].map(([id, f]) => [id, f.kinds]))).toEqual({
+            cooking: ['range', 'fire'],
+            fishing: ['fishing-spot'],
+            mining: ['rock'],
+            pickpocket: ['pickpocket'],
+            stall: ['stall'],
+            woodcutting: ['tree'],
+        });
     });
 });

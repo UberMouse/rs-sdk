@@ -6,6 +6,7 @@ import {
     addReach,
     byWritten,
     failed,
+    formatMethods,
     formatReport,
     formatUnreached,
     nearestReached,
@@ -322,6 +323,7 @@ describe('formatReport', () => {
             bytes: 1024,
         },
         unreached: [],
+        methods: { resolved: 6, errors: [] },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -452,8 +454,18 @@ describe('formatReport', () => {
             { ...report, gates: { ...report.gates, drifted: ['x'] } },
             { ...report, gates: { ...report.gates, invalid: ['x'] } },
             { ...report, gates: { ...report.gates, unnamed: ['x'] } },
+            { ...report, methods: { resolved: 5, errors: ['methods.ts x: no rock site holds (1, 2, 0)'] } },
         ])
             expect(failed(one)).toBe(true);
+    });
+
+    test('the methods section: how many resolved, and an error per record that did not', () => {
+        expect(formatMethods(report.methods)).toEqual(['methods: 6 resolved']);
+        expect(formatMethods({ resolved: 5, errors: ['methods.ts x: no rock site holds (1, 2, 0)'] })).toEqual([
+            'methods: 5 resolved',
+            'ERROR methods: 1 records methods.ts does not resolve:',
+            '  methods.ts x: no rock site holds (1, 2, 0)',
+        ]);
     });
 
     test('lists the gate errors, warnings, unclear entries and quest windows; warnings alone do not fail', () => {

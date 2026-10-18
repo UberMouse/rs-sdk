@@ -28,6 +28,7 @@ export const pickpocket: FamilyFactory = data => {
     return {
         id: 'pickpocket',
         skills: ['thieving'],
+        kinds: ['pickpocket'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'pickpocket', ['npc']);
             const { subtype } = targetFeatures(site, world, 'pickpocket', p.npc);

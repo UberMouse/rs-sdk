@@ -25,9 +25,10 @@ export const woodcutting: FamilyFactory = data => {
     return {
         id: 'woodcutting',
         skills: ['woodcutting'],
+        kinds: ['tree'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'woodcutting', ['tree']);
-            const { subtype } = targetFeatures(site, world, 'tree', p.tree);
+            const { subtype, features } = targetFeatures(site, world, 'tree', p.tree);
             const row = rows.get(subtype);
             if (!row) throw new ModelError(`no woodcutting_trees row for tree ${subtype}`);
             // The level check (woodcut.rs2:34-39), then an axe: ~woodcutting_axe_checker returns null with none
@@ -54,6 +55,8 @@ export const woodcutting: FamilyFactory = data => {
                 products: [{ obj: row.data.product![0]![0]!, count: 1 }],
                 consumes: [],
                 deplete: { chance: normal ? 1 : 1 / 8, respawnTicks },
+                features: features.length,
+                tools: [profile.axe],
             };
         },
     };

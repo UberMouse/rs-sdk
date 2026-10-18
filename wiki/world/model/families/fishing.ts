@@ -135,6 +135,7 @@ export const fishing: FamilyFactory = data => {
     return {
         id: 'fishing',
         skills: ['fishing'],
+        kinds: ['fishing-spot'],
         model(site, params, profile, world): ActionModel {
             const p = stringParams(params, 'fishing', ['spot', 'tool']);
             const { subtype } = targetFeatures(site, world, 'fishing-spot', p.spot);
@@ -164,6 +165,7 @@ export const fishing: FamilyFactory = data => {
                 ],
                 // The bait goes only on a catch (fishing.rs2:49-51, :63-65).
                 consumes: c.bait ? [{ obj: c.bait, count: 1 }] : [],
+                tools: [p.tool],
             };
         },
     };
