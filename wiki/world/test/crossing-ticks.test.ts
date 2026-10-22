@@ -283,13 +283,81 @@ describe('a gate: its success ticks', () => {
         expect(out.gates[0]).toMatchObject({
             landings: [at(169, 100), at(170, 99), at(171, 100)].map(stand => ({ stand, landing })),
             ticks: 12,
-            // Each stand's own: 11 from under the pipe, 12 from beside it.
+        });
+        // A landings row (the north stand refuses) keeps no stand's ticks: its stands can land on different tiles.
+        expect(out.gates[0]).not.toHaveProperty('standTicks');
+    });
+
+    // A hatch every stand around which drops the player on one tile five north: a `to` row. Under the first, a stand
+    // off the south tile walks there first, as the Wilderness pipe's (wilderness_course.rs2:57-60); the second waits
+    // while the player walks, a varp the run can't read, taken both ways.
+    const HATCHES = `[oploc1,hatch]
+if (coord ! movecoord(loc_coord, 0, 0, -1)) {
+    p_delay(0);
+    p_walk(movecoord(loc_coord, 0, 0, -1));
+}
+p_delay(0);
+p_teleport(movecoord(loc_coord, 0, 0, 5));
+
+[oploc1,slowhatch]
+if (%option_run = 0) {
+    p_delay(2);
+}
+p_delay(0);
+p_teleport(movecoord(loc_coord, 0, 0, 5));
+`;
+    const hatchScan: GateScanInput = {
+        ...scan,
+        triggers: parseTriggers(FILE, HATCHES),
+        callables: parseCallables(FILE, HATCHES),
+    };
+    const hatchConfigs = parseConfigs('[hatch]\nop1=Use\n[slowhatch]\nop1=Use');
+    const HATCH = at(300, 300);
+    const hatch = (loc: string): Gate => ({
+        trigger: `oploc1,${loc}`,
+        kind: 'gate',
+        loc,
+        tile: HATCH,
+        shape: 10,
+        angle: 0,
+        requires: [['skill:agility:1']],
+        source: `${FILE}:1`,
+    });
+    const hatchCollision = {
+        ...collision,
+        walkable: (l: number, x: number, z: number) => key(at(x, z, l)) !== key(HATCH),
+    };
+    const derive = (loc: string) =>
+        deriveGateLandings({
+            gates: [hatch(loc)],
+            scan: hatchScan,
+            candidates: scanGates(hatchScan),
+            locConfigs: hatchConfigs,
+            collision: hatchCollision,
+            size: locSizes(hatchConfigs),
+            locs: [{ config: loc, tile: HATCH, shape: 10, rotation: 0 }],
+        }).gates[0];
+
+    test("a `to` row: each stand's ticks, the row's the most of them", () => {
+        // From (300, 299): p_delay(0) 1. From the others, the p_delay(0) before p_walk adds 1: 2.
+        expect(derive('hatch')).toMatchObject({
+            to: at(300, 305),
+            ticks: 2,
             standTicks: [
-                { stand: at(169, 100), ticks: 12 },
-                { stand: at(170, 99), ticks: 11 },
-                { stand: at(171, 100), ticks: 12 },
+                { stand: at(299, 300), ticks: 2 },
+                { stand: at(300, 299), ticks: 1 },
+                { stand: at(300, 301), ticks: 2 },
+                { stand: at(301, 300), ticks: 2 },
             ],
         });
+    });
+
+    test("a stand whose paths to the one landing take different ticks keeps the quickest, the player's way", () => {
+        // %option_run taken both ways: p_delay(2) 3 + p_delay(0) 1 = 4 walking, 1 running (as the island rope
+        // swings', shortcuts.rs2:137-141). The row's ticks are the most of the stands': 1.
+        const g = derive('slowhatch');
+        expect(g?.standTicks?.map(st => st.ticks)).toEqual([1, 1, 1, 1]);
+        expect(g?.ticks).toBe(1);
     });
 });
 

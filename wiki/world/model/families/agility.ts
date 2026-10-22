@@ -8,10 +8,11 @@
 // in.
 import { codeOf } from '../../classify';
 import { parseRequirement } from '../../requirements';
-import { damageAt, statRandomChance } from '../../roll';
+import { damageAt, expectedTicks, statRandomChance } from '../../roll';
 import { first } from '../../sources/configs';
+import { triggerKey } from '../../sources/gate-scan';
 import { parseCallables, parseTriggers, type Callable, type Trigger } from '../../sources/triggers';
-import type { Crossing, Gate, Rect, Roll, Site, Tile } from '../../types';
+import type { Course, Crossing, Gate, Rect, Roll, Site, Tile } from '../../types';
 import { byTile, tileKey } from '../../util';
 import { ModelError, ProfileError, type ActionModel, type ModelWorld } from '../family';
 import type { Profile } from '../profile';
@@ -89,6 +90,12 @@ function gateMoves(g: Gate): Move[] {
     }));
 }
 
+/**
+ * The most placements that set no step one step may have in the way: the lap tries every order of them (rounds), k! of
+ * them (the Barbarian course's two walls, 2).
+ */
+const MAX_BEFORE = 5;
+
 /** The lap of an `agility-course` site, step by step; throws when the site or world can't give one. */
 export function lapOf(site: Site, world: ModelWorld): Step[] {
     if (site.kind !== 'agility-course' || !site.course)
@@ -104,19 +111,26 @@ export function lapOf(site: Site, world: ModelWorld): Step[] {
         const moves = own.flatMap(o => movesAt(o.loc, o.tile, full)).sort(byMove);
         if (!moves.length) throw new ModelError(`step ${step} of ${site.id} has no crossing or gate row to make it by`);
         const locs = new Set(own.map(o => o.loc));
-        // The other placements of the step's loc configs in the site, which set no step (stepAt, sources/courses.ts).
-        const others = new Map<string, Tile>();
+        // The other placements of the step's loc configs in the site, which set no step (stepAt, sources/courses.ts),
+        // by loc and tile. Each is crossed by its crossing rows: one with only a gate row is not modelled.
+        const inSite = (loc: string, tile: Tile) =>
+            locs.has(loc) && inRect(site.bbox, tile) && !obstacles.some(o => same(o.tile, tile));
+        for (const g of gates)
+            if (inSite(g.loc, g.tile))
+                throw new ModelError(
+                    `${g.loc} at (${g.tile.x}, ${g.tile.z}, ${g.tile.level}) in ${site.id} sets no step and has a gate row: not modelled`,
+                );
+        const others = new Map<string, { loc: string; tile: Tile }>();
         for (const c of crossings)
-            if (
-                c.act.kind === 'loc-op' &&
-                locs.has(c.act.loc) &&
-                inRect(site.bbox, c.at) &&
-                !obstacles.some(o => same(o.tile, c.at))
-            )
-                others.set(`${c.act.loc} ${tileKey(c.at)}`, c.at);
-        const before = [...others]
-            .sort(([, a], [, b]) => byTile(a, b))
-            .map(([key, tile]) => movesAt(key.slice(0, key.indexOf(' ')), tile, full));
+            if (c.act.kind === 'loc-op' && inSite(c.act.loc, c.at))
+                others.set(`${c.act.loc} ${tileKey(c.at)}`, { loc: c.act.loc, tile: c.at });
+        if (others.size > MAX_BEFORE)
+            throw new ModelError(
+                `step ${step} of ${site.id} has ${others.size} placements that set no step: more than ${MAX_BEFORE} orders them past reading`,
+            );
+        const before = [...others.values()]
+            .sort((a, b) => byTile(a.tile, b.tile))
+            .map(o => movesAt(o.loc, o.tile, full));
         steps.push({ step, before, moves });
     }
     return steps;
@@ -173,53 +187,121 @@ function meets(m: Move, profile: Profile): boolean {
 }
 
 /**
- * The agility xp tenths a move's trigger gives on success, read from its script: `stat_advance(agility, <n>)` in its
- * body or a label it jumps to, or a proc it calls with `<n>` for a parameter the proc passes to stat_advance
- * (`~agility_climb_up(75, ...)`, skill_agility/scripts/agility.rs2:3-6; `~agility_force_move`, :11-16). The lap
- * bonus's proc passes none of its parameters, so it is not counted here (Course.lapBonus is).
+ * The loc op trigger the engine runs for `op` on a placed `loc`: the loc's own, else its category's
+ * (ScriptProvider.getByTrigger, server/engine/src/engine/script/ScriptProvider.ts:124-134, looks up the type's
+ * trigger first, then the category's).
  */
-function xpReader(data: GameData): (trigger: string, loc: string) => number {
+export function triggerFor(
+    triggers: readonly Trigger[],
+    locs: GameData['locs'],
+    loc: string,
+    op: string,
+): Trigger | undefined {
+    const ops = triggers.filter(x => x.on === 'loc' && x.kind === 'op' && x.op === op);
+    const category = first(locs.get(loc), 'category');
+    return ops.find(x => !x.category && x.target === loc) ?? ops.find(x => x.category && x.target === category);
+}
+
+const STAT_ADVANCE = /\bstat_advance\(\s*agility\s*,/g;
+
+/**
+ * The agility xp tenths a move's trigger gives on success, read from its script: each `stat_advance(agility, <n>)`
+ * in its body, a label it jumps to, or a proc it calls (followed through), `<n>` a number or a parameter the call
+ * gives one for (`~agility_climb_up(75, ...)`, skill_agility/scripts/agility.rs2:3-6; `~agility_force_move`, :11-16).
+ * The one proc not followed is the course's lap proc, the one whose body holds the bonus's stat_advance
+ * (Course.source): its bonus is Course.lapBonus. Throws when the xp a stat_advance gives is not read, or when the
+ * trigger gives xp more than one way.
+ */
+function xpReader(data: GameData): (trigger: string, loc: string, course: Course) => number {
     let triggers: Trigger[] | undefined;
     let callables: Map<string, Callable> | undefined;
     const cache = new Map<string, number>();
-    return (trigger, loc) => {
-        const had = cache.get(trigger);
+    return (trigger, loc, course) => {
+        const key = `${trigger} ${loc} ${course.source}`;
+        const had = cache.get(key);
         if (had !== undefined) return had;
         triggers ??= data.scripts.flatMap(([f, text]) => parseTriggers(f, text));
         callables ??= new Map(data.scripts.flatMap(([f, text]) => parseCallables(f, text)).map(c => [c.call, c]));
+        const procs = callables;
         const op = trigger.match(/^oploc([1-5]),/)?.[1];
-        const category = first(data.locs.get(loc), 'category');
-        const t = triggers.find(
-            x =>
-                x.on === 'loc' &&
-                x.kind === 'op' &&
-                x.op === op &&
-                (x.category ? x.target === category : x.target === loc),
-        );
-        if (!t) throw new ModelError(`no script has the trigger ${trigger}`);
+        const t = op === undefined ? undefined : triggerFor(triggers, data.locs, loc, op);
+        if (!t) throw new ModelError(`no script has the trigger ${trigger} for ${loc}`);
+        const lapProc = lapProcOf(course, [...procs.values()]);
+        // Whether a proc's body, or a proc it calls (the lap proc aside), has a stat_advance(agility, ...): the
+        // procs followed.
+        const advancing = new Map<string, boolean>();
+        const advances = (call: string): boolean => {
+            const known = advancing.get(call);
+            if (known !== undefined) return known;
+            advancing.set(call, false);
+            const code = codeOf(procs.get(call)?.body ?? '');
+            const yes =
+                code.search(STAT_ADVANCE) >= 0 ||
+                [...code.matchAll(/~([a-z0-9_]+)/g)].some(m => `~${m[1]}` !== lapProc && advances(`~${m[1]}`));
+            advancing.set(call, yes);
+            return yes;
+        };
         const found: number[] = [];
-        const bodies = [t.body];
-        const seen = new Set<string>();
-        for (let i = 0; i < bodies.length; i++) {
-            const code = codeOf(bodies[i]!);
-            for (const m of code.matchAll(/\bstat_advance\(\s*agility\s*,\s*(\d+)\s*\)/g)) found.push(Number(m[1]));
-            for (const m of code.matchAll(/~([a-z0-9_]+)\(/g)) {
-                const n = paramXp(callables.get(`~${m[1]}`), argsAt(code, m.index + m[0].length));
-                if (n !== undefined) found.push(n);
+        const labels = new Set<string>();
+        // One body, its parameters bound to the calling code's arguments (`$xp` -> `75`); `stack` the procs it is in.
+        const visit = (body: string, where: string, env: ReadonlyMap<string, string>, stack: readonly string[]) => {
+            const code = codeOf(body);
+            for (const m of code.matchAll(STAT_ADVANCE)) {
+                const arg = argsAt(code, m.index + m[0].indexOf('(') + 1)[1] ?? '';
+                const n = Number(env.get(arg) ?? arg);
+                if (arg === '' || !Number.isInteger(n))
+                    throw new ModelError(`${trigger}: stat_advance(agility, ${arg}) in ${where} gives xp not read`);
+                found.push(n);
+            }
+            for (const m of code.matchAll(/~([a-z0-9_]+)(\()?/g)) {
+                const call = `~${m[1]}`;
+                const proc = procs.get(call);
+                if (!proc || call === lapProc || stack.includes(call) || !advances(call)) continue;
+                const listed = m[2] ? argsAt(code, m.index + m[0].length) : [];
+                const args = listed.length === 1 && listed[0] === '' ? [] : listed;
+                const params = paramsOf(proc);
+                if (params.length !== args.length)
+                    throw new ModelError(`${trigger}: ${call} is called with ${args.length} arguments in ${where}`);
+                const bound = new Map(params.map((p, i) => [p, env.get(args[i]!) ?? args[i]!]));
+                visit(proc.body, call, bound, [...stack, call]);
             }
             for (const m of code.matchAll(/@([a-z0-9_]+)|\bjump\(([a-z0-9_]+)\)/g)) {
-                const label = callables.get(`@${m[1] ?? m[2]}`);
-                if (!label || seen.has(label.call)) continue;
-                seen.add(label.call);
-                bodies.push(label.body);
+                const label = procs.get(`@${m[1] ?? m[2]}`);
+                if (!label || labels.has(label.call)) continue;
+                labels.add(label.call);
+                visit(label.body, label.call, new Map(), stack);
             }
-        }
+        };
+        visit(t.body, `[${triggerKey(t)}]`, new Map(), []);
         if (found.length > 1)
             throw new ModelError(`${trigger} gives agility xp ${found.length} ways: which runs is not read`);
         const xp = found[0] ?? 0;
-        cache.set(trigger, xp);
+        cache.set(key, xp);
         return xp;
     };
+}
+
+/** The `$name`s of a proc's parameters, in order. */
+const paramsOf = (proc: Callable): string[] =>
+    (proc.body.match(/^\s*\(([^)]*)\)/)?.[1] ?? '')
+        .split(',')
+        .map(p => p.trim().split(/\s+/)[1])
+        .filter((p): p is string => p !== undefined);
+
+/**
+ * The course's lap proc: the proc in Course.source's file whose header is the last before that line, and whose body
+ * has the bonus's stat_advance there. Throws when there is none.
+ */
+function lapProcOf(course: Course, callables: readonly Callable[]): string {
+    const at = course.source.match(/^(.*):(\d+)$/);
+    const [file, line] = [at?.[1], Number(at?.[2])];
+    const proc = callables
+        .filter(c => c.file === file && c.call.startsWith('~') && c.line <= line)
+        .sort((a, b) => b.line - a.line)[0];
+    const there = proc && codeOf(proc.body).split('\n')[line - proc.line];
+    if (!proc || there === undefined || there.search(STAT_ADVANCE) < 0)
+        throw new ModelError(`no proc has the lap bonus's stat_advance at ${course.source}`);
+    return proc.call;
 }
 
 /** The literal arguments of a call whose `(` ends just before `from`, split at its top-level commas. */
@@ -238,18 +320,6 @@ function argsAt(code: string, from: number): string[] {
         }
     }
     return args;
-}
-
-/** The xp a proc gives when it passes one of its parameters to stat_advance(agility, ...) and the call gives a number. */
-function paramXp(proc: Callable | undefined, args: readonly string[]): number | undefined {
-    if (!proc) return undefined;
-    const params = (proc.body.match(/^\s*\(([^)]*)\)/)?.[1] ?? '').split(',').map(p => p.trim().split(/\s+/)[1]);
-    const passed = codeOf(proc.body).match(/\bstat_advance\(\s*agility\s*,\s*(\$[a-z0-9_]+)\s*\)/)?.[1];
-    const i = passed === undefined ? -1 : params.indexOf(passed);
-    if (i < 0) return undefined;
-    const n = Number(args[i]);
-    if (!Number.isInteger(n)) throw new ModelError(`${proc.call} is called with xp ${args[i]}: not a number`);
-    return n;
 }
 
 /** A move's expected cost at a profile, or a lap's: ticks, hitpoints lost and xp tenths. */
@@ -325,8 +395,14 @@ export const agility: FamilyFactory = data => {
             const { pairs, index } = pairsOf(steps);
             if (!walks || walks.length !== pairs.length)
                 throw new ModelError(`a lap of ${site.id} needs its ${pairs.length} walks priced (Family.walks)`);
-            const walk = (from: Tile, to: Tile): number | null =>
-                walks[index.get(`${tileKey(from)} ${tileKey(to)}`)!] ?? null;
+            const walk = (from: Tile, to: Tile): number | null => {
+                const i = index.get(`${tileKey(from)} ${tileKey(to)}`);
+                if (i === undefined)
+                    throw new ModelError(
+                        `a lap of ${site.id} walks ${tileKey(from)} to ${tileKey(to)}, no pair of its walks`,
+                    );
+                return walks[i] ?? null;
+            };
             const hp = profile.levels.hitpoints;
             // Each move at the profile: its cost, or why it can't be made (`profile`: the profile can't).
             const priced = (m: Move): Priced | { why: string; profile: boolean } => {
@@ -337,22 +413,21 @@ export const agility: FamilyFactory = data => {
                     };
                 // The next click's op runs a tick after the move's last delay ends: it is refused while the delay
                 // holds the player (survey §0, families/common.ts clickTicks).
-                const own = { ticks: m.ticks + 1, damage: 0, xp: xpOf(m.trigger, m.loc) };
+                const own = { ticks: m.ticks + 1, damage: 0, xp: xpOf(m.trigger, m.loc, site.course!) };
                 if (!m.roll) return own;
                 const stat = m.roll.stat;
                 if (!isSkill(stat)) throw new ModelError(`${m.trigger} rolls ${stat}: not a skill`);
                 const p = statRandomChance(profile.levels[stat], m.roll.low, m.roll.high);
                 if (p <= 0)
                     return { why: `${m.trigger} never succeeds at ${stat} ${profile.levels[stat]}`, profile: true };
-                // (1 - p)/p falls come before the success on average (roll.ts expectedTicks), each its failure's
-                // ticks, the walk back to the stand from where it leaves the player, and the click again.
+                // Each fall takes its failure's ticks, the walk back to the stand from where it leaves the player, and
+                // the click again (roll.ts expectedTicks: (1 - p)/p falls before the success).
                 const fail = m.roll.fail;
                 const back = fail.to ? walk(fail.to, m.stand) : 0;
                 if (back === null) return { why: `no walk back from ${m.trigger}'s fall`, profile: false };
-                const falls = (1 - p) / p;
                 return {
-                    ticks: own.ticks + falls * (fail.ticks + back + 1),
-                    damage: falls * damageAt(fail.hpDamage ?? { a: 0, b: 1, c: fail.damage }, hp),
+                    ticks: expectedTicks(own.ticks, p, fail.ticks + 1, back),
+                    damage: ((1 - p) / p) * damageAt(fail.hpDamage ?? { a: 0, b: 1, c: fail.damage }, hp),
                     xp: own.xp,
                 };
             };
@@ -366,6 +441,7 @@ export const agility: FamilyFactory = data => {
             for (const st of steps)
                 for (const ms of [...st.before, st.moves]) {
                     if (usable(ms).length) continue;
+                    if (!ms.length) throw new ModelError(`step ${st.step} of ${site.id} has a placement with no move`);
                     const why = ms.map(m => costs.get(m)!).flatMap(c => ('why' in c ? [c] : []));
                     const text = [...new Set(why.map(w => w.why))].sort().join('; ');
                     if (why.every(w => w.profile)) throw new ProfileError(`step ${st.step} of ${site.id}: ${text}`);

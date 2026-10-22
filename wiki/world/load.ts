@@ -4,7 +4,8 @@ import { readFileSync } from 'fs';
 import { contentHash } from './content-hash';
 import { WORLD_JSON } from './paths';
 import { damageAt } from './roll';
-import { WORLD_FORMAT, type HpDamage, type World } from './types';
+import { WORLD_FORMAT, type HpDamage, type Tile, type World } from './types';
+import { tileKey } from './util';
 
 /** A parsed JSON object, its fields not yet checked. */
 type Parsed = { [key: string]: unknown };
@@ -126,11 +127,19 @@ function gateProblem(g: Parsed): string | undefined {
     if (g.ticks !== undefined && (!isCount(g.ticks) || (g.to === undefined && g.landings === undefined)))
         return 'its ticks, when it has them, is a count, on a row with to or landings';
     if (g.standTicks !== undefined) {
-        if (g.ticks === undefined || !Array.isArray(g.standTicks) || !g.standTicks.length)
-            return 'its standTicks, when it has them, is a list beside its ticks';
-        for (const st of g.standTicks)
-            if (!isObject(st) || !isTile(st.stand) || !isCount(st.ticks) || st.ticks > (g.ticks as number))
-                return "a standTicks entry needs a stand tile and ticks, no more than the row's ticks";
+        if (g.ticks === undefined || g.to === undefined || !Array.isArray(g.standTicks) || !g.standTicks.length)
+            return 'its standTicks, when it has them, is a list beside its ticks, on a row with to';
+        const stands = new Set<string>();
+        for (const st of g.standTicks) {
+            if (!isObject(st) || !isTile(st.stand) || !isCount(st.ticks))
+                return 'a standTicks entry needs a stand tile and ticks';
+            const { x, z, level } = st.stand as Tile;
+            const key = tileKey(st.stand as Tile);
+            if (stands.has(key)) return `its standTicks has the stand (${x}, ${z}, ${level}) twice`;
+            stands.add(key);
+        }
+        if (Math.max(...g.standTicks.map(st => (st as Parsed).ticks as number)) !== g.ticks)
+            return "its ticks is the most of its standTicks'";
     }
     if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))
         return 'oneWay, when it has it, is true, on a row with from';

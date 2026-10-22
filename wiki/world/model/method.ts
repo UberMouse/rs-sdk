@@ -2,7 +2,7 @@
 // ticks under each requirement set that gets to all of them, and the lowest level its families can model it at;
 // then its floor at a profile (cycle.ts).
 import type { Measured, MethodDef } from '../methods';
-import { SINKS, type wayFinder } from '../distance';
+import { SINKS, type Way, type wayFinder } from '../distance';
 import { isMultiway, readZones, wildernessLevel, type Zones } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
 import {
@@ -14,7 +14,7 @@ import {
     type World,
     type WorldMethod,
 } from '../types';
-import { cmp } from '../util';
+import { cmp, tileKey } from '../util';
 import { cycle, type CycleRates, type CycleSink, type Withdraw } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
 import { buildFamilies, type GameData } from './families/index';
@@ -196,6 +196,42 @@ function withdrawObj(def: MethodDef): string {
     return obj;
 }
 
+type Finder = ReturnType<typeof wayFinder>;
+
+/**
+ * Finder.runTicksBetween by (from, to, requirement set), kept per finder: the methods and ways of one build share a
+ * graph and its finder, so a leg or walk two of them price is searched once.
+ */
+const memos = new WeakMap<Finder, Map<string, Way | null>>();
+function wayBetween(finder: Finder, from: Tile, to: Tile, reach: readonly string[]): Way | null {
+    let memo = memos.get(finder);
+    if (!memo) memos.set(finder, (memo = new Map()));
+    const key = `${tileKey(from)} ${tileKey(to)} ${reach.join('\n')}`;
+    let way = memo.get(key);
+    if (way === undefined) memo.set(key, (way = finder.runTicksBetween(from, to, reach)));
+    return way;
+}
+
+/**
+ * The run ticks of each of a family's walk pairs (Family.walks) under `reach`, null for a pair no walk joins. A pair
+ * no walk joins searches all the graph its `to` is reached from; so when `from` reaches no `to` of an earlier pair,
+ * a later `to` that walks to that one is not searched: `from` reaching it would reach the earlier one through it.
+ */
+function pairWalks(
+    finder: Finder,
+    pairs: readonly { from: Tile; to: Tile }[],
+    reach: readonly string[],
+): (number | null)[] {
+    const unreached = new Map<string, Tile[]>();
+    return pairs.map(({ from, to }) => {
+        const dead = unreached.get(tileKey(from)) ?? [];
+        if (dead.some(t => wayBetween(finder, to, t, reach))) return null;
+        const way = wayBetween(finder, from, to, reach);
+        if (!way) unreached.set(tileKey(from), [...dead, to]);
+        return way?.runTicks ?? null;
+    });
+}
+
 /** The method's sites and its legs under each requirement set, before the levels are checked. */
 function locate(
     def: MethodDef,
@@ -270,7 +306,7 @@ function locate(
         const legs: Leg[] = [];
         for (let i = 0; i + 1 < tour.length; i++) {
             const [a, b] = [tour[i]!, tour[i + 1]!];
-            const way = finder.runTicksBetween(standOf(a), standOf(b), reach);
+            const way = wayBetween(finder, standOf(a), standOf(b), reach);
             if (!way) {
                 unwalked.add(`${stopId(a)} to ${stopId(b)}`);
                 break;
@@ -286,7 +322,7 @@ function locate(
         ways.push({
             reach,
             legs,
-            walks: pairs.map(w => finder.runTicksBetween(w.from, w.to, reach)?.runTicks ?? null),
+            walks: pairWalks(finder, pairs, reach),
         });
     }
     if (!ways.length)
@@ -305,21 +341,40 @@ const paramList = (params: unknown): unknown[] => (Array.isArray(params) ? param
 
 /**
  * The gather (or withdrawn obj) and each process step's models of a located method at `profile`, the gather's walks
- * from `way`; throws a ModelError when a family can't. A step `'here'` or at a bare tile is modelled at the previous
- * step's site.
+ * from `way`; throws a ModelError when a family can't. With no `way`, the first of the method's ways (in their order)
+ * whose gather models, the first's error when none does: a family that picks among walk pairs (Family.walks) may close
+ * a lap over one way's walks and not another's. A step `'here'` or at a bare tile is modelled at the previous step's
+ * site.
  */
 export function methodModels(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
-    way: MethodWay | undefined = m.ways[0],
-): { gather: ActionModel | Withdraw; steps: ActionModel[][] } {
+    way?: MethodWay,
+): { gather: ActionModel | Withdraw; steps: ActionModel[][]; way: MethodWay | undefined } {
     const { world } = ctx;
-    const gather =
+    const gatherOver = (w: MethodWay | undefined): ActionModel | Withdraw =>
         m.def.family === WITHDRAW
             ? { withdraw: withdrawObj(m.def) }
-            : familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world, way?.walks);
-    if (m.sink.mode !== 'process' || m.def.sink.mode !== 'process') return { gather, steps: [] };
+            : familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world, w?.walks);
+    let chosen = way ?? m.ways[0];
+    let gather: ActionModel | Withdraw | undefined;
+    if (way || !m.ways.some(w => w.walks)) gather = gatherOver(chosen);
+    else {
+        let first: unknown;
+        for (const w of m.ways) {
+            try {
+                gather = gatherOver(w);
+                chosen = w;
+                break;
+            } catch (e) {
+                if (!(e instanceof ModelError)) throw e;
+                first ??= e;
+            }
+        }
+        if (!gather) throw first;
+    }
+    if (m.sink.mode !== 'process' || m.def.sink.mode !== 'process') return { gather, steps: [], way: chosen };
     let last = m.site;
     const stops = m.sink.steps;
     const steps = m.def.sink.steps.map((step, i) => {
@@ -330,7 +385,7 @@ export function methodModels(
         const family = familyOf(ctx, step.family);
         return paramList(step.params).map(p => family.model(last, p, profile, world));
     });
-    return { gather, steps };
+    return { gather, steps, way: chosen };
 }
 
 /** Whether a method trains `skill`: its `levels` name it (the gather family's skills, then the process steps'). */
@@ -359,9 +414,9 @@ export interface MeasuredFigure {
 
 /**
  * The method's measured figures that have an XP/hr for `skill`, in the record's order, each with its floor over its
- * `way`th way (the shortest by default): the way the figure is set beside.
+ * `way`th way (by default methodRate's): the way the figure is set beside.
  */
-export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodContext, way = 0): MeasuredFigure[] {
+export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodContext, way?: number): MeasuredFigure[] {
     return (m.def.measured ?? []).flatMap(measured => {
         const xpPerHour = measured.xpPerHour[skill];
         if (xpPerHour === undefined) return [];
@@ -370,8 +425,12 @@ export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodCont
     });
 }
 
-/** The floor of a resolved method at `profile`, over its `way`th way (the shortest by default). */
-export function methodRate(m: ResolvedMethod, profile: Profile, ctx: MethodContext, way = 0): CycleRates {
+/**
+ * The floor of a resolved method at `profile`, over its `way`th way; by default the first, in order (the shortest),
+ * whose gather models (methodModels).
+ */
+export function methodRate(m: ResolvedMethod, profile: Profile, ctx: MethodContext, way?: number): CycleRates {
+    if (way === undefined) return rate(m, profile, ctx);
     const chosen = m.ways[way];
     if (!chosen) throw new MethodError(m.def.id, `no way ${way} (${m.ways.length} ways)`);
     return rate(m, profile, ctx, chosen);
@@ -381,9 +440,10 @@ function rate(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
-    way: MethodWay,
+    over?: MethodWay,
 ): CycleRates {
-    const { gather, steps } = methodModels(m, profile, ctx, way);
+    const { gather, steps, way } = methodModels(m, profile, ctx, over);
+    if (!way) throw new ModelError('it has no way to walk');
     const legs = way.legs.map(l => l.runTicks);
     const sink: CycleSink =
         m.def.sink.mode === 'process' && m.sink.mode === 'process'
@@ -436,12 +496,7 @@ export function resolveMethod(
             let reason = '';
             for (let level = 1; level <= 99; level++) {
                 try {
-                    rate(
-                        { def, ...located },
-                        profileAt(s, level, { tools: ctx.tools, atLeast }),
-                        ctx,
-                        located.ways[0]!,
-                    );
+                    rate({ def, ...located }, profileAt(s, level, { tools: ctx.tools, atLeast }), ctx);
                     return { level, reason };
                 } catch (e) {
                     if (!(e instanceof ModelError)) throw e;

@@ -113,7 +113,7 @@ const site: Site = {
     course: {
         varp: 't_course_progress',
         lapBonus: 100,
-        source: 'skill_agility/scripts/t_course.rs2:30',
+        source: 'skill_agility/scripts/t_course.rs2:26',
         obstacles: [
             { step: 1, feature: 0, loc: 't_log', tile: LOG, source: 'skill_agility/scripts/t_course.rs2:3' },
             { step: 2, feature: 1, loc: 't_pipe', tile: PIPE, source: 'skill_agility/scripts/t_course.rs2:6' },
@@ -180,6 +180,11 @@ function fault(f: () => unknown, re: RegExp): void {
     expect(e).not.toBeInstanceOf(ProfileError);
     expect(e.message).toMatch(re);
 }
+
+/** The family over SCRIPT with `edit` applied (line for line: the lap proc stays on line 26) and `more` after it. */
+const edited = (edit: (script: string) => string, more = '', locs = data.locs): Family =>
+    agility({ ...data, locs, scripts: [['skill_agility/scripts/t_course.rs2', edit(SCRIPT) + more]] });
+const xp = (f: Family) => f.model(site, undefined, profile(20), world, walks).xpTenths;
 
 describe('agility: one lap of a course', () => {
     test('the lap: the cheapest round, each fall priced, the walls in their cheaper order', () => {
@@ -271,10 +276,10 @@ describe('agility: one lap of a course', () => {
             ...data,
             scripts: [
                 [
-                    't.rs2',
+                    'skill_agility/scripts/t_course.rs2',
                     SCRIPT.replace(
                         'stat_advance(agility, 40);',
-                        'stat_advance(agility, 40);\nstat_advance(agility, 5);',
+                        'stat_advance(agility, 40); stat_advance(agility, 5);',
                     ),
                 ],
             ],
@@ -282,5 +287,68 @@ describe('agility: one lap of a course', () => {
         const e = thrown(() => twice.model(site, undefined, profile(20), world, walks));
         expect(e).toBeInstanceOf(ModelError);
         expect(e.message).toBe('oploc1,t_pipe gives agility xp 2 ways: which runs is not read');
+    });
+    test("a called proc's literal stat_advance counts; the loc's own trigger wins over its category's", () => {
+        const viaProc = edited(
+            x => x.replace('stat_advance(agility, 40);', '~t_pipe_xp;'),
+            '\n[proc,t_pipe_xp]\nstat_advance(agility, 40);\n',
+        );
+        expect(xp(viaProc)).toEqual({ agility: 30 + 40 + 3 * 20 + 100 });
+        // ScriptProvider.getByTrigger looks up t_pipe's own [oploc1,t_pipe] before its category's.
+        const category = edited(
+            x => x,
+            '\n[oploc1,_t_cat]\nstat_advance(agility, 7);\n',
+            parseConfigs('[t_pipe]\ncategory=t_cat\n'),
+        );
+        expect(xp(category)).toEqual({ agility: 30 + 40 + 3 * 20 + 100 });
+    });
+
+    test('xp a stat_advance gives that is not read, or a call whose arguments are not, is a ModelError', () => {
+        const calc = edited(x => x.replace('stat_advance(agility, $xp);', 'stat_advance(agility, calc($xp * 2));'));
+        fault(
+            () => xp(calc),
+            /^oploc1,t_log: stat_advance\(agility, calc\(\$xp \* 2\)\) in ~t_force gives xp not read$/,
+        );
+        const short = edited(x => x.replace('~t_force(30, movecoord(coord, 0, 0, -3));', '~t_force(30);'));
+        fault(() => xp(short), /^oploc1,t_log: ~t_force is called with 1 arguments in \[oploc1,t_log\]$/);
+        // Course.source names the lap proc by its bonus's line: a line with none is not it.
+        fault(
+            () =>
+                family.model(
+                    { ...site, course: { ...site.course!, source: 'skill_agility/scripts/t_course.rs2:25' } },
+                    undefined,
+                    profile(20),
+                    world,
+                    walks,
+                ),
+            /^no proc has the lap bonus's stat_advance at skill_agility\/scripts\/t_course.rs2:25$/,
+        );
+    });
+
+    test('more than five placements in the way of one step, one with only a gate row, or one with no move fail', () => {
+        const walls = [1, 2, 3, 4, 5, 6].map(i =>
+            crossing('t_wall', t(100 + 2 * i, 92), t(99 + 2 * i, 92), t(101 + 2 * i, 92), 3),
+        );
+        fault(
+            () => lapOf(site, { ...world, crossings: [...world.crossings, ...walls] }),
+            /^step 3 of agility-course:test:0 has 8 placements that set no step: more than 5 orders them past reading$/,
+        );
+        const gated: Gate = { ...pipe, trigger: 'oploc1,t_wall', loc: 't_wall', tile: t(115, 92), source: 'x.rs2:1' };
+        fault(
+            () => lapOf(site, { ...world, gates: [...world.gates, gated] }),
+            /^t_wall at \(115, 92, 0\) in agility-course:test:0 sets no step and has a gate row: not modelled$/,
+        );
+        const stranded = crossing('t_wall', t(115, 92), t(114, 92), t(116, 92), 3, { from: [] });
+        fault(
+            () =>
+                family.model(
+                    site,
+                    undefined,
+                    profile(20),
+                    { ...world, crossings: [...world.crossings, stranded] },
+                    walks,
+                ),
+            /^step 3 of agility-course:test:0 has a placement with no move$/,
+        );
     });
 });

@@ -363,14 +363,16 @@ export interface Gate {
     landings?: { stand: Tile; landing: Tile; free?: true }[];
     /**
      * With `to` or `landings` read from the script: the ticks a successful move takes, its script's delays summed
-     * (sources/gate-scan.ts Path.ticks), the most any stand's takes. Absent when a delay on the way is not known
-     * offline.
+     * (sources/gate-scan.ts Path.ticks), the most any stand's takes (on a `to` row, the most of `standTicks`). Absent
+     * when a delay on the way is not known offline.
      */
     ticks?: number;
     /**
-     * With `ticks`: each stand's own, the most its moves take, by stand tile (the Wilderness course pipe takes 11 from
-     * the tile south of it and 12 from the others, which its script walks there first,
-     * skill_agility/scripts/wilderness_course.rs2:57-60). On a `to` row these are the tiles the move is made from.
+     * On a `to` row with `ticks`: each stand's own, the fewest its paths take, by stand tile, the tiles the move is
+     * made from; `ticks` is the most of them (the Wilderness course pipe takes 11 from the tile south of it and 12 from
+     * the others, which its script walks there first, skill_agility/scripts/wilderness_course.rs2:57-60). A `landings`
+     * row has none: a stand's paths there can land on different tiles in different ticks (sources/gate-landings.ts
+     * ticksOf).
      */
     standTicks?: { stand: Tile; ticks: number }[];
     /**

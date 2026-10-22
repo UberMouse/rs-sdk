@@ -5,19 +5,22 @@ import { describe, expect, test } from 'bun:test';
 import { reachCollision } from '../collision';
 import { wayFinder } from '../distance';
 import { loadWorld } from '../load';
-import { agility, lapOf } from '../model/families/agility';
+import { agility, lapOf, triggerFor } from '../model/families/agility';
 import { readGameData } from '../model/families/index';
 import type { Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 import { locSizes } from '../place';
+import { codeOf } from '../classify';
 import { reachGraph } from '../reach';
 import { readConfigs } from '../sources/configs';
+import { parseCallables, parseTriggers } from '../sources/triggers';
 import type { Site, Tile } from '../types';
 import { tileKey } from '../util';
 
 const world = loadWorld();
 const finder = wayFinder(reachGraph({ world, collision: reachCollision, size: locSizes(readConfigs('loc')) }));
-const family = agility(readGameData());
+const data = readGameData();
+const family = agility(data);
 
 const course = (name: string): Site => {
     const s = world.sites.find(x => x.id === `agility-course:${name}-agility-course:0`);
@@ -91,6 +94,42 @@ describe('the ticks the laps read', () => {
     });
 });
 
+describe('the rolls the laps read', () => {
+    test("every course obstacle whose trigger calls stat_random has that roll on each of its rows' moves", () => {
+        const triggers = data.scripts.flatMap(([f, text]) => parseTriggers(f, text));
+        const labels = new Map(data.scripts.flatMap(([f, text]) => parseCallables(f, text)).map(c => [c.call, c]));
+        // The trigger's body and the labels it jumps to (the Barbarian walls' @climb_barbarian_crumblingwall).
+        const rolls = (body: string): boolean => {
+            const code = codeOf(body);
+            const jumped = [...code.matchAll(/@([a-z0-9_]+)/g)].map(m => labels.get(`@${m[1]}`)?.body ?? '');
+            return /\bstat_random\(/.test(code) || jumped.some(b => /\bstat_random\(/.test(codeOf(b)));
+        };
+        const rolled: string[] = [];
+        for (const name of ['gnome', 'barbarian', 'wilderness'])
+            for (const step of lapOf(course(name), world))
+                for (const ms of [...step.before, step.moves]) {
+                    const { trigger, loc } = ms[0]!;
+                    const op = trigger.match(/^oploc([1-5]),/)![1]!;
+                    if (!rolls(triggerFor(triggers, data.locs, loc, op)!.body)) {
+                        expect(ms.filter(m => m.roll).map(m => m.trigger)).toEqual([]);
+                        continue;
+                    }
+                    rolled.push(`${name} ${step.step} ${loc}`);
+                    expect(ms.filter(m => !m.roll).map(m => tileKey(m.stand))).toEqual([]);
+                }
+        // A shape the extractors miss leaves a rolled trigger's rows without one, failing above; a new rolled
+        // obstacle fails here.
+        expect([...new Set(rolled)]).toEqual([
+            'barbarian 1 barbarian_rope_swing',
+            'barbarian 2 barbarian_log_balance',
+            'barbarian 4 balancing_ledge1',
+            'wilderness 2 obstical_ropeswing2',
+            'wilderness 3 wilderness_stepping_stone',
+            'wilderness 4 wilderness_log_balance1',
+        ]);
+    });
+});
+
 describe('the laps, worked by hand', () => {
     test('Gnome at Agility 1: no rolls, 61 ticks, 865 xp tenths', () => {
         const gnome = course('gnome');
@@ -148,7 +187,7 @@ describe('the laps, worked by hand', () => {
         expect(m.damage).toBeCloseTo((30 / 226) * (8 + 8) + (39 / 217) * 12, 12);
     });
 
-    test('Barbarian at Agility 35, the pipe in: the walls on the way, 28/228 falls', () => {
+    test('Barbarian at Agility 35, the pipe in: the walls on the way, 28/228 and 48/208 falls', () => {
         const barbarian = course('barbarian');
         // Rope swing 2 + 1 from (2551, 3554), log 11 + 1, net 1 + 1, ledge 6 + 1 from (2536, 3547, 1), the three walls
         // 4 + 1 each from the west = 39. Walks: rope -> log 1, log -> net 1, net -> ledge 1, ledge -> the first wall 6
@@ -163,11 +202,20 @@ describe('the laps, worked by hand', () => {
         // stat_random(200, 280) at 35: floor(200 x 64/98) + floor(280 x 34/98) + 1 = 130 + 97 + 1 = 228, 28/228
         // falls. The rope swing's: 1 + 6 (out of the pit) + 1 = 8; the ledge's: 6 + 6 (back up the net) + 1 = 13.
         expect(run(barbarian, t(2534, 3545), t(2536, 3547, 1))).toBe(6);
+        // The log's stat_random(180, 260) (barbarian_course.rs2:41) at 35: floor(180 x 64/98) + floor(260 x 34/98) + 1
+        // = 117 + 90 + 1 = 208, 48/208 falls. A fall (:42-57): p_arrivedelay 1, the forced walks 2 + 4, three
+        // p_delay(0) 3 and the last forced step 1 = 11, leaving the player south of the pond at (2545, 3542); the walk
+        // back to the stand (2550, 3547) 5 and the click 1: 17. The lap keeps that stand: from (2551, 3546), the rope
+        // swing's landing is 2 away and the fall's walk back 4, 2 + 48/208 x 16 > 1 + 48/208 x 17.
+        expect(run(barbarian, t(2545, 3542), t(2550, 3547))).toBe(5);
+        expect(run(barbarian, t(2551, 3549), t(2551, 3546))).toBe(2);
+        expect(run(barbarian, t(2545, 3542), t(2551, 3546))).toBe(4);
         const m = lap(barbarian, 35);
-        expect(m.ticksPerAttempt).toBeCloseTo(54 + (28 / 228) * (8 + 13), 12);
+        expect(m.ticksPerAttempt).toBeCloseTo(54 + (28 / 228) * (8 + 13) + (48 / 208) * 17, 12);
         // 200 + 125 + 75 + 200 + 3 x 125 (barbarian_course.rs2:30, 65, 73, 104, 120) + the bonus 420 (:154).
         expect(m.xpTenths).toEqual({ agility: 1395 });
-        // At 35 HP: floor(35 x 15/100) + 1 = 6 a fall.
-        expect(m.damage).toBeCloseTo((28 / 228) * 12, 12);
+        // At 35 HP: floor(35 x 15/100) + 1 = 6 a fall off the swing or ledge, floor(35 x 9/100) + 1 = 4 off the log
+        // (:57).
+        expect(m.damage).toBeCloseTo((28 / 228) * 12 + (48 / 208) * 4, 12);
     });
 });

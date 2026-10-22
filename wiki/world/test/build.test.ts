@@ -221,6 +221,9 @@ const refused = (bad: unknown): string => {
     }
 };
 
+/** loadWorld's refusal of gates[1] for `rule`. */
+const refusedGate = (rule: string) => `is not a world.json: gates[1]: ${rule}: regenerate it with bun run world`;
+
 describe('serializeWorld', () => {
     test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate, crossing or method per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
@@ -469,23 +472,33 @@ describe('serializeWorld', () => {
                     'is not a world.json: gates[1]: its ticks, when it has them, is a count, on a row with to or landings: regenerate it with bun run world',
                 );
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], ticks: 3 }] })).toBe('read');
-            // Each stand's ticks sit beside the row's, a stand tile and a count no more than them.
+            // Each stand's ticks sit beside the row's on a row with to, each stand once, a stand tile and a count, the
+            // row's ticks the most of them.
             const stand = landing.stand;
-            for (const g of [
-                { ...world.gates[1], standTicks: [{ stand, ticks: 3 }] },
-                { ...world.gates[1], ticks: 3, standTicks: [] },
-                { ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 4 }] },
-                { ...world.gates[1], ticks: 3, standTicks: [{ stand: 'here', ticks: 3 }] },
-            ])
-                expect(refused({ ...world, gates: [world.gates[0], g] })).toMatch(
-                    /^is not a world\.json: gates\[1\]: (its standTicks, when it has them, is a list beside its ticks|a standTicks entry needs a stand tile and ticks, no more than the row's ticks): regenerate/,
-                );
+            const { landings: __, ...toRow } = { ...world.gates[1]!, to: landing.landing, ticks: 3 };
+            const why = (g: object) => refused({ ...world, gates: [world.gates[0], g] });
+            const LIST = 'its standTicks, when it has them, is a list beside its ticks, on a row with to';
+            expect(why({ ...toRow, ticks: undefined, standTicks: [{ stand, ticks: 3 }] })).toBe(refusedGate(LIST));
+            expect(why({ ...toRow, standTicks: [] })).toBe(refusedGate(LIST));
+            // A landings row has none: its stands can land on different tiles in different ticks.
+            expect(why({ ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 3 }] })).toBe(refusedGate(LIST));
+            expect(why({ ...toRow, standTicks: [{ stand: 'here', ticks: 3 }] })).toBe(
+                refusedGate('a standTicks entry needs a stand tile and ticks'),
+            );
             expect(
-                refused({
-                    ...world,
-                    gates: [world.gates[0], { ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 2 }] }],
+                why({
+                    ...toRow,
+                    standTicks: [
+                        { stand, ticks: 3 },
+                        { stand, ticks: 2 },
+                    ],
                 }),
-            ).toBe('read');
+            ).toBe(refusedGate(`its standTicks has the stand (${stand.x}, ${stand.z}, ${stand.level}) twice`));
+            for (const ticks of [2, 4])
+                expect(why({ ...toRow, standTicks: [{ stand, ticks }] })).toBe(
+                    refusedGate("its ticks is the most of its standTicks'"),
+                );
+            expect(why({ ...toRow, standTicks: [{ stand, ticks: 3 }] })).toBe('read');
             // A gate's requires has a set (the free form is [[]]); a quest window's is [].
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], requires: [] }] })).toBe(
                 'is not a world.json: gates[1]: a gate whose requires has no set, so nothing opens it ([[]] asks for nothing): regenerate it with bun run world',

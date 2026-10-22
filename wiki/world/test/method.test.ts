@@ -1,18 +1,20 @@
 import { describe, expect, test } from 'bun:test';
 import { wayFinder } from '../distance';
 import type { MethodDef, ProcessStepDef } from '../methods';
-import type { Family } from '../model/family';
+import { ModelError, type Family } from '../model/family';
 import type { GameData } from '../model/families/index';
 import {
     fromWorldMethod,
     measuredProfile,
     MethodError,
     methodModel,
+    methodModels,
     methodRate,
     resolveMethod,
     resolveMethods,
     toWorldMethod,
     type MethodContext,
+    type MethodWay,
 } from '../model/method';
 import { profileAt } from '../model/profile';
 import { locSizes } from '../place';
@@ -633,6 +635,34 @@ describe('process steps, withdrawals and walks', () => {
                 /^methods\.ts lure-paced: the process step family marking has walks: not modelled$/,
             );
         }
+    });
+
+    test('by default the first way whose walks the gather models over: a later one when the first fails', () => {
+        // A family that closes nothing over a walk it lacks: the first way's walks have none, the second's do.
+        const real = ctx.families.get('mining')!;
+        const picky: Family = {
+            ...real,
+            walks: () => [{ from: at(0, 3201, 3201), to: at(0, 3211, 3201) }],
+            model: (s, p, profile, world, walks) => {
+                if (walks?.[0] == null) throw new ModelError('no walk closes it');
+                return real.model(s, p, profile, world);
+            },
+        };
+        const picking = { ...ctx, families: new Map([...ctx.families, ['mining', picky]]) };
+        const one = resolveMethod(mine, picking, finder);
+        const good = one.ways[0]!;
+        const bad: MethodWay = {
+            ...good,
+            legs: good.legs.map(l => ({ ...l, runTicks: l.runTicks + 1 })),
+            walks: [null],
+        };
+        const two = { ...one, ways: [bad, good] };
+        const p40 = profileAt('mining', 40, { tools: ctx.tools });
+        expect(methodModels(two, p40, picking).way).toBe(good);
+        expect(methodRate(two, p40, picking)).toEqual(methodRate(one, p40, picking));
+        // Asked for the first way, or with no way that models, it fails with the first's error.
+        expect(() => methodRate(two, p40, picking, 0)).toThrow(/^no walk closes it$/);
+        expect(() => methodRate({ ...two, ways: [bad, bad] }, p40, picking)).toThrow(/^no walk closes it$/);
     });
 
     test('a step of a family with no site kinds stops at its tile, priced like any tile', () => {
