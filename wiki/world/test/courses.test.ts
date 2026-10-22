@@ -50,7 +50,7 @@ describe('readCourses', () => {
         expect(course).toEqual({
             course: 'test',
             varp: 'test_course_progress',
-            laps: 3,
+            lastStep: 3,
             lapBonus: 420,
             source: `${FILE}:28`,
             steps: [
@@ -76,6 +76,23 @@ describe('readCourses', () => {
         expect(() => read(text)).toThrow(
             `${FILE}:17: ~update_test_varp(3) is inside a block that is not a loc_coord guard`,
         );
+    });
+
+    test('a lap call with a step that is not a literal throws', () => {
+        expect(() => read(COURSE.replace('~update_test_varp(1);', '~update_test_varp($n);'))).toThrow(
+            `${FILE}:3: ~update_test_varp is called with a step that is not a literal`,
+        );
+        expect(() => read(COURSE.replace('~update_test_varp(1);', '~update_test_varp(calc(1 + 1));'))).toThrow(
+            'is called with a step that is not a literal',
+        );
+    });
+
+    test('a followed label or proc called inside a block throws: its step would run for every placement', () => {
+        const text = COURSE.replace(
+            '[oploc1,branch] @climb_branch;',
+            '[oploc1,branch]\nif(stat(agility) > 5) {\n    @climb_branch;\n}',
+        );
+        expect(() => read(text)).toThrow('is reached from inside a block');
     });
 
     test('no lap proc, no course', () => expect(read(COURSE.replace('%test_course_progress = 0;', ''))).toEqual([]));

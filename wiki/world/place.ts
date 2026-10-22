@@ -366,7 +366,8 @@ interface Lap {
 /**
  * Each course's laps: its features linked within SITE_RADIUS on any level (a course climbs to level 2 and back), a
  * cluster that holds every step from 1 to the last being one lap. A cluster short of a step (the Gnome course's tree
- * branch placed 30 tiles north of it, whose Climb-down lands on the course) is no site, and logged.
+ * branch placed 30 tiles north of it, whose Climb-down lands on the course) is no site, and logged; a course left
+ * with no site throws.
  */
 function courseLaps(
     features: readonly Feature[],
@@ -387,7 +388,7 @@ function courseLaps(
                     throw new Error(`buildSites: ${features[i]!.config} is an agility-course feature with no step`);
                 steps.set(i, step);
             }
-            const missing = Array.from({ length: def.laps }, (_, k) => k + 1).filter(
+            const missing = Array.from({ length: def.lastStep }, (_, k) => k + 1).filter(
                 k => ![...steps.values()].some(s => s.step === k),
             );
             if (missing.length) {
@@ -401,10 +402,13 @@ function courseLaps(
                 def,
                 steps,
                 first: c.filter(i => steps.get(i)!.step === 1),
-                last: c.filter(i => steps.get(i)!.step === def.laps),
+                last: c.filter(i => steps.get(i)!.step === def.lastStep),
             });
         }
     }
+    for (const def of courses?.defs ?? [])
+        if (![...out.values()].some(l => l.def === def))
+            throw new Error(`buildSites: no placement of course ${def.course} holds every step 1 to ${def.lastStep}`);
     return out;
 }
 

@@ -368,7 +368,7 @@ describe('locSizes', () => {
 const lap: CourseDef = {
     course: 'test',
     varp: 'test_course_progress',
-    laps: 3,
+    lastStep: 3,
     lapBonus: 420,
     source: 'c.rs2:28',
     steps: [
@@ -424,6 +424,13 @@ describe('buildSites: agility courses', () => {
             ],
         });
         expect(lines).toEqual(['place: agility-course test placements rope (140, 100) lack step 1, 3: no site']);
+    });
+
+    test('a course left with no site throws', () => {
+        const rope = [obstacle('rope', 96, 100, 1)];
+        expect(() =>
+            buildSites(rope, courseArea, noZones, stubCollision(blockedBy(rope)), { ...quiet, courses }),
+        ).toThrow('buildSites: no placement of course test holds every step 1 to 3');
     });
 
     test('a course feature with no course, or no step, throws', () => {

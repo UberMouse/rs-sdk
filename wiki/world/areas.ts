@@ -4,9 +4,10 @@
 //   line), so a tile in no town still names the right kingdom. The Wilderness is the engine's box
 //   (sources/zones.ts); the Kharidian Desert holds Al Kharid; Feldip Hills is the ogre land south of
 //   Kandarin, and Yanille, Castle Wars and the places the seed put under it are Kandarin's. Regions
-//   overlap only where an island region lies under a mainland region's rect: Crandor and Entrana
-//   under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under Kandarin's.
-//   The island, being smaller, wins every tile both hold, its land included (area-resolve.ts).
+//   overlap only where a smaller region lies under a larger one's rect: the islands, Crandor and
+//   Entrana under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under
+//   Kandarin's, and the Barbarian agility course under the Barbarian Outpost's. The smaller rect wins
+//   every tile both hold at equal depth, its land included (area-resolve.ts).
 // - A bank's leaf rect is its booths, bankers and chests plus one tile, so the trees, stalls and
 //   shops beside it name the town instead.
 // - Every site build.ts must place (its COVERED kinds) lies in an area; build.ts fails otherwise.

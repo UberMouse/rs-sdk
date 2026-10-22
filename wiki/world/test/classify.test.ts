@@ -459,7 +459,7 @@ describe('type changes', () => {
 const course = (name: string, target: string, category = false): CourseDef => ({
     course: name,
     varp: `${name}_course_progress`,
-    laps: 1,
+    lastStep: 1,
     lapBonus: 10,
     source: 'c.rs2:9',
     steps: [{ target, category, op: '1', step: 1, source: 'c.rs2:2' }],

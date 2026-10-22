@@ -38,7 +38,7 @@ export interface CourseDef {
     /** The progress varp (`gnome_course_progress`). */
     varp: string;
     /** The step that completes the lap (the proc's `%varp = <n>`): steps run 1 to this. */
-    laps: number;
+    lastStep: number;
     /** The lap bonus in xp tenths, the proc's `stat_advance(agility, <n>)`. */
     lapBonus: number;
     /** The bonus's stat_advance, as `file:line`. */
@@ -69,7 +69,7 @@ function enclosing(body: string, index: number): number[] {
 interface Lap {
     proc: string;
     varp: string;
-    laps: number;
+    lastStep: number;
     lapBonus: number;
     source: string;
 }
@@ -87,7 +87,7 @@ function lapOf(c: Callable): Lap | undefined {
     return {
         proc: c.call,
         varp: end[1]!,
-        laps: Number(end[2]),
+        lastStep: Number(end[2]),
         lapBonus: Number(bonus[1]),
         source: `${c.file}:${lineAt(c.line, code, at)}`,
     };
@@ -95,27 +95,32 @@ function lapOf(c: Callable): Lap | undefined {
 
 /**
  * Every course: each proc that keeps a lap, and the loc op triggers whose body, or a label or proc it calls (followed
- * through), calls it with a step. A call inside a block other than a `loc_coord` guard throws, as which placements it
- * runs for is then unread.
+ * through), calls it with a step. A lap call throws when its step is not a literal, when it is inside a block other
+ * than a `loc_coord` guard, or when it is reached through a call inside a block: which placements it runs for is
+ * then unread.
  */
 export function readCourses(triggers: readonly Trigger[], callables: readonly Callable[]): CourseDef[] {
-    const laps = callables.flatMap(c => lapOf(c) ?? []);
-    if (!laps.length) return [];
+    const lapProcs = callables.flatMap(c => lapOf(c) ?? []);
+    if (!lapProcs.length) return [];
     const byCall = new Map(callables.map(c => [c.call, c]));
-    const lapCalls = new Set(laps.map(l => l.proc));
-    const steps = new Map<string, CourseStep[]>(laps.map(l => [l.proc, []]));
+    const lapCalls = new Set(lapProcs.map(l => l.proc));
+    const steps = new Map<string, CourseStep[]>(lapProcs.map(l => [l.proc, []]));
     for (const t of triggers) {
         if (t.on !== 'loc' || t.kind !== 'op') continue;
-        const bodies: { file: string; line: number; body: string }[] = [t];
+        // `entered` is the enclosed call that led to a followed body: its steps then run for unread placements.
+        const bodies: { file: string; line: number; body: string; entered?: string }[] = [t];
         const seen = new Set<string>();
         for (let i = 0; i < bodies.length; i++) {
-            const { file, line, body } = bodies[i]!;
+            const { file, line, body, entered } = bodies[i]!;
             const code = codeOf(body);
             for (const m of code.matchAll(/([@~][a-z0-9_]+)\(\s*(\d+)\s*\)|[@~][a-z0-9_]+|\bjump\(([a-z0-9_]+)\)/g)) {
                 const call = m[3] ? `@${m[3]}` : (m[1] ?? m[0]);
-                if (lapCalls.has(call) && m[2] !== undefined) {
+                const source = `${file}:${lineAt(line, code, m.index)}`;
+                if (lapCalls.has(call)) {
+                    if (m[2] === undefined)
+                        throw new Error(`${source}: ${call} is called with a step that is not a literal`);
+                    if (entered) throw new Error(`${entered}: ${call}(${m[2]}) is reached from inside a block`);
                     const guards = enclosing(code, m.index).map(open => code.slice(0, open).match(GUARD)?.[1]);
-                    const source = `${file}:${lineAt(line, code, m.index)}`;
                     if (guards.some(g => g === undefined))
                         throw new Error(`${source}: ${call}(${m[2]}) is inside a block that is not a loc_coord guard`);
                     const at = guards.at(-1);
@@ -132,15 +137,15 @@ export function readCourses(triggers: readonly Trigger[], callables: readonly Ca
                 const callee = byCall.get(call);
                 if (!callee || lapCalls.has(call) || seen.has(call)) continue;
                 seen.add(call);
-                bodies.push(callee);
+                bodies.push({ ...callee, entered: entered ?? (enclosing(code, m.index).length ? source : undefined) });
             }
         }
     }
-    return laps
+    return lapProcs
         .map(l => ({
             course: l.varp.replace(/_course_progress$/, ''),
             varp: l.varp,
-            laps: l.laps,
+            lastStep: l.lastStep,
             lapBonus: l.lapBonus,
             source: l.source,
             steps: steps.get(l.proc)!.sort((a, b) => a.step - b.step || cmp(a.target, b.target)),
