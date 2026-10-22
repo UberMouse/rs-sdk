@@ -1,6 +1,6 @@
 {
   "format": 15,
-  "generatedFrom": "882699169a968e667d112006b714348bea4827ec",
+  "generatedFrom": "fb264971634d877c8d7f8dc3d93c608d6d879a0f",
   "areas": [
     {"id":"asgarnia","name":"Asgarnia","rects":[{"x1":2968,"z1":3090,"x2":3064,"z2":3467},{"x1":2851,"z1":3206,"x2":2967,"z2":3467},{"x1":2932,"z1":3190,"x2":2967,"z2":3205},{"x1":2823,"z1":3468,"x2":3064,"z2":3519},{"x1":2823,"z1":3520,"x2":2943,"z2":3708}]},
     {"id":"asgarnia-chaos-temple","name":"Chaos Temple","parent":"asgarnia","rects":[{"x1":2922,"z1":3514,"x2":2943,"z2":3537}]},
