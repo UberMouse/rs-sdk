@@ -78,7 +78,10 @@ export interface MethodQuery {
     bestMethods(skill: Skill, profile: Profile, opts?: BestOptions): RankedMethod[];
 }
 
-/** The hazard of a method's sites: the gather site and the sites its sink stops at. */
+/**
+ * The hazard of a method's sites: the gather site and the sites its sink stops at. A bare tile stop is not counted:
+ * method.ts refuses one in the Wilderness, and whether it is multiway is not known here.
+ */
 export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink'>): Hazard {
     const sites = [m.site, ...sinkSites(m.sink)];
     return {

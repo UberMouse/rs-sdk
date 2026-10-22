@@ -177,7 +177,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
                   consumes: [],
               }
             : gather;
-    if (source.restart) throw new ModelError('a gather with a restart is not modelled');
+    if (source.restart || source.start) throw new ModelError('a gather with a restart or a start is not modelled');
     const tpi = withdraw === undefined ? ticksPerItem(source) : 0;
     const p = source.success;
     const failsPerSuccess = (1 - p) / p;
@@ -306,7 +306,15 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         const menus = Math.ceil((n * actions) / upTo - 1e-9);
         return menus < 2 ? 0 : repeat ? (menus - 1) * ticks : ticks;
     };
-    const process = runs.reduce((t, r) => t + n * r.actions * ticksPerItem(r.m) + restarts(r), 0);
+    // A step's start (ActionModel.start), once a trip.
+    const starts = ({ m }: Run): number => {
+        const start = m.start ?? 0;
+        if (!Number.isFinite(start) || start < 0) throw new ModelError(`a process step's start ${start} is not >= 0`);
+        if (start && !trips)
+            throw new ModelError('a process step with a start on a trip that never ends is not modelled');
+        return start;
+    };
+    const process = runs.reduce((t, r) => t + n * r.actions * ticksPerItem(r.m) + restarts(r) + starts(r), 0);
     const travel = trips && sink.mode !== 'drop' ? sink.legs.reduce((a, b) => a + b, 0) : 0;
     const bank = trips && banks ? BANK_TICKS : 0;
     // A process sink that drops drops what is left that fills a slot, at the last step, with the click away.

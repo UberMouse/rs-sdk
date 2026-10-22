@@ -2,11 +2,15 @@
 import type { Family } from '../family';
 import type { FamilyFactory, GameData } from './common';
 import { cooking } from './cooking';
+import { firemaking } from './firemaking';
 import { fishing } from './fishing';
+import { fletching } from './fletching';
 import { mining } from './mining';
+import { pick } from './pick';
 import { pickpocket } from './pickpocket';
 import { smelting } from './smelting';
 import { smithing } from './smithing';
+import { spinning } from './spinning';
 import { stall } from './stall';
 import { superheat } from './superheat';
 import { woodcutting } from './woodcutting';
@@ -15,11 +19,15 @@ export { readGameData, type GameData } from './common';
 
 export const FAMILIES: Readonly<Record<string, FamilyFactory>> = {
     cooking,
+    firemaking,
     fishing,
+    fletching,
     mining,
+    pick,
     pickpocket,
     smelting,
     smithing,
+    spinning,
     stall,
     superheat,
     woodcutting,

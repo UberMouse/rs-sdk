@@ -158,6 +158,36 @@ data=product_amount,10
 data=levelrequired,19
 data=bar,iron_bar
 data=bar_amount,1
+
+[fletching_normal]
+table=fletch_bow_table
+data=log,logs
+data=shafts,15
+data=objchoices,shortbow,longbow
+data=shortbow,unstrung_shortbow,5,50
+data=longbow,unstrung_longbow,10,100
+
+[fletching_willow]
+table=fletch_bow_table
+data=log,willow_logs
+data=objchoices,willow_shortbow,willow_longbow
+data=shortbow,unstrung_willow_shortbow,35,333
+data=longbow,unstrung_willow_longbow,40,415
+
+[stringing_willow_longbow]
+table=fletching_table
+data=item,unstrung_willow_longbow
+data=product,willow_longbow,1
+data=level,40
+data=experience,415
+
+[fletching_bronze_arrow]
+table=fletching_table
+data=item,bronze_arrowheads
+data=metal,bronze
+data=product,bronze_arrow,15
+data=level,1
+data=experience,13
 `;
 
 const OBJS = `
@@ -185,6 +215,21 @@ param=smithing_anvil_struct,smithing_iron_bar
 param=smelting_struct,smelting_bronze_bar
 [gold_bar]
 param=smelting_struct,smelting_gold_bar
+[flax]
+param=crafting_spinning_struct,flax
+[wool]
+param=crafting_spinning_struct,wool
+[logs]
+category=category_22
+param=levelrequire,1
+param=productexp,400
+[willow_logs]
+category=category_22
+param=levelrequire,30
+param=productexp,900
+[unstrung_willow_longbow]
+category=unstrung_bow
+[bronze_arrowheads]
 `;
 
 const LOCS = `
@@ -236,6 +281,15 @@ param=bar_count,1
 [smithing_iron_bar]
 param=levelrequired,15
 param=xpperbar,250
+[flax]
+param=product,bow_string
+param=levelrequire,10
+param=productexp,150
+param=ingredient,flax
+[wool]
+param=product,ball_of_wool
+param=productexp,25
+param=ingredient,wool
 `;
 
 // freshfish.rs2's lure trigger and continue label, cut down; memberfish's big net, whose roll is its own proc.
@@ -894,6 +948,172 @@ describe('smithing', () => {
     });
 });
 
+describe('spinning', () => {
+    const wheel = at('spinning-wheel', [['spinningwheel', '']]);
+
+    test('flax at a wheel at Crafting 10', () => {
+        // spinning.rs2: the struct flax (oc_param(flax, crafting_spinning_struct)) makes a bow_string for 150 tenths
+        // at Crafting 10 (:60-64, :102-105). After a string, @process_spin's weakqueue 2 from inside the queue
+        // (:98, :110) runs 3 ticks on. The wheel's op opens the menu on the arrival tick A, the button comes at A + 1
+        // and its weakqueue 3 from a dialog (:87) spins the first at A + 4: one tick over the cadence, once a trip.
+        // ~skill_multi2_header's buttons make 1, 5 or 10 (chat.rs2:785-798): a larger load takes Make X's count
+        // dialog, a tick a trip.
+        expect(family('spinning').model(wheel.site, { obj: 'flax' }, profile(10), wheel.world)).toEqual({
+            ticksPerAttempt: 3,
+            start: 1,
+            restart: { upTo: 10, ticks: 1 },
+            success: 1,
+            xpTenths: { crafting: 150 },
+            products: [{ obj: 'bow_string', count: 1 }],
+            consumes: [{ obj: 'flax', count: 1 }],
+        });
+        // Wool's struct names no levelrequire: the param's default 0 lets any level spin it.
+        expect(family('spinning').model(wheel.site, { obj: 'wool' }, profile(1), wheel.world).xpTenths).toEqual({
+            crafting: 25,
+        });
+    });
+
+    test('fails with a reason', () => {
+        refuses('spinning', wheel, { obj: 'flax' }, profile(9), /spinning flax needs crafting 10/);
+        fails('spinning', wheel, { obj: 'logs' }, profile(99), /logs has no spinning struct/);
+        fails('spinning', wheel, {}, profile(99), /needs an obj param/);
+        fails('spinning', at('furnace', [['furnace', '']]), { obj: 'flax' }, profile(99), /not a spinning wheel/);
+        // Rellekka's wheel refuses a player without The Fremennik Trials (spinning.rs2:37-42).
+        fails(
+            'spinning',
+            at('spinning-wheel', [['viking_spinningwheel', '']]),
+            { obj: 'flax' },
+            profile(99),
+            /the Fremennik wheel: needs The Fremennik Trials, not modelled/,
+        );
+    });
+});
+
+describe('fletching', () => {
+    // Done in place: the site is wherever the step before stands.
+    const trees = at('tree', [['willow_tree', 'willow']]);
+
+    test('a willow longbow cut at Fletching 40, then strung', () => {
+        // cut_logs.rs2: fletching_willow's longbow column, unstrung_willow_longbow at level 40 for 415 tenths
+        // (:62-66, :73). After a log the queue sets %action_delay to the clock + 2 and queues the next that far on,
+        // from inside the queue (:103-104, :83-86): 3 ticks a log; the knife's click at K opens the menu, the button
+        // at K + 1 queues the first 2 on, from a dialog: K + 3, the cadence too. Make X past 10 costs a tick.
+        expect(
+            family('fletching').model(trees.site, { product: 'unstrung_willow_longbow' }, profile(40), trees.world),
+        ).toEqual({
+            ticksPerAttempt: 3,
+            restart: { upTo: 10, ticks: 1 },
+            success: 1,
+            xpTenths: { fletching: 415 },
+            products: [{ obj: 'unstrung_willow_longbow', count: 1 }],
+            consumes: [{ obj: 'willow_logs', count: 1 }],
+            tools: ['knife'],
+        });
+        // bows.rs2:35-42: stringing_willow_longbow, one bow and a bow string a use, 415 tenths, no delay: 5 OpHeldU a
+        // tick (USER_EVENTS_PER_TICK), 1/5 of a tick a bow.
+        expect(family('fletching').model(trees.site, { product: 'willow_longbow' }, profile(40), trees.world)).toEqual({
+            ticksPerAttempt: 0.2,
+            success: 1,
+            xpTenths: { fletching: 415 },
+            products: [{ obj: 'willow_longbow', count: 1 }],
+            consumes: [
+                { obj: 'unstrung_willow_longbow', count: 1 },
+                { obj: 'bow_string', count: 1 },
+            ],
+        });
+    });
+
+    test('arrow shafts: 15 from a log, 15 x 5 = 75 tenths, at level 1', () => {
+        // cut_logs.rs2:56-59, :68-71: fletching_normal's shafts 15.
+        const m = family('fletching').model(
+            trees.site,
+            { product: 'arrow_shaft', log: 'logs' },
+            profile(1),
+            trees.world,
+        );
+        expect([m.products, m.xpTenths, m.consumes]).toEqual([
+            [{ obj: 'arrow_shaft', count: 15 }],
+            { fletching: 75 },
+            [{ obj: 'logs', count: 1 }],
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        refuses('fletching', trees, { product: 'unstrung_willow_longbow' }, profile(39), /needs fletching 40/);
+        refuses('fletching', trees, { product: 'willow_longbow' }, profile(39), /needs fletching 40/);
+        // A row with no shafts offers only its bows (cut_logs.rs2:37-41).
+        fails('fletching', trees, { product: 'arrow_shaft', log: 'willow_logs' }, profile(99), /cuts no arrow_shaft/);
+        fails('fletching', trees, { product: 'arrow_shaft' }, profile(99), /needs a log param/);
+        fails(
+            'fletching',
+            trees,
+            { product: 'unstrung_willow_longbow', log: 'logs' },
+            profile(99),
+            /is cut from willow_logs, not logs/,
+        );
+        // Arrows are in fletching_table too, but their item is no unstrung bow.
+        fails('fletching', trees, { product: 'bronze_arrow' }, profile(99), /fletching makes no bronze_arrow/);
+        fails('fletching', trees, {}, profile(99), /needs a product param/);
+    });
+});
+
+describe('firemaking', () => {
+    const trees = at('tree', [['willow_tree', 'willow']]);
+
+    test('willow logs at Firemaking 30', () => {
+        // firemaking.rs2: willow_logs' levelrequire 30 and productexp 900 (:81-86, :121). A roll every 4 ticks: the
+        // click sets %action_delay 3 on and each roll 4 on (:103, :106, :114); a light's p_delay(0) push holds the
+        // next click to 2 ticks after it, 2 short of the next roll. stat_random(firemaking, 64, 512) (:105) at 30:
+        // floor(64 x 69 / 98) + floor(512 x 29 / 98) + 1 = 45 + 151 + 1 = 197, 197/256. The log is dropped and burnt,
+        // nothing comes back to the inventory; a tinderbox is held (:93-96).
+        expect(family('firemaking').model(trees.site, { log: 'willow_logs' }, profile(30), trees.world)).toEqual({
+            ticksPerAttempt: 4,
+            success: 197 / 256,
+            xpTenths: { firemaking: 900 },
+            products: [],
+            consumes: [{ obj: 'willow_logs', count: 1 }],
+            tools: ['tinderbox'],
+        });
+        // At 43: floor(64 x 56 / 98) + floor(512 x 42 / 98) + 1 = 36 + 219 + 1 = 256, every roll lights.
+        expect(family('firemaking').model(trees.site, { log: 'willow_logs' }, profile(43), trees.world).success).toBe(
+            1,
+        );
+    });
+
+    test('fails with a reason', () => {
+        refuses('firemaking', trees, { log: 'willow_logs' }, profile(29), /lighting willow_logs needs firemaking 30/);
+        fails('firemaking', trees, { log: 'flax' }, profile(99), /flax is not a log a tinderbox lights/);
+        fails('firemaking', trees, {}, profile(99), /needs a log param/);
+    });
+});
+
+describe('pick', () => {
+    const field = at('flax', [
+        ['flax', 'flax'],
+        ['flax', 'flax'],
+        ['flax', 'flax'],
+    ]);
+
+    test('flax: a pick every 2 ticks, a plant gone 10 ticks 3 times in 16', () => {
+        // pickables.rs2:56-74: p_delay(0) before the flax (:66) holds the next click to 2 ticks on; no XP; random(16)
+        // < 3 (:71) deletes the plant for 10 ticks (:72). The site's 3 plants are worked in turn.
+        expect(family('pick').model(field.site, {}, profile(1), field.world)).toEqual({
+            ticksPerAttempt: 2,
+            success: 1,
+            xpTenths: {},
+            products: [{ obj: 'flax', count: 1 }],
+            consumes: [],
+            deplete: { chance: 3 / 16, respawnTicks: 10 },
+            features: 3,
+        });
+    });
+
+    test('fails with a reason', () => {
+        fails('pick', at('tree', [['tree', 'tree']]), {}, profile(99), /not a flax site/);
+        fails('pick', field, { plant: 'wheat' }, profile(99), /has no flax wheat/);
+    });
+});
+
 describe('registry', () => {
     test('every family is registered under its own id', () => {
         expect([...families.keys()]).toEqual(Object.keys(FAMILIES));
@@ -903,11 +1123,15 @@ describe('registry', () => {
     test('the kinds of site each family acts at', () => {
         expect(Object.fromEntries([...families].map(([id, f]) => [id, f.kinds]))).toEqual({
             cooking: ['range', 'fire'],
+            firemaking: [],
             fishing: ['fishing-spot'],
+            fletching: [],
             mining: ['rock'],
+            pick: ['flax'],
             pickpocket: ['pickpocket'],
             smelting: ['furnace'],
             smithing: ['anvil'],
+            spinning: ['spinning-wheel'],
             stall: ['stall'],
             superheat: [],
             woodcutting: ['tree'],

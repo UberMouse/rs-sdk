@@ -509,7 +509,7 @@ export interface WorldMethod extends MethodDef {
     stand: Tile;
     /** The bank site of a bank sink, or of a process sink that banks at another site than its own. */
     bank?: string;
-    /** A process sink's step sites, one per step: a site id, or `'here'`. */
+    /** A process sink's step sites, one per step: a site id, `'here'`, or a bare tile step's `tile:x,z,level`. */
     processors?: string[];
     /** The gather family's first skill. */
     skill: Skill;

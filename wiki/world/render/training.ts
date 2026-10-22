@@ -12,6 +12,7 @@ import {
     type MethodContext,
     type MethodModel,
     type ResolvedMethod,
+    type Stop,
 } from '../model/method';
 import { profileAt, toolKindOfObj, type Profile, type Tools } from '../model/profile';
 import { SKILLS, XP_RATE, type Skill } from '../model/server';
@@ -129,7 +130,13 @@ function skillPage(
         if (m.sink.mode === 'bank') stops = bankAt(m.sink.bank);
         else if (m.def.sink.mode === 'process') {
             const { steps, end } = m.def.sink;
-            const at = m.sink.steps.map((s, i) => `${steps[i]!.family} ${s === 'here' ? 'here' : `at ${where(s)}`}`);
+            const stop = (s: Stop): string =>
+                s === 'here'
+                    ? 'here'
+                    : 'tile' in s
+                      ? `at (${s.tile.x}, ${s.tile.z}, ${s.tile.level})`
+                      : `at ${where(s)}`;
+            const at = m.sink.steps.map((s, i) => `${steps[i]!.family} ${stop(s)}`);
             // A withdrawal banks at its own site.
             stops = [...at, end === 'bank' ? bankAt(m.sink.bank ?? m.site) : end].join(', then ');
         }

@@ -50,8 +50,9 @@ export interface MethodDef {
 export interface ProcessStepDef {
     family: string;
     /**
-     * `'here'`: where the previous action stands (superheat beside the rock); a tile: in a site of the family's kinds;
-     * omitted: the nearest site of the first of its kinds to the previous step's site (the gather's for the first).
+     * `'here'`: where the previous action stands (superheat beside the rock); a tile: in a site of the family's kinds,
+     * or, for a family with no kinds (firemaking), the tile itself; omitted: the nearest site of the first of its kinds
+     * to the previous step's site (the gather's for the first), which a family with no kinds can't have.
      */
     at?: Tile | 'here';
     /** The family's params, or a list of them, one per input kind it takes (cooking: one per raw fish). */

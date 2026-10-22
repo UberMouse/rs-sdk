@@ -306,6 +306,108 @@ describe('the families on the real world (hand-worked in families.test.ts)', () 
     });
 });
 
+describe('spinning, fletching, firemaking and flax picking (hand-worked in families.test.ts)', () => {
+    test('the rows, structs and obj params they read', () => {
+        expect(paramsOf(data.objs, 'flax')).toContain('crafting_spinning_struct,flax');
+        expect(paramsOf(data.objs, 'wool')).toContain('crafting_spinning_struct,wool');
+        expect(paramsOf(data.structs, 'flax')).toEqual(
+            expect.arrayContaining(['product,bow_string', 'levelrequire,10', 'productexp,150', 'ingredient,flax']),
+        );
+        expect(paramsOf(data.structs, 'wool').some(x => x.startsWith('levelrequire,'))).toBe(false);
+        expect(script('skill_combat/configs/combat.param')).toContain('[levelrequire]\ntype=int\ndefault=0');
+        const normal = row('fletching_normal');
+        expect([normal.log, normal.shafts]).toEqual([[['logs']], [['15']]]);
+        const willow = row('fletching_willow');
+        expect([willow.log, willow.shafts, willow.longbow]).toEqual([
+            [['willow_logs']],
+            undefined,
+            [['unstrung_willow_longbow', '40', '415']],
+        ]);
+        const string = row('stringing_willow_longbow');
+        expect([string.item, string.product, string.level, string.experience]).toEqual([
+            [['unstrung_willow_longbow']],
+            [['willow_longbow', '1']],
+            [['40']],
+            [['415']],
+        ]);
+        expect(first(data.objs.get('unstrung_willow_longbow'), 'category')).toBe('unstrung_bow');
+        expect(first(data.objs.get('willow_logs'), 'category')).toBe('category_22');
+        expect(paramsOf(data.objs, 'willow_logs')).toEqual(
+            expect.arrayContaining(['levelrequire,30', 'productexp,900']),
+        );
+    });
+
+    test('the inline script values they port', () => {
+        const spin = script('skill_crafting/scripts/spinning/spinning.rs2');
+        expect(spin).toContain('weakqueue*(crafting_spinning, 3)($obj, $struct, $amt, loc_type, loc_coord);');
+        expect(spin).toContain('weakqueue*(crafting_spinning, 2)($spinning_obj, $struct, $amt, $loc, $coord);');
+        expect(spin).toContain('if(loc_type = viking_spinningwheel) {\n    if(%viking < ^viking_complete) {');
+        // ~skill_multi2_header and ~skill_multi3 return 1, 5 or 10, or Make X's count.
+        const chat = script('interface_chat/scripts/chat.rs2');
+        for (const proc of ['skill_multi2_header', 'skill_multi2', 'skill_multi3']) {
+            const body = chat.split(`[proc,${proc}]`)[1]!.split('\n[')[0]!;
+            expect(new Set(body.match(/return\(\$obj\d, (\w+)\)/g)!.map(x => x.match(/, (\w+)\)$/)![1]))).toEqual(
+                new Set(['last_int', '10', '5', '1']),
+            );
+        }
+        const cut = script('skill_fletching/scripts/cut_logs.rs2');
+        expect(cut.split('%action_delay = add(map_clock, 2);').length - 1).toBe(2);
+        expect(cut).toContain('weakqueue*(fletch_logs, sub(%action_delay, map_clock))');
+        expect(cut).toContain('def_int $fletching_experience = multiply($shaft_count, 5);');
+        const bows = script('skill_fletching/scripts/bows.rs2');
+        expect(bows).not.toMatch(/p_delay|queue/);
+        expect(bows).toContain('inv_del(inv, bow_string, 1);');
+        const fire = script('skill_firemaking/scripts/firemaking.rs2');
+        const inv = fire.split('[label,light_logs_inv]')[1]!.split('\n[')[0]!;
+        expect(inv).toContain('stat_random(firemaking, 64, 512)');
+        expect(inv.split('%action_delay = calc(map_clock + 3);').length - 1).toBe(1);
+        expect(inv.split('%action_delay = calc(map_clock + 4);').length - 1).toBe(2);
+        expect(inv).toContain('p_opobj(4);');
+        const flax = script('general_use/scripts/pickables.rs2').split('[oploc2,flax]')[1]!.split('\n[')[0]!;
+        expect(flax.match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(0);']);
+        expect(flax).toContain('inv_add(inv, flax, 1);');
+        expect(flax).toContain('if (random(16) < 3) {\n        loc_del(10);');
+    });
+
+    test('on the real Seers wheel and flax field', () => {
+        const p = profileAt('crafting', 40, { tools });
+        const wheel = world.sites.find(s => s.id === 'spinning-wheel:seers-village:0')!;
+        const spin = families.get('spinning')!.model(wheel, { obj: 'flax' }, p, world);
+        expect([spin.ticksPerAttempt, spin.start, spin.xpTenths, spin.products]).toEqual([
+            3,
+            1,
+            { crafting: 150 },
+            [{ obj: 'bow_string', count: 1 }],
+        ]);
+        const rellekka = world.sites.find(s => s.id === 'spinning-wheel:rellekka:0')!;
+        expect(() => families.get('spinning')!.model(rellekka, { obj: 'flax' }, p, world)).toThrow(
+            /needs The Fremennik Trials/,
+        );
+        const field = world.sites.find(s => s.id === 'flax:flax:0')!;
+        const pick = families.get('pick')!.model(field, {}, p, world);
+        expect([pick.ticksPerAttempt, pick.deplete, pick.features]).toEqual([
+            2,
+            { chance: 3 / 16, respawnTicks: 10 },
+            48,
+        ]);
+        const cut = families.get('fletching')!.model(field, { product: 'unstrung_willow_longbow' }, p, world);
+        const strung = families.get('fletching')!.model(field, { product: 'willow_longbow' }, p, world);
+        expect([cut.ticksPerAttempt, cut.xpTenths, strung.ticksPerAttempt, strung.consumes]).toEqual([
+            3,
+            { fletching: 415 },
+            0.2,
+            [
+                { obj: 'unstrung_willow_longbow', count: 1 },
+                { obj: 'bow_string', count: 1 },
+            ],
+        ]);
+        const fire = families
+            .get('firemaking')!
+            .model(field, { log: 'willow_logs' }, profileAt('firemaking', 30, { tools }), world);
+        expect([fire.ticksPerAttempt, fire.success, fire.xpTenths]).toEqual([4, 197 / 256, { firemaking: 900 }]);
+    });
+});
+
 test('the anvils and furnaces a quest locks need it (gates.ts USE_GATES)', () => {
     const ids = ['anvil:asgarnia:1', 'anvil:rellekka:0', 'furnace:rellekka:0'];
     expect(ids.map(id => world.sites.find(s => s.id === id)?.reach)).toEqual([

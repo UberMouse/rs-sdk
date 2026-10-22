@@ -3,6 +3,7 @@
 // then its floor at a profile (cycle.ts).
 import type { Measured, MethodDef } from '../methods';
 import { SINKS, type wayFinder } from '../distance';
+import { wildernessLevel } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
 import {
     SINK_KINDS,
@@ -44,8 +45,19 @@ export interface MethodWay {
     walks?: number[];
 }
 
-/** A process step's place: a site, or `'here'`, where the previous action stands. */
-export type Stop = Site | 'here';
+/**
+ * A process step's stop at a bare tile: the family has no site kinds (firemaking), so the record's tile is the stop
+ * itself, priced like any tile under each way's requirement set.
+ */
+export interface TileStop {
+    tile: Tile;
+}
+
+/** A process step's place: a site, a bare tile, or `'here'`, where the previous action stands. */
+export type Stop = Site | TileStop | 'here';
+
+/** The id a tile stop goes by in a leg and in world.json's `processors`. */
+export const tileStopId = (t: Tile): string => `tile:${t.x},${t.z},${t.level}`;
 
 /** The `family` of a method whose load is withdrawn from the bank it starts at (cycle.ts Withdraw). */
 export const WITHDRAW = 'withdraw';
@@ -139,13 +151,21 @@ function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly Fe
     return site;
 }
 
-/** The sites a sink stops at, in the order the cycle visits them: none, the bank, or the steps' sites then the bank. */
-export const sinkSites = (sink: ResolvedMethod['sink']): Site[] =>
+/** The stops a sink makes, in the order the cycle visits them: none, the bank, or the steps' stops then the bank. */
+export const sinkStops = (sink: ResolvedMethod['sink']): (Site | TileStop)[] =>
     sink.mode === 'drop'
         ? []
         : sink.mode === 'bank'
           ? [sink.bank]
-          : [...sink.steps.filter((s): s is Site => s !== 'here'), ...(sink.bank ? [sink.bank] : [])];
+          : [...sink.steps.filter((s): s is Site | TileStop => s !== 'here'), ...(sink.bank ? [sink.bank] : [])];
+
+/** The sites among a sink's stops: its tile stops left out. */
+export const sinkSites = (sink: ResolvedMethod['sink']): Site[] =>
+    sinkStops(sink).filter((s): s is Site => !('tile' in s));
+
+/** A stop's id and the tile its legs start and end at. */
+const stopId = (s: Site | TileStop): string => ('tile' in s ? tileStopId(s.tile) : s.id);
+const standOf = (s: Site | TileStop): Tile => ('tile' in s ? s.tile : s.stand!);
 
 /** A withdraw record's obj, or a ModelError. */
 function withdrawObj(def: MethodDef): string {
@@ -181,43 +201,57 @@ function locate(
         if (!def.sink.steps.length) throw new ModelError('a process sink needs a step');
         if (tile && withdraw) throw new ModelError('a withdraw method banks where it withdraws: give no sink bank');
         if (tile && end !== 'bank') throw new ModelError(`a sink bank is never visited when the sink ends in ${end}`);
-        // Each step's site; an omitted `at` is the nearest to the previous step's site (the gather's for the first).
-        let last = site;
+        // Each step's site; an omitted `at` is the nearest to the previous step's site (the gather's for the first). A
+        // family with no site kinds stops at its tile; what follows one names its own tile, as no nearest is known
+        // from a bare tile.
+        let last: Site | undefined = site;
+        const nearest = (kinds: readonly FeatureKind[]): Site => {
+            if (!last) throw new ModelError(`nothing is nearest a bare tile step: give the ${kinds.join('/')} tile`);
+            return nearestOf(ctx.world, last, kinds);
+        };
         const steps = def.sink.steps.map((step): Stop => {
             const { kinds, walks } = familyOf(ctx, step.family);
             // Only the gather family's walks are priced (below) and passed to its model.
             if (walks) throw new ModelError(`the process step family ${step.family} has walks: not modelled`);
             if (step.at === 'here') return 'here';
-            last = step.at ? siteAt(ctx.world, kinds, step.at) : nearestOf(ctx.world, last, kinds);
+            if (!kinds.length) {
+                if (!step.at)
+                    throw new ModelError(
+                        `the process step family ${step.family} has no site kinds: give its tile or 'here'`,
+                    );
+                // The hazard counts sites only (query.ts methodHazard): a tile in the Wilderness would go unseen.
+                if (wildernessLevel(step.at) > 0)
+                    throw new ModelError(`a bare tile step in the Wilderness, ${coord(step.at)}, is not modelled`);
+                last = undefined;
+                return { tile: step.at };
+            }
+            last = step.at ? siteAt(ctx.world, kinds, step.at) : nearest(kinds);
             return last;
         });
         const bank =
-            end !== 'bank' || withdraw
-                ? undefined
-                : tile
-                  ? siteAt(ctx.world, ['bank'], tile)
-                  : nearestOf(ctx.world, last, ['bank']);
+            end !== 'bank' || withdraw ? undefined : tile ? siteAt(ctx.world, ['bank'], tile) : nearest(['bank']);
         sink = { mode: 'process', steps, ...(bank ? { bank } : {}) };
     }
-    const stops = sinkSites(sink);
-    for (const s of stops)
+    const stops = sinkStops(sink);
+    for (const s of sinkSites(sink))
         if (!s.stand || !s.reach.length) throw new ModelError(`sink site ${s.id} has no stand a walk reaches`);
-    // Every set that gets to all the method's sites: one reach set of each, joined, the minimal ones kept.
-    const joined = [site, ...stops].reduce<string[][]>(
+    // Every set that gets to all the method's sites: one reach set of each, joined, the minimal ones kept. A tile stop
+    // adds none of its own: a way that can't walk to it is dropped below.
+    const joined = [site, ...sinkSites(sink)].reduce<string[][]>(
         (acc, s) => acc.flatMap(a => s.reach.map(r => canonicalSet([...a, ...r], ctx.quests))),
         [[]],
     );
     // site -> each stop -> site, a stop the same as the one before it (two steps at one anvil) walked to once.
-    const tour = [site, ...stops, site].filter((s, i, all) => i === 0 || s !== all[i - 1]);
+    const tour = [site, ...stops, site].filter((s, i, all) => i === 0 || stopId(s) !== stopId(all[i - 1]!));
     const pairs = family?.walks?.(site, def.params, ctx.world);
     const ways: MethodWay[] = [];
     for (const reach of minimalSets(joined, ctx.quests)) {
         const legs: Leg[] = [];
         for (let i = 0; i + 1 < tour.length; i++) {
             const [a, b] = [tour[i]!, tour[i + 1]!];
-            const way = finder.runTicksBetween(a.stand!, b.stand!, reach);
+            const way = finder.runTicksBetween(standOf(a), standOf(b), reach);
             if (!way) break;
-            legs.push({ from: a.id, to: b.id, ...way });
+            legs.push({ from: stopId(a), to: stopId(b), ...way });
         }
         if (legs.length !== tour.length - 1) continue;
         if (!pairs) {
@@ -240,7 +274,8 @@ const paramList = (params: unknown): unknown[] => (Array.isArray(params) ? param
 
 /**
  * The gather (or withdrawn obj) and each process step's models of a located method at `profile`, the gather's walks
- * from `way`; throws a ModelError when a family can't. A step `'here'` is modelled at the previous step's site.
+ * from `way`; throws a ModelError when a family can't. A step `'here'` or at a bare tile is modelled at the previous
+ * step's site.
  */
 export function methodModels(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
@@ -259,7 +294,8 @@ export function methodModels(
     const steps = m.def.sink.steps.map((step, i) => {
         const stop = stops[i];
         if (stop === undefined) throw new ModelError(`no site for process step ${i + 1}`);
-        if (stop !== 'here') last = stop;
+        // A tile stop's family has no site kinds and reads no site: it is handed the last one.
+        if (stop !== 'here' && !('tile' in stop)) last = stop;
         const family = familyOf(ctx, step.family);
         return paramList(step.params).map(p => family.model(last, p, profile, world));
     });
@@ -436,7 +472,9 @@ export function toWorldMethod(m: ResolvedMethod): WorldMethod {
         site: m.site.id,
         stand: m.site.stand!,
         ...(m.sink.mode !== 'drop' && m.sink.bank ? { bank: m.sink.bank.id } : {}),
-        ...(m.sink.mode === 'process' ? { processors: m.sink.steps.map(s => (s === 'here' ? 'here' : s.id)) } : {}),
+        ...(m.sink.mode === 'process'
+            ? { processors: m.sink.steps.map(s => (s === 'here' ? 'here' : stopId(s))) }
+            : {}),
         skill: m.skill,
         minLevel: m.minLevel,
         levels: m.levels,
@@ -468,7 +506,15 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): R
     else {
         if (processors?.length !== def.sink.steps.length)
             throw new MethodError(wm.id, `world.json names no site for each process step${STALE}`);
-        const steps = processors.map((id): Stop => (id === 'here' ? 'here' : byId(id, 'process step')));
+        const steps = processors.map((id, i): Stop => {
+            if (id === 'here') return 'here';
+            if (!id.startsWith('tile:')) return byId(id, 'process step');
+            // A tile stop is the record's own tile.
+            const tile = (def.sink.mode === 'process' ? def.sink.steps[i]?.at : undefined) ?? 'here';
+            if (tile === 'here' || tileStopId(tile) !== id)
+                throw new MethodError(wm.id, `world.json's process step ${id} is not the record's tile${STALE}`);
+            return { tile };
+        });
         // A process sink that banks names its bank, but a withdrawal's, which is its site.
         const banks = def.sink.end === 'bank' && def.family !== WITHDRAW;
         sink = { mode: 'process', steps, ...(banks ? { bank: byId(bank, 'bank') } : {}) };

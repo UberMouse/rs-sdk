@@ -803,8 +803,27 @@ describe('restarts', () => {
         ]);
     });
 
+    test('a start is paid once a trip, beside the restarts', () => {
+        // 28 ore, start 1 and Make X 1: 28 x 5 + 1 + 1 = 142, legs 20: 162.
+        expect(withdraw('ore', { ...smelt, start: 1 }).trip).toMatchObject({ process: 142, total: 162 });
+        fails(
+            {
+                gather: { withdraw: 'ore' },
+                sink: { mode: 'process', steps: [[{ ...smelt, start: -1 }]], end: 'bank', legs, here: [false] },
+            },
+            /start -1 is not >= 0/,
+        );
+    });
+
     test('fails where it is not modelled', () => {
-        fails({ gather: { ...smelt, consumes: [] }, sink: { mode: 'bank', legs } }, /a gather with a restart/);
+        fails(
+            { gather: { ...smelt, consumes: [] }, sink: { mode: 'bank', legs } },
+            /a gather with a restart or a start/,
+        );
+        fails(
+            { gather: { ...smelt, consumes: [], restart: undefined, start: 1 }, sink: { mode: 'bank', legs } },
+            /a gather with a restart or a start/,
+        );
         // Stackable feathers made into stackable runes: the trip never ends.
         const vein: ActionModel = {
             ticksPerAttempt: 4,
@@ -821,6 +840,19 @@ describe('restarts', () => {
         fails(
             { gather: vein, sink: { mode: 'process', steps: [[craft]], end: 'keep', legs, here: [false] } },
             /restarts on a trip that never ends/,
+        );
+        fails(
+            {
+                gather: vein,
+                sink: {
+                    mode: 'process',
+                    steps: [[{ ...craft, restart: undefined, start: 1 }]],
+                    end: 'keep',
+                    legs,
+                    here: [false],
+                },
+            },
+            /a start on a trip that never ends/,
         );
     });
 });

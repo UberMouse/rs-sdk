@@ -457,6 +457,13 @@ describe('a record that does not resolve stops the build, naming it and why', ()
     });
 });
 
+/** The lure method burning its catch in the steps given, then `end`. */
+const burnLure = (steps: ProcessStepDef[], end: 'bank' | 'keep' = 'keep', bank?: Tile): MethodDef => ({
+    ...lure,
+    id: 'lure-burn',
+    sink: { mode: 'process', steps, end, ...(bank ? { bank } : {}) },
+});
+
 describe('process steps, withdrawals and walks', () => {
     // A process family that marks a fish (params.from, default trout) as a salmon wherever it is, and remembers the
     // sites it was modelled at.
@@ -619,6 +626,77 @@ describe('process steps, withdrawals and walks', () => {
                 /^methods\.ts lure-paced: the process step family marking has walks: not modelled$/,
             );
         }
+    });
+
+    test('a step of a family with no site kinds stops at its tile, priced like any tile', () => {
+        // A family with no kinds that burns a raw fish wherever it stands, leaving nothing.
+        const burning: Family = {
+            ...marking,
+            id: 'burning',
+            kinds: [],
+            model: (...a) => ({ ...marking.model(...a), products: [] }),
+        };
+        // One model per fish the rod catches (trout, and salmon from Fishing 30).
+        const fish = [{ from: 'raw_trout' }, { from: 'raw_salmon' }];
+        const burnt: MethodContext = { ...ctx, families: new Map([...ctx.families, ['burning', burning]]) };
+        const tile = at(0, 3210, 3220);
+        markedAt.length = 0;
+        const m = resolveMethod(burnLure([{ family: 'burning', at: tile, params: fish }]), burnt, finder);
+        expect(m.sink).toEqual({ mode: 'process', steps: [{ tile }] });
+        // The spot's stand (3201, 3220) to the tile: 9 steps, 5 run ticks, and back; no requirement of its own.
+        expect(m.ways).toEqual([
+            {
+                reach: [],
+                legs: [
+                    { from: 'fishing-spot:river:0', to: 'tile:3210,3220,0', runTicks: 5, requires: [] },
+                    { from: 'tile:3210,3220,0', to: 'fishing-spot:river:0', runTicks: 5, requires: [] },
+                ],
+            },
+        ]);
+        // It reads no site: it is handed the gather's.
+        expect(new Set(markedAt)).toEqual(new Set(['fishing-spot:river:0']));
+        const wm = toWorldMethod(m);
+        expect(wm.processors).toEqual(['tile:3210,3220,0']);
+        expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites })).toEqual(m);
+        expect(() => fromWorldMethod({ ...wm, processors: ['tile:3211,3220,0'] }, { sites })).toThrow(
+            /process step tile:3211,3220,0 is not the record's tile; world.json is stale/,
+        );
+        // A bank after it names its tile: tile -> bank a's stand (3220, 3222), 10 steps, 5 run ticks.
+        const banked = resolveMethod(
+            burnLure([{ family: 'burning', at: tile, params: fish }], 'bank', at(0, 3220, 3220)),
+            burnt,
+            finder,
+        );
+        expect(banked.ways[0]!.legs.map(l => [l.from, l.to, l.runTicks])).toEqual([
+            ['fishing-spot:river:0', 'tile:3210,3220,0', 5],
+            ['tile:3210,3220,0', 'bank:a:0', 5],
+            ['bank:a:0', 'fishing-spot:river:0', 10],
+        ]);
+        const refused = (def: MethodDef, re: RegExp) =>
+            expect(() => resolveMethod(def, burnt, finder)).toThrow(
+                new RegExp(`^methods\\.ts lure-burn: ${re.source}`),
+            );
+        refused(
+            burnLure([{ family: 'burning', params: fish }]),
+            /the process step family burning has no site kinds: give/,
+        );
+        // No nearest is known from a bare tile: a later step or the bank names its own.
+        refused(
+            burnLure([
+                { family: 'burning', at: tile, params: fish },
+                { family: 'cooking', params: { food: 'raw_trout' } },
+            ]),
+            /nothing is nearest a bare tile step: give the range\/fire tile/,
+        );
+        refused(
+            burnLure([{ family: 'burning', at: tile, params: fish }], 'bank'),
+            /nothing is nearest a bare tile step: give the bank tile/,
+        );
+        // The hazard counts sites only, so a tile in the Wilderness (z 3520 and up, level 1 there) is refused.
+        refused(
+            burnLure([{ family: 'burning', at: at(0, 3210, 3520), params: fish }]),
+            /a bare tile step in the Wilderness, \(3210, 3520, 0\), is not modelled/,
+        );
     });
 
     test('a record the new shapes cannot resolve fails naming why', () => {

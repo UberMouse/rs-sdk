@@ -7,7 +7,14 @@ import { wayFinder } from '../distance';
 import { loadWorld } from '../load';
 import { METHODS } from '../methods';
 import { readGameData } from '../model/families/index';
-import { measuredProfile, methodModel, methodRate, resolveMethods, type MethodContext } from '../model/method';
+import {
+    measuredProfile,
+    methodModel,
+    methodRate,
+    resolveMethods,
+    tileStopId,
+    type MethodContext,
+} from '../model/method';
 import type { Skill } from '../model/server';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
@@ -49,9 +56,11 @@ describe("each seed is at its plan's sites", () => {
             expect(m.site.id).toBe(site);
             if (m.sink.mode === 'drop') throw new Error(`${id} drops`);
             expect(m.sink.bank?.id).toBe(bank);
-            expect(m.sink.mode === 'process' ? m.sink.steps.map(s => (s === 'here' ? s : s.id)) : null).toEqual(
-                processor === null ? null : [processor],
-            );
+            expect(
+                m.sink.mode === 'process'
+                    ? m.sink.steps.map(s => (s === 'here' ? s : 'tile' in s ? tileStopId(s.tile) : s.id))
+                    : null,
+            ).toEqual(processor === null ? null : [processor]);
             expect(m.ways[0]!.reach).toEqual([]);
             // A bank method's first leg is the site's nearest bank, which distance.ts computed the same way.
             if (m.sink.mode === 'bank') expect(m.ways[0]!.legs[0]!.runTicks).toBe(m.site.nearest!.bank!.runTicks);
