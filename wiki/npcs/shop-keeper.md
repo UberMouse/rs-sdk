@@ -37,5 +37,5 @@ Shop keeper has no drops.
 
 ## Notes
 
-- Has 10 visual variants (generalshopkeeper1, khazard_shopkeeper, generalshopkeeper5, generalshopkeeper4, generalshopkeeper6, generalshopkeeper7, generalshopkeeper2, swordshop1, lathas_shopkeeper, generalshopkeeper3).
+- Has 10 visual variants (generalshopkeeper1, generalshopkeeper2, generalshopkeeper3, generalshopkeeper4, generalshopkeeper5, generalshopkeeper6, generalshopkeeper7, swordshop1, khazard_shopkeeper, lathas_shopkeeper).
 - Category: Shop Keeper.

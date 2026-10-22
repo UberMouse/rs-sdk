@@ -13,6 +13,6 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
+| Wilderness | Ground | 1 |
 | m40_46 | Ground | 1 |
 | m42_56 | Ground | 1 |
-| Wilderness | Ground | 1 |

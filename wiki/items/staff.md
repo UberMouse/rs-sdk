@@ -28,8 +28,8 @@
 
 - Sold by: [Staffshop](../shops/staffshop.md) for 15 gp
 - Sold by: [Memberstaffshop](../shops/memberstaffshop.md) for 15 gp
-- Dropped by: [Wizard](../npcs/wizard.md) (8/128)
-- Dropped by: [Dark wizard](../npcs/dark-wizard.md) (4/128)
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (4/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (4/128)
+- Dropped by: [Dark wizard](../npcs/dark-wizard.md) (4/128)
 - Dropped by: [Necromancer](../npcs/necromancer.md) (8/128)
+- Dropped by: [Wizard](../npcs/wizard.md) (8/128)

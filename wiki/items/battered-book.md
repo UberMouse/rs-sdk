@@ -1,6 +1,6 @@
 # Battered book
 
-*A very thickley bound book.*
+*A very thickly bound book.*
 
 | Detail | |
 |---|---|

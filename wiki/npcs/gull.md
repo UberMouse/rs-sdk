@@ -59,4 +59,4 @@ Gull has no drops.
 
 ## Notes
 
-- Has 8 visual variants (seabird1, viking_seagull, viking_seagull2, viking_seagull3, viking_seagull4, gull1, gull2, misc_seagull).
+- Has 8 visual variants (seabird1, gull1, gull2, viking_seagull, viking_seagull2, viking_seagull3, viking_seagull4, misc_seagull).

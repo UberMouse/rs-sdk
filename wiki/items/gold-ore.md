@@ -22,5 +22,5 @@
 
 ## Sources
 
-- Dropped by: [Tribesman](../npcs/tribesman.md) (5/138)
 - Dropped by: [Lesser demon](../npcs/lesser-demon.md) (2/128)
+- Dropped by: [Tribesman](../npcs/tribesman.md) (5/138)

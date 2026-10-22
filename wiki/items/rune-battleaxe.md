@@ -20,3 +20,7 @@
 | Range Defence | -1 |
 | Strength Bonus | +64 |
 | Attack Speed | 6 |
+
+## Sources
+
+- Dropped by: [Iron dragon](../npcs/iron-dragon.md) (1/128)

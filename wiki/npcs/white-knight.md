@@ -4,7 +4,7 @@
 |---|---|
 | **Combat Level** | 36 |
 | **Hitpoints** | 52 |
-| **Description** | The Knight seems to be watching something. |
+| **Description** | Nice armour! |
 | **Aggressive** | No |
 | **Movement** | Wander |
 | **Respawn** | 100 ticks |
@@ -82,5 +82,4 @@ Always drops: Bones
 
 ## Notes
 
-- Associated with the **Death** quest.
-- Has 2 visual variants (death_white_knight, white_knight).
+- Has 2 visual variants (white_knight, death_white_knight).

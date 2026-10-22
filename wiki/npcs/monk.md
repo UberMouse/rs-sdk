@@ -34,4 +34,4 @@ Always drops: Bones
 
 ## Notes
 
-- Has 4 visual variants (monk, entrana_monk, monkadventurerpg, monk_ardougne).
+- Has 4 visual variants (entrana_monk, monk_ardougne, monkadventurerpg, monk).

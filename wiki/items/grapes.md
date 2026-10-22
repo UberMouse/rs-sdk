@@ -13,5 +13,5 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
-| m50_152 | Ground | 1 |
 | Wilderness | Floor 2 | 1 |
+| m50_152 | Ground | 1 |

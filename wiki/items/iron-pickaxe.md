@@ -26,9 +26,11 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | m41_58 | Ground | 1 |
+| m43_70 | Ground | 1 |
 | m52_152 | Ground | 1 |
 | m52_153 | Ground | 1 |
 
 ## Sources
 
 - Sold by: [Nurmof's Pickaxe Shop](../shops/nurmofs-pickaxe-shop.md) for 140 gp
+- Dropped by: [Possessed Pickaxe](../npcs/possessed-pickaxe.md) (Always)

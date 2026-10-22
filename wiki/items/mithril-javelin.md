@@ -22,5 +22,5 @@
 ## Sources
 
 - Sold by: [Authentic throwing weapons](../shops/authentic-throwing-weapons.md) for 83 gp
-- Dropped by: [Tribesman](../npcs/tribesman.md) (2/138)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (1/128)
+- Dropped by: [Tribesman](../npcs/tribesman.md) (2/138)

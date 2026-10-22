@@ -1,6 +1,7 @@
 // Renders the world as the markdown agents read: wiki/places, wiki/resources, wiki/services and wiki/training, which
 // are wholly generated, and the generated head of wiki/world/README.md. renderWorld is pure; the rest reads
-// the game data it needs, writes the pages and removes stale ones, or lists what differs (--check).
+// the game data it needs, writes the pages (the npc, shop and item generators' too) and removes stale ones,
+// or lists what differs (--check).
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
 import { ROOT, SCRIPTS, WORLD_JSON } from './paths';
@@ -13,12 +14,15 @@ import { renderTraining, type TrainingData } from './render/training';
 import { first, parseConfigs, readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
 import { readCallables, readTriggers } from './sources/triggers';
-import { refuseSymlink } from './stale';
+import { refuseSymlink, WIKI_README } from './stale';
 import type { World } from './types';
 import { cmp } from './util';
 
 /** The folders renderWorld owns outright: a file in them that it did not render is stale. */
 export const GENERATED_DIRS: readonly string[] = ['wiki/places', 'wiki/resources', 'wiki/services', 'wiki/training'];
+
+/** The folders of the npc, shop and item generators (wiki/generate-*.ts), which name their own stale pages. */
+export const PAGE_DIRS: readonly string[] = ['wiki/items', 'wiki/npcs', 'wiki/shops'];
 
 export const README = 'wiki/world/README.md';
 
@@ -154,33 +158,51 @@ function holds(file: string, text: string): boolean {
 
 /**
  * The repo-relative paths whose file under `root` is not `files`' content, missing, unreadable, or
- * (inside the generated folders) not in `files` at all: what a fresh generation would change.
+ * (inside the generated folders) not in `files` at all, and the `removals` a generator named stale:
+ * what a fresh generation would change.
  */
-export function drift(files: ReadonlyMap<string, string>, root: string = ROOT): string[] {
+export function drift(
+    files: ReadonlyMap<string, string>,
+    root: string = ROOT,
+    removals: readonly string[] = [],
+): string[] {
     const differ = [...files].filter(([p, text]) => !holds(join(root, p), text)).map(([p]) => p);
     const stale = generatedFiles(root).filter(p => !files.has(p));
-    return [...differ, ...stale].sort(cmp);
+    return [...differ, ...stale, ...removals].sort(cmp);
 }
 
 /**
- * The paths writeFiles may write: world.json, the README, and files inside the generated folders.
- * A path is taken as it resolves, so `wiki/places/../../x` is outside them.
+ * The paths writeFiles may write: world.json, the READMEs, and files inside the generated folders and
+ * PAGE_DIRS. A path is taken as it resolves, so `wiki/places/../../x` is outside them.
  */
 function writable(p: string, root: string): boolean {
     const at = relative(root, join(root, p));
     if (at.startsWith('..') || isAbsolute(at)) return false;
-    return at === relative(ROOT, WORLD_JSON) || at === README || GENERATED_DIRS.some(d => at.startsWith(`${d}/`));
+    return (
+        at === relative(ROOT, WORLD_JSON) ||
+        at === README ||
+        at === WIKI_README ||
+        [...GENERATED_DIRS, ...PAGE_DIRS].some(d => at.startsWith(`${d}/`))
+    );
 }
 
 /**
- * Writes `files` under `root` and removes the generated folders' files not among them; returns those.
- * It throws, before touching anything, on a path it does not own or a generated folder that is a
+ * Writes `files` under `root`, removes the generated folders' files not among them and the `removals`
+ * (pages in PAGE_DIRS a generator named stale); returns what it removed. It throws, before touching
+ * anything, on a path it does not own, a removal outside PAGE_DIRS, or a folder of either that is a
  * symlink, since a removal through one would delete files wherever the link points.
  */
-export function writeFiles(files: ReadonlyMap<string, string>, root: string = ROOT): string[] {
+export function writeFiles(
+    files: ReadonlyMap<string, string>,
+    root: string = ROOT,
+    removals: readonly string[] = [],
+): string[] {
     const foreign = [...files.keys()].filter(p => !writable(p, root));
     if (foreign.length) throw new Error(`writeFiles writes only generated files, not ${foreign.join(', ')}`);
-    for (const d of GENERATED_DIRS) refuseSymlink(join(root, d));
+    const loose = removals.filter(p => !PAGE_DIRS.includes(dirname(p)));
+    if (loose.length)
+        throw new Error(`writeFiles removes only pages in ${PAGE_DIRS.join(', ')}, not ${loose.join(', ')}`);
+    for (const d of [...GENERATED_DIRS, ...PAGE_DIRS]) refuseSymlink(join(root, d));
     for (const [p, text] of files) {
         const file = join(root, p);
         if (holds(file, text)) continue;
@@ -194,5 +216,6 @@ export function writeFiles(files: ReadonlyMap<string, string>, root: string = RO
         const dir = dirname(join(root, p));
         if (!GENERATED_DIRS.some(d => join(root, d) === dir) && readdirSync(dir).length === 0) rmdirSync(dir);
     }
-    return stale;
+    for (const p of removals) unlinkSync(join(root, p));
+    return [...stale, ...removals];
 }

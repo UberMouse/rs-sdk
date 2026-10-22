@@ -22,10 +22,16 @@
 | Strength Bonus | +6 |
 | Attack Speed | 6 |
 
+## Spawn Locations
+
+| Area | Floor | Quantity |
+|------|-------|----------|
+| m43_71 | Ground | 1 |
+
 ## Sources
 
 - Dropped by: [Goblin guard](../npcs/goblin-guard.md) (4/128 (members))
 - Dropped by: [Goblin](../npcs/goblin.md) (4/128 (members))
-- Dropped by: [Tribesman](../npcs/tribesman.md) (7/138)
 - Dropped by: [Hobgoblin](../npcs/hobgoblin.md) (3/128 (members))
 - Dropped by: [Jogre](../npcs/jogre.md) (30/128)
+- Dropped by: [Tribesman](../npcs/tribesman.md) (7/138)

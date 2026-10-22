@@ -12,7 +12,7 @@
 
 | Area | Centre | Spawns | F2P |
 |------|--------|--------|-----|
-| [Kandarin](../places/kandarin.md) | (2540, 3548) | 1 | no |
+| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2540, 3548) | 1 | no |
 
 ## Interactions
 

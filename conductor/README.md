@@ -86,7 +86,7 @@ bun conductor/tools/library.ts generate <name> --spec '<json>' --purpose "..."  
 Saves go through the engine's management port (`:8898`), served only when the engine runs with
 `SAVE_ENDPOINTS=true` (`up.sh` sets it): `GET /save/<name>` exports a player's current save
 without logging it out and says which file the engine reads; `POST /kick/<name>` logs a player
-out server-side. MCP `execute_code` holds a bot's control connection only while its code runs.
+out server-side. MCP `execute_code` keeps a bot's control lease between calls until `disconnect_bot`.
 
 ## How it learns
 

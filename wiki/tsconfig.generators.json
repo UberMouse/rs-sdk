@@ -1,8 +1,6 @@
 {
-    // The generators that read the world index (wiki/world/load.ts), typechecked by verify:conductor so a
-    // change to the World contract fails here too. They predate noUncheckedIndexedAccess, which flags
-    // about fifty indexed reads in them, so it alone is off.
+    // The npc, shop and item page generators, which wiki/world/build.ts chains after the world index,
+    // typechecked by verify:conductor so a change to the World contract fails here too.
     "extends": "../tsconfig.json",
-    "compilerOptions": { "noUncheckedIndexedAccess": false },
-    "include": ["generate-npcs.ts", "generate-shops.ts"]
+    "include": ["generate-npcs.ts", "generate-shops.ts", "generate-items.ts"]
 }

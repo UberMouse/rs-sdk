@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | A powerful Wizard of the Knights of the Round Table. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 3) |
 
 ## Interactions
 
@@ -20,4 +20,4 @@ Merlin has no drops.
 
 ## Notes
 
-- Has 2 visual variants (merlin, merlin2).
+- Has 2 visual variants (merlin2, merlin).

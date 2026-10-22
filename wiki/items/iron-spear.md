@@ -24,6 +24,6 @@
 
 ## Sources
 
-- Dropped by: [Tribesman](../npcs/tribesman.md) (2/138)
 - Dropped by: [Hobgoblin](../npcs/hobgoblin.md) (2/128 (members))
 - Dropped by: [Jogre](../npcs/jogre.md) (4/128)
+- Dropped by: [Tribesman](../npcs/tribesman.md) (2/138)

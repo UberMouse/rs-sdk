@@ -23,3 +23,4 @@
 
 - Sold by: [Authentic throwing weapons](../shops/authentic-throwing-weapons.md) for 208 gp
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (20/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (20/128)

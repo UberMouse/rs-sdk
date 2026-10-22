@@ -7,6 +7,20 @@
 | **Description** | A mourner, or plague healer. |
 | **Aggressive** | No |
 | **Movement** | Wander |
+| **Respawn** | 140 ticks |
+
+## Combat Stats
+
+| Stat | Value |
+|------|-------|
+| Attack Bonus | 6 |
+| Strength Bonus | 2 |
+| Stab Defence | 6 |
+| Slash Defence | 6 |
+| Crush Defence | 9 |
+| Magic Defence | 0 |
+| Range Defence | 0 |
+| Attack Style | Crush |
 
 ## Locations
 
@@ -32,17 +46,10 @@
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2543, 3326) | 6 | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2546, 3330) | 1 | no |
 
-## Interactions
-
-| Option | Action |
-|--------|--------|
-| Talk-to | Talk-to |
-
 ## Drops
 
-Mourner has no drops.
+Always drops: Bones
 
 ## Notes
 
-- Associated with the **Elena** quest.
-- Has 10 visual variants (mournertwa, mourner2, mourner3, mourner_armed, mournerstew3, mournerstew2, mournerstew1, mournerwatchtower, mourner1, mournertwb).
+- Has 10 visual variants (mourner2, mourner3, mourner_armed, mournerstew3, mournerstew2, mournerstew1, mournerwatchtower, mourner1, mournertwa, mournertwb).

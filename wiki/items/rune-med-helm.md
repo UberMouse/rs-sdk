@@ -24,8 +24,9 @@
 
 ## Sources
 
-- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
 - Dropped by: [Black Demon](../npcs/black-demon.md) (1/128)
-- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)
+- Dropped by: [Iron dragon](../npcs/iron-dragon.md) (1/128)
 - Dropped by: [Kalphite Guardian](../npcs/kalphite-guardian.md) (1/128)
 - Dropped by: [Lesser demon](../npcs/lesser-demon.md) (1/128)
+- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
+- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)

@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | Now that's an effective disguise! |
+| **Description** | A young prince. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Wander (range 2) |
 
 ## Location
 
@@ -14,11 +14,16 @@
 |------|--------|--------|-----|
 | [Draynor jail (Draynor Village)](../places/jail.md) | (3123, 3242) | 1 | yes |
 
+## Interactions
+
+| Option | Action |
+|--------|--------|
+| Talk-to | Talk-to |
+
 ## Drops
 
 Prince Ali has no drops.
 
 ## Notes
 
-- Associated with the **Prince** quest.
-- Has 2 visual variants (prince_ali_disguised, prince_ali_prison).
+- Has 2 visual variants (prince_ali_prison, prince_ali_disguised).

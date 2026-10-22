@@ -13,9 +13,9 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
-| m41_52 | Ground | 1 |
 | Wilderness | Floor 1 | 1 |
 | Wilderness | Floor 2 | 1 |
+| m41_52 | Ground | 1 |
 
 ## Sources
 

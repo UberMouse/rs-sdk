@@ -24,5 +24,5 @@
 
 ## Sources
 
-- Sold by: [Aaron's Archery Appendages](../shops/aarons-archery-appendages.md) for 200 gp
 - Sold by: [Scavvo's Rune Store](../shops/scavvos-rune-store.md) for 200 gp
+- Sold by: [Aaron's Archery Appendages](../shops/aarons-archery-appendages.md) for 200 gp

@@ -6,6 +6,6 @@
 |---|---|
 | **Type** | Quest Item |
 | **Members** | Yes |
-| **Weight** | 150g |
+| **Weight** | 14g |
 | **Value** | 10 gp |
 | **Tradeable** | No |

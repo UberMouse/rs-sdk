@@ -6,6 +6,7 @@
 |---|---|
 | **Type** | Armour |
 | **Members** | Yes |
+| **Weight** | 6lb |
 | **Value** | 35200 gp |
 | **Equipable** | Yes — Head |
 

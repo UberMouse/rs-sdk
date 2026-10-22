@@ -4,6 +4,13 @@ import type { Tile } from './types';
 /** Ascending order of numbers or strings (by code unit, as `<` compares them), 0 when equal. */
 export const cmp = (a: number | string, b: number | string): number => (a < b ? -1 : a > b ? 1 : 0);
 
+/** A config's pack id, for ordering by the game's id order; a config without one is a broken input, not a last place. */
+export const packId = (ids: Map<string, number>, config: string): number => {
+    const id = ids.get(config);
+    if (id === undefined) throw new Error(`config ${config} has no pack id`);
+    return id;
+};
+
 /** Appends `x` to the list at `key`, making the list when it is the first. */
 export function push<K, V>(lists: Map<K, V[]>, key: K, x: V): void {
     const list = lists.get(key);

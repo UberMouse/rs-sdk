@@ -30,3 +30,4 @@
 
 - Sold by: [Zeke's Superior Scimitars](../shops/zekes-superior-scimitars.md) for 112 gp
 - Dropped by: [Bandit](../npcs/bandit.md) (4/128)
+- Dropped by: [Skeletal miner](../npcs/skeletal-miner.md) (1/128)

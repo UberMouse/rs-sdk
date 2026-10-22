@@ -280,3 +280,5 @@ Review findings `task-review` deferred because their fix needs work outside the 
   walkable land (`quest_regicide.rs2:462`), which leaves tree:tirannwn:1 unreached.
 - travel: `tasks/travel.ts:23` keeps its own `GATE_STAND_TOLERANCE`; import it from `actions/gate.ts` (code-quality
   Q3, from the gnome-exit fix).
+- travel itest "enters the Wilderness only with wilderness: true" can flake: its 10 HP save is attacked in the
+  Wilderness and ends `interrupt:low-hp` (run itpt9hcvdl8e, 2026-10-22); give the fixture more HP or food.

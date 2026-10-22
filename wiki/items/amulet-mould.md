@@ -17,8 +17,8 @@
 
 ## Sources
 
-- Sold by: [Rommiks Crafty Supplies](../shops/rommiks-crafty-supplies.md) for 5 gp
-- Sold by: [Craftingshop Free](../shops/craftingshop-free.md) for 5 gp
 - Sold by: [Dommiks Crafting Store](../shops/dommiks-crafting-store.md) for 5 gp
 - Sold by: [Craftingshop2 Free](../shops/craftingshop2-free.md) for 5 gp
+- Sold by: [Rommiks Crafty Supplies](../shops/rommiks-crafty-supplies.md) for 5 gp
+- Sold by: [Craftingshop Free](../shops/craftingshop-free.md) for 5 gp
 - Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (1/128)

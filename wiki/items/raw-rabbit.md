@@ -11,5 +11,5 @@
 
 ## Sources
 
-- Dropped by: [Rabbit](../npcs/rabbit.md) (Always)
 - Dropped by: [Bunny](../npcs/bunny.md) (Always)
+- Dropped by: [Rabbit](../npcs/rabbit.md) (Always)

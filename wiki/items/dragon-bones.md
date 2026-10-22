@@ -12,7 +12,10 @@
 ## Sources
 
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (Always)
-- Dropped by: [King black dragon](../npcs/king-black-dragon.md) (Always)
-- Dropped by: [Green dragon](../npcs/green-dragon.md) (Always)
 - Dropped by: [Blue dragon](../npcs/blue-dragon.md) (Always)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (Always)
+- Dropped by: [Green dragon](../npcs/green-dragon.md) (Always)
+- Dropped by: [Iron dragon](../npcs/iron-dragon.md) (Always)
+- Dropped by: [King black dragon](../npcs/king-black-dragon.md) (Always)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (Always)
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (Always)

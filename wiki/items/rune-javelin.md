@@ -22,3 +22,5 @@
 ## Sources
 
 - Sold by: [Authentic throwing weapons](../shops/authentic-throwing-weapons.md) for 520 gp
+- Dropped by: [Iron dragon](../npcs/iron-dragon.md) (20/128)
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (20/128)

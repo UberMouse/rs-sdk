@@ -26,7 +26,8 @@
 
 | Area | Centre | Spawns | F2P |
 |------|--------|--------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2549, 3561) | 2 | no |
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2550, 3563) | 1 | no |
+| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2548, 3558) | 1 | no |
 | [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | 2 | yes |
 | [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | 3 | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | 1 | yes |

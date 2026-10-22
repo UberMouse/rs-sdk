@@ -23,5 +23,5 @@
 
 ## Sources
 
-- Dropped by: [Green dragon](../npcs/green-dragon.md) (1/128)
 - Dropped by: [Blue dragon](../npcs/blue-dragon.md) (1/128)
+- Dropped by: [Green dragon](../npcs/green-dragon.md) (1/128)

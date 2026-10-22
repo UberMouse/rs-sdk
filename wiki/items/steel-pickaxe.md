@@ -22,6 +22,13 @@
 | Level Requirement | 6 |
 | Attack Speed | 5 |
 
+## Spawn Locations
+
+| Area | Floor | Quantity |
+|------|-------|----------|
+| m43_71 | Ground | 1 |
+
 ## Sources
 
 - Sold by: [Nurmof's Pickaxe Shop](../shops/nurmofs-pickaxe-shop.md) for 500 gp
+- Dropped by: [Possessed Pickaxe](../npcs/possessed-pickaxe.md) (10/500)

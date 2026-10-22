@@ -68,5 +68,5 @@ Ghost has no drops.
 
 ## Notes
 
-- Has 6 visual variants (ghost, house_ghost, zamorakghost, hauntedmine_boss_ghost_faded, hauntedmine_suprise_ghost, dragonslayer_ghost).
+- Has 6 visual variants (ghost, house_ghost, zamorakghost, dragonslayer_ghost, hauntedmine_boss_ghost_faded, hauntedmine_suprise_ghost).
 - Will flee from combat when attacked.

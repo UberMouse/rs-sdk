@@ -1,4 +1,4 @@
-// Ported from sdk/actions.ts walkTo @ 4c2069cc0, with walkStepToward, waitForMovementComplete,
+// Ported from sdk/actions.ts walkTo @ df3d8888a, with walkStepToward, waitForMovementComplete,
 // openDoorAt, tryOpenBlockingDoor and walkAdjacentTo from sdk/actions-helpers.ts @ 4c2069cc0.
 // Differences from bot.walkTo:
 // - Routes come from `ctx.pathfinder` (default `collisionPaths`, the SDK's collision data as
@@ -10,9 +10,9 @@
 //   dialog and interface guards clear what would block it.
 // - Waits are ticks. waitForMovementComplete's 15 s wall-clock failsafe is gone (the engine ends a run
 //   whose client stops publishing ticks); openDoorAt's 8 s wait is DOOR_OPEN_TICKS.
-// - The whole walk has a tick budget (walkBudgetTicks, from the first route's length), where upstream is
-//   bounded only by its 50 route queries; past it the walk ends `timeout` where it stands, and walking
-//   again carries on from there. Inside a task step the budget is also capped to the step's ticks left
+// - The whole walk has a tick budget (walkBudgetTicks, from the first route's length), where upstream has
+//   50 route queries and a 120 s wall-clock timeout, and refuses to walk on stale state; past it the walk
+//   ends `timeout` where it stands, and walking again carries on from there. Inside a task step the budget is also capped to the step's ticks left
 //   less `reserveTicks`, so a step that walks never overruns its own budget; with none left it is `no-time`.
 // - A door open the client refuses to send fails that attempt at once instead of waiting for nothing.
 // - A route that crosses the Wilderness (the surface one, or the Edgeville dungeon's) to a destination
@@ -790,17 +790,16 @@ function* walkOnPlane(
             // tolerance, or a tolerance under 2 could never be met.
             const last = wp === end;
             const leg = yield* walkLeg(w, wp, last ? Math.min(WAYPOINT_PASS, tolerance) : WAYPOINT_PASS, pos);
-            if (chebyshev(leg.pos, target) <= tolerance) return { ok: true, message: 'Arrived' };
+            // Stuck legs move the bot too: the next leg and the route's progress are judged from here.
+            pos = leg.pos;
+            if (chebyshev(pos, target) <= tolerance) return { ok: true, message: 'Arrived' };
             if (leg.status === 'stuck') {
                 if (++stuckInARow >= STUCK_WAYPOINTS) {
                     yield* tryOpenDoor(w);
                     if (w.noBlade) return noBladeFailure(w.noBlade, x, z);
                     break;
                 }
-            } else {
-                stuckInARow = 0;
-                pos = leg.pos;
-            }
+            } else stuckInARow = 0;
         }
 
         const remaining = chebyshev(pos, target);

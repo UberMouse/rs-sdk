@@ -11,5 +11,6 @@
 
 ## Sources
 
-- Dropped by: [Baby dragon](../npcs/baby-dragon.md) (Always)
 - Dropped by: [Baby blue dragon](../npcs/baby-blue-dragon.md) (Always)
+- Dropped by: [Baby dragon](../npcs/baby-dragon.md) (Always)
+- Dropped by: [Baby red dragon](../npcs/baby-red-dragon.md) (Always)

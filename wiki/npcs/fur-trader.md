@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | I wonder what he does with all that fur? |
+| **Description** | Knows how to keep warm in the winter. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 3) |
+| **Movement** | Wander |
 
 ## Locations
 
@@ -28,6 +28,5 @@ Fur trader has no drops.
 
 ## Notes
 
-- Associated with the **Viking** quest.
-- Has 2 visual variants (viking_fur_monger, fur_merchant).
+- Has 2 visual variants (fur_merchant, viking_fur_monger).
 - Category: Shop Keeper.

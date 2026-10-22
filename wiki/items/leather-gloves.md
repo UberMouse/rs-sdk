@@ -28,6 +28,6 @@
 ## Sources
 
 - Sold by: [Jiminua's Jungle Store](../shops/jiminuas-jungle-store.md) for 9 gp
+- Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 9 gp
 - Sold by: [Fancy Clothes Store](../shops/fancy-clothes-store.md) for 7 gp
 - Sold by: [Thessalia Fine Clothes](../shops/thessalia-fine-clothes.md) for 6 gp
-- Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 9 gp

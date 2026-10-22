@@ -26,4 +26,5 @@
 
 - Sold by: [Valaine's Shop of Champions](../shops/valaines-shop-of-champions.md) for 16640 gp
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (1/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (1/128)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (1/128)

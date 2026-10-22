@@ -26,6 +26,7 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | Lumbridge | Floor 1 | 1 |
+| m43_71 | Ground | 1 |
 
 ## Sources
 
