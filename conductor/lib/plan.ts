@@ -619,8 +619,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     const phaseUntil = chosen.until;
                     const planHolds = !!planUntil && ask(null, 'until', () => planUntil(pv));
                     const phaseHolds = !planHolds && !!phaseUntil && ask(chosen, 'until', () => phaseUntil(pv));
-                    // Cutting a fight short would leave the next phase refused in combat: wait it out.
-                    if ((!planHolds && !phaseHolds) || st.player?.combat.inCombat) return null;
+                    if (!planHolds && !phaseHolds) return null;
                     if (!planHolds) return PHASE_UNTIL;
                     ext.planEnd = { status: 'done', reason: PLAN_UNTIL };
                     return PLAN_UNTIL;

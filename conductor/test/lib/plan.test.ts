@@ -14,6 +14,7 @@ import {
     type PlanResult,
     type Predicate,
 } from '../../lib/plan';
+import { SETTLE_TICKS } from '../../lib/engine';
 import { defineTask, type Outcome } from '../../lib/task';
 import { countItems, TICK_MS } from '../../lib/util';
 import chopBurnPlan from '../../plans/chop-burn';
@@ -214,6 +215,8 @@ const selected = (r: PlanSimulation) => r.events.filter(e => e.type === 'select'
 
 /** The tick the first phase run's external stop fired at. */
 const stoppedAt = (r: PlanSimulation) => r.runs[0]!.events.find(e => e.type === 'external-stop')?.tick;
+/** The tick the first phase run ended at: its duration, as the scripted runs start at tick 0. */
+const settledAt = (r: PlanSimulation) => r.runs[0]!.result.durationMs / TICK_MS;
 
 /** Burns a full inventory of logs, else chops: the consumer above the producer. */
 const chopBurn = (until?: Predicate) =>
@@ -416,9 +419,9 @@ describe('until', () => {
         expect(r.result.reason).toBe('plan until met');
     });
 
-    // Copper ore arrives at tick 5, in a fight from tick 3 to tick 8.
+    // Copper ore arrives at tick 5, in a fight from tick 3 to tick 8: the engine settles it.
     const fight = BASE.series(20, (w, i) => {
-        const fighting = i >= 3 && i < 9 ? w.player({ inCombat: true }) : w;
+        const fighting = i >= 3 && i < 9 ? w.player({ inCombat: true, lastDamageTick: i }) : w;
         return i >= 5 ? fighting.inv('Copper ore', 1) : fighting;
     });
     test("a phase's until that holds in a fight waits for the fight to end", async () => {
@@ -428,8 +431,9 @@ describe('until', () => {
                 timeline: fight,
             },
         );
-        expect(stoppedAt(r)).toBe(9);
-        expect(r.runs[0]!.result.reason).toBe('until met');
+        expect(stoppedAt(r)).toBe(5);
+        expect(settledAt(r)).toBe(9);
+        expect(r.runs[0]!.result.reason).toBe('until met; fight settled in 4 ticks');
         expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met', inCombat: false });
     });
 
@@ -438,17 +442,32 @@ describe('until', () => {
             plan([phase(watch, {})], v => v.inv('Copper ore') > 0),
             { timeline: fight },
         );
-        expect(stoppedAt(r)).toBe(9);
-        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(settledAt(r)).toBe(9);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met', inCombat: false });
     });
 
-    test("the plan's stops do not wait for a fight", async () => {
+    test("the plan's stops wait out a fight", async () => {
         // 0.02 min is 1200ms: tick 3, the fight's first.
         const r = await sim(plan([phase(watch, {})]), {
             timeline: fight,
             stops: [{ kind: 'minutes', minutes: 0.02 }],
         });
         expect(stoppedAt(r)).toBe(3);
+        expect(settledAt(r)).toBe(9);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'reached 0.02 min', inCombat: false });
+    });
+
+    test(`a fight longer than ${SETTLE_TICKS} ticks ends the plan at the cap, still in combat`, async () => {
+        const endless = BASE.series(SETTLE_TICKS + 20, (w, i) =>
+            i >= 3 ? w.player({ inCombat: true, lastDamageTick: i }) : w,
+        );
+        const r = await sim(plan([phase(watch, {})]), {
+            timeline: endless,
+            stops: [{ kind: 'minutes', minutes: 0.02 }],
+        });
+        expect(stoppedAt(r)).toBe(3);
+        expect(settledAt(r)).toBe(3 + SETTLE_TICKS);
+        expect(r.runs[0]!.result.reason).toBe(`reached 0.02 min; still in combat after ${SETTLE_TICKS} ticks`);
         expect(r.result).toMatchObject({ status: 'done', reason: 'reached 0.02 min', inCombat: true });
     });
 });
