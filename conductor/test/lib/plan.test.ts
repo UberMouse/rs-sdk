@@ -457,6 +457,23 @@ describe('until', () => {
         expect(r.result).toMatchObject({ status: 'done', reason: 'reached 0.02 min', inCombat: false });
     });
 
+    // The fight above, with HP low from tick 6 and no food.
+    const losing = BASE.series(20, (w, i) =>
+        i >= 3 && i < 9 ? w.player({ inCombat: true, lastDamageTick: i, hp: i >= 6 ? 2 : 10 }) : w,
+    );
+    for (const onFail of ['fail', 'continue'] as const)
+        test(`a plan stop whose settle fails on low HP ends the plan failed (onFail: ${onFail})`, async () => {
+            const r = await sim(plan([phase(watch, {}, { onFail })]), {
+                timeline: losing,
+                stops: [{ kind: 'minutes', minutes: 0.02 }],
+            });
+            expect(stoppedAt(r)).toBe(3);
+            expect(r.runs).toHaveLength(1);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toStartWith('watch: reached 0.02 min; interrupt:low-hp: hp 2/10');
+            expect(r.result.reason).toEndWith('no food');
+        });
+
     test(`a fight longer than ${SETTLE_TICKS} ticks ends the plan at the cap, still in combat`, async () => {
         const endless = BASE.series(SETTLE_TICKS + 20, (w, i) =>
             i >= 3 ? w.player({ inCombat: true, lastDamageTick: i }) : w,

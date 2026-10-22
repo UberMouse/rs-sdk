@@ -1008,6 +1008,35 @@ describe('a stop in a fight', () => {
         expect(externalStops(r.events)).toHaveLength(1);
     });
 
+    test('a stop while the bot fights a target that does not hit back is settled until the target is gone', async () => {
+        // The bot targets goblin 5 from tick 3; the goblin never faces it, and dies (leaves view) at tick 20.
+        const states = timeline(30, () => ({})).map((s, i) =>
+            i >= 3 && i < 20
+                ? world(s)
+                      .fighting(5)
+                      .npcBeside('Goblin', { index: 5, options: ['Attack'] })
+                      .build()
+                : s,
+        );
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        expect(r.result.durationMs).toBe(20 * TICK_MS);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test('a stop while the bot faces an NPC it cannot attack (a fishing spot) ends on its tick', async () => {
+        const states = timeline(30, () => ({})).map(s =>
+            world(s)
+                .fighting(5)
+                .npcBeside('Fishing spot', { index: 5, options: ['Net', 'Bait'] })
+                .build(),
+        );
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.reason).toBe('reached 0.05 min');
+        expect(r.result.durationMs).toBe(8 * TICK_MS);
+    });
+
     test('a client that stops ticking during the settle ends the run stuck', async () => {
         class Stalls extends TimelineDriver {
             override nextTick() {

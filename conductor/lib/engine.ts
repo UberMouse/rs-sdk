@@ -22,6 +22,7 @@ import {
     GUARDS,
     isAttacked,
     lowHpGuard,
+    ownFight,
     underFire,
     wildernessGuard,
 } from './interrupts';
@@ -58,10 +59,12 @@ export const LEFTOVER_STEP = 'close-leftover';
 export const LEFTOVER_CLOSE_TICKS = 5;
 
 /**
- * Ticks a `done` run that ends while the bot is attacked waits for the fight to end (60 s: long enough
- * for one slow kill).
+ * Ticks a `done` run that ends in a fight waits for it to end (60 s: long enough for one slow kill).
  */
 export const SETTLE_TICKS = 100;
+
+/** Attacked, or still fighting its own target (one that is not hitting back, or not yet). */
+const inFight = (s: BotWorldState) => isAttacked(s) || ownFight(s);
 
 /** What a choice dialog found open at the start is called, when the task does not drive dialogs itself. */
 const STRAY_CHOICE = 'choice dialog';
@@ -358,7 +361,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const firedAt = new Map<string, number>();
 
     /**
-     * A `done` run that ends while the bot is attacked waits up to SETTLE_TICKS for the fight to end,
+     * A `done` run that ends in a fight (`inFight`) waits up to SETTLE_TICKS for it to end,
      * under the shared guards only and with no stops (the stop that ended the run would fire again);
      * TickStall still ends it. An abort guard that ends without an outcome (an eat) resumes the wait on
      * what is left of the budget; one that fails makes the run `failed`.
@@ -367,7 +370,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         const from = driver.state().tick;
         const settled = (s: BotWorldState): End => ({
             ...end,
-            reason: isAttacked(s)
+            reason: inFight(s)
                 ? `${end.reason}; still in combat after ${SETTLE_TICKS} ticks`
                 : `${end.reason}; fight settled in ${s.tick - from} ticks`,
         });
@@ -376,7 +379,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 const left = SETTLE_TICKS - (driver.state().tick - from);
                 if (left <= 0) return settled(driver.state());
                 const r = await interpret(
-                    wait('settle fight', s => !isAttacked(s), left),
+                    wait('settle fight', s => !inFight(s), left),
                     { driver: view, guards: settleGuards, firedAt },
                 );
                 if (r.kind === 'returned') return settled(r.value.state);
@@ -393,7 +396,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const finish = async (endStatus: TaskStatus, endReason: string, endBy?: string): Promise<TaskResult> => {
         const atStop = stateOrNull();
         const { status, reason, by } =
-            endStatus === 'done' && atStop && isAttacked(atStop)
+            endStatus === 'done' && atStop && inFight(atStop)
                 ? await settle({ status: endStatus, reason: endReason, by: endBy })
                 : { status: endStatus, reason: endReason, by: endBy };
         if (status !== 'done') await takeScreenshot(status);

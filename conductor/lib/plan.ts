@@ -702,12 +702,16 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             });
 
             if (ext.error) return finish('error', ext.error);
-            if (ext.planEnd) return finish(ext.planEnd.status, ext.planEnd.reason);
             if (result.status === 'error') return finish('error', `${chosen.name}: ${result.reason}`);
             // A death ends the plan whatever onFail says: the runner has to see what happened.
             if (result.endedBy === DEATH_GUARD)
                 // the engine's reason is `<guard>: <why>`; the phase name already says who died
                 return finish('failed', `${chosen.name}: ${result.reason.replace(`${DEATH_GUARD}: `, '')}`);
+            if (ext.planEnd)
+                // The plan is ending: a phase that failed settling the fight after it is not retried.
+                return result.status === 'done'
+                    ? finish(ext.planEnd.status, ext.planEnd.reason)
+                    : finish(result.status, `${chosen.name}: ${result.reason}`);
             if (result.status === 'done') {
                 fails.delete(chosen.name);
             } else {

@@ -95,14 +95,15 @@ test(
     'a stop that lands mid-fight ends after the fight settles, and the next run starts',
     async () => {
         await withFixtureBot(
-            // Strength 10 hits a chicken (3 hp) for at most 2, so the first XP lands with the chicken alive.
-            { position: COOP, skills: { Attack: 20, Strength: 10 } },
+            // Strength 1 hits a chicken (3 hp) for at most 1, 100 Attack XP a hit at the local stack's XP rate
+            // (25): the stop needs a second hit, so it lands with the chicken alive and in the fight.
+            { position: COOP, skills: { Attack: 20, Strength: 1 } },
             async ({ name }) => {
                 const params = { target: 'Chicken', skill: 'Attack', area: AREA };
-                const first = await runTask(name, 'combat', params, ['xp:Attack:1', 'minutes:3']);
+                const first = await runTask(name, 'combat', params, ['xp:Attack:150', 'minutes:3']);
                 const detail = `${JSON.stringify(first.result)}\n${first.stderr}`;
                 expect(first.result.status, detail).toBe('done');
-                const settled = /^reached \+1 attack xp; fight settled in (\d+) ticks$/i.exec(first.result.reason);
+                const settled = /^reached \+150 attack xp; fight settled in (\d+) ticks$/i.exec(first.result.reason);
                 expect(settled, detail).not.toBeNull();
                 expect(first.result.durationMs, detail).toBeGreaterThan(Number(settled![1]) * TICK_MS);
 

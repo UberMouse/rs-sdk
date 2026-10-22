@@ -2,6 +2,7 @@
 // dialogs or leftover modals itself. The engine checks them at every tick of a generator step's waits
 // and between steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
 import type { BotWorldState } from '../../sdk/types';
+import { ATTACK_OPTION } from '../actions/attack';
 import type { ActionContext } from '../actions/context';
 import { clearStrayChoice, closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
 import { eat } from '../actions/eat';
@@ -302,6 +303,18 @@ export const recentlyHit = (s: BotWorldState): boolean => {
 /** In combat, and something attacks the bot: an attacker next to it, or a hit taken lately. */
 export const isAttacked = (s: BotWorldState): boolean =>
     !!s.player?.combat.inCombat && (attackers(s).length > 0 || recentlyHit(s));
+
+/**
+ * In combat with an NPC the bot targets, whether or not it hits back: the target is in view, alive and
+ * attackable. A fishing spot has no Attack option. The client publishes a target only while hits on the bot
+ * or on it back the facing, or within a walk-up grace, so a target the bot only faced drops out by itself.
+ */
+export const ownFight = (s: BotWorldState): boolean => {
+    const c = s.player?.combat;
+    if (!c?.inCombat || c.targetType !== 'npc') return false;
+    const target = s.nearbyNpcs.find(n => n.index === c.targetIndex);
+    return !!target && target.healthPercent !== 0 && target.options.some(o => ATTACK_OPTION.test(o));
+};
 
 interface UnderAttackEpisode {
     /** The bot's highest hp this episode: the baseline for the unknown-attacker hp-loss check. */
