@@ -355,6 +355,9 @@ const data: GameData = {
     objs: parseConfigs(OBJS),
     locs: parseConfigs(LOCS),
     structs: parseConfigs(STRUCTS),
+    npcs: new Map(),
+    params: new Map(),
+    constants: new Map(),
     scripts: [
         ['skill_fishing/scripts/fishing_spots/freshfish.rs2', FRESHFISH],
         ['skill_fishing/scripts/fishing_spots/memberfish.rs2', MEMBERFISH],
