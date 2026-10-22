@@ -61,7 +61,7 @@ export async function walkLive(
         bank,
         walks = MAX_WALKS,
         ...opts
-    }: WalkOptions & { tolerance?: number; bank?: (item: string) => number | undefined; walks?: number } = {},
+    }: WalkOptions & { tolerance?: number; bank?: (item: string) => number; walks?: number } = {},
 ): Promise<LiveWalk> {
     const sent: string[] = [];
     const logs: string[] = [];

@@ -208,7 +208,8 @@ export const gateName = (g: Pick<Gate, 'trigger' | 'loc' | 'tile'>): string => `
 /** The fill's skipped line for a gate row on an object that has no `to`, `landings` or `opens`. */
 export const noLandingLine = (g: Pick<Gate, 'trigger' | 'loc' | 'tile'>): string =>
     `${gateName(g)}: a gate row with no derived landing`;
-const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
+/** The loc shapes of a wall (straight, diagonal corner, L, square corner, diagonal): a gate row of one with no `to` is a door. */
+export const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 
 /** A trigger's op number (`oploc1,x` -> 1); undefined for a use-item trigger. */
 const opOf = (trigger: string): number | undefined => {
