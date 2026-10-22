@@ -44,9 +44,16 @@ export function damageType(value: string, constants: ReadonlyMap<string, Constan
     return name as DamageType;
 }
 
-/** A script that replaces the default melee AI for an NPC: the trigger and its header's `file:line`. */
+/**
+ * The AI triggers whose global script is the default melee AI (npc_combat.rs2:1-4): the retaliation (`ai_queue1`) and
+ * damage (`ai_queue2`) handlers and the attack modes. `ai_queue3`, the death handler (:3), is left out: the drop-table
+ * scripts override it per NPC (`[ai_queue3,giant]`, drop tables/scripts/giant.rs2:1), and it runs once the fight ends.
+ */
+export const AI_TRIGGERS = ['ai_queue1', 'ai_queue2', 'ai_opplayer2', 'ai_applayer2'] as const;
+
+/** A script that replaces part of the default melee AI for an NPC: the trigger and its header's `file:line`. */
 export interface AiOverride {
-    trigger: 'ai_opplayer2' | 'ai_applayer2';
+    trigger: (typeof AI_TRIGGERS)[number];
     at: string;
 }
 
@@ -78,8 +85,13 @@ export interface NpcCombat {
     maxDealt: number;
     /** `combat_xp_multiplier`, 1000 for 1x. */
     xpMultiplier: number;
+    /**
+     * `retreat`: at or below this HP the default AI's retaliation sets `playerescape` and does not attack back
+     * (npc_combat.rs2:12-13,23-24; :37-38,48-49 for `_ap`); undefined for the `.param` default `null`.
+     */
+    retreat: number | undefined;
     category: string | undefined;
-    /** The scripts that replace the default melee AI for it, one per trigger at most; empty when it has the default. */
+    /** The scripts that replace the default melee AI for it, one per AI_TRIGGERS entry at most; empty when it has none. */
     aiOverrides: AiOverride[];
 }
 
@@ -118,11 +130,11 @@ function readNpcDefaults(): NpcDefaults {
 
 export const NPC_DEFAULTS = readNpcDefaults();
 
-const AI_TRIGGER = /^\[(ai_opplayer2|ai_applayer2),(_?)([a-z0-9][a-z0-9_]*)\]$/;
+const AI_TRIGGER = new RegExp(`^\\[(${AI_TRIGGERS.join('|')}),(_?)([a-z0-9][a-z0-9_]*)\\]$`);
 
 /**
- * The `[ai_opplayer2,<subject>]` and `[ai_applayer2,<subject>]` scripts, by `<trigger> <subject>`, the subject
- * `_<category>` for a category's. The global `[ai_opplayer2,_]` (npc_combat.rs2:4, the default melee AI) is left out.
+ * The `[<trigger>,<subject>]` scripts of each AI_TRIGGERS trigger, by `<trigger> <subject>`, the subject `_<category>`
+ * for a category's. The global `[<trigger>,_]` scripts (npc_combat.rs2:1-4, the default melee AI) are left out.
  */
 function aiTriggers(scripts: readonly [file: string, text: string][]): Map<string, AiOverride> {
     const out = new Map<string, AiOverride>();
@@ -163,7 +175,7 @@ export function readNpcCombat(
         const vis = first(cfg, 'vislevel');
         const category = first(cfg, 'category');
         // The engine runs the npc's own trigger, else its category's, else the global one (ScriptProvider.ts:124-134).
-        const aiOverrides = (['ai_opplayer2', 'ai_applayer2'] as const).flatMap(t => {
+        const aiOverrides = AI_TRIGGERS.flatMap(t => {
             const own = ai.get(`${t} ${npc}`) ?? (category === undefined ? undefined : ai.get(`${t} _${category}`));
             return own ? [own] : [];
         });
@@ -193,6 +205,7 @@ export function readNpcCombat(
             deathDrop: paramName(cfg, 'death_drop', data, what),
             maxDealt: int('max_dealt'),
             xpMultiplier: int('combat_xp_multiplier'),
+            retreat: paramName(cfg, 'retreat', data, what) === undefined ? undefined : int('retreat'),
             category,
             aiOverrides,
         };

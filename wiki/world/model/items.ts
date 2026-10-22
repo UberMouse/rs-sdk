@@ -9,9 +9,11 @@ import type { Constant } from '../sources/constants';
 import type { DbRow } from '../sources/dbrows';
 import { readWieldRequirements, type WieldRequirement } from '../sources/levelrequire';
 import { blocks } from '../sources/triggers';
+import { readStyleSkills } from './combat';
 import { ModelError } from './family';
 import { damageType, type DamageType } from './npcs';
 import { paramInt, type ParamData } from './params';
+import type { ServerDefault, Skill } from './server';
 
 export interface Item {
     /** `stackable=yes`: any number of it takes one slot. */
@@ -100,7 +102,7 @@ export interface Equipment {
     bonuses: Record<Bonus, number>;
     /**
      * `attackrate` (default 4): a weapon's ticks between swings (skill_combat/scripts/player/player_melee.rs2:59). No
-     * weapon swings every 4 ticks by a literal in the script (:57), not by this param.
+     * weapon swings at UNARMED_ATTACK_RATE, not by this param.
      */
     attackRate: number;
     attackRange: number;
@@ -109,6 +111,23 @@ export interface Equipment {
     /** What the levelrequire scripts need to wield it, undefined when they do not gate it. */
     wield: WieldRequirement | undefined;
 }
+
+/** The player's melee swing, whose delay for no weapon is a literal: `if ($weapon = null) { %action_delay = ...`. */
+export const MELEE_SOURCE = 'skill_combat/scripts/player/player_melee.rs2';
+
+/**
+ * The ticks between a player's swings with no weapon: `%action_delay = add(map_clock, <n>)` under `if ($weapon =
+ * null)` in `text` (player_melee.rs2:56-57). Throws when the script has no such line.
+ */
+export function readUnarmedAttackRate(text: string): ServerDefault {
+    const m = text.match(/if \(\$weapon = null\) \{\s*%action_delay = add\(map_clock, (\d+)\);/);
+    if (!m) throw new Error(`Expected the unarmed swing delay in ${MELEE_SOURCE}: has it moved?`);
+    const line = text.slice(0, m.index! + m[0].indexOf('%action_delay')).split('\n').length;
+    return { value: Number(m[1]), at: `${MELEE_SOURCE}:${line}` };
+}
+
+/** 4 ticks, read from the content when the module loads. */
+export const UNARMED_ATTACK_RATE = readUnarmedAttackRate(readFileSync(join(SCRIPTS, MELEE_SOURCE), 'utf8'));
 
 /** An obj's Equipment; throws a ModelError naming it when the game has no such obj or it has no `wearpos`. */
 export type Equipments = (obj: string) => Equipment;
@@ -135,12 +154,17 @@ export function readEquipment(
     };
 }
 
-/** One attack style of a weapon's style table: its damage style (`^style_<kind>_<style>`) and damage type. */
+/**
+ * One attack style of a weapon's style table: its damage style (`^style_<kind>_<style>`), damage type, and the skills
+ * its hits train.
+ */
 export interface CombatStyle {
     kind: 'melee' | 'ranged' | 'magic';
     /** For melee, a MeleeStyle (`accurate`, `aggressive`, `defensive`, `controlled`). */
     style: string;
     damageType: DamageType;
+    /** The skills `~give_combat_experience` pays for it, Hitpoints apart (readStyleSkills). */
+    skills: Skill[];
 }
 
 /** The style table a weapon of a category (undefined for no weapon or no category) uses, by the dbrow's name. */
@@ -169,6 +193,7 @@ export function readCombatStyles(data: {
     const cases = new Map([...body.matchAll(/case (\w+) : return\((\w+)\);/g)].map(m => [m[1]!, m[2]!]));
     const fallback = cases.get('default');
     if (!unarmed || !fallback) throw new Error(`${STYLE_SOURCE.file}:${proc.line}: no unarmed or default style table`);
+    const trains = readStyleSkills(text);
     const rows = new Map(data.dbrows.filter(r => r.table === 'combat_style_table').map(r => [r.row, r]));
     const table = (name: string): CombatStyle[] => {
         const row = rows.get(name);
@@ -178,10 +203,13 @@ export function readCombatStyles(data: {
             const m = s?.match(/^\^style_(melee|ranged|magic)_(\w+)$/);
             const t = types[i]?.[0];
             if (!m || t === undefined) throw new ModelError(`${name} has a malformed style ${i}: ${s}, ${t}`);
+            const skills = trains.get(s!);
+            if (!skills?.length) throw new ModelError(`${name} style ${i}: ${STYLE_SOURCE.file} gives ${s} no XP`);
             return {
                 kind: m[1] as CombatStyle['kind'],
                 style: m[2]!,
                 damageType: damageType(t, data.constants, `${name} style ${i}`),
+                skills,
             };
         });
     };

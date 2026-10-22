@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { readGameData } from '../model/families/index';
-import { readBoneXp, readCombatStyles, readEquipment } from '../model/items';
+import { STYLE_SKILLS } from '../model/combat';
+import { readBoneXp, readCombatStyles, readEquipment, UNARMED_ATTACK_RATE } from '../model/items';
 import { NPC_DEFAULTS, readNpcCombat } from '../model/npcs';
 
 const data = readGameData();
@@ -18,7 +19,7 @@ describe('the seed NPCs (phase 4 survey §1.5 table; _unpack/225/all.npc)', () =
 
     test('chicken: 1/1/1/3, att -47 str -42 def -42, rate 4, stab, respawn 50, no hunt, vislevel 1, bones', () => {
         // all.npc:1025 sets hitpoints, respawnrate, vislevel and the bonuses; attackrate (4), death_drop (bones) and
-        // the XP multiplier (1000) are the .param defaults.
+        // the XP multiplier (1000) are the .param defaults. It sets retreat 1 (:1051): at 1 HP it flees.
         expect(npcs('chicken')).toEqual({
             npc: 'chicken',
             levels: { attack: 1, defence: 1, strength: 1, hitpoints: 3, ranged: 1, magic: 1 },
@@ -34,6 +35,7 @@ describe('the seed NPCs (phase 4 survey §1.5 table; _unpack/225/all.npc)', () =
             deathDrop: 'bones',
             maxDealt: 1000,
             xpMultiplier: 1000,
+            retreat: 1,
             category: 'chicken',
             aiOverrides: [],
         });
@@ -55,6 +57,7 @@ describe('the seed NPCs (phase 4 survey §1.5 table; _unpack/225/all.npc)', () =
             deathDrop: 'big_bones',
             maxDealt: 1000,
             xpMultiplier: 1000,
+            retreat: undefined,
             category: undefined,
             aiOverrides: [],
         });
@@ -71,17 +74,33 @@ describe('the seed NPCs (phase 4 survey §1.5 table; _unpack/225/all.npc)', () =
             42,
             'big_bones',
         ]);
-        expect(moss.aiOverrides).toEqual([]);
+        expect([moss.aiOverrides, moss.retreat]).toEqual([[], undefined]);
     });
 
     test('AI overrides: a dragon by its own trigger, a witch by her category', () => {
         expect(npcs('green_dragon').aiOverrides).toEqual([
             { trigger: 'ai_opplayer2', at: 'npc/scripts/dragon.rs2:17' },
         ]);
-        expect(npcs('witch1').aiOverrides[0]).toEqual({
-            trigger: 'ai_opplayer2',
-            at: 'areas/area_draynor/scripts/witch.rs2:5',
-        });
+        expect(npcs('witch1').aiOverrides).toEqual([
+            { trigger: 'ai_queue1', at: 'areas/area_draynor/scripts/witch.rs2:4' },
+            { trigger: 'ai_opplayer2', at: 'areas/area_draynor/scripts/witch.rs2:5' },
+            { trigger: 'ai_applayer2', at: 'areas/area_draynor/scripts/witch.rs2:6' },
+        ]);
+    });
+
+    test('the retaliation and damage handlers: by its own name, or by category with its attack modes', () => {
+        expect(npcs('monkey').aiOverrides).toEqual([
+            { trigger: 'ai_queue1', at: 'quests/quest_tbwt/scripts/monkey.rs2:55' },
+        ]);
+        expect(npcs('horror_dagganoth_melee').aiOverrides).toEqual([
+            { trigger: 'ai_queue1', at: 'quests/quest_horror/scripts/horror_dagannoth.rs2:58' },
+            { trigger: 'ai_opplayer2', at: 'quests/quest_horror/scripts/horror_dagannoth.rs2:64' },
+            { trigger: 'ai_applayer2', at: 'quests/quest_horror/scripts/horror_dagannoth.rs2:71' },
+        ]);
+    });
+
+    test('retreat: unicorn_foal_1 flees at 5 HP (quest_viking/configs/viking.npc:2083)', () => {
+        expect(npcs('unicorn_foal_1').retreat).toBe(5);
     });
 
     test('every npc config reads', () => {
@@ -127,10 +146,10 @@ describe('the scimitars (skill_combat/configs/melee/scimitars.obj)', () => {
         expect(styles('weapon_slash')).toEqual({
             table: 'weapon_slash_table',
             styles: [
-                { kind: 'melee', style: 'accurate', damageType: 'slash' },
-                { kind: 'melee', style: 'aggressive', damageType: 'slash' },
-                { kind: 'melee', style: 'controlled', damageType: 'stab' },
-                { kind: 'melee', style: 'defensive', damageType: 'slash' },
+                { kind: 'melee', style: 'accurate', damageType: 'slash', skills: ['attack'] },
+                { kind: 'melee', style: 'aggressive', damageType: 'slash', skills: ['strength'] },
+                { kind: 'melee', style: 'controlled', damageType: 'stab', skills: ['attack', 'strength', 'defence'] },
+                { kind: 'melee', style: 'defensive', damageType: 'slash', skills: ['defence'] },
             ],
         });
     });
@@ -145,6 +164,26 @@ describe('the scimitars (skill_combat/configs/melee/scimitars.obj)', () => {
     test('every wearable obj and its style table reads', () => {
         for (const [obj, cfg] of data.objs)
             if (cfg.wearpos) expect(() => styles(equipment(obj).category)).not.toThrow();
+    });
+});
+
+describe('the unarmed swing and the styles each skill (player_melee.rs2, combat.rs2)', () => {
+    test('no weapon swings every 4 ticks (player_melee.rs2:57)', () => {
+        expect(UNARMED_ATTACK_RATE).toEqual({ value: 4, at: 'skill_combat/scripts/player/player_melee.rs2:57' });
+    });
+
+    test("give_combat_experience's off-island switch (combat.rs2:144-165)", () => {
+        expect(Object.fromEntries(STYLE_SKILLS)).toEqual({
+            '^style_melee_accurate': ['attack'],
+            '^style_melee_aggressive': ['strength'],
+            '^style_melee_defensive': ['defence'],
+            '^style_melee_controlled': ['attack', 'strength', 'defence'],
+            '^style_ranged_accurate': ['ranged'],
+            '^style_ranged_rapid': ['ranged'],
+            '^style_ranged_longrange': ['ranged', 'defence'],
+            '^style_magic_normal': ['magic'],
+            '^style_magic_defensive': ['magic', 'defence'],
+        });
     });
 });
 

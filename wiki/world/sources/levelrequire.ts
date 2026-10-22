@@ -34,7 +34,8 @@ const paramNames = (b: Block): string[] =>
 
 /**
  * Every obj the levelrequire scripts gate, with what wielding it needs. Throws naming the file and line when a gate
- * calls a label or proc it cannot follow, or checks a stat that is not a skill.
+ * calls a label or proc it cannot follow, checks a stat that is not a skill, or reads a varp other than as
+ * `%var < ^const`.
  */
 export function readWieldRequirements(scripts: readonly [file: string, text: string][]): Map<string, WieldRequirement> {
     const all = scripts.filter(([f]) => f.startsWith(LEVELREQUIRE_DIR)).flatMap(([f, text]) => blocks(f, text));
@@ -60,7 +61,15 @@ export function readWieldRequirements(scripts: readonly [file: string, text: str
                 throw new Error(`${b.file}:${b.line}: cannot read the check ${m[0]}`);
             out.levels[skill as Skill] = Math.max(out.levels[skill as Skill] ?? 0, level);
         }
-        for (const m of body.matchAll(/%(\w+)\s*<\s*\^\w+/g)) if (!out.quests.includes(m[1]!)) out.quests.push(m[1]!);
+        // A varp read any other way than `%var < ^const` is a check this does not price: throw rather than drop it.
+        for (const m of body.matchAll(/%\w+(\s*<\s*\^\w+)?/g)) {
+            const varp = m[0].match(/^%(\w+)/)![1]!;
+            if (!m[1]) {
+                const line = b.line + body.slice(0, m.index).split('\n').length - 1;
+                throw new Error(`${b.file}:${line}: cannot read the varp check on %${varp}`);
+            }
+            if (!out.quests.includes(varp)) out.quests.push(varp);
+        }
         // A proc that takes no arguments is called without parentheses: `if (~levelrequire_dragon_slayer_quest = false)`.
         for (const m of body.matchAll(/([@~])(\w+)(?:\(([^)]*)\))?/g)) {
             const call = m[1]! + m[2]!;

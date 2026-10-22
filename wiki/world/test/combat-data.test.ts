@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError } from '../model/family';
-import { readBoneXp, readCombatStyles, readEquipment } from '../model/items';
+import { readBoneXp, readCombatStyles, readEquipment, readUnarmedAttackRate } from '../model/items';
+import { readStyleSkills } from '../model/combat';
 import { NPC_DEFAULTS, readNpcCombat, readVisLevelDefault } from '../model/npcs';
 import { paramInt } from '../model/params';
 import { parseConfigs } from '../sources/configs';
@@ -74,6 +75,9 @@ default=1000
 [bone_exp]
 type=int
 default=0
+[retreat]
+type=int
+default=null
 `);
 
 const CONSTANTS = collectConstants([
@@ -107,6 +111,11 @@ param=strengthbonus,16
 param=death_drop,big_bones
 param=combat_xp_multiplier,25
 
+[raider]
+param=retreat,5
+
+[monkey]
+
 [ghost]
 category=fowl
 vislevel=hide
@@ -118,6 +127,10 @@ const AI = `[ai_opplayer2,_] gosub(npc_default_attack);
 [ai_opplayer2,_fowl] npc_setmode(applayer2);
 [ai_applayer2,_fowl] ~npc_rangeattack;
 [ai_opplayer2,hen] @hen_ai;
+[ai_queue1,_] gosub(npc_default_retaliate);
+[ai_queue2,_fowl] ~fowl_damage(last_int);
+[ai_queue1,monkey] @monkey_retaliate;
+[ai_queue3,hen] gosub(npc_default_death);
 `;
 
 const data = {
@@ -150,6 +163,7 @@ describe('readNpcCombat', () => {
             deathDrop: 'big_bones',
             maxDealt: 1000,
             xpMultiplier: 25,
+            retreat: undefined,
             category: undefined,
             aiOverrides: [],
         });
@@ -172,13 +186,23 @@ describe('readNpcCombat', () => {
     });
 
     test("AI overrides: the npc's own trigger beats its category's, which counts when it has none", () => {
-        // hen's own [ai_opplayer2,hen] is the one run; its category fowl's applayer2 still applies. The global
-        // [ai_opplayer2,_] is the default AI, not an override.
+        // hen's own [ai_opplayer2,hen] is the one run; its category fowl's damage handler and applayer2 still apply.
+        // The global [ai_opplayer2,_] and [ai_queue1,_] are the default AI, not overrides; ai_queue3 is the death
+        // handler, not counted.
         expect(npcs('hen').aiOverrides).toEqual([
+            { trigger: 'ai_queue2', at: 'npc/scripts/fowl.rs2:6' },
             { trigger: 'ai_opplayer2', at: 'npc/scripts/fowl.rs2:4' },
             { trigger: 'ai_applayer2', at: 'npc/scripts/fowl.rs2:3' },
         ]);
         expect(npcs('brute').aiOverrides).toEqual([]);
+    });
+
+    test("a retaliation override by the npc's own name", () => {
+        expect(npcs('monkey').aiOverrides).toEqual([{ trigger: 'ai_queue1', at: 'npc/scripts/fowl.rs2:7' }]);
+    });
+
+    test("retreat: its own HP threshold, or none for the param's null default", () => {
+        expect([npcs('raider').retreat, npcs('brute').retreat]).toEqual([5, undefined]);
     });
 
     test('a damage type no npc defence covers, and a missing npc, are ModelErrors', () => {
@@ -306,6 +330,18 @@ describe('readWieldRequirements', () => {
         expect(wield.get('bronze_blade')).toMatchObject({ levels: { attack: 1 }, quests: [] });
     });
 
+    test('a varp read other than as `%var < ^const` throws naming its line', () => {
+        expect(() =>
+            readWieldRequirements([
+                ...LEVEL_SCRIPTS,
+                [
+                    'levelrequire/scripts/tier9.rs2',
+                    '\n[opheld2,odd]\nif (%odd_quest ! ^odd_complete) {\n    return;\n}\n@levelrequire_attack(9, last_slot);',
+                ],
+            ]),
+        ).toThrow('levelrequire/scripts/tier9.rs2:3: cannot read the varp check on %odd_quest');
+    });
+
     test('a gate calling a label it cannot follow throws naming its line', () => {
         expect(() =>
             readWieldRequirements([
@@ -340,6 +376,18 @@ param=bone_exp,150
 [logs]
 cost=4
 `);
+
+describe('readUnarmedAttackRate', () => {
+    test("the literal delay under the no-weapon check, with that line; the weapon's param is not it", () => {
+        const text =
+            '[proc,swing]\n// set the skill clock\nif ($weapon = null) {\n    %action_delay = add(map_clock, 5);\n} else {\n    %action_delay = add(map_clock, oc_param($weapon, attackrate));\n}\n';
+        expect(readUnarmedAttackRate(text)).toEqual({
+            value: 5,
+            at: 'skill_combat/scripts/player/player_melee.rs2:4',
+        });
+        expect(() => readUnarmedAttackRate('%action_delay = add(map_clock, 4);')).toThrow(/has it moved/);
+    });
+});
 
 describe('readEquipment', () => {
     const equipment = readEquipment({ ...data, objs: OBJS, scripts: LEVEL_SCRIPTS });
@@ -384,6 +432,25 @@ switch_category(oc_category($weapon)) {
     case weapon_heavy : return(weapon_slash_table);
     case default : return(weapon_unarmed_table);
 }
+
+[proc,give_combat_experience](int $damagestyle, int $damage, int $multiplier)
+if (~in_tutorial_island(coord) = true) {
+    switch_int($damagestyle) {
+        case ^style_melee_accurate : ~tutorial_give_xp(attack, $damage);
+    }
+} else {
+    switch_int($damagestyle) {
+        case ^style_melee_accurate :
+            stat_advance(attack, $damage);
+        case ^style_melee_aggressive :
+            stat_advance(strength, $damage);
+        case ^style_melee_controlled, ^style_melee_odd :
+            stat_advance(attack, $damage);
+            stat_advance(defence, $damage); // and strength in the real one
+        case default : return;
+    }
+    stat_advance(hitpoints, $damage);
+}
 `;
 
 const STYLE_ROWS = parseDbrows(`
@@ -411,8 +478,8 @@ describe('readCombatStyles', () => {
         expect(styles('weapon_slash')).toEqual({
             table: 'weapon_slash_table',
             styles: [
-                { kind: 'melee', style: 'accurate', damageType: 'slash' },
-                { kind: 'melee', style: 'controlled', damageType: 'stab' },
+                { kind: 'melee', style: 'accurate', damageType: 'slash', skills: ['attack'] },
+                { kind: 'melee', style: 'controlled', damageType: 'stab', skills: ['attack', 'defence'] },
             ],
         });
         expect(styles('weapon_heavy').table).toBe('weapon_slash_table');
@@ -421,8 +488,29 @@ describe('readCombatStyles', () => {
     test('no weapon is the null check; an unlisted category the default', () => {
         expect(styles(undefined)).toEqual({
             table: 'weapon_unarmed_table',
-            styles: [{ kind: 'melee', style: 'aggressive', damageType: 'crush' }],
+            styles: [{ kind: 'melee', style: 'aggressive', damageType: 'crush', skills: ['strength'] }],
         });
         expect(styles('weapon_odd').table).toBe('weapon_unarmed_table');
+    });
+});
+
+describe('readStyleSkills', () => {
+    test("each case's stat_advance skills, off Tutorial Island, Hitpoints apart; a shared case gives each its own", () => {
+        const skills = readStyleSkills(COMBAT_RS2);
+        expect(Object.fromEntries(skills)).toEqual({
+            '^style_melee_accurate': ['attack'],
+            '^style_melee_aggressive': ['strength'],
+            '^style_melee_controlled': ['attack', 'defence'],
+            '^style_melee_odd': ['attack', 'defence'],
+        });
+        expect(skills.get('^style_melee_controlled')).not.toBe(skills.get('^style_melee_odd'));
+    });
+
+    test('a stat_advance naming no skill throws with its line; no proc throws', () => {
+        const bad = COMBAT_RS2.replace('stat_advance(strength', 'stat_advance(luck');
+        expect(() => readStyleSkills(bad)).toThrow(
+            'skill_combat/scripts/combat.rs2:22: stat_advance(luck) names no skill',
+        );
+        expect(() => readStyleSkills('[proc,other]')).toThrow(/has no \[proc,give_combat_experience\]/);
     });
 });

@@ -3,7 +3,11 @@
 // swings to a kill and the XP a kill pays. Paths are under server/content/scripts/ unless they name the engine.
 // Integer steps truncate where the scripts' calc and scale do. The game data (NPC stats and params, worn bonuses)
 // reaches these from the readers; the hit chance is not statRandomChance (roll.ts), a skilling roll.
-import type { Skill } from './server';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { SCRIPTS } from '../paths';
+import { blocks } from '../sources/triggers';
+import { SKILLS, type Skill } from './server';
 
 /** A melee damage style, by its `^style_melee_*` constant. */
 export type MeleeStyle = 'accurate' | 'aggressive' | 'defensive' | 'controlled';
@@ -15,6 +19,43 @@ export const MELEE_STYLE_BONUS: Record<MeleeStyle, { attack: number; strength: n
     defensive: { attack: 0, strength: 0, defence: 3 },
     controlled: { attack: 1, strength: 1, defence: 1 },
 };
+
+/** The proc that pays each damage style its XP. */
+export const XP_SOURCE = { file: 'skill_combat/scripts/combat.rs2', proc: '[proc,give_combat_experience]' };
+
+/**
+ * The skills each damage style trains, by its `^style_<kind>_<style>` constant: the `stat_advance(<skill>, ...)` lines
+ * under each `case` of the last `switch_int($damagestyle)` in give_combat_experience, the one off Tutorial Island
+ * (combat.rs2:144-166). Hitpoints, which every style pays after the switch (:167), is not listed. Throws naming the
+ * file and line when the proc or its switch is missing, or a stat_advance names no skill.
+ */
+export function readStyleSkills(text: string): Map<string, Skill[]> {
+    const proc = blocks(XP_SOURCE.file, text).find(b => b.header === XP_SOURCE.proc);
+    if (!proc) throw new Error(`${XP_SOURCE.file} has no ${XP_SOURCE.proc}`);
+    const at = proc.body.lastIndexOf('switch_int($damagestyle)');
+    if (at < 0) throw new Error(`${XP_SOURCE.file}:${proc.line}: no switch_int($damagestyle)`);
+    const first = proc.line + proc.body.slice(0, at).split('\n').length;
+    const out = new Map<string, Skill[]>();
+    let current: string[] = [];
+    for (const [i, raw] of proc.body.slice(at).split('\n').slice(1).entries()) {
+        const line = raw.replace(/\/\/.*/, '');
+        if (/^\s*\}\s*$/.test(line)) break;
+        const c = line.match(/^\s*case (.+?) :/);
+        if (c) {
+            current = c[1] === 'default' ? [] : c[1]!.split(',').map(s => s.trim());
+            for (const style of current) out.set(style, []);
+        }
+        const skill = line.match(/stat_advance\((\w+),/)?.[1];
+        if (skill === undefined) continue;
+        if (!(SKILLS as readonly string[]).includes(skill))
+            throw new Error(`${XP_SOURCE.file}:${first + i}: stat_advance(${skill}) names no skill`);
+        for (const style of current) out.get(style)!.push(skill as Skill);
+    }
+    return out;
+}
+
+/** Each damage style's trained skills, read from the content when the module loads. */
+export const STYLE_SKILLS = readStyleSkills(readFileSync(join(SCRIPTS, XP_SOURCE.file), 'utf8'));
 
 /**
  * A player's effective level: `~combat_effective_stat` (combat.rs2:4-5) is `scale(max(100, prayer), 100, level)`,
@@ -131,9 +172,10 @@ export function hitpointsXpPerKill(swing: Swing, hp: number, multiplier: number)
 
 /**
  * The expected XP a kill pays the skills a melee style trains, in tenths before XP_RATE (Hitpoints apart:
- * hitpointsXpPerKill): accurate, aggressive and defensive pay `scale(400, 100, damage*10)` to Attack, Strength or
- * Defence; controlled pays `scale(133, 100, ...)` to each of the three (combat.rs2:145-154). With the capped damage
- * summing to the NPC's HP, a single-skill style pays 40·hp at a multiplier of 1000, whatever the accuracy.
+ * hitpointsXpPerKill): accurate, aggressive and defensive pay `scale(400, 100, damage*10)` to the one skill
+ * STYLE_SKILLS gives them (Attack, Strength or Defence); controlled pays `scale(133, 100, ...)` to each of its three
+ * (combat.rs2:145-154). With the capped damage summing to the NPC's HP, a single-skill style pays 40·hp at a
+ * multiplier of 1000, whatever the accuracy.
  */
 export function styleXpPerKill(
     style: MeleeStyle,
@@ -141,12 +183,11 @@ export function styleXpPerKill(
     hp: number,
     multiplier: number,
 ): Partial<Record<Skill, number>> {
-    if (style === 'controlled') {
-        const each = perKill(swing, hp, d => hitXp(d, CONTROLLED_XP_RATE, multiplier));
-        return { attack: each, strength: each, defence: each };
-    }
-    const skill: Skill = style === 'accurate' ? 'attack' : style === 'aggressive' ? 'strength' : 'defence';
-    return { [skill]: perKill(swing, hp, d => hitXp(d, STYLE_XP_RATE, multiplier)) };
+    const skills = STYLE_SKILLS.get(`^style_melee_${style}`);
+    if (!skills?.length) throw new Error(`${XP_SOURCE.file} gives ^style_melee_${style} no skill`);
+    const rate = style === 'controlled' ? CONTROLLED_XP_RATE : STYLE_XP_RATE;
+    const each = perKill(swing, hp, d => hitXp(d, rate, multiplier));
+    return Object.fromEntries(skills.map(s => [s, each]));
 }
 
 /** The base levels the combat level is taken from. */
