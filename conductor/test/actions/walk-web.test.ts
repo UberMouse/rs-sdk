@@ -82,6 +82,7 @@ describe('walkTo: slashable webs', () => {
         const w = await walk(slashAnswers('cut'));
         expect(w.result).toEqual({ ok: true, message: 'Arrived' });
         expect(w.sends).toEqual(['Slash Web', 'walk to (3210, 3205)', 'walk to (3210, 3215)']);
+        expect(w.logs).toContain('walk: slashed the Web at (3210, 3205)');
         expect(w.at).toEqual(DEST);
     });
 
@@ -89,6 +90,7 @@ describe('walkTo: slashable webs', () => {
         const w = await walk(slashAnswers('fail', 'fail', 'cut'));
         expect(w.result).toEqual({ ok: true, message: 'Arrived' });
         expect(w.sends.filter(s => s === 'Slash Web')).toHaveLength(3);
+        expect(w.logs).toContain('walk: slashed the Web at (3210, 3205) in 3 attempts');
         expect(w.at).toEqual(DEST);
     });
 

@@ -370,6 +370,16 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
         expect(walk.success && walk.reachedDestination).toBe(true);
     });
 
+    test('the Varrock Sewers are down the Varrock manhole, from Varrock or from beside them in the Edgeville Dungeon', () => {
+        const mossGiants = at(0, 3158, 9895);
+        const fromDungeon = planConnectors(at(0, 3151, 9894), mossGiants);
+        expect(names(fromDungeon)).toEqual(['up Edgeville Dungeon trapdoor', 'down Varrock Sewers manhole']);
+        expect(fromDungeon?.[1]?.loc).toEqual(at(0, 3237, 3458));
+        expect(fromDungeon?.[1]?.to).toEqual(at(0, 3236, 9858));
+        // Varrock East bank.
+        expect(names(planConnectors(at(0, 3254, 3420), at(0, 3165, 9879)))).toEqual(['down Varrock Sewers manhole']);
+    }, 60_000);
+
     test("the dungeon's ladder into the brass-key house is never a way out (edgeville_dungeon.rs2:6)", () => {
         // The house's door opens only to the key used on it, from inside too, and a walk uses no item on a door:
         // the ladder up would leave the bot shut in, key or not.

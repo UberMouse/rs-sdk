@@ -136,8 +136,7 @@ test(
 
 // Varrock Sewers: the way east to the moss giants is closed by a slashable web at (3210, 9898), the only link
 // (the Edgeville Dungeon side ends at a wall at x 3152). Start at the sewer ladder's landing; the goal is a
-// tile west of the web that no route reaches without crossing it (an offline flood fill; the moss giants'
-// tiles x < 3200 lie in lib/connectors.ts's Edgeville Dungeon box, a different plane, until it has a sewers box).
+// tile west of the web that no route reaches without crossing it (an offline flood fill).
 // Combat 99 so nothing in the sewers hunts the bot.
 const SEWER_LADDER = { x: 3237, z: 9859 };
 const BEYOND_WEB = { x: 3201, z: 9881 };

@@ -991,7 +991,12 @@ function* slashWebAt(w: Walk, web: NearbyLoc, option: number): Op<DoorOpen> {
         );
         const said = stop(waited.state);
         if (said) return NO_BLADE.test(said) ? 'no-blade' : 'cant-reach';
-        if (!intact(waited.state)) return 'opened';
+        if (!intact(waited.state)) {
+            yield* log(
+                `walk: slashed the ${web.name} at (${web.x}, ${web.z})${attempt > 1 ? ` in ${attempt} attempts` : ''}`,
+            );
+            return 'opened';
+        }
         if (!failed(waited.state)) return 'cant-reach';
     }
     return 'unslashed';
