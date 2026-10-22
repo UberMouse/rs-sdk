@@ -116,7 +116,7 @@ export interface ProfileOptions {
 }
 
 /**
- * The profile at base `levels` raised by `boosts`, with the best axe and pickaxe usable at the boosted levels, `worn`
+ * The profile at the `base` levels raised by `boosts`, with the best axe and pickaxe usable at the boosted levels, `worn`
  * and `prayers`.
  */
 export function profileOf(base: Record<Skill, number>, opts: Omit<ProfileOptions, 'atLeast'>): Profile {
