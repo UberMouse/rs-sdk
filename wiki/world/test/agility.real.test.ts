@@ -203,7 +203,7 @@ describe('the laps, worked by hand', () => {
         // falls. The rope swing's: 1 + 6 (out of the pit) + 1 = 8; the ledge's: 6 + 6 (back up the net) + 1 = 13.
         expect(run(barbarian, t(2534, 3545), t(2536, 3547, 1))).toBe(6);
         // The log's stat_random(180, 260) (barbarian_course.rs2:41) at 35: floor(180 x 64/98) + floor(260 x 34/98) + 1
-        // = 117 + 90 + 1 = 208, 48/208 falls. A fall (:42-57): p_arrivedelay 1, the forced walks 2 + 4, three
+        // = 117 + 90 + 1 = 208, 48/208 falls. A fall (:35-57): p_arrivedelay 1, the forced walks 2 + 4, three
         // p_delay(0) 3 and the last forced step 1 = 11, leaving the player south of the pond at (2545, 3542); the walk
         // back to the stand (2550, 3547) 5 and the click 1: 17. The lap keeps that stand: from (2551, 3546), the rope
         // swing's landing is 2 away and the fall's walk back 4, 2 + 48/208 x 16 > 1 + 48/208 x 17.

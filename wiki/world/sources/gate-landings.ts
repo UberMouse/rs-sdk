@@ -310,8 +310,8 @@ export function walksTo(canStep: StepCollision['canStep'], a: Tile, b: Tile, wit
  * Whether a failed roll's tile `t` is one where the move takes the player anyway (rollFor's `across`): a short walk
  * (walksTo, FAIL_WALK) from the move's landing and none to any of `stands`, the tiles the same move (to that landing)
  * is made from; or (with no steps to walk) the landing itself. A tile a short walk from both ends crossed nothing (the
- * Barbarian course's log drops the player south of its pond, skill_agility/scripts/barbarian_course.rs2:49-55, as
- * near its east stands as its landing): the roll gates the move.
+ * Barbarian course's log drops the player south of its pond, skill_agility/scripts/barbarian_course.rs2:49-55, a short
+ * walk from its east stands and from its landing): the roll gates the move.
  */
 export function fellAcross(
     canStep: StepCollision['canStep'] | undefined,
