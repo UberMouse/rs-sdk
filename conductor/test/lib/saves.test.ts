@@ -1,7 +1,9 @@
 // Saves built byte for byte as the engine writes them (Player.save, server/engine/src/engine/entity/Player.ts)
 // read back through decodeSave and verifySave.
 import { describe, expect, test } from 'bun:test';
-import { decodeSave, verifySave } from '../../lib/saves';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { decodeSave, LIBRARY_DIR, verifySave } from '../../lib/saves';
 
 /** Packet.getcrc (server/engine/src/io/Packet.ts): CRC-32, as a signed int. */
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
@@ -161,5 +163,17 @@ describe('saves in the engine format', () => {
         const bytes = engineSave(10, content);
         expect(() => verifySave(bytes)).toThrow('save version 10 is newer than the engine');
         expect(() => decodeSave(bytes)).toThrow('save version 10 is newer than the engine');
+    });
+});
+
+describe('a save written by the real engine', () => {
+    test('decodes to the summary recorded beside it in the library', () => {
+        const name = 'rune-mysteries-done';
+        const bytes = new Uint8Array(readFileSync(join(LIBRARY_DIR, `${name}.sav`)));
+        const { summary } = JSON.parse(readFileSync(join(LIBRARY_DIR, `${name}.json`), 'utf8'));
+        const { saveVersion, ...decoded } = decodeSave(bytes);
+        expect(saveVersion).toBe(8);
+        expect(decoded).toEqual(summary);
+        verifySave(bytes);
     });
 });
