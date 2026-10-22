@@ -186,6 +186,15 @@ describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', ()
         });
     });
 
+    test('every roll in the built world has its damage form, and the damage is the form at 99 hitpoints', () => {
+        const rolls = [...world.crossings, ...world.gates].flatMap(r => (r.roll ? [r.roll] : []));
+        expect(rolls.length).toBeGreaterThan(0);
+        for (const r of rolls) {
+            expect(r.fail.hpDamage).toBeDefined();
+            expect(r.fail.damage).toBe(damageAt(r.fail.hpDamage!, 99));
+        }
+    });
+
     test('no move is a duplicate of a connector row, and every row is written, beside the teleports', () => {
         expect(report.scripted.duplicates).toEqual([]);
         expect(report.scripted.rows + report.teleports.rows + report.npcTeleports.rows + report.curated.rows).toBe(

@@ -3,7 +3,8 @@
 import { readFileSync } from 'fs';
 import { contentHash } from './content-hash';
 import { WORLD_JSON } from './paths';
-import { WORLD_FORMAT, type World } from './types';
+import { damageAt } from './roll';
+import { WORLD_FORMAT, type HpDamage, type World } from './types';
 
 /** A parsed JSON object, its fields not yet checked. */
 type Parsed = { [key: string]: unknown };
@@ -76,8 +77,10 @@ function rollProblem(r: unknown): string | undefined {
     const f = r.fail;
     if (!isObject(f) || !isCount(f.ticks) || !isCount(f.damage)) return "a roll's fail needs ticks and damage";
     const d = f.hpDamage;
-    if (d !== undefined && (!isObject(d) || !isCount(d.a) || !isInt(d.b) || d.b < 1 || !isInt(d.c)))
+    if (!isObject(d) || !isCount(d.a) || !isInt(d.b) || d.b < 1 || !isInt(d.c))
         return "a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0";
+    if (f.damage !== damageAt(d as unknown as HpDamage, 99))
+        return "a roll's fail.damage is not its hpDamage at 99 hitpoints";
     if (f.to !== undefined && !isTile(f.to)) return "a roll's fail.to is not a tile";
     if (f.back !== undefined && (f.to === undefined || !isCount(f.back)))
         return "a roll's fail.back is run ticks from its fail.to";

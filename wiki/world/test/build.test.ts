@@ -381,13 +381,26 @@ describe('serializeWorld', () => {
             ],
             [
                 'a way back with no fail tile',
-                { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 0, back: 2 } } },
+                {
+                    ...shortcut,
+                    roll: { ...roll, fail: { ticks: 4, damage: 0, hpDamage: { a: 0, b: 1, c: 0 }, back: 2 } },
+                },
                 "crossings[1]: a roll's fail.back is run ticks from its fail.to",
             ],
             [
                 'a damage form dividing by 0',
                 { ...shortcut, roll: { ...roll, fail: { ...roll.fail, hpDamage: { a: 15, b: 0, c: 1 } } } },
                 "crossings[1]: a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0",
+            ],
+            [
+                'a roll with no damage form',
+                { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 3 } } },
+                "crossings[1]: a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0",
+            ],
+            [
+                'a damage that drifted from its form at 99 hitpoints',
+                { ...shortcut, roll: { ...roll, fail: { ...roll.fail, damage: 4 } } },
+                "crossings[1]: a roll's fail.damage is not its hpDamage at 99 hitpoints",
             ],
             [
                 'success ticks that are not a count',

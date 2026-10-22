@@ -241,7 +241,13 @@ const ticksOf = (ls: readonly { ticks?: number }[]): { ticks?: number } =>
 
 /** LanderWorld.locAt over the placed locs: the loc of a config whose tile is the one asked. */
 function locFinder(locs: readonly PlacedLoc[]): NonNullable<LanderWorld['locAt']> {
-    const byKey = new Map(locs.map(l => [`${tileKey(l.tile)} ${l.config}`, l]));
+    // The first loc placed on a tile and config wins: loc_find (server/engine/src/engine/script/handlers/LocOps.ts:79-93)
+    // is World.getLoc, which returns the zone's first of that type (server/engine/src/engine/zone/Zone.ts:283-290).
+    const byKey = new Map<string, PlacedLoc>();
+    for (const l of locs) {
+        const key = `${tileKey(l.tile)} ${l.config}`;
+        if (!byKey.has(key)) byKey.set(key, l);
+    }
     return (tile, config) => {
         const l = byKey.get(`${tileKey(tile)} ${config}`);
         return l && { shape: l.shape ?? 10, angle: l.rotation ?? 0 };

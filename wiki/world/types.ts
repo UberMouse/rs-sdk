@@ -451,8 +451,9 @@ export interface Roll {
         /** Hitpoints a failure takes at 99 hitpoints (hpDamage there), the most when the script rolls the damage. */
         damage: number;
         /**
-         * Hitpoints a failure takes at the player's hitpoints, the most when the script rolls the damage. Always written
-         * at build; optional only for rows built by hand (tests).
+         * Hitpoints a failure takes at the player's hitpoints, the most when the script rolls the damage. Always
+         * written at build and required by load.ts; optional in the type only because conductor tests build rolls by
+         * hand without it.
          */
         hpDamage?: HpDamage;
         /**
