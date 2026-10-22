@@ -131,6 +131,9 @@ export interface NearbyPlayer {
     distance: number;
     /** See NearbyNpc.reachable. */
     reachable?: boolean;
+    combatTargetType?: 'npc' | 'player' | 'none';
+    combatTargetIndex?: number;
+    inCombat?: boolean;
 }
 
 export interface GroundItem {

@@ -59,8 +59,8 @@ For a client you can watch, or that agents can screenshot
 | Tool                           | Description                                    |
 | ------------------------------ | ---------------------------------------------- |
 | `execute_code(bot_name, code)` | Run code on a bot. Auto-connects on first use. |
-| `list_bots()`                  | Bots this session has used (attached only during a call) |
-| `disconnect_bot(name)`         | Disconnect a bot                               |
+| `list_bots()`                  | Bots this MCP server holds a connection to |
+| `disconnect_bot(name)`         | Disconnect a bot and release its controller lease |
 
 ### Example
 
@@ -136,8 +136,9 @@ Rules for every agent working in this repo:
   SDK's `connect()` rejects naming the holder) unless it asks for takeover (`--takeover` on
   `run-task.ts`, `RS_TAKEOVER=1` for a script). Never take over a bot another agent is driving,
   and never route around the refusal with an ad-hoc script: wait, or report back. MCP
-  `execute_code` holds the bot only while its code runs, and is refused while a task or script
-  drives it. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect in
+  `execute_code` takes the lease on its first call for a bot and keeps it between calls until
+  `disconnect_bot` or the MCP server exits, so `run-task.ts` is refused after an MCP call until
+  you disconnect; `execute_code` itself is refused while a task or script drives the bot. Read-only tools (`screenshot.ts`, `progress.ts`, `sdk/cli.ts`, chat) connect in
   observe mode and are always safe.
 - **In a conductor run, test on a worker account, not the conductor's bot.** Smoke tests and
   experiments load a save into a worker (`bun conductor/tools/load.ts <worker> lib:<save> --client`);
