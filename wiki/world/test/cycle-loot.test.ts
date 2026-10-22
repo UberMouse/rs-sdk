@@ -1,0 +1,237 @@
+import { describe, expect, test } from 'bun:test';
+import {
+    BURY_DELAY,
+    BURY_SWING_GAP,
+    cycle,
+    EAT_DELAY,
+    readBuryDelay,
+    type CycleInput,
+    type CycleSink,
+    type Loot,
+} from '../model/cycle';
+import { ModelError, type ActionModel } from '../model/family';
+import { readItems } from '../model/items';
+import { XP_RATE } from '../model/server';
+import { parseConfigs } from '../sources/configs';
+
+// Synthetic objs: stackable coins (cost 1, the engine's default), non-stackable bones and a hide, and a food.
+const items = readItems(
+    parseConfigs(`
+[coins]
+stackable=yes
+[bones]
+cost=10
+[hide]
+cost=100
+[food]
+cost=50
+`),
+);
+/** bone_exp in tenths: the game's bones (bones.obj:12). */
+const boneXp = (obj: string) => (obj === 'bones' ? 45 : 0);
+
+/** A kill every 20 ticks at attackrate 4: 100 Strength XP, a bones, 15 coins, and a hide 3 kills in 4. */
+const kill: ActionModel = {
+    ticksPerAttempt: 20,
+    success: 1,
+    xpTenths: { strength: 1000 },
+    products: [
+        { obj: 'bones', count: 1 },
+        { obj: 'coins', count: 15 },
+        { obj: 'hide', count: 0.75 },
+    ],
+    consumes: [],
+    attackRate: 4,
+};
+
+const bank: CycleSink = { mode: 'bank', legs: [10, 10] };
+const run = (input: Omit<CycleInput, 'items' | 'boneXp'>) => cycle({ ...input, items, boneXp });
+const looted = (loot: Loot, gather: ActionModel = kill) => run({ gather, sink: bank, loot });
+
+function fails(input: Omit<CycleInput, 'items'>, re: RegExp): void {
+    expect(() => cycle({ ...input, items })).toThrow(ModelError);
+    expect(() => cycle({ ...input, items })).toThrow(re);
+}
+
+describe('bury constants', () => {
+    test('a bury holds p_delay(0), so the swing after it comes 3 ticks after the one before', () => {
+        // bury_bone.rs2:10 `p_delay(0)`. Swing at P; the bury at P + 1 (its p_stopaction would end the swing at P);
+        // delayedUntil = P + 1 + 1 + 0 = P + 2, still delayed in P + 2's packets; the re-click at P + 3.
+        expect(BURY_DELAY).toEqual({ value: 0, at: 'skill_prayer/scripts/bury_bone.rs2:10' });
+        expect(BURY_SWING_GAP).toBe(3);
+        expect(readBuryDelay('p_stopaction;\n    p_delay(2);\n').value).toBe(2);
+        expect(() => readBuryDelay('p_stopaction;')).toThrow(/has the default moved/);
+    });
+});
+
+describe('loot policy', () => {
+    test('leave: only the coins are kept, nothing fills a slot, no trip ends', () => {
+        // Bones and the unlisted hide are left. A kill of 20 ticks, no bank visit: 9000 / 20 = 450 kills an hour,
+        // 100 x 25 = 2,500 XP each: 1,125,000 Strength XP; 15 x 450 = 6,750 coins at 1 gp.
+        const r = looted({ bones: 'leave' });
+        expect(r.trip).toEqual({
+            successes: 1,
+            gather: 20,
+            process: 0,
+            travel: 0,
+            bank: 0,
+            drop: 0,
+            eat: 0,
+            wait: 0,
+            total: 20,
+        });
+        expect(r.xpPerHour).toEqual({ strength: 450 * 100 * XP_RATE });
+        expect(r.itemsPerHour).toEqual([{ obj: 'coins', count: 6750 }]);
+        expect(r.gpPerHour).toBe(6750);
+    });
+
+    test('bury: Prayer XP and no slot, the bury free between swings 4 ticks apart', () => {
+        // BURY_SWING_GAP 3 <= attackrate 4: max(0, 3 - 4) = 0 ticks. 450 kills an hour as left; 4.5 x 25 = 112.5
+        // Prayer XP each: 50,625. The buried bones are not a product.
+        const r = looted({ bones: 'bury' });
+        expect(r.trip.total).toBe(20);
+        expect(r.trip.process).toBe(0);
+        expect(r.xpPerHour).toEqual({ strength: 450 * 100 * XP_RATE, prayer: 450 * 4.5 * XP_RATE });
+        expect(r.itemsPerHour).toEqual([{ obj: 'coins', count: 6750 }]);
+    });
+
+    test('bury at an attack rate of 2: the re-click holds the next swing 1 tick', () => {
+        // max(0, 3 - 2) = 1 tick a bury, counted as process: 21 a kill, 9000 / 21 = 428.57 kills an hour.
+        const r = looted({ bones: 'bury' }, { ...kill, attackRate: 2 });
+        expect(r.trip.process).toBe(1);
+        expect(r.trip.total).toBe(21);
+        expect(r.xpPerHour.prayer).toBeCloseTo((9000 / 21) * 4.5 * XP_RATE, 6);
+    });
+
+    test('bank: the bones fill a slot a kill, so a trip ends at a full inventory', () => {
+        // The coins take a slot: 27 free, a bones a kill (the hide left): 27 kills. 27 x 20 = 540 + legs 20 = 560 a
+        // trip. 9000 / 560 x 27 = 433.93 kills an hour: that many bones at 10 gp and 15 x as many coins at 1.
+        const r = looted({ bones: 'bank' });
+        expect(r.trip).toEqual({
+            successes: 27,
+            gather: 540,
+            process: 0,
+            travel: 20,
+            bank: 0,
+            drop: 0,
+            eat: 0,
+            wait: 0,
+            total: 560,
+        });
+        const kills = (9000 / 560) * 27;
+        expect(r.itemsPerHour.map(x => x.obj)).toEqual(['bones', 'coins']);
+        expect(r.gpPerHour).toBeCloseTo(kills * (10 + 15), 6);
+        expect(r.xpPerHour.prayer).toBeUndefined();
+    });
+
+    test('keep lists a non-stackable: the hide is kept, 3/4 of a slot a kill', () => {
+        // 27 free / 0.75 = 36 kills: 720 + 20 = 740 a trip; 9000 / 740 x 36 = 437.84 kills; gp 15 + 0.75 x 100 each.
+        const r = looted({ bones: 'leave', keep: ['hide'] });
+        expect(r.trip.successes).toBe(36);
+        expect(r.trip.total).toBe(740);
+        expect(r.gpPerHour).toBeCloseTo((9000 / 740) * 36 * (15 + 75), 6);
+    });
+
+    test('no policy: every product is kept, as before', () => {
+        // Bones 1 + hide 0.75 = 1.75 slots a kill: 27 / 1.75 = 15.43 kills a trip.
+        const r = run({ gather: kill, sink: bank });
+        expect(r.trip.successes).toBeCloseTo(27 / 1.75, 9);
+        expect(r.xpPerHour.prayer).toBeUndefined();
+    });
+
+    test('fails where it is not modelled', () => {
+        fails(
+            {
+                gather: kill,
+                sink: { mode: 'process', steps: [], end: 'keep', legs: [], here: [] },
+                loot: { bones: 'bury' },
+                boneXp,
+            },
+            /loot policy with a process sink/,
+        );
+        fails({ gather: kill, sink: bank, loot: { bones: 'bury' } }, /needs the bones Prayer XP/);
+        const { attackRate: _, ...noRate } = kill;
+        fails(
+            { gather: noRate, sink: bank, loot: { bones: 'bury' }, boneXp },
+            /needs the gather to have an attackRate/,
+        );
+        // Leaving or banking the bones needs no attackRate.
+        expect(looted({ bones: 'leave' }, noRate).trip.total).toBe(20);
+    });
+});
+
+describe('food with kept loot', () => {
+    test('loot fills faster than food empties: the trip ends at a full inventory, the food just gone', () => {
+        // Damage 6 a kill, a food heals 12: 0.5 food a kill; the hide kept, 0.75 slots a kill. 27 free / max(0.5,
+        // 0.75) = 36 kills; it starts with 36 x 0.5 = 18 food and ends with 27 hides. Each food holds the swings
+        // EAT_DELAY = 3: 36 x 0.5 x 3 = 54 eat ticks. 720 + 20 + 54 = 794 a trip; 9000 / 794 x 18 food an hour.
+        const r = run({
+            gather: { ...kill, damage: 6 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'bury', keep: ['hide'] },
+        });
+        expect(r.trip).toEqual({
+            successes: 36,
+            gather: 720,
+            process: 0,
+            travel: 20,
+            bank: 0,
+            drop: 0,
+            eat: 54,
+            wait: 0,
+            total: 794,
+        });
+        expect(r.suppliesPerHour).toEqual([{ obj: 'food', count: expect.closeTo((9000 / 794) * 18, 9) }]);
+        expect(r.xpPerHour.prayer).toBeCloseTo((9000 / 794) * 36 * 4.5 * XP_RATE, 6);
+    });
+
+    test('food empties faster than loot fills: the trip ends when the food runs out', () => {
+        // Damage 12, heal 12: a food a kill, more than the hide's 0.75 slot: 27 / 1 = 27 kills on 27 food, the
+        // inventory 27 x 0.75 = 20.25 hides at the end. 27 x 3 = 81 eat ticks; 540 + 20 + 81 = 641 a trip.
+        const r = run({
+            gather: { ...kill, damage: 12 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'leave', keep: ['hide'] },
+        });
+        expect(r.trip.successes).toBe(27);
+        expect(r.trip.eat).toBe(81);
+        expect(r.trip.total).toBe(641);
+        expect(EAT_DELAY).toBe(3);
+    });
+
+    test('without a loot policy, food with a non-stackable product is still refused', () => {
+        fails(
+            { gather: { ...kill, damage: 6 }, sink: bank, food: { obj: 'food', heal: 12 } },
+            /fills the inventory is not modelled/,
+        );
+    });
+});
+
+describe('uncalibrated damage', () => {
+    test('no food in the cycle: none eaten, no eat ticks, the trip ends at a full inventory', () => {
+        // The bones banked fill a slot a kill: 27 kills, 540 + 20 = 560 a trip, as with no damage at all.
+        const hurt = { ...kill, damage: 6 };
+        const r = run({
+            gather: hurt,
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'bank' },
+            uncalibrated: true,
+        });
+        expect(r.trip.successes).toBe(27);
+        expect(r.trip.eat).toBe(0);
+        expect(r.trip.total).toBe(560);
+        expect(r.suppliesPerHour).toEqual([]);
+        // Nothing kept fills a slot: no trip ends.
+        const never = run({ gather: hurt, sink: bank, loot: { bones: 'bury' }, uncalibrated: true });
+        expect(never.trip.successes).toBe(1);
+        expect(never.trip.travel).toBe(0);
+        // Calibrated, the same damage needs its food.
+        fails(
+            { gather: hurt, sink: bank, loot: { bones: 'bank' }, boneXp },
+            /costs 6 hitpoints a success: name a food/,
+        );
+    });
+});

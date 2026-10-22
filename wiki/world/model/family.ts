@@ -32,6 +32,13 @@ export interface ActionModel {
      */
     damage?: number;
     /**
+     * On an action that swings on `%action_delay` (a kill): the ticks from one swing to the next, the weapon's
+     * `attackrate` (skill_combat/scripts/player/player_melee.rs2:55-60). An eat adds to that delay, so the food
+     * `damage` takes costs EAT_DELAY ticks each; a bury fits between two swings when this is at least
+     * BURY_SWING_GAP (cycle.ts).
+     */
+    attackRate?: number;
+    /**
      * Inputs one product of a process step takes (5 bars a platebody); default 1. A step's chained input is its
      * `consumes[0]`, whose count must be `batch`. The load rounds down to whole batches where the step's input per
      * success is a whole number.

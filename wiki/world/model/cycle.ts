@@ -15,21 +15,32 @@
 //   success is whole, the load rounds down to whole batches; a chain with more than one batched step is not modelled.
 // - With food, every free slot holds food, and the load is the successes that food covers: free x heal over the
 //   damage a success costs (failDamage x fails per success, plus `damage`). Food with a non-stackable product (both
-//   filling the inventory) is not modelled. The hitpoints pool and regeneration are left out, which only lowers the
-//   floor a little (a trip lasts somewhat longer than its food).
+//   filling the inventory) is not modelled, except under a `loot` policy (below). The hitpoints pool and regeneration
+//   are left out, which only lowers the floor a little (a trip lasts somewhat longer than its food).
+// - A `loot` policy (a kill's drops, see Loot) picks which of the gather's products are kept before anything else
+//   reads them. Kept loot and food then share the free slots: each eat frees a slot the loot can take, so a trip that
+//   starts with f food ends when the food runs out (f / food a success) or the inventory fills (free - f over the
+//   slots a success fills less the food it eats). Ideal play starts with the f that makes both come at once:
+//   free / max(food a success, slots a success) successes. Picking the loot up is not counted here.
+// - `uncalibrated`: the gather's `damage` is not yet checked against a run (the food gate), so no food goes in the
+//   cycle (none eaten, no eat ticks, no food supply) and a trip ends only when the inventory fills.
 // - A drop sink never travels: a full inventory of non-stackable items is dropped in dropTicks(free slots), unless every
 //   success depletes the feature (mining, a stall): the next item needs a fresh click on another feature anyway, and
 //   the drop goes out in that tick ahead of the click, free, so the inventory never fills. Food with a drop sink is
 //   not modelled (nothing restocks it).
-// - `damage` (see ActionModel) needs a food, and its eats cost no ticks; only a stun's eats do (eatTicksPerFail).
+// - `damage` (see ActionModel) needs a food, and its eats cost no ticks, but on an action with an `attackRate` (a
+//   kill) each costs EAT_DELAY; a stun's eats cost eatTicksPerFail.
 //
 // The steps. A process step's `restart`, `start` and `perTick` (see ActionModel) add to its ticks over a trip, so
 // they need a trip that ends; `batch` is the inputs an action takes (the whole-batch rounding above). A gather with a
 // restart, a start or a perTick is not modelled.
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { SCRIPTS } from '../paths';
 import { ModelError, ProfileError, type ActionModel } from './family';
 import { INVENTORY_SLOTS, type Items } from './items';
 import { resourceCap, ticksPerItem } from './rate';
-import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE, type Skill } from './server';
+import { readDefault, TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE, type ServerDefault, type Skill } from './server';
 
 /**
  * Packets the re-click after a full drop carries: a MOVE_OPCLICK, then the op (OPLOC1) it pairs with. The client
@@ -67,6 +78,41 @@ export const BANK_TICKS = 0;
  */
 export const EAT_DELAY = 3;
 
+export const BURY_SOURCE = 'skill_prayer/scripts/bury_bone.rs2';
+
+/** The `p_delay` a bury holds the player for: the one `p_delay(n)` line of `text` (bury_bone.rs2). */
+export function readBuryDelay(text: string): ServerDefault {
+    return readDefault(BURY_SOURCE, text, /^\s*p_delay\((\d+)\);/);
+}
+
+/** 0, read from the content when the module loads (bury_bone.rs2:10). */
+export const BURY_DELAY = readBuryDelay(readFileSync(join(SCRIPTS, BURY_SOURCE), 'utf8'));
+
+/**
+ * The fewest ticks from one swing to the next with a bury between them. The bury's `p_stopaction` ends the attack
+ * (bury_bone.rs2:8), so it can't go in the swing's own tick (the packets are read before the swing,
+ * World.ts:402,425) and goes the tick after: 1. `p_delay(n)` then holds the player until the tick n + 1 on
+ * (PlayerOps.ts:376-379: delayedUntil = clock + 1 + n), and a delayed player's OpNpc is refused
+ * (OpNpcHandler.ts:16-20) through that tick's packets too, as the delay clears in processPlayers (World.ts:776): the
+ * re-click goes n + 2 ticks after the bury. The re-clicked attack swings at once when `%action_delay` has passed
+ * (player_melee.rs2:8-11), so the next swing waits for the later of the cooldown and the re-click, and a bury costs
+ * max(0, BURY_SWING_GAP - attackRate) ticks: 3 - attackRate at p_delay(0), none for any melee weapon (attackrate 3
+ * and up).
+ */
+export const BURY_SWING_GAP = 1 + BURY_DELAY.value + 2;
+
+/**
+ * What happens to a kill's drops (a method record's `loot`): stackable products are kept (coins, runes, noted
+ * drops); bones (an obj with a `bone_exp`) are buried in place, banked or left; any other non-stackable product is
+ * left unless `keep` names it. A left product is not picked up: it fills no slot and is not among the products, so
+ * it drops out of gp/hr. A buried one is not either, and gives its `bone_exp` Prayer XP (bury_bone.rs2:15) and a bury
+ * each (BURY_SWING_GAP).
+ */
+export interface Loot {
+    bones: 'bury' | 'bank' | 'leave';
+    keep?: string[];
+}
+
 /** What a process sink leaves the end products to: the bank, a drop at the last step, or the inventory (runes). */
 export type ProcessEnd = 'bank' | 'drop' | 'keep';
 
@@ -98,6 +144,16 @@ export interface CycleInput {
     items: Items;
     /** The food eaten to cover the gather's failDamage and damage, and how much one heals. */
     food?: { obj: string; heal: number };
+    /**
+     * The record's loot policy for the gather's products (a kill's drops), with a bank or drop sink. These three sit
+     * here, beside `food`, rather than on the ActionModel: they are the method record's choices and state (its
+     * `loot`, its calibration), not the family's model of the action.
+     */
+    loot?: Loot;
+    /** With `loot`: an obj's `bone_exp` in tenths (readBoneXp), which says which products are bones. */
+    boneXp?: (obj: string) => number;
+    /** The gather's `damage` is uncalibrated: `food` is not used, and `damage` needs none (see the header). */
+    uncalibrated?: boolean;
 }
 
 /** One trip's ticks by what they are spent on. */
@@ -166,13 +222,39 @@ interface Run {
     actions: number;
 }
 
+/** A product buried, per success, and its `bone_exp` in tenths. */
+interface Buried {
+    obj: string;
+    count: number;
+    boneXp: number;
+}
+
+/** The products `loot` keeps, and the bones it buries. */
+function sortLoot(
+    products: { obj: string; count: number }[],
+    loot: Loot,
+    boneXp: (obj: string) => number,
+    items: Items,
+): { kept: { obj: string; count: number }[]; buried: Buried[] } {
+    const kept: { obj: string; count: number }[] = [];
+    const buried: Buried[] = [];
+    for (const x of products) {
+        if (items(x.obj).stackable) kept.push(x);
+        else if (boneXp(x.obj) > 0) {
+            if (loot.bones === 'bank') kept.push(x);
+            else if (loot.bones === 'bury') buried.push({ ...x, boneXp: boneXp(x.obj) });
+        } else if (loot.keep?.includes(x.obj)) kept.push(x);
+    }
+    return { kept, buried };
+}
+
 /** The floor's rates for one method: its gather and sink, at the profile its models were built for. */
-export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
+export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibrated }: CycleInput): CycleRates {
     const withdraw = 'withdraw' in gather ? gather.withdraw : undefined;
     if (withdraw !== undefined && sink.mode !== 'process')
         throw new ModelError(`withdrawing ${withdraw} needs a process sink`);
     // The withdraw source as an action: one item a success, its ticks none.
-    const source: ActionModel =
+    const raw: ActionModel =
         'withdraw' in gather
             ? {
                   ticksPerAttempt: 1,
@@ -182,6 +264,22 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
                   consumes: [],
               }
             : gather;
+    // Under a loot policy the gather's products are those kept; the bones buried go in place, a bury each.
+    let source = raw;
+    let buried: Buried[] = [];
+    if (loot) {
+        if (sink.mode === 'process') throw new ModelError('a loot policy with a process sink is not modelled');
+        if (!boneXp) throw new ModelError('a loot policy needs the bones Prayer XP (boneXp)');
+        const sorted = sortLoot(raw.products, loot, boneXp, items);
+        source = { ...raw, products: sorted.kept };
+        buried = sorted.buried;
+    }
+    const buries = buried.reduce((n, x) => n + x.count, 0);
+    if (buries > 0 && source.attackRate === undefined)
+        throw new ModelError('burying between swings needs the gather to have an attackRate');
+    const buryTicks = buries * Math.max(0, BURY_SWING_GAP - (source.attackRate ?? 0));
+    // An uncalibrated damage eats nothing.
+    const food = uncalibrated ? undefined : named;
     if (source.restart || source.start || source.perTick !== undefined)
         throw new ModelError('a gather with a restart, a start or a perTick is not modelled');
     const tpi = withdraw === undefined ? ticksPerItem(source) : 0;
@@ -282,15 +380,19 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         if (source.failDamage === undefined && source.damage === undefined)
             throw new ModelError(`food ${food.obj} is named but the action costs no hitpoints`);
         if (!banks) throw new ModelError('food with no bank visit is not modelled: nothing restocks it');
-        if (slotsPerSuccess > 0) throw new ProfileError('food with a product that fills the inventory is not modelled');
+        if (slotsPerSuccess > 0 && !loot)
+            throw new ProfileError('food with a product that fills the inventory is not modelled');
         // At a success chance of 1 with no `damage` nothing hurts: no food is eaten and the trip never ends.
         foodPerSuccess = (failDamage * failsPerSuccess + damage) / food.heal;
-        successes = foodPerSuccess > 0 ? free / foodPerSuccess : Infinity;
+        // Food and kept loot share the free slots (see the header); with no loot slot this is the food alone.
+        const perSuccess = Math.max(foodPerSuccess, slotsPerSuccess);
+        successes = perSuccess > 0 ? free / perSuccess : Infinity;
     } else if (slotsPerSuccess === 0 || dropsAsItGoes) successes = Infinity;
     else successes = room / slotsPerSuccess;
     if (failDamage && p < 1 && !food)
         throw new ModelError(`the action costs ${failDamage} hitpoints a fail: name a food`);
-    if (damage && !food) throw new ModelError(`the action costs ${damage} hitpoints a success: name a food`);
+    if (damage && !food && !uncalibrated)
+        throw new ModelError(`the action costs ${damage} hitpoints a success: name a food`);
     // Whole batches: a step whose input per success is whole leaves no part batch in the load.
     if (Number.isFinite(successes))
         for (const r of runs) {
@@ -329,7 +431,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         if (!trips) throw new ModelError('a process step with a perTick on a trip that never ends is not modelled');
         return Math.ceil((n * actions) / m.perTick - 1e-9) * ticksPerItem(m);
     };
-    const process = runs.reduce((t, r) => t + acts(r) + restarts(r) + starts(r), 0);
+    // The buries are an in-place step of the gather's (BURY_SWING_GAP).
+    const process = runs.reduce((t, r) => t + acts(r) + restarts(r) + starts(r), n * buryTicks);
     const travel = trips && sink.mode !== 'drop' ? sink.legs.reduce((a, b) => a + b, 0) : 0;
     const bank = trips && banks ? BANK_TICKS : 0;
     // A process sink that drops drops what is left that fills a slot, at the last step, with the click away.
@@ -338,8 +441,11 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     // Only a stun's eats cost ticks (eatTicksPerFail); the food for `damage` goes in no ticks of its own: an eat has no
     // p_delay (player/scripts/consumption/consume.rs2:115-131). That assumes at most one food a success: the
     // %eat_delay gate (consume.rs2:122-126) refuses another eat for the 2 ticks after one ($eat_delay 2, $skill_delay 3
-    // for normal food; consume.rs2:3), so two foods never go in one tick.
-    const eat = food ? n * failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) : 0;
+    // for normal food; consume.rs2:3), so two foods never go in one tick. On a kill (an attackRate) the eat adds
+    // EAT_DELAY to the %action_delay the next swing waits on (consume.rs2:129-131, player_melee.rs2:8-11), so each
+    // food for `damage` holds the swings EAT_DELAY ticks.
+    const swingEats = food && source.attackRate !== undefined ? (EAT_DELAY * damage) / food.heal : 0;
+    const eat = food ? n * (failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) + swingEats) : 0;
     const active = gatherTicks + process + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.
     if (source.deplete && source.features === undefined)
@@ -354,6 +460,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const xp = new Map<Skill, number>();
     const tenths = (skill: Skill, t: number) => xp.set(skill, (xp.get(skill) ?? 0) + t);
     for (const [skill, t] of Object.entries(source.xpTenths) as [Skill, number][]) tenths(skill, t);
+    for (const x of buried) tenths('prayer', x.boneXp * x.count);
     for (const r of runs)
         for (const [skill, t] of Object.entries(r.m.xpTenths) as [Skill, number][]) tenths(skill, t * r.actions);
     const supplies = new Map<string, number>();
