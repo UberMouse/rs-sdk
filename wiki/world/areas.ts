@@ -1514,7 +1514,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
-                'tree:kandarin:45',
+                'tree:kandarin:46',
                 "a willow on a patch of bank the river's water closes in",
                 'f1, as maps/m40_54.jm2:185',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
@@ -1585,7 +1585,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         ] as const
     ).flatMap(([sites, why, wall]) => sites.map(site => walledIn(site, why, wall))),
     {
-        site: 'tree:kandarin:77',
+        site: 'tree:kandarin:78',
         reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
         source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:18',
     },
