@@ -39,9 +39,16 @@ describe('planeOf', () => {
         expect(planeOf(0, 3058, 9776)).toBe('0u-mine');
         expect(planeOf(0, 3104, 9576)).toBe('0u-basement');
         expect(planeOf(0, 3104, 9577)).not.toBe(planeOf(0, 3058, 9776));
-        // The Edgeville dungeon is its own area; underground elsewhere (the Varrock sewers) is neither.
+        // The Edgeville dungeon is its own area; underground elsewhere is neither.
         expect(planeOf(0, 3100, 9930)).toBe('0u-edgeville');
-        expect(planeOf(0, 3237, 9858)).toBe('0u');
+        expect(planeOf(0, 3300, 9858)).toBe('0u');
+    });
+
+    test('the Varrock Sewers are their own area, the moss giant room included, on level 0 only', () => {
+        expect(planeOf(0, 3158, 9895)).toBe('0u-varrock-sewers');
+        expect(planeOf(0, 3236, 9858)).toBe('0u-varrock-sewers');
+        expect(planeOf(0, 3151, 9894)).toBe('0u-edgeville');
+        expect(planeOf(2, 3241, 9905)).toBe('2u');
     });
 });
 
@@ -91,10 +98,19 @@ describe('the table is a view of world.json', () => {
         expect([...why].sort()).toEqual([
             'into an underground area planeOf does not name',
             'not up or down',
+            'op Climb down, which climb does not send',
             'op Cross, which climb does not send',
         ]);
-        // The Varrock sewers manhole: into an underground area no plane names.
-        expect(whyOf('manholeclosed', 3237, 3458)).toEqual(['into an underground area planeOf does not name']);
+        // The Varrock Sewers manhole: opened, then `Climb down` with a space.
+        expect(whyOf('manholeclosed', 3237, 3458)).toEqual(['op Climb down, which climb does not send']);
+        // The north ladder pair into the sewers is in the table, and not left out.
+        expect(CONNECTORS.filter(c => c.loc.x === 3230 && c.loc.z % 6400 === 3504).map(row)).toEqual([
+            'down Ladder, Varrock loc 0:3230,3504 stand 0:3229,3504 to 0:3229,9904',
+            'up Ladder, Varrock Sewers loc 0:3230,9904 stand 0:3229,9904 to 0:3229,3504',
+        ]);
+        expect(LEFT_OUT.filter(l => / \(3230, (3504|9904)\) /.test(l.row))).toEqual([]);
+        // The trapdoor on level 2 lands on level 2 of the sewers' box, which no plane names.
+        expect(whyOf('trapdoor', 3242, 3505)).toEqual(['into an underground area planeOf does not name']);
         // Castle Wars' outside stairs move the player along the ground.
         expect(whyOf('castlewars_outsidestairs_zamorak_linked', 2382, 3131)).toEqual([
             'not up or down',
@@ -393,6 +409,8 @@ const ONE_WAY = [
     'up 0:3049,3208',
     'down 1:3057,3483',
     'down 1:3187,3414',
+    // The Varrock Sewers' ladder up to the manhole; the manhole down is left out (its op is `Climb down`).
+    'up 0:3237,9858',
 ];
 
 describe('the table against the collision data', () => {

@@ -46,23 +46,36 @@ export const UNDERGROUND_Z = 6400;
  * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
  * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
  * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower
- * basement). Other underground tiles count as one area, `u`, so the table leaves out every connector into them.
+ * basement). A box with a `level` holds tiles of that level only; one without holds every level. Other underground
+ * tiles count as one area, `u`, so the table leaves out every connector into them.
  */
-const UNDERGROUND_AREAS = [
+const UNDERGROUND_AREAS: readonly {
+    id: string;
+    level?: number;
+    minX: number;
+    maxX: number;
+    minZ: number;
+    maxZ: number;
+}[] = [
     // The Taverley Dungeon (collision flood fill from the ladder's landing: x 2817..2969, z 9671..9854). Its east
     // edge (x 2944..2969, z <= 9801) lies inside the mine's box, next to a mine pocket at z >= 9806; no passage joins them.
     { id: 'taverley', minX: 2816, maxX: 2943, minZ: 9664, maxZ: 9855 },
     { id: 'taverley', minX: 2944, maxX: 2975, minZ: 9728, maxZ: 9803 },
     { id: 'mine', minX: 2880, maxX: 3071, minZ: 9728, maxZ: 9855 },
+    // The Varrock Sewers, before the Edgeville Dungeon: the dungeon has no tile at x >= 3152, and the moss giant room
+    // (x 3153..3221, z 9874..9908) inside the dungeon's box is a pocket of the sewers, opened by the web at (3210, 9898).
+    { id: 'varrock-sewers', level: 0, minX: 3152, maxX: 3295, minZ: 9840, maxZ: 9919 },
     // The Edgeville Dungeon, including its Wilderness part north of z 9920.
     { id: 'edgeville', minX: 3072, maxX: 3199, minZ: 9792, maxZ: 9983 },
     { id: 'basement', minX: 3072, maxX: 3135, minZ: 9536, maxZ: 9599 },
-] as const;
+];
 
 /** The plane a tile is on: its level; at level 0 underground, `u` and the area appended. */
 export function planeOf(level: number, x: number, z: number): string {
     if (z < UNDERGROUND_Z) return `${level}`;
-    const area = UNDERGROUND_AREAS.find(a => x >= a.minX && x <= a.maxX && z >= a.minZ && z <= a.maxZ);
+    const area = UNDERGROUND_AREAS.find(
+        a => (a.level === undefined || a.level === level) && x >= a.minX && x <= a.maxX && z >= a.minZ && z <= a.maxZ,
+    );
     return `${level}u${area ? `-${area.id}` : ''}`;
 }
 const planeAt = (t: Tile) => planeOf(t.level, t.x, t.z);
