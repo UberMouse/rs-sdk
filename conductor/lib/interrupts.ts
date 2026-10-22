@@ -333,9 +333,10 @@ interface UnderAttackEpisode {
  * For a skilling task whose interaction (a chop, a mine, a fish) would cancel auto-retaliate: while
  * something attacks the bot it touches nothing and lets auto-retaliate finish the fight.
  *
- * "Attacked" (`isAttacked`) is not `combat.inCombat` alone: that is also true while the bot merely
- * faces its own target (a fishing spot). It needs an attacker next to the bot, or a hit taken within
- * RECENT_HIT_TICKS, on top of inCombat.
+ * "Attacked" (`isAttacked`) is not `combat.inCombat` alone: that is also true for the client's walk-up
+ * grace after the bot merely faces an attackable NPC (a man it pickpockets or talks to). An NPC with no
+ * Attack option, such as a fishing spot, is never published as a target. It needs an attacker next to
+ * the bot, or a hit taken within RECENT_HIT_TICKS, on top of inCombat.
  *
  * A named attacker is waited out with no total tick cap, when winnable: auto-retaliate on and the
  * attacker's combat level no higher than the bot's; otherwise the run fails at once, naming it. The
