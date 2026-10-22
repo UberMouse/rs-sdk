@@ -190,7 +190,7 @@ string 3, legs 32 -> ~190 ticks/13 bows -> **~1.28M Fletching/h** (measured 971k
 
 | Fact | Value | Source |
 |---|---|---|
-| Light from inventory | tinderbox on logs: drops the log, `%action_delay` +3, then a `stat_random(firemaking, 64, 512)` roll every 4 ticks (`p_opobj(4)` re-runs); p = 1 from Firemaking 44 | `scripts/skill_firemaking/scripts/firemaking.rs2:13-28, 79-117` |
+| Light from inventory | tinderbox on logs: drops the log, `%action_delay` +3, then a `stat_random(firemaking, 64, 512)` roll every 4 ticks (`p_opobj(4)` re-runs); p = 1 from Firemaking 43 (64·56/98 + 512·42/98 + 1 = 36 + 219 + 1 = 256, floored) | `scripts/skill_firemaking/scripts/firemaking.rs2:13-28, 79-117` |
 | Cadence | first log 3 ticks, then **4 ticks a log** (the next log's click lands while `%action_delay` is ahead) | `firemaking.rs2:98-115` |
 | After a fire | pushed west, else east, south, north (`p_delay(0)`); a fire lasts 100+random(100) ticks, so a line burns westward and needs clear tiles | `firemaking.rs2:119-131, 145-174` |
 | XP / level | logs 400 tenths (1,000 game XP), level 1; willow 900 (2,250), level 30 | `scripts/skill_firemaking/configs/firemaking.obj:88-105, 165-182` |
