@@ -142,6 +142,11 @@ describe('hill giants, 9 spawns in the Edgeville dungeon', () => {
         expect(resourceCap(m, 9)).toBeCloseTo(9 / (m.ticksPerAttempt + 58), 12);
         expect(m.attackRate).toBe(4);
         expect(m.products).toContainEqual({ obj: 'big_bones', count: 1 });
+        // The kills that drop what is taken (ActionModel.pAnyOf): the big bones every kill (death_drop, giant.rs2:8);
+        // a limpwurt root on $random 76-86 of random(128) (giant.rs2:51-52), 11/128.
+        expect(m.pAnyOf!(new Set(['big_bones']))).toBeCloseTo(1, 12);
+        expect(m.pAnyOf!(new Set(['limpwurt_root']))).toBeCloseTo(11 / 128, 12);
+        expect(m.pAnyOf!(new Set(['limpwurt_root', 'big_bones']))).toBeCloseTo(1, 12);
         expect(m.retreat).toBeUndefined();
     });
 
@@ -213,6 +218,9 @@ describe('chickens, 9 spawns in Lumbridge', () => {
             { obj: 'feather', count: 5 },
             { obj: 'raw_chicken', count: 1 },
         ]);
+        // Feathers on $rng 0-63 of random(128) (chicken.rs2:17-22): 1/2 of the kills; nothing drops coins.
+        expect(m.pAnyOf!(new Set(['feather']))).toBeCloseTo(1 / 2, 12);
+        expect(m.pAnyOf!(new Set(['coins']))).toBe(0);
         // Respawn 50 scales to 49: 4 + 49 - 1 - 4 - 2 = 46. The cap with one bot: 9 / (ticks + 46).
         expect(m.deplete).toEqual({ chance: 1, respawnTicks: 46 });
         expect(resourceCap(m, 9)).toBeCloseTo(9 / (m.ticksPerAttempt + 46), 12);

@@ -59,6 +59,11 @@ export interface DropTable {
     at: string;
     /** The expected count of each obj per kill, by obj config name, in name order. */
     counts: Map<string, number>;
+    /**
+     * The chance a kill drops none of `objs`: the chances of the paths that add none of them, summed (exact, whatever
+     * the paths' drops have in common).
+     */
+    pNone(objs: ReadonlySet<string>): number;
 }
 
 /** An npc's drop table; throws a ModelError for an npc the game lacks or a script line the evaluator can't settle. */
@@ -84,6 +89,11 @@ interface Path {
     env: ReadonlyMap<string, Value>;
     /** The values each `random` call made on the way here can still take, by its roll's `root`. */
     rolls: ReadonlyMap<number, Ranges>;
+    /**
+     * The objs an `obj_add` on the way here added. Each adds at least one: its count is checked to be 1 or more
+     * (ObjStackValid, script/ScriptValidators.ts:122) past the -1 that adds nothing.
+     */
+    adds: ReadonlySet<string>;
 }
 
 interface Ended extends Path {
@@ -206,7 +216,7 @@ export function readDropTables(
         let roots = 0;
         const fork = (path: Path, change: Partial<Path> = {}): Path => {
             if (++steps > MAX_STEPS) throw new ModelError(`${what}: more than ${MAX_STEPS} steps of paths`);
-            return { p: path.p, env: path.env, rolls: path.rolls, ...change };
+            return { p: path.p, env: path.env, rolls: path.rolls, adds: path.adds, ...change };
         };
         /** Raises unless `paths` carry chance `p` between them: no chance is lost or made at a split. */
         const conserved = (paths: readonly { p: number }[], p: number, file: string, node: Expr | Stmt): void => {
@@ -452,11 +462,15 @@ export function readDropTables(
             return { yes, no };
         }
 
-        /** `obj_add(coord, obj, count, duration)`: the path's chance times the count (its mean when rolled). */
-        function objAdd(vals: Value[], path: Path, file: string, s: Stmt): void {
+        /**
+         * `obj_add(coord, obj, count, duration)`: the path's chance times the count (its mean when rolled). The path on,
+         * with the obj among its adds.
+         */
+        function objAdd(vals: Value[], path: Path, file: string, s: Stmt): Path {
             if (vals.length !== 4) return fail(file, s, `gives obj_add ${vals.length} values`);
             const [, obj, count] = vals as [Value, Value, Value];
-            if (obj.t === 'null' || (obj.t === 'int' && obj.n === -1) || (count.t === 'int' && count.n === -1)) return;
+            if (obj.t === 'null' || (obj.t === 'int' && obj.n === -1) || (count.t === 'int' && count.n === -1))
+                return path;
             if (obj.t !== 'name') return fail(file, s, `adds a ${obj.t}, not an obj`);
             // The packer makes `cert_<obj>`, the noted obj, for any obj it names (tools/pack/config/ObjConfig.ts:212-216).
             if (!data.objs.has(obj.v.replace(/^cert_/, '')))
@@ -468,6 +482,7 @@ export function readDropTables(
                       ? mean(rangesOf(path, count))
                       : fail(file, s, 'adds no count');
             counts.set(obj.v, (counts.get(obj.v) ?? 0) + path.p * n);
+            return { ...path, adds: new Set(path.adds).add(obj.v) };
         }
 
         function stmt(s: Stmt, path: Path, file: string): Flow {
@@ -582,8 +597,7 @@ export function readDropTables(
                         };
                     if (name === 'obj_add') {
                         const outs = evalAll(args ?? [], path, file);
-                        for (const o of outs) objAdd(o.vals, o.path, file, s);
-                        return { live: outs.map(o => o.path), ended: [] };
+                        return { live: outs.map(o => objAdd(o.vals, o.path, file, s)), ended: [] };
                     }
                     return fail(file, s, `calls ${name}, which is not read`);
                 }
@@ -602,7 +616,7 @@ export function readDropTables(
 
         const flow = run(
             parse(`ai_queue3 ${key}`, death).body,
-            [{ p: 1, env: new Map(), rolls: new Map() }],
+            [{ p: 1, env: new Map(), rolls: new Map(), adds: new Set() }],
             death.file,
         );
         const out = total([...flow.live, ...flow.ended]);
@@ -610,10 +624,19 @@ export function readDropTables(
             throw new ModelError(
                 `${what}: its paths carry a chance of ${out} between them, not 1 (${death.file}:${death.line})`,
             );
+        // The ended paths by the objs they add: a kill drops one such set.
+        const sets = new Map<string, { objs: string[]; p: number }>();
+        for (const end of [...flow.live, ...flow.ended]) {
+            const objs = [...end.adds].sort();
+            const id = objs.join(' ');
+            const at = sets.get(id) ?? sets.set(id, { objs, p: 0 }).get(id)!;
+            at.p += end.p;
+        }
         return {
             npc,
             at: `${death.file}:${death.line}`,
             counts: new Map([...counts].filter(([, n]) => n > 0).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))),
+            pNone: objs => [...sets.values()].filter(x => !x.objs.some(o => objs.has(o))).reduce((t, x) => t + x.p, 0),
         };
     };
 }

@@ -68,9 +68,14 @@ export function readDeathTicks(text: string): ServerDefault {
  * first, Npc.ts:179-181), and a melee npc at 0 HP deals nothing (npc_combat_melee.rs2:40-42); an npc swing in the
  * killing swing's own tick lands, as the npc's turn comes first. So swing j lands when (S - 1) * playerRate >= 1 + h
  * + j * npcRate, that is when S > ceil((1 + h + j * npcRate) / playerRate), and the expectation is the sum over j of
- * P(S > that). Infinity when no swing can damage the npc.
+ * P(S > that). Infinity when no swing can damage the npc. A rate under 1 tick is a ModelError.
  */
 export function npcSwingsPerKill(swing: Swing, hp: number, playerRate: number, npcRate: number): number {
+    for (const [who, rate] of [
+        ['player', playerRate],
+        ['npc', npcRate],
+    ] as const)
+        if (!(rate >= 1)) throw new ModelError(`the ${who}'s attack rate ${rate} is under 1 tick`);
     const survival = swingSurvival(swing, hp);
     if (!survival) return Infinity;
     const h = Math.trunc(npcRate / 2);
@@ -84,17 +89,35 @@ export function npcSwingsPerKill(swing: Swing, hp: number, playerRate: number, n
 
 /** P(S > s) below which the tail of the swings to a kill is dropped. */
 const TAIL = 1e-12;
+/** The most swings swingSurvival follows a kill for before it gives up (a ProfileError, not a cut tail). */
+export const MAX_SWINGS = 100_000;
+/** swingSurvival's tables by swing and HP, as a page asks for many profiles of one kill. */
+const survivals = new Map<string, number[] | undefined>();
 
 /**
  * P(S > s), the chance the npc is still alive after s swings, for s from 0 until it falls below TAIL; undefined when
- * no swing can damage (swingDamage's distribution, the HP left carried from swing to swing).
+ * no swing can damage (swingDamage's distribution, the HP left carried from swing to swing). A ProfileError when the
+ * tail runs past MAX_SWINGS.
  */
 function swingSurvival(swing: Swing, hp: number): number[] | undefined {
+    const key = `${swing.hit} ${swing.max} ${hp}`;
+    if (!survivals.has(key)) {
+        if (survivals.size >= 1000) survivals.clear();
+        survivals.set(key, survivalOf(swing, hp));
+    }
+    return survivals.get(key);
+}
+
+function survivalOf(swing: Swing, hp: number): number[] | undefined {
     if (!(swing.hit > 0 && swing.max >= 1)) return undefined;
     const dists = Array.from({ length: hp + 1 }, (_, h) => (h ? swingDamage(swing, h) : []));
     let alive: number[] = Array.from({ length: hp + 1 }, (_, h) => (h === hp ? 1 : 0));
     const out = [1];
     while (out[out.length - 1]! >= TAIL) {
+        if (out.length > MAX_SWINGS)
+            throw new ProfileError(
+                `a kill of ${hp} HP at hit chance ${swing.hit}, max ${swing.max} runs past ${MAX_SWINGS} swings`,
+            );
         const next = Array.from({ length: hp + 1 }, () => 0);
         for (let h = 1; h <= hp; h++) {
             if (!alive[h]) continue;
@@ -185,9 +208,23 @@ function readers(data: GameData): Readers {
 
 const STYLES = Object.keys(MELEE_STYLE_BONUS) as MeleeStyle[];
 
-/** Each spawn's tile to every other's, in spawn order: the pairs `walks` asks method.ts to price. */
-const pairsOf = (tiles: Tile[]) =>
-    tiles.flatMap((from, i) => tiles.flatMap((to, j) => (i === j ? [] : [{ from, to }])));
+/**
+ * The most spawns of the npc a site may have: their pairs grow as its square (method.ts searches a walk for each),
+ * and 64 holds the largest npc site in the index (58 rats).
+ */
+export const MAX_SPAWNS = 64;
+
+/**
+ * Each spawn's tile to every other's, in spawn order: the pairs `walks` asks method.ts to price. A ModelError past
+ * MAX_SPAWNS. Every pair is priced, as no cheaper bound on a run picks the nearest spawn for certain.
+ */
+function pairsOf(tiles: Tile[]): { from: Tile; to: Tile }[] {
+    if (tiles.length > MAX_SPAWNS)
+        throw new ModelError(
+            `${tiles.length} spawns of the npc: the walks between them past ${MAX_SPAWNS} are not priced`,
+        );
+    return tiles.flatMap((from, i) => tiles.flatMap((to, j) => (i === j ? [] : [{ from, to }])));
+}
 
 /** The params' style and the site's spawns of the npc. */
 function target(site: Site, params: unknown, world: Pick<World, 'features'>) {
@@ -292,16 +329,18 @@ export const combat: FamilyFactory = data => {
 
             // Drops by spawn tile (the jewel table reads the coord), averaged over the spawns.
             const sums = new Map<string, number>();
-            for (const f of features) {
+            const readDrops = read.drops;
+            const tables = features.map(f => {
                 const key = `${subtype} ${profile.worn.join(',')} ${f.tile.level},${f.tile.x},${f.tile.z}`;
                 let table = drops.get(key);
                 if (!table)
                     drops.set(
                         key,
-                        (table = read.drops(subtype, { worn: profile.worn, varps: DROP_VARPS, coord: f.tile })),
+                        (table = readDrops(subtype, { worn: profile.worn, varps: DROP_VARPS, coord: f.tile })),
                     );
                 for (const [obj, c] of table.counts) sums.set(obj, (sums.get(obj) ?? 0) + c);
-            }
+                return table;
+            });
 
             // npc_del's removeNpc counts the scaled respawnrate down from that turn (World.ts:1525-1551,
             // 2061-2065; Npc.ts:121), so the npc is back deathTicks + R - 1 after the killing swing. The kill's
@@ -321,8 +360,10 @@ export const combat: FamilyFactory = data => {
                 attackRate: gear.attackRate,
                 freeTicks: gaps.free,
                 pickupTicks: gaps.pickup,
+                pAnyOf: objs => tables.reduce((t, x) => t + 1 - x.pNone(objs), 0) / tables.length,
                 deplete: {
                     chance: 1,
+                    // 0: the npc is back before the next kill could start, so the player is the binding side.
                     respawnTicks: Math.max(0, read.deathTicks + respawn - 1 - gear.attackRate - gaps.free),
                 },
                 features: features.length,

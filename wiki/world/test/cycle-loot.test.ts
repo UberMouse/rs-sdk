@@ -343,39 +343,70 @@ describe('uncalibrated damage', () => {
     });
 });
 
+/** The kill's drops: bones and coins every kill, the hide 3 kills in 4. */
+const pAnyOf = (objs: ReadonlySet<string>) =>
+    objs.has('bones') || objs.has('coins') ? 1 : objs.has('hide') ? 0.75 : 0;
+
 describe("a kill's free and pickup ticks", () => {
-    test('a pickup is charged when any product is taken: the coins under a leave policy', () => {
+    /** Bones every kill and 16 coins 1 kill in 8 (2 a kill), picked up in 8 ticks. */
+    const rare: ActionModel = {
+        ...kill,
+        products: [
+            { obj: 'bones', count: 1 },
+            { obj: 'coins', count: 2 },
+        ],
+        pickupTicks: 8,
+        pAnyOf: objs => (objs.has('bones') ? 1 : objs.has('coins') ? 1 / 8 : 0),
+    };
+
+    test('a pickup is charged on the kills that drop a product taken: the coins under a leave policy, every kill', () => {
         // pickupTicks 5 on the 20-tick kill: 25 a kill, 9000 / 25 = 360 kills an hour.
-        const r = looted({ bones: 'leave' }, { ...kill, pickupTicks: 5 });
+        const r = looted({ bones: 'leave' }, { ...kill, pickupTicks: 5, pAnyOf });
         expect(r.trip).toMatchObject({ successes: 1, gather: 25, total: 25 });
         expect(r.itemsPerHour).toEqual([{ obj: 'coins', count: 360 * 15 }]);
     });
 
+    test('a rare kept drop pays the pickup on its share of the kills', () => {
+        // The coins drop 1 kill in 8: 8 / 8 = 1 tick a kill, 21; 9000 / 21 kills an hour, 2 coins each.
+        const r = looted({ bones: 'leave' }, rare);
+        expect(r.trip).toMatchObject({ successes: 1, gather: 21, total: 21 });
+        expect(r.itemsPerHour).toEqual([{ obj: 'coins', count: (9000 / 21) * 2 }]);
+    });
+
+    test('buried bones drop every kill: the pickup every kill', () => {
+        // The bones (death_drop) on every kill: P 1, 20 + 8 = 28, and the bury's swing gap past the attackrate.
+        const r = looted({ bones: 'bury' }, rare);
+        expect(r.trip.gather).toBe(28);
+        expect(r.trip.total).toBe(28 + Math.max(0, BURY_SWING_GAP - 4));
+    });
+
     test('nothing taken, no pickup', () => {
-        // Only the bones (left) and the unlisted hide (left): no product is kept or buried, so the kill stays 20.
+        // Only the bones (left) and the unlisted hide (left): no product is kept or buried, so the kill stays 20, and
+        // needs no pAnyOf.
         const gather = { ...kill, products: kill.products.filter(x => x.obj !== 'coins'), pickupTicks: 5 };
         expect(looted({ bones: 'leave' }, gather).trip.total).toBe(20);
-        // Buried bones are taken: the pickup is charged.
-        expect(looted({ bones: 'bury' }, gather).trip.total).toBe(25);
+        // Buried bones are taken: the pickup is charged, which needs pAnyOf.
+        expect(looted({ bones: 'bury' }, { ...gather, pAnyOf }).trip.total).toBe(25);
+        fails({ gather, sink: bank, loot: { bones: 'bury' }, boneXp }, /pickupTicks needs pAnyOf/);
     });
 
     test("the eats spend the kill's free ticks and the pickup's before they hold a swing", () => {
-        // Damage 24, heal 12: 2 food a kill, 6 eat ticks back to back. freeTicks 2 + pickupTicks 3 = 5 free:
-        // max(0, 6 - 5) = 1 eat tick a kill. 27 / 2 = 13.5 kills (as in "two foods a kill"), each 20 + 3 = 23:
-        // 310.5 + 20 travel + 13.5 eat = 344.
+        // Damage 24, heal 12: 2 food a kill, 6 eat ticks back to back. The coins' pickup of 8 on 1 kill in 8 is 1 a
+        // kill, so freeTicks 2 + 1 = 3 free: max(0, 6 - 3) = 3 eat ticks a kill. 27 slots (the coins take one) / 2 =
+        // 13.5 kills, each 20 + 1 = 21: 283.5 + 20 travel + 40.5 eat = 344.
         const r = run({
-            gather: { ...kill, damage: 24, freeTicks: 2, pickupTicks: 3 },
+            gather: { ...rare, damage: 24, freeTicks: 2 },
             sink: bank,
             food: { obj: 'food', heal: 12 },
-            loot: { bones: 'leave', keep: ['hide'] },
+            loot: { bones: 'leave' },
         });
-        expect(r.trip).toMatchObject({ successes: 13.5, gather: 310.5, eat: 13.5, travel: 20, total: 344 });
-        // Free ticks past the eats' leave none to charge.
+        expect(r.trip).toMatchObject({ successes: 13.5, gather: 283.5, eat: 40.5, travel: 20, total: 344 });
+        // Free ticks past the eats' leave none to charge: 5 + 1 = 6.
         const spare = run({
-            gather: { ...kill, damage: 24, freeTicks: 7, pickupTicks: 3 },
+            gather: { ...rare, damage: 24, freeTicks: 5 },
             sink: bank,
             food: { obj: 'food', heal: 12 },
-            loot: { bones: 'leave', keep: ['hide'] },
+            loot: { bones: 'leave' },
         });
         expect(spare.trip.eat).toBe(0);
     });
@@ -385,10 +416,13 @@ describe("a kill's free and pickup ticks", () => {
         // respawn 25: still 50, so the trip waits 25 a kill (1 / cap = 50, less the 25 active).
         const r = looted(
             { bones: 'leave' },
-            { ...kill, pickupTicks: 5, deplete: { chance: 1, respawnTicks: 30 }, features: 1 },
+            { ...kill, pickupTicks: 5, pAnyOf, deplete: { chance: 1, respawnTicks: 30 }, features: 1 },
         );
         expect(r.trip).toMatchObject({ gather: 25, wait: 25, total: 50 });
         expect(r.binding).toBe('resource');
+        // The rare coins' pickup, 1 a kill: the kill 21, the respawn 29, still 50.
+        const few = looted({ bones: 'leave' }, { ...rare, deplete: { chance: 1, respawnTicks: 30 }, features: 1 });
+        expect(few.trip).toMatchObject({ gather: 21, wait: 29, total: 50 });
     });
 });
 

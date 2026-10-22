@@ -247,6 +247,7 @@ const tables = readDropTables({
     ],
 });
 const counts = (npc: string, ctx?: DropContext) => Object.fromEntries(tables(npc, ctx).counts);
+const none = (npc: string, ...objs: string[]) => tables(npc).pNone(new Set(objs));
 
 describe('readDropTables on scripted death scripts', () => {
     test('a random(8) if/else-if chain: each branch its slice of the roll, the death_drop default once', () => {
@@ -279,6 +280,21 @@ describe('readDropTables on scripted death scripts', () => {
     test('a switch over a roll: each case its keys, the default the rest', () => {
         // random(4): keys 0 and 1 are 2/4 sword; 2 and 3 go to the default, 2/4 of 3 coins = 1.5.
         expect(counts('switcher')).toEqual({ coins: 1.5, sword: 0.5 });
+    });
+
+    test('pNone: the chance a kill drops none of the objs, summed over the paths that add none', () => {
+        // chain: $r 5-7 adds neither the sword nor the coins, 3/8; the bones drop on every path.
+        expect(none('chain', 'sword', 'coins')).toBeCloseTo(3 / 8, 12);
+        expect(none('chain', 'bones')).toBe(0);
+        expect(none('chain')).toBeCloseTo(1, 12);
+        // nested: a gem on $r < 1 (1/4) then $g < 4 (4/8), 1/8; coal 1/10 on every path: (7/8)(9/10) = 63/80. The
+        // ruby alone is 1/16: (15/16)(9/10) = 27/32.
+        expect(none('nested', 'ruby', 'sapphire', 'coal')).toBeCloseTo(63 / 80, 12);
+        expect(none('nested', 'ruby', 'coal')).toBeCloseTo(27 / 32, 12);
+        // switcher: every roll takes the sword (0-1) or the coins (2-3), never both: 0, where two independent halves
+        // would give 1/4.
+        expect(none('switcher', 'sword', 'coins')).toBe(0);
+        expect(none('switcher', 'sword')).toBeCloseTo(1 / 2, 12);
     });
 
     test('a copy of a roll narrows with it', () => {

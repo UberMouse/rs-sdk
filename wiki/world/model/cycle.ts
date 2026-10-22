@@ -23,8 +23,8 @@
 //   slots a success fills less the food it eats). Ideal play starts with the f that makes both come at once:
 //   free / max(food a success, slots a success) successes. That assumes a bank visit withdraws exactly that f
 //   (free x food / slots, when the loot fills faster), or fills every slot with food when the food runs out first.
-//   A kill with `pickupTicks` takes them every success when any of its products is taken (kept or buried), though a
-//   kill whose taken products drop on few kills would skip most pickups: a little slow there.
+//   A kill with `pickupTicks` takes them on the kills that drop any product taken (kept or buried): pAnyOf of those
+//   objs times pickupTicks a success.
 // - `uncalibrated`: the gather's `damage` is not yet checked against a run (the food gate), so no food goes for it
 //   (none eaten, no swing eats) and, with no failDamage, a trip ends only when the inventory fills. A fail's damage
 //   (failDamage) is not under the gate: it still eats the named food.
@@ -341,13 +341,17 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
         buried = sorted.buried;
     }
     const buries = buried.reduce((n, x) => n + x.count, 0);
-    // A kill whose products are taken waits for the drop each success (ActionModel.pickupTicks); the target's respawn
-    // runs on through it.
-    const pickup = raw.pickupTicks !== undefined && (source.products.length > 0 || buries > 0) ? raw.pickupTicks : 0;
+    // A kill that drops a product taken waits for the drop (ActionModel.pickupTicks), on that share of the kills
+    // (pAnyOf); the target's respawn runs on through it.
+    const taken = new Set([...source.products, ...buried].map(x => x.obj));
+    if (raw.pickupTicks !== undefined && taken.size && !raw.pAnyOf)
+        throw new ModelError('a kill with pickupTicks needs pAnyOf to say which kills drop what is taken');
+    const pickup = raw.pickupTicks !== undefined && taken.size ? raw.pAnyOf!(taken) * raw.pickupTicks : 0;
     if (pickup > 0)
         source = {
             ...source,
             successTicks: (source.successTicks ?? 0) + pickup,
+            // 0: the target is back before the next kill could start, so the player is the binding side.
             ...(source.deplete
                 ? { deplete: { ...source.deplete, respawnTicks: Math.max(0, source.deplete.respawnTicks - pickup) } }
                 : {}),
@@ -526,9 +530,14 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     // many a kill takes: each adds its own, and the %eat_delay gate (:122-126) lets the next in 3 ticks on, before the
     // pushed swing. Off a kill the food for `damage` costs no ticks. A kill's free ticks (freeTicks, and the pickup's
     // when the drops are taken) absorb the eats: k eats after the killing swing push the next swing to attackRate + k *
-    // EAT_DELAY after it, which costs only past the gap. Per success that is max(0, the eats' EAT_DELAYs - gap), a
-    // floor of the whole eats' cost. The buries are charged as if the swings ran back to back: a bury holds the player
-    // (p_delay), so it can't go during a run.
+    // EAT_DELAY after it, which costs only past the gap. Charged as max(0, the mean eats' EAT_DELAYs - the mean gap) a
+    // success, where play pays the mean of max(0, a kill's eats' EAT_DELAYs - its gap): the gap differs by kill (the
+    // spawn's run in freeTicks, a pickup on the kills that drop what is taken) and the eats come whole. By Jensen's
+    // inequality the charge is at most the play's: an undercharge, by at most min(the mean eat ticks, the mean gap) a
+    // success, where some kills' eats outrun their gap though the mean gap covers the mean eats (EAT_DELAY 3, a gap
+    // of 2 and an eat every second kill: 0 charged, 0.5 paid). None at a gap of 0, or one no kill's eats outrun. The
+    // buries are charged as if the swings ran back to back: a bury holds the player (p_delay), so it can't go during a
+    // run.
     const gapTicks = (source.freeTicks ?? 0) + pickup;
     const swingEats =
         food && source.attackRate !== undefined ? Math.max(0, (EAT_DELAY * damage) / food.heal - gapTicks) : 0;

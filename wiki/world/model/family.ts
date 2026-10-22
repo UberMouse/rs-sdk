@@ -45,11 +45,13 @@ export interface ActionModel {
      */
     freeTicks?: number;
     /**
-     * On a kill: ticks a success adds when the cycle takes any of its products (kept or buried): the wait for the drop
-     * and the step onto it. They are free ticks for the eats too, and come off `deplete.respawnTicks`, as the target's
-     * respawn does not wait on them.
+     * On a kill: ticks a success adds when it drops any of the products the cycle takes (kept or buried): the wait for
+     * the drop and the step onto it. They are free ticks for the eats too, and come off `deplete.respawnTicks`, as the
+     * target's respawn does not wait on them. Needs `pAnyOf`.
      */
     pickupTicks?: number;
+    /** With `pickupTicks`: the chance a success drops at least one of `objs`, of its products. */
+    pAnyOf?: (objs: ReadonlySet<string>) => number;
     /** On a kill: the npc's `retreat` HP, at which it runs instead of fighting back; not priced, a note for the page. */
     retreat?: number;
     /**

@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
-import { killGaps, npcSwingsPerKill, readDeathTicks } from '../model/families/combat';
+import { combat, killGaps, MAX_SPAWNS, MAX_SWINGS, npcSwingsPerKill, readDeathTicks } from '../model/families/combat';
+import type { GameData } from '../model/families/common';
+import { ModelError, ProfileError } from '../model/family';
+import type { Feature, Site } from '../types';
 
 describe('death ticks', () => {
     test('npc_delay(n) puts the drop 2 + n + 1 ticks after the killing swing', () => {
@@ -32,6 +35,39 @@ describe('npc swings per kill', () => {
     test('a swing that can never damage: Infinity', () => {
         expect(npcSwingsPerKill({ hit: 0, max: 5 }, 10, 4, 4)).toBe(Infinity);
         expect(npcSwingsPerKill({ hit: 0.5, max: 0 }, 10, 4, 4)).toBe(Infinity);
+    });
+
+    test('an attack rate under 1 tick is a ModelError, not an endless sum', () => {
+        expect(() => npcSwingsPerKill(coin, 1, 4, 0)).toThrow(/the npc's attack rate 0 is under 1 tick/);
+        expect(() => npcSwingsPerKill(coin, 1, -4, 4)).toThrow(/the player's attack rate -4/);
+    });
+
+    test('a kill whose tail runs past MAX_SWINGS is a ProfileError, never a cut sum', () => {
+        // A swing damages with chance 1e-4 x 1/2: 10 HP take 2e5 swings on average, past the cap.
+        const slow = { hit: 1e-4, max: 1 };
+        expect(MAX_SWINGS).toBe(100_000);
+        expect(() => npcSwingsPerKill(slow, 10, 4, 4)).toThrow(ProfileError);
+        expect(() => npcSwingsPerKill(slow, 10, 4, 4)).toThrow(/runs past 100000 swings/);
+    });
+});
+
+/** A site of n chickens on a row of tiles. */
+const row = (n: number) => {
+    const features = Array.from({ length: n }, (_, i) => ({ subtype: 'chicken', tile: { level: 0, x: i, z: 0 } }));
+    const site = { id: 'npc:test:0', kind: 'npc', features: features.map((_, i) => i) };
+    return { site: site as unknown as Site, world: { features: features as unknown as Feature[] } };
+};
+
+describe('spawn walks', () => {
+    const family = combat({} as GameData);
+    const params = { npc: 'chicken', style: 'accurate' };
+
+    test('each spawn to every other up to MAX_SPAWNS; past it a ModelError', () => {
+        const at = row(MAX_SPAWNS);
+        expect(family.walks!(at.site, params, at.world)).toHaveLength(MAX_SPAWNS * (MAX_SPAWNS - 1));
+        const past = row(MAX_SPAWNS + 1);
+        expect(() => family.walks!(past.site, params, past.world)).toThrow(ModelError);
+        expect(() => family.walks!(past.site, params, past.world)).toThrow(/65 spawns of the npc/);
     });
 });
 
