@@ -110,7 +110,7 @@ const TAVERLEY_DUNGEON =
 const EDGEVILLE_DUNGEON =
     'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)';
 const VARROCK_SEWERS =
-    'giant rats (combat 6, hunt players up to about combat 12) at (3223, 9860), (3237, 9868) and (3239, 9864), by the ladder landing; giant spiders (combat 27, hunt up to about combat 54) at (3217-3220, 9886-9889) and (combat 2) at (3219-3221, 9886) on the way to the web at (3210, 9898); zombies (combat 24, hunt up to about combat 48) at (3224-3230, 9903-9906), 5-8 tiles north of that route; in the west pocket beyond the web, deadly red spiders (combat 34, hunt up to about combat 68) at (3171-3186, 9883-9906) and moss giants (combat 42, hunt up to about combat 84) at (3157-3167, 9878-9905)';
+    'giant rats (combat 6, hunt players up to combat 12) at (3223, 9860), (3237, 9868) and (3239, 9864), by the ladder landing; giant spiders (combat 27, hunt up to combat 54) at (3217-3220, 9886-9889) and (combat 2) at (3219-3221, 9886) on the way to the web at (3210, 9898); zombies (combat 24, hunt up to combat 48) at (3224-3230, 9903-9906), 5-8 tiles north of that route; in the west pocket beyond the web, deadly red spiders (combat 34, hunt up to combat 68) at (3171-3186, 9883-9906) and moss giants (combat 42, hunt up to combat 84) at (3157-3167, 9878-9905)';
 
 /**
  * The curated names and hazards, by loc tile (`level,x,z`, with ` up` or ` down` for one direction of a middle
