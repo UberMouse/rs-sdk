@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError, ProfileError, type Family } from '../model/family';
 import { lootExpectation, lootRows, scaleByPlayercount, type GameData } from '../model/families/common';
+import { runesPerEssence } from '../model/families/runecraft';
 import { parseCatch, readSpots } from '../model/families/fishing';
 import { buildFamilies, FAMILIES } from '../model/families/index';
 import type { Profile } from '../model/profile';
@@ -11,6 +12,23 @@ import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } f
 
 // Small copies of the real rows and scripts (families.real.test.ts checks the real ones still say this).
 const DBROWS = `
+[runecraft_earth]
+table=runecraft_table
+data=type,4
+data=level,9
+data=experience,65
+data=rune,earthrune
+data=talisman,earth_talisman
+data=multiplier,26
+
+[runecraft_death]
+table=runecraft_table
+data=type,13
+data=level,65
+data=experience,100
+data=rune,deathrune
+data=talisman,death_talisman
+
 [normal_tree_table]
 table=woodcutting_trees
 data=tree,tree
@@ -121,6 +139,73 @@ data=levelrequired,40
 data=experience,1800
 data=successchance,0,0
 data=cantcookmessage_fire,You can't cook that on a fire.
+
+[magic_spell_superheat]
+table=magic_spell_table
+data=spell,^superheat_item
+data=levelrequired,43
+data=runesrequired,naturerune,1,firerune,4,null,null
+data=experience,530
+
+[magic_staff_fire]
+table=magic_staff_table
+data=staff,staff_of_fire
+data=staff,lava_battlestaff
+data=rune,firerune
+
+[magic_staff_earth]
+table=magic_staff_table
+data=staff,staff_of_earth
+data=staff,lava_battlestaff
+data=rune,earthrune
+
+[iron_platebody]
+table=smithing
+data=ifproduct,iron_platebody
+data=product,iron_platebody
+data=product_amount,1
+data=levelrequired,33
+data=bar,iron_bar
+data=bar_amount,5
+
+[iron_dart_tip]
+table=smithing
+data=ifproduct,iron_dart_tip
+data=product,iron_dart_tip
+data=product_amount,10
+data=levelrequired,19
+data=bar,iron_bar
+data=bar_amount,1
+
+[fletching_normal]
+table=fletch_bow_table
+data=log,logs
+data=shafts,15
+data=objchoices,shortbow,longbow
+data=shortbow,unstrung_shortbow,5,50
+data=longbow,unstrung_longbow,10,100
+
+[fletching_willow]
+table=fletch_bow_table
+data=log,willow_logs
+data=objchoices,willow_shortbow,willow_longbow
+data=shortbow,unstrung_willow_shortbow,35,333
+data=longbow,unstrung_willow_longbow,40,415
+
+[stringing_willow_longbow]
+table=fletching_table
+data=item,unstrung_willow_longbow
+data=product,willow_longbow,1
+data=level,40
+data=experience,415
+
+[fletching_bronze_arrow]
+table=fletching_table
+data=item,bronze_arrowheads
+data=metal,bronze
+data=product,bronze_arrow,15
+data=level,1
+data=experience,13
 `;
 
 const OBJS = `
@@ -134,6 +219,35 @@ param=mining_rate,2
 param=fishing_struct,fishing_struct_trout
 [raw_salmon]
 param=fishing_struct,fishing_struct_salmon
+[iron_ore]
+param=smeltsto,iron_bar
+[tin_ore]
+param=smeltsto,bronze_bar
+[gold_ore]
+param=smeltsto,gold_bar
+[coal]
+[iron_bar]
+param=smelting_struct,smelting_iron_bar
+param=smithing_anvil_struct,smithing_iron_bar
+[bronze_bar]
+param=smelting_struct,smelting_bronze_bar
+[gold_bar]
+param=smelting_struct,smelting_gold_bar
+[flax]
+param=crafting_spinning_struct,flax
+[wool]
+param=crafting_spinning_struct,wool
+[logs]
+category=category_22
+param=levelrequire,1
+param=productexp,400
+[willow_logs]
+category=category_22
+param=levelrequire,30
+param=productexp,900
+[unstrung_willow_longbow]
+category=unstrung_bow
+[bronze_arrowheads]
 `;
 
 const LOCS = `
@@ -144,6 +258,12 @@ category=mining_rock_fast
 [loc_4982]
 category=mining_rock_normal
 [blankrunestone]
+[earth_altar]
+param=rune_type,4
+[death_altar]
+param=rune_type,13
+[lost_altar]
+param=rune_type,99
 [gemrock]
 [range]
 category=cooking_oven
@@ -162,6 +282,38 @@ param=success_high,192
 param=productexp,700
 param=success_low,16
 param=success_high,96
+[smelting_bronze_bar]
+param=product,bronze_bar
+param=levelrequired,1
+param=productexp,62
+param=ingredient,copper_ore
+param=bar_count,1
+param=ingredient_secondary,tin_ore
+param=ingredient_secondary_count,1
+[smelting_iron_bar]
+param=product,iron_bar
+param=levelrequired,15
+param=productexp,125
+param=ingredient,iron_ore
+param=bar_count,1
+[smelting_gold_bar]
+param=product,gold_bar
+param=levelrequired,40
+param=productexp,225
+param=ingredient,gold_ore
+param=bar_count,1
+[smithing_iron_bar]
+param=levelrequired,15
+param=xpperbar,250
+[flax]
+param=product,bow_string
+param=levelrequire,10
+param=productexp,150
+param=ingredient,flax
+[wool]
+param=product,ball_of_wool
+param=productexp,25
+param=ingredient,wool
 `;
 
 // freshfish.rs2's lure trigger and continue label, cut down; memberfish's big net, whose roll is its own proc.
@@ -210,6 +362,8 @@ const data: GameData = {
 };
 const families = buildFamilies(data);
 const family = (id: string): Family => families.get(id)!;
+/** The families over `dbrows` in place of DBROWS. */
+const withRows = (dbrows: string) => buildFamilies({ ...data, dbrows: parseDbrows(dbrows) });
 
 /** A site of `kind` holding one feature per [config, subtype], and the world they are in. */
 function at(kind: FeatureKind, features: [config: string, subtype: string][]): { site: Site; world: World } {
@@ -261,6 +415,7 @@ const profile = (level: number, tools: Partial<Profile> = {}): Profile => ({
     axe: null,
     pickaxe: null,
     glory: false,
+    worn: [],
     ...tools,
 });
 
@@ -640,6 +795,421 @@ describe('cooking', () => {
     });
 });
 
+describe('superheat', () => {
+    // Cast in place: the site is wherever the step before stands.
+    const rocks = at('rock', [['ironrock1', 'iron']]);
+
+    test('iron with a staff of fire at Magic 43', () => {
+        // superheat.rs2: iron_ore smeltsto iron_bar, its struct's ingredient iron_ore, one a cast (:35, :62);
+        // p_delay(1) (:67) refuses the next OpHeldT for 2 ticks, so a cast every 3. magic_spells.dbrow:186-187:
+        // 1 nature + 4 fire, 530 Magic tenths; the worn staff of fire (magic_staff_fire) zeroes the fire runes
+        // (magic.rs2:53-88). Smithing: smelting_iron_bar's productexp 125 (:56-60). No fail roll.
+        const p = profile(43, { worn: ['staff_of_fire'] });
+        expect(family('superheat').model(rocks.site, { ore: 'iron_ore' }, p, rocks.world)).toEqual({
+            ticksPerAttempt: 3,
+            success: 1,
+            xpTenths: { magic: 530, smithing: 125 },
+            products: [{ obj: 'iron_bar', count: 1 }],
+            consumes: [
+                { obj: 'iron_ore', count: 1 },
+                { obj: 'naturerune', count: 1 },
+            ],
+        });
+    });
+
+    test('without a staff the fire runes are spent; tin makes bronze from copper and tin', () => {
+        // tin_ore smeltsto bronze_bar, whose struct's ingredient is copper_ore (:35) and secondary 1 tin (:61-65).
+        const m = family('superheat').model(rocks.site, { ore: 'tin_ore' }, profile(43), rocks.world);
+        expect(m.consumes).toEqual([
+            { obj: 'copper_ore', count: 1 },
+            { obj: 'tin_ore', count: 1 },
+            { obj: 'naturerune', count: 1 },
+            { obj: 'firerune', count: 4 },
+        ]);
+        expect(m.xpTenths).toEqual({ magic: 530, smithing: 62 });
+    });
+
+    test('a lava battlestaff, in the fire and the earth staff rows, saves the fire runes too', () => {
+        // magic_staff_table: lava_battlestaff in magic_staff_fire and magic_staff_earth; ~staff_runes (magic.rs2:53-88)
+        // frees every rune of the worn staff's rows. Superheat takes no earth: 1 nature is left.
+        const m = family('superheat').model(
+            rocks.site,
+            { ore: 'iron_ore' },
+            profile(43, { worn: ['lava_battlestaff'] }),
+            rocks.world,
+        );
+        expect(m.consumes).toEqual([
+            { obj: 'iron_ore', count: 1 },
+            { obj: 'naturerune', count: 1 },
+        ]);
+        // A staff of earth stands in for earth only: the 4 fire are spent.
+        const earth = family('superheat').model(
+            rocks.site,
+            { ore: 'iron_ore' },
+            profile(43, { worn: ['staff_of_earth'] }),
+            rocks.world,
+        );
+        expect(earth.consumes).toContainEqual({ obj: 'firerune', count: 4 });
+    });
+
+    test('gold with goldsmith gauntlets: scale(5, 2, 225) = 1125 / 2 = 562 tenths', () => {
+        // superheat.rs2:57-58; SCALE is a * c / b truncated.
+        const p = profile(43, { worn: ['gauntlets_of_goldsmithing'] });
+        expect(family('superheat').model(rocks.site, { ore: 'gold_ore' }, p, rocks.world).xpTenths.smithing).toBe(562);
+    });
+
+    test('fails with a reason', () => {
+        refuses('superheat', rocks, { ore: 'iron_ore' }, profile(42), /needs magic 43/);
+        refuses(
+            'superheat',
+            rocks,
+            { ore: 'iron_ore' },
+            { ...profile(43), levels: { ...profile(43).levels, smithing: 14 } },
+            /needs smithing 15/,
+        );
+        fails('superheat', rocks, { ore: 'coal' }, profile(99), /coal has no smeltsto/);
+        fails('superheat', rocks, {}, profile(99), /needs an ore param/);
+    });
+});
+
+describe('smelting', () => {
+    const furnace = at('furnace', [['furnace', '']]);
+
+    test('iron at a furnace: half the bars without a ring of forging', () => {
+        // smelting.rs2: after a bar, start_smelt_ore is queued with delay 0 and smelting_ore with delay 3, both from
+        // inside a queue (:164, :188): 1 + 4 = 5 ticks a bar. Iron fails on randominc(1) = 1 (:202): 1/2 a bar and
+        // 125 / 2 tenths per ore; the fail still takes the ore (:192-196). The buttons make at most 10 (:53-91): a
+        // larger load takes Make X, whose p_countdialog (:94) costs a tick a trip.
+        const m = family('smelting').model(furnace.site, { bar: 'iron_bar' }, profile(15), furnace.world);
+        expect(m).toEqual({
+            ticksPerAttempt: 5,
+            restart: { upTo: 10, ticks: 1 },
+            success: 1,
+            xpTenths: { smithing: 62.5 },
+            products: [{ obj: 'iron_bar', count: 0.5 }],
+            consumes: [{ obj: 'iron_ore', count: 1 }],
+        });
+        // A worn ring of forging skips the roll (:200-201): every ore a bar, 125 tenths. It melts at its 140th bar
+        // (ring_of_forging.rs2:3-9): 1/140 of a ring an ore.
+        const ring = family('smelting').model(
+            furnace.site,
+            { bar: 'iron_bar' },
+            profile(15, { worn: ['ring_of_forging'] }),
+            furnace.world,
+        );
+        expect([ring.products, ring.xpTenths, ring.consumes]).toEqual([
+            [{ obj: 'iron_bar', count: 1 }],
+            { smithing: 125 },
+            [
+                { obj: 'iron_ore', count: 1 },
+                { obj: 'ring_of_forging', count: 1 / 140 },
+            ],
+        ]);
+    });
+
+    test('gold with goldsmith gauntlets: scale(5, 2, 225) = 562 tenths; no ring wear on any bar but iron', () => {
+        // smelting.rs2:216-217. A ring worn while smelting gold is never asked for (:198).
+        const worn = ['gauntlets_of_goldsmithing', 'ring_of_forging'];
+        const m = family('smelting').model(furnace.site, { bar: 'gold_bar' }, profile(40, { worn }), furnace.world);
+        expect([m.xpTenths, m.consumes]).toEqual([{ smithing: 562 }, [{ obj: 'gold_ore', count: 1 }]]);
+        const bare = family('smelting').model(furnace.site, { bar: 'gold_bar' }, profile(40), furnace.world);
+        expect(bare.xpTenths).toEqual({ smithing: 225 });
+    });
+
+    test('bronze takes a copper and a tin a bar', () => {
+        const m = family('smelting').model(furnace.site, { bar: 'bronze_bar' }, profile(1), furnace.world);
+        expect([m.consumes, m.products, m.xpTenths]).toEqual([
+            [
+                { obj: 'copper_ore', count: 1 },
+                { obj: 'tin_ore', count: 1 },
+            ],
+            [{ obj: 'bronze_bar', count: 1 }],
+            { smithing: 62 },
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        refuses('smelting', furnace, { bar: 'iron_bar' }, profile(14), /needs smithing 15/);
+        fails('smelting', furnace, { bar: 'iron_ore' }, profile(99), /iron_ore has no smelting struct/);
+        fails('smelting', furnace, {}, profile(99), /needs a bar param/);
+        fails('smelting', at('anvil', [['anvil', '']]), { bar: 'iron_bar' }, profile(99), /not a furnace/);
+    });
+});
+
+describe('smithing', () => {
+    const anvil = at('anvil', [['anvil', '']]);
+
+    test('an iron platebody at Smithing 33', () => {
+        // smithing.rs2 [proc,smithing_anvil]: p_delay(1) (:272) holds 2 ticks, p_delay(2) (:286) 3: 5 ticks a
+        // product. XP bar_amount x xpperbar = 5 x 250 = 1250 tenths (:283). 5 bars a platebody, a hammer held
+        // (:101-104). The buttons make 1, 5 or 10 (:1-36): each further 10 takes the bar used on the anvil at
+        // t + clickTicks(2) = t + 4 after the last product, the button at t + 5 and its p_delay(1) to t + 7, 2 ticks
+        // past the run's t + 5.
+        expect(family('smithing').model(anvil.site, { product: 'iron_platebody' }, profile(33), anvil.world)).toEqual({
+            ticksPerAttempt: 5,
+            restart: { upTo: 10, ticks: 2, repeat: true },
+            success: 1,
+            xpTenths: { smithing: 1250 },
+            products: [{ obj: 'iron_platebody', count: 1 }],
+            consumes: [{ obj: 'iron_bar', count: 5 }],
+            batch: 5,
+            tools: ['hammer'],
+        });
+    });
+
+    test('fails with a reason', () => {
+        refuses('smithing', anvil, { product: 'iron_platebody' }, profile(32), /needs smithing 33/);
+        refuses('smithing', anvil, { product: 'iron_platebody' }, profile(14), /working iron_bar needs smithing 15/);
+        fails('smithing', anvil, { product: 'rune_platebody' }, profile(99), /no smithing row makes rune_platebody/);
+        fails('smithing', anvil, {}, profile(99), /needs a product param/);
+        // Dart tips wait on Tourist Trap's ^desertrescue_learned_darts (smithing.rs2:224-230).
+        fails(
+            'smithing',
+            anvil,
+            { product: 'iron_dart_tip' },
+            profile(99),
+            /iron_dart_tip not modelled: needs Tourist Trap/,
+        );
+        fails('smithing', at('furnace', [['furnace', '']]), { product: 'iron_platebody' }, profile(99), /not an anvil/);
+    });
+});
+
+describe('spinning', () => {
+    const wheel = at('spinning-wheel', [['spinningwheel', '']]);
+
+    test('flax at a wheel at Crafting 10', () => {
+        // spinning.rs2: the struct flax (oc_param(flax, crafting_spinning_struct)) makes a bow_string for 150 tenths
+        // at Crafting 10 (:60-64, :102-105). After a string, @process_spin's weakqueue 2 from inside the queue
+        // (:98, :110) runs 3 ticks on. The wheel's op opens the menu on the arrival tick A, the button comes at A + 1
+        // and its weakqueue 3 from a dialog (:87) spins the first at A + 4: one tick over the cadence, once a trip.
+        // ~skill_multi2_header's buttons make 1, 5 or 10 (chat.rs2:785-798): a larger load takes Make X's count
+        // dialog, a tick a trip.
+        expect(family('spinning').model(wheel.site, { obj: 'flax' }, profile(10), wheel.world)).toEqual({
+            ticksPerAttempt: 3,
+            start: 1,
+            restart: { upTo: 10, ticks: 1 },
+            success: 1,
+            xpTenths: { crafting: 150 },
+            products: [{ obj: 'bow_string', count: 1 }],
+            consumes: [{ obj: 'flax', count: 1 }],
+        });
+        // Wool's struct names no levelrequire: the param's default 0 lets any level spin it.
+        expect(family('spinning').model(wheel.site, { obj: 'wool' }, profile(1), wheel.world).xpTenths).toEqual({
+            crafting: 25,
+        });
+    });
+
+    test('fails with a reason', () => {
+        refuses('spinning', wheel, { obj: 'flax' }, profile(9), /spinning flax needs crafting 10/);
+        fails('spinning', wheel, { obj: 'logs' }, profile(99), /logs has no spinning struct/);
+        fails('spinning', wheel, {}, profile(99), /needs an obj param/);
+        fails('spinning', at('furnace', [['furnace', '']]), { obj: 'flax' }, profile(99), /not a spinning wheel/);
+    });
+
+    test("Rellekka's wheel spins as any other: its quest is in the site's reach (gates.ts USE_GATES)", () => {
+        const viking = at('spinning-wheel', [['viking_spinningwheel', '']]);
+        expect(family('spinning').model(viking.site, { obj: 'flax' }, profile(10), viking.world)).toEqual(
+            family('spinning').model(wheel.site, { obj: 'flax' }, profile(10), wheel.world),
+        );
+    });
+});
+
+describe('fletching', () => {
+    // Done in place: the site is wherever the step before stands.
+    const trees = at('tree', [['willow_tree', 'willow']]);
+
+    test('a willow longbow cut at Fletching 40, then strung', () => {
+        // cut_logs.rs2: fletching_willow's longbow column, unstrung_willow_longbow at level 40 for 415 tenths
+        // (:62-66, :73). After a log the queue sets %action_delay to the clock + 2 and queues the next that far on,
+        // from inside the queue (:103-104, :83-86): 3 ticks a log; the knife's click at K opens the menu, the button
+        // at K + 1 queues the first 2 on, from a dialog: K + 3, the cadence too. Make X past 10 costs a tick.
+        expect(
+            family('fletching').model(trees.site, { product: 'unstrung_willow_longbow' }, profile(40), trees.world),
+        ).toEqual({
+            ticksPerAttempt: 3,
+            restart: { upTo: 10, ticks: 1 },
+            success: 1,
+            xpTenths: { fletching: 415 },
+            products: [{ obj: 'unstrung_willow_longbow', count: 1 }],
+            consumes: [{ obj: 'willow_logs', count: 1 }],
+            tools: ['knife'],
+        });
+        // bows.rs2:35-42: stringing_willow_longbow, one bow and a bow string a use, 415 tenths, no delay: 5 OpHeldU a
+        // tick (USER_EVENTS_PER_TICK), whole ticks of 5 bows.
+        expect(family('fletching').model(trees.site, { product: 'willow_longbow' }, profile(40), trees.world)).toEqual({
+            ticksPerAttempt: 1,
+            perTick: 5,
+            success: 1,
+            xpTenths: { fletching: 415 },
+            products: [{ obj: 'willow_longbow', count: 1 }],
+            consumes: [
+                { obj: 'unstrung_willow_longbow', count: 1 },
+                { obj: 'bow_string', count: 1 },
+            ],
+        });
+    });
+
+    test('arrow shafts: 15 from a log, 15 x 5 = 75 tenths, at level 1', () => {
+        // cut_logs.rs2:56-59, :68-71: fletching_normal's shafts 15.
+        const m = family('fletching').model(
+            trees.site,
+            { product: 'arrow_shaft', log: 'logs' },
+            profile(1),
+            trees.world,
+        );
+        expect([m.products, m.xpTenths, m.consumes]).toEqual([
+            [{ obj: 'arrow_shaft', count: 15 }],
+            { fletching: 75 },
+            [{ obj: 'logs', count: 1 }],
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        refuses('fletching', trees, { product: 'unstrung_willow_longbow' }, profile(39), /needs fletching 40/);
+        refuses('fletching', trees, { product: 'willow_longbow' }, profile(39), /needs fletching 40/);
+        // A row with no shafts offers only its bows (cut_logs.rs2:37-41).
+        fails('fletching', trees, { product: 'arrow_shaft', log: 'willow_logs' }, profile(99), /cuts no arrow_shaft/);
+        fails('fletching', trees, { product: 'arrow_shaft' }, profile(99), /needs a log param/);
+        fails(
+            'fletching',
+            trees,
+            { product: 'unstrung_willow_longbow', log: 'logs' },
+            profile(99),
+            /is cut from willow_logs, not logs/,
+        );
+        // Arrows are in fletching_table too, but their item is no unstrung bow.
+        fails('fletching', trees, { product: 'bronze_arrow' }, profile(99), /fletching makes no bronze_arrow/);
+        fails('fletching', trees, {}, profile(99), /needs a product param/);
+    });
+
+    test('a bow two rows make fails the build of the family, naming both', () => {
+        expect(() =>
+            withRows(DBROWS.replace('data=shortbow,unstrung_willow_shortbow', 'data=shortbow,unstrung_longbow')),
+        ).toThrow('fletch_bow_table cuts unstrung_longbow in both fletching_normal and fletching_willow');
+        expect(() =>
+            withRows(
+                DBROWS.replace(
+                    'data=item,bronze_arrowheads\ndata=metal,bronze\ndata=product,bronze_arrow,15',
+                    'data=item,unstrung_willow_longbow\ndata=metal,bronze\ndata=product,willow_longbow,15',
+                ),
+            ),
+        ).toThrow('fletching_table strings willow_longbow in both stringing_willow_longbow and fletching_bronze_arrow');
+    });
+});
+
+describe('firemaking', () => {
+    const trees = at('tree', [['willow_tree', 'willow']]);
+
+    test('willow logs at Firemaking 30', () => {
+        // firemaking.rs2: willow_logs' levelrequire 30 and productexp 900 (:81-86, :121). A roll every 4 ticks: the
+        // click sets %action_delay 3 on and each roll 4 on (:103, :106, :114); a light's p_delay(0) push holds the
+        // next click to 2 ticks after it, 2 short of the next roll. stat_random(firemaking, 64, 512) (:105) at 30:
+        // floor(64 x 69 / 98) + floor(512 x 29 / 98) + 1 = 45 + 151 + 1 = 197, 197/256. The log is dropped and burnt,
+        // nothing comes back to the inventory; a tinderbox is held (:93-96).
+        expect(family('firemaking').model(trees.site, { log: 'willow_logs' }, profile(30), trees.world)).toEqual({
+            ticksPerAttempt: 4,
+            success: 197 / 256,
+            xpTenths: { firemaking: 900 },
+            products: [],
+            consumes: [{ obj: 'willow_logs', count: 1 }],
+            tools: ['tinderbox'],
+        });
+        // At 43: floor(64 x 56 / 98) + floor(512 x 42 / 98) + 1 = 36 + 219 + 1 = 256, every roll lights.
+        expect(family('firemaking').model(trees.site, { log: 'willow_logs' }, profile(43), trees.world).success).toBe(
+            1,
+        );
+    });
+
+    test('fails with a reason', () => {
+        refuses('firemaking', trees, { log: 'willow_logs' }, profile(29), /lighting willow_logs needs firemaking 30/);
+        fails('firemaking', trees, { log: 'flax' }, profile(99), /flax is not a log a tinderbox lights/);
+        fails('firemaking', trees, {}, profile(99), /needs a log param/);
+    });
+});
+
+describe('pick', () => {
+    const field = at('flax', [
+        ['flax', 'flax'],
+        ['flax', 'flax'],
+        ['flax', 'flax'],
+    ]);
+
+    test('flax: a pick every 2 ticks, a plant gone 10 ticks 3 times in 16', () => {
+        // pickables.rs2:56-74: p_delay(0) before the flax (:66) holds the next click to 2 ticks on; no XP; random(16)
+        // < 3 (:71) deletes the plant for 10 ticks (:72). The site's 3 plants are worked in turn.
+        expect(family('pick').model(field.site, {}, profile(1), field.world)).toEqual({
+            ticksPerAttempt: 2,
+            success: 1,
+            xpTenths: {},
+            products: [{ obj: 'flax', count: 1 }],
+            consumes: [],
+            deplete: { chance: 3 / 16, respawnTicks: 10 },
+            features: 3,
+        });
+    });
+
+    test('fails with a reason', () => {
+        fails('pick', at('tree', [['tree', 'tree']]), {}, profile(99), /not a flax site/);
+        fails('pick', field, { plant: 'wheat' }, profile(99), /has no flax wheat/);
+    });
+});
+
+describe('runecraft', () => {
+    const earth = at('rc-altar', [['earth_altar', 'earth']]);
+
+    test('earth runes per essence at Runecraft 1, 26, 55 and 99', () => {
+        // runecraft.rs2:80-83: level / multiplier + 1 in integers, earth's multiplier 26 (runecraft.dbrow).
+        // 1 / 26 = 0, 26 / 26 = 1, 55 / 26 = 2, 99 / 26 = 3.
+        expect([1, 26, 55, 99].map(l => runesPerEssence(l, 26))).toEqual([1, 2, 3, 4]);
+        // 25 / 26 = 0 and 52 / 26 = 2: the counts step at 26, 52 and 78.
+        expect([25, 51, 52, 77, 78].map(l => runesPerEssence(l, 26))).toEqual([1, 2, 3, 3, 4]);
+        // No multiplier column: one rune an essence at any level.
+        expect(runesPerEssence(99, undefined)).toBe(1);
+    });
+
+    test('earth at Runecraft 55: every essence in one op, 5 ticks a trip', () => {
+        // The earth_altar's rune_type 4 is runecraft_earth's type (~get_runecraft_data, :173-176). One op binds all
+        // the essence (:68, :94), then p_delay(3) (:99): the next click 3 + 2 = 5 ticks on, whatever the load. 65
+        // tenths an essence (:95); 55 / 26 + 1 = 3 earth runes an essence. The talisman is held for the ruins.
+        expect(family('runecraft').model(earth.site, {}, profile(55), earth.world)).toEqual({
+            ticksPerAttempt: 5,
+            perTick: 28,
+            success: 1,
+            xpTenths: { runecraft: 65 },
+            products: [{ obj: 'earthrune', count: 3 }],
+            consumes: [{ obj: 'blankrune', count: 1 }],
+            tools: ['earth_talisman'],
+        });
+        expect(family('runecraft').model(earth.site, undefined, profile(9), earth.world).products).toEqual([
+            { obj: 'earthrune', count: 1 },
+        ]);
+        expect(family('runecraft').model(earth.site, {}, profile(99), earth.world).products).toEqual([
+            { obj: 'earthrune', count: 4 },
+        ]);
+    });
+
+    test('a row with no multiplier makes one rune an essence', () => {
+        const death = at('rc-altar', [['death_altar', 'death']]);
+        expect(family('runecraft').model(death.site, {}, profile(99), death.world).products).toEqual([
+            { obj: 'deathrune', count: 1 },
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        // The level check (:62-66): earth needs 9.
+        refuses('runecraft', earth, {}, profile(8), /crafting at earth_altar needs runecraft 9/);
+        fails(
+            'runecraft',
+            at('rc-altar', [['lost_altar', 'lost']]),
+            {},
+            profile(99),
+            /lost_altar has no runecraft_table/,
+        );
+        fails('runecraft', at('tree', [['tree', 'tree']]), {}, profile(99), /not an rc-altar/);
+        fails('runecraft', earth, { rune: 'earth' }, profile(99), /runecraft has no param rune/);
+    });
+});
+
 describe('registry', () => {
     test('every family is registered under its own id', () => {
         expect([...families.keys()]).toEqual(Object.keys(FAMILIES));
@@ -648,11 +1218,20 @@ describe('registry', () => {
 
     test('the kinds of site each family acts at', () => {
         expect(Object.fromEntries([...families].map(([id, f]) => [id, f.kinds]))).toEqual({
+            agility: ['agility-course'],
             cooking: ['range', 'fire'],
+            firemaking: [],
             fishing: ['fishing-spot'],
+            fletching: [],
             mining: ['rock'],
+            pick: ['flax'],
             pickpocket: ['pickpocket'],
+            runecraft: ['rc-altar'],
+            smelting: ['furnace'],
+            smithing: ['anvil'],
+            spinning: ['spinning-wheel'],
             stall: ['stall'],
+            superheat: [],
             woodcutting: ['tree'],
         });
     });

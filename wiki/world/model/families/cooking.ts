@@ -6,7 +6,7 @@
 import { first } from '../../sources/configs';
 import type { DbRow } from '../../sources/dbrows';
 import { ModelError, type ActionModel } from '../family';
-import { statRandomChance } from '../roll';
+import { statRandomChance } from '../../roll';
 import { clickTicks, int, requireLevel, stringParams, type FamilyFactory } from './common';
 
 /** `food`: the raw item's obj config (`raw_salmon`). */

@@ -290,7 +290,8 @@ Built per `conductor/docs/world-index-phase3-spec.md`; the hand-written referenc
   at each run's start levels and tool, and prints the paste-ready entry only when every counted run started the
   same. A plan names its method (`PlanDef.method`), checked both ways by `conductor/test/plans.test.ts`.
 - **`query.ts`** has `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
-  multiway })`: `met` omitted counts every token as met; a hazard is the maximum over the gather, processor and
+  multiway })`: `met` omitted counts every token as met but a way's `skill:` tokens, which are held to the profile's
+  levels either way. `methodRate` rates any profile over the first way that models, and checks no gate. A hazard is the maximum over the gather, processor and
   bank sites; a ProfileError drops a method and a data fault throws a MethodError naming it; the ranking is by
   floor XP/hr, ties by id, and each result carries its rated way and its measured figures.
 - **No calibration report in the build.** The comparison is `stats.ts --methods` (percent of floor), not a
@@ -309,3 +310,38 @@ Known gaps:
 - `iron-se-varrock-bank`'s measured figure was assembled by hand from iron-bulk's mine-leg phases, and
   `knight-ardougne-pickpocket`'s from knight-thieve's thieving and Ardougne South bank phases.
 - Most promoted plans have no method yet; `bun test conductor/test/plans.test.ts` prints them.
+
+## Phase 3b as built
+
+Built per `conductor/docs/world-index-phase3b-spec.md` (survey: `world-index-phase3b-survey.md`); the hand-written
+reference is the Methods section of `wiki/world/README.md`. Where it differs from phase 3:
+
+- **Process sinks.** A sink is `{ mode: 'process', steps, end: 'bank' | 'drop' | 'keep' }`: ordered steps, each a
+  family at `'here'`, a tile, or the nearest site of its kinds (a family with no kinds, firemaking, stops at a bare tile,
+  `TileStop`). A `withdraw` family is a source that takes an obj from the bank the record sits in. A step `'here'` that
+  uses a non-stackable supply (bow strings) is done as each item is gathered, so its load differs from carrying the
+  supplies (`model/cycle.ts`).
+- **Families added** (`model/families/`): superheat, smelting, smithing, spinning, fletching, firemaking, pick (the flax),
+  agility, runecraft. `ActionModel` gained `batch`, `damage`, `restart`, `start` and `perTick`; `statRandomChance` (`roll.ts`) is the one stat-roll chance shared by the families.
+- **Laps.** An agility attempt is a whole lap of a course site over its crossing and gate rows
+  (`Gate.standTicks` gives a gate row's success ticks by stand); the family names the tile pairs it walks
+  (`Family.walks`) and `method.ts` prices them under each way into `MethodWay.walks`. Hitpoints lost to falls are food
+  per hour (`MethodDef.food`); a certain roll costs none. The course's skill gate is a `skill:` token of the way, which
+  bounds a record's `minLevel`.
+- **Use gates.** `USE_GATES` (`gates.ts`) adds what using a feature asks (Doric's anvil, the Rellekka furnaces, anvil and
+  wheel) to its site's reach.
+- **Worn items.** `Profile.worn` holds objs a family reads (a ring of forging, a staff of fire); a measured figure
+  records what its runs wore.
+- **Method legs.** `model/legs.ts` prices a leg over a random landing (the essence mine) at the chance-weighted mean
+  of the walks on, a teleport at its script's delays, and carries the came-from context of the npc whose teleport an
+  earlier leg crossed. Legs can be fractional (a chance-weighted mean); the training pages print them at one decimal. `distance.ts` is unchanged: nearest-bank figures still use the worst
+  landing and the kind's constant.
+- **Records.** The phase 3b records are linked to their promoted plans; `WORLD_FORMAT` is 20. Seven training pages
+  (Smithing, Magic, Agility, Runecraft, Crafting, Fletching, Firemaking) joined the set.
+
+Known gaps:
+
+- The Wilderness ridge gates are not in the lap floor, and the runecraft landing is the mean, not what a bot gets
+  on a given trip (`conductor/roadmap.md`, Review follow-ups).
+- Firemaking line resets and HP regeneration are left out of the floor; pottery and Wilderness combat are not modelled.
+- Several records have no measured figure yet (`conductor/roadmap.md`, Review follow-ups).

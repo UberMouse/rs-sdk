@@ -380,6 +380,8 @@ export interface Edge {
     via: Via;
     /** On a crossing row's edges and a rolled gate's checked ones; another edge costs CROSSING_TICKS[via]. */
     cost?: EdgeCost;
+    /** On a crossing row's edges: the row (World.crossings) it was added for. */
+    row?: Crossing;
 }
 
 /**
@@ -475,7 +477,15 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
         scripted: 'crossings',
         teleport: 'crossings',
     };
-    const addEdge = (via: Via, from: Tile, to: Tile, alts: number[], what: string, cost?: EdgeCost): boolean => {
+    const addEdge = (
+        via: Via,
+        from: Tile,
+        to: Tile,
+        alts: number[],
+        what: string,
+        cost?: EdgeCost,
+        row?: Crossing,
+    ): boolean => {
         // No alternative, no way across: no edge.
         if (!alts.length) return false;
         const [a, b] = [index.of(from.level, from.x, from.z), index.of(to.level, to.x, to.z)];
@@ -484,6 +494,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
             return false;
         }
         const edge: Edge = cost ? { to: b, alts, via, cost } : { to: b, alts, via };
+        if (row) edge.row = row;
         const list = edgeFrom.get(a);
         if (list) list.push(edge);
         else edgeFrom.set(a, [edge]);
@@ -634,7 +645,7 @@ export function reachGraph(input: Pick<ReachInput, 'world' | 'collision' | 'size
             const alts = alternatives(c.requires);
             for (const l of c.landings) {
                 const cost: EdgeCost = c.roll ? { spread: l.spread, roll: c.roll } : { spread: l.spread };
-                for (const from of c.from) addEdge(c.via, from, l.tile, alts, name, cost);
+                for (const from of c.from) addEdge(c.via, from, l.tile, alts, name, cost, c);
             }
         }
     });

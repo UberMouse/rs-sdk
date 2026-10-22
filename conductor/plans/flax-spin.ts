@@ -17,6 +17,7 @@ const far = (v: { state: { player?: { worldX: number; worldZ: number } | null } 
 
 export default definePlan({
     name: 'flax-spin',
+    method: 'flax-seers-spin-bank',
     description: "Seers' flax field -> spinning wheel -> Seers bank bow string loop",
     phases: [
         phase(travel, { to: { x: 2743, z: 3445 }, tolerance: 6 }, { name: 'to-seers', when: v => far(v) }),

@@ -42,6 +42,8 @@ export const RESOURCE_KINDS = [
     'stall',
     'thieving-chest',
     'pickpocket',
+    'flax',
+    'agility-course',
 ] as const satisfies readonly FeatureKind[];
 
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
@@ -72,6 +74,8 @@ export const KINDS: readonly (readonly [FeatureKind, string])[] = [
     ['stall', 'Stalls'],
     ['thieving-chest', 'Thieving chests'],
     ['pickpocket', 'Pickpocket targets'],
+    ['flax', 'Flax'],
+    ['agility-course', 'Agility courses'],
     ['npc', 'Monsters'],
     ['connector', 'Ladders and stairs'],
 ];
@@ -214,7 +218,7 @@ export function reachSummary(sites: readonly Pick<Site, 'reach' | 'stand'>[]): s
     const unreached = sites.filter(s => s.stand && !s.reach.length).length;
     const noStand = sites.filter(s => !s.stand).length;
     return (
-        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -), ${unreached} it does ` +
+        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), ${unreached} it does ` +
         `not reach (unreached)${noStand ? `, ${noStand} with no stand tile (no stand)` : ''}`
     );
 }

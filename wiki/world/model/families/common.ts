@@ -106,6 +106,20 @@ export function param(cfg: Config | undefined, key: string): string | undefined 
     return p === undefined ? undefined : p.slice(key.length + 1);
 }
 
+/** A config's `key` param; throws a ModelError naming `what` (`smelting struct bronze_bar`) when it has none. */
+export function paramStr(cfg: Config, key: string, what: string): string {
+    const v = param(cfg, key);
+    if (v === undefined) throw new ModelError(`${what} has no ${key}`);
+    return v;
+}
+
+/** A config's `key` param as a number; throws a ModelError naming `what` when it is missing or not a number. */
+export function paramNum(cfg: Config, key: string, what: string): number {
+    const v = Number(paramStr(cfg, key, what));
+    if (!Number.isFinite(v)) throw new ModelError(`${what} has no number in ${key}`);
+    return v;
+}
+
 /**
  * `~scale_by_playercount(base)` (general/scripts/player_count.rs2:1-4): `scale(4000 - min(players, 2000), 4000,
  * base)`, which the engine computes as `a * c / b` truncated to an int (NumberOps.ts SCALE, ScriptState.pushInt's
@@ -129,6 +143,17 @@ export const rollInterval = (n: number): number => n + 1;
  * processClientsIn, then :425 processPlayers, which clears it at :776). So the next op runs at T + 2 + k.
  */
 export const clickTicks = (k: number): number => k + 2;
+
+/**
+ * Ticks from a `weakqueue(d)` call to its script running: d when it is called from a click or dialog (before the
+ * tick's queue pass), d + 1 when it is called from inside a queue script, as the player's queue list is walked
+ * (Player.ts:966-976; enqueueScript puts the new entry on the tail with addTail, Player.ts:897). That holds when the
+ * running entry is the list's tail, as the walk's cursor is saved before the script runs and restored after
+ * (LinkList.ts:97-111), so the new entry is not reached until the next tick. It assumes the player has one weak-queue
+ * entry in these loops: with another entry pending behind the running one, a new tail would be reached in the same
+ * walk and d = 0 would run that tick.
+ */
+export const queueTicks = (d: number, fromQueue: boolean): number => (fromQueue ? d + 1 : d);
 
 /** One row of a weighted loot table: `weight` out of the table's total, `min`..`max` of `obj`. */
 export interface LootRow {

@@ -15,6 +15,8 @@ export interface Profile {
      * mining gem roll `random(86)` instead of `random(256)` on a members world (skill_mining/scripts/mining.rs2:134-139).
      */
     glory: boolean;
+    /** Objs worn that a family reads (a staff of fire, a ring of forging), by obj config name; none by default. */
+    worn: string[];
 }
 
 /** A tool and the level its checker asks for (0: none). */
@@ -83,17 +85,24 @@ export interface ProfileOptions {
     /** Floors for the other skills: a method's requirements, so a column is not blocked by a second skill. */
     atLeast?: Partial<Record<Skill, number>>;
     glory?: boolean;
+    worn?: readonly string[];
 }
 
-/** The profile at `levels`, with the best axe and pickaxe usable there. */
+/** The profile at `levels`, with the best axe and pickaxe usable there and `worn`. */
 export function profileOf(levels: Record<Skill, number>, opts: Omit<ProfileOptions, 'atLeast'>): Profile {
     const best = (kind: keyof Tools): string | null => bestTool(opts.tools[kind], levels[TOOL_SKILL[kind]]);
-    return { levels, axe: best('axe'), pickaxe: best('pickaxe'), glory: opts.glory ?? false };
+    return {
+        levels,
+        axe: best('axe'),
+        pickaxe: best('pickaxe'),
+        glory: opts.glory ?? false,
+        worn: [...(opts.worn ?? [])],
+    };
 }
 
 /**
  * The profile a training page's level column models: `skill` at `level`, every other skill at the same level
- * raised to its `atLeast` floor, and the best axe and pickaxe usable at those levels.
+ * raised to its `atLeast` floor, the best axe and pickaxe usable at those levels, and `worn`.
  */
 export function profileAt(skill: Skill, level: number, opts: ProfileOptions): Profile {
     const levels = Object.fromEntries(

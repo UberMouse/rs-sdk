@@ -69,7 +69,7 @@ const LEGS: { site: string; bank: string; route: number; ticks: number; evidence
     },
     {
         // The willow grove (2711, 3510) to the bank (2727, 3493), in from its south side; 19 legs, 22-23 ticks.
-        site: 'tree:kandarin:70',
+        site: 'tree:kandarin:71',
         bank: 'bank:seers-village-bank:0',
         route: 36,
         ticks: 22,

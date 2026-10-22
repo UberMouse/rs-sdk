@@ -1,12 +1,12 @@
 // What the world index reads from curated tables because the scripts are too complex to read offline:
 // quests whose journal calls the scan can't read, the procs that hold a loadout rule, transports the sail
 // scripts don't give, the loc teleports to a dbrow's coords, the npc teleports to an enum's coords, the transports
-// left out of scope, and every gate candidate confirmed or rejected. Every entry cites its script. The build reads
-// these together with what it derives (sources/quests.ts, sources/loadout.ts, sources/transports.ts,
-// sources/dbrow-teleports.ts, sources/npc-teleports.ts, sources/gate-scan.ts) and fails on a quest in neither, a
-// quest override the scan no longer needs, a gate candidate GATES does not review, a GATES entry the scan no longer
-// finds, a gate at odds with the scan without a why, and an override (a rejection, or a gate with a why) whose scan
-// digest no longer matches the scan's proposal.
+// left out of scope, the locs a quest locks the use of, and every gate candidate confirmed or rejected. Every entry
+// cites its script. The build reads these together with what it derives (sources/quests.ts, sources/loadout.ts,
+// sources/transports.ts, sources/dbrow-teleports.ts, sources/npc-teleports.ts, sources/gate-scan.ts) and fails on a
+// quest in neither, a quest override the scan no longer needs, a gate candidate GATES does not review, a GATES entry
+// the scan no longer finds, a gate at odds with the scan without a why, an override (a rejection, or a gate with a
+// why) whose scan digest no longer matches the scan's proposal, and a use gate on a config no feature is placed as.
 import { GATE_LIST } from './gate-list';
 import type { DbrowTeleport } from './sources/dbrow-teleports';
 import type { CuratedCrossing } from './sources/curated-crossings';
@@ -494,5 +494,32 @@ export const TRANSPORTS_OUT_OF_SCOPE: readonly { script: string; what: string; r
         script: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:91',
         what: 'Holgart’s boats to the fishing platform and back',
         reason: "Holgart's dialogue goes by %seaslugquest stage (holgart_ardougne.rs2:2): quest boats are out of scope",
+    },
+];
+
+/**
+ * A loc config whose op script refuses a player without `requires` (one set, in requirements.ts's forms): a
+ * site of its locs needs it to be used, on top of the walk there. The build adds it to the site's reach sets
+ * (build.ts addReach) and fails on a config no feature is placed as.
+ */
+export interface UseGate {
+    config: string;
+    requires: string[];
+    source: string;
+}
+
+/** Features a quest locks: their op scripts read the quest's varp before anything else. */
+export const USE_GATES: readonly UseGate[] = [
+    // %doricquest 0 or 10 refuses: done is the only stage past them (smithing.rs2:53-64).
+    { config: 'doric_anvil', requires: ['quest:doric'], source: 'skill_smithing/scripts/smithing/smithing.rs2:53' },
+    { config: 'viking_anvil', requires: ['quest:viking'], source: 'skill_smithing/scripts/smithing/smithing.rs2:66' },
+    // Both the use-on op and the Smelt op (oploc2) check it.
+    { config: 'viking_furnace', requires: ['quest:viking'], source: 'skill_smithing/scripts/smelting/smelting.rs2:2' },
+    { config: 'viking_furnace2', requires: ['quest:viking'], source: 'skill_smithing/scripts/smelting/smelting.rs2:2' },
+    // Both the use-on op and the Spin op (oploc2, :37-42) check it.
+    {
+        config: 'viking_spinningwheel',
+        requires: ['quest:viking'],
+        source: 'skill_crafting/scripts/spinning/spinning.rs2:2',
     },
 ];

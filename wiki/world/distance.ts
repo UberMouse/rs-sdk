@@ -67,7 +67,8 @@ import { cmp } from './util';
  * The sinks each kind of site gets a nearest of. Every gathering, thieving and processing kind takes its products
  * or loot to a bank (conductor/docs/world-index.md, "Analysis: training methods"); on the way ore is smelted at a
  * furnace, raw fish cooked on a range, and the bars a furnace makes smithed at an anvil. Fires cook too, but phase 3
- * models a range (the spec's "range for raw fish"), so fires are not range sinks.
+ * models a range (the spec's "range for raw fish"), so fires are not range sinks. An agility course's bank is where
+ * its food comes from.
  */
 export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     tree: ['bank'],
@@ -76,6 +77,8 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     stall: ['bank'],
     'thieving-chest': ['bank'],
     pickpocket: ['bank'],
+    flax: ['bank'],
+    'agility-course': ['bank'],
     furnace: ['bank', 'anvil'],
     anvil: ['bank'],
     range: ['bank'],
@@ -129,12 +132,12 @@ export function crossingTicks(e: Pick<Edge, 'via' | 'cost'>, level = 1): number 
     if (!roll) return success;
     const back = roll.fail.to ? roll.fail.back : 0;
     if (back === undefined) return undefined;
-    const ticks = expectedTicks(success, statRandomChance(roll.low, roll.high, level), roll.fail.ticks, back);
+    const ticks = expectedTicks(success, statRandomChance(level, roll.low, roll.high), roll.fail.ticks, back);
     return Number.isFinite(ticks) ? ticks : undefined;
 }
 
 /** Half ticks in a tick: a run step is one. */
-const HALVES = 2;
+export const HALVES = 2;
 
 /**
  * `ticks` in half ticks, rounded up. A rolled crossing's expected ticks (crossingTicks) are a float that, when exactly
@@ -213,13 +216,14 @@ interface Searcher {
      * betters the base's: the first search of a kind (ctx `{}`, no base) finds every tile's way over `{}` edges; a
      * later one (a context that asks more) only the tiles whose way it shortens, starting from the gated tiles' base
      * labels, so it walks no further than the context changes things. With `stop`, it ends once every tile of it is
-     * settled. Called inside `graph.within`.
+     * settled; with `limit`, once the tiles `limit` half ticks out are. Called inside `graph.within`.
      */
     search(
         ctx: number,
         base: Int32Array | null,
         seed: (from: Relax, to: Relax) => void,
         stop?: ReadonlySet<number>,
+        limit?: number,
     ): number;
 }
 
@@ -278,7 +282,7 @@ function searcher(graph: ReachGraph, reached?: NearestOptions['reached']): Searc
         sets.size(set) < sets.size(have) ||
         (set !== have && sets.size(set) === sets.size(have) && sets.dominates(set, have));
 
-    const search: Searcher['search'] = (ctx, base, seed, stop) => {
+    const search: Searcher['search'] = (ctx, base, seed, stop, limit = INF) => {
         run++;
         const seen = 2 * run;
         let queued = 0;
@@ -325,7 +329,7 @@ function searcher(graph: ReachGraph, reached?: NearestOptions['reached']): Searc
         };
         seed(relaxFrom, relaxTo);
         let left = stop?.size ?? INF;
-        for (let d = lo; queued > 0 && left > 0; d++) {
+        for (let d = lo; queued > 0 && left > 0 && d <= limit; d++) {
             const bucket = buckets[d];
             if (!bucket) continue;
             for (let k = 0; k < bucket.length && left > 0; k++) {
@@ -478,6 +482,12 @@ export interface Way {
     requires: string[];
 }
 
+/** A way in half ticks, before the rounding up to run ticks (wayFinder halfWays). */
+export interface HalfWay {
+    half: number;
+    requires: string[];
+}
+
 /**
  * Point-to-point run ticks over the graph, for the legs of a method's cycle (site -> bank -> site, and a processor on
  * the way), which the nearest-sink tables do not give: the way back from a bank, a leg to a bank that is not the
@@ -491,10 +501,41 @@ export function wayFinder(graph: ReachGraph): {
      * there is none (or either tile is off the graph). A way asking less is kept of two equally short.
      */
     runTicksBetween(from: Tile, to: Tile, reachSet: readonly string[]): Way | null;
+    /**
+     * For each of `from`, the shortest way to the nearest of `to` in half ticks, unrounded, crossing only what
+     * `reachSet` meets: one search from every `to` at once, stopped once each of `from` settles or past `limit` half
+     * ticks. Null for one it did not settle, or off the graph. A method leg over a random landing sums the half ticks
+     * of its walks before rounding (model/legs.ts).
+     */
+    halfWays(
+        from: readonly Tile[],
+        to: readonly Tile[],
+        reachSet: readonly string[],
+        limit: number,
+    ): (HalfWay | null)[];
 } {
     const { index, sets } = graph;
     const searching = searcher(graph);
     return {
+        halfWays(from, to, reachSet, limit) {
+            const as = from.map(t => index.of(t.level, t.x, t.z));
+            const bs = to.map(t => index.of(t.level, t.x, t.z)).filter(b => b >= 0);
+            const ctx = sets.intern(reachSet);
+            return graph.within(() => {
+                const seen = searching.search(
+                    ctx,
+                    null,
+                    (_, reach) => bs.forEach(b => reach(b, 0, 0, 0)),
+                    new Set(as.filter(a => a >= 0)),
+                    limit,
+                );
+                return as.map(a =>
+                    a >= 0 && searching.mark[a] === seen + 1
+                        ? { half: searching.dist[a]!, requires: sets.strings(searching.setOf[a]!) }
+                        : null,
+                );
+            });
+        },
         runTicksBetween(from, to, reachSet) {
             const a = index.of(from.level, from.x, from.z);
             const b = index.of(to.level, to.x, to.z);

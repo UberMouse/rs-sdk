@@ -16,6 +16,7 @@ const pickWorn = (v: { state: { equipment: { name: string }[] } }) => v.state.eq
 
 export default definePlan({
     name: 'earth-runecraft-28',
+    method: 'earth-runecraft-aubury-essence',
     description: 'Earth runecraft loop carrying only the Earth talisman and essence (pickaxe wielded)',
     requires: { 'Earth talisman or banked': v => v.inv('Earth talisman') > 0 || v.runs('bank-1') === 0 },
     phases: [

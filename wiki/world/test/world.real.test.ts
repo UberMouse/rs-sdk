@@ -14,6 +14,7 @@ import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
 import { readCallables, readTriggers } from '../sources/triggers';
 import { coord } from '../reach';
+import { damageAt } from '../roll';
 import type { Feature, Site, Tile } from '../types';
 
 // Built when the file loads, where no timeout applies: the build reads all the game data, 3-4s here,
@@ -136,9 +137,14 @@ describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', ()
 
     test("the Gnome Stronghold gate's forcemove crosses it each way, its gates.ts why as the rows' notes", () => {
         const rows = rowsOn('gnome_areagate');
-        expect(rows.map(r => [r.landings.map(l => l.tile), r.source])).toEqual([
-            [[{ level: 0, x: 2461, z: 3382 }], 'areas/area_gnome/scripts/gnome_gate.rs2:57'],
-            [[{ level: 0, x: 2461, z: 3385 }], 'areas/area_gnome/scripts/gnome_gate.rs2:59'],
+        // From its entrance tile a success takes, northbound, p_delay(0) (gnome_gate.rs2:46) and p_delay(0) (:54), 1 + 1,
+        // and the forcemove's 3 tiles, 3: 5 ticks; southbound p_delay(1) (:45) 2 more than p_delay(0): 6. From any
+        // other stand it walks to that tile first (~playerwalk, :29, :37), its ticks not known offline.
+        expect(rows.map(r => [r.landings.map(l => l.tile), r.source, r.from.length, r.ticks])).toEqual([
+            [[{ level: 0, x: 2461, z: 3382 }], 'areas/area_gnome/scripts/gnome_gate.rs2:57', 4, undefined],
+            [[{ level: 0, x: 2461, z: 3382 }], 'areas/area_gnome/scripts/gnome_gate.rs2:57', 1, 6],
+            [[{ level: 0, x: 2461, z: 3385 }], 'areas/area_gnome/scripts/gnome_gate.rs2:59', 6, undefined],
+            [[{ level: 0, x: 2461, z: 3385 }], 'areas/area_gnome/scripts/gnome_gate.rs2:59', 1, 5],
         ]);
         expect(rows.every(r => r.via === 'scripted' && r.requires.length === 1 && !r.requires[0]!.length)).toBe(true);
         expect(rows[0]!.notes).toStartWith('Shut only while The Grand Tree');
@@ -178,6 +184,15 @@ describe('the scripted moves (sources/gate-landings.ts deriveScriptedMoves)', ()
             source: 'skill_agility/scripts/wilderness_course.rs2:136',
             fail: { to: { level: 0, x: 2998, z: 10345 } },
         });
+    });
+
+    test('every roll in the built world has its damage form, and the damage is the form at 99 hitpoints', () => {
+        const rolls = [...world.crossings, ...world.gates].flatMap(r => (r.roll ? [r.roll] : []));
+        expect(rolls.length).toBeGreaterThan(0);
+        for (const r of rolls) {
+            expect(r.fail.hpDamage).toBeDefined();
+            expect(r.fail.damage).toBe(damageAt(r.fail.hpDamage!, 99));
+        }
     });
 
     test('no move is a duplicate of a connector row, and every row is written, beside the teleports', () => {
@@ -587,5 +602,209 @@ describe('npc locations', () => {
             },
         ]);
         expect(pagePlaces('sigli-the-huntsman.md')).toEqual(['rellekka']);
+    });
+});
+
+/** A course's obstacles as `step loc (x, z, level)`. */
+const courseLap = (course: string) => {
+    const sites = sitesOf('agility-course').filter(s => s.counts[course] !== undefined);
+    expect(sites).toHaveLength(1);
+    const { course: c, id } = sites[0]!;
+    return {
+        id,
+        bonus: c && [c.lapBonus, c.source],
+        obstacles: c?.obstacles.map(o => `${o.step} ${o.loc} ${coord(o.tile)}`),
+    };
+};
+
+describe('flax and the agility courses', () => {
+    test("the Seers' flax field is one flax site, 28 run ticks from the Seers bank", () => {
+        const [field, ...more] = inLeaf('flax', 'flax');
+        expect(more).toEqual([]);
+        expect(new Set(featuresOf(field!).map(f => f.config))).toEqual(new Set(['flax']));
+        // conductor/docs/world-index-phase3b-survey.md §1f: bank -> flax 28 run ticks (wayFinder).
+        expect(field!.nearest?.bank).toMatchObject({ site: 'bank:seers-village-bank:0', runTicks: 28, requires: [] });
+    });
+
+    // The steps and bonuses below are the survey's (§1d) and the scripts' `~update_<course>_varp(n)` calls.
+    test('the Gnome course: 7 steps, any of three nets, two trees and four pipes; 390 tenths a lap', () =>
+        expect(courseLap('gnome')).toEqual({
+            id: 'agility-course:gnome-agility-course:0',
+            bonus: [390, 'skill_agility/scripts/gnome_course.rs2:108'],
+            obstacles: [
+                '1 gnome_log_balance1 (2474, 3435)',
+                '2 obstical_net2 (2471, 3425)',
+                '2 obstical_net2 (2473, 3425)',
+                '2 obstical_net2 (2475, 3425)',
+                '3 gnome_tree_branch_1 (2473, 3422, 1)',
+                '4 balancing_rope (2478, 3420, 2)',
+                '5 climbing_tree (2486, 3419, 2)',
+                '5 climbing_tree2 (2487, 3418, 2)',
+                '5 climbing_tree2 (2487, 3420, 2)',
+                '6 obstical_net3 (2483, 3426)',
+                '6 obstical_net3 (2485, 3426)',
+                '6 obstical_net3 (2487, 3426)',
+                '7 loc_154 (2484, 3431)',
+                '7 loc_154 (2484, 3435)',
+                '7 gnome_obstacle_pipe (2487, 3431)',
+                '7 gnome_obstacle_pipe (2487, 3435)',
+            ],
+        }));
+
+    test("the Gnome course's tree branch 30 tiles north, which climbs down onto it, is no lap", () =>
+        expect(report.log).toContain(
+            'place: agility-course gnome placements climbing_tree2 (2489, 3450) lack step 1, 2, 3, 4, 6, 7: no site',
+        ));
+
+    test('the Barbarian course: 5 steps, only its third crumbling wall a step; 420 tenths a lap', () =>
+        expect(courseLap('barbarian')).toEqual({
+            id: 'agility-course:barbarian-agility-course:0',
+            bonus: [420, 'skill_agility/scripts/barbarian_course.rs2:154'],
+            obstacles: [
+                '1 barbarian_rope_swing (2551, 3550)',
+                '2 barbarian_log_balance (2550, 3546)',
+                '3 barbarian_obstacle_net (2538, 3545)',
+                '4 balancing_ledge1 (2535, 3547, 1)',
+                // barbarian_course.rs2:121: only the wall at 0_39_55_46_33.
+                '5 castlecrumbly1 (2542, 3553)',
+            ],
+        }));
+
+    test('the Wilderness course: 5 steps, either end of the pipe and any of three rocks; 4989 tenths a lap', () =>
+        expect(courseLap('wilderness')).toEqual({
+            id: 'agility-course:wilderness-agility-course:0',
+            bonus: [4989, 'skill_agility/scripts/wilderness_course.rs2:176'],
+            obstacles: [
+                '1 obstical_pipe2 (3004, 3938)',
+                '1 obstical_pipe2 (3004, 3948)',
+                '2 obstical_ropeswing2 (3005, 3952)',
+                '3 wilderness_stepping_stone (3001, 3960)',
+                '4 wilderness_log_balance1 (3001, 3945)',
+                '5 wilderness_rocks (2993, 3936)',
+                '5 wilderness_rocks (2994, 3936)',
+                '5 wilderness_rocks (2995, 3936)',
+            ],
+        }));
+});
+
+/**
+ * A course's obstacles as `step loc (x, z, level): ticks`, one count per crossing row on the obstacle's tile (each
+ * row its stands' count), or the gate row's.
+ */
+const courseTicks = (course: string): string[] => {
+    const site = sitesOf('agility-course').find(s => s.counts[course] !== undefined);
+    return (site?.course?.obstacles ?? []).map(o => {
+        const on = (t: Tile) => coord(t) === coord(o.tile);
+        const rows = [
+            ...rowsOn(o.loc).filter(c => on(c.at)),
+            ...world.gates.filter(g => g.loc === o.loc && on(g.tile)),
+        ];
+        return `${o.step} ${o.loc} ${coord(o.tile)}: ${rows.map(r => r.ticks).join(' ')}`;
+    });
+};
+
+/** The failure of the first crossing row on `loc`'s roll. */
+const failOn = (loc: string) => rowsOn(loc)[0]!.roll!.fail;
+
+describe('the agility courses: success ticks and falls (sources/gate-scan.ts bound runs)', () => {
+    // All in skill_agility/scripts/: p_delay(n) is n + 1 ticks, p_arrivedelay 1, a forcemove (agility.rs2:125 and
+    // ~agility_walk :18) or ~agility_force_move (:11) a tick a tile (p_delay(0) at :41), ~forcewalk2 (:137) a
+    // p_delay(0) then a tick a tile of ~clipped_telewalk (:89), which steps around a blocked tile.
+    test('the Gnome course', () =>
+        expect(courseTicks('gnome')).toEqual([
+            // gnome_course.rs2:3 p_arrivedelay 1, :6 seven tiles 7: 8.
+            '1 gnome_log_balance1 (2474, 3435): 8 8',
+            // :17 p_arrivedelay 1, :18 ~agility_climb_up's p_delay(0) (agility.rs2:5) 1: 2.
+            '2 obstical_net2 (2471, 3425): 2 2',
+            '2 obstical_net2 (2473, 3425): 2 2',
+            '2 obstical_net2 (2475, 3425): 2 2',
+            // :24 and :25, as the net: 2.
+            '3 gnome_tree_branch_1 (2473, 3422, 1): 2',
+            // :30 p_arrivedelay 1, :34 six tiles 6: 7.
+            '4 balancing_rope (2478, 3420, 2): 7 7',
+            // :42 and :43, as the net: 2.
+            '5 climbing_tree (2486, 3419, 2): 2',
+            '5 climbing_tree2 (2487, 3418, 2): 2',
+            '5 climbing_tree2 (2487, 3420, 2): 2',
+            // :54 and :55, as the net: 2.
+            '6 obstical_net3 (2483, 3426): 2',
+            '6 obstical_net3 (2485, 3426): 2 2',
+            '6 obstical_net3 (2487, 3426): 2',
+            // :64 ~forcewalk2's p_delay(0) 1 and the walk to the tile south of the pipe, :87 the exactmove's p_delay(3)
+            // 4, :89 p_delay(2) 3, :91 p_delay(0) 1, :93 p_delay(3) 4: 13 and the walk. From the tile south, 0: 13;
+            // from beside the pipe, a diagonal step around the pipe's own tile, 2: 15.
+            '7 loc_154 (2484, 3431): 15',
+            '7 loc_154 (2484, 3435): 15 13',
+            '7 gnome_obstacle_pipe (2487, 3431): 15',
+            '7 gnome_obstacle_pipe (2487, 3435): 15 13',
+        ]));
+
+    test('the Barbarian course', () =>
+        expect(courseTicks('barbarian')).toEqual([
+            // barbarian_course.rs2:12 p_delay(0) 1, :25 none from $start_pos itself, the one stand, :27 p_delay(0) 1: 2.
+            '1 barbarian_rope_swing (2551, 3550): 2',
+            // :35 p_arrivedelay 1, then forcemoves of 2, 4, 3 and 1 tiles (:38, :40, :61, :63): 11.
+            '2 barbarian_log_balance (2550, 3546): 11',
+            // :73 ~agility_climb_up's p_delay(0): 1.
+            '3 barbarian_obstacle_net (2538, 3545): 1',
+            // :77 p_delay(0) 1, forcemoves of 1, 1 and 2 tiles (:81, :83, :98), :103 p_delay(0) 1: 6.
+            '4 balancing_ledge1 (2535, 3547, 1): 6 6',
+            // :117 ~forcewalk2 1 and the walk to the tile west, :119 p_delay(2) 3: 4 from that tile, 6 from north or
+            // south, a step around the wall's own tile.
+            '5 castlecrumbly1 (2542, 3553): 4 6',
+        ]));
+
+    test('the Wilderness course; the far end of the pipe, which every stand of refuses (:49), has no count', () =>
+        expect(courseTicks('wilderness')).toEqual([
+            // wilderness_course.rs2:67 p_delay(0) 1, :68 p_delay(3) 4, :70 p_delay(0) 1, :72 p_delay(0) 1, :74 p_delay(3)
+            // 4: 11 from the tile south of the pipe; :58 p_delay(0) 1 more from beside it: 12, the most of any stand.
+            '1 obstical_pipe2 (3004, 3938): 12',
+            '1 obstical_pipe2 (3004, 3948): ',
+            // :86 p_delay(0) 1, :88 none from $start_pos itself, the one stand, :99 p_delay(0) 1: 2.
+            '2 obstical_ropeswing2 (3005, 3952): 2',
+            // :106 p_arrivedelay 1, :109-:113 three p_delay(1) 6, :120-:124 two p_delay(1) and a p_delay(0) 5: 12.
+            '3 wilderness_stepping_stone (3001, 3960): 12',
+            // :131 p_arrivedelay 1, forcemoves of 4, 3 and 1 tiles (:135, :143, :146): 9.
+            '4 wilderness_log_balance1 (3001, 3945): 9',
+            // :152 p_arrivedelay 1, :155 one tile to the rock 1, :156 three tiles 3: 5.
+            '5 wilderness_rocks (2993, 3936): 5',
+            '5 wilderness_rocks (2994, 3936): 5',
+            '5 wilderness_rocks (2995, 3936): 5',
+        ]));
+
+    test('the pipe and the rope swing are crossings: where they land', () => {
+        const [pipe] = world.gates.filter(g => g.loc === 'obstical_pipe2' && g.to);
+        // wilderness_course.rs2:73 makes the piece at (3004, 3948) the active loc; :74 lands at its loc_coord + 2.
+        expect(pipe).toMatchObject({ tile: { level: 0, x: 3004, z: 3938 }, to: { level: 0, x: 3004, z: 3950 } });
+        expect(pipe!.requires).toEqual([['skill:agility:49']]);
+        const [swing, ...more] = rowsOn('obstical_ropeswing2');
+        expect(more).toEqual([]);
+        // :80 $start_pos is the tile north of the swing, (3005, 3953); :99 the exactmove lands 5 north of it.
+        expect(swing).toMatchObject({
+            from: [{ level: 0, x: 3005, z: 3953 }],
+            landings: [{ tile: { level: 0, x: 3005, z: 3958 } }],
+        });
+    });
+
+    test('the Wilderness falls, worked at 52 and 99 hitpoints', () => {
+        // wilderness_course.rs2:137 floor(HP * 15 / 100) + 1, after :131 p_arrivedelay 1, :135 four tiles 4,
+        // ~agility_delay_fail's p_delay(1) 2 and p_delay(0) 1 (agility.rs2:107, :116): 8 ticks.
+        // 52: 780 / 100 = 7, + 1 = 8. 99: 1485 / 100 = 14, + 1 = 15.
+        const log = failOn('wilderness_log_balance1');
+        expect([log.ticks, log.hpDamage, damageAt(log.hpDamage!, 52), damageAt(log.hpDamage!, 99), log.damage]).toEqual(
+            [8, { a: 15, b: 100, c: 1 }, 8, 15, 15],
+        );
+        // :115 floor(HP * 216 / 1000) + 1, after :106 p_arrivedelay 1, three p_delay(1) 6 (:109-:113), and the fail's
+        // 3: 10 ticks. 52: 11232 / 1000 = 11, + 1 = 12. 99: 21384 / 1000 = 21, + 1 = 22.
+        const stones = failOn('wilderness_stepping_stone');
+        expect([stones.ticks, stones.hpDamage, damageAt(stones.hpDamage!, 52), damageAt(stones.hpDamage!, 99)]).toEqual(
+            [10, { a: 216, b: 1000, c: 1 }, 12, 22],
+        );
+        // :90 floor(HP * 15 / 100) + 1, after :86 p_delay(0) 1 and no delay from $start_pos: 1 tick.
+        expect(failOn('obstical_ropeswing2')).toMatchObject({
+            ticks: 1,
+            hpDamage: { a: 15, b: 100, c: 1 },
+            damage: 15,
+        });
     });
 });

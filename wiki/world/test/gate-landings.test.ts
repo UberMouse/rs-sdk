@@ -601,6 +601,8 @@ describe('deriveGateLandings: stands and landings', () => {
             'requires',
             'from',
             'to',
+            'ticks',
+            'standTicks',
             'source',
             'notes',
         ]);
@@ -615,7 +617,7 @@ describe('deriveGateLandings: rolls', () => {
             low: 50,
             high: 150,
             source: lineOf('stat_random(agility, 50, 150)'),
-            fail: { ticks: 2, to: coordTile('0_50_50_2_2'), damage: 0 },
+            fail: { ticks: 2, to: coordTile('0_50_50_2_2'), damage: 0, hpDamage: { a: 0, b: 1, c: 0 } },
         });
         expect(Object.keys(gate).slice(-2)).toEqual(['source', 'roll']);
         expect(out.rolled).toBe(1);

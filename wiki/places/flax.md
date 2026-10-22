@@ -9,3 +9,9 @@
 |---|---|---|---|---|---|---|
 | `tree:flax:0` | (2754, 3433) | [yew](../resources/tree/yew.md) 1 | no | no | - | - |
 | `tree:flax:1` | (2754, 3454) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+
+## Flax
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `flax:flax:0` | (2743, 3444) | [flax](../resources/flax/flax.md) 48 | no | no | - | - |

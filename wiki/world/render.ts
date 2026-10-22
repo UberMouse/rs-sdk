@@ -54,7 +54,7 @@ function readme(world: World, pages: ReadonlyMap<string, string>, body: string):
         '| Folder | Pages | One page per |',
         '|---|---|---|',
         `| ${folder('wiki/places')} | ${count('wiki/places')} | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |`,
-        `| ${folder('wiki/resources')} | ${count('wiki/resources')} | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |`,
+        `| ${folder('wiki/resources')} | ${count('wiki/resources')} | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target, flax, agility course): its dbrow or script data, then every site |`,
         `| ${folder('wiki/services')} | ${count('wiki/services')} | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |`,
         `| ${folder('wiki/training')} | ${count('wiki/training')} | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |`,
         '',

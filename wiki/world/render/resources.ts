@@ -33,6 +33,8 @@ const SINGULAR: Record<ResourceKind, string> = {
     stall: 'Stall',
     'thieving-chest': 'Thieving chest',
     pickpocket: 'Pickpocket target',
+    flax: 'Flax',
+    'agility-course': 'Agility course',
 };
 
 /** A column's first value tuple. */
@@ -80,8 +82,39 @@ const fromRows = (name: string, rows: readonly DbRow[]): string =>
 
 const NO_ROW = (name: string): string[] => [`No \`${name}\` row names this subtype.`];
 
-/** The data section of a subtype's page, by kind; `configs` are the placed configs of the subtype. */
-function dataSection(kind: ResourceKind, subtype: string, configs: readonly string[], data: PageData): string[] {
+/** A course's lap: its obstacles in lap order and its bonus, from the site's Course. */
+function lapSection(site: Site, world: World): string[] {
+    const { course } = site;
+    if (!course) return [`\`${site.id}\` has no lap.`];
+    return [
+        `\`${site.id}\`: progress varp \`${course.varp}\`, a lap bonus of ${course.lapBonus / 10} base XP (${course.source}). An obstacle moves the lap on only as the next step (an earlier one sets it back); one of each step's obstacles completes it.`,
+        '',
+        ...table(
+            ['Step', 'Obstacle', 'Loc', 'Tile', 'Source'],
+            course.obstacles.map(o => [
+                String(o.step),
+                world.features[o.feature]!.name,
+                `\`${o.loc}\``,
+                coord(o.tile),
+                o.source,
+            ]),
+        ),
+        '',
+    ];
+}
+
+/**
+ * The data section of a subtype's page, by kind; `configs` are the placed configs of the subtype, `holding` its
+ * sites.
+ */
+function dataSection(
+    kind: ResourceKind,
+    subtype: string,
+    configs: readonly string[],
+    holding: readonly Site[],
+    world: World,
+    data: PageData,
+): string[] {
     const f = facts(data);
     switch (kind) {
         case 'tree': {
@@ -233,6 +266,15 @@ function dataSection(kind: ResourceKind, subtype: string, configs: readonly stri
                 statRandomRule('Thieving'),
             ];
         }
+        case 'flax':
+            return [
+                'Picked one at a time through `[oploc2,flax]` (general_use/scripts/pickables.rs2), which adds the obj flax.',
+            ];
+        case 'agility-course':
+            return [
+                ...holding.flatMap(s => lapSection(s, world)),
+                "Base XP is the script's stat_advance tenths over 10; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).",
+            ];
     }
 }
 
@@ -285,7 +327,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                     '',
                     '## Data',
                     '',
-                    ...dataSection(kind, subtype, configs, data),
+                    ...dataSection(kind, subtype, configs, holding, world, data),
                     '',
                     '## Sites',
                     '',

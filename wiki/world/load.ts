@@ -3,7 +3,9 @@
 import { readFileSync } from 'fs';
 import { contentHash } from './content-hash';
 import { WORLD_JSON } from './paths';
-import { WORLD_FORMAT, type World } from './types';
+import { damageAt } from './roll';
+import { WORLD_FORMAT, type HpDamage, type Tile, type World } from './types';
+import { tileKey } from './util';
 
 /** A parsed JSON object, its fields not yet checked. */
 type Parsed = { [key: string]: unknown };
@@ -75,6 +77,11 @@ function rollProblem(r: unknown): string | undefined {
         return 'a roll needs a stat, whole low and high bounds, and a source';
     const f = r.fail;
     if (!isObject(f) || !isCount(f.ticks) || !isCount(f.damage)) return "a roll's fail needs ticks and damage";
+    const d = f.hpDamage;
+    if (!isObject(d) || !isCount(d.a) || !isInt(d.b) || d.b < 1 || !isInt(d.c))
+        return "a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0";
+    if (f.damage !== damageAt(d as unknown as HpDamage, 99))
+        return "a roll's fail.damage is not its hpDamage at 99 hitpoints";
     if (f.to !== undefined && !isTile(f.to)) return "a roll's fail.to is not a tile";
     if (f.back !== undefined && (f.to === undefined || !isCount(f.back)))
         return "a roll's fail.back is run ticks from its fail.to";
@@ -91,10 +98,20 @@ function crossingProblem(c: unknown): string | undefined {
     if (!Array.isArray(c.from) || !c.from.every(isTile)) return 'its from is not a list of tiles';
     if (!Array.isArray(c.landings) || !c.landings.length) return 'no landings';
     for (const l of c.landings)
-        if (!isObject(l) || !isTile(l.tile) || (l.spread !== undefined && !isCount(l.spread)))
-            return 'a landing needs a tile, and spread, when it has one, as run ticks';
+        if (
+            !isObject(l) ||
+            !isTile(l.tile) ||
+            (l.spread !== undefined && !isCount(l.spread)) ||
+            (l.chance !== undefined && !(typeof l.chance === 'number' && l.chance > 0 && l.chance <= 1))
+        )
+            return 'a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]';
+    if (new Set(c.landings.map(l => (l as { chance?: unknown }).chance === undefined)).size > 1)
+        return 'its landings all carry a chance or none do';
+    if (c.landings.reduce((t: number, l) => t + ((l as { chance?: number }).chance ?? 0), 0) > 1 + 1e-9)
+        return "its landings' chances sum past 1";
     if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
     if (!c.requires.length) return 'its requires has no set, so nothing makes the move ([[]] asks for nothing)';
+    if (c.ticks !== undefined && !isCount(c.ticks)) return 'its ticks, when it has them, is a count';
     const roll = c.roll === undefined ? undefined : rollProblem(c.roll);
     if (roll) return roll;
     return isName(c.source) ? undefined : 'no source';
@@ -116,6 +133,23 @@ function gateProblem(g: Parsed): string | undefined {
         return 'a gate whose requires has no set, so nothing opens it ([[]] asks for nothing)';
     const roll = g.roll === undefined ? undefined : rollProblem(g.roll);
     if (roll) return roll;
+    if (g.ticks !== undefined && (!isCount(g.ticks) || (g.to === undefined && g.landings === undefined)))
+        return 'its ticks, when it has them, is a count, on a row with to or landings';
+    if (g.standTicks !== undefined) {
+        if (g.ticks === undefined || g.to === undefined || !Array.isArray(g.standTicks) || !g.standTicks.length)
+            return 'its standTicks, when it has them, is a list beside its ticks, on a row with to';
+        const stands = new Set<string>();
+        for (const st of g.standTicks) {
+            if (!isObject(st) || !isTile(st.stand) || !isCount(st.ticks))
+                return 'a standTicks entry needs a stand tile and ticks';
+            const { x, z, level } = st.stand as Tile;
+            const key = tileKey(st.stand as Tile);
+            if (stands.has(key)) return `its standTicks has the stand (${x}, ${z}, ${level}) twice`;
+            stands.add(key);
+        }
+        if (Math.max(...g.standTicks.map(st => (st as Parsed).ticks as number)) !== g.ticks)
+            return "its ticks is the most of its standTicks'";
+    }
     if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))
         return 'oneWay, when it has it, is true, on a row with from';
     if (g.act !== undefined) {
@@ -134,9 +168,40 @@ function gateProblem(g: Parsed): string | undefined {
     return undefined;
 }
 
-/** The first malformed crossing-model field of `world`, as `<list>[<i>]: <what>`, or undefined. */
+/**
+ * What is wrong with a World.sites row's course, or undefined: an `agility-course` site has one, and no other site
+ * does; its obstacles are features of `features`, in lap order from step 1.
+ */
+function courseProblem(s: Parsed, features: number): string | undefined {
+    if ((s.kind === 'agility-course') !== (s.course !== undefined))
+        return 'an agility-course site, and only one, has a course';
+    if (s.course === undefined) return undefined;
+    const c = s.course;
+    if (!isObject(c) || !isName(c.varp) || !isCount(c.lapBonus) || !isName(c.source))
+        return 'a course needs a varp, a lap bonus and a source';
+    if (!Array.isArray(c.obstacles) || !c.obstacles.length) return 'a course with no obstacles';
+    let last = 0;
+    for (const o of c.obstacles) {
+        if (
+            !isObject(o) ||
+            !isCount(o.feature) ||
+            o.feature >= features ||
+            !isName(o.loc) ||
+            !isTile(o.tile) ||
+            !isName(o.source)
+        )
+            return "a course's obstacle needs a feature, a loc, a tile and a source";
+        if (!isInt(o.step) || o.step < 1 || (o.step !== last && o.step !== last + 1))
+            return "a course's obstacles are in lap order from step 1, with no step missed";
+        last = o.step;
+    }
+    return undefined;
+}
+
+/** The first malformed crossing-model field of `world`, or site course, as `<list>[<i>]: <what>`, or undefined. */
 function crossingModelProblem(world: World): string | undefined {
     const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
+        ['sites', world.sites, s => courseProblem(s, world.features.length)],
         ['crossings', world.crossings, crossingProblem],
         ['gates', world.gates, gateProblem],
         ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],

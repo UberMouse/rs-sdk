@@ -22,6 +22,7 @@ const far = (
 
 export default definePlan({
     name: 'iron-smith',
+    method: 'iron-se-varrock-smelt-lumbridge-kiteshield',
     description: 'SE Varrock iron -> Lumbridge furnace -> Varrock West anvil + bank',
     requires: {
         'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5,

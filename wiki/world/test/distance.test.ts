@@ -702,3 +702,23 @@ describe('runTicksBetween: one leg, point to point', () => {
         expect(finder(new Grid()).runTicksBetween(at(0, 3100, 3100), at(0, 3200, 3200), [])).toBeNull();
     });
 });
+
+describe('halfWays: from several tiles to the nearest of several, unrounded', () => {
+    test('one search: each from tile its half ticks to the nearest target, null past the limit', () => {
+        const f = finder(new Grid());
+        // To the nearer of (3200, 3200) and (3210, 3200), within 100 half ticks: 7 steps from (3203, 3207), 3 from
+        // (3213, 3200).
+        expect(
+            f.halfWays([at(0, 3203, 3207), at(0, 3213, 3200)], [at(0, 3200, 3200), at(0, 3210, 3200)], [], 100),
+        ).toEqual([
+            { half: 7, requires: [] },
+            { half: 3, requires: [] },
+        ]);
+        // A limit of 5 half ticks settles the second only; one off the graph is null.
+        expect(f.halfWays([at(0, 3203, 3207), at(0, 3213, 3200)], [at(0, 3210, 3200)], [], 5)).toEqual([
+            null,
+            { half: 3, requires: [] },
+        ]);
+        expect(f.halfWays([at(2, 3200, 3200)], [at(0, 3200, 3200)], [], 100)).toEqual([null]);
+    });
+});

@@ -14,10 +14,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:barbarian-outpost:0` | (2550, 3564) | Barbarian 4, Barbarian woman 2, Chicken 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
-
-## Ladders and stairs
-
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:barbarian-outpost:0` | (2547, 3551) | Ladder 1 | down (2548, 9951) by Climb-Down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `npc:barbarian-outpost:0` | (2550, 3564) | Barbarian 4, Barbarian woman 1, Chicken 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |

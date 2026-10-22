@@ -117,7 +117,7 @@ describe('every gate row on an object has an outcome', () => {
                 low: 128,
                 high: 400,
                 source: 'quests/quest_upass/scripts/quest_upass.rs2:254',
-                fail: { ticks: 0, damage: 0 },
+                fail: { ticks: 0, damage: 0, hpDamage: { a: 0, b: 1, c: 0 } },
             });
     });
 });
@@ -197,5 +197,37 @@ describe('the landings, each with its script', () => {
             expect(
                 derived.gates.some(g => g.landings?.some(l => same(l.landing, o.landing) && same(l.stand, o.stand))),
             ).toBe(false);
+    });
+});
+
+// quest_regicide.rs2:456 refuses the move when distance(coord, $start) > 1, $start being one of two tiles by the
+// loc's angle (:396-:451): for angle north/south (1, 3) (loc_x - 1, loc_z + 1) or (loc_x + 2, loc_z + 1); for
+// east/west (2, 0) (loc_x + 1, loc_z - 1) or (loc_x + 1, loc_z + 2). By hand, the loc at (2187, 3163) angle 2
+// starts at (2188, 3162) or (2188, 3165): the stand (2187, 3162) is 1 from the first (dx 1, dz 0) and is kept;
+// (2186, 3163) is 2 from the first (dx 2) and 2 from the second (dx 2) and is refused.
+const starts = (g: Gate): Tile[] => {
+    const { x, z, level } = g.tile;
+    return g.angle % 2 === 1
+        ? [
+              { level, x: x - 1, z: z + 1 },
+              { level, x: x + 2, z: z + 1 },
+          ]
+        : [
+              { level, x: x + 1, z: z - 1 },
+              { level, x: x + 1, z: z + 2 },
+          ];
+};
+const near = (a: Tile, b: Tile): boolean => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z)) <= 1;
+
+describe('Regicide cross-over stands', () => {
+    const crossOvers = derived.gates.filter(g => g.trigger === 'oploc1,_regicide_cross_over');
+
+    test('no stand is more than one tile from $start, and the adjacent ones are kept', () => {
+        const stands = crossOvers.flatMap(g => (g.landings ?? []).map(l => ({ g, stand: l.stand })));
+        expect(stands.length).toBeGreaterThan(0);
+        for (const { g, stand } of stands) expect(starts(g).some(s => near(s, stand))).toBe(true);
+        const camp = crossOvers.find(g => g.tile.x === 2187 && g.tile.z === 3163)!;
+        expect(camp.landings!.some(l => same(l.stand, { level: 0, x: 2187, z: 3162 }))).toBe(true);
+        expect(camp.landings!.some(l => same(l.stand, { level: 0, x: 2186, z: 3163 }))).toBe(false);
     });
 });

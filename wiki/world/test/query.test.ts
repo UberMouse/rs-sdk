@@ -3,10 +3,11 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError, ProfileError, type Family } from '../model/family';
 import type { Item } from '../model/items';
-import { MethodError, type MethodModel } from '../model/method';
+import { MethodError, tileStop, tileStopId, type MethodModel } from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
 import type { Skill } from '../model/server';
 import { methodHazard, methodQuery, type BestOptions } from '../query';
+import { zoneKey } from '../sources/zones';
 import { WORLD_FORMAT, type Site, type Tile, type World, type WorldMethod } from '../types';
 
 const tile = (x: number, z: number): Tile => ({ level: 0, x, z });
@@ -82,6 +83,7 @@ const model: MethodModel = {
         return item;
     },
     foods: new Map(),
+    zones: { f2p: new Set(), multiway: new Set() },
     tools: {
         axe: [
             { obj: 'rune_axe', level: 41 },
@@ -137,9 +139,9 @@ const banked = chop('tree-bank', tree, {
 // 1482.35 logs/h: Woodcutting x 10 x 25 = 370,588, Firemaking x 40 x 25 = 1,482,353. Bronze: 112 + 84 + 30 = 226
 // ticks, 1115.04 logs/h: 278,761 and 1,115,044.
 const burn = chop('tree-burn-bank', tree, {
-    sink: { mode: 'process-bank', process: { family: 'firemaking', at: range.centre, params: {} } },
+    sink: { mode: 'process', steps: [{ family: 'firemaking', at: range.centre, params: {} }], end: 'bank' },
     bank: bank.id,
-    processor: range.id,
+    processors: [range.id],
     minLevel: 30,
     levels: { woodcutting: 20, firemaking: 30 },
     measured: [
@@ -217,6 +219,13 @@ describe('bestMethods', () => {
         ]);
     });
 
+    test("a way's skill tokens are held to the profile's levels, met or not", () => {
+        // tree-drop's one way needs Agility 10: at Agility 9 it is out, though `met` accepts every token.
+        const low = { ...at('woodcutting', 50), levels: { ...at('woodcutting', 50).levels, agility: 9 } };
+        expect(rank('woodcutting', low).map(r => r[0])).toEqual(['wild-drop', 'tree-bank', 'tree-burn-bank']);
+        expect(rank('woodcutting', low, { met: () => true })).toEqual(rank('woodcutting', low));
+    });
+
     test('levels: a method a family refuses at the profile is out', () => {
         // Woodcutting 25 and Firemaking 25: the bronze axe (533,898; the long-way bank 414,474: 112 + 40 = 152 ticks,
         // 1657.89 logs/h); burning needs Firemaking 30.
@@ -289,6 +298,45 @@ describe('bestMethods', () => {
         );
     });
 
+    test("the cycle refusing a profile drops the method there, like a family's refusal", () => {
+        // Chopping gives sticks below Woodcutting 30 and logs from 30; logs are carved 'here' into stackable runes,
+        // kept. Below 30 nothing is carved and the sticks would fill the inventory for good: cycle.ts's ProfileError.
+        const picking: Family = {
+            ...woodcutting,
+            model: (...a) => {
+                const m = woodcutting.model(...a);
+                return a[2].levels.woodcutting < 30 ? { ...m, products: [{ obj: 'sticks', count: 1 }] } : m;
+            },
+        };
+        const carving: Family = {
+            ...firemaking,
+            model: (...a) => ({ ...firemaking.model(...a), products: [{ obj: 'runes', count: 1 }] }),
+        };
+        const extra: Record<string, Item> = {
+            sticks: { stackable: false, cost: 1, wearable: false },
+            runes: { stackable: true, cost: 1, wearable: false },
+        };
+        const carvedModel: MethodModel = {
+            ...model,
+            families: new Map([...model.families, ['woodcutting', picking], ['firemaking', carving]]),
+            items: obj => extra[obj] ?? model.items(obj),
+        };
+        const carve = chop('tree-carve-keep', tree, {
+            sink: { mode: 'process', steps: [{ family: 'firemaking', at: 'here', params: {} }], end: 'keep' },
+            processors: ['here'],
+            levels: { woodcutting: 20, firemaking: 30 },
+        });
+        const q = methodQuery({ ...world, methods: [carve, drop] }, carvedModel);
+        // Woodcutting 25 with Firemaking 30, so the carving family itself refuses nothing.
+        const low = { ...at('woodcutting', 25), levels: { ...at('woodcutting', 25).levels, firemaking: 30 } };
+        expect(() => q.methodRate('tree-carve-keep', low)).toThrow(/kept products fill the inventory: sticks$/);
+        expect(q.bestMethods('woodcutting', low).map(r => r.method.def.id)).toEqual(['tree-drop']);
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.method.def.id)).toEqual([
+            'tree-drop',
+            'tree-carve-keep',
+        ]);
+    });
+
     test('a ModelError that is not a ProfileError (a data fault) stops the query too, naming the method', () => {
         // tree-drop names logs as its food, which `foods` has no heal for: model/method.ts's rate refuses it.
         const fed = methodQuery({ ...world, methods: [burn, banked, wild, { ...drop, food: 'logs' }] }, model);
@@ -334,5 +382,79 @@ describe('methodHazard', () => {
             wildernessLevel: 5,
             multiway: false,
         });
+    });
+
+    // A multiway zone outside the Wilderness, as most of multiway.csv's are (Castle Wars, Karamja).
+    const multi = tile(3240, 3200);
+    const zones = { f2p: new Set<string>(), multiway: new Set([zoneKey(multi)]) };
+    /** A method at the tree that stops at `t`. */
+    const hazardAt = (t: Tile) => methodHazard({ site: tree, sink: { mode: 'process', steps: [tileStop(t, zones)] } });
+
+    test("a bare tile stop counts: its zone's multiway, and its Wilderness level", () => {
+        expect(hazardAt(multi)).toEqual({ wildernessLevel: 0, multiway: true });
+        // z 3600 is in the Wilderness's first box (z 3520 up): floor((3600 - 3520) / 8) + 1 = 11 (sources/zones.ts).
+        expect(hazardAt(tile(3210, 3600))).toEqual({ wildernessLevel: 11, multiway: false });
+    });
+
+    test("a world.json tile stop is rebuilt with its hazard from the model's zones", () => {
+        const tiled: WorldMethod = {
+            ...burn,
+            id: 'tree-burn-tile',
+            sink: { mode: 'process', steps: [{ family: 'firemaking', at: multi, params: {} }], end: 'bank' },
+            processors: [tileStopId(multi)],
+        };
+        const q = methodQuery({ ...world, methods: [tiled] }, { ...model, zones });
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.hazard)).toEqual([
+            { wildernessLevel: 0, multiway: true },
+        ]);
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50), { multiway: false })).toEqual([]);
+    });
+});
+
+describe('bestMethods over ways that may not model', () => {
+    // A lap-like family: it models over a way whose first walk exists (walks[0] not null), as an agility lap closes.
+    const lap: Family = {
+        ...woodcutting,
+        id: 'lap',
+        model: (s, p, profile, w, walks) => {
+            if (walks?.[0] === null) throw new ModelError('the lap does not close');
+            return woodcutting.model(s, p, profile, w);
+        },
+    };
+    const lapModel: MethodModel = { ...model, families: new Map([...model.families, ['lap', lap]]) };
+    const lapMethod = (ways: WorldMethod['ways']) =>
+        methodQuery({ ...world, methods: [{ ...chop('lap-way', tree, {}), family: 'lap', ways }] }, lapModel);
+    const ranked = (q: ReturnType<typeof lapMethod>, opts?: BestOptions) =>
+        q.bestMethods('woodcutting', at('woodcutting', 50), opts).map(r => [r.method.def.id, r.way]);
+
+    test('the first way that models is rated, not the first accepted', () => {
+        const q = lapMethod([
+            { reach: [], legs: [], walks: [null] },
+            { reach: ['quest:shortcut'], legs: [], walks: [3] },
+        ]);
+        expect(ranked(q)).toEqual([['lap-way', 1]]);
+        expect(ranked(q, { met: () => true })).toEqual([['lap-way', 1]]);
+    });
+
+    test('no accepted way models: the method drops out and the query goes on', () => {
+        const q = lapMethod([
+            { reach: [], legs: [], walks: [null] },
+            { reach: ['quest:shortcut'], legs: [], walks: [3] },
+        ]);
+        expect(ranked(q, { met: none })).toEqual([]);
+        const both = methodQuery(
+            {
+                ...world,
+                methods: [
+                    ...world.methods,
+                    { ...chop('lap-way', tree, {}), family: 'lap', ways: [{ reach: [], legs: [], walks: [null] }] },
+                ],
+            },
+            lapModel,
+        );
+        expect(both.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.method.def.id)).not.toContain(
+            'lap-way',
+        );
+        expect(both.bestMethods('woodcutting', at('woodcutting', 50)).length).toBe(4);
     });
 });

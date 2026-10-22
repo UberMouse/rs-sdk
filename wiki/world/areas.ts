@@ -4,9 +4,10 @@
 //   line), so a tile in no town still names the right kingdom. The Wilderness is the engine's box
 //   (sources/zones.ts); the Kharidian Desert holds Al Kharid; Feldip Hills is the ogre land south of
 //   Kandarin, and Yanille, Castle Wars and the places the seed put under it are Kandarin's. Regions
-//   overlap only where an island region lies under a mainland region's rect: Crandor and Entrana
-//   under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under Kandarin's.
-//   The island, being smaller, wins every tile both hold, its land included (area-resolve.ts).
+//   overlap only where a smaller region lies under a larger one's rect: the islands, Crandor and
+//   Entrana under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under
+//   Kandarin's, and the Barbarian agility course under the Barbarian Outpost's. The smaller rect wins
+//   every tile both hold at equal depth, its land included (area-resolve.ts).
 // - A bank's leaf rect is its booths, bankers and chests plus one tile, so the trees, stalls and
 //   shops beside it name the town instead.
 // - Every site build.ts must place (its COVERED kinds) lies in an area; build.ts fails otherwise.
@@ -198,7 +199,9 @@ export const AREAS: readonly Area[] = [
         id: 'barbarian-agility-course',
         name: 'Barbarian Outpost agility course',
         parent: 'kandarin',
-        rects: [{ x1: 2527, z1: 3521, x2: 2550, z2: 3544 }],
+        // The yard of its obstacles, from the rope swing (2551, 3550) round to the crumbling walls (z 3553)
+        // (skill_agility/scripts/barbarian_course.rs2); smaller than the Outpost's rect, it wins the tiles both hold.
+        rects: [{ x1: 2528, z1: 3541, x2: 2553, z2: 3559 }],
     },
     {
         id: 'barbarian-outpost',
@@ -1511,7 +1514,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
-                'tree:kandarin:45',
+                'tree:kandarin:46',
                 "a willow on a patch of bank the river's water closes in",
                 'f1, as maps/m40_54.jm2:185',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
@@ -1582,7 +1585,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         ] as const
     ).flatMap(([sites, why, wall]) => sites.map(site => walledIn(site, why, wall))),
     {
-        site: 'tree:kandarin:77',
+        site: 'tree:kandarin:78',
         reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
         source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:18',
     },

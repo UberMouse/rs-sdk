@@ -17,6 +17,7 @@ import {
     nearestReached,
     serializeWorld,
     unreachedPockets,
+    useSets,
     type BuildReport,
     type HintScan,
     type OpUser,
@@ -168,12 +169,19 @@ const world: World = {
             from: [{ level: 0, x: 2603, z: 3336 }],
             landings: [{ tile: { level: 0, x: 2598, z: 3336 }, spread: 0 }],
             requires: [['skill:agility:33']],
+            ticks: 5,
             roll: {
                 stat: 'agility',
                 low: 60,
                 high: 250,
                 source: 'agility.rs2:10',
-                fail: { ticks: 4, to: { level: 0, x: 2600, z: 3330 }, damage: 3, back: 4 },
+                fail: {
+                    ticks: 4,
+                    to: { level: 0, x: 2600, z: 3330 },
+                    damage: 3,
+                    hpDamage: { a: 0, b: 1, c: 3 },
+                    back: 4,
+                },
             },
             source: 'agility.rs2:12',
         },
@@ -212,6 +220,9 @@ const refused = (bad: unknown): string => {
         rmSync(dir, { recursive: true });
     }
 };
+
+/** loadWorld's refusal of gates[1] for `rule`. */
+const refusedGate = (rule: string) => `is not a world.json: gates[1]: ${rule}: regenerate it with bun run world`;
 
 describe('serializeWorld', () => {
     test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate, crossing or method per line, empty lists inline, a trailing newline', () => {
@@ -365,7 +376,31 @@ describe('serializeWorld', () => {
             [
                 'a spread that is not run ticks',
                 { ...teleport, landings: [{ tile: teleport.landings[0]!.tile, spread: -1 }] },
-                'crossings[1]: a landing needs a tile, and spread, when it has one, as run ticks',
+                'crossings[1]: a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]',
+            ],
+            [
+                'a chance past 1',
+                { ...teleport, landings: [{ tile: teleport.landings[0]!.tile, chance: 1.5 }] },
+                'crossings[1]: a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]',
+            ],
+            [
+                'a chance on some landings only',
+                {
+                    ...teleport,
+                    landings: [{ tile: teleport.landings[0]!.tile, chance: 0.5 }, { tile: teleport.landings[0]!.tile }],
+                },
+                'crossings[1]: its landings all carry a chance or none do',
+            ],
+            [
+                'chances that sum past 1',
+                {
+                    ...teleport,
+                    landings: [
+                        { tile: teleport.landings[0]!.tile, chance: 0.6 },
+                        { tile: teleport.landings[0]!.tile, chance: 0.5 },
+                    ],
+                },
+                "crossings[1]: its landings' chances sum past 1",
             ],
             [
                 'a roll with no fail',
@@ -374,8 +409,31 @@ describe('serializeWorld', () => {
             ],
             [
                 'a way back with no fail tile',
-                { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 0, back: 2 } } },
+                {
+                    ...shortcut,
+                    roll: { ...roll, fail: { ticks: 4, damage: 0, hpDamage: { a: 0, b: 1, c: 0 }, back: 2 } },
+                },
                 "crossings[1]: a roll's fail.back is run ticks from its fail.to",
+            ],
+            [
+                'a damage form dividing by 0',
+                { ...shortcut, roll: { ...roll, fail: { ...roll.fail, hpDamage: { a: 15, b: 0, c: 1 } } } },
+                "crossings[1]: a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0",
+            ],
+            [
+                'a roll with no damage form',
+                { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 3 } } },
+                "crossings[1]: a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0",
+            ],
+            [
+                'a damage that drifted from its form at 99 hitpoints',
+                { ...shortcut, roll: { ...roll, fail: { ...roll.fail, damage: 4 } } },
+                "crossings[1]: a roll's fail.damage is not its hpDamage at 99 hitpoints",
+            ],
+            [
+                'success ticks that are not a count',
+                { ...shortcut, ticks: -1 },
+                'crossings[1]: its ticks, when it has them, is a count',
             ],
             ['a rolled row with no source', { ...shortcut, source: undefined }, 'crossings[1]: no source'],
             [
@@ -428,6 +486,43 @@ describe('serializeWorld', () => {
                 expect(refused({ ...world, gates: [g, world.gates[1]] })).toBe(
                     'is not a world.json: gates[0]: oneWay, when it has it, is true, on a row with from: regenerate it with bun run world',
                 );
+            // A gate's success ticks are a count, on a row whose landing is read (to or landings).
+            const { landings: _, ...unlanded } = world.gates[1]!;
+            for (const g of [
+                { ...world.gates[1], ticks: 1.5 },
+                { ...unlanded, ticks: 3 },
+            ])
+                expect(refused({ ...world, gates: [world.gates[0], g] })).toBe(
+                    'is not a world.json: gates[1]: its ticks, when it has them, is a count, on a row with to or landings: regenerate it with bun run world',
+                );
+            expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], ticks: 3 }] })).toBe('read');
+            // Each stand's ticks sit beside the row's on a row with to, each stand once, a stand tile and a count, the
+            // row's ticks the most of them.
+            const stand = landing.stand;
+            const { landings: __, ...toRow } = { ...world.gates[1]!, to: landing.landing, ticks: 3 };
+            const why = (g: object) => refused({ ...world, gates: [world.gates[0], g] });
+            const LIST = 'its standTicks, when it has them, is a list beside its ticks, on a row with to';
+            expect(why({ ...toRow, ticks: undefined, standTicks: [{ stand, ticks: 3 }] })).toBe(refusedGate(LIST));
+            expect(why({ ...toRow, standTicks: [] })).toBe(refusedGate(LIST));
+            // A landings row has none: its stands can land on different tiles in different ticks.
+            expect(why({ ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 3 }] })).toBe(refusedGate(LIST));
+            expect(why({ ...toRow, standTicks: [{ stand: 'here', ticks: 3 }] })).toBe(
+                refusedGate('a standTicks entry needs a stand tile and ticks'),
+            );
+            expect(
+                why({
+                    ...toRow,
+                    standTicks: [
+                        { stand, ticks: 3 },
+                        { stand, ticks: 2 },
+                    ],
+                }),
+            ).toBe(refusedGate(`its standTicks has the stand (${stand.x}, ${stand.z}, ${stand.level}) twice`));
+            for (const ticks of [2, 4])
+                expect(why({ ...toRow, standTicks: [{ stand, ticks }] })).toBe(
+                    refusedGate("its ticks is the most of its standTicks'"),
+                );
+            expect(why({ ...toRow, standTicks: [{ stand, ticks: 3 }] })).toBe('read');
             // A gate's requires has a set (the free form is [[]]); a quest window's is [].
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], requires: [] }] })).toBe(
                 'is not a world.json: gates[1]: a gate whose requires has no set, so nothing opens it ([[]] asks for nothing): regenerate it with bun run world',
@@ -443,6 +538,57 @@ describe('serializeWorld', () => {
             );
         });
     });
+});
+
+test("loadWorld reads an agility-course site's course back, and refuses a malformed one, naming its row", () => {
+    const tile = { level: 0, x: 1, z: 2 };
+    const obstacle = (step: number, feature: number) => ({ step, feature, loc: 'log', tile, source: 'c.rs2:3' });
+    const course = { varp: 'test_course_progress', lapBonus: 420, source: 'c.rs2:28', obstacles: [obstacle(1, 0)] };
+    const site: Site = {
+        id: 'agility-course:town:0',
+        kind: 'agility-course',
+        areaPath: ['town'],
+        centre: tile,
+        bbox: { x1: 1, z1: 2, x2: 3, z2: 4 },
+        stand: tile,
+        counts: { test: 2 },
+        features: [0, 1],
+        f2p: false,
+        multiway: false,
+        wildernessLevel: 0,
+        reach: [[]],
+        course: { ...course, obstacles: [obstacle(1, 0), obstacle(1, 1), obstacle(2, 1)] },
+    };
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, serializeWorld({ ...world, sites: [site] }));
+        expect(loadWorld(file).sites).toEqual([site]);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
+    const why = (s: unknown): string => refused({ ...world, sites: [site, s] });
+    const { course: _, ...bare } = site;
+    expect(why(bare)).toBe(
+        'is not a world.json: sites[1]: an agility-course site, and only one, has a course: regenerate it with bun run world',
+    );
+    expect(why({ ...site, kind: 'tree' })).toBe(
+        'is not a world.json: sites[1]: an agility-course site, and only one, has a course: regenerate it with bun run world',
+    );
+    expect(why({ ...site, course: { ...course, lapBonus: -1 } })).toBe(
+        'is not a world.json: sites[1]: a course needs a varp, a lap bonus and a source: regenerate it with bun run world',
+    );
+    expect(why({ ...site, course: { ...course, obstacles: [] } })).toBe(
+        'is not a world.json: sites[1]: a course with no obstacles: regenerate it with bun run world',
+    );
+    // world has two features, so 2 is none.
+    expect(why({ ...site, course: { ...course, obstacles: [obstacle(1, 2)] } })).toBe(
+        "is not a world.json: sites[1]: a course's obstacle needs a feature, a loc, a tile and a source: regenerate it with bun run world",
+    );
+    for (const steps of [[2], [1, 3], [1, 2, 1], [0, 1]])
+        expect(why({ ...site, course: { ...course, obstacles: steps.map(n => obstacle(n, 0)) } })).toBe(
+            "is not a world.json: sites[1]: a course's obstacles are in lap order from step 1, with no step missed: regenerate it with bun run world",
+        );
 });
 
 test('byWritten orders by kind, then x, z, level and config', () => {
@@ -480,6 +626,18 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         expect(() => loadWorld(file)).toThrow(`format 13, this code reads format ${WORLD_FORMAT}`);
         writeFileSync(file, serializeWorld({ ...world, format: 14 }));
         expect(() => loadWorld(file)).toThrow(`format 14, this code reads format ${WORLD_FORMAT}`);
+        // Format 16 was written before crossing and gate rows carried their success ticks and a roll's failure its
+        // damage at the player's hitpoints (hpDamage).
+        writeFileSync(file, serializeWorld({ ...world, format: 16 }));
+        expect(() => loadWorld(file)).toThrow(`format 16, this code reads format ${WORLD_FORMAT}`);
+        // Format 17 was written before a method's sink could run process steps (`process`, its sites `processors`)
+        // and a source withdraw from the bank.
+        writeFileSync(file, serializeWorld({ ...world, format: 17 }));
+        expect(() => loadWorld(file)).toThrow(`format 17, this code reads format ${WORLD_FORMAT}`);
+        // Format 18 was written before a gate row carried each stand's ticks (standTicks) and a method way's walks
+        // could be null (a pair no walk joins).
+        writeFileSync(file, serializeWorld({ ...world, format: 18 }));
+        expect(() => loadWorld(file)).toThrow(`format 18, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }
@@ -1108,6 +1266,41 @@ describe('reach on sites and npc spawn clusters', () => {
             ['tree:town:0', []],
             ['furnace:town:0', []],
         ]);
+    });
+
+    test("a quest that locks a site's features joins every set; one free feature frees the site", () => {
+        const features = ['doric_anvil', 'doric_anvil', 'anvil', 'viking_anvil'].map(config => ({ config }));
+        const gates = [
+            { config: 'doric_anvil', requires: ['quest:doric'], source: 'smithing.rs2:53' },
+            { config: 'viking_anvil', requires: ['quest:viking'], source: 'smithing.rs2:66' },
+        ];
+        const { sites } = addReach(
+            {
+                sites: [
+                    site('anvil:town:0', tile(1, 1), { features: [0, 1] }),
+                    site('anvil:town:1', tile(20, 0), { features: [0, 2] }),
+                    site('anvil:town:2', tile(20, 0), { features: [0, 3] }),
+                    site('anvil:town:3', null, { features: [0] }),
+                ],
+                npcSpawns: [],
+            },
+            fake,
+            open,
+            { sets: useSets(features, gates) },
+        );
+        expect(sites.map(s => [s.id, s.reach])).toEqual([
+            ['anvil:town:0', [['quest:doric']]],
+            ['anvil:town:1', [['skill:mining:40']]],
+            [
+                'anvil:town:2',
+                [
+                    ['quest:doric', 'skill:mining:40'],
+                    ['quest:viking', 'skill:mining:40'],
+                ],
+            ],
+            ['anvil:town:3', []],
+        ]);
+        expect(() => useSets(features, [{ ...gates[0]!, config: 'gone_anvil' }])).toThrow(/gone_anvil/);
     });
 
     test("an npc cluster's reach is the cheapest over the tiles beside it, not its nearest tile's", () => {

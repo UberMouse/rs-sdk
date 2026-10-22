@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { AXES, PICKAXES, readTools } from '../model/profile';
-import { statRandomChance } from '../model/roll';
+import { statRandomChance } from '../roll';
 import { INVENTORY_SLOTS } from '../model/items';
 import {
     TICK_MS,

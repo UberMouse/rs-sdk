@@ -25,10 +25,11 @@ import { areaResolver } from './area-resolve';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
-import { questFacts } from './requirements';
-import { formatDistance, nearestSinks, priceCrossings, SINKS, wayFinder, type DistanceReport } from './distance';
+import { minimalSets, questFacts, type QuestFacts } from './requirements';
+import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
 import { METHODS } from './methods';
 import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
+import { legFinder } from './model/legs';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -57,6 +58,7 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
+import { readCourses, stepAt } from './sources/courses';
 import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossings } from './sources/curated-crossings';
 import { deriveDbrowTeleports, type DbrowTeleports, type TeleportCollision } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
@@ -73,6 +75,8 @@ import {
     QUEST_OVERRIDES,
     QUEST_VARP_EXCEPTIONS,
     TRANSPORTS_OUT_OF_SCOPE,
+    USE_GATES,
+    type UseGate,
 } from './gates';
 import { readConstants } from './sources/constants';
 import {
@@ -146,6 +150,8 @@ export const COVERED: ReadonlySet<FeatureKind> = new Set<FeatureKind>([
     'stall',
     'thieving-chest',
     'pickpocket',
+    'flax',
+    'agility-course',
 ]);
 
 /** A site of a COVERED kind no walk from the Lumbridge spawn reaches (Site.reach `[]`): a curation to-do. */
@@ -436,17 +442,49 @@ export function nearestReached(reached: (t: Tile) => boolean, t: Tile, radius = 
 }
 
 /**
+ * What using a site asks, as alternatives, one per kind of its features (gates.ts USE_GATES): `[[]]` when one of
+ * them is free. Throws on a gate whose config no feature is placed as.
+ */
+export function useSets(
+    features: readonly Pick<Feature, 'config'>[],
+    gates: readonly UseGate[],
+): (s: Pick<Site, 'features'>) => string[][] {
+    const byConfig = new Map(gates.map(g => [g.config, g.requires]));
+    const placedConfigs = new Set(features.map(f => f.config));
+    const stale = gates.filter(g => !placedConfigs.has(g.config)).map(g => g.config);
+    if (stale.length) throw new Error(`USE_GATES names configs no feature is placed as: ${stale.join(', ')}`);
+    return s => {
+        const sets = s.features.map(i => byConfig.get(features[i]!.config) ?? []);
+        return sets.some(r => !r.length) ? [[]] : sets;
+    };
+}
+
+/**
  * Each site's reach, the sets of its stand tile, and each npc spawn cluster's, the minimal sets over the tiles
  * `beside` gives it (place.ts besideCluster; types.ts NpcSpawn.reach): the cheapest way beside any of its
- * spawns, not the nearest tile's, which may sit behind a door the cheapest way does not need. Also the COVERED
- * sites none reaches, by area path then id.
+ * spawns, not the nearest tile's, which may sit behind a door the cheapest way does not need. A site's sets
+ * join `use.sets`' alternatives (useSets: what using one of its features asks). Also the COVERED sites none
+ * reaches, by area path then id.
  */
 export function addReach(
     placed: { sites: readonly Placed<Site>[]; npcSpawns: readonly Placed<NpcSpawn>[] },
     reach: Pick<Reach, 'setsAt' | 'setsAny' | 'reached'>,
     beside: (c: Placed<NpcSpawn>) => Tile[],
+    use: { sets: (s: Placed<Site>) => string[][]; quests?: QuestFacts } = { sets: () => [[]] },
 ): { sites: Site[]; npcSpawns: NpcSpawn[]; unreached: Unreached[] } {
-    const sites = placed.sites.map(s => ({ ...s, reach: s.stand ? reach.setsAt(s.stand) : [] }));
+    const sites = placed.sites.map(s => {
+        if (!s.stand) return { ...s, reach: [] };
+        const walk = reach.setsAt(s.stand);
+        const gated = use.sets(s);
+        if (gated.length === 1 && !gated[0]!.length) return { ...s, reach: walk };
+        return {
+            ...s,
+            reach: minimalSets(
+                walk.flatMap(w => gated.map(g => [...w, ...g])),
+                use.quests,
+            ),
+        };
+    });
     const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(beside(c)) }));
     const unreached = sites
         .filter(s => COVERED.has(s.kind) && !s.reach.length)
@@ -722,13 +760,19 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const triggers = scripts.flatMap(([f, text]) => parseTriggers(f, text));
     const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
     const dbrows = readDbrows();
+    const courses = readCourses(triggers, callables);
     const classify = classifier({
         locConfigs,
         npcConfigs,
         dbrows,
         triggers,
         callables,
+        courses,
     });
+    const courseStep = (f: Pick<Feature, 'subtype' | 'config' | 'tile'>) => {
+        const course = courses.find(c => c.course === f.subtype);
+        return course && stepAt(course, f.config, first(locConfigs.get(f.config), 'category'), f.tile);
+    };
     const packs = { loc: readPack('loc'), npc: readPack('npc') };
     const map = readAllMapSquares();
 
@@ -742,8 +786,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             unpacked.push(`${source} ${id}`);
             return;
         }
-        for (const c of classify(source, config))
+        for (const c of classify(source, config)) {
+            // A course obstacle whose step is guarded to one tile is one only there (sources/courses.ts CourseStep.at).
+            if (c.kind === 'agility-course' && !courseStep({ subtype: c.subtype, config, tile: rest.tile })) continue;
             features.push({ source, id, config, ...rest, kind: c.kind, subtype: c.subtype, name: c.name });
+        }
     };
     for (const l of map.locs) place('loc', l.id, { tile: l.tile, shape: l.shape, rotation: l.rotation });
     for (const n of map.npcs) place('npc', n.id, { tile: n.tile });
@@ -847,6 +894,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         locConfigs,
         collision,
         size: locSizes(locConfigs),
+        locs: placedLocs,
     });
     // Each quest's stages are the constants its gates compare with (Quest.stages).
     const questRows = quests.quests.map(q => {
@@ -948,8 +996,12 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             range: config => apRange(config, first(npcConfigs.get(config), 'category')),
             inSight: sightOf(collision, placedLocs, locConfigs),
         },
+        courses: { defs: courses, step: courseStep },
     }).sort((a, b) => cmp(a.id, b.id));
-    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
+    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
+        sets: useSets(features, USE_GATES),
+        quests: graph.quests,
+    });
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
     // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).
@@ -960,11 +1012,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
     // The model is built once: the training pages rate the methods with it too.
-    const model = methodModel({ dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts });
+    const model = methodModel(
+        { dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts },
+        zones,
+    );
     const methods = resolveMethods(
         METHODS,
-        { world: { sites, features }, ...model, quests: graph.quests },
-        wayFinder(graph),
+        {
+            world: { sites, features, crossings: reachInput.world.crossings, gates: reachInput.world.gates },
+            ...model,
+            quests: graph.quests,
+        },
+        legFinder(graph, reachInput.world.crossings),
     );
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,

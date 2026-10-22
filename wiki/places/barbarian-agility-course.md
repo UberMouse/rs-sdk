@@ -7,4 +7,25 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:barbarian-agility-course:0` | (2533, 3538) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
+| `tree:barbarian-agility-course:0` | (2533, 3542) | [normal](../resources/tree/normal.md) 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `tree:barbarian-agility-course:1` | (2530, 3553) | [oak](../resources/tree/oak.md) 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+
+## Agility courses
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `agility-course:barbarian-agility-course:0` | (2545, 3549) | [barbarian](../resources/agility-course/barbarian.md) 5 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+
+## Monsters
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `npc:barbarian-agility-course:0` | (2548, 3558) | Barbarian woman 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
+
+## Ladders and stairs
+
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:barbarian-agility-course:0` | (2532, 3545) | Ladder 1 | up (2532, 3546) L1 by Climb-up | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `connector:barbarian-agility-course:1` | (2532, 3545) L1 | Ladder 1 | down (2532, 3546) by Climb-down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `connector:barbarian-agility-course:2` | (2547, 3551) | Ladder 1 | down (2548, 9951) by Climb-Down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |

@@ -5,14 +5,17 @@
 import type { Pathfinder } from '../../conductor/actions/paths';
 import type { Config } from './sources/configs';
 import { first } from './sources/configs';
+import type { CourseDef, CourseStep } from './sources/courses';
 import { isF2p, isMultiway, wildernessLevel, type Zones } from './sources/zones';
-import type { Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
+import type { Course, Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
 import { cmp, push, uniqueTiles } from './util';
 
 /**
  * How far apart (in tiles, Chebyshev as the engine's CoordGrid.distanceTo, CoordGrid.ts:60) two
  * features of a kind may be and still link into one site. A connector is always its own site.
- * `thieving-chest` uses the stall radius: both are thieving targets agents treat as one place.
+ * `thieving-chest` uses the stall radius: both are thieving targets agents treat as one place. An agility course's
+ * obstacles lie further apart than a resource's (the Gnome course's log is 10 tiles from its nets) and link across
+ * levels (buildSites).
  */
 export const SITE_RADIUS: Record<FeatureKind, number> = {
     bank: 10,
@@ -36,6 +39,8 @@ export const SITE_RADIUS: Record<FeatureKind, number> = {
     stall: 6,
     'thieving-chest': 6,
     pickpocket: 8,
+    flax: 8,
+    'agility-course': 12,
     npc: 6,
     connector: 0,
 };
@@ -92,6 +97,11 @@ export interface SiteOptions {
         range: (config: string) => number | undefined;
         inSight: (from: Tile, to: Tile) => boolean;
     };
+    /**
+     * The agility courses (sources/courses.ts), and the step an `agility-course` feature sets (stepAt). Needed when
+     * the features hold that kind.
+     */
+    courses?: { defs: readonly CourseDef[]; step: (f: Feature) => CourseStep | undefined };
 }
 
 // The packer's forceapproach bits (server/engine/tools/pack/config/LocConfig.ts:149): every side
@@ -342,23 +352,110 @@ function countsOf(fs: Feature[]): Record<string, number> {
     return Object.fromEntries([...counts].sort(([a], [b]) => cmp(a, b)));
 }
 
+/** An agility course's cluster as buildSites places it: its first obstacle decides its area and stand. */
+interface Lap {
+    def: CourseDef;
+    /** Each member's step, by feature index. */
+    steps: Map<number, CourseStep>;
+    /** The members that set step 1, by tile. */
+    first: number[];
+    /** The members that set the last step. */
+    last: number[];
+}
+
+/**
+ * Each course's laps: its features linked within SITE_RADIUS on any level (a course climbs to level 2 and back), a
+ * cluster that holds every step from 1 to the last being one lap. A cluster short of a step (the Gnome course's tree
+ * branch placed 30 tiles north of it, whose Climb-down lands on the course) is no site, and logged; a course left
+ * with no site throws.
+ */
+function courseLaps(
+    features: readonly Feature[],
+    members: Map<string, number[]>,
+    courses: SiteOptions['courses'],
+    log: SiteOptions['log'],
+): Map<number[], Lap> {
+    const out = new Map<number[], Lap>();
+    for (const [name, of] of members) {
+        const def = courses?.defs.find(d => d.course === name);
+        if (!courses || !def) throw new Error(`buildSites: no course ${name} for its agility-course features`);
+        for (const c of cluster(features, of, SITE_RADIUS['agility-course'])) {
+            c.sort((a, b) => byFeature(features[a]!, features[b]!) || a - b);
+            const steps = new Map<number, CourseStep>();
+            for (const i of c) {
+                const step = courses.step(features[i]!);
+                if (!step)
+                    throw new Error(`buildSites: ${features[i]!.config} is an agility-course feature with no step`);
+                steps.set(i, step);
+            }
+            const missing = Array.from({ length: def.lastStep }, (_, k) => k + 1).filter(
+                k => ![...steps.values()].some(s => s.step === k),
+            );
+            if (missing.length) {
+                const at = c.map(i => `${features[i]!.config} (${features[i]!.tile.x}, ${features[i]!.tile.z})`);
+                log(
+                    `place: agility-course ${name} placements ${at.join(', ')} lack step ${missing.join(', ')}: no site`,
+                );
+                continue;
+            }
+            out.set(c, {
+                def,
+                steps,
+                first: c.filter(i => steps.get(i)!.step === 1),
+                last: c.filter(i => steps.get(i)!.step === def.lastStep),
+            });
+        }
+    }
+    for (const def of courses?.defs ?? [])
+        if (![...out.values()].some(l => l.def === def))
+            throw new Error(`buildSites: no placement of course ${def.course} holds every step 1 to ${def.lastStep}`);
+    return out;
+}
+
+/** A lap's Course: its obstacles by step, then as the cluster orders them (by tile). */
+const courseOf = (features: readonly Feature[], members: number[], lap: Lap): Course => ({
+    varp: lap.def.varp,
+    lapBonus: lap.def.lapBonus,
+    source: lap.def.source,
+    obstacles: members
+        .map(i => ({ i, step: lap.steps.get(i)! }))
+        .sort((a, b) => a.step.step - b.step.step)
+        .map(({ i, step }) => ({
+            step: step.step,
+            feature: i,
+            loc: features[i]!.config,
+            tile: features[i]!.tile,
+            source: step.source,
+        })),
+});
+
 /**
  * Clusters `features` into sites: per kind, level and leaf area (the last id of `resolve`'s path),
  * single-linkage within SITE_RADIUS. A site's id is `kind:leaf:n` (`unnamed` for no area), `n`
  * counting that kind's sites in that area by their first feature's (x, z), so ids do not depend on
  * the input order. Sites come out sorted by kind, area and `n`; `features` holds indexes into
  * `features`, ordered by tile.
+ *
+ * An agility course is one site per lap (courseLaps), on every level it holds: its area is its first obstacle's,
+ * its centre the mean of its features on that obstacle's level, its bbox on no one level when it spans several,
+ * and its stand the tile using a first obstacle nearest the last obstacles, as the lap comes back to the first from
+ * the last.
  */
 export function buildSites(
     features: readonly Feature[],
     resolve: (t: Tile) => string[],
     zones: Zones,
     collision: SiteCollision,
-    { size, log, walked, approach }: SiteOptions,
+    { size, log, walked, approach, courses }: SiteOptions,
 ): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
-    features.forEach((f, i) => push(groups, `${f.kind}\0${paths[i]!.at(-1) ?? ''}\0${f.tile.level}`, i));
+    const courseMembers = new Map<string, number[]>();
+    features.forEach((f, i) =>
+        f.kind === 'agility-course'
+            ? push(courseMembers, f.subtype, i)
+            : push(groups, `${f.kind}\0${paths[i]!.at(-1) ?? ''}\0${f.tile.level}`, i),
+    );
 
     // Clusters per kind and area, across levels, since `n` counts within the area.
     const byArea = new Map<string, number[][]>();
@@ -367,6 +464,11 @@ export function buildSites(
         const clusters = cluster(features, members, SITE_RADIUS[features[members[0]!]!.kind]);
         for (const c of clusters) c.sort((a, b) => byFeature(features[a]!, features[b]!) || a - b);
         byArea.set(area, [...(byArea.get(area) ?? []), ...clusters]);
+    }
+    const laps = courseLaps(features, courseMembers, courses, log);
+    for (const [c, lap] of laps) {
+        const area = `agility-course\0${paths[lap.first[0]!]!.at(-1) ?? ''}`;
+        byArea.set(area, [...(byArea.get(area) ?? []), c]);
     }
 
     const sites: Placed<Site>[] = [];
@@ -382,11 +484,26 @@ export function buildSites(
             const fs = members.map(i => features[i]!);
             const tiles = fs.map(f => f.tile);
             const { kind } = fs[0]!;
-            const areaPath = paths[members[0]!]!;
+            const lap = laps.get(members);
+            const areaPath = paths[lap ? lap.first[0]! : members[0]!]!;
             const id = `${kind}:${areaPath.at(-1) ?? 'unnamed'}:${n}`;
-            const centre = centreOf(tiles);
-            const bbox = bboxOf(tiles);
-            const stand = standTile(features, members, kind, centre, bbox, collision, { size, walked, approach });
+            let centre = centreOf(tiles);
+            let bbox = bboxOf(tiles);
+            let stand: Tile | null;
+            if (lap) {
+                const level = features[lap.first[0]!]!.tile.level;
+                centre = centreOf(tiles.filter(t => t.level === level));
+                if (tiles.some(t => t.level !== level)) {
+                    const { level: _, ...every } = bbox;
+                    bbox = every;
+                }
+                const last = centreOf(lap.last.map(i => features[i]!.tile));
+                stand = standTile(features, lap.first, kind, last, bbox, collision, {
+                    size,
+                    walked,
+                    approach,
+                });
+            } else stand = standTile(features, members, kind, centre, bbox, collision, { size, walked, approach });
             if (!stand) log(`place: site ${id} has no stand tile`);
             sites.push({
                 id,
@@ -400,6 +517,7 @@ export function buildSites(
                 f2p: tiles.some(t => isF2p(zones, t)),
                 multiway: tiles.some(t => isMultiway(zones, t)),
                 wildernessLevel: tiles.reduce((max, t) => Math.max(max, wildernessLevel(t)), 0),
+                ...(lap ? { course: courseOf(features, members, lap) } : {}),
             });
         });
     }

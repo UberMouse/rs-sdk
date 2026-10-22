@@ -5,6 +5,7 @@
 import {
     forMethod,
     fromWorldMethod,
+    isTileStop,
     measuredFigures,
     methodModels,
     methodRate,
@@ -12,6 +13,7 @@ import {
     type MethodContext,
     type MethodModel,
     type ResolvedMethod,
+    type Stop,
 } from '../model/method';
 import { profileAt, toolKindOfObj, type Profile, type Tools } from '../model/profile';
 import { SKILLS, XP_RATE, type Skill } from '../model/server';
@@ -66,7 +68,7 @@ function bySkill(methods: readonly ResolvedMethod[]): Map<Skill, ResolvedMethod[
 /** Every training page and the README, as repo-relative paths and text. */
 export function renderTraining(world: World, data: TrainingData): Page[] {
     const ctx: MethodContext = { world, ...data.model };
-    const methods = world.methods.map(wm => fromWorldMethod(wm, world));
+    const methods = world.methods.map(wm => fromWorldMethod(wm, world, data.model.zones));
     const pages = bySkill(methods);
     const out: Page[] = [...pages].map(([skill, ms]) => [trainingPath(skill), skillPage(skill, ms, world, data, ctx)]);
     out.push([TRAINING_README, readme(pages)]);
@@ -90,13 +92,15 @@ function skillPage(
         profileAt(skill, level, { tools: ctx.tools, atLeast: m.levels });
     const xp = (m: ResolvedMethod, profile: Profile): number => methodRate(m, profile, ctx).xpPerHour[skill] ?? 0;
     const where = (s: Site): string => `${areaCell(path, areas, s.areaPath)} \`${s.id}\``;
+    const bankAt = (s: Site): string => `bank at ${where(s)}`;
     // The tool tier a page's columns pick the best of, by the obj that is one.
     const tier = (t: string): keyof Tools | null => toolKindOfObj(ctx.tools, t);
 
     // The tools the method carries at 99: a tier stands for the best of it usable at each column.
     const held = (m: ResolvedMethod): string[] => {
-        const { gather, process } = methodModels(m, column(m, 99), ctx);
-        return [...new Set([gather, ...process].flatMap(a => a.tools ?? []))];
+        const { gather, steps } = methodModels(m, column(m, 99), ctx);
+        const actions = [...('withdraw' in gather ? [] : [gather]), ...steps.flat()];
+        return [...new Set(actions.flatMap(a => a.tools ?? []))];
     };
     const tools = (ts: readonly string[]): string =>
         ts
@@ -122,13 +126,23 @@ function skillPage(
     };
     const sink = (m: ResolvedMethod): string => {
         if (m.sink.mode === 'drop') return 'drop';
-        const legs = m.ways[0]!.legs.map(l => l.runTicks);
-        const bank = `bank at ${where(m.sink.bank)}`;
-        const stops =
-            m.sink.mode === 'bank'
-                ? bank
-                : `${m.def.sink.mode === 'process-bank' ? m.def.sink.process.family : 'process'} at ${where(m.sink.processor)}, then ${bank}`;
-        return `${stops}; legs ${legs.join(' + ')} run ticks`;
+        // A leg over random landings runs their mean (model/legs.ts): one decimal.
+        const legs = m.ways[0]!.legs.map(l => Number(l.runTicks.toFixed(1)));
+        let stops = '';
+        if (m.sink.mode === 'bank') stops = bankAt(m.sink.bank);
+        else if (m.def.sink.mode === 'process') {
+            const { steps, end } = m.def.sink;
+            const stop = (s: Stop): string =>
+                s === 'here'
+                    ? 'here'
+                    : isTileStop(s)
+                      ? `at (${s.tile.x}, ${s.tile.z}, ${s.tile.level})`
+                      : `at ${where(s)}`;
+            const at = m.sink.steps.map((s, i) => `${steps[i]!.family} ${stop(s)}`);
+            // A withdrawal banks at its own site.
+            stops = [...at, end === 'bank' ? bankAt(m.sink.bank ?? m.site) : end].join(', then ');
+        }
+        return legs.length ? `${stops}; legs ${legs.join(' + ')} run ticks` : stops;
     };
     // Each measured figure with the page's skill in it: the table cell (XP/hr, level, it over its floor) and who ran it.
     const measured = (m: ResolvedMethod): { cell: string; by: string }[] =>

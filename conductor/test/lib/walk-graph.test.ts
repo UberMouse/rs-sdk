@@ -323,7 +323,7 @@ describe("rolled crossings are priced at the bot's current level", () => {
         3 +
         4 +
         Math.ceil(
-            2 * expectedTicks(CROSSING_TICKS.scripted, statRandomChance(roll.low, roll.high, level), 20, 0) - 1e-9,
+            2 * expectedTicks(CROSSING_TICKS.scripted, statRandomChance(level, roll.low, roll.high), 20, 0) - 1e-9,
         );
     const levels = Array.from({ length: 90 }, (_, i) => i + 10);
     /** The last level the shortcut costs more than the way round, and the first it costs less. */

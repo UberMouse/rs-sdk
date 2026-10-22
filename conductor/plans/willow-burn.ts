@@ -9,6 +9,7 @@ const hasAxe = (v: { inv(i: RegExp): number }) => v.inv(/axe$/i) > 0;
 
 export default definePlan({
     name: 'willow-burn',
+    method: 'willow-draynor-burn',
     description: 'Draynor willows: chop until full, line-burn the willow logs, repeat.',
     requires: { 'combat level 45+': v => (v.state.player?.combatLevel ?? 0) >= 45 },
     phases: [

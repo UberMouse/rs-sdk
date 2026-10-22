@@ -3,7 +3,7 @@
 import { first } from '../../sources/configs';
 import type { DbRow } from '../../sources/dbrows';
 import { ModelError, ProfileError, type ActionModel } from '../family';
-import { statRandomChance } from '../roll';
+import { statRandomChance } from '../../roll';
 import {
     clickTicks,
     dbIndex,

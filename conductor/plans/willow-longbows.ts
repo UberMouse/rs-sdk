@@ -15,6 +15,7 @@ const unstrung = (v: { state: { inventory: { id: number; count: number }[] } }) 
 
 export default definePlan({
     name: 'willow-longbows',
+    method: 'willow-seers-longbow-bank',
     description: 'Seers willows -> Willow longbow (u) -> string -> Seers bank, 13 per trip',
     requires: { 'fletching 40+': v => v.level('fletching') >= 40 },
     phases: [

@@ -93,6 +93,22 @@ The entrance gate (oploc1,gnome_areagate, areas/area_gnome/scripts/gnome_gate.rs
 | `pickpocket:tree-gnome-stronghold:37` | (2481, 3498) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
 | `pickpocket:tree-gnome-stronghold:38` | (2486, 3399) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - | - |
 
+## Flax
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `flax:tree-gnome-stronghold:0` | (2399, 3422) | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
+| `flax:tree-gnome-stronghold:1` | (2408, 3388) | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
+| `flax:tree-gnome-stronghold:2` | (2409, 3441) | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
+| `flax:tree-gnome-stronghold:3` | (2424, 3401) | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
+| `flax:tree-gnome-stronghold:4` | (2428, 3424) | [flax](../resources/flax/flax.md) 4 | no | no | - | - |
+| `flax:tree-gnome-stronghold:5` | (2446, 3402) | [flax](../resources/flax/flax.md) 7 | no | no | - | - |
+| `flax:tree-gnome-stronghold:6` | (2446, 3440) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+| `flax:tree-gnome-stronghold:7` | (2450, 3425) | [flax](../resources/flax/flax.md) 3 | no | no | - | - |
+| `flax:tree-gnome-stronghold:8` | (2478, 3402) | [flax](../resources/flax/flax.md) 20 | no | no | - | - |
+| `flax:tree-gnome-stronghold:9` | (2476, 3445) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+| `flax:tree-gnome-stronghold:10` | (2493, 3445) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
@@ -202,7 +218,7 @@ The entrance gate (oploc1,gnome_areagate, areas/area_gnome/scripts/gnome_gate.rs
 | Area | Sites in it |
 |---|---|
 | [Gnome Ball Field](gnome-ball-field.md) | tree 2, pickpocket 3, connector 1 |
-| [Gnome Stronghold agility course](gnome-agility-course.md) | tree 2 |
+| [Gnome Stronghold agility course](gnome-agility-course.md) | tree 2, agility-course 1 |
 | [Gnome Stronghold south bank](gnome-stronghold-bank.md) | bank 1 |
 | [Grand Tree](grand-tree.md) | tree 1, pickpocket 5, npc 5, connector 4 |
 | [Grand Tree bank](grand-tree-bank.md) | bank 1 |

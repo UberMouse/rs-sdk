@@ -40,6 +40,8 @@ export type FeatureKind =
     | 'stall'
     | 'thieving-chest'
     | 'pickpocket'
+    | 'flax'
+    | 'agility-course'
     | 'npc'
     | 'connector';
 
@@ -85,8 +87,8 @@ export interface Site {
     wildernessLevel: number;
     /**
      * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to this site's
-     * chosen stand tile (reach.ts), and to no other tile of it: `[[]]` with none, `[]` when no set gets there or
-     * there is no stand.
+     * chosen stand tile (reach.ts), and to no other tile of it, joined with what using its features asks (a quest
+     * that locks them, gates.ts USE_GATES): `[[]]` with none, `[]` when no set gets there or there is no stand.
      */
     reach: string[][];
     /**
@@ -96,6 +98,39 @@ export interface Site {
      * kinds.
      */
     nearest?: Nearest;
+    /** On an `agility-course` site, its lap (sources/courses.ts). */
+    course?: Course;
+}
+
+/**
+ * An agility course's lap as its scripts keep it: a progress varp each obstacle moves on when it is the next one (an
+ * earlier one sets it back), and a bonus paid when the last completes (sources/courses.ts).
+ */
+export interface Course {
+    /** The progress varp (`gnome_course_progress`). */
+    varp: string;
+    /** The lap bonus in xp tenths, paid on top of the last obstacle's own xp. */
+    lapBonus: number;
+    /** The bonus's stat_advance, as `file:line`. */
+    source: string;
+    /**
+     * The site's placed obstacles in lap order, by step, then tile: one or more per step (the Gnome course's three
+     * nets are each step 2), any one of which completes it.
+     */
+    obstacles: CourseObstacle[];
+}
+
+/** One placed obstacle of a course; the crossing rows on its loc (`act.loc` and `at`) are its moves, where World.crossings has them. */
+export interface CourseObstacle {
+    /** Its place in the lap, from 1 to the last. */
+    step: number;
+    /** Index into World.features. */
+    feature: number;
+    /** The loc config and its tile. */
+    loc: string;
+    tile: Tile;
+    /** The call that sets the step, as `file:line`. */
+    source: string;
 }
 
 /** The nearest sink of one kind: its site id, the run ticks to its stand, and what that way needs. */
@@ -327,6 +362,20 @@ export interface Gate {
      */
     landings?: { stand: Tile; landing: Tile; free?: true }[];
     /**
+     * With `to` or `landings` read from the script: the ticks a successful move takes, its script's delays summed
+     * (sources/gate-scan.ts Path.ticks), the most any stand's takes (on a `to` row, the most of `standTicks`). Absent
+     * when a delay on the way is not known offline.
+     */
+    ticks?: number;
+    /**
+     * On a `to` row with `ticks`: each stand's own, the fewest its paths take, by stand tile, the tiles the move is
+     * made from; `ticks` is the most of them (the Wilderness course pipe takes 11 from the tile south of it and 12 from
+     * the others, which its script walks there first, skill_agility/scripts/wilderness_course.rs2:57-60). A `landings`
+     * row has none: a stand's paths there can land on different tiles in different ticks (sources/gate-landings.ts
+     * ticksOf).
+     */
+    standTicks?: { stand: Tile; ticks: number }[];
+    /**
      * On an object, the move deletes the loc or swaps it for one whose collision does not block
      * (sources/gate-landings.ts): once `requires` is met, the op makes the loc's tiles walkable for a while.
      * LOC_DEL and LOC_CHANGE take a duration, after which the loc comes back (the Kharazi jungle's after
@@ -381,6 +430,24 @@ export interface Landing {
      * walk here, or this one is stranded, and then no distance goes by this landing.
      */
     spread?: number;
+    /**
+     * The chance the move lands here, where a row's landings are not equally likely: an npc teleport draws a coord of
+     * its enum, each equally likely, then a tile of that coord's ring (sources/npc-teleports.ts), so a tile of a
+     * smaller ring is likelier. Absent: the row's landings are equally likely. A ring's tiles off land keep their
+     * share, so a row's chances may sum to under 1. Only a method leg over the landings reads it (model/legs.ts).
+     */
+    chance?: number;
+}
+
+/**
+ * Hitpoints a hit takes from a player with HP current hitpoints: floor(HP x a / b) + c (roll.ts damageAt). The
+ * Wilderness course's log takes floor(HP x 15 / 100) + 1 (skill_agility/scripts/wilderness_course.rs2:137); a hit
+ * that reads no hitpoints has `a` 0 and `b` 1.
+ */
+export interface HpDamage {
+    a: number;
+    b: number;
+    c: number;
 }
 
 /** A move behind `stat_random(stat, low, high)` (roll.ts statRandomChance), and what a failed roll does. */
@@ -396,8 +463,14 @@ export interface Roll {
         ticks: number;
         /** Where it leaves the player: absent, the tile they tried from; else that tile (a river bank). */
         to?: Tile;
-        /** Hitpoints a failure takes, the most when the script rolls the damage. */
+        /** Hitpoints a failure takes at 99 hitpoints (hpDamage there), the most when the script rolls the damage. */
         damage: number;
+        /**
+         * Hitpoints a failure takes at the player's hitpoints, the most when the script rolls the damage. Always
+         * written at build and required by load.ts; optional in the type only because conductor tests build rolls by
+         * hand without it.
+         */
+        hpDamage?: HpDamage;
         /**
          * With `to`, the run ticks from it back to the nearest tile the move is tried from (distance.ts
          * priceCrossings). Written at build; absent when no walk gets back, and then no distance takes the move.
@@ -426,6 +499,13 @@ export interface Crossing {
     landings: Landing[];
     /** The minimal requirement sets (requirements.ts), any one of which makes the move. */
     requires: string[][];
+    /**
+     * The ticks a successful move takes, its script's delays summed: a `scripted` row's (sources/gate-scan.ts
+     * Path.ticks), an npc teleport's and its way back's (sources/npc-teleports.ts). Absent when a delay on the way is
+     * not known offline, and on curated and other teleport rows. distance.ts prices a move by CROSSING_TICKS, not
+     * these; a method leg over a random landing reads them (model/legs.ts).
+     */
+    ticks?: number;
     roll?: Roll;
     /** The script line that makes the move, as `file:line`. */
     source: string;
@@ -433,7 +513,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 15;
+export const WORLD_FORMAT = 20;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the
@@ -444,10 +524,10 @@ export interface WorldMethod extends MethodDef {
     /** The site `at` lies in, and its stand. */
     site: string;
     stand: Tile;
-    /** The bank site of a bank or process-bank sink. */
+    /** The bank site of a bank sink, or of a process sink that banks at another site than its own. */
     bank?: string;
-    /** The processor site of a process-bank sink. */
-    processor?: string;
+    /** A process sink's step sites, one per step: a site id, `'here'`, or a bare tile step's `tile:x,z,level`. */
+    processors?: string[];
     /** The gather family's first skill. */
     skill: Skill;
     /** The lowest level at which it models with every skill of `levels` at that level (ResolvedMethod.minLevel). */

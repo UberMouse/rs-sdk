@@ -20,6 +20,7 @@ const far = (v: V, c: { x: number; z: number }, r: number) => {
 
 export default definePlan({
     name: 'superheat-mine',
+    method: 'iron-se-varrock-superheat-platebody-bank',
     description: 'Mine iron at SE Varrock, superheat at the mine, smith platebodies at the SE anvil, bank East',
     requires: { 'Magic 43+': v => v.level('Magic') >= 43 },
     phases: [

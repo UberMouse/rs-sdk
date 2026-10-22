@@ -8,12 +8,14 @@ import {
     RECLICK_PACKETS,
     type CycleInput,
 } from '../model/cycle';
-import { ModelError, type ActionModel } from '../model/family';
+import { ModelError, ProfileError, type ActionModel } from '../model/family';
 import { INVENTORY_SLOTS, readItems } from '../model/items';
 import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE } from '../model/server';
 import { parseConfigs } from '../sources/configs';
 
-// Synthetic objs: a worn pick, a carried rod, stackable feathers and coins (coins with no cost: the engine's 1).
+// Synthetic objs: a worn pick, a carried rod, stackable feathers and coins (coins with no cost: the engine's 1); for
+// the process chains a carried hammer and knife, stackable natures and runes, non-stackable bow strings and coal, a
+// wearable ring.
 const items = readItems(
     parseConfigs(`
 [ore]
@@ -37,6 +39,33 @@ cost=1
 cost=50
 [jug]
 cost=3
+[bar]
+cost=40
+[plate]
+cost=500
+[hammer]
+[nature]
+stackable=yes
+cost=4
+[essence]
+cost=2
+[rune]
+stackable=yes
+cost=5
+[log]
+cost=8
+[knife]
+[unstrung]
+cost=10
+[string]
+cost=15
+[bow]
+cost=60
+[coal]
+cost=1
+[ring]
+wearpos=ring
+cost=800
 `),
 );
 
@@ -189,7 +218,7 @@ describe('bank sink', () => {
     });
 });
 
-describe('process-bank sink', () => {
+describe('process sink, one step then bank', () => {
     // A cooking step: 3 ticks an item, 3/4 cooked at 80 XP, 1/4 burnt (expected XP 60 an item).
     const cook: ActionModel = {
         ticksPerAttempt: 3,
@@ -206,7 +235,10 @@ describe('process-bank sink', () => {
         // 26 fish (rod and feathers take 2 slots) x 10 = 260 ticks; 26 x 3 = 78 cooking; legs 10 + 50 + 40 = 100;
         // 438 a trip. 9000 / 438 x 26 = 534.25 fish an hour: 667,808.2 Fishing XP (1,250 each), 801,369.9 Cooking
         // (60 x 25 = 1,500 each); 400.68 cooked (30 gp) and 133.56 burnt (1 gp) banked, 12,154.1 gp.
-        const r = run({ gather: spot, sink: { mode: 'process-bank', process: [cook], legs: [10, 50, 40] } });
+        const r = run({
+            gather: spot,
+            sink: { mode: 'process', steps: [[cook]], end: 'bank', legs: [10, 50, 40], here: [false] },
+        });
         const fish = (9000 / 438) * 26;
         expect(r.trip).toEqual({
             successes: 26,
@@ -234,22 +266,39 @@ describe('process-bank sink', () => {
         // slot.
         const jug: ActionModel = { ...cook, tools: ['jug'] };
         expect(
-            run({ gather: spot, sink: { mode: 'process-bank', process: [jug], legs: [10, 50, 40] } }).trip,
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[jug]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip,
         ).toMatchObject({
             successes: 25,
             total: 425,
         });
         const rod: ActionModel = { ...cook, tools: ['rod'] };
         expect(
-            run({ gather: spot, sink: { mode: 'process-bank', process: [rod], legs: [10, 50, 40] } }).trip.successes,
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[rod]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip.successes,
         ).toBe(26);
     });
 
     test('a step whose input the gather does not give does nothing; the raw fish is banked as caught', () => {
         const other: ActionModel = { ...cook, consumes: [{ obj: 'ore', count: 1 }] };
-        const r = run({ gather: spot, sink: { mode: 'process-bank', process: [other], legs: [10, 50, 40] } });
+        const r = run({
+            gather: spot,
+            sink: { mode: 'process', steps: [[other]], end: 'bank', legs: [10, 50, 40], here: [false] },
+        });
         expect(r.trip).toMatchObject({ process: 0, total: 360 });
         expect(r.itemsPerHour.map(x => x.obj)).toEqual(['raw']);
+        // Nor does its tool take a slot: still 26 fish, 260 + 100 = 360 (with the jug carried, 25 and 350).
+        const jugged: ActionModel = { ...other, tools: ['jug'] };
+        expect(
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[jugged]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip,
+        ).toMatchObject({ successes: 26, total: 360 });
     });
 });
 
@@ -315,4 +364,550 @@ test('XP is the script tenths over 10 times the server rate', () => {
     // One success a tick, 100 tenths: 10 XP x XP_RATE x 9000.
     const once: ActionModel = { ticksPerAttempt: 1, success: 1, xpTenths: { magic: 100 }, products: [], consumes: [] };
     expect(run({ gather: once, sink: { mode: 'drop' } }).xpPerHour.magic).toBe(10 * XP_RATE * TICKS_PER_HOUR);
+});
+
+describe('process sink, chained steps', () => {
+    // A vein that never runs out: an ore every 4 ticks with the worn pick, 35 XP.
+    const vein: ActionModel = {
+        ticksPerAttempt: 4,
+        success: 1,
+        xpTenths: { mining: 350 },
+        products: [{ obj: 'ore', count: 1 }],
+        consumes: [],
+        tools: ['pick'],
+    };
+    // Smelting a bar from an ore: 5 ticks, 12.5 XP.
+    const smelt: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 125 },
+        products: [{ obj: 'bar', count: 1 }],
+        consumes: [{ obj: 'ore', count: 1 }],
+    };
+    // Smithing a plate from 5 bars with the carried hammer: 5 ticks, 125 XP.
+    const smith: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 1250 },
+        products: [{ obj: 'plate', count: 1 }],
+        consumes: [{ obj: 'bar', count: 5 }],
+        batch: 5,
+        tools: ['hammer'],
+    };
+
+    test('two steps, each taking the one before it, then the bank: the load rounds down to whole plates', () => {
+        // The hammer takes a slot: 27 ore, rounded down to 25 (5 plates of 5 bars). 25 x 4 = 100 ticks mining; 25 x 5 =
+        // 125 smelting; 5 plates x 5 = 25 smithing; legs 20 + 10 + 30 + 40 = 100: 350 a trip. 9000 / 350 x 25 = 642.86
+        // ore an hour: Mining 35 x 25 each = 562,500; Smithing (12.5 + 125 / 5) x 25 = 937.5 each = 602,678.6. 128.57
+        // plates banked at 500: 64,285.7 gp.
+        const r = run({
+            gather: vein,
+            sink: {
+                mode: 'process',
+                steps: [[smelt], [smith]],
+                end: 'bank',
+                legs: [20, 10, 30, 40],
+                here: [false, false],
+            },
+        });
+        const ore = (9000 / 350) * 25;
+        expect(r.trip).toEqual({
+            successes: 25,
+            gather: 100,
+            process: 150,
+            travel: 100,
+            bank: 0,
+            drop: 0,
+            eat: 0,
+            wait: 0,
+            total: 350,
+        });
+        expect(r.binding).toBe('player');
+        expect(r.xpPerHour.mining).toBeCloseTo(562_500, 6);
+        expect(r.xpPerHour.smithing).toBeCloseTo(ore * 937.5, 6);
+        expect(r.itemsPerHour).toEqual([{ obj: 'plate', count: expect.closeTo(ore / 5, 9) }]);
+        expect(r.gpPerHour).toBeCloseTo((ore / 5) * 500, 6);
+    });
+
+    test('dropped at the last step: the plates go in whole ticks with the click away, and keep no value', () => {
+        // As above with no bank leg (20 + 10 + 30 = 60) and 5 plates dropped: ceil((5 + 2) / 5) = 2 ticks. 100 + 150 +
+        // 60 + 2 = 312 a trip.
+        const r = run({
+            gather: vein,
+            sink: { mode: 'process', steps: [[smelt], [smith]], end: 'drop', legs: [20, 10, 30], here: [false, false] },
+        });
+        expect(r.trip).toMatchObject({ successes: 25, process: 150, travel: 60, bank: 0, drop: 2, total: 312 });
+        expect(r.xpPerHour.smithing).toBeCloseTo((9000 / 312) * 25 * 937.5, 6);
+        expect(r.gpPerHour).toBe(0);
+    });
+
+    test('kept: a stackable end product takes a slot and is never banked', () => {
+        // Essence every 3 ticks (5 XP) made into 3 runes at the altar, 1 tick and 6.5 XP an essence. The rune stack
+        // takes a slot: 27 essence; 81 + 27 + legs 30 + 30 = 168 a trip. 9000 / 168 x 27 = 1,446.43 essence an hour:
+        // Mining 5 x 25 = 125 each, 180,803.6; Runecraft 6.5 x 25 = 162.5 each, 235,044.6; 4,339.3 runes at 5 gp.
+        const ess: ActionModel = {
+            ...vein,
+            ticksPerAttempt: 3,
+            xpTenths: { mining: 50 },
+            products: [{ obj: 'essence', count: 1 }],
+        };
+        const craft: ActionModel = {
+            ticksPerAttempt: 1,
+            success: 1,
+            xpTenths: { runecraft: 65 },
+            products: [{ obj: 'rune', count: 3 }],
+            consumes: [{ obj: 'essence', count: 1 }],
+        };
+        const r = run({
+            gather: ess,
+            sink: { mode: 'process', steps: [[craft]], end: 'keep', legs: [30, 30], here: [false] },
+        });
+        const n = (9000 / 168) * 27;
+        expect(r.trip).toMatchObject({
+            successes: 27,
+            gather: 81,
+            process: 27,
+            travel: 60,
+            bank: 0,
+            drop: 0,
+            total: 168,
+        });
+        expect(r.xpPerHour.mining).toBeCloseTo(n * 125, 6);
+        expect(r.xpPerHour.runecraft).toBeCloseTo(n * 162.5, 6);
+        expect(r.itemsPerHour).toEqual([{ obj: 'rune', count: expect.closeTo(n * 3, 9) }]);
+        expect(r.gpPerHour).toBeCloseTo(n * 3 * 5, 6);
+        // A kept product that fills a slot would fill the inventory for good. A step the gather gives no input for at
+        // a profile leaves its input kept, so the profile is refused (ProfileError), not the record.
+        const bars: ActionModel = { ...craft, products: [{ obj: 'bar', count: 1 }] };
+        fails(
+            { gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30], here: [false] } },
+            /kept products fill the inventory: bar/,
+        );
+        expect(() =>
+            run({
+                gather: ess,
+                sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30], here: [false] },
+            }),
+        ).toThrow(ProfileError);
+    });
+
+    test('withdrawn from the bank: no gathering, the load is the free slots over the ore, a stackable supply one slot', () => {
+        // Superheat (3 ticks, 53 Magic and 12.5 Smithing XP, a nature a cast) then smith at an anvil and back. The hammer
+        // and the nature stack take 2 slots: 26 ore, 25 in whole plates. 25 x 3 + 5 x 5 = 100 ticks; legs 15 + 15: 130.
+        // 9000 / 130 x 25 = 1,730.77 ore an hour: Magic 53 x 25 = 1,325 each, 2,293,269.2; Smithing 937.5 each,
+        // 1,622,596.2. The ore (10 gp) and natures (4 gp) used: 24,230.8 gp; 346.15 plates banked, 173,076.9 gp.
+        const superheat: ActionModel = {
+            ticksPerAttempt: 3,
+            success: 1,
+            xpTenths: { magic: 530, smithing: 125 },
+            products: [{ obj: 'bar', count: 1 }],
+            consumes: [
+                { obj: 'ore', count: 1 },
+                { obj: 'nature', count: 1 },
+            ],
+        };
+        const r = run({
+            gather: { withdraw: 'ore' },
+            sink: { mode: 'process', steps: [[superheat], [smith]], end: 'bank', legs: [15, 15], here: [false, false] },
+        });
+        const ore = (9000 / 130) * 25;
+        expect(r.trip).toEqual({
+            successes: 25,
+            gather: 0,
+            process: 100,
+            travel: 30,
+            bank: 0,
+            drop: 0,
+            eat: 0,
+            wait: 0,
+            total: 130,
+        });
+        expect(r.xpPerHour.magic).toBeCloseTo(ore * 1325, 6);
+        expect(r.xpPerHour.smithing).toBeCloseTo(ore * 937.5, 6);
+        expect(r.suppliesPerHour).toEqual([
+            { obj: 'ore', count: expect.closeTo(ore, 9) },
+            { obj: 'nature', count: expect.closeTo(ore, 9) },
+        ]);
+        expect(r.suppliesGpPerHour).toBeCloseTo(ore * 14, 6);
+        expect(r.gpPerHour).toBeCloseTo((ore / 5) * 500, 6);
+    });
+
+    describe('a non-stackable supply', () => {
+        // Logs every 8 ticks (4 at 1/2) with a worn axe (the pick), cut into a bow with the carried knife (3 ticks,
+        // 5 XP), strung with a bow string (2 ticks, 41.5 XP). The knife leaves 27 free slots.
+        const chop: ActionModel = {
+            ...spot,
+            ticksPerAttempt: 4,
+            xpTenths: { woodcutting: 675 },
+            products: [{ obj: 'log', count: 1 }],
+            consumes: [],
+            tools: ['pick'],
+        };
+        const cut: ActionModel = {
+            ticksPerAttempt: 3,
+            success: 1,
+            xpTenths: { fletching: 50 },
+            products: [{ obj: 'unstrung', count: 1 }],
+            consumes: [{ obj: 'log', count: 1 }],
+            tools: ['knife'],
+        };
+        const string: ActionModel = {
+            ticksPerAttempt: 2,
+            success: 1,
+            xpTenths: { fletching: 415 },
+            products: [{ obj: 'bow', count: 1 }],
+            consumes: [
+                { obj: 'unstrung', count: 1 },
+                { obj: 'string', count: 1 },
+            ],
+        };
+
+        test("used 'here' as each log comes: the bow takes the log's slot, the string's comes free", () => {
+            // Chop, cut and string one log at a time: strings and bows together hold the slots the trip started with
+            // in strings, and the log being chopped one more: 27 - 1 = 26 strings, so 26 bows a trip. 26 x 8 = 208
+            // chopping, 26 x (3 + 2) = 130 fletching, legs 20 + 20: 378. 9000 / 378 x 26 = 619.05 logs an hour:
+            // Fletching 46.5 x 25 = 1,162.5 each, 719,642.9; as many strings used.
+            const r = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20], here: [true, true] },
+            });
+            const logs = (9000 / 378) * 26;
+            expect(r.trip).toMatchObject({ successes: 26, gather: 208, process: 130, travel: 40, total: 378 });
+            expect(r.xpPerHour.fletching).toBeCloseTo(logs * 1162.5, 6);
+            expect(r.itemsPerHour).toEqual([{ obj: 'bow', count: expect.closeTo(logs, 9) }]);
+            expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
+        });
+
+        test('used away from the stand: carried all trip, a slot per unit beside the logs', () => {
+            // Cut 'here', strung at another site: the strings are carried while the unstrung bows pile up, a log's and
+            // a string's slot a success: 27 / 2 = 13.5 a trip. 13.5 x 8 = 108 chopping, 13.5 x (3 + 2) = 67.5
+            // fletching, legs 40: 215.5. 9000 / 215.5 x 13.5 = 563.81 logs an hour: Fletching 1,162.5 each, 655,423.4.
+            const r = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20], here: [true, false] },
+            });
+            const logs = (9000 / 215.5) * 13.5;
+            expect(r.trip).toMatchObject({ successes: 13.5, gather: 108, process: 67.5, travel: 40, total: 215.5 });
+            expect(r.xpPerHour.fletching).toBeCloseTo(logs * 1162.5, 6);
+            expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
+            // No step 'here' at all: the same.
+            expect(
+                run({
+                    gather: chop,
+                    sink: {
+                        mode: 'process',
+                        steps: [[cut], [string]],
+                        end: 'bank',
+                        legs: [20, 20],
+                        here: [false, false],
+                    },
+                }).trip.successes,
+            ).toBe(13.5);
+        });
+
+        test('strung 5 a tick (perTick): a trip takes whole ticks of them', () => {
+            const strung: ActionModel = { ...string, ticksPerAttempt: 1, perTick: 5 };
+            // Withdrawn unstrung bows, strung at the bank: a bow's and a string's slot each, 28 / 2 = 14 a trip;
+            // ceil(14 / 5) = 3 ticks, not 2.8.
+            const withdrawn = run({
+                gather: { withdraw: 'unstrung' },
+                sink: { mode: 'process', steps: [[strung]], end: 'bank', legs: [], here: [false] },
+            });
+            expect(withdrawn.trip).toMatchObject({ successes: 14, process: 3 });
+            // The chain all 'here': 26 bows a trip (above), 26 x 3 = 78 cutting and ceil(26 / 5) = 6 stringing.
+            const chained = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [strung]], end: 'bank', legs: [20, 20], here: [true, true] },
+            });
+            expect(chained.trip).toMatchObject({ successes: 26, process: 84 });
+            fails(
+                {
+                    gather: chop,
+                    sink: {
+                        mode: 'process',
+                        steps: [[cut], [{ ...strung, perTick: 2.5 }]],
+                        end: 'bank',
+                        legs: [20, 20],
+                        here: [true, true],
+                    },
+                },
+                /perTick 2.5 is not a whole number >= 1/,
+            );
+            fails(
+                { gather: { ...chop, perTick: 5 }, sink: { mode: 'drop' } },
+                /a gather with a restart, a start or a perTick/,
+            );
+        });
+    });
+
+    test('fails with a reason where it is not modelled', () => {
+        const legs = [10, 10];
+        fails({ gather: { withdraw: 'ore' }, sink: { mode: 'bank', legs } }, /withdrawing ore needs a process sink/);
+        fails(
+            { gather: vein, sink: { mode: 'process', steps: [[smelt], [smelt]], end: 'bank', legs, here: [false] } },
+            /1 'here' flags for 2 steps/,
+        );
+        fails(
+            {
+                gather: { withdraw: 'nature' },
+                sink: { mode: 'process', steps: [[smelt]], end: 'bank', legs, here: [false] },
+            },
+            /withdrawing the stackable nature is not modelled/,
+        );
+        const none: ActionModel = { ...smelt, consumes: [] };
+        fails(
+            { gather: vein, sink: { mode: 'process', steps: [[none]], end: 'bank', legs, here: [false] } },
+            /must take one chained input/,
+        );
+        const odd: ActionModel = { ...smith, consumes: [{ obj: 'bar', count: 1 }] };
+        fails(
+            {
+                gather: vein,
+                sink: { mode: 'process', steps: [[smelt], [odd]], end: 'bank', legs, here: [false, false] },
+            },
+            /takes 1 bar an action, but its batch is 5/,
+        );
+        // Rounding the load to whole batches of a second batched step could leave the first at a part batch.
+        const pairs: ActionModel = { ...smelt, consumes: [{ obj: 'ore', count: 2 }], batch: 2 };
+        fails(
+            {
+                gather: vein,
+                sink: { mode: 'process', steps: [[pairs], [smith]], end: 'bank', legs, here: [false, false] },
+            },
+            /more than one batched step is not modelled/,
+        );
+        // 27 ore (the hammer takes a slot) is no whole batch of 30 bars: refused at the profile, whose tools set it.
+        const huge: ActionModel = { ...smith, consumes: [{ obj: 'bar', count: 30 }], batch: 30 };
+        const input: Omit<CycleInput, 'items'> = {
+            gather: vein,
+            sink: { mode: 'process', steps: [[smelt], [huge]], end: 'bank', legs, here: [false, false] },
+        };
+        expect(() => run(input)).toThrow(ProfileError);
+        expect(() => run(input)).toThrow(/the load holds no whole batch/);
+    });
+});
+
+describe('food with damage', () => {
+    test('a success that costs hitpoints: food covers the damage, eaten in no ticks', () => {
+        // A lap every 60 ticks, 571 XP, 1.5 hitpoints of falls a lap. A food healing 6 covers 4 laps; 28 slots of it
+        // cover 112. 112 x 60 = 6,720 + legs 50 = 6,770 a trip, no eat ticks. 9000 / 6770 x 112 = 148.89 laps an hour:
+        // 571 x 25 = 14,275 XP each, 2,125,435.7; 37.22 food.
+        const lap: ActionModel = {
+            ticksPerAttempt: 60,
+            success: 1,
+            xpTenths: { agility: 5710 },
+            products: [],
+            consumes: [],
+            damage: 1.5,
+        };
+        const r = run({ gather: lap, sink: { mode: 'bank', legs: [25, 25] }, food: { obj: 'food', heal: 6 } });
+        const laps = (9000 / 6770) * 112;
+        expect(r.trip).toEqual({
+            successes: 112,
+            gather: 6720,
+            process: 0,
+            travel: 50,
+            bank: 0,
+            drop: 0,
+            eat: 0,
+            wait: 0,
+            total: 6770,
+        });
+        expect(r.xpPerHour.agility).toBeCloseTo(laps * 14_275, 6);
+        expect(r.suppliesPerHour).toEqual([{ obj: 'food', count: expect.closeTo(laps / 4, 9) }]);
+        fails({ gather: lap, sink: { mode: 'bank', legs: [25, 25] } }, /costs 1.5 hitpoints a success: name a food/);
+        fails(
+            {
+                gather: lap,
+                sink: { mode: 'process', steps: [], end: 'keep', legs: [], here: [] },
+                food: { obj: 'food', heal: 6 },
+            },
+            /nothing restocks it/,
+        );
+    });
+
+    test('damage beside failDamage: both eaten, only the stuns cost eat ticks', () => {
+        // p 1/2, 2 hitpoints a fail, 1 a success, a heal of 2: (2 x 1 + 1) / 2 = 1.5 food a success, 27 / 1.5 = 18 a
+        // trip (coins take a slot). Eat ticks are the fails' alone: eatTicksPerFail(2 / 2, 1/2) = 0.25 + 3 x 0.5 =
+        // 1.75 a fail, a fail a success: 18 x 1.75 = 31.5.
+        const pocket: ActionModel = {
+            ticksPerAttempt: 2,
+            success: 0.5,
+            xpTenths: { thieving: 400 },
+            products: [{ obj: 'coins', count: 30 }],
+            consumes: [],
+            failTicks: 9,
+            failDamage: 2,
+            damage: 1,
+        };
+        const r = run({ gather: pocket, sink: { mode: 'bank', legs: [20, 20] }, food: { obj: 'food', heal: 2 } });
+        expect(r.trip.successes).toBe(18);
+        expect(r.trip.eat).toBeCloseTo(31.5, 9);
+    });
+
+    test('food for an action that can hurt but not at this profile (damage 0): none eaten, no trip ends', () => {
+        // A lap of 60 ticks whose falls are all certain to succeed: 150 laps an hour, no bank visit.
+        const sure: ActionModel = {
+            ticksPerAttempt: 60,
+            success: 1,
+            xpTenths: { agility: 5710 },
+            products: [],
+            consumes: [],
+            damage: 0,
+        };
+        const r = run({ gather: sure, sink: { mode: 'bank', legs: [25, 25] }, food: { obj: 'food', heal: 6 } });
+        expect(r.xpPerHour.agility).toBeCloseTo(150 * 14_275, 6);
+        expect(r.suppliesPerHour).toEqual([]);
+        // An action with no damage at all names a food by mistake.
+        const { damage: _, ...never } = sure;
+        fails(
+            { gather: never, sink: { mode: 'bank', legs: [25, 25] }, food: { obj: 'food', heal: 6 } },
+            /food food is named but the action costs no hitpoints/,
+        );
+    });
+});
+
+describe('restarts', () => {
+    // Withdrawn from the bank, worked at a furnace or anvil, banked: legs 10 + 10.
+    const legs = [10, 10];
+    const withdraw = (obj: string, ...steps: ActionModel[]) =>
+        run({
+            gather: { withdraw: obj },
+            sink: { mode: 'process', steps: steps.map(s => [s]), end: 'bank', legs, here: steps.map(() => false) },
+        });
+    // An anvil's buttons make at most 10 a click, each further 10 2 ticks more; a furnace's Make X costs 1 tick a trip.
+    const anvil = { upTo: 10, ticks: 2, repeat: true };
+    const furnace = { upTo: 10, ticks: 1 };
+    const smith1: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 250 },
+        products: [{ obj: 'plate', count: 1 }],
+        consumes: [{ obj: 'bar', count: 1 }],
+        tools: ['hammer'],
+        restart: anvil,
+    };
+    const smith5: ActionModel = {
+        ...smith1,
+        xpTenths: { smithing: 1250 },
+        consumes: [{ obj: 'bar', count: 5 }],
+        batch: 5,
+    };
+    const smelt: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 125 },
+        products: [{ obj: 'bar', count: 1 }],
+        consumes: [{ obj: 'ore', count: 1 }],
+        restart: furnace,
+    };
+
+    test('a 1-bar product: 27 bars a trip take three clicks of Make 10, two restarts of 2 ticks', () => {
+        // The hammer takes a slot: 27 bars. ceil(27 / 10) - 1 = 2 restarts: 27 x 5 + 4 = 139, legs 20: 159.
+        expect(withdraw('bar', smith1).trip).toMatchObject({ successes: 27, process: 139, travel: 20, total: 159 });
+    });
+
+    test('a 5-bar product: 25 bars make 5, one click, no restart', () => {
+        // 27 bars round down to 25, 5 platebodies: ceil(5 / 10) - 1 = 0. 5 x 5 = 25, legs 20: 45.
+        expect(withdraw('bar', smith5).trip).toMatchObject({ successes: 25, process: 25, total: 45 });
+    });
+
+    test("a furnace load over 10 pays Make X's count dialog once; 10 or fewer pay nothing", () => {
+        // 28 ore, no tool: 28 x 5 + 1 = 141, legs 20: 161.
+        expect(withdraw('ore', smelt).trip).toMatchObject({ successes: 28, process: 141, total: 161 });
+        // Two coal a bar beside the ore: 28 / 3 = 9.33 bars, under 10: 9.33 x 5 = 46.67.
+        const steel: ActionModel = { ...smelt, consumes: [...smelt.consumes, { obj: 'coal', count: 2 }] };
+        const r = withdraw('ore', steel);
+        expect(r.trip.successes).toBeCloseTo(28 / 3, 9);
+        expect(r.trip.process).toBeCloseTo((28 / 3) * 5, 9);
+    });
+
+    test('a part batch: iron at half a bar an ore, smithed into 5-bar plates with no rounding', () => {
+        // 27 ore (the hammer): 27 x 5 + 1 (Make X) = 136 smelting; 13.5 bars make 2.7 plates, 2.7 x 5 = 13.5, under
+        // 10 plates so no restart: 149.5, legs 10 + 5 + 15 = 30: 179.5. Smithing a ore: 12.5 / 2 + 125 x 0.1 = 18.75.
+        const half: ActionModel = { ...smelt, xpTenths: { smithing: 62.5 }, products: [{ obj: 'bar', count: 0.5 }] };
+        const r = run({
+            gather: { withdraw: 'ore' },
+            sink: {
+                mode: 'process',
+                steps: [[half], [smith5]],
+                end: 'bank',
+                legs: [10, 5, 15],
+                here: [false, false],
+            },
+        });
+        expect(r.trip).toMatchObject({ successes: 27, process: 149.5, travel: 30, total: 179.5 });
+        const ore = (TICKS_PER_HOUR / 179.5) * 27;
+        expect(r.xpPerHour.smithing).toBeCloseTo(ore * 18.75 * XP_RATE, 6);
+        expect(r.itemsPerHour).toEqual([{ obj: 'plate', count: expect.closeTo(ore * 0.1, 9) }]);
+    });
+
+    test("a worn supply takes no slot: the ring's wear is counted, 28 ore still fill the trip", () => {
+        // 28 ore, a ring per 140: 28 x 5 = 140, legs 20: 160. Rings an hour: ore / 140.
+        const ring: ActionModel = {
+            ...smelt,
+            consumes: [...smelt.consumes, { obj: 'ring', count: 1 / 140 }],
+            restart: undefined,
+        };
+        const r = withdraw('ore', ring);
+        const ore = (TICKS_PER_HOUR / 160) * 28;
+        expect(r.trip).toMatchObject({ successes: 28, total: 160 });
+        expect(r.suppliesPerHour).toEqual([
+            { obj: 'ore', count: expect.closeTo(ore, 9) },
+            { obj: 'ring', count: expect.closeTo(ore / 140, 9) },
+        ]);
+    });
+
+    test('a start is paid once a trip, beside the restarts', () => {
+        // 28 ore, start 1 and Make X 1: 28 x 5 + 1 + 1 = 142, legs 20: 162.
+        expect(withdraw('ore', { ...smelt, start: 1 }).trip).toMatchObject({ process: 142, total: 162 });
+        fails(
+            {
+                gather: { withdraw: 'ore' },
+                sink: { mode: 'process', steps: [[{ ...smelt, start: -1 }]], end: 'bank', legs, here: [false] },
+            },
+            /start -1 is not >= 0/,
+        );
+    });
+
+    test('fails where it is not modelled', () => {
+        fails(
+            { gather: { ...smelt, consumes: [] }, sink: { mode: 'bank', legs } },
+            /a gather with a restart, a start or a perTick/,
+        );
+        fails(
+            { gather: { ...smelt, consumes: [], restart: undefined, start: 1 }, sink: { mode: 'bank', legs } },
+            /a gather with a restart, a start or a perTick/,
+        );
+        // Stackable feathers made into stackable runes: the trip never ends.
+        const vein: ActionModel = {
+            ticksPerAttempt: 4,
+            success: 1,
+            xpTenths: {},
+            products: [{ obj: 'feather', count: 1 }],
+            consumes: [],
+        };
+        const craft: ActionModel = {
+            ...smelt,
+            consumes: [{ obj: 'feather', count: 1 }],
+            products: [{ obj: 'rune', count: 1 }],
+        };
+        fails(
+            { gather: vein, sink: { mode: 'process', steps: [[craft]], end: 'keep', legs, here: [false] } },
+            /restarts on a trip that never ends/,
+        );
+        fails(
+            {
+                gather: vein,
+                sink: {
+                    mode: 'process',
+                    steps: [[{ ...craft, restart: undefined, start: 1 }]],
+                    end: 'keep',
+                    legs,
+                    here: [false],
+                },
+            },
+            /a start on a trip that never ends/,
+        );
+    });
 });

@@ -96,6 +96,7 @@ const model: TrainingData['model'] = {
         return item;
     },
     foods: new Map(),
+    zones: { f2p: new Set(), multiway: new Set() },
     tools: {
         axe: [
             { obj: 'rune_axe', level: 41 },
@@ -132,7 +133,7 @@ const burn: WorldMethod = {
     family: 'woodcutting',
     at: tree.centre,
     params: {},
-    sink: { mode: 'process-bank', process: { family: 'firemaking', at: range.centre, params: {} } },
+    sink: { mode: 'process', steps: [{ family: 'firemaking', at: range.centre, params: {} }], end: 'bank' },
     plans: ['burn-plan'],
     measured: [
         {
@@ -149,7 +150,7 @@ const burn: WorldMethod = {
     site: tree.id,
     stand: tree.stand!,
     bank: bank.id,
-    processor: range.id,
+    processors: [range.id],
     skill: 'woodcutting',
     minLevel: 30,
     levels: { woodcutting: 20, firemaking: 30 },
@@ -286,6 +287,16 @@ describe('the training pages', () => {
             '  - **Supplies/hr** at 99: none.',
             '  - **Measured**: 185k at 35 by w1 on 2026-10-01, with the Bronze axe.',
         ]);
+    });
+
+    test('a leg over random landings, run at their mean, to one decimal', () => {
+        const [first, ...rest] = burn.ways[0]!.legs;
+        const mean: WorldMethod = {
+            ...burn,
+            ways: [{ reach: [], legs: [{ ...first!, runTicks: 53.92307692307692 }, ...rest] }],
+        };
+        const page = new Map(renderTraining({ ...world, methods: [mean] }, data)).get('wiki/training/woodcutting.md')!;
+        expect(page).toContain('; legs 53.9 + 5 + 15 run ticks.');
     });
 
     test("the same method on its process skill's page: that skill's XP, `-` under its own level", () => {

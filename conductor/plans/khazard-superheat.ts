@@ -17,6 +17,7 @@ const far = (v: V, c: { x: number; z: number }, r: number) => {
 
 export default definePlan({
     name: 'khazard-superheat',
+    method: 'iron-khazard-superheat-platebody-drop',
     description:
         'Mine iron at Port Khazard, superheat at the rocks, smith platebodies at the anvil and drop them; no bank',
     requires: { 'Magic 43+': v => v.level('Magic') >= 43 },

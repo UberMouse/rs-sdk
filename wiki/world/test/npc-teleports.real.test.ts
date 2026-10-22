@@ -54,6 +54,19 @@ describe('the essence mine teleports', () => {
         }
     });
 
+    test("each takes its label's p_delay(4), 5 ticks (essence_mine.rs2:20)", () => {
+        for (const c of teleports) expect([c.act, c.ticks]).toEqual([c.act, 5]);
+    });
+
+    test('a landing is as likely as the coords whose open radius-1 squares hold it: 1 / 22 shared among each', () => {
+        // ServerOps.ts map_findsquare: a uniform tile of the coord's open radius-1 square. The squares are disjoint, so
+        // each landing's chance is 1 / (22 x the open tiles of its square), from 1/22 x 1/9 up, and they sum to 1.
+        const [first] = teleports;
+        const sizes = first!.landings.map(l => 1 / (22 * l.chance!));
+        for (const n of sizes) expect(Math.abs(n - Math.round(n)) < 1e-9 && n >= 1 && n <= 9).toBe(true);
+        expect(first!.landings.reduce((t, l) => t + l.chance!, 0)).toBeCloseTo(1, 12);
+    });
+
     test('they are no longer out of scope', () =>
         expect(TRANSPORTS_OUT_OF_SCOPE.filter(o => o.script.includes('essence_mine'))).toEqual([]));
 });
@@ -69,6 +82,13 @@ describe('the mine’s portals back', () => {
             expect(c.requires).toHaveLength(1);
             expect(c.requires[0]).toContain('quest:runemysteries');
             expect(c.requires[0]!.filter(r => r.startsWith(CAME_FROM))).toHaveLength(1);
+        }
+    });
+
+    test("each takes its label's p_delay(1), 2 ticks, and lands on every tile alike", () => {
+        for (const c of back) {
+            expect(c.ticks).toBe(2);
+            expect(c.landings.every(l => l.chance === undefined)).toBe(true);
         }
     });
 

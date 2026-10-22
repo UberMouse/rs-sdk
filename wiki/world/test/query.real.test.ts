@@ -10,6 +10,7 @@ const profile: Profile = {
     axe: null,
     pickaxe: 'adamant_pickaxe',
     glory: false,
+    worn: [],
 };
 
 test('at Mining 60 with an adamant pickaxe the seed iron methods rank, the bank one below the drop one', () => {

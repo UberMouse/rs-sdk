@@ -8,6 +8,7 @@ import woodcutting from '@conductor/tasks/woodcutting';
 
 export default definePlan({
     name: 'chop-burn',
+    method: 'trees-lumbridge-burn',
     description: 'Chop normal trees at Lumbridge until full, burn the logs east of the general store; repeat.',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [

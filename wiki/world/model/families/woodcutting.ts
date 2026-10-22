@@ -1,7 +1,7 @@
 // Chopping a tree: skill_woodcutting/scripts/woodcut.rs2 on the woodcutting_trees rows (configs/trees.dbrow).
 import { treeSubtype } from '../../classify';
 import { ModelError, ProfileError, type ActionModel } from '../family';
-import { statRandomChance } from '../roll';
+import { statRandomChance } from '../../roll';
 import {
     int,
     requireLevel,

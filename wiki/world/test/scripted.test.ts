@@ -240,6 +240,8 @@ describe('deriveScriptedMoves: rows', () => {
                 from: around(PLACED.jumprock!),
                 landings: [{ tile: coordTile('0_50_50_10_10') }],
                 requires: [[]],
+                // No delay on the way: 0 ticks.
+                ticks: 0,
                 source: lineOf('p_telejump(0_50_50_10_10)'),
             },
         ]);
@@ -261,14 +263,16 @@ describe('deriveScriptedMoves: rows', () => {
                 from: [ONLY.logbalance!],
                 landings: [{ tile: at(130, 105) }],
                 requires: [[]],
-                // The fall: p_delay(0) then p_delay(2), 1 + 3 ticks; 99 hitpoints * 10 / 100 + 1 damage at most; the
-                // river bank it telejumps to.
+                // The success: p_delay(0), 1 tick, then the forcemove's 6 tiles a tick each (~walk's p_delay(0)): 7.
+                ticks: 7,
+                // The fall: p_delay(0) then p_delay(2), 1 + 3 ticks; floor(HP * 10 / 100) + 1 damage, 10 at 99
+                // hitpoints; the river bank it telejumps to.
                 roll: {
                     stat: 'agility',
                     low: 100,
                     high: 200,
                     source: lineOf('stat_random(agility, 100, 200)'),
-                    fail: { ticks: 4, to: coordTile('0_1_1_30_30'), damage: 10 },
+                    fail: { ticks: 4, to: coordTile('0_1_1_30_30'), damage: 10, hpDamage: { a: 10, b: 100, c: 1 } },
                 },
                 source: lineOf('~forcemove(movecoord(coord, 0, 0, 6))'),
             },
@@ -291,6 +295,8 @@ describe('deriveScriptedMoves: rows', () => {
                 from: [ONLY.citygate!],
                 landings: [{ tile: at(150, 104) }],
                 requires: [[]],
+                // The forcemove's 3 tiles, a tick each.
+                ticks: 3,
                 source: lineOf('~forcemove(movecoord(coord, 0, 0, 3))'),
                 notes: TEMPORARY.why,
             },

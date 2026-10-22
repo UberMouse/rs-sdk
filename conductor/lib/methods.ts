@@ -321,10 +321,11 @@ function widenLevelRange(
 
 /**
  * MethodRunsInput.floor over `world`'s methods: the floor at measuredProfile of the entry, the profile the training
- * pages set a measured figure beside (model/method.ts measuredFigures), over the method's shortest way.
+ * pages set a measured figure beside (model/method.ts measuredFigures), over the method's shortest way. The crossing
+ * and gate rows are required: without them every agility method's floor is an error.
  */
 export function measuredFloor(
-    world: Pick<World, 'sites' | 'features' | 'methods'>,
+    world: Pick<World, 'sites' | 'features' | 'methods' | 'crossings' | 'gates'>,
     model: MethodModel,
 ): MethodRunsInput['floor'] {
     const query = methodQuery(world, model);
