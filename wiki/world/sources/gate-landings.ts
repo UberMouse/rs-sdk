@@ -235,9 +235,22 @@ const mergeRolls = ([r, ...more]: readonly Roll[]): Roll => {
     };
 };
 
-/** Gate.ticks of the paths that land (LandingOutcome `landing`): the most they take, when each is known. */
-const ticksOf = (ls: readonly { ticks?: number }[]): { ticks?: number } =>
-    ls.length && ls.every(l => l.ticks !== undefined) ? { ticks: Math.max(...ls.map(l => l.ticks!)) } : {};
+/**
+ * Gate.ticks and Gate.standTicks of the paths that land (LandingOutcome `landing`), when each is known: the most
+ * they take, and the most each stand's take, by stand tile.
+ */
+function ticksOf(ls: readonly { stand: Tile; ticks?: number }[]): Pick<Gate, 'ticks' | 'standTicks'> {
+    if (!ls.length || ls.some(l => l.ticks === undefined)) return {};
+    const byStand = new Map<string, { stand: Tile; ticks: number }>();
+    for (const l of ls) {
+        const had = byStand.get(tileKey(l.stand));
+        if (!had || had.ticks < l.ticks!) byStand.set(tileKey(l.stand), { stand: l.stand, ticks: l.ticks! });
+    }
+    return {
+        ticks: Math.max(...ls.map(l => l.ticks!)),
+        standTicks: [...byStand.values()].sort((a, b) => byTile(a.stand, b.stand)),
+    };
+}
 
 /** LanderWorld.locAt over the placed locs: the loc of a config whose tile is the one asked. */
 function locFinder(locs: readonly PlacedLoc[]): NonNullable<LanderWorld['locAt']> {

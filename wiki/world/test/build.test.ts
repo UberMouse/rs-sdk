@@ -469,6 +469,23 @@ describe('serializeWorld', () => {
                     'is not a world.json: gates[1]: its ticks, when it has them, is a count, on a row with to or landings: regenerate it with bun run world',
                 );
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], ticks: 3 }] })).toBe('read');
+            // Each stand's ticks sit beside the row's, a stand tile and a count no more than them.
+            const stand = landing.stand;
+            for (const g of [
+                { ...world.gates[1], standTicks: [{ stand, ticks: 3 }] },
+                { ...world.gates[1], ticks: 3, standTicks: [] },
+                { ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 4 }] },
+                { ...world.gates[1], ticks: 3, standTicks: [{ stand: 'here', ticks: 3 }] },
+            ])
+                expect(refused({ ...world, gates: [world.gates[0], g] })).toMatch(
+                    /^is not a world\.json: gates\[1\]: (its standTicks, when it has them, is a list beside its ticks|a standTicks entry needs a stand tile and ticks, no more than the row's ticks): regenerate/,
+                );
+            expect(
+                refused({
+                    ...world,
+                    gates: [world.gates[0], { ...world.gates[1], ticks: 3, standTicks: [{ stand, ticks: 2 }] }],
+                }),
+            ).toBe('read');
             // A gate's requires has a set (the free form is [[]]); a quest window's is [].
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], requires: [] }] })).toBe(
                 'is not a world.json: gates[1]: a gate whose requires has no set, so nothing opens it ([[]] asks for nothing): regenerate it with bun run world',
@@ -580,6 +597,10 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // and a source withdraw from the bank.
         writeFileSync(file, serializeWorld({ ...world, format: 17 }));
         expect(() => loadWorld(file)).toThrow(`format 17, this code reads format ${WORLD_FORMAT}`);
+        // Format 18 was written before a gate row carried each stand's ticks (standTicks) and a method way's walks
+        // could be null (a pair no walk joins).
+        writeFileSync(file, serializeWorld({ ...world, format: 18 }));
+        expect(() => loadWorld(file)).toThrow(`format 18, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }

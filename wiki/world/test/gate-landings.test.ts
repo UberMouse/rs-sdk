@@ -602,6 +602,7 @@ describe('deriveGateLandings: stands and landings', () => {
             'from',
             'to',
             'ticks',
+            'standTicks',
             'source',
             'notes',
         ]);

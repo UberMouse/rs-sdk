@@ -368,6 +368,12 @@ export interface Gate {
      */
     ticks?: number;
     /**
+     * With `ticks`: each stand's own, the most its moves take, by stand tile (the Wilderness course pipe takes 11 from
+     * the tile south of it and 12 from the others, which its script walks there first,
+     * skill_agility/scripts/wilderness_course.rs2:57-60). On a `to` row these are the tiles the move is made from.
+     */
+    standTicks?: { stand: Tile; ticks: number }[];
+    /**
      * On an object, the move deletes the loc or swaps it for one whose collision does not block
      * (sources/gate-landings.ts): once `requires` is met, the op makes the loc's tiles walkable for a while.
      * LOC_DEL and LOC_CHANGE take a duration, after which the loc comes back (the Kharazi jungle's after
@@ -496,7 +502,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 18;
+export const WORLD_FORMAT = 19;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

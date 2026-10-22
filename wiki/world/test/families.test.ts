@@ -1138,6 +1138,7 @@ describe('registry', () => {
 
     test('the kinds of site each family acts at', () => {
         expect(Object.fromEntries([...families].map(([id, f]) => [id, f.kinds]))).toEqual({
+            agility: ['agility-course'],
             cooking: ['range', 'fire'],
             firemaking: [],
             fishing: ['fishing-spot'],

@@ -72,8 +72,11 @@ export class ModelError extends Error {}
  */
 export class ProfileError extends ModelError {}
 
-/** What a family reads of the world. */
-export type ModelWorld = Pick<World, 'features'>;
+/**
+ * What a family reads of the world: the features, and the crossing and gate rows where it has them (an agility lap's
+ * obstacles); a family that needs those throws a ModelError without them.
+ */
+export type ModelWorld = Pick<World, 'features'> & Partial<Pick<World, 'crossings' | 'gates'>>;
 
 export interface Family {
     /** `woodcutting`, `fishing`, ... */
@@ -85,11 +88,12 @@ export interface Family {
      * Throws a ModelError when the site, params or game data can't be modelled (an unknown subtype, no row), and a
      * ProfileError when the profile can't do it (no axe or pickaxe, a level under the requirement).
      */
-    model(site: Site, params: unknown, profile: Profile, world: ModelWorld, walks?: number[]): ActionModel;
+    model(site: Site, params: unknown, profile: Profile, world: ModelWorld, walks?: (number | null)[]): ActionModel;
     /**
-     * Optional, for a method's gather family: the tile pairs it needs walked inside its site (an agility lap's landing
-     * to the next obstacle). method.ts prices each under the way's requirement set, in run ticks, and passes them to
-     * `model` as `walks`, in this order. A process step's family that has them fails the record.
+     * Optional, for a method's gather family: the tile pairs it may walk inside its site (an agility lap's landing to
+     * each stand of the next obstacle). method.ts prices each under the way's requirement set, in run ticks, `null`
+     * for a pair no walk joins, and passes them to `model` as `walks`, in this order; the family picks among them and
+     * throws a ModelError when the ones that walk don't do. A process step's family that has them fails the record.
      */
     walks?(site: Site, params: unknown, world: ModelWorld): { from: Tile; to: Tile }[];
 }

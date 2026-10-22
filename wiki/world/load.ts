@@ -125,6 +125,13 @@ function gateProblem(g: Parsed): string | undefined {
     if (roll) return roll;
     if (g.ticks !== undefined && (!isCount(g.ticks) || (g.to === undefined && g.landings === undefined)))
         return 'its ticks, when it has them, is a count, on a row with to or landings';
+    if (g.standTicks !== undefined) {
+        if (g.ticks === undefined || !Array.isArray(g.standTicks) || !g.standTicks.length)
+            return 'its standTicks, when it has them, is a list beside its ticks';
+        for (const st of g.standTicks)
+            if (!isObject(st) || !isTile(st.stand) || !isCount(st.ticks) || st.ticks > (g.ticks as number))
+                return "a standTicks entry needs a stand tile and ticks, no more than the row's ticks";
+    }
     if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))
         return 'oneWay, when it has it, is true, on a row with from';
     if (g.act !== undefined) {

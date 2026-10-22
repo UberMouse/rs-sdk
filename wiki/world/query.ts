@@ -88,7 +88,10 @@ export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink'>): Hazard {
 }
 
 /** The query over `world`'s methods, rated with `model` (methodModel). */
-export function methodQuery(world: Pick<World, 'sites' | 'features' | 'methods'>, model: MethodModel): MethodQuery {
+export function methodQuery(
+    world: Pick<World, 'sites' | 'features' | 'methods'> & Partial<Pick<World, 'crossings' | 'gates'>>,
+    model: MethodModel,
+): MethodQuery {
     const ctx: MethodContext = { world, ...model };
     const methods = world.methods.map(wm => fromWorldMethod(wm, world, model.zones));
     const byId = new Map(methods.map(m => [m.def.id, m]));

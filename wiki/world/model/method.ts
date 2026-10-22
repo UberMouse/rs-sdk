@@ -41,8 +41,11 @@ export interface Leg {
 export interface MethodWay {
     reach: string[];
     legs: Leg[];
-    /** When the gather family has `walks`: the run ticks of each, under `reach`, in the family's order. */
-    walks?: number[];
+    /**
+     * When the gather family has `walks`: the run ticks of each, under `reach`, in the family's order; `null` for a pair
+     * no walk joins.
+     */
+    walks?: (number | null)[];
 }
 
 /**
@@ -98,7 +101,8 @@ export interface ResolvedMethod {
 
 /** What resolving and modelling a method reads. */
 export interface MethodContext {
-    world: Pick<World, 'sites' | 'features'>;
+    /** The crossing and gate rows where a family reads them (ModelWorld). */
+    world: Pick<World, 'sites' | 'features'> & Partial<Pick<World, 'crossings' | 'gates'>>;
     families: ReadonlyMap<string, Family>;
     items: Items;
     /** Hitpoints each food heals (items.ts readFoods). */
@@ -278,8 +282,12 @@ function locate(
             ways.push({ reach, legs });
             continue;
         }
-        const walks = pairs.map(w => finder.runTicksBetween(w.from, w.to, reach)?.runTicks);
-        if (walks.every(w => w !== undefined)) ways.push({ reach, legs, walks: walks as number[] });
+        // The family picks among its pairs (Family.walks), so one no walk joins is kept as null, not a dropped way.
+        ways.push({
+            reach,
+            legs,
+            walks: pairs.map(w => finder.runTicksBetween(w.from, w.to, reach)?.runTicks ?? null),
+        });
     }
     if (!ways.length)
         throw new ModelError(

@@ -597,12 +597,16 @@ describe('process steps, withdrawals and walks', () => {
     });
 
     test("a gather family's walks are priced under each way's set and passed to its model", () => {
-        // Stand (3201, 3201) to (3211, 3201): 10 steps, 5 run ticks.
+        // Stand (3201, 3201) to (3211, 3201): 10 steps, 5 run ticks; a pair to a tile off the map no walk joins,
+        // kept as null for the family to pass over.
         const real = ctx.families.get('mining')!;
-        const got: (number[] | undefined)[] = [];
+        const got: ((number | null)[] | undefined)[] = [];
         const walking: Family = {
             ...real,
-            walks: () => [{ from: at(0, 3201, 3201), to: at(0, 3211, 3201) }],
+            walks: () => [
+                { from: at(0, 3201, 3201), to: at(0, 3211, 3201) },
+                { from: at(0, 3201, 3201), to: at(0, 9000, 9000) },
+            ],
             model: (s, p, profile, world, walks) => {
                 got.push(walks);
                 return real.model(s, p, profile, world);
@@ -610,10 +614,10 @@ describe('process steps, withdrawals and walks', () => {
         };
         const walked = { ...ctx, families: new Map([...ctx.families, ['mining', walking]]) };
         const m = resolveMethod(mine, walked, finder);
-        expect(m.ways[0]!.walks).toEqual([5]);
+        expect(m.ways[0]!.walks).toEqual([5, null]);
         got.length = 0;
         methodRate(m, profileAt('mining', 40, { tools: ctx.tools }), walked);
-        expect(got).toEqual([[5]]);
+        expect(got).toEqual([[5, null]]);
         // A family without walks leaves the way without them.
         expect(resolve(mine).ways[0]).not.toHaveProperty('walks');
         // A process step's family with walks would have them ignored: refused, 'here' or not.

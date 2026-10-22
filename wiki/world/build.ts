@@ -1017,7 +1017,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     );
     const methods = resolveMethods(
         METHODS,
-        { world: { sites, features }, ...model, quests: graph.quests },
+        {
+            world: { sites, features, crossings: reachInput.world.crossings, gates: reachInput.world.gates },
+            ...model,
+            quests: graph.quests,
+        },
         wayFinder(graph),
     );
     const sailSiteCheck = outOfScopeSites(

@@ -1,6 +1,7 @@
 // The formula families by id. Adding one is a module beside these, its line here, and its tests.
 import type { Family } from '../family';
 import type { FamilyFactory, GameData } from './common';
+import { agility } from './agility';
 import { cooking } from './cooking';
 import { firemaking } from './firemaking';
 import { fishing } from './fishing';
@@ -18,6 +19,7 @@ import { woodcutting } from './woodcutting';
 export { readGameData, type GameData } from './common';
 
 export const FAMILIES: Readonly<Record<string, FamilyFactory>> = {
+    agility,
     cooking,
     firemaking,
     fishing,

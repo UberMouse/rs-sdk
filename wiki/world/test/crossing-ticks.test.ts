@@ -255,7 +255,7 @@ describe('a scripted crossing: its success ticks', () => {
 });
 
 describe('a gate: its success ticks', () => {
-    test("a pipe whose loc_find moves the active loc on: the far piece's exactmove lands, the slowest stand's ticks", () => {
+    test("a pipe whose loc_find moves the active loc on: the far piece's exactmove lands, the slowest stand's ticks, and each stand's", () => {
         // From the stand under the pipe, (170, 99): p_delay(0) 1, the exactmove's p_delay(3) 4, p_delay(0) 1, the
         // telejump to (170, 109), p_delay(0) 1, then loc_find makes the piece at (170, 110) the active loc and its
         // exactmove, p_delay(3) 4, lands at its loc_coord + 2 = (170, 112): 11. From (169, 100) and (171, 100) the
@@ -283,6 +283,12 @@ describe('a gate: its success ticks', () => {
         expect(out.gates[0]).toMatchObject({
             landings: [at(169, 100), at(170, 99), at(171, 100)].map(stand => ({ stand, landing })),
             ticks: 12,
+            // Each stand's own: 11 from under the pipe, 12 from beside it.
+            standTicks: [
+                { stand: at(169, 100), ticks: 12 },
+                { stand: at(170, 99), ticks: 11 },
+                { stand: at(171, 100), ticks: 12 },
+            ],
         });
     });
 });
