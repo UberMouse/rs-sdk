@@ -1282,6 +1282,18 @@ export type ExpectedUnreached = ({ area: string } | { site: string }) & {
     source: string;
 };
 
+/**
+ * A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player but its own:
+ * `why` says where, `wall` names a loc or map flag that walls it with its map square line, and `source` is the op
+ * it is used by.
+ */
+const walledIn = (
+    site: string,
+    why: string,
+    wall: string,
+    source = 'skill_woodcutting/scripts/woodcut.rs2:1',
+): ExpectedUnreached => ({ site, reason: `walled in by collision: ${why} (${wall})`, source });
+
 export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     {
         area: 'tutorial-island',
@@ -1368,11 +1380,13 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     ...[5, 10, 13, 15, 17, 18, 23]
         .map(i => `tree:kandarin:${i}`)
         .concat(['tree:swamp:1', 'tree:swamp:3'])
-        .map((site): ExpectedUnreached => ({
-            site,
-            reason: "walled in by collision north of the Tree Gnome Stronghold's fence (gnomefence, as maps/m37_54.jm2:4631): no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
-            source: 'skill_woodcutting/scripts/woodcut.rs2:1',
-        })),
+        .map(site =>
+            walledIn(
+                site,
+                'the forest north of the Tree Gnome Stronghold, past its north fence',
+                'gnomefence at maps/m37_54.jm2:4631',
+            ),
+        ),
     ...['range:west-ardougne:0', 'water-source:kandarin:2'].map((site): ExpectedUnreached => ({
         site,
         reason: "in the mourner headquarters, whose door lets a player in only at two Biohazard stages wearing a doctor's gown (^biohazard_poisoned_stew, ^biohazard_found_distillator) and is locked at every other, the quest done included (doors.rs2:69)",
@@ -1520,13 +1534,9 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
         ] as const
-    ).map(([site, why, wall, source]): ExpectedUnreached => ({
-        site,
-        reason: `walled in by collision: ${why} (${wall})`,
-        source,
-    })),
-    // Stretches of land with several trees, walled in the same way: no loc or npc op on or beside each moves the player
-    // in, but the ones the reason names, which lead off it.
+    ).map(([site, why, wall, source]) => walledIn(site, why, wall, source)),
+    // Stretches of land with several trees walled in alike: no loc or npc op on or beside one moves the player onto it,
+    // and those the reason names lead off it.
     ...(
         [
             [
@@ -1569,13 +1579,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'gnomefence at maps/m37_54.jm2:4748',
             ],
         ] as const
-    ).flatMap(([sites, why, wall]) =>
-        sites.map((site): ExpectedUnreached => ({
-            site,
-            reason: `walled in by collision: ${why} (${wall})`,
-            source: 'skill_woodcutting/scripts/woodcut.rs2:1',
-        })),
-    ),
+    ).flatMap(([sites, why, wall]) => sites.map(site => walledIn(site, why, wall))),
     {
         site: 'tree:kandarin:77',
         reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
@@ -1604,4 +1608,75 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
             source: 'skill_runecraft/scripts/runecraft.rs2:45',
         }),
     ),
+    // Land players do get to, by a crossing the index does not read yet: each reason names it, and
+    // conductor/roadmap.md (Review follow-ups) tracks deriving it. An entry goes stale once its crossing lands.
+    ...[...[1, 3, 4, 5, 7, 9, 11, 12, 14, 15, 18, 19, 20].map(i => `tree:karamja:${i}`), 'tree:kharazi-jungle:0'].map(
+        (site): ExpectedUnreached => ({
+            site,
+            reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). All but a few of the jungle locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), so their gate rows, which open the locs, free no way through, and no row says the chain of cuts',
+            source: 'quests/quest_legends/scripts/jungle_tree.rs2:161',
+        }),
+    ),
+    ...[0, 1, 2, 3].map((i): ExpectedUnreached => ({
+        site: `fire:goblin-cave:${i}`,
+        reason: "in Dwarf Cannon's goblin cave, whose entrance by the Fishing Guild always telejumps the player in (mcannoncave, mcannon_cave.rs2:10); gate-list.ts reads its check as a side effect, and a side-effect gate candidate gives no edge",
+        source: 'quests/quest_mcannon/scripts/locs/mcannon_cave.rs2:10',
+    })),
+    ...['rock:tirannwn:1', 'rock:arandar:0', 'tree:tirannwn:20', 'tree:arandar:0'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "past Regicide's pit traps, which players jump (@regicide_jump_pitfall, quest_regicide.rs2:239: an agility roll, :274, then an exactmove three tiles on, or a fall into the pit); gate-list.ts reads their checks as side effects, and a side-effect gate candidate gives no edge",
+        source: 'quests/quest_regicide/scripts/quest_regicide.rs2:280',
+    })),
+    ...['altar:underground-pass:1', 'fire:underground-pass:3', 'furnace:underground-pass:0'].map(
+        (site): ExpectedUnreached => ({
+            site,
+            reason: "in the Underground Pass past its spear traps, whose moves no bound run settles (the build report's scripted moves with no settled landing): the other ops on its edge give no way in from land a walk gets to (the mud pile, quest_upass.rs2:149, the railings, :226, and the ledge, upass_obstacles.rs2:246), and the pipe (upass_pipe4, upass_obstacles.rs2:61) is a side-effect gate candidate, which gives no edge",
+            source: 'quests/quest_upass/scripts/upass_obstacles.rs2:150',
+        }),
+    ),
+    ...['fishing-spot:kandarin:7', 'range:kandarin:7'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "on the fishing platform, which Holgart's boat telejumps the player to (holgart_ardougne.rs2:105); his dialogue goes by Sea Slug's stage, so gates.ts leaves the boat out as a quest boat (TRANSPORTS_OUT_OF_SCOPE)",
+        source: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:105',
+    })),
+    {
+        site: 'fire:ardougne-sewers:0',
+        reason: 'at the end of the Hazeel Cult sewer, where the raft takes the player only once all five valves above are turned right (~count_correct_valves); fewer leave them at an island on the way or where they are, and gate-list.ts reads the raft as not a gate',
+        source: 'quests/quest_hazeelcult/scripts/quest_hazeelcult.rs2:38',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:0',
+        reason: "on the desert mining camp's mine floor, where the lower mine cart takes the player (oploc2,touristtrap_minecart: a dialogue choice and an agility roll; gate-list.ts reads its check as a side effect, which gives no edge) from the barrel room, itself past the mine cave and the mine doors, whose teleport into the mine (quest_desertrescue.rs2:435) the doors' gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:1',
+        reason: "rocks on the desert mining camp's mine floor, reached as rock:desert-mining-camp-mine:0 is (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, a nook the cave walls and an adamantite rock close in (cavewall_face1 at maps/m51_147.jm2:6452, adamantiterock1 at :6543), though that rock is used from the floor too",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:2',
+        reason: "in the desert mining camp's barrel room, past the mine cave, whose gate row lands there (quest_desertrescue.rs2:488), from the tunnel inside the mine doors; that tunnel is entered from outside only by the doors' teleport into the mine, which their gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:435',
+    },
+    {
+        site: 'tree:baxtorian-falls:0',
+        reason: "on the Baxtorian Falls ledge, which the rope tied to the overhanging tree lets the player down to (quest_waterfall.rs2:262; its gate row lands); the tree is used from the river's islet, reached only by the rope thrown on the crossing rock (aplocu,crossing_rock_waterfall_quest, :214), whose script throws from the bank north of it (inzone, :222) while a gate row is run from the tiles beside its loc, so that row derives no landing (the fill's rows it could not use)",
+        source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:214',
+    },
+    {
+        site: 'tree:tirannwn:1',
+        reason: "past Regicide's dense forest: both crossings on the pocket's edge (regicide_cross_over3 at (2165, 3189) and (2173, 3156)) exactmove the player onto tiles off walkable land, which the gate rows leave out (the build report's gate landings off walkable land)",
+        source: 'quests/quest_regicide/scripts/quest_regicide.rs2:462',
+    },
+    {
+        site: 'fire:underground-pass:0',
+        reason: "in the Underground Pass, past obstacles the index does not settle: the collapsed bridges' moves no bound run settles (upass_obstacles.rs2:368, the build report's scripted moves with no settled landing), the tunnels down from the level above (cavewalltunnel_upass_down, quest_upass.rs2:407) start on land no walk gets to, and the pipe (upass_pipe6, upass_obstacles.rs2:330) is a side-effect gate candidate, which gives no edge",
+        source: 'quests/quest_upass/scripts/upass_obstacles.rs2:368',
+    },
+    {
+        site: 'fire:underground-pass:1',
+        reason: "west of the Underground Pass's old bridge, which players drop by shooting a lit arrow at its guide rope from the ledge north-east of it (aploc1,oldbridge_guiderope: east of the rope and from z 9720 on, upass_bridge.rs2:34, :38); its gate row lands here, but a gate row is run from the tiles beside its loc, and those are the chasm's. The lever (:89) and the swamp's bubbles (upass_obstacles.rs2:33) only move the player off",
+        source: 'quests/quest_upass/scripts/upass_bridge.rs2:33',
+    },
 ];

@@ -263,9 +263,6 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
 
 The unreached report was worked per `world-index-unreached-spec.md`: the sites nobody walks to (walled in by
 collision, behind a minigame or a quest window) are `EXPECTED_UNREACHED` rows in `areas.ts`, each citing its
-script, and the build fails on a stale one. Known gaps, the pockets the report still lists (`wiki/world/README.md`,
-"The unreached report"): side-effect gate candidates give no edge (the Dwarf Cannon cave, the Regicide pitfalls);
-a gate row whose script teleports somewhere its `to` does not give (the desert mining camp's mine); the scripted
-moves whose landing no bound run settles (a `map_findsquare`, a coord kept in a varp, the Underground Pass traps;
-the build report lists them); chained moves (the Kharazi jungle cuts); quest boats out of scope (Holgart's).
-Outside the report: banker clusters across booths; unnamed underground areas outside the walker's `planeOf`.
+script, and the build fails on a stale one. The report now lists none: the pockets players reach by a crossing the
+index misses are rows too, their reasons naming the crossing (`wiki/world/README.md`, "The unreached report"), and
+deriving those crossings is in `conductor/roadmap.md` (Review follow-ups). Outside the report: banker clusters across booths; unnamed underground areas outside the walker's `planeOf`.
