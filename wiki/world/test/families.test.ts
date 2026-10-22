@@ -121,6 +121,28 @@ data=levelrequired,40
 data=experience,1800
 data=successchance,0,0
 data=cantcookmessage_fire,You can't cook that on a fire.
+
+[magic_spell_superheat]
+table=magic_spell_table
+data=spell,^superheat_item
+data=levelrequired,43
+data=runesrequired,naturerune,1,firerune,4,null,null
+data=experience,530
+
+[magic_staff_fire]
+table=magic_staff_table
+data=staff,staff_of_fire
+data=staff,lava_battlestaff
+data=rune,firerune
+
+[iron_platebody]
+table=smithing
+data=ifproduct,iron_platebody
+data=product,iron_platebody
+data=product_amount,1
+data=levelrequired,33
+data=bar,iron_bar
+data=bar_amount,5
 `;
 
 const OBJS = `
@@ -134,6 +156,20 @@ param=mining_rate,2
 param=fishing_struct,fishing_struct_trout
 [raw_salmon]
 param=fishing_struct,fishing_struct_salmon
+[iron_ore]
+param=smeltsto,iron_bar
+[tin_ore]
+param=smeltsto,bronze_bar
+[gold_ore]
+param=smeltsto,gold_bar
+[coal]
+[iron_bar]
+param=smelting_struct,smelting_iron_bar
+param=smithing_anvil_struct,smithing_iron_bar
+[bronze_bar]
+param=smelting_struct,smelting_bronze_bar
+[gold_bar]
+param=smelting_struct,smelting_gold_bar
 `;
 
 const LOCS = `
@@ -162,6 +198,29 @@ param=success_high,192
 param=productexp,700
 param=success_low,16
 param=success_high,96
+[smelting_bronze_bar]
+param=product,bronze_bar
+param=levelrequired,1
+param=productexp,62
+param=ingredient,copper_ore
+param=bar_count,1
+param=ingredient_secondary,tin_ore
+param=ingredient_secondary_count,1
+[smelting_iron_bar]
+param=product,iron_bar
+param=levelrequired,15
+param=productexp,125
+param=ingredient,iron_ore
+param=bar_count,1
+[smelting_gold_bar]
+param=product,gold_bar
+param=levelrequired,40
+param=productexp,225
+param=ingredient,gold_ore
+param=bar_count,1
+[smithing_iron_bar]
+param=levelrequired,15
+param=xpperbar,250
 `;
 
 // freshfish.rs2's lure trigger and continue label, cut down; memberfish's big net, whose roll is its own proc.
@@ -641,6 +700,132 @@ describe('cooking', () => {
     });
 });
 
+describe('superheat', () => {
+    // Cast in place: the site is wherever the step before stands.
+    const rocks = at('rock', [['ironrock1', 'iron']]);
+
+    test('iron with a staff of fire at Magic 43', () => {
+        // superheat.rs2: iron_ore smeltsto iron_bar, its struct's ingredient iron_ore, one a cast (:35, :62);
+        // p_delay(1) (:67) refuses the next OpHeldT for 2 ticks, so a cast every 3. magic_spells.dbrow:186-187:
+        // 1 nature + 4 fire, 530 Magic tenths; the worn staff of fire (magic_staff_fire) zeroes the fire runes
+        // (magic.rs2:53-88). Smithing: smelting_iron_bar's productexp 125 (:56-60). No fail roll.
+        const p = profile(43, { worn: ['staff_of_fire'] });
+        expect(family('superheat').model(rocks.site, { ore: 'iron_ore' }, p, rocks.world)).toEqual({
+            ticksPerAttempt: 3,
+            success: 1,
+            xpTenths: { magic: 530, smithing: 125 },
+            products: [{ obj: 'iron_bar', count: 1 }],
+            consumes: [
+                { obj: 'iron_ore', count: 1 },
+                { obj: 'naturerune', count: 1 },
+            ],
+        });
+    });
+
+    test('without a staff the fire runes are spent; tin makes bronze from copper and tin', () => {
+        // tin_ore smeltsto bronze_bar, whose struct's ingredient is copper_ore (:35) and secondary 1 tin (:61-65).
+        const m = family('superheat').model(rocks.site, { ore: 'tin_ore' }, profile(43), rocks.world);
+        expect(m.consumes).toEqual([
+            { obj: 'copper_ore', count: 1 },
+            { obj: 'tin_ore', count: 1 },
+            { obj: 'naturerune', count: 1 },
+            { obj: 'firerune', count: 4 },
+        ]);
+        expect(m.xpTenths).toEqual({ magic: 530, smithing: 62 });
+    });
+
+    test('gold with goldsmith gauntlets: scale(5, 2, 225) = 1125 / 2 = 562 tenths', () => {
+        // superheat.rs2:57-58; SCALE is a * c / b truncated.
+        const p = profile(43, { worn: ['gauntlets_of_goldsmithing'] });
+        expect(family('superheat').model(rocks.site, { ore: 'gold_ore' }, p, rocks.world).xpTenths.smithing).toBe(562);
+    });
+
+    test('fails with a reason', () => {
+        refuses('superheat', rocks, { ore: 'iron_ore' }, profile(42), /needs magic 43/);
+        refuses(
+            'superheat',
+            rocks,
+            { ore: 'iron_ore' },
+            { ...profile(43), levels: { ...profile(43).levels, smithing: 14 } },
+            /needs smithing 15/,
+        );
+        fails('superheat', rocks, { ore: 'coal' }, profile(99), /coal has no smeltsto/);
+        fails('superheat', rocks, {}, profile(99), /needs an ore param/);
+    });
+});
+
+describe('smelting', () => {
+    const furnace = at('furnace', [['furnace', '']]);
+
+    test('iron at a furnace: half the bars without a ring of forging', () => {
+        // smelting.rs2: after a bar, start_smelt_ore is queued with delay 0 and smelting_ore with delay 3, both from
+        // inside a queue (:164, :188): 1 + 4 = 5 ticks a bar. Iron fails on randominc(1) = 1 (:202): 1/2 a bar and
+        // 125 / 2 tenths per ore; the fail still takes the ore (:192-196).
+        const m = family('smelting').model(furnace.site, { bar: 'iron_bar' }, profile(15), furnace.world);
+        expect(m).toEqual({
+            ticksPerAttempt: 5,
+            success: 1,
+            xpTenths: { smithing: 62.5 },
+            products: [{ obj: 'iron_bar', count: 0.5 }],
+            consumes: [{ obj: 'iron_ore', count: 1 }],
+        });
+        // A worn ring of forging skips the roll (:200-201): every ore a bar, 125 tenths.
+        const ring = family('smelting').model(
+            furnace.site,
+            { bar: 'iron_bar' },
+            profile(15, { worn: ['ring_of_forging'] }),
+            furnace.world,
+        );
+        expect([ring.products, ring.xpTenths]).toEqual([[{ obj: 'iron_bar', count: 1 }], { smithing: 125 }]);
+    });
+
+    test('bronze takes a copper and a tin a bar', () => {
+        const m = family('smelting').model(furnace.site, { bar: 'bronze_bar' }, profile(1), furnace.world);
+        expect([m.consumes, m.products, m.xpTenths]).toEqual([
+            [
+                { obj: 'copper_ore', count: 1 },
+                { obj: 'tin_ore', count: 1 },
+            ],
+            [{ obj: 'bronze_bar', count: 1 }],
+            { smithing: 62 },
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        refuses('smelting', furnace, { bar: 'iron_bar' }, profile(14), /needs smithing 15/);
+        fails('smelting', furnace, { bar: 'iron_ore' }, profile(99), /iron_ore has no smelting struct/);
+        fails('smelting', furnace, {}, profile(99), /needs a bar param/);
+        fails('smelting', at('anvil', [['anvil', '']]), { bar: 'iron_bar' }, profile(99), /not a furnace/);
+    });
+});
+
+describe('smithing', () => {
+    const anvil = at('anvil', [['anvil', '']]);
+
+    test('an iron platebody at Smithing 33', () => {
+        // smithing.rs2 [proc,smithing_anvil]: p_delay(1) (:272) holds 2 ticks, p_delay(2) (:286) 3: 5 ticks a
+        // product. XP bar_amount x xpperbar = 5 x 250 = 1250 tenths (:283). 5 bars a platebody, a hammer held
+        // (:101-104).
+        expect(family('smithing').model(anvil.site, { product: 'iron_platebody' }, profile(33), anvil.world)).toEqual({
+            ticksPerAttempt: 5,
+            success: 1,
+            xpTenths: { smithing: 1250 },
+            products: [{ obj: 'iron_platebody', count: 1 }],
+            consumes: [{ obj: 'iron_bar', count: 5 }],
+            batch: 5,
+            tools: ['hammer'],
+        });
+    });
+
+    test('fails with a reason', () => {
+        refuses('smithing', anvil, { product: 'iron_platebody' }, profile(32), /needs smithing 33/);
+        refuses('smithing', anvil, { product: 'iron_platebody' }, profile(14), /working iron_bar needs smithing 15/);
+        fails('smithing', anvil, { product: 'rune_platebody' }, profile(99), /no smithing row makes rune_platebody/);
+        fails('smithing', anvil, {}, profile(99), /needs a product param/);
+        fails('smithing', at('furnace', [['furnace', '']]), { product: 'iron_platebody' }, profile(99), /not an anvil/);
+    });
+});
+
 describe('registry', () => {
     test('every family is registered under its own id', () => {
         expect([...families.keys()]).toEqual(Object.keys(FAMILIES));
@@ -653,7 +838,10 @@ describe('registry', () => {
             fishing: ['fishing-spot'],
             mining: ['rock'],
             pickpocket: ['pickpocket'],
+            smelting: ['furnace'],
+            smithing: ['anvil'],
             stall: ['stall'],
+            superheat: [],
             woodcutting: ['tree'],
         });
     });

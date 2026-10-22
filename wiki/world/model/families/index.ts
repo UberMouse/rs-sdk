@@ -5,7 +5,10 @@ import { cooking } from './cooking';
 import { fishing } from './fishing';
 import { mining } from './mining';
 import { pickpocket } from './pickpocket';
+import { smelting } from './smelting';
+import { smithing } from './smithing';
 import { stall } from './stall';
+import { superheat } from './superheat';
 import { woodcutting } from './woodcutting';
 
 export { readGameData, type GameData } from './common';
@@ -15,7 +18,10 @@ export const FAMILIES: Readonly<Record<string, FamilyFactory>> = {
     fishing,
     mining,
     pickpocket,
+    smelting,
+    smithing,
     stall,
+    superheat,
     woodcutting,
 };
 

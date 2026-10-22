@@ -72,6 +72,56 @@ describe('the game data the hand-worked cases rest on', () => {
         expect(first(data.locs.get('cooksquestrange'), 'category')).toBe('cooking_oven');
         const bakery = row('stealing_bakery_stall');
         expect([bakery.respawn_ticks, bakery.loot_total, bakery.experience]).toEqual([[['8']], [['20']], [['160']]]);
+        const spell = row('magic_spell_superheat');
+        expect([spell.spell, spell.levelrequired, spell.runesrequired, spell.experience]).toEqual([
+            [['^superheat_item']],
+            [['43']],
+            [['naturerune', '1', 'firerune', '4', 'null', 'null']],
+            [['530']],
+        ]);
+        expect(row('magic_staff_fire').staff).toContainEqual(['staff_of_fire']);
+        expect(row('magic_staff_fire').rune).toEqual([['firerune']]);
+        const plate = row('iron_platebody');
+        expect([plate.product, plate.product_amount, plate.levelrequired, plate.bar, plate.bar_amount]).toEqual([
+            [['iron_platebody']],
+            [['1']],
+            [['33']],
+            [['iron_bar']],
+            [['5']],
+        ]);
+        for (const [ore, bar] of [
+            ['iron_ore', 'iron_bar'],
+            ['tin_ore', 'bronze_bar'],
+            ['gold_ore', 'gold_bar'],
+        ] as const)
+            expect(paramsOf(data.objs, ore)).toContain(`smeltsto,${bar}`);
+        expect(paramsOf(data.objs, 'coal').some(x => x.startsWith('smeltsto,'))).toBe(false);
+        expect(paramsOf(data.objs, 'iron_bar')).toEqual(
+            expect.arrayContaining(['smelting_struct,smelting_iron_bar', 'smithing_anvil_struct,smithing_iron_bar']),
+        );
+        expect(paramsOf(data.structs, 'smelting_iron_bar')).toEqual(
+            expect.arrayContaining([
+                'product,iron_bar',
+                'levelrequired,15',
+                'productexp,125',
+                'ingredient,iron_ore',
+                'bar_count,1',
+            ]),
+        );
+        expect(paramsOf(data.structs, 'smelting_bronze_bar')).toEqual(
+            expect.arrayContaining([
+                'productexp,62',
+                'ingredient,copper_ore',
+                'ingredient_secondary,tin_ore',
+                'ingredient_secondary_count,1',
+            ]),
+        );
+        expect(paramsOf(data.structs, 'smelting_gold_bar')).toEqual(
+            expect.arrayContaining(['levelrequired,40', 'productexp,225', 'ingredient,gold_ore']),
+        );
+        expect(paramsOf(data.structs, 'smithing_iron_bar')).toEqual(
+            expect.arrayContaining(['levelrequired,15', 'xpperbar,250']),
+        );
     });
 
     test('the inline script values the families port', () => {
@@ -100,6 +150,18 @@ describe('the game data the hand-worked cases rest on', () => {
             'if(%stunned > map_clock) {\n    return;\n}',
         );
         expect(script('skill_cooking/scripts/cooking.rs2').match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(1);']);
+        const superheat = script('skill_magic/scripts/spells/superheat.rs2');
+        expect(superheat.match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(1);']);
+        expect(superheat).toContain('inv_del(inv, $ore1, 1);');
+        const smelting = script('skill_smithing/scripts/smelting/smelting.rs2');
+        expect(smelting).toContain(
+            'weakqueue*(start_smelt_ore, calc(%action_delay - map_clock - 1))($struct, $count);',
+        );
+        expect(smelting).toContain('weakqueue*(smelting_ore, 3)($struct, $count);');
+        expect(smelting).toContain('} else if (randominc(1) = 1) {');
+        expect(smelting.split('%action_delay = add(map_clock, 1);').length - 1).toBe(2);
+        const anvil = script('skill_smithing/scripts/smithing/smithing.rs2').split('[proc,smithing_anvil]')[1]!;
+        expect(anvil.split('\n[')[0]!.match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(1);', 'p_delay(2);']);
         expect(script('general/scripts/player_count.rs2')).toContain(
             'return (scale(sub(4000, $playercount), 4000, $base));',
         );
@@ -184,6 +246,30 @@ describe('the families on the real world (hand-worked in families.test.ts)', () 
             obj: 'salmon',
             count: 173 / 256,
         });
+    });
+
+    test('superheat, smelting and smithing on a real furnace and anvil', () => {
+        const p = profileAt('smithing', 43, { tools, worn: ['staff_of_fire'] });
+        const furnace = world.sites.find(s => s.kind === 'furnace')!;
+        const anvil = world.sites.find(s => s.kind === 'anvil')!;
+        const heat = families.get('superheat')!.model(furnace, { ore: 'iron_ore' }, p, world);
+        expect([heat.ticksPerAttempt, heat.xpTenths, heat.consumes]).toEqual([
+            3,
+            { magic: 530, smithing: 125 },
+            [
+                { obj: 'iron_ore', count: 1 },
+                { obj: 'naturerune', count: 1 },
+            ],
+        ]);
+        const smelt = families.get('smelting')!.model(furnace, { bar: 'iron_bar' }, p, world);
+        expect([smelt.ticksPerAttempt, smelt.products]).toEqual([5, [{ obj: 'iron_bar', count: 0.5 }]]);
+        const smith = families.get('smithing')!.model(anvil, { product: 'iron_platebody' }, p, world);
+        expect([smith.ticksPerAttempt, smith.xpTenths, smith.batch, smith.tools]).toEqual([
+            5,
+            { smithing: 1250 },
+            5,
+            ['hammer'],
+        ]);
     });
 });
 

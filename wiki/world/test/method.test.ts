@@ -443,7 +443,7 @@ describe('a record that does not resolve stops the build, naming it and why', ()
             /a process step takes raw_trout, which neither the gather nor an earlier step gives at 99/,
         );
         fails({ ...mine, id: 'Iron_Bank' }, /the id is not kebab-case/);
-        fails({ ...mine, family: 'smelting' }, /no family smelting/);
+        fails({ ...mine, family: 'no-such-family' }, /no family no-such-family/);
     });
 
     test('resolveMethods collects every failure, and two records with one id fail both', () => {
