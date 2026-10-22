@@ -1283,9 +1283,8 @@ export type ExpectedUnreached = ({ area: string } | { site: string }) & {
 };
 
 /**
- * A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player but its own:
- * `why` says where, `wall` names a loc or map flag that walls it with its map square line, and `source` is the op
- * it is used by.
+ * A site walled in by collision: `why` says where, `wall` names a loc or map flag that walls it with its map square
+ * line, and `source` is the op it is used by.
  */
 const walledIn = (
     site: string,
@@ -1624,7 +1623,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     })),
     ...['rock:tirannwn:1', 'rock:arandar:0', 'tree:tirannwn:20', 'tree:arandar:0'].map((site): ExpectedUnreached => ({
         site,
-        reason: "past Regicide's pit traps, which players jump (@regicide_jump_pitfall, quest_regicide.rs2:239: an agility roll, :274, then an exactmove three tiles on, or a fall into the pit); gate-list.ts reads their checks as side effects, and a side-effect gate candidate gives no edge",
+        reason: "past Regicide's pit traps, which players jump (@regicide_jump_pitfall, quest_regicide.rs2:239: an agility roll, :275, then an exactmove three tiles on, or a fall into the pit); gate-list.ts reads their checks as side effects, and a side-effect gate candidate gives no edge",
         source: 'quests/quest_regicide/scripts/quest_regicide.rs2:280',
     })),
     ...['altar:underground-pass:1', 'fire:underground-pass:3', 'furnace:underground-pass:0'].map(
@@ -1661,8 +1660,8 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     },
     {
         site: 'tree:baxtorian-falls:0',
-        reason: "on the Baxtorian Falls ledge, which the rope tied to the overhanging tree lets the player down to (quest_waterfall.rs2:262; its gate row lands); the tree is used from the river's islet, reached only by the rope thrown on the crossing rock (aplocu,crossing_rock_waterfall_quest, :214), whose script throws from the bank north of it (inzone, :222) while a gate row is run from the tiles beside its loc, so that row derives no landing (the fill's rows it could not use)",
-        source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:214',
+        reason: "on the Baxtorian Falls ledge, which the rope tied to the overhanging tree lets the player down to (quest_waterfall.rs2:262; its gate row lands); the tree is used from the river's islet, reached only by the rope thrown on the crossing rock (aplocu,crossing_rock_waterfall_quest, :213), whose script throws from the bank north of it (inzone, :222) while a gate row is run from the tiles beside its loc, so that row derives no landing (the fill's rows it could not use)",
+        source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:222',
     },
     {
         site: 'tree:tirannwn:1',
