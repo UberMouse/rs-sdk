@@ -255,11 +255,17 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
   `OVERRIDES` (names, hazards) and `LEFT_OUT`; it is not hand-curated. `lib/banks.ts` `nearestBank`
   picks the fewest run ticks over the graph, not the straight line. The walker plans every walk over
   that graph (`lib/walk-graph.ts` `planWay`): the doors it can open, the connectors `climb` uses, and
-  the moves `actions/cross.ts` makes (scripted moves, teleports, gate jumps; a roll priced at the bot's
+  the moves `actions/cross.ts` makes (scripted moves, a queued script's included; teleports by an item used
+  on a loc, an npc's op and dialogue or an item op; gate jumps; a roll priced at the bot's
   current level, one whose failure can take its hitpoints left refused), with a bank detour for an obj
   a move needs when the plan's bank record holds it. It does not take transports, nor a crossing `cross` can't
   make (`crossingRefusal`: the gnome gliders' interface clicks).
 
-Known gaps, listed by the build's unreached report: the scripted moves whose landing no bound run settles (a
-`map_findsquare`, a coord kept in a varp; the build report lists them); banker clusters across booths; unnamed
-underground areas outside the walker's `planeOf`.
+The unreached report was worked per `world-index-unreached-spec.md`: the sites nobody walks to (walled in by
+collision, behind a minigame or a quest window) are `EXPECTED_UNREACHED` rows in `areas.ts`, each citing its
+script, and the build fails on a stale one. Known gaps, the pockets the report still lists (`wiki/world/README.md`,
+"The unreached report"): side-effect gate candidates give no edge (the Dwarf Cannon cave, the Regicide pitfalls);
+a gate row whose script teleports somewhere its `to` does not give (the desert mining camp's mine); the scripted
+moves whose landing no bound run settles (a `map_findsquare`, a coord kept in a varp, the Underground Pass traps;
+the build report lists them); chained moves (the Kharazi jungle cuts); quest boats out of scope (Holgart's).
+Outside the report: banker clusters across booths; unnamed underground areas outside the walker's `planeOf`.

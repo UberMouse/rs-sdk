@@ -1477,11 +1477,124 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'potters_wheels.loc:5; crate3 at maps/m52_52.jm2:5351, egypt_plantpotted at :5392',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
+            [
+                'tree:misthalin:38',
+                "trees in a thicket by the Exam Centre's fence, used only from a tile the bushes close in",
+                'bush1 at maps/m52_52.jm2:6024',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'fishing-spot:brimhaven-dungeon:0',
+                "two lava eel spots in the dungeon's lava, fished only from a tile beside them (lavafish_loc.rs2:6): the tiles beside them are lava the map flags blocked, or ground behind the dungeon's cave walls that no walk gets to",
+                'f1, as maps/m42_148.jm2:3968; loc_5091 at :7226',
+                'skill_fishing/scripts/fishing_spots/lavafish_loc.rs2:5',
+            ],
+            [
+                'fire:feldip-hills:0',
+                "a fire in a ruined room east of Gu'Tanoth whose crumbling walls close it in",
+                'crumblywall1 at maps/m39_47.jm2:6117',
+                'skill_cooking/scripts/cooking.rs2:2',
+            ],
+            [
+                'tree:kandarin:45',
+                "a willow on a patch of bank the river's water closes in",
+                'f1, as maps/m40_54.jm2:185',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:tirannwn:16',
+                'in a strip between the grand wall and a cliff, whose edges the map flags blocked',
+                'f1, as maps/m35_52.jm2:3724',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:tirannwn:26',
+                "on a strip of shore south of the Castle Wars arena, which water and the edge of the map's land close in",
+                'f1, as maps/m36_48.jm2:2820',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:wilderness:159',
+                'burnt dead trees on a plateau whose edge the map flags blocked',
+                'f1, as maps/m52_60.jm2:569',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
         ] as const
     ).map(([site, why, wall, source]): ExpectedUnreached => ({
         site,
         reason: `walled in by collision: ${why} (${wall})`,
         source,
+    })),
+    // Stretches of land with several trees, walled in the same way: no loc or npc op on or beside each moves the player
+    // in, but the ones the reason names, which lead off it.
+    ...(
+        [
+            [
+                [0, 1, 2, 3, 4, 6]
+                    .map(i => `tree:feldip-hills:${i}`)
+                    .concat(
+                        [9, 11, 14, 16].map(i => `tree:kandarin:${i}`),
+                        ['tree:tirannwn:30', 'tree:tirannwn:37'],
+                    ),
+                "the land south of the Castle Wars arena and west of the ogres' plateau, which railings, drystone walls and cliffs the map flags blocked close in; the ogres' caves and battlement and Toban's cave on its edge lead off it",
+                'railing at maps/m38_46.jm2:4136, drystonewall at maps/m38_48.jm2:6449',
+            ],
+            [
+                [
+                    'tree:kandarin:1',
+                    'tree:kandarin:12',
+                    ...[19, 21, 27, 29, 31, 32, 33, 34, 38].map(i => `tree:tirannwn:${i}`),
+                ],
+                'a dead forest north of the Castle Wars arena, which dead trees, an old fence and tiles the map flags blocked close in',
+                'deadtree1 at maps/m37_51.jm2:4139, oldfencing at maps/m36_51.jm2:5112',
+            ],
+            [
+                ['tree:misthalin:43', 'tree:morytania:0', 'tree:morytania:1'],
+                'a strip east of the Dig Site, which bushes and tiles the map flags blocked close in',
+                'f1, as maps/m52_52.jm2:3243',
+            ],
+            [
+                ['tree:misthalin:44', 'tree:misthalin:46', 'tree:misthalin:47'],
+                "a strip east of the Dig Site, which the Dig Site's bushes and tiles the map flags blocked close in",
+                'digsitebush at maps/m52_53.jm2:7221',
+            ],
+            [
+                ['tree:morytania:12', 'tree:morytania:14', 'tree:morytania:15'],
+                "a stretch of Morytania's swamp, which swamp plants, dead trees and tiles the map flags blocked close in",
+                'deadtree2_swamp at maps/m55_51.jm2:4342',
+            ],
+            [
+                ['tree:kandarin:4', 'tree:tirannwn:36'],
+                'the forest west of the Tree Gnome Stronghold, past its west fence',
+                'gnomefence at maps/m37_54.jm2:4748',
+            ],
+        ] as const
+    ).flatMap(([sites, why, wall]) =>
+        sites.map((site): ExpectedUnreached => ({
+            site,
+            reason: `walled in by collision: ${why} (${wall})`,
+            source: 'skill_woodcutting/scripts/woodcut.rs2:1',
+        })),
+    ),
+    {
+        site: 'tree:kandarin:77',
+        reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
+        source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:18',
+    },
+    ...['water-source:castle-wars:0', 'water-source:tirannwn:0'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "in the Castle Wars arena, a minigame: a player is put in it only as a game starts ([queue,castlewars_start]) or into a free place in one under way (castlewars_controller.rs2:119), from a team's waiting room",
+        source: 'minigames/game_castlewars/scripts/castlewars_controller.rs2:146',
+    })),
+    {
+        site: 'fire:kandarin:14',
+        reason: "upstairs in a building inside the Fight Arena's walls, whose doors let a player in only mid-quest (Khazard armour worn from ^arena_obtained_armour, or brought back after jail); from ^arena_freed_servils on the guard attacks (@khazard_guard_generals_pet, quest_arena.rs2:43)",
+        source: 'quests/quest_arena/scripts/quest_arena.rs2:42',
+    },
+    ...['rock:dig-site-dungeon:1', 'rock:dig-site-dungeon:3'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "the Dig Site dungeon's copy from before the blockage is cleared: the winches' rope lands in it only before ^itexam_removed_blockage (area_digsite.rs2:627), and in the copy south of it after",
+        source: 'quests/quest_itexam/scripts/area_digsite.rs2:630',
     })),
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
     ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(

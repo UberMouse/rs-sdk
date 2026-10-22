@@ -218,6 +218,18 @@ that names no such area or site, and on one no unreached site matches, so an ent
 reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
 but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes,
 and its reason names a loc or map flag that walls it with the map square line (`hedge at maps/m45_54.jm2:5352`).
+One entry's reason may cover several sites walled in alike (the decoration trees of the Feldip Hills behind its
+railings and dry stone walls). An entry is checked first: no hint on its pocket's boundary moves the player.
+
+What the report still lists is not curated away: each pocket left has a way in its hints that the index does
+not read, so it waits on a derivation, not an entry. In this revision they are the Kharazi jungle (jungle trees
+cut in turn, each cut moving the player two tiles on, `jungle_tree.rs2:141`), the Dwarf Cannon goblin cave
+and the Regicide pitfalls (side-effect gate candidates, which give no edge), the desert mining camp's mine (its
+gate's move teleports into the mine, `quest_desertrescue.rs2:435`, which the gate row does not land), the
+Underground Pass past its traps and pipes (scripted moves no bound run settles, side-effect pipes), the fishing
+platform (Holgart's boat, in `TRANSPORTS_OUT_OF_SCOPE`), the Hazeel Cult sewer (the raft past the valve puzzle,
+read as not a gate), the Baxtorian Falls ledge (the rope from the rock and the tree) and one Tirannwn tree past
+a Regicide dense forest whose landing reads off walkable land.
 
 The fill's own warning before it, the rows it could not use, says why each is left out: a landing not on land (a
 middle ladder on the top level), a wall whose side the row can't read, or a gate row with no derived landing, with
