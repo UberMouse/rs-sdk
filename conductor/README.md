@@ -45,7 +45,7 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
   printed as the `RESULT` line.
 - Every run is recorded next to its log (`conductor/runs/<bot>/<runId>.ticks.ndjson.gz`, about
   47 KiB a minute, about 2.8 MB an hour): what the code observed and every command it sent. `bun conductor/tools/replay.ts
-<file>` re-runs the current task code on it and prints the first command that differs.
+  <file>` re-runs the current task code on it and prints the first command that differs.
 
 `conductor/tasks/woodcutting.ts` is the reference task; the design and its rationale are in
 [`docs/interruptible-tasks.md`](docs/interruptible-tasks.md), and the authoring rules in
@@ -53,10 +53,10 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 
 ### Tests
 
-| Layer                                                                                                                                                                      | Where                         | Run                                                         |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------- |
-| Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/`             | `bun test conductor` (no server)                            |
-| Integration: ops, one smoke run per task and the replay of a recorded run, against the real local engine, one fresh bot each                                               | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
+| Layer | Where | Run |
+|---|---|---|
+| Unit: ops, interpreter, engine, tasks on scripted worlds (`simulate` in `test/simulate.ts`, `world()` builders and captured fixtures in `test/world.ts`, `test/fixtures/`) | `conductor/test/` | `bun test conductor` (no server) |
+| Integration: ops, one smoke run per task and the replay of a recorded run, against the real local engine, one fresh bot each | `conductor/test/integration/` | `bun run test:integration [filter]` (needs the local stack) |
 
 A new task (or a new or rewritten step in one; contract T8 in
 `.claude/review-lenses/contract.md`) has both: unit tests for its success, failure and guard
@@ -90,17 +90,17 @@ out server-side. MCP `execute_code` keeps a bot's control lease between calls un
 
 ## How it learns
 
-| Loop                                                            | Where it lives                                                                                                                                                                          |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Game knowledge: spots, requirements, hazards, gear, SDK gotchas | `learnings/`, `wiki/skills/`, `wiki/quests/` (rules: `.claude/skills/knowledge`)                                                                                                        |
-| Which method is best                                            | `bun conductor/tools/stats.ts <bot>` over every run; `--methods` sets each curated method's plan runs beside its floor (`wiki/world/methods.ts`); explore/exploit in the conductor loop |
-| How far from max, how fast                                      | `bun conductor/tools/progress.ts <bot>`                                                                                                                                                 |
-| Journal a dispatch with a real UTC stamp                        | `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (see `--help`)                                                                                         |
-| What to do next                                                 | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups)                                                                                                          |
-| Code quality                                                    | `.claude/skills/task-review` with lenses in `.claude/review-lenses/`                                                                                                                    |
-| How the agents themselves work                                  | the retrospective reads transcripts via `.claude/skills/session-forensics`                                                                                                              |
-| Undo a bad experiment                                           | `bun conductor/tools/save.ts snapshot <bot> <label>` before it, `restore <bot> <label>` after                                                                                           |
-| Would changed code decide differently on a past run             | `bun conductor/tools/replay.ts conductor/runs/<bot>/<runId>.ticks.ndjson.gz [--task-dir <dir>]`                                                                                         |
+| Loop | Where it lives |
+|---|---|
+| Game knowledge: spots, requirements, hazards, gear, SDK gotchas | `learnings/`, `wiki/skills/`, `wiki/quests/` (rules: `.claude/skills/knowledge`) |
+| Which method is best | `bun conductor/tools/stats.ts <bot>` over every run; `--methods` sets each curated method's plan runs beside its floor (`wiki/world/methods.ts`); explore/exploit in the conductor loop |
+| How far from max, how fast | `bun conductor/tools/progress.ts <bot>` |
+| Journal a dispatch with a real UTC stamp | `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (see `--help`) |
+| What to do next | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups) |
+| Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |
+| How the agents themselves work | the retrospective reads transcripts via `.claude/skills/session-forensics` |
+| Undo a bad experiment | `bun conductor/tools/save.ts snapshot <bot> <label>` before it, `restore <bot> <label>` after |
+| Would changed code decide differently on a past run | `bun conductor/tools/replay.ts conductor/runs/<bot>/<runId>.ticks.ndjson.gz [--task-dir <dir>]` |
 
 ## Local stack
 
