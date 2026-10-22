@@ -98,8 +98,13 @@ function crossingProblem(c: unknown): string | undefined {
     if (!Array.isArray(c.from) || !c.from.every(isTile)) return 'its from is not a list of tiles';
     if (!Array.isArray(c.landings) || !c.landings.length) return 'no landings';
     for (const l of c.landings)
-        if (!isObject(l) || !isTile(l.tile) || (l.spread !== undefined && !isCount(l.spread)))
-            return 'a landing needs a tile, and spread, when it has one, as run ticks';
+        if (
+            !isObject(l) ||
+            !isTile(l.tile) ||
+            (l.spread !== undefined && !isCount(l.spread)) ||
+            (l.chance !== undefined && !(typeof l.chance === 'number' && l.chance > 0 && l.chance <= 1))
+        )
+            return 'a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]';
     if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
     if (!c.requires.length) return 'its requires has no set, so nothing makes the move ([[]] asks for nothing)';
     if (c.ticks !== undefined && !isCount(c.ticks)) return 'its ticks, when it has them, is a count';

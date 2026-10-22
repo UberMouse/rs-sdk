@@ -406,6 +406,49 @@ describe('spinning, fletching, firemaking and flax picking (hand-worked in famil
     });
 });
 
+describe('runecraft (hand-worked in families.test.ts)', () => {
+    test('the row, the altar param and the script lines it ports', () => {
+        const earth = row('runecraft_earth');
+        expect([earth.type, earth.level, earth.experience, earth.rune, earth.talisman, earth.multiplier]).toEqual([
+            [['4']],
+            [['9']],
+            [['65']],
+            [['earthrune']],
+            [['earth_talisman']],
+            [['26']],
+        ]);
+        expect(paramsOf(data.locs, 'earth_altar')).toContain('rune_type,4');
+        const rc = script('skill_runecraft/scripts/runecraft.rs2');
+        expect(rc).toContain('[oploc1,_rc_altar] @runecraft_runes;');
+        const craft = rc.split('[label,runecraft_runes]')[1]!.split('\n[')[0]!;
+        expect(craft).toContain('~get_runecraft_data(loc_param(rune_type))');
+        expect(craft).toContain(
+            '$rune_count_per_ess = calc($level / db_getfield($data, runecraft_table:multiplier, 0) + 1);',
+        );
+        expect(craft).toContain('def_int $total_ess = inv_total(inv, blankrune);');
+        expect(craft).toContain(
+            'stat_advance(runecraft, calc($total_ess * db_getfield($data, runecraft_table:experience, 0)));',
+        );
+        // One delay, after the runes.
+        expect(craft.match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(3);']);
+    });
+
+    test('on the real earth altar at Runecraft 55', () => {
+        const altar = world.sites.find(s => s.id === 'rc-altar:earth-altar:0')!;
+        // The ruins outside let in only a player holding the talisman: the altar's reach says so.
+        expect(altar.reach).toEqual([['item:earth_talisman:held']]);
+        const m = families.get('runecraft')!.model(altar, {}, profileAt('runecraft', 55, { tools }), world);
+        expect([m.ticksPerAttempt, m.perTick, m.xpTenths, m.products, m.consumes, m.tools]).toEqual([
+            5,
+            28,
+            { runecraft: 65 },
+            [{ obj: 'earthrune', count: 3 }],
+            [{ obj: 'blankrune', count: 1 }],
+            ['earth_talisman'],
+        ]);
+    });
+});
+
 test('the anvils, furnaces and spinning wheel a quest locks need it (gates.ts USE_GATES)', () => {
     const ids = ['anvil:asgarnia:1', 'anvil:rellekka:0', 'furnace:rellekka:0', 'spinning-wheel:rellekka:0'];
     expect(ids.map(id => world.sites.find(s => s.id === id)?.reach)).toEqual([

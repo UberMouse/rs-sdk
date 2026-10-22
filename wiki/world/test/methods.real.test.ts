@@ -3,20 +3,22 @@
 // above its floor is a model bug (cycle.ts, a family, distance.ts) to find, never a test to loosen.
 import { describe, expect, test } from 'bun:test';
 import { reachCollision } from '../collision';
-import { wayFinder } from '../distance';
 import { loadWorld } from '../load';
 import { METHODS } from '../methods';
 import { readGameData } from '../model/families/index';
+import { legFinder } from '../model/legs';
 import {
     isTileStop,
     measuredProfile,
     methodModel,
     methodRate,
+    resolveMethod,
     resolveMethods,
     tileStopId,
     type MethodContext,
 } from '../model/method';
-import type { Skill } from '../model/server';
+import { profileOf } from '../model/profile';
+import { SKILLS, type Skill } from '../model/server';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { questFacts } from '../requirements';
@@ -30,7 +32,8 @@ const ctx: MethodContext = {
     ...methodModel(data),
     quests: questFacts(world.quests),
 };
-const { methods, errors } = resolveMethods(METHODS, ctx, wayFinder(graph));
+const legs = legFinder(graph, world.crossings);
+const { methods, errors } = resolveMethods(METHODS, ctx, legs);
 const method = (id: string) => {
     const m = methods.find(x => x.def.id === id);
     if (!m) throw new Error(`no method ${id}`);
@@ -104,4 +107,38 @@ describe('the floor at the measured levels is at or above every measured figure'
                     expect({ skill, floor: at, measured: xp, atOrAbove: at >= xp }).toMatchObject({ atOrAbove: true });
                 }
             });
+});
+
+describe('earth runes from the essence mine (survey §1e)', () => {
+    // Mining essence at each of the mine's rocks, crafted at the earth altar through its ruins, the runes kept: the way
+    // in is Aubury's teleport, priced at its landings' mean (model/legs.ts), and the way out a portal back to him.
+    const ALTAR = world.features[world.sites.find(s => s.id === 'rc-altar:earth-altar:0')!.features[0]!]!.tile;
+    const levels = Object.fromEntries(SKILLS.map(s => [s, 55])) as Record<Skill, number>;
+    const profile = { ...profileOf(levels, { tools: ctx.tools }), pickaxe: 'adamant_pickaxe' };
+    for (const i of [0, 1, 2, 3])
+        test(`rock:rune-essence-mine:${i}`, () => {
+            const rock = world.sites.find(s => s.id === `rock:rune-essence-mine:${i}`)!;
+            const m = resolveMethod(
+                {
+                    id: 'earth-runes',
+                    name: 'earth runes',
+                    family: 'mining',
+                    at: world.features[rock.features[0]!]!.tile,
+                    params: {},
+                    sink: { mode: 'process', steps: [{ family: 'runecraft', at: ALTAR, params: {} }], end: 'keep' },
+                },
+                ctx,
+                legs,
+            );
+            const [way] = m.ways;
+            expect(way!.reach).toEqual(['item:earth_talisman:held', 'quest:runemysteries']);
+            // To the altar out of the mine: by the portal back to Aubury, which only a way in by him takes.
+            expect(way!.legs[0]!.requires).toContain('other:came from aubury');
+            const rate = methodRate(m, profile, ctx);
+            // 26 essence (the talisman and the runes take a slot each, the pickaxe is wielded), 4 ticks each with an
+            // adamant pickaxe; one craft of 5 ticks.
+            expect(rate.trip).toMatchObject({ successes: 26, gather: 104, process: 5 });
+            // The best measured run (roadmap: 42.4k XP in 1,080 s).
+            expect(rate.xpPerHour.runecraft).toBeGreaterThanOrEqual(153_000);
+        }, 30_000);
 });

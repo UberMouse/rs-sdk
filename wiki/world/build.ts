@@ -26,9 +26,10 @@ import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { minimalSets, questFacts, type QuestFacts } from './requirements';
-import { formatDistance, nearestSinks, priceCrossings, SINKS, wayFinder, type DistanceReport } from './distance';
+import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
 import { METHODS } from './methods';
 import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
+import { legFinder } from './model/legs';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -1022,7 +1023,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             ...model,
             quests: graph.quests,
         },
-        wayFinder(graph),
+        legFinder(graph, reachInput.world.crossings),
     );
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,

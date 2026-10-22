@@ -376,7 +376,12 @@ describe('serializeWorld', () => {
             [
                 'a spread that is not run ticks',
                 { ...teleport, landings: [{ tile: teleport.landings[0]!.tile, spread: -1 }] },
-                'crossings[1]: a landing needs a tile, and spread, when it has one, as run ticks',
+                'crossings[1]: a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]',
+            ],
+            [
+                'a chance past 1',
+                { ...teleport, landings: [{ tile: teleport.landings[0]!.tile, chance: 1.5 }] },
+                'crossings[1]: a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]',
             ],
             [
                 'a roll with no fail',

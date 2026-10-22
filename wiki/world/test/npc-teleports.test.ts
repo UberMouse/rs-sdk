@@ -169,6 +169,14 @@ describe('deriveNpcTeleports', () => {
             [3231, 3210],
             [3231, 3211],
         ]);
+        // A spot of two, then a tile of its ring: the first ring's 6 tiles 1/2 x 1/6 each; the second's 9 walkable
+        // tiles (its off-land column among them) 1/2 x 1/9.
+        expect(a!.landings.map(l => l.chance)).toEqual([...Array(6).fill(1 / 12), ...Array(6).fill(1 / 18)]);
+        // One spot: every landing equally likely, and no chance written.
+        const even = ENUMS.replace('val=1,0_50_50_31_10\n', '');
+        expect(npcRows(derive(ENTRY, { enums: even }).crossings)[0]!.landings.every(l => l.chance === undefined)).toBe(
+            true,
+        );
     });
 
     test('the portal goes back to each npc’s coord, ringed with a line of walk, under its came-from', () => {
@@ -184,6 +192,15 @@ describe('deriveNpcTeleports', () => {
         expect(b!.landings).toHaveLength(25);
         expect(b!.source).toBe(ENTRY.back.source);
         expect(b!.from).toHaveLength(4);
+    });
+
+    test("each row's ticks are its block's delays up to the jump, p_delay(n) n + 1", () => {
+        // The label's p_delay(4) before its p_telejump: 5; the portal's p_delay(1): 2.
+        expect(npcRows(crossings).map(c => c.ticks)).toEqual([5, 5]);
+        expect(backRows(crossings).map(c => c.ticks)).toEqual([2, 2]);
+        // Two delays before the jump add: 5 + 1.
+        const two = SCRIPT.replace('p_delay(4);', 'p_delay(4); p_delay(0);');
+        expect(npcRows(derive(ENTRY, { script: two }).crossings).map(c => c.ticks)).toEqual([6, 6]);
     });
 
     test('a cluster used from no tile on land, and the landings off land, are reported', () => {
@@ -210,6 +227,9 @@ describe('deriveNpcTeleports', () => {
             /is not a p_telejump\(\$coord\)/,
         );
         expect(() => derive({ ...ENTRY, source: `${FILE}:30` })).toThrow(/is not in skill_test/);
+        expect(() => derive(ENTRY, { script: SCRIPT.replace('p_delay(4);', 'p_delay($wait);') })).toThrow(
+            /the jump has a delay it can't read: p_delay\(\$wait\)/,
+        );
         expect(() => derive({ ...ENTRY, enum: 'other_spots' })).toThrow(/does not draw \$coord from other_spots/);
         expect(() => derive(ENTRY, { enums: ENUMS.replace('outputtype=coord', 'outputtype=int') })).toThrow(
             /does not give coords/,

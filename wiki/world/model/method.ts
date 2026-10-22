@@ -18,6 +18,7 @@ import { cmp, tileKey } from '../util';
 import { cycle, type CycleRates, type CycleSink, type Withdraw } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
 import { buildFamilies, type GameData } from './families/index';
+import { tourLegs, type LegFinder } from './legs';
 import { readFoods, readItems, type Items } from './items';
 import { profileAt, profileOf, readTools, toolKindOfObj, type Profile, type Tools } from './profile';
 import { SKILLS, type Skill } from './server';
@@ -29,7 +30,10 @@ export class MethodError extends Error {
     }
 }
 
-/** One walk of the cycle: between two sites' stands, in run ticks, and the requirement set its crossings take. */
+/**
+ * One walk of the cycle: between two sites' stands, in run ticks, and the requirement set its crossings take. A leg over
+ * a random landing is its mean (model/legs.ts), so its run ticks need not be whole.
+ */
 export interface Leg {
     from: string;
     to: string;
@@ -236,7 +240,7 @@ function pairWalks(
 function locate(
     def: MethodDef,
     ctx: MethodContext,
-    finder: ReturnType<typeof wayFinder>,
+    legFinder: LegFinder,
 ): Pick<ResolvedMethod, 'site' | 'sink' | 'ways'> {
     const withdraw = def.family === WITHDRAW;
     const family = withdraw ? undefined : familyOf(ctx, def.family);
@@ -304,14 +308,14 @@ function locate(
     const unwalked = new Set<string>();
     for (const reach of minimalSets(joined, ctx.quests)) {
         const legs: Leg[] = [];
-        for (let i = 0; i + 1 < tour.length; i++) {
-            const [a, b] = [tour[i]!, tour[i + 1]!];
-            const way = wayBetween(finder, standOf(a), standOf(b), reach);
+        const priced = tourLegs(legFinder, tour.map(standOf), reach);
+        for (let i = 0; i < priced.length; i++) {
+            const [a, b, way] = [tour[i]!, tour[i + 1]!, priced[i]];
             if (!way) {
                 unwalked.add(`${stopId(a)} to ${stopId(b)}`);
                 break;
             }
-            legs.push({ from: stopId(a), to: stopId(b), ...way });
+            legs.push({ from: stopId(a), to: stopId(b), runTicks: way.runTicks, requires: way.requires });
         }
         if (legs.length !== tour.length - 1) continue;
         if (!pairs) {
@@ -322,7 +326,7 @@ function locate(
         ways.push({
             reach,
             legs,
-            walks: pairWalks(finder, pairs, reach),
+            walks: pairWalks(legFinder.finder, pairs, reach),
         });
     }
     if (!ways.length)
@@ -465,11 +469,7 @@ function rate(
  * requirement set that walks every leg, and a level (1-99) at which every family models it, every skill at that level
  * with the best tools usable there. Throws a MethodError naming the record and the reason.
  */
-export function resolveMethod(
-    def: MethodDef,
-    ctx: MethodContext,
-    finder: ReturnType<typeof wayFinder>,
-): ResolvedMethod {
+export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFinder): ResolvedMethod {
     try {
         if (!KEBAB.test(def.id)) throw new ModelError('the id is not kebab-case');
         const located = locate(def, ctx, finder);
@@ -613,7 +613,7 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>, zo
 export function resolveMethods(
     defs: readonly MethodDef[],
     ctx: MethodContext,
-    finder: ReturnType<typeof wayFinder>,
+    finder: LegFinder,
 ): { methods: ResolvedMethod[]; errors: string[] } {
     const methods: ResolvedMethod[] = [];
     const errors: string[] = [];

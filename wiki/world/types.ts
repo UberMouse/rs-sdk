@@ -430,6 +430,13 @@ export interface Landing {
      * walk here, or this one is stranded, and then no distance goes by this landing.
      */
     spread?: number;
+    /**
+     * The chance the move lands here, where a row's landings are not equally likely: an npc teleport draws a coord of
+     * its enum, each equally likely, then a tile of that coord's ring (sources/npc-teleports.ts), so a tile of a
+     * smaller ring is likelier. Absent: the row's landings are equally likely. A ring's tiles off land keep their
+     * share, so a row's chances may sum to under 1. Only a method leg over the landings reads it (model/legs.ts).
+     */
+    chance?: number;
 }
 
 /**
@@ -493,8 +500,10 @@ export interface Crossing {
     /** The minimal requirement sets (requirements.ts), any one of which makes the move. */
     requires: string[][];
     /**
-     * A `scripted` row's: the ticks a successful move takes, its script's delays summed (sources/gate-scan.ts
-     * Path.ticks). Absent when a delay on the way is not known offline, and on curated and teleport rows.
+     * The ticks a successful move takes, its script's delays summed: a `scripted` row's (sources/gate-scan.ts
+     * Path.ticks), an npc teleport's and its way back's (sources/npc-teleports.ts). Absent when a delay on the way is
+     * not known offline, and on curated and other teleport rows. distance.ts prices a move by CROSSING_TICKS, not
+     * these; a method leg over a random landing reads them (model/legs.ts).
      */
     ticks?: number;
     roll?: Roll;
@@ -504,7 +513,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 19;
+export const WORLD_FORMAT = 20;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

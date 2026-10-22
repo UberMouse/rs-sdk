@@ -10,12 +10,14 @@
 // that npc's op meets. A way that came in by it met what got it to the npc's teleport too, so the build joins that to
 // the way back (joinWaysIn): a fill does not take the portal to Distentor, inside the Magic Guild, without 66 Magic. A
 // cluster or loc no tile on land is used from gets no row, nor does one whose every landing is off walkable land, nor
-// a way back to an npc no walk gets to the teleport of; the build report lists each, and each landing left out.
+// a way back to an npc no walk gets to the teleport of; the build report lists each, and each landing left out. A row's
+// ticks are its block's delays up to the jump (Crossing.ticks); an npc's landings carry their chance when the enum's
+// rings make some likelier than others (Landing.chance).
 import { besideCluster, reachTiles, type Placed, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import type { Reach } from '../reach';
 import { CAME_FROM, cameFrom, minimalSets, requirementSet, type QuestFacts } from '../requirements';
 import type { Crossing, NpcSpawn, Quest, Tile } from '../types';
-import { byTile, cmp, onLandIn, uniqueTiles } from '../util';
+import { byTile, cmp, onLandIn, tileKey, uniqueTiles } from '../util';
 import { first, type Config } from './configs';
 import { constantInt, type Constant } from './constants';
 import { findsquareTiles, type TeleportCollision } from './dbrow-teleports';
@@ -119,6 +121,24 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
             if (!new RegExp(`\\bp_telejump\\s*\\(\\s*${escape(local)}\\s*\\)`).test(lineIn(at, b, what)))
                 throw fail(`${at} is not a p_telejump(${local})`);
         };
+        /**
+         * The ticks the delays of block `b` take up to its `file:line` `at`, as Crossing.ticks counts them: each
+         * `p_delay(n)` n + 1 (PlayerOps.ts:376-380); a delay it can't read fails.
+         */
+        const delaysTo = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): number => {
+            lineIn(at, b, what);
+            const code = b.body
+                .split('\n')
+                .slice(0, Number(at.split(':')[1]) - b.line + 1)
+                .map(l => l.replace(/\/\/.*$/, ''));
+            let ticks = 0;
+            for (const l of code)
+                for (const m of l.matchAll(/\bp_(?:delay|arrivedelay)\b\s*(\(\s*([^)]*?)\s*\))?/g)) {
+                    if (!m[1] || !/^\d+$/.test(m[2]!)) throw fail(`${what} has a delay it can't read: ${m[0]}`);
+                    ticks += Number(m[2]) + 1;
+                }
+            return ticks;
+        };
         /** The tiles a ring round `literal` can give, each once, and those of them on walkable land. */
         const land = (literal: string, ring: string[]): { all: Tile[]; on: Tile[] } => {
             let tiles: Tile[];
@@ -140,6 +160,7 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
             throw fail(`the label does not set %${e.back.varp} to ${param}`);
         const ring = ringOf(lineIn(e.ring, label, 'the ring'), e.ring);
         jumpsTo(e.source, label, ring.into, 'the jump');
+        const ticks = delaysTo(e.source, label, 'the jump');
         const draw = `${escape(ring.arg)}\\s*=\\s*enum\\(\\s*int\\s*,\\s*coord\\s*,\\s*${e.enum}\\s*,\\s*random\\(\\s*enum_getoutputcount\\(\\s*${e.enum}\\s*\\)\\s*\\)\\s*\\)`;
         if (!new RegExp(draw).test(label.body)) throw fail(`the label does not draw ${ring.arg} from ${e.enum}`);
         const checked = lineIn(e.checkedAt, label, 'the check');
@@ -156,8 +177,16 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         if (first(cfg, 'outputtype') !== 'coord') throw fail(`enum ${e.enum} does not give coords`);
         const coords = (cfg.val ?? []).map(v => v.slice(v.indexOf(',') + 1));
         if (!coords.length || !coords.every(isCoordLiteral)) throw fail(`enum ${e.enum} has no coords, or a non-coord`);
-        const drawn = uniqueTiles(coords.flatMap(c => land(c, ring.ring).all));
-        const landings = drawn.filter(onLand);
+        // A coord of the enum, each equally likely, then a tile of its ring, each equally likely (map_findsquare,
+        // engine/script/handlers/ServerOps.ts:276-334): a tile's chance is its rings' shares summed.
+        const rings = coords.map(c => land(c, ring.ring).all);
+        const chance = new Map<string, number>();
+        for (const r of rings)
+            for (const t of r) chance.set(tileKey(t), (chance.get(tileKey(t)) ?? 0) + 1 / (rings.length * r.length));
+        const drawn = uniqueTiles(rings.flat());
+        const landings = drawn.filter(onLand).map(tile => ({ tile, chance: chance.get(tileKey(tile))! }));
+        // Landings all equally likely carry no chance (Landing.chance).
+        const even = landings.every(l => l.chance === landings[0]?.chance);
 
         // The npc op triggers that jump to the label and nothing else, with the coord constant they pass.
         const call = new RegExp(`^\\s*@${e.label}\\s*\\(\\s*(\\^[a-z0-9_]+)\\s*\\)\\s*;?\\s*$`);
@@ -194,8 +223,9 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
                     act: { kind: 'npc-op', npc, op: Number(trigger.op) },
                     at: c.centre,
                     from,
-                    landings: landings.map(tile => ({ tile })),
+                    landings: even ? landings.map(({ tile }) => ({ tile })) : landings,
                     requires,
+                    ticks,
                     source: e.source,
                 });
             }
@@ -206,6 +236,7 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         const backBlock = { file: back.file, line: back.line, body: back.body };
         const backRing = ringOf(lineIn(e.back.ring, backBlock, 'the ring back'), e.back.ring);
         jumpsTo(e.back.source, backBlock, backRing.into, 'the jump back');
+        const backTicks = delaysTo(e.back.source, backBlock, 'the jump back');
         if (backRing.arg !== `%${e.back.varp}`) throw fail(`${e.back.ring} rings ${backRing.arg}, not %${e.back.varp}`);
         const covered = new Set(triggerConfigs(input.triggers, input.locConfigs)(back));
         const placed = input.locs
@@ -229,6 +260,7 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
                     from,
                     landings: on.map(tile => ({ tile })),
                     requires: [[cameFrom(npc)]],
+                    ticks: backTicks,
                     source: e.back.source,
                 });
             }

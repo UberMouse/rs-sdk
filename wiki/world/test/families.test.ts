@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError, ProfileError, type Family } from '../model/family';
 import { lootExpectation, lootRows, scaleByPlayercount, type GameData } from '../model/families/common';
+import { runesPerEssence } from '../model/families/runecraft';
 import { parseCatch, readSpots } from '../model/families/fishing';
 import { buildFamilies, FAMILIES } from '../model/families/index';
 import type { Profile } from '../model/profile';
@@ -11,6 +12,23 @@ import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } f
 
 // Small copies of the real rows and scripts (families.real.test.ts checks the real ones still say this).
 const DBROWS = `
+[runecraft_earth]
+table=runecraft_table
+data=type,4
+data=level,9
+data=experience,65
+data=rune,earthrune
+data=talisman,earth_talisman
+data=multiplier,26
+
+[runecraft_death]
+table=runecraft_table
+data=type,13
+data=level,65
+data=experience,100
+data=rune,deathrune
+data=talisman,death_talisman
+
 [normal_tree_table]
 table=woodcutting_trees
 data=tree,tree
@@ -240,6 +258,12 @@ category=mining_rock_fast
 [loc_4982]
 category=mining_rock_normal
 [blankrunestone]
+[earth_altar]
+param=rune_type,4
+[death_altar]
+param=rune_type,13
+[lost_altar]
+param=rune_type,99
 [gemrock]
 [range]
 category=cooking_oven
@@ -1130,6 +1154,62 @@ describe('pick', () => {
     });
 });
 
+describe('runecraft', () => {
+    const earth = at('rc-altar', [['earth_altar', 'earth']]);
+
+    test('earth runes per essence at Runecraft 1, 26, 55 and 99', () => {
+        // runecraft.rs2:80-83: level / multiplier + 1 in integers, earth's multiplier 26 (runecraft.dbrow).
+        // 1 / 26 = 0, 26 / 26 = 1, 55 / 26 = 2, 99 / 26 = 3.
+        expect([1, 26, 55, 99].map(l => runesPerEssence(l, 26))).toEqual([1, 2, 3, 4]);
+        // 25 / 26 = 0 and 52 / 26 = 2: the counts step at 26, 52 and 78.
+        expect([25, 51, 52, 77, 78].map(l => runesPerEssence(l, 26))).toEqual([1, 2, 3, 3, 4]);
+        // No multiplier column: one rune an essence at any level.
+        expect(runesPerEssence(99, undefined)).toBe(1);
+    });
+
+    test('earth at Runecraft 55: every essence in one op, 5 ticks a trip', () => {
+        // The earth_altar's rune_type 4 is runecraft_earth's type (~get_runecraft_data, :173-176). One op binds all
+        // the essence (:68, :94), then p_delay(3) (:99): the next click 3 + 2 = 5 ticks on, whatever the load. 65
+        // tenths an essence (:95); 55 / 26 + 1 = 3 earth runes an essence. The talisman is held for the ruins.
+        expect(family('runecraft').model(earth.site, {}, profile(55), earth.world)).toEqual({
+            ticksPerAttempt: 5,
+            perTick: 28,
+            success: 1,
+            xpTenths: { runecraft: 65 },
+            products: [{ obj: 'earthrune', count: 3 }],
+            consumes: [{ obj: 'blankrune', count: 1 }],
+            tools: ['earth_talisman'],
+        });
+        expect(family('runecraft').model(earth.site, undefined, profile(9), earth.world).products).toEqual([
+            { obj: 'earthrune', count: 1 },
+        ]);
+        expect(family('runecraft').model(earth.site, {}, profile(99), earth.world).products).toEqual([
+            { obj: 'earthrune', count: 4 },
+        ]);
+    });
+
+    test('a row with no multiplier makes one rune an essence', () => {
+        const death = at('rc-altar', [['death_altar', 'death']]);
+        expect(family('runecraft').model(death.site, {}, profile(99), death.world).products).toEqual([
+            { obj: 'deathrune', count: 1 },
+        ]);
+    });
+
+    test('fails with a reason', () => {
+        // The level check (:62-66): earth needs 9.
+        refuses('runecraft', earth, {}, profile(8), /crafting at earth_altar needs runecraft 9/);
+        fails(
+            'runecraft',
+            at('rc-altar', [['lost_altar', 'lost']]),
+            {},
+            profile(99),
+            /lost_altar has no runecraft_table/,
+        );
+        fails('runecraft', at('tree', [['tree', 'tree']]), {}, profile(99), /not an rc-altar/);
+        fails('runecraft', earth, { rune: 'earth' }, profile(99), /runecraft has no param rune/);
+    });
+});
+
 describe('registry', () => {
     test('every family is registered under its own id', () => {
         expect([...families.keys()]).toEqual(Object.keys(FAMILIES));
@@ -1146,6 +1226,7 @@ describe('registry', () => {
             mining: ['rock'],
             pick: ['flax'],
             pickpocket: ['pickpocket'],
+            runecraft: ['rc-altar'],
             smelting: ['furnace'],
             smithing: ['anvil'],
             spinning: ['spinning-wheel'],

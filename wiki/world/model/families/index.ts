@@ -9,6 +9,7 @@ import { fletching } from './fletching';
 import { mining } from './mining';
 import { pick } from './pick';
 import { pickpocket } from './pickpocket';
+import { runecraft } from './runecraft';
 import { smelting } from './smelting';
 import { smithing } from './smithing';
 import { spinning } from './spinning';
@@ -27,6 +28,7 @@ export const FAMILIES: Readonly<Record<string, FamilyFactory>> = {
     mining,
     pick,
     pickpocket,
+    runecraft,
     smelting,
     smithing,
     spinning,

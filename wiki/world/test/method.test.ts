@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test';
-import { wayFinder } from '../distance';
 import type { MethodDef, ProcessStepDef } from '../methods';
 import { ModelError, type Family } from '../model/family';
 import type { GameData } from '../model/families/index';
+import { legFinder } from '../model/legs';
 import {
     fromWorldMethod,
     measuredProfile,
@@ -211,12 +211,13 @@ const ctx: MethodContext = {
     world: { sites, features },
     ...methodModel(data, zones),
 };
-const finder = wayFinder(
+const finder = legFinder(
     reachGraph({
         world: { features: [], connectors: [], gates: [], transports: [] },
         collision: new Grid(),
         size: locSizes(new Map()),
     }),
+    [],
 );
 
 const mine: MethodDef = {
@@ -415,12 +416,13 @@ describe('a record that does not resolve stops the build, naming it and why', ()
     test('no walk reaches it, or no requirement set walks a leg', () => {
         fails({ ...mine, at: at(0, 3200, 3230) }, /site rock:shut:0 has no stand a walk reaches/);
         // A bank walled in, though its reach says otherwise: no leg gets there.
-        const walled = wayFinder(
+        const walled = legFinder(
             reachGraph({
                 world: { features: [], connectors: [], gates: [], transports: [] },
                 collision: new Grid().room(3218, 3220, 3222, 3224),
                 size: locSizes(new Map()),
             }),
+            [],
         );
         expect(() => resolveMethod(mine, ctx, walled)).toThrow(
             /methods\.ts iron-mine-bank: no requirement set gets to every site and walks each leg/,
