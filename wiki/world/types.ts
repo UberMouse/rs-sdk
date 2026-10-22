@@ -496,7 +496,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 17;
+export const WORLD_FORMAT = 18;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the
@@ -507,10 +507,10 @@ export interface WorldMethod extends MethodDef {
     /** The site `at` lies in, and its stand. */
     site: string;
     stand: Tile;
-    /** The bank site of a bank or process-bank sink. */
+    /** The bank site of a bank sink, or of a process sink that banks at another site than its own. */
     bank?: string;
-    /** The processor site of a process-bank sink. */
-    processor?: string;
+    /** A process sink's step sites, one per step: a site id, or `'here'`. */
+    processors?: string[];
     /** The gather family's first skill. */
     skill: Skill;
     /** The lowest level at which it models with every skill of `levels` at that level (ResolvedMethod.minLevel). */

@@ -132,7 +132,7 @@ const burn: WorldMethod = {
     family: 'woodcutting',
     at: tree.centre,
     params: {},
-    sink: { mode: 'process-bank', process: { family: 'firemaking', at: range.centre, params: {} } },
+    sink: { mode: 'process', steps: [{ family: 'firemaking', at: range.centre, params: {} }], end: 'bank' },
     plans: ['burn-plan'],
     measured: [
         {
@@ -149,7 +149,7 @@ const burn: WorldMethod = {
     site: tree.id,
     stand: tree.stand!,
     bank: bank.id,
-    processor: range.id,
+    processors: [range.id],
     skill: 'woodcutting',
     minLevel: 30,
     levels: { woodcutting: 20, firemaking: 30 },

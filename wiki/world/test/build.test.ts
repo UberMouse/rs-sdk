@@ -575,6 +575,10 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // damage at the player's hitpoints (hpDamage).
         writeFileSync(file, serializeWorld({ ...world, format: 16 }));
         expect(() => loadWorld(file)).toThrow(`format 16, this code reads format ${WORLD_FORMAT}`);
+        // Format 17 was written before a method's sink could run process steps (`process`, its sites `processors`)
+        // and a source withdraw from the bank.
+        writeFileSync(file, serializeWorld({ ...world, format: 17 }));
+        expect(() => loadWorld(file)).toThrow(`format 17, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }

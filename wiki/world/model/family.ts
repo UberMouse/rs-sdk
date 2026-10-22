@@ -1,6 +1,6 @@
 // The contract a formula module implements: one kind of action (chop, mine, fish, pickpocket, cook ...) at a site,
 // turned into what one attempt costs and yields. rate.ts and the cycle model take it from there.
-import type { FeatureKind, Site, World } from '../types';
+import type { FeatureKind, Site, Tile, World } from '../types';
 import type { Profile } from './profile';
 import type { Skill } from './server';
 
@@ -25,6 +25,18 @@ export interface ActionModel {
      * food's heal, so the method that names the food turns it into a supply.
      */
     failDamage?: number;
+    /**
+     * Hitpoints a success is expected to cost besides failDamage's (an agility lap's falls, at the profile's
+     * hitpoints). The food that covers it is eaten in no ticks of its own: an eat has no `p_delay`
+     * (player/scripts/consumption/consume.rs2:115-131).
+     */
+    damage?: number;
+    /**
+     * Inputs one product of a process step takes (5 bars a platebody); default 1. A step's chained input is its
+     * `consumes[0]`, whose count must be `batch`. The load rounds down to whole batches where the step's input per
+     * success is a whole number.
+     */
+    batch?: number;
     /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
     /** With `deplete`: the site's features of the target, which the player works in turn (the resource cap's k). */
@@ -43,6 +55,9 @@ export class ModelError extends Error {}
  */
 export class ProfileError extends ModelError {}
 
+/** What a family reads of the world. */
+export type ModelWorld = Pick<World, 'features'>;
+
 export interface Family {
     /** `woodcutting`, `fishing`, ... */
     id: string;
@@ -53,5 +68,11 @@ export interface Family {
      * Throws a ModelError when the site, params or game data can't be modelled (an unknown subtype, no row), and a
      * ProfileError when the profile can't do it (no axe or pickaxe, a level under the requirement).
      */
-    model(site: Site, params: unknown, profile: Profile, world: Pick<World, 'features'>): ActionModel;
+    model(site: Site, params: unknown, profile: Profile, world: ModelWorld, walks?: number[]): ActionModel;
+    /**
+     * Optional, for a method's gather family: the tile pairs it needs walked inside its site (an agility lap's landing
+     * to the next obstacle). method.ts prices each under the way's requirement set, in run ticks, and passes them to
+     * `model` as `walks`, in this order.
+     */
+    walks?(site: Site, params: unknown, world: ModelWorld): { from: Tile; to: Tile }[];
 }

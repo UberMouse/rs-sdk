@@ -48,8 +48,10 @@ describe("each seed is at its plan's sites", () => {
             const m = method(id);
             expect(m.site.id).toBe(site);
             if (m.sink.mode === 'drop') throw new Error(`${id} drops`);
-            expect(m.sink.bank.id).toBe(bank);
-            expect(m.sink.mode === 'process-bank' ? m.sink.processor.id : null).toBe(processor);
+            expect(m.sink.bank?.id).toBe(bank);
+            expect(m.sink.mode === 'process' ? m.sink.steps.map(s => (s === 'here' ? s : s.id)) : null).toEqual(
+                processor === null ? null : [processor],
+            );
             expect(m.ways[0]!.reach).toEqual([]);
             // A bank method's first leg is the site's nearest bank, which distance.ts computed the same way.
             if (m.sink.mode === 'bank') expect(m.ways[0]!.legs[0]!.runTicks).toBe(m.site.nearest!.bank!.runTicks);

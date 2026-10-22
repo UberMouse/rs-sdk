@@ -137,9 +137,9 @@ const banked = chop('tree-bank', tree, {
 // 1482.35 logs/h: Woodcutting x 10 x 25 = 370,588, Firemaking x 40 x 25 = 1,482,353. Bronze: 112 + 84 + 30 = 226
 // ticks, 1115.04 logs/h: 278,761 and 1,115,044.
 const burn = chop('tree-burn-bank', tree, {
-    sink: { mode: 'process-bank', process: { family: 'firemaking', at: range.centre, params: {} } },
+    sink: { mode: 'process', steps: [{ family: 'firemaking', at: range.centre, params: {} }], end: 'bank' },
     bank: bank.id,
-    processor: range.id,
+    processors: [range.id],
     minLevel: 30,
     levels: { woodcutting: 20, firemaking: 30 },
     measured: [

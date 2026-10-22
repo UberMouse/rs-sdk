@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { wayFinder } from '../distance';
-import type { MethodDef } from '../methods';
+import type { MethodDef, ProcessStepDef } from '../methods';
+import type { Family } from '../model/family';
 import type { GameData } from '../model/families/index';
 import {
     fromWorldMethod,
@@ -228,8 +229,9 @@ const lure: MethodDef = {
     at: at(0, 3200, 3220),
     params: { tool: 'fly_fishing_rod' },
     sink: {
-        mode: 'process-bank',
-        process: { family: 'cooking', at: at(0, 3205, 3220), params: [{ food: 'raw_trout' }, { food: 'raw_salmon' }] },
+        mode: 'process',
+        steps: [{ family: 'cooking', at: at(0, 3205, 3220), params: [{ food: 'raw_trout' }, { food: 'raw_salmon' }] }],
+        end: 'bank',
     },
 };
 const guards: MethodDef = {
@@ -276,15 +278,11 @@ describe('resolving a record', () => {
         expect(m.ways[0]!.legs.map(l => l.runTicks)).toEqual([5, 5]);
     });
 
-    test("a process-bank method: site -> processor -> the processor's nearest bank -> site", () => {
+    test("a process method: site -> the step's site -> its nearest bank -> site", () => {
         // Spot stand (3201, 3220) -> fire (3205, 3221): 4 steps, 2 ticks; -> bank (3220, 3222): 15, 8; -> spot: 19, 10.
         // Cooking salmon needs 25, the highest level a part asks for.
         const m = resolve(lure);
-        expect(m.sink).toMatchObject({
-            mode: 'process-bank',
-            processor: { id: 'fire:camp:0' },
-            bank: { id: 'bank:a:0' },
-        });
+        expect(m.sink).toMatchObject({ mode: 'process', steps: [{ id: 'fire:camp:0' }], bank: { id: 'bank:a:0' } });
         expect(m.ways[0]!.legs.map(l => [l.from, l.to, l.runTicks])).toEqual([
             ['fishing-spot:river:0', 'fire:camp:0', 2],
             ['fire:camp:0', 'bank:a:0', 8],
@@ -322,7 +320,7 @@ describe('world.json and measured figures', () => {
             expect(wm).toMatchObject({ ...def, site: m.site.id, stand: m.site.stand, levels: m.levels });
             expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites })).toEqual(m);
         }
-        expect(toWorldMethod(resolve(lure))).toMatchObject({ bank: 'bank:a:0', processor: 'fire:camp:0' });
+        expect(toWorldMethod(resolve(lure))).toMatchObject({ bank: 'bank:a:0', processors: ['fire:camp:0'] });
         expect(toWorldMethod(resolve({ ...mine, sink: { mode: 'drop' } }))).not.toHaveProperty('bank');
     });
 
@@ -365,7 +363,11 @@ describe('a record that does not resolve stops the build, naming it and why', ()
         fails(
             {
                 ...lure,
-                sink: { mode: 'process-bank', process: { family: 'cooking', at: at(0, 3201, 3201), params: {} } },
+                sink: {
+                    mode: 'process',
+                    steps: [{ family: 'cooking', at: at(0, 3201, 3201), params: {} }],
+                    end: 'bank',
+                },
             },
             /no range\/fire site holds/,
         );
@@ -373,7 +375,10 @@ describe('a record that does not resolve stops the build, naming it and why', ()
 
     test('no sink to fall back on: a spot with no nearest range', () => {
         fails(
-            { ...lure, sink: { mode: 'process-bank', process: { family: 'cooking', params: { food: 'raw_trout' } } } },
+            {
+                ...lure,
+                sink: { mode: 'process', steps: [{ family: 'cooking', params: { food: 'raw_trout' } }], end: 'bank' },
+            },
             /site fishing-spot:river:0 has no nearest range \(phase 3 searches only the first of range\/fire\): give its tile/,
         );
     });
@@ -430,11 +435,12 @@ describe('a record that does not resolve stops the build, naming it and why', ()
             {
                 ...mine,
                 sink: {
-                    mode: 'process-bank',
-                    process: { family: 'cooking', at: at(0, 3205, 3220), params: { food: 'raw_trout' } },
+                    mode: 'process',
+                    steps: [{ family: 'cooking', at: at(0, 3205, 3220), params: { food: 'raw_trout' } }],
+                    end: 'bank',
                 },
             },
-            /a process step takes raw_trout, which the gather does not give at 99/,
+            /a process step takes raw_trout, which neither the gather nor an earlier step gives at 99/,
         );
         fails({ ...mine, id: 'Iron_Bank' }, /the id is not kebab-case/);
         fails({ ...mine, family: 'smelting' }, /no family smelting/);
@@ -448,5 +454,151 @@ describe('a record that does not resolve stops the build, naming it and why', ()
             'methods.ts iron-mine-bank: the id is used by more than one record',
             'methods.ts lure-cook-bank: no fishing-spot site holds (3230, 3230, 0)',
         ]);
+    });
+});
+
+describe('process steps, withdrawals and walks', () => {
+    // A process family that marks a fish (params.from, default trout) as a salmon wherever it is, and remembers the
+    // sites it was modelled at.
+    const markedAt: string[] = [];
+    const marking: Family = {
+        id: 'marking',
+        skills: ['crafting'],
+        kinds: ['fire'],
+        model(s, params) {
+            markedAt.push(s.id);
+            const from = (params as { from?: string }).from ?? 'trout';
+            return {
+                ticksPerAttempt: 2,
+                success: 1,
+                xpTenths: { crafting: 100 },
+                products: [{ obj: 'salmon', count: 1 }],
+                consumes: [{ obj: from, count: 1 }],
+            };
+        },
+    };
+    const marked: MethodContext = { ...ctx, families: new Map([...ctx.families, ['marking', marking]]) };
+    const cookTrout: ProcessStepDef = { family: 'cooking', at: at(0, 3205, 3220), params: { food: 'raw_trout' } };
+    const withdraw: MethodDef = {
+        id: 'withdraw-cook',
+        name: 'Raw trout from the bank, cooked',
+        family: 'withdraw',
+        at: at(0, 3220, 3220),
+        params: { obj: 'raw_trout' },
+        sink: { mode: 'process', steps: [cookTrout], end: 'bank' },
+    };
+
+    test("a withdrawal starts and ends at its bank, and trains its steps' skills", () => {
+        // Bank a's stand (3220, 3222) -> the fire's (3205, 3221): 15 steps, 8 run ticks, and back. Trout cook from 15.
+        const m = resolve(withdraw);
+        expect(m.site.id).toBe('bank:a:0');
+        expect(m.sink).toEqual({ mode: 'process', steps: [expect.objectContaining({ id: 'fire:camp:0' })] });
+        expect(m.ways[0]!.legs.map(l => [l.from, l.to, l.runTicks])).toEqual([
+            ['bank:a:0', 'fire:camp:0', 8],
+            ['fire:camp:0', 'bank:a:0', 8],
+        ]);
+        expect([m.skill, m.minLevel, m.levels]).toEqual(['cooking', 15, { cooking: 15 }]);
+        // No tool: 28 raw trout a trip, no gathering ticks, the raw trout a supply.
+        const rate = methodRate(m, profileAt('cooking', 40, { tools: ctx.tools }), ctx);
+        expect(rate.trip).toMatchObject({ successes: 28, gather: 0, travel: 16 });
+        expect(rate.suppliesPerHour.map(x => x.obj)).toEqual(['raw_trout']);
+        const wm = toWorldMethod(m);
+        expect(wm).not.toHaveProperty('bank');
+        expect(wm.processors).toEqual(['fire:camp:0']);
+        expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites })).toEqual(m);
+    });
+
+    test("a step 'here' is no stop: modelled at the previous step's site, or the gather's", () => {
+        markedAt.length = 0;
+        const def: MethodDef = {
+            ...withdraw,
+            id: 'withdraw-cook-mark',
+            sink: { mode: 'process', steps: [cookTrout, { family: 'marking', at: 'here', params: {} }], end: 'drop' },
+        };
+        const m = resolveMethod(def, marked, finder);
+        expect(m.sink).toEqual({ mode: 'process', steps: [expect.objectContaining({ id: 'fire:camp:0' }), 'here'] });
+        // A withdrawal walks back to its bank even when it drops.
+        expect(m.ways[0]!.legs.map(l => l.runTicks)).toEqual([8, 8]);
+        expect(new Set(markedAt)).toEqual(new Set(['fire:camp:0']));
+        expect(toWorldMethod(m).processors).toEqual(['fire:camp:0', 'here']);
+        // A gather that drops walks back from its last stop to the site, not to a bank: spot -> fire -> spot.
+        const lureDrop: MethodDef = {
+            ...lure,
+            id: 'lure-cook-drop',
+            sink: {
+                mode: 'process',
+                steps: [cookTrout],
+                end: 'drop',
+            },
+        };
+        expect(resolveMethod(lureDrop, marked, finder).ways[0]!.legs.map(l => [l.from, l.to, l.runTicks])).toEqual([
+            ['fishing-spot:river:0', 'fire:camp:0', 2],
+            ['fire:camp:0', 'fishing-spot:river:0', 2],
+        ]);
+        // Raw trout marked where they are caught, then dropped: no stop, no leg.
+        markedAt.length = 0;
+        const here = resolveMethod(
+            {
+                ...lure,
+                id: 'lure-here',
+                sink: {
+                    mode: 'process',
+                    steps: [{ family: 'marking', at: 'here', params: { from: 'raw_trout' } }],
+                    end: 'drop',
+                },
+            },
+            marked,
+            finder,
+        );
+        expect(here.ways).toEqual([{ reach: [], legs: [] }]);
+        expect(new Set(markedAt)).toEqual(new Set(['fishing-spot:river:0']));
+    });
+
+    test("a gather family's walks are priced under each way's set and passed to its model", () => {
+        // Stand (3201, 3201) to (3211, 3201): 10 steps, 5 run ticks.
+        const real = ctx.families.get('mining')!;
+        const got: (number[] | undefined)[] = [];
+        const walking: Family = {
+            ...real,
+            walks: () => [{ from: at(0, 3201, 3201), to: at(0, 3211, 3201) }],
+            model: (s, p, profile, world, walks) => {
+                got.push(walks);
+                return real.model(s, p, profile, world);
+            },
+        };
+        const walked = { ...ctx, families: new Map([...ctx.families, ['mining', walking]]) };
+        const m = resolveMethod(mine, walked, finder);
+        expect(m.ways[0]!.walks).toEqual([5]);
+        got.length = 0;
+        methodRate(m, profileAt('mining', 40, { tools: ctx.tools }), walked);
+        expect(got).toEqual([[5]]);
+        // A family without walks leaves the way without them.
+        expect(resolve(mine).ways[0]).not.toHaveProperty('walks');
+    });
+
+    test('a record the new shapes cannot resolve fails naming why', () => {
+        fails({ ...withdraw, sink: { mode: 'bank' } }, /a withdraw method needs a process sink/);
+        fails({ ...withdraw, params: {} }, /a withdraw method needs params \{ obj \}/);
+        fails({ ...withdraw, at: at(0, 3202, 3200) }, /no bank site holds/);
+        fails(
+            { ...withdraw, sink: { mode: 'process', steps: [cookTrout], end: 'bank', bank: at(0, 3220, 3220) } },
+            /a withdraw method banks where it withdraws: give no sink bank/,
+        );
+        fails(
+            { ...lure, sink: { mode: 'process', steps: [cookTrout], end: 'drop', bank: at(0, 3220, 3220) } },
+            /a sink bank is never visited when the sink ends in drop/,
+        );
+        fails({ ...lure, sink: { mode: 'process', steps: [], end: 'bank' } }, /a process sink needs a step/);
+    });
+
+    test("a measured figure's worn objs reach its profile; a column's profile wears none unless asked", () => {
+        const m = resolve(withdraw);
+        const measured = { xpPerHour: {}, level: { cooking: 60 }, bot: 'b', date: '2026-01-01', hours: 1, from: 'x' };
+        expect(measuredProfile(m, { ...measured, worn: ['fly_fishing_rod'] }, ctx.tools).worn).toEqual([
+            'fly_fishing_rod',
+        ]);
+        expect(measuredProfile(m, measured, ctx.tools).worn).toEqual([]);
+        expect(profileAt('cooking', 60, { tools: ctx.tools }).worn).toEqual([]);
+        expect(profileAt('cooking', 60, { tools: ctx.tools, worn: ['feather'] }).worn).toEqual(['feather']);
     });
 });

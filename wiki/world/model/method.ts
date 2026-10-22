@@ -14,7 +14,7 @@ import {
     type WorldMethod,
 } from '../types';
 import { cmp } from '../util';
-import { cycle, type CycleRates, type CycleSink } from './cycle';
+import { cycle, type CycleRates, type CycleSink, type Withdraw } from './cycle';
 import { ModelError, type ActionModel, type Family } from './family';
 import { buildFamilies, type GameData } from './families/index';
 import { readFoods, readItems, type Items } from './items';
@@ -40,12 +40,21 @@ export interface Leg {
 export interface MethodWay {
     reach: string[];
     legs: Leg[];
+    /** When the gather family has `walks`: the run ticks of each, under `reach`, in the family's order. */
+    walks?: number[];
 }
+
+/** A process step's place: a site, or `'here'`, where the previous action stands. */
+export type Stop = Site | 'here';
+
+/** The `family` of a method whose load is withdrawn from the bank it starts at (cycle.ts Withdraw). */
+export const WITHDRAW = 'withdraw';
 
 export interface ResolvedMethod {
     def: MethodDef;
     site: Site;
-    sink: { mode: 'drop' } | { mode: 'bank'; bank: Site } | { mode: 'process-bank'; processor: Site; bank: Site };
+    /** A process sink's steps, one per step of the record, and its bank when it banks at another site than `site`. */
+    sink: { mode: 'drop' } | { mode: 'bank'; bank: Site } | { mode: 'process'; steps: Stop[]; bank?: Site };
     /** One per minimal set that reaches the method's sites and walks its legs; shortest travel first. */
     ways: MethodWay[];
     /** The family's first skill, which a level column trains. */
@@ -56,7 +65,7 @@ export interface ResolvedMethod {
      */
     minLevel: number;
     /**
-     * Each skill the method trains (the gather family's, then the process step's), and the lowest level of it at which
+     * Each skill the method trains (the gather family's, then the process steps'), and the lowest level of it at which
      * the families model the method with the other skills of the method at 99: what each skill itself needs (fly
      * fishing and cooking trout and salmon: Fishing 20, Cooking 25, where `minLevel`, every skill at once, is 25).
      */
@@ -130,9 +139,20 @@ function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly Fe
     return site;
 }
 
-/** The sites a sink stops at, in the order the cycle visits them: none, the bank, or the processor then the bank. */
+/** The sites a sink stops at, in the order the cycle visits them: none, the bank, or the steps' sites then the bank. */
 export const sinkSites = (sink: ResolvedMethod['sink']): Site[] =>
-    sink.mode === 'drop' ? [] : sink.mode === 'bank' ? [sink.bank] : [sink.processor, sink.bank];
+    sink.mode === 'drop'
+        ? []
+        : sink.mode === 'bank'
+          ? [sink.bank]
+          : [...sink.steps.filter((s): s is Site => s !== 'here'), ...(sink.bank ? [sink.bank] : [])];
+
+/** A withdraw record's obj, or a ModelError. */
+function withdrawObj(def: MethodDef): string {
+    const obj = (def.params as { obj?: unknown } | null)?.obj;
+    if (typeof obj !== 'string' || obj === '') throw new ModelError('a withdraw method needs params { obj }');
+    return obj;
+}
 
 /** The method's sites and its legs under each requirement set, before the levels are checked. */
 function locate(
@@ -140,24 +160,42 @@ function locate(
     ctx: MethodContext,
     finder: ReturnType<typeof wayFinder>,
 ): Pick<ResolvedMethod, 'site' | 'sink' | 'ways'> {
-    const family = familyOf(ctx, def.family);
-    const site = siteAt(ctx.world, family.kinds, def.at);
+    const withdraw = def.family === WITHDRAW;
+    const family = withdraw ? undefined : familyOf(ctx, def.family);
+    const site = siteAt(ctx.world, family?.kinds ?? ['bank'], def.at);
     if (!site.stand || !site.reach.length) throw new ModelError(`site ${site.id} has no stand a walk reaches`);
     let sink: ResolvedMethod['sink'];
-    if (def.sink.mode === 'drop') sink = { mode: 'drop' };
-    else if (def.sink.mode === 'bank')
-        sink = {
-            mode: 'bank',
-            bank: def.sink.bank ? siteAt(ctx.world, ['bank'], def.sink.bank) : nearestOf(ctx.world, site, ['bank']),
-        };
-    else {
-        const step = def.sink.process;
-        const kinds = familyOf(ctx, step.family).kinds;
-        const processor = step.at ? siteAt(ctx.world, kinds, step.at) : nearestOf(ctx.world, site, kinds);
-        const bank = def.sink.bank
-            ? siteAt(ctx.world, ['bank'], def.sink.bank)
-            : nearestOf(ctx.world, processor, ['bank']);
-        sink = { mode: 'process-bank', processor, bank };
+    if (def.sink.mode !== 'process') {
+        if (withdraw) throw new ModelError('a withdraw method needs a process sink');
+        sink =
+            def.sink.mode === 'drop'
+                ? { mode: 'drop' }
+                : {
+                      mode: 'bank',
+                      bank: def.sink.bank
+                          ? siteAt(ctx.world, ['bank'], def.sink.bank)
+                          : nearestOf(ctx.world, site, ['bank']),
+                  };
+    } else {
+        const { end, bank: tile } = def.sink;
+        if (!def.sink.steps.length) throw new ModelError('a process sink needs a step');
+        if (tile && withdraw) throw new ModelError('a withdraw method banks where it withdraws: give no sink bank');
+        if (tile && end !== 'bank') throw new ModelError(`a sink bank is never visited when the sink ends in ${end}`);
+        // Each step's site; an omitted `at` is the nearest to the previous step's site (the gather's for the first).
+        let last = site;
+        const steps = def.sink.steps.map((step): Stop => {
+            if (step.at === 'here') return 'here';
+            const kinds = familyOf(ctx, step.family).kinds;
+            last = step.at ? siteAt(ctx.world, kinds, step.at) : nearestOf(ctx.world, last, kinds);
+            return last;
+        });
+        const bank =
+            end !== 'bank' || withdraw
+                ? undefined
+                : tile
+                  ? siteAt(ctx.world, ['bank'], tile)
+                  : nearestOf(ctx.world, last, ['bank']);
+        sink = { mode: 'process', steps, ...(bank ? { bank } : {}) };
     }
     const stops = sinkSites(sink);
     for (const s of stops)
@@ -167,7 +205,9 @@ function locate(
         (acc, s) => acc.flatMap(a => s.reach.map(r => canonicalSet([...a, ...r], ctx.quests))),
         [[]],
     );
-    const tour = stops.length ? [site, ...stops, site] : [];
+    // site -> each stop -> site, a stop the same as the one before it (two steps at one anvil) walked to once.
+    const tour = [site, ...stops, site].filter((s, i, all) => i === 0 || s !== all[i - 1]);
+    const pairs = family?.walks?.(site, def.params, ctx.world);
     const ways: MethodWay[] = [];
     for (const reach of minimalSets(joined, ctx.quests)) {
         const legs: Leg[] = [];
@@ -177,7 +217,13 @@ function locate(
             if (!way) break;
             legs.push({ from: a.id, to: b.id, ...way });
         }
-        if (legs.length === Math.max(tour.length - 1, 0)) ways.push({ reach, legs });
+        if (legs.length !== tour.length - 1) continue;
+        if (!pairs) {
+            ways.push({ reach, legs });
+            continue;
+        }
+        const walks = pairs.map(w => finder.runTicksBetween(w.from, w.to, reach)?.runTicks);
+        if (walks.every(w => w !== undefined)) ways.push({ reach, legs, walks: walks as number[] });
     }
     if (!ways.length) throw new ModelError(`no requirement set gets to every site and walks each leg`);
     const travel = (w: MethodWay) => w.legs.reduce((t, l) => t + l.runTicks, 0);
@@ -190,22 +236,35 @@ function locate(
 /** The process step's params as a list: one entry, or each of a list. */
 const paramList = (params: unknown): unknown[] => (Array.isArray(params) ? params : [params]);
 
-/** The gather and process models of a located method at `profile`; throws a ModelError when a family can't. */
+/**
+ * The gather (or withdrawn obj) and each process step's models of a located method at `profile`, the gather's walks
+ * from `way`; throws a ModelError when a family can't. A step `'here'` is modelled at the previous step's site.
+ */
 export function methodModels(
-    m: Pick<ResolvedMethod, 'def' | 'site' | 'sink'>,
+    m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
-): { gather: ActionModel; process: ActionModel[] } {
+    way: MethodWay | undefined = m.ways[0],
+): { gather: ActionModel | Withdraw; steps: ActionModel[][] } {
     const { world } = ctx;
-    const gather = familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world);
-    if (m.sink.mode !== 'process-bank' || m.def.sink.mode !== 'process-bank') return { gather, process: [] };
-    const step = m.def.sink.process;
-    const family = familyOf(ctx, step.family);
-    const processor = m.sink.processor;
-    return { gather, process: paramList(step.params).map(p => family.model(processor, p, profile, world)) };
+    const gather =
+        m.def.family === WITHDRAW
+            ? { withdraw: withdrawObj(m.def) }
+            : familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world, way?.walks);
+    if (m.sink.mode !== 'process' || m.def.sink.mode !== 'process') return { gather, steps: [] };
+    let last = m.site;
+    const stops = m.sink.steps;
+    const steps = m.def.sink.steps.map((step, i) => {
+        const stop = stops[i];
+        if (stop === undefined) throw new ModelError(`no site for process step ${i + 1}`);
+        if (stop !== 'here') last = stop;
+        const family = familyOf(ctx, step.family);
+        return paramList(step.params).map(p => family.model(last, p, profile, world));
+    });
+    return { gather, steps };
 }
 
-/** Whether a method trains `skill`: its `levels` name it (the gather family's skills, then the process step's). */
+/** Whether a method trains `skill`: its `levels` name it (the gather family's skills, then the process steps'). */
 export const trains = (m: Pick<ResolvedMethod, 'levels'>, skill: Skill): boolean => m.levels[skill] !== undefined;
 
 /**
@@ -250,19 +309,19 @@ export function methodRate(m: ResolvedMethod, profile: Profile, ctx: MethodConte
 }
 
 function rate(
-    m: Pick<ResolvedMethod, 'def' | 'site' | 'sink'>,
+    m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
     way: MethodWay,
 ): CycleRates {
-    const { gather, process } = methodModels(m, profile, ctx);
+    const { gather, steps } = methodModels(m, profile, ctx, way);
     const legs = way.legs.map(l => l.runTicks);
     const sink: CycleSink =
-        m.sink.mode === 'drop'
-            ? { mode: 'drop' }
-            : m.sink.mode === 'bank'
+        m.def.sink.mode === 'process'
+            ? { mode: 'process', steps, end: m.def.sink.end, legs }
+            : m.def.sink.mode === 'bank'
               ? { mode: 'bank', legs }
-              : { mode: 'process-bank', process, legs };
+              : { mode: 'drop' };
     let food: { obj: string; heal: number } | undefined;
     if (m.def.food !== undefined) {
         const heal = ctx.foods.get(m.def.food);
@@ -285,13 +344,23 @@ export function resolveMethod(
     try {
         if (!KEBAB.test(def.id)) throw new ModelError('the id is not kebab-case');
         const located = locate(def, ctx, finder);
-        const skill = familyOf(ctx, def.family).skills[0]!;
-        // A process step whose input the gather never gives (a misnamed food) would do nothing at every level.
+        const skills = methodSkills(def, ctx);
+        const skill = skills[0];
+        if (skill === undefined) throw new ModelError('it trains no skill');
+        // A process step whose input neither the gather nor an earlier step gives (a misnamed food) would do nothing
+        // at every level. A step's input is its first consumes; the others are supplies.
         const top = methodModels({ def, ...located }, profileAt(skill, 99, { tools: ctx.tools }), ctx);
-        for (const step of top.process)
-            for (const c of step.consumes)
-                if (!top.gather.products.some(x => x.obj === c.obj))
-                    throw new ModelError(`a process step takes ${c.obj}, which the gather does not give at 99`);
+        const given = new Set('withdraw' in top.gather ? [top.gather.withdraw] : top.gather.products.map(x => x.obj));
+        for (const step of top.steps) {
+            for (const m of step) {
+                const input = m.consumes[0]?.obj;
+                if (input !== undefined && !given.has(input))
+                    throw new ModelError(
+                        `a process step takes ${input}, which neither the gather nor an earlier step gives at 99`,
+                    );
+            }
+            for (const x of step.flatMap(m => m.products)) given.add(x.obj);
+        }
         // The lowest level of `skill` at which it models, the skills of `atLeast` raised to theirs; with the reason the
         // last level failed when none does.
         const lowest = (s: Skill, atLeast: Partial<Record<Skill, number>>): { level?: number; reason: string } => {
@@ -314,7 +383,6 @@ export function resolveMethod(
         };
         const all = lowest(skill, {});
         if (all.level === undefined) throw new ModelError(`no level models it (at 99: ${all.reason})`);
-        const skills = [...new Set([skill, ...methodSkills(def, ctx)])];
         const levels: Partial<Record<Skill, number>> = {};
         for (const s of skills) {
             // It models at minLevel with every skill there, so with the others at 99 some level of `s` does too.
@@ -332,16 +400,17 @@ export function resolveMethod(
     }
 }
 
-/** The skills a record trains: its family's, then its process step's, each once. */
+/** The skills a record trains: its family's (none for a withdrawal), then its process steps', each once. */
 function methodSkills(def: MethodDef, ctx: MethodContext): Skill[] {
-    const step = def.sink.mode === 'process-bank' ? [def.sink.process.family] : [];
-    return [...new Set([def.family, ...step].flatMap(f => familyOf(ctx, f).skills))];
+    const steps = def.sink.mode === 'process' ? def.sink.steps.map(s => s.family) : [];
+    const families = [...(def.family === WITHDRAW ? [] : [def.family]), ...steps];
+    return [...new Set(families.flatMap(f => familyOf(ctx, f).skills))];
 }
 
 /**
  * The profile a measured figure was taken at: each skill the figure names at exactly its measured level (one below
- * the method's skill stays below it), every other skill at the method's skill's level, and the axe or pickaxe the
- * runs used in place of the best one usable at those levels. Throws when the figure has no level for the method's
+ * the method's skill stays below it), every other skill at the method's skill's level, the axe or pickaxe the runs
+ * used in place of the best one usable at those levels, and the objs the runs wore. Throws when the figure has no level for the method's
  * skill or names a tool that is neither.
  */
 export function measuredProfile(m: Pick<ResolvedMethod, 'def' | 'skill'>, measured: Measured, tools: Tools): Profile {
@@ -349,7 +418,7 @@ export function measuredProfile(m: Pick<ResolvedMethod, 'def' | 'skill'>, measur
     if (level === undefined)
         throw new MethodError(m.def.id, `a measured figure (${measured.bot} ${measured.date}) has no ${m.skill} level`);
     const levels = Object.fromEntries(SKILLS.map(s => [s, measured.level[s] ?? level])) as Record<Skill, number>;
-    const profile = profileOf(levels, { tools });
+    const profile = profileOf(levels, { tools, ...(measured.worn ? { worn: measured.worn } : {}) });
     if (measured.tool !== undefined) {
         const kind = toolKindOfObj(tools, measured.tool);
         if (kind === null) throw new MethodError(m.def.id, `measured tool ${measured.tool} is no axe or pickaxe`);
@@ -364,8 +433,8 @@ export function toWorldMethod(m: ResolvedMethod): WorldMethod {
         ...m.def,
         site: m.site.id,
         stand: m.site.stand!,
-        ...(m.sink.mode === 'drop' ? {} : { bank: m.sink.bank.id }),
-        ...(m.sink.mode === 'process-bank' ? { processor: m.sink.processor.id } : {}),
+        ...(m.sink.mode !== 'drop' && m.sink.bank ? { bank: m.sink.bank.id } : {}),
+        ...(m.sink.mode === 'process' ? { processors: m.sink.steps.map(s => (s === 'here' ? 'here' : s.id)) } : {}),
         skill: m.skill,
         minLevel: m.minLevel,
         levels: m.levels,
@@ -381,7 +450,7 @@ const STALE = '; world.json is stale or hand-edited: run `bun run world`';
  * site world.json has not, or one whose stand has moved: the file is not one build.ts wrote.
  */
 export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): ResolvedMethod {
-    const { site, stand, bank, processor, skill, minLevel, levels, ways, ...def } = wm;
+    const { site, stand, bank, processors, skill, minLevel, levels, ways, ...def } = wm;
     const byId = (id: string | undefined, what: string): Site => {
         const s = id === undefined ? undefined : world.sites.find(x => x.id === id);
         if (!s)
@@ -391,12 +460,17 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): R
     const at = byId(site, 'method');
     if (!at.stand || at.stand.x !== stand.x || at.stand.z !== stand.z || at.stand.level !== stand.level)
         throw new MethodError(wm.id, `site ${site}'s stand is not the method's ${coord(stand)}${STALE}`);
-    const sink: ResolvedMethod['sink'] =
-        def.sink.mode === 'drop'
-            ? { mode: 'drop' }
-            : def.sink.mode === 'bank'
-              ? { mode: 'bank', bank: byId(bank, 'bank') }
-              : { mode: 'process-bank', processor: byId(processor, 'processor'), bank: byId(bank, 'bank') };
+    let sink: ResolvedMethod['sink'];
+    if (def.sink.mode === 'drop') sink = { mode: 'drop' };
+    else if (def.sink.mode === 'bank') sink = { mode: 'bank', bank: byId(bank, 'bank') };
+    else {
+        if (processors?.length !== def.sink.steps.length)
+            throw new MethodError(wm.id, `world.json names no site for each process step${STALE}`);
+        const steps = processors.map((id): Stop => (id === 'here' ? 'here' : byId(id, 'process step')));
+        // A process sink that banks names its bank, but a withdrawal's, which is its site.
+        const banks = def.sink.end === 'bank' && def.family !== WITHDRAW;
+        sink = { mode: 'process', steps, ...(banks ? { bank: byId(bank, 'bank') } : {}) };
+    }
     return { def, site: at, sink, ways, skill, minLevel, levels };
 }
 

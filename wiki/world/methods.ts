@@ -18,22 +18,25 @@ export interface MethodDef {
     /** Stable, kebab-case; plans name it. */
     id: string;
     name: string;
-    /** The family of the action at the site (model/families/index.ts). */
+    /**
+     * The family of the action at the site (model/families/index.ts), or `withdraw`: no action, the load is taken
+     * from the bank `at` lies in (params `{ obj }`), and the cycle starts and ends there.
+     */
     family: string;
     /** A tile in the site. */
     at: Tile;
     /** The family's params: tree type, tool, fish, npc ... */
     params: unknown;
     /**
-     * Where the products go. `bank` omitted: the site's nearest bank. A process step's `at` omitted: the site's
-     * nearest processor of the step's kind; its `params` are the family's params, or a list of them, one per gathered
-     * product it takes (cooking: one per raw fish). A process-bank's `bank` omitted: the processor's nearest bank.
+     * Where the products go. `bank` omitted: the nearest bank of the site, or of the last process step's site. A
+     * process sink runs its steps in order, each taking a product of the gather or of an earlier step, then (`end`)
+     * banks, drops the end products at the last step, or keeps them (a stackable product: runes).
      */
     sink:
         | { mode: 'drop' }
         | { mode: 'bank'; bank?: Tile }
-        | { mode: 'process-bank'; process: { family: string; at?: Tile; params: unknown }; bank?: Tile };
-    /** The obj eaten to cover a family's failure damage (pickpocket stuns), restocked at the bank. */
+        | { mode: 'process'; steps: ProcessStepDef[]; end: 'bank' | 'drop' | 'keep'; bank?: Tile };
+    /** The obj eaten to cover the action's damage (pickpocket stuns, agility falls), restocked at the bank. */
     food?: string;
     /** Promoted plans that run it (conductor/plans/). */
     plans?: string[];
@@ -43,6 +46,18 @@ export interface MethodDef {
     source?: string;
 }
 
+/** One process step of a method. */
+export interface ProcessStepDef {
+    family: string;
+    /**
+     * `'here'`: where the previous action stands (superheat beside the rock); a tile: in a site of the family's kinds;
+     * omitted: the nearest site of the first of its kinds to the previous step's site (the gather's for the first).
+     */
+    at?: Tile | 'here';
+    /** The family's params, or a list of them, one per input kind it takes (cooking: one per raw fish). */
+    params: unknown;
+}
+
 export interface Measured {
     /** Game XP per hour, XP_RATE included, as stats.ts prints it. */
     xpPerHour: Partial<Record<Skill, number>>;
@@ -50,6 +65,8 @@ export interface Measured {
     level: Partial<Record<Skill, number>>;
     /** The axe or pickaxe the runs used, when the family reads one from the profile. */
     tool?: string;
+    /** The objs worn in the runs that a family reads (Profile.worn). */
+    worn?: string[];
     bot: string;
     /** YYYY-MM-DD. */
     date: string;
@@ -114,12 +131,15 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 3238, z: 3252 },
         params: { tool: 'fly_fishing_rod' },
         sink: {
-            mode: 'process-bank',
-            process: {
-                family: 'cooking',
-                at: { level: 0, x: 3232, z: 3238 },
-                params: [{ food: 'raw_trout' }, { food: 'raw_salmon' }],
-            },
+            mode: 'process',
+            steps: [
+                {
+                    family: 'cooking',
+                    at: { level: 0, x: 3232, z: 3238 },
+                    params: [{ food: 'raw_trout' }, { food: 'raw_salmon' }],
+                },
+            ],
+            end: 'bank',
             bank: { level: 0, x: 3254, z: 3418 },
         },
         plans: ['lure-cook-bank'],

@@ -261,6 +261,7 @@ const profile = (level: number, tools: Partial<Profile> = {}): Profile => ({
     axe: null,
     pickaxe: null,
     glory: false,
+    worn: [],
     ...tools,
 });
 
