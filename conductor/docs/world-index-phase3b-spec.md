@@ -134,6 +134,9 @@ non-stackable supply is `'here'`, the bot gathers, processes and consumes one su
 slot is freed by the product it makes (chop, cut and string a longbow: the strung bow takes the log's slot, the string's
 slot comes free). Such a chain's load is the free slots less the one slot a gather needs, over the slots one success's
 end product holds, not the free slots over (input + supply) slots. Steps away from the gather site keep the rule above.
+As built (3a4eea202): the divisor is the larger of the slots one success holds after those steps and the slots of the
+supplies it consumes (the supplies bind when they hold more), and a `withdraw` source keeps the rule above (it has no
+gather, so nothing is processed as it is gathered).
 
 ## Task 5 — Superheat, smelting and smithing
 
