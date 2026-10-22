@@ -106,6 +106,20 @@ export function param(cfg: Config | undefined, key: string): string | undefined 
     return p === undefined ? undefined : p.slice(key.length + 1);
 }
 
+/** A config's `key` param; throws a ModelError naming `what` (`smelting struct bronze_bar`) when it has none. */
+export function paramStr(cfg: Config, key: string, what: string): string {
+    const v = param(cfg, key);
+    if (v === undefined) throw new ModelError(`${what} has no ${key}`);
+    return v;
+}
+
+/** A config's `key` param as a number; throws a ModelError naming `what` when it is missing or not a number. */
+export function paramNum(cfg: Config, key: string, what: string): number {
+    const v = Number(paramStr(cfg, key, what));
+    if (!Number.isFinite(v)) throw new ModelError(`${what} has no number in ${key}`);
+    return v;
+}
+
 /**
  * `~scale_by_playercount(base)` (general/scripts/player_count.rs2:1-4): `scale(4000 - min(players, 2000), 4000,
  * base)`, which the engine computes as `a * c / b` truncated to an int (NumberOps.ts SCALE, ScriptState.pushInt's

@@ -3,7 +3,7 @@
 // `oc_param(<obj>, crafting_spinning_struct)`). A process step with no fail roll. Rellekka's wheel needs The Fremennik
 // Trials (spinning.rs2:2-6, :37-42): its site's reach carries it (gates.ts USE_GATES).
 import { ModelError, type ActionModel } from '../family';
-import { param, queueTicks, requireLevel, stringParams, type FamilyFactory } from './common';
+import { param, paramNum, paramStr, queueTicks, requireLevel, stringParams, type FamilyFactory } from './common';
 
 /** `obj`: the obj spun (`flax`, `wool`). */
 export interface SpinningParams {
@@ -31,16 +31,9 @@ export const spinning: FamilyFactory = data => ({
         const name = param(data.objs.get(p.obj), 'crafting_spinning_struct');
         const struct = name === undefined ? undefined : data.structs.get(name);
         if (!struct) throw new ModelError(`${p.obj} has no spinning struct`);
-        const str = (key: string): string => {
-            const v = param(struct, key);
-            if (v === undefined) throw new ModelError(`spinning struct ${name} has no ${key}`);
-            return v;
-        };
-        const num = (key: string): number => {
-            const v = Number(str(key));
-            if (!Number.isFinite(v)) throw new ModelError(`spinning struct ${name} has no number in ${key}`);
-            return v;
-        };
+        const what = `spinning struct ${name}`;
+        const str = (key: string): string => paramStr(struct, key, what);
+        const num = (key: string): number => paramNum(struct, key, what);
         // The level check after the menu (spinning.rs2:60-64); a struct with no levelrequire (wool) has the param's
         // default.
         const level = param(struct, 'levelrequire') === undefined ? LEVEL_DEFAULT : num('levelrequire');

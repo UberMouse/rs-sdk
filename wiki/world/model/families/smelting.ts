@@ -7,7 +7,7 @@
 import type { GameData } from './common';
 import { ModelError, type ActionModel } from '../family';
 import type { Profile } from '../profile';
-import { param, queueTicks, requireLevel, stringParams, type FamilyFactory } from './common';
+import { param, paramNum, paramStr, queueTicks, requireLevel, stringParams, type FamilyFactory } from './common';
 
 /** `bar`: the bar's obj config (`iron_bar`). */
 export interface SmeltingParams {
@@ -31,16 +31,9 @@ export function barStruct(data: GameData, bar: string): BarStruct {
     const name = param(data.objs.get(bar), 'smelting_struct');
     const struct = name === undefined ? undefined : data.structs.get(name);
     if (!struct) throw new ModelError(`${bar} has no smelting struct`);
-    const str = (key: string): string => {
-        const v = param(struct, key);
-        if (v === undefined) throw new ModelError(`smelting struct ${name} has no ${key}`);
-        return v;
-    };
-    const num = (key: string): number => {
-        const v = Number(str(key));
-        if (!Number.isFinite(v)) throw new ModelError(`smelting struct ${name} has no number in ${key}`);
-        return v;
-    };
+    const what = `smelting struct ${name}`;
+    const str = (key: string): string => paramStr(struct, key, what);
+    const num = (key: string): number => paramNum(struct, key, what);
     const secondary = param(struct, 'ingredient_secondary');
     return {
         product: str('product'),

@@ -6,7 +6,7 @@
 // (smithing.rs2:53-64) and Rellekka's The Fremennik Trials (:66-71), which gates.ts USE_GATES puts on their sites'
 // reach; dart tips need Tourist Trap (:224-230), which is not modelled.
 import { ModelError, type ActionModel } from '../family';
-import { clickTicks, dbIndex, int, param, requireLevel, stringParams, type FamilyFactory } from './common';
+import { clickTicks, dbIndex, int, param, paramNum, requireLevel, stringParams, type FamilyFactory } from './common';
 
 /** `product`: the product's obj config (`iron_platebody`), its dbrow's `ifproduct`. */
 export interface SmithingParams {
@@ -39,10 +39,9 @@ export const smithing: FamilyFactory = data => {
             const bars = int(row, 'bar_amount');
             const structName = param(data.objs.get(bar), 'smithing_anvil_struct');
             const struct = structName === undefined ? undefined : data.structs.get(structName);
-            const xpPerBar = Number(param(struct, 'xpperbar'));
-            const barLevel = Number(param(struct, 'levelrequired'));
-            if (!struct || !Number.isFinite(xpPerBar) || !Number.isFinite(barLevel))
-                throw new ModelError(`${bar} has no anvil struct with xpperbar and levelrequired`);
+            if (!struct) throw new ModelError(`${bar} has no anvil struct`);
+            const xpPerBar = paramNum(struct, 'xpperbar', `anvil struct ${structName}`);
+            const barLevel = paramNum(struct, 'levelrequired', `anvil struct ${structName}`);
             // The bar's level opens the interface (smithing.rs2:93-99), the row's makes the product (:251-255).
             requireLevel(profile, 'smithing', barLevel, `working ${bar}`);
             requireLevel(profile, 'smithing', int(row, 'levelrequired'), `smithing ${p.product}`);

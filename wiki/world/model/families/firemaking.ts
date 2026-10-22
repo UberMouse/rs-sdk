@@ -5,7 +5,7 @@
 import { first } from '../../sources/configs';
 import { statRandomChance } from '../../roll';
 import { ModelError, type ActionModel } from '../family';
-import { param, requireLevel, stringParams, type FamilyFactory } from './common';
+import { paramNum, requireLevel, stringParams, type FamilyFactory } from './common';
 
 /** `log`: the log's obj config (`willow_logs`). */
 export interface FiremakingParams {
@@ -29,11 +29,9 @@ export const firemaking: FamilyFactory = data => ({
         const p = stringParams(params, 'firemaking', ['log']);
         if (!p.log) throw new ModelError('firemaking needs a log param (the log obj)');
         const cfg = data.objs.get(p.log);
-        if (first(cfg, 'category') !== LOGS) throw new ModelError(`${p.log} is not a log a tinderbox lights`);
-        const level = Number(param(cfg, 'levelrequire'));
-        const xp = Number(param(cfg, 'productexp'));
-        if (!Number.isFinite(level) || !Number.isFinite(xp))
-            throw new ModelError(`${p.log} has no levelrequire and productexp params`);
+        if (!cfg || first(cfg, 'category') !== LOGS) throw new ModelError(`${p.log} is not a log a tinderbox lights`);
+        const level = paramNum(cfg, 'levelrequire', p.log);
+        const xp = paramNum(cfg, 'productexp', p.log);
         // The level check (:81-86).
         requireLevel(profile, 'firemaking', level, `lighting ${p.log}`);
         return {
