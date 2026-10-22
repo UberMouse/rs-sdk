@@ -18,9 +18,14 @@
 //   filling the inventory) is not modelled. The hitpoints pool and regeneration are left out, which only lowers the
 //   floor a little (a trip lasts somewhat longer than its food).
 // - A drop sink never travels: a full inventory of non-stackable items is dropped in dropTicks(free slots), unless every
-//   success depletes the feature
-//   (mining, a stall): the next item needs a fresh click on another feature anyway, and the drop goes out in that
-//   tick ahead of the click, free. Food with a drop sink is not modelled (nothing restocks it).
+//   success depletes the feature (mining, a stall): the next item needs a fresh click on another feature anyway, and
+//   the drop goes out in that tick ahead of the click, free, so the inventory never fills. Food with a drop sink is
+//   not modelled (nothing restocks it).
+// - `damage` (see ActionModel) needs a food, and its eats cost no ticks; only a stun's eats do (eatTicksPerFail).
+//
+// The steps. A process step's `restart`, `start` and `perTick` (see ActionModel) add to its ticks over a trip, so
+// they need a trip that ends; `batch` is the inputs an action takes (the whole-batch rounding above). A gather with a
+// restart, a start or a perTick is not modelled.
 import { ModelError, ProfileError, type ActionModel } from './family';
 import { INVENTORY_SLOTS, type Items } from './items';
 import { resourceCap, ticksPerItem } from './rate';

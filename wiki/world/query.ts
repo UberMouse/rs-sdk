@@ -8,8 +8,10 @@
 //   a level under its requirement itself, and woodcutting and mining an axe or pickaxe the profile lacks (mining one
 //   above its Mining level too) (model/families/), so the query keeps no copy of those rules. A method with walk pairs
 //   (Family.walks) none of whose accepted ways models (a lap that closes over none) drops out too; any other error
-//   stops the query as a MethodError naming the method. The profile's axe and pickaxe are the only tools it holds
-//   (profile.ts), the ones the checker would pick: the caller's to set.
+//   stops the query as a MethodError naming the method. The profile's tools are its axe and pickaxe, the ones the
+//   checkers would pick, and its worn objs (a staff, a ring of forging, goldsmith gauntlets) that smelting and
+//   superheat read (profile.ts): the caller's to set. A measured figure is rated at the tool and worn objs its runs
+//   used instead (model/method.ts measuredProfile).
 // - Reach: a method's `ways` are the requirement sets that get to all of its sites, shortest travel first; the query
 //   rates the first one `met` accepts every token of that models (conductor/lib/account.ts meetsOneOf's semantics:
 //   `[]` needs nothing). A way's `skill:<stat>:<n>` tokens are held to the profile's levels as well, `met` or not: a

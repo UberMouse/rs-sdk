@@ -174,8 +174,8 @@ function familyOf(ctx: MethodContext, id: string): Family {
 }
 
 /**
- * The site `nearest` names for the first sink kind of `kinds` (a cooking family's ['range', 'fire'] searches ranges
- * only: phase 3 models ranges, not fires) the site's kind sinks to, or a ModelError.
+ * The site `nearest` names for the first sink kind of `kinds` the site's kind sinks to, or a ModelError: only that
+ * first kind is searched (a cooking family's ['range', 'fire'] searches ranges, never fires).
  */
 function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly FeatureKind[]): Site {
     const kind = kinds.find((k): k is SinkKind => (SINK_KINDS as readonly string[]).includes(k));
@@ -183,7 +183,7 @@ function nearestOf(world: MethodContext['world'], from: Site, kinds: readonly Fe
     const site = id === undefined ? undefined : world.sites.find(s => s.id === id);
     if (!site)
         throw new ModelError(
-            `site ${from.id} has no nearest ${kind ?? kinds.join('/')} (phase 3 searches only the first of ${kinds.join('/')}): give its tile`,
+            `site ${from.id} has no nearest ${kind ?? kinds.join('/')} (only the first sink kind of ${kinds.join('/')} is searched): give its tile`,
         );
     return site;
 }

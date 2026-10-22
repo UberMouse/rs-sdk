@@ -419,7 +419,7 @@ describe('a record that does not resolve stops the build, naming it and why', ()
                 ...lure,
                 sink: { mode: 'process', steps: [{ family: 'cooking', params: { food: 'raw_trout' } }], end: 'bank' },
             },
-            /site fishing-spot:river:0 has no nearest range \(phase 3 searches only the first of range\/fire\): give its tile/,
+            /site fishing-spot:river:0 has no nearest range \(only the first sink kind of range\/fire is searched\): give its tile/,
         );
     });
 
