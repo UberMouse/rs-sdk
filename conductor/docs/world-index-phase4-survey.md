@@ -180,7 +180,7 @@ trunc(13.3*d), which is slightly under 13.3*HP. The exact expectation follows fr
 |---|---|---|
 | Format | one `[ai_queue3,<npc>]` script per NPC (234 `ai_queue3` triggers, 78 files in `S/drop tables/scripts/`): `gosub(npc_death)`, `obj_add(npc_param(death_drop))`, then a `random(128)` if/else-if chain of `obj_add(obj, count)` | `S/drop tables/scripts/giant.rs2:1-59`; `moss_giant.rs2:1-70`; `chicken.rs2:1-22`; `green_dragon.rs2:1-56` |
 | Shared procs | `~randomherb` (random(128) chain; coins 10 when not members), `~randomjewel` (random(128); ring of wealth -> random(65)) | `S/drop tables/scripts/shared_droptables.rs2:2,37-60` |
-| dbrow tables | `drop_table` (total, drop LIST), `~roll_on_drop_table`, used by man, goblin, dwarf, ... | `S/drop tables/configs/drop_table.dbtable:1-3`; `S/drop tables/scripts/drop_table.rs2:1-20` |
+| dbrow tables | `drop_table` (total, drop LIST), `~roll_on_drop_table`: used by no NPC, only mining's gem rocks (`S/skill_mining/scripts/mining.rs2:257`); NPC drops are `random` chains | `S/drop tables/configs/drop_table.dbtable:1-3`; `S/drop tables/scripts/drop_table.rs2:1-20` |
 | Branches | `map_members` branches (members worlds only, per memory) and tertiary clue procs (`trail_*`) | `moss_giant.rs2:20-25`; `green_dragon.rs2:12` |
 | Default drop | `death_drop` param default `bones` | `npc_combat.param:29-31`; `npc_combat.rs2:96-101` |
 | Ground duration | 200 ticks | `S/drop tables/configs/lootdrop.constant:1` |
