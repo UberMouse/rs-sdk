@@ -2,7 +2,7 @@
 // skill_thieving/scripts/thieving.rs2, on the pickpocket rows (configs/pickpocking/pickpocket.dbrow). The Fremennik
 // npcs (attempt_pick_viking_pocket, pickpocket.rs2:145-151) also need The Fremennik Trials, which this does not check.
 import { ModelError, type ActionModel } from '../family';
-import { statRandomChance } from '../roll';
+import { statRandomChance } from '../../roll';
 import {
     clickTicks,
     dbIndex,

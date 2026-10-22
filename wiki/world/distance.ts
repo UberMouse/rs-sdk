@@ -129,7 +129,7 @@ export function crossingTicks(e: Pick<Edge, 'via' | 'cost'>, level = 1): number 
     if (!roll) return success;
     const back = roll.fail.to ? roll.fail.back : 0;
     if (back === undefined) return undefined;
-    const ticks = expectedTicks(success, statRandomChance(roll.low, roll.high, level), roll.fail.ticks, back);
+    const ticks = expectedTicks(success, statRandomChance(level, roll.low, roll.high), roll.fail.ticks, back);
     return Number.isFinite(ticks) ? ticks : undefined;
 }
 

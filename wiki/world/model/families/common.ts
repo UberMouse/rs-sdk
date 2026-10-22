@@ -130,6 +130,14 @@ export const rollInterval = (n: number): number => n + 1;
  */
 export const clickTicks = (k: number): number => k + 2;
 
+/**
+ * Ticks from a `weakqueue(d)` call to its script running: d when it is called from a click or dialog (before the
+ * tick's queue pass), d + 1 when it is called from inside a queue script, as the player's queue list is walked
+ * (Player.ts:966-976: the new entry goes on the tail after the walk's cursor is saved, LinkList.ts:97-111, so it
+ * is not reached until the next tick).
+ */
+export const queueTicks = (d: number, fromQueue: boolean): number => (fromQueue ? d + 1 : d);
+
 /** One row of a weighted loot table: `weight` out of the table's total, `min`..`max` of `obj`. */
 export interface LootRow {
     obj: string;

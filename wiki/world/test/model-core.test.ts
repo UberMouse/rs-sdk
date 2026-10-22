@@ -2,44 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import type { ActionModel } from '../model/family';
 import { bestTool, profileAt, readTools, toolKindOfObj, toolKindOfSkill, type Tools } from '../model/profile';
 import { gatherRate, resourceCap, ticksPerItem } from '../model/rate';
-import { statRandomChance } from '../model/roll';
 import { levelForXp, readDefault, xpForLevel } from '../model/server';
 import { parseConfigs } from '../sources/configs';
-
-describe('statRandomChance', () => {
-    // PlayerOps.ts:596: value = floor(low*(99-L)/98) + floor(high*(L-1)/98) + 1; chance value/256.
-    test('yew with a rune axe (trees.dbrow:143, 14,44)', () => {
-        // L1: 14 + 0 + 1 = 15. L50: floor(14*49/98) = 7, floor(44*49/98) = 22, so 30. L99: 0 + 44 + 1 = 45.
-        expect(statRandomChance(1, 14, 44)).toBe(15 / 256);
-        expect(statRandomChance(50, 14, 44)).toBe(30 / 256);
-        expect(statRandomChance(99, 14, 44)).toBe(45 / 256);
-    });
-
-    test('gold rock (mine.dbrow:101, 7,75): at 50 each floor drops a half', () => {
-        // L1: 7 + 0 + 1 = 8. L50: floor(3.5) = 3, floor(37.5) = 37, so 41, where the unfloored sum is 42. L99: 76.
-        expect(statRandomChance(1, 7, 75)).toBe(8 / 256);
-        expect(statRandomChance(50, 7, 75)).toBe(41 / 256);
-        expect(statRandomChance(99, 7, 75)).toBe(76 / 256);
-    });
-
-    test('guard pickpocket (pickpocket.dbrow:77, 50,240)', () => {
-        // L1: 50 + 0 + 1 = 51. L50: 25 + 120 + 1 = 146. L99: 0 + 240 + 1 = 241.
-        expect(statRandomChance(1, 50, 240)).toBe(51 / 256);
-        expect(statRandomChance(50, 50, 240)).toBe(146 / 256);
-        expect(statRandomChance(99, 50, 240)).toBe(241 / 256);
-    });
-
-    test('a level over 99 rolls as 99', () => {
-        // A boost to 105 caps at 99 (PlayerOps.ts:595): 45/256, as at 99.
-        expect(statRandomChance(105, 14, 44)).toBe(45 / 256);
-    });
-
-    test('a value past 256 always succeeds', () => {
-        // Beef (cooking_generic.dbrow:43, 128,512) at L50: 64 + 256 + 1 = 321 > every roll 0..255. L1: 129.
-        expect(statRandomChance(50, 128, 512)).toBe(1);
-        expect(statRandomChance(1, 128, 512)).toBe(129 / 256);
-    });
-});
 
 describe('level curve', () => {
     // Player.ts:79-85: acc += floor(l + 2^(l/10) * 300) for l = 1..level-1; the level's XP is floor(acc/4)*10

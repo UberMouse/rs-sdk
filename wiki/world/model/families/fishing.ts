@@ -5,7 +5,7 @@
 import { codeOf } from '../../classify';
 import { parseCallables, parseTriggers } from '../../sources/triggers';
 import { ModelError, type ActionModel } from '../family';
-import { statRandomChance } from '../roll';
+import { statRandomChance } from '../../roll';
 import { param, requireLevel, rollInterval, stringParams, targetFeatures, type FamilyFactory } from './common';
 
 /** `spot`: the spot subtype (`freshfish`), omitted when the site has one; `tool`: the tool (`fly_fishing_rod`). */
