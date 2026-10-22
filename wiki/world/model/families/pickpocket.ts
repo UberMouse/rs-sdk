@@ -40,6 +40,9 @@ export const pickpocket: FamilyFactory = data => {
             // cadence below would be wrong; every row has 8 or 10.
             const stun = int(row, 'stun_ticks');
             if (stun < 1) throw new ModelError(`${row.row} has stun_ticks ${stun}: a fail's cadence needs at least 1`);
+            // A stun that hits for 0 costs no hitpoints: no failDamage, so a record naming food for it is refused
+            // (cycle.ts).
+            const hit = int(row, 'stun_damage');
             return {
                 // The attempt's p_delay(0) (thieving.rs2:5) holds the player a tick before the roll (:12), so the
                 // next click's op runs clickTicks(0) ticks after this one's.
@@ -57,7 +60,7 @@ export const pickpocket: FamilyFactory = data => {
                 // does nothing (pickpocket.rs2:130-132): the next op runs 3 + stun_ticks after the click, against
                 // a success's clickTicks(0).
                 failTicks: 3 + stun - clickTicks(0),
-                failDamage: int(row, 'stun_damage'),
+                ...(hit > 0 ? { failDamage: hit } : {}),
             };
         },
     };

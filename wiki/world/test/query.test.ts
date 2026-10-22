@@ -219,6 +219,13 @@ describe('bestMethods', () => {
         ]);
     });
 
+    test("a way's skill tokens are held to the profile's levels, met or not", () => {
+        // tree-drop's one way needs Agility 10: at Agility 9 it is out, though `met` accepts every token.
+        const low = { ...at('woodcutting', 50), levels: { ...at('woodcutting', 50).levels, agility: 9 } };
+        expect(rank('woodcutting', low).map(r => r[0])).toEqual(['wild-drop', 'tree-bank', 'tree-burn-bank']);
+        expect(rank('woodcutting', low, { met: () => true })).toEqual(rank('woodcutting', low));
+    });
+
     test('levels: a method a family refuses at the profile is out', () => {
         // Woodcutting 25 and Firemaking 25: the bronze axe (533,898; the long-way bank 414,474: 112 + 40 = 152 ticks,
         // 1657.89 logs/h); burning needs Firemaking 30.

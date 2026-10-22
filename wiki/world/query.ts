@@ -12,8 +12,10 @@
 //   (profile.ts), the ones the checker would pick: the caller's to set.
 // - Reach: a method's `ways` are the requirement sets that get to all of its sites, shortest travel first; the query
 //   rates the first one `met` accepts every token of that models (conductor/lib/account.ts meetsOneOf's semantics:
-//   `[]` needs nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
-//   over its shortest way: the query can't know the account, and each result names the way it rated.
+//   `[]` needs nothing). A way's `skill:<stat>:<n>` tokens are held to the profile's levels as well, `met` or not: a
+//   profile under a course's Agility gate gets no rate from it. With `met` omitted every other token counts as met, so
+//   each method is rated over its shortest way the profile's levels let in: the query can't know the account, and
+//   each result names the way it rated.
 // - Hazards: the deepest Wilderness level of the sites and tiles the method stands at (its site, processors and
 //   bank), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
 //   requirement set, not the tiles it crosses.
@@ -35,14 +37,16 @@ import {
     type ResolvedMethod,
 } from './model/method';
 import type { Profile } from './model/profile';
-import type { Skill } from './model/server';
+import { SKILLS, type Skill } from './model/server';
+import { lowestLevel } from './roll';
 import type { World } from './types';
 import { cmp } from './util';
 
 export interface BestOptions {
     /**
      * Whether the account meets a requirement token (conductor/lib/account.ts tokens: `quest:<id>`,
-     * `skill:<stat>:<level>`, `coins:<n>`, ...). Omitted: every token is met, nothing is filtered on reach.
+     * `skill:<stat>:<level>`, `coins:<n>`, ...). Omitted: every token is met but a skill token, which the profile's
+     * levels judge either way.
      */
     met?: (token: string) => boolean;
     /** The deepest Wilderness level a method's sites may be at (0: none in the Wilderness). Omitted: no limit. */
@@ -60,7 +64,7 @@ export interface Hazard {
 
 export interface RankedMethod {
     method: ResolvedMethod;
-    /** The way rated, an index into `method.ways`: the shortest one whose reach `met` accepts. */
+    /** The way rated, an index into `method.ways`: the shortest one whose reach `met` and the profile's levels accept. */
     way: number;
     /** The floor's XP/hr of the queried skill at the profile, over that way. */
     xpPerHour: number;
@@ -115,6 +119,7 @@ export function methodQuery(
                     let first: ModelError | undefined;
                     for (const [i, w] of m.ways.entries()) {
                         if (!w.reach.every(met)) continue;
+                        if (!SKILLS.every(s => profile.levels[s] >= lowestLevel([w.reach], s))) continue;
                         try {
                             return { way: i, rates: rateMethod(m, profile, ctx, i) };
                         } catch (e) {

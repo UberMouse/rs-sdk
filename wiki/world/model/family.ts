@@ -22,7 +22,7 @@ export interface ActionModel {
     successTicks?: number;
     /**
      * Hitpoints a failed attempt costs (a pickpocket stun's hit). Food per hour is the damage per hour over the
-     * food's heal, so the method that names the food turns it into a supply.
+     * food's heal, so the method that names the food turns it into a supply. Undefined when a fail costs none.
      */
     failDamage?: number;
     /**

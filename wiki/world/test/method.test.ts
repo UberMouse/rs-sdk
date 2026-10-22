@@ -198,6 +198,10 @@ const sites: Site[] = [
         nearest: nearA(11),
     }),
     site('rock:shut:0', [at(0, 3200, 3230)], 'ironrock1', 'iron', at(0, 3201, 3230), { reach: [] }),
+    // Behind a Mining 30 gate, or a quest, Mining 25 and Agility 40.
+    site('rock:gated:0', [at(0, 3200, 3240)], 'ironrock1', 'iron', at(0, 3201, 3240), {
+        reach: [['skill:mining:30'], ['quest:x', 'skill:agility:40', 'skill:mining:25']],
+    }),
     site('fishing-spot:river:0', [at(0, 3200, 3220)], 'freshfish_spot', 'freshfish', at(0, 3201, 3220), {
         nearest: {},
     }),
@@ -310,6 +314,18 @@ describe('resolving a record', () => {
         const rate = methodRate(m, profileAt('thieving', 60, { tools: ctx.tools }), ctx);
         expect(rate.suppliesPerHour.map(x => x.obj)).toEqual(['trout']);
         expect(rate.trip.travel).toBe(12);
+    });
+
+    test("a site behind a skill gate: the levels are raised to the lowest any way's reach lets in", () => {
+        // Iron models from Mining 15, but no way gets there under 25 (the quest way); every skill at once needs the
+        // Mining 30 way (the quest way's Agility 40 is higher).
+        const m = resolve({ ...mine, id: 'gated-drop', at: at(0, 3200, 3240), sink: { mode: 'drop' } });
+        expect(m.ways.map(w => w.reach)).toEqual([
+            ['skill:mining:30'],
+            ['quest:x', 'skill:agility:40', 'skill:mining:25'],
+        ]);
+        expect(m.levels).toEqual({ mining: 25 });
+        expect(m.minLevel).toBe(30);
     });
 
     test("a sink behind a requirement: the method asks it, joined with the site's", () => {
@@ -455,6 +471,14 @@ describe('a record that does not resolve stops the build, naming it and why', ()
         fails(
             { ...guards, food: 'iron_ore' },
             /no level models it \(at 99: iron_ore is not a food with a fixed heal\)/,
+        );
+        // A stun that hits for 0 (stun_damage 0) costs no hitpoints, so the food it names is refused.
+        const harmless: MethodContext = {
+            ...ctx,
+            ...methodModel({ ...data, dbrows: parseDbrows(DBROWS.replace('stun_damage,2', 'stun_damage,0')) }, zones),
+        };
+        expect(() => resolveMethod(guards, harmless, finder)).toThrow(
+            /methods\.ts guard-pickpocket: no level models it \(at 99: food trout is named but the action costs no hitpoints\)/,
         );
         fails(
             {

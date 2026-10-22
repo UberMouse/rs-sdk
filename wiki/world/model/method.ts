@@ -5,6 +5,7 @@ import type { Measured, MethodDef } from '../methods';
 import { SINKS, type Way, type wayFinder } from '../distance';
 import { isMultiway, readZones, wildernessLevel, type Zones } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
+import { lowestLevel } from '../roll';
 import {
     SINK_KINDS,
     type FeatureKind,
@@ -91,14 +92,16 @@ export interface ResolvedMethod {
     /** The family's first skill, which a level column trains. */
     skill: Skill;
     /**
-     * The lowest level of `skill` (every other skill at it too) at which the families model the method. The floor
-     * assumes tools are wielded and does not check their wield level (a rune pickaxe needs Attack 40).
+     * The lowest level of `skill` (every other skill at it too) at which the families model the method and some way's
+     * reach lets the account in (its `skill:<stat>:<n>` tokens; the Barbarian course's 35 Agility). The floor assumes
+     * tools are wielded and does not check their wield level (a rune pickaxe needs Attack 40).
      */
     minLevel: number;
     /**
      * Each skill the method trains (the gather family's, then the process steps'), and the lowest level of it at which
      * the families model the method with the other skills of the method at 99: what each skill itself needs (fly
-     * fishing and cooking trout and salmon: Fishing 20, Cooking 25, where `minLevel`, every skill at once, is 25).
+     * fishing and cooking trout and salmon: Fishing 20, Cooking 25, where `minLevel`, every skill at once, is 25),
+     * raised to the lowest level of it any way's reach asks.
      */
     levels: Partial<Record<Skill, number>>;
 }
@@ -515,15 +518,21 @@ export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFin
         };
         const all = lowest(skill, {});
         if (all.level === undefined) throw new ModelError(`no level models it (at 99: ${all.reason})`);
+        // A level no way's reach lets in (a course behind a skill gate) is no level of the method either.
+        const reaches = located.ways.map(w => w.reach);
+        const minLevel = Math.max(
+            all.level,
+            Math.min(...reaches.map(r => Math.max(...SKILLS.map(s => lowestLevel([r], s))))),
+        );
         const levels: Partial<Record<Skill, number>> = {};
         for (const s of skills) {
             // It models at minLevel with every skill there, so with the others at 99 some level of `s` does too.
             const own = lowest(s, Object.fromEntries(skills.filter(o => o !== s).map(o => [o, 99])));
             if (own.level === undefined)
                 throw new ModelError(`no ${s} level models it with the others at 99 (${own.reason})`);
-            levels[s] = own.level;
+            levels[s] = Math.max(own.level, lowestLevel(reaches, s));
         }
-        return { def, ...located, skill, minLevel: all.level, levels };
+        return { def, ...located, skill, minLevel, levels };
     } catch (e) {
         if (e instanceof MethodError) throw e;
         // Any other error (rate.ts rejecting a bad model, say) is the record's failure too: name it.

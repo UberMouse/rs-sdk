@@ -163,9 +163,12 @@ test("each skill's own level, the others at 99, and the whole method's", () => {
         minLevel: 27,
         levels: { mining: 15, smithing: 27 },
     });
-    // The Wilderness pipe's Agility 49 (wilderness_course.rs2:48-77); runecraft.dbrow earth 9; spinning.struct flax 10;
-    // cut_logs.dbrow and bows.dbrow willow longbow 40, woodcut willow 30.
-    expect(method('agility-wilderness-course')).toMatchObject({ minLevel: 49, levels: { agility: 49 } });
+    // The Wilderness pipe models from Agility 49 (wilderness_course.rs2:48-77), but its gate lets in from 52
+    // (wilderness_course.rs2:2); the Barbarian course models from 1, its pipe lets in from 35
+    // (barbarian_course.rs2:126). runecraft.dbrow earth 9; spinning.struct flax 10; cut_logs.dbrow and bows.dbrow
+    // willow longbow 40, woodcut willow 30.
+    expect(method('agility-wilderness-course')).toMatchObject({ minLevel: 52, levels: { agility: 52 } });
+    expect(method('agility-barbarian-course')).toMatchObject({ minLevel: 35, levels: { agility: 35 } });
     expect(method('earth-runecraft-aubury-essence')).toMatchObject({
         minLevel: 9,
         levels: { mining: 1, runecraft: 9 },
