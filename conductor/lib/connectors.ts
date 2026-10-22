@@ -11,9 +11,8 @@
 // walkable in the collision data and that each connector has its way back.
 //
 // A plane is a level and, at level 0, whether the tile is underground and in which underground area:
-// those (the Dwarven Mine, the Wizards' Tower basement, the Taverley Dungeon) are drawn at the surface's x
-// with z + 6400 on level 0, and are separate planes (UNDERGROUND_AREAS): no stairs joins the mine to the
-// basement, and none joins the dungeon to the mine.
+// those (UNDERGROUND_AREAS names each) are drawn at the surface's x with z + 6400 on level 0, and are separate
+// planes: no stairs joins the mine to the basement, and none joins the Taverley Dungeon to the mine.
 import type { Connector as Row, World } from '../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from './account';
 import { nearestWay } from './walk-graph';
@@ -45,9 +44,10 @@ export const UNDERGROUND_Z = 6400;
 /**
  * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
  * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
- * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower
- * basement). A box with a `level` holds tiles of that level only; one without holds every level. Other underground
- * tiles count as one area, `u`, so the table leaves out every connector into them.
+ * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild), the Varrock Sewers, the Edgeville
+ * Dungeon and m48_149 (the Wizards' Tower basement). A box with a `level` holds tiles of that level only; one
+ * without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
+ * connector into them.
  */
 const UNDERGROUND_AREAS: readonly {
     id: string;
@@ -143,17 +143,23 @@ export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
     // Edgeville Dungeon and the ladder back. The trapdoor is reached by the opening on the house's west side.
     [key(0, 3097, 3468), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
     [key(0, 3096, 9867), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
+    // Varrock: the manhole (closed: "Open", then "Climb down") into the Varrock Sewers and the ladder back.
+    [key(0, 3237, 3458), { name: 'Varrock Sewers manhole' }],
+    [key(0, 3237, 9858), { name: 'Varrock Sewers manhole' }],
     // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
     [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
     [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
 ]);
 
 /** A climb's op as actions/climb.ts sends it: the direction's own option, or a middle floor's plain Climb. */
-const CLIMB_OP = /^((climb|walk)-(up|down)|climb)$/i;
+const CLIMB_OP = /^((climb[- ]|walk-)(up|down)|climb)$/i;
+/** The closed locs actions/climb.ts opens before it climbs them. */
+export const OPENS = /trapdoor|manhole/i;
 
 /**
  * Why a walk cannot use a generated row, or undefined when it can. actions/climb.ts sends a Climb-up or Climb-down
- * (Walk-), or Climb and answers its question, or opens a closed trapdoor first; it waits until the plane changes.
+ * (Walk-), or Climb and answers its question, or opens a closed trapdoor or manhole first; it waits until the plane
+ * changes.
  * A gate on a row's op needs no check here: the graph's edge carries its requirement (wiki/world/reach.ts).
  */
 function leftOut(row: Row, world: World): string | undefined {
@@ -165,8 +171,8 @@ function leftOut(row: Row, world: World): string | undefined {
     if (lumped(from) || lumped(to)) return 'into an underground area planeOf does not name';
     const moving = row.thenOp ?? row;
     if (!CLIMB_OP.test(moving.opName)) return `op ${moving.opName}, which climb does not send`;
-    if (row.thenOp && !(/^open$/i.test(row.opName) && /trapdoor/i.test(world.features[row.feature]?.name ?? '')))
-        return `opened by ${row.opName}, and climb opens only a trapdoor`;
+    if (row.thenOp && !(/^open$/i.test(row.opName) && OPENS.test(world.features[row.feature]?.name ?? '')))
+        return `opened by ${row.opName}, and climb opens only a trapdoor or a manhole`;
     return undefined;
 }
 

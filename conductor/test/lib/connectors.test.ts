@@ -98,11 +98,14 @@ describe('the table is a view of world.json', () => {
         expect([...why].sort()).toEqual([
             'into an underground area planeOf does not name',
             'not up or down',
-            'op Climb down, which climb does not send',
             'op Cross, which climb does not send',
         ]);
-        // The Varrock Sewers manhole: opened, then `Climb down` with a space.
-        expect(whyOf('manholeclosed', 3237, 3458)).toEqual(['op Climb down, which climb does not send']);
+        // The Varrock Sewers manhole (opened, then `Climb down` with a space) and its ladder up are in the table.
+        expect(whyOf('manholeclosed', 3237, 3458)).toEqual([]);
+        expect(CONNECTORS.filter(c => c.loc.x === 3237 && c.loc.z % 6400 === 3458).map(row)).toEqual([
+            'down Varrock Sewers manhole loc 0:3237,3458 stand 0:3236,3458 to 0:3236,9858',
+            'up Varrock Sewers manhole loc 0:3237,9858 stand 0:3236,9858 to 0:3236,3458',
+        ]);
         // The north ladder pair into the sewers is in the table, and not left out.
         expect(CONNECTORS.filter(c => c.loc.x === 3230 && c.loc.z % 6400 === 3504).map(row)).toEqual([
             'down Ladder, Varrock loc 0:3230,3504 stand 0:3229,3504 to 0:3229,9904',
@@ -223,17 +226,26 @@ describe('connectorTable on a scripted world', () => {
             },
             { row: 'ladder (400, 9000) L0 Climb-up', why: 'into an underground area planeOf does not name' },
         ]);
-        // A manhole into a named area: climb opens only trapdoors.
+        // A manhole into a named area is opened like a trapdoor, and climbed down with a space or a hyphen.
         const named = {
             ...scripted,
             connectors: [
                 r(1, tile(0, 200, 200), 'Open', 'down', tile(0, 3096, 9868), {
-                    thenOp: { op: 1, opName: 'Climb-down' },
+                    thenOp: { op: 1, opName: 'Climb down' },
                 }),
             ],
         };
-        expect(connectorTable(named, new Map()).left.map(l => l.why)).toEqual([
-            'opened by Open, and climb opens only a trapdoor',
+        expect(connectorTable(named, new Map()).left).toEqual([]);
+        expect(connectorTable(named, new Map()).connectors.map(c => c.name)).toEqual(['Manhole']);
+        // Any other loc opened first is left out.
+        const other = {
+            ...scripted,
+            connectors: [
+                r(0, tile(1, 100, 100), 'Open', 'down', tile(0, 101, 100), { thenOp: { op: 1, opName: 'Climb-down' } }),
+            ],
+        };
+        expect(connectorTable(other, new Map()).left.map(l => l.why)).toEqual([
+            'opened by Open, and climb opens only a trapdoor or a manhole',
         ]);
     });
 });
@@ -370,7 +382,8 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
     });
 
     test('an underground area no table row leads to is no-connector (null), not an empty chain', () => {
-        expect(planConnectors(at(0, 3058, 9780), at(0, 3237, 9858))).toBeNull();
+        // The cellar under the ladder at (2562, 3356).
+        expect(planConnectors(at(0, 3058, 9780), at(0, 2561, 9756))).toBeNull();
     });
 
     test('the mine stairs and the tower top floor carry a hazard note, in both directions', () => {
@@ -409,8 +422,6 @@ const ONE_WAY = [
     'up 0:3049,3208',
     'down 1:3057,3483',
     'down 1:3187,3414',
-    // The Varrock Sewers' ladder up to the manhole; the manhole down is left out (its op is `Climb down`).
-    'up 0:3237,9858',
 ];
 
 describe('the table against the collision data', () => {
