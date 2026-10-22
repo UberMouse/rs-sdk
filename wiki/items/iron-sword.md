@@ -30,6 +30,7 @@
 ## Sources
 
 - Sold by: [Varrock Swordshop](../shops/varrock-swordshop.md) for 91 gp
+- Dropped by: [Black Knight](../npcs/black-knight.md) (4/128)
 - Dropped by: [Hobgoblin](../npcs/hobgoblin.md) (3/128)
 - Dropped by: [Kalphite Worker](../npcs/kalphite-worker.md) (3/128)
-- Dropped by: [Black Knight](../npcs/black-knight.md) (4/128)
+- Dropped by: [Skeletal miner](../npcs/skeletal-miner.md) (4/128)

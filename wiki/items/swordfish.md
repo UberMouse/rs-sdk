@@ -15,3 +15,4 @@
 - Sold by: [Fishrestaurant](../shops/fishrestaurant.md) for 200 gp
 - Sold by: [The Shrimp and Parrot](../shops/the-shrimp-and-parrot.md) for 260 gp
 - Sold by: [Fishing Guild Shop](../shops/fishing-guild-shop.md) for 200 gp
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (2/128)

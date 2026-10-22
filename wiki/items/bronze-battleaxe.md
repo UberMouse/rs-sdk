@@ -24,5 +24,5 @@
 ## Sources
 
 - Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 52 gp
-- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (4/128)
 - Dropped by: [Dwarf](../npcs/dwarf.md) (2/128)
+- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (4/128)

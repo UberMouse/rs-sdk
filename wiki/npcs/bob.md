@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | He's dressed all in red. |
+| **Description** | An expert on axes. |
 | **Aggressive** | No |
-| **Movement** | Wander |
+| **Movement** | Stationary (indoors) |
 
 ## Locations
 
@@ -21,6 +21,7 @@
 | Option | Action |
 |--------|--------|
 | Talk-to | Talk-to |
+| Trade | Trade |
 
 ## Drops
 
@@ -28,5 +29,5 @@ Bob has no drops.
 
 ## Notes
 
-- Associated with the **Murder** quest.
-- Has 3 visual variants (bob_sinclair, death_growncat_black, bob).
+- Has 3 visual variants (bob, bob_sinclair, death_growncat_black).
+- Category: Shop Keeper.

@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | There's something fishy about this guy. |
+| **Description** | Its a fisherman! |
 | **Aggressive** | No |
-| **Movement** | Stationary |
+| **Movement** | Wander |
 
 ## Locations
 
@@ -38,5 +38,5 @@ Fisherman has no drops.
 
 ## Notes
 
-- Associated with the **Viking** quest.
-- Has 6 visual variants (viking_fisherman1, grail_fisherman, fishplatform1, fishplatform2, fishplatform3, fishplatform4).
+- Associated with the **Grail** quest.
+- Has 6 visual variants (grail_fisherman, fishplatform1, fishplatform2, fishplatform3, fishplatform4, viking_fisherman1).

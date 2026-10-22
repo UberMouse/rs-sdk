@@ -113,7 +113,7 @@ Always drops: Bones
 
 ## Notes
 
-- Has 24 visual variants (guard1, guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, murderguard, death_guard1, death_guard2, viking_longhall_guard1, viking_longhall_guard2, bioguard1, guard_carnillean, ranging_guild_guard, ardougne_guard, misc_ulby_doorguard, lathastrainer1, lathastrainer2, lathastrainer3).
+- Has 24 visual variants (guard1, guard2, ardougne_guard, lathastrainer1, lathastrainer2, lathastrainer3, bioguard1, ranging_guild_guard, murderguard, guard_carnillean, death_guard1, death_guard2, troll_sguard1, troll_sguard2, troll_sguard3, troll_sguard4, troll_sguard5, troll_sguard6, troll_sguard7, troll_sguard8, eadgar_storeroom_guard, viking_longhall_guard1, viking_longhall_guard2, misc_ulby_doorguard).
 - Can be pickpocketed for Thieving experience.
 - Category: Guard.
 - Can drop medium clue scrolls.

@@ -23,9 +23,9 @@
 
 ## Sources
 
-- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 1950 gp
 - Sold by: [Wayne's Chains! - Chainmail specialist](../shops/waynes-chains-chainmail-specialist.md) for 1950 gp
-- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
+- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 1950 gp
 - Dropped by: [Kalphite Soldier](../npcs/kalphite-soldier.md) (1/128)
-- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)
 - Dropped by: [Lesser demon](../npcs/lesser-demon.md) (1/128)
+- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
+- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)

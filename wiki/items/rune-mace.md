@@ -24,3 +24,4 @@
 ## Sources
 
 - Sold by: [Scavvo's Rune Store](../shops/scavvos-rune-store.md) for 14400 gp
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (4/128)

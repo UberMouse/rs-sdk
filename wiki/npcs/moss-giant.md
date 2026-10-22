@@ -47,10 +47,10 @@
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3158, 9903) | 2 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3165, 9879) | 2 | yes |
 | [Kandarin](../places/kandarin.md) | (2553, 3406) | 4 | no |
 | [Kandarin](../places/kandarin.md) | (2695, 3211) | 5 | no |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3158, 9903) | 2 | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3165, 9879) | 2 | yes |
 | [Wilderness](../places/wilderness.md) | (3139, 3818) | 1 | yes |
 | [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | yes |
 | [Wilderness](../places/wilderness.md) | (3141, 3826) | 1 | yes |

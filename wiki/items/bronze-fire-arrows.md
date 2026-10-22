@@ -1,13 +1,13 @@
-# Bolt(p)
+# Bronze fire arrows
 
-*Vicious poisoned bolts.*
+*These bronze headed arrows are ablaze with fire.*
 
 | Detail | |
 |---|---|
 | **Type** | Ammunition |
 | **Members** | Yes |
-| **Weight** | 18g |
-| **Value** | 3 gp |
+| **Weight** | 16g |
+| **Value** | 10 gp |
 | **Equipable** | Yes — Ammo |
 | **Stackable** | Yes |
 
@@ -15,9 +15,5 @@
 
 | Stat | Value |
 |------|-------|
-| Range Bonus | +10 |
+| Range Bonus | +7 |
 | Level Requirement | 1 |
-
-## Sources
-
-- Dropped by: [Tribesman](../npcs/tribesman.md) (2/138)

@@ -25,5 +25,5 @@
 
 ## Sources
 
-- Dropped by: [Warrior](../npcs/warrior.md) (1/128)
 - Dropped by: [Market Guard](../npcs/market-guard.md) (1/128)
+- Dropped by: [Warrior](../npcs/warrior.md) (1/128)

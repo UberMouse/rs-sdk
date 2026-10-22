@@ -11,6 +11,6 @@
 
 ## Sources
 
-- Sold by: [Ardougne Gem Stall](../shops/ardougne-gem-stall.md) for 3000 gp
 - Sold by: [Gem Trader](../shops/gem-trader.md) for 2000 gp
+- Sold by: [Ardougne Gem Stall](../shops/ardougne-gem-stall.md) for 3000 gp
 - Sold by: [Herquin's Gems](../shops/herquins-gems.md) for 2000 gp

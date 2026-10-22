@@ -25,3 +25,4 @@
 ## Sources
 
 - Dropped by: [Kalphite Queen](../npcs/kalphite-queen.md) (3/128)
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (2/128)

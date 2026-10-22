@@ -24,3 +24,4 @@
 ## Sources
 
 - Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 4160 gp
+- Dropped by: [Iron dragon](../npcs/iron-dragon.md) (3/128)

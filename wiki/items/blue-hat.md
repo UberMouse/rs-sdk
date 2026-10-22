@@ -15,8 +15,8 @@
 
 | Stat | Value |
 |------|-------|
-| Magic Attack | +3 |
-| Magic Defence | +3 |
+| Magic Attack | +2 |
+| Magic Defence | +2 |
 
 ## Spawn Locations
 

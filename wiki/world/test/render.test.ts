@@ -14,6 +14,7 @@ import {
     type RenderData,
 } from '../render';
 import { bySiteId, link, reachLabel, slug } from '../render/common';
+import { stalePages } from '../stale';
 import type { Config } from '../sources/configs';
 import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } from '../types';
 
@@ -880,6 +881,50 @@ describe('writeFiles and drift', () => {
         expect(() => writeFiles(files, root)).toThrow('wiki/places is a symlink');
         expect(existsSync(missing)).toBe(false);
         expect(existsSync(join(root, 'wiki/resources/rock/old.md'))).toBe(true);
+    });
+});
+
+/** A repo whose wiki/npcs holds a page that has changed and one no generator writes now. */
+const pagesTree = (): string => {
+    const root = tree();
+    mkdirSync(join(root, 'wiki/npcs'), { recursive: true });
+    writeFileSync(join(root, 'wiki/npcs/goblin.md'), 'hand edit');
+    writeFileSync(join(root, 'wiki/npcs/extra.md'), 'no npc');
+    writeFileSync(join(root, 'wiki/npcs/README.md'), 'by hand');
+    return root;
+};
+
+describe("writeFiles and drift on the generators' pages", () => {
+    const files = new Map([
+        ['wiki/places/kept.md', 'old text'],
+        ['wiki/npcs/goblin.md', '# Goblin\n'],
+        ['wiki/npcs/guard.md', '# Guard\n'],
+    ]);
+
+    test('drift names a changed page, a missing page and an extra one the generator lists as stale', () => {
+        const root = pagesTree();
+        expect(drift(files, root, stalePages('wiki/npcs', files, root))).toEqual([
+            'wiki/npcs/extra.md',
+            'wiki/npcs/goblin.md',
+            'wiki/npcs/guard.md',
+            'wiki/resources/rock/old.md',
+        ]);
+    });
+
+    test('writeFiles writes them and removes the stale page, the README left, then nothing drifts', () => {
+        const root = pagesTree();
+        const stale = stalePages('wiki/npcs', files, root);
+        expect(writeFiles(files, root, stale)).toEqual(['wiki/resources/rock/old.md', 'wiki/npcs/extra.md']);
+        expect(readFileSync(join(root, 'wiki/npcs/guard.md'), 'utf8')).toBe('# Guard\n');
+        expect(existsSync(join(root, 'wiki/npcs/README.md'))).toBe(true);
+        expect(drift(files, root, stalePages('wiki/npcs', files, root))).toEqual([]);
+    });
+
+    test("writeFiles refuses a removal outside the generators' folders, removing nothing", () => {
+        const root = pagesTree();
+        expect(() => writeFiles(files, root, ['wiki/other.md'])).toThrow('not wiki/other.md');
+        expect(existsSync(join(root, 'wiki/other.md'))).toBe(true);
+        expect(readFileSync(join(root, 'wiki/npcs/goblin.md'), 'utf8')).toBe('hand edit');
     });
 });
 

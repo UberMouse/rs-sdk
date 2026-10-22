@@ -30,7 +30,7 @@
 
 ## Sources
 
-- Sold by: [Aaron's Archery Appendages](../shops/aarons-archery-appendages.md) for 21 gp
 - Sold by: [Jiminua's Jungle Store](../shops/jiminuas-jungle-store.md) for 31 gp
-- Sold by: [Thessalia Fine Clothes](../shops/thessalia-fine-clothes.md) for 21 gp
 - Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 31 gp
+- Sold by: [Thessalia Fine Clothes](../shops/thessalia-fine-clothes.md) for 21 gp
+- Sold by: [Aaron's Archery Appendages](../shops/aarons-archery-appendages.md) for 21 gp

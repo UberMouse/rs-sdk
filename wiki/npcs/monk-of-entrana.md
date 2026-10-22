@@ -27,4 +27,4 @@ Monk of Entrana has no drops.
 
 ## Notes
 
-- Has 2 visual variants (shipmonk2, shipmonk).
+- Has 2 visual variants (shipmonk, shipmonk2).

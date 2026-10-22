@@ -110,7 +110,7 @@ Always drops: Bones
 
 ## Notes
 
-- Has 17 visual variants (man, man2, man3, ardougnian_male1, avan, dskin_w_ardoungecitizen1, w_ardougnecitizen6, w_ardougnecitizen1, w_ardougnecitizen2, w_ardougnecitizen3, w_ardougnecitizen4, w_ardougnecitizen5, canafis_man1, canafis_man2, canafis_man3, werewolfroadblocker, al_kharid_man).
+- Has 17 visual variants (man, man2, man3, al_kharid_man, ardougnian_male1, dskin_w_ardoungecitizen1, w_ardougnecitizen6, avan, w_ardougnecitizen1, w_ardougnecitizen2, w_ardougnecitizen3, w_ardougnecitizen4, w_ardougnecitizen5, canafis_man1, canafis_man2, canafis_man3, werewolfroadblocker).
 - Can be pickpocketed for Thieving experience.
 - Category: Citizen.
 - Can drop easy clue scrolls.

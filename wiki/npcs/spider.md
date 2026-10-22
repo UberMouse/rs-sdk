@@ -124,4 +124,4 @@ Spider has no drops.
 
 ## Notes
 
-- Has 5 visual variants (spider, mm_warehouse_spider, mm_cutscene_spider, upass_little_spider, vampire_spider).
+- Has 5 visual variants (spider, upass_little_spider, vampire_spider, mm_warehouse_spider, mm_cutscene_spider).

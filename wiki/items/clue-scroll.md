@@ -1,6 +1,6 @@
 # Clue scroll
 
-*Part of the world map, but where?*
+*A clue!*
 
 | Detail | |
 |---|---|

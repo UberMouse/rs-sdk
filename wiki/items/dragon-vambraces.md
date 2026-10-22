@@ -1,6 +1,6 @@
 # Dragon vambraces
 
-*Made from 100% real dragon hide.*
+*Made from 100% real dragonhide.*
 
 | Detail | |
 |---|---|

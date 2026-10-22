@@ -24,5 +24,5 @@
 ## Sources
 
 - Sold by: [Skulgrimen's Battle Gear](../shops/skulgrimens-battle-gear.md) for 224 gp
-- Dropped by: [Warrior](../npcs/warrior.md) (6/128)
 - Dropped by: [Market Guard](../npcs/market-guard.md) (6/128)
+- Dropped by: [Warrior](../npcs/warrior.md) (6/128)

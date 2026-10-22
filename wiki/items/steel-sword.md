@@ -30,9 +30,9 @@
 ## Sources
 
 - Sold by: [Varrock Swordshop](../shops/varrock-swordshop.md) for 325 gp
-- Dropped by: [Tower guard](../npcs/tower-guard.md) (6/128)
 - Dropped by: [Colonel Radick](../npcs/colonel-radick.md) (6/128)
-- Dropped by: [Soldier](../npcs/soldier.md) (6/128)
 - Dropped by: [Ice giant](../npcs/ice-giant.md) (4/128)
-- Dropped by: [White Knight](../npcs/white-knight.md) (1/128)
 - Dropped by: [Paladin](../npcs/paladin.md) (2/128)
+- Dropped by: [Soldier](../npcs/soldier.md) (6/128)
+- Dropped by: [Tower guard](../npcs/tower-guard.md) (6/128)
+- Dropped by: [White Knight](../npcs/white-knight.md) (1/128)

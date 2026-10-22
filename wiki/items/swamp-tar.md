@@ -15,8 +15,8 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | Al Kharid (south) | Ground | 1 |
+| Morytania | Ground | 1 |
 | m53_52 | Ground | 1 |
 | m53_53 | Ground | 1 |
 | m54_52 | Ground | 1 |
 | m54_53 | Ground | 1 |
-| Morytania | Ground | 1 |

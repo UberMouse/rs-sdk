@@ -5,7 +5,7 @@
 | Detail | |
 |---|---|
 | **Type** | Armour |
-| **Members** | No |
+| **Members** | Yes |
 | **Weight** | 10g |
 | **Value** | 1050 gp |
 | **Equipable** | Yes — Front |

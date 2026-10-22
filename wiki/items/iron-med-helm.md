@@ -32,4 +32,5 @@
 ## Sources
 
 - Sold by: [Helmet Shop](../shops/helmet-shop.md) for 84 gp
+- Dropped by: [Skeletal miner](../npcs/skeletal-miner.md) (6/128)
 - Dropped by: [Thug](../npcs/thug.md) (4/128)

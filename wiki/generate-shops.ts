@@ -5,19 +5,20 @@
  * Run: bun wiki/generate-shops.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { basename, join, relative } from 'path';
 import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
-import { removeStalePages } from './world/stale';
+import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
 import { areaCell, areasOf, coord } from './world/render/common';
 import { readCallables, readTriggers } from './world/sources/triggers';
 import type { Site, Tile, World } from './world/types';
-import { cmp } from './world/util';
+import { readPack } from './world/sources/packs';
+import { cmp, packId } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
-const WIKI_DIR = join(import.meta.dir);
-const SHOP_DIR = join(WIKI_DIR, 'shops');
+/** The pages' folder, repo-relative. */
+const SHOP_DIR = 'wiki/shops';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -109,7 +110,7 @@ function parseInvConfigs(content: string, sourcePath: string): ShopInventory[] {
         if (sectionMatch) {
             if (current && current.stock.length > 0) shops.push(current);
             current = {
-                name: sectionMatch[1],
+                name: sectionMatch[1]!,
                 scope: '',
                 restock: false,
                 allstock: false,
@@ -135,9 +136,9 @@ function parseInvConfigs(content: string, sourcePath: string): ShopInventory[] {
             const parts = value.split(',');
             if (parts.length >= 3) {
                 current.stock.push({
-                    configName: parts[0].trim(),
-                    quantity: parseInt(parts[1]) || 0,
-                    price: parseInt(parts[2]) || 0,
+                    configName: parts[0]!.trim(),
+                    quantity: parseInt(parts[1]!) || 0,
+                    price: parseInt(parts[2]!) || 0,
                 });
             }
         }
@@ -177,7 +178,7 @@ function parseNpcConfigs(content: string, sourcePath: string): NpcShopInfo[] {
         const sectionMatch = line.match(/^\[([^\]]+)\]$/);
         if (sectionMatch) {
             flush();
-            currentName = sectionMatch[1];
+            currentName = sectionMatch[1]!;
             currentDisplayName = '';
             currentParams = new Map();
             continue;
@@ -231,7 +232,7 @@ function readOpeners(): Map<string, Openers> {
         if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set() });
         return openers.get(inv)!;
     };
-    const invsIn = (body: string): string[] => [...code(body).matchAll(OPENSHOP)].map(m => m[1]);
+    const invsIn = (body: string): string[] => [...code(body).matchAll(OPENSHOP)].map(m => m[1]!);
     const callsIn = (body: string): string[] => [
         ...[...code(body).matchAll(/[@~][a-z0-9_]+/g)].map(m => m[0]),
         ...[...code(body).matchAll(/\bjump\(([a-z0-9_]+)\)/g)].map(m => `@${m[1]}`),
@@ -248,8 +249,8 @@ function readOpeners(): Map<string, Openers> {
         const bodies = [t.body];
         const seen = new Set<string>();
         for (let i = 0; i < bodies.length; i++) {
-            for (const inv of invsIn(bodies[i])) opener(inv).npcs.add(t.target);
-            for (const call of callsIn(bodies[i])) {
+            for (const inv of invsIn(bodies[i]!)) opener(inv).npcs.add(t.target);
+            for (const call of callsIn(bodies[i]!)) {
                 const body = callable.get(call);
                 if (body === undefined || seen.has(call)) continue;
                 seen.add(call);
@@ -328,7 +329,7 @@ function parseObjConfigsFull(content: string): Map<string, ObjInfo> {
             if (currentName && currentDisplayName) {
                 items.set(currentName, { displayName: currentDisplayName, cost: currentCost });
             }
-            currentName = sectionMatch[1];
+            currentName = sectionMatch[1]!;
             currentDisplayName = '';
             currentCost = 0;
             continue;
@@ -349,7 +350,8 @@ function parseObjConfigsFull(content: string): Map<string, ObjInfo> {
 function findFilesRecursive(dir: string, ext: string): string[] {
     const results: string[] = [];
     function walk(d: string) {
-        const entries = readdirSync(d, { withFileTypes: true });
+        // By name: the filesystem lists in no fixed order.
+        const entries = readdirSync(d, { withFileTypes: true }).sort((a, b) => cmp(a.name, b.name));
         for (const entry of entries) {
             const fullPath = join(d, entry.name);
             if (entry.isDirectory()) walk(fullPath);
@@ -370,7 +372,7 @@ function prettifyConfigName(name: string): string {
 function getAreaFromSourcePath(sourcePath: string): string {
     const match = sourcePath.match(/scripts\/(?:areas\/)?(\w+)\//);
     if (!match) return 'Unknown';
-    return SOURCE_PATH_AREAS[match[1]] || prettifyConfigName(match[1]);
+    return SOURCE_PATH_AREAS[match[1]!] || prettifyConfigName(match[1]!);
 }
 
 function slugify(name: string): string {
@@ -382,15 +384,22 @@ function slugify(name: string): string {
 
 // ─── Main Pipeline ───────────────────────────────────────────────────────────
 
-function main() {
-    // First, so a stale world.json fails before any parsing.
-    const world = loadFreshWorld();
-    console.log('Shop Wiki Generator');
-    console.log('===================\n');
+/**
+ * The shop pages for `world`, wiki/README.md with its Shops section rewritten (from `prior`, an earlier step's
+ * files, else from disk), and the pages in wiki/shops that are not among them, without touching the disk.
+ * `log` gets the progress lines.
+ */
+export function shopPages(
+    world: World,
+    prior: ReadonlyMap<string, string> = new Map(),
+    log: (line: string) => void = () => {},
+): Pages {
+    log('Shop Wiki Generator');
+    log('===================\n');
 
     // ─── Step 1: Parse shop inventories ─────────────────────────────────
 
-    console.log('Step 1: Parsing shop inventories...');
+    log('Step 1: Parsing shop inventories...');
 
     const invFiles = findFilesRecursive(join(CONTENT_DIR, 'scripts'), '.inv');
     const allShops = new Map<string, ShopInventory>();
@@ -406,11 +415,11 @@ function main() {
             }
         }
     }
-    console.log(`  Found ${allShops.size} shop inventories from ${invFiles.length} .inv files`);
+    log(`  Found ${allShops.size} shop inventories from ${invFiles.length} .inv files`);
 
     // ─── Step 2: Parse shop owner NPCs ──────────────────────────────────
 
-    console.log('\nStep 2: Parsing shop owner NPCs...');
+    log('\nStep 2: Parsing shop owner NPCs...');
 
     const npcFiles = findFilesRecursive(join(CONTENT_DIR, 'scripts'), '.npc');
     const shopOwners = new Map<string, ShopOwner[]>(); // shopName -> owners
@@ -438,13 +447,19 @@ function main() {
         }
     }
 
+    // In the game's id order (npc.pack): the first owner, whose title and area the page takes, is the npc it
+    // defines first.
+    const npcIds = readPack('npc').id;
+    for (const owners of shopOwners.values())
+        owners.sort((a, b) => cmp(packId(npcIds, a.npcConfigName), packId(npcIds, b.npcConfigName)));
+
     let totalOwners = 0;
     for (const owners of shopOwners.values()) totalOwners += owners.length;
-    console.log(`  Found ${totalOwners} shop owners for ${shopOwners.size} shops`);
+    log(`  Found ${totalOwners} shop owners for ${shopOwners.size} shops`);
 
     // ─── Step 3: Load item data (names + costs) ────────────────────────
 
-    console.log('\nStep 3: Loading item data...');
+    log('\nStep 3: Loading item data...');
 
     const objData = new Map<string, ObjInfo>();
     const allObjContent = readFileSync(join(CONTENT_DIR, 'scripts', '_unpack', '225', 'all.obj'), 'utf-8');
@@ -467,20 +482,20 @@ function main() {
             }
         }
     }
-    console.log(`  Loaded ${objData.size} items`);
+    log(`  Loaded ${objData.size} items`);
 
     // ─── Step 3b: Shop coordinates from the world index ─────────────────
 
-    console.log('\nStep 3b: Loading shop sites from wiki/world.json...');
+    log('\nStep 3b: Loading shop sites from the world index...');
 
     const locate = shopLocator(world);
-    console.log(`  world.json: ${world.sites.filter(s => s.kind === 'shop').length} shop sites`);
+    log(`  world.json: ${world.sites.filter(s => s.kind === 'shop').length} shop sites`);
 
     // ─── Step 4: Build shop pages ───────────────────────────────────────
 
-    console.log('\nStep 4: Building shop pages...');
+    log('\nStep 4: Building shop pages...');
 
-    const shopPages: ShopPage[] = [];
+    const built: ShopPage[] = [];
 
     for (const [shopName, inventory] of allShops) {
         const owners = shopOwners.get(shopName) || [];
@@ -491,7 +506,7 @@ function main() {
             ? getAreaFromSourcePath(primaryOwner.sourcePath)
             : getAreaFromSourcePath(inventory.sourcePath);
 
-        shopPages.push({
+        built.push({
             shopName,
             shopTitle,
             inventory,
@@ -502,45 +517,43 @@ function main() {
     }
 
     // Sort by shop title
-    shopPages.sort((a, b) => a.shopTitle.localeCompare(b.shopTitle));
-    console.log(`  Built ${shopPages.length} shop pages`);
+    built.sort((a, b) => cmp(a.shopTitle, b.shopTitle));
+    log(`  Built ${built.length} shop pages`);
 
     // ─── Step 5: Generate markdown ──────────────────────────────────────
 
-    console.log('\nStep 5: Generating markdown...');
-
-    mkdirSync(SHOP_DIR, { recursive: true });
+    log('\nStep 5: Generating markdown...');
 
     const pageIndex: { name: string; file: string; location: string }[] = [];
+    const files = new Map<string, string>();
     const nameOfFile = new Map<string, string>();
 
-    for (const page of shopPages) {
+    for (const page of built) {
         const slug = slugify(page.shopTitle);
         const fileName = `${slug}.md`;
         const first = nameOfFile.get(fileName);
         if (first !== undefined) throw new Error(`two pages slug to ${fileName}: ${first} and ${page.shopName}`);
         nameOfFile.set(fileName, page.shopName);
-        const filePath = join(SHOP_DIR, fileName);
-
-        const md = generateShopMarkdown(page, objData, locate(page.shopName, `wiki/shops/${fileName}`));
-        writeFileSync(filePath, md);
+        const path = `${SHOP_DIR}/${fileName}`;
+        files.set(path, generateShopMarkdown(page, objData, locate(page.shopName, path)));
 
         pageIndex.push({ name: page.shopTitle, file: fileName, location: page.location });
     }
 
-    console.log(`  Generated ${pageIndex.length} shop pages`);
+    log(`  Generated ${pageIndex.length} shop pages`);
 
     // Every page here is generated, so one not written now is for a shop
     // whose title has changed or gone: it would keep stale data.
-    const written = new Set(pageIndex.map(p => p.file));
-    for (const file of removeStalePages(SHOP_DIR, written)) console.log(`  Removed stale ${file}`);
+    const stale = stalePages(SHOP_DIR, files);
 
     // ─── Step 6: Update README ──────────────────────────────────────────
 
-    console.log('\nStep 6: Updating README...');
-    updateReadme(pageIndex);
+    log('\nStep 6: Updating README...');
+    const readme = updateReadme(priorReadme(prior), pageIndex, log);
+    if (readme !== undefined) files.set(WIKI_README, readme);
 
-    console.log('\nDone!');
+    log('\nDone!');
+    return { files, stale };
 }
 
 // ─── Generate Markdown ───────────────────────────────────────────────────────
@@ -613,13 +626,17 @@ function generateShopMarkdown(
 
 // ─── Update README ───────────────────────────────────────────────────────────
 
-function updateReadme(pages: { name: string; file: string; location: string }[]) {
-    const readmePath = join(WIKI_DIR, 'README.md');
-    if (!existsSync(readmePath)) {
-        console.log('  No wiki/README.md; skipping index update');
-        return;
+/** `readme` with its Shops section rewritten for `pages`; undefined when there is no README. */
+function updateReadme(
+    readme: string | undefined,
+    pages: { name: string; file: string; location: string }[],
+    log: (line: string) => void,
+): string | undefined {
+    if (readme === undefined) {
+        log('  No wiki/README.md; skipping index update');
+        return undefined;
     }
-    let content = readFileSync(readmePath, 'utf-8');
+    let content = readme;
 
     // Remove existing Shops section if present
     const shopsStart = content.indexOf('## Shops');
@@ -634,7 +651,7 @@ function updateReadme(pages: { name: string; file: string; location: string }[])
     }
 
     // Sort alphabetically
-    pages.sort((a, b) => a.name.localeCompare(b.name));
+    pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate Shops section
     const section = [
@@ -657,10 +674,15 @@ function updateReadme(pages: { name: string; file: string; location: string }[])
         content = content.trimEnd() + '\n\n' + section.join('\n');
     }
 
-    writeFileSync(readmePath, content);
-    console.log(`  Updated README.md with ${pages.length} shop entries`);
+    log(`  Updated README.md with ${pages.length} shop entries`);
+    return content;
 }
 
 // ─── Run ─────────────────────────────────────────────────────────────────────
 
-main();
+if (import.meta.main) {
+    // First, so a stale world.json fails before any parsing.
+    const pages = shopPages(loadFreshWorld(), new Map(), console.log);
+    writePages(pages);
+    for (const p of pages.stale) console.log(`  Removed stale ${basename(p)}`);
+}

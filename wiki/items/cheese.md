@@ -18,7 +18,7 @@
 
 ## Sources
 
+- Sold by: [Grand Tree Groceries](../shops/grand-tree-groceries.md) for 4 gp
 - Sold by: [Foodshop](../shops/foodshop.md) for 4 gp
 - Sold by: [Food Store](../shops/food-store.md) for 4 gp
-- Sold by: [Grand Tree Groceries](../shops/grand-tree-groceries.md) for 4 gp
 - Dropped by: [Chaos dwarf](../npcs/chaos-dwarf.md) (1/128)

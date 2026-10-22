@@ -24,7 +24,7 @@
 | Crush Defence | +1 |
 | Magic Defence | +6 |
 | Strength Bonus | +2 |
-| Attack Speed | 5 |
+| Attack Speed | 4 |
 
 ## Sources
 

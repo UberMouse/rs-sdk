@@ -1,6 +1,6 @@
 # Unholy book
 
-*The holy book of Zamorak.*
+*The unholy book of Zamorak.*
 
 | Detail | |
 |---|---|

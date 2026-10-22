@@ -27,7 +27,7 @@
 
 ## Sources
 
-- Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 1500 gp
 - Sold by: [Staffshop](../shops/staffshop.md) for 1500 gp
 - Sold by: [Memberstaffshop](../shops/memberstaffshop.md) for 1500 gp
+- Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 1500 gp
 - Dropped by: [Necromancer](../npcs/necromancer.md) (1/128)

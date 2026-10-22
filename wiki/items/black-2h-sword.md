@@ -25,5 +25,5 @@
 ## Sources
 
 - Sold by: [Armoury](../shops/armoury.md) for 2880 gp
-- Sold by: [Gaius' Two Handed Shop](../shops/gaius-two-handed-shop.md) for 1920 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 1920 gp
+- Sold by: [Gaius' Two Handed Shop](../shops/gaius-two-handed-shop.md) for 1920 gp

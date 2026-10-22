@@ -25,7 +25,8 @@
 ## Sources
 
 - Sold by: [Armoury](../shops/armoury.md) for 3900 gp
-- Sold by: [Gaius' Two Handed Shop](../shops/gaius-two-handed-shop.md) for 2600 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 2600 gp
+- Sold by: [Gaius' Two Handed Shop](../shops/gaius-two-handed-shop.md) for 2600 gp
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (4/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (4/128)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (4/128)

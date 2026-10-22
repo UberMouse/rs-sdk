@@ -6,7 +6,7 @@
 | **Hitpoints** | N/A |
 | **Description** | This beast doesn't need climbing boots. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 2) |
+| **Movement** | Wander |
 
 ## Locations
 
@@ -28,5 +28,5 @@ Mountain Goat has no drops.
 
 ## Notes
 
-- Associated with the **Troll** quest.
-- Has 3 visual variants (troll_mountain_goat, troll_mountain_goat_smaller, mountain_goat2).
+- Associated with the **Death** quest.
+- Has 3 visual variants (mountain_goat2, troll_mountain_goat, troll_mountain_goat_smaller).

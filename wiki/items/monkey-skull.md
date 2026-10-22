@@ -1,12 +1,12 @@
-# Rocks
+# Monkey skull
 
-*Some rocks.*
+*It's a very ancient skull from some kind of ape.*
 
 | Detail | |
 |---|---|
 | **Type** | Quest Item |
 | **Members** | Yes |
-| **Weight** | 1g |
+| **Weight** | 500g |
 | **Value** | 0 gp |
 | **Tradeable** | No |
 
@@ -14,8 +14,4 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
-| m38_150 | Ground | 1 |
-
-## Sources
-
-- Dropped by: [Earth elemental](../npcs/earth-elemental.md) (Always)
+| m43_143 | Ground | 1 |

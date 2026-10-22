@@ -6,6 +6,7 @@
 |---|---|
 | **Type** | Armour |
 | **Members** | Yes |
+| **Weight** | 12lb |
 | **Value** | 54400 gp |
 | **Equipable** | Yes — Shield |
 

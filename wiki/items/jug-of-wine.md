@@ -19,7 +19,7 @@
 ## Sources
 
 - Sold by: [Karamja Wines, Spirits, and Beers](../shops/karamja-wines-spirits-and-beers.md) for 1 gp
-- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
-- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)
 - Dropped by: [Ice giant](../npcs/ice-giant.md) (3/128)
 - Dropped by: [Lesser demon](../npcs/lesser-demon.md) (2/128)
+- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
+- Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)

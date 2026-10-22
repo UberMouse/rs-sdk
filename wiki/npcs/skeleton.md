@@ -125,5 +125,5 @@ Always drops: Bones
 
 ## Notes
 
-- Has 7 visual variants (skeleton_unarmed, skeleton_unagressive, skeleton_armed, giantskeleton, mm_skeleton, dragonslayer_skeleton, skull_skeleton).
+- Has 7 visual variants (skeleton_unarmed, skeleton_unagressive, skeleton_armed, giantskeleton, skull_skeleton, dragonslayer_skeleton, mm_skeleton).
 - Will flee from combat when attacked.

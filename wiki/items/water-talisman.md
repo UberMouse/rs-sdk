@@ -11,5 +11,5 @@
 
 ## Sources
 
-- Dropped by: [Wizard](../npcs/wizard.md) (3/128)
 - Dropped by: [Dark wizard](../npcs/dark-wizard.md) (2/128)
+- Dropped by: [Wizard](../npcs/wizard.md) (3/128)
