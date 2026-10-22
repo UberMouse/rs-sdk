@@ -392,6 +392,17 @@ describe('serializeWorld', () => {
                 'crossings[1]: its landings all carry a chance or none do',
             ],
             [
+                'chances that sum past 1',
+                {
+                    ...teleport,
+                    landings: [
+                        { tile: teleport.landings[0]!.tile, chance: 0.6 },
+                        { tile: teleport.landings[0]!.tile, chance: 0.5 },
+                    ],
+                },
+                "crossings[1]: its landings' chances sum past 1",
+            ],
+            [
                 'a roll with no fail',
                 { ...shortcut, roll: { ...roll, fail: undefined } },
                 "crossings[1]: a roll's fail needs ticks and damage",
