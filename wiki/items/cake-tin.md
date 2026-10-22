@@ -18,5 +18,5 @@
 
 ## Sources
 
-- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 10 gp
 - Sold by: [Arhein Store](../shops/arhein-store.md) for 13 gp
+- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 10 gp

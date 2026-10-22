@@ -18,8 +18,8 @@
 
 ## Sources
 
-- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 10 gp
-- Sold by: [Foodshop](../shops/foodshop.md) for 10 gp
-- Sold by: [Food Store](../shops/food-store.md) for 10 gp
 - Sold by: [Funch's Fine Groceries](../shops/funchs-fine-groceries.md) for 10 gp
 - Sold by: [Grand Tree Groceries](../shops/grand-tree-groceries.md) for 10 gp
+- Sold by: [Foodshop](../shops/foodshop.md) for 10 gp
+- Sold by: [Food Store](../shops/food-store.md) for 10 gp
+- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 10 gp

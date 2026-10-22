@@ -24,7 +24,7 @@
 
 ## Sources
 
+- Dropped by: [Blue dragon](../npcs/blue-dragon.md) (2/128)
 - Dropped by: [Green dragon](../npcs/green-dragon.md) (2/128)
 - Dropped by: [Moss giant](../npcs/moss-giant.md) (2/128 (members))
 - Dropped by: [Tribesman](../npcs/tribesman.md) (1/138)
-- Dropped by: [Blue dragon](../npcs/blue-dragon.md) (2/128)

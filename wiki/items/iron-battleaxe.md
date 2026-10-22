@@ -23,11 +23,11 @@
 
 ## Sources
 
-- Sold by: [Armoury](../shops/armoury.md) for 273 gp
 - Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 182 gp
-- Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 182 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 182 gp
-- Dropped by: [Ice warrior](../npcs/ice-warrior.md) (3/128)
+- Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 182 gp
+- Sold by: [Armoury](../shops/armoury.md) for 273 gp
 - Dropped by: [Dwarf](../npcs/dwarf.md) (1/128)
-- Dropped by: [Thug](../npcs/thug.md) (2/128)
+- Dropped by: [Ice warrior](../npcs/ice-warrior.md) (3/128)
 - Dropped by: [Magic axe](../npcs/magic-axe.md) (Always)
+- Dropped by: [Thug](../npcs/thug.md) (2/128)

@@ -6,6 +6,7 @@
 |---|---|
 | **Type** | Other |
 | **Members** | Yes |
+| **Weight** | 1360g |
 | **Value** | 0 gp |
 
 ## Sources

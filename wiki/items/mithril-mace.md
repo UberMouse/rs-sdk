@@ -24,6 +24,6 @@
 ## Sources
 
 - Sold by: [Flynn's Mace Market](../shops/flynns-mace-market.md) for 585 gp
+- Dropped by: [Ice giant](../npcs/ice-giant.md) (1/128)
 - Dropped by: [Ice warrior](../npcs/ice-warrior.md) (1/128)
 - Dropped by: [Otherworldly being](../npcs/otherworldly-being.md) (1/128)
-- Dropped by: [Ice giant](../npcs/ice-giant.md) (1/128)

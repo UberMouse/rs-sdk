@@ -6,6 +6,7 @@
 |---|---|
 | **Type** | Other |
 | **Members** | Yes |
+| **Weight** | 30g |
 | **Value** | 20 gp |
 
 ## Sources

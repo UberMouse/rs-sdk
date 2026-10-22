@@ -29,5 +29,5 @@
 
 ## Sources
 
-- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 60 gp
 - Sold by: [Wayne's Chains! - Chainmail specialist](../shops/waynes-chains-chainmail-specialist.md) for 60 gp
+- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 60 gp

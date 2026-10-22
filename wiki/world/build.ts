@@ -6,7 +6,7 @@
 // sources/npc-teleports.ts, sources/curated-crossings.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
 // (distance.ts), and resolves every curated method (methods.ts, model/method.ts); then prints a report and renders
-// the pages (render.ts). `bun run
+// the pages (render.ts) and, from the world in memory, the npc, shop and item pages (wiki/generate-*.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches, by pocket
 // (the curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
@@ -18,6 +18,9 @@
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
 import { relative } from 'path';
+import { itemPages } from '../generate-items';
+import { npcPages } from '../generate-npcs';
+import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
@@ -1557,14 +1560,20 @@ if (import.meta.main) {
         areas: AREAS,
         collision: reachCollision,
     });
-    const files = new Map([
+    const worldFiles = new Map([
         [relative(ROOT, WORLD_JSON), serializeWorld(world)],
         ...renderWorld(world, readRenderData(model)),
     ]);
-    // Every file but world.json is a page, the README included.
-    const generated = `world.json and ${files.size - 1} pages (README.md among them)`;
+    // In order: shops and items take the README as the step before left it, and items reads the npc pages.
+    const npcs = npcPages(world);
+    const shops = shopPages(world, npcs.files);
+    const items = itemPages(new Map([...npcs.files, ...shops.files]));
+    const files = new Map([...worldFiles, ...npcs.files, ...shops.files, ...items.files]);
+    const removals = [...npcs.stale, ...shops.stale, ...items.stale];
+    // Every world file but world.json is a page, the README included.
+    const generated = `world.json, ${worldFiles.size - 1} world pages (README.md among them) and ${files.size - worldFiles.size} npc, shop and item pages`;
     if (process.argv.includes('--check')) {
-        const stale = drift(files);
+        const stale = drift(files, ROOT, removals);
         if (stale.length) {
             console.log(`${stale.length} generated files differ from a fresh build; run bun run world and commit:`);
             for (const p of stale) console.log(`  ${p}`);
@@ -1577,7 +1586,7 @@ if (import.meta.main) {
             process.exitCode = 1;
         }
     } else {
-        const removed = writeFiles(files);
+        const removed = writeFiles(files, ROOT, removals);
         // The report, then where a walk from the Lumbridge spawn gets to (reach.ts) and the covered sites it
         // does not: warnings only, so `--check` leaves them out.
         for (const line of [

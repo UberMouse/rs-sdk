@@ -1,4 +1,4 @@
-# Cow hide
+# Cowhide
 
 *I should take this to the tannery.*
 

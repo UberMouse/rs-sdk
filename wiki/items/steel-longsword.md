@@ -22,13 +22,19 @@
 | Strength Bonus | +16 |
 | Attack Speed | 5 |
 
+## Spawn Locations
+
+| Area | Floor | Quantity |
+|------|-------|----------|
+| m43_71 | Ground | 1 |
+
 ## Sources
 
 - Sold by: [Varrock Swordshop](../shops/varrock-swordshop.md) for 500 gp
-- Dropped by: [Giant](../npcs/giant.md) (2/128)
 - Dropped by: [Black Heather](../npcs/black-heather.md) (1/128)
+- Dropped by: [Donny the lad](../npcs/donny-the-lad.md) (1/128)
+- Dropped by: [Giant](../npcs/giant.md) (2/128)
 - Dropped by: [Hobgoblin](../npcs/hobgoblin.md) (1/128)
 - Dropped by: [Kalphite Worker](../npcs/kalphite-worker.md) (2/128)
-- Dropped by: [Speedy Keith](../npcs/speedy-keith.md) (1/128)
-- Dropped by: [Donny the lad](../npcs/donny-the-lad.md) (1/128)
 - Dropped by: [Paladin](../npcs/paladin.md) (1/128)
+- Dropped by: [Speedy Keith](../npcs/speedy-keith.md) (1/128)

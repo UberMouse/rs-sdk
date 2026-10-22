@@ -11,9 +11,10 @@
 
 ## Sources
 
-- Sold by: [Rufus' Meat Emporium](../shops/rufus-meat-emporium.md) for 1 gp
 - Sold by: [Food Store](../shops/food-store.md) for 1 gp
-- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
-- Dropped by: [Imp](../npcs/imp.md) (5/128)
+- Sold by: [Rufus' Meat Emporium](../shops/rufus-meat-emporium.md) for 1 gp
 - Dropped by: [Chicken](../npcs/chicken.md) (Always)
+- Dropped by: [Imp](../npcs/imp.md) (5/128)
+- Dropped by: [Rooster](../npcs/rooster.md) (Always)
+- Dropped by: [Wolfman](../npcs/wolfman.md) (32/512)
 - Dropped by: [Wolfwoman](../npcs/wolfwoman.md) (32/512)

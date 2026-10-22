@@ -31,7 +31,7 @@
 ## Sources
 
 - Sold by: [Flynn's Mace Market](../shops/flynns-mace-market.md) for 63 gp
-- Dropped by: [Dark warrior](../npcs/dark-warrior.md) (1/128)
-- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (1/128)
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (1/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (1/128)
+- Dropped by: [Dark warrior](../npcs/dark-warrior.md) (1/128)
+- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (1/128)

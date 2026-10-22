@@ -16,9 +16,12 @@ Generated from `server/content` at `fb264971634d877c8d7f8dc3d93c608d6d879a0f`: 2
 
 `wiki/world.json` and every page in `wiki/places/`, `wiki/resources/`, `wiki/services/` and `wiki/training/`
 are written by `bun run world` (`wiki/world/build.ts`) from `server/content`, the curated areas and the curated
-methods (`wiki/world/methods.ts`), and are committed with the code. Never edit them by hand: the next build
-overwrites the edit, and `bun wiki/world/build.ts --check` (part of `bun run verify:conductor`) fails while a page
-differs from a fresh build. The build also deletes pages it no longer renders from those four folders.
+methods (`wiki/world/methods.ts`); then, from the world it just built, the npc, shop and item pages in `wiki/npcs/`,
+`wiki/shops/` and `wiki/items/` (and their sections of `wiki/README.md` when it exists). All are committed with
+the code. Never edit them by hand: the next build overwrites the edit, and `bun wiki/world/build.ts --check` (part
+of `bun run verify:conductor`) fails while a page differs from a fresh build, is missing, or is an extra `.md` in
+one of those seven folders. The build also deletes pages it no longer renders from them (a folder's `README.md`
+aside in the last three).
 
 A site is a cluster of same-kind features (locs or npc spawns) in one area: its id is
 `kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it, a walk's first.
@@ -32,7 +35,10 @@ with ` L<n>` above level 0; underground areas sit at z + 6400.
 `npcSpawns` in world.json clusters every placed npc's spawns the same way, per config, whether or
 not a feature kind takes it. The npc pages (`wiki/generate-npcs.ts`) read their Locations from it
 and from the sites, and the shop pages (`wiki/generate-shops.ts`) their Coordinates from the shop
-sites; both refuse a world.json built from other game data, so run `bun run world` first.
+sites; the item pages (`wiki/generate-items.ts`) read their drops from the npc pages. `bun run world`
+runs the three in that order on the world in memory, so a check sees fresh pages. Run alone
+(`bun wiki/generate-<x>.ts`), npcs and shops refuse a world.json built from other game data, and items
+reads the npc pages on disk.
 
 ## Reach and requirements
 

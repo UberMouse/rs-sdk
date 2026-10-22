@@ -5,14 +5,16 @@
  * Run: bun wiki/generate-items.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, relative } from 'path';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { basename, dirname, join, relative } from 'path';
+import { ROOT } from './world/paths';
+import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
+import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
-const WIKI_DIR = join(import.meta.dir);
-const ITEM_DIR = join(WIKI_DIR, 'items');
-const SHOP_DIR = join(WIKI_DIR, 'shops');
-const NPC_DIR = join(WIKI_DIR, 'npcs');
+// The folders, repo-relative.
+const ITEM_DIR = 'wiki/items';
+const NPC_DIR = 'wiki/npcs';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -122,7 +124,7 @@ function parseObjConfigs(content: string, sourcePath: string): Map<string, ItemC
         const sectionMatch = line.match(/^\[([^\]]+)\]$/);
         if (sectionMatch) {
             if (current) configs.set(current.configName, current);
-            current = makeEmptyItemConfig(sectionMatch[1], sourcePath);
+            current = makeEmptyItemConfig(sectionMatch[1]!, sourcePath);
             continue;
         }
 
@@ -163,7 +165,7 @@ function parseObjConfigs(content: string, sourcePath: string): Map<string, ItemC
                 if (countMatch) {
                     const parts = value.split(',');
                     if (parts.length >= 1) {
-                        current.countRefs.push(parts[0]);
+                        current.countRefs.push(parts[0]!);
                     }
                 }
                 break;
@@ -289,7 +291,7 @@ function parseShopData(): Map<string, ShopStockEntry[]> {
 
             const sectionMatch = line.match(/^\[([^\]]+)\]$/);
             if (sectionMatch) {
-                currentShopName = sectionMatch[1];
+                currentShopName = sectionMatch[1]!;
                 isShop = false;
                 continue;
             }
@@ -303,7 +305,7 @@ function parseShopData(): Map<string, ShopStockEntry[]> {
                 const value = line.slice(eqIdx + 1).trim();
                 const parts = value.split(',');
                 if (parts.length >= 2) {
-                    const itemConfig = parts[0].trim();
+                    const itemConfig = parts[0]!.trim();
                     const info = shopInfo.get(currentShopName);
                     const shopTitle = info?.title || prettifyConfigName(currentShopName);
                     const sellMultiplier = info?.sellMultiplier || 1000;
@@ -313,7 +315,7 @@ function parseShopData(): Map<string, ShopStockEntry[]> {
                         shopConfigName: currentShopName,
                         shopTitle,
                         itemConfigName: itemConfig,
-                        quantity: parseInt(parts[1]) || 0,
+                        quantity: parseInt(parts[1]!) || 0,
                         sellMultiplier,
                     });
                 }
@@ -326,23 +328,24 @@ function parseShopData(): Map<string, ShopStockEntry[]> {
 
 // ─── NPC Drop Data Parser (from generated NPC pages) ────────────────────────
 
-function parseNpcDropData(): Map<string, NpcDropSource[]> {
+/** What the npc pages among `pages` (path -> content) drop, read in path order. */
+function parseNpcDropData(pages: ReadonlyMap<string, string>): Map<string, NpcDropSource[]> {
     const itemToDrops = new Map<string, NpcDropSource[]>();
 
-    if (!existsSync(NPC_DIR)) return itemToDrops;
-
-    const npcFiles = readdirSync(NPC_DIR).filter(f => f.endsWith('.md'));
-    for (const file of npcFiles) {
-        const content = readFileSync(join(NPC_DIR, file), 'utf-8');
+    const npcPages = [...pages]
+        .filter(([p]) => dirname(p) === NPC_DIR && p.endsWith('.md'))
+        .sort(([a], [b]) => cmp(a, b));
+    for (const [path, content] of npcPages) {
+        const file = basename(path);
         const npcNameMatch = content.match(/^# (.+)$/m);
         if (!npcNameMatch) continue;
-        const npcName = npcNameMatch[1];
+        const npcName = npcNameMatch[1]!;
         const npcSlug = file.replace('.md', '');
 
         // Parse "Always drops: ItemName" lines
         const alwaysDrops = content.matchAll(/^Always drops: (.+?)(?:\s*\(x\d+\))?$/gm);
         for (const match of alwaysDrops) {
-            const itemName = match[1].trim();
+            const itemName = match[1]!.trim();
             if (!itemToDrops.has(itemName)) itemToDrops.set(itemName, []);
             itemToDrops.get(itemName)!.push({ npcName, npcSlug, rarity: 'Always' });
         }
@@ -350,8 +353,8 @@ function parseNpcDropData(): Map<string, NpcDropSource[]> {
         // Parse drop table rows: | ItemName (xQty) | N/D |
         const dropRows = content.matchAll(/^\| (.+?) \| (\d+\/\d+(?:\s*\(members\))?) \|$/gm);
         for (const match of dropRows) {
-            let itemName = match[1].trim();
-            const rarity = match[2].trim();
+            let itemName = match[1]!.trim();
+            const rarity = match[2]!.trim();
             // Remove quantity suffix
             itemName = itemName.replace(/\s*\(x[\d-]+\)$/, '');
             if (itemName === 'Item') continue; // skip header
@@ -441,8 +444,8 @@ function parseObjSpawns(
     for (const file of mapFiles) {
         const match = file.match(/^m(\d+)_(\d+)\.jm2$/);
         if (!match) continue;
-        const mapX = parseInt(match[1]);
-        const mapZ = parseInt(match[2]);
+        const mapX = parseInt(match[1]!);
+        const mapZ = parseInt(match[2]!);
         const mapSquare = `m${mapX}_${mapZ}`;
         const area = MAP_SQUARE_AREAS[mapSquare] || mapSquare;
 
@@ -460,9 +463,9 @@ function parseObjSpawns(
             // Format: level localX localZ: itemID quantity
             const m = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+):\s*(\d+)\s+(\d+)$/);
             if (!m) continue;
-            const level = parseInt(m[1]);
-            const objId = parseInt(m[4]);
-            const quantity = parseInt(m[5]);
+            const level = parseInt(m[1]!);
+            const objId = parseInt(m[4]!);
+            const quantity = parseInt(m[5]!);
 
             const configName = objIdToName.get(objId);
             if (!configName) continue;
@@ -542,13 +545,19 @@ function hasCombatStats(config: ItemConfig): boolean {
 
 // ─── Main Pipeline ───────────────────────────────────────────────────────────
 
-function main() {
-    console.log('Item Wiki Generator');
-    console.log('===================\n');
+/**
+ * The item pages, wiki/README.md with its Items section rewritten, and the pages in wiki/items that are not
+ * among them, without touching the disk. Drops are read from the npc pages in `prior` (the npcs step's
+ * files), as is the README when an earlier step rewrote it (else it is read from disk). `log` gets the
+ * progress lines.
+ */
+export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string) => void = () => {}): Pages {
+    log('Item Wiki Generator');
+    log('===================\n');
 
     // ─── Step 1: Parse all item configs ─────────────────────────────────
 
-    console.log('Step 1: Parsing item configs...');
+    log('Step 1: Parsing item configs...');
 
     const allConfigs = new Map<string, ItemConfig>();
 
@@ -556,7 +565,7 @@ function main() {
     const allObjContent = readFileSync(join(CONTENT_DIR, 'scripts', '_unpack', '225', 'all.obj'), 'utf-8');
     const baseConfigs = parseObjConfigs(allObjContent, 'scripts/_unpack/225/all.obj');
     for (const [name, config] of baseConfigs) allConfigs.set(name, config);
-    console.log(`  all.obj: ${baseConfigs.size} configs`);
+    log(`  all.obj: ${baseConfigs.size} configs`);
 
     // Parse extra .obj files (override base)
     const objFiles = findFilesRecursive(join(CONTENT_DIR, 'scripts'), '.obj');
@@ -583,7 +592,7 @@ function main() {
                 if (config.wearpos3) existing.wearpos3 = config.wearpos3;
                 if (config.dummyitem) existing.dummyitem = config.dummyitem;
                 for (let i = 0; i < 5; i++) {
-                    if (config.iops[i]) existing.iops[i] = config.iops[i];
+                    if (config.iops[i]) existing.iops[i] = config.iops[i]!;
                 }
                 for (const [k, v] of config.params) existing.params.set(k, v);
                 if (config.sourcePath !== 'scripts/_unpack/225/all.obj') {
@@ -595,8 +604,8 @@ function main() {
             extraCount++;
         }
     }
-    console.log(`  Extra .obj files: ${extraCount} configs from ${objFiles.length - 1} files`);
-    console.log(`  Total configs: ${allConfigs.size}`);
+    log(`  Extra .obj files: ${extraCount} configs from ${objFiles.length - 1} files`);
+    log(`  Total configs: ${allConfigs.size}`);
 
     // ─── Step 2: Build set of count variant refs (visual-only items) ────
 
@@ -606,11 +615,11 @@ function main() {
             countVariantRefs.add(ref);
         }
     }
-    console.log(`  Count variant refs: ${countVariantRefs.size}`);
+    log(`  Count variant refs: ${countVariantRefs.size}`);
 
     // ─── Step 3: Parse pack file ───────────────────────────────────────
 
-    console.log('\nStep 2: Loading pack file...');
+    log('\nStep 2: Loading pack file...');
     const objPackContent = readFileSync(join(CONTENT_DIR, 'pack', 'obj.pack'), 'utf-8');
     const certConfigNames = new Set<string>();
     const objIdToName = new Map<number, string>();
@@ -626,7 +635,7 @@ function main() {
             }
         }
     }
-    console.log(`  Pack entries: ${objIdToName.size}, cert names: ${certConfigNames.size}`);
+    log(`  Pack entries: ${objIdToName.size}, cert names: ${certConfigNames.size}`);
 
     // ─── Step 4: Get tutorial item config names ─────────────────────────
 
@@ -637,11 +646,11 @@ function main() {
         const configs = parseObjConfigs(content, 'tutorial');
         for (const name of configs.keys()) tutorialItems.add(name);
     }
-    console.log(`  Tutorial items: ${tutorialItems.size}`);
+    log(`  Tutorial items: ${tutorialItems.size}`);
 
     // ─── Step 5: Filter items ───────────────────────────────────────────
 
-    console.log('\nStep 3: Filtering items...');
+    log('\nStep 3: Filtering items...');
 
     const filteredConfigs = new Map<string, ItemConfig>();
     let filtered = 0;
@@ -670,15 +679,15 @@ function main() {
         filteredConfigs.set(name, config);
     }
 
-    console.log(`  Filtered out ${filtered} items:`);
+    log(`  Filtered out ${filtered} items:`);
     for (const [reason, count] of [...filterReasons.entries()].sort((a, b) => b[1] - a[1])) {
-        console.log(`    ${reason}: ${count}`);
+        log(`    ${reason}: ${count}`);
     }
-    console.log(`  Remaining: ${filteredConfigs.size} items`);
+    log(`  Remaining: ${filteredConfigs.size} items`);
 
     // ─── Step 6: Deduplicate by display name ────────────────────────────
 
-    console.log('\nStep 4: Deduplicating by display name...');
+    log('\nStep 4: Deduplicating by display name...');
 
     const pagesByName = new Map<string, ItemConfig[]>();
     for (const [, config] of filteredConfigs) {
@@ -712,29 +721,29 @@ function main() {
             // Higher cost as tiebreaker
             return b.cost - a.cost;
         });
-        bestConfigs.set(name, configs[0]);
+        bestConfigs.set(name, configs[0]!);
     }
-    console.log(`  Deduplicated to ${bestConfigs.size} unique items`);
+    log(`  Deduplicated to ${bestConfigs.size} unique items`);
 
     // ─── Step 7: Parse shop and drop data ───────────────────────────────
 
-    console.log('\nStep 5: Parsing shop and NPC drop data...');
+    log('\nStep 5: Parsing shop and NPC drop data...');
 
     const itemToShops = parseShopData();
-    console.log(`  Items sold in shops: ${itemToShops.size}`);
+    log(`  Items sold in shops: ${itemToShops.size}`);
 
-    const itemToDrops = parseNpcDropData();
-    console.log(`  Items dropped by NPCs: ${itemToDrops.size}`);
+    const itemToDrops = parseNpcDropData(prior);
+    log(`  Items dropped by NPCs: ${itemToDrops.size}`);
 
     // Parse ground item spawns from map files
     const itemSpawns = parseObjSpawns(join(CONTENT_DIR, 'maps'), objIdToName);
-    console.log(`  Items with ground spawns: ${itemSpawns.size}`);
+    log(`  Items with ground spawns: ${itemSpawns.size}`);
 
     // ─── Step 8: Build item pages ───────────────────────────────────────
 
-    console.log('\nStep 6: Building item pages...');
+    log('\nStep 6: Building item pages...');
 
-    const itemPages: ItemPage[] = [];
+    const built: ItemPage[] = [];
 
     for (const [displayName, config] of bestConfigs) {
         const { category, equipSlot } = categorizeItem(config);
@@ -779,7 +788,7 @@ function main() {
             }
         }
 
-        itemPages.push({
+        built.push({
             displayName,
             config,
             category,
@@ -791,45 +800,47 @@ function main() {
     }
 
     // Sort alphabetically
-    itemPages.sort((a, b) => a.displayName.localeCompare(b.displayName));
-    console.log(`  Built ${itemPages.length} item pages`);
+    built.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    log(`  Built ${built.length} item pages`);
 
     // Category breakdown
     const catCounts = new Map<string, number>();
-    for (const page of itemPages) {
+    for (const page of built) {
         catCounts.set(page.category, (catCounts.get(page.category) || 0) + 1);
     }
     for (const [cat, count] of [...catCounts.entries()].sort((a, b) => b[1] - a[1])) {
-        console.log(`    ${cat}: ${count}`);
+        log(`    ${cat}: ${count}`);
     }
 
     // ─── Step 9: Generate markdown ──────────────────────────────────────
 
-    console.log('\nStep 7: Generating markdown...');
-
-    mkdirSync(ITEM_DIR, { recursive: true });
+    log('\nStep 7: Generating markdown...');
 
     const pageIndex: { name: string; file: string; category: ItemCategory }[] = [];
+    const files = new Map<string, string>();
 
-    for (const page of itemPages) {
+    for (const page of built) {
         const slug = slugify(page.displayName);
         const fileName = `${slug}.md`;
-        const filePath = join(ITEM_DIR, fileName);
-
-        const md = generateItemMarkdown(page);
-        writeFileSync(filePath, md);
+        files.set(`${ITEM_DIR}/${fileName}`, generateItemMarkdown(page));
 
         pageIndex.push({ name: page.displayName, file: fileName, category: page.category });
     }
 
-    console.log(`  Generated ${pageIndex.length} item pages`);
+    log(`  Generated ${pageIndex.length} item pages`);
+
+    // Every page here is generated, so one not written now is for an item
+    // whose name has changed or gone: it would keep stale data.
+    const stale = stalePages(ITEM_DIR, files);
 
     // ─── Step 10: Update README ─────────────────────────────────────────
 
-    console.log('\nStep 8: Updating README...');
-    updateReadme(pageIndex);
+    log('\nStep 8: Updating README...');
+    const readme = updateReadme(priorReadme(prior), pageIndex, log);
+    if (readme !== undefined) files.set(WIKI_README, readme);
 
-    console.log('\nDone!');
+    log('\nDone!');
+    return { files, stale };
 }
 
 // ─── Generate Markdown ───────────────────────────────────────────────────────
@@ -951,13 +962,17 @@ function generateItemMarkdown(page: ItemPage): string {
 
 // ─── Update README ───────────────────────────────────────────────────────────
 
-function updateReadme(pages: { name: string; file: string; category: ItemCategory }[]) {
-    const readmePath = join(WIKI_DIR, 'README.md');
-    if (!existsSync(readmePath)) {
-        console.log('  No wiki/README.md; skipping index update');
-        return;
+/** `readme` with its Items section rewritten for `pages`; undefined when there is no README. */
+function updateReadme(
+    readme: string | undefined,
+    pages: { name: string; file: string; category: ItemCategory }[],
+    log: (line: string) => void,
+): string | undefined {
+    if (readme === undefined) {
+        log('  No wiki/README.md; skipping index update');
+        return undefined;
     }
-    let content = readFileSync(readmePath, 'utf-8');
+    let content = readme;
 
     // Remove existing Items section if present
     const itemsStart = content.indexOf('## Items');
@@ -1000,10 +1015,20 @@ function updateReadme(pages: { name: string; file: string; category: ItemCategor
         }
     }
 
-    writeFileSync(readmePath, content);
-    console.log(`  Updated README.md with ${pages.length} item entries`);
+    log(`  Updated README.md with ${pages.length} item entries`);
+    return content;
 }
 
 // ─── Run ─────────────────────────────────────────────────────────────────────
 
-main();
+if (import.meta.main) {
+    // Run alone, it reads drops from the npc pages on disk.
+    const npcs = existsSync(join(ROOT, NPC_DIR))
+        ? readdirSync(join(ROOT, NPC_DIR))
+              .filter(f => f.endsWith('.md'))
+              .map((f): [string, string] => [`${NPC_DIR}/${f}`, readFileSync(join(ROOT, NPC_DIR, f), 'utf-8')])
+        : [];
+    const pages = itemPages(new Map(npcs), console.log);
+    writePages(pages);
+    for (const p of pages.stale) console.log(`  Removed stale ${basename(p)}`);
+}

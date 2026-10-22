@@ -21,3 +21,7 @@
 | Crush Defence | +29 |
 | Magic Defence | -1 |
 | Range Defence | +29 |
+
+## Sources
+
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (2/128)

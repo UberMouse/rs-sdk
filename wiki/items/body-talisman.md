@@ -11,5 +11,5 @@
 
 ## Sources
 
-- Dropped by: [Guard](../npcs/guard.md) (3/128)
 - Dropped by: [Giant](../npcs/giant.md) (2/128)
+- Dropped by: [Guard](../npcs/guard.md) (3/128)

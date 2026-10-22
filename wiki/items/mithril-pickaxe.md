@@ -25,3 +25,4 @@
 ## Sources
 
 - Sold by: [Nurmof's Pickaxe Shop](../shops/nurmofs-pickaxe-shop.md) for 1300 gp
+- Dropped by: [Possessed Pickaxe](../npcs/possessed-pickaxe.md) (10/500)

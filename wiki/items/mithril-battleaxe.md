@@ -23,9 +23,10 @@
 
 ## Sources
 
-- Sold by: [Armoury](../shops/armoury.md) for 2535 gp
 - Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 1690 gp
-- Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 1690 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 1690 gp
+- Sold by: [Brian's Battleaxe Bazaar](../shops/brians-battleaxe-bazaar.md) for 1690 gp
+- Sold by: [Armoury](../shops/armoury.md) for 2535 gp
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (3/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (3/128)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (3/128)

@@ -27,3 +27,4 @@
 | Range Defence | +1 |
 | Strength Bonus | +1 |
 | Prayer Bonus | +1 |
+| Attack Speed | 1 |

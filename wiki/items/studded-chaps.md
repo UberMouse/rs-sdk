@@ -25,5 +25,5 @@
 ## Sources
 
 - Sold by: [Aaron's Archery Appendages](../shops/aarons-archery-appendages.md) for 750 gp
-- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 750 gp
 - Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 750 gp
+- Sold by: [Horvik's Armour Shop](../shops/horviks-armour-shop.md) for 750 gp

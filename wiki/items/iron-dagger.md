@@ -33,14 +33,14 @@
 ## Sources
 
 - Sold by: [Varrock Swordshop](../shops/varrock-swordshop.md) for 35 gp
-- Dropped by: [Farmer](../npcs/farmer.md) (1/128)
-- Dropped by: [Druid](../npcs/druid.md) (6/128)
-- Dropped by: [Guard](../npcs/guard.md) (6/128)
-- Dropped by: [Giant](../npcs/giant.md) (4/128)
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (1/128)
-- Dropped by: [Woman](../npcs/woman.md) (1/128)
+- Dropped by: [Druid](../npcs/druid.md) (6/128)
+- Dropped by: [Farmer](../npcs/farmer.md) (1/128)
+- Dropped by: [Giant](../npcs/giant.md) (4/128)
+- Dropped by: [Guard](../npcs/guard.md) (6/128)
+- Dropped by: [Man](../npcs/man.md) (1/128)
 - Dropped by: [Pirate](../npcs/pirate.md) (6/128)
 - Dropped by: [Rogue](../npcs/rogue.md) (1/128)
-- Dropped by: [Thief](../npcs/thief.md) (1/128)
-- Dropped by: [Man](../npcs/man.md) (1/128)
 - Dropped by: [Skeleton](../npcs/skeleton.md) (6/128)
+- Dropped by: [Thief](../npcs/thief.md) (1/128)
+- Dropped by: [Woman](../npcs/woman.md) (1/128)

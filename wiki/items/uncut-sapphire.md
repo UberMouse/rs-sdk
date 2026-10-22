@@ -14,8 +14,9 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | m42_153 | Ground | 1 |
+| m43_60 | Ground | 1 |
 
 ## Sources
 
-- Sold by: [Gem Trader](../shops/gem-trader.md) for 25 gp
 - Sold by: [Herquin's Gems](../shops/herquins-gems.md) for 25 gp
+- Sold by: [Gem Trader](../shops/gem-trader.md) for 25 gp

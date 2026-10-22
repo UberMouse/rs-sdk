@@ -18,5 +18,5 @@
 ## Sources
 
 - Sold by: [Rellekka Longhall Bar](../shops/rellekka-longhall-bar.md) for 325 gp
-- Dropped by: [Warrior](../npcs/warrior.md) (4/128)
 - Dropped by: [Market Guard](../npcs/market-guard.md) (4/128)
+- Dropped by: [Warrior](../npcs/warrior.md) (4/128)

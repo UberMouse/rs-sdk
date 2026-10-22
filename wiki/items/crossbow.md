@@ -27,7 +27,7 @@
 
 ## Sources
 
-- Sold by: [Armoury](../shops/armoury.md) for 105 gp
-- Sold by: [Lowe's Archery Emporium](../shops/lowes-archery-emporium.md) for 70 gp
 - Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 70 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 70 gp
+- Sold by: [Lowe's Archery Emporium](../shops/lowes-archery-emporium.md) for 70 gp
+- Sold by: [Armoury](../shops/armoury.md) for 105 gp

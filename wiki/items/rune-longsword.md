@@ -26,4 +26,5 @@
 
 - Sold by: [Scavvo's Rune Store](../shops/scavvos-rune-store.md) for 32000 gp
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (1/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (1/128)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (1/128)

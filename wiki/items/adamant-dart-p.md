@@ -23,3 +23,4 @@
 ## Sources
 
 - Dropped by: [Black dragon](../npcs/black-dragon.md) (7/128)
+- Dropped by: [Bronze dragon](../npcs/bronze-dragon.md) (1/128)

@@ -25,3 +25,4 @@
 ## Sources
 
 - Dropped by: [Greater demon](../npcs/greater-demon.md) (1/128)
+- Dropped by: [Steel dragon](../npcs/steel-dragon.md) (1/128)

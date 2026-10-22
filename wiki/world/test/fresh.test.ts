@@ -1,11 +1,11 @@
 import { afterAll, describe, expect, test } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync, existsSync } from 'fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { serializeWorld } from '../build';
 import { contentHash, type GitRun } from '../content-hash';
 import { loadFreshWorld } from '../load';
-import { removeStalePages } from '../stale';
+import { stalePages, writePages } from '../stale';
 import { WORLD_FORMAT, type World } from '../types';
 
 const tmp = mkdtempSync(join(tmpdir(), 'fresh-test-'));
@@ -103,40 +103,44 @@ describe('loadFreshWorld', () => {
     });
 });
 
-describe('removeStalePages', () => {
-    test('removes the .md files not written, leaving other files, and returns them sorted', () => {
-        const dir = join(tmp, 'pages');
-        mkdirSync(dir);
-        for (const f of ['keep.md', 'b.md', 'a.md', 'notes.txt']) writeFileSync(join(dir, f), 'x');
-        expect(removeStalePages(dir, new Set(['keep.md']))).toEqual(['a.md', 'b.md']);
-        expect(existsSync(join(dir, 'keep.md'))).toBe(true);
-        expect(existsSync(join(dir, 'notes.txt'))).toBe(true);
-        expect(existsSync(join(dir, 'a.md'))).toBe(false);
+/** A repo under `tmp` whose wiki/pages holds `names`, each saying "x". */
+const repo = (name: string, names: string[]): string => {
+    const root = join(tmp, name);
+    mkdirSync(join(root, 'wiki/pages'), { recursive: true });
+    for (const f of names) writeFileSync(join(root, 'wiki/pages', f), 'x');
+    return root;
+};
+
+describe('stalePages', () => {
+    test('lists the .md files not generated, other files aside, sorted and repo-relative; writePages removes them', () => {
+        const root = repo('pages', ['keep.md', 'b.md', 'a.md', 'notes.txt']);
+        const files = new Map([['wiki/pages/keep.md', 'new']]);
+        const stale = stalePages('wiki/pages', files, root);
+        expect(stale).toEqual(['wiki/pages/a.md', 'wiki/pages/b.md']);
+        writePages({ files, stale }, root);
+        expect(readFileSync(join(root, 'wiki/pages/keep.md'), 'utf8')).toBe('new');
+        expect(existsSync(join(root, 'wiki/pages/notes.txt'))).toBe(true);
+        expect(existsSync(join(root, 'wiki/pages/a.md'))).toBe(false);
     });
 
-    test('never removes a README.md placed in the folder by hand', () => {
-        const dir = join(tmp, 'with-readme');
-        mkdirSync(dir);
-        for (const f of ['README.md', 'old.md']) writeFileSync(join(dir, f), 'x');
-        expect(removeStalePages(dir, new Set())).toEqual(['old.md']);
-        expect(existsSync(join(dir, 'README.md'))).toBe(true);
-    });
+    test('never lists a README.md placed in the folder by hand', () =>
+        expect(stalePages('wiki/pages', new Map(), repo('with-readme', ['README.md', 'old.md']))).toEqual([
+            'wiki/pages/old.md',
+        ]));
 
-    test('refuses a symlinked folder, removing nothing through it', () => {
+    test('lists none for a folder not yet made', () => expect(stalePages('wiki/none', new Map(), tmp)).toEqual([]));
+
+    test('refuses a symlinked folder', () => {
         const target = join(tmp, 'target');
         mkdirSync(target);
         writeFileSync(join(target, 'precious.md'), 'x');
-        const link = join(tmp, 'link');
-        symlinkSync(target, link);
-        expect(() => removeStalePages(link, new Set())).toThrow('is a symlink');
-        expect(existsSync(join(target, 'precious.md'))).toBe(true);
+        mkdirSync(join(tmp, 'linked/wiki'), { recursive: true });
+        symlinkSync(target, join(tmp, 'linked/wiki/pages'));
+        expect(() => stalePages('wiki/pages', new Map(), join(tmp, 'linked'))).toThrow('is a symlink');
     });
 
-    test('refuses an empty slug, removing nothing', () => {
-        const dir = join(tmp, 'empty-slug');
-        mkdirSync(dir);
-        writeFileSync(join(dir, 'old.md'), 'x');
-        expect(() => removeStalePages(dir, new Set(['.md']))).toThrow('empty slug');
-        expect(existsSync(join(dir, 'old.md'))).toBe(true);
-    });
+    test('refuses an empty slug', () =>
+        expect(() =>
+            stalePages('wiki/pages', new Map([['wiki/pages/.md', 'x']]), repo('empty-slug', ['old.md'])),
+        ).toThrow('empty slug'));
 });

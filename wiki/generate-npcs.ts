@@ -5,19 +5,19 @@
  * Run: bun wiki/generate-npcs.ts
  */
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, relative } from 'path';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { basename, join, relative } from 'path';
 import { hasCombatParams } from './world/classify';
 import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
-import { removeStalePages } from './world/stale';
+import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
 import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
 import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
 import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
-const WIKI_DIR = join(import.meta.dir);
-const NPC_DIR = join(WIKI_DIR, 'npcs');
+/** The pages' folder, repo-relative. */
+const NPC_DIR = 'wiki/npcs';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -134,7 +134,7 @@ function parseIniConfigs(content: string, sourcePath: string): Map<string, NpcCo
         const sectionMatch = line.match(/^\[([^\]]+)\]$/);
         if (sectionMatch) {
             if (current) configs.set(current.configName, current);
-            current = makeEmptyConfig(sectionMatch[1], sourcePath);
+            current = makeEmptyConfig(sectionMatch[1]!, sourcePath);
             continue;
         }
 
@@ -228,7 +228,7 @@ function parseObjConfigs(content: string): Map<string, string> {
             if (currentName && currentDisplayName) {
                 names.set(currentName, currentDisplayName);
             }
-            currentName = sectionMatch[1];
+            currentName = sectionMatch[1]!;
             currentDisplayName = '';
             continue;
         }
@@ -385,13 +385,13 @@ function parseDropFile(content: string): ParsedDropFile {
     }
 
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const line = lines[i]!.trim();
         if (!line || line.startsWith('//')) continue;
 
         // Trigger line: [ai_queue3,name] @label; or [ai_queue3,name] without @
         const triggerMatch = line.match(/^\[ai_queue3,([^\]]+)\]\s*(?:@(\w+)\s*;)?/);
         if (triggerMatch) {
-            const triggerName = triggerMatch[1];
+            const triggerName = triggerMatch[1]!;
             const labelRef = triggerMatch[2];
 
             if (labelRef) {
@@ -412,7 +412,7 @@ function parseDropFile(content: string): ParsedDropFile {
         const labelMatch = line.match(/^\[label,(\w+)\]/);
         if (labelMatch) {
             finishLabel();
-            currentLabel = labelMatch[1];
+            currentLabel = labelMatch[1]!;
             currentData = { hasDeathDrop: false, entries: [], alwaysItems: [], clueTier: null };
             denominator = 128;
             lastThreshold = 0;
@@ -439,7 +439,7 @@ function parseDropFile(content: string): ParsedDropFile {
         // Random declaration: def_int $random = random(N);
         const randomMatch = line.match(/random\((\d+)\)/);
         if (randomMatch && line.includes('def_int')) {
-            denominator = parseInt(randomMatch[1]);
+            denominator = parseInt(randomMatch[1]!);
             lastThreshold = 0;
             continue;
         }
@@ -453,8 +453,8 @@ function parseDropFile(content: string): ParsedDropFile {
                 const prevLines = lines.slice(Math.max(0, i - 3), i).join(' ');
                 if (!prevLines.includes('if (') && !prevLines.includes('else if') && !prevLines.includes('random(')) {
                     currentData.alwaysItems.push({
-                        itemConfigName: alwaysMatch[1].trim(),
-                        quantity: parseInt(alwaysMatch[2]),
+                        itemConfigName: alwaysMatch[1]!.trim(),
+                        quantity: parseInt(alwaysMatch[2]!),
                     });
                     continue;
                 }
@@ -464,13 +464,13 @@ function parseDropFile(content: string): ParsedDropFile {
         // If/else if threshold: if ($random < N) or else if ($random < N) or ($dropint < N) or ($rng < N)
         const threshMatch = line.match(/(?:if|else\s+if)\s*\(\s*\$\w+\s*<\s*(\d+)\s*\)/);
         if (threshMatch) {
-            const newThreshold = parseInt(threshMatch[1]);
+            const newThreshold = parseInt(threshMatch[1]!);
             const numerator = newThreshold - lastThreshold;
 
             // Collect all lines belonging to this branch until the next } else if or closing }
             const blockLines: string[] = [line];
             for (let j = i + 1; j < Math.min(i + 15, lines.length); j++) {
-                const jline = lines[j].trim();
+                const jline = lines[j]!.trim();
                 // Stop at next else-if branch or end of chain
                 if (jline.startsWith('} else if') || jline === '}') break;
                 blockLines.push(jline);
@@ -495,8 +495,8 @@ function parseDropFile(content: string): ParsedDropFile {
 
                 // Add members items
                 for (const m of membersBlock.matchAll(objAddPattern)) {
-                    const itemName = m[1].trim();
-                    const rawQty = m[2].trim();
+                    const itemName = m[1]!.trim();
+                    const rawQty = m[2]!.trim();
                     if (itemName.startsWith('~')) continue;
                     currentData.entries.push({
                         itemConfigName: itemName,
@@ -514,8 +514,8 @@ function parseDropFile(content: string): ParsedDropFile {
 
                 // Add F2P fallback items
                 for (const m of f2pBlock.matchAll(objAddPattern)) {
-                    const itemName = m[1].trim();
-                    const rawQty = m[2].trim();
+                    const itemName = m[1]!.trim();
+                    const rawQty = m[2]!.trim();
                     if (itemName.startsWith('~')) continue;
                     currentData.entries.push({
                         itemConfigName: itemName,
@@ -529,8 +529,8 @@ function parseDropFile(content: string): ParsedDropFile {
                 const isMembers = membersCheck && !hasFallback;
 
                 for (const m of block.matchAll(objAddPattern)) {
-                    const itemName = m[1].trim();
-                    const rawQty = m[2].trim();
+                    const itemName = m[1]!.trim();
+                    const rawQty = m[2]!.trim();
                     if (itemName.startsWith('~')) continue;
                     currentData.entries.push({
                         itemConfigName: itemName,
@@ -596,7 +596,7 @@ function getAreaFromSourcePath(sourcePath: string): string | null {
     // Extract area directory name from source path
     const match = sourcePath.match(/scripts\/(?:areas\/)?(\w+)\//);
     if (!match) return null;
-    const dirName = match[1];
+    const dirName = match[1]!;
     return SOURCE_PATH_AREAS[dirName] || null;
 }
 
@@ -636,29 +636,32 @@ function hasCombatStats(config: NpcConfig): boolean {
 
 // ─── Main Pipeline ───────────────────────────────────────────────────────────
 
-function main() {
-    console.log('NPC Wiki Generator');
-    console.log('==================\n');
+/**
+ * The npc pages and the NPCs section of wiki/README.md for `world`, and the pages in wiki/npcs that are not
+ * among them, without touching the disk. `log` gets the progress lines.
+ */
+export function npcPages(world: World, log: (line: string) => void = () => {}): Pages {
+    log('NPC Wiki Generator');
+    log('==================\n');
 
     // ─── Step 1: Parse all data sources ──────────────────────────────────
 
-    console.log('Step 1: Parsing data sources...');
+    log('Step 1: Parsing data sources...');
 
-    // 1a: Where every npc stands, from the world index (wiki/world.json)
-    const world = loadFreshWorld();
+    // 1a: Where every npc stands, from the world index
     const locate = npcLocator(world);
     const areas = areasOf(world);
-    console.log(`  world.json: ${world.sites.length} sites, ${world.npcSpawns.length} npc spawn clusters`);
+    log(`  world.json: ${world.sites.length} sites, ${world.npcSpawns.length} npc spawn clusters`);
 
     // 1b: Obj pack (ID map)
     const objPackContent = readFileSync(join(CONTENT_DIR, 'pack', 'obj.pack'), 'utf-8');
     const objPack = parsePackFile(objPackContent);
-    console.log(`  obj.pack: ${objPack.idToName.size} entries`);
+    log(`  obj.pack: ${objPack.idToName.size} entries`);
 
     // 1c: NPC configs from all.npc
     const allNpcContent = readFileSync(join(CONTENT_DIR, 'scripts', '_unpack', '225', 'all.npc'), 'utf-8');
     const allNpcConfigs = parseIniConfigs(allNpcContent, 'scripts/_unpack/225/all.npc');
-    console.log(`  all.npc: ${allNpcConfigs.size} configs`);
+    log(`  all.npc: ${allNpcConfigs.size} configs`);
 
     // 1d: NPC configs from script area/quest config files
     const npcConfigFiles = findFilesRecursive(join(CONTENT_DIR, 'scripts'), '.npc');
@@ -672,7 +675,7 @@ function main() {
             extraNpcConfigs.set(name, config);
         }
     }
-    console.log(`  Area/quest NPC configs: ${extraNpcConfigs.size} configs from ${npcConfigFiles.length - 1} files`);
+    log(`  Area/quest NPC configs: ${extraNpcConfigs.size} configs from ${npcConfigFiles.length - 1} files`);
 
     // 1e: Merge NPC configs (extra configs override all.npc for matching names)
     const allConfigs = new Map<string, NpcConfig>();
@@ -701,7 +704,7 @@ function main() {
             if (config.hasPatrol) existing.hasPatrol = config.hasPatrol;
             for (const [k, v] of config.params) existing.params.set(k, v);
             for (let j = 0; j < 5; j++) {
-                if (config.ops[j]) existing.ops[j] = config.ops[j];
+                if (config.ops[j]) existing.ops[j] = config.ops[j]!;
             }
             // Keep the more specific source path
             if (config.sourcePath !== 'scripts/_unpack/225/all.npc') {
@@ -711,7 +714,7 @@ function main() {
             allConfigs.set(name, config);
         }
     }
-    console.log(`  Total merged NPC configs: ${allConfigs.size}`);
+    log(`  Total merged NPC configs: ${allConfigs.size}`);
 
     // 1f: Obj display names
     const objNames = new Map<string, string>();
@@ -730,11 +733,11 @@ function main() {
             if (!objNames.has(k)) objNames.set(k, v);
         }
     }
-    console.log(`  Obj display names: ${objNames.size}`);
+    log(`  Obj display names: ${objNames.size}`);
 
     // 1g: Drop tables
     const dropTables = parseDropTables(join(CONTENT_DIR, 'scripts', 'drop tables', 'scripts'));
-    console.log(`  Drop tables: ${dropTables.size} tables parsed`);
+    log(`  Drop tables: ${dropTables.size} tables parsed`);
 
     // Build category map: category name -> list of config names
     const categoryMap = new Map<string, string[]>();
@@ -747,7 +750,7 @@ function main() {
 
     // ─── Step 2: Filter ──────────────────────────────────────────────────
 
-    console.log('\nStep 2: Filtering NPCs...');
+    log('\nStep 2: Filtering NPCs...');
 
     // Get tutorial and antimacro config names
     const tutorialFile = join(CONTENT_DIR, 'scripts', 'tutorial', 'configs', 'tutorial.npc');
@@ -780,12 +783,12 @@ function main() {
 
         filteredConfigs.set(name, config);
     }
-    console.log(`  Filtered out ${filtered} NPCs (tutorial, antimacro, unnamed)`);
-    console.log(`  Remaining: ${filteredConfigs.size} configs`);
+    log(`  Filtered out ${filtered} NPCs (tutorial, antimacro, unnamed)`);
+    log(`  Remaining: ${filteredConfigs.size} configs`);
 
     // ─── Step 3: Deduplicate by display name ─────────────────────────────
 
-    console.log('\nStep 3: Deduplicating by display name...');
+    log('\nStep 3: Deduplicating by display name...');
 
     const pagesByName = new Map<string, NpcPage>();
     for (const [configName, config] of filteredConfigs) {
@@ -806,11 +809,11 @@ function main() {
         const page = pagesByName.get(displayName)!;
         page.variants.push(config);
     }
-    console.log(`  Deduplicated to ${pagesByName.size} unique NPC pages`);
+    log(`  Deduplicated to ${pagesByName.size} unique NPC pages`);
 
     // ─── Step 4: Resolve drops and locations ─────────────────────────────
 
-    console.log('\nStep 4: Resolving drops and locations...');
+    log('\nStep 4: Resolving drops and locations...');
 
     for (const [displayName, page] of pagesByName) {
         // Locations of all variants
@@ -874,12 +877,12 @@ function main() {
 
     // ─── Step 5: Generate markdown ───────────────────────────────────────
 
-    console.log('\nStep 5: Generating markdown...');
-
-    mkdirSync(NPC_DIR, { recursive: true });
+    log('\nStep 5: Generating markdown...');
 
     let generated = 0;
     const pageIndex: { name: string; file: string }[] = [];
+    // Two npcs whose names slug alike share a page: the later one's.
+    const files = new Map<string, string>();
 
     for (const [displayName, page] of pagesByName) {
         const slug = displayName.toLowerCase()
@@ -888,34 +891,33 @@ function main() {
             .replace(/^-|-$/g, '');
 
         const fileName = `${slug}.md`;
-        const filePath = join(NPC_DIR, fileName);
-
-        const md = generateNpcMarkdown(page, objNames, areas, `wiki/npcs/${fileName}`);
-        writeFileSync(filePath, md);
+        const path = `${NPC_DIR}/${fileName}`;
+        files.set(path, generateNpcMarkdown(page, objNames, areas, path));
 
         pageIndex.push({ name: displayName, file: fileName });
         generated++;
     }
 
-    console.log(`  Generated ${generated} NPC pages`);
+    log(`  Generated ${generated} NPC pages`);
 
     // Every page here is generated, so one not written now is for an npc
     // whose name has changed or gone: it would keep stale data.
-    const written = new Set(pageIndex.map(p => p.file));
-    for (const file of removeStalePages(NPC_DIR, written)) console.log(`  Removed stale ${file}`);
+    const stale = stalePages(NPC_DIR, files);
 
     // ─── Step 6: Update README ───────────────────────────────────────────
 
-    console.log('\nStep 6: Updating README...');
-    updateReadme(pageIndex);
+    log('\nStep 6: Updating README...');
+    const readme = updateReadme(priorReadme(new Map()), pageIndex, files, log);
+    if (readme !== undefined) files.set(WIKI_README, readme);
 
-    console.log('\nDone!');
+    log('\nDone!');
+    return { files, stale };
 }
 
 // ─── Generate Markdown for One NPC Page ──────────────────────────────────────
 
 function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas: Areas, pagePath: string): string {
-    const primary = page.variants[0];
+    const primary = page.variants[0]!;
     const combat = isCombatNpc(primary);
     const lines: string[] = [];
 
@@ -1110,12 +1112,12 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
 
 function generateNotes(page: NpcPage): string[] {
     const notes: string[] = [];
-    const primary = page.variants[0];
+    const primary = page.variants[0]!;
 
     // Quest association from source path
     const questMatch = primary.sourcePath.match(/quests\/quest_(\w+)\//);
     if (questMatch) {
-        const questName = prettifyConfigName(questMatch[1]);
+        const questName = prettifyConfigName(questMatch[1]!);
         notes.push(`Associated with the **${questName}** quest.`);
     }
 
@@ -1156,13 +1158,18 @@ function generateNotes(page: NpcPage): string[] {
 
 // ─── Update README ───────────────────────────────────────────────────────────
 
-function updateReadme(pages: { name: string; file: string }[]) {
-    const readmePath = join(WIKI_DIR, 'README.md');
-    if (!existsSync(readmePath)) {
-        console.log('  No wiki/README.md; skipping index update');
-        return;
+/** `readme` with its NPCs section rewritten for `pages`, read from `files`; undefined when there is no README. */
+function updateReadme(
+    readme: string | undefined,
+    pages: { name: string; file: string }[],
+    files: ReadonlyMap<string, string>,
+    log: (line: string) => void,
+): string | undefined {
+    if (readme === undefined) {
+        log('  No wiki/README.md; skipping index update');
+        return undefined;
     }
-    let content = readFileSync(readmePath, 'utf-8');
+    let content = readme;
 
     // Remove existing NPCs section if present
     const npcsStart = content.indexOf('## NPCs');
@@ -1189,11 +1196,10 @@ function updateReadme(pages: { name: string; file: string }[]) {
     ];
 
     for (const page of pages) {
-        // Read back the file to get combat level
-        const filePath = join(NPC_DIR, page.file);
-        const md = readFileSync(filePath, 'utf-8');
+        // Read back the page to get combat level
+        const md = files.get(`${NPC_DIR}/${page.file}`)!;
         const levelMatch = md.match(/\*\*Combat Level\*\*\s*\|\s*([^|]+)\|/);
-        const level = levelMatch ? levelMatch[1].trim() : 'None';
+        const level = levelMatch ? levelMatch[1]!.trim() : 'None';
         npcSection.push(`| [${page.name}](npcs/${page.file}) | ${level} |`);
     }
     npcSection.push('');
@@ -1201,8 +1207,8 @@ function updateReadme(pages: { name: string; file: string }[]) {
     // Append to content
     content = content.trimEnd() + '\n\n' + npcSection.join('\n');
 
-    writeFileSync(readmePath, content);
-    console.log(`  Updated README.md with ${pages.length} NPC entries`);
+    log(`  Updated README.md with ${pages.length} NPC entries`);
+    return content;
 }
 
 // ─── Utility: Find files recursively ─────────────────────────────────────────
@@ -1228,4 +1234,9 @@ function findFilesRecursive(dir: string, ext: string): string[] {
 
 // ─── Run ─────────────────────────────────────────────────────────────────────
 
-main();
+if (import.meta.main) {
+    // First, so a stale world.json fails before any parsing.
+    const pages = npcPages(loadFreshWorld(), console.log);
+    writePages(pages);
+    for (const p of pages.stale) console.log(`  Removed stale ${basename(p)}`);
+}

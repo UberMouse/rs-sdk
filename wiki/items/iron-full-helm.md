@@ -31,5 +31,5 @@
 ## Sources
 
 - Sold by: [Helmet Shop](../shops/helmet-shop.md) for 154 gp
-- Dropped by: [Giant](../npcs/giant.md) (5/128)
 - Dropped by: [Black Knight](../npcs/black-knight.md) (2/128)
+- Dropped by: [Giant](../npcs/giant.md) (5/128)

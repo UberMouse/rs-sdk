@@ -19,6 +19,6 @@
 
 ## Sources
 
-- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 4 gp
 - Sold by: [Arhein Store](../shops/arhein-store.md) for 5 gp
 - Sold by: [Shantay Pass Shop](../shops/shantay-pass-shop.md) for 4 gp
+- Sold by: [Frenita's Cookery Shop](../shops/frenitas-cookery-shop.md) for 4 gp

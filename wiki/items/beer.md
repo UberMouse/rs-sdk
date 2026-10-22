@@ -21,13 +21,13 @@
 
 ## Sources
 
-- Sold by: [Karamja Wines, Spirits, and Beers](../shops/karamja-wines-spirits-and-beers.md) for 2 gp
 - Sold by: [Rellekka Longhall Bar](../shops/rellekka-longhall-bar.md) for 2 gp
-- Dropped by: [Warrior](../npcs/warrior.md) (1/128)
-- Dropped by: [Goblin guard](../npcs/goblin-guard.md) (2/128)
-- Dropped by: [Giant](../npcs/giant.md) (6/128)
-- Dropped by: [Market Guard](../npcs/market-guard.md) (1/128)
-- Dropped by: [Goblin](../npcs/goblin.md) (2/128)
-- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (1/128)
+- Sold by: [Karamja Wines, Spirits, and Beers](../shops/karamja-wines-spirits-and-beers.md) for 2 gp
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (1/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (1/128)
+- Dropped by: [Giant](../npcs/giant.md) (6/128)
+- Dropped by: [Goblin guard](../npcs/goblin-guard.md) (2/128)
+- Dropped by: [Goblin](../npcs/goblin.md) (2/128)
+- Dropped by: [Gunthor the brave](../npcs/gunthor-the-brave.md) (1/128)
+- Dropped by: [Market Guard](../npcs/market-guard.md) (1/128)
+- Dropped by: [Warrior](../npcs/warrior.md) (1/128)

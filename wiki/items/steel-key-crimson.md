@@ -6,5 +6,6 @@
 |---|---|
 | **Type** | Other |
 | **Members** | Yes |
+| **Weight** | 10g |
 | **Value** | 88 gp |
 | **Tradeable** | No |

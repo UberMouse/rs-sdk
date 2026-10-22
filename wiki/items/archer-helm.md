@@ -14,7 +14,9 @@
 
 | Stat | Value |
 |------|-------|
-| Slash Attack | +5 |
+| Stab Attack | -5 |
+| Slash Attack | -5 |
+| Crush Attack | -5 |
 | Magic Attack | -5 |
 | Range Attack | +6 |
 | Stab Defence | +6 |
