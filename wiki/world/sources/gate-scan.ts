@@ -536,7 +536,7 @@ interface Path {
     opened?: string;
     /**
      * A bound run's: the ticks the path's delays take (`p_delay(n)` n + 1, `p_arrivedelay` one, as for a player
-     * who has just walked to the loc; a forced walk's proc delays a tick a tile, skill_agility/scripts/agility.rs2:40),
+     * who has just walked to the loc; a forced walk's proc delays a tick a tile, skill_agility/scripts/agility.rs2:41),
      * the hitpoints its `damage` and `~damage_self` calls take (at the player's hitpoints, the most when the amount
      * rolls or reads another stat, as `most` takes it), and why the ticks (`untimed`) or the damage (`unsure`) are
      * not known offline.
