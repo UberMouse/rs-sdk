@@ -61,39 +61,39 @@ interface ShopPage {
 // ─── Area Name Mappings ──────────────────────────────────────────────────────
 
 const SOURCE_PATH_AREAS: Record<string, string> = {
-    area_lumbridge: 'Lumbridge',
-    area_alkharid: 'Al Kharid',
-    area_ardougne_east: 'East Ardougne',
-    area_ardougne_west: 'West Ardougne',
-    area_barbarian_village: 'Barbarian Village',
-    area_barbarian_outpost: 'Barbarian Outpost',
-    area_brimhaven: 'Brimhaven',
-    area_camelot: 'Camelot',
-    area_canifis: 'Canifis',
-    area_catherby: 'Catherby',
-    area_combat_training: 'Combat Training Camp',
-    area_desert: 'Desert',
-    area_draynor: 'Draynor Village',
-    area_edgeville: 'Edgeville',
-    area_entrana: 'Entrana',
-    area_falador: 'Falador',
-    area_fishing_platform: 'Fishing Platform',
-    area_gnome: 'Tree Gnome Stronghold',
-    area_karamja: 'Karamja',
-    area_lostcity: 'Zanaris',
-    area_mage_arena: 'Mage Arena',
-    area_port_sarim: 'Port Sarim',
-    area_rimmington: 'Rimmington',
-    area_seers: "Seers' Village",
-    area_shilo: 'Shilo Village',
-    area_taverly: 'Taverley',
-    area_varrock: 'Varrock',
-    area_white_wolf_mountain: 'White Wolf Mountain',
-    area_wilderness: 'Wilderness',
-    area_wizard_tower: 'Wizard Tower',
-    area_yanille: 'Yanille',
-    areas_heroes_guild: "Heroes' Guild",
-    monastery: 'Monastery',
+    'area_lumbridge': 'Lumbridge',
+    'area_alkharid': 'Al Kharid',
+    'area_ardougne_east': 'East Ardougne',
+    'area_ardougne_west': 'West Ardougne',
+    'area_barbarian_village': 'Barbarian Village',
+    'area_barbarian_outpost': 'Barbarian Outpost',
+    'area_brimhaven': 'Brimhaven',
+    'area_camelot': 'Camelot',
+    'area_canifis': 'Canifis',
+    'area_catherby': 'Catherby',
+    'area_combat_training': 'Combat Training Camp',
+    'area_desert': 'Desert',
+    'area_draynor': 'Draynor Village',
+    'area_edgeville': 'Edgeville',
+    'area_entrana': 'Entrana',
+    'area_falador': 'Falador',
+    'area_fishing_platform': 'Fishing Platform',
+    'area_gnome': 'Tree Gnome Stronghold',
+    'area_karamja': 'Karamja',
+    'area_lostcity': 'Zanaris',
+    'area_mage_arena': 'Mage Arena',
+    'area_port_sarim': 'Port Sarim',
+    'area_rimmington': 'Rimmington',
+    'area_seers': "Seers' Village",
+    'area_shilo': 'Shilo Village',
+    'area_taverly': 'Taverley',
+    'area_varrock': 'Varrock',
+    'area_white_wolf_mountain': 'White Wolf Mountain',
+    'area_wilderness': 'Wilderness',
+    'area_wizard_tower': 'Wizard Tower',
+    'area_yanille': 'Yanille',
+    'areas_heroes_guild': "Heroes' Guild",
+    'monastery': 'Monastery',
 };
 
 // ─── Parsers ─────────────────────────────────────────────────────────────────
@@ -219,11 +219,7 @@ interface Openers {
 }
 
 /** A script body without its `//` comments, so a commented-out call is no call. */
-const code = (body: string): string =>
-    body
-        .split('\n')
-        .map(line => line.replace(/\/\/.*/, ''))
-        .join('\n');
+const code = (body: string): string => body.split('\n').map(line => line.replace(/\/\/.*/, '')).join('\n');
 
 /**
  * Who opens each inventory by an explicit ~openshop call: the files making the call, and the npcs
@@ -297,21 +293,15 @@ function shopLocator(world: World): (inv: string, pagePath: string) => string {
         for (const { f, site } of fs) bySite.set(site, [...(bySite.get(site) || []), f.tile]);
         return [...bySite]
             .map(([site, tiles]) => ({ site, centre: centreOf(tiles) }))
-            .sort(
-                (a, b) =>
-                    cmp(areas.label(a.site.areaPath), areas.label(b.site.areaPath)) ||
-                    a.centre.level - b.centre.level ||
-                    a.centre.x - b.centre.x ||
-                    a.centre.z - b.centre.z,
+            .sort((a, b) =>
+                cmp(areas.label(a.site.areaPath), areas.label(b.site.areaPath)) ||
+                a.centre.level - b.centre.level || a.centre.x - b.centre.x || a.centre.z - b.centre.z
             )
             .map(({ site, centre }) => `${coord(centre)} in ${areaCell(pagePath, areas, site.areaPath)}`);
     };
 
     return (inv, pagePath) => {
-        const own = placed(
-            shops.filter(s => s.f.subtype === inv),
-            pagePath,
-        );
+        const own = placed(shops.filter(s => s.f.subtype === inv), pagePath);
         if (own.length > 0) return own.join('; ');
         const o = openers.get(inv);
         if (!o) return 'not placed: no script opens this inventory';
@@ -386,8 +376,7 @@ function getAreaFromSourcePath(sourcePath: string): string {
 }
 
 function slugify(name: string): string {
-    return name
-        .toLowerCase()
+    return name.toLowerCase()
         .replace(/['']/g, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
@@ -569,7 +558,11 @@ export function shopPages(
 
 // ─── Generate Markdown ───────────────────────────────────────────────────────
 
-function generateShopMarkdown(page: ShopPage, objData: Map<string, ObjInfo>, coordinates: string): string {
+function generateShopMarkdown(
+    page: ShopPage,
+    objData: Map<string, ObjInfo>,
+    coordinates: string,
+): string {
     const lines: string[] = [];
     const primaryOwner = page.owners[0];
 
@@ -618,9 +611,9 @@ function generateShopMarkdown(page: ShopPage, objData: Map<string, ObjInfo>, coo
         const baseCost = info?.cost || 0;
 
         // Buy price = what player pays to buy from shop (at normal stock)
-        const buyPrice = Math.max(1, Math.floor((baseCost * sellToPlayerMul) / 1000));
+        const buyPrice = Math.max(1, Math.floor(baseCost * sellToPlayerMul / 1000));
         // Sell price = what player gets selling to shop (at normal stock)
-        const sellPrice = Math.floor((baseCost * buyFromPlayerMul) / 1000);
+        const sellPrice = Math.floor(baseCost * buyFromPlayerMul / 1000);
 
         const itemSlug = slugify(displayName);
         const itemLink = `[${displayName}](../items/${itemSlug}.md)`;
@@ -661,7 +654,12 @@ function updateReadme(
     pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate Shops section
-    const section = ['## Shops', '', '| Shop | Location |', '|------|----------|'];
+    const section = [
+        '## Shops',
+        '',
+        '| Shop | Location |',
+        '|------|----------|',
+    ];
 
     for (const page of pages) {
         section.push(`| [${page.name}](shops/${page.file}) | ${page.location} |`);

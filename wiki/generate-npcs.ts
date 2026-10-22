@@ -86,39 +86,39 @@ interface NpcPage {
 // ─── Area Name Mappings ──────────────────────────────────────────────────────
 
 const SOURCE_PATH_AREAS: Record<string, string> = {
-    area_lumbridge: 'Lumbridge',
-    area_alkharid: 'Al Kharid',
-    area_ardougne_east: 'East Ardougne',
-    area_ardougne_west: 'West Ardougne',
-    area_barbarian_village: 'Barbarian Village',
-    area_barbarian_outpost: 'Barbarian Outpost',
-    area_brimhaven: 'Brimhaven',
-    area_camelot: 'Camelot',
-    area_canifis: 'Canifis',
-    area_catherby: 'Catherby',
-    area_combat_training: 'Combat Training Camp',
-    area_desert: 'Desert',
-    area_draynor: 'Draynor Village',
-    area_edgeville: 'Edgeville',
-    area_entrana: 'Entrana',
-    area_falador: 'Falador',
-    area_fishing_platform: 'Fishing Platform',
-    area_gnome: 'Tree Gnome Stronghold',
-    area_karamja: 'Karamja',
-    area_lostcity: 'Zanaris',
-    area_mage_arena: 'Mage Arena',
-    area_port_sarim: 'Port Sarim',
-    area_rimmington: 'Rimmington',
-    area_seers: "Seers' Village",
-    area_shilo: 'Shilo Village',
-    area_taverly: 'Taverley',
-    area_varrock: 'Varrock',
-    area_white_wolf_mountain: 'White Wolf Mountain',
-    area_wilderness: 'Wilderness',
-    area_wizard_tower: 'Wizard Tower',
-    area_yanille: 'Yanille',
-    areas_heroes_guild: "Heroes' Guild",
-    monastery: 'Monastery',
+    'area_lumbridge': 'Lumbridge',
+    'area_alkharid': 'Al Kharid',
+    'area_ardougne_east': 'East Ardougne',
+    'area_ardougne_west': 'West Ardougne',
+    'area_barbarian_village': 'Barbarian Village',
+    'area_barbarian_outpost': 'Barbarian Outpost',
+    'area_brimhaven': 'Brimhaven',
+    'area_camelot': 'Camelot',
+    'area_canifis': 'Canifis',
+    'area_catherby': 'Catherby',
+    'area_combat_training': 'Combat Training Camp',
+    'area_desert': 'Desert',
+    'area_draynor': 'Draynor Village',
+    'area_edgeville': 'Edgeville',
+    'area_entrana': 'Entrana',
+    'area_falador': 'Falador',
+    'area_fishing_platform': 'Fishing Platform',
+    'area_gnome': 'Tree Gnome Stronghold',
+    'area_karamja': 'Karamja',
+    'area_lostcity': 'Zanaris',
+    'area_mage_arena': 'Mage Arena',
+    'area_port_sarim': 'Port Sarim',
+    'area_rimmington': 'Rimmington',
+    'area_seers': "Seers' Village",
+    'area_shilo': 'Shilo Village',
+    'area_taverly': 'Taverley',
+    'area_varrock': 'Varrock',
+    'area_white_wolf_mountain': 'White Wolf Mountain',
+    'area_wilderness': 'Wilderness',
+    'area_wizard_tower': 'Wizard Tower',
+    'area_yanille': 'Yanille',
+    'areas_heroes_guild': "Heroes' Guild",
+    'monastery': 'Monastery',
 };
 
 // ─── Parser: INI Config ──────────────────────────────────────────────────────
@@ -149,66 +149,26 @@ function parseIniConfigs(content: string, sourcePath: string): Map<string, NpcCo
         const value = line.slice(eqIdx + 1).trim();
 
         switch (key) {
-            case 'name':
-                current.name = value;
-                break;
-            case 'desc':
-                current.desc = value;
-                break;
-            case 'vislevel':
-                current.vislevel = value;
-                break;
-            case 'hitpoints':
-                current.hitpoints = parseInt(value) || 0;
-                break;
-            case 'attack':
-                current.attack = parseInt(value) || 0;
-                break;
-            case 'strength':
-                current.strength = parseInt(value) || 0;
-                break;
-            case 'defence':
-                current.defence = parseInt(value) || 0;
-                break;
-            case 'category':
-                current.category = value;
-                break;
-            case 'huntmode':
-                current.huntmode = value;
-                break;
-            case 'wanderrange':
-                current.wanderrange = parseInt(value) || 0;
-                break;
-            case 'maxrange':
-                current.maxrange = parseInt(value) || 0;
-                break;
-            case 'respawnrate':
-                current.respawnrate = parseInt(value) || 0;
-                break;
-            case 'defaultmode':
-                current.defaultmode = value;
-                break;
-            case 'givechase':
-                current.givechase = value;
-                break;
-            case 'moverestrict':
-                current.moverestrict = value;
-                break;
-            case 'op1':
-                current.ops[0] = value;
-                break;
-            case 'op2':
-                current.ops[1] = value;
-                break;
-            case 'op3':
-                current.ops[2] = value;
-                break;
-            case 'op4':
-                current.ops[3] = value;
-                break;
-            case 'op5':
-                current.ops[4] = value;
-                break;
+            case 'name': current.name = value; break;
+            case 'desc': current.desc = value; break;
+            case 'vislevel': current.vislevel = value; break;
+            case 'hitpoints': current.hitpoints = parseInt(value) || 0; break;
+            case 'attack': current.attack = parseInt(value) || 0; break;
+            case 'strength': current.strength = parseInt(value) || 0; break;
+            case 'defence': current.defence = parseInt(value) || 0; break;
+            case 'category': current.category = value; break;
+            case 'huntmode': current.huntmode = value; break;
+            case 'wanderrange': current.wanderrange = parseInt(value) || 0; break;
+            case 'maxrange': current.maxrange = parseInt(value) || 0; break;
+            case 'respawnrate': current.respawnrate = parseInt(value) || 0; break;
+            case 'defaultmode': current.defaultmode = value; break;
+            case 'givechase': current.givechase = value; break;
+            case 'moverestrict': current.moverestrict = value; break;
+            case 'op1': current.ops[0] = value; break;
+            case 'op2': current.ops[1] = value; break;
+            case 'op3': current.ops[2] = value; break;
+            case 'op4': current.ops[3] = value; break;
+            case 'op5': current.ops[4] = value; break;
             case 'param': {
                 const commaIdx = value.indexOf(',');
                 if (commaIdx !== -1) {
@@ -380,9 +340,7 @@ interface DropTableData {
 }
 
 function parseDropTables(dropsDir: string): Map<string, DropTable> {
-    const files = readdirSync(dropsDir)
-        .filter(f => f.endsWith('.rs2') && f !== 'shared_droptables.rs2' && f !== 'drop_table.rs2')
-        .sort(cmp);
+    const files = readdirSync(dropsDir).filter(f => f.endsWith('.rs2') && f !== 'shared_droptables.rs2' && f !== 'drop_table.rs2').sort(cmp);
 
     // Map from trigger name (config name or _category) to DropTable
     const result = new Map<string, DropTable>();
@@ -489,11 +447,7 @@ function parseDropFile(content: string): ParsedDropFile {
 
         // Always-drop items (outside the if/else chain, plain obj_add)
         // These come after the death_drop line but before the random() declaration
-        if (
-            line.includes('obj_add(npc_coord,') &&
-            !line.includes('npc_param(death_drop)') &&
-            !currentData.entries.length
-        ) {
+        if (line.includes('obj_add(npc_coord,') && !line.includes('npc_param(death_drop)') && !currentData.entries.length) {
             const alwaysMatch = line.match(/obj_add\(npc_coord,\s*([^,]+),\s*(\d+)/);
             if (alwaysMatch && !line.includes('$random') && !line.includes('$drop') && !line.includes('$rng')) {
                 // Check if we're inside an if block - simple heuristic: no if/else context
@@ -548,18 +502,14 @@ function parseDropFile(content: string): ParsedDropFile {
                     currentData.entries.push({
                         itemConfigName: itemName,
                         quantity: parseQuantity(rawQty),
-                        numerator,
-                        denominator,
+                        numerator, denominator,
                         membersOnly: true,
                     });
                 }
                 for (const m of membersBlock.matchAll(sharedCallPattern)) {
                     currentData.entries.push({
-                        itemConfigName: `~${m[1]}`,
-                        quantity: '1',
-                        numerator,
-                        denominator,
-                        membersOnly: true,
+                        itemConfigName: `~${m[1]}`, quantity: '1',
+                        numerator, denominator, membersOnly: true,
                     });
                 }
 
@@ -571,8 +521,7 @@ function parseDropFile(content: string): ParsedDropFile {
                     currentData.entries.push({
                         itemConfigName: itemName,
                         quantity: parseQuantity(rawQty),
-                        numerator,
-                        denominator,
+                        numerator, denominator,
                         membersOnly: false,
                     });
                 }
@@ -587,18 +536,14 @@ function parseDropFile(content: string): ParsedDropFile {
                     currentData.entries.push({
                         itemConfigName: itemName,
                         quantity: parseQuantity(rawQty),
-                        numerator,
-                        denominator,
+                        numerator, denominator,
                         membersOnly: isMembers,
                     });
                 }
                 for (const m of block.matchAll(sharedCallPattern)) {
                     currentData.entries.push({
-                        itemConfigName: `~${m[1]}`,
-                        quantity: '1',
-                        numerator,
-                        denominator,
-                        membersOnly: isMembers,
+                        itemConfigName: `~${m[1]}`, quantity: '1',
+                        numerator, denominator, membersOnly: isMembers,
                     });
                 }
             }
@@ -829,25 +774,13 @@ export function npcPages(world: World, log: (line: string) => void = () => {}): 
     let filtered = 0;
     for (const [name, config] of allConfigs) {
         // Skip tutorial NPCs
-        if (tutorialConfigs.has(name)) {
-            filtered++;
-            continue;
-        }
+        if (tutorialConfigs.has(name)) { filtered++; continue; }
         // Skip antimacro NPCs
-        if (antimacroConfigs.has(name)) {
-            filtered++;
-            continue;
-        }
+        if (antimacroConfigs.has(name)) { filtered++; continue; }
         // Skip NPCs with macro event categories
-        if (config.category.startsWith('macro_event')) {
-            filtered++;
-            continue;
-        }
+        if (config.category.startsWith('macro_event')) { filtered++; continue; }
         // Skip NPCs with no name
-        if (!config.name) {
-            filtered++;
-            continue;
-        }
+        if (!config.name) { filtered++; continue; }
 
         filteredConfigs.set(name, config);
     }
@@ -910,10 +843,7 @@ export function npcPages(world: World, log: (line: string) => void = () => {}): 
             let bestDrop = '';
             let bestCount = 0;
             for (const [drop, count] of deathDropCounts) {
-                if (count > bestCount) {
-                    bestDrop = drop;
-                    bestCount = count;
-                }
+                if (count > bestCount) { bestDrop = drop; bestCount = count; }
             }
             page.alwaysDropItem = bestDrop;
         }
@@ -960,8 +890,7 @@ export function npcPages(world: World, log: (line: string) => void = () => {}): 
     const files = new Map<string, string>();
 
     for (const [displayName, page] of pagesByName) {
-        const slug = displayName
-            .toLowerCase()
+        const slug = displayName.toLowerCase()
             .replace(/['']/g, '')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '');
@@ -1008,10 +937,7 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
     // Combat level - show range if variants differ
     const vislevels = [...new Set(page.variants.map(v => v.vislevel).filter(v => v && v !== 'hide'))];
     if (vislevels.length > 1) {
-        const nums = vislevels
-            .map(v => parseInt(v))
-            .filter(n => !isNaN(n))
-            .sort((a, b) => a - b);
+        const nums = vislevels.map(v => parseInt(v)).filter(n => !isNaN(n)).sort((a, b) => a - b);
         if (nums.length > 1) {
             lines.push(`| **Combat Level** | ${nums[0]}-${nums[nums.length - 1]} |`);
         } else {
@@ -1045,9 +971,7 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
 
     // Respawn (only for combat NPCs)
     if (combat) {
-        const respawnRates = [...new Set(page.variants.map(v => v.respawnrate).filter(r => r > 0))].sort(
-            (a, b) => a - b,
-        );
+        const respawnRates = [...new Set(page.variants.map(v => v.respawnrate).filter(r => r > 0))].sort((a, b) => a - b);
         if (respawnRates.length > 0) {
             if (respawnRates.length > 1) {
                 lines.push(`| **Respawn** | ${respawnRates[0]}-${respawnRates[respawnRates.length - 1]} ticks |`);
@@ -1094,12 +1018,9 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
         lines.push('| Area | Centre | Spawns | F2P |');
         lines.push('|------|--------|--------|-----|');
 
-        const rows = [...page.locations].sort(
-            (a, b) =>
-                cmp(areas.label(a.areaPath), areas.label(b.areaPath)) ||
-                a.centre.level - b.centre.level ||
-                a.centre.x - b.centre.x ||
-                a.centre.z - b.centre.z,
+        const rows = [...page.locations].sort((a, b) =>
+            cmp(areas.label(a.areaPath), areas.label(b.areaPath)) ||
+            a.centre.level - b.centre.level || a.centre.x - b.centre.x || a.centre.z - b.centre.z
         );
         for (const row of rows) {
             const area = areaCell(pagePath, areas, row.areaPath);
@@ -1272,7 +1193,12 @@ function updateReadme(
     pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate NPCs section
-    const npcSection = ['## NPCs', '', '| NPC | Combat Level |', '|-----|-------------|'];
+    const npcSection = [
+        '## NPCs',
+        '',
+        '| NPC | Combat Level |',
+        '|-----|-------------|',
+    ];
 
     for (const page of pages) {
         // Read back the page to get combat level

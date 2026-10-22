@@ -72,20 +72,20 @@ interface ItemPage {
 // ─── Wearpos Display Names ───────────────────────────────────────────────────
 
 const WEARPOS_NAMES: Record<string, string> = {
-    hat: 'Head',
-    back: 'Back',
-    front: 'Front',
-    righthand: 'Weapon',
-    torso: 'Body',
-    lefthand: 'Shield',
-    arms: 'Arms',
-    legs: 'Legs',
-    head: 'Head',
-    hands: 'Hands',
-    feet: 'Feet',
-    jaw: 'Jaw',
-    ring: 'Ring',
-    quiver: 'Ammo',
+    'hat': 'Head',
+    'back': 'Back',
+    'front': 'Front',
+    'righthand': 'Weapon',
+    'torso': 'Body',
+    'lefthand': 'Shield',
+    'arms': 'Arms',
+    'legs': 'Legs',
+    'head': 'Head',
+    'hands': 'Hands',
+    'feet': 'Feet',
+    'jaw': 'Jaw',
+    'ring': 'Ring',
+    'quiver': 'Ammo',
 };
 
 // ─── Combat Stat Keys ────────────────────────────────────────────────────────
@@ -94,21 +94,21 @@ const ATTACK_STATS = ['stabattack', 'slashattack', 'crushattack', 'magicattack',
 const DEFENCE_STATS = ['stabdefence', 'slashdefence', 'crushdefence', 'magicdefence', 'rangedefence'];
 const BONUS_STATS = ['strengthbonus', 'rangebonus', 'prayerbonus'];
 const STAT_DISPLAY: Record<string, string> = {
-    stabattack: 'Stab Attack',
-    slashattack: 'Slash Attack',
-    crushattack: 'Crush Attack',
-    magicattack: 'Magic Attack',
-    rangeattack: 'Range Attack',
-    stabdefence: 'Stab Defence',
-    slashdefence: 'Slash Defence',
-    crushdefence: 'Crush Defence',
-    magicdefence: 'Magic Defence',
-    rangedefence: 'Range Defence',
-    strengthbonus: 'Strength Bonus',
-    rangebonus: 'Range Bonus',
-    prayerbonus: 'Prayer Bonus',
-    levelrequire: 'Level Requirement',
-    attackrate: 'Attack Speed',
+    'stabattack': 'Stab Attack',
+    'slashattack': 'Slash Attack',
+    'crushattack': 'Crush Attack',
+    'magicattack': 'Magic Attack',
+    'rangeattack': 'Range Attack',
+    'stabdefence': 'Stab Defence',
+    'slashdefence': 'Slash Defence',
+    'crushdefence': 'Crush Defence',
+    'magicdefence': 'Magic Defence',
+    'rangedefence': 'Range Defence',
+    'strengthbonus': 'Strength Bonus',
+    'rangebonus': 'Range Bonus',
+    'prayerbonus': 'Prayer Bonus',
+    'levelrequire': 'Level Requirement',
+    'attackrate': 'Attack Speed',
 };
 
 // ─── Parsers ─────────────────────────────────────────────────────────────────
@@ -136,57 +136,23 @@ function parseObjConfigs(content: string, sourcePath: string): Map<string, ItemC
         const value = line.slice(eqIdx + 1).trim();
 
         switch (key) {
-            case 'name':
-                current.name = value;
-                break;
-            case 'desc':
-                current.desc = value;
-                break;
-            case 'cost':
-                current.cost = parseInt(value) || 0;
-                break;
-            case 'weight':
-                current.weight = value;
-                break;
-            case 'members':
-                current.members = value === 'yes';
-                break;
-            case 'stackable':
-                current.stackable = value === 'yes';
-                break;
-            case 'tradeable':
-                current.tradeable = value;
-                break;
-            case 'category':
-                current.category = value;
-                break;
-            case 'wearpos':
-                current.wearpos = value;
-                break;
-            case 'wearpos2':
-                current.wearpos2 = value;
-                break;
-            case 'wearpos3':
-                current.wearpos3 = value;
-                break;
-            case 'dummyitem':
-                current.dummyitem = value;
-                break;
-            case 'iop1':
-                current.iops[0] = value;
-                break;
-            case 'iop2':
-                current.iops[1] = value;
-                break;
-            case 'iop3':
-                current.iops[2] = value;
-                break;
-            case 'iop4':
-                current.iops[3] = value;
-                break;
-            case 'iop5':
-                current.iops[4] = value;
-                break;
+            case 'name': current.name = value; break;
+            case 'desc': current.desc = value; break;
+            case 'cost': current.cost = parseInt(value) || 0; break;
+            case 'weight': current.weight = value; break;
+            case 'members': current.members = value === 'yes'; break;
+            case 'stackable': current.stackable = value === 'yes'; break;
+            case 'tradeable': current.tradeable = value; break;
+            case 'category': current.category = value; break;
+            case 'wearpos': current.wearpos = value; break;
+            case 'wearpos2': current.wearpos2 = value; break;
+            case 'wearpos3': current.wearpos3 = value; break;
+            case 'dummyitem': current.dummyitem = value; break;
+            case 'iop1': current.iops[0] = value; break;
+            case 'iop2': current.iops[1] = value; break;
+            case 'iop3': current.iops[2] = value; break;
+            case 'iop4': current.iops[3] = value; break;
+            case 'iop5': current.iops[4] = value; break;
             case 'param': {
                 const commaIdx = value.indexOf(',');
                 if (commaIdx !== -1) {
@@ -255,8 +221,7 @@ function prettifyConfigName(name: string): string {
 }
 
 function slugify(name: string): string {
-    return name
-        .toLowerCase()
+    return name.toLowerCase()
         .replace(/['']/g, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
@@ -410,71 +375,72 @@ function parseNpcDropData(pages: ReadonlyMap<string, string>): Map<string, NpcDr
 // ─── Map Spawn Parser ───────────────────────────────────────────────────────
 
 const MAP_SQUARE_AREAS: Record<string, string> = {
-    m50_50: 'Lumbridge',
-    m49_50: 'Lumbridge (west)',
-    m51_50: 'Lumbridge (east)',
-    m50_49: 'Al Kharid',
-    m51_49: 'Al Kharid',
-    m49_49: 'Al Kharid (south)',
-    m48_50: 'Edgeville area',
-    m48_51: 'Edgeville area',
-    m49_51: 'Barbarian Village',
-    m49_52: 'Barbarian Village',
-    m50_51: 'Varrock (south)',
-    m50_52: 'Varrock',
-    m51_51: 'Varrock (east)',
-    m51_52: 'Varrock (east)',
-    m50_53: 'Varrock (north)',
-    m45_50: 'Falador (south)',
-    m46_50: 'Falador',
-    m46_51: 'Falador (north)',
-    m47_50: 'Falador (east)',
-    m45_51: 'Falador (west)',
-    m44_50: 'Rimmington',
-    m44_49: 'Karamja',
-    m45_49: 'Karamja',
-    m43_49: 'Karamja (west)',
-    m44_48: 'Brimhaven',
-    m47_51: 'Taverley',
-    m47_52: 'Taverley (north)',
-    m41_50: "Seers' Village area",
-    m42_50: 'Catherby',
-    m40_50: 'Ardougne',
-    m40_49: 'Ardougne (south)',
-    m39_50: 'Ardougne (west)',
-    m40_48: 'Ardougne area',
-    m39_49: 'West Ardougne',
-    m41_49: 'Yanille area',
-    m41_48: 'Yanille',
-    m48_52: 'Wilderness (low)',
-    m48_53: 'Wilderness',
-    m48_54: 'Wilderness',
-    m49_53: 'Wilderness',
-    m49_54: 'Wilderness',
-    m50_54: 'Wilderness',
-    m50_55: 'Wilderness (deep)',
-    m51_53: 'Wilderness',
-    m51_54: 'Wilderness',
-    m46_52: 'Camelot area',
-    m43_50: 'Gnome Stronghold',
-    m43_51: 'Gnome Stronghold',
-    m42_49: 'Fight Arena area',
-    m52_50: 'Canifis area',
-    m53_50: 'Canifis',
-    m53_51: 'Morytania',
-    m44_51: 'Entrana',
-    m45_48: 'Shilo Village area',
-    m46_48: 'Shilo Village area',
-    m43_48: 'Feldip Hills',
-    m48_49: 'Desert',
-    m49_48: 'Desert',
+    'm50_50': 'Lumbridge',
+    'm49_50': 'Lumbridge (west)',
+    'm51_50': 'Lumbridge (east)',
+    'm50_49': 'Al Kharid',
+    'm51_49': 'Al Kharid',
+    'm49_49': 'Al Kharid (south)',
+    'm48_50': 'Edgeville area',
+    'm48_51': 'Edgeville area',
+    'm49_51': 'Barbarian Village',
+    'm49_52': 'Barbarian Village',
+    'm50_51': 'Varrock (south)',
+    'm50_52': 'Varrock',
+    'm51_51': 'Varrock (east)',
+    'm51_52': 'Varrock (east)',
+    'm50_53': 'Varrock (north)',
+    'm45_50': 'Falador (south)',
+    'm46_50': 'Falador',
+    'm46_51': 'Falador (north)',
+    'm47_50': 'Falador (east)',
+    'm45_51': 'Falador (west)',
+    'm44_50': 'Rimmington',
+    'm44_49': 'Karamja',
+    'm45_49': 'Karamja',
+    'm43_49': 'Karamja (west)',
+    'm44_48': 'Brimhaven',
+    'm47_51': 'Taverley',
+    'm47_52': 'Taverley (north)',
+    'm41_50': "Seers' Village area",
+    'm42_50': 'Catherby',
+    'm40_50': 'Ardougne',
+    'm40_49': 'Ardougne (south)',
+    'm39_50': 'Ardougne (west)',
+    'm40_48': 'Ardougne area',
+    'm39_49': 'West Ardougne',
+    'm41_49': 'Yanille area',
+    'm41_48': 'Yanille',
+    'm48_52': 'Wilderness (low)',
+    'm48_53': 'Wilderness',
+    'm48_54': 'Wilderness',
+    'm49_53': 'Wilderness',
+    'm49_54': 'Wilderness',
+    'm50_54': 'Wilderness',
+    'm50_55': 'Wilderness (deep)',
+    'm51_53': 'Wilderness',
+    'm51_54': 'Wilderness',
+    'm46_52': 'Camelot area',
+    'm43_50': 'Gnome Stronghold',
+    'm43_51': 'Gnome Stronghold',
+    'm42_49': 'Fight Arena area',
+    'm52_50': 'Canifis area',
+    'm53_50': 'Canifis',
+    'm53_51': 'Morytania',
+    'm44_51': 'Entrana',
+    'm45_48': 'Shilo Village area',
+    'm46_48': 'Shilo Village area',
+    'm43_48': 'Feldip Hills',
+    'm48_49': 'Desert',
+    'm49_48': 'Desert',
 };
 
-function parseObjSpawns(mapsDir: string, objIdToName: Map<number, string>): Map<string, SpawnLocation[]> {
+function parseObjSpawns(
+    mapsDir: string,
+    objIdToName: Map<number, string>
+): Map<string, SpawnLocation[]> {
     const spawns = new Map<string, SpawnLocation[]>();
-    const mapFiles = readdirSync(mapsDir)
-        .filter(f => f.endsWith('.jm2'))
-        .sort(cmp);
+    const mapFiles = readdirSync(mapsDir).filter(f => f.endsWith('.jm2')).sort(cmp);
 
     for (const file of mapFiles) {
         const match = file.match(/^m(\d+)_(\d+)\.jm2$/);
@@ -518,17 +484,14 @@ function parseObjSpawns(mapsDir: string, objIdToName: Map<number, string>): Map<
 function categorizeItem(config: ItemConfig): { category: ItemCategory; equipSlot: string | null } {
     const hasAttackStats = ATTACK_STATS.some(s => config.params.has(s));
     const hasDefenceStats = DEFENCE_STATS.some(s => config.params.has(s));
-    const wearSlot = config.wearpos ? WEARPOS_NAMES[config.wearpos] || config.wearpos : null;
+    const wearSlot = config.wearpos ? (WEARPOS_NAMES[config.wearpos] || config.wearpos) : null;
 
     // Ammunition: stackable + quiver slot or arrow/bolt category
-    if (
-        config.wearpos === 'quiver' ||
-        (config.stackable && config.category.includes('arrow')) ||
+    if (config.wearpos === 'quiver' || (config.stackable && config.category.includes('arrow')) ||
         (config.stackable && config.category.includes('bolt')) ||
         (config.stackable && config.category.includes('dart')) ||
         (config.stackable && config.category.includes('javelin')) ||
-        (config.stackable && config.category.includes('throwing'))
-    ) {
+        (config.stackable && config.category.includes('throwing'))) {
         if (hasAttackStats || config.wearpos === 'quiver') {
             return { category: 'Ammunition', equipSlot: 'Ammo' };
         }
@@ -703,39 +666,18 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
 
     for (const [name, config] of allConfigs) {
         // No name
-        if (!config.name) {
-            filterOut('no name');
-            continue;
-        }
+        if (!config.name) { filterOut('no name'); continue; }
         // Cert/noted variants
-        if (certConfigNames.has(name)) {
-            filterOut('cert');
-            continue;
-        }
-        if (name.startsWith('cert_')) {
-            filterOut('cert prefix');
-            continue;
-        }
+        if (certConfigNames.has(name)) { filterOut('cert'); continue; }
+        if (name.startsWith('cert_')) { filterOut('cert prefix'); continue; }
         // Tutorial items
-        if (tutorialItems.has(name)) {
-            filterOut('tutorial');
-            continue;
-        }
+        if (tutorialItems.has(name)) { filterOut('tutorial'); continue; }
         // Internal dummy rendering variants (count refs)
-        if (countVariantRefs.has(name)) {
-            filterOut('count variant');
-            continue;
-        }
+        if (countVariantRefs.has(name)) { filterOut('count variant'); continue; }
         // Dummyitem (visual-only internal items)
-        if (config.dummyitem === 'inv_only') {
-            filterOut('dummyitem');
-            continue;
-        }
+        if (config.dummyitem === 'inv_only') { filterOut('dummyitem'); continue; }
         // Template items (cert template)
-        if (name === 'template_for_cert') {
-            filterOut('cert template');
-            continue;
-        }
+        if (name === 'template_for_cert') { filterOut('cert template'); continue; }
 
         filteredConfigs.set(name, config);
     }
@@ -821,7 +763,7 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
                     if (!shops.some(s => s.shopSlug === slugify(entry.shopTitle))) {
                         // Compute buy price: item.cost * sellMultiplier / 1000 (min 1)
                         const baseCost = config.cost;
-                        const buyPrice = Math.max(1, Math.floor((baseCost * entry.sellMultiplier) / 1000));
+                        const buyPrice = Math.max(1, Math.floor(baseCost * entry.sellMultiplier / 1000));
                         shops.push({
                             shopTitle: entry.shopTitle,
                             shopSlug: slugify(entry.shopTitle),
@@ -1053,7 +995,12 @@ function updateReadme(
     pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate Items section
-    const section = ['## Items', '', '| Item | Type |', '|------|------|'];
+    const section = [
+        '## Items',
+        '',
+        '| Item | Type |',
+        '|------|------|',
+    ];
 
     for (const page of pages) {
         section.push(`| [${page.name}](items/${page.file}) | ${page.category} |`);
