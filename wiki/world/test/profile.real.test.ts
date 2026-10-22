@@ -2,11 +2,11 @@ import { describe, expect, test } from 'bun:test';
 import { ProfileError } from '../model/family';
 import { readGameData } from '../model/families/index';
 import { readCombatStyles, readEquipment } from '../model/items';
-import { gearOf, profileOf, readTools, type Profile } from '../model/profile';
+import { gearOf, profileOf, readPrayers, readTools, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 
 const game = readGameData();
-const data = { equipment: readEquipment(game), styles: readCombatStyles(game) };
+const data = { equipment: readEquipment(game), styles: readCombatStyles(game), prayers: readPrayers(game) };
 const tools = readTools(game.objs);
 const wearing = (level: number, worn: string[]): Profile =>
     profileOf(Object.fromEntries(SKILLS.map(s => [s, level])) as Record<Skill, number>, { tools, worn });
@@ -75,5 +75,23 @@ describe('gearOf on the game data (paths under server/content/scripts/skill_comb
 
     test("3b's worn objs read: a staff of fire is the weapon", () => {
         expect(gearOf(wearing(43, ['staff_of_fire']), data).weapon?.obj).toBe('staff_of_fire');
+    });
+});
+
+const praying = (prayer: number, prayers: Profile['prayers']): Profile =>
+    profileOf({ ...Object.fromEntries(SKILLS.map(s => [s, 1])), prayer } as Record<Skill, number>, {
+        tools,
+        prayers,
+    });
+
+describe('prayers on the game data', () => {
+    test('the tiers come from the check procs and prayers.dbrow (player_combat_stat.rs2:214-230)', () => {
+        expect(data.prayers('strength', 115)).toMatchObject({ level: 31 });
+        expect(data.prayers('attack', 105)).toMatchObject({ name: 'Clarity of Thought', level: 7 });
+        expect(data.prayers('defence', 115)).toMatchObject({ name: 'Steel Skin', level: 28 });
+    });
+    test('strength 115 (Ultimate Strength, level 31, prayers.dbrow) errors at Prayer 30 and passes at 31', () => {
+        expect(() => gearOf(praying(30, { strength: 115 }), data)).toThrow(ProfileError);
+        expect(() => gearOf(praying(31, { strength: 115 }), data)).not.toThrow();
     });
 });

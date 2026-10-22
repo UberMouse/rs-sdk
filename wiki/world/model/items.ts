@@ -136,7 +136,8 @@ export function readEquipment(
     data: ParamData & { objs: ReadonlyMap<string, Config>; scripts: readonly [file: string, text: string][] },
 ): Equipments {
     const wield = readWieldRequirements(data.scripts);
-    return obj => {
+    const cache = new Map<string, Equipment>();
+    const read = (obj: string): Equipment => {
         const cfg = data.objs.get(obj);
         if (!cfg) throw new ModelError(`no obj ${obj}`);
         const wearpos = (['wearpos', 'wearpos2', 'wearpos3'] as const).flatMap(k => cfg[k] ?? []);
@@ -151,6 +152,11 @@ export function readEquipment(
             category: first(cfg, 'category'),
             wield: wield.get(obj),
         };
+    };
+    return obj => {
+        let e = cache.get(obj);
+        if (!e) cache.set(obj, (e = read(obj)));
+        return e;
     };
 }
 
@@ -213,9 +219,12 @@ export function readCombatStyles(data: {
             };
         });
     };
+    const tables = new Map<string, { table: string; styles: CombatStyle[] }>();
     return category => {
         const name = category === undefined ? unarmed : (cases.get(category) ?? fallback);
-        return { table: name, styles: table(name) };
+        let t = tables.get(name);
+        if (!t) tables.set(name, (t = { table: name, styles: table(name) }));
+        return t;
     };
 }
 

@@ -62,7 +62,7 @@ export interface ProcessStepDef {
 export interface Measured {
     /** Game XP per hour, XP_RATE included, as stats.ts prints it. */
     xpPerHour: Partial<Record<Skill, number>>;
-    /** At the start of the measured runs. */
+    /** The base level at the start of the measured runs, boosts excluded. */
     level: Partial<Record<Skill, number>>;
     /** The axe or pickaxe the runs used, when the family reads one from the profile. */
     tool?: string;

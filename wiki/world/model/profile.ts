@@ -3,6 +3,7 @@
 // through one shape. The gear a combat model reads (summed bonuses, swing speed, style table) is derived from it by
 // gearOf, so a Profile stays plain data.
 import type { Config } from '../sources/configs';
+import type { DbRow } from '../sources/dbrows';
 import { combatLevel } from './combat';
 import { ProfileError } from './family';
 import { BONUSES, UNARMED_ATTACK_RATE, type Bonus, type CombatStyles, type Equipment, type Equipments } from './items';
@@ -116,7 +117,8 @@ export interface ProfileOptions {
 }
 
 /**
- * The profile at the `base` levels raised by `boosts`, with the best axe and pickaxe usable at the boosted levels, `worn`
+ * The profile at the `base` levels raised by `boosts`; a caller holding observed (current) levels subtracts its boosts
+ * first, or `levels` counts them twice. The profile has the best axe and pickaxe usable at the boosted levels, `worn`
  * and `prayers`.
  */
 export function profileOf(base: Record<Skill, number>, opts: Omit<ProfileOptions, 'atLeast'>): Profile {
@@ -147,6 +149,69 @@ export function combatLevelOf(profile: Profile): number {
     return combatLevel(baseLevels(profile));
 }
 
+/** A prayer that gives a tier of an attack, strength or defence prayer, and the Prayer level the game asks for it. */
+export interface PrayerTier {
+    /** The dbrow's `name` (`Clarity of Thought`). */
+    name: string;
+    /** `db_getfield($data, prayers:level, 0)`, which the activate script compares with `stat_base(prayer)`. */
+    level: number;
+    /** The activate script's level check, file:line. */
+    at: string;
+}
+
+/** The prayer giving `percent` of a skill, or undefined when the game has none. */
+export type Prayers = (skill: PrayedSkill, percent: PrayerPercent) => PrayerTier | undefined;
+
+const PRAYER_PROCS: Record<PrayedSkill, string> = {
+    attack: 'check_attack_prayer',
+    strength: 'check_strength_prayer',
+    defence: 'check_defence_prayer',
+};
+
+const PRAYER_SCRIPTS = 'skill_prayer/scripts/prayers/';
+const COMBAT_STAT = 'skill_combat/scripts/player/player_combat_stat.rs2';
+
+/**
+ * Which prayer gives each percentage. `check_<skill>_prayer` returns the percentage of the first prayer varp that is
+ * on (player_combat_stat.rs2:214-230); a prayer's activate script (skill_prayer/scripts/prayers/<name>.rs2) names the
+ * prayer's dbrow by `~get_prayer_data(^prayer_<name>)`, sets its varp `%prayer<n> = ^true` and refuses it below the
+ * dbrow's `level` (`stat_base(prayer) < $levelreq`). Throws when a script or row it needs is missing.
+ */
+export function readPrayers(data: {
+    scripts: readonly [file: string, text: string][];
+    dbrows: readonly DbRow[];
+}): Prayers {
+    const varps = new Map<string, PrayerTier>();
+    for (const [file, text] of data.scripts) {
+        if (!file.startsWith(PRAYER_SCRIPTS)) continue;
+        const constant = text.match(/~get_prayer_data\(\^(prayer_\w+)\)/)?.[1];
+        const varp = text.match(/%(prayer\d+) = \^true;/)?.[1];
+        const check = text.match(/stat_base\(prayer\) < \$levelreq/);
+        if (!constant || !varp || !check) continue;
+        const row = data.dbrows.find(r => r.table === 'prayers' && r.data.prayer?.[0]?.[0] === `^${constant}`);
+        if (!row) throw new Error(`${file}: no prayers dbrow for ^${constant}`);
+        const line = text.slice(0, check.index).split('\n').length;
+        varps.set(varp, {
+            name: row.data.name![0]![0]!,
+            level: Number(row.data.level![0]![0]),
+            at: `${file}:${line}`,
+        });
+    }
+    const text = data.scripts.find(([f]) => f === COMBAT_STAT)?.[1];
+    if (!text) throw new Error(`No ${COMBAT_STAT}`);
+    const tiers = new Map<string, PrayerTier>();
+    for (const [skill, proc] of Object.entries(PRAYER_PROCS)) {
+        const body = text.split(`[proc,${proc}]`)[1]?.split('\n[')[0];
+        if (!body) throw new Error(`${COMBAT_STAT} has no ${proc}`);
+        for (const m of body.matchAll(/if \(%(prayer\d+) = \^true\) return \((\d+)\);/g)) {
+            const tier = varps.get(m[1]!);
+            if (!tier) throw new Error(`${COMBAT_STAT}: no prayer script sets %${m[1]}`);
+            tiers.set(`${skill}:${m[2]}`, tier);
+        }
+    }
+    return (skill, percent) => tiers.get(`${skill}:${percent}`);
+}
+
 /** What a combat model reads of the profile's worn objs. */
 export interface Gear {
     /** Each worn-bonus param summed over the worn objs (`~equip_get_bonuses`, player/scripts/equip.rs2:244-285). */
@@ -173,19 +238,32 @@ const WEAPON_SLOT = 'righthand';
  * The gear of `profile.worn`. Throws a ProfileError when two worn objs share a slot (`~wearpos_conflicts` compares
  * every `wearpos`, `wearpos2` and `wearpos3` of the two, player/scripts/equip.rs2:474-488) or one needs a higher base
  * level to wield than the profile has (the levelrequire labels check `stat_base`, levelrequire/scripts/
- * levelrequire.rs2:6-12). A wield check's quest varps are returned in `quests`, not checked.
+ * levelrequire.rs2:6-12), or a claimed prayer needs more base Prayer than it has (PrayerTier.at). Every combat caller
+ * reads the profile through here, so this is where the prayers are checked. A wield check's quest varps are returned in `quests`, not checked.
  */
-export function gearOf(profile: Profile, data: { equipment: Equipments; styles: CombatStyles }): Gear {
+export function gearOf(
+    profile: Profile,
+    data: { equipment: Equipments; styles: CombatStyles; prayers: Prayers },
+): Gear {
+    const base = baseLevels(profile);
+    for (const [skill, percent] of Object.entries(profile.prayers ?? {}) as [PrayedSkill, PrayerPercent][]) {
+        const tier = data.prayers(skill, percent);
+        if (!tier) throw new ProfileError(`no prayer gives ${percent}% of ${skill}`);
+        if (base.prayer < tier.level)
+            throw new ProfileError(
+                `${tier.name} (${percent}% ${skill}) needs prayer ${tier.level} (${tier.at}); the profile has ${base.prayer}`,
+            );
+    }
     const worn = profile.worn.map(data.equipment);
     const held = new Map<string, string>();
     for (const e of worn) {
         for (const slot of e.wearpos) {
             const other = held.get(slot);
+            if (other === e.obj) throw new ProfileError(`${e.obj} is listed twice in worn`);
             if (other !== undefined) throw new ProfileError(`${other} and ${e.obj} are both worn in ${slot}`);
         }
         for (const slot of e.wearpos) held.set(slot, e.obj);
     }
-    const base = baseLevels(profile);
     for (const e of worn) {
         for (const [skill, level] of Object.entries(e.wield?.levels ?? {}) as [Skill, number][]) {
             if (base[skill] < level)

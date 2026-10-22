@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { combatLevel } from '../model/combat';
 import { ProfileError } from '../model/family';
 import { BONUSES, UNARMED_ATTACK_RATE, type Bonus, type CombatStyles, type Equipment } from '../model/items';
-import { baseLevels, combatLevelOf, gearOf, profileAt, profileOf, type Tools } from '../model/profile';
+import { baseLevels, combatLevelOf, gearOf, profileAt, profileOf, type Prayers, type Tools } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 
 const tools: Tools = { axe: [], pickaxe: [{ obj: 'mithril_pickaxe', level: 21 }] };
@@ -73,7 +73,10 @@ const styles: CombatStyles = category => ({
     table: category === undefined ? 'unarmed' : category.startsWith('weapon_') ? category : 'default',
     styles: [],
 });
-const data = { equipment, styles };
+/** Scripted prayers: 115% strength needs Prayer 30, no other tier exists. */
+const prayers: Prayers = (skill, percent) =>
+    skill === 'strength' && percent === 115 ? { name: 'Big Strength', level: 30, at: 'big.rs2:9' } : undefined;
+const data = { equipment, styles, prayers };
 /** gearOf of a profile at 30 wearing `worn`, deferred for toThrow. */
 const clash = (worn: string[]) => () => gearOf(profileOf(at(30), { tools, worn }), data);
 
@@ -149,7 +152,7 @@ describe('gearOf', () => {
             new ProfileError('twohander and shield are both worn in lefthand'),
         );
         expect(clash(['helm', 'mask'])).toThrow(new ProfileError('helm and mask are both worn in jaw'));
-        expect(clash(['sword', 'sword'])).toThrow(ProfileError);
+        expect(clash(['sword', 'sword'])).toThrow(new ProfileError('sword is listed twice in worn'));
         expect(clash(['twohander', 'helm'])).not.toThrow();
     });
 
@@ -160,5 +163,22 @@ describe('gearOf', () => {
         );
         expect(() => gearOf(profileOf(at(19), { tools, worn, boosts: { attack: 5 } }), data)).toThrow(ProfileError);
         expect(gearOf(profileOf(at(20), { tools, worn }), data).weapon?.obj).toBe('sword');
+    });
+});
+
+const praying = (prayer: number, boost = 0) =>
+    profileOf({ ...at(30), prayer }, { tools, prayers: { strength: 115 }, boosts: { prayer: boost } });
+
+describe('gearOf: prayers need base Prayer', () => {
+    test('a prayer over the base Prayer level is a ProfileError; a boost does not lift it', () => {
+        expect(() => gearOf(praying(29), data)).toThrow(
+            new ProfileError('Big Strength (115% strength) needs prayer 30 (big.rs2:9); the profile has 29'),
+        );
+        expect(() => gearOf(praying(29, 5), data)).toThrow(ProfileError);
+        expect(() => gearOf(praying(30), data)).not.toThrow();
+    });
+    test('a tier the game has no prayer for is a ProfileError', () => {
+        const p = profileOf(at(99), { tools, prayers: { attack: 105 } });
+        expect(() => gearOf(p, data)).toThrow(new ProfileError('no prayer gives 105% of attack'));
     });
 });
