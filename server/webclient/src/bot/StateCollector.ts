@@ -7,6 +7,7 @@ import type ClientPlayer from '#/dash3d/ClientPlayer.js';
 import type ClientObj from '#/dash3d/ClientObj.js';
 import IfType from '#/config/IfType.js';
 import { collectGEState } from './ge-state.js';
+import { getDialogPageId } from './dialog-page.js';
 import ObjType from '#/config/ObjType.js';
 import NpcType from '#/config/NpcType.js';
 import LocType from '#/config/LocType.js';
@@ -163,6 +164,7 @@ export class BotStateCollector implements ScanProvider {
 
         return {
             tick: currentTick,
+            combatTargetTelemetryVersion: 1,
             revision: this.publicationRevision,
             player: this.collectPlayerState(currentTick, clientCycle),
             skills: this.collectSkills(),
@@ -170,7 +172,7 @@ export class BotStateCollector implements ScanProvider {
             equipment: this.collectInventory(EQUIPMENT_INTERFACE_ID),
             combatStyle: this.collectCombatStyle(),
             nearbyNpcs: this.collectNearbyNpcs(clientCycle),
-            nearbyPlayers: this.collectNearbyPlayers(),
+            nearbyPlayers: this.collectNearbyPlayers(clientCycle),
             nearbyLocs: this.collectNearbyLocs(),
             groundItems: this.collectGroundItems(),
             gameMessages: this.collectGameMessages(currentTick, publish),
@@ -335,13 +337,13 @@ export class BotStateCollector implements ScanProvider {
         }
 
         // Get dialog options using client's method if available
-        let options: Array<{ index: number; text: string }> = [];
+        let options: DialogState['options'] = [];
         if (isOpen && typeof this.client.getDialogOptions === 'function') {
             const rawOptions = this.client.getDialogOptions();
-            options = rawOptions.map((opt: any) => ({ index: opt.index, text: opt.text }));
+            options = rawOptions.map((opt: any) => ({ ...opt }));
         }
 
-        return { isOpen, options, isWaiting };
+        return { isOpen, options, isWaiting, pageId: getDialogPageId(c) };
     }
 
     private collectRecentDialogs(currentTick: number, publish: boolean): Array<{ text: string[]; tick: number; interfaceId: number; observationId?: number }> {
@@ -560,6 +562,11 @@ export class BotStateCollector implements ScanProvider {
             this.faceEntitySetCycle = clientCycle;
         }
         let target = BotStateCollector.decodeFaceEntity(rawFaceEntity);
+        // Trading/talking also sets faceEntity. An NPC without Attack is an
+        // interaction target, even during the walk-up grace or a recent fight.
+        if (target.type === 'npc' && !c.npc?.[target.index]?.type?.op?.some((op: string | null) => op !== null && /^attack$/i.test(op))) {
+            target = { type: 'none', index: -1 };
+        }
         // combatCycle is set to loopCycle + 400 when damage is taken/dealt
         // So if combatCycle > loopCycle, we're in combat (within 400 ticks of last hit)
         const combatCycle = player.combatCycle ?? -1000;
@@ -990,7 +997,7 @@ export class BotStateCollector implements ScanProvider {
         return npcs;
     }
 
-    private collectNearbyPlayers(): NearbyPlayer[] {
+    private collectNearbyPlayers(clientCycle: number): NearbyPlayer[] {
         const c = this.client as any;
         const players: NearbyPlayer[] = [];
         const localPlayer = c.localPlayer;
@@ -1017,6 +1024,10 @@ export class BotStateCollector implements ScanProvider {
             // Convert fine-grained local coords (128 units/tile) to world coordinates
             const playerWorldX = baseX + ((player.x || 0) >> 7);
             const playerWorldZ = baseZ + ((player.z || 0) >> 7);
+            const facing = BotStateCollector.decodeFaceEntity(player.faceEntity ?? -1);
+            const combatCycle = player.combatCycle ?? -1000;
+            const corroborated = combatCycle > clientCycle;
+            const target = corroborated ? facing : { type: 'none' as const, index: -1 };
 
             players.push({
                 kind: 'player',
@@ -1026,6 +1037,9 @@ export class BotStateCollector implements ScanProvider {
                 x: playerWorldX,
                 z: playerWorldZ,
                 distance,
+                combatTargetType: target.type,
+                combatTargetIndex: target.index,
+                inCombat: corroborated,
                 reachable: this.reachProbeReady()
                     ? this.reachProbe.canReachEntity(player.routeX?.[0] ?? (player.x || 0) >> 7, player.routeZ?.[0] ?? (player.z || 0) >> 7, 1)
                     : undefined

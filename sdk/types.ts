@@ -139,6 +139,11 @@ export interface NearbyPlayer {
     distance: number;
     /** See NearbyNpc.reachable. */
     reachable?: boolean;
+    /** Current client-observed combat target. This is populated only while the
+     * target is corroborated by the entity's combat cycle. */
+    combatTargetType?: 'npc' | 'player' | 'none';
+    combatTargetIndex?: number;
+    inCombat?: boolean;
 }
 
 /**
@@ -254,6 +259,8 @@ export interface DialogState {
     isOpen: boolean;
     options: DialogOption[];
     isWaiting: boolean;
+    /** Opaque identity of this client dialogue page, for guarded clicks. */
+    pageId?: string;
     text?: string;
     allComponents?: DialogComponent[];
 }
@@ -550,6 +557,8 @@ export interface OpFeedbackState {
 
 export interface BotWorldState {
     tick: number;
+    /** Version of nearby-player combat-target telemetry emitted by the Lite client. */
+    combatTargetTelemetryVersion?: number;
     /** Tick on which an updated Lite runner already emitted policy-gated KBD op2. */
     fastKbdAttackTick?: number;
     /** Prayer-on packets emitted in-process immediately before first-spawn KBD op2. */
@@ -598,7 +607,7 @@ export type BotAction =
     | { type: 'talkToNpc'; npcIndex: number; reason: string }
     | { type: 'interactNpc'; npcIndex: number; optionIndex: number; reason: string }
     | { type: 'interactPlayer'; playerIndex: number; optionIndex: number; reason: string }
-    | { type: 'clickDialogOption'; optionIndex: number; reason: string }
+    | { type: 'clickDialogOption'; optionIndex: number; reason: string; guard?: { pageId: string; componentId: number } }
     // clickComponent: IF_BUTTON packet - for simple buttons, spellcasting, etc.
     | { type: 'clickComponent'; componentId: number; reason: string }
     // clickComponentWithOption: INV_BUTTON packet - for components with inventory operations (smithing, crafting, etc.)
@@ -763,6 +772,16 @@ export interface ChopTreeResult {
     success: boolean;
     logs?: InventoryItem;
     message: string;
+}
+
+/** One ore observed entering the inventory, with Mining XP as corroboration. */
+export interface MineRockResult {
+    success: boolean;
+    message: string;
+    ore?: InventoryItem;
+    oresMined: number;
+    xpGained: number;
+    reason?: 'loc_not_found' | 'no_matching_option' | 'cant_reach' | 'inventory_full' | 'rejected' | 'timeout';
 }
 
 export interface BurnLogsResult {
@@ -930,6 +949,7 @@ export interface UseItemOnNpcResult {
 }
 
 export interface InteractLocResult {
+    /** Activity observed; for mining this can be an animation before ore arrives. Use mineRock for ore completion. */
     success: boolean;
     message: string;
     reason?: 'loc_not_found' | 'no_matching_option' | 'cant_reach' | 'timeout';

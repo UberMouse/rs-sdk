@@ -85,7 +85,7 @@ if ($inv_coins = 0) {
     ~open_manage_miscellania_interface;
     return;
 } 
-if (%misc_coffers = 5000000) {
+if (%misc_coffers >= 5000000) {
     ~mesbox("The coffers can only hold 5000000 coins.");
     ~open_manage_miscellania_interface;
     return;
@@ -98,13 +98,8 @@ def_int $requested_deposit = last_int;
 if_close;
 p_delay(0);
 def_int $coffer_space = sub(5000000, %misc_coffers);
-def_int $deposit_amt = $requested_deposit;
-
-if ($deposit_amt > $coffer_space) {
-    $deposit_amt = $coffer_space;
-} else if($deposit_amt > $inv_coins) {
-    $deposit_amt = $inv_coins;
-}
+// Re-read the inventory after the dialog and apply both limits independently.
+def_int $deposit_amt = min($requested_deposit, min($coffer_space, inv_total(inv, coins)));
 
 if ($deposit_amt > 0) {
     inv_del(inv, coins, $deposit_amt);
@@ -115,13 +110,8 @@ if ($deposit_amt > 0) {
 
 // Withdraw
 [if_button,misc_both_manage:com_89]
-if (%misc_coffers = 0) {
+if (%misc_coffers <= 0) {
     ~mesbox("There are no coins to withdraw.");
-    ~open_manage_miscellania_interface;
-    return;
-}
-if(inv_itemspace(inv, coins, %misc_coffers, inv_size(inv)) = false) {
-    ~mesbox("You do not have enough space to hold any coins.");
     ~open_manage_miscellania_interface;
     return;
 }
@@ -132,8 +122,17 @@ p_countdialog;
 def_int $withdraw_amt = last_int;
 if_close;
 p_delay(0);
-if ($withdraw_amt > %misc_coffers) {
-    $withdraw_amt = %misc_coffers;
+// Re-read the balance and reject signed, non-positive input before changing money.
+$withdraw_amt = min($withdraw_amt, %misc_coffers);
+if ($withdraw_amt <= 0) {
+    ~open_manage_miscellania_interface;
+    return;
+}
+// Inventory contents may have changed while the amount dialog was open.
+if (inv_itemspace(inv, coins, $withdraw_amt, inv_size(inv)) = false) {
+    ~mesbox("You do not have enough space to hold any coins.");
+    ~open_manage_miscellania_interface;
+    return;
 }
 %misc_coffers = sub(%misc_coffers, $withdraw_amt);
 inv_add(inv, coins, $withdraw_amt);

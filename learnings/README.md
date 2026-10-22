@@ -2,9 +2,7 @@
 
 Unless a section explicitly says otherwise, snippets in this directory are
 written for the MCP `execute_code` environment. That environment provides
-`bot` and `sdk` as globals and supports top-level `await`. Although the API
-reference uses TypeScript notation, keep `execute_code` bodies
-JavaScript-compatible and omit type-only syntax:
+`bot` and `sdk` as globals and accepts TypeScript with top-level `await`:
 
 ```typescript
 const state = sdk.getState();
@@ -26,9 +24,8 @@ await runScript(async ({ bot, sdk }) => {
 
 For a long or background run, execute the standalone file with
 `bun bots/<name>/script.ts`. Do not launch a detached bare snippet: `runScript`
-owns connection setup, timeout reporting, signal handling, and shutdown.
-
-Do not paste context-prefixed runner expressions into `execute_code`.
+owns connection setup, timeout reporting, signal handling, and shutdown. Keep
+the browser client opened by MCP running: standalone scripts do not start a client.
 
 ## Action semantics
 

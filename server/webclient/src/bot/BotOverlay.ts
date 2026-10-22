@@ -283,6 +283,7 @@ export class BotOverlay implements GatewayMessageHandler {
         return {
             ...baseState,
             dialog: {
+                ...baseState.dialog,
                 isOpen: this.client.isDialogOpen(),
                 options: dialogOptions,
                 isWaiting: this.client.isWaitingForDialog(),

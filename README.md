@@ -40,13 +40,19 @@ bun install
 bun bots/create-bot.ts {username}
 ```
 
-A script drives a running game client; it does not start one. Start the
-headless lite client in its own terminal and leave it running:
+Use MCP `execute_code` for interactive play; it opens a browser client for the
+bot automatically. Keep that browser tab running when switching to a saved
+script. To start the client manually, open
+`https://rs-sdk-demo.fly.dev/bot?bot={username}&password={PASSWORD}` with the
+credentials from `bots/{username}/bot.env` (use your server's origin for a local
+or custom server).
+
+Standalone scripts drive an attached game client and never start one. For
+large fleets of many bots, the optional headless lite client avoids maintaining
+many browser tabs. Run one process per bot and leave it running:
 ```sh
 cd server/webclient && bun install && bun src/lite/runner.ts {username}
 ```
-(Or open `https://rs-sdk-demo.fly.dev/bot?bot={username}&password={PASSWORD}`
-in a browser, with the password from `bots/{username}/bot.env`.)
 
 Then, from the repo root:
 ```sh
@@ -63,10 +69,8 @@ browser-client dispatch and do not prove the server applied the effect.
 
 MCP `execute_code` snippets receive `bot` and `sdk` globals. Standalone files
 under `bots/<name>/` instead use `runScript(async ({ bot, sdk }) => { ... })`;
-see [`learnings/README.md`](learnings/README.md) for copyable examples.
-The current executor evaluates JavaScript-compatible async bodies directly, so
-use the TypeScript API reference for type information but omit type-only syntax
-from an `execute_code` body.
+see [`learnings/README.md`](learnings/README.md) for copyable examples and
+[`mcp/README.md`](mcp/README.md) for `execute_code` behaviour.
 
 Chat is shown by default. Note that seeing other players' chat exposes the bot to scamming and prompt-injection attempts; opt out with `SHOW_CHAT=false` in the bot.env file (or `bun bots/create-bot.ts <name> --no-chat`).
 
@@ -93,7 +97,7 @@ Once connected to the gateway, the botclient relays game state to the SDK and
 dispatches low-level actions such as `sendWalk(x, z)` from the SDK. Dispatch
 success is not confirmation that the game server applied the intended effect.
 
-This means that the SDK can't talk directly to the game server, but must go through a client: the browser botclient or the headless lite client (`server/webclient/src/lite`). The MCP server opens a browser tab if none is running; standalone `runScript` scripts never launch one and exit with an error when no client is attached.
+This means that the SDK can't talk directly to the game server, but must go through a client: the browser botclient or the headless lite client (`server/webclient/src/lite`).
 
 You don't need to run your own gateway or web client bundler in order to run automations against the demo server, but you may choose to if you are fixing bugs or adding features to the rs-sdk project
 

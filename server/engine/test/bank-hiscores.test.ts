@@ -1,11 +1,29 @@
 import { expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseBankSnapshots, rankMatchingBanks } from '../src/web/pages/BankHiscores.js';
 
 const item = (name: string, value: number, count = 100) => ({ name, value, count });
 const row = (username: string, items: ReturnType<typeof item>[], value = 1000000) => ({ username, value, items: JSON.stringify(items) });
+
+test('bank snapshots clear withdrawn items and empty banks without rewriting unchanged rows', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'bank-snapshot-update-'));
+    try {
+        mkdirSync(join(dir, 'data/config'), { recursive: true });
+        copyFileSync(join(import.meta.dir, '../data/config/private.pem'), join(dir, 'data/config/private.pem'));
+        copyFileSync(join(import.meta.dir, '../data/config/public.pem'), join(dir, 'data/config/public.pem'));
+        const result = Bun.spawnSync([process.execPath, join(import.meta.dir, 'fixtures/bank-snapshot-update.ts')], {
+            cwd: dir,
+            env: { ...process.env, DB_BACKEND: 'sqlite', GE_ENABLED: 'false', BANK_TEST_CACHE: join(import.meta.dir, '../data/pack') },
+            stdout: 'pipe', stderr: 'pipe'
+        });
+        if (result.exitCode !== 0) throw new Error(result.stdout.toString() + result.stderr.toString());
+        expect(result.stdout.toString()).toContain('Bank snapshot update checks passed');
+    } finally {
+        rmSync(dir, { recursive: true, force: true });
+    }
+});
 
 test('matches literal substrings ignoring case and sums full stack values once', () => {
     const banks = parseBankSnapshots([row('wealthy', [item('Lobster', 1000000), item('Shrimps', 20)]), row('shrimp-holder', [item('Raw shrimps', 400), item('Shrimps', 600), item('Lobster', 100)], 1100), row('unrelated', [item('Lobster', 5000000)])]);

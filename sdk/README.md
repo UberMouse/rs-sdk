@@ -73,6 +73,22 @@ After filing the bug, keep working on your goal!
 
 ## Programmatic Usage
 
+`runScript` returns after cleaning up its connection and timers. It does not
+schedule a forced process exit, so consecutive runs and retry delays can use
+the same process. A failed managed run sets `process.exitCode = 1`.
+
+One-shot CLI scripts that need to terminate handles they own can explicitly
+exit after their final run:
+
+```typescript
+import { runScript } from './sdk/runner';
+
+const result = await runScript(async ({ bot }) => {
+  await bot.chopTree();
+});
+process.exit(process.exitCode ?? (result.success ? 0 : 1));
+```
+
 Create a script file (e.g., `my-bot.ts`):
 
 ```typescript

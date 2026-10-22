@@ -633,8 +633,8 @@ export default class ClientCheatHandler extends ClientGameMessageHandler<ClientC
                     default:
                         return false;
                 }
-            } else if (cmd === 'ban' && Environment.node.production) {
-                // custom
+            } else if (cmd === 'ban') {
+                // Moderation is staff-only, regardless of the world's production setting.
                 if (args.length < 2) {
                     // ::ban <username> <minutes>
                     player.messageGame('Usage: ::ban <username> <minutes>');
@@ -659,8 +659,8 @@ export default class ClientCheatHandler extends ClientGameMessageHandler<ClientC
 
                 World.notifyPlayerMute(player.username, username, Date.now() + minutes * 60 * 1000);
                 player.messageGame(`Player '${args[0]}' has been muted for ${minutes} minutes.`);
-            } else if (cmd === 'kick' && Environment.node.production) {
-                // custom
+            } else if (cmd === 'kick') {
+                // Moderation is staff-only, regardless of the world's production setting.
                 if (args.length < 1) {
                     // ::kick <username>
                     player.messageGame('Usage: ::kick <username>');

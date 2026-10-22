@@ -11,13 +11,14 @@ const { default: World } = await import('../../src/engine/World.js');
 const { NetworkPlayer } = await import('../../src/engine/entity/NetworkPlayer.js');
 const { default: NullClientSocket } = await import('../../src/server/NullClientSocket.js');
 const { Visibility } = await import('../../src/network/rsbuf/visibility.js');
-const { checkWorldFeedUpgrade, cycleWorldFeed, onWorldFeedClose, onWorldFeedMessage, onWorldFeedOpen } = await import('../../src/web/worldfeed.js');
+const { checkWorldFeedUpgrade, cycleWorldFeed, onWorldFeedClose, onWorldFeedMessage, onWorldFeedOpen, getPlayerPositionsJson } = await import('../../src/web/worldfeed.js');
 
 type Message = { t: string; [key: string]: any };
 
 const viewers: { close: () => void }[] = [];
 
 afterEach(() => {
+    World.zonesTracking.clear();
     for (const v of viewers.splice(0)) {
         v.close();
     }
@@ -124,4 +125,64 @@ test('roster lists visible players every few ticks', () => {
 
 test('upgrade checks the token when one is configured', () => {
     expect(checkWorldFeedUpgrade(new URL('http://localhost/worldfeed'))).toBeUndefined();
+});
+
+
+test('map snapshots are shared for a second and roster work runs every ten ticks', () => {
+    const player = addPlayer(22, 3210, 3210);
+    const first = getPlayerPositionsJson(1000);
+    player.x++;
+    expect(getPlayerPositionsJson(1999)).toBe(first);
+    expect(JSON.parse(getPlayerPositionsJson(2000))[0].x).toBe(3211);
+    const v = viewer();
+    onWorldFeedMessage(v.ws, JSON.stringify({ t: 'roster', on: true }));
+    World.currentTick = 15;
+    cycleWorldFeed();
+    expect(v.sent.some(s => JSON.parse(s).t === 'roster')).toBe(false);
+    World.currentTick = 20;
+    cycleWorldFeed();
+    expect(v.last().t).toBe('roster');
+});
+
+test('zone membership stays cached until movement, map origin, plane or clear changes it', () => {
+    const player = addPlayer(23, 3210, 3210);
+    player.originX = player.x; player.originZ = player.z;
+    const area = player.buildArea;
+    let clears = 0;
+    const clear = area.activeZones.clear.bind(area.activeZones);
+    area.activeZones.clear = () => { clears++; clear(); };
+    area.rebuildZones(); area.rebuildZones();
+    player.x++; area.rebuildZones();
+    expect(clears).toBe(1);
+    player.x += 8; area.rebuildZones();
+    player.originX += 8; area.rebuildZones();
+    player.level++; area.rebuildZones();
+    expect(clears).toBe(4);
+    area.clear(false); area.rebuildZones();
+    expect(clears).toBe(6);
+    expect(area.activeZones.size).toBeGreaterThan(0);
+});
+
+test('loaded unchanged zones skip writes, new zones and private events retain delivery', () => {
+    const player = addPlayer(24, 3210, 3210);
+    const zone = World.gameMap.getZone(3210, 3210, 0);
+    player.buildArea.activeZones.add(zone.index);
+    const written: any[] = [];
+    player.write = message => { written.push(message); };
+    player.updateZones();
+    expect(written.length).toBeGreaterThan(0); // First sight always sends a full update.
+    written.length = 0;
+    player.updateZones();
+    expect(written).toEqual([]);
+    const mine = { marker: 'mine' }, theirs = { marker: 'theirs' };
+    // ZoneEventType.FOLLOWS = 1; use actual zone filtering with capture-only output.
+    (zone as any).events.add({ type: 1, receiver64: player.hash64, message: mine });
+    (zone as any).events.add({ type: 1, receiver64: 999n, message: theirs });
+    World.trackZone(zone);
+    player.updateZones();
+    expect(written).toContain(mine);
+    expect(written).not.toContain(theirs);
+    zone.reset();
+    player.buildArea.activeZones.clear(); player.updateZones();
+    expect(player.buildArea.loadedZones.size).toBe(0);
 });

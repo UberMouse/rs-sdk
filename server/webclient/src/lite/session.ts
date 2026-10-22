@@ -13,6 +13,7 @@
 // quiet without closing. A single bad packet is not an ending; see handlePacket.
 
 import './dom-shim.js';
+import { loginJitterMs } from './LoginBackoff.js';
 
 import { invalidateCache, loadCache } from './cache.js';
 import { CLIENT_VERSION, GameConnection, LoginError, OutdatedClientError } from './net/GameConnection.js';
@@ -33,6 +34,8 @@ const KEEPALIVE_CYCLES = 50;
 const IDLE_CYCLES = 3000; // ~60s, i.e. ~200 missed server ticks
 
 export interface SessionOptions {
+    /** Spread remote fleet starts over 5s by default; 0 disables the delay. */
+    loginJitterMs?: number;
     host: string;
     username: string;
     password: string;
@@ -115,14 +118,16 @@ export async function startSession(opts: SessionOptions): Promise<LiteSession> {
     let { checksums } = await loadCache({ origin, cacheDir, members: opts.members, quiet: opts.quiet });
     let locIndex = await LocIndex.load({ origin, cacheDir, versionlistCrc: checksums[5], quiet: opts.quiet });
 
-    const connect = () =>
-        GameConnection.connect({
+    const connect = async () => {
+        await Bun.sleep(loginJitterMs(opts.loginJitterMs ?? Number(process.env.LITE_LOGIN_JITTER_MS ?? (secured ? 5000 : 0))));
+        return GameConnection.connect({
             host: opts.host,
             secured,
             username: opts.username,
             password: opts.password,
             checksums
         });
+    };
 
     let connection: GameConnection;
     try {

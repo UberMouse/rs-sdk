@@ -14,6 +14,7 @@
 // reading. Only a stream-level failure ends the session.
 
 import ObjType from '#/config/ObjType.js';
+import { getDialogPageId, invalidateDialogPage } from '#/bot/dialog-page.js';
 
 import { ComponentType } from '#/config/IfType.js';
 import { BuildArea } from '#/dash3d/CollisionMap.js';
@@ -117,6 +118,7 @@ export function dispatch(c: LiteClient, opcode: number, buf: Packet, psize: numb
             c.chatModalId = comId;
             c.mainModalId = -1;
             c.resumedPauseButton = false;
+            invalidateDialogPage(c);
             return;
         }
         case ServerProt.IF_OPENMAIN_SIDE: {
@@ -186,6 +188,7 @@ export function dispatch(c: LiteClient, opcode: number, buf: Packet, psize: numb
             const hideCom = c.ifMutable(comId);
             if (hideCom) {
                 hideCom.hide = hidden;
+                getDialogPageId(c);
             }
             return;
         }
@@ -235,6 +238,7 @@ export function dispatch(c: LiteClient, opcode: number, buf: Packet, psize: numb
             const textCom = c.ifMutable(comId);
             if (textCom) {
                 textCom.text = text;
+                getDialogPageId(c);
             }
             return;
         }

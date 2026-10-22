@@ -99,7 +99,8 @@ export class TrafficMeter {
         // Newest snapshot at least windowSec old, so the window is never shorter
         // than asked; with less history than that, the oldest snapshot we have.
         const target = now - windowSec * 1000;
-        const base = this.snapshots.findLast(s => s.at <= target) ?? this.snapshots[0];
+        // The constructor seeds a snapshot, and pruning always retains one.
+        const base = this.snapshots.findLast(s => s.at <= target) ?? this.snapshots[0]!;
         const seconds = Math.max(1, (now - base.at) / 1000);
 
         const byKind = new Map<string, number>();

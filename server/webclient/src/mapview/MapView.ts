@@ -47,7 +47,8 @@ export class MapView extends GameShell {
     playerPositions: {x: number, z: number, level: number, name: string}[] = [];
     playerTrails: Map<string, {x: number, z: number, time: number}[]> = new Map();
     lastPlayerFetch: number = 0;
-    readonly playerPollInterval: number = 750;
+    readonly playerPollInterval: number = 1500;
+    private playerFetchPending = false;
     readonly maxTrailLength: number = 2000;
     readonly maxTrailAge: number = 1800000;
 
@@ -465,10 +466,12 @@ export class MapView extends GameShell {
 
             Pix2D.cls();
 
-            const left: number = Math.max(0, this.focusX - ((this.sWid / this.zoom) | 0));
-            const top: number = Math.max(0, this.focusZ - ((this.sHei / this.zoom) | 0));
-            const right: number = Math.min(this.mapWidth, this.focusX + ((this.sWid / this.zoom) | 0));
-            const bottom: number = Math.min(this.mapHeight, this.focusZ + ((this.sHei / this.zoom) | 0));
+            // Keep the full viewport even beyond the map edges. Cropping these
+            // bounds then stretching them to the canvas changes each axis's scale.
+            const left: number = this.focusX - ((this.sWid / this.zoom) | 0);
+            const top: number = this.focusZ - ((this.sHei / this.zoom) | 0);
+            const right: number = this.focusX + ((this.sWid / this.zoom) | 0);
+            const bottom: number = this.focusZ + ((this.sHei / this.zoom) | 0);
             this.renderWorldMap(left, top, right, bottom, 0, 0, this.sWid, this.sHei);
 
             // custom: long-term movement traces under the live player layer
@@ -489,19 +492,24 @@ export class MapView extends GameShell {
             if (this.showOverview) {
                 this.overview?.quickPlotSprite(this.overviewX, this.overviewY);
 
+                const overviewLeft = Math.max(0, left);
+                const overviewTop = Math.max(0, top);
+                const overviewRight = Math.min(this.mapWidth, right);
+                const overviewBottom = Math.min(this.mapHeight, bottom);
+
                 Pix2D.fillRectTrans(
-                    (this.overviewX + (this.overviewWidth * left) / this.mapWidth) | 0,
-                    (this.overviewY + (this.overviewHeight * top) / this.mapHeight) | 0,
-                    (((right - left) * this.overviewWidth) / this.mapWidth) | 0,
-                    (((bottom - top) * this.overviewHeight) / this.mapHeight) | 0,
+                    (this.overviewX + (this.overviewWidth * overviewLeft) / this.mapWidth) | 0,
+                    (this.overviewY + (this.overviewHeight * overviewTop) / this.mapHeight) | 0,
+                    (((overviewRight - overviewLeft) * this.overviewWidth) / this.mapWidth) | 0,
+                    (((overviewBottom - overviewTop) * this.overviewHeight) / this.mapHeight) | 0,
                     0xff0000,
                     0x80
                 );
                 Pix2D.drawRect(
-                    (this.overviewX + (this.overviewWidth * left) / this.mapWidth) | 0,
-                    (this.overviewY + (this.overviewHeight * top) / this.mapHeight) | 0,
-                    (((right - left) * this.overviewWidth) / this.mapWidth) | 0,
-                    (((bottom - top) * this.overviewHeight) / this.mapHeight) | 0,
+                    (this.overviewX + (this.overviewWidth * overviewLeft) / this.mapWidth) | 0,
+                    (this.overviewY + (this.overviewHeight * overviewTop) / this.mapHeight) | 0,
+                    (((overviewRight - overviewLeft) * this.overviewWidth) / this.mapWidth) | 0,
+                    (((overviewBottom - overviewTop) * this.overviewHeight) / this.mapHeight) | 0,
                     0xff0000
                 );
 
@@ -830,7 +838,7 @@ export class MapView extends GameShell {
 
         // custom: poll player positions
         const now: number = performance.now();
-        if (MapView.shouldDrawPlayers && now - this.lastPlayerFetch > this.playerPollInterval) {
+        if (!document.hidden && !this.playerFetchPending && MapView.shouldDrawPlayers && now - this.lastPlayerFetch > this.playerPollInterval) {
             this.lastPlayerFetch = now;
             this.fetchPlayerPositions();
         }
@@ -1210,8 +1218,13 @@ export class MapView extends GameShell {
         const visibleY: number = bottom - top;
         const widthRatio: number = (((width - widthOffset) << 16) / visibleX) | 0;
         const heightRatio: number = (((height - heightOffset) << 16) / visibleY) | 0;
+        // Clip tile iteration, rather than the viewport used for projection.
+        const startTileX = Math.max(0, -left);
+        const endTileX = Math.min(visibleX, this.mapWidth - left);
+        const startTileY = Math.max(0, -top);
+        const endTileY = Math.min(visibleY, this.mapHeight - top);
 
-        for (let x: number = 0; x < visibleX; x++) {
+        for (let x: number = startTileX; x < endTileX; x++) {
             let startX: number = (widthRatio * x) >> 16;
             let endX: number = (widthRatio * (x + 1)) >> 16;
             const lengthX: number = endX - startX;
@@ -1226,7 +1239,7 @@ export class MapView extends GameShell {
             const overlays = this.floort2[x + left];
             const shapes = this.floorsr[x + left];
 
-            for (let y: number = 0; y < visibleY; y++) {
+            for (let y: number = startTileY; y < endTileY; y++) {
                 let startY: number = (heightRatio * y) >> 16;
                 let endY: number = (heightRatio * (y + 1)) >> 16;
                 const lengthY: number = endY - startY;
@@ -1252,12 +1265,14 @@ export class MapView extends GameShell {
             }
         }
 
-        if (right - left > width - widthOffset) {
+        // Keep the existing detail cutoff based on actual map tiles, excluding
+        // blank space beyond the edges of the viewport.
+        if (endTileX - startTileX > width - widthOffset) {
             return;
         }
 
         let visibleMapFunctionCount: number = 0;
-        for (let x: number = 0; x < visibleX; x++) {
+        for (let x: number = startTileX; x < endTileX; x++) {
             let startX: number = (widthRatio * x) >> 16;
             let endX: number = (widthRatio * (x + 1)) >> 16;
             const lengthX: number = endX - startX;
@@ -1269,7 +1284,7 @@ export class MapView extends GameShell {
             const mapscenes = this.locMapscene[x + left];
             const mapfunctions = this.locMapfunction[x + left];
 
-            for (let y: number = 0; y < visibleY; y++) {
+            for (let y: number = startTileY; y < endTileY; y++) {
                 let startY: number = (heightRatio * y) >> 16;
                 let endY: number = (heightRatio * (y + 1)) >> 16;
                 const lengthY: number = endY - startY;
@@ -1363,7 +1378,7 @@ export class MapView extends GameShell {
         }
 
         if (MapView.shouldDrawFreemap) {
-            for (let x = 0; x < visibleX; x++) {
+            for (let x = startTileX; x < endTileX; x++) {
                 let startX = widthRatio * x >> 16;
                 let endX = widthRatio * (x + 1) >> 16;
                 let lengthX = endX - startX;
@@ -1375,7 +1390,7 @@ export class MapView extends GameShell {
                 endX += widthOffset;
 
                 let multi = this.freePos[x + left];
-                for (let y = 0; y < visibleY; y++) {
+                for (let y = startTileY; y < endTileY; y++) {
                     let startY = heightRatio * y >> 16;
                     let endY = heightRatio * (y + 1) >> 16;
                     let lengthY = endY - startY;
@@ -1394,7 +1409,7 @@ export class MapView extends GameShell {
         }
 
         if (MapView.shouldDrawMultimap) {
-            for (let x = 0; x < visibleX; x++) {
+            for (let x = startTileX; x < endTileX; x++) {
                 let startX = widthRatio * x >> 16;
                 let endX = widthRatio * (x + 1) >> 16;
                 let lengthX = endX - startX;
@@ -1406,7 +1421,7 @@ export class MapView extends GameShell {
                 endX += widthOffset;
 
                 let multi = this.multiPos[x + left];
-                for (let y = 0; y < visibleY; y++) {
+                for (let y = startTileY; y < endTileY; y++) {
                     let startY = heightRatio * y >> 16;
                     let endY = heightRatio * (y + 1) >> 16;
                     let lengthY = endY - startY;
@@ -1425,7 +1440,7 @@ export class MapView extends GameShell {
         }
 
         if (MapView.shouldDrawItems) {
-            for (let x: number = 0; x < visibleX; x++) {
+            for (let x: number = startTileX; x < endTileX; x++) {
                 let startX: number = (widthRatio * x) >> 16;
                 let endX: number = (widthRatio * (x + 1)) >> 16;
                 const lengthX: number = endX - startX;
@@ -1436,7 +1451,7 @@ export class MapView extends GameShell {
                 startX += widthOffset;
                 endX += widthOffset;
 
-                for (let y: number = 0; y < visibleY; y++) {
+                for (let y: number = startTileY; y < endTileY; y++) {
                     let startY: number = (heightRatio * y) >> 16;
                     let endY: number = (heightRatio * (y + 1)) >> 16;
                     const lengthY: number = endY - startY;
@@ -1455,7 +1470,7 @@ export class MapView extends GameShell {
         }
 
         if (MapView.shouldDrawNpcs) {
-            for (let x: number = 0; x < visibleX; x++) {
+            for (let x: number = startTileX; x < endTileX; x++) {
                 let startX: number = (widthRatio * x) >> 16;
                 let endX: number = (widthRatio * (x + 1)) >> 16;
                 const lengthX: number = endX - startX;
@@ -1466,7 +1481,7 @@ export class MapView extends GameShell {
                 startX += widthOffset;
                 endX += widthOffset;
 
-                for (let y: number = 0; y < visibleY; y++) {
+                for (let y: number = startTileY; y < endTileY; y++) {
                     let startY: number = (heightRatio * y) >> 16;
                     let endY: number = (heightRatio * (y + 1)) >> 16;
                     const lengthY: number = endY - startY;
@@ -2027,14 +2042,16 @@ export class MapView extends GameShell {
 
     // custom: fetch player positions from server
     fetchPlayerPositions(): void {
-        fetch('/playerpositions')
+        this.playerFetchPending = true;
+        fetch('/playerpositions', { signal: AbortSignal.timeout(5000) })
             .then(res => res.json())
             .then((data: {x: number, z: number, level: number, name: string}[]) => {
                 this.playerPositions = data;
                 this.updateTrails(data);
                 this.redraw = true;
             })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => { this.playerFetchPending = false; });
     }
 
     // custom: fetch and pre-render long-term anonymous traces

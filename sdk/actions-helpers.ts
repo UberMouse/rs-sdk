@@ -2,6 +2,7 @@
 // Private helper methods extracted from BotActions for reusability
 
 import { BotSDK } from './index';
+import { executionWait } from './execution-context';
 import { shortestNameMatch } from './action-quantity';
 import type {
     NearbyLoc,
@@ -319,13 +320,11 @@ export class ActionHelpers {
         let lastZ = startZ;
         let lastMoveTick = startTick;
 
-        return new Promise((resolve) => {
+        return executionWait((resolve) => {
             let resolved = false;
             const done = (result: { arrived: boolean; stoppedMoving: boolean; x: number; z: number }) => {
                 if (resolved) return;
                 resolved = true;
-                clearTimeout(safetyTimer);
-                unsub();
                 resolve(result);
             };
 
@@ -370,6 +369,7 @@ export class ActionHelpers {
                     done({ arrived: distToTarget <= tolerance, stoppedMoving: true, x: currentX, z: currentZ });
                 }
             });
+            return () => { clearTimeout(safetyTimer); unsub(); };
         });
     }
 
@@ -385,7 +385,8 @@ export class ActionHelpers {
         tolerance: number,
         lastPos: { x: number; z: number }
     ): Promise<{ status: 'arrived' | 'progress' | 'stuck'; pos: { x: number; z: number } }> {
-        await this.sdk.sendWalk(targetX, targetZ, true);
+        const dispatch = await this.sdk.sendWalk(targetX, targetZ, true);
+        if (!dispatch.success) return { status: 'stuck', pos: lastPos };
         const moveResult = await this.waitForMovementComplete(targetX, targetZ, tolerance);
 
         const pos = this.sdk.getState()?.player;

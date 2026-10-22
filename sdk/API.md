@@ -65,7 +65,7 @@
 | Signature | Description |
 |---|---|
 | `async talkTo(target: NearbyNpc \| string \| RegExp): Promise<TalkResult>` | Talk to an NPC and wait for dialog to open. Walks to the NPC first (handling doors). |
-| `async interactLoc(target: NearbyLoc \| string \| RegExp, option: number \| string \| RegExp = 1): Promise<InteractLocResult>` | Interact with a nearby location object (rock, fishing spot, furnace, etc.). Walks to the target first (handling doors), sends the interaction, then waits for an effect (animation, dialog, interface) or detects failure when the player has been idle for 2 ticks with nothing happening. |
+| `async interactLoc(target: NearbyLoc \| string \| RegExp, option: number \| string \| RegExp = 1): Promise<InteractLocResult>` | Interact with a nearby location object (rock, fishing spot, furnace, etc.). Walks to the target first (handling doors), sends the interaction, then waits for an effect (animation, dialog, interface) or detects failure when the player has been idle for 2 ticks with nothing happening. Success can mean the action started, before its product arrives; use mineRock for completed mining. |
 | `async interactNpc(target: NearbyNpc \| string \| RegExp, option: number \| string \| RegExp = 1): Promise<InteractNpcResult>` | Interact with a nearby NPC using a specified option (e.g. "Trade", "Pickpocket", "Fish"). Walks to the NPC first (handling doors), sends the interaction, then waits for an effect (animation, dialog, interface) or detects failure when the player has been idle for 2 ticks with nothing happening. |
 | `async pickpocketNpc(target: NearbyNpc \| string \| RegExp): Promise<PickpocketResult>` | Pickpocket an NPC. Handles door retrying if path is blocked. |
 
@@ -73,7 +73,7 @@
 
 | Signature | Description |
 |---|---|
-| `async walkTo(x: number, z: number, tolerance: number = 3): Promise<ActionResult>` | Walk to coordinates using pathfinding, auto-opening doors. Aborts if the player dies en route. |
+| `async walkTo(x: number, z: number, tolerance: number = 3, options: { timeout?: number } = {}): Promise<ActionResult>` | Walk to coordinates using pathfinding, auto-opening doors. Bounds the whole route with options.timeout (default 120s), refuses stale state, and aborts on cancellation or death. |
 
 ### Shopping
 
@@ -136,6 +136,12 @@
 | `async craftJewelry(options: { barPattern?: RegExp; product?: string; gem?: string; timeout?: number; } = {}): Promise<CraftJewelryResult>` | Craft jewelry at a furnace using a gold/silver bar and optional gem. Requires: bar + mould in inventory (ring mould, necklace mould, or amulet mould). Optionally a gem for gem-set jewelry. |
 | `async enchantItem(target: InventoryItem \| string \| RegExp, level: 1 \| 2 \| 3 \| 4 \| 5, options: { timeout?: number } = {}): Promise<EnchantResult>` | Cast an enchantment spell on a jewelry item. |
 | `async stringAmulet(target: InventoryItem \| string \| RegExp = /amulet/i, options: { timeout?: number } = {}): Promise<StringAmuletResult>` | String an amulet using a ball of wool. |
+
+### Mining
+
+| Signature | Description |
+|---|---|
+| `async mineRock(target: NearbyLoc \| string \| RegExp = /rocks?/i, options: { timeout?: number } = {}): Promise<MineRockResult>` | Mine a rock and wait for new ore plus Mining XP. Rock names have a "Rocks" prefix: use /copper ore/i for rocks and /^copper ore$/i for inventory. |
 
 ### Prayer
 
@@ -265,8 +271,8 @@
 | `async sendUseItemOnItem(sourceSlot: number, targetSlot: number): Promise<ActionResult>` | Use one inventory item on another. Rejected up front while a shop or bank modal is open: those replace the inventory tab, so the server drops the packet as "component not visible" and sends no message at all. Close the modal first — `bot.closeShop()`, `bot.closeInterface()`, or `sendCloseModal()`. |
 | `async sendUseItemOnLoc(itemSlot: number, x: number, z: number, locId: number): Promise<ActionResult>` | Use an inventory item on a location. |
 | `async sendUseItemOnNpc(itemSlot: number, npcIndex: number): Promise<ActionResult>` | Use an inventory item on an NPC. |
-| `async sendClickDialog(option: number = 0): Promise<ActionResult>` | Click a dialog option by its server-assigned index. IMPORTANT: `option` is the **server-assigned index** stored on each `DialogOption.index` field — NOT the array position in `dialog.options`. Server-assigned indices are 1-based: `dialog.options[0].index === 1`. Pass `0` only as the implicit "continue" click for dialogs with no selectable options (the common pattern: pass through narration pages). To click an option by its visible text, prefer `clickDialogByText()`, which avoids the index-vs-position footgun entirely. |
-| `async clickDialogByText(pattern: string \| RegExp): Promise<ActionResult>` | Click a dialog option whose visible text matches `pattern`. Convenience wrapper that resolves the server-assigned index for you, sidestepping the 1-based vs 0-based array-position confusion of `sendClickDialog()`. Matches against `DialogOption.text` (case-insensitive by default for string patterns). |
+| `async sendClickDialog(option: number = 0): Promise<ActionResult>` | Click a dialog option by its server-assigned index. IMPORTANT: `option` is the **server-assigned index** stored on each `DialogOption.index` field — NOT the array position in `dialog.options`. Server-assigned indices are 1-based: `dialog.options[0].index === 1`. Pass `0` only as the implicit "continue" click for dialogs with no selectable options (the common pattern: pass through narration pages). To click an option by its visible text, prefer `clickDialogByText()`, which also binds the click to its observed dialogue page. This low-level index method does not bind the click to a page. |
+| `async clickDialogByText(pattern: string \| RegExp): Promise<ActionResult>` | Click a dialog option whose visible text matches `pattern`. Convenience wrapper that resolves the server-assigned index for you, sidestepping the 1-based vs 0-based array-position confusion of `sendClickDialog()`. Matches against `DialogOption.text` (case-insensitive by default for string patterns). Binds the click to the observed page and component; it never falls back to an unguarded index when the page changes or the client is too old. |
 | `async sendClickComponent(componentId: number): Promise<ActionResult>` | Click a component using IF_BUTTON packet - for simple buttons, spellcasting, etc. |
 | `async sendClickComponentWithOption(componentId: number, optionIndex: number = 1, slot: number = 0): Promise<ActionResult>` | Click a component using INV_BUTTON packet - for components with inventory operations (smithing, crafting, etc.) |
 | `async sendClickInterfaceOption(arrayPosition: number): Promise<ActionResult>` | Click an interface option by **0-based array position**. Note the mismatch: `InterfaceOption.index` is a 1-based display label, so passing one straight through clicks the option after the one you matched. Prefer `clickInterfaceOption()` when selecting from published state. |
@@ -379,6 +385,8 @@ interface DialogState {
   isOpen: boolean;
   options: DialogOption[];
   isWaiting: boolean;
+  /** Opaque identity of this client dialogue page, for guarded clicks. */
+  pageId?: string;
   text?: string;
   allComponents?: DialogComponent[];
 }
@@ -526,6 +534,8 @@ interface OpFeedbackState {
 ```typescript
 interface BotWorldState {
   tick: number;
+  /** Version of nearby-player combat-target telemetry emitted by the Lite client. */
+  combatTargetTelemetryVersion?: number;
   /** Tick on which an updated Lite runner already emitted policy-gated KBD op2. */
   fastKbdAttackTick?: number;
   /** Prayer-on packets emitted in-process immediately before first-spawn KBD op2. */
@@ -589,6 +599,21 @@ interface ChopTreeResult {
   success: boolean;
   logs?: InventoryItem;
   message: string;
+}
+```
+
+### MineRockResult
+
+One ore observed entering the inventory, with Mining XP as corroboration.
+
+```typescript
+interface MineRockResult {
+  success: boolean;
+  message: string;
+  ore?: InventoryItem;
+  oresMined: number;
+  xpGained: number;
+  reason?: 'loc_not_found' | 'no_matching_option' | 'cant_reach' | 'inventory_full' | 'rejected' | 'timeout';
 }
 ```
 
@@ -837,6 +862,7 @@ interface UseItemOnNpcResult {
 
 ```typescript
 interface InteractLocResult {
+  /** Activity observed; for mining this can be an animation before ore arrives. Use mineRock for ore completion. */
   success: boolean;
   message: string;
   reason?: 'loc_not_found' | 'no_matching_option' | 'cant_reach' | 'timeout';

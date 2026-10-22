@@ -306,6 +306,8 @@ export class NetworkPlayer extends Player {
         // update active zones
         for (const zoneIndex of activeZones) {
             const zone: Zone = World.gameMap.getZoneIndex(zoneIndex);
+            // Loaded zones only need processing when the engine tracked a change.
+            if (loadedZones.has(zoneIndex) && !World.zonesTracking.has(zone)) continue;
             if (!loadedZones.has(zone.index)) {
                 zone.writeFullFollows(this);
             }

@@ -12,6 +12,7 @@ export default class BuildArea {
     readonly mapsquares: Set<number>;
     
     lastBuild: number = -1;
+    private zoneKey = '';
 
     constructor(player: Player) {
         this.player = player;
@@ -22,6 +23,7 @@ export default class BuildArea {
 
     clear(reconnecting: boolean): void {
         if (!reconnecting) {
+            this.zoneKey = '';
             this.activeZones.clear();
             this.loadedZones.clear();
             this.mapsquares.clear();
@@ -29,14 +31,15 @@ export default class BuildArea {
     }
 
     rebuildZones(): void {
-        // update any newly tracked zones
-        this.activeZones.clear();
-
         const centerX = CoordGrid.zone(this.player.x);
         const centerZ = CoordGrid.zone(this.player.z);
 
         const originX: number = CoordGrid.zone(this.player.originX);
         const originZ: number = CoordGrid.zone(this.player.originZ);
+        const key = `${centerX}:${centerZ}:${originX}:${originZ}:${this.player.level}`;
+        if (key === this.zoneKey) return;
+        this.zoneKey = key;
+        this.activeZones.clear();
 
         const leftX = originX - 6;
         const rightX = originX + 6;

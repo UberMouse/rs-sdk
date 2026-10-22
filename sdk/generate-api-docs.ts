@@ -138,6 +138,7 @@ function methodCategory(name: string, surface: 'actions' | 'sdk'): string {
     if (surface === 'actions') {
         if (lower.includes('dialog') || lower.includes('blocking') || lower.includes('tutorial')) return 'UI & Dialog';
         if (lower.includes('walk')) return 'Movement';
+        if (lower.includes('mine')) return 'Mining';
         if (lower.includes('fletch') || lower.includes('craft') || lower.includes('smith') || lower.includes('enchant') || lower.includes('string')) {
             return 'Crafting & Smithing';
         }

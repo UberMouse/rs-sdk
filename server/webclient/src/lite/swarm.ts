@@ -27,6 +27,7 @@
 // of the gold, and the report marks anything that is currently offline.
 
 import { fileURLToPath } from 'node:url';
+import { loginJitterMs } from './LoginBackoff.js';
 
 import { OutdatedClientError } from './net/GameConnection.js';
 import { startSession, type LiteSession, type SessionEnd } from './session.js';
@@ -399,7 +400,7 @@ function exitIfOutdated(e: unknown): void {
 async function relogin(bot: PickpocketBot): Promise<void> {
     let delay = RELOGIN_MS;
     while (!shuttingDown) {
-        await Bun.sleep(delay);
+        await Bun.sleep(RELOGIN_MS + loginJitterMs(Math.max(1000, delay - RELOGIN_MS)));
         if (shuttingDown) {
             return;
         }

@@ -2,13 +2,12 @@
  * Logic test for sdk.clickDialogByText() — no bot required.
  *
  * Verifies the helper resolves dialog options by visible text and dispatches
- * the server-assigned (1-based) index, sidestepping the array-position
- * footgun that exists with raw sendClickDialog().
+ * the published index with a page token and exact component ID.
  */
 
 import { describe, expect, test } from 'bun:test';
 import { BotSDK } from '../index';
-import type { ActionResult, BotWorldState, DialogOption } from '../types';
+import type { ActionResult, BotAction, BotWorldState, DialogOption } from '../types';
 
 function makeOption(index: number, text: string): DialogOption {
     return { index, text, componentId: 1000 + index, buttonType: 0 };
@@ -22,25 +21,48 @@ function makeState(opts: { dialogOpen: boolean; options?: DialogOption[] }): Bot
             isOpen: opts.dialogOpen,
             options: opts.options ?? [],
             isWaiting: false,
+            pageId: 'test-page',
         },
     } as unknown as BotWorldState;
 }
 
-function mountSdk(state: BotWorldState | null): { sdk: BotSDK; calls: number[] } {
+function mountSdk(state: BotWorldState | null): { sdk: BotSDK; calls: number[]; actions: BotAction[] } {
     const sdk = new BotSDK({ botUsername: 'test' });
     (sdk as any).state = state;
 
     // Stub the protocol-level call so we can record what the helper dispatches.
     const calls: number[] = [];
-    (sdk as any).sendClickDialog = async (option: number): Promise<ActionResult> => {
-        calls.push(option);
+    const actions: BotAction[] = [];
+    (sdk as any).sendAction = async (action: BotAction): Promise<ActionResult> => {
+        actions.push(action);
+        if (action.type === 'clickDialogOption') calls.push(action.optionIndex);
         return { success: true, message: 'stub-clicked' };
     };
 
-    return { sdk, calls };
+    return { sdk, calls, actions };
 }
 
 describe('clickDialogByText()', () => {
+    test('sends the page token and exact component ID selected from that snapshot', async () => {
+        const { sdk, actions } = mountSdk(makeState({ dialogOpen: true, options: [makeOption(2, 'Yes')] }));
+        expect((await sdk.clickDialogByText('yes')).success).toBe(true);
+        expect(actions).toEqual([{
+            type: 'clickDialogOption', optionIndex: 2,
+            guard: { pageId: 'test-page', componentId: 1002 }, reason: 'SDK'
+        }]);
+    });
+
+    for (const missing of ['pageId', 'componentId'] as const) {
+        test(`refuses legacy state missing ${missing} without dispatching`, async () => {
+            const state = makeState({ dialogOpen: true, options: [makeOption(1, 'Yes')] });
+            if (missing === 'pageId') delete state.dialog.pageId;
+            else delete state.dialog.options[0]!.componentId;
+            const { sdk, actions } = mountSdk(state);
+            expect(await sdk.clickDialogByText('yes')).toMatchObject({ success: false, reason: 'unsupported_client' });
+            expect(actions).toEqual([]);
+        });
+    }
+
     test('returns no_dialog when dialog is closed', async () => {
         const { sdk, calls } = mountSdk(makeState({ dialogOpen: false }));
         const r = await sdk.clickDialogByText(/yes/i);
