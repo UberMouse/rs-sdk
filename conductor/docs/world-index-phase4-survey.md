@@ -125,7 +125,7 @@ Read-only research at main 3be5b410a. Paths: `S/` = `server/content/scripts/`, `
 | Aggression range | `huntrange` tiles, `check_vis=lineofsight`; giants 2, moss 2, green dragon 4, chicken none | `E/engine/entity/Npc.ts:996`; `all.npc` |
 | Hunt modes | config `huntmode=`: cowardly 163 NPCs, aggressive_melee 19, aggressive_ranged 17, ...; `S/_unpack/225/all.hunt` | `all.hunt:36-45,70-78` |
 | Level cutoff | `check_nottoostrong=outside_wilderness`: skip a player whose combat level > `vislevel*2` unless they are in the Wilderness (giant 28 -> 56, moss 42 -> 84) | `Npc.ts:1011`; `all.hunt:40` |
-| Combat level | `(10*(def+hp+prayer/2) + max(13*(att+str), 13*3/2*ranged, 13*3/2*magic)) / 40` | `S/player/scripts/combat_level.rs2:1-10` |
+| Combat level | `(10*(def+hp+prayer/2) + max(13*(att+str), 13*(3*ranged/2), 13*(3*magic/2))) / 40` (each `/` truncates: `scale(3, 2, ...)`) | `S/player/scripts/combat_level.rs2:1-10` |
 | Tolerance timer | **none in this engine** (no tolerance code). An NPC that found a target stops hunting until `resetDefaults`/respawn (`find_keephunting=off`) | `Npc.ts:985-989,429-438` |
 | Single-way lockout | an NPC skips a player hit in the last 8 ticks by another (`check_notcombat`) | `Npc.ts:1014-1021`; `npc_combat.rs2:382-399` |
 | XP multiplier | `param=combat_xp_multiplier` (default 1000); only quest and antimacro NPCs change it | `combat.param:164-167`; `S/npc/scripts/ai_spawn.rs2:2` |
