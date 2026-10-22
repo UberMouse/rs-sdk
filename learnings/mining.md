@@ -8,7 +8,7 @@ Rocks are **locations** (not NPCs). Filter for rocks with a "Mine" option:
 
 The game names every rock `Rocks`; the webclient's state collector renames known live ore rocks to `Rocks copper ore`, `Rocks tin ore`, and so on (by loc id), so `nearbyLocs` carries the ore label.
 Use `/copper ore/i` to find a rock; `/^copper ore$/i` matches the inventory item only.
-Depleted rocks stay plain `Rocks`; select a live ore-specific rock again. [v 2026-10-22 upstream-followups local]
+Depleted rocks stay plain `Rocks`; select a live ore-specific rock again.
 
 ```typescript
 const state = sdk.getState();
@@ -18,7 +18,7 @@ const rock = state?.nearbyLocs
   .sort((a, b) => a.distance - b.distance)[0];
 ```
 
-**Every rock is named "Rocks" in the game** (options Mine, Prospect), and so are depleted rocks (plainrock1/2, ids 450/452). Copper vs tin vs iron differs only by loc id (`rock1`/`rock2` and `macro_` variants in `server/content/pack/loc.pack`); the ore label is added by the webclient, not the game, and only for ids it knows. Prospect, or match on loc id, to pick an ore. Dropped ores pile at the bot's feet. [v 2026-10-09 conductor1 local]
+**Every rock is named "Rocks" in the game** (options Mine, Prospect), and so are depleted rocks (plainrock1/2, ids 450/452). Copper vs tin vs iron differs only by loc id (`rock1`/`rock2` and `macro_` variants in `server/content/pack/loc.pack`); Prospect, or match on loc id, to pick an ore. Dropped ores pile at the bot's feet. [v 2026-10-09 conductor1 local]
 
 ## Mining Action
 
