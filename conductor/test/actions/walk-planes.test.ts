@@ -190,6 +190,21 @@ describe('walkTo into and out of underground areas', () => {
         expect(w.driver.commands.some(c => c.type === 'log' && /WARNING/.test(c.msg))).toBe(false);
     });
 
+    test('the Edgeville Dungeon beside the sewers to the moss giants is a climb, not a walk on one plane', async () => {
+        // Same level and both underground: only the Varrock Sewers box tells the two tiles apart.
+        const start = world()
+            .player({ at: { x: 3151, z: 9894, level: 0 } })
+            .build();
+        const w = await walk(start, 3158, 9895);
+        // Off to the Edgeville Dungeon trapdoor's ladder (out of sight in this world, so the climb fails there).
+        expect(w.paths.queries[0]).toMatchObject({ to: { x: 3096, z: 9868 } });
+        expect(w.result).toMatchObject({
+            ok: false,
+            reason: 'climb-failed',
+            message: expect.stringContaining('Edgeville Dungeon trapdoor'),
+        });
+    });
+
     test('inside the mine to a tile in the mine is an ordinary walk', async () => {
         const start = world()
             .player({ at: { x: 3058, z: 9776, level: 0 } })

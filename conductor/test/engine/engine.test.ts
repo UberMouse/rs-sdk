@@ -5,12 +5,12 @@ import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { type Op, send, ticks, uninterruptible, wait } from '../../core/op';
-import { LEFTOVER_CLOSE_TICKS, LEFTOVER_STEP, MAX_STEP_COMMANDS } from '../../lib/engine';
+import { LEFTOVER_CLOSE_TICKS, LEFTOVER_STEP, MAX_STEP_COMMANDS, SETTLE_TICKS } from '../../lib/engine';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { act } from '../core/fixtures';
-import { timeline, world, type World } from '../world';
+import { attackedFrom, type StateSpec, timeline, world, type World } from '../world';
 import { runDef, runTask } from './harness';
 
 const xpOf = (s: BotWorldState) => s.skills[0]?.experience ?? 0;
@@ -914,5 +914,147 @@ describe('the result', () => {
         expect(r.events.map(e => e.type)).toEqual(['start', 'step', 'screenshot', 'result']);
         expect(r.events.at(-1)).toEqual({ type: 'result', ...r.result });
         expect(r.printed.at(-1)).toBe('[task:test] failed: chop: out of trees');
+    });
+});
+
+/** Attacks, then waits on the fight: no finally, so every send after the stop is the engine's. */
+function* attackAndWait(): Op<Outcome> {
+    yield* send(act('attack'));
+    yield* wait('never', () => false, 1000);
+    return { done: 'unreachable' };
+}
+
+/** Ticks 0..n-1 with `spec`, attacked (a goblin beside the bot) from tick 3 until `until`. */
+const fighting = (n: number, until: number, spec: (t: number) => StateSpec = () => ({})) =>
+    timeline(n, spec).map((s, i) => attackedFrom(world(s), i, until).build());
+
+/** Attacks, then fails at tick 6. */
+function* giveUp(): Op<Outcome> {
+    yield* send(act('attack'));
+    yield* wait('tick 6', s => s.tick >= 6, 1000);
+    return { fail: 'gave up' };
+}
+
+describe('a stop in a fight', () => {
+    // 0.05 min = 3000 ms: past it at tick 8, mid-fight.
+    const stops = [{ kind: 'minutes' as const, minutes: 0.05 }];
+
+    test('a minutes stop while attacked ends done at the first tick not attacked, sending nothing more', async () => {
+        const r = await runTask([step('fight', attackAndWait)], fighting(30, 20), { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        expect(r.result.durationMs).toBe(20 * TICK_MS);
+        expect(r.result.inCombat).toBe(false);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test(`a fight longer than ${SETTLE_TICKS} ticks ends at the cap, still done`, async () => {
+        const r = await runTask([step('fight', attackAndWait)], fighting(10, Infinity), { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe(`reached 0.05 min; still in combat after ${SETTLE_TICKS} ticks`);
+        expect(r.result.durationMs).toBe((8 + SETTLE_TICKS) * TICK_MS);
+        expect(r.result.inCombat).toBe(true);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test('low HP during the settle eats, and the settle goes on', async () => {
+        const states = fighting(30, 20, t => ({ hp: t === 10 || t === 11 ? 4 : 10, food: 2 }));
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        // HP is scripted low for two ticks, so the guard eats on each.
+        expect(r.sends).toEqual(['attack', 'Eat Shrimps', 'Eat Shrimps']);
+    });
+
+    test('low HP during the settle with no food under fire ends failed with the low-HP reason', async () => {
+        const states = fighting(30, 20, t => ({ hp: t >= 10 ? 4 : 10 }));
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('reached 0.05 min; interrupt:low-hp: hp 4/10 at');
+        expect(r.result.reason).toEndWith('no food');
+        expect(r.result.endedBy).toBe('interrupt:low-hp');
+        expect(r.result.durationMs).toBe(10 * TICK_MS);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test('death during the settle ends failed with the death reason, and the dead bot does not eat', async () => {
+        const states = fighting(30, 20, t => ({ hp: t >= 10 ? 0 : 10, dead: t === 10, food: 2 }));
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('reached 0.05 min; interrupt:death: died');
+        expect(r.result.endedBy).toBe('interrupt:death');
+        expect(r.result.durationMs).toBe(10 * TICK_MS);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test('a stop with no attacker (stale inCombat, last hit long ago) ends on its tick', async () => {
+        const stale = timeline(30, () => ({ inCombat: true, lastDamageTick: 0 })).map(s => ({
+            ...s,
+            tick: s.tick + 17,
+        }));
+        const r = await runTask([step('fight', attackAndWait)], stale, { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('reached 0.05 min');
+        expect(r.result.durationMs).toBe(8 * TICK_MS);
+    });
+
+    test('an external stop mid-fight is settled the same way, and fires once', async () => {
+        const r = await runTask([step('fight', attackAndWait)], fighting(30, 20), {
+            externalStop: s => (s.tick >= 6 ? 'plan stop' : null),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('plan stop; fight settled in 14 ticks');
+        expect(r.sends).toEqual(['attack']);
+        expect(externalStops(r.events)).toHaveLength(1);
+    });
+
+    test('a stop while the bot fights a target that does not hit back is settled until the target is gone', async () => {
+        // The bot targets goblin 5 from tick 3; the goblin never faces it, and dies (leaves view) at tick 20.
+        const states = timeline(30, () => ({})).map((s, i) =>
+            i >= 3 && i < 20
+                ? world(s)
+                      .fighting(5)
+                      .npcBeside('Goblin', { index: 5, options: ['Attack'] })
+                      .build()
+                : s,
+        );
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        expect(r.result.durationMs).toBe(20 * TICK_MS);
+        expect(r.sends).toEqual(['attack']);
+    });
+
+    test('a stop while the bot faces an NPC it cannot attack (a fishing spot) ends on its tick', async () => {
+        const states = timeline(30, () => ({})).map(s =>
+            world(s)
+                .fighting(5)
+                .npcBeside('Fishing spot', { index: 5, options: ['Net', 'Bait'] })
+                .build(),
+        );
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.reason).toBe('reached 0.05 min');
+        expect(r.result.durationMs).toBe(8 * TICK_MS);
+    });
+
+    test('a client that stops ticking during the settle ends the run stuck', async () => {
+        class Stalls extends TimelineDriver {
+            override nextTick() {
+                return this.ticksElapsed >= 12
+                    ? Promise.reject(new TickStall('client stopped publishing ticks for 30s'))
+                    : super.nextTick();
+            }
+        }
+        const r = await runTask([step('fight', attackAndWait)], [], { driver: new Stalls(fighting(30, 20)), stops });
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe('reached 0.05 min; client stopped publishing ticks for 30s');
+    });
+
+    test('a failed run mid-fight is not settled', async () => {
+        const r = await runTask([step('fight', giveUp)], fighting(30, 20));
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('fight: gave up');
+        expect(r.result.durationMs).toBe(6 * TICK_MS);
+        expect(r.result.inCombat).toBe(true);
     });
 });

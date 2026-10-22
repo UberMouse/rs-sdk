@@ -22,6 +22,13 @@ function dispatch(sdk: BotSDK): Promise<ActionResult> {
 }
 
 describe('BotSDK.sendAction dispatch failures', () => {
+    test('cleans pending dispatches when the socket write throws synchronously', async () => {
+        const { sdk, pending } = stubSdk(5000);
+        (sdk as any).send = () => { throw new Error('Socket write failed'); };
+        expect(await dispatch(sdk)).toMatchObject({ success: false, reason: 'error', message: 'Socket write failed' });
+        expect(pending.size).toBe(0);
+    });
+
     test('reports a timeout instead of throwing', async () => {
         const { sdk, sent, pending } = stubSdk(20);
 

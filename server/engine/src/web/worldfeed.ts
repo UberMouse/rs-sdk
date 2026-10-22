@@ -5,7 +5,6 @@ import Player from '#/engine/entity/Player.js';
 import { NpcStat } from '#/engine/entity/NpcStat.js';
 import { PlayerStat } from '#/engine/entity/PlayerStat.js';
 import World from '#/engine/World.js';
-import { WorldStat } from '#/engine/WorldStat.js';
 import Packet from '#/io/Packet.js';
 import { NpcInfoProt, PlayerInfoProt } from '#/network/rsbuf/prot.js';
 import { Visibility } from '#/network/rsbuf/visibility.js';
@@ -50,7 +49,7 @@ import type { WebSocketData } from './websocket.js';
 const WORLD_FEED_VERSION = 1;
 const MAX_RECT_SIZE = 384;
 const MAX_BUFFERED_BYTES = 1 << 20;
-const ROSTER_INTERVAL_TICKS = 5;
+const ROSTER_INTERVAL_TICKS = 10;
 const MAX_CLIENT_MESSAGE_BYTES = 1024;
 const SLOW_FEED_MS = 20;
 
@@ -73,6 +72,7 @@ type RecordJson = { full?: string | null; delta?: string | null };
 
 type Subscriber = {
     ws: ServerWebSocket<WebSocketData>;
+    lastActivityAt: number;
     x0: number;
     z0: number;
     x1: number;
@@ -121,6 +121,7 @@ export function checkWorldFeedUpgrade(url: URL): Response | undefined {
 export function onWorldFeedOpen(ws: ServerWebSocket<WebSocketData>): void {
     subscribers.set(ws, {
         ws,
+        lastActivityAt: Date.now(),
         x0: 0,
         z0: 0,
         x1: 0,
@@ -155,6 +156,11 @@ export function onWorldFeedMessage(ws: ServerWebSocket<WebSocketData>, message: 
         return;
     }
 
+    sub.lastActivityAt = Date.now();
+    if (msg.t === 'ping') {
+        return;
+    }
+
     if (msg.t === 'sub') {
         const x = toInt(msg.x);
         const z = toInt(msg.z);
@@ -175,6 +181,7 @@ export function onWorldFeedClose(ws: ServerWebSocket<WebSocketData>): void {
 }
 
 export function cycleWorldFeed(): void {
+    expireIdleSubscribers(Date.now());
     if (subscribers.size === 0) {
         return;
     }
@@ -224,6 +231,20 @@ export function cycleWorldFeed(): void {
     const elapsed = Date.now() - start;
     if (elapsed >= SLOW_FEED_MS) {
         printInfo(`World feed took ${elapsed}ms for ${subscribers.size} subscriber(s)`);
+    }
+}
+
+function expireIdleSubscribers(now: number): void {
+    const idleTimeoutMs = Environment.WORLD_FEED_IDLE_TIMEOUT_MS;
+    for (const [ws, sub] of subscribers) {
+        if (now - sub.lastActivityAt >= idleTimeoutMs) {
+            subscribers.delete(ws);
+            try {
+                ws.close(1001, 'World feed idle timeout');
+            } catch {
+                // The socket may already be closing; removing it still frees the slot.
+            }
+        }
     }
 }
 
@@ -581,13 +602,26 @@ function toInt(value: unknown): number {
     return typeof value === 'number' && Number.isFinite(value) ? Math.trunc(value) : 0;
 }
 
-// Compression costs tick-thread CPU (~7 ms per MB); skip it when the last tick ran long,
-// the same trade the gateway relay makes.
+// Always compress, even though it costs tick-thread CPU (~7 ms per MB). WebKit drops
+// (1006) a permessage-deflate socket that mixes compressed and uncompressed messages,
+// so the choice can't follow tick time the way the gateway relay's does.
 function send(ws: ServerWebSocket<WebSocketData>, msg: FeedRecord | string): void {
-    const compress = World.lastCycleStats[WorldStat.CYCLE] < World.tickRate * 0.75;
     try {
-        ws.send(typeof msg === 'string' ? msg : JSON.stringify(msg), compress);
+        ws.send(typeof msg === 'string' ? msg : JSON.stringify(msg), true);
     } catch {
         subscribers.delete(ws);
     }
+}
+
+// Map dashboards can share one immutable JSON snapshot for a second.
+let positionsAt = -Infinity;
+let positionsJson = '[]';
+export function getPlayerPositionsJson(now = Date.now()): string {
+    if (now - positionsAt >= 1000 || now < positionsAt) {
+        positionsJson = JSON.stringify([...World.playerLoop.all()].map(player => ({
+            x: player.x, z: player.z, level: player.level, name: player.displayName
+        })));
+        positionsAt = now;
+    }
+    return positionsJson;
 }

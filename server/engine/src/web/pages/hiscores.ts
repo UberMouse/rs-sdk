@@ -5,6 +5,7 @@ import { escapeHtml, SKILL_NAMES, ENABLED_SKILLS, QUEST_POINTS_HISCORE_TYPE } fr
 import { itemSpriteUrl, playerSpriteUrl } from '#/web/sprites/SpriteRenderer.js';
 import { parseBankSnapshots, rankMatchingBanks } from './BankHiscores.js';
 import type { BankSnapshot } from './BankHiscores.js';
+import { loadRankedList, type RankedRow } from './RankedHiscores.js';
 
 const hiddenNames = Environment.HISCORES_HIDDEN_NAMES;
 
@@ -55,84 +56,62 @@ function formatStackCount(count: number): string {
     return `${count}`;
 }
 
-// Format playtime (in game ticks) to human-readable string
+// Format playtime (in game ticks) to human-readable string, with the exact tick count on hover
 function formatPlaytime(ticks: number): string {
     const totalSeconds = Math.floor(ticks * (Environment.NODE_TICKRATE / 1000));
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
-    if (hours > 0) {
-        return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
+    const seconds = totalSeconds % 60;
+    // Zero-pad below the leading unit so right-aligned columns line up on h/m/s.
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const time = hours > 0 ? `${hours}h ${pad(minutes)}m ${pad(seconds)}s` : minutes > 0 ? `${minutes}m ${pad(seconds)}s` : `${seconds}s`;
+    return `<span title="${ticks.toLocaleString()} ticks" style="font-variant-numeric: tabular-nums">${time}</span>`;
 }
 
-// rs-sdk: ranked lists are served from a short-lived cache. Every hiscores request used to
-// materialise the whole hiscore/hiscore_large table (160k+ rows) on the tick thread; a burst
-// of page loads was enough to freeze the world for seconds. The list changes on player save
-// (autosave is 15 min), so a 60s TTL is invisible to users.
-type RankedRow = { username: string; level: number; playtime: number };
-const RANKED_TTL_MS = Number(process.env.HISCORES_CACHE_MS ?? 60_000);
-const rankedCache = new Map<string, { at: number; rows: RankedRow[]; pending: Promise<RankedRow[]> | null }>();
+// Serve complete snapshots while the read worker refreshes rankings off the tick thread.
+const RANKED_TTL_MS = Number(process.env.HISCORES_CACHE_MS ?? 300_000);
+type RankedCache = { at: number; rows: RankedRow[] | null; pending: Promise<RankedRow[]> | null };
+const rankedCache = new Map<string, RankedCache>();
 
-// category 0 = overall (hiscore_large type 0), otherwise hiscore type = category
-async function getRankedList(profile: string, category: number): Promise<RankedRow[]> {
+export async function getRankedList(profile: string, category: number): Promise<RankedRow[]> {
     const key = `${profile}:${category}`;
-    const now = Date.now();
     const cached = rankedCache.get(key);
-    if (cached && now - cached.at < RANKED_TTL_MS) {
-        return cached.rows;
-    }
-    if (cached?.pending) {
-        return cached.pending;
-    }
-    const load = (async () => {
-        let rows: RankedRow[];
-        if (category === 0) {
-            let query = db
-                .selectFrom('hiscore_large')
-                .innerJoin('account', 'account.id', 'hiscore_large.account_id')
-                .select(['account.username', 'hiscore_large.level', 'hiscore_large.playtime'])
-                .where('hiscore_large.type', '=', 0)
-                .where('hiscore_large.profile', '=', profile)
-                .where('account.staffmodlevel', '<=', 1)
-                .orderBy('hiscore_large.level', 'desc')
-                .orderBy('hiscore_large.playtime', 'asc');
-            if (hiddenNames.length > 0) {
-                query = query.where(eb => eb.not(eb(eb.fn('lower', ['account.username']), 'in', hiddenNames)));
-            }
-            rows = await query.execute();
-        } else {
-            let query = db
-                .selectFrom('hiscore')
-                .innerJoin('account', 'account.id', 'hiscore.account_id')
-                .select(['account.username', 'hiscore.level', 'hiscore.playtime'])
-                .where('hiscore.type', '=', category)
-                .where('hiscore.profile', '=', profile)
-                .where('account.staffmodlevel', '<=', 1)
-                .orderBy('hiscore.level', 'desc')
-                .orderBy('hiscore.playtime', 'asc');
-            if (hiddenNames.length > 0) {
-                query = query.where(eb => eb.not(eb(eb.fn('lower', ['account.username']), 'in', hiddenNames)));
-            }
-            rows = await query.execute();
-        }
-        rankedCache.set(key, { at: Date.now(), rows, pending: null });
+    if (cached?.pending) return cached.rows ?? cached.pending;
+    if (cached?.rows && Date.now() - cached.at < RANKED_TTL_MS) return cached.rows;
+    const entry: RankedCache = { at: cached?.at ?? 0, rows: cached?.rows ?? null, pending: null };
+    const load = loadRankedList(profile, category).then(rows => {
+        entry.rows = rows;
+        entry.at = Date.now();
         return rows;
-    })();
-    rankedCache.set(key, { at: cached?.at ?? 0, rows: cached?.rows ?? [], pending: load });
-    try {
-        return await load;
-    } catch (err) {
+    }).catch(error => {
+        if (entry.rows) {
+            // Keep a useful snapshot and back off for 30s after a failed refresh.
+            entry.at = Date.now() - RANKED_TTL_MS + 30_000;
+            console.warn('[hiscores] refresh failed:', error);
+            return entry.rows;
+        }
         rankedCache.delete(key);
-        throw err;
-    }
+        throw error;
+    }).finally(() => { entry.pending = null; });
+    entry.pending = load;
+    rankedCache.set(key, entry);
+    return entry.rows ?? load;
 }
 
 // rank of a player in a ranked list (1-based), or null when absent
+// One index per cached snapshot; player pages otherwise scan every ranked list.
+const rankIndexes = new WeakMap<RankedRow[], Map<string, number>>();
 function rankIn(rows: RankedRow[], username: string): number | null {
-    const lower = username.toLowerCase();
-    const idx = rows.findIndex(r => r.username.toLowerCase() === lower);
-    return idx === -1 ? null : idx + 1;
+    let ranks = rankIndexes.get(rows);
+    if (!ranks) {
+        ranks = new Map();
+        rows.forEach((row, index) => {
+            const name = row.username.toLowerCase();
+            if (!ranks!.has(name)) ranks!.set(name, index + 1);
+        });
+        rankIndexes.set(rows, ranks);
+    }
+    return ranks.get(username.toLowerCase()) ?? null;
 }
 
 // "Select hiscore table" sidebar shared by the list pages

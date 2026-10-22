@@ -55,6 +55,7 @@ model hiscore {
     date     DateTime @default(now()) @updatedAt
 
     @@id([profile, type, account_id])
+    @@index([profile, type, level(sort: Desc), playtime, account_id], map: "hiscore_rank")
 }
 
 model hiscore_large {
@@ -68,6 +69,7 @@ model hiscore_large {
     date     DateTime @default(now()) @updatedAt
 
     @@id([profile, type, account_id])
+    @@index([profile, type, level(sort: Desc), playtime, account_id], map: "hiscore_large_rank")
 }
 
 model hiscore_outfit {

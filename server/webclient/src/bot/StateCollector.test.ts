@@ -176,6 +176,20 @@ describe('BotStateCollector combat state', () => {
         expect(fighting.combat).toMatchObject({ inCombat: true, targetIndex: 7 });
     });
 
+    test('does not identify talking or trading with a shopkeeper as a fight', () => {
+        const client = createClient();
+        client.npc[7].type = { name: 'Shop keeper', vislevel: 0, op: ['Talk-to', 'Trade'] };
+        client.localPlayer.combatCycle = 90;
+        const collector = new BotStateCollector(client);
+        expect((collector as any).collectPlayerState(1, 100).combat)
+            .toMatchObject({ inCombat: false, targetIndex: -1, targetType: 'none' });
+
+        // Recent damage from another entity must not make the shopkeeper our opponent.
+        client.localPlayer.combatCycle = 120;
+        expect((collector as any).collectPlayerState(2, 100).combat)
+            .toMatchObject({ inCombat: true, targetIndex: -1, targetType: 'none' });
+    });
+
     test('decodes player targets, which the client packs above the npc index space', () => {
         const client = createClient();
         client.localPlayer.faceEntity = 32768 + 3; // player slot 3, not npc 32771

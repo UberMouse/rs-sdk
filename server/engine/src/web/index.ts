@@ -14,6 +14,7 @@ import { handleSaveRequest } from './pages/saves.js';
 import { handleDisclaimerPage, handleMapviewPage, handlePublicFiles } from './pages/static.js';
 import { WebSocketData, handleWebSocketUpgrade, handleGatewayEndpointGet, websocketHandlers } from './websocket.js';
 import { getIp } from './utils.js';
+import { getPlayerPositionsJson } from './worldfeed.js';
 
 export type { WebSocketData };
 
@@ -83,6 +84,7 @@ export async function startWeb() {
 }
 
 async function handleRequest(req: Request, server: Bun.Server, url: URL): Promise<Response | undefined> {
+            if (/^\/hi(?:gh)?scores(?:\/|$)/.test(url.pathname)) server.timeout(req, 60);
             // Handle WebSocket upgrades first
             const wsResponse = handleWebSocketUpgrade(req, server, url);
             if (wsResponse !== undefined) {
@@ -130,11 +132,7 @@ async function handleRequest(req: Request, server: Bun.Server, url: URL): Promis
 
             // Player positions endpoint
             if (url.pathname === '/playerpositions' || url.pathname === '/playerpositions/') {
-                const players: {x: number, z: number, level: number, name: string}[] = [];
-                for (const player of World.playerLoop.all()) {
-                    players.push({ x: player.x, z: player.z, level: player.level, name: player.displayName });
-                }
-                return new Response(JSON.stringify(players), {
+                return new Response(getPlayerPositionsJson(), {
                     headers: {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'

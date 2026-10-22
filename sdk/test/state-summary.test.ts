@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { formatWorldStateSummary } from '../formatter';
+import { formatWorldState, formatWorldStateSummary } from '../formatter';
 import type { BotWorldState } from '../types';
 
 function state(overrides: Partial<BotWorldState> = {}): BotWorldState {
@@ -123,5 +123,40 @@ describe('formatWorldStateSummary', () => {
 
         expect(out).toContain('[!] dialog open (1 options)');
         expect(out).toContain("> I can't reach that! (x2)");
+    });
+});
+
+describe('formatWorldState brief mode', () => {
+    const world = () => state({
+        skills: [
+            { name: 'Hitpoints', level: 10, baseLevel: 10, experience: 1300 },
+            { name: 'Thieving', level: 1, baseLevel: 1, experience: 40 },
+            { name: 'Fishing', level: 1, baseLevel: 1, experience: 0 },
+            { name: 'Mining', level: 1, baseLevel: 1, experience: 0 }
+        ] as any,
+        nearbyNpcs: [{ name: 'Man', index: 42, distance: 3, combatLevel: 2, hp: null, maxHp: null, inCombat: false, reachable: false, options: ['Talk-to', 'Pickpocket'] }] as any,
+        nearbyLocs: [{ name: 'Tree', x: 3200, z: 3210, distance: 2, reachable: true, options: ['Chop down'] }] as any
+    });
+
+    test('folds untrained skills and drops npc indexes and action lists', () => {
+        const out = formatWorldState(world(), 0, { brief: true });
+
+        expect(out).toContain('HP: 10 (1,300 xp)');
+        expect(out).toContain('Thieving: 1 (40 xp)');
+        expect(out).not.toContain('Fishing');
+        expect(out).toContain('(2 other skills at 1, 0 xp)');
+        expect(out).toContain('- Man (Lvl 2) [UNREACHABLE] - 3 tiles\n');
+        expect(out).not.toContain('idx: 42');
+        expect(out).not.toContain('Pickpocket');
+        expect(out).toContain('- Tree at (3200, 3210) - 2 tiles');
+        expect(out).not.toContain('Chop down');
+    });
+
+    test('the default keeps everything for the CLI', () => {
+        const out = formatWorldState(world(), 0);
+
+        expect(out).toContain('Fishing: 1 (0 xp)');
+        expect(out).toContain('(idx: 42) [Talk-to, Pickpocket]');
+        expect(out).toContain('[Chop down]');
     });
 });

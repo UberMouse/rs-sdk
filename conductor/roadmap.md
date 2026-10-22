@@ -20,7 +20,7 @@ Ranged 40, Fletching 30, Herblore 28.
 | Smithing 60->99 + Magic 66->99 | 932k + 897k | Khazard superheat 514k Smith + 727k Magic/h | 1.8 (Magic done inside it) | measured; needs ~100k gp, ~700 natures, Staff of fire first (leg prep ~1.5 h incl. knights ~95k gp/h) |
 | Crafting 70->99 | 865k | 322k/h flax-spin | 2.7 | measured; lever = pick share (43%) |
 | Runecraft 55->99 | 950k | earth v2 (nearest cluster) 153k measured on w1 | 6.2 | measured 2026-10-16 (w1 55->64 in 18 min); +4% with a rune-drop step |
-| Att/Str/Def 70->99 + HP 73->99 | 862k/865k/828k + 831k | hill giants 582k/541k/635k; HP rides along | 3.7 (2.5 with moss giants + smithed rune scimitar, modelled) | moss giants plan failed on a path (below) |
+| Att/Str/Def 70->99 + HP 73->99 | 862k/865k/828k + 831k | hill giants 582k/541k/635k; HP rides along | 3.7 (2.5 with moss giants + smithed rune scimitar, modelled) | path fixed (smoke passed 2026-10-22), moss giants plan awaits a measure run |
 | Prayer 60->99 | 928k | quests Priest in Peril 35k + Holy Grail 275k (Merlin's Crystal first), then green dragons + anti-dragon shield ~170k/h (model) alongside melee | ~4-5 (model; ~11 at hill giants' 57k) | research 2026-10-16; quests first |
 | Ranged 40->99 | 982k | ~0.75-1.4 h modelled: willow shortbow rapid + steel/mithril arrows on hill giants (~700k-1M/h), later yew/magic shortbow + adamant | ~1.2 (model) | research 2026-10-16; kill overhead binds, not weapon; worker measure next |
 | Fletching 30->99 | 991k | Seers willow longbows chop + cut + string: ~971k/h measured on w3 (40->79 in 15 min) + WC ~830k/h alongside | ~1.0 | measured on a worker; plan willow-longbows + `fletching` string option committed (ffb928721); needs ~500 banked bow strings (flax-spin) |
@@ -32,14 +32,14 @@ Total about 27-33 h of play plus ~10% logistics. Binding rows: Herblore (5-10 h,
 (2.5-3.7 h), Prayer (~3 h, unknown), Crafting (2.7 h). Everything gathering-side is under 2 h. Order of legs on
 main: (1) Crafting 70 done; (2) knights ~100k gp (runner ad21c74d7890d02f9) -> Yanille natures + Staff of fire ->
 khazard-superheat to Smithing 99 (+Magic 99, gives Smith 90 for the rune scimitar); (3) w4 Wilderness agility 52->99;
-(4) melee 70->99 on moss giants with a smithed rune scimitar once the path bug is fixed (else hill giants);
+(4) melee 70->99 on moss giants with a smithed rune scimitar (else hill giants);
 (5) Runecraft earth v2 (can run any time; no prerequisites beyond essence-mine); (6) Ranged + Prayer on giants;
 (7) WC/FM -> Fletching; (8) Crafting 99; (9) Herblore last (needs the herb-source research).
 
 In flight at retro #9: knights leg and Khazard chain (main), w4 Wilderness plan bank-round-trip proof, w1 earth
-v2, w2 moss giants (first run failed: `to-giants` travel "No path to (3158, 9895) from (3151, 9894)", so the
-Edgeville Dungeon moss-giant room is not connected in the walk data: a waypoint/connector fix or a different
-spawn, `lib/connectors.ts` or `travel` waypoints), research on Fletching+Ranged and Prayer+Herblore.
+v2, w2 moss giants (first run failed: `to-giants` travel "No path to (3158, 9895) from (3151, 9894)": the moss
+giant room is in the Varrock Sewers, not the Edgeville Dungeon; fixed by the sewers walk box, manhole connector
+and web slash, smoke walk-varrock-sewers passed 2026-10-22), research on Fletching+Ranged and Prayer+Herblore.
 
 Open conductor loop: write the measured XP/h and next optimization into the Max route row the same turn as each
 GOAL report (rows were stale at retro #7, #8 and Hitpoints/Agility again at #9). Journal worker results at the
@@ -92,11 +92,11 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` stairs/ladders.
 - In review / landed: firemaking wall-edge fix (bb9c4f533), cooking reach fix (25143a7db), travel +
   `passGate` (0d241f745), death ends a plan / idle rail / travel flee (ba9df8a92): all committed.
-- **Flee with no food (in progress: task-author in a worktree)**: `travel` with `flee: true` in combat at low HP and no food fails at once
+- **Flee with no food (done, 4882c35a3)**: `travel` with `flee: true` in combat at low HP and no food fails at once
   in `lowHpGuard` (`interrupts.ts`: `if (p?.combat.inCombat || hpFell) return { fail: ... no food }`),
-  which leaves the bot standing in the fight. Fix: in flee mode skip the no-food fail (walking on is
-  the only way out; keep failing only when HP is 0 / dead), or let a task opt out via `allow: ['low-hp']`
-  while fleeing. Add a unit test on a scripted world (in combat, hp 4, no food, flee: keeps walking).
+  which left the bot standing in the fight. 4882c35a3 added `TaskDef.keepGoingWithoutFood`, which `travel`
+  sets for `flee`: the guard no longer fails in combat or after a recent hit with no food (death and
+  wilderness guards unchanged), with unit and smoke tests.
 - **Run-task auto-journal + plan nudge (idea)**: runners still journal in batches and chain plain runs
   after four prompt fixes; make it structural (see the retrospective #4 proposals): `run-task.ts
   --objective <title> --journal <path>` appends the mechanical journal line itself, and the RESULT
@@ -174,7 +174,7 @@ First drafts are assumed suboptimal; a rate here is a floor, not the route's fin
 | Hitpoints | 73 | from combat (~180k/h alongside giants) | - | finishes with melee: 831k left, ~4.6 h at 180k/h alongside, so HP, not Att/Str/Def, may bind the melee leg unless the target/weapon raises damage dealt |
 | Crafting | 70 | Seers flax pick -> spin -> bank (plan flax-spin, now travels to Seers from anywhere), main account 35->70 2026-10-16 | ~322k measured on main (44->70, 111,750 XP in 1,247 s, 32 loops) | tick budget per 28-flax loop: spin ~132 ticks (47%), pick ~122 (43%), bank ~30 (10%). ~2.7 h to 99 at this rate. Next: the pick share is the lever (no flax shop known); research Crafting 70-99 alternatives (battlestaves at 66+ via orbs, gem cutting from the Ardougne gem stall) before the next Crafting leg |
 | Fletching | 30 | arrow shafts | ~971k measured on w3 (willow longbows, 40->79, 15 min; arrow shafts 70k) | Seers willow-longbow loop (fletching.md): per 13-bow trip chop ~120 ticks (grove NW of the bank, 9.2 ticks/log), bank ~27, cut + string ~76. Plan willow-longbows promoted 2026-10-16. Levers: Make-10 restart after level-ups (~6 ticks each), several string uses per tick (server takes 5 packets/tick), a better axe for the chop share |
-| Attack/Strength/Defence | 70/70/70 | hill giants ("Giant", lvl 28) + Mithril scimitar, burying bones (plans `hill-giants`, `giants-att-def`) | main account 2026-10-16: Str 54->70 541k/h (598 s), Att 40->68 582k/h (654 s), Def 40->70 635k/h (664 s); Prayer ~60k/h and HP ~180k/h alongside; food ~28-55 fish/h, falling above combat 65 | ~48 ticks/kill (Str run: fight 100, loot 25, bury 25, dialog 38, low-hp 7 step runs over ~25 kills); restock: Edgeville bank 60 s + walk back ~180 s. Plan notes: fight phases onFail continue (combat with no food caps NPC level at 5), two travel phases (direct from Edgeville; Al Kharid waypoints only from the south). Next 70->99: same giants lose value as levels rise (giants hunt only below combat 56, so no aggro now); a stronger target + adamant/rune scimitar; stop burying once Prayer quests run Next (research 2026-10-16, model fits the measured rates within ~10%): moss giants (60 HP vs 35, 4 spawns east Edgeville Dungeon (3158,9903)/(3165,9879)) ~+28% at equal overhead, worker measure in flight; then Rune scimitar (not sold: smith at Smithing 90 from 2 runite ore, Wilderness (3060,3885) or Lava Maze) + smithed adamant armour (Smithing 77-88) after the superheat leg: modelled ~2.5 h for 70->99 on all three vs ~3.7 h today. Scimitars swing every 4 ticks, longswords 5, so no bought weapon beats it; dragon scimitar does not exist; Protect from Melee drains too fast to beat food. Per-kill overhead (loot/bury/dialog ~18 ticks) is worth ~0.3-0.5 h |
+| Attack/Strength/Defence | 70/70/70 | hill giants ("Giant", lvl 28) + Mithril scimitar, burying bones (plans `hill-giants`, `giants-att-def`) | main account 2026-10-16: Str 54->70 541k/h (598 s), Att 40->68 582k/h (654 s), Def 40->70 635k/h (664 s); Prayer ~60k/h and HP ~180k/h alongside; food ~28-55 fish/h, falling above combat 65 | ~48 ticks/kill (Str run: fight 100, loot 25, bury 25, dialog 38, low-hp 7 step runs over ~25 kills); restock: Edgeville bank 60 s + walk back ~180 s. Plan notes: fight phases onFail continue (combat with no food caps NPC level at 5), two travel phases (direct from Edgeville; Al Kharid waypoints only from the south). Next 70->99: same giants lose value as levels rise (giants hunt only below combat 56, so no aggro now); a stronger target + adamant/rune scimitar; stop burying once Prayer quests run Next (research 2026-10-16, model fits the measured rates within ~10%): moss giants (60 HP vs 35, 4 spawns in the Varrock Sewers west pocket (3158,9903)/(3165,9879), via the Varrock East manhole and a web slash) ~+28% at equal overhead, worker measure in flight; then Rune scimitar (not sold: smith at Smithing 90 from 2 runite ore, Wilderness (3060,3885) or Lava Maze) + smithed adamant armour (Smithing 77-88) after the superheat leg: modelled ~2.5 h for 70->99 on all three vs ~3.7 h today. Scimitars swing every 4 ticks, longswords 5, so no bought weapon beats it; dragon scimitar does not exist; Protect from Melee drains too fast to beat food. Per-kill overhead (loot/bury/dialog ~18 ticks) is worth ~0.3-0.5 h |
 | Prayer | 60 | Restless Ghost via `interact` task on w5 (+28,125 Prayer, 301 s); big bones buried at hill giants ~57k/h alongside Str | quests 28k per 5 min is the best rate so far (~340k/h equivalent); Priest in Peril 35k, Holy Grail 275k next; baby blue dragon bones untested | research 2026-10-16 (prayer.md): no altar multiplier or bone shop, bury only. Quests first: Priest in Peril 35k, Merlin's Crystal -> Holy Grail 275k (+382k Defence). Then melee on green dragons (Wilderness, free anti-dragon shield caps dragonfire at 5) ~170k Prayer/h modelled, 2.2x hill giants per HP. Pyres at Mort'ton (up to 22.5 XP/HP + Firemaking) unresearched |
 | Herblore | 28 | Druidic Ritual done; no training method measured (research in flight 2026-10-16) | - | research 2026-10-16 (herblore.md): no herb shop; chaos druids ~0.45 herbs/kill, only newt secondaries buyable -> ~459 XP/herb, ~70-100k/h. Quests ~403k first (Jungle Potion 19k, Digsite 50k, Eadgar's Ruse 275k, Mort'ton 58k). Next: quest chain feasibility (Death Plateau, Troll Stronghold) and a herb-source search (sinister chest, Sanfew goutweed swap) |
 | Runecraft | 55 | earth ruins via Aubury teleport, plan earth-runecraft-28 (v2: nearest essence cluster, bank withdraws pickaxe + talisman), main 45->55; v2 measured on w1 55->64 | ~153k measured (w1, 42.4k XP in 1,080 s, 10 trips of 26 essence; v1 140k) | trip ~252 ticks: enter-mine 64, landing walk + mine 108-114 (walk now 8-14, was ~25), portal 5-9, craft 69. Next: a drop step for the rune stack (27 essence, +4%, needs a drop task: none in the catalog); enter-mine + craft walking are 53% of the trip (check run is on); rune pickaxe ~171k if one drops. Researched 2026-10-16: no other altar pays (runecraft.md) |
@@ -234,12 +234,6 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - walkTo: connector `hazard` is only logged (`walk: WARNING at ...`); add an opt-in `WalkOptions` gate (e.g. a combat floor on the Falador mine stairs: scorpions hunt combat 28 and under) that returns a distinct reason, and make the shop task use it before walking into the Dwarven Mine; touches tasks outside the walk change (safety S1)
 - crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)
 - fishing: learnings/fishing.md:76 labels the Al Kharid spot (3267,3148) Lure/Bait but map data says Net/Bait (npc 330); River Lum Lure/Bait spot (3238,3252) and the Draynor four hop tiles + dark-wizard hazard are missing (contract T6)
-- combat (engine start refusal now uses `isAttacked`, uncommitted 2026-10-16; the finish-mid-fight deferral below is still open): a `--until` stop (minutes/xp) can land mid-fight. `engine.ts` `finish()` only eats, so
-  the run ends with `inCombat: true` and the next run is refused ("in combat ... handle the
-  attacker first", `executeTask` in engine.ts). The task can't fix this: no stop hook, and `isComplete` runs
-  after `checkStops`. The engine fix is to defer a stop while `player.combat.inCombat`, with a
-  bounded grace of about 30 s, or to wait out a fight before refusing at start (robustness R5,
-  safety S1).
 - bank: `bankInView` in `tasks/bank.ts` (/^bank booth$/, /banker/) is looser than `findUsableBooth` in `actions/bank.ts` (bank chests, Closed booths, usable options); export one shared predicate from the action so the no-walk shortcut cannot skip a walk and then fail no-bank-found (game G3, contract T5, code-quality Q3).
 - Knowledge: `learnings/banking.md` lacks the stand tiles in `lib/banks.ts` (Varrock East verified by smoke 2026-10-10T01-34-59-869Z-bank; Falador West/East, Edgeville map-data only; Draynor/Al Kharid skip reasons) (contract T6).
 - essence-mine: done 2026-10-16: `interactNpc(npc, option)` is in `conductor/actions/interact.ts` (with tests) and the Aubury Teleport uses it; the other raw `interactNpc` sends (bank, shop, fish, attack, pickpocket) still inline theirs.
@@ -284,3 +278,5 @@ Review findings `task-review` deferred because their fix needs work outside the 
   with all five valves turned right (`quest_hazeelcult.rs2:38`).
 - World index: the Regicide dense-forest crossings at (2165, 3189) and (2173, 3156) exactmove onto tiles off
   walkable land (`quest_regicide.rs2:462`), which leaves tree:tirannwn:1 unreached.
+- travel: `tasks/travel.ts:23` keeps its own `GATE_STAND_TOLERANCE`; import it from `actions/gate.ts` (code-quality
+  Q3, from the gnome-exit fix).

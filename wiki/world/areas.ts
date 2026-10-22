@@ -1161,7 +1161,7 @@ export const AREAS: readonly Area[] = [
     {
         id: 'edgeville-dungeon',
         name: 'Edgeville Dungeon',
-        rects: [{ x1: 3072, z1: 9824, x2: 3167, z2: 10047 }],
+        rects: [{ x1: 3072, z1: 9824, x2: 3151, z2: 10047 }],
         notes: 'Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sources/zones.ts).',
     },
     {
@@ -1245,7 +1245,7 @@ export const AREAS: readonly Area[] = [
     {
         id: 'varrock-sewers',
         name: 'Varrock Sewers',
-        rects: [{ x1: 3168, z1: 9840, x2: 3295, z2: 9919 }],
+        rects: [{ x1: 3152, z1: 9840, x2: 3295, z2: 9919 }],
         notes: 'Ladders up into Varrock at (3237, 3458) and (3230, 3504).',
     },
     {

@@ -934,6 +934,7 @@ export class LiteClient {
         return {
             ...baseState,
             dialog: {
+                ...baseState.dialog,
                 isOpen: this.isDialogOpen(),
                 options: dialogOptions,
                 isWaiting: this.isWaitingForDialog(),

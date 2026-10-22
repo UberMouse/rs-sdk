@@ -1,6 +1,7 @@
 import { describe, expect, mock, test } from 'bun:test';
 
 import { ClientProt } from '#/io/ClientProt.js';
+import { ServerProt } from '#/io/ServerProt.js';
 
 mock.module('#3rdparty/tinymidipcm.js', () => ({
     stopMidi() {},
@@ -76,6 +77,14 @@ const { Client } = await import('../client/Client.js');
 const { default: LocType } = await import('#/config/LocType.js');
 const { default: ObjType } = await import('#/config/ObjType.js');
 const { default: IfType } = await import('#/config/IfType.js');
+const { default: Packet } = await import('#/io/Packet.js');
+const { default: ClientPlayer, PlayerUpdate } = await import('#/dash3d/ClientPlayer.js');
+const { ActionExecutor } = await import('./ActionExecutor.js');
+const { BotStateCollector } = await import('./StateCollector.js');
+const { LiteClient } = await import('../lite/LiteClient.js');
+const { dispatch } = await import('../lite/protocol/incoming.js');
+const { captureBaseInterfaces, resetBaseInterfaces } = await import('../lite/interfaces.js');
+const { BotSDK } = await import('../../../../sdk/index.js');
 
 const BUTTON_OK = 1;
 const BUTTON_CLOSE = 3;
@@ -84,6 +93,249 @@ const BUTTON_CLOSE = 3;
 function defineComponent(id: number, com: Record<string, unknown>): void {
     IfType.list[id] = { id, ...com } as never;
 }
+
+// Drive real incoming decoders, state collection, SDK selection and outgoing
+// packet writers without a game connection or downloaded interface archive.
+for (const kind of ['browser', 'lite'] as const) {
+    describe(`${kind} guarded dialogue clicks`, () => {
+        function fixture() {
+            defineComponent(9200, { children: [9201, 9202], text: 'First question' });
+            defineComponent(9201, { buttonType: BUTTON_OK, buttonText: 'Select', text: 'Yes' });
+            defineComponent(9202, { buttonType: BUTTON_OK, buttonText: 'Select', text: 'No' });
+            defineComponent(9210, { children: [9211], text: 'Second question' });
+            defineComponent(9211, { buttonType: BUTTON_OK, buttonText: 'Select', text: 'Destroy item' });
+            defineComponent(9220, { text: 'Unrelated sidebar text', layerId: -1 });
+            const out = new Packet(new Uint8Array(64));
+            let client: any;
+            if (kind === 'lite') {
+                resetBaseInterfaces();
+                captureBaseInterfaces();
+                client = new LiteClient({
+                    connection: { out, isClosed: false } as never,
+                    locIndex: {} as never, username: 'dialog-test', password: 'x'
+                });
+            } else {
+                client = Object.assign(Object.create(Client.prototype), {
+                    out, ingame: true, chatModalId: -1, sideModalId: -1,
+                    mainModalId: -1, resumedPauseButton: false,
+                    sideIcon: [], activeIcon: 0, randomIn: null,
+                    captureDialogToHistory() {}
+                });
+            }
+            const executor = new ActionExecutor(client);
+            const collector = new BotStateCollector(client);
+            const snapshot = () => {
+                if (kind === 'lite') client.activate();
+                return (collector as any).collectDialogState();
+            };
+            const receive = async (opcode: number, id: number, text?: string | boolean) => {
+                const body = new Packet(new Uint8Array(128));
+                body.p2(id);
+                if (typeof text === 'string') body.pjstr(text);
+                else if (typeof text === 'boolean') body.p1(text ? 1 : 0);
+                const size = body.pos;
+                body.pos = 0;
+                if (kind === 'lite') {
+                    dispatch(client, opcode, body, size);
+                } else {
+                    client.ptype = opcode;
+                    client.psize = size;
+                    client.in = new Packet(new Uint8Array(128));
+                    client.stream = {
+                        available: size,
+                        async readBytes(dst: Uint8Array, offset: number, length: number) {
+                            dst.set(body.data.subarray(0, length), offset);
+                        }
+                    };
+                    expect(await client.tcpIn()).toBe(true);
+                }
+            };
+            const choose = async (inFlight?: () => Promise<void>) => {
+                const sdk = new BotSDK({ botUsername: 'dialog-test' });
+                (sdk as any).state = { dialog: snapshot() };
+                (sdk as any).sendAction = async (action: any) => {
+                    await inFlight?.();
+                    return executor.execute(action);
+                };
+                return sdk.clickDialogByText(/^Yes$/);
+            };
+            return { client, out, receive, snapshot, choose, executor };
+        }
+
+        test('unchanged page sends the selected IF_BUTTON component', async () => {
+            const f = fixture();
+            await f.receive(ServerProt.IF_OPENCHAT, 9200);
+            const first = f.snapshot();
+            expect(first.pageId).toBeDefined();
+            expect(f.snapshot().pageId).toBe(first.pageId);
+            expect(first.options[0].componentId).toBe(9201);
+            expect((await f.choose()).success).toBe(true);
+            expect(Array.from(f.out.data.subarray(0, f.out.pos))).toEqual([ClientProt.IF_BUTTON, 9201 >> 8, 9201 & 255]);
+        });
+
+        for (const change of ['different interface', 'reopened identical page', 'same buttons, new question', 'unsampled text round trip'] as const) {
+            test(`rejects ${change} without writing any game packet`, async () => {
+                const f = fixture();
+                await f.receive(ServerProt.IF_OPENCHAT, 9200);
+                const result = await f.choose(async () => {
+                    if (change === 'different interface') await f.receive(ServerProt.IF_OPENCHAT, 9210);
+                    else if (change === 'reopened identical page') await f.receive(ServerProt.IF_OPENCHAT, 9200);
+                    else {
+                        await f.receive(ServerProt.IF_SETTEXT, 9200, 'Second question');
+                        if (change === 'unsampled text round trip') await f.receive(ServerProt.IF_SETTEXT, 9200, 'First question');
+                    }
+                });
+                expect(result).toMatchObject({ success: false, phase: 'validation', reason: 'stale_dialog' });
+                expect(f.out.pos).toBe(0);
+            });
+        }
+
+        for (const id of [9200, 9220]) {
+            test(`does not reject unchanged dialogue after text packet for ${id}`, async () => {
+                const f = fixture();
+                await f.receive(ServerProt.IF_OPENCHAT, 9200);
+                const result = await f.choose(() => f.receive(ServerProt.IF_SETTEXT, id,
+                    id === 9200 ? 'First question' : 'Updated sidebar'));
+                expect(result.success).toBe(true);
+                expect(f.out.pos).toBe(3);
+            });
+        }
+
+        test('rejects a component ID that does not match the selected option', async () => {
+            const f = fixture();
+            await f.receive(ServerProt.IF_OPENCHAT, 9200);
+            expect(f.executor.execute({
+                type: 'clickDialogOption', optionIndex: 1, reason: 'test',
+                guard: { pageId: f.snapshot().pageId, componentId: 9202 }
+            })).toMatchObject({ success: false, reason: 'stale_dialog' });
+            expect(f.out.pos).toBe(0);
+        });
+
+        test('rejects an unsampled hide/unhide round trip', async () => {
+            const f = fixture();
+            await f.receive(ServerProt.IF_OPENCHAT, 9200);
+            // Establish the original boolean value rather than undefined.
+            await f.receive(ServerProt.IF_SETHIDE, 9201, false);
+            expect(await f.choose(async () => {
+                await f.receive(ServerProt.IF_SETHIDE, 9201, true);
+                await f.receive(ServerProt.IF_SETHIDE, 9201, false);
+            })).toMatchObject({ success: false, reason: 'stale_dialog' });
+            expect(f.out.pos).toBe(0);
+        });
+
+        test('guarded Continue sends RESUME once and rejects its waiting snapshot', async () => {
+            const f = fixture();
+            defineComponent(9230, { children: [9231] });
+            defineComponent(9231, { buttonType: 6, buttonText: 'Continue', text: '' });
+            if (kind === 'lite') {
+                f.client.interfaces.list[9230] = IfType.list[9230];
+                f.client.interfaces.list[9231] = IfType.list[9231];
+            }
+            await f.receive(ServerProt.IF_OPENCHAT, 9230);
+            const action = {
+                type: 'clickDialogOption' as const, optionIndex: 1, reason: 'test',
+                guard: { pageId: f.snapshot().pageId, componentId: 9231 }
+            };
+            expect(f.executor.execute(action)).toMatchObject({ success: true });
+            expect(Array.from(f.out.data.subarray(0, f.out.pos))).toEqual([ClientProt.RESUME_PAUSEBUTTON, 9231 >> 8, 9231 & 255]);
+            expect(f.executor.execute(action)).toMatchObject({ success: false, reason: 'stale_dialog' });
+            expect(f.out.pos).toBe(3);
+        });
+
+        if (kind === 'lite') {
+            test('a token from a different client cannot select an identical page', async () => {
+                const a = fixture();
+                await a.receive(ServerProt.IF_OPENCHAT, 9200);
+                const pageId = a.snapshot().pageId;
+                const b = fixture();
+                await b.receive(ServerProt.IF_OPENCHAT, 9200);
+                expect(b.client.executeBotAction({
+                    type: 'clickDialogOption', optionIndex: 1, reason: 'test',
+                    guard: { pageId, componentId: 9201 }
+                })).toMatchObject({ success: false, reason: 'stale_dialog' });
+                expect(b.out.pos).toBe(0);
+                // This also reactivates a's component table after b's packet.
+                expect(a.client.executeBotAction({
+                    type: 'clickDialogOption', optionIndex: 1, reason: 'test',
+                    guard: { pageId, componentId: 9201 }
+                })).toMatchObject({ success: true });
+                expect(a.out.pos).toBe(3);
+            });
+        }
+
+        test('preserves explicitly unguarded low-level index clicks', async () => {
+            const f = fixture();
+            await f.receive(ServerProt.IF_OPENCHAT, 9200);
+            expect(f.executor.execute({ type: 'clickDialogOption', optionIndex: 2, reason: 'test' })).toMatchObject({ success: true });
+            expect(Array.from(f.out.data.subarray(0, f.out.pos))).toEqual([ClientProt.IF_BUTTON, 9202 >> 8, 9202 & 255]);
+        });
+    });
+}
+
+describe('browser game tick publication', () => {
+    test('publishes decoded player state after PLAYER_INFO completes', async () => {
+        // Teleport the local player to plane 1, tile (55, 56), with a hitmark.
+        // No old/new visible players; 2047 terminates the new-player bit list.
+        const bits = '1' + '11' + '01' + '0110111' + '0111000' + '1' + '1'
+            + '00000000' + '11111111111';
+        const payload = Uint8Array.from([
+            ...bits.match(/.{8}/g)!.map(byte => parseInt(byte, 2)),
+            PlayerUpdate.HITMARK, 7, 1, 23, 30
+        ]);
+        const wire = Uint8Array.from([ServerProt.PLAYER_INFO, 0, payload.length, ...payload]);
+        let readPos = 0;
+        const player = new ClientPlayer();
+        player.teleport(true, 50, 50);
+        player.health = 30;
+        player.totalHealth = 30;
+
+        // Retain the real packet framing and player decoders; only the socket
+        // is replaced so this regression needs no game server or browser.
+        const client = Object.assign(Object.create(Client.prototype), {
+            stream: {
+                get available() { return wire.length - readPos; },
+                async readBytes(dst: Uint8Array, offset: number, length: number) {
+                    dst.set(wire.subarray(readPos, readPos + length), offset);
+                    readPos += length;
+                }
+            },
+            in: new Packet(new Uint8Array(64)),
+            ptype: -1,
+            ptype0: -1,
+            ptype1: -1,
+            ptype2: -1,
+            randomIn: null,
+            localPlayer: player,
+            players: { 2047: player },
+            playerCount: 0,
+            playerIds: new Int32Array(2048),
+            entityRemovalIds: new Int32Array(2048),
+            entityUpdateIds: new Int32Array(2048),
+            minusedlevel: 0,
+            awaitingPlayerInfo: true,
+            lastTickTime: 0
+        });
+        const published: unknown[] = [];
+        client.setOnGameTickCallback(() => published.push({
+            health: player.health,
+            x: player.routeX[0],
+            z: player.routeZ[0],
+            level: client.minusedlevel,
+            awaitingPlayerInfo: client.awaitingPlayerInfo,
+            packetPosition: client.in.pos
+        }));
+
+        expect(await client.tcpIn()).toBe(true);
+        expect(published).toEqual([{
+            health: 23, x: 55, z: 56, level: 1,
+            awaitingPlayerInfo: false, packetPosition: payload.length
+        }]);
+        expect(readPos).toBe(wire.length);
+        expect(client.ptype).toBe(-1);
+        expect(await client.tcpIn()).toBe(false);
+        expect(published).toHaveLength(1);
+    });
+});
 
 describe('ranged spell dispatch', () => {
     test('dispatches a combat spell when adjacency routing fails', () => {

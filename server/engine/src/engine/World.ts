@@ -825,6 +825,9 @@ class World {
 
     private processLogouts(): void {
         const start: number = Date.now();
+        const started = performance.now();
+        const budgetMs = Math.max(1, Math.min(50, this.tickRate / 6));
+        let removed = 0;
 
         for (const player of this.playerLoop.all()) {
             let force = false;
@@ -852,6 +855,9 @@ class World {
             }
 
             if (player.loggingOut && (force || this.currentTick >= player.preventLogoutUntil)) {
+                // Keep loggingOut set so deferred accounts are retried next tick.
+                // Each removal performs a durable whole-world checkpoint.
+                if (!this.shutdown && (removed >= 10 || (removed > 0 && performance.now() - started >= budgetMs))) continue;
                 player.closeModal();
 
                 let queueDiscardable = true;
@@ -878,6 +884,7 @@ class World {
                     ScriptRunner.execute(state);
 
                     this.removePlayer(player);
+                    removed++;
                 }
             }
         }
@@ -898,6 +905,11 @@ class World {
 
     private processLogins(): void {
         const start: number = Date.now();
+        const started = performance.now();
+        // One checkpoint cannot be interrupted, but a reconnect burst must not run
+        // hundreds of whole-world saves in one tick. Leave the rest queued.
+        const budgetMs = Math.max(1, Math.min(50, this.tickRate / 6));
+        let processed = 0;
 
         // counted once per tick; sessions admitted below increment it so a burst of
         // logins from one IP can't all slip under the cap in the same tick
@@ -912,7 +924,13 @@ class World {
             }
         }
 
-        player: for (const player of this.newPlayers) {
+        player: for (const queuedPlayer of this.newPlayers) {
+            if (processed >= 10 || (processed > 0 && performance.now() - started >= budgetMs)) break;
+            this.newPlayers.delete(queuedPlayer);
+            processed++;
+            let player = queuedPlayer;
+            if (player instanceof NetworkPlayer && (!isClientConnected(player) || player.client.state < 0)) continue;
+            let transferred = false;
             // prevent logging in if a player save is being flushed
             if (this.logoutRequests.has(player.username)) {
                 player.addSessionLog(LoggerEventType.ENGINE, 'Tried to log in - old session is mid-logout');
@@ -993,7 +1011,6 @@ class World {
                 const client = isClientConnected(player) ? player.client : null;
 
                 // Re-create the new player from the existing player's current state
-                this.newPlayers.delete(player);
                 const transferredPlayer = PlayerLoading.load(player.username, new Packet(existingSave), client);
 
                 // Preserve login metadata from the original login response
@@ -1004,18 +1021,20 @@ class World {
                 transferredPlayer.members = player.members;
                 transferredPlayer.messageCount = player.messageCount;
 
-                this.newPlayers.add(transferredPlayer);
-
                 // Remove the old player WITHOUT flushing to disk
                 // State is already transferred to the new player, so no need to save
                 // This avoids a race condition where the old logout could interfere with the new player's save
+                if (other instanceof NetworkPlayer && ipCounts) {
+                    const oldIp = other.client.remoteAddress;
+                    ipCounts.set(oldIp, Math.max(0, (ipCounts.get(oldIp) ?? 0) - 1));
+                }
                 this.removePlayerWithoutSave(other);
 
-                // Skip the rest of this iteration - transferredPlayer will be processed
-                // on the next iteration of the outer loop. Without this, the original
-                // player would continue to the normal login process and get added to
-                // this.players, causing an infinite loop when transferredPlayer is processed.
-                continue player;
+                // Finish admission in this iteration. Deferring the transferred
+                // player behind the backlog would leave the account out of the world.
+                player = transferredPlayer;
+                transferred = true;
+                break;
             }
 
             // prevent logging in when the server is shutting down
@@ -1028,12 +1047,12 @@ class World {
                 continue;
             }
 
-            // per-IP connection cap - reconnects and session transfers never reach here,
-            // so this only gates net-new sessions
+            // Session transfers replace an existing slot; only net-new sessions
+            // are subject to the per-IP connection cap.
             if (player instanceof NetworkPlayer && ipCounts) {
                 const ip = player.client.remoteAddress;
                 const count = ipCounts.get(ip) ?? 0;
-                if (count >= World.PLAYER_MAX_PER_IP) {
+                if (!transferred && count >= World.PLAYER_MAX_PER_IP) {
                     player.addSessionLog(LoggerEventType.ENGINE, `Tried to log in - too many connections from ${ip}`);
                     this.forceLogout(player, 7);
                     continue;
@@ -1124,7 +1143,6 @@ class World {
                 staffLvl: player.staffModLevel
             });
         }
-        this.newPlayers.clear();
         this.cycleStats[WorldStat.LOGIN] = Date.now() - start;
     }
 
@@ -1987,6 +2005,7 @@ class World {
             tick: this.currentTick,
             tickRate: this.tickRate,
             players: this.getTotalPlayers(),
+            pendingLogins: this.newPlayers.size,
             npcs: this.getTotalNpcs(),
             zonesTracking: this.zonesTracking.size,
             window: n,

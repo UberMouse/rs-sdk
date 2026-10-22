@@ -49,7 +49,7 @@ From `skill_mining/scripts/mining.rs2` and the engine's `STAT_RANDOM`
 | 1 | Copper | 17.5 | SW Varrock, SE Varrock, Rimmington |
 | 10 | Blurite | 17.5 | |
 | 10 | Limestone | 26.5 | |
-| 15 | Iron | 35 | Asgarnian Ice Dungeon, Al Kharid |
+| 15 | Iron | 35 | SE Varrock, Asgarnian Ice Dungeon, Al Kharid |
 | 20 | Silver | 40 | SE Varrock, Fight Arena, Al Kharid |
 | 30 | Coal | 50 | Al Kharid, SW Varrock, Crafting Guild |
 | 40 | Gold | 65 | Dwarven Mine, Coal Trucks, Barbarian Village, Mining Guild |

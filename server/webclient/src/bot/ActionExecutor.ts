@@ -3,6 +3,7 @@
 
 import type { Client, ClientActionResult } from '#/client/Client.js';
 import type { BotAction, NearbyLoc, GroundItem } from './types.js';
+import { getDialogPageId } from './dialog-page.js';
 
 export interface ActionResult {
     success: boolean;
@@ -132,12 +133,28 @@ export class ActionExecutor {
                     return result;
                 }
 
-                case 'clickDialogOption':
+                case 'clickDialogOption': {
+                    if (action.guard !== undefined) {
+                        const { pageId, componentId } = action.guard;
+                        // Validate and dispatch synchronously: no packet can change
+                        // the dialogue between this check and the actual click.
+                        if (typeof pageId !== 'string' || getDialogPageId(this.client) !== pageId ||
+                            !this.client.getDialogOptions().some(option =>
+                                option.componentId === componentId && option.index === action.optionIndex)) {
+                            return {
+                                success: false,
+                                phase: 'validation',
+                                reason: 'stale_dialog',
+                                message: 'Dialogue changed before the click; read fresh state and choose again'
+                            };
+                        }
+                    }
                     return this.wrapBool(
                         this.client.clickDialogOption(action.optionIndex),
                         `Clicked dialog option ${action.optionIndex}`,
                         'Failed to click dialog option'
                     );
+                }
 
                 case 'searchGE':
                     return this.wrapBool(this.client.searchGE(action.query), 'GE search dispatched', 'Open the GE catalogue before searching');

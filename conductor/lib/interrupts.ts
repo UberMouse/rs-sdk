@@ -2,6 +2,7 @@
 // dialogs or leftover modals itself. The engine checks them at every tick of a generator step's waits
 // and between steps for every task; a task opts out of one with `allow`, and adds its own with `guards`.
 import type { BotWorldState } from '../../sdk/types';
+import { ATTACK_OPTION } from '../actions/attack';
 import type { ActionContext } from '../actions/context';
 import { clearStrayChoice, closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
 import { eat } from '../actions/eat';
@@ -303,6 +304,18 @@ export const recentlyHit = (s: BotWorldState): boolean => {
 export const isAttacked = (s: BotWorldState): boolean =>
     !!s.player?.combat.inCombat && (attackers(s).length > 0 || recentlyHit(s));
 
+/**
+ * In combat with an NPC the bot targets, whether or not it hits back: the target is in view, alive and
+ * attackable. A fishing spot has no Attack option. The client publishes a target only while hits on the bot
+ * or on it back the facing, or within a walk-up grace, so a target the bot only faced drops out by itself (after ~16 ticks, `FACING_GRACE_CYCLES` = 500 cycles).
+ */
+export const ownFight = (s: BotWorldState): boolean => {
+    const c = s.player?.combat;
+    if (!c?.inCombat || c.targetType !== 'npc') return false;
+    const target = s.nearbyNpcs.find(n => n.index === c.targetIndex);
+    return !!target && target.healthPercent !== 0 && target.options.some(o => ATTACK_OPTION.test(o));
+};
+
 interface UnderAttackEpisode {
     /** The bot's highest hp this episode: the baseline for the unknown-attacker hp-loss check. */
     startHp: number | null;
@@ -320,9 +333,10 @@ interface UnderAttackEpisode {
  * For a skilling task whose interaction (a chop, a mine, a fish) would cancel auto-retaliate: while
  * something attacks the bot it touches nothing and lets auto-retaliate finish the fight.
  *
- * "Attacked" (`isAttacked`) is not `combat.inCombat` alone: that is also true while the bot merely
- * faces its own target (a fishing spot). It needs an attacker next to the bot, or a hit taken within
- * RECENT_HIT_TICKS, on top of inCombat.
+ * "Attacked" (`isAttacked`) is not `combat.inCombat` alone: that is also true for the client's walk-up
+ * grace after the bot merely faces an attackable NPC (a man it pickpockets or talks to). An NPC with no
+ * Attack option, such as a fishing spot, is never published as a target. It needs an attacker next to
+ * the bot, or a hit taken within RECENT_HIT_TICKS, on top of inCombat.
  *
  * A named attacker is waited out with no total tick cap, when winnable: auto-retaliate on and the
  * attacker's combat level no higher than the bot's; otherwise the run fails at once, naming it. The

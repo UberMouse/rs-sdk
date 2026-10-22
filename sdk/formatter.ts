@@ -144,12 +144,16 @@ export function formatWorldStateSummary(
  * `options.sinceTick`: only render gameMessages with tick > sinceTick.
  * The MCP server passes this to suppress chat the bot has already been shown
  * across repeated execute_code calls. Omit for full-state snapshots.
+ * `options.brief`: the MCP server appends this to every execute_code result,
+ * so trim what an agent rarely needs on every call - untrained skills, NPC
+ * indexes, and NPC/object action lists (still available via sdk.getState()).
  */
 export function formatWorldState(
     state: BotWorldState,
     stateAgeMs?: number,
-    options?: { sinceTick?: number }
+    options?: { sinceTick?: number; brief?: boolean }
 ): string {
+    const brief = options?.brief ?? false;
     const lines: string[] = [];
 
     lines.push('# World State');
@@ -303,12 +307,18 @@ export function formatWorldState(
     // Skills (filter out unknown/placeholder skills like Stat18, Stat19)
     lines.push('');
     lines.push('## Skills');
+    let untrained = 0;
     for (const skill of state.skills || []) {
         if (/^Stat\d+$/i.test(skill.name)) continue;
+        if (brief && skill.baseLevel <= 1 && skill.level <= 1 && skill.experience === 0) {
+            untrained++;
+            continue;
+        }
         const boosted = skill.level !== skill.baseLevel ? `${skill.level}/` : '';
         const displayName = skill.name === 'Hitpoints' ? 'HP' : skill.name;
         lines.push(`${displayName}: ${boosted}${skill.baseLevel} (${skill.experience.toLocaleString()} xp)`);
     }
+    if (untrained > 0) lines.push(`(${untrained} other skills at 1, 0 xp)`);
 
     // Inventory
     lines.push('');
@@ -380,6 +390,10 @@ export function formatWorldState(
             const hp = npc.hp !== null && npc.maxHp !== null ? ` HP: ${npc.hp}/${npc.maxHp}` : '';
             const combat = npc.inCombat ? ' [in combat]' : '';
             const unreachable = npc.reachable === false ? ' [UNREACHABLE]' : '';
+            if (brief) {
+                lines.push(`- ${npc.name}${lvl}${hp}${combat}${unreachable} - ${npc.distance} tiles`);
+                continue;
+            }
             const opts = npc.options?.length > 0 ? ` [${npc.options.join(', ')}]` : '';
             lines.push(`- ${npc.name}${lvl}${hp}${combat}${unreachable} - ${npc.distance} tiles (idx: ${npc.index})${opts}`);
         }
@@ -406,7 +420,7 @@ export function formatWorldState(
         lines.push('## Nearby Objects');
         for (const loc of state.nearbyLocs.slice(0, 10)) {
             const unreachable = loc.reachable === false ? ' [UNREACHABLE]' : '';
-            const opts = loc.options?.length > 0 ? ` [${loc.options.join(', ')}]` : '';
+            const opts = !brief && loc.options?.length > 0 ? ` [${loc.options.join(', ')}]` : '';
             lines.push(`- ${loc.name} at (${loc.x}, ${loc.z})${unreachable} - ${loc.distance} tiles${opts}`);
         }
         if (state.nearbyLocs.length > 10) {

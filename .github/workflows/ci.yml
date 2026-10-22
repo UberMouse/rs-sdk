@@ -25,5 +25,15 @@ jobs:
         working-directory: server/webclient
         run: bun install --frozen-lockfile
 
+      - name: Install engine dependencies
+        working-directory: server/engine
+        run: bun install --frozen-lockfile
+
+      - name: Build game content for compiled-script regression tests
+        working-directory: server/engine
+        env:
+          BUILD_VERIFY: "false"
+        run: bun run build
+
       - name: Type-check, test, and verify generated docs
         run: bun run check

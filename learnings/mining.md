@@ -6,12 +6,16 @@ Successful patterns for mining automation.
 
 Rocks are **locations** (not NPCs). Filter for rocks with a "Mine" option:
 
+The client names live rocks `Rocks copper ore`, `Rocks tin ore`, and so on.
+Use `/copper ore/i` to find a rock; `/^copper ore$/i` matches the inventory item only.
+Depleted rocks can appear as plain `Rocks`; select a live ore-specific rock again.
+
 ```typescript
 const state = sdk.getState();
 const rock = state?.nearbyLocs
-    .filter(loc => /rocks?/i.test(loc.name))
-    .filter(loc => loc.optionsWithIndex.some(o => /^mine$/i.test(o.text)))
-    .sort((a, b) => a.distance - b.distance)[0];
+  .filter((loc) => /rocks?/i.test(loc.name))
+  .filter((loc) => loc.optionsWithIndex.some((o) => /^mine$/i.test(o.text)))
+  .sort((a, b) => a.distance - b.distance)[0];
 ```
 
 **Every rock is named "Rocks"** (options Mine, Prospect), and so are depleted rocks (plainrock1/2, ids 450/452). Copper vs tin vs iron is told apart only by loc id (`rock1`/`rock2` and `macro_` variants in `server/content/pack/loc.pack`); the "Rocks copper ore" label in `cli.ts` is SDK decoration, not the game name. Prospect, or match on loc id, to pick an ore. Dropped ores pile at the bot's feet. [v 2026-10-09 conductor1 local]
@@ -19,8 +23,8 @@ const rock = state?.nearbyLocs
 ## Mining Action
 
 ```typescript
-if (!rock) throw new Error('No mineable rock nearby');
-const result = await bot.interactLoc(rock, 'mine');
+if (!rock) throw new Error("No mineable rock nearby");
+const result = await bot.mineRock(rock);
 if (!result.success) console.warn(result.reason, result.message);
 ```
 
@@ -37,9 +41,6 @@ const animation = sdk.getState()?.player?.animId ?? -1;
 const isMining = animation === 625;
 const isIdle = animation === -1;
 ```
-
-
-
 
 **Note:** Al Kharid mine is full of Lvl 14 scorpions. Combat 27+ with defensive style is enough to survive while mining. The scorpion fights actually train Defence passively.
 
@@ -66,11 +67,11 @@ Iron: [wiki/resources/rock/iron.md](../wiki/resources/rock/iron.md); sites [Varr
 
 ```typescript
 function countOre() {
-    const state = sdk.getState();
-    if (!state) return 0;
-    return state.inventory
-        .filter(i => /ore$/i.test(i.name))
-        .reduce((sum, i) => sum + i.count, 0);
+  const state = sdk.getState();
+  if (!state) return 0;
+  return state.inventory
+    .filter((i) => /ore$/i.test(i.name))
+    .reduce((sum, i) => sum + i.count, 0);
 }
 ```
 
@@ -78,12 +79,12 @@ function countOre() {
 
 ```typescript
 const state = sdk.getState();
-if (!state) throw new Error('No world state');
+if (!state) throw new Error("No world state");
 if (state.inventory.length >= 28) {
-    const ores = state.inventory.filter(i => /ore$/i.test(i.name));
-    for (const ore of ores) {
-        await sdk.sendDropItem(ore.slot);
-        await new Promise(r => setTimeout(r, 100));
-    }
+  const ores = state.inventory.filter((i) => /ore$/i.test(i.name));
+  for (const ore of ores) {
+    await sdk.sendDropItem(ore.slot);
+    await new Promise((r) => setTimeout(r, 100));
+  }
 }
 ```

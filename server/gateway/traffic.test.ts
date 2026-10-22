@@ -59,7 +59,7 @@ describe('TrafficMeter', () => {
         expect(goo.outMBps).toBe(0.12);
         expect(goo.avgOutFrameKB).toBe(40);
         expect(goo.sdkOutMBpsByMode).toEqual({ control: 0.04, observe: 0.08 });
-        expect(r.groups[0].group).toBe('goo'); // most expensive first
+        expect(r.groups[0]!.group).toBe('goo'); // most expensive first
 
         // single-account names fold into one row instead of one row each
         expect(r.groups.some(g => g.group === 'chiefkeefer')).toBe(false);
@@ -114,11 +114,11 @@ describe('StateFieldSampler', () => {
         const r = sampler.report();
         expect(r.all.pairs).toBe(2);
         const fields = Object.fromEntries(r.all.fields.map(f => [f.field, f]));
-        expect(fields.bank.unchangedPct).toBe(100);
-        expect(fields.tick.unchangedPct).toBe(0);
-        expect(fields.player.unchangedPct).toBe(0);
-        expect(r.all.fields[0].field).toBe('bank');
-        expect(r.groups[0].group).toBe('goo');
+        expect(fields.bank!.unchangedPct).toBe(100);
+        expect(fields.tick!.unchangedPct).toBe(0);
+        expect(fields.player!.unchangedPct).toBe(0);
+        expect(r.all.fields[0]!.field).toBe('bank');
+        expect(r.groups[0]!.group).toBe('goo');
         expect(r.all.unchangedPct).toBeGreaterThan(95);
         expect(formatFieldReport(r)).toContain('bank');
     });

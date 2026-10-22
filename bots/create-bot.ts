@@ -96,6 +96,9 @@ async function createBot(username?: string, serverOverride?: string, hideChat?: 
     console.log(`\n✓ Bot "${botUsername}" created successfully!`);
     console.log(`\nCredentials saved in bots/${botUsername}/bot.env`);
     console.log(`\nTo get started:`);
+    console.log(`  Use MCP execute_code on "${botUsername}" — it opens the browser client automatically.`);
+    console.log(`  For a standalone script, first open the browser bot client using the credentials in bot.env and leave it running.`);
+    console.log(`  Scripts do not start a game client. Once the browser is attached, run:`);
     console.log(`  bun bots/${botUsername}/script.ts`);
 }
 

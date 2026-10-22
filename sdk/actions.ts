@@ -3,6 +3,7 @@
 // Actions resolve when the EFFECT is complete (not just acknowledged)
 
 import { BotSDK } from './index';
+import { throwIfExecutionAborted, withExecutionDeadline } from './execution-context';
 import { GEActions } from './ge-actions';
 import type { GEOfferRequest, GEActionResult } from './ge-types';
 import { ActionHelpers, ALREADY_FIGHTING_REFUSALS, NO_RUNES_REFUSALS } from './actions-helpers';
@@ -20,6 +21,7 @@ import type {
     GroundItem,
     ShopItem,
     ChopTreeResult,
+    MineRockResult,
     BurnLogsResult,
     PickupResult,
     DropItemResult,
@@ -1063,8 +1065,19 @@ export class BotActions {
         }
     }
 
-    /** Walk to coordinates using pathfinding, auto-opening doors. Aborts if the player dies en route. */
-    async walkTo(x: number, z: number, tolerance: number = 3): Promise<ActionResult> {
+    /** Walk to coordinates using pathfinding, auto-opening doors. Bounds the whole route with options.timeout (default 120s), refuses stale state, and aborts on cancellation or death. */
+    async walkTo(x: number, z: number, tolerance: number = 3, options: { timeout?: number } = {}): Promise<ActionResult> {
+        const timeout = options.timeout ?? 120_000;
+        if (!Number.isFinite(timeout) || timeout <= 0 || !Number.isFinite(tolerance) || tolerance < 0) {
+            return { success: false, message: 'walkTo requires a positive finite timeout and a non-negative finite tolerance' };
+        }
+        return withExecutionDeadline(timeout, () => this._walkToRoute(x, z, tolerance), () => {
+            const player = this.sdk.getState()?.player;
+            return { success: false, reason: 'timeout', message: `Walk timed out after ${timeout}ms: at (${player?.worldX}, ${player?.worldZ}), destination (${x}, ${z})` };
+        });
+    }
+
+    private async _walkToRoute(x: number, z: number, tolerance: number): Promise<ActionResult> {
         if (!Number.isFinite(x) || !Number.isFinite(z)) {
             // walkTo(undefined, undefined) used to be accepted and marched the
             // bot across the map (players expose coordinates as .x/.z).
@@ -1073,10 +1086,23 @@ export class BotActions {
                 message: `walkTo requires numeric coordinates - got (${x}, ${z}). Nearby entities (players included) expose them as .x/.z; your own position is state.player.worldX/.worldZ`,
             };
         }
+        const ensureFreshState = async (): Promise<ActionResult | null> => {
+            throwIfExecutionAborted();
+            if (this.sdk.getStateAge && this.sdk.getStateAge() > 10_000) {
+                try { await this.sdk.waitForStateChange(5000); }
+                catch {
+                    throwIfExecutionAborted();
+                    return { success: false, reason: 'stale_state', message: `Cannot walk to (${x}, ${z}): no fresh world state` };
+                }
+            }
+            return null;
+        };
+        const stale = await ensureFreshState();
+        if (stale) return stale;
         await this.dismissBlockingUI();
 
         const state = this.sdk.getState();
-        if (!state?.player) return { success: false, message: 'No player state' };
+        if (!state?.player || state.inGame === false) return { success: false, message: 'No in-game player state' };
 
         // Death mid-walk: an orphaned walkTo that keeps marching after a
         // respawn re-enters the danger zone that killed it. Abort instead.
@@ -1140,6 +1166,8 @@ export class BotActions {
         };
 
         for (let i = 0; i < MAX_ITERATIONS; i++) {
+            const stale = await ensureFreshState();
+            if (stale) return stale;
             const dead = diedEnRoute();
             if (dead) return dead;
 
@@ -1192,6 +1220,8 @@ export class BotActions {
             let consecutiveStuck = 0;
 
             for (const wp of path.waypoints) {
+                const stale = await ensureFreshState();
+                if (stale) return stale;
                 // Proactively open doors the path requires — only when we're close enough to see them
                 if (requiredDoorKeys.size > 0) {
                     const wpDoorKey = `${wp.x},${wp.z}`;
@@ -1257,6 +1287,7 @@ export class BotActions {
                 const isFinalWp = wp === path.waypoints[path.waypoints.length - 1];
                 const wpTolerance = isFinalWp ? Math.min(2, tolerance) : 2;
                 const result = await this.helpers.walkStepToward(wp.x, wp.z, wpTolerance, pos);
+                pos = result.pos;
                 const deadMidStep = diedEnRoute();
                 if (deadMidStep) return deadMidStep;
                 if (distTo(result.pos) <= tolerance) return { success: true, message: 'Arrived' };
@@ -1268,7 +1299,6 @@ export class BotActions {
                     }
                 } else {
                     consecutiveStuck = 0;
-                    pos = result.pos;
                 }
             }
 
@@ -3994,11 +4024,71 @@ export class BotActions {
 
     // ============ Porcelain: Generic Interactions ============
 
+    /** Mine a rock and wait for new ore plus Mining XP. Rock names have a "Rocks" prefix: use /copper ore/i for rocks and /^copper ore$/i for inventory. */
+    async mineRock(target: NearbyLoc | string | RegExp = /rocks?/i, options: { timeout?: number } = {}): Promise<MineRockResult> {
+        const timeout = options.timeout ?? 30_000;
+        if (!Number.isFinite(timeout) || timeout <= 0) return { success: false, reason: 'timeout', message: 'mineRock requires a positive finite timeout', oresMined: 0, xpGained: 0 };
+        return withExecutionDeadline(timeout, () => this._mineRockOnce(target, timeout),
+            () => ({ success: false, reason: 'timeout', message: `Mining timed out after ${timeout}ms`, oresMined: 0, xpGained: 0 }));
+    }
+
+    private async _mineRockOnce(target: NearbyLoc | string | RegExp, timeout: number): Promise<MineRockResult> {
+        const fail = (reason: MineRockResult['reason'], message: string): MineRockResult =>
+            ({ success: false, reason, message, oresMined: 0, xpGained: 0 });
+        if (target == null) return fail('loc_not_found', 'mineRock requires a rock, name, or pattern');
+        await this.dismissBlockingUI();
+        const rock = this.helpers.resolveLocation(target, /rocks?/i, /^mine$/i);
+        if (!rock) return fail('loc_not_found', `No mineable rock matches ${target}`);
+        if (this.sdk.getInventory().length >= 28) return fail('inventory_full', 'Inventory is full');
+        if (rock.distance > 2) {
+            const walk = await this.walkTo(rock.x, rock.z, 2);
+            if (!walk.success) return fail('cant_reach', walk.message);
+        }
+        const current = this.helpers.refindLocation(rock) ?? rock;
+        const mine = current.optionsWithIndex.find(option => /^mine$/i.test(option.text));
+        if (!mine) return fail('no_matching_option', `${current.name} has no Mine option`);
+
+        const before = new Map<number, number>();
+        for (const item of this.sdk.getInventory()) before.set(item.id, (before.get(item.id) ?? 0) + item.count);
+        const xp = this.sdk.getSkillXp('mining') ?? 0;
+        const oreName = /rocks?\s+(.+?)\s+ore$/i.exec(rock.name)?.[1];
+        const expected = oreName === 'gem' ? /^uncut /i : oreName ? exactNamePattern(`${oreName} ore`) : /(?:ore|essence|^coal$|^clay$|^uncut )/i;
+        const matchesOre = (item: InventoryItem) => expected.test(item.name) || (oreName !== undefined && item.name.toLowerCase() === oreName.toLowerCase());
+        const gainedOre = (state: BotWorldState) => {
+            const amounts = new Map<number, number>();
+            for (const item of state.inventory) amounts.set(item.id, (amounts.get(item.id) ?? 0) + item.count);
+            return state.inventory.find(item => matchesOre(item) && (amounts.get(item.id) ?? 0) > (before.get(item.id) ?? 0));
+        };
+        const miningXp = (state: BotWorldState) => state.skills.find(skill => /^mining$/i.test(skill.name))?.experience ?? xp;
+        const baseline = this.helpers.getMessageTick();
+        const rejection = this.helpers.opRejectionCursor();
+        const refusals = ['need a mining level', 'need a pickaxe', 'do not have a pickaxe', "can't reach", 'cannot reach', 'no ore'];
+        const interaction = await this.sdk.sendInteractLoc(current.x, current.z, current.id, mine.opIndex);
+        if (!interaction.success) return fail(interaction.reason === 'cant_reach' ? 'cant_reach' : 'rejected', interaction.message);
+        try {
+            const final = await this.sdk.waitForCondition(state =>
+                (Boolean(gainedOre(state)) && miningXp(state) > xp) ||
+                this.helpers.wasOpRejectedSince(rejection, state) ||
+                Boolean(this.helpers.findRefusal(baseline, refusals)), timeout);
+            const ore = gainedOre(final);
+            const xpGained = miningXp(final) - xp;
+            if (ore && xpGained > 0) {
+                const count = final.inventory.filter(item => item.id === ore.id).reduce((sum, item) => sum + item.count, 0);
+                return { success: true, message: `Mined ${ore.name}`, ore, oresMined: count - (before.get(ore.id) ?? 0), xpGained };
+            }
+            return fail('rejected', this.helpers.findRefusal(baseline, refusals) ?? 'Mining operation was rejected');
+        } catch {
+            throwIfExecutionAborted();
+            return fail('timeout', `No ${oreName ?? 'ore'} gained from ${rock.name} within ${timeout}ms`);
+        }
+    }
+
     /**
      * Interact with a nearby location object (rock, fishing spot, furnace, etc.).
      * Walks to the target first (handling doors), sends the interaction, then waits
      * for an effect (animation, dialog, interface) or detects failure when the player
      * has been idle for 2 ticks with nothing happening.
+     * Success can mean the action started, before its product arrives; use mineRock for completed mining.
      * @param target - NearbyLoc object or name string/regex to find
      * @param option - Option index or name regex to match (default: 1, the first option)
      */

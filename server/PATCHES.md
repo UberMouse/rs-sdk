@@ -99,7 +99,8 @@ survival) is described in the project memory; this file is the human-readable ch
       **profile query param XSS-sanitized**), `pages/screenshots.ts`, `pages/static.ts`.
 - [ ] **World feed** (`src/web/worldfeed.ts`, rs-sdk-only): read-only `/worldfeed` WebSocket
       streaming live players/npcs for external 3D viewers (rs-world). Off unless `WORLD_FEED=true`
-      (`WORLD_FEED_TOKEN`, `WORLD_FEED_MAX_CLIENTS` in `Environment.ts`). Hooks: `isWorldFeed`
+      (`WORLD_FEED_TOKEN`, `WORLD_FEED_MAX_CLIENTS`, `WORLD_FEED_IDLE_TIMEOUT_MS` in `Environment.ts`).
+      Inactive clients expire after the configured timeout. Hooks: `isWorldFeed`
       branches in `websocket.ts` upgrade/open/message/close, and `cycleWorldFeed()` in
       `World.cycle()` between `processClientsOut()` and `processCleanup()` — it reads the per-tick
       info masks, `walkDir`/`runDir`/`tele`/`jump` and `lastTickX/Z`, so it must stay before cleanup.
@@ -384,6 +385,12 @@ Upgrade hazards:
 - [ ] **`scripts/login_logout/login.rs2`** — random-event timer gated on `map_random_events`.
 - [ ] **`scripts/macro events/scripts/macro_events.rs2`** — macro events disabled when off.
 - [ ] **`scripts/shop/configs/shop.varp`** — `transmit=yes` on shop varps (bot shop state).
+- [ ] **`scripts/minigames/game_managing_miscellania/scripts/managing_miscellania.rs2`** — coffers
+      deposit clamps to `min(requested, coffer space, current coins held)` after the count dialog;
+      withdraw rejects non-positive counts and checks the current coffer balance and inventory
+      capacity before transferring money. Report and initial fix by kadeski ([PR #73](https://github.com/MaxBittker/rs-sdk/pull/73)).
+      Reported upstream to LostCity; drop this patch once their 289 branch carries a fix.
+      Verify: from the repo root, `bun test server/engine/test/miscellania-coffers.test.ts` (requires built engine content).
 - [x] **README art** — moved out of the vendored tree to `docs/media/` (promo.gif, discord.svg,
       hiscores.svg, task_length.svg); nothing in `content/title/` is locally modified anymore.
 - [ ] Smithing arrowheads + telegrab + nails fixes live in content history; they're additive

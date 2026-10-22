@@ -11,7 +11,7 @@ test('reconnect transfers ownership and stale socket closes cannot detach the re
         copyFileSync(join(import.meta.dir, '../data/config/private.pem'), join(dir, 'data/config/private.pem'));
         const result = Bun.spawnSync([process.execPath, 'test', join(import.meta.dir, 'fixtures/reconnect-lifecycle.ts')], {
             cwd: dir,
-            env: { ...process.env, GE_DATABASE: join(dir, 'market.sqlite') }
+            env: { ...process.env, GE_DATABASE: join(dir, 'market.sqlite'), MAX_PLAYERS_PER_IP: '1' }
         });
         if (result.exitCode !== 0) {
             throw new Error(result.stdout.toString() + result.stderr.toString());

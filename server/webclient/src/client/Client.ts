@@ -3,6 +3,7 @@ import { playWave, setWaveVolume } from '#3rdparty/audio.js';
 import { stopMidi, setMidiVolume, playMidi } from '#3rdparty/tinymidipcm.js';
 
 import type { WalkResult } from '#/bot/types.js';
+import { getDialogPageId, invalidateDialogPage } from '#/bot/dialog-page.js';
 
 import ClientBuild from '#/client/ClientBuild.js';
 import { ClientCode } from '#/client/ClientCode.js';
@@ -8487,6 +8488,7 @@ export class Client extends GameShell {
                 this.redrawChat = true;
                 this.mainModalId = -1;
                 this.resumedPauseButton = false;
+                invalidateDialogPage(this);
 
                 this.ptype = -1;
                 return true;
@@ -8645,6 +8647,7 @@ export class Client extends GameShell {
                 const hide = this.in.g1() === 1;
 
                 IfType.list[comId].hide = hide;
+                getDialogPageId(this);
 
                 this.ptype = -1;
                 return true;
@@ -8713,6 +8716,7 @@ export class Client extends GameShell {
                 const text = this.in.gjstr();
 
                 IfType.list[comId].text = text;
+                getDialogPageId(this);
 
                 if (IfType.list[comId].layerId === this.sideIcon[this.activeIcon]) {
                     this.redrawSide = true;
@@ -8967,13 +8971,13 @@ export class Client extends GameShell {
                 }
                 this.lastTickTime = now;
 
-                // Notify SDK of game tick (PLAYER_INFO arrives once per server tick)
+                this.getPlayerPos(this.in, this.psize);
+                this.awaitingPlayerInfo = false;
+
+                // Publish this tick only after its player update is fully decoded.
                 if (this.onGameTickCallback) {
                     this.onGameTickCallback();
                 }
-
-                this.getPlayerPos(this.in, this.psize);
-                this.awaitingPlayerInfo = false;
 
                 this.ptype = -1;
                 return true;
