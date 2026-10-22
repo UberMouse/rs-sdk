@@ -23,7 +23,8 @@
 //   slots a success fills less the food it eats). Ideal play starts with the f that makes both come at once:
 //   free / max(food a success, slots a success) successes. That assumes a bank visit withdraws exactly that f
 //   (free x food / slots, when the loot fills faster), or fills every slot with food when the food runs out first.
-//   Picking the loot up is not counted here.
+//   A kill with `pickupTicks` takes them every success when any of its products is taken (kept or buried), though a
+//   kill whose taken products drop on few kills would skip most pickups: a little slow there.
 // - `uncalibrated`: the gather's `damage` is not yet checked against a run (the food gate), so no food goes for it
 //   (none eaten, no swing eats) and, with no failDamage, a trip ends only when the inventory fills. A fail's damage
 //   (failDamage) is not under the gate: it still eats the named food.
@@ -32,8 +33,8 @@
 //   the drop goes out in that tick ahead of the click, free, so the inventory never fills. Food with a drop sink is
 //   not modelled (nothing restocks it).
 // - `damage` (see ActionModel) needs a food. Its eats cost no ticks, except on an action with an `attackRate` (a
-//   kill), where each costs EAT_DELAY; a stun's eats cost eatTicksPerFail. Only foods whose trigger adds EAT_DELAY
-//   (normal food) are modelled.
+//   kill), where each costs EAT_DELAY past the kill's free ticks; a stun's eats cost eatTicksPerFail. Only foods whose
+//   trigger adds EAT_DELAY (normal food) are modelled.
 //
 // The steps. A process step's `restart`, `start` and `perTick` (see ActionModel) add to its ticks over a trip, so
 // they need a trip that ends; `batch` is the inputs an action takes (the whole-batch rounding above). A gather with a
@@ -340,6 +341,17 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
         buried = sorted.buried;
     }
     const buries = buried.reduce((n, x) => n + x.count, 0);
+    // A kill whose products are taken waits for the drop each success (ActionModel.pickupTicks); the target's respawn
+    // runs on through it.
+    const pickup = raw.pickupTicks !== undefined && (source.products.length > 0 || buries > 0) ? raw.pickupTicks : 0;
+    if (pickup > 0)
+        source = {
+            ...source,
+            successTicks: (source.successTicks ?? 0) + pickup,
+            ...(source.deplete
+                ? { deplete: { ...source.deplete, respawnTicks: Math.max(0, source.deplete.respawnTicks - pickup) } }
+                : {}),
+        };
     if (buries > 0 && source.attackRate === undefined)
         throw new ModelError('burying between swings needs the gather to have an attackRate');
     const buryTicks = buries * Math.max(0, BURY_SWING_GAP - (source.attackRate ?? 0));
@@ -512,11 +524,14 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     // (:129-131), so it costs ticks only where the next action waits on that. A stun's eats cost eatTicksPerFail. On a
     // kill (an attackRate) each food for `damage` holds the next swing EAT_DELAY ticks (player_melee.rs2:8-11), however
     // many a kill takes: each adds its own, and the %eat_delay gate (:122-126) lets the next in 3 ticks on, before the
-    // pushed swing. Off a kill the food for `damage` costs no ticks. The swing eats and the buries are charged as if
-    // the swings ran back to back; a between-kill gap (a walk to the next target, a respawn wait) absorbs an eat after
-    // the killing swing, which then costs max(0, attackRate + EAT_DELAY - gap), and a bury likewise, so a caller with
-    // such a gap must net them against it.
-    const swingEats = food && source.attackRate !== undefined ? (EAT_DELAY * damage) / food.heal : 0;
+    // pushed swing. Off a kill the food for `damage` costs no ticks. A kill's free ticks (freeTicks, and the pickup's
+    // when the drops are taken) absorb the eats: k eats after the killing swing push the next swing to attackRate + k *
+    // EAT_DELAY after it, which costs only past the gap. Per success that is max(0, the eats' EAT_DELAYs - gap), a
+    // floor of the whole eats' cost. The buries are charged as if the swings ran back to back: a bury holds the player
+    // (p_delay), so it can't go during a run.
+    const gapTicks = (source.freeTicks ?? 0) + pickup;
+    const swingEats =
+        food && source.attackRate !== undefined ? Math.max(0, (EAT_DELAY * damage) / food.heal - gapTicks) : 0;
     const eat = food ? n * (failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) + swingEats) : 0;
     const active = gatherTicks + process + bury + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.

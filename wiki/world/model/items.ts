@@ -33,9 +33,19 @@ export type Items = (obj: string) => Item;
 const DEFAULT_COST = 1;
 
 export function readItems(objs: ReadonlyMap<string, Config>): Items {
-    return obj => {
+    return (obj): Item => {
         const cfg = objs.get(obj);
-        if (!cfg) throw new ModelError(`no obj ${obj}`);
+        if (!cfg) {
+            // The packer makes `cert_<obj>`, the noted obj, for every obj (tools/pack/config/ObjConfig.ts:212-216), with
+            // no config of its own; the engine gives it the obj's cost and makes it stackable
+            // (cache/config/ObjType.ts:295-320). A drop table can name one.
+            const link = obj.startsWith('cert_') ? objs.get(obj.slice('cert_'.length)) : undefined;
+            if (link) {
+                const cost = first(link, 'cost');
+                return { stackable: true, cost: cost === undefined ? DEFAULT_COST : Number(cost), wearable: false };
+            }
+            throw new ModelError(`no obj ${obj}`);
+        }
         const cost = first(cfg, 'cost');
         return {
             stackable: first(cfg, 'stackable') === 'yes',

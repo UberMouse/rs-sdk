@@ -342,3 +342,64 @@ describe('uncalibrated damage', () => {
         );
     });
 });
+
+describe("a kill's free and pickup ticks", () => {
+    test('a pickup is charged when any product is taken: the coins under a leave policy', () => {
+        // pickupTicks 5 on the 20-tick kill: 25 a kill, 9000 / 25 = 360 kills an hour.
+        const r = looted({ bones: 'leave' }, { ...kill, pickupTicks: 5 });
+        expect(r.trip).toMatchObject({ successes: 1, gather: 25, total: 25 });
+        expect(r.itemsPerHour).toEqual([{ obj: 'coins', count: 360 * 15 }]);
+    });
+
+    test('nothing taken, no pickup', () => {
+        // Only the bones (left) and the unlisted hide (left): no product is kept or buried, so the kill stays 20.
+        const gather = { ...kill, products: kill.products.filter(x => x.obj !== 'coins'), pickupTicks: 5 };
+        expect(looted({ bones: 'leave' }, gather).trip.total).toBe(20);
+        // Buried bones are taken: the pickup is charged.
+        expect(looted({ bones: 'bury' }, gather).trip.total).toBe(25);
+    });
+
+    test("the eats spend the kill's free ticks and the pickup's before they hold a swing", () => {
+        // Damage 24, heal 12: 2 food a kill, 6 eat ticks back to back. freeTicks 2 + pickupTicks 3 = 5 free:
+        // max(0, 6 - 5) = 1 eat tick a kill. 27 / 2 = 13.5 kills (as in "two foods a kill"), each 20 + 3 = 23:
+        // 310.5 + 20 travel + 13.5 eat = 344.
+        const r = run({
+            gather: { ...kill, damage: 24, freeTicks: 2, pickupTicks: 3 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'leave', keep: ['hide'] },
+        });
+        expect(r.trip).toMatchObject({ successes: 13.5, gather: 310.5, eat: 13.5, travel: 20, total: 344 });
+        // Free ticks past the eats' leave none to charge.
+        const spare = run({
+            gather: { ...kill, damage: 24, freeTicks: 7, pickupTicks: 3 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'leave', keep: ['hide'] },
+        });
+        expect(spare.trip.eat).toBe(0);
+    });
+
+    test("the pickup comes off the respawn: the target's cycle is unchanged", () => {
+        // One spawn down 30 ticks after a 20-tick kill: a kill every 50. With a 5-tick pickup the kill is 25 and the
+        // respawn 25: still 50, so the trip waits 25 a kill (1 / cap = 50, less the 25 active).
+        const r = looted(
+            { bones: 'leave' },
+            { ...kill, pickupTicks: 5, deplete: { chance: 1, respawnTicks: 30 }, features: 1 },
+        );
+        expect(r.trip).toMatchObject({ gather: 25, wait: 25, total: 50 });
+        expect(r.binding).toBe('resource');
+    });
+});
+
+describe('noted drops', () => {
+    test("a cert_ obj is stackable at its obj's cost (ObjType.ts:295-320)", () => {
+        expect(items('cert_hide')).toEqual({ stackable: true, cost: 100, wearable: false });
+        // The engine's default cost of 1 for an obj with no cost line.
+        expect(items('cert_coins').cost).toBe(1);
+        expect(() => items('cert_nothing')).toThrow(/no obj cert_nothing/);
+        // Kept as a stackable under any policy, valued at the hide's 100: 450 kills x 0.5 x 100.
+        const r = looted({ bones: 'leave' }, { ...kill, products: [{ obj: 'cert_hide', count: 0.5 }] });
+        expect(r.gpPerHour).toBe(450 * 0.5 * 100);
+    });
+});

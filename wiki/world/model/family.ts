@@ -39,6 +39,20 @@ export interface ActionModel {
      */
     attackRate?: number;
     /**
+     * On a kill (with `attackRate`): ticks per success, already in ticksPerAttempt, from the end of the swing cooldown
+     * after the killing swing to the next target's first swing (the run beyond it). The eats `damage` takes spend them
+     * before they hold a swing (cycle.ts).
+     */
+    freeTicks?: number;
+    /**
+     * On a kill: ticks a success adds when the cycle takes any of its products (kept or buried): the wait for the drop
+     * and the step onto it. They are free ticks for the eats too, and come off `deplete.respawnTicks`, as the target's
+     * respawn does not wait on them.
+     */
+    pickupTicks?: number;
+    /** On a kill: the npc's `retreat` HP, at which it runs instead of fighting back; not priced, a note for the page. */
+    retreat?: number;
+    /**
      * Inputs one product of a process step takes (5 bars a platebody); default 1. A step's chained input is its
      * `consumes[0]`, whose count must be `batch`. The load rounds down to whole batches where the step's input per
      * success is a whole number.
