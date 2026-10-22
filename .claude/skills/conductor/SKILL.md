@@ -124,7 +124,10 @@ Seed `invariants` with the list below on the first write.
 2. **Decide** the goal (from the queue; refill it from roadmap §Now and §Backlog), then what the
    runner gets with it:
    - Methods to try: catalog tasks and promoted plans (`conductor/plans/`) that serve it, with
-     spots/targets from `wiki/skills/<skill>.md` §Verified training spots and `learnings/`.
+     spots/targets from `wiki/skills/<skill>.md` §Verified training spots and `learnings/`. Rank the
+     curated methods with `bestMethods(skill, profile, { met, maxWilderness, multiway })`
+     (`wiki/world/query.ts`) or read `wiki/training/<skill>.md`; both give the floor XP/hr beside
+     what bots measured.
    - **Exploit** the variant with the best XP/hr in `stats.ts` that is safe for the bot's level.
    - **Explore** about one goal in five: name an untried variant from roadmap §Experiments or a
      spot the knowledge base lists without stats for the runner to try short, then compare in
@@ -140,6 +143,11 @@ Seed `invariants` with the list below on the first write.
 4. **Dispatch** a `task-runner` with the goal brief (template below); add it to `inFlight` and to
    `runners` (its agent ID, `<abs worktree>/.durable-state/runners/<bot>.json`, the objective id),
    mark the objective `in-progress`, `attempts += 1`, rewrite state.
+   **Bookkeeping rides along** (durable-state §Write discipline 3): a report's state changes,
+   journal line, progress check and follow-up dispatch go out as parallel calls in one message,
+   and the state write with the new agent IDs goes in the next message with whatever it does.
+   When a goal closes with nothing in flight, the state is complete: say in one line that this is
+   a clean point for the user to `/clear` and resume the conductor, then carry on.
 5. **On the runner's report** (it journaled its own runs):
    1. Drop the `inFlight` entry. Recount `runsSinceRetro`:
       `jq -s --arg t "<lastRetroAt>" '[.[] | select(.kind == "run" and .at > $t)] | length' <journal>`.
@@ -154,7 +162,14 @@ Seed `invariants` with the list below on the first write.
    5. **`GOAL ...`** (a final report): promote each draft it marks `promote` (below), judge the
       outcome (below), write the report's measured XP/h, tick budget and next optimization into
       that skill's roadmap §Max route row in the same turn (retro #7: rows lagged the reports),
-      **optimize the method** (below), and go to 1.
+      and in that turn run `bun conductor/tools/stats.ts <bot> --methods`: the goal's plan names a
+      method and it prints an entry -> paste it into the method's `measured` in
+      `wiki/world/methods.ts`, `bun run world`, commit `methods.ts` with the regenerated pages
+      (its paths: Promoting a draft plan, step 3); only the per-run table (runs started at
+      different levels or tool) -> leave `measured` alone and put the percent of floor in the
+      roadmap row; the plan names no method (or it was a task run without a plan) -> skip this
+      (promotion step 3 is where a method gets added). Then **optimize the method** (below),
+      and go to 1.
 6. **On the curator's report**: `git diff -- learnings wiki` — check the edits follow the
    knowledge skill's rules (current truth, provenance tags, no narration, nothing in generated
    wiki dirs). Commit: `knowledge: <what was learned>`. Revert any edit that breaks the rules.
@@ -176,12 +191,19 @@ it orchestrated (2026-10-11). After every goal, for each method it used:
 
 1. **Budget**: the method's ideal cycle in game ticks (click to swing, swing to product, respawn,
    bank trip) from the task's step log and `.ticks.ndjson.gz` (`replay.ts`), against the
-   measured cycle. Every idle tick is a gap: walking between targets, waits on state, drops or
-   banking that stop the action, travel the plan could avoid.
+   measured cycle. A curated method's ideal is its floor (`methodRate(id, profile)`, the
+   `wiki/training/` page): the `stats.ts --methods` percent of floor is the headroom. That
+   exists only for a plan that names a method; for one that names none `--methods` shows
+   nothing, and the budget is worked from the logs as above (or write the record first, when
+   the world index models the family). Every idle tick is a gap: walking between targets,
+   waits on state, drops or banking that stop the action, travel the plan could avoid.
 2. **Close the gaps in parallel**, each with its own agent:
    - a **spot search** (a read-only agent on the world index: `wiki/world.json`,
      `wiki/resources/`, `wiki/services/`) for the layout that removes walking. That means
-     a stand tile reaching several targets, the nearest bank or range, a shorter route;
+     a stand tile reaching several targets, the nearest bank or range, a shorter route. A layout
+     with a higher floor than the method it replaces is a new record in `wiki/world/methods.ts`
+     (checklist in `wiki/world/README.md`), not a note; where the world index does not model the
+     family yet, note it in roadmap §Experiments instead;
    - a **task-author** on a worker for the code: actions that overlap in one tick, no waits on
      state the next action doesn't need, a fixed stand mode;
    - the **plan** (the runner's next goal): phase order, errands batched, trips removed.
@@ -201,8 +223,15 @@ refuses it: move it, then add it.
    `conductor/plans/` is a revision of that plan: diff it first, and keep the better one).
 2. `bun run verify:conductor` (the drafts were linted, but `tsc` checks `conductor/plans/` only
    once it is there). A failure: move it back and leave it a draft; note it for the next runner.
-3. `git add conductor/plans/<name>.ts`, then
-   `git commit -m "plans: promote <name>" -m "<each run: status, reason, XP gained, minutes, XP/hr>" -- conductor/plans/<name>.ts`.
+3. The plan names its method (`PlanDef.method`, `conductor/docs/plans.md`): the id of its record
+   in `wiki/world/methods.ts`, which lists the plan back; no record fits and the plan's whole run
+   is one method's cycle → add the record first. `bun test conductor/test/plans.test.ts` checks
+   the link both ways. A plan that does more than one cycle (mine, smelt, smith) names none.
+   Then `git add conductor/plans/<name>.ts`, and when the record changed (after `bun run world`)
+   also `wiki/world/methods.ts wiki/world.json wiki/world/README.md wiki/places wiki/resources
+   wiki/services wiki/training` (everything `bun run world` writes), and commit with a pathspec
+   that names the same paths:
+   `git commit -m "plans: promote <name>" -m "<each run: status, reason, XP gained, minutes, XP/hr>" -- conductor/plans/<name>.ts [wiki/world/methods.ts wiki/world.json wiki/world/README.md wiki/places wiki/resources wiki/services wiki/training]`.
 4. A runner still owning a goal that uses it (after a script-fault return): tell it the new path
    when you resume it.
 

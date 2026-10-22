@@ -44,6 +44,9 @@
 // only what the context's edges change (every context meets `{}`, so its ways are never longer). The way's
 // `requires` is the join (SetTable.union) of the alternatives its crossings take; of two ways equally short, the one
 // asking fewer requirements is kept.
+//
+// wayFinder answers one leg point to point (a method's way back from its bank, or to a bank that is not the
+// nearest) with the same search, from the leg's end and stopped once its start settles.
 import { actName, coord, IntList, STEPS, type Edge, type ReachGraph, type Via } from './reach';
 import { expectedTicks, lowestLevel, statRandomChance } from './roll';
 import {
@@ -189,19 +192,40 @@ const perKind = (): Record<SinkKind, number> => ({ bank: 0, furnace: 0, range: 0
 const INF = 0x7fffffff;
 
 /**
- * The nearest sinks of every site whose kind SINKS lists, by site id: `{}` for one with no stand, no reach or no
- * sink its contexts get to. Sinks are the sites of the sink kind with a stand some set reaches.
+ * The search over the reversed graph that nearestSinks and wayFinder share: the reversed edges, and one search
+ * layer (typed arrays the size of the graph) that each search reuses. Its labels are read straight after the search
+ * that set them: a tile's label is current when `mark[i] >= seen` for that search's `seen`.
  */
-export function nearestSinks(
-    graph: ReachGraph,
-    sites: readonly SiteIn[],
-    options: NearestOptions = {},
-): { nearest: Map<string, Nearest>; report: DistanceReport } {
-    const began = performance.now();
+interface Searcher {
+    /** The tiles a way into which may need more than {}: the targets of edges and the opened tiles that ask something. */
+    gated: number[];
+    mark: Int32Array;
+    dist: Int32Array;
+    sinkOf: Int16Array;
+    setOf: Uint16Array;
+    /** Tiles settled over every search so far. */
+    settled(): number;
+    /** Bytes of the search layer and the edge masks. */
+    bytes: number;
+    /**
+     * A Dijkstra over the reversed graph under context `ctx`, on the search layer, from the labels `seed` gives; it
+     * returns the run's `seen` mark. With `base` (a layer of half ticks by tile), a tile takes a label only when it
+     * betters the base's: the first search of a kind (ctx `{}`, no base) finds every tile's way over `{}` edges; a
+     * later one (a context that asks more) only the tiles whose way it shortens, starting from the gated tiles' base
+     * labels, so it walks no further than the context changes things. With `stop`, it ends once every tile of it is
+     * settled. Called inside `graph.within`.
+     */
+    search(
+        ctx: number,
+        base: Int32Array | null,
+        seed: (from: Relax, to: Relax) => void,
+        stop?: ReadonlySet<number>,
+    ): number;
+}
+
+function searcher(graph: ReachGraph, reached?: NearestOptions['reached']): Searcher {
     const { index, sets, openAlts, stepMask } = graph;
-    const { reached } = options;
     const n = index.size;
-    const at = (t: Tile): number => index.of(t.level, t.x, t.z);
 
     // The edges reversed: by target tile, each source tile with its alternatives and cost in half ticks. A roll is
     // priced at the lowest level any of the edge's alternatives lets through.
@@ -220,8 +244,6 @@ export function nearestSinks(
     for (const i of edgeTo.keys()) hasIn[i] = 1;
     const opened = new Uint8Array(n);
     for (const i of openAlts.keys()) opened[i] = 1;
-    // The tiles a way into which may need more than {}: the targets of edges and the opened tiles that ask
-    // something. Only from these does a context's search start (below).
     const gated = [
         ...new Set([
             ...[...edgeTo].filter(([, es]) => es.some(e => !e.alts.includes(0))).map(([i]) => i),
@@ -229,9 +251,6 @@ export function nearestSinks(
         ]),
     ].sort((a, b) => a - b);
 
-    // The base layer: each tile's way to the nearest sink of the kind over `{}` edges alone, its set always `{}`.
-    const baseDist = new Int32Array(n);
-    const baseSink = new Int16Array(n);
     // The search layer: `mark` is 2 * run when a search has seen the tile, + 1 once settled.
     const mark = new Int32Array(n);
     const dist = new Int32Array(n);
@@ -259,19 +278,7 @@ export function nearestSinks(
         sets.size(set) < sets.size(have) ||
         (set !== have && sets.size(set) === sets.size(have) && sets.dominates(set, have));
 
-    /**
-     * A Dijkstra over the reversed graph under context `ctx`, on the search layer, from the labels `seed` gives; it
-     * returns the run's `seen` mark. With `base`, a tile takes a label only when it betters the base layer's: the
-     * first search of a kind (ctx `{}`, no base) finds every tile's way over `{}` edges; a later one (a context that
-     * asks more) only the tiles whose way it shortens, starting from the gated tiles' base labels, so it walks no
-     * further than the context changes things. With `stop`, it ends once every tile of it is settled.
-     */
-    const search = (
-        ctx: number,
-        base: boolean,
-        seed: (from: Relax, to: Relax) => void,
-        stop?: ReadonlySet<number>,
-    ): number => {
+    const search: Searcher['search'] = (ctx, base, seed, stop) => {
         run++;
         const seen = 2 * run;
         let queued = 0;
@@ -279,7 +286,7 @@ export function nearestSinks(
         let hi = 0;
         const relaxTo: Relax = (p, half, sink, set) => {
             if (mark[p] === seen + 1 || (reached && !reached(p))) return;
-            const [have, haveSet] = mark[p] === seen ? [dist[p]!, setOf[p]!] : [base ? baseDist[p]! : INF, 0];
+            const [have, haveSet] = mark[p] === seen ? [dist[p]!, setOf[p]!] : [base ? base[p]! : INF, 0];
             if (half > have || (half === have && !asksLess(set, haveSet))) return;
             mark[p] = seen;
             dist[p] = half;
@@ -337,6 +344,44 @@ export function nearestSinks(
         return seen;
     };
 
+    return {
+        gated,
+        mark,
+        dist,
+        sinkOf,
+        setOf,
+        settled: () => settled,
+        bytes:
+            mark.byteLength +
+            dist.byteLength +
+            sinkOf.byteLength +
+            setOf.byteLength +
+            hasIn.byteLength +
+            opened.byteLength,
+        search,
+    };
+}
+
+/**
+ * The nearest sinks of every site whose kind SINKS lists, by site id: `{}` for one with no stand, no reach or no
+ * sink its contexts get to. Sinks are the sites of the sink kind with a stand some set reaches.
+ */
+export function nearestSinks(
+    graph: ReachGraph,
+    sites: readonly SiteIn[],
+    options: NearestOptions = {},
+): { nearest: Map<string, Nearest>; report: DistanceReport } {
+    const began = performance.now();
+    const { index, sets } = graph;
+    const n = index.size;
+    const at = (t: Tile): number => index.of(t.level, t.x, t.z);
+    const searching = searcher(graph, options.reached);
+    const { gated, mark, dist, sinkOf, setOf, search } = searching;
+
+    // The base layer: each tile's way to the nearest sink of the kind over `{}` edges alone, its set always `{}`.
+    const baseDist = new Int32Array(n);
+    const baseSink = new Int16Array(n);
+
     const nearest = new Map<string, Nearest>();
     for (const s of sites) if (SINKS[s.kind]) nearest.set(s.id, {});
     const report: DistanceReport = {
@@ -346,15 +391,7 @@ export function nearestSinks(
         missing: perKind(),
         settled: 0,
         ms: 0,
-        bytes:
-            baseDist.byteLength +
-            baseSink.byteLength +
-            mark.byteLength +
-            dist.byteLength +
-            sinkOf.byteLength +
-            setOf.byteLength +
-            hasIn.byteLength +
-            opened.byteLength,
+        bytes: baseDist.byteLength + baseSink.byteLength + searching.bytes,
     };
     const usable = (s: SiteIn): boolean => s.stand !== null && s.reach.length > 0 && at(s.stand) >= 0;
 
@@ -379,7 +416,7 @@ export function nearestSinks(
             const found = new Map<number, Map<number, Found>>();
             if (sinks.length && contexts.size) {
                 // The base search, from every sink at once; its labels become the base layer.
-                const seen = search(0, false, (_, to) => sinks.forEach((s, k) => to(at(s.stand!), 0, k, 0)));
+                const seen = search(0, null, (_, to) => sinks.forEach((s, k) => to(at(s.stand!), 0, k, 0)));
                 for (let i = 0; i < n; i++) {
                     baseDist[i] = mark[i]! >= seen ? dist[i]! : INF;
                     baseSink[i] = sinkOf[i]!;
@@ -391,8 +428,8 @@ export function nearestSinks(
                         c === 0
                             ? seen
                             : options.full
-                              ? search(c, false, fromSinks, tiles)
-                              : search(c, true, from => {
+                              ? search(c, null, fromSinks, tiles)
+                              : search(c, baseDist, from => {
                                     for (const g of gated)
                                         if (baseDist[g]! < INF) from(g, baseDist[g]!, baseSink[g]!, 0);
                                 });
@@ -430,9 +467,49 @@ export function nearestSinks(
             }
         }
     });
-    report.settled = settled;
+    report.settled = searching.settled();
     report.ms = Math.round(performance.now() - began);
     return { nearest, report };
+}
+
+/** A way between two tiles: its run ticks and the requirement set (canonical) its crossings take, `[]` for none. */
+export interface Way {
+    runTicks: number;
+    requires: string[];
+}
+
+/**
+ * Point-to-point run ticks over the graph, for the legs of a method's cycle (site -> bank -> site, and a processor on
+ * the way), which the nearest-sink tables do not give: the way back from a bank, a leg to a bank that is not the
+ * nearest, a processor to a bank. Built once per graph (the search layer is allocated once); each query is the
+ * search nearestSinks runs, from `to` over the reversed edges and stopped once `from` settles, so it walks no further
+ * than the leg is long.
+ */
+export function wayFinder(graph: ReachGraph): {
+    /**
+     * The shortest way from `from` to `to` crossing only what the requirement set `reachSet` meets, or null when
+     * there is none (or either tile is off the graph). A way asking less is kept of two equally short.
+     */
+    runTicksBetween(from: Tile, to: Tile, reachSet: readonly string[]): Way | null;
+} {
+    const { index, sets } = graph;
+    const searching = searcher(graph);
+    return {
+        runTicksBetween(from, to, reachSet) {
+            const a = index.of(from.level, from.x, from.z);
+            const b = index.of(to.level, to.x, to.z);
+            if (a < 0 || b < 0) return null;
+            const ctx = sets.intern(reachSet);
+            return graph.within(() => {
+                const seen = searching.search(ctx, null, (_, reach) => reach(b, 0, 0, 0), new Set([a]));
+                if (searching.mark[a] !== seen + 1) return null;
+                return {
+                    runTicks: Math.ceil(searching.dist[a]! / HALVES),
+                    requires: sets.strings(searching.setOf[a]!),
+                };
+            });
+        },
+    };
 }
 
 /** The distances' section of the build report. */

@@ -1,13 +1,15 @@
-// Renders the world as the markdown agents read: wiki/places, wiki/resources and wiki/services, which are
-// wholly generated, and the generated head of wiki/world/README.md. renderWorld is pure; the rest reads
+// Renders the world as the markdown agents read: wiki/places, wiki/resources, wiki/services and wiki/training, which
+// are wholly generated, and the generated head of wiki/world/README.md. renderWorld is pure; the rest reads
 // the game data it needs, writes the pages and removes stale ones, or lists what differs (--check).
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
 import { ROOT, SCRIPTS, WORLD_JSON } from './paths';
-import { link, type PageData } from './render/common';
+import type { MethodModel } from './model/method';
+import { link } from './render/common';
 import { renderPlaces } from './render/places';
 import { renderResources } from './render/resources';
 import { renderServices } from './render/services';
+import { renderTraining, type TrainingData } from './render/training';
 import { first, parseConfigs, readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
 import { readCallables, readTriggers } from './sources/triggers';
@@ -16,14 +18,14 @@ import type { World } from './types';
 import { cmp } from './util';
 
 /** The folders renderWorld owns outright: a file in them that it did not render is stale. */
-export const GENERATED_DIRS: readonly string[] = ['wiki/places', 'wiki/resources', 'wiki/services'];
+export const GENERATED_DIRS: readonly string[] = ['wiki/places', 'wiki/resources', 'wiki/services', 'wiki/training'];
 
 export const README = 'wiki/world/README.md';
 
 /** The line in README.md below which it is hand-written; the generator keeps what follows it. */
 export const HAND_WRITTEN = '<!-- Hand-written below this line: build.ts keeps it as it is. -->';
 
-export interface RenderData extends PageData {
+export interface RenderData extends TrainingData {
     /** README.md from the line after HAND_WRITTEN to the end. */
     readmeBody: string;
 }
@@ -50,6 +52,7 @@ function readme(world: World, pages: ReadonlyMap<string, string>, body: string):
         `| ${folder('wiki/places')} | ${count('wiki/places')} | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |`,
         `| ${folder('wiki/resources')} | ${count('wiki/resources')} | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |`,
         `| ${folder('wiki/services')} | ${count('wiki/services')} | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |`,
+        `| ${folder('wiki/training')} | ${count('wiki/training')} | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |`,
         '',
         HAND_WRITTEN,
         body,
@@ -66,6 +69,7 @@ export function renderWorld(world: World, data: RenderData): Map<string, string>
         ...renderPlaces(world, data),
         ...renderResources(world, data),
         ...renderServices(world, data),
+        ...renderTraining(world, data),
     ]) {
         if (pages.has(path) || path === README) throw new Error(`two pages render to ${path}`);
         pages.set(path, text);
@@ -111,13 +115,17 @@ export function questListNames(text: string): Map<string, string> {
     );
 }
 
-/** Reads the game data the pages need and the README's hand-written part (empty if no README), from ROOT. */
-export function readRenderData(): RenderData {
+/**
+ * Reads the game data the pages need and the README's hand-written part (empty if no README), from ROOT; the training
+ * pages rate methods with `model`, the one buildWorld resolved them with.
+ */
+export function readRenderData(model: MethodModel): RenderData {
     const file = join(ROOT, README);
     return {
         dbrows: readDbrows(),
         npcConfigs: readConfigs('npc'),
         objConfigs: readConfigs('obj'),
+        model,
         shopTitles: openshopTitles([...readTriggers(), ...readCallables()].map(s => s.body)),
         questNames: questListNames(readFileSync(join(SCRIPTS, QUESTLIST), 'utf8')),
         readmeBody: existsSync(file) ? readmeBody(readFileSync(file, 'utf8')) : '',

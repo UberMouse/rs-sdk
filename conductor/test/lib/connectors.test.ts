@@ -174,6 +174,7 @@ describe('connectorTable on a scripted world', () => {
         transports: [],
         gates: [],
         crossings: [],
+        methods: [],
     };
 
     test('one row per loc, direction and landing, named by the loc and its place', () => {

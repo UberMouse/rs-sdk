@@ -331,6 +331,13 @@ export function readRecording(path: string): Recording {
     return parseRecording(readFileSync(path));
 }
 
+/** A recording with no whole line: an empty file, or a prefix of one cut inside its header line. */
+export class EmptyRecordingError extends Error {
+    constructor() {
+        super('empty recording');
+    }
+}
+
 /** A recording from its gzipped bytes (see readRecording). */
 export function parseRecording(bytes: Uint8Array): Recording {
     const text = gunzipSync(bytes, { finishFlush: constants.Z_SYNC_FLUSH }).toString('utf8');
@@ -338,7 +345,7 @@ export function parseRecording(bytes: Uint8Array): Recording {
     // The last element is '' after a whole file's final newline, or the partial line of a cut one.
     lines.pop();
     const [first, ...rest] = lines;
-    if (!first) throw new Error('empty recording');
+    if (!first) throw new EmptyRecordingError();
     const header = JSON.parse(first) as Header;
     if (header.k !== 'h' || header.v !== RECORDING_VERSION)
         throw new Error(`not a version ${RECORDING_VERSION} recording`);

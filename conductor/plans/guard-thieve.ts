@@ -9,6 +9,7 @@ const food = /^(trout|salmon)$/i;
 
 export default definePlan({
     name: 'guard-thieve',
+    method: 'guard-falador-pickpocket',
     description: 'Falador guards with Trout/Salmon, banked at Falador East when food runs out',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [

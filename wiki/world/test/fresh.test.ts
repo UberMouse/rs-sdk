@@ -87,6 +87,7 @@ describe('loadFreshWorld', () => {
         transports: [],
         gates: [],
         crossings: [],
+        methods: [],
     };
     const file = join(tmp, 'world.json');
     writeFileSync(file, serializeWorld(world));
