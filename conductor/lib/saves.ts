@@ -14,7 +14,7 @@ import { configName, packFile } from './packs';
 import { errMessage, fileStamp } from './util';
 
 /** Newest save format the engine reads (PlayerLoading.SAV_VERSION). */
-const SAV_VERSION = 8;
+const SAV_VERSION = 9;
 const SAV_MAGIC = 0x2004;
 /** Oldest format decodeSave reads: earlier ones omit inventory sizes. */
 const MIN_DECODE_VERSION = 5;
@@ -337,7 +337,11 @@ export interface SaveSummary {
     varps: Record<number, number>;
 }
 
-/** Decode the parts of a save worth describing. Mirrors PlayerLoading.load for versions 5-8. */
+/**
+ * Decode the parts of a save worth describing. Mirrors PlayerLoading.load for versions 5-9 up to the
+ * inventories; what follows them (AFK zones, chat modes, last login, recovery items, v9's level playtimes)
+ * is left unread.
+ */
 export function decodeSave(bytes: Uint8Array): SaveSummary {
     const saveVersion = verifySave(bytes);
     if (saveVersion < MIN_DECODE_VERSION) throw new Error(`save version ${saveVersion} is too old to decode`);

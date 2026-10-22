@@ -408,6 +408,17 @@ describe('walkTo: giving up', () => {
         expect(w.result()).toEqual({ ok: false, reason: 'stuck', message: 'Stuck at (3200, 3204)' });
     });
 
+    test('a stuck leg that still got closer counts as progress: three more routes, stuck where the bot stands', async () => {
+        // One tile short of the wall: the first leg moves a tile (stuck) and the walk is a tile closer.
+        const paths = straightPaths();
+        const states = world()
+            .player({ at: { x: 3200, z: 3203 } })
+            .series(1);
+        const w = await walk(states, DEST.x, DEST.z, 0, { paths, blocked: solid });
+        expect(w.result()).toEqual({ ok: false, reason: 'stuck', message: 'Stuck at (3200, 3204)' });
+        expect(paths.queries).toHaveLength(4);
+    });
+
     test('fifty routes that each get a little closer give up where the bot stands', async () => {
         const paths = fakePaths(from => ({
             success: true,
