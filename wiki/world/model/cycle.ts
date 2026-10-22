@@ -97,7 +97,8 @@ export const BURY_DELAY = readBuryDelay(readFileSync(join(SCRIPTS, BURY_SOURCE),
  * re-click goes n + 2 ticks after the bury. The re-clicked attack swings at once when `%action_delay` has passed
  * (player_melee.rs2:8-11), so the next swing waits for the later of the cooldown and the re-click, and a bury costs
  * max(0, BURY_SWING_GAP - attackRate) ticks: 3 - attackRate at p_delay(0), none for any melee weapon (attackrate 3
- * and up).
+ * and up). Each bury takes a swing's gap of its own (a second in the same gap would end the re-clicked attack), so
+ * this assumes a kill drops no more bones than it takes swings.
  */
 export const BURY_SWING_GAP = 1 + BURY_DELAY.value + 2;
 
