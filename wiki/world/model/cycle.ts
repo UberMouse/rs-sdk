@@ -21,15 +21,19 @@
 //   reads them. Kept loot and food then share the free slots: each eat frees a slot the loot can take, so a trip that
 //   starts with f food ends when the food runs out (f / food a success) or the inventory fills (free - f over the
 //   slots a success fills less the food it eats). Ideal play starts with the f that makes both come at once:
-//   free / max(food a success, slots a success) successes. Picking the loot up is not counted here.
-// - `uncalibrated`: the gather's `damage` is not yet checked against a run (the food gate), so no food goes in the
-//   cycle (none eaten, no eat ticks, no food supply) and a trip ends only when the inventory fills.
+//   free / max(food a success, slots a success) successes. That assumes a bank visit withdraws exactly that f
+//   (free x food / slots, when the loot fills faster), or fills every slot with food when the food runs out first.
+//   Picking the loot up is not counted here.
+// - `uncalibrated`: the gather's `damage` is not yet checked against a run (the food gate), so no food goes for it
+//   (none eaten, no swing eats) and, with no failDamage, a trip ends only when the inventory fills. A fail's damage
+//   (failDamage) is not under the gate: it still eats the named food.
 // - A drop sink never travels: a full inventory of non-stackable items is dropped in dropTicks(free slots), unless every
 //   success depletes the feature (mining, a stall): the next item needs a fresh click on another feature anyway, and
 //   the drop goes out in that tick ahead of the click, free, so the inventory never fills. Food with a drop sink is
 //   not modelled (nothing restocks it).
-// - `damage` (see ActionModel) needs a food, and its eats cost no ticks, but on an action with an `attackRate` (a
-//   kill) each costs EAT_DELAY; a stun's eats cost eatTicksPerFail.
+// - `damage` (see ActionModel) needs a food. Its eats cost no ticks, except on an action with an `attackRate` (a
+//   kill), where each costs EAT_DELAY; a stun's eats cost eatTicksPerFail. Only foods whose trigger adds EAT_DELAY
+//   (normal food) are modelled.
 //
 // The steps. A process step's `restart`, `start` and `perTick` (see ActionModel) add to its ticks over a trip, so
 // they need a trip that ends; `batch` is the inputs an action takes (the whole-batch rounding above). A gather with a
@@ -72,12 +76,74 @@ export function dropTicks(drops: number): number {
  */
 export const BANK_TICKS = 0;
 
-/**
- * The ticks an eat adds to `%action_delay` (consume.rs2:129-131, `$skill_delay` 3 for every normal food, :3-6), which
- * the pickpocket op waits on (pickpocket.rs2:134-137).
- */
-export const EAT_DELAY = 3;
+/** The food triggers: each `[opheld1,<obj or _category>]` calls @player_consume_item. */
+export const CONSUME_SOURCE = 'player/scripts/consumption/consume.rs2';
 
+/** A food trigger's `$skill_delay`, and the trigger's line; null when it passes none (or differing ones). */
+export interface EatDelay {
+    value: number | null;
+    at: string;
+}
+
+/**
+ * The `$skill_delay` (third argument) each `[opheld1,<subject>]` trigger of `text` (consume.rs2) passes to
+ * @player_consume_item, by subject: an obj, or `_<category>` for the objs of a category. The label adds it to
+ * `%action_delay` (consume.rs2:129-131). Normal food passes 3; gnome food, karambwan and potions pass null.
+ */
+export function readEatDelays(text: string): Map<string, EatDelay> {
+    const found = new Map<string, { values: Set<string>; at: string }>();
+    let subject: string | undefined;
+    text.split('\n').forEach((line, i) => {
+        const header = line.match(/^\[([^,\]]+),([^\]]+)\]/);
+        if (header) {
+            subject = header[1] === 'opheld1' ? header[2] : undefined;
+            if (subject !== undefined) found.set(subject, { values: new Set(), at: `${CONSUME_SOURCE}:${i + 1}` });
+        }
+        const call = line.match(/@player_consume_item\([^,]+,[^,]+,\s*([^)\s]+)\s*\)/);
+        if (call && subject !== undefined) found.get(subject)!.values.add(call[1]!);
+    });
+    const out = new Map<string, EatDelay>();
+    for (const [s, { values, at }] of found) {
+        if (values.size === 0) continue;
+        const [only] = values;
+        out.set(s, { value: values.size === 1 && /^\d+$/.test(only!) ? Number(only) : null, at });
+    }
+    return out;
+}
+
+/** Every food trigger's skill delay, read from the content when the module loads. */
+export const EAT_DELAYS = readEatDelays(readFileSync(join(SCRIPTS, CONSUME_SOURCE), 'utf8'));
+
+/** The one skill delay every food trigger that passes one passes (normal food); throws when they differ. */
+export function normalEatDelay(delays: ReadonlyMap<string, EatDelay>): ServerDefault {
+    const fixed = [...delays.values()].filter(d => d.value !== null);
+    const values = new Set(fixed.map(d => d.value));
+    if (values.size !== 1)
+        throw new Error(`Expected one skill delay among ${CONSUME_SOURCE}'s food triggers, found ${values.size}`);
+    return { value: fixed[0]!.value!, at: fixed[0]!.at };
+}
+
+/**
+ * The ticks a normal food's eat adds to `%action_delay` (consume.rs2:129-131), which the pickpocket op
+ * (pickpocket.rs2:134-137) and a swing (player_melee.rs2:8-11) wait on.
+ */
+export const EAT_DELAY = normalEatDelay(EAT_DELAYS).value;
+
+/**
+ * Throws a ModelError unless `obj`'s trigger (its own, else its category's) passes EAT_DELAY: the model covers
+ * normal food only.
+ */
+export function checkNormalFood(obj: string, items: Items, delays: ReadonlyMap<string, EatDelay> = EAT_DELAYS): void {
+    const category = items(obj).category;
+    const d = delays.get(obj) ?? (category === undefined ? undefined : delays.get(`_${category}`));
+    if (!d) throw new ModelError(`no ${CONSUME_SOURCE} trigger eats ${obj}`);
+    if (d.value !== EAT_DELAY)
+        throw new ModelError(
+            `${obj}'s trigger (${d.at}) passes skill delay ${d.value}, not normal food's: not modelled`,
+        );
+}
+
+/** Where a bury's delay is read: the bones' Bury op. */
 export const BURY_SOURCE = 'skill_prayer/scripts/bury_bone.rs2';
 
 /** The `p_delay` a bury holds the player for: the one `p_delay(n)` line of `text` (bury_bone.rs2). */
@@ -85,20 +151,16 @@ export function readBuryDelay(text: string): ServerDefault {
     return readDefault(BURY_SOURCE, text, /^\s*p_delay\((\d+)\);/);
 }
 
-/** 0, read from the content when the module loads (bury_bone.rs2:10). */
+/** Read from the content when the module loads. */
 export const BURY_DELAY = readBuryDelay(readFileSync(join(SCRIPTS, BURY_SOURCE), 'utf8'));
 
 /**
- * The fewest ticks from one swing to the next with a bury between them. The bury's `p_stopaction` ends the attack
- * (bury_bone.rs2:8), so it can't go in the swing's own tick (the packets are read before the swing,
- * World.ts:402,425) and goes the tick after: 1. `p_delay(n)` then holds the player until the tick n + 1 on
- * (PlayerOps.ts:376-379: delayedUntil = clock + 1 + n), and a delayed player's OpNpc is refused
- * (OpNpcHandler.ts:16-20) through that tick's packets too, as the delay clears in processPlayers (World.ts:776): the
- * re-click goes n + 2 ticks after the bury. The re-clicked attack swings at once when `%action_delay` has passed
- * (player_melee.rs2:8-11), so the next swing waits for the later of the cooldown and the re-click, and a bury costs
- * max(0, BURY_SWING_GAP - attackRate) ticks: 3 - attackRate at p_delay(0), none for any melee weapon (attackrate 3
- * and up). Each bury takes a swing's gap of its own (a second in the same gap would end the re-clicked attack), so
- * this assumes a kill drops no more bones than it takes swings.
+ * The fewest ticks from one swing to the next with a bury between them: 1 + n + 2 at `p_delay(n)`. The bury's
+ * `p_stopaction` (bury_bone.rs2:8) ends the attack, so it goes the tick after the swing (1); `p_delay(n)`
+ * (bury_bone.rs2:10) holds the player n ticks, and the re-click's OpNpc is refused while delayed
+ * (OpNpcHandler.ts:16-20) through the tick the delay clears in (World.ts:776), so it goes 2 ticks later. A bury costs
+ * max(0, BURY_SWING_GAP - attackRate). Each takes a swing gap of its own (a second would end the re-clicked attack):
+ * at most one bones per swing.
  */
 export const BURY_SWING_GAP = 1 + BURY_DELAY.value + 2;
 
@@ -153,7 +215,7 @@ export interface CycleInput {
     loot?: Loot;
     /** With `loot`: an obj's `bone_exp` in tenths (readBoneXp), which says which products are bones. */
     boneXp?: (obj: string) => number;
-    /** The gather's `damage` is uncalibrated: `food` is not used, and `damage` needs none (see the header). */
+    /** The gather's `damage` is uncalibrated: it eats no `food` and needs none; failDamage still eats it (header). */
     uncalibrated?: boolean;
 }
 
@@ -163,6 +225,8 @@ export interface Trip {
     successes: number;
     gather: number;
     process: number;
+    /** Ticks the buries hold the next swing (BURY_SWING_GAP). */
+    bury: number;
     travel: number;
     bank: number;
     drop: number;
@@ -173,7 +237,7 @@ export interface Trip {
 }
 
 /**
- * Why the floor is what it is: the player's own actions (gather, process, eat) are the larger share of a trip
+ * Why the floor is what it is: the player's own actions (gather, process, bury, eat) are the larger share of a trip
  * (`player`), the sink's (travel, bank, drops) are (`travel`), or the features can't respawn fast enough
  * (`resource`).
  */
@@ -279,11 +343,17 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     if (buries > 0 && source.attackRate === undefined)
         throw new ModelError('burying between swings needs the gather to have an attackRate');
     const buryTicks = buries * Math.max(0, BURY_SWING_GAP - (source.attackRate ?? 0));
-    // An uncalibrated damage eats nothing.
-    const food = uncalibrated ? undefined : named;
+    // An uncalibrated `damage` eats nothing; a fail's damage still eats the named food (see the header).
+    const damage = uncalibrated ? 0 : (source.damage ?? 0);
+    const food = uncalibrated && source.failDamage === undefined ? undefined : named;
     if (source.restart || source.start || source.perTick !== undefined)
         throw new ModelError('a gather with a restart, a start or a perTick is not modelled');
     const tpi = withdraw === undefined ? ticksPerItem(source) : 0;
+    // A bury takes a swing gap of its own (BURY_SWING_GAP).
+    if (buries > 0 && buries > tpi / source.attackRate!)
+        throw new ModelError(
+            `${buries} bones a kill but ${tpi / source.attackRate!} swings: at most one bury a swing is modelled`,
+        );
     const p = source.success;
     const failsPerSuccess = (1 - p) / p;
     const stepModels = sink.mode === 'process' ? sink.steps : [];
@@ -374,12 +444,12 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     // A drop sink with a feature every success depletes (mining, a stall) drops ahead of the next click, free.
     const dropsAsItGoes = sink.mode === 'drop' && source.deplete?.chance === 1;
     const failDamage = source.failDamage ?? 0;
-    const damage = source.damage ?? 0;
     let successes: number;
     let foodPerSuccess = 0;
     if (food) {
         if (source.failDamage === undefined && source.damage === undefined)
             throw new ModelError(`food ${food.obj} is named but the action costs no hitpoints`);
+        checkNormalFood(food.obj, items);
         if (!banks) throw new ModelError('food with no bank visit is not modelled: nothing restocks it');
         if (slotsPerSuccess > 0 && !loot)
             throw new ProfileError('food with a product that fills the inventory is not modelled');
@@ -392,8 +462,7 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     else successes = room / slotsPerSuccess;
     if (failDamage && p < 1 && !food)
         throw new ModelError(`the action costs ${failDamage} hitpoints a fail: name a food`);
-    if (damage && !food && !uncalibrated)
-        throw new ModelError(`the action costs ${damage} hitpoints a success: name a food`);
+    if (damage && !food) throw new ModelError(`the action costs ${damage} hitpoints a success: name a food`);
     // Whole batches: a step whose input per success is whole leaves no part batch in the load.
     if (Number.isFinite(successes))
         for (const r of runs) {
@@ -432,22 +501,24 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
         if (!trips) throw new ModelError('a process step with a perTick on a trip that never ends is not modelled');
         return Math.ceil((n * actions) / m.perTick - 1e-9) * ticksPerItem(m);
     };
-    // The buries are an in-place step of the gather's (BURY_SWING_GAP).
-    const process = runs.reduce((t, r) => t + acts(r) + restarts(r) + starts(r), n * buryTicks);
+    const process = runs.reduce((t, r) => t + acts(r) + restarts(r) + starts(r), 0);
+    const bury = n * buryTicks;
     const travel = trips && sink.mode !== 'drop' ? sink.legs.reduce((a, b) => a + b, 0) : 0;
     const bank = trips && banks ? BANK_TICKS : 0;
     // A process sink that drops drops what is left that fills a slot, at the last step, with the click away.
     const left = [...held].filter(([o]) => !items(o).stackable).reduce((t, [, c]) => t + c, 0);
     const drop = !trips ? 0 : sink.mode === 'drop' ? dropTicks(free) : end === 'drop' ? dropTicks(n * left) : 0;
-    // Only a stun's eats cost ticks (eatTicksPerFail); the food for `damage` goes in no ticks of its own: an eat has no
-    // p_delay (player/scripts/consumption/consume.rs2:115-131). That assumes at most one food a success: the
-    // %eat_delay gate (consume.rs2:122-126) refuses another eat for the 2 ticks after one ($eat_delay 2, $skill_delay 3
-    // for normal food; consume.rs2:3), so two foods never go in one tick. On a kill (an attackRate) the eat adds
-    // EAT_DELAY to the %action_delay the next swing waits on (consume.rs2:129-131, player_melee.rs2:8-11), so each
-    // food for `damage` holds the swings EAT_DELAY ticks.
+    // An eat has no p_delay (player/scripts/consumption/consume.rs2:115-131) but adds EAT_DELAY to %action_delay
+    // (:129-131), so it costs ticks only where the next action waits on that. A stun's eats cost eatTicksPerFail. On a
+    // kill (an attackRate) each food for `damage` holds the next swing EAT_DELAY ticks (player_melee.rs2:8-11), however
+    // many a kill takes: each adds its own, and the %eat_delay gate (:122-126) lets the next in 3 ticks on, before the
+    // pushed swing. Off a kill the food for `damage` costs no ticks. The swing eats and the buries are charged as if
+    // the swings ran back to back; a between-kill gap (a walk to the next target, a respawn wait) absorbs an eat after
+    // the killing swing, which then costs max(0, attackRate + EAT_DELAY - gap), and a bury likewise, so a caller with
+    // such a gap must net them against it.
     const swingEats = food && source.attackRate !== undefined ? (EAT_DELAY * damage) / food.heal : 0;
     const eat = food ? n * (failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) + swingEats) : 0;
-    const active = gatherTicks + process + travel + bank + drop + eat;
+    const active = gatherTicks + process + bury + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.
     if (source.deplete && source.features === undefined)
         throw new ModelError('the model depletes but names no features: the resource cap needs them');
@@ -455,7 +526,7 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     const wait = Math.max(0, n / cap - active);
     const total = active + wait;
     const binding: Binding =
-        wait > 0 ? 'resource' : travel + bank + drop > gatherTicks + process + eat ? 'travel' : 'player';
+        wait > 0 ? 'resource' : travel + bank + drop > gatherTicks + process + bury + eat ? 'travel' : 'player';
 
     const perHour = (TICKS_PER_HOUR / total) * n;
     const xp = new Map<Skill, number>();
@@ -476,7 +547,7 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     const value = (xs: { obj: string; count: number }[]) => xs.reduce((v, x) => v + x.count * items(x.obj).cost, 0);
     const dropped = sink.mode === 'drop' || end === 'drop';
     return {
-        trip: { successes: n, gather: gatherTicks, process, travel, bank, drop, eat, wait, total },
+        trip: { successes: n, gather: gatherTicks, process, bury, travel, bank, drop, eat, wait, total },
         binding,
         xpPerHour: Object.fromEntries([...xp].map(([skill, t]) => [skill, (t / 10) * XP_RATE * perHour])),
         itemsPerHour,

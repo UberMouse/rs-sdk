@@ -2,9 +2,13 @@ import { describe, expect, test } from 'bun:test';
 import {
     BURY_DELAY,
     BURY_SWING_GAP,
+    checkNormalFood,
     cycle,
     EAT_DELAY,
+    EAT_DELAYS,
+    normalEatDelay,
     readBuryDelay,
+    readEatDelays,
     type CycleInput,
     type CycleSink,
     type Loot,
@@ -14,7 +18,8 @@ import { readItems } from '../model/items';
 import { XP_RATE } from '../model/server';
 import { parseConfigs } from '../sources/configs';
 
-// Synthetic objs: stackable coins (cost 1, the engine's default), non-stackable bones and a hide, and a food.
+// Synthetic objs: stackable coins (cost 1, the engine's default), non-stackable bones and a hide, a normal food (its
+// category's trigger, consume.rs2:3, passes skill delay 3) and a gnome batta (consume.rs2:31 passes null).
 const items = readItems(
     parseConfigs(`
 [coins]
@@ -25,6 +30,9 @@ cost=10
 cost=100
 [food]
 cost=50
+category=meat
+[batta]
+category=gnome_batta
 `),
 );
 /** bone_exp in tenths: the game's bones (bones.obj:12). */
@@ -64,6 +72,52 @@ describe('bury constants', () => {
     });
 });
 
+/** A line of consume.rs2, as an EatDelay's `at`. */
+const at = (line: number) => `player/scripts/consumption/consume.rs2:${line}`;
+
+describe('eat delay', () => {
+    test("normal food's skill delay, read from every food trigger of consume.rs2", () => {
+        // consume.rs2:3 `[opheld1,_meat] @player_consume_item(consume_effect_stat, 2, 3)`, the first of the triggers
+        // passing 3; every other trigger passes 3 or null.
+        expect(normalEatDelay(EAT_DELAYS)).toEqual({ value: 3, at: at(3) });
+        expect(EAT_DELAY).toBe(3);
+        // :31 passes null; :70-75 passes 3 beside a $eat_delay variable; :54-57's switch passes 3 in both cases.
+        expect(EAT_DELAYS.get('_gnome_batta')).toEqual({ value: null, at: at(31) });
+        expect(EAT_DELAYS.get('_category_129')).toEqual({ value: 3, at: at(70) });
+        expect(EAT_DELAYS.get('_gnome_cocktail')?.value).toBe(3);
+    });
+
+    test('a trigger with differing delays has none; triggers that differ have no normal one', () => {
+        const delays = readEatDelays(`[opheld1,a] @player_consume_item(x, 2, 3);
+[opheld1,b]
+switch_int (1) {
+    case 1 : @player_consume_item(x, 2, 3);
+    case default : @player_consume_item(x, null, null);
+}
+[opheld1,c] ~displaymessage(^dm_default);
+[opheld3,d] @player_consume_item(x, 2, 5);
+[opheld1,e] @player_consume_item(x, 2, 4);
+`);
+        expect([...delays]).toEqual([
+            ['a', { value: 3, at: at(1) }],
+            ['b', { value: null, at: at(2) }],
+            ['e', { value: 4, at: at(9) }],
+        ]);
+        expect(() => normalEatDelay(delays)).toThrow(/found 2/);
+    });
+
+    test("a food's trigger: its own obj's, else its category's", () => {
+        const delays = new Map([
+            ['batta', { value: 3, at: at(1) }],
+            ['_meat', { value: 3, at: at(2) }],
+        ]);
+        expect(() => checkNormalFood('batta', items, delays)).not.toThrow();
+        expect(() => checkNormalFood('food', items, delays)).not.toThrow();
+        expect(() => checkNormalFood('hide', items, delays)).toThrow(/no .* trigger eats hide/);
+        expect(() => checkNormalFood('batta', items)).toThrow(/passes skill delay null/);
+    });
+});
+
 describe('loot policy', () => {
     test('leave: only the coins are kept, nothing fills a slot, no trip ends', () => {
         // Bones and the unlisted hide are left. A kill of 20 ticks, no bank visit: 9000 / 20 = 450 kills an hour,
@@ -73,6 +127,7 @@ describe('loot policy', () => {
             successes: 1,
             gather: 20,
             process: 0,
+            bury: 0,
             travel: 0,
             bank: 0,
             drop: 0,
@@ -96,10 +151,10 @@ describe('loot policy', () => {
     });
 
     test('bury at an attack rate of 2: the re-click holds the next swing 1 tick', () => {
-        // max(0, 3 - 2) = 1 tick a bury, counted as process: 21 a kill, 9000 / 21 = 428.57 kills an hour.
+        // max(0, 3 - 2) = 1 tick a bury, its own share of the trip: 21 a kill, 9000 / 21 = 428.57 kills an hour.
         const r = looted({ bones: 'bury' }, { ...kill, attackRate: 2 });
-        expect(r.trip.process).toBe(1);
-        expect(r.trip.total).toBe(21);
+        expect(r.trip).toMatchObject({ process: 0, bury: 1, total: 21 });
+        expect(r.binding).toBe('player');
         expect(r.xpPerHour.prayer).toBeCloseTo((9000 / 21) * 4.5 * XP_RATE, 6);
     });
 
@@ -111,6 +166,7 @@ describe('loot policy', () => {
             successes: 27,
             gather: 540,
             process: 0,
+            bury: 0,
             travel: 20,
             bank: 0,
             drop: 0,
@@ -157,6 +213,14 @@ describe('loot policy', () => {
         );
         // Leaving or banking the bones needs no attackRate.
         expect(looted({ bones: 'leave' }, noRate).trip.total).toBe(20);
+        // A kill of 8 ticks at attackrate 4 is 2 swings: 2 bones fit a gap each, 3 do not.
+        const quick = { ...kill, ticksPerAttempt: 8 };
+        const bones = (count: number) => ({ ...quick, products: [{ obj: 'bones', count }] });
+        expect(looted({ bones: 'bury' }, bones(2)).trip.bury).toBe(0);
+        fails(
+            { gather: bones(3), sink: bank, loot: { bones: 'bury' }, boneXp },
+            /3 bones a kill but 2 swings: at most one bury a swing/,
+        );
     });
 });
 
@@ -175,6 +239,7 @@ describe('food with kept loot', () => {
             successes: 36,
             gather: 720,
             process: 0,
+            bury: 0,
             travel: 20,
             bank: 0,
             drop: 0,
@@ -199,6 +264,32 @@ describe('food with kept loot', () => {
         expect(r.trip.eat).toBe(81);
         expect(r.trip.total).toBe(641);
         expect(EAT_DELAY).toBe(3);
+    });
+
+    test('two foods a kill hold the swings EAT_DELAY each', () => {
+        // Damage 24, heal 12: 2 food a kill, more than the 0.75 hide slot: 27 / 2 = 13.5 kills on 27 food. Each eat
+        // adds 3 to %action_delay: 13.5 x 2 x 3 = 81 eat ticks; 13.5 x 20 = 270 + 20 + 81 = 371 a trip.
+        const r = run({
+            gather: { ...kill, damage: 24 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'leave', keep: ['hide'] },
+        });
+        expect(r.trip).toMatchObject({ successes: 13.5, gather: 270, eat: 81, total: 371 });
+    });
+
+    test('a food whose trigger adds another skill delay is not modelled', () => {
+        // consume.rs2:31 `[opheld1,_gnome_batta] @player_consume_item(consume_effect_stat, null, null)`.
+        fails(
+            {
+                gather: { ...kill, damage: 6 },
+                sink: bank,
+                food: { obj: 'batta', heal: 12 },
+                loot: { bones: 'leave', keep: ['hide'] },
+                boneXp,
+            },
+            /batta's trigger \(player\/scripts\/consumption\/consume.rs2:31\) passes skill delay null/,
+        );
     });
 
     test('without a loot policy, food with a non-stackable product is still refused', () => {
@@ -228,6 +319,22 @@ describe('uncalibrated damage', () => {
         const never = run({ gather: hurt, sink: bank, loot: { bones: 'bury' }, uncalibrated: true });
         expect(never.trip.successes).toBe(1);
         expect(never.trip.travel).toBe(0);
+        // A fail's damage is not under the gate: it still eats the named food. Fails 1 in 2 at 4 damage, heal 12:
+        // 1/3 food a kill, the hide's 0.75 slot more: 27 / 0.75 = 36 kills on 12 food. The stun's eats cost
+        // eatTicksPerFail(1/3, 1/2) = min(max(1/3 - 1/4, 0), 1/4) + 3 x max(1/3 - 1/2, 0) = 1/12 a fail, a fail a
+        // kill: 36 / 12 = 3 eat ticks; the uncalibrated damage eats none.
+        const stung = run({
+            gather: { ...hurt, success: 0.5, ticksPerAttempt: 10, failDamage: 4 },
+            sink: bank,
+            food: { obj: 'food', heal: 12 },
+            loot: { bones: 'leave', keep: ['hide'] },
+            uncalibrated: true,
+        });
+        expect(stung.trip.successes).toBe(36);
+        expect(stung.trip.eat).toBeCloseTo(3, 9);
+        expect(stung.suppliesPerHour).toEqual([
+            { obj: 'food', count: expect.closeTo((9000 / stung.trip.total) * 12, 9) },
+        ]);
         // Calibrated, the same damage needs its food.
         fails(
             { gather: hurt, sink: bank, loot: { bones: 'bank' }, boneXp },

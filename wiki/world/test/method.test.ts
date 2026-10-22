@@ -92,6 +92,7 @@ param=fishing_struct,fishing_struct_trout
 [raw_salmon]
 param=fishing_struct,fishing_struct_salmon
 [trout]
+category=category_58
 [salmon]
 [burntfish2]
 [fly_fishing_rod]

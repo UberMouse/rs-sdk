@@ -37,6 +37,7 @@ cost=30
 cost=1
 [food]
 cost=50
+category=meat
 [jug]
 cost=3
 [bar]
@@ -125,6 +126,7 @@ describe('drop sink', () => {
             successes: 26,
             gather: 260,
             process: 0,
+            bury: 0,
             travel: 0,
             bank: 0,
             drop: 6,
@@ -165,6 +167,7 @@ describe('bank sink', () => {
             successes: 28,
             gather: 112,
             process: 0,
+            bury: 0,
             travel: 60,
             bank: 0,
             drop: 0,
@@ -244,6 +247,7 @@ describe('process sink, one step then bank', () => {
             successes: 26,
             gather: 260,
             process: 78,
+            bury: 0,
             travel: 100,
             bank: 0,
             drop: 0,
@@ -415,6 +419,7 @@ describe('process sink, chained steps', () => {
             successes: 25,
             gather: 100,
             process: 150,
+            bury: 0,
             travel: 100,
             bank: 0,
             drop: 0,
@@ -467,6 +472,7 @@ describe('process sink, chained steps', () => {
             successes: 27,
             gather: 81,
             process: 27,
+            bury: 0,
             travel: 60,
             bank: 0,
             drop: 0,
@@ -515,6 +521,7 @@ describe('process sink, chained steps', () => {
             successes: 25,
             gather: 0,
             process: 100,
+            bury: 0,
             travel: 30,
             bank: 0,
             drop: 0,
@@ -706,6 +713,7 @@ describe('food with damage', () => {
             successes: 112,
             gather: 6720,
             process: 0,
+            bury: 0,
             travel: 50,
             bank: 0,
             drop: 0,

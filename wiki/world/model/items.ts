@@ -22,6 +22,8 @@ export interface Item {
     cost: number;
     /** It has a `wearpos`: ideal play wields a tool like it (an axe, a pickaxe) rather than carry it. */
     wearable: boolean;
+    /** Config `category`, which a script trigger can name (`_<category>`, the food triggers of consume.rs2). */
+    category?: string;
 }
 
 /** An obj's Item; throws a ModelError naming it when the game has no such obj. */
@@ -39,6 +41,7 @@ export function readItems(objs: ReadonlyMap<string, Config>): Items {
             stackable: first(cfg, 'stackable') === 'yes',
             cost: cost === undefined ? DEFAULT_COST : Number(cost),
             wearable: first(cfg, 'wearpos') !== undefined,
+            category: first(cfg, 'category'),
         };
     };
 }
