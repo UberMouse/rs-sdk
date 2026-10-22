@@ -9,3 +9,9 @@
 |---|---|---|---|---|---|---|
 | `tree:wilderness-agility-course:0` | (2997, 3940) | [normal](../resources/tree/normal.md) 3 | no | no | 53 | 52 Agility |
 | `tree:wilderness-agility-course:1` | (2999, 3956) | [normal](../resources/tree/normal.md) 3 | no | no | 55 | 52 Agility |
+
+## Agility courses
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `agility-course:wilderness-agility-course:0` | (3000, 3944) | [wilderness](../resources/agility-course/wilderness.md) 8 | no | no | 56 | 52 Agility |

@@ -50,13 +50,13 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:28` | (2504, 3487) | (2502, 3488) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 126 ticks |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:31` | (2549, 3365) | (2549, 3365) | 7 | no | no | - | - | Ardougne North bank (East Ardougne), 57 ticks |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:36` | (2565, 3447) | (2564, 3447) | 9 | no | no | - | - | Ardougne North bank (East Ardougne), 59 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:45` | (2566, 3512) | (2566, 3511) | 2 | no | no | - | unreached | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:59` | (2687, 3491) | (2687, 3492) | 30 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:69` | (2672, 3227) | (2672, 3228) | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 42 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2708, 3513) | (2707, 3513) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 19 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2741, 3353) | (2742, 3352) | 3 | no | no | - | - | Catherby bank (Catherby), 60 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:73` | (2747, 3568) | (2746, 3568) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 49 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2764, 3427) | (2764, 3427) | 2 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:46` | (2566, 3512) | (2566, 3511) | 2 | no | no | - | unreached | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 30 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2672, 3227) | (2672, 3228) | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 42 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2708, 3513) | (2707, 3513) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 19 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:72` | (2741, 3353) | (2742, 3352) | 3 | no | no | - | - | Catherby bank (Catherby), 60 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2747, 3568) | (2746, 3568) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 49 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | 2 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
 | [Castle Wars (Kandarin)](../../places/castle-wars.md) | `tree:castle-wars:0` | (2447, 3118) | (2448, 3118) | 2 | no | no | - | - | Castle Wars bank chest (Castle Wars), 21 ticks |
 | [Catherby (Kandarin)](../../places/catherby.md) | `tree:catherby:0` | (2787, 3442) | (2787, 3442) | 3 | no | no | - | - | Catherby bank (Catherby), 14 ticks |
 | [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:0` | (2590, 3498) | (2589, 3498) | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 85 ticks |

@@ -387,7 +387,7 @@ describe('renderWorld', () => {
           | Folder | Pages | One page per |
           |---|---|---|
           | [wiki/places/](../places/) | 3 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
-          | [wiki/resources/](../resources/) | 2 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |
+          | [wiki/resources/](../resources/) | 2 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target, flax, agility course): its dbrow or script data, then every site |
           | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
           | [wiki/training/](../training/) | 1 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
@@ -718,6 +718,73 @@ describe('in-game names and resource data', () => {
           | 13 | 7.8 | 12 | Coins x10 |
 
           Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
+
+          "
+        `);
+    });
+
+    test("a flax page names its trigger; an agility course's lists its lap in order, then its bonus", () => {
+        const n = named.features.length;
+        const lapPages = renderWorld(
+            {
+                ...named,
+                features: [
+                    ...named.features,
+                    feature('flax', 'flax', 'Flax', 'flax', 3200, 3200),
+                    feature('agility-course', 'test', 'Log balance', 'log', 3200, 3200),
+                    feature('agility-course', 'test', 'Rope', 'rope', 3201, 3200, 1),
+                ],
+                sites: [
+                    ...named.sites,
+                    site('flax:town:0', ['town'], [n], { flax: 1 }),
+                    site(
+                        'agility-course:town:0',
+                        ['town'],
+                        [n + 1, n + 2],
+                        { test: 2 },
+                        {
+                            course: {
+                                varp: 'test_course_progress',
+                                lapBonus: 390,
+                                source: 'c.rs2:28',
+                                obstacles: [
+                                    {
+                                        step: 1,
+                                        feature: n + 1,
+                                        loc: 'log',
+                                        tile: { level: 0, x: 3200, z: 3200 },
+                                        source: 'c.rs2:3',
+                                    },
+                                    {
+                                        step: 2,
+                                        feature: n + 2,
+                                        loc: 'rope',
+                                        tile: { level: 1, x: 3201, z: 3200 },
+                                        source: 'c.rs2:9',
+                                    },
+                                ],
+                            },
+                        },
+                    ),
+                ],
+            },
+            namedData,
+        );
+        const lapData = (path: string): string => {
+            const page = lapPages.get(path)!;
+            return page.slice(page.indexOf('## Data\n') + '## Data\n'.length, page.indexOf('## Sites\n'));
+        };
+        expect(lapData('wiki/resources/flax/flax.md')).toContain('`[oploc2,flax]` (general_use/scripts/pickables.rs2)');
+        expect(lapData('wiki/resources/agility-course/test.md')).toMatchInlineSnapshot(`
+          "
+          \`agility-course:town:0\`: progress varp \`test_course_progress\`, a lap bonus of 39 base XP (c.rs2:28). An obstacle moves the lap on only as the next step (an earlier one sets it back); one of each step's obstacles completes it.
+
+          | Step | Obstacle | Loc | Tile | Source |
+          |---|---|---|---|---|
+          | 1 | Log balance | \`log\` | (3200, 3200) | c.rs2:3 |
+          | 2 | Rope | \`rope\` | (3201, 3200) L1 | c.rs2:9 |
+
+          Base XP is the script's stat_advance tenths over 10; the server multiplies it by its xpRate (25 on the local server, learnings/local-server.md).
 
           "
         `);

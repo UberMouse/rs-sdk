@@ -401,4 +401,4 @@
 | [Ruins](ruins-2.md) | water-source 1, tree 2, npc 2 |
 | [Scorpion Pit](scorpion-pit.md) | npc 2 |
 | [The Forgotten Cemetery](the-forgotten-cemetery.md) | tree 1, pickpocket 1, npc 5 |
-| [Wilderness agility course](wilderness-agility-course.md) | tree 2 |
+| [Wilderness agility course](wilderness-agility-course.md) | tree 2, agility-course 1 |

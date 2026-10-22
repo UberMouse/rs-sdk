@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { buildSites, locSizes, spawnClusters, type LocReach, type Placed, type SiteCollision } from '../place';
 import type { Config } from '../sources/configs';
+import { stepAt, type CourseDef } from '../sources/courses';
 import type { Zones } from '../sources/zones';
 import { zoneKey } from '../sources/zones';
 import type { Feature, FeatureKind, Site, Tile } from '../types';
@@ -360,5 +361,79 @@ describe('locSizes', () => {
             length: 1,
             forceapproach: 0,
         });
+    });
+});
+
+// A three-step course (sources/courses.ts): two logs are step 1, a rope on level 1 step 2, a wall the last.
+const lap: CourseDef = {
+    course: 'test',
+    varp: 'test_course_progress',
+    laps: 3,
+    lapBonus: 420,
+    source: 'c.rs2:28',
+    steps: [
+        { target: 'log', category: false, op: '1', step: 1, source: 'c.rs2:3' },
+        { target: 'rope', category: false, op: '1', step: 2, source: 'c.rs2:9' },
+        { target: 'wall', category: false, op: '1', step: 3, source: 'c.rs2:17' },
+    ],
+};
+const obstacle = (config: string, x: number, z: number, level = 0): Feature => ({
+    ...loc('agility-course', 'test', x, z, level),
+    config,
+});
+const courseFeatures = [
+    obstacle('log', 100, 110),
+    obstacle('log', 100, 90),
+    obstacle('rope', 96, 100, 1),
+    obstacle('wall', 101, 92),
+    // A rope 39 tiles off: no lap on its own.
+    obstacle('rope', 140, 100),
+];
+const courses = { defs: [lap], step: (f: Feature) => stepAt(lap, f.config, undefined, f.tile) };
+// The course's area holds x >= 100, so its rope at x 96 is outside it.
+const courseArea = (t: Tile): string[] => (t.x >= 100 && t.x < 120 ? ['region', 'course'] : ['region']);
+
+describe('buildSites: agility courses', () => {
+    test('one site per lap across levels: area of its first obstacle, stand by the first nearest the last', () => {
+        const lines: string[] = [];
+        const sites = buildSites(courseFeatures, courseArea, noZones, stubCollision(blockedBy(courseFeatures)), {
+            size,
+            log: l => lines.push(l),
+            courses,
+        });
+        expect(sites).toHaveLength(1);
+        const [site] = sites;
+        expect(site!.id).toBe('agility-course:course:0');
+        expect(site!.areaPath).toEqual(['region', 'course']);
+        // The mean of its level-0 tiles (100, 110), (100, 90), (101, 92): (100.3, 97.3).
+        expect(site!.centre).toEqual({ level: 0, x: 100, z: 97 });
+        // The rope is on level 1, so the box is on no one level.
+        expect(site!.bbox).toEqual({ x1: 96, z1: 90, x2: 101, z2: 110 });
+        // The log tiles' sides nearest the wall (101, 92): (100, 91) at 1 + 1 beats (101, 90) at 0 + 4.
+        expect(site!.stand).toEqual({ level: 0, x: 100, z: 91 });
+        expect(site!.counts).toEqual({ test: 4 });
+        expect(site!.course).toEqual({
+            varp: 'test_course_progress',
+            lapBonus: 420,
+            source: 'c.rs2:28',
+            obstacles: [
+                { step: 1, feature: 1, loc: 'log', tile: { level: 0, x: 100, z: 90 }, source: 'c.rs2:3' },
+                { step: 1, feature: 0, loc: 'log', tile: { level: 0, x: 100, z: 110 }, source: 'c.rs2:3' },
+                { step: 2, feature: 2, loc: 'rope', tile: { level: 1, x: 96, z: 100 }, source: 'c.rs2:9' },
+                { step: 3, feature: 3, loc: 'wall', tile: { level: 0, x: 101, z: 92 }, source: 'c.rs2:17' },
+            ],
+        });
+        expect(lines).toEqual(['place: agility-course test placements rope (140, 100) lack step 1, 3: no site']);
+    });
+
+    test('a course feature with no course, or no step, throws', () => {
+        const collision = stubCollision(blockedBy(courseFeatures));
+        expect(() => buildSites(courseFeatures, courseArea, noZones, collision, quiet)).toThrow(
+            'buildSites: no course test for its agility-course features',
+        );
+        const stray = [...courseFeatures, obstacle('net', 102, 100)];
+        expect(() => buildSites(stray, courseArea, noZones, collision, { ...quiet, courses })).toThrow(
+            'buildSites: net is an agility-course feature with no step',
+        );
     });
 });

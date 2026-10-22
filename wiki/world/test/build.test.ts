@@ -445,6 +445,57 @@ describe('serializeWorld', () => {
     });
 });
 
+test("loadWorld reads an agility-course site's course back, and refuses a malformed one, naming its row", () => {
+    const tile = { level: 0, x: 1, z: 2 };
+    const obstacle = (step: number, feature: number) => ({ step, feature, loc: 'log', tile, source: 'c.rs2:3' });
+    const course = { varp: 'test_course_progress', lapBonus: 420, source: 'c.rs2:28', obstacles: [obstacle(1, 0)] };
+    const site: Site = {
+        id: 'agility-course:town:0',
+        kind: 'agility-course',
+        areaPath: ['town'],
+        centre: tile,
+        bbox: { x1: 1, z1: 2, x2: 3, z2: 4 },
+        stand: tile,
+        counts: { test: 2 },
+        features: [0, 1],
+        f2p: false,
+        multiway: false,
+        wildernessLevel: 0,
+        reach: [[]],
+        course: { ...course, obstacles: [obstacle(1, 0), obstacle(1, 1), obstacle(2, 1)] },
+    };
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, serializeWorld({ ...world, sites: [site] }));
+        expect(loadWorld(file).sites).toEqual([site]);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
+    const why = (s: unknown): string => refused({ ...world, sites: [site, s] });
+    const { course: _, ...bare } = site;
+    expect(why(bare)).toBe(
+        'is not a world.json: sites[1]: an agility-course site, and only one, has a course: regenerate it with bun run world',
+    );
+    expect(why({ ...site, kind: 'tree' })).toBe(
+        'is not a world.json: sites[1]: an agility-course site, and only one, has a course: regenerate it with bun run world',
+    );
+    expect(why({ ...site, course: { ...course, lapBonus: -1 } })).toBe(
+        'is not a world.json: sites[1]: a course needs a varp, a lap bonus and a source: regenerate it with bun run world',
+    );
+    expect(why({ ...site, course: { ...course, obstacles: [] } })).toBe(
+        'is not a world.json: sites[1]: a course with no obstacles: regenerate it with bun run world',
+    );
+    // world has two features, so 2 is none.
+    expect(why({ ...site, course: { ...course, obstacles: [obstacle(1, 2)] } })).toBe(
+        "is not a world.json: sites[1]: a course's obstacle needs a feature, a loc, a tile and a source: regenerate it with bun run world",
+    );
+    for (const steps of [[2], [1, 3], [1, 2, 1], [0, 1]])
+        expect(why({ ...site, course: { ...course, obstacles: steps.map(n => obstacle(n, 0)) } })).toBe(
+            "is not a world.json: sites[1]: a course's obstacles are in lap order from step 1, with no step missed: regenerate it with bun run world",
+        );
+});
+
 test('byWritten orders by kind, then x, z, level and config', () => {
     const fs = [tree(5, 1), tree(1, 9, 'oaktree'), { ...tree(1, 1), kind: 'rock' as const }, tree(1, 9)];
     expect(fs.sort(byWritten).map(f => `${f.kind} ${f.tile.x},${f.tile.z} ${f.config}`)).toEqual([

@@ -3,6 +3,7 @@
 // config no rule claims is scenery.
 import type { Config } from './sources/configs';
 import { first } from './sources/configs';
+import type { CourseDef } from './sources/courses';
 import type { DbRow } from './sources/dbrows';
 import type { Callable, Trigger } from './sources/triggers';
 import type { FeatureKind } from './types';
@@ -15,6 +16,8 @@ export interface ClassifyInput {
     triggers: Trigger[];
     /** The labels and procs trigger bodies call, followed through every call. Omitted: none. */
     callables?: Callable[];
+    /** The agility courses (sources/courses.ts readCourses). Omitted: none. */
+    courses?: readonly CourseDef[];
 }
 
 export interface Classified {
@@ -369,6 +372,29 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         return { kind, subtype: row ? row.row.replace(/^runecraft_/, '') : '', ops };
     };
 
+    // Flax is picked through general_use/scripts/pickables.rs2 [oploc2,flax], which adds the obj flax; the other
+    // pickables there (cabbage, onion, potato, wheat) are no kind.
+    const pickables = under(['general_use/scripts/pickables.rs2']);
+    const flax: Rule = (on, config, cfg) => {
+        const ts = pickables(on, config, cfg).filter(t => /\binv_add\(\s*inv\s*,\s*flax\s*,/.test(codeOf(t.body)));
+        return ts.length ? { kind: 'flax', subtype: 'flax', ops: opsOf(ts) } : null;
+    };
+
+    // An obstacle of an agility course: a loc whose op moves the course's lap on (sources/courses.ts), its course
+    // the subtype. A step guarded to one tile claims the config too; build.ts keeps only the placements that set a
+    // step.
+    const courseSteps = (input.courses ?? []).flatMap(c => c.steps.map(s => ({ ...s, course: c.course })));
+    const course: Rule = (on, config, cfg) => {
+        if (on !== 'loc') return null;
+        const category = first(cfg, 'category');
+        const hits = courseSteps.filter(s => (s.category ? s.target === category : s.target === config));
+        const courses = [...new Set(hits.map(h => h.course))];
+        if (courses.length > 1) throw new Error(`loc:${config} moves on the laps of ${courses.join(', ')}`);
+        return hits.length
+            ? { kind: 'agility-course', subtype: courses[0]!, ops: [...new Set(hits.map(h => h.op))].sort() }
+            : null;
+    };
+
     /** A rule claiming the configs with a trigger in a script source (inSource); `named`: the config is the subtype. */
     const bySource = (kind: FeatureKind, only: 'loc' | 'npc', sources: readonly string[], named: boolean): Rule => {
         const triggersUnder = under(sources);
@@ -386,6 +412,8 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         ['shop', shop],
         ['tanner', tanner],
         ['station', station],
+        ['flax', flax],
+        ['agility-course', course],
         // Stalls and chests by their script's directory, not their names (`tea_stall` is a stall).
         ['stall', bySource('stall', 'loc', ['skill_thieving/scripts/stalls/'], true)],
         ['thieving-chest', bySource('thieving-chest', 'loc', ['skill_thieving/scripts/chest/'], true)],

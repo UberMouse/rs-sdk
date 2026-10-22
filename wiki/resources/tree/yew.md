@@ -37,8 +37,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:18` | (2931, 3227) | (2931, 3228) | 4 | yes | no | - | - | Falador East bank (Falador), 73 ticks |
 | [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:29` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - | - | Falador East bank (Falador), 41 ticks |
 | [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | 2 | yes | yes | - | - | Falador East bank (Falador), 26 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:59` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:78` | (2764, 3427) | (2764, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
 | [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | 4 | no | no | - | - | Catherby bank (Catherby), 22 ticks |
 | [Flax (Kandarin)](../../places/flax.md) | `tree:flax:0` | (2754, 3433) | (2753, 3433) | 1 | no | no | - | - | Catherby bank (Catherby), 31 ticks |
 | [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |

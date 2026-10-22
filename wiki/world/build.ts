@@ -54,6 +54,7 @@ import {
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
+import { readCourses, stepAt } from './sources/courses';
 import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossings } from './sources/curated-crossings';
 import { deriveDbrowTeleports, type DbrowTeleports, type TeleportCollision } from './sources/dbrow-teleports';
 import { readDbrows } from './sources/dbrows';
@@ -143,6 +144,8 @@ export const COVERED: ReadonlySet<FeatureKind> = new Set<FeatureKind>([
     'stall',
     'thieving-chest',
     'pickpocket',
+    'flax',
+    'agility-course',
 ]);
 
 /** A site of a COVERED kind no walk from the Lumbridge spawn reaches (Site.reach `[]`): a curation to-do. */
@@ -719,13 +722,19 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const triggers = scripts.flatMap(([f, text]) => parseTriggers(f, text));
     const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
     const dbrows = readDbrows();
+    const courses = readCourses(triggers, callables);
     const classify = classifier({
         locConfigs,
         npcConfigs,
         dbrows,
         triggers,
         callables,
+        courses,
     });
+    const courseStep = (f: Pick<Feature, 'subtype' | 'config' | 'tile'>) => {
+        const course = courses.find(c => c.course === f.subtype);
+        return course && stepAt(course, f.config, first(locConfigs.get(f.config), 'category'), f.tile);
+    };
     const packs = { loc: readPack('loc'), npc: readPack('npc') };
     const map = readAllMapSquares();
 
@@ -739,8 +748,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             unpacked.push(`${source} ${id}`);
             return;
         }
-        for (const c of classify(source, config))
+        for (const c of classify(source, config)) {
+            // A course obstacle whose step is guarded to one tile is one only there (sources/courses.ts CourseStep.at).
+            if (c.kind === 'agility-course' && !courseStep({ subtype: c.subtype, config, tile: rest.tile })) continue;
             features.push({ source, id, config, ...rest, kind: c.kind, subtype: c.subtype, name: c.name });
+        }
     };
     for (const l of map.locs) place('loc', l.id, { tile: l.tile, shape: l.shape, rotation: l.rotation });
     for (const n of map.npcs) place('npc', n.id, { tile: n.tile });
@@ -945,6 +957,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             range: config => apRange(config, first(npcConfigs.get(config), 'category')),
             inSight: sightOf(collision, placedLocs, locConfigs),
         },
+        courses: { defs: courses, step: courseStep },
     }).sort((a, b) => cmp(a.id, b.id));
     const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
     const { npcSpawns, unreached } = reached;

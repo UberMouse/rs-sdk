@@ -42,6 +42,8 @@ export const RESOURCE_KINDS = [
     'stall',
     'thieving-chest',
     'pickpocket',
+    'flax',
+    'agility-course',
 ] as const satisfies readonly FeatureKind[];
 
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
@@ -72,6 +74,8 @@ export const KINDS: readonly (readonly [FeatureKind, string])[] = [
     ['stall', 'Stalls'],
     ['thieving-chest', 'Thieving chests'],
     ['pickpocket', 'Pickpocket targets'],
+    ['flax', 'Flax'],
+    ['agility-course', 'Agility courses'],
     ['npc', 'Monsters'],
     ['connector', 'Ladders and stairs'],
 ];

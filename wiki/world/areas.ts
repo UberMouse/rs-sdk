@@ -198,7 +198,9 @@ export const AREAS: readonly Area[] = [
         id: 'barbarian-agility-course',
         name: 'Barbarian Outpost agility course',
         parent: 'kandarin',
-        rects: [{ x1: 2527, z1: 3521, x2: 2550, z2: 3544 }],
+        // The yard of its obstacles, from the rope swing (2551, 3550) round to the crumbling walls (z 3553)
+        // (skill_agility/scripts/barbarian_course.rs2); smaller than the Outpost's rect, it wins the tiles both hold.
+        rects: [{ x1: 2528, z1: 3541, x2: 2553, z2: 3559 }],
     },
     {
         id: 'barbarian-outpost',

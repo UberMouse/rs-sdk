@@ -67,7 +67,8 @@ import { cmp } from './util';
  * The sinks each kind of site gets a nearest of. Every gathering, thieving and processing kind takes its products
  * or loot to a bank (conductor/docs/world-index.md, "Analysis: training methods"); on the way ore is smelted at a
  * furnace, raw fish cooked on a range, and the bars a furnace makes smithed at an anvil. Fires cook too, but phase 3
- * models a range (the spec's "range for raw fish"), so fires are not range sinks.
+ * models a range (the spec's "range for raw fish"), so fires are not range sinks. An agility course's bank is where
+ * its food comes from.
  */
 export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     tree: ['bank'],
@@ -76,6 +77,8 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     stall: ['bank'],
     'thieving-chest': ['bank'],
     pickpocket: ['bank'],
+    flax: ['bank'],
+    'agility-course': ['bank'],
     furnace: ['bank', 'anvil'],
     anvil: ['bank'],
     range: ['bank'],

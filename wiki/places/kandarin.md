@@ -125,7 +125,7 @@
 | `tree:kandarin:24` | (2488, 3368) | [normal](../resources/tree/normal.md) 43, [oak](../resources/tree/oak.md) 18 | no | no | - | - |
 | `tree:kandarin:25` | (2470, 3282) | [normal](../resources/tree/normal.md) 1 | no | no | - | Biohazard done |
 | `tree:kandarin:26` | (2494, 3323) | [normal](../resources/tree/normal.md) 2 | no | no | - | Biohazard done |
-| `tree:kandarin:27` | (2521, 3561) | [normal](../resources/tree/normal.md) 53, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 9 | no | no | - | - |
+| `tree:kandarin:27` | (2521, 3561) | [normal](../resources/tree/normal.md) 53, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 9 | no | no | - | - |
 | `tree:kandarin:28` | (2504, 3487) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | no | no | - | - |
 | `tree:kandarin:29` | (2508, 3405) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 3 | no | no | - | - |
 | `tree:kandarin:30` | (2507, 3426) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
@@ -135,57 +135,58 @@
 | `tree:kandarin:34` | (2525, 3250) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:35` | (2527, 3260) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 | `tree:kandarin:36` | (2565, 3447) | [normal](../resources/tree/normal.md) 151, [oak](../resources/tree/oak.md) 27, [willow](../resources/tree/willow.md) 9 | no | no | - | - |
-| `tree:kandarin:37` | (2538, 3261) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:38` | (2546, 3516) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:39` | (2553, 3293) | [normal](../resources/tree/normal.md) 21 | no | no | - | Biohazard done |
-| `tree:kandarin:40` | (2550, 3188) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:41` | (2556, 3146) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:42` | (2561, 3174) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:kandarin:43` | (2561, 3192) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:44` | (2563, 3616) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:45` | (2566, 3512) | [willow](../resources/tree/willow.md) 2 | no | no | - | unreached |
-| `tree:kandarin:46` | (2569, 3156) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:47` | (2571, 3604) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:48` | (2576, 3170) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:kandarin:49` | (2576, 3116) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:50` | (2579, 3148) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:51` | (2579, 3253) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:52` | (2584, 3605) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:kandarin:53` | (2587, 3350) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:54` | (2592, 3593) | [maple](../resources/tree/maple.md) 1 | no | no | - | - |
-| `tree:kandarin:55` | (2596, 3149) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:56` | (2601, 3179) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:57` | (2607, 3348) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:58` | (2605, 3189) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:59` | (2687, 3491) | [magic](../resources/tree/magic.md) 7, [maple](../resources/tree/maple.md) 79, [normal](../resources/tree/normal.md) 970, [oak](../resources/tree/oak.md) 155, [willow](../resources/tree/willow.md) 30, [yew](../resources/tree/yew.md) 4 | no | yes | - | - |
-| `tree:kandarin:60` | (2626, 3179) | [normal](../resources/tree/normal.md) 10 | no | no | - | - |
-| `tree:kandarin:61` | (2627, 3083) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:62` | (2627, 3108) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:kandarin:63` | (2625, 3357) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:64` | (2633, 3144) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
-| `tree:kandarin:65` | (2629, 3347) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:kandarin:66` | (2638, 3356) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:kandarin:67` | (2638, 3366) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:68` | (2650, 3144) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:kandarin:69` | (2672, 3227) | [willow](../resources/tree/willow.md) 3 | no | yes | - | - |
-| `tree:kandarin:70` | (2708, 3513) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
-| `tree:kandarin:71` | (2741, 3353) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:kandarin:72` | (2738, 3517) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:73` | (2747, 3568) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
-| `tree:kandarin:74` | (2748, 3480) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:kandarin:75` | (2786, 3479) | [maple](../resources/tree/maple.md) 2, [normal](../resources/tree/normal.md) 123, [oak](../resources/tree/oak.md) 9 | no | yes | - | - |
-| `tree:kandarin:76` | (2754, 3548) | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
-| `tree:kandarin:77` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - | unreached |
-| `tree:kandarin:78` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - | - |
-| `tree:kandarin:79` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - | wear Sled + Troll Stronghold at stage 20 + 28 Agility |
-| `tree:kandarin:80` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:81` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:82` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:83` | (2818, 3534) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
-| `tree:kandarin:84` | (2820, 3501) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
-| `tree:kandarin:85` | (2840, 3448) | [normal](../resources/tree/normal.md) 16 | no | yes | - | - |
-| `tree:kandarin:86` | (2840, 3340) | [normal](../resources/tree/normal.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:87` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
+| `tree:kandarin:37` | (2533, 3534) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:kandarin:38` | (2538, 3261) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:39` | (2546, 3516) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:40` | (2553, 3293) | [normal](../resources/tree/normal.md) 21 | no | no | - | Biohazard done |
+| `tree:kandarin:41` | (2550, 3188) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:42` | (2556, 3146) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:43` | (2561, 3174) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| `tree:kandarin:44` | (2561, 3192) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:45` | (2563, 3616) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:46` | (2566, 3512) | [willow](../resources/tree/willow.md) 2 | no | no | - | unreached |
+| `tree:kandarin:47` | (2569, 3156) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:48` | (2571, 3604) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:49` | (2576, 3170) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:kandarin:50` | (2576, 3116) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:51` | (2579, 3148) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:52` | (2579, 3253) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:53` | (2584, 3605) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:kandarin:54` | (2587, 3350) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:55` | (2592, 3593) | [maple](../resources/tree/maple.md) 1 | no | no | - | - |
+| `tree:kandarin:56` | (2596, 3149) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:57` | (2601, 3179) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:58` | (2607, 3348) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:59` | (2605, 3189) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:60` | (2687, 3491) | [magic](../resources/tree/magic.md) 7, [maple](../resources/tree/maple.md) 79, [normal](../resources/tree/normal.md) 970, [oak](../resources/tree/oak.md) 155, [willow](../resources/tree/willow.md) 30, [yew](../resources/tree/yew.md) 4 | no | yes | - | - |
+| `tree:kandarin:61` | (2626, 3179) | [normal](../resources/tree/normal.md) 10 | no | no | - | - |
+| `tree:kandarin:62` | (2627, 3083) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:63` | (2627, 3108) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| `tree:kandarin:64` | (2625, 3357) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:65` | (2633, 3144) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
+| `tree:kandarin:66` | (2629, 3347) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:kandarin:67` | (2638, 3356) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:kandarin:68` | (2638, 3366) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:69` | (2650, 3144) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:kandarin:70` | (2672, 3227) | [willow](../resources/tree/willow.md) 3 | no | yes | - | - |
+| `tree:kandarin:71` | (2708, 3513) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
+| `tree:kandarin:72` | (2741, 3353) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:kandarin:73` | (2738, 3517) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:74` | (2747, 3568) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
+| `tree:kandarin:75` | (2748, 3480) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:kandarin:76` | (2786, 3479) | [maple](../resources/tree/maple.md) 2, [normal](../resources/tree/normal.md) 123, [oak](../resources/tree/oak.md) 9 | no | yes | - | - |
+| `tree:kandarin:77` | (2754, 3548) | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
+| `tree:kandarin:78` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - | unreached |
+| `tree:kandarin:79` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - | - |
+| `tree:kandarin:80` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - | wear Sled + Troll Stronghold at stage 20 + 28 Agility |
+| `tree:kandarin:81` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:82` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:83` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:84` | (2818, 3534) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
+| `tree:kandarin:85` | (2820, 3501) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
+| `tree:kandarin:86` | (2840, 3448) | [normal](../resources/tree/normal.md) 16 | no | yes | - | - |
+| `tree:kandarin:87` | (2840, 3340) | [normal](../resources/tree/normal.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:88` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
 
 ## Rocks
 
@@ -229,6 +230,13 @@
 | `pickpocket:kandarin:5` | (2547, 3116) L1 | [Watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - | Watch Tower at stage 1 or 18 Agility |
 | `pickpocket:kandarin:6` | (2571, 3385) | [Man (man)](../resources/pickpocket/man.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 4 | no | no | - | - |
 | `pickpocket:kandarin:7` | (2648, 3360) | [Farmer](../resources/pickpocket/farmer1.md) 3, [Woman (ardougnian_female1)](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
+
+## Flax
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `flax:kandarin:0` | (2626, 3634) | [flax](../resources/flax/flax.md) 18 | no | no | - | - |
+| `flax:kandarin:1` | (2702, 3396) | [flax](../resources/flax/flax.md) 3 | no | no | - | - |
 
 ## Monsters
 
@@ -388,86 +396,84 @@
 | `connector:kandarin:17` | (2518, 3430) L1 | Staircase 1 | down (2519, 3430) by Climb-down | no | no | - | - |
 | `connector:kandarin:18` | (2521, 3493) | Ladder 1 | up (2521, 3494) L1 by Climb-up | no | no | - | - |
 | `connector:kandarin:19` | (2521, 3493) L1 | Ladder 1 | down (2521, 3494) by Climb-down | no | no | - | - |
-| `connector:kandarin:20` | (2532, 3545) | Ladder 1 | up (2532, 3546) L1 by Climb-up | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
-| `connector:kandarin:21` | (2532, 3545) L1 | Ladder 1 | down (2532, 3546) by Climb-down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
-| `connector:kandarin:22` | (2533, 3155) | Ladder 1 | down (2533, 9556) by Climb-down | no | no | - | - |
-| `connector:kandarin:23` | (2560, 3356) | Ladder 1 | up (2560, 3357) L1 by Climb-up | no | no | - | 46 Thieving |
-| `connector:kandarin:24` | (2560, 3356) L1 | Ladder 1 | down (2560, 3357) by Climb-down | no | no | - | 46 Thieving |
-| `connector:kandarin:25` | (2562, 3356) | Ladder 1 | down (2561, 9756) by Climb-down | no | no | - | 46 Thieving |
-| `connector:kandarin:26` | (2566, 3227) | Ladder 1 | down (2565, 9627) by Climb-down | no | no | - | - |
-| `connector:kandarin:27` | (2566, 3231) | Ladder 1 | down (2565, 9631) by Climb-down | no | no | - | - |
-| `connector:kandarin:28` | (2566, 3242) | Ladder 1 | down (2565, 9642) by Climb-down | no | no | - | - |
-| `connector:kandarin:29` | (2569, 3122) | Staircase 1 | down (2569, 9525) by Climb-down | no | no | - | - |
-| `connector:kandarin:30` | (2569, 3227) | Ladder 1 | down (2568, 9627) by Climb-down | no | no | - | - |
-| `connector:kandarin:31` | (2569, 3231) | Ladder 1 | down (2568, 9631) by Climb-down | no | no | - | - |
-| `connector:kandarin:32` | (2570, 3441) | Ladder 1 | up (2569, 3441) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:33` | (2570, 3441) L1 | Ladder 1 | down (2569, 3441) by Climb-down | no | no | - | Dwarf Cannon at stage 2 |
-| `connector:kandarin:34` | (2570, 3443) L1 | Ladder 1 | up (2569, 3443) L2 by Climb-up | no | no | - | Dwarf Cannon at stage 2 |
-| `connector:kandarin:35` | (2570, 3443) L2 | Ladder 1 | down (2569, 3443) L1 by Climb-down | no | no | - | Dwarf Cannon at stage 2 |
-| `connector:kandarin:36` | (2572, 3227) | Ladder 1 | down (2571, 9627) by Climb-down | no | no | - | - |
-| `connector:kandarin:37` | (2572, 3240) | Staircase 1 | up (2571, 3241) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:38` | (2572, 3240) L1 | Staircase 1 | down (2572, 3242) by Climb or Climb-down; up (2571, 3241) L2 by Climb or Climb-up | no | no | - | - |
-| `connector:kandarin:39` | (2572, 3241) L2 | Staircase 1 | down (2572, 3242) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:40` | (2595, 3208) | Staircase 1 | up (2597, 3208) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:41` | (2596, 3208) L1 | Staircase 1 | down (2596, 3207) by Climb-down | no | no | - | - |
-| `connector:kandarin:42` | (2612, 3475) | Ladder 1 | up (2611, 3475) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:43` | (2612, 3475) L1 | Ladder 1 | down (2611, 3475) by Climb-down | no | no | - | - |
-| `connector:kandarin:44` | (2613, 3139) | Staircase 1 | up (2612, 3139) L1 by Climb-up | no | no | - | unreached |
-| `connector:kandarin:45` | (2613, 3139) L1 | Staircase 1 | down (2616, 3139) by Climb-down | no | no | - | unreached |
-| `connector:kandarin:46` | (2616, 3208) | Staircase 1 | up (2618, 3208) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:47` | (2617, 3208) L1 | Staircase 1 | down (2617, 3207) by Climb-down | no | no | - | - |
-| `connector:kandarin:48` | (2619, 3140) L1 | Ladder 1 | up (2618, 3140) L2 by Climb-up | no | no | - | unreached |
-| `connector:kandarin:49` | (2619, 3140) L2 | Ladder 1 | down (2618, 3140) L1 by Climb-down | no | no | - | unreached |
-| `connector:kandarin:50` | (2630, 3386) | Ladder 1 | up (2630, 3385) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:51` | (2630, 3386) L1 | Ladder 1 | down (2630, 3385) by Climb or Climb-down; up (2630, 3385) L2 by Climb or Climb-up | no | no | - | - |
-| `connector:kandarin:52` | (2630, 3386) L2 | Ladder 1 | down (2630, 3385) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:53` | (2659, 3492) | Ladder 1 | down (2658, 9892) by Climb-down | no | no | - | carry Shiny key |
-| `connector:kandarin:54` | (2677, 3087) | Ladder 1 | up (2676, 3087) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:55` | (2677, 3087) L1 | Ladder 1 | down (2676, 3087) by Climb-down | no | no | - | - |
-| `connector:kandarin:56` | (2677, 3405) | Ladder 1 | down (2677, 9804) by Climb-down | no | no | - | - |
-| `connector:kandarin:57` | (2696, 3282) | Ladder 1 | down (2696, 9683) by Climb-down | no | no | - | - |
-| `connector:kandarin:58` | (2699, 3405) L2 | Ladder 1 | up (2698, 3405) L3 by Climb-up | no | no | - | - |
-| `connector:kandarin:59` | (2699, 3405) L3 | Ladder 1 | down (2698, 3405) L2 by Climb-down | no | no | - | unreached |
-| `connector:kandarin:60` | (2701, 3408) | Ladder 1 | up (2700, 3408) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:61` | (2701, 3408) L1 | Ladder 1 | down (2700, 3408) by Climb-down | no | no | - | - |
-| `connector:kandarin:62` | (2704, 3403) L1 | Ladder 1 | up (2703, 3403) L2 by Climb-up | no | no | - | - |
-| `connector:kandarin:63` | (2704, 3403) L2 | Ladder 1 | down (2703, 3403) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:64` | (2724, 3374) | Staircase 1 | down (2727, 9774) by Climb-down | no | no | - | Legends Quest at stage 50 |
-| `connector:kandarin:65` | (2737, 3582) | Ladder 1 | up (2736, 3582) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:66` | (2737, 3582) L1 | Ladder 1 | down (2736, 3582) by Climb-down | no | no | - | - |
-| `connector:kandarin:67` | (2746, 3460) | Staircase 1 | up (2745, 3461) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:68` | (2746, 3461) L1 | Staircase 1 | down (2746, 3462) by Climb-down | no | no | - | - |
-| `connector:kandarin:69` | (2747, 3493) | Ladder 1 | up (2746, 3493) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:70` | (2747, 3493) L1 | Ladder 1 | down (2746, 3493) by Climb-down | no | no | - | - |
-| `connector:kandarin:71` | (2749, 3491) L1 | Ladder 1 | up (2748, 3491) L2 by Climb-up | no | no | - | - |
-| `connector:kandarin:72` | (2749, 3491) L2 | Ladder 1 | down (2748, 3491) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:73` | (2750, 3510) | Staircase 1 | up (2750, 3513) L1 by Climb-up | no | no | - | - |
-| `connector:kandarin:74` | (2750, 3511) L1 | Staircase 1 | down (2750, 3509) by Climb-down | no | no | - | - |
-| `connector:kandarin:75` | (2767, 3491) L1 | Ladder 1 | up (2766, 3491) L2 by Climb-up | no | no | - | - |
-| `connector:kandarin:76` | (2767, 3491) L2 | Ladder 1 | down (2766, 3491) L1 by Climb-down | no | no | - | - |
-| `connector:kandarin:77` | (2773, 3234) | Gangplank 1 | up (2775, 3234) L1 by Cross | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:78` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:79` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:80` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:81` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:82` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:83` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:84` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:85` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:86` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:87` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:88` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:89` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:90` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:91` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
-| `connector:kandarin:92` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `connector:kandarin:20` | (2533, 3155) | Ladder 1 | down (2533, 9556) by Climb-down | no | no | - | - |
+| `connector:kandarin:21` | (2560, 3356) | Ladder 1 | up (2560, 3357) L1 by Climb-up | no | no | - | 46 Thieving |
+| `connector:kandarin:22` | (2560, 3356) L1 | Ladder 1 | down (2560, 3357) by Climb-down | no | no | - | 46 Thieving |
+| `connector:kandarin:23` | (2562, 3356) | Ladder 1 | down (2561, 9756) by Climb-down | no | no | - | 46 Thieving |
+| `connector:kandarin:24` | (2566, 3227) | Ladder 1 | down (2565, 9627) by Climb-down | no | no | - | - |
+| `connector:kandarin:25` | (2566, 3231) | Ladder 1 | down (2565, 9631) by Climb-down | no | no | - | - |
+| `connector:kandarin:26` | (2566, 3242) | Ladder 1 | down (2565, 9642) by Climb-down | no | no | - | - |
+| `connector:kandarin:27` | (2569, 3122) | Staircase 1 | down (2569, 9525) by Climb-down | no | no | - | - |
+| `connector:kandarin:28` | (2569, 3227) | Ladder 1 | down (2568, 9627) by Climb-down | no | no | - | - |
+| `connector:kandarin:29` | (2569, 3231) | Ladder 1 | down (2568, 9631) by Climb-down | no | no | - | - |
+| `connector:kandarin:30` | (2570, 3441) | Ladder 1 | up (2569, 3441) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:31` | (2570, 3441) L1 | Ladder 1 | down (2569, 3441) by Climb-down | no | no | - | Dwarf Cannon at stage 2 |
+| `connector:kandarin:32` | (2570, 3443) L1 | Ladder 1 | up (2569, 3443) L2 by Climb-up | no | no | - | Dwarf Cannon at stage 2 |
+| `connector:kandarin:33` | (2570, 3443) L2 | Ladder 1 | down (2569, 3443) L1 by Climb-down | no | no | - | Dwarf Cannon at stage 2 |
+| `connector:kandarin:34` | (2572, 3227) | Ladder 1 | down (2571, 9627) by Climb-down | no | no | - | - |
+| `connector:kandarin:35` | (2572, 3240) | Staircase 1 | up (2571, 3241) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:36` | (2572, 3240) L1 | Staircase 1 | down (2572, 3242) by Climb or Climb-down; up (2571, 3241) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:kandarin:37` | (2572, 3241) L2 | Staircase 1 | down (2572, 3242) L1 by Climb-down | no | no | - | - |
+| `connector:kandarin:38` | (2595, 3208) | Staircase 1 | up (2597, 3208) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:39` | (2596, 3208) L1 | Staircase 1 | down (2596, 3207) by Climb-down | no | no | - | - |
+| `connector:kandarin:40` | (2612, 3475) | Ladder 1 | up (2611, 3475) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:41` | (2612, 3475) L1 | Ladder 1 | down (2611, 3475) by Climb-down | no | no | - | - |
+| `connector:kandarin:42` | (2613, 3139) | Staircase 1 | up (2612, 3139) L1 by Climb-up | no | no | - | unreached |
+| `connector:kandarin:43` | (2613, 3139) L1 | Staircase 1 | down (2616, 3139) by Climb-down | no | no | - | unreached |
+| `connector:kandarin:44` | (2616, 3208) | Staircase 1 | up (2618, 3208) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:45` | (2617, 3208) L1 | Staircase 1 | down (2617, 3207) by Climb-down | no | no | - | - |
+| `connector:kandarin:46` | (2619, 3140) L1 | Ladder 1 | up (2618, 3140) L2 by Climb-up | no | no | - | unreached |
+| `connector:kandarin:47` | (2619, 3140) L2 | Ladder 1 | down (2618, 3140) L1 by Climb-down | no | no | - | unreached |
+| `connector:kandarin:48` | (2630, 3386) | Ladder 1 | up (2630, 3385) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:49` | (2630, 3386) L1 | Ladder 1 | down (2630, 3385) by Climb or Climb-down; up (2630, 3385) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:kandarin:50` | (2630, 3386) L2 | Ladder 1 | down (2630, 3385) L1 by Climb-down | no | no | - | - |
+| `connector:kandarin:51` | (2659, 3492) | Ladder 1 | down (2658, 9892) by Climb-down | no | no | - | carry Shiny key |
+| `connector:kandarin:52` | (2677, 3087) | Ladder 1 | up (2676, 3087) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:53` | (2677, 3087) L1 | Ladder 1 | down (2676, 3087) by Climb-down | no | no | - | - |
+| `connector:kandarin:54` | (2677, 3405) | Ladder 1 | down (2677, 9804) by Climb-down | no | no | - | - |
+| `connector:kandarin:55` | (2696, 3282) | Ladder 1 | down (2696, 9683) by Climb-down | no | no | - | - |
+| `connector:kandarin:56` | (2699, 3405) L2 | Ladder 1 | up (2698, 3405) L3 by Climb-up | no | no | - | - |
+| `connector:kandarin:57` | (2699, 3405) L3 | Ladder 1 | down (2698, 3405) L2 by Climb-down | no | no | - | unreached |
+| `connector:kandarin:58` | (2701, 3408) | Ladder 1 | up (2700, 3408) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:59` | (2701, 3408) L1 | Ladder 1 | down (2700, 3408) by Climb-down | no | no | - | - |
+| `connector:kandarin:60` | (2704, 3403) L1 | Ladder 1 | up (2703, 3403) L2 by Climb-up | no | no | - | - |
+| `connector:kandarin:61` | (2704, 3403) L2 | Ladder 1 | down (2703, 3403) L1 by Climb-down | no | no | - | - |
+| `connector:kandarin:62` | (2724, 3374) | Staircase 1 | down (2727, 9774) by Climb-down | no | no | - | Legends Quest at stage 50 |
+| `connector:kandarin:63` | (2737, 3582) | Ladder 1 | up (2736, 3582) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:64` | (2737, 3582) L1 | Ladder 1 | down (2736, 3582) by Climb-down | no | no | - | - |
+| `connector:kandarin:65` | (2746, 3460) | Staircase 1 | up (2745, 3461) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:66` | (2746, 3461) L1 | Staircase 1 | down (2746, 3462) by Climb-down | no | no | - | - |
+| `connector:kandarin:67` | (2747, 3493) | Ladder 1 | up (2746, 3493) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:68` | (2747, 3493) L1 | Ladder 1 | down (2746, 3493) by Climb-down | no | no | - | - |
+| `connector:kandarin:69` | (2749, 3491) L1 | Ladder 1 | up (2748, 3491) L2 by Climb-up | no | no | - | - |
+| `connector:kandarin:70` | (2749, 3491) L2 | Ladder 1 | down (2748, 3491) L1 by Climb-down | no | no | - | - |
+| `connector:kandarin:71` | (2750, 3510) | Staircase 1 | up (2750, 3513) L1 by Climb-up | no | no | - | - |
+| `connector:kandarin:72` | (2750, 3511) L1 | Staircase 1 | down (2750, 3509) by Climb-down | no | no | - | - |
+| `connector:kandarin:73` | (2767, 3491) L1 | Ladder 1 | up (2766, 3491) L2 by Climb-up | no | no | - | - |
+| `connector:kandarin:74` | (2767, 3491) L2 | Ladder 1 | down (2766, 3491) L1 by Climb-down | no | no | - | - |
+| `connector:kandarin:75` | (2773, 3234) | Gangplank 1 | up (2775, 3234) L1 by Cross | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:76` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:77` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:78` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:kandarin:79` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:80` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:81` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:82` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:83` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:84` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:85` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:86` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:87` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:88` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:kandarin:89` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
+| `connector:kandarin:90` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Areas within
 
 | Area | Sites in it |
 |---|---|
-| [Barbarian Outpost](barbarian-outpost.md) | tree 2, npc 1, connector 1 |
-| [Barbarian Outpost agility course](barbarian-agility-course.md) | tree 1 |
+| [Barbarian Outpost](barbarian-outpost.md) | tree 2, npc 1 |
+| [Barbarian Outpost agility course](barbarian-agility-course.md) | tree 2, agility-course 1, npc 1, connector 3 |
 | [Battlefield](battlefield.md) | pickpocket 2, npc 2 |
 | [Baxtorian Falls](baxtorian-falls.md) | tree 1 |
 | [Beehives](beehives.md) | tree 1 |
@@ -480,7 +486,7 @@
 | [Fight Arena](fight-arena.md) | tree 2, npc 1, connector 1 |
 | [Fishing Guild](fishing-guild.md) | bank 1, shop 1, range 1, tree 3, fishing-spot 1, pickpocket 1, npc 8, connector 2 |
 | [Fishing Platform](fishing-platform.md) | connector 1 |
-| [Flax](flax.md) | tree 2 |
+| [Flax](flax.md) | tree 2, flax 1 |
 | [Fremennik Province](fremennik-province.md) | tree 1 |
 | [Golden Apple Tree](golden-apple-tree.md) | tree 1 |
 | [Hemenster](hemenster.md) | anvil 1, range 1, tree 3, thieving-chest 1, npc 1, connector 2 |
@@ -492,11 +498,11 @@
 | [Observatory](observatory.md) | tree 1 |
 | [Port Khazard](port-khazard.md) | shop 2, anvil 1, range 2, fire 2, tree 2, rock 1, npc 1, connector 4 |
 | [Ranging Guild](ranging-guild.md) | shop 2, tanner 1, tree 1, npc 7, connector 13 |
-| [Rellekka](rellekka.md) | shop 4, furnace 1, anvil 1, fire 8, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, sand-pit 1, tree 1, rock 1, fishing-spot 2, stall 2, thieving-chest 3, pickpocket 9, npc 15 |
+| [Rellekka](rellekka.md) | shop 4, furnace 1, anvil 1, fire 8, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, sand-pit 1, tree 1, rock 1, fishing-spot 2, stall 2, thieving-chest 3, pickpocket 9, flax 1, npc 15 |
 | [Seers' Village](seers-village.md) | bank 1, anvil 1, range 1, fire 4, spinning-wheel 1, water-source 1, altar 1, tree 2, pickpocket 2, connector 10 |
 | [Sinclair Mansion](sinclair-mansion.md) | tree 1, npc 1 |
 | [Sorcerer's Tower](sorcerers-tower.md) | range 1, tree 1 |
-| [Tree Gnome Stronghold](tree-gnome-stronghold.md) | bank 2, shop 6, range 2, spinning-wheel 3, tree 16, fishing-spot 1, pickpocket 48, npc 47, connector 58 |
+| [Tree Gnome Stronghold](tree-gnome-stronghold.md) | bank 2, shop 6, range 2, spinning-wheel 3, tree 16, fishing-spot 1, pickpocket 48, flax 11, agility-course 1, npc 47, connector 58 |
 | [Tree Gnome Village](tree-gnome-village.md) | shop 1, tree 2, pickpocket 1, npc 1, connector 10 |
 | [Underground Pass entrance](underground-pass-entrance.md) | tree 1, npc 1 |
 | [West Ardougne](west-ardougne.md) | anvil 1, range 1, fire 2, altar 1, tree 4, npc 9, connector 12 |

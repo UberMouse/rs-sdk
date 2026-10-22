@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { classifier, type Classified } from '../classify';
 import type { Config } from '../sources/configs';
+import type { CourseDef } from '../sources/courses';
 import type { Callable, Trigger } from '../sources/triggers';
 
 const trig = (file: string, on: 'loc' | 'npc', target: string, body = '', category = false, op = '1'): Trigger => ({
@@ -53,6 +54,7 @@ function classify(
         triggers?: Trigger[];
         callables?: Callable[];
         dbrows?: { row: string; table: string; data: Record<string, string[][]> }[];
+        courses?: CourseDef[];
     } = {},
 ) {
     const configs = new Map([[config, cfg]]);
@@ -62,6 +64,7 @@ function classify(
         dbrows: data.dbrows ?? [],
         triggers: data.triggers ?? [],
         callables: data.callables,
+        courses: data.courses,
     })(on, config);
 }
 
@@ -450,4 +453,48 @@ describe('type changes', () => {
         );
         expect(run('loc', 'lever')).toEqual([]);
     });
+});
+
+/** A one-step course whose step is on `target`. */
+const course = (name: string, target: string, category = false): CourseDef => ({
+    course: name,
+    varp: `${name}_course_progress`,
+    laps: 1,
+    lapBonus: 10,
+    source: 'c.rs2:9',
+    steps: [{ target, category, op: '1', step: 1, source: 'c.rs2:2' }],
+});
+
+describe('flax and agility courses', () => {
+    test('flax: a pickables trigger that adds the obj flax; another pickable is no kind', () => {
+        const pickables = 'general_use/scripts/pickables.rs2';
+        const flax = trig(pickables, 'loc', 'flax', '\ninv_add(inv, flax, 1);', false, '2');
+        expect(one('loc', 'flax', { name: ['Flax'] }, { triggers: [flax] })).toEqual({
+            kind: 'flax',
+            subtype: 'flax',
+            name: 'Flax',
+        });
+        const onion = trig(pickables, 'loc', 'onion', '\ninv_add(inv, onion, 1);', false, '2');
+        expect(one('loc', 'onion', {}, { triggers: [onion] })).toBeNull();
+        // The same body in another script is not a pickable.
+        expect(one('loc', 'flax', {}, { triggers: [{ ...flax, file: 'a.rs2' }] })).toBeNull();
+    });
+
+    test('an agility-course obstacle: a loc config or category with a step, its course the subtype', () => {
+        expect(one('loc', 'log', { name: ['Log balance'] }, { courses: [course('gnome', 'log')] })).toEqual({
+            kind: 'agility-course',
+            subtype: 'gnome',
+            name: 'Log balance',
+        });
+        expect(
+            one('loc', 'rope', { category: ['ropes'] }, { courses: [course('barbarian', 'ropes', true)] }),
+        ).toMatchObject({ kind: 'agility-course', subtype: 'barbarian' });
+        // An npc of that name is not one.
+        expect(one('npc', 'log', {}, { courses: [course('gnome', 'log')] })).toBeNull();
+    });
+
+    test('a loc moving two courses on throws', () =>
+        expect(() => classify('loc', 'log', {}, { courses: [course('gnome', 'log'), course('wild', 'log')] })).toThrow(
+            'loc:log moves on the laps of gnome, wild',
+        ));
 });

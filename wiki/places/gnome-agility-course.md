@@ -9,3 +9,9 @@
 |---|---|---|---|---|---|---|
 | `tree:gnome-agility-course:0` | (2490, 3414) | [magic](../resources/tree/magic.md) 1 | no | no | - | - |
 | `tree:gnome-agility-course:1` | (2492, 3423) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+
+## Agility courses
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `agility-course:gnome-agility-course:0` | (2481, 3429) | [gnome](../resources/agility-course/gnome.md) 16 | no | no | - | - |

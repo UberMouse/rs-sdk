@@ -134,9 +134,40 @@ function gateProblem(g: Parsed): string | undefined {
     return undefined;
 }
 
-/** The first malformed crossing-model field of `world`, as `<list>[<i>]: <what>`, or undefined. */
+/**
+ * What is wrong with a World.sites row's course, or undefined: an `agility-course` site has one, and no other site
+ * does; its obstacles are features of `features`, in lap order from step 1.
+ */
+function courseProblem(s: Parsed, features: number): string | undefined {
+    if ((s.kind === 'agility-course') !== (s.course !== undefined))
+        return 'an agility-course site, and only one, has a course';
+    if (s.course === undefined) return undefined;
+    const c = s.course;
+    if (!isObject(c) || !isName(c.varp) || !isCount(c.lapBonus) || !isName(c.source))
+        return 'a course needs a varp, a lap bonus and a source';
+    if (!Array.isArray(c.obstacles) || !c.obstacles.length) return 'a course with no obstacles';
+    let last = 0;
+    for (const o of c.obstacles) {
+        if (
+            !isObject(o) ||
+            !isCount(o.feature) ||
+            o.feature >= features ||
+            !isName(o.loc) ||
+            !isTile(o.tile) ||
+            !isName(o.source)
+        )
+            return "a course's obstacle needs a feature, a loc, a tile and a source";
+        if (!isInt(o.step) || o.step < 1 || (o.step !== last && o.step !== last + 1))
+            return "a course's obstacles are in lap order from step 1, with no step missed";
+        last = o.step;
+    }
+    return undefined;
+}
+
+/** The first malformed crossing-model field of `world`, or site course, as `<list>[<i>]: <what>`, or undefined. */
 function crossingModelProblem(world: World): string | undefined {
     const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
+        ['sites', world.sites, s => courseProblem(s, world.features.length)],
         ['crossings', world.crossings, crossingProblem],
         ['gates', world.gates, gateProblem],
         ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],

@@ -589,3 +589,85 @@ describe('npc locations', () => {
         expect(pagePlaces('sigli-the-huntsman.md')).toEqual(['rellekka']);
     });
 });
+
+/** A course's obstacles as `step loc (x, z, level)`. */
+const courseLap = (course: string) => {
+    const sites = sitesOf('agility-course').filter(s => s.counts[course] !== undefined);
+    expect(sites).toHaveLength(1);
+    const { course: c, id } = sites[0]!;
+    return {
+        id,
+        bonus: c && [c.lapBonus, c.source],
+        obstacles: c?.obstacles.map(o => `${o.step} ${o.loc} ${coord(o.tile)}`),
+    };
+};
+
+describe('flax and the agility courses', () => {
+    test("the Seers' flax field is one flax site, 28 run ticks from the Seers bank", () => {
+        const [field, ...more] = inLeaf('flax', 'flax');
+        expect(more).toEqual([]);
+        expect(new Set(featuresOf(field!).map(f => f.config))).toEqual(new Set(['flax']));
+        // conductor/docs/world-index-phase3b-survey.md §1f: bank -> flax 28 run ticks (wayFinder).
+        expect(field!.nearest?.bank).toMatchObject({ site: 'bank:seers-village-bank:0', runTicks: 28, requires: [] });
+    });
+
+    // The steps and bonuses below are the survey's (§1d) and the scripts' `~update_<course>_varp(n)` calls.
+    test('the Gnome course: 7 steps, any of three nets, two trees and four pipes; 390 tenths a lap', () =>
+        expect(courseLap('gnome')).toEqual({
+            id: 'agility-course:gnome-agility-course:0',
+            bonus: [390, 'skill_agility/scripts/gnome_course.rs2:108'],
+            obstacles: [
+                '1 gnome_log_balance1 (2474, 3435)',
+                '2 obstical_net2 (2471, 3425)',
+                '2 obstical_net2 (2473, 3425)',
+                '2 obstical_net2 (2475, 3425)',
+                '3 gnome_tree_branch_1 (2473, 3422, 1)',
+                '4 balancing_rope (2478, 3420, 2)',
+                '5 climbing_tree (2486, 3419, 2)',
+                '5 climbing_tree2 (2487, 3418, 2)',
+                '5 climbing_tree2 (2487, 3420, 2)',
+                '6 obstical_net3 (2483, 3426)',
+                '6 obstical_net3 (2485, 3426)',
+                '6 obstical_net3 (2487, 3426)',
+                '7 loc_154 (2484, 3431)',
+                '7 loc_154 (2484, 3435)',
+                '7 gnome_obstacle_pipe (2487, 3431)',
+                '7 gnome_obstacle_pipe (2487, 3435)',
+            ],
+        }));
+
+    test("the Gnome course's tree branch 30 tiles north, which climbs down onto it, is no lap", () =>
+        expect(report.log).toContain(
+            'place: agility-course gnome placements climbing_tree2 (2489, 3450) lack step 1, 2, 3, 4, 6, 7: no site',
+        ));
+
+    test('the Barbarian course: 5 steps, only its third crumbling wall a step; 420 tenths a lap', () =>
+        expect(courseLap('barbarian')).toEqual({
+            id: 'agility-course:barbarian-agility-course:0',
+            bonus: [420, 'skill_agility/scripts/barbarian_course.rs2:154'],
+            obstacles: [
+                '1 barbarian_rope_swing (2551, 3550)',
+                '2 barbarian_log_balance (2550, 3546)',
+                '3 barbarian_obstacle_net (2538, 3545)',
+                '4 balancing_ledge1 (2535, 3547, 1)',
+                // barbarian_course.rs2:121: only the wall at 0_39_55_46_33.
+                '5 castlecrumbly1 (2542, 3553)',
+            ],
+        }));
+
+    test('the Wilderness course: 5 steps, either end of the pipe and any of three rocks; 4989 tenths a lap', () =>
+        expect(courseLap('wilderness')).toEqual({
+            id: 'agility-course:wilderness-agility-course:0',
+            bonus: [4989, 'skill_agility/scripts/wilderness_course.rs2:176'],
+            obstacles: [
+                '1 obstical_pipe2 (3004, 3938)',
+                '1 obstical_pipe2 (3004, 3948)',
+                '2 obstical_ropeswing2 (3005, 3952)',
+                '3 wilderness_stepping_stone (3001, 3960)',
+                '4 wilderness_log_balance1 (3001, 3945)',
+                '5 wilderness_rocks (2993, 3936)',
+                '5 wilderness_rocks (2994, 3936)',
+                '5 wilderness_rocks (2995, 3936)',
+            ],
+        }));
+});

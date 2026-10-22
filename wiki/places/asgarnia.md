@@ -172,6 +172,13 @@
 | `pickpocket:asgarnia:4` | (3014, 3237) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
 | `pickpocket:asgarnia:5` | (3035, 3296) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
 
+## Flax
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `flax:asgarnia:0` | (2888, 3424) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+| `flax:asgarnia:1` | (2890, 3438) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |

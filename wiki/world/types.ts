@@ -40,6 +40,8 @@ export type FeatureKind =
     | 'stall'
     | 'thieving-chest'
     | 'pickpocket'
+    | 'flax'
+    | 'agility-course'
     | 'npc'
     | 'connector';
 
@@ -96,6 +98,39 @@ export interface Site {
      * kinds.
      */
     nearest?: Nearest;
+    /** On an `agility-course` site, its lap (sources/courses.ts). */
+    course?: Course;
+}
+
+/**
+ * An agility course's lap as its scripts keep it: a progress varp each obstacle moves on when it is the next one (an
+ * earlier one sets it back), and a bonus paid when the last completes (sources/courses.ts).
+ */
+export interface Course {
+    /** The progress varp (`gnome_course_progress`). */
+    varp: string;
+    /** The lap bonus in xp tenths, paid on top of the last obstacle's own xp. */
+    lapBonus: number;
+    /** The bonus's stat_advance, as `file:line`. */
+    source: string;
+    /**
+     * The site's placed obstacles in lap order, by step, then tile: one or more per step (the Gnome course's three
+     * nets are each step 2), any one of which completes it.
+     */
+    obstacles: CourseObstacle[];
+}
+
+/** One placed obstacle of a course; the crossing rows on its loc (`act.loc` and `at`) are its moves, where World.crossings has them. */
+export interface CourseObstacle {
+    /** Its place in the lap, from 1 to the last. */
+    step: number;
+    /** Index into World.features. */
+    feature: number;
+    /** The loc config and its tile. */
+    loc: string;
+    tile: Tile;
+    /** The call that sets the step, as `file:line`. */
+    source: string;
 }
 
 /** The nearest sink of one kind: its site id, the run ticks to its stand, and what that way needs. */
@@ -433,7 +468,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 15;
+export const WORLD_FORMAT = 16;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

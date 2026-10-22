@@ -109,6 +109,12 @@
 | `pickpocket:rellekka:7` | (2676, 3665) | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - | - |
 | `pickpocket:rellekka:8` | (2679, 3690) | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - | - |
 
+## Flax
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `flax:rellekka:0` | (2618, 3646) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+
 ## Monsters
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |

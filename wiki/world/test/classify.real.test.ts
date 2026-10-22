@@ -2,16 +2,20 @@ import { describe, expect, test } from 'bun:test';
 import { classifier } from '../classify';
 import { readConfigs } from '../sources/configs';
 import { readDbrows } from '../sources/dbrows';
+import { readCourses } from '../sources/courses';
 import { readCallables, readTriggers } from '../sources/triggers';
 
 const locConfigs = readConfigs('loc');
 const npcConfigs = readConfigs('npc');
+const triggers = readTriggers();
+const callables = readCallables();
 const c = classifier({
     locConfigs,
     npcConfigs,
     dbrows: readDbrows(),
-    triggers: readTriggers(),
-    callables: readCallables(),
+    triggers,
+    callables,
+    courses: readCourses(triggers, callables),
 });
 
 describe('classifier on the real game data', () => {
@@ -31,6 +35,19 @@ describe('classifier on the real game data', () => {
     test('resources', () => {
         expect(c('loc', 'yewtree')).toMatchObject([{ kind: 'tree', subtype: 'yew' }]);
         expect(c('loc', 'ironrock1')).toMatchObject([{ kind: 'rock', subtype: 'iron' }]);
+        expect(c('loc', 'flax')).toEqual([{ kind: 'flax', subtype: 'flax', name: 'Flax' }]);
+        expect(c('loc', 'cabbage')).toEqual([]);
+    });
+
+    test('agility course obstacles, by the course whose lap they move on', () => {
+        expect(c('loc', 'gnome_log_balance1')).toMatchObject([{ kind: 'agility-course', subtype: 'gnome' }]);
+        expect(c('loc', 'obstical_ropeswing2')).toMatchObject([{ kind: 'agility-course', subtype: 'wilderness' }]);
+        // Both crumbling walls reach the Barbarian course's guarded step (barbarian_course.rs2:121); build.ts keeps
+        // only the placement on its tile.
+        expect(c('loc', 'castlecrumbly1')).toMatchObject([{ kind: 'agility-course', subtype: 'barbarian' }]);
+        expect(c('loc', 'castlecrumbly')).toMatchObject([{ kind: 'agility-course', subtype: 'barbarian' }]);
+        // The Barbarian pipe moves no lap on.
+        expect(c('loc', 'barbarian_obstacle_pipe')).toEqual([]);
     });
 
     test('stations by category', () => {
