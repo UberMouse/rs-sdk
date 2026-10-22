@@ -467,7 +467,11 @@ export const agility: FamilyFactory = data => {
                 xpTenths: { agility: best.xp + site.course!.lapBonus },
                 products: [],
                 consumes: [],
-                ...(best.damage > 0 ? { damage: best.damage } : {}),
+                // A course with a fall that hurts says so with 0 where its rolls are certain, so a food named for
+                // its lower levels is not refused (cycle.ts).
+                ...(best.damage > 0 || [...costs.keys()].some(m => (m.roll?.fail.damage ?? 0) > 0)
+                    ? { damage: best.damage }
+                    : {}),
             };
         },
     };

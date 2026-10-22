@@ -8,7 +8,7 @@ Generated from `server/content` at `fb264971634d877c8d7f8dc3d93c608d6d879a0f`: 2
 | [wiki/places/](../places/) | 225 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
 | [wiki/resources/](../resources/) | 95 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target, flax, agility course): its dbrow or script data, then every site |
 | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
-| [wiki/training/](../training/) | 6 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
+| [wiki/training/](../training/) | 13 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
 <!-- Hand-written below this line: build.ts keeps it as it is. -->
 

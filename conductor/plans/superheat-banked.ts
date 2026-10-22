@@ -17,6 +17,7 @@ const far = (v: V, c: { x: number; z: number }, r: number) => {
 
 export default definePlan({
     name: 'superheat-banked',
+    method: 'superheat-iron-varrock-east-platebody',
     description: 'Banked iron ore: superheat at Varrock East bank, smith platebodies at the SE anvil, bank',
     requires: { 'Magic 43+': v => v.level('Magic') >= 43 },
     phases: [

@@ -289,6 +289,16 @@ describe('the training pages', () => {
         ]);
     });
 
+    test('a leg over random landings, run at their mean, to one decimal', () => {
+        const [first, ...rest] = burn.ways[0]!.legs;
+        const mean: WorldMethod = {
+            ...burn,
+            ways: [{ reach: [], legs: [{ ...first!, runTicks: 53.92307692307692 }, ...rest] }],
+        };
+        const page = new Map(renderTraining({ ...world, methods: [mean] }, data)).get('wiki/training/woodcutting.md')!;
+        expect(page).toContain('; legs 53.9 + 5 + 15 run ticks.');
+    });
+
     test("the same method on its process skill's page: that skill's XP, `-` under its own level", () => {
         // Firemaking from the rates above: 1.12M with Woodcutting under 41 (columns 30 and 40), 1.48M from 50. Measured
         // 700,000 / 1,115,044 = 63%.

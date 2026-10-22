@@ -21,6 +21,7 @@ const inWild = (v: V) => {
 
 export default definePlan({
     name: 'agility-wilderness',
+    method: 'agility-wilderness-course',
     description:
         'Wilderness agility course (Agility 52+): bank food at Edgeville, travel in, laps until food is short, travel out, repeat',
     phases: [

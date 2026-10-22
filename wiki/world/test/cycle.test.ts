@@ -744,6 +744,27 @@ describe('food with damage', () => {
         expect(r.trip.successes).toBe(18);
         expect(r.trip.eat).toBeCloseTo(31.5, 9);
     });
+
+    test('food for an action that can hurt but not at this profile (damage 0): none eaten, no trip ends', () => {
+        // A lap of 60 ticks whose falls are all certain to succeed: 150 laps an hour, no bank visit.
+        const sure: ActionModel = {
+            ticksPerAttempt: 60,
+            success: 1,
+            xpTenths: { agility: 5710 },
+            products: [],
+            consumes: [],
+            damage: 0,
+        };
+        const r = run({ gather: sure, sink: { mode: 'bank', legs: [25, 25] }, food: { obj: 'food', heal: 6 } });
+        expect(r.xpPerHour.agility).toBeCloseTo(150 * 14_275, 6);
+        expect(r.suppliesPerHour).toEqual([]);
+        // An action with no damage at all names a food by mistake.
+        const { damage: _, ...never } = sure;
+        fails(
+            { gather: never, sink: { mode: 'bank', legs: [25, 25] }, food: { obj: 'food', heal: 6 } },
+            /food food is named but the action costs no hitpoints/,
+        );
+    });
 });
 
 describe('restarts', () => {

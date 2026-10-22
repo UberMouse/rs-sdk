@@ -146,6 +146,14 @@ function siteAt(world: MethodContext['world'], kinds: readonly FeatureKind[], t:
             t.z >= s.bbox.z1 &&
             t.z <= s.bbox.z2,
     );
+    // Bboxes overlap (a sparse site's spans others): one of a target's own tiles names its site.
+    const own = holding.filter(s =>
+        s.features.some(i => {
+            const f = world.features[i]!.tile;
+            return f.x === t.x && f.z === t.z && f.level === t.level;
+        }),
+    );
+    if (own.length === 1) return own[0]!;
     if (holding.length !== 1)
         throw new ModelError(
             holding.length

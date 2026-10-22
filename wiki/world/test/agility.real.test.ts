@@ -218,4 +218,14 @@ describe('the laps, worked by hand', () => {
         // (:57).
         expect(m.damage).toBeCloseTo((28 / 228) * 12 + (48 / 208) * 4, 12);
     });
+
+    test('Barbarian from Agility 93: every roll certain, damage 0 (a food named for lower levels is not refused)', () => {
+        // The log's stat_random(180, 260) at 93: floor(180 x 6/98) + floor(260 x 92/98) + 1 = 11 + 244 + 1 = 256, certain;
+        // at 92: 12 + 241 + 1 = 254. The swing's and ledge's (200, 280) at 93: 12 + 262 + 1. The 54 ticks of the lap at
+        // 35 with no falls.
+        const m = lap(course('barbarian'), 93);
+        expect(m.ticksPerAttempt).toBe(54);
+        expect(m.damage).toBe(0);
+        expect(lap(course('barbarian'), 92).damage).toBeGreaterThan(0);
+    });
 });

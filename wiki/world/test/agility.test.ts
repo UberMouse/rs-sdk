@@ -206,11 +206,11 @@ describe('agility: one lap of a course', () => {
         expect(m.consumes).toEqual([]);
     });
 
-    test('at 99 the roll always succeeds: no falls and no damage', () => {
+    test('at 99 the roll always succeeds: no falls, damage 0 (the course can hurt, not at this level)', () => {
         // floor(255 * 98/98) + 1 = 256: p = 1. 6 + 8 + 15 + 3 = 32.
         const m = family.model(site, undefined, profile(99), world, walks);
         expect(m.ticksPerAttempt).toBe(32);
-        expect(m).not.toHaveProperty('damage');
+        expect(m.damage).toBe(0);
     });
 
     test('the pairs: each landing to each stand of the next placement in every round, and a fall back to its stand', () => {

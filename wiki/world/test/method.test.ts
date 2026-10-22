@@ -379,6 +379,24 @@ describe('a record that does not resolve stops the build, naming it and why', ()
         );
     });
 
+    test("overlapping sites: a target's own tile names its site, another tile in both bboxes neither", () => {
+        // A sparse rock site whose bbox spans rock:mine:0's.
+        const wide = site(
+            'rock:wide:0',
+            [at(0, 3190, 3190), at(0, 3210, 3210)],
+            'ironrock1',
+            'iron',
+            at(0, 3191, 3190),
+        );
+        const both = { ...ctx, world: { sites: [...sites, wide], features } };
+        const dropped: MethodDef = { ...mine, sink: { mode: 'drop' } };
+        expect(resolveMethod(dropped, both, finder).site.id).toBe('rock:mine:0');
+        expect(resolveMethod({ ...dropped, at: at(0, 3190, 3190) }, both, finder).site.id).toBe('rock:wide:0');
+        expect(() => resolveMethod({ ...dropped, at: at(0, 3201, 3200) }, both, finder)).toThrow(
+            /\(3201, 3200, 0\) lies in several rock sites: rock:mine:0, rock:wide:0/,
+        );
+    });
+
     test('no sink to fall back on: a spot with no nearest range', () => {
         fails(
             {

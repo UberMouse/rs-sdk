@@ -274,7 +274,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     let successes: number;
     let foodPerSuccess = 0;
     if (food) {
-        if (!failDamage && !damage) throw new ModelError(`food ${food.obj} is named but the action costs no hitpoints`);
+        if (source.failDamage === undefined && source.damage === undefined)
+            throw new ModelError(`food ${food.obj} is named but the action costs no hitpoints`);
         if (!banks) throw new ModelError('food with no bank visit is not modelled: nothing restocks it');
         if (slotsPerSuccess > 0) throw new ProfileError('food with a product that fills the inventory is not modelled');
         // At a success chance of 1 with no `damage` nothing hurts: no food is eaten and the trip never ends.
@@ -354,7 +355,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     for (const c of source.consumes) add(supplies, c.obj, c.count);
     if (withdraw !== undefined) add(supplies, withdraw, 1);
     for (const c of stepSupplies) add(supplies, c.obj, c.count);
-    if (food) add(supplies, food.obj, foodPerSuccess);
+    if (food && foodPerSuccess > 0) add(supplies, food.obj, foodPerSuccess);
 
     const hourly = (m: Map<string, number>) => [...m].map(([obj, count]) => ({ obj, count: count * perHour }));
     const itemsPerHour = hourly(held);

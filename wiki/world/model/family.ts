@@ -28,7 +28,7 @@ export interface ActionModel {
     /**
      * Hitpoints a success is expected to cost besides failDamage's (an agility lap's falls, at the profile's
      * hitpoints). The food that covers it is eaten in no ticks of its own: an eat has no `p_delay`
-     * (player/scripts/consumption/consume.rs2:115-131).
+     * (player/scripts/consumption/consume.rs2:115-131). 0: the action can hurt, not at this profile.
      */
     damage?: number;
     /**

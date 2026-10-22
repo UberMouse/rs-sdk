@@ -126,7 +126,8 @@ function skillPage(
     };
     const sink = (m: ResolvedMethod): string => {
         if (m.sink.mode === 'drop') return 'drop';
-        const legs = m.ways[0]!.legs.map(l => l.runTicks);
+        // A leg over random landings runs their mean (model/legs.ts): one decimal.
+        const legs = m.ways[0]!.legs.map(l => Number(l.runTicks.toFixed(1)));
         let stops = '';
         if (m.sink.mode === 'bank') stops = bankAt(m.sink.bank);
         else if (m.def.sink.mode === 'process') {

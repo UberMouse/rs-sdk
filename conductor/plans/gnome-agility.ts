@@ -14,6 +14,7 @@ const atCourse = (v: { state: { player?: { worldX: number; worldZ: number } | nu
 
 export default definePlan({
     name: 'gnome-agility',
+    method: 'agility-gnome-course',
     description: 'Varrock East bank food -> travel to Gnome Stronghold -> agility laps',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
