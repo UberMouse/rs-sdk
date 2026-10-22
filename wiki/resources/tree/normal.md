@@ -140,7 +140,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Crash Island](../../places/crash-island.md) | `tree:crash-island:5` | (2924, 2715) | (2923, 2715) | 1 | no | no | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 47 ticks via Monkey Madness done |
 | [Crash Island](../../places/crash-island.md) | `tree:crash-island:6` | (2933, 2715) | (2932, 2715) | 1 | no | no | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 52 ticks via Monkey Madness done |
 | [Dungeon below (2556, 3444)](../../places/dungeon-below-2556-3444.md) | `tree:dungeon-below-2556-3444:0` | (2541, 9818) | (2540, 9818) | 5 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) | Ardougne North bank (East Ardougne), 77 ticks |
-| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `tree:edgeville-dungeon:0` | (3161, 9904) | (3161, 9904) | 3 | yes | yes | - | - | Varrock East bank (Varrock), 134 ticks |
 | [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2843, 3375) | (2844, 3378) | 22 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 90 ticks |
 | [Entrana](../../places/entrana.md) | `tree:entrana:1` | (2824, 3348) | (2823, 3349) | 2 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 66 ticks |
 | [Entrana](../../places/entrana.md) | `tree:entrana:2` | (2863, 3350) | (2863, 3350) | 2 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 73 ticks |
@@ -523,7 +522,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Isafdar (Tirannwn)](../../places/isafdar.md) | `tree:isafdar:0` | (2241, 3185) | (2239, 3184) | 112 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 278 ticks via Regicide at stage 8 + 56 Agility |
 | [Prifddinas (Tirannwn)](../../places/prifddinas.md) | `tree:prifddinas:0` | (2235, 3287) | (2235, 3287) | 8 | no | no | - | unreached | - |
 | [Tyras Camp (Tirannwn)](../../places/tyras-camp.md) | `tree:tyras-camp:0` | (2172, 3141) | (2175, 3139) | 6 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 356 ticks via Regicide at stage 9 + 56 Agility |
-| [Varrock Sewers](../../places/varrock-sewers.md) | `tree:varrock-sewers:0` | (3253, 9915) | (3256, 9916) | 3 | yes | yes | - | - | Varrock East bank (Varrock), 75 ticks |
+| [Varrock Sewers](../../places/varrock-sewers.md) | `tree:varrock-sewers:0` | (3161, 9904) | (3161, 9904) | 3 | yes | yes | - | - | Varrock East bank (Varrock), 134 ticks |
+| [Varrock Sewers](../../places/varrock-sewers.md) | `tree:varrock-sewers:1` | (3253, 9915) | (3256, 9916) | 3 | yes | yes | - | - | Varrock East bank (Varrock), 75 ticks |
 | [Watchtower quest area](../../places/watchtower-quest-area.md) | `tree:watchtower-quest-area:0` | (2911, 4721) | (2909, 4721) | 53 | no | no | - | unreached | - |
 | [Watchtower quest area](../../places/watchtower-quest-area.md) | `tree:watchtower-quest-area:1` | (2924, 4687) | (2923, 4687) | 1 | no | no | - | unreached | - |
 | [Watchtower quest area](../../places/watchtower-quest-area.md) | `tree:watchtower-quest-area:3` | (2940, 4700) | (2940, 4700) | 5 | no | no | - | unreached | - |
