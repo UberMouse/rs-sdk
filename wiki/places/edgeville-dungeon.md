@@ -9,12 +9,6 @@ Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sou
 |---|---|---|---|---|---|---|
 | `fire:edgeville-dungeon:0` | (3124, 9878) | Fire 1 | yes | no | - | - |
 
-## Trees
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:edgeville-dungeon:0` | (3161, 9904) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
-
 ## Rocks
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
@@ -45,8 +39,6 @@ Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sou
 | `npc:edgeville-dungeon:17` | (3130, 9929) | Thug 9 | no | no | 2 | - |
 | `npc:edgeville-dungeon:18` | (3132, 9909) | Skeleton (skeleton_armed) 1, Skeleton (skeleton_unarmed) 4 | yes | no | - | - |
 | `npc:edgeville-dungeon:19` | (3140, 9872) | Skeleton (skeleton_armed) 5, Skeleton (skeleton_unarmed) 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:20` | (3158, 9903) | Moss giant 2 | yes | yes | - | - |
-| `npc:edgeville-dungeon:21` | (3165, 9879) | Moss giant 2 | yes | yes | - | - |
 
 ## Ladders and stairs
 

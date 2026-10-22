@@ -162,3 +162,30 @@ describe('climb through a closed trapdoor', () => {
         expect(r.result).toMatchObject({ ok: false, reason: 'send-failed' });
     });
 });
+
+describe('climb through a closed manhole', () => {
+    const manhole = CONNECTORS.find(k => k.name === 'Varrock Sewers manhole' && k.direction === 'down');
+    if (!manhole) throw new Error('no Varrock Sewers manhole');
+    const surface = world().player({ at: { level: 0, x: 3236, z: 3458 } });
+    const closed = surface.loc('Manhole', 3237, 3458, { options: ['Open'] });
+    const open = surface.loc('Manhole', 3237, 3458, { options: ['Climb down', 'Close'] });
+    const sewers = world().player({ at: { level: 0, x: 3236, z: 9858 } });
+    const timeline = (opensAt: number, climbsAt: number) =>
+        Array.from({ length: 40 }, (_, i) => ({
+            ...(i >= climbsAt ? sewers : i >= opensAt ? open : closed).build(),
+            tick: i,
+        }));
+
+    test('opens it, then sends Climb down once it offers it, and is ok in the sewers', async () => {
+        const r = await runOp(timeline(3, 8), ctx => climb(ctx, manhole));
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends.map(s => s.type === 'interactLoc' && s.reason)).toEqual(['Open Manhole', 'Climb down Manhole']);
+        expect(r.driver.state().player?.worldZ).toBe(9858);
+    });
+
+    test('an open manhole is climbed at once', async () => {
+        const r = await runOp(timeline(0, 4), ctx => climb(ctx, manhole));
+        expect(r.result).toEqual({ ok: true });
+        expect(r.sends.map(s => s.type === 'interactLoc' && s.reason)).toEqual(['Climb down Manhole']);
+    });
+});

@@ -39,9 +39,16 @@ describe('planeOf', () => {
         expect(planeOf(0, 3058, 9776)).toBe('0u-mine');
         expect(planeOf(0, 3104, 9576)).toBe('0u-basement');
         expect(planeOf(0, 3104, 9577)).not.toBe(planeOf(0, 3058, 9776));
-        // The Edgeville dungeon is its own area; underground elsewhere (the Varrock sewers) is neither.
+        // The Edgeville dungeon is its own area; underground elsewhere is neither.
         expect(planeOf(0, 3100, 9930)).toBe('0u-edgeville');
-        expect(planeOf(0, 3237, 9858)).toBe('0u');
+        expect(planeOf(0, 3300, 9858)).toBe('0u');
+    });
+
+    test('the Varrock Sewers are their own area, the moss giant room included, on level 0 only', () => {
+        expect(planeOf(0, 3158, 9895)).toBe('0u-varrock-sewers');
+        expect(planeOf(0, 3236, 9858)).toBe('0u-varrock-sewers');
+        expect(planeOf(0, 3151, 9894)).toBe('0u-edgeville');
+        expect(planeOf(2, 3241, 9905)).toBe('2u');
     });
 });
 
@@ -93,8 +100,20 @@ describe('the table is a view of world.json', () => {
             'not up or down',
             'op Cross, which climb does not send',
         ]);
-        // The Varrock sewers manhole: into an underground area no plane names.
-        expect(whyOf('manholeclosed', 3237, 3458)).toEqual(['into an underground area planeOf does not name']);
+        // The Varrock Sewers manhole (opened, then `Climb down` with a space) and its ladder up are in the table.
+        expect(whyOf('manholeclosed', 3237, 3458)).toEqual([]);
+        expect(CONNECTORS.filter(c => c.loc.x === 3237 && c.loc.z % 6400 === 3458).map(row)).toEqual([
+            'down Varrock Sewers manhole loc 0:3237,3458 stand 0:3236,3458 to 0:3236,9858',
+            'up Varrock Sewers manhole loc 0:3237,9858 stand 0:3236,9858 to 0:3236,3458',
+        ]);
+        // The north ladder pair into the sewers is in the table, and not left out.
+        expect(CONNECTORS.filter(c => c.loc.x === 3230 && c.loc.z % 6400 === 3504).map(row)).toEqual([
+            'down Ladder, Varrock loc 0:3230,3504 stand 0:3229,3504 to 0:3229,9904',
+            'up Ladder, Varrock Sewers loc 0:3230,9904 stand 0:3229,9904 to 0:3229,3504',
+        ]);
+        expect(LEFT_OUT.filter(l => / \(3230, (3504|9904)\) /.test(l.row))).toEqual([]);
+        // The trapdoor on level 2 lands on level 2 of the sewers' box, which no plane names.
+        expect(whyOf('trapdoor', 3242, 3505)).toEqual(['into an underground area planeOf does not name']);
         // Castle Wars' outside stairs move the player along the ground.
         expect(whyOf('castlewars_outsidestairs_zamorak_linked', 2382, 3131)).toEqual([
             'not up or down',
@@ -207,17 +226,26 @@ describe('connectorTable on a scripted world', () => {
             },
             { row: 'ladder (400, 9000) L0 Climb-up', why: 'into an underground area planeOf does not name' },
         ]);
-        // A manhole into a named area: climb opens only trapdoors.
+        // A manhole into a named area is opened like a trapdoor, and climbed down with a space or a hyphen.
         const named = {
             ...scripted,
             connectors: [
                 r(1, tile(0, 200, 200), 'Open', 'down', tile(0, 3096, 9868), {
-                    thenOp: { op: 1, opName: 'Climb-down' },
+                    thenOp: { op: 1, opName: 'Climb down' },
                 }),
             ],
         };
-        expect(connectorTable(named, new Map()).left.map(l => l.why)).toEqual([
-            'opened by Open, and climb opens only a trapdoor',
+        expect(connectorTable(named, new Map()).left).toEqual([]);
+        expect(connectorTable(named, new Map()).connectors.map(c => c.name)).toEqual(['Manhole']);
+        // Any other loc opened first is left out.
+        const other = {
+            ...scripted,
+            connectors: [
+                r(0, tile(1, 100, 100), 'Open', 'down', tile(0, 101, 100), { thenOp: { op: 1, opName: 'Climb-down' } }),
+            ],
+        };
+        expect(connectorTable(other, new Map()).left.map(l => l.why)).toEqual([
+            'opened by Open, and climb opens only a trapdoor or a manhole',
         ]);
     });
 });
@@ -342,6 +370,16 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
         expect(walk.success && walk.reachedDestination).toBe(true);
     });
 
+    test('the Varrock Sewers are down the Varrock manhole, from Varrock or from beside them in the Edgeville Dungeon', () => {
+        const mossGiants = at(0, 3158, 9895);
+        const fromDungeon = planConnectors(at(0, 3151, 9894), mossGiants);
+        expect(names(fromDungeon)).toEqual(['up Edgeville Dungeon trapdoor', 'down Varrock Sewers manhole']);
+        expect(fromDungeon?.[1]?.loc).toEqual(at(0, 3237, 3458));
+        expect(fromDungeon?.[1]?.to).toEqual(at(0, 3236, 9858));
+        // Varrock East bank.
+        expect(names(planConnectors(at(0, 3254, 3420), at(0, 3165, 9879)))).toEqual(['down Varrock Sewers manhole']);
+    }, 60_000);
+
     test("the dungeon's ladder into the brass-key house is never a way out (edgeville_dungeon.rs2:6)", () => {
         // The house's door opens only to the key used on it, from inside too, and a walk uses no item on a door:
         // the ladder up would leave the bot shut in, key or not.
@@ -354,7 +392,8 @@ describe('planConnectors: the climbs of the shortest way over the world graph', 
     });
 
     test('an underground area no table row leads to is no-connector (null), not an empty chain', () => {
-        expect(planConnectors(at(0, 3058, 9780), at(0, 3237, 9858))).toBeNull();
+        // The cellar under the ladder at (2562, 3356).
+        expect(planConnectors(at(0, 3058, 9780), at(0, 2561, 9756))).toBeNull();
     });
 
     test('the mine stairs and the tower top floor carry a hazard note, in both directions', () => {

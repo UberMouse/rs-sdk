@@ -619,8 +619,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     const phaseUntil = chosen.until;
                     const planHolds = !!planUntil && ask(null, 'until', () => planUntil(pv));
                     const phaseHolds = !planHolds && !!phaseUntil && ask(chosen, 'until', () => phaseUntil(pv));
-                    // Cutting a fight short would leave the next phase refused in combat: wait it out.
-                    if ((!planHolds && !phaseHolds) || st.player?.combat.inCombat) return null;
+                    if (!planHolds && !phaseHolds) return null;
                     if (!planHolds) return PHASE_UNTIL;
                     ext.planEnd = { status: 'done', reason: PLAN_UNTIL };
                     return PLAN_UNTIL;
@@ -703,12 +702,17 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             });
 
             if (ext.error) return finish('error', ext.error);
-            if (ext.planEnd) return finish(ext.planEnd.status, ext.planEnd.reason);
             if (result.status === 'error') return finish('error', `${chosen.name}: ${result.reason}`);
             // A death ends the plan whatever onFail says: the runner has to see what happened.
             if (result.endedBy === DEATH_GUARD)
                 // the engine's reason is `<guard>: <why>`; the phase name already says who died
                 return finish('failed', `${chosen.name}: ${result.reason.replace(`${DEATH_GUARD}: `, '')}`);
+            if (ext.planEnd)
+                // The plan is ending: a phase that did not end done (a guard failing the settle, or any other failure on
+                // that tick) fails the plan, and onFail is not consulted.
+                return result.status === 'done'
+                    ? finish(ext.planEnd.status, ext.planEnd.reason)
+                    : finish(result.status, `${chosen.name}: ${result.reason}`);
             if (result.status === 'done') {
                 fails.delete(chosen.name);
             } else {

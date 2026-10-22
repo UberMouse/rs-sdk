@@ -124,9 +124,10 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
   rawParams: phase.params, stops: [], partOf: opts.runId, externalStop })`.
 - **`externalStop`** for a phase: the plan stops (`checkStops` with the plan's starting XP and
   elapsed time since the plan started; a plan stop ends the phase AND the plan `done`), then the
-  plan's `until` (ends the plan `done`), then the phase's `until` (ends the phase `done`). A phase
-  or plan `until` that holds while `state.player.combat.inCombat` waits (returns null) until the
-  fight ends; plan stops don't wait.
+  plan's `until` (ends the plan `done`), then the phase's `until` (ends the phase `done`). A plan
+  stop, plan `until` or phase `until` ends the phase at once; the engine then settles a fight the
+  phase ended in (at most `SETTLE_TICKS`, `lib/engine.ts`). After a plan stop or plan `until`, a
+  phase that does not end `done` fails the plan whatever `onFail` says.
 - **Outcomes**: `done` → select again. `failed`/`stuck` → `onFail` (`fail` default ends the plan
   with that status and `<phase>: <reason>`; `continue` selects again with the phase skipped once;
   more than `maxFails` consecutive failures of one phase end the plan `failed`). `error` → plan
@@ -152,7 +153,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 ### Acceptance criteria
 - [ ] Unit tests on scripted worlds cover: selection order and `when` defaults; a producer →
       consumer cycle running two rounds; phase `until` ending a phase and the plan going on; an
-      `until` waiting out combat; plan `until` and plan `--until` (`minutes`, `xp`) across phases
+      `until` ending a phase in a fight (settled by the engine); plan `until` and plan `--until` (`minutes`, `xp`) across phases
       measured from the plan's start; `onFail` `fail`, `continue`, the function form and
       `maxFails`; `no phase applies`; the idle-phase rail; params checked up front; a throwing
       predicate; `v.bank` remembered from an earlier phase; `phase-end`/`result` events; the

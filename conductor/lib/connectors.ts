@@ -11,9 +11,8 @@
 // walkable in the collision data and that each connector has its way back.
 //
 // A plane is a level and, at level 0, whether the tile is underground and in which underground area:
-// those (the Dwarven Mine, the Wizards' Tower basement, the Taverley Dungeon) are drawn at the surface's x
-// with z + 6400 on level 0, and are separate planes (UNDERGROUND_AREAS): no stairs joins the mine to the
-// basement, and none joins the dungeon to the mine.
+// those (UNDERGROUND_AREAS names each) are drawn at the surface's x with z + 6400 on level 0, and are separate
+// planes: no stairs joins the mine to the basement, and none joins the Taverley Dungeon to the mine.
 import type { Connector as Row, World } from '../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from './account';
 import { nearestWay } from './walk-graph';
@@ -45,24 +44,38 @@ export const UNDERGROUND_Z = 6400;
 /**
  * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
  * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
- * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild) and m48_149 (the Wizards' Tower
- * basement). Other underground tiles count as one area, `u`, so the table leaves out every connector into them.
+ * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild), the Varrock Sewers, the Edgeville
+ * Dungeon and m48_149 (the Wizards' Tower basement). A box with a `level` holds tiles of that level only; one
+ * without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
+ * connector into them.
  */
-const UNDERGROUND_AREAS = [
+const UNDERGROUND_AREAS: readonly {
+    id: string;
+    level?: number;
+    minX: number;
+    maxX: number;
+    minZ: number;
+    maxZ: number;
+}[] = [
     // The Taverley Dungeon (collision flood fill from the ladder's landing: x 2817..2969, z 9671..9854). Its east
     // edge (x 2944..2969, z <= 9801) lies inside the mine's box, next to a mine pocket at z >= 9806; no passage joins them.
     { id: 'taverley', minX: 2816, maxX: 2943, minZ: 9664, maxZ: 9855 },
     { id: 'taverley', minX: 2944, maxX: 2975, minZ: 9728, maxZ: 9803 },
     { id: 'mine', minX: 2880, maxX: 3071, minZ: 9728, maxZ: 9855 },
+    // The Varrock Sewers, before the Edgeville Dungeon: the dungeon has no tile at x >= 3152, and the moss giant room
+    // (x 3153..3221, z 9874..9908) inside the dungeon's box is a pocket of the sewers, opened by the web at (3210, 9898).
+    { id: 'varrock-sewers', level: 0, minX: 3152, maxX: 3295, minZ: 9840, maxZ: 9919 },
     // The Edgeville Dungeon, including its Wilderness part north of z 9920.
     { id: 'edgeville', minX: 3072, maxX: 3199, minZ: 9792, maxZ: 9983 },
     { id: 'basement', minX: 3072, maxX: 3135, minZ: 9536, maxZ: 9599 },
-] as const;
+];
 
 /** The plane a tile is on: its level; at level 0 underground, `u` and the area appended. */
 export function planeOf(level: number, x: number, z: number): string {
     if (z < UNDERGROUND_Z) return `${level}`;
-    const area = UNDERGROUND_AREAS.find(a => x >= a.minX && x <= a.maxX && z >= a.minZ && z <= a.maxZ);
+    const area = UNDERGROUND_AREAS.find(
+        a => (a.level === undefined || a.level === level) && x >= a.minX && x <= a.maxX && z >= a.minZ && z <= a.maxZ,
+    );
     return `${level}u${area ? `-${area.id}` : ''}`;
 }
 const planeAt = (t: Tile) => planeOf(t.level, t.x, t.z);
@@ -96,6 +109,8 @@ const TAVERLEY_DUNGEON =
     'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part';
 const EDGEVILLE_DUNGEON =
     'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)';
+const VARROCK_SEWERS =
+    'giant rats (combat 6, hunt players up to combat 12) at (3223, 9860), (3237, 9868) and (3239, 9864), by the ladder landing; giant spiders (combat 27, hunt up to combat 54) at (3217-3220, 9886-9889) and (combat 2) at (3219-3221, 9886) on the way to the web at (3210, 9898); zombies (combat 24, hunt up to combat 48) at (3224-3230, 9903-9906), 5-8 tiles north of that route; in the west pocket beyond the web, deadly red spiders (combat 34, hunt up to combat 68) at (3171-3186, 9883-9906) and moss giants (combat 42, hunt up to combat 84) at (3157-3167, 9878-9905)';
 
 /**
  * The curated names and hazards, by loc tile (`level,x,z`, with ` up` or ` down` for one direction of a middle
@@ -130,17 +145,23 @@ export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
     // Edgeville Dungeon and the ladder back. The trapdoor is reached by the opening on the house's west side.
     [key(0, 3097, 3468), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
     [key(0, 3096, 9867), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
+    // Varrock: the manhole (closed: "Open", then "Climb down") into the Varrock Sewers and the ladder back.
+    [key(0, 3237, 3458), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
+    [key(0, 3237, 9858), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
     // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
     [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
     [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
 ]);
 
 /** A climb's op as actions/climb.ts sends it: the direction's own option, or a middle floor's plain Climb. */
-const CLIMB_OP = /^((climb|walk)-(up|down)|climb)$/i;
+const CLIMB_OP = /^((climb[- ]|walk-)(up|down)|climb)$/i;
+/** The closed locs actions/climb.ts opens before it climbs them. */
+export const OPENS = /trapdoor|manhole/i;
 
 /**
  * Why a walk cannot use a generated row, or undefined when it can. actions/climb.ts sends a Climb-up or Climb-down
- * (Walk-), or Climb and answers its question, or opens a closed trapdoor first; it waits until the plane changes.
+ * (Walk-), or Climb and answers its question, or opens a closed trapdoor or manhole first; it waits until the plane
+ * changes.
  * A gate on a row's op needs no check here: the graph's edge carries its requirement (wiki/world/reach.ts).
  */
 function leftOut(row: Row, world: World): string | undefined {
@@ -152,8 +173,8 @@ function leftOut(row: Row, world: World): string | undefined {
     if (lumped(from) || lumped(to)) return 'into an underground area planeOf does not name';
     const moving = row.thenOp ?? row;
     if (!CLIMB_OP.test(moving.opName)) return `op ${moving.opName}, which climb does not send`;
-    if (row.thenOp && !(/^open$/i.test(row.opName) && /trapdoor/i.test(world.features[row.feature]?.name ?? '')))
-        return `opened by ${row.opName}, and climb opens only a trapdoor`;
+    if (row.thenOp && !(/^open$/i.test(row.opName) && OPENS.test(world.features[row.feature]?.name ?? '')))
+        return `opened by ${row.opName}, and climb opens only a trapdoor or a manhole`;
     return undefined;
 }
 

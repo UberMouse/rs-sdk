@@ -3,12 +3,12 @@
 // Uses one level connector (lib/connectors.ts): finds its loc, sends the option for the direction and waits
 // until the bot is on the plane it leads to, read from state (level, and whether z is underground).
 // The loc's own Climb-up / Climb-down option is sent where it has one; a middle floor's plain "Climb"
-// opens a "Climb up or down?" dialog, answered here as part of the climb. A closed trapdoor (only "Open")
-// is opened first and the climb goes on once it offers "Climb-down". The walk to the loc is the
-// caller's (walkTo's); the client's own pathing covers the last tiles.
+// opens a "Climb up or down?" dialog, answered here as part of the climb. A closed trapdoor or manhole (only
+// "Open") is opened first and the climb goes on once it offers "Climb-down" (or "Climb down"). The walk to the loc
+// is the caller's (walkTo's); the client's own pathing covers the last tiles.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, scan, send, wait } from '../core/op';
-import { type Connector, planeOf } from '../lib/connectors';
+import { type Connector, OPENS, planeOf } from '../lib/connectors';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { interactLoc } from './interact';
@@ -38,12 +38,12 @@ export type ClimbResult =
       };
 
 const OPTIONS = {
-    up: { direct: /^(climb|walk)-up$/i, choice: /^climb up\.?$/i },
-    down: { direct: /^(climb|walk)-down$/i, choice: /^climb down\.?$/i },
+    up: { direct: /^(climb[- ]|walk-)up$/i, choice: /^climb up\.?$/i },
+    down: { direct: /^(climb[- ]|walk-)down$/i, choice: /^climb down\.?$/i },
 } as const;
 /** A middle floor's op 1: it asks which way. */
 const ASKS = /^climb$/i;
-/** A closed trapdoor's only option. */
+/** A closed trapdoor's or manhole's only option. */
 const OPEN = /^open$/i;
 
 const where = (c: Connector) => `${c.name} at (${c.loc.x}, ${c.loc.z}) level ${c.loc.level}`;
@@ -67,15 +67,15 @@ function nearestLoc(locs: readonly NearbyLoc[], c: Connector, ok: (l: NearbyLoc)
 const findLoc = (locs: readonly NearbyLoc[], c: Connector) =>
     nearestLoc(locs, c, l => hasOption(l, OPTIONS[c.direction].direct) || hasOption(l, ASKS));
 
-/** The connector's loc when it is closed: a trapdoor within LOC_SLACK offering Open. */
+/** The connector's loc when it is closed: a trapdoor or manhole within LOC_SLACK offering Open. */
 const findClosed = (locs: readonly NearbyLoc[], c: Connector) =>
-    nearestLoc(locs, c, l => /trapdoor/i.test(l.name) && hasOption(l, OPEN));
+    nearestLoc(locs, c, l => OPENS.test(l.name) && hasOption(l, OPEN));
 
 /**
  * Climbs `c`: sends its option on the loc and waits for the bot to be on the plane it leads to
- * (`c.to`). A direction's option (Climb-up / Walk-up, Climb-down / Walk-down) goes straight; a plain
- * Climb opens the choice, and "Climb Up." or "Climb Down." is clicked. The bot should stand near the
- * loc already: the op sends once and waits CLIMB_WAIT_TICKS.
+ * (`c.to`). A direction's option (Climb-up / Walk-up, Climb-down / Walk-down, Climb up / Climb down) goes
+ * straight; a plain Climb opens the choice, and "Climb Up." or "Climb Down." is clicked. The bot should stand near
+ * the loc already: the op sends once and waits CLIMB_WAIT_TICKS.
  */
 export function* climb(ctx: ActionContext, c: Connector): Op<ClimbResult> {
     const before = ctx.state();
