@@ -278,3 +278,5 @@ Review findings `task-review` deferred because their fix needs work outside the 
   with all five valves turned right (`quest_hazeelcult.rs2:38`).
 - World index: the Regicide dense-forest crossings at (2165, 3189) and (2173, 3156) exactmove onto tiles off
   walkable land (`quest_regicide.rs2:462`), which leaves tree:tirannwn:1 unreached.
+- travel: `tasks/travel.ts:23` keeps its own `GATE_STAND_TOLERANCE`; import it from `actions/gate.ts` (code-quality
+  Q3, from the gnome-exit fix).
