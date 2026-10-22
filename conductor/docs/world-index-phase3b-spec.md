@@ -127,6 +127,14 @@ The contract extension of survey §4:
 - [ ] The migrated record's floor and the training pages are unchanged.
 - [ ] Out of scope: any new family (Tasks 5-8).
 
+**Amendment (2026-10-22, after Task 4's implementer):** the sink's `then` is named `end` (oxlint `unicorn/no-thenable`
+rejects a `then` key; values and meaning unchanged); Tasks 5-10 use `end`. The non-stackable supply rule above
+under-counts a chain processed as it is gathered: when every step up to and including the one that consumes a
+non-stackable supply is `'here'`, the bot gathers, processes and consumes one success at a time, so a consumed supply's
+slot is freed by the product it makes (chop, cut and string a longbow: the strung bow takes the log's slot, the string's
+slot comes free). Such a chain's load is the free slots less the one slot a gather needs, over the slots one success's
+end product holds, not the free slots over (input + supply) slots. Steps away from the gather site keep the rule above.
+
 ## Task 5 — Superheat, smelting and smithing
 
 **Files:** `model/families/{superheat,smelting,smithing}.ts`, `model/families/index.ts`, tests.
@@ -147,6 +155,8 @@ The contract extension of survey §4:
 - `spinning` (process at a spinning wheel): survey §1f.
 - `fletching` (process in place; cut a product or string a bow, bow string as a non-stackable supply): survey §1h.
 - `firemaking` (process in place or at a tile; log; no site kinds; line resets left out): survey §1i.
+  Task 4 resolves a tile step only to a site of the family's kinds; a family with no kinds needs a step `at` a
+  bare tile (the tile itself as the stop, priced like any tile), added here.
 - `pick` (gather on `flax`: 2 ticks, a flax vanishes 3 times in 16 for 10 ticks): survey §1f.
 
 ### Acceptance criteria
