@@ -201,7 +201,8 @@ function makeEmptyItemConfig(configName: string, sourcePath: string): ItemConfig
 function findFilesRecursive(dir: string, ext: string): string[] {
     const results: string[] = [];
     function walk(d: string) {
-        const entries = readdirSync(d, { withFileTypes: true });
+        // By name: the filesystem lists in no fixed order.
+        const entries = readdirSync(d, { withFileTypes: true }).sort((a, b) => cmp(a.name, b.name));
         for (const entry of entries) {
             const fullPath = join(d, entry.name);
             if (entry.isDirectory()) walk(fullPath);
@@ -439,7 +440,7 @@ function parseObjSpawns(
     objIdToName: Map<number, string>
 ): Map<string, SpawnLocation[]> {
     const spawns = new Map<string, SpawnLocation[]>();
-    const mapFiles = readdirSync(mapsDir).filter(f => f.endsWith('.jm2'));
+    const mapFiles = readdirSync(mapsDir).filter(f => f.endsWith('.jm2')).sort(cmp);
 
     for (const file of mapFiles) {
         const match = file.match(/^m(\d+)_(\d+)\.jm2$/);
@@ -623,6 +624,7 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
     const objPackContent = readFileSync(join(CONTENT_DIR, 'pack', 'obj.pack'), 'utf-8');
     const certConfigNames = new Set<string>();
     const objIdToName = new Map<number, string>();
+    const objIds = new Map<string, number>();
     for (const line of objPackContent.split('\n')) {
         const eqIdx = line.indexOf('=');
         if (eqIdx === -1) continue;
@@ -630,6 +632,7 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
         const name = line.slice(eqIdx + 1).trim();
         if (!isNaN(id) && name) {
             objIdToName.set(id, name);
+            objIds.set(name, id);
             if (name.startsWith('cert_')) {
                 certConfigNames.add(name);
             }
@@ -719,7 +722,9 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
             const bWear = b.wearpos ? 1 : 0;
             if (aWear !== bWear) return bWear - aWear;
             // Higher cost as tiebreaker
-            return b.cost - a.cost;
+            if (a.cost !== b.cost) return b.cost - a.cost;
+            // Then the game's id order (obj.pack): the config it defines first
+            return cmp(objIds.get(a.configName) ?? Infinity, objIds.get(b.configName) ?? Infinity);
         });
         bestConfigs.set(name, configs[0]!);
     }
@@ -800,7 +805,7 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
     }
 
     // Sort alphabetically
-    built.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    built.sort((a, b) => cmp(a.displayName, b.displayName));
     log(`  Built ${built.length} item pages`);
 
     // Category breakdown
@@ -932,7 +937,7 @@ function generateItemMarkdown(page: ItemPage): string {
             byAreaLevel.get(key)!.count += spawn.quantity;
         }
 
-        const sortedAreas = [...byAreaLevel.values()].sort((a, b) => a.area.localeCompare(b.area));
+        const sortedAreas = [...byAreaLevel.values()].sort((a, b) => cmp(a.area, b.area));
         for (const data of sortedAreas) {
             const floorStr = data.level === 0 ? 'Ground' : `Floor ${data.level}`;
             lines.push(`| ${data.area} | ${floorStr} | ${data.count} |`);
@@ -987,7 +992,7 @@ function updateReadme(
     }
 
     // Sort alphabetically
-    pages.sort((a, b) => a.name.localeCompare(b.name));
+    pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate Items section
     const section = [

@@ -4,23 +4,9 @@
 |---|---|
 | **Combat Level** | 48 |
 | **Hitpoints** | 50 |
-| **Description** | A hardened Fremennik warrior. |
+| **Description** | He looks big and dumb. |
 | **Aggressive** | No |
-| **Movement** | Wander (range 12) |
-| **Respawn** | 60 ticks |
-
-## Combat Stats
-
-| Stat | Value |
-|------|-------|
-| Attack Bonus | 40 |
-| Strength Bonus | 40 |
-| Stab Defence | 50 |
-| Slash Defence | 50 |
-| Crush Defence | 50 |
-| Magic Defence | 50 |
-| Range Defence | 50 |
-| Attack Style | Crush |
+| **Movement** | Wander |
 
 ## Locations
 
@@ -42,9 +28,13 @@
 | [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3695) | 1 | no |
 | [Rellekka (Kandarin)](../places/rellekka.md) | (2685, 3653) | 1 | no |
 
-## Drops
+## Interactions
 
-Always drops: Bones
+| Option | Action |
+|--------|--------|
+| Talk-to | Talk-to |
+
+## Drops
 
 | Item | Rarity |
 |------|--------|
@@ -74,6 +64,5 @@ Always drops: Bones
 
 ## Notes
 
-- Associated with the **Viking** quest.
-- Has 2 visual variants (viking_guard2, warrioradventurerpg).
+- Has 2 visual variants (warrioradventurerpg, viking_guard2).
 - Can drop medium clue scrolls.

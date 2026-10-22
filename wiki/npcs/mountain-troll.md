@@ -233,7 +233,7 @@ Always drops: Big bones
 
 ## Notes
 
-- Associated with the **Troll** quest.
-- Has 8 visual variants (troll_melee1, death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7).
+- Associated with the **Death** quest.
+- Has 8 visual variants (death_troll_melee1, death_troll_melee2, death_troll_melee3, death_troll_melee4, death_troll_melee5, death_troll_melee6, death_troll_melee7, troll_melee1).
 - Will flee from combat when attacked.
 - Category: Mountain Troll.

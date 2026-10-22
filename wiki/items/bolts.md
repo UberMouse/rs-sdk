@@ -28,9 +28,9 @@
 ## Sources
 
 - Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 3 gp
+- Sold by: [Armoury](../shops/armoury.md) for 4 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 3 gp
 - Sold by: [Lowe's Archery Emporium](../shops/lowes-archery-emporium.md) for 3 gp
-- Sold by: [Armoury](../shops/armoury.md) for 4 gp
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (22/128 (members))
 - Dropped by: [Dwarf](../npcs/dwarf.md) (7/128 (members))
 - Dropped by: [Goblin guard](../npcs/goblin-guard.md) (3/128)

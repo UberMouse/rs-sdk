@@ -19,8 +19,8 @@
 
 ## Sources
 
-- Sold by: [Fancy Clothes Store](../shops/fancy-clothes-store.md) for 2 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 2 gp
+- Sold by: [Fancy Clothes Store](../shops/fancy-clothes-store.md) for 2 gp
 - Dropped by: [Dark wizard](../npcs/dark-wizard.md) (4/128)
 - Dropped by: [Imp](../npcs/imp.md) (8/128)
 - Dropped by: [Wizard](../npcs/wizard.md) (3/128)

@@ -1,11 +1,11 @@
 # Wig
 
-*A grey woollen wig.*
+*A wig that has been dyed slightly blonde.*
 
 | Detail | |
 |---|---|
 | **Type** | Quest Item |
 | **Members** | No |
-| **Weight** | 10g |
+| **Weight** | 1lb |
 | **Value** | 0 gp |
 | **Tradeable** | No |

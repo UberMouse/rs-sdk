@@ -19,11 +19,11 @@
 ## Sources
 
 - Sold by: [Harrys Fishing Shop](../shops/harrys-fishing-shop.md) for 3 gp
-- Sold by: [Fremennik Fish Monger](../shops/fremennik-fish-monger.md) for 3 gp
 - Sold by: [Island Fishmonger](../shops/island-fishmonger.md) for 3 gp
 - Sold by: [Etceteria Fish](../shops/etceteria-fish.md) for 3 gp
 - Sold by: [Gerrant's Fishy Business](../shops/gerrants-fishy-business.md) for 3 gp
 - Sold by: [Fernahai's Fishing Hut](../shops/fernahais-fishing-hut.md) for 3 gp
+- Sold by: [Fremennik Fish Monger](../shops/fremennik-fish-monger.md) for 3 gp
 - Sold by: [Fishing Guild Shop](../shops/fishing-guild-shop.md) for 3 gp
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (5/128)
 - Dropped by: [Farmer](../npcs/farmer.md) (5/128)

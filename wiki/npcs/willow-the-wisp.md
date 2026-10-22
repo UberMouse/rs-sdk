@@ -82,5 +82,4 @@ Willow the wisp has no drops.
 
 ## Notes
 
-- Associated with the **Regicide** quest.
-- Has 3 visual variants (regicide_willothewisp1, regicide_willothewisp2, willothewisp).
+- Has 3 visual variants (willothewisp, regicide_willothewisp1, regicide_willothewisp2).

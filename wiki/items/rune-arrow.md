@@ -20,8 +20,8 @@
 
 ## Sources
 
-- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 400 gp
 - Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 400 gp
+- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 400 gp
 - Dropped by: [Fire giant](../npcs/fire-giant.md) (5/128)
 - Dropped by: [Kalphite Queen](../npcs/kalphite-queen.md) (2/128)
 - Dropped by: [Red dragon](../npcs/red-dragon.md) (8/128)

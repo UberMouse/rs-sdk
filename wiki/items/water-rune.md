@@ -14,15 +14,15 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
+| Varrock (east) | Ground | 4 |
 | m46_60 | Ground | 5 |
 | m47_56 | Ground | 5 |
-| Varrock (east) | Ground | 4 |
 
 ## Sources
 
 - Sold by: [Lundail's Arena-side Rune Shop](../shops/lundails-arena-side-rune-shop.md) for 4 gp
-- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 4 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 4 gp
+- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 4 gp
 - Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 4 gp
 - Dropped by: [Bandit](../npcs/bandit.md) (3/128)
 - Dropped by: [Black Heather](../npcs/black-heather.md) (3/128)

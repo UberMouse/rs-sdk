@@ -4,9 +4,9 @@
 |---|---|
 | **Combat Level** | None |
 | **Hitpoints** | N/A |
-| **Description** | Precariously balanced.... |
+| **Description** | I wonder what this is doing here. |
 | **Aggressive** | No |
-| **Movement** | Stationary |
+| **Movement** | Wander |
 
 ## Locations
 
@@ -29,5 +29,5 @@ Boulder has no drops.
 
 ## Notes
 
-- Associated with the **Upass** quest.
-- Has 2 visual variants (boulder_upass, boulder_legends).
+- Associated with the **Legends** quest.
+- Has 2 visual variants (boulder_legends, boulder_upass).

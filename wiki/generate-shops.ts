@@ -13,6 +13,7 @@ import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './
 import { areaCell, areasOf, coord } from './world/render/common';
 import { readCallables, readTriggers } from './world/sources/triggers';
 import type { Site, Tile, World } from './world/types';
+import { readPack } from './world/sources/packs';
 import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
@@ -349,7 +350,8 @@ function parseObjConfigsFull(content: string): Map<string, ObjInfo> {
 function findFilesRecursive(dir: string, ext: string): string[] {
     const results: string[] = [];
     function walk(d: string) {
-        const entries = readdirSync(d, { withFileTypes: true });
+        // By name: the filesystem lists in no fixed order.
+        const entries = readdirSync(d, { withFileTypes: true }).sort((a, b) => cmp(a.name, b.name));
         for (const entry of entries) {
             const fullPath = join(d, entry.name);
             if (entry.isDirectory()) walk(fullPath);
@@ -445,6 +447,12 @@ export function shopPages(
         }
     }
 
+    // In the game's id order (npc.pack): the first owner, whose title and area the page takes, is the npc it
+    // defines first.
+    const npcIds = readPack('npc').id;
+    for (const owners of shopOwners.values())
+        owners.sort((a, b) => cmp(npcIds.get(a.npcConfigName) ?? Infinity, npcIds.get(b.npcConfigName) ?? Infinity));
+
     let totalOwners = 0;
     for (const owners of shopOwners.values()) totalOwners += owners.length;
     log(`  Found ${totalOwners} shop owners for ${shopOwners.size} shops`);
@@ -509,7 +517,7 @@ export function shopPages(
     }
 
     // Sort by shop title
-    built.sort((a, b) => a.shopTitle.localeCompare(b.shopTitle));
+    built.sort((a, b) => cmp(a.shopTitle, b.shopTitle));
     log(`  Built ${built.length} shop pages`);
 
     // ─── Step 5: Generate markdown ──────────────────────────────────────
@@ -643,7 +651,7 @@ function updateReadme(
     }
 
     // Sort alphabetically
-    pages.sort((a, b) => a.name.localeCompare(b.name));
+    pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate Shops section
     const section = [

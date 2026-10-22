@@ -13,6 +13,7 @@ import { centreOf } from './world/place';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
 import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
 import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
+import { readPack } from './world/sources/packs';
 import { cmp } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
@@ -790,8 +791,12 @@ export function npcPages(world: World, log: (line: string) => void = () => {}): 
 
     log('\nStep 3: Deduplicating by display name...');
 
+    // Configs sharing a display name are distinct npcs to the game; they are taken in its id order (npc.pack),
+    // so the page describes the one it defines first.
+    const npcIds = readPack('npc').id;
+    const byId = [...filteredConfigs].sort(([a], [b]) => cmp(npcIds.get(a) ?? Infinity, npcIds.get(b) ?? Infinity));
     const pagesByName = new Map<string, NpcPage>();
-    for (const [configName, config] of filteredConfigs) {
+    for (const [, config] of byId) {
         const displayName = config.name;
 
         if (!pagesByName.has(displayName)) {
@@ -1185,7 +1190,7 @@ function updateReadme(
     }
 
     // Sort alphabetically
-    pages.sort((a, b) => a.name.localeCompare(b.name));
+    pages.sort((a, b) => cmp(a.name, b.name));
 
     // Generate NPCs section
     const npcSection = [
@@ -1217,7 +1222,8 @@ function findFilesRecursive(dir: string, ext: string): string[] {
     const results: string[] = [];
 
     function walk(d: string) {
-        const entries = readdirSync(d, { withFileTypes: true });
+        // By name: the filesystem lists in no fixed order.
+        const entries = readdirSync(d, { withFileTypes: true }).sort((a, b) => cmp(a.name, b.name));
         for (const entry of entries) {
             const fullPath = join(d, entry.name);
             if (entry.isDirectory()) {

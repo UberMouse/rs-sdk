@@ -88,4 +88,4 @@ Always drops: Bones
 
 ## Notes
 
-- Has 6 visual variants (dwarf_normal, dwarf_mountain, dwarf_tunnel, guilddwarf, mcannonguard, dwarven_shopkeeper).
+- Has 6 visual variants (dwarf_normal, dwarf_mountain, dwarf_tunnel, mcannonguard, guilddwarf, dwarven_shopkeeper).

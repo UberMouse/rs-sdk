@@ -11,5 +11,5 @@
 
 ## Sources
 
-- Sold by: [Herquin's Gems](../shops/herquins-gems.md) for 100 gp
 - Sold by: [Gem Trader](../shops/gem-trader.md) for 100 gp
+- Sold by: [Herquin's Gems](../shops/herquins-gems.md) for 100 gp

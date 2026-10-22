@@ -20,6 +20,6 @@
 
 ## Sources
 
-- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 160 gp
 - Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 160 gp
 - Sold by: [Lowe's Archery Emporium](../shops/lowes-archery-emporium.md) for 160 gp
+- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 160 gp

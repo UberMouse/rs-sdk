@@ -12,7 +12,7 @@
 ## Sources
 
 - Sold by: [Harrys Fishing Shop](../shops/harrys-fishing-shop.md) for 15 gp
-- Sold by: [Fremennik Fish Monger](../shops/fremennik-fish-monger.md) for 19 gp
 - Sold by: [Island Fishmonger](../shops/island-fishmonger.md) for 19 gp
 - Sold by: [Etceteria Fish](../shops/etceteria-fish.md) for 19 gp
 - Sold by: [Gerrant's Fishy Business](../shops/gerrants-fishy-business.md) for 15 gp
+- Sold by: [Fremennik Fish Monger](../shops/fremennik-fish-monger.md) for 19 gp

@@ -15,6 +15,8 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | Karamja (west) | Ground | 2 |
+| Wilderness | Ground | 3 |
+| Wilderness (deep) | Ground | 2 |
 | m39_147 | Ground | 1 |
 | m42_153 | Ground | 1 |
 | m43_70 | Ground | 3 |
@@ -31,8 +33,6 @@
 | m49_154 | Ground | 8 |
 | m50_59 | Ground | 6 |
 | m51_154 | Ground | 1 |
-| Wilderness | Ground | 3 |
-| Wilderness (deep) | Ground | 2 |
 
 ## Sources
 

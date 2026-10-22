@@ -24,13 +24,13 @@
 | Al Kharid | Ground | 1 |
 | Desert | Ground | 1 |
 | Desert | Floor 1 | 1 |
-| m50_150 | Ground | 1 |
 | Varrock | Floor 1 | 1 |
+| m50_150 | Ground | 1 |
 
 ## Sources
 
 - Sold by: [West Ardougne General Store](../shops/west-ardougne-general-store.md) for 7 gp
 - Sold by: [Jiminua's Jungle Store](../shops/jiminuas-jungle-store.md) for 9 gp
+- Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 9 gp
 - Sold by: [Fancy Clothes Store](../shops/fancy-clothes-store.md) for 7 gp
 - Sold by: [Thessalia Fine Clothes](../shops/thessalia-fine-clothes.md) for 6 gp
-- Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 9 gp

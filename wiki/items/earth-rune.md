@@ -14,15 +14,15 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
+| Wilderness | Ground | 1 |
 | m47_56 | Ground | 5 |
 | m49_154 | Ground | 6 |
-| Wilderness | Ground | 1 |
 
 ## Sources
 
 - Sold by: [Lundail's Arena-side Rune Shop](../shops/lundails-arena-side-rune-shop.md) for 4 gp
-- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 4 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 4 gp
+- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 4 gp
 - Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 4 gp
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (2/128)
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (3/128)

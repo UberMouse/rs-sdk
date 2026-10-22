@@ -26,9 +26,9 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | Lumbridge | Ground | 1 |
+| Varrock | Floor 1 | 1 |
 | m49_57 | Ground | 1 |
 | m51_61 | Floor 3 | 1 |
-| Varrock | Floor 1 | 1 |
 
 ## Sources
 

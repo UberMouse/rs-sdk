@@ -19,8 +19,8 @@
 ## Sources
 
 - Sold by: [Lundail's Arena-side Rune Shop](../shops/lundails-arena-side-rune-shop.md) for 30 gp
-- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 30 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 30 gp
+- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 30 gp
 - Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 30 gp
 - Dropped by: [Bandit](../npcs/bandit.md) (2/128)
 - Dropped by: [Black Knight](../npcs/black-knight.md) (2/128)

@@ -13,12 +13,12 @@
 
 | Area | Floor | Quantity |
 |------|-------|----------|
+| Rimmington | Ground | 1 |
 | m38_151 | Ground | 1 |
 | m39_55 | Ground | 1 |
 | m42_42 | Ground | 1 |
 | m49_57 | Ground | 1 |
 | m51_57 | Ground | 1 |
-| Rimmington | Ground | 1 |
 
 ## Sources
 

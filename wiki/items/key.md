@@ -1,6 +1,6 @@
 # Key
 
-*A key to some drawers.*
+*A key to unlock a treasure chest.*
 
 | Detail | |
 |---|---|

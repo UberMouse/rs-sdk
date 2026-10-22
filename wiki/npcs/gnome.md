@@ -4,9 +4,23 @@
 |---|---|
 | **Combat Level** | 1 |
 | **Hitpoints** | 3 |
-| **Description** | Looks like a gnome to me. |
+| **Description** | Like a mini man! |
 | **Aggressive** | No |
 | **Movement** | Wander |
+| **Respawn** | 120 ticks |
+
+## Combat Stats
+
+| Stat | Value |
+|------|-------|
+| Attack Bonus | -42 |
+| Strength Bonus | -42 |
+| Stab Defence | -42 |
+| Slash Defence | -42 |
+| Crush Defence | -42 |
+| Magic Defence | -42 |
+| Range Defence | -42 |
+| Attack Style | Crush |
 
 ## Locations
 
@@ -50,17 +64,11 @@
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2465, 3490) L2 | 1 | no |
 | [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2526, 3169) | 7 | no |
 
-## Interactions
-
-| Option | Action |
-|--------|--------|
-| Talk-to | Talk-to |
-
 ## Drops
 
-Gnome has no drops.
+Always drops: Bones
 
 ## Notes
 
-- Associated with the **Tree** quest.
-- Has 6 visual variants (tracker1, tracker2, tracker3, gnome, browclothedgnome, darkskinned_gnome).
+- Has 6 visual variants (gnome, browclothedgnome, darkskinned_gnome, tracker1, tracker2, tracker3).
+- Can be pickpocketed for Thieving experience.

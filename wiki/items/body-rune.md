@@ -15,17 +15,17 @@
 | Area | Floor | Quantity |
 |------|-------|----------|
 | Al Kharid | Floor 1 | 1 |
+| Wilderness | Ground | 2 |
+| Wilderness (deep) | Ground | 2 |
 | m47_56 | Ground | 5 |
 | m48_60 | Ground | 15 |
 | m50_154 | Ground | 1 |
-| Wilderness | Ground | 2 |
-| Wilderness (deep) | Ground | 2 |
 
 ## Sources
 
 - Sold by: [Lundail's Arena-side Rune Shop](../shops/lundails-arena-side-rune-shop.md) for 3 gp
-- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 3 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 3 gp
+- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 3 gp
 - Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 3 gp
 - Dropped by: [Black Heather](../npcs/black-heather.md) (3/128)
 - Dropped by: [Black Knight](../npcs/black-knight.md) (3/128)

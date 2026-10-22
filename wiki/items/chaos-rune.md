@@ -23,8 +23,8 @@
 ## Sources
 
 - Sold by: [Lundail's Arena-side Rune Shop](../shops/lundails-arena-side-rune-shop.md) for 15 gp
-- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 15 gp
 - Sold by: [Betty's Magic Emporium](../shops/bettys-magic-emporium.md) for 15 gp
+- Sold by: [Aubury's Rune Shop](../shops/auburys-rune-shop.md) for 15 gp
 - Sold by: [Magic Guild Store](../shops/magic-guild-store.md) for 15 gp
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (1/128)
 - Dropped by: [Bandit](../npcs/bandit.md) (3/128)

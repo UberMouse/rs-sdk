@@ -31,9 +31,9 @@
 
 ## Sources
 
-- Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 16 gp
-- Sold by: [Bandit Duty Free](../shops/bandit-duty-free.md) for 14 gp
 - Sold by: [Jiminua's Jungle Store](../shops/jiminuas-jungle-store.md) for 24 gp
+- Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 16 gp
 - Sold by: [Obli's General Store](../shops/oblis-general-store.md) for 24 gp
+- Sold by: [Bandit Duty Free](../shops/bandit-duty-free.md) for 14 gp
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (6/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (6/128)

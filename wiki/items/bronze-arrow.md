@@ -31,14 +31,14 @@
 
 ## Sources
 
-- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 1 gp
-- Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 1 gp
 - Sold by: [Aemad's Adventuring Supplies](../shops/aemads-adventuring-supplies.md) for 1 gp
 - Sold by: [West Ardougne General Store](../shops/west-ardougne-general-store.md) for 1 gp
+- Sold by: [Hicktons Archery Emporium](../shops/hicktons-archery-emporium.md) for 1 gp
+- Sold by: [Armoury](../shops/armoury.md) for 1 gp
 - Sold by: [Bolkoy's Village Shop](../shops/bolkoys-village-shop.md) for 1 gp
 - Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 1 gp
 - Sold by: [Lowe's Archery Emporium](../shops/lowes-archery-emporium.md) for 1 gp
-- Sold by: [Armoury](../shops/armoury.md) for 1 gp
+- Sold by: [Dargaud's Bow and Arrows](../shops/dargauds-bow-and-arrows.md) for 1 gp
 - Dropped by: [Al-Kharid warrior](../npcs/al-kharid-warrior.md) (3/128)
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (3/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (3/128)

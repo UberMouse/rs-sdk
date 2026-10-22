@@ -13,8 +13,8 @@
 
 - Sold by: [Ardougne Fur Stall](../shops/ardougne-fur-stall.md) for 12 gp
 - Sold by: [Furstall](../shops/furstall.md) for 10 gp
-- Sold by: [Fremennik Fur Trader](../shops/fremennik-fur-trader.md) for 12 gp
 - Sold by: [Fancy Clothes Store](../shops/fancy-clothes-store.md) for 13 gp
+- Sold by: [Fremennik Fur Trader](../shops/fremennik-fur-trader.md) for 12 gp
 - Dropped by: [Barbarian woman](../npcs/barbarian-woman.md) (1/128)
 - Dropped by: [Barbarian](../npcs/barbarian.md) (1/128)
 - Dropped by: [Bear Cub](../npcs/bear-cub.md) (Always)

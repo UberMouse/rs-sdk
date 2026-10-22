@@ -24,9 +24,9 @@
 
 ## Sources
 
-- Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 200 gp
-- Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 200 gp
 - Sold by: [Armoury](../shops/armoury.md) for 300 gp
+- Sold by: [Gulluck and Sons](../shops/gulluck-and-sons.md) for 200 gp
+- Sold by: [Bob's Brilliant Axes](../shops/bobs-brilliant-axes.md) for 200 gp
 - Dropped by: [Bandit](../npcs/bandit.md) (1/128)
 - Dropped by: [Fire giant](../npcs/fire-giant.md) (3/128)
 - Dropped by: [Greater demon](../npcs/greater-demon.md) (3/128)

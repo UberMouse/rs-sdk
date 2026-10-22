@@ -34,5 +34,5 @@ Shop assistant has no drops.
 
 ## Notes
 
-- Has 8 visual variants (generalassistant1, generalassistant5, generalassistant4, generalassistant6, generalassistant7, generalassistant2, swordshop2, generalassistant3).
+- Has 8 visual variants (generalassistant1, generalassistant2, generalassistant3, generalassistant4, generalassistant5, generalassistant6, generalassistant7, swordshop2).
 - Category: Shop Keeper.
