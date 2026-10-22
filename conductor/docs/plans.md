@@ -169,8 +169,8 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
 - **Predicate errors.** A `when` or `until` that throws ends the plan `error`, naming the phase.
 - **Combat between phases.** `executeTask` refuses to start in combat. A stop or `until` that lands
   in a fight (the bot attacked, or still fighting its own target) ends the phase after the engine
-  settles the fight (at most 100 ticks); a guard failing in the settle ends the plan failed, whatever
-  `onFail` says. Combat that starts in the gap between phases goes through the next phase's `onFail` like any
+  settles the fight (at most 100 ticks); any phase that does not end done after the stop or `until`
+  fired (a guard failing in the settle is the common case) ends the plan failed, whatever `onFail` says. Combat that starts in the gap between phases goes through the next phase's `onFail` like any
   refusal.
 - **One controller connection for the whole plan**, so nothing can take the bot between phases.
 

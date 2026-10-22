@@ -307,7 +307,7 @@ export const isAttacked = (s: BotWorldState): boolean =>
 /**
  * In combat with an NPC the bot targets, whether or not it hits back: the target is in view, alive and
  * attackable. A fishing spot has no Attack option. The client publishes a target only while hits on the bot
- * or on it back the facing, or within a walk-up grace, so a target the bot only faced drops out by itself.
+ * or on it back the facing, or within a walk-up grace, so a target the bot only faced drops out by itself (after ~16 ticks, `FACING_GRACE_CYCLES` = 500 cycles).
  */
 export const ownFight = (s: BotWorldState): boolean => {
     const c = s.player?.combat;

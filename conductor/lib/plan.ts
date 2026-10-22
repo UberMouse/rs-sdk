@@ -708,7 +708,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 // the engine's reason is `<guard>: <why>`; the phase name already says who died
                 return finish('failed', `${chosen.name}: ${result.reason.replace(`${DEATH_GUARD}: `, '')}`);
             if (ext.planEnd)
-                // The plan is ending: a phase that failed settling the fight after it is not retried.
+                // The plan is ending: a phase that did not end done (a guard failing the settle, or any other failure on
+                // that tick) fails the plan, and onFail is not consulted.
                 return result.status === 'done'
                     ? finish(ext.planEnd.status, ext.planEnd.reason)
                     : finish(result.status, `${chosen.name}: ${result.reason}`);
