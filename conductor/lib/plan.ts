@@ -98,6 +98,13 @@ export interface PlanDef {
      * `plan requires <key>`. A `when` on every phase would refuse the same, but as `no phase applies`.
      */
     requires?: Record<string, Predicate>;
+    /**
+     * The training method it runs: a method id of wiki/world/methods.ts, whose record lists this plan in its `plans`
+     * (conductor/test/plans.test.ts checks both ways). `stats.ts --methods` sets its runs beside the method's floor.
+     * Named only when the plan's whole run IS that method's cycle: a plan that does more (smelts or smiths what it
+     * mines) names none, as its whole-run XP/hr measures another activity.
+     */
+    method?: string;
 }
 
 /** A plan result's `params`: each phase's task and params. */

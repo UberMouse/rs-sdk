@@ -5,14 +5,15 @@
 // (sources/gate-scan.ts, gates.ts), the crossings (sources/gate-landings.ts, sources/dbrow-teleports.ts,
 // sources/npc-teleports.ts, sources/curated-crossings.ts), and each site's and npc spawn cluster's reach (reach.ts: what a walk from the
 // Lumbridge spawn needs to get there), and each resource and processor site's nearest bank and processors in run ticks
-// (distance.ts); then prints a report and renders the pages (render.ts). `bun run
+// (distance.ts), and resolves every curated method (methods.ts, model/method.ts); then prints a report and renders
+// the pages (render.ts). `bun run
 // world` writes them, prints the report with the reach fill's section and the covered sites no walk reaches, by pocket
 // (the curation to-do list, a warning), and exits 1 when the report has an error (failed): a site that breaks the COVERED
 // rule, a quest or journal call the scan can't read with no override, a gates.ts quest entry no longer
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
-// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does, or an
-// areas.ts EXPECTED_UNREACHED entry no unreached site matches. `--check`
+// stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does, an
+// areas.ts EXPECTED_UNREACHED entry no unreached site matches, or a method record that does not resolve. `--check`
 // writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
@@ -22,7 +23,9 @@ import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { questFacts } from './requirements';
-import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
+import { formatDistance, nearestSinks, priceCrossings, SINKS, wayFinder, type DistanceReport } from './distance';
+import { METHODS } from './methods';
+import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
 import { ROOT, WORLD_JSON } from './paths';
 import { drift, readRenderData, renderWorld, writeFiles } from './render';
 import { bySiteId, coord } from './render/common';
@@ -352,6 +355,8 @@ export interface BuildReport {
         /** EXPECTED_UNREACHED entries of an existing area or site no unreached site matches, named the same: an error. */
         stale: string[];
     };
+    /** The methods.ts records resolved, and the ones that do not, as `methods.ts <id>: <reason>`: an error. */
+    methods: { resolved: number; errors: string[] };
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -368,7 +373,8 @@ export const failed = (r: BuildReport): boolean =>
     r.gates.unnamed.length > 0 ||
     r.scripted.duplicates.length > 0 ||
     r.unreached.invalid.length > 0 ||
-    r.unreached.stale.length > 0;
+    r.unreached.stale.length > 0 ||
+    r.methods.errors.length > 0;
 
 export interface BuildInput {
     generatedFrom: string;
@@ -701,7 +707,12 @@ function sightOf(
 const named = (u: Underived): string => `${u.config} ${coord(u.loc)} op${u.op}`;
 
 /** Reads the game data and builds the world, without writing anything. */
-export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { world: World; report: BuildReport } {
+export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
+    world: World;
+    report: BuildReport;
+    /** The model the methods were resolved with, which the training pages rate them with (readRenderData). */
+    model: MethodModel;
+} {
     const locConfigs = readConfigs('loc');
     const npcConfigs = readConfigs('npc');
     const scripts = readScripts();
@@ -944,6 +955,14 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
         context: cameFromContext(reachInput.world.crossings),
     });
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
+    // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
+    // The model is built once: the training pages rate the methods with it too.
+    const model = methodModel({ dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts });
+    const methods = resolveMethods(
+        METHODS,
+        { world: { sites, features }, ...model, quests: graph.quests },
+        wayFinder(graph),
+    );
     const sailSiteCheck = outOfScopeSites(
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
@@ -979,6 +998,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
     });
 
     return {
+        model,
         world: {
             format: WORLD_FORMAT,
             generatedFrom,
@@ -992,6 +1012,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             transports,
             gates: reachInput.world.gates,
             crossings: reachInput.world.crossings,
+            methods: methods.methods.map(toWorldMethod),
         },
         report: {
             features: tally(features, f => f.kind),
@@ -1111,6 +1132,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): { w
             unpriced: priced.unpriced,
             stranded: priced.stranded,
             unreached: { pockets, expected: expected.expected, invalid: expected.invalid, stale: expected.stale },
+            methods: { resolved: methods.methods.length, errors: methods.errors },
         },
     };
 }
@@ -1132,7 +1154,7 @@ const jsonRecord = (key: string, record: Readonly<Record<string, unknown>>): str
 
 /**
  * Two-space JSON with one area, feature, site, npc spawn cluster, connector, quest, loadout rule,
- * transport, gate or crossing per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
+ * transport, gate, crossing or method per line, so a diff shows which ones changed. Keys keep the order the objects were built in,
  * and undefined fields are left out as JSON.stringify does.
  */
 export function serializeWorld(world: World): string {
@@ -1149,7 +1171,8 @@ export function serializeWorld(world: World): string {
         jsonRecord('loadoutRules', world.loadoutRules) + ',',
         jsonList('transports', world.transports) + ',',
         jsonList('gates', world.gates) + ',',
-        jsonList('crossings', world.crossings),
+        jsonList('crossings', world.crossings) + ',',
+        jsonList('methods', world.methods),
         '}',
         '',
     ].join('\n');
@@ -1432,6 +1455,14 @@ export function formatCurated(r: BuildReport['curated']): string[] {
     ];
 }
 
+/** The methods' section of the build report: how many resolved, and an error per record that did not. */
+export function formatMethods(r: BuildReport['methods']): string[] {
+    return [
+        `methods: ${r.resolved} resolved`,
+        ...list(`ERROR methods: ${r.errors.length} records methods.ts does not resolve:`, r.errors),
+    ];
+}
+
 /** How far apart two tiles are, Chebyshev, as the unreached report counts it. */
 const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
 
@@ -1521,10 +1552,14 @@ export function formatUnreached(unreached: BuildReport['unreached'], areas: read
 if (import.meta.main) {
     // Imported here only: it parses the collision data the SDK bundles (see collision.ts).
     const { reachCollision } = await import('./collision');
-    const { world, report } = buildWorld({ generatedFrom: contentHash(), areas: AREAS, collision: reachCollision });
+    const { world, report, model } = buildWorld({
+        generatedFrom: contentHash(),
+        areas: AREAS,
+        collision: reachCollision,
+    });
     const files = new Map([
         [relative(ROOT, WORLD_JSON), serializeWorld(world)],
-        ...renderWorld(world, readRenderData()),
+        ...renderWorld(world, readRenderData(model)),
     ]);
     // Every file but world.json is a page, the README included.
     const generated = `world.json and ${files.size - 1} pages (README.md among them)`;
@@ -1538,7 +1573,7 @@ if (import.meta.main) {
         // A fresh world.json can still have a report error: `bun run world` fails on it, so the check
         // does too.
         if (failed(report)) {
-            for (const line of formatReport(report)) console.log(line);
+            for (const line of [...formatReport(report), ...formatMethods(report.methods)]) console.log(line);
             process.exitCode = 1;
         }
     } else {
@@ -1549,6 +1584,7 @@ if (import.meta.main) {
             ...formatReport(report),
             ...formatReach(report.reach),
             ...formatDistance(report.distance),
+            ...formatMethods(report.methods),
             ...formatUnreached(report.unreached, world.areas),
         ])
             console.log(line);

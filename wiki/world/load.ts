@@ -11,16 +11,25 @@ type Parsed = { [key: string]: unknown };
 const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== null && !Array.isArray(x);
 
 /**
- * Whether `x` is a world.json of this format: its format, a string generatedFrom, the nine lists and
+ * Whether `x` is a world.json of this format: its format, a string generatedFrom, the ten lists and
  * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields
  * (crossingModelProblem).
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&
     typeof x.generatedFrom === 'string' &&
-    [x.areas, x.features, x.sites, x.npcSpawns, x.connectors, x.quests, x.transports, x.gates, x.crossings].every(
-        Array.isArray,
-    ) &&
+    [
+        x.areas,
+        x.features,
+        x.sites,
+        x.npcSpawns,
+        x.connectors,
+        x.quests,
+        x.transports,
+        x.gates,
+        x.crossings,
+        x.methods,
+    ].every(Array.isArray) &&
     isObject(x.loadoutRules);
 
 const isInt = (x: unknown): x is number => Number.isInteger(x);
@@ -156,7 +165,7 @@ export function loadWorld(file: string = WORLD_JSON): World {
         );
     if (!isWorld(world))
         throw new Error(
-            `${file} is not a world.json: it needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates and crossings`,
+            `${file} is not a world.json: it needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates, crossings and methods`,
         );
     const problem = crossingModelProblem(world);
     if (problem) throw new Error(`${file} is not a world.json: ${problem}: regenerate it with bun run world`);

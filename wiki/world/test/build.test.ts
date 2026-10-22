@@ -7,6 +7,7 @@ import {
     byWritten,
     expectedUnreached,
     failed,
+    formatMethods,
     formatReport,
     formatScripted,
     formatCurated,
@@ -177,6 +178,22 @@ const world: World = {
             source: 'agility.rs2:12',
         },
     ],
+    methods: [
+        {
+            id: 'tree-drop',
+            name: 'Trees, dropped',
+            family: 'woodcutting',
+            at: { level: 0, x: 1, z: 2 },
+            params: { tree: 'normal' },
+            sink: { mode: 'drop' },
+            site: 'tree:town:0',
+            stand: { level: 0, x: 1, z: 3 },
+            skill: 'woodcutting',
+            minLevel: 1,
+            levels: { woodcutting: 1 },
+            ways: [{ reach: [], legs: [] }],
+        },
+    ],
 };
 
 /** The message loadWorld refuses `bad` with, less the file's name; `read` when it reads it. */
@@ -197,7 +214,7 @@ const refused = (bad: unknown): string => {
 };
 
 describe('serializeWorld', () => {
-    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate or crossing per line, empty lists inline, a trailing newline', () => {
+    test('one area, feature, site, npc spawn cluster, connector, quest, rule, transport, gate, crossing or method per line, empty lists inline, a trailing newline', () => {
         expect(serializeWorld(world)).toBe(
             [
                 '{',
@@ -235,6 +252,9 @@ describe('serializeWorld', () => {
                 '  "crossings": [',
                 `    ${JSON.stringify(world.crossings[0])},`,
                 `    ${JSON.stringify(world.crossings[1])}`,
+                '  ],',
+                '  "methods": [',
+                '    {"id":"tree-drop","name":"Trees, dropped","family":"woodcutting","at":{"level":0,"x":1,"z":2},"params":{"tree":"normal"},"sink":{"mode":"drop"},"site":"tree:town:0","stand":{"level":0,"x":1,"z":3},"skill":"woodcutting","minLevel":1,"levels":{"woodcutting":1},"ways":[{"reach":[],"legs":[]}]}',
                 '  ]',
                 '}',
                 '',
@@ -294,10 +314,14 @@ describe('serializeWorld', () => {
             const { quests: _, loadoutRules: _r, transports: _t, ...before } = world;
             writeFileSync(file, JSON.stringify(before));
             expect(() => loadWorld(file)).toThrow(
-                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates and crossings/,
+                /needs generatedFrom, areas, features, sites, npcSpawns, connectors, quests, loadoutRules, transports, gates, crossings and methods/,
             );
             const { gates: _g, ...noGates } = world;
             writeFileSync(file, JSON.stringify(noGates));
+            expect(() => loadWorld(file)).toThrow(/not a world.json/);
+            // A format-12 one, written before the methods, with its format bumped by hand.
+            const { methods: _m, ...noMethods } = world;
+            writeFileSync(file, JSON.stringify(noMethods));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
             writeFileSync(file, JSON.stringify({ ...world, loadoutRules: [] }));
             expect(() => loadWorld(file)).toThrow(/not a world.json/);
@@ -446,10 +470,16 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         // Format 11 was written before resource and processor sites had their nearest bank.
         writeFileSync(file, serializeWorld({ ...world, format: 11 }));
         expect(() => loadWorld(file)).toThrow(`format 11, this code reads format ${WORLD_FORMAT}`);
-        // Format 13 was written before a gate row could carry its act, a loc-op act its choices and a gate's
-        // landing that it is free.
+        // Format 12 was written before the curated methods.
+        writeFileSync(file, serializeWorld({ ...world, format: 12 }));
+        expect(() => loadWorld(file)).toThrow(`format 12, this code reads format ${WORLD_FORMAT}`);
+        // Format 13 was written two ways: with the methods (main), or before a gate row could carry its act, a
+        // loc-op act its choices and a gate's landing that it is free (the crossing model); format 14 is the
+        // second with its acts but no methods.
         writeFileSync(file, serializeWorld({ ...world, format: 13 }));
         expect(() => loadWorld(file)).toThrow(`format 13, this code reads format ${WORLD_FORMAT}`);
+        writeFileSync(file, serializeWorld({ ...world, format: 14 }));
+        expect(() => loadWorld(file)).toThrow(`format 14, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }
@@ -542,6 +572,7 @@ describe('formatReport', () => {
         unpriced: [],
         stranded: [],
         unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
+        methods: { resolved: 6, errors: [] },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -706,6 +737,7 @@ describe('formatReport', () => {
             { ...report, scripted: { ...report.scripted, duplicates: ['x'] } },
             { ...report, unreached: { ...report.unreached, invalid: ['x'] } },
             { ...report, unreached: { ...report.unreached, stale: ['x'] } },
+            { ...report, methods: { resolved: 5, errors: ['methods.ts x: no rock site holds (1, 2, 0)'] } },
         ])
             expect(failed(one)).toBe(true);
     });
@@ -732,6 +764,15 @@ describe('formatReport', () => {
             '  site rock:cvae:0 (c.rs2:2)',
         ]);
         expect(failed(invalid)).toBe(true);
+    });
+
+    test('the methods section: how many resolved, and an error per record that did not', () => {
+        expect(formatMethods(report.methods)).toEqual(['methods: 6 resolved']);
+        expect(formatMethods({ resolved: 5, errors: ['methods.ts x: no rock site holds (1, 2, 0)'] })).toEqual([
+            'methods: 5 resolved',
+            'ERROR methods: 1 records methods.ts does not resolve:',
+            '  methods.ts x: no rock site holds (1, 2, 0)',
+        ]);
     });
 
     test('lists the gate errors, warnings, unclear entries and quest windows; warnings alone do not fail', () => {

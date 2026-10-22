@@ -6,6 +6,7 @@ import {
     nearestSinks,
     priceCrossings,
     strandedLandings,
+    wayFinder,
 } from '../distance';
 import { locSizes } from '../place';
 import { fillReach, reachGraph, type ReachInput } from '../reach';
@@ -629,4 +630,75 @@ test('kept to the tiles a walk reaches, the searches find the same ways and sett
     expect(kept.nearest.get('tree:east:0')?.bank?.site).toBe('bank:east:0');
     expect(fill.reached(at(0, 3210, 3210))).toBe(false);
     expect(kept.report.settled).toBeLessThan(all.report.settled);
+});
+
+/** A wayFinder over the grid and the world's rows. */
+const finder = (grid: Grid, world: Partial<ReachInput['world']> = {}) =>
+    wayFinder(
+        reachGraph({
+            world: { features: [], connectors: [], gates: [], transports: [], ...world },
+            collision: grid,
+            size,
+        }),
+    );
+
+describe('runTicksBetween: one leg, point to point', () => {
+    test('half a tick a step, rounded up once; the same both ways on open ground', () => {
+        // 7 steps, 3 of them diagonal: 7 half ticks, 4 run ticks.
+        const f = finder(new Grid());
+        expect(f.runTicksBetween(at(0, 3200, 3200), at(0, 3207, 3203), [])).toEqual({ runTicks: 4, requires: [] });
+        expect(f.runTicksBetween(at(0, 3207, 3203), at(0, 3200, 3200), [])).toEqual({ runTicks: 4, requires: [] });
+        expect(f.runTicksBetween(at(0, 3200, 3200), at(0, 3200, 3200), [])).toEqual({ runTicks: 0, requires: [] });
+    });
+
+    test("only what the requirement set meets is crossed, and the way's own set comes back", () => {
+        // The toll door: through it 11 steps and a crossing; round by the gap, 23 steps, 12 ticks.
+        const f = finder(doorGrid(), { gates: [toll] });
+        const [tree, bankStand] = [at(0, 3222, 3220), at(0, 3210, 3220)];
+        const through = Math.ceil((11 + CROSSING_TICKS.gate * 2) / 2);
+        expect(f.runTicksBetween(tree, bankStand, [])).toEqual({ runTicks: 12, requires: [] });
+        expect(f.runTicksBetween(tree, bankStand, ['coins:5'])).toEqual({ runTicks: 12, requires: [] });
+        expect(f.runTicksBetween(tree, bankStand, ['coins:10'])).toEqual({ runTicks: through, requires: ['coins:10'] });
+        // The same as the site's nearest bank under the same set.
+        const r = nearest(doorGrid(), sites({ 'tree:toll:0': [['coins:10']] }), { gates: [toll] });
+        expect(bank(r, 'tree:toll:0')?.runTicks).toBe(through);
+    });
+
+    test('a way one direction only: up a ladder with no way down', () => {
+        const LADDER = at(0, 3210, 3210);
+        const UP = at(1, 3210, 3211);
+        const ladder: Feature = {
+            source: 'loc',
+            id: 1,
+            config: 'ladder',
+            tile: LADDER,
+            shape: 10,
+            rotation: 0,
+            kind: 'connector',
+            subtype: '',
+            name: 'Ladder',
+        };
+        const up: Connector = {
+            feature: 0,
+            loc: LADDER,
+            op: 1,
+            opName: 'Climb-up',
+            direction: 'up',
+            landing: UP,
+            stand: null,
+            source: 'ladders.rs2:1',
+        };
+        const f = finder(new Grid().block(LADDER), { features: [ladder], connectors: [up] });
+        const ground = at(0, 3214, 3210);
+        // 3 steps to the ladder's east side and the climb.
+        expect(f.runTicksBetween(ground, UP, [])).toEqual({
+            runTicks: Math.ceil((3 + CROSSING_TICKS.connector * 2) / 2),
+            requires: [],
+        });
+        expect(f.runTicksBetween(UP, ground, [])).toBeNull();
+    });
+
+    test('a tile off the graph has no way', () => {
+        expect(finder(new Grid()).runTicksBetween(at(0, 3100, 3100), at(0, 3200, 3200), [])).toBeNull();
+    });
 });

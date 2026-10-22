@@ -8,16 +8,17 @@ Generated from `server/content` at `882699169a968e667d112006b714348bea4827ec`: 2
 | [wiki/places/](../places/) | 225 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
 | [wiki/resources/](../resources/) | 91 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target): its dbrow data, then every site |
 | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
+| [wiki/training/](../training/) | 6 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
 <!-- Hand-written below this line: build.ts keeps it as it is. -->
 
 ## What is generated
 
-`wiki/world.json` and every page in `wiki/places/`, `wiki/resources/` and `wiki/services/` are
-written by `bun run world` (`wiki/world/build.ts`) from `server/content` and the curated areas, and
-are committed with the code. Never edit them by hand: the next build overwrites the edit, and
-`bun wiki/world/build.ts --check` (part of `bun run verify:conductor`) fails while a page differs
-from a fresh build. The build also deletes pages it no longer renders from those three folders.
+`wiki/world.json` and every page in `wiki/places/`, `wiki/resources/`, `wiki/services/` and `wiki/training/`
+are written by `bun run world` (`wiki/world/build.ts`) from `server/content`, the curated areas and the curated
+methods (`wiki/world/methods.ts`), and are committed with the code. Never edit them by hand: the next build
+overwrites the edit, and `bun wiki/world/build.ts --check` (part of `bun run verify:conductor`) fails while a page
+differs from a fresh build. The build also deletes pages it no longer renders from those four folders.
 
 A site is a cluster of same-kind features (locs or npc spawns) in one area: its id is
 `kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it, a walk's first.
@@ -233,6 +234,35 @@ middle ladder on the top level), a wall whose side the row can't read, or a gate
 what stopped the derivation (no tile on land reaches the loc, every landing off walkable land, a construct not
 known offline).
 
+## Methods
+
+A method is a curated record in `wiki/world/methods.ts` (`MethodDef`): a family (the kind of action: woodcutting,
+mining, fishing, pickpocket, stall, cooking; `model/families/`), a tile `at` in the gather site, the family's params,
+a sink (`drop`, `bank`, or `process-bank`: a process step at a range, then the bank) and the promoted plans that run
+it. Sites renumber when the data changes and tiles don't, so a record names a tile. `bun run world` resolves each
+(`model/method.ts`: its site, sinks, legs, minimum level) into `methods[]` in world.json and fails naming a record it
+can't; there is no rate grid in world.json.
+
+The **floor** (`model/cycle.ts`) is the tick-perfect rate of a method at a profile (levels, tool, food): the game's
+formulas (`model/`, each citing its script) for ideal play over the shortest way, with no tick wasted and banking at
+its minimum tick cost. Legs are run ticks. A bot measures at or below it, and the gap is what a tick-perfect pass
+works on; a measured figure above its floor is a model bug. The pages in `wiki/training/` show the floor by level
+beside the measured figures; `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
+multiway })` in `query.ts` give it to code, `bestMethods` ranked by floor XP/hr.
+
+Measured figures are curated, not read at build time: when a goal finishes, `bun conductor/tools/stats.ts <bot>
+--methods` prints the paste-ready `measured` entry (XP/hr, the levels and tool the runs started at, bot, date, hours,
+the command), and the conductor pastes it into the record. A plan names its method (`PlanDef.method`, see
+`conductor/docs/plans.md`) and the record lists the plan back.
+
+Adding a method:
+
+1. Write the record in `methods.ts`: a tile in the site, the params, the sink, the plans.
+2. A new kind of action needs a family module in `model/families/` (one file, its registry line in `index.ts`) with a
+   test worked by hand from its script in `test/families.test.ts`.
+3. `bun run world`; read the method's row in `wiki/training/<skill>.md`.
+4. After bots have run it, paste the `stats.ts --methods` entry into `measured`.
+
 ## Where corrections go
 
 | Wrong on a page | Fix it in |
@@ -246,6 +276,8 @@ known offline).
 | A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |
+| A method's tile, params, sink, plans or a measured figure | its record in `wiki/world/methods.ts`, then `bun run world` |
+| A method's floor (a formula, a cycle or tool rule) | the family module in `wiki/world/model/families/`, or `model/` (`cycle.ts`, `rate.ts`, `roll.ts`), with its hand-worked test |
 
 Then run `bun run world` and commit the code with the regenerated files. What is learned in game
 about a place (a hazard, a route, a rate measured) goes in `learnings/` per the `knowledge` skill,

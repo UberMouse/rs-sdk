@@ -1,7 +1,10 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { closeSync, existsSync, fstatSync, openSync, readdirSync, readFileSync, readSync } from 'node:fs';
 import { join } from 'node:path';
+import type { BotWorldState } from '../../sdk/types';
+import { EmptyRecordingError, parseRecording, type Rec, recordingFile, StateDecoder } from '../core/drivers/recording';
 import { REPO_ROOT } from './env';
 import type { TaskResult } from './task';
+import { errMessage } from './util';
 
 export type TimedResult = TaskResult & { t: number };
 
@@ -40,9 +43,12 @@ export function readResultEvent(file: string): Record<string, unknown> | undefin
     return readResultEvents(file).events[0];
 }
 
-/** Every `result` event in conductor/runs/<bot>/*.ndjson, oldest first; unparseable or malformed lines are counted, not fatal. */
-export function loadResults(botName: string): { results: TimedResult[]; skipped: number } {
-    const dir = join(REPO_ROOT, 'conductor/runs', botName);
+/**
+ * Every `result` event in <root>/conductor/runs/<bot>/*.ndjson (root: this checkout), oldest first; unparseable or
+ * malformed lines are counted, not fatal.
+ */
+export function loadResults(botName: string, root: string = REPO_ROOT): { results: TimedResult[]; skipped: number } {
+    const dir = join(root, 'conductor/runs', botName);
     const results: TimedResult[] = [];
     let skipped = 0;
     if (!existsSync(dir)) return { results, skipped };
@@ -77,4 +83,42 @@ export function selectResults(results: TimedResult[], f: ResultFilter = {}): Tim
             (f.since === undefined || r.t >= f.since) &&
             (f.task === undefined || r.task === f.task),
     );
+}
+
+/** Bytes of a recording read first for its opening state; doubled until the state is in them. */
+const START_PREFIX_BYTES = 64 * 1024;
+
+/**
+ * The state a run started on: the first state its recording (next to its log) holds, or undefined when it has no
+ * recording or the recording no state. Reads only as much of the file as that state needs (a cut gzip stream reads up
+ * to its last whole line, as a killed run's recording does).
+ */
+export function readStartState(logFile: string): BotWorldState | undefined {
+    const file = recordingFile(logFile);
+    if (!existsSync(file)) return undefined;
+    const fd = openSync(file, 'r');
+    try {
+        const size = fstatSync(fd).size;
+        for (let n = START_PREFIX_BYTES; ; n *= 2) {
+            const bytes = Buffer.alloc(Math.min(n, size));
+            readSync(fd, bytes, 0, bytes.length, 0);
+            const whole = bytes.length >= size;
+            let records: Rec[];
+            try {
+                records = parseRecording(bytes).records;
+            } catch (e) {
+                // A prefix that ends inside the header line holds no whole line yet: read more. Any other error (an
+                // empty file, another recording version) is the whole file's, so it is not read further.
+                if (!whole && e instanceof EmptyRecordingError) continue;
+                throw e;
+            }
+            const first = records.find(r => r.k === 'p');
+            if (first) return new StateDecoder().decode(first.d, first.x);
+            if (whole) return undefined;
+        }
+    } catch (e) {
+        throw new Error(`can't read the start of ${file}: ${errMessage(e)}`, { cause: e });
+    } finally {
+        closeSync(fd);
+    }
 }

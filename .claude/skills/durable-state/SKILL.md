@@ -75,6 +75,15 @@ Owner skills add their own fields as further top-level keys, and say what they m
    ```
    The first write:
    `S=.durable-state/state.json; mkdir -p .durable-state && [ -f "$S" ] || jq -n --arg sid "$CLAUDE_CODE_SESSION_ID" '{skill: "<owner>", sessionId: $sid}' > "$S"`.
+   **One transition, one write, no turn of its own.** Every turn re-reads the whole
+   conversation, so a turn spent only on a state write is the most expensive bookkeeping there
+   is. Fold everything one transition changes (`inFlight`, `tasks`, owner fields) into a single
+   `jq` program, and send it in the same message as that turn's other tool calls (the journal
+   line, a progress check, the next dispatch). The one ordering limit: an `inFlight` entry needs
+   the agent ID its dispatch returns, so it goes in the write that follows the dispatch, together
+   with whatever else that turn does. Don't read the file back to check a write you just made:
+   the `jq` exit status says whether it landed, and your context already holds the state. Read it
+   on resume, or when another agent may have changed it.
 4. **Set-once fields are read back, never re-derived.** A value captured at the start of the run
    (a baseline XP snapshot, a base commit) is written once; a resume reads it.
 5. **Absolute paths** for anything the hook prints: its reader cannot assume a cwd.
