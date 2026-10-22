@@ -109,6 +109,8 @@ const TAVERLEY_DUNGEON =
     'skeletons (combat 22-25, hunt players up to combat 44-50) north of the landing, a baby blue dragon at (2892, 9799) and blue dragons at (2897, 9797) and (2899, 9802) beside it; poison spiders (combat 64, hunt range 1) in the west part';
 const EDGEVILLE_DUNGEON =
     'giant spiders and skeletons roam the dungeon near the ladder; hill giants (combat 28, hunt players up to combat 55) at (3100-3114, 9827-9840)';
+const VARROCK_SEWERS =
+    'giant rats (combat 6, hunt players up to about combat 12) at (3223, 9860), (3237, 9868) and (3239, 9864), by the ladder landing; giant spiders (combat 27, hunt up to about combat 54) at (3217-3220, 9886-9889) and (combat 2) at (3219-3221, 9886) on the way to the web at (3210, 9898); zombies (combat 24, hunt up to about combat 48) at (3224-3230, 9903-9906), 5-8 tiles north of that route; in the west pocket beyond the web, deadly red spiders (combat 34, hunt up to about combat 68) at (3171-3186, 9883-9906) and moss giants (combat 42, hunt up to about combat 84) at (3157-3167, 9878-9905)';
 
 /**
  * The curated names and hazards, by loc tile (`level,x,z`, with ` up` or ` down` for one direction of a middle
@@ -144,8 +146,8 @@ export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
     [key(0, 3097, 3468), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
     [key(0, 3096, 9867), { name: 'Edgeville Dungeon trapdoor', hazard: EDGEVILLE_DUNGEON }],
     // Varrock: the manhole (closed: "Open", then "Climb down") into the Varrock Sewers and the ladder back.
-    [key(0, 3237, 3458), { name: 'Varrock Sewers manhole' }],
-    [key(0, 3237, 9858), { name: 'Varrock Sewers manhole' }],
+    [key(0, 3237, 3458), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
+    [key(0, 3237, 9858), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
     // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
     [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
     [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
