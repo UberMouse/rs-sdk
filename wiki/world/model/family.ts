@@ -72,7 +72,7 @@ export interface Family {
     /**
      * Optional, for a method's gather family: the tile pairs it needs walked inside its site (an agility lap's landing
      * to the next obstacle). method.ts prices each under the way's requirement set, in run ticks, and passes them to
-     * `model` as `walks`, in this order.
+     * `model` as `walks`, in this order. A process step's family that has them fails the record.
      */
     walks?(site: Site, params: unknown, world: ModelWorld): { from: Tile; to: Tile }[];
 }

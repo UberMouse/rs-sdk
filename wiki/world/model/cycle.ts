@@ -10,9 +10,9 @@
 //   product of the gather or a step (coins and runes never fill the inventory).
 // - Without food, the load is the free slots over the slots a success fills: the gather's non-stackable products
 //   (fractional: gems), or the withdrawn obj, plus a slot per unit of a step's non-stackable supply (bow strings,
-//   carried from the start of the trip). No such slot means the inventory never fills: the sink is never visited.
-//   Where a step takes `batch` inputs a product and its input per success is whole, the load rounds down to whole
-//   batches.
+//   carried from the start of the trip), unless a step 'here' uses it (see `asItGoes`). No such slot means the
+//   inventory never fills: the sink is never visited. Where a step takes `batch` inputs a product and its input per
+//   success is whole, the load rounds down to whole batches; a chain with more than one batched step is not modelled.
 // - With food, every free slot holds food, and the load is the successes that food covers: free x heal over the
 //   damage a success costs (failDamage x fails per success, plus `damage`). Food with a non-stackable product (both
 //   filling the inventory) is not modelled. The hitpoints pool and regeneration are left out, which only lowers the
@@ -21,7 +21,7 @@
 //   success depletes the feature
 //   (mining, a stall): the next item needs a fresh click on another feature anyway, and the drop goes out in that
 //   tick ahead of the click, free. Food with a drop sink is not modelled (nothing restocks it).
-import { ModelError, type ActionModel } from './family';
+import { ModelError, ProfileError, type ActionModel } from './family';
 import { INVENTORY_SLOTS, type Items } from './items';
 import { resourceCap, ticksPerItem } from './rate';
 import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE, type Skill } from './server';
@@ -71,10 +71,11 @@ export type CycleSink =
     /** Run ticks of site -> bank and bank -> site. */
     | { mode: 'bank'; legs: number[] }
     /**
-     * The process steps in order, each a model per input kind it takes; what the end products are left to; and the
-     * run ticks of the tour: site -> each step site not 'here' -> the bank when it banks -> site.
+     * The process steps in order, each a model per input kind it takes; what the end products are left to; the run
+     * ticks of the tour: site -> each step site not 'here' -> the bank when it banks -> site; and whether each step is
+     * 'here' (absent: none is).
      */
-    | { mode: 'process'; steps: ActionModel[][]; end: ProcessEnd; legs: number[] };
+    | { mode: 'process'; steps: ActionModel[][]; end: ProcessEnd; legs: number[]; here?: boolean[] };
 
 /**
  * The `withdraw` source: one `withdraw` obj from the bank a success, in no ticks of its own. Withdraw-All
@@ -149,9 +150,13 @@ export function eatTicksPerFail(perFail: number, p: number): number {
     return Math.min(Math.max(perFail - free, 0), oneTick) + EAT_DELAY * Math.max(perFail - p, 0);
 }
 
-/** A process step's model at work: the input it takes per gather success, and its actions per gather success. */
+/**
+ * A process step's model at work: its step's index, the input it takes per gather success, and its actions per gather
+ * success.
+ */
 interface Run {
     m: ActionModel;
+    step: number;
     per: number;
     actions: number;
 }
@@ -179,35 +184,45 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     // A trip visits a bank (BANK_TICKS, a food restock) with a bank sink, a process sink that banks, or a withdrawal.
     const banks = sink.mode === 'bank' || (sink.mode === 'process' && (sink.end === 'bank' || withdraw !== undefined));
 
+    // The whole-batch rounding below takes one batched step; a second could leave the first at a part batch.
+    if (stepModels.filter(s => s.some(m => (m.batch ?? 1) > 1)).length > 1)
+        throw new ModelError('a chain with more than one batched step is not modelled');
     // The chain, per success: `held` starts as the gather's products; each step's model takes all of its input (its
     // first `consumes`) in actions of `batch` and adds its products. A model whose input nothing gives at this profile
     // (salmon under Fishing 30) does nothing. Its other `consumes` are supplies, per action.
     const held = new Map<string, number>();
     for (const x of source.products) add(held, x.obj, x.count);
+    // The leading steps 'here' (at the gather's stand), and what is held per success once they are done.
+    const here = sink.mode === 'process' ? (sink.here ?? []) : [];
+    let atSite = 0;
+    while (atSite < stepModels.length && here[atSite]) atSite++;
+    let heldAtSite = new Map(held);
     const runs: Run[] = [];
-    for (const m of stepModels.flat()) {
-        const input = m.consumes[0];
-        if (!input) throw new ModelError('a process step must take one chained input (its first consumes)');
-        const batch = m.batch ?? 1;
-        if (input.count !== batch)
-            throw new ModelError(
-                `a process step takes ${input.count} ${input.obj} an action, but its batch is ${batch}`,
-            );
-        const per = held.get(input.obj);
-        if (per === undefined) continue;
-        const actions = per / batch;
-        held.delete(input.obj);
-        for (const x of m.products) add(held, x.obj, x.count * actions);
-        runs.push({ m, per, actions });
-    }
-    const stepSupplies = runs.flatMap(r =>
-        r.m.consumes.slice(1).map(c => ({ obj: c.obj, count: c.count * r.actions })),
-    );
+    stepModels.forEach((models, step) => {
+        for (const m of models) {
+            const input = m.consumes[0];
+            if (!input) throw new ModelError('a process step must take one chained input (its first consumes)');
+            const batch = m.batch ?? 1;
+            if (input.count !== batch)
+                throw new ModelError(
+                    `a process step takes ${input.count} ${input.obj} an action, but its batch is ${batch}`,
+                );
+            const per = held.get(input.obj);
+            if (per === undefined) continue;
+            const actions = per / batch;
+            held.delete(input.obj);
+            for (const x of m.products) add(held, x.obj, x.count * actions);
+            runs.push({ m, step, per, actions });
+        }
+        if (step + 1 === atSite) heldAtSite = new Map(held);
+    });
+    const suppliesOf = (r: Run) => r.m.consumes.slice(1).map(c => ({ obj: c.obj, count: c.count * r.actions }));
+    const stepSupplies = runs.flatMap(suppliesOf);
 
-    // Slots the trip can't fill: tools not worn (the gather's and the process steps', each once), a slot per stackable
-    // supply, a slot per stackable product.
+    // Slots the trip can't fill: tools not worn (the gather's and the steps' that run at this profile, each once), a
+    // slot per stackable supply, a slot per stackable product.
     const toolSlots = new Set(
-        [source, ...stepModels.flat()].flatMap(a => a.tools ?? []).filter(t => !items(t).wearable),
+        [source, ...runs.map(r => r.m)].flatMap(a => a.tools ?? []).filter(t => !items(t).wearable),
     ).size;
     for (const c of source.consumes)
         if (!items(c.obj).stackable) throw new ModelError(`the supply ${c.obj} is not stackable: not modelled`);
@@ -220,13 +235,28 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     );
     const free = INVENTORY_SLOTS - toolSlots - supplySlots - stackable.size;
     if (free < 1) throw new ModelError(`no free inventory slot (${toolSlots} tools, ${supplySlots} supplies)`);
-    const filling = source.products.filter(x => !items(x.obj).stackable).reduce((n, x) => n + x.count, 0);
-    const carried = stepSupplies.filter(c => !items(c.obj).stackable).reduce((n, c) => n + c.count, 0);
-    const slotsPerSuccess = filling + carried;
+    const slots = (xs: Iterable<{ obj: string; count: number }>) =>
+        [...xs].filter(x => !items(x.obj).stackable).reduce((n, x) => n + x.count, 0);
+    // A step 'here' that uses a non-stackable supply (bow strings) is done as each item is gathered: chop a log, cut
+    // it, string it, then chop the next (steps run in the record's order, each on the product of the one before). The
+    // strung bow takes the log's slot and the string's comes free, so the strings and bows together hold the slots
+    // the trip started with in strings, and only the log being gathered needs one more: the load is the free slots
+    // less one over the slots a success holds once the steps 'here' are done, or over its strings if they hold more.
+    // Supplies of steps away from the stand are carried all trip beside what accumulates.
+    const inline = runs.filter(r => r.step < atSite);
+    const away = runs.filter(r => r.step >= atSite);
+    const asItGoes = withdraw === undefined && inline.some(r => slots(suppliesOf(r)) > 0);
+    const room = asItGoes ? free - 1 : free;
+    if (room < 1) throw new ModelError(`no free inventory slot to gather into beside the supplies`);
+    const slotsPerSuccess = asItGoes
+        ? Math.max(slots([...heldAtSite].map(([obj, count]) => ({ obj, count }))), slots(inline.flatMap(suppliesOf))) +
+          slots(away.flatMap(suppliesOf))
+        : slots(source.products) + slots(stepSupplies);
     const end = sink.mode === 'process' ? sink.end : undefined;
     if (end === 'keep') {
+        // Profile-dependent: a step whose input the gather gives only at some levels is skipped below them.
         const left = [...held.keys()].filter(o => !items(o).stackable);
-        if (left.length) throw new ModelError(`kept products fill the inventory: ${left.join(', ')}`);
+        if (left.length) throw new ProfileError(`kept products fill the inventory: ${left.join(', ')}`);
     }
 
     // A drop sink with a feature every success depletes (mining, a stall) drops ahead of the next click, free.
@@ -243,7 +273,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         foodPerSuccess = (failDamage * failsPerSuccess + damage) / food.heal;
         successes = foodPerSuccess > 0 ? free / foodPerSuccess : Infinity;
     } else if (slotsPerSuccess === 0 || dropsAsItGoes) successes = Infinity;
-    else successes = free / slotsPerSuccess;
+    else successes = room / slotsPerSuccess;
     if (failDamage && p < 1 && !food)
         throw new ModelError(`the action costs ${failDamage} hitpoints a fail: name a food`);
     if (damage && !food) throw new ModelError(`the action costs ${damage} hitpoints a success: name a food`);
@@ -254,7 +284,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
             if (batch > 1 && Number.isInteger(r.per))
                 successes = (Math.floor((successes * r.per) / batch) * batch) / r.per;
         }
-    if (successes === 0) throw new ModelError('the load holds no whole batch');
+    // Profile-dependent: the free slots depend on the tools carried at the profile.
+    if (successes === 0) throw new ProfileError('the load holds no whole batch');
     // A trip that never ends is counted one success at a time, with no travel.
     const trips = Number.isFinite(successes);
     const n = trips ? successes : 1;
@@ -267,7 +298,9 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const left = [...held].filter(([o]) => !items(o).stackable).reduce((t, [, c]) => t + c, 0);
     const drop = !trips ? 0 : sink.mode === 'drop' ? dropTicks(free) : end === 'drop' ? dropTicks(n * left) : 0;
     // Only a stun's eats cost ticks (eatTicksPerFail); the food for `damage` goes in no ticks of its own: an eat has no
-    // p_delay (player/scripts/consumption/consume.rs2:115-131).
+    // p_delay (player/scripts/consumption/consume.rs2:115-131). That assumes at most one food a success: the
+    // %eat_delay gate (consume.rs2:122-126, $eat_delay 2 for normal food, :3) refuses another eat for the 2 ticks after
+    // one, so two foods never go in one tick.
     const eat = food ? n * failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) : 0;
     const active = gatherTicks + process + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.

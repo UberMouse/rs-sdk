@@ -552,6 +552,38 @@ describe('process steps, withdrawals and walks', () => {
         );
         expect(here.ways).toEqual([{ reach: [], legs: [] }]);
         expect(new Set(markedAt)).toEqual(new Set(['fishing-spot:river:0']));
+        // A non-stackable supply (a cooked trout a mark) used 'here' is used as each fish comes (cycle.ts): at Fishing
+        // 20, only trout, the rod and feathers leave 26 slots, one for the fish being caught: 25 a trip. At the fire it
+        // is carried all trip beside the raw trout: 26 / 2 = 13.
+        const supplied: Family = {
+            ...marking,
+            model: (...a) => {
+                const base = marking.model(...a);
+                return { ...base, consumes: [...base.consumes, { obj: 'trout', count: 1 }] };
+            },
+        };
+        const sup: MethodContext = { ...ctx, families: new Map([...ctx.families, ['marking', supplied]]) };
+        const fish20 = profileAt('fishing', 20, { tools: ctx.tools });
+        const markAt = (stop: ProcessStepDef['at']) =>
+            methodRate(
+                resolveMethod(
+                    {
+                        ...lure,
+                        id: 'lure-mark',
+                        sink: {
+                            mode: 'process',
+                            steps: [{ family: 'marking', at: stop, params: { from: 'raw_trout' } }],
+                            end: 'drop',
+                        },
+                    },
+                    sup,
+                    finder,
+                ),
+                fish20,
+                sup,
+            ).trip.successes;
+        expect(markAt('here')).toBe(25);
+        expect(markAt(at(0, 3205, 3220))).toBe(13);
     });
 
     test("a gather family's walks are priced under each way's set and passed to its model", () => {
@@ -574,6 +606,19 @@ describe('process steps, withdrawals and walks', () => {
         expect(got).toEqual([[5]]);
         // A family without walks leaves the way without them.
         expect(resolve(mine).ways[0]).not.toHaveProperty('walks');
+        // A process step's family with walks would have them ignored: refused, 'here' or not.
+        const pacing: Family = { ...marking, walks: () => [{ from: at(0, 3201, 3201), to: at(0, 3211, 3201) }] };
+        const paced: MethodContext = { ...ctx, families: new Map([...ctx.families, ['marking', pacing]]) };
+        const steps: ProcessStepDef[] = [
+            { family: 'marking', at: 'here', params: {} },
+            { family: 'marking', params: {} },
+        ];
+        for (const step of steps) {
+            const def: MethodDef = { ...lure, id: 'lure-paced', sink: { mode: 'process', steps: [step], end: 'drop' } };
+            expect(() => resolveMethod(def, paced, finder)).toThrow(
+                /^methods\.ts lure-paced: the process step family marking has walks: not modelled$/,
+            );
+        }
     });
 
     test('a record the new shapes cannot resolve fails naming why', () => {

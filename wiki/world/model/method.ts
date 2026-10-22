@@ -184,8 +184,10 @@ function locate(
         // Each step's site; an omitted `at` is the nearest to the previous step's site (the gather's for the first).
         let last = site;
         const steps = def.sink.steps.map((step): Stop => {
+            const { kinds, walks } = familyOf(ctx, step.family);
+            // Only the gather family's walks are priced (below) and passed to its model.
+            if (walks) throw new ModelError(`the process step family ${step.family} has walks: not modelled`);
             if (step.at === 'here') return 'here';
-            const kinds = familyOf(ctx, step.family).kinds;
             last = step.at ? siteAt(ctx.world, kinds, step.at) : nearestOf(ctx.world, last, kinds);
             return last;
         });
@@ -317,8 +319,8 @@ function rate(
     const { gather, steps } = methodModels(m, profile, ctx, way);
     const legs = way.legs.map(l => l.runTicks);
     const sink: CycleSink =
-        m.def.sink.mode === 'process'
-            ? { mode: 'process', steps, end: m.def.sink.end, legs }
+        m.def.sink.mode === 'process' && m.sink.mode === 'process'
+            ? { mode: 'process', steps, end: m.def.sink.end, legs, here: m.sink.steps.map(s => s === 'here') }
             : m.def.sink.mode === 'bank'
               ? { mode: 'bank', legs }
               : { mode: 'drop' };

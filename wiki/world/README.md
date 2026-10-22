@@ -238,8 +238,11 @@ known offline).
 
 A method is a curated record in `wiki/world/methods.ts` (`MethodDef`): a family (the kind of action: woodcutting,
 mining, fishing, pickpocket, stall, cooking; `model/families/`), a tile `at` in the gather site, the family's params,
-a sink (`drop`, `bank`, or `process-bank`: a process step at a range, then the bank) and the promoted plans that run
-it. Sites renumber when the data changes and tiles don't, so a record names a tile. `bun run world` resolves each
+a sink and the promoted plans that run it. The sink is `drop`, `bank`, or `process`: ordered steps, each a family and
+its params at a tile, `'here'` (where the previous action stands) or, omitted, the nearest site of the family's kinds,
+then `end: bank | drop | keep` for what the last step makes. The `withdraw` family (params `{ obj }`) is a source
+instead of a gather: it takes the obj from the bank at `at`, and its process sink starts and ends there. Sites
+renumber when the data changes and tiles don't, so a record names a tile. `bun run world` resolves each
 (`model/method.ts`: its site, sinks, legs, minimum level) into `methods[]` in world.json and fails naming a record it
 can't; there is no rate grid in world.json.
 

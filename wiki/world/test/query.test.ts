@@ -289,6 +289,45 @@ describe('bestMethods', () => {
         );
     });
 
+    test("the cycle refusing a profile drops the method there, like a family's refusal", () => {
+        // Chopping gives sticks below Woodcutting 30 and logs from 30; logs are carved 'here' into stackable runes,
+        // kept. Below 30 nothing is carved and the sticks would fill the inventory for good: cycle.ts's ProfileError.
+        const picking: Family = {
+            ...woodcutting,
+            model: (...a) => {
+                const m = woodcutting.model(...a);
+                return a[2].levels.woodcutting < 30 ? { ...m, products: [{ obj: 'sticks', count: 1 }] } : m;
+            },
+        };
+        const carving: Family = {
+            ...firemaking,
+            model: (...a) => ({ ...firemaking.model(...a), products: [{ obj: 'runes', count: 1 }] }),
+        };
+        const extra: Record<string, Item> = {
+            sticks: { stackable: false, cost: 1, wearable: false },
+            runes: { stackable: true, cost: 1, wearable: false },
+        };
+        const carvedModel: MethodModel = {
+            ...model,
+            families: new Map([...model.families, ['woodcutting', picking], ['firemaking', carving]]),
+            items: obj => extra[obj] ?? model.items(obj),
+        };
+        const carve = chop('tree-carve-keep', tree, {
+            sink: { mode: 'process', steps: [{ family: 'firemaking', at: 'here', params: {} }], end: 'keep' },
+            processors: ['here'],
+            levels: { woodcutting: 20, firemaking: 30 },
+        });
+        const q = methodQuery({ ...world, methods: [carve, drop] }, carvedModel);
+        // Woodcutting 25 with Firemaking 30, so the carving family itself refuses nothing.
+        const low = { ...at('woodcutting', 25), levels: { ...at('woodcutting', 25).levels, firemaking: 30 } };
+        expect(() => q.methodRate('tree-carve-keep', low)).toThrow(/kept products fill the inventory: sticks$/);
+        expect(q.bestMethods('woodcutting', low).map(r => r.method.def.id)).toEqual(['tree-drop']);
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.method.def.id)).toEqual([
+            'tree-drop',
+            'tree-carve-keep',
+        ]);
+    });
+
     test('a ModelError that is not a ProfileError (a data fault) stops the query too, naming the method', () => {
         // tree-drop names logs as its food, which `foods` has no heal for: model/method.ts's rate refuses it.
         const fed = methodQuery({ ...world, methods: [burn, banked, wild, { ...drop, food: 'logs' }] }, model);

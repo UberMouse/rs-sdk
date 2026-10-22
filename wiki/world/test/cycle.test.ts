@@ -8,7 +8,7 @@ import {
     RECLICK_PACKETS,
     type CycleInput,
 } from '../model/cycle';
-import { ModelError, type ActionModel } from '../model/family';
+import { ModelError, ProfileError, type ActionModel } from '../model/family';
 import { INVENTORY_SLOTS, readItems } from '../model/items';
 import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE } from '../model/server';
 import { parseConfigs } from '../sources/configs';
@@ -274,6 +274,11 @@ describe('process sink, one step then bank', () => {
         const r = run({ gather: spot, sink: { mode: 'process', steps: [[other]], end: 'bank', legs: [10, 50, 40] } });
         expect(r.trip).toMatchObject({ process: 0, total: 360 });
         expect(r.itemsPerHour.map(x => x.obj)).toEqual(['raw']);
+        // Nor does its tool take a slot: still 26 fish, 260 + 100 = 360 (with the jug carried, 25 and 350).
+        const jugged: ActionModel = { ...other, tools: ['jug'] };
+        expect(
+            run({ gather: spot, sink: { mode: 'process', steps: [[jugged]], end: 'bank', legs: [10, 50, 40] } }).trip,
+        ).toMatchObject({ successes: 26, total: 360 });
     });
 });
 
@@ -442,12 +447,16 @@ describe('process sink, chained steps', () => {
         expect(r.xpPerHour.runecraft).toBeCloseTo(n * 162.5, 6);
         expect(r.itemsPerHour).toEqual([{ obj: 'rune', count: expect.closeTo(n * 3, 9) }]);
         expect(r.gpPerHour).toBeCloseTo(n * 3 * 5, 6);
-        // A kept product that fills a slot would fill the inventory for good.
+        // A kept product that fills a slot would fill the inventory for good. A step the gather gives no input for at
+        // a profile leaves its input kept, so the profile is refused (ProfileError), not the record.
         const bars: ActionModel = { ...craft, products: [{ obj: 'bar', count: 1 }] };
         fails(
             { gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30] } },
             /kept products fill the inventory: bar/,
         );
+        expect(() =>
+            run({ gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30] } }),
+        ).toThrow(ProfileError);
     });
 
     test('withdrawn from the bank: no gathering, the load is the free slots over the ore, a stackable supply one slot', () => {
@@ -491,11 +500,9 @@ describe('process sink, chained steps', () => {
         expect(r.gpPerHour).toBeCloseTo((ore / 5) * 500, 6);
     });
 
-    test('a non-stackable supply takes a slot per unit a success uses', () => {
+    describe('a non-stackable supply', () => {
         // Logs every 8 ticks (4 at 1/2) with a worn axe (the pick), cut into a bow with the carried knife (3 ticks,
-        // 5 XP), strung with a bow string (2 ticks, 41.5 XP). The knife leaves 27 slots; a success fills a log's and a
-        // string's: 13.5 a trip. 13.5 x 8 = 108 chopping, 13.5 x (3 + 2) = 67.5 fletching, legs 40: 215.5. 9000 /
-        // 215.5 x 13.5 = 563.81 logs an hour: Fletching 46.5 x 25 = 1,162.5 each, 655,423.4; as many strings used.
+        // 5 XP), strung with a bow string (2 ticks, 41.5 XP). The knife leaves 27 free slots.
         const chop: ActionModel = {
             ...spot,
             ticksPerAttempt: 4,
@@ -522,15 +529,41 @@ describe('process sink, chained steps', () => {
                 { obj: 'string', count: 1 },
             ],
         };
-        const r = run({
-            gather: chop,
-            sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20] },
+
+        test("used 'here' as each log comes: the bow takes the log's slot, the string's comes free", () => {
+            // Chop, cut and string one log at a time: strings and bows together hold the slots the trip started with
+            // in strings, and the log being chopped one more: 27 - 1 = 26 strings, so 26 bows a trip. 26 x 8 = 208
+            // chopping, 26 x (3 + 2) = 130 fletching, legs 20 + 20: 378. 9000 / 378 x 26 = 619.05 logs an hour:
+            // Fletching 46.5 x 25 = 1,162.5 each, 719,642.9; as many strings used.
+            const r = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20], here: [true, true] },
+            });
+            const logs = (9000 / 378) * 26;
+            expect(r.trip).toMatchObject({ successes: 26, gather: 208, process: 130, travel: 40, total: 378 });
+            expect(r.xpPerHour.fletching).toBeCloseTo(logs * 1162.5, 6);
+            expect(r.itemsPerHour).toEqual([{ obj: 'bow', count: expect.closeTo(logs, 9) }]);
+            expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
         });
-        const logs = (9000 / 215.5) * 13.5;
-        expect(r.trip).toMatchObject({ successes: 13.5, gather: 108, process: 67.5, travel: 40, total: 215.5 });
-        expect(r.xpPerHour.fletching).toBeCloseTo(logs * 1162.5, 6);
-        expect(r.itemsPerHour).toEqual([{ obj: 'bow', count: expect.closeTo(logs, 9) }]);
-        expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
+
+        test('used away from the stand: carried all trip, a slot per unit beside the logs', () => {
+            // Cut 'here', strung at another site: the strings are carried while the unstrung bows pile up, a log's and
+            // a string's slot a success: 27 / 2 = 13.5 a trip. 13.5 x 8 = 108 chopping, 13.5 x (3 + 2) = 67.5
+            // fletching, legs 40: 215.5. 9000 / 215.5 x 13.5 = 563.81 logs an hour: Fletching 1,162.5 each, 655,423.4.
+            const r = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20], here: [true, false] },
+            });
+            const logs = (9000 / 215.5) * 13.5;
+            expect(r.trip).toMatchObject({ successes: 13.5, gather: 108, process: 67.5, travel: 40, total: 215.5 });
+            expect(r.xpPerHour.fletching).toBeCloseTo(logs * 1162.5, 6);
+            expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
+            // No step 'here' at all: the same.
+            expect(
+                run({ gather: chop, sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20] } })
+                    .trip.successes,
+            ).toBe(13.5);
+        });
     });
 
     test('fails with a reason where it is not modelled', () => {
@@ -550,6 +583,20 @@ describe('process sink, chained steps', () => {
             { gather: vein, sink: { mode: 'process', steps: [[smelt], [odd]], end: 'bank', legs } },
             /takes 1 bar an action, but its batch is 5/,
         );
+        // Rounding the load to whole batches of a second batched step could leave the first at a part batch.
+        const pairs: ActionModel = { ...smelt, consumes: [{ obj: 'ore', count: 2 }], batch: 2 };
+        fails(
+            { gather: vein, sink: { mode: 'process', steps: [[pairs], [smith]], end: 'bank', legs } },
+            /more than one batched step is not modelled/,
+        );
+        // 27 ore (the hammer takes a slot) is no whole batch of 30 bars: refused at the profile, whose tools set it.
+        const huge: ActionModel = { ...smith, consumes: [{ obj: 'bar', count: 30 }], batch: 30 };
+        const input: Omit<CycleInput, 'items'> = {
+            gather: vein,
+            sink: { mode: 'process', steps: [[smelt], [huge]], end: 'bank', legs },
+        };
+        expect(() => run(input)).toThrow(ProfileError);
+        expect(() => run(input)).toThrow(/the load holds no whole batch/);
     });
 });
 
