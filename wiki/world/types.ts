@@ -87,8 +87,8 @@ export interface Site {
     wildernessLevel: number;
     /**
      * The minimal requirement sets (requirements.ts) a walk from the Lumbridge spawn needs to get to this site's
-     * chosen stand tile (reach.ts), and to no other tile of it: `[[]]` with none, `[]` when no set gets there or
-     * there is no stand.
+     * chosen stand tile (reach.ts), and to no other tile of it, joined with what using its features asks (a quest
+     * that locks them, gates.ts USE_GATES): `[[]]` with none, `[]` when no set gets there or there is no stand.
      */
     reach: string[][];
     /**

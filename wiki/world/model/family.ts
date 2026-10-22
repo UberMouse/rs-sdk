@@ -37,6 +37,12 @@ export interface ActionModel {
      * success is a whole number.
      */
     batch?: number;
+    /**
+     * On a process step: ticks a trip spends starting the step again, `ticks` once it takes more than `upTo` actions
+     * in the trip, and with `repeat` for every further `upTo` too (ceil(actions / upTo) - 1 times). A menu whose
+     * largest button makes `upTo` repeats (the anvil's Make 10); one with a Make X pays its count dialog once.
+     */
+    restart?: { upTo: number; ticks: number; repeat?: boolean };
     /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
     /** With `deplete`: the site's features of the target, which the player works in turn (the resource cap's k). */

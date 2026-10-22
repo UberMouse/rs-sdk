@@ -43,13 +43,14 @@ reads the npc pages on disk.
 ## Reach and requirements
 
 A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to get to its stand tile
-(`wiki/world/reach.ts`, `reachGraph` then `fillReach`): its minimal requirement sets, `[[]]` for none and
-`[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
+(`wiki/world/reach.ts`, `reachGraph` then `fillReach`), joined with a quest that locks the use of its locs
+(`USE_GATES` in `gates.ts`: the Doric and Rellekka anvils, the Rellekka furnaces): its minimal requirement
+sets, `[[]]` for none and `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
 `place.ts`, with a wall check), because a bot talks to an npc from beside it. The fill keeps at most
 `MAX_SETS` (24) sets per tile.
 
 The pages show it in a Requires column: `-` for none, the sets joined with "or", `unreached`, or `no stand`
-for a site with no stand tile; so a `-` row on a service or resource page is one a fresh account can walk to.
+for a site with no stand tile; so a `-` row on a service or resource page is one a fresh account can walk to and use.
 Within a set every requirement applies; any one set is enough. A set is written in the token forms of
 `wiki/world/requirements.ts` (its header lists them):
 
@@ -281,6 +282,7 @@ Adding a method:
 | Sites split or merged wrongly, or a bad stand tile | `wiki/world/place.ts` (`SITE_RADIUS`, the stand rules) |
 | A page's layout or wording | `wiki/world/render/` |
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
+| A site whose use (not the walk there) needs a quest: a Requires cell missing it | `USE_GATES` in `wiki/world/gates.ts` |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |

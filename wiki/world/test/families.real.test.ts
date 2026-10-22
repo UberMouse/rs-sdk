@@ -81,6 +81,8 @@ describe('the game data the hand-worked cases rest on', () => {
         ]);
         expect(row('magic_staff_fire').staff).toContainEqual(['staff_of_fire']);
         expect(row('magic_staff_fire').rune).toEqual([['firerune']]);
+        expect(row('magic_staff_fire').staff).toContainEqual(['lava_battlestaff']);
+        expect(row('magic_staff_earth').staff).toContainEqual(['lava_battlestaff']);
         const plate = row('iron_platebody');
         expect([plate.product, plate.product_amount, plate.levelrequired, plate.bar, plate.bar_amount]).toEqual([
             [['iron_platebody']],
@@ -160,8 +162,35 @@ describe('the game data the hand-worked cases rest on', () => {
         expect(smelting).toContain('weakqueue*(smelting_ore, 3)($struct, $count);');
         expect(smelting).toContain('} else if (randominc(1) = 1) {');
         expect(smelting.split('%action_delay = add(map_clock, 1);').length - 1).toBe(2);
-        const anvil = script('skill_smithing/scripts/smithing/smithing.rs2').split('[proc,smithing_anvil]')[1]!;
+        expect(smelting).toContain('if (inv_total(worn, ring_of_forging) > 0 & map_members = ^true) {');
+        expect(smelting).toContain(
+            'if ($product = gold_bar & inv_total(worn, gauntlets_of_goldsmithing) > 0) {\n    $xp = scale(5, 2, $xp);',
+        );
+        expect(superheat).toContain(
+            'if ($bar = gold_bar & inv_total(worn, gauntlets_of_goldsmithing) > 0) {\n    $smith_xp = scale(5, 2, $smith_xp);',
+        );
+        // The Make buttons stop at 10; more takes Make X's count dialog.
+        expect(new Set(smelting.match(/@smelt_ore\(\w+, (\d+)\)/g)!.map(x => x.match(/(\d+)\)$/)![1]))).toEqual(
+            new Set(['1', '5', '10']),
+        );
+        expect(smelting).toContain('[label,smelt_ore_makex](obj $bar)\np_countdialog;');
+        const ring = script('general/scripts/enchanted_jewellry/ring_of_forging.rs2');
+        expect(ring).toContain('if (%ring_of_forging >= 140) {');
+        expect(ring).toContain('inv_del(worn, ring_of_forging, 1);');
+        const smithing = script('skill_smithing/scripts/smithing/smithing.rs2');
+        const anvil = smithing.split('[proc,smithing_anvil]')[1]!;
         expect(anvil.split('\n[')[0]!.match(/p_delay\((\d+)\);/g)).toEqual(['p_delay(1);', 'p_delay(2);']);
+        // The anvil's buttons make 1, 5 or 10, with no Make X.
+        expect(new Set(smithing.match(/@attempt_smithing\(last_item, (\d+)\)/g))).toEqual(
+            new Set([
+                '@attempt_smithing(last_item, 1)',
+                '@attempt_smithing(last_item, 5)',
+                '@attempt_smithing(last_item, 10)',
+            ]),
+        );
+        expect(smithing).toContain(
+            'case bronze_dart_tip, iron_dart_tip, steel_dart_tip, mithril_dart_tip, adamant_dart_tip, rune_dart_tip :\n         if (%desertrescue < ^desertrescue_learned_darts) {',
+        );
         expect(script('general/scripts/player_count.rs2')).toContain(
             'return (scale(sub(4000, $playercount), 4000, $base));',
         );
@@ -263,6 +292,10 @@ describe('the families on the real world (hand-worked in families.test.ts)', () 
         ]);
         const smelt = families.get('smelting')!.model(furnace, { bar: 'iron_bar' }, p, world);
         expect([smelt.ticksPerAttempt, smelt.products]).toEqual([5, [{ obj: 'iron_bar', count: 0.5 }]]);
+        const lava = families
+            .get('superheat')!
+            .model(furnace, { ore: 'iron_ore' }, { ...p, worn: ['lava_battlestaff'] }, world);
+        expect(lava.consumes).toEqual(heat.consumes);
         const smith = families.get('smithing')!.model(anvil, { product: 'iron_platebody' }, p, world);
         expect([smith.ticksPerAttempt, smith.xpTenths, smith.batch, smith.tools]).toEqual([
             5,
@@ -271,6 +304,15 @@ describe('the families on the real world (hand-worked in families.test.ts)', () 
             ['hammer'],
         ]);
     });
+});
+
+test('the anvils and furnaces a quest locks need it (gates.ts USE_GATES)', () => {
+    const ids = ['anvil:asgarnia:1', 'anvil:rellekka:0', 'furnace:rellekka:0'];
+    expect(ids.map(id => world.sites.find(s => s.id === id)?.reach)).toEqual([
+        [['quest:doric']],
+        [['quest:viking']],
+        [['quest:viking']],
+    ]);
 });
 
 test('every gathering and thieving site models at 99, or fails with a ModelError', () => {

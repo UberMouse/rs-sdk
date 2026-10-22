@@ -17,6 +17,7 @@ import {
     nearestReached,
     serializeWorld,
     unreachedPockets,
+    useSets,
     type BuildReport,
     type HintScan,
     type OpUser,
@@ -1207,6 +1208,41 @@ describe('reach on sites and npc spawn clusters', () => {
             ['tree:town:0', []],
             ['furnace:town:0', []],
         ]);
+    });
+
+    test("a quest that locks a site's features joins every set; one free feature frees the site", () => {
+        const features = ['doric_anvil', 'doric_anvil', 'anvil', 'viking_anvil'].map(config => ({ config }));
+        const gates = [
+            { config: 'doric_anvil', requires: ['quest:doric'], source: 'smithing.rs2:53' },
+            { config: 'viking_anvil', requires: ['quest:viking'], source: 'smithing.rs2:66' },
+        ];
+        const { sites } = addReach(
+            {
+                sites: [
+                    site('anvil:town:0', tile(1, 1), { features: [0, 1] }),
+                    site('anvil:town:1', tile(20, 0), { features: [0, 2] }),
+                    site('anvil:town:2', tile(20, 0), { features: [0, 3] }),
+                    site('anvil:town:3', null, { features: [0] }),
+                ],
+                npcSpawns: [],
+            },
+            fake,
+            open,
+            { sets: useSets(features, gates) },
+        );
+        expect(sites.map(s => [s.id, s.reach])).toEqual([
+            ['anvil:town:0', [['quest:doric']]],
+            ['anvil:town:1', [['skill:mining:40']]],
+            [
+                'anvil:town:2',
+                [
+                    ['quest:doric', 'skill:mining:40'],
+                    ['quest:viking', 'skill:mining:40'],
+                ],
+            ],
+            ['anvil:town:3', []],
+        ]);
+        expect(() => useSets(features, [{ ...gates[0]!, config: 'gone_anvil' }])).toThrow(/gone_anvil/);
     });
 
     test("an npc cluster's reach is the cheapest over the tiles beside it, not its nearest tile's", () => {

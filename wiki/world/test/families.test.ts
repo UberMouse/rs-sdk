@@ -135,6 +135,12 @@ data=staff,staff_of_fire
 data=staff,lava_battlestaff
 data=rune,firerune
 
+[magic_staff_earth]
+table=magic_staff_table
+data=staff,staff_of_earth
+data=staff,lava_battlestaff
+data=rune,earthrune
+
 [iron_platebody]
 table=smithing
 data=ifproduct,iron_platebody
@@ -143,6 +149,15 @@ data=product_amount,1
 data=levelrequired,33
 data=bar,iron_bar
 data=bar_amount,5
+
+[iron_dart_tip]
+table=smithing
+data=ifproduct,iron_dart_tip
+data=product,iron_dart_tip
+data=product_amount,10
+data=levelrequired,19
+data=bar,iron_bar
+data=bar_amount,1
 `;
 
 const OBJS = `
@@ -734,6 +749,29 @@ describe('superheat', () => {
         expect(m.xpTenths).toEqual({ magic: 530, smithing: 62 });
     });
 
+    test('a lava battlestaff, in the fire and the earth staff rows, saves the fire runes too', () => {
+        // magic_staff_table: lava_battlestaff in magic_staff_fire and magic_staff_earth; ~staff_runes (magic.rs2:53-88)
+        // frees every rune of the worn staff's rows. Superheat takes no earth: 1 nature is left.
+        const m = family('superheat').model(
+            rocks.site,
+            { ore: 'iron_ore' },
+            profile(43, { worn: ['lava_battlestaff'] }),
+            rocks.world,
+        );
+        expect(m.consumes).toEqual([
+            { obj: 'iron_ore', count: 1 },
+            { obj: 'naturerune', count: 1 },
+        ]);
+        // A staff of earth stands in for earth only: the 4 fire are spent.
+        const earth = family('superheat').model(
+            rocks.site,
+            { ore: 'iron_ore' },
+            profile(43, { worn: ['staff_of_earth'] }),
+            rocks.world,
+        );
+        expect(earth.consumes).toContainEqual({ obj: 'firerune', count: 4 });
+    });
+
     test('gold with goldsmith gauntlets: scale(5, 2, 225) = 1125 / 2 = 562 tenths', () => {
         // superheat.rs2:57-58; SCALE is a * c / b truncated.
         const p = profile(43, { worn: ['gauntlets_of_goldsmithing'] });
@@ -760,23 +798,42 @@ describe('smelting', () => {
     test('iron at a furnace: half the bars without a ring of forging', () => {
         // smelting.rs2: after a bar, start_smelt_ore is queued with delay 0 and smelting_ore with delay 3, both from
         // inside a queue (:164, :188): 1 + 4 = 5 ticks a bar. Iron fails on randominc(1) = 1 (:202): 1/2 a bar and
-        // 125 / 2 tenths per ore; the fail still takes the ore (:192-196).
+        // 125 / 2 tenths per ore; the fail still takes the ore (:192-196). The buttons make at most 10 (:53-91): a
+        // larger load takes Make X, whose p_countdialog (:94) costs a tick a trip.
         const m = family('smelting').model(furnace.site, { bar: 'iron_bar' }, profile(15), furnace.world);
         expect(m).toEqual({
             ticksPerAttempt: 5,
+            restart: { upTo: 10, ticks: 1 },
             success: 1,
             xpTenths: { smithing: 62.5 },
             products: [{ obj: 'iron_bar', count: 0.5 }],
             consumes: [{ obj: 'iron_ore', count: 1 }],
         });
-        // A worn ring of forging skips the roll (:200-201): every ore a bar, 125 tenths.
+        // A worn ring of forging skips the roll (:200-201): every ore a bar, 125 tenths. It melts at its 140th bar
+        // (ring_of_forging.rs2:3-9): 1/140 of a ring an ore.
         const ring = family('smelting').model(
             furnace.site,
             { bar: 'iron_bar' },
             profile(15, { worn: ['ring_of_forging'] }),
             furnace.world,
         );
-        expect([ring.products, ring.xpTenths]).toEqual([[{ obj: 'iron_bar', count: 1 }], { smithing: 125 }]);
+        expect([ring.products, ring.xpTenths, ring.consumes]).toEqual([
+            [{ obj: 'iron_bar', count: 1 }],
+            { smithing: 125 },
+            [
+                { obj: 'iron_ore', count: 1 },
+                { obj: 'ring_of_forging', count: 1 / 140 },
+            ],
+        ]);
+    });
+
+    test('gold with goldsmith gauntlets: scale(5, 2, 225) = 562 tenths; no ring wear on any bar but iron', () => {
+        // smelting.rs2:216-217. A ring worn while smelting gold is never asked for (:198).
+        const worn = ['gauntlets_of_goldsmithing', 'ring_of_forging'];
+        const m = family('smelting').model(furnace.site, { bar: 'gold_bar' }, profile(40, { worn }), furnace.world);
+        expect([m.xpTenths, m.consumes]).toEqual([{ smithing: 562 }, [{ obj: 'gold_ore', count: 1 }]]);
+        const bare = family('smelting').model(furnace.site, { bar: 'gold_bar' }, profile(40), furnace.world);
+        expect(bare.xpTenths).toEqual({ smithing: 225 });
     });
 
     test('bronze takes a copper and a tin a bar', () => {
@@ -805,9 +862,12 @@ describe('smithing', () => {
     test('an iron platebody at Smithing 33', () => {
         // smithing.rs2 [proc,smithing_anvil]: p_delay(1) (:272) holds 2 ticks, p_delay(2) (:286) 3: 5 ticks a
         // product. XP bar_amount x xpperbar = 5 x 250 = 1250 tenths (:283). 5 bars a platebody, a hammer held
-        // (:101-104).
+        // (:101-104). The buttons make 1, 5 or 10 (:1-36): each further 10 takes the bar used on the anvil at
+        // t + clickTicks(2) = t + 4 after the last product, the button at t + 5 and its p_delay(1) to t + 7, 2 ticks
+        // past the run's t + 5.
         expect(family('smithing').model(anvil.site, { product: 'iron_platebody' }, profile(33), anvil.world)).toEqual({
             ticksPerAttempt: 5,
+            restart: { upTo: 10, ticks: 2, repeat: true },
             success: 1,
             xpTenths: { smithing: 1250 },
             products: [{ obj: 'iron_platebody', count: 1 }],
@@ -822,6 +882,14 @@ describe('smithing', () => {
         refuses('smithing', anvil, { product: 'iron_platebody' }, profile(14), /working iron_bar needs smithing 15/);
         fails('smithing', anvil, { product: 'rune_platebody' }, profile(99), /no smithing row makes rune_platebody/);
         fails('smithing', anvil, {}, profile(99), /needs a product param/);
+        // Dart tips wait on Tourist Trap's ^desertrescue_learned_darts (smithing.rs2:224-230).
+        fails(
+            'smithing',
+            anvil,
+            { product: 'iron_dart_tip' },
+            profile(99),
+            /iron_dart_tip not modelled: needs Tourist Trap/,
+        );
         fails('smithing', at('furnace', [['furnace', '']]), { product: 'iron_platebody' }, profile(99), /not an anvil/);
     });
 });

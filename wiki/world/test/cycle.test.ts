@@ -14,7 +14,8 @@ import { TICKS_PER_HOUR, USER_EVENTS_PER_TICK, XP_RATE } from '../model/server';
 import { parseConfigs } from '../sources/configs';
 
 // Synthetic objs: a worn pick, a carried rod, stackable feathers and coins (coins with no cost: the engine's 1); for
-// the process chains a carried hammer and knife, stackable natures and runes, non-stackable bow strings.
+// the process chains a carried hammer and knife, stackable natures and runes, non-stackable bow strings and coal, a
+// wearable ring.
 const items = readItems(
     parseConfigs(`
 [ore]
@@ -60,6 +61,11 @@ cost=10
 cost=15
 [bow]
 cost=60
+[coal]
+cost=1
+[ring]
+wearpos=ring
+cost=800
 `),
 );
 
@@ -703,5 +709,118 @@ describe('food with damage', () => {
         const r = run({ gather: pocket, sink: { mode: 'bank', legs: [20, 20] }, food: { obj: 'food', heal: 2 } });
         expect(r.trip.successes).toBe(18);
         expect(r.trip.eat).toBeCloseTo(31.5, 9);
+    });
+});
+
+describe('restarts', () => {
+    // Withdrawn from the bank, worked at a furnace or anvil, banked: legs 10 + 10.
+    const legs = [10, 10];
+    const withdraw = (obj: string, ...steps: ActionModel[]) =>
+        run({
+            gather: { withdraw: obj },
+            sink: { mode: 'process', steps: steps.map(s => [s]), end: 'bank', legs, here: steps.map(() => false) },
+        });
+    // An anvil's buttons make at most 10 a click, each further 10 2 ticks more; a furnace's Make X costs 1 tick a trip.
+    const anvil = { upTo: 10, ticks: 2, repeat: true };
+    const furnace = { upTo: 10, ticks: 1 };
+    const smith1: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 250 },
+        products: [{ obj: 'plate', count: 1 }],
+        consumes: [{ obj: 'bar', count: 1 }],
+        tools: ['hammer'],
+        restart: anvil,
+    };
+    const smith5: ActionModel = {
+        ...smith1,
+        xpTenths: { smithing: 1250 },
+        consumes: [{ obj: 'bar', count: 5 }],
+        batch: 5,
+    };
+    const smelt: ActionModel = {
+        ticksPerAttempt: 5,
+        success: 1,
+        xpTenths: { smithing: 125 },
+        products: [{ obj: 'bar', count: 1 }],
+        consumes: [{ obj: 'ore', count: 1 }],
+        restart: furnace,
+    };
+
+    test('a 1-bar product: 27 bars a trip take three clicks of Make 10, two restarts of 2 ticks', () => {
+        // The hammer takes a slot: 27 bars. ceil(27 / 10) - 1 = 2 restarts: 27 x 5 + 4 = 139, legs 20: 159.
+        expect(withdraw('bar', smith1).trip).toMatchObject({ successes: 27, process: 139, travel: 20, total: 159 });
+    });
+
+    test('a 5-bar product: 25 bars make 5, one click, no restart', () => {
+        // 27 bars round down to 25, 5 platebodies: ceil(5 / 10) - 1 = 0. 5 x 5 = 25, legs 20: 45.
+        expect(withdraw('bar', smith5).trip).toMatchObject({ successes: 25, process: 25, total: 45 });
+    });
+
+    test("a furnace load over 10 pays Make X's count dialog once; 10 or fewer pay nothing", () => {
+        // 28 ore, no tool: 28 x 5 + 1 = 141, legs 20: 161.
+        expect(withdraw('ore', smelt).trip).toMatchObject({ successes: 28, process: 141, total: 161 });
+        // Two coal a bar beside the ore: 28 / 3 = 9.33 bars, under 10: 9.33 x 5 = 46.67.
+        const steel: ActionModel = { ...smelt, consumes: [...smelt.consumes, { obj: 'coal', count: 2 }] };
+        const r = withdraw('ore', steel);
+        expect(r.trip.successes).toBeCloseTo(28 / 3, 9);
+        expect(r.trip.process).toBeCloseTo((28 / 3) * 5, 9);
+    });
+
+    test('a part batch: iron at half a bar an ore, smithed into 5-bar plates with no rounding', () => {
+        // 27 ore (the hammer): 27 x 5 + 1 (Make X) = 136 smelting; 13.5 bars make 2.7 plates, 2.7 x 5 = 13.5, under
+        // 10 plates so no restart: 149.5, legs 10 + 5 + 15 = 30: 179.5. Smithing a ore: 12.5 / 2 + 125 x 0.1 = 18.75.
+        const half: ActionModel = { ...smelt, xpTenths: { smithing: 62.5 }, products: [{ obj: 'bar', count: 0.5 }] };
+        const r = run({
+            gather: { withdraw: 'ore' },
+            sink: {
+                mode: 'process',
+                steps: [[half], [smith5]],
+                end: 'bank',
+                legs: [10, 5, 15],
+                here: [false, false],
+            },
+        });
+        expect(r.trip).toMatchObject({ successes: 27, process: 149.5, travel: 30, total: 179.5 });
+        const ore = (TICKS_PER_HOUR / 179.5) * 27;
+        expect(r.xpPerHour.smithing).toBeCloseTo(ore * 18.75 * XP_RATE, 6);
+        expect(r.itemsPerHour).toEqual([{ obj: 'plate', count: expect.closeTo(ore * 0.1, 9) }]);
+    });
+
+    test("a worn supply takes no slot: the ring's wear is counted, 28 ore still fill the trip", () => {
+        // 28 ore, a ring per 140: 28 x 5 = 140, legs 20: 160. Rings an hour: ore / 140.
+        const ring: ActionModel = {
+            ...smelt,
+            consumes: [...smelt.consumes, { obj: 'ring', count: 1 / 140 }],
+            restart: undefined,
+        };
+        const r = withdraw('ore', ring);
+        const ore = (TICKS_PER_HOUR / 160) * 28;
+        expect(r.trip).toMatchObject({ successes: 28, total: 160 });
+        expect(r.suppliesPerHour).toEqual([
+            { obj: 'ore', count: expect.closeTo(ore, 9) },
+            { obj: 'ring', count: expect.closeTo(ore / 140, 9) },
+        ]);
+    });
+
+    test('fails where it is not modelled', () => {
+        fails({ gather: { ...smelt, consumes: [] }, sink: { mode: 'bank', legs } }, /a gather with a restart/);
+        // Stackable feathers made into stackable runes: the trip never ends.
+        const vein: ActionModel = {
+            ticksPerAttempt: 4,
+            success: 1,
+            xpTenths: {},
+            products: [{ obj: 'feather', count: 1 }],
+            consumes: [],
+        };
+        const craft: ActionModel = {
+            ...smelt,
+            consumes: [{ obj: 'feather', count: 1 }],
+            products: [{ obj: 'rune', count: 1 }],
+        };
+        fails(
+            { gather: vein, sink: { mode: 'process', steps: [[craft]], end: 'keep', legs, here: [false] } },
+            /restarts on a trip that never ends/,
+        );
     });
 });

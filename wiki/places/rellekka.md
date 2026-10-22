@@ -16,13 +16,13 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `furnace:rellekka:0` | (2617, 3666) | Furnace 2 | no | no | - | - |
+| `furnace:rellekka:0` | (2617, 3666) | Furnace 2 | no | no | - | The Fremennik Trials done |
 
 ## [Anvils](../services/anvil.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `anvil:rellekka:0` | (2620, 3663) | Anvil 3 | no | no | - | - |
+| `anvil:rellekka:0` | (2620, 3663) | Anvil 3 | no | no | - | The Fremennik Trials done |
 
 ## [Fires](../services/fire.md)
 

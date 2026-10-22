@@ -6,8 +6,8 @@
 // The load. A trip lasts until the inventory is full or, for a method that eats, until the food is gone:
 // - Slots: INVENTORY_SLOTS less the tools carried, the gather's and the process steps' (a tool with a `wearpos` is
 //   wielded instead, as ideal play does; its wield level is not checked), one slot per stackable supply (bait,
-//   feathers, a step's nature runes; a non-stackable supply of the gather is not modelled), and one per stackable
-//   product of the gather or a step (coins and runes never fill the inventory).
+//   feathers, a step's nature runes; a non-stackable supply of the gather is not modelled; a wearable one is worn),
+//   and one per stackable product of the gather or a step (coins and runes never fill the inventory).
 // - Without food, the load is the free slots over the slots a success fills: the gather's non-stackable products
 //   (fractional: gems), or the withdrawn obj, plus a slot per unit of a step's non-stackable supply (bow strings,
 //   carried from the start of the trip), unless a step 'here' uses it (see `asItGoes`). No such slot means the
@@ -177,6 +177,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
                   consumes: [],
               }
             : gather;
+    if (source.restart) throw new ModelError('a gather with a restart is not modelled');
     const tpi = withdraw === undefined ? ticksPerItem(source) : 0;
     const p = source.success;
     const failsPerSuccess = (1 - p) / p;
@@ -239,6 +240,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     if (free < 1) throw new ProfileError(`no free inventory slot (${toolSlots} tools, ${supplySlots} supplies)`);
     const slots = (xs: Iterable<{ obj: string; count: number }>) =>
         [...xs].filter(x => !items(x.obj).stackable).reduce((n, x) => n + x.count, 0);
+    // A wearable supply is worn, as a tool is: its count is wear (a ring of forging's charges), in no slot.
+    const carried = (xs: { obj: string; count: number }[]) => slots(xs.filter(x => !items(x.obj).wearable));
     // A step 'here' that uses a non-stackable supply (bow strings) is done as each item is gathered: chop a log, cut
     // it, string it, then chop the next (steps run in the record's order, each on the product of the one before). The
     // strung bow takes the log's slot and the string's comes free, so the strings and bows together hold the slots
@@ -247,13 +250,15 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     // Supplies of steps away from the stand are carried all trip beside what accumulates.
     const inline = runs.filter(r => r.step < atSite);
     const away = runs.filter(r => r.step >= atSite);
-    const asItGoes = withdraw === undefined && inline.some(r => slots(suppliesOf(r)) > 0);
+    const asItGoes = withdraw === undefined && inline.some(r => carried(suppliesOf(r)) > 0);
     const room = asItGoes ? free - 1 : free;
     if (room < 1) throw new ProfileError(`no free inventory slot to gather into beside the supplies`);
     const slotsPerSuccess = asItGoes
-        ? Math.max(slots([...heldAtSite].map(([obj, count]) => ({ obj, count }))), slots(inline.flatMap(suppliesOf))) +
-          slots(away.flatMap(suppliesOf))
-        : slots(source.products) + slots(stepSupplies);
+        ? Math.max(
+              slots([...heldAtSite].map(([obj, count]) => ({ obj, count }))),
+              carried(inline.flatMap(suppliesOf)),
+          ) + carried(away.flatMap(suppliesOf))
+        : slots(source.products) + carried(stepSupplies);
     const end = sink.mode === 'process' ? sink.end : undefined;
     if (end === 'keep') {
         // Profile-dependent: a step whose input the gather gives only at some levels is skipped below them.
@@ -293,7 +298,15 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const n = trips ? successes : 1;
 
     const gatherTicks = n * tpi;
-    const process = runs.reduce((t, r) => t + n * r.actions * ticksPerItem(r.m), 0);
+    // A step's restarts over the trip's actions of it (ActionModel.restart). The epsilon keeps a whole count whole.
+    const restarts = ({ m, actions }: Run): number => {
+        if (!m.restart) return 0;
+        if (!trips) throw new ModelError('a process step that restarts on a trip that never ends is not modelled');
+        const { upTo, ticks, repeat } = m.restart;
+        const menus = Math.ceil((n * actions) / upTo - 1e-9);
+        return menus < 2 ? 0 : repeat ? (menus - 1) * ticks : ticks;
+    };
+    const process = runs.reduce((t, r) => t + n * r.actions * ticksPerItem(r.m) + restarts(r), 0);
     const travel = trips && sink.mode !== 'drop' ? sink.legs.reduce((a, b) => a + b, 0) : 0;
     const bank = trips && banks ? BANK_TICKS : 0;
     // A process sink that drops drops what is left that fills a slot, at the last step, with the click away.

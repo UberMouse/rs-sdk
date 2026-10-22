@@ -26,7 +26,7 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `anvil:asgarnia:0` | (2918, 3573) | Anvil 1 | no | no | - | - |
-| `anvil:asgarnia:1` | (2950, 3452) | Anvil 2 | yes | yes | - | - |
+| `anvil:asgarnia:1` | (2950, 3452) | Anvil 2 | yes | yes | - | Doric's Quest done |
 | `anvil:asgarnia:2` | (2999, 3144) | Anvil 1 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)

@@ -1,7 +1,7 @@
 // The gate scan on the real scripts (sources/gate-scan.ts), the curated verdicts (gates.ts GATES) and their
 // placed locs.
 import { describe, expect, test } from 'bun:test';
-import { GATES, LOADOUT_PROCS, QUEST_OVERRIDES } from '../gates';
+import { GATES, LOADOUT_PROCS, QUEST_OVERRIDES, USE_GATES } from '../gates';
 import { toolCheckers } from '../sources/conditions';
 import { readConfigs } from '../sources/configs';
 import { readConstants } from '../sources/constants';
@@ -227,6 +227,19 @@ describe('gates.ts', () => {
             expect(g.shape).toBeGreaterThanOrEqual(0);
             expect(g.angle).toBeGreaterThanOrEqual(0);
             expect(g.angle).toBeLessThan(4);
+        }
+    });
+
+    test("each use gate cites the line that tests its loc's config, its quest's varp read just after", () => {
+        const text = new Map(scripts);
+        for (const g of USE_GATES) {
+            const [file, at] = g.source.split(':') as [string, string];
+            const lines = text.get(file)!.split('\n');
+            expect(lines[Number(at) - 1]).toContain(`loc_type = ${g.config}`);
+            for (const r of g.requires) {
+                const quest = quests.find(q => `quest:${q.id}` === r)!;
+                expect(lines.slice(Number(at) - 1, Number(at) + 2).join('\n')).toContain(`%${quest.varp} `);
+            }
         }
     });
 

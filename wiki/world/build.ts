@@ -25,7 +25,7 @@ import { areaResolver } from './area-resolve';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
-import { questFacts } from './requirements';
+import { minimalSets, questFacts, type QuestFacts } from './requirements';
 import { formatDistance, nearestSinks, priceCrossings, SINKS, wayFinder, type DistanceReport } from './distance';
 import { METHODS } from './methods';
 import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
@@ -74,6 +74,8 @@ import {
     QUEST_OVERRIDES,
     QUEST_VARP_EXCEPTIONS,
     TRANSPORTS_OUT_OF_SCOPE,
+    USE_GATES,
+    type UseGate,
 } from './gates';
 import { readConstants } from './sources/constants';
 import {
@@ -439,17 +441,49 @@ export function nearestReached(reached: (t: Tile) => boolean, t: Tile, radius = 
 }
 
 /**
+ * What using a site asks, as alternatives, one per kind of its features (gates.ts USE_GATES): `[[]]` when one of
+ * them is free. Throws on a gate whose config no feature is placed as.
+ */
+export function useSets(
+    features: readonly Pick<Feature, 'config'>[],
+    gates: readonly UseGate[],
+): (s: Pick<Site, 'features'>) => string[][] {
+    const byConfig = new Map(gates.map(g => [g.config, g.requires]));
+    const placedConfigs = new Set(features.map(f => f.config));
+    const stale = gates.filter(g => !placedConfigs.has(g.config)).map(g => g.config);
+    if (stale.length) throw new Error(`USE_GATES names configs no feature is placed as: ${stale.join(', ')}`);
+    return s => {
+        const sets = s.features.map(i => byConfig.get(features[i]!.config) ?? []);
+        return sets.some(r => !r.length) ? [[]] : sets;
+    };
+}
+
+/**
  * Each site's reach, the sets of its stand tile, and each npc spawn cluster's, the minimal sets over the tiles
  * `beside` gives it (place.ts besideCluster; types.ts NpcSpawn.reach): the cheapest way beside any of its
- * spawns, not the nearest tile's, which may sit behind a door the cheapest way does not need. Also the COVERED
- * sites none reaches, by area path then id.
+ * spawns, not the nearest tile's, which may sit behind a door the cheapest way does not need. A site's sets
+ * join `use.sets`' alternatives (useSets: what using one of its features asks). Also the COVERED sites none
+ * reaches, by area path then id.
  */
 export function addReach(
     placed: { sites: readonly Placed<Site>[]; npcSpawns: readonly Placed<NpcSpawn>[] },
     reach: Pick<Reach, 'setsAt' | 'setsAny' | 'reached'>,
     beside: (c: Placed<NpcSpawn>) => Tile[],
+    use: { sets: (s: Placed<Site>) => string[][]; quests?: QuestFacts } = { sets: () => [[]] },
 ): { sites: Site[]; npcSpawns: NpcSpawn[]; unreached: Unreached[] } {
-    const sites = placed.sites.map(s => ({ ...s, reach: s.stand ? reach.setsAt(s.stand) : [] }));
+    const sites = placed.sites.map(s => {
+        if (!s.stand) return { ...s, reach: [] };
+        const walk = reach.setsAt(s.stand);
+        const gated = use.sets(s);
+        if (gated.length === 1 && !gated[0]!.length) return { ...s, reach: walk };
+        return {
+            ...s,
+            reach: minimalSets(
+                walk.flatMap(w => gated.map(g => [...w, ...g])),
+                use.quests,
+            ),
+        };
+    });
     const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(beside(c)) }));
     const unreached = sites
         .filter(s => COVERED.has(s.kind) && !s.reach.length)
@@ -963,7 +997,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         },
         courses: { defs: courses, step: courseStep },
     }).sort((a, b) => cmp(a.id, b.id));
-    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision));
+    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
+        sets: useSets(features, USE_GATES),
+        quests: graph.quests,
+    });
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
     // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).

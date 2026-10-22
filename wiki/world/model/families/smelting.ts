@@ -2,6 +2,8 @@
 // skill_smithing/scripts/smelting/smelting.rs2, on the bar's smelting struct (configs/smelting/smelting.struct,
 // `oc_param(<bar>, smelting_struct)`). A process step: every bar takes its ores whether it comes out or not, so the
 // model's success is 1 and its products and XP are the expected ones per bar. Superheat reads the same struct.
+// Rellekka's furnaces refuse a player without The Fremennik Trials (smelting.rs2:2-7, 31-37; gates.ts USE_GATES puts
+// it on their site's reach).
 import type { GameData } from './common';
 import { ModelError, type ActionModel } from '../family';
 import type { Profile } from '../profile';
@@ -66,6 +68,12 @@ export function barXp(s: BarStruct, profile: Profile): number {
 /** Worn, it stops the iron bar's fail roll on a members world (smelting.rs2:200-202). */
 const RING_OF_FORGING = 'ring_of_forging';
 
+/** Iron bars a ring of forging lasts: the 140th melts it (~lose_charge_ring_of_forging, ring_of_forging.rs2:3-9). */
+const RING_CHARGES = 140;
+
+/** The most bars a Make button smelts (smelting.rs2:53-91): a larger load takes Make X. */
+const MAKE_MAX = 10;
+
 export const smelting: FamilyFactory = data => ({
     id: 'smelting',
     skills: ['smithing'],
@@ -79,17 +87,28 @@ export const smelting: FamilyFactory = data => ({
         requireLevel(profile, 'smithing', s.levelrequired, `smelting ${p.bar}`);
         // An iron bar fails on randominc(1) = 1, half the time, unless a ring of forging is worn; a fail still takes
         // the ore (smelting.rs2:198-209).
-        const made = s.product === 'iron_bar' && !profile.worn.includes(RING_OF_FORGING) ? 0.5 : 1;
+        const iron = s.product === 'iron_bar';
+        const ring = iron && profile.worn.includes(RING_OF_FORGING);
+        const made = iron && !ring ? 0.5 : 1;
         return {
             // After a bar, %action_delay = clock + 1 and [label,smelt_ore_weakqueue] queues start_smelt_ore with
             // delay 0, which queues smelting_ore with delay 3, both from inside a queue (smelting.rs2:157-164,
-            // 184-188, 225-228): 1 + 4 = 5 ticks a bar. The first bar is 4 ticks after the Make button (:137-144,
-            // 162), which is the tick after the furnace op opens the menu: 5 from the arrival too.
+            // 184-188, 225-228): 1 + 4 = 5 ticks a bar. The furnace op opens the menu on the arrival tick (:31-51);
+            // a Make 1/5/10 button the tick after runs @smelt_ore, whose weakqueue(smelting_ore, 4) from a click
+            // lands the first bar 4 ticks on (:137-144, 162): 5 from the arrival too.
             ticksPerAttempt: queueTicks(0, true) + queueTicks(3, true),
+            // A load over MAKE_MAX takes Make X: its p_countdialog (:93-98) holds @smelt_ore until the count comes
+            // back, read the tick after the button (ResumePCountDialogHandler.ts:16-17), one tick more a trip.
+            restart: { upTo: MAKE_MAX, ticks: 1 },
             success: 1,
             xpTenths: { smithing: barXp(s, profile) * made },
             products: [{ obj: s.product, count: made }],
-            consumes: [{ obj: s.ingredient, count: s.barCount }, ...(s.secondary ? [s.secondary] : [])],
+            consumes: [
+                { obj: s.ingredient, count: s.barCount },
+                ...(s.secondary ? [s.secondary] : []),
+                // The ring's wear: each bar smelted with it spends a charge (:200-201).
+                ...(ring ? [{ obj: RING_OF_FORGING, count: 1 / RING_CHARGES }] : []),
+            ],
             ...(s.barCount > 1 ? { batch: s.barCount } : {}),
         };
     },
