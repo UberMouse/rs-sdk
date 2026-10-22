@@ -260,6 +260,43 @@ works on; a measured figure above its floor is a model bug. The pages in `wiki/t
 beside the measured figures; `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
 multiway })` in `query.ts` give it to code, `bestMethods` ranked by floor XP/hr.
 
+What a record can say, beyond a gather and a sink (the code is the reference; each is worked from its script):
+
+- **Process steps** (`sink.steps`, in order; each takes a product of the gather or an earlier step, and a step whose
+  input the profile doesn't make is skipped). `at` is `'here'` (where the previous action stands: superheat beside the
+  rock, fletching where the log was cut), a tile in a site of the family's kinds, or omitted for the nearest site of its
+  first kind to the previous step's. A family with no site kinds (firemaking) stops at its own tile, or `'here'`; what
+  follows it names its tile. `end` is `bank` (the nearest bank of the last step's site, or `bank`'s tile), `drop` or
+  `keep` (a stackable product: runes). A bank is never visited on `keep` or `drop`, so `bank` with them is an error.
+- **Withdraw** is a source in place of a gather (`family: 'withdraw'`, params `{ obj }`, `at` in a bank): the load
+  comes from the bank in no ticks of its own and the process sink starts and ends there, so it takes no `bank`.
+- **Supplies.** A step's `consumes` after the first (the chained input) are its supplies: stackable ones take a slot
+  each, non-stackable ones (bow strings) a slot per unit carried from the start of the trip, and a wearable one is worn
+  (a ring of forging's charges). A step `'here'` that uses a non-stackable supply is done as each item is gathered
+  (chop, cut, string, chop), so the strung bow takes the log's slot and the string's comes free (`asItGoes`,
+  `model/cycle.ts`); a step away from the stand carries its supplies all trip.
+- **Step timings** a family sets on its `ActionModel`: `batch` (inputs a product takes), `restart` (ticks a trip spends
+  starting the step again, once it takes more than `upTo` actions: the anvil's Make 10), `start` (ticks once a trip,
+  where the first action is later than the cadence: the spinning menu) and `perTick` (the most actions one tick runs,
+  where an action takes no tick of its own: stringing).
+- **Laps.** An `agility` method's one attempt is a whole lap of a course site (`model/families/agility.ts`): each
+  obstacle's moves are its crossing rows and gate rows (`Gate.standTicks`: the success ticks by stand tile, the most
+  being `Gate.ticks`), the falls of rolled moves priced in at the profile's hitpoints, and the lap is the cheapest round
+  over the walks between obstacles. The family names those tile pairs (`Family.walks`), `method.ts` prices them under
+  each way's reach set into `MethodWay.walks`, and the family picks. A course gate on the lap's skill (the Barbarian
+  course's Agility 35) shows as a `skill:` token of the way. The Wilderness ridge gates are not an obstacle of the lap
+  and are left out of its floor.
+- **Food** (`MethodDef.food`) covers a family's `failDamage` (a pickpocket stun) and `damage` (a lap's falls), restocked
+  at the bank.
+- **Worn items** are `Profile.worn` (obj config names: a staff of fire, a ring of forging), which a family reads;
+  `Measured.worn` records what a measured run wore.
+- **Use gates.** A site's reach also carries what using its feature asks (`USE_GATES` in `gates.ts`: Doric's anvil
+  needs the Doric quest, Rellekka's furnaces, anvil and spinning wheel The Fremennik Trials), so a method's `ways` include it.
+  `distance.ts`' nearest-sink figures don't read them: a record names its step sites rather than rely on `nearest`.
+- **Random landings.** A method's legs price a crossing that lands on one of several tiles (the essence mine's
+  teleports and portals) at the chance-weighted mean of the walks on from each landing, and a teleport at its script's
+  delays (`model/legs.ts`); the rest of the index still prices them at the worst landing.
+
 Measured figures are curated, not read at build time: when a goal finishes, `bun conductor/tools/stats.ts <bot>
 --methods` prints the paste-ready `measured` entry (XP/hr, the levels and tool the runs started at, bot, date, hours,
 the command), and the conductor pastes it into the record. A plan names its method (`PlanDef.method`, see

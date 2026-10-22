@@ -282,3 +282,10 @@ Review findings `task-review` deferred because their fix needs work outside the 
   Q3, from the gnome-exit fix).
 - travel itest "enters the Wilderness only with wilderness: true" can flake: its 10 HP save is attacked in the
   Wilderness and ends `interrupt:low-hp` (run itpt9hcvdl8e, 2026-10-22); give the fixture more HP or food.
+- World index: `distance.ts` `nearestSinks` ignores sink use gates (`gates.ts` USE_GATES): `furnace:falador:0`'s nearest anvil is Doric's quest-locked `anvil:asgarnia:1`, priced with no requirement; method records name their step sites explicitly to avoid it.
+- World index: random landings at their chance-weighted mean and teleports at their script ticks are applied to method legs only (`model/legs.ts`); `distance.ts` nearest-bank figures still use the worst-landing pricing (out of scope of phase 3b).
+- World index: random-landing rows from sources other than npc-teleports carry no `chance` (equal weights); a leg needing two random rows falls back to the whole-graph price; coin requirements may count more than once across landings.
+- World index: measured figures pending (seed from `stats.ts --methods`, or `--phases` where a prologue ran): `agility-gnome-course` and `earth-runecraft-aubury-essence` (prologue runs; `--phases`), `agility-barbarian-course` (no plan), `iron-se-varrock-smelt-lumbridge-kiteshield` (no usable run; one 0.03 h run at 99.8% of floor: recheck), `trees-lumbridge-burn` (no runs).
+- willow-longbows: the floor cuts and strings each bow as it is chopped (26 logs a trip) where the plan carries 13 strings and chops 13 a trip; a plan lever.
+- Levers, not model gaps: the Wilderness ridge gates (excluded from the `agility-wilderness-course` lap floor; the agility task crosses them each lap) and the runecraft landing (the floor takes the mean of the mine's 22 landings; the plan mines whichever rock it finds).
+- Phase 4 note: the Wilderness combat opt-in comes later, with Prayer (user decision).
