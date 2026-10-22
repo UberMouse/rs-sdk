@@ -384,6 +384,14 @@ describe('serializeWorld', () => {
                 'crossings[1]: a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]',
             ],
             [
+                'a chance on some landings only',
+                {
+                    ...teleport,
+                    landings: [{ tile: teleport.landings[0]!.tile, chance: 0.5 }, { tile: teleport.landings[0]!.tile }],
+                },
+                'crossings[1]: its landings all carry a chance or none do',
+            ],
+            [
                 'a roll with no fail',
                 { ...shortcut, roll: { ...roll, fail: undefined } },
                 "crossings[1]: a roll's fail needs ticks and damage",

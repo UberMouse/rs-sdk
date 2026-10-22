@@ -511,7 +511,7 @@ export function wayFinder(graph: ReachGraph): {
         from: readonly Tile[],
         to: readonly Tile[],
         reachSet: readonly string[],
-        limit?: number,
+        limit: number,
     ): (HalfWay | null)[];
 } {
     const { index, sets } = graph;

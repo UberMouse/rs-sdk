@@ -7,7 +7,7 @@ import { CROSSING_TICKS, priceCrossings } from '../distance';
 import { legFinder, rowTicks, tourLegs, type LegFinder } from '../model/legs';
 import { locSizes } from '../place';
 import { reachGraph } from '../reach';
-import type { Crossing } from '../types';
+import type { Crossing, Tile } from '../types';
 import { at, Grid } from './grid';
 
 const size = locSizes(new Map());
@@ -50,6 +50,17 @@ function finderOver(rows: Crossing[], grid = new Grid()): { legs: LegFinder; pri
     const graph = reachGraph({ world: { ...world, crossings: priced }, collision: grid, size });
     return { legs: legFinder(graph, priced), priced };
 }
+
+/** A free ladder from `from` to `to`. */
+const ladder = (from: Tile, to: Tile): Crossing => ({
+    via: 'scripted',
+    act: { kind: 'loc-op', loc: 'test_ladder', op: 1 },
+    at: from,
+    from: [from],
+    landings: [{ tile: to }],
+    requires: [[]],
+    source: 'test_ladder.rs2:1',
+});
 
 // From the landing at x to the rock: max(|x - 3210|, 5) steps on open ground, a half tick each.
 const toRock = Array.from({ length: 22 }, (_, i) => Math.max(Math.abs(3200 + i - 3210), 5));
@@ -120,6 +131,20 @@ describe('what the mean counts', () => {
         expect(legs.leg(WIZARD_SIDE, rock, [QUEST])?.runTicks).toBe(CROSSING_TICKS.teleport + (3 / 4) * 10);
     });
 
+    test("another row from and to one of a random row's tiles by the same via is walked as any other", () => {
+        // A second teleport by the wizard's tile to the landing at x 3210 alone: no random row, so the plain way takes
+        // it at CROSSING_TICKS.teleport (6 half ticks) and 5 steps on to the rock: ceil(11 / 2) = 6, under the mean's
+        // 6 + 81 / 22.
+        const one: Crossing = {
+            ...teleport,
+            act: { kind: 'npc-op', npc: 'apprentice', op: 3 },
+            landings: [{ tile: at(1, 3210, 3220) }],
+            ticks: undefined,
+        };
+        const { legs } = finderOver([teleport, one]);
+        expect(legs.leg(WIZARD_SIDE, ROCK, [QUEST])).toEqual({ runTicks: 6, requires: [QUEST] });
+    });
+
     test('a stranded landing counts for none; a row with a landing that walks nowhere is not taken', () => {
         // A landing walled in on every side: no walk leaves it, so the build gives it no spread.
         const pen = at(1, 3225, 3228);
@@ -150,5 +175,23 @@ describe('tourLegs', () => {
 
     test('a tour with no way in has no way out', () => {
         expect(tourLegs(legs, [ROCK, BANK, ROCK], [])).toEqual([null, null]);
+    });
+
+    test('a cycle that never crosses the wizard has no portal back', () => {
+        // Ladders in and out of the mine, free: in from beside the bank onto the rock (1 step and the ladder's 4 half
+        // ticks: ceil(5 / 2) = 3), out from 10 steps west of the rock to 25 steps north of the bank (10 + 4 + 25 half
+        // ticks: ceil(39 / 2) = 20). The portal's 14.5 is shorter, but only for a way that came in by the wizard.
+        const { legs: laddered } = finderOver([
+            teleport,
+            portal,
+            ladder(at(0, 3219, 3205), ROCK),
+            ladder(at(1, 3200, 3229), at(0, 3220, 3230)),
+        ]);
+        const tour = tourLegs(laddered, [ROCK, BANK, ROCK], [QUEST]);
+        expect(tour).toEqual([
+            { runTicks: 20, requires: [] },
+            { runTicks: 3, requires: [] },
+        ]);
+        expect(laddered.leg(ROCK, BANK, [QUEST], 'wizard')?.runTicks).toBe(3 + 11.5);
     });
 });

@@ -1,27 +1,27 @@
-// The legs of a method's cycle (model/method.ts): the run ticks of a walk between two of its stops, as the cycle repeats
-// it. distance.ts prices a crossing that lands on one of several tiles at random (Crossing.landings: the essence mine's
-// teleports and its portals out) at its kind's CROSSING_TICKS plus the landing's spread, so a way on from it costs at
-// least what it would from the worst landing: sound for comparing nearest sinks, and well over what a repeated walk
-// averages. A method leg over one such row is priced at its mean instead:
+// The legs of a method's cycle (model/method.ts): the run ticks of a walk between two of its stops, cycle on cycle.
+// distance.ts prices a crossing that lands on one of several tiles at random (Crossing.landings: the essence mine's
+// teleports and its portals out) at CROSSING_TICKS by its kind plus the landing's spread, so a way on costs at least
+// what it would from the worst landing: sound for nearest sinks, well over a repeated walk's average. A method leg
+// over one such row is priced at its mean instead:
 //
-//   ticks(row) + sum over its landings l of chance(l) x runTicks(walk to the row's nearest `from` tile + walk from l)
+//   ticks(row) + sum over counted landings l of chance(l) x runTicks(walk to the row's nearest `from` + walk from l)
 //
-// with each landing's way rounded up once from half ticks (distance.ts), its chance the landing's (Landing.chance;
-// absent, the landings are equally likely), and the chances of the landings counted taken as the whole. `ticks(row)`
-// is its script's delays and the click (Crossing.ticks + 1: the essence mine teleport's p_delay(4), 6 ticks,
-// skill_runecraft/scripts/essence_mine.rs2:20) where the row has them, else CROSSING_TICKS by its via. A stranded
-// landing (no spread: distance.ts strandedLandings) counts for none, as in distance.ts; a row with a landing no walk
-// takes on to the leg's end is not taken.
+// each landing's way rounded up once from half ticks (distance.ts), chance(l) its Landing.chance (equal without one)
+// over the counted landings' total. ticks(row) is its script's delays and the click (Crossing.ticks + 1: the essence
+// mine teleport's p_delay(4), 6 ticks, skill_runecraft/scripts/essence_mine.rs2:20), else CROSSING_TICKS by its via.
+// The counted landings are those with a spread. One without (stranded, off land, or with no walk from another landing:
+// distance.ts priceCrossings) is left out and the others' chances renormalised, as distance.ts sends no way by it
+// either (crossingTicks): optimistic if the server can really land there. A row with a counted landing no walk takes on
+// to the leg's end is not taken.
 //
-// The walks are over the graph without the random rows' edges (an edge of another row from and to the same tiles by
-// the same via is left out with them), so a leg crosses at most one random row, and takes the shortest of that graph's
-// own way and each row's. A leg no such way walks (one that needs two random rows) takes the whole graph's way, its
-// random rows at their spread.
+// The walks are over the graph without the random rows' own edges (Edge.row), so a leg crosses at most one random row,
+// taking the shortest of that graph's way and each row's. A leg no such way walks (one needing two random rows) takes
+// the whole graph's way, its random rows at their spread.
 //
 // The essence mine's portals return to the wizard the way came in by (sources/npc-teleports.ts), under
-// `other:came from <npc>`. A leg is priced under its reach set, and given `came`, the npc whose teleport an earlier leg
-// of the cycle crossed, with that npc's came-from requirement too, as the conductor's walker meets it once it crosses
-// the npc's teleport (conductor/actions/walk.ts).
+// `other:came from <npc>`. A leg is priced under its reach set and, given `came` (the npc whose teleport an earlier leg
+// of the cycle crossed), that npc's came-from too, as the conductor's walker meets it once it crosses the npc's
+// teleport (conductor/actions/walk.ts).
 import { CROSSING_TICKS, HALVES, wayFinder, type HalfWay, type Way } from '../distance';
 import type { Edge, ReachGraph } from '../reach';
 import { cameFrom, canonicalSet, dominates, requirementSet } from '../requirements';
@@ -51,21 +51,24 @@ export const rowTicks = (c: Pick<Crossing, 'via' | 'ticks'>): number =>
 /** A row's requirement sets as a reach set states them: `members` is met (reach.ts SetTable.intern drops it). */
 const altsOf = (c: Crossing): string[][] => c.requires.map(r => r.filter(x => x !== 'members'));
 
+/** Whether an edge is a random row's (the header comment). */
+const isRandom = (e: Edge): boolean => (e.row?.landings.length ?? 0) > 1;
+
 /** A LegFinder over `graph`, whose crossing rows are `crossings`. */
 export function legFinder(graph: ReachGraph, crossings: readonly Crossing[]): LegFinder {
-    const { index, quests } = graph;
-    const at = (t: Tile): number => index.of(t.level, t.x, t.z);
+    const { quests } = graph;
     const random = crossings.filter(c => c.landings.length > 1);
-    const skip = new Set<string>();
-    for (const c of random)
-        for (const f of c.from) for (const l of c.landings) skip.add(`${at(f)} ${at(l.tile)} ${c.via}`);
-    const edgeFrom = new Map<number, readonly Edge[]>();
-    for (const [from, es] of graph.edgeFrom) {
-        const kept = es.filter(e => !skip.has(`${from} ${e.to} ${e.via}`));
-        if (kept.length) edgeFrom.set(from, kept);
-    }
     const whole = wayFinder(graph);
-    const walks = wayFinder({ ...graph, edgeFrom });
+    // Without random rows the two graphs are one. A tile with no random row's edge keeps its list.
+    let walks = whole;
+    if (random.length) {
+        const edgeFrom = new Map<number, readonly Edge[]>();
+        for (const [from, es] of graph.edgeFrom) {
+            const kept = es.some(isRandom) ? es.filter(e => !isRandom(e)) : es;
+            if (kept.length) edgeFrom.set(from, kept);
+        }
+        walks = wayFinder({ ...graph, edgeFrom });
+    }
     // The npcs a way back returns to.
     const returned = new Set(crossings.flatMap(c => returnsTo(c) ?? []));
     const memo = new Map<string, LegWay | null>();
@@ -84,7 +87,7 @@ export function legFinder(graph: ReachGraph, crossings: readonly Crossing[]): Le
             bound = fallback.runTicks + Math.max(0, ...rows.map(c => rowTicks(c) - CROSSING_TICKS[c.via]));
         }
         // A row beats it only from a landing within `bound` of `to`, and then, a landing's spread being the walk to it
-        // from the row's farthest landing, every landing of the row is within `bound` and the most spread.
+        // from the row's farthest landing, every counted landing of the row is within `bound` and the most spread.
         const counted = rows.flatMap(c => c.landings.filter(l => l.spread !== undefined));
         const spread = Math.max(0, ...counted.map(l => l.spread!));
         const landed = [...new Map(counted.map(l => [tileKey(l.tile), l.tile] as const)).values()];
@@ -94,6 +97,7 @@ export function legFinder(graph: ReachGraph, crossings: readonly Crossing[]): Le
             .forEach((w, i) => onward.set(tileKey(landed[i]!), w));
         let best: LegWay | null = plain;
         for (const c of rows) {
+            // Its counted landings: those with a spread (the header comment).
             const ls = c.landings.filter(l => l.spread !== undefined);
             const on = ls.map(l => onward.get(tileKey(l.tile)));
             if (!ls.length || on.some(w => !w)) continue;

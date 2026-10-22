@@ -95,14 +95,17 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
     const offLand: NpcTeleportOffLand[] = [];
     for (const e of input.entries) {
         const fail = (why: string) => new Error(`gates.ts NPC_TELEPORTS @${e.label} (${e.source}): ${why}`);
-        /** The text of a `file:line` in the block (a label or trigger) `b`, or a failure. */
-        const lineIn = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): string => {
+        /** The line of the block (a label or trigger) `b`, counted from its first, that `file:line` `at` is, or a failure. */
+        const lineOf = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): number => {
             const [file, n] = at.split(':');
             const k = Number(n) - b.line;
             if (file !== b.file || !(k >= 0 && k < b.body.split('\n').length))
                 throw fail(`${what} ${at} is not in ${b.file}:${b.line}`);
-            return input.scripts.get(file)!.split('\n')[Number(n) - 1]!;
+            return k;
         };
+        /** The text of a `file:line` in the block `b` (lineOf), or a failure. */
+        const lineIn = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): string =>
+            input.scripts.get(b.file)!.split('\n')[b.line + lineOf(at, b, what) - 1]!;
         /**
          * The `$<into> = map_findsquare(<arg>, <min>, <max>, <type>)` of a line: the local it sets, its arg, and its
          * ring with the type's value.
@@ -123,13 +126,15 @@ export function deriveNpcTeleports(input: NpcTeleportInput): NpcTeleports {
         };
         /**
          * The ticks the delays of block `b` take up to its `file:line` `at`, as Crossing.ticks counts them: each
-         * `p_delay(n)` n + 1 (PlayerOps.ts:376-380); a delay it can't read fails.
+         * `p_delay(n)` n + 1 (PlayerOps.ts:376-380), and a delay it can't read fails. It sums every delay in the text
+         * above that line, in whichever branch: the entries' blocks (essence_mine.rs2) delay in none.
+         * Not gate-scan.ts's rule (Path.ticks), which counts `p_arrivedelay` 1 for a player who just walked to a loc:
+         * after an npc's dialog that is not known, so it fails here.
          */
         const delaysTo = (at: string, b: Pick<Callable, 'file' | 'line' | 'body'>, what: string): number => {
-            lineIn(at, b, what);
             const code = b.body
                 .split('\n')
-                .slice(0, Number(at.split(':')[1]) - b.line + 1)
+                .slice(0, lineOf(at, b, what) + 1)
                 .map(l => l.replace(/\/\/.*$/, ''));
             let ticks = 0;
             for (const l of code)

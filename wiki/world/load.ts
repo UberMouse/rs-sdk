@@ -105,6 +105,8 @@ function crossingProblem(c: unknown): string | undefined {
             (l.chance !== undefined && !(typeof l.chance === 'number' && l.chance > 0 && l.chance <= 1))
         )
             return 'a landing needs a tile, spread, when it has one, as run ticks, and chance, when it has one, in (0, 1]';
+    if (new Set(c.landings.map(l => (l as { chance?: unknown }).chance === undefined)).size > 1)
+        return 'its landings all carry a chance or none do';
     if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
     if (!c.requires.length) return 'its requires has no set, so nothing makes the move ([[]] asks for nothing)';
     if (c.ticks !== undefined && !isCount(c.ticks)) return 'its ticks, when it has them, is a count';
