@@ -75,6 +75,9 @@ function rollProblem(r: unknown): string | undefined {
         return 'a roll needs a stat, whole low and high bounds, and a source';
     const f = r.fail;
     if (!isObject(f) || !isCount(f.ticks) || !isCount(f.damage)) return "a roll's fail needs ticks and damage";
+    const d = f.hpDamage;
+    if (d !== undefined && (!isObject(d) || !isCount(d.a) || !isInt(d.b) || d.b < 1 || !isInt(d.c)))
+        return "a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0";
     if (f.to !== undefined && !isTile(f.to)) return "a roll's fail.to is not a tile";
     if (f.back !== undefined && (f.to === undefined || !isCount(f.back)))
         return "a roll's fail.back is run ticks from its fail.to";
@@ -95,6 +98,7 @@ function crossingProblem(c: unknown): string | undefined {
             return 'a landing needs a tile, and spread, when it has one, as run ticks';
     if (!isSets(c.requires)) return 'its requires is not a list of requirement sets';
     if (!c.requires.length) return 'its requires has no set, so nothing makes the move ([[]] asks for nothing)';
+    if (c.ticks !== undefined && !isCount(c.ticks)) return 'its ticks, when it has them, is a count';
     const roll = c.roll === undefined ? undefined : rollProblem(c.roll);
     if (roll) return roll;
     return isName(c.source) ? undefined : 'no source';
@@ -116,6 +120,8 @@ function gateProblem(g: Parsed): string | undefined {
         return 'a gate whose requires has no set, so nothing opens it ([[]] asks for nothing)';
     const roll = g.roll === undefined ? undefined : rollProblem(g.roll);
     if (roll) return roll;
+    if (g.ticks !== undefined && (!isCount(g.ticks) || (g.to === undefined && g.landings === undefined)))
+        return 'its ticks, when it has them, is a count, on a row with to or landings';
     if (g.oneWay !== undefined && (g.oneWay !== true || g.from === undefined))
         return 'oneWay, when it has it, is true, on a row with from';
     if (g.act !== undefined) {

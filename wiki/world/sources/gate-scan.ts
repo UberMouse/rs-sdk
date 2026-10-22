@@ -49,14 +49,16 @@
 // its body (a proc given only known values may call itself, as ~agility_walk does), and the landing is where
 // the last one leaves the player; `loc_del`, and `loc_change` to a loc whose collision does not block,
 // open the loc. A `stat_random` roll is followed both ways, each path marked: a slip is not the move, but
-// its path says what a failure does, from the delays (Path.ticks) and damage (Path.damage) on it. A
+// its path says what a failure does, from the delays (Path.ticks) and damage (Path.damage) on it, as the path
+// that makes the move says, from its delays, what a success takes. `loc_find` finds a placed loc
+// (LanderWorld.locAt) and makes it the active loc, so `loc_coord` reads its tile from there on. A
 // condition the scan reads only as other:<text>, or not at all, goes both ways, as which paths are kept
 // (consistent) reads only requirements, refusals and quest stages; but the path keeps its text (Path.passed),
 // and one past any but a wait (a var against `map_clock` taken the way time opens, waits) is not free. A
 // dialogue choice is not kept: the player picks it.
 import { codeOf } from '../classify';
 import { minimalSets, requirementSet, subsetOf } from '../requirements';
-import type { Gate, Quest, Side, Tile } from '../types';
+import type { Gate, HpDamage, Quest, Side, Tile } from '../types';
 import { cmp, push } from '../util';
 import { conditionReader, FLIP, NEGATE, nameOf, readsSubjects, type QuestRef } from './conditions';
 import { first, type Config } from './configs';
@@ -193,6 +195,11 @@ export interface LanderWorld {
     locConfigs: ReadonlyMap<string, Config>;
     /** MAP_BLOCKED (ServerOps.ts): the tile's collision blocks walking (GameMap.ts isMapBlocked). */
     mapBlocked(tile: Tile): boolean;
+    /**
+     * LOC_FIND (LocOps.ts:79): the loc of config `config` placed on `tile`, its shape and angle, or undefined when
+     * none is. Absent: no `loc_find` is settled, and the call that holds it is not run.
+     */
+    locAt?(tile: Tile, config: string): { shape: number; angle: number } | undefined;
 }
 
 /** One placed loc and the tile the player uses it from: what a bound run knows that the scan doesn't. */
@@ -221,7 +228,8 @@ export interface SeenRoll {
  * passed on the way, as `` `text` (file:line) ``), opens the loc, or can't be
  * told offline (`why`, with the construct and its script line). A path that failed a roll is a
  * `fail`: where it leaves the player (`tile`, absent when no command moved them), and the ticks and damage it
- * takes (Path.ticks, Path.damage), or why those are not known.
+ * takes (Path.ticks, Path.damage), or why those are not known. A landing's `ticks` are what the path that lands
+ * there takes (Path.ticks), absent when a delay on it is not known offline (Path.untimed).
  */
 export type LandingOutcome =
     | {
@@ -230,6 +238,7 @@ export type LandingOutcome =
           player: boolean;
           at: string;
           move: string;
+          ticks?: number;
           roll?: SeenRoll;
           unrolled?: string;
           free?: true;
@@ -237,7 +246,7 @@ export type LandingOutcome =
       }
     | { k: 'opens'; at: string }
     | { k: 'underived'; why: string }
-    | { k: 'fail'; roll: SeenRoll; tile?: Tile; ticks: number; damage: number }
+    | { k: 'fail'; roll: SeenRoll; tile?: Tile; ticks: number; damage: HpDamage }
     | { k: 'fail'; roll: SeenRoll; why: string };
 
 /** A trigger's name as its header writes it. */
@@ -527,11 +536,14 @@ interface Path {
     opened?: string;
     /**
      * A bound run's: the ticks the path's delays take (`p_delay(n)` n + 1, `p_arrivedelay` one, as for a player
-     * who has just walked to the loc), the hitpoints its `damage` and `~damage_self` calls take (the most, when
-     * the amount rolls or reads a stat, as `most` takes it), and why either is not known offline.
+     * who has just walked to the loc; a forced walk's proc delays a tick a tile, skill_agility/scripts/agility.rs2:40),
+     * the hitpoints its `damage` and `~damage_self` calls take (at the player's hitpoints, the most when the amount
+     * rolls or reads another stat, as `most` takes it), and why the ticks (`untimed`) or the damage (`unsure`) are
+     * not known offline.
      */
     ticks?: number;
-    damage?: number;
+    damage?: HpDamage;
+    untimed?: string;
     unsure?: string;
 }
 
@@ -670,7 +682,7 @@ function distinctPaths(paths: readonly Path[]): Path[] {
             p.moved,
             p.landing ? JSON.stringify(p.landing) : '',
             p.opened ?? '',
-            `${p.ticks ?? ''} ${p.damage ?? ''} ${p.unsure ?? ''}`,
+            `${p.ticks ?? ''} ${p.damage ? JSON.stringify(p.damage) : ''} ${p.untimed ?? ''} ${p.unsure ?? ''}`,
             p.fare,
             (p.queued ?? []).map(q => `${q.call}(${q.args.map(valueKey).join(',')})`).join(' '),
             keyOf(p.taken, t => [...t].map(([o, n]) => `${o}=${n}`).join(',')),
@@ -742,11 +754,70 @@ const POS = 'coord';
 /** The highest level a stat reaches: what `most` takes a `stat` read for. */
 const MAX_STAT = 99;
 
+/** An amount that reads no hitpoints, as HpDamage. */
+const flat = (n: number): HpDamage => ({ a: 0, b: 1, c: n });
+
+/** `stat(hitpoints)`, the player's current hitpoints, as HpDamage. */
+const HITPOINTS: HpDamage = { a: 1, b: 1, c: 0 };
+
+/**
+ * `x op y` as HpDamage, where the engine's integer arithmetic (handlers/NumberOps.ts; the quotient truncated, the
+ * floor of what is not negative) keeps that form: a sum or product with an amount that reads no hitpoints, a sum
+ * of two whole multiples of them, and a quotient by a whole y > 0 of an amount not negative whose c it divides
+ * (floor(floor(HP a / b) / y) is floor(HP a / (b y))). Undefined for any other.
+ */
+function combineDamage(op: string, x: HpDamage, y: HpDamage): HpDamage | undefined {
+    if (op === '-') return y.a === 0 ? { ...x, c: x.c - y.c } : undefined;
+    if (op === '+') {
+        if (x.a === 0 || y.a === 0) return x.a === 0 ? { ...y, c: y.c + x.c } : { ...x, c: x.c + y.c };
+        return x.b === 1 && y.b === 1 ? { a: x.a + y.a, b: 1, c: x.c + y.c } : undefined;
+    }
+    if (op === '*') {
+        if (x.a === 0 && y.a === 0) return flat(x.c * y.c);
+        const [d, k] = x.a === 0 ? [y, x.c] : y.a === 0 ? [x, y.c] : [];
+        return d && d.b === 1 ? { a: d.a * k!, b: 1, c: d.c * k! } : undefined;
+    }
+    if (op === '/') {
+        const k = y.a === 0 ? y.c : 0;
+        if (k <= 0) return undefined;
+        if (x.a === 0) return flat(Math.trunc(x.c / k));
+        return x.a > 0 && x.c >= 0 && x.c % k === 0 ? { a: x.a, b: x.b * k, c: x.c / k } : undefined;
+    }
+    return undefined;
+}
+
+/** A proc argument's most (`most`), kept under MOST as its three parts. */
+const keepMost = (env: Map<string, Value>, param: string, d: HpDamage): void => {
+    for (const part of ['a', 'b', 'c'] as const) env.set(`${MOST}${part} ${param}`, { t: 'int', n: d[part] });
+};
+/** A local's most (keepMost), or undefined when its call kept none. */
+const mostOf = (env: ReadonlyMap<string, Value>, name: string): HpDamage | undefined => {
+    const [a, b, c] = (['a', 'b', 'c'] as const).map(part => intOf(env.get(`${MOST}${part} ${name}`)));
+    return a === undefined || b === undefined || c === undefined ? undefined : { a, b, c };
+};
+
 /** The engine's two-int arithmetic commands (handlers/NumberOps.ts) as the operators they compute, for `most`. */
 const OPERATORS: Readonly<Record<string, string>> = { add: '+', sub: '-', multiply: '*', divide: '/' };
 
-/** The key prefix a bound run keeps a proc argument's most under (`most`), beside the local; no local is named so. */
+/**
+ * The key prefix a bound run keeps a proc argument's most under (`most`, an HpDamage as its three parts), beside the
+ * local; no local is named so.
+ */
 const MOST = '#most ';
+
+/**
+ * The key prefix a bound run keeps the active loc's facts under once `loc_find` has made another loc the active one
+ * (LocOps.ts:91), beside the locals; no local is named so.
+ */
+const ACTIVE = '#loc ';
+
+/** The active loc's facts a path's locals keep (ACTIVE), as entries. */
+const activeOf = (env: ReadonlyMap<string, Value>): [string, Value][] => [...env].filter(([k]) => k.startsWith(ACTIVE));
+
+/** A command that delays the player: a bound run follows a proc with one for its ticks (Path.ticks). */
+const DELAYS = /\bp_(?:delay|arrivedelay)\b/;
+/** LOC_FIND: a bound run follows a proc with one, as it can change the active loc. */
+const FINDS_LOC = /\bloc_find\s*\(/;
 
 /** Bounds a bound run's calls, a proc calling itself among them: ~agility_walk steps one tile a call. */
 const BOUND_DEPTH = 64;
@@ -841,6 +912,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
     const readsConditions = marking((_, code) => reads.test(code) || PAYS.test(code));
     // Callables that change a loc, themselves or through a callee: a bound run follows them for `opened`.
     const changingLoc = marking((_, code) => CHANGES_LOC.test(code), incidental);
+    // Callables that delay the player or find a loc, themselves or through a callee: a bound run follows them for
+    // its ticks and the active loc.
+    const timing = marking((_, code) => DELAYS.test(code) || FINDS_LOC.test(code), incidental);
     // The loc categories: in a bound run, `loc_category = jungle_bush` compares two names.
     const categories = new Set([...(world?.locConfigs.values() ?? [])].flatMap(c => c.category ?? []));
     /**
@@ -906,7 +980,8 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         // COORD is the player's tile (server/engine/src/engine/script/handlers/PlayerOps.ts), written `coord` or
         // `coord()`; the loc's facts the same. A bound run knows them.
         if (!e.args?.length && e.name === 'coord') return env.get(POS) ?? sideUnknown('coord');
-        if (!e.args?.length && LOC_FACTS.has(e.name)) return bound?.facts.get(e.name) ?? locUnknown(e.text);
+        if (!e.args?.length && LOC_FACTS.has(e.name))
+            return env.get(`${ACTIVE}${e.name}`) ?? bound?.facts.get(e.name) ?? locUnknown(e.text);
         if (e.args === null) {
             if (e.name === 'true' || e.name === 'false') return { t: 'bool', b: e.name === 'true' };
             return known(e.name) || (bound && categories.has(e.name)) ? { t: 'name', v: e.name } : unknown(e.text);
@@ -932,6 +1007,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
         // MAP_BLOCKED, in a bound run, from the collision data.
         if (bound && world && e.name === 'map_blocked' && a0?.t === 'coord' && !a0.relative)
             return { t: 'bool', b: world.mapBlocked(a0) };
+        // DISTANCE: the Chebyshev distance between two coords, levels aside (ServerOps.ts:94, CoordGrid.distanceToSW).
+        if (e.name === 'distance' && isFixed(a0) && isFixed(a1))
+            return { t: 'int', n: Math.max(Math.abs(a0.x - a1.x), Math.abs(a0.z - a1.z)) };
         // `~check_axis(coord, loc_coord, angle)`, in a bound run: at angle north or south (odd) the two coords
         // share their z, at west or east their x (doors/scripts/door_procs.rs2:77); `_locactive` on the bound
         // loc's (:90).
@@ -990,32 +1068,63 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
     };
 
     /**
-     * The most an amount (a failed roll's damage) can be: what it evaluates to, or with each `stat` at MAX_STAT
-     * and each random draw at its top (`random(n)` n - 1, `randominc(n)` n), through `calc` and the four
-     * operations, written or as ADD, SUB, MULTIPLY and DIVIDE (a difference or quotient only of a number known
-     * offline); a local not known offline is the most of the argument passed for it (MOST). Undefined for anything
-     * else.
+     * The most an amount (a failed roll's damage) can be, at the player's hitpoints (HpDamage): what it evaluates
+     * to, or with `stat(hitpoints)` the player's current hitpoints, each other `stat` at MAX_STAT and each random
+     * draw at its top (`random(n)` n - 1, `randominc(n)` n), through `calc` and the four operations, written or as
+     * ADD, SUB, MULTIPLY and DIVIDE (a difference or quotient only of a number known offline; combineDamage); a
+     * local not known offline is the most of the argument passed for it (MOST). Undefined for anything else, and
+     * for an amount not of HpDamage's form.
      */
-    const most = (e: Expr, env: ReadonlyMap<string, Value>, file: string): number | undefined => {
+    const most = (e: Expr, env: ReadonlyMap<string, Value>, file: string): HpDamage | undefined => {
         const v = evaluate(e, env, file);
-        if (v.t === 'int') return v.n;
-        if (v.t === 'range') return v.hi;
+        if (v.t === 'int') return flat(v.n);
+        if (v.t === 'range') return flat(v.hi);
         const [l, r] = e.t === 'bin' ? [e.l, e.r] : e.t === 'name' ? (e.args ?? []) : [];
         const op = e.t === 'bin' ? e.op : e.t === 'name' ? OPERATORS[e.name] : undefined;
         if (op && l && r) {
             const exact = op === '-' || op === '/';
-            const [a, b] = [most(l, env, file), exact ? intOf(evaluate(r, env, file)) : most(r, env, file)];
-            if (a === undefined || b === undefined) return undefined;
-            if (op === '/') return b ? Math.trunc(a / b) : undefined;
-            return { '+': a + b, '-': a - b, '*': a * b }[op];
+            const k = exact ? intOf(evaluate(r, env, file)) : undefined;
+            const [a, b] = [most(l, env, file), exact ? (k === undefined ? undefined : flat(k)) : most(r, env, file)];
+            return a && b && combineDamage(op, a, b);
         }
         if (e.t !== 'name') return undefined;
-        if (e.name.startsWith('$')) return intOf(env.get(`${MOST}${e.name}`));
+        if (e.name.startsWith('$')) return mostOf(env, e.name);
         if (!l) return undefined;
-        if (e.name === 'stat' || e.name === 'stat_base') return MAX_STAT;
+        if (e.name === 'stat' && l.t === 'name' && l.name === 'hitpoints' && l.args === null) return HITPOINTS;
+        if (e.name === 'stat' || e.name === 'stat_base') return flat(MAX_STAT);
         const n = most(l, env, file);
         if (e.name === 'calc' || e.name === 'randominc') return n;
-        return e.name === 'random' && n !== undefined ? n - 1 : undefined;
+        return e.name === 'random' && n?.a === 0 ? flat(n.c - 1) : undefined;
+    };
+
+    /**
+     * A condition on LOC_FIND (`loc_find(coord, type)`, alone or `=`/`!` a truth; LocOps.ts:79-93) in a bound run
+     * with LanderWorld.locAt: whether it holds, and the facts of the loc found, which the engine makes the active
+     * one. Undefined for any other condition, or a coord or type not known offline.
+     */
+    const locFind = (
+        e: Expr,
+        env: ReadonlyMap<string, Value>,
+        file: string,
+    ): { holds: boolean; found?: Map<string, Value> } | undefined => {
+        if (!world?.locAt) return undefined;
+        const [call, op, rhs] =
+            e.t === 'bin' && (e.op === '=' || e.op === '!') ? [e.l, e.op, e.r] : [e, '=', undefined];
+        if (call.t !== 'name' || call.name !== 'loc_find' || call.args?.length !== 2) return undefined;
+        const truth = rhs ? truthOf(evaluate(rhs, env, file)) : true;
+        const [tile, type] = call.args.map(a => evaluate(a, env, file));
+        if (truth === undefined || !isFixed(tile) || type?.t !== 'name') return undefined;
+        const loc = world.locAt(tile, type.v);
+        const taken = (loc !== undefined) === (truth === (op === '='));
+        if (!loc) return { holds: taken };
+        const at = `\`${e.text}\` (${file}:${e.line})`;
+        const found = new Map<string, Value>([
+            ['loc_coord', { t: 'coord', relative: false, level: tile.level, x: tile.x, z: tile.z, at, from: 'loc' }],
+            ['loc_angle', { t: 'int', n: loc.angle }],
+            ['loc_shape', { t: 'int', n: loc.shape }],
+            ['loc_type', type],
+        ]);
+        return { holds: taken, found };
     };
 
     /**
@@ -1270,11 +1379,20 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                 }
                 case 'return':
                     return { live: [], ended: [p] };
-                case 'if':
+                case 'if': {
+                    // `loc_find(coord, type)`, in a bound run, settled by LanderWorld.locAt: found, the loc is the
+                    // active one (LocOps.ts:79-93), its tile `loc_coord`.
+                    const find = bound && locFind(s.cond, p.env, file);
+                    if (find) {
+                        const env = new Map(p.env);
+                        for (const [fact, v] of find.found ?? []) env.set(`${ACTIVE}${fact}`, v);
+                        return block(find.holds ? s.yes : s.no, [{ ...p, env }], file, stack);
+                    }
                     return merge(
                         block(s.yes, branch(p, assume(s.cond, true, p.env, file)), file, stack),
                         block(s.no, branch(p, assume(s.cond, false, p.env, file)), file, stack),
                     );
+                }
                 case 'while':
                     // Run as an `if`: the body once or not at all, which is enough to see what it moves.
                     return merge(block(s.body, branch(p, assume(s.cond, true, p.env, file)), file, stack), {
@@ -1332,12 +1450,12 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             }
             const { name } = s.call;
             const raw = s.call.args ?? [];
-            // A bound run's delays and damage: what a failed roll's path costs (Path.ticks, Path.damage).
+            // A bound run's delays and damage: what a success and a failed roll's path cost (Path.ticks, Path.damage).
             if (bound && (name === 'p_delay' || name === 'p_arrivedelay')) {
                 const n = name === 'p_arrivedelay' ? 0 : intOf(raw[0] && evaluate(raw[0], p.env, file));
                 if (n === undefined)
                     return {
-                        live: [{ ...p, unsure: p.unsure ?? `\`${s.text}\` (${at}): the delay is not known offline` }],
+                        live: [{ ...p, untimed: p.untimed ?? `\`${s.text}\` (${at}): the delay is not known offline` }],
                         ended: [],
                     };
                 return { live: [{ ...p, ticks: (p.ticks ?? 0) + n + 1 }], ended: [] };
@@ -1345,12 +1463,23 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             const hurt = bound && (name === '~damage_self' ? raw[0] : name === 'damage' ? raw[2] : undefined);
             if (hurt) {
                 const n = most(hurt, p.env, file);
-                if (n === undefined)
+                const had = p.damage ?? flat(0);
+                // A second hit that reads hitpoints reads them after the first lowered them (Player.ts:1991
+                // applyDamage): the most the two take, floor(x) + floor(y) <= floor(x + y), is floor(HP x (a1/b1 +
+                // a2/b2)) + c1 + c2.
+                const sum =
+                    n &&
+                    (n.a === 0 || had.a === 0
+                        ? combineDamage('+', had, n)
+                        : had.b === n.b
+                          ? { a: had.a + n.a, b: n.b, c: had.c + n.c }
+                          : { a: had.a * n.b + n.a * had.b, b: had.b * n.b, c: had.c + n.c });
+                if (!sum)
                     return {
                         live: [{ ...p, unsure: p.unsure ?? `\`${s.text}\` (${at}): the damage is not known offline` }],
                         ended: [],
                     };
-                return { live: [{ ...p, damage: (p.damage ?? 0) + n }], ended: [] };
+                return { live: [{ ...p, damage: sum }], ended: [] };
             }
             const index = MOVE_COMMANDS[name];
             if (index !== undefined) {
@@ -1434,9 +1563,9 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             // call), to BOUND_DEPTH.
             if (stack.includes(call) && (isLabel || !bound || args.some(a => a.t === 'unknown')))
                 return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
-            // A proc that can't move the player (nor, in a bound run, change a loc) returns to the script; a
-            // label never does.
-            if (!callee || !(moves(call) || (bound && changingLoc.has(call))))
+            // A proc that can't move the player (nor, in a bound run, change or find a loc or delay the player)
+            // returns to the script; a label never does.
+            if (!callee || !(moves(call) || (bound && (changingLoc.has(call) || timing.has(call)))))
                 return isLabel ? { live: [], ended: [p] } : { live: [p], ended: [] };
             // A moving proc given a fixed tile moves the player there; one that reads no condition the scan
             // reads crosses the loc.
@@ -1451,13 +1580,15 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                 return { live: [], ended: [p] };
             }
             const env = new Map(script.params.map((param, i) => [param, args[i] ?? unknown(param)]));
-            // A bound run carries the player's tile into the call and back out of it, and the most of each
-            // argument not known offline that `most` can take (a damage passed on to ~damage_self).
+            // A bound run carries the player's tile and the active loc (the script's, LocOps.ts) into the call and
+            // back out of it, and the most of each argument not known offline that `most` can take (a damage
+            // passed on to ~damage_self).
             if (bound) {
                 env.set(POS, p.env.get(POS)!);
+                for (const [k, v] of activeOf(p.env)) env.set(k, v);
                 script.params.forEach((param, i) => {
                     const n = args[i]?.t === 'unknown' && raw[i] ? most(raw[i], p.env, file) : undefined;
-                    if (n !== undefined) env.set(`${MOST}${param}`, { t: 'int', n });
+                    if (n !== undefined) keepMost(env, param, n);
                 });
             }
             const one = counted ? made(p, doorProc(call) ? CROSS : moveTarget(fixed)) : undefined;
@@ -1469,7 +1600,7 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
             // A label is a jump: the script ends where it does. A proc returns, to the caller's locals.
             const back = (q: Path): Path => ({
                 ...q,
-                env: bound ? new Map(p.env).set(POS, q.env.get(POS)!) : p.env,
+                env: bound ? new Map([...p.env, ...activeOf(q.env)]).set(POS, q.env.get(POS)!) : p.env,
                 within: p.within,
             });
             return isLabel ? { live: [], ended: out } : { live: out.map(back), ended: [] };
@@ -1512,7 +1643,7 @@ function gateWalker(input: GateScanInput, world?: LanderWorld) {
                 fare: 0,
                 taken: new Map(),
                 moved: false,
-                ...(binding ? { ticks: 0, damage: 0 } : {}),
+                ...(binding ? { ticks: 0, damage: flat(0) } : {}),
             };
             const flow = block(script.body, [start], script.file, []);
             let ends = [...flow.live, ...flow.ended];
@@ -1679,6 +1810,7 @@ function landingOf(p: Path): LandingOutcome {
             k: 'landing',
             ...p.landing,
             move: p.outer ?? p.move!.at,
+            ...(p.untimed ? {} : { ticks: p.ticks ?? 0 }),
             ...(roll ? ('why' in roll ? { unrolled: roll.why } : { roll }) : {}),
         };
     if (p.opened) return { k: 'opens', at: p.opened };
@@ -1689,10 +1821,10 @@ function landingOf(p: Path): LandingOutcome {
 function fallOf(p: Path): LandingOutcome[] {
     const roll = rollOf(p);
     if (!roll || 'why' in roll) return [];
-    if (p.unsure) return [{ k: 'fail', roll, why: p.unsure }];
+    if (p.untimed ?? p.unsure) return [{ k: 'fail', roll, why: (p.untimed ?? p.unsure)! }];
     if (p.landing && 'why' in p.landing) return [{ k: 'fail', roll, why: p.landing.why }];
     const tile = p.landing?.tile;
-    return [{ k: 'fail', roll, ...(tile ? { tile } : {}), ticks: p.ticks ?? 0, damage: p.damage ?? 0 }];
+    return [{ k: 'fail', roll, ...(tile ? { tile } : {}), ticks: p.ticks ?? 0, damage: p.damage ?? flat(0) }];
 }
 
 /** The stage `set` holds of a quest: its `quest:<id>>=<n>`, or complete for `quest:<id>`. */

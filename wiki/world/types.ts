@@ -362,6 +362,12 @@ export interface Gate {
      */
     landings?: { stand: Tile; landing: Tile; free?: true }[];
     /**
+     * With `to` or `landings` read from the script: the ticks a successful move takes, its script's delays summed
+     * (sources/gate-scan.ts Path.ticks), the most any stand's takes. Absent when a delay on the way is not known
+     * offline.
+     */
+    ticks?: number;
+    /**
      * On an object, the move deletes the loc or swaps it for one whose collision does not block
      * (sources/gate-landings.ts): once `requires` is met, the op makes the loc's tiles walkable for a while.
      * LOC_DEL and LOC_CHANGE take a duration, after which the loc comes back (the Kharazi jungle's after
@@ -418,6 +424,17 @@ export interface Landing {
     spread?: number;
 }
 
+/**
+ * Hitpoints a hit takes from a player with HP current hitpoints: floor(HP x a / b) + c (roll.ts damageAt). The
+ * Wilderness course's log takes floor(HP x 15 / 100) + 1 (skill_agility/scripts/wilderness_course.rs2:137); a hit
+ * that reads no hitpoints has `a` 0 and `b` 1.
+ */
+export interface HpDamage {
+    a: number;
+    b: number;
+    c: number;
+}
+
 /** A move behind `stat_random(stat, low, high)` (roll.ts statRandomChance), and what a failed roll does. */
 export interface Roll {
     /** The stat rolled, as a `skill:` requirement names it (`agility`). */
@@ -431,8 +448,13 @@ export interface Roll {
         ticks: number;
         /** Where it leaves the player: absent, the tile they tried from; else that tile (a river bank). */
         to?: Tile;
-        /** Hitpoints a failure takes, the most when the script rolls the damage. */
+        /** Hitpoints a failure takes at 99 hitpoints (hpDamage there), the most when the script rolls the damage. */
         damage: number;
+        /**
+         * Hitpoints a failure takes at the player's hitpoints, the most when the script rolls the damage. Always written
+         * at build; optional only for rows built by hand (tests).
+         */
+        hpDamage?: HpDamage;
         /**
          * With `to`, the run ticks from it back to the nearest tile the move is tried from (distance.ts
          * priceCrossings). Written at build; absent when no walk gets back, and then no distance takes the move.
@@ -461,6 +483,11 @@ export interface Crossing {
     landings: Landing[];
     /** The minimal requirement sets (requirements.ts), any one of which makes the move. */
     requires: string[][];
+    /**
+     * A `scripted` row's: the ticks a successful move takes, its script's delays summed (sources/gate-scan.ts
+     * Path.ticks). Absent when a delay on the way is not known offline, and on curated and teleport rows.
+     */
+    ticks?: number;
     roll?: Roll;
     /** The script line that makes the move, as `file:line`. */
     source: string;
@@ -468,7 +495,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 16;
+export const WORLD_FORMAT = 17;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

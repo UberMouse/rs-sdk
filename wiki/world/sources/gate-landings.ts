@@ -49,7 +49,8 @@
 import { CONNECTOR_SCRIPTS, inSource } from '../classify';
 import { footprint, reachTiles, type PlacedLoc, type SiteOptions, type StepCollision } from '../place';
 import { coord, STEPS, stepsOutOf } from '../reach';
-import type { Connector, Crossing, Gate, Roll, Tile } from '../types';
+import { damageAt } from '../roll';
+import type { Connector, Crossing, Gate, HpDamage, Roll, Tile } from '../types';
 import { byTile, cmp, onLandIn, push, tileKey, uniqueTiles } from '../util';
 import type { ConnectorCollision } from './connectors';
 import {
@@ -82,6 +83,8 @@ export interface GateLandingInput {
     /** With `canStep`, a failed roll a short walk from the move's landing does not gate it (rollFor, walksTo). */
     collision: ConnectorCollision & Partial<Pick<StepCollision, 'canStep'>>;
     size: SiteOptions['size'];
+    /** Every placed loc, for `loc_find` (gate-scan.ts LanderWorld.locAt); absent, none is found. */
+    locs?: readonly PlacedLoc[];
 }
 
 /** A gate row on an object whose move no path derives, with what stopped each path. */
@@ -191,29 +194,59 @@ export function rollFor(
         };
     const to = tiles[0]!;
     if (across(to)) return undefined;
+    const hpDamage = worstDamage(known.map(f => f.damage));
     return {
         ...seen,
         fail: {
             ticks: Math.max(...known.map(f => f.ticks)),
             ...(sameTile(to, stand) ? {} : { to }),
-            damage: Math.max(...known.map(f => f.damage)),
+            damage: damageAt(hpDamage, MAX_HITPOINTS),
+            hpDamage,
         },
     };
 }
+
+/** The hitpoints Roll.fail.damage is taken at: the most a player has (99, the highest level). */
+const MAX_HITPOINTS = 99;
+
+/**
+ * Of several failures' damage, the one that takes the most at MAX_HITPOINTS, the first of those alike. Where one
+ * roll's failed paths take different hits in the scripts the build reads, none reads hitpoints (Legends' Quest's,
+ * quests/quest_legends/scripts/quest_legends.rs2:1761), so that one is the most at any hitpoints.
+ */
+const worstDamage = ([d, ...more]: readonly HpDamage[]): HpDamage =>
+    more.reduce((w, x) => (damageAt(x, MAX_HITPOINTS) > damageAt(w, MAX_HITPOINTS) ? x : w), d!);
 
 /** A roll as a key, all but its failure's ticks and damage: two alike are one roll (mergeRolls). */
 const rollKey = (r: Roll | undefined): string =>
     r ? JSON.stringify([r.stat, r.low, r.high, r.source, r.fail.to ?? null]) : '';
 
 /** Rolls alike (rollKey) as one: the most ticks and damage any of them takes, the worst stand's. */
-const mergeRolls = ([r, ...more]: readonly Roll[]): Roll => ({
-    ...r!,
-    fail: {
-        ...r!.fail,
-        ticks: Math.max(r!.fail.ticks, ...more.map(m => m.fail.ticks)),
-        damage: Math.max(r!.fail.damage, ...more.map(m => m.fail.damage)),
-    },
-});
+const mergeRolls = ([r, ...more]: readonly Roll[]): Roll => {
+    const hpDamage = worstDamage([r!, ...more].map(m => m.fail.hpDamage ?? { a: 0, b: 1, c: m.fail.damage }));
+    return {
+        ...r!,
+        fail: {
+            ...r!.fail,
+            ticks: Math.max(r!.fail.ticks, ...more.map(m => m.fail.ticks)),
+            damage: damageAt(hpDamage, MAX_HITPOINTS),
+            hpDamage,
+        },
+    };
+};
+
+/** Gate.ticks of the paths that land (LandingOutcome `landing`): the most they take, when each is known. */
+const ticksOf = (ls: readonly { ticks?: number }[]): { ticks?: number } =>
+    ls.length && ls.every(l => l.ticks !== undefined) ? { ticks: Math.max(...ls.map(l => l.ticks!)) } : {};
+
+/** LanderWorld.locAt over the placed locs: the loc of a config whose tile is the one asked. */
+function locFinder(locs: readonly PlacedLoc[]): NonNullable<LanderWorld['locAt']> {
+    const byKey = new Map(locs.map(l => [`${tileKey(l.tile)} ${l.config}`, l]));
+    return (tile, config) => {
+        const l = byKey.get(`${tileKey(tile)} ${config}`);
+        return l && { shape: l.shape ?? 10, angle: l.rotation ?? 0 };
+    };
+}
 
 /**
  * How far (Chebyshev) a short walk (walksTo) looks: from a stand to a landing that is no passage, and from a failed
@@ -256,6 +289,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
     const land = gateLander(input.scan, {
         locConfigs: input.locConfigs,
         mapBlocked: t => !collision.walkable(t.level, t.x, t.z),
+        ...(input.locs ? { locAt: locFinder(input.locs) } : {}),
     });
     const triggers = new Map(input.scan.triggers.map(t => [triggerKey(t), t]));
     // A failed roll's tile where the move lands anyway: a short walk from it, or (with no steps to walk) the tile.
@@ -424,7 +458,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
                     return fail(['every landing is off walkable land']);
                 }
                 counts.to++;
-                return write({ to: one!.tile });
+                return write({ to: one!.tile, ...ticksOf(landed) });
             }
             const landings: NonNullable<Gate['landings']> = [];
             for (const l of unique) {
@@ -457,7 +491,7 @@ export function deriveGateLandings(input: GateLandingInput): GateLandings {
                         reasons: noLanding(b.outcomes),
                     });
             counts.landings++;
-            return write({ landings });
+            return write({ landings, ...ticksOf(landed.filter(l => onLand(l.tile))) });
         }
         if (outcomes.some(({ o }) => o.k === 'opens')) {
             counts.opens++;
@@ -526,11 +560,15 @@ export interface ScriptedMoves {
     duplicates: string[];
 }
 
-/** One stand's passage: where it lands, the line of the move the scan counts, and the roll it is behind. */
+/**
+ * One stand's passage: where it lands, the line of the move the scan counts, the ticks a success takes (absent when
+ * not known offline), and the roll it is behind.
+ */
 interface Passage {
     stand: Tile;
     tile: Tile;
     move: string;
+    ticks?: number;
     roll?: Roll;
 }
 
@@ -540,7 +578,11 @@ interface Passage {
  */
 export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
     const { collision, size, locConfigs } = input;
-    const land = gateLander(input.scan, { locConfigs, mapBlocked: t => !collision.walkable(t.level, t.x, t.z) });
+    const land = gateLander(input.scan, {
+        locConfigs,
+        mapBlocked: t => !collision.walkable(t.level, t.x, t.z),
+        locAt: locFinder(input.locs),
+    });
     const blocks = new Map(input.curated.filter(e => e.kind === 'temporary-block').map(e => [e.trigger, e]));
     const connectorAt = new Set(input.connectors.map(c => `${tileKey(c.loc)} ${c.op}`));
     const configsOf = triggerConfigs(input.scan.triggers, locConfigs);
@@ -593,7 +635,8 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
         const roll =
             way!.roll && rollFor(way!.roll, stand, f => walksTo(collision.canStep, f, way!.tile, FAIL_WALK), os);
         if (roll && 'why' in roll) return { stuck: [roll.why] };
-        return { passage: { stand, tile: way!.tile, move: way!.move, ...(roll ? { roll } : {}) } };
+        const ticks = way!.ticks === undefined ? {} : { ticks: way!.ticks };
+        return { passage: { stand, tile: way!.tile, move: way!.move, ...ticks, ...(roll ? { roll } : {}) } };
     };
 
     const triggers: Record<string, number> = {};
@@ -643,7 +686,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
             }
             for (const st of stuck) report(st.reasons, st.stand);
             const rows = new Map<string, Passage[]>();
-            for (const g of given) push(rows, JSON.stringify([g.tile, g.move, rollKey(g.roll)]), g);
+            for (const g of given) push(rows, JSON.stringify([g.tile, g.move, g.ticks ?? null, rollKey(g.roll)]), g);
             for (const group of rows.values()) {
                 const [g] = group;
                 crossings.push({
@@ -653,6 +696,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
                     from: group.map(x => x.stand).sort(byTile),
                     landings: [{ tile: g!.tile }],
                     requires: [[]],
+                    ...(g!.ticks === undefined ? {} : { ticks: g!.ticks }),
                     ...(g!.roll ? { roll: mergeRolls(group.map(x => x.roll!)) } : {}),
                     source: g!.move.match(/\(([^()]*\.rs2:\d+)\)$/)?.[1] ?? g!.move,
                     ...(block?.why ? { notes: block.why } : {}),

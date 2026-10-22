@@ -856,6 +856,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         locConfigs,
         collision,
         size: locSizes(locConfigs),
+        locs: placedLocs,
     });
     // Each quest's stages are the constants its gates compare with (Quest.stages).
     const questRows = quests.quests.map(q => {

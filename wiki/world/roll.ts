@@ -2,6 +2,7 @@
 // (render/resources.ts), distance.ts prices a rolled crossing with it at the lowest level its requirement allows,
 // and a walker can price one at a bot's own level.
 import { parseRequirement } from './requirements';
+import type { HpDamage } from './types';
 
 /**
  * The chance a `stat_random(stat, low, high)` roll succeeds at stat `level` (the current, boosted level).
@@ -38,6 +39,13 @@ export function lowestLevel(requires: readonly (readonly string[])[], stat: stri
     }
     return lowest === Infinity ? 1 : lowest;
 }
+
+/**
+ * The hitpoints a hit (HpDamage) takes from a player with `hp` current hitpoints: floor(hp x a / b) + c. The scripts
+ * write it with the engine's integer division, which truncates (handlers/NumberOps.ts), the floor for the counts
+ * here.
+ */
+export const damageAt = (d: HpDamage, hp: number): number => Math.floor((hp * d.a) / d.b) + d.c;
 
 /**
  * The expected ticks of a crossing that takes `success` ticks when it succeeds, with chance `chance`: each failure

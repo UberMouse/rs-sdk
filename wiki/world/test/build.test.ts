@@ -168,12 +168,19 @@ const world: World = {
             from: [{ level: 0, x: 2603, z: 3336 }],
             landings: [{ tile: { level: 0, x: 2598, z: 3336 }, spread: 0 }],
             requires: [['skill:agility:33']],
+            ticks: 5,
             roll: {
                 stat: 'agility',
                 low: 60,
                 high: 250,
                 source: 'agility.rs2:10',
-                fail: { ticks: 4, to: { level: 0, x: 2600, z: 3330 }, damage: 3, back: 4 },
+                fail: {
+                    ticks: 4,
+                    to: { level: 0, x: 2600, z: 3330 },
+                    damage: 3,
+                    hpDamage: { a: 0, b: 1, c: 3 },
+                    back: 4,
+                },
             },
             source: 'agility.rs2:12',
         },
@@ -377,6 +384,16 @@ describe('serializeWorld', () => {
                 { ...shortcut, roll: { ...roll, fail: { ticks: 4, damage: 0, back: 2 } } },
                 "crossings[1]: a roll's fail.back is run ticks from its fail.to",
             ],
+            [
+                'a damage form dividing by 0',
+                { ...shortcut, roll: { ...roll, fail: { ...roll.fail, hpDamage: { a: 15, b: 0, c: 1 } } } },
+                "crossings[1]: a roll's fail.hpDamage needs a and c whole, a not negative, and b a whole number above 0",
+            ],
+            [
+                'success ticks that are not a count',
+                { ...shortcut, ticks: -1 },
+                'crossings[1]: its ticks, when it has them, is a count',
+            ],
             ['a rolled row with no source', { ...shortcut, source: undefined }, 'crossings[1]: no source'],
             [
                 'requires with no set (the free form is [[]])',
@@ -428,6 +445,16 @@ describe('serializeWorld', () => {
                 expect(refused({ ...world, gates: [g, world.gates[1]] })).toBe(
                     'is not a world.json: gates[0]: oneWay, when it has it, is true, on a row with from: regenerate it with bun run world',
                 );
+            // A gate's success ticks are a count, on a row whose landing is read (to or landings).
+            const { landings: _, ...unlanded } = world.gates[1]!;
+            for (const g of [
+                { ...world.gates[1], ticks: 1.5 },
+                { ...unlanded, ticks: 3 },
+            ])
+                expect(refused({ ...world, gates: [world.gates[0], g] })).toBe(
+                    'is not a world.json: gates[1]: its ticks, when it has them, is a count, on a row with to or landings: regenerate it with bun run world',
+                );
+            expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], ticks: 3 }] })).toBe('read');
             // A gate's requires has a set (the free form is [[]]); a quest window's is [].
             expect(refused({ ...world, gates: [world.gates[0], { ...world.gates[1], requires: [] }] })).toBe(
                 'is not a world.json: gates[1]: a gate whose requires has no set, so nothing opens it ([[]] asks for nothing): regenerate it with bun run world',
@@ -531,6 +558,10 @@ test('loadWorld refuses a file of another format, or of none, and says how to re
         expect(() => loadWorld(file)).toThrow(`format 13, this code reads format ${WORLD_FORMAT}`);
         writeFileSync(file, serializeWorld({ ...world, format: 14 }));
         expect(() => loadWorld(file)).toThrow(`format 14, this code reads format ${WORLD_FORMAT}`);
+        // Format 16 was written before crossing and gate rows carried their success ticks and a roll's failure its
+        // damage at the player's hitpoints (hpDamage).
+        writeFileSync(file, serializeWorld({ ...world, format: 16 }));
+        expect(() => loadWorld(file)).toThrow(`format 16, this code reads format ${WORLD_FORMAT}`);
     } finally {
         rmSync(dir, { recursive: true });
     }

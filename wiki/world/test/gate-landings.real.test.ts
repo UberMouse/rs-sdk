@@ -117,7 +117,7 @@ describe('every gate row on an object has an outcome', () => {
                 low: 128,
                 high: 400,
                 source: 'quests/quest_upass/scripts/quest_upass.rs2:254',
-                fail: { ticks: 0, damage: 0 },
+                fail: { ticks: 0, damage: 0, hpDamage: { a: 0, b: 1, c: 0 } },
             });
     });
 });
