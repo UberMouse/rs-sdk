@@ -229,7 +229,10 @@ describe('process sink, one step then bank', () => {
         // 26 fish (rod and feathers take 2 slots) x 10 = 260 ticks; 26 x 3 = 78 cooking; legs 10 + 50 + 40 = 100;
         // 438 a trip. 9000 / 438 x 26 = 534.25 fish an hour: 667,808.2 Fishing XP (1,250 each), 801,369.9 Cooking
         // (60 x 25 = 1,500 each); 400.68 cooked (30 gp) and 133.56 burnt (1 gp) banked, 12,154.1 gp.
-        const r = run({ gather: spot, sink: { mode: 'process', steps: [[cook]], end: 'bank', legs: [10, 50, 40] } });
+        const r = run({
+            gather: spot,
+            sink: { mode: 'process', steps: [[cook]], end: 'bank', legs: [10, 50, 40], here: [false] },
+        });
         const fish = (9000 / 438) * 26;
         expect(r.trip).toEqual({
             successes: 26,
@@ -257,27 +260,38 @@ describe('process sink, one step then bank', () => {
         // slot.
         const jug: ActionModel = { ...cook, tools: ['jug'] };
         expect(
-            run({ gather: spot, sink: { mode: 'process', steps: [[jug]], end: 'bank', legs: [10, 50, 40] } }).trip,
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[jug]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip,
         ).toMatchObject({
             successes: 25,
             total: 425,
         });
         const rod: ActionModel = { ...cook, tools: ['rod'] };
         expect(
-            run({ gather: spot, sink: { mode: 'process', steps: [[rod]], end: 'bank', legs: [10, 50, 40] } }).trip
-                .successes,
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[rod]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip.successes,
         ).toBe(26);
     });
 
     test('a step whose input the gather does not give does nothing; the raw fish is banked as caught', () => {
         const other: ActionModel = { ...cook, consumes: [{ obj: 'ore', count: 1 }] };
-        const r = run({ gather: spot, sink: { mode: 'process', steps: [[other]], end: 'bank', legs: [10, 50, 40] } });
+        const r = run({
+            gather: spot,
+            sink: { mode: 'process', steps: [[other]], end: 'bank', legs: [10, 50, 40], here: [false] },
+        });
         expect(r.trip).toMatchObject({ process: 0, total: 360 });
         expect(r.itemsPerHour.map(x => x.obj)).toEqual(['raw']);
         // Nor does its tool take a slot: still 26 fish, 260 + 100 = 360 (with the jug carried, 25 and 350).
         const jugged: ActionModel = { ...other, tools: ['jug'] };
         expect(
-            run({ gather: spot, sink: { mode: 'process', steps: [[jugged]], end: 'bank', legs: [10, 50, 40] } }).trip,
+            run({
+                gather: spot,
+                sink: { mode: 'process', steps: [[jugged]], end: 'bank', legs: [10, 50, 40], here: [false] },
+            }).trip,
         ).toMatchObject({ successes: 26, total: 360 });
     });
 });
@@ -382,7 +396,13 @@ describe('process sink, chained steps', () => {
         // plates banked at 500: 64,285.7 gp.
         const r = run({
             gather: vein,
-            sink: { mode: 'process', steps: [[smelt], [smith]], end: 'bank', legs: [20, 10, 30, 40] },
+            sink: {
+                mode: 'process',
+                steps: [[smelt], [smith]],
+                end: 'bank',
+                legs: [20, 10, 30, 40],
+                here: [false, false],
+            },
         });
         const ore = (9000 / 350) * 25;
         expect(r.trip).toEqual({
@@ -408,7 +428,7 @@ describe('process sink, chained steps', () => {
         // 60 + 2 = 312 a trip.
         const r = run({
             gather: vein,
-            sink: { mode: 'process', steps: [[smelt], [smith]], end: 'drop', legs: [20, 10, 30] },
+            sink: { mode: 'process', steps: [[smelt], [smith]], end: 'drop', legs: [20, 10, 30], here: [false, false] },
         });
         expect(r.trip).toMatchObject({ successes: 25, process: 150, travel: 60, bank: 0, drop: 2, total: 312 });
         expect(r.xpPerHour.smithing).toBeCloseTo((9000 / 312) * 25 * 937.5, 6);
@@ -432,7 +452,10 @@ describe('process sink, chained steps', () => {
             products: [{ obj: 'rune', count: 3 }],
             consumes: [{ obj: 'essence', count: 1 }],
         };
-        const r = run({ gather: ess, sink: { mode: 'process', steps: [[craft]], end: 'keep', legs: [30, 30] } });
+        const r = run({
+            gather: ess,
+            sink: { mode: 'process', steps: [[craft]], end: 'keep', legs: [30, 30], here: [false] },
+        });
         const n = (9000 / 168) * 27;
         expect(r.trip).toMatchObject({
             successes: 27,
@@ -451,11 +474,14 @@ describe('process sink, chained steps', () => {
         // a profile leaves its input kept, so the profile is refused (ProfileError), not the record.
         const bars: ActionModel = { ...craft, products: [{ obj: 'bar', count: 1 }] };
         fails(
-            { gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30] } },
+            { gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30], here: [false] } },
             /kept products fill the inventory: bar/,
         );
         expect(() =>
-            run({ gather: ess, sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30] } }),
+            run({
+                gather: ess,
+                sink: { mode: 'process', steps: [[bars]], end: 'keep', legs: [30, 30], here: [false] },
+            }),
         ).toThrow(ProfileError);
     });
 
@@ -476,7 +502,7 @@ describe('process sink, chained steps', () => {
         };
         const r = run({
             gather: { withdraw: 'ore' },
-            sink: { mode: 'process', steps: [[superheat], [smith]], end: 'bank', legs: [15, 15] },
+            sink: { mode: 'process', steps: [[superheat], [smith]], end: 'bank', legs: [15, 15], here: [false, false] },
         });
         const ore = (9000 / 130) * 25;
         expect(r.trip).toEqual({
@@ -560,8 +586,16 @@ describe('process sink, chained steps', () => {
             expect(r.suppliesPerHour).toEqual([{ obj: 'string', count: expect.closeTo(logs, 9) }]);
             // No step 'here' at all: the same.
             expect(
-                run({ gather: chop, sink: { mode: 'process', steps: [[cut], [string]], end: 'bank', legs: [20, 20] } })
-                    .trip.successes,
+                run({
+                    gather: chop,
+                    sink: {
+                        mode: 'process',
+                        steps: [[cut], [string]],
+                        end: 'bank',
+                        legs: [20, 20],
+                        here: [false, false],
+                    },
+                }).trip.successes,
             ).toBe(13.5);
         });
     });
@@ -570,30 +604,43 @@ describe('process sink, chained steps', () => {
         const legs = [10, 10];
         fails({ gather: { withdraw: 'ore' }, sink: { mode: 'bank', legs } }, /withdrawing ore needs a process sink/);
         fails(
-            { gather: { withdraw: 'nature' }, sink: { mode: 'process', steps: [[smelt]], end: 'bank', legs } },
+            { gather: vein, sink: { mode: 'process', steps: [[smelt], [smelt]], end: 'bank', legs, here: [false] } },
+            /1 'here' flags for 2 steps/,
+        );
+        fails(
+            {
+                gather: { withdraw: 'nature' },
+                sink: { mode: 'process', steps: [[smelt]], end: 'bank', legs, here: [false] },
+            },
             /withdrawing the stackable nature is not modelled/,
         );
         const none: ActionModel = { ...smelt, consumes: [] };
         fails(
-            { gather: vein, sink: { mode: 'process', steps: [[none]], end: 'bank', legs } },
+            { gather: vein, sink: { mode: 'process', steps: [[none]], end: 'bank', legs, here: [false] } },
             /must take one chained input/,
         );
         const odd: ActionModel = { ...smith, consumes: [{ obj: 'bar', count: 1 }] };
         fails(
-            { gather: vein, sink: { mode: 'process', steps: [[smelt], [odd]], end: 'bank', legs } },
+            {
+                gather: vein,
+                sink: { mode: 'process', steps: [[smelt], [odd]], end: 'bank', legs, here: [false, false] },
+            },
             /takes 1 bar an action, but its batch is 5/,
         );
         // Rounding the load to whole batches of a second batched step could leave the first at a part batch.
         const pairs: ActionModel = { ...smelt, consumes: [{ obj: 'ore', count: 2 }], batch: 2 };
         fails(
-            { gather: vein, sink: { mode: 'process', steps: [[pairs], [smith]], end: 'bank', legs } },
+            {
+                gather: vein,
+                sink: { mode: 'process', steps: [[pairs], [smith]], end: 'bank', legs, here: [false, false] },
+            },
             /more than one batched step is not modelled/,
         );
         // 27 ore (the hammer takes a slot) is no whole batch of 30 bars: refused at the profile, whose tools set it.
         const huge: ActionModel = { ...smith, consumes: [{ obj: 'bar', count: 30 }], batch: 30 };
         const input: Omit<CycleInput, 'items'> = {
             gather: vein,
-            sink: { mode: 'process', steps: [[smelt], [huge]], end: 'bank', legs },
+            sink: { mode: 'process', steps: [[smelt], [huge]], end: 'bank', legs, here: [false, false] },
         };
         expect(() => run(input)).toThrow(ProfileError);
         expect(() => run(input)).toThrow(/the load holds no whole batch/);
@@ -632,7 +679,7 @@ describe('food with damage', () => {
         fails(
             {
                 gather: lap,
-                sink: { mode: 'process', steps: [], end: 'keep', legs: [] },
+                sink: { mode: 'process', steps: [], end: 'keep', legs: [], here: [] },
                 food: { obj: 'food', heal: 6 },
             },
             /nothing restocks it/,

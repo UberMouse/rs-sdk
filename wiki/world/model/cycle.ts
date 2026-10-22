@@ -73,9 +73,9 @@ export type CycleSink =
     /**
      * The process steps in order, each a model per input kind it takes; what the end products are left to; the run
      * ticks of the tour: site -> each step site not 'here' -> the bank when it banks -> site; and whether each step is
-     * 'here' (absent: none is).
+     * 'here' (one per step).
      */
-    | { mode: 'process'; steps: ActionModel[][]; end: ProcessEnd; legs: number[]; here?: boolean[] };
+    | { mode: 'process'; steps: ActionModel[][]; end: ProcessEnd; legs: number[]; here: boolean[] };
 
 /**
  * The `withdraw` source: one `withdraw` obj from the bank a success, in no ticks of its own. Withdraw-All
@@ -193,7 +193,9 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const held = new Map<string, number>();
     for (const x of source.products) add(held, x.obj, x.count);
     // The leading steps 'here' (at the gather's stand), and what is held per success once they are done.
-    const here = sink.mode === 'process' ? (sink.here ?? []) : [];
+    const here = sink.mode === 'process' ? sink.here : [];
+    if (sink.mode === 'process' && here.length !== stepModels.length)
+        throw new ModelError(`the sink names ${here.length} 'here' flags for ${stepModels.length} steps`);
     let atSite = 0;
     while (atSite < stepModels.length && here[atSite]) atSite++;
     let heldAtSite = new Map(held);
@@ -234,7 +236,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
         [...source.products, ...runs.flatMap(r => r.m.products)].map(x => x.obj).filter(o => items(o).stackable),
     );
     const free = INVENTORY_SLOTS - toolSlots - supplySlots - stackable.size;
-    if (free < 1) throw new ModelError(`no free inventory slot (${toolSlots} tools, ${supplySlots} supplies)`);
+    if (free < 1) throw new ProfileError(`no free inventory slot (${toolSlots} tools, ${supplySlots} supplies)`);
     const slots = (xs: Iterable<{ obj: string; count: number }>) =>
         [...xs].filter(x => !items(x.obj).stackable).reduce((n, x) => n + x.count, 0);
     // A step 'here' that uses a non-stackable supply (bow strings) is done as each item is gathered: chop a log, cut
@@ -247,7 +249,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const away = runs.filter(r => r.step >= atSite);
     const asItGoes = withdraw === undefined && inline.some(r => slots(suppliesOf(r)) > 0);
     const room = asItGoes ? free - 1 : free;
-    if (room < 1) throw new ModelError(`no free inventory slot to gather into beside the supplies`);
+    if (room < 1) throw new ProfileError(`no free inventory slot to gather into beside the supplies`);
     const slotsPerSuccess = asItGoes
         ? Math.max(slots([...heldAtSite].map(([obj, count]) => ({ obj, count }))), slots(inline.flatMap(suppliesOf))) +
           slots(away.flatMap(suppliesOf))
@@ -268,7 +270,7 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     if (food) {
         if (!failDamage && !damage) throw new ModelError(`food ${food.obj} is named but the action costs no hitpoints`);
         if (!banks) throw new ModelError('food with no bank visit is not modelled: nothing restocks it');
-        if (slotsPerSuccess > 0) throw new ModelError('food with a product that fills the inventory is not modelled');
+        if (slotsPerSuccess > 0) throw new ProfileError('food with a product that fills the inventory is not modelled');
         // At a success chance of 1 with no `damage` nothing hurts: no food is eaten and the trip never ends.
         foodPerSuccess = (failDamage * failsPerSuccess + damage) / food.heal;
         successes = foodPerSuccess > 0 ? free / foodPerSuccess : Infinity;
@@ -299,8 +301,8 @@ export function cycle({ gather, sink, items, food }: CycleInput): CycleRates {
     const drop = !trips ? 0 : sink.mode === 'drop' ? dropTicks(free) : end === 'drop' ? dropTicks(n * left) : 0;
     // Only a stun's eats cost ticks (eatTicksPerFail); the food for `damage` goes in no ticks of its own: an eat has no
     // p_delay (player/scripts/consumption/consume.rs2:115-131). That assumes at most one food a success: the
-    // %eat_delay gate (consume.rs2:122-126, $eat_delay 2 for normal food, :3) refuses another eat for the 2 ticks after
-    // one, so two foods never go in one tick.
+    // %eat_delay gate (consume.rs2:122-126) refuses another eat for the 2 ticks after one ($eat_delay 2, $skill_delay 3
+    // for normal food; consume.rs2:3), so two foods never go in one tick.
     const eat = food ? n * failsPerSuccess * eatTicksPerFail(failDamage / food.heal, p) : 0;
     const active = gatherTicks + process + travel + bank + drop + eat;
     // The features respawn all trip long, so the cap holds over the whole trip: n items take at least n / cap.
