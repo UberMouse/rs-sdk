@@ -6,13 +6,13 @@
 //
 // - Levels and tools: a method counts when its families model it at the profile (no ProfileError): each family refuses
 //   a level under its requirement itself, and woodcutting and mining an axe or pickaxe the profile lacks (mining one
-//   above its Mining level too) (model/families/), so the query keeps no copy of those rules. Any other error (a data
-//   or record fault: an obj or food the game lacks, a bad param) stops the query as a MethodError naming the method. The
-//   profile's axe and pickaxe are the only tools it holds (profile.ts), the ones the checker would pick: the caller's
-//   to set.
+//   above its Mining level too) (model/families/), so the query keeps no copy of those rules. A method with walk pairs
+//   (Family.walks) none of whose accepted ways models (a lap that closes over none) drops out too; any other error
+//   stops the query as a MethodError naming the method. The profile's axe and pickaxe are the only tools it holds
+//   (profile.ts), the ones the checker would pick: the caller's to set.
 // - Reach: a method's `ways` are the requirement sets that get to all of its sites, shortest travel first; the query
-//   rates the first one `met` accepts every token of (conductor/lib/account.ts meetsOneOf's semantics: `[]` needs
-//   nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
+//   rates the first one `met` accepts every token of that models (conductor/lib/account.ts meetsOneOf's semantics:
+//   `[]` needs nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
 //   over its shortest way: the query can't know the account, and each result names the way it rated.
 // - Hazards: the deepest Wilderness level of the sites and tiles the method stands at (its site, processors and
 //   bank), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
@@ -20,7 +20,7 @@
 import { loadFreshWorld } from './load';
 import type { CycleRates } from './model/cycle';
 import { readGameData } from './model/families/index';
-import { ProfileError } from './model/family';
+import { ModelError, ProfileError } from './model/family';
 import {
     forMethod,
     fromWorldMethod,
@@ -109,19 +109,30 @@ export function methodQuery(
                 const hazard = methodHazard(m);
                 if (opts.maxWilderness !== undefined && hazard.wildernessLevel > opts.maxWilderness) continue;
                 if (opts.multiway === false && hazard.multiway) continue;
-                const way = m.ways.findIndex(w => w.reach.every(met));
-                if (way < 0) continue;
-                const rates = forMethod(m, () => {
-                    try {
-                        return rateMethod(m, profile, ctx, way);
-                    } catch (e) {
-                        // A family refusing the profile (a level under its requirement, no axe or pickaxe, a pickaxe
-                        // above its Mining level) drops the method; any other error is a fault, named by forMethod.
-                        if (e instanceof ProfileError) return undefined;
-                        throw e;
+                // The first way `met` accepts that models: a family that picks among walk pairs may close its lap over
+                // one way's walks and not another's.
+                const found = forMethod(m, () => {
+                    let first: ModelError | undefined;
+                    for (const [i, w] of m.ways.entries()) {
+                        if (!w.reach.every(met)) continue;
+                        try {
+                            return { way: i, rates: rateMethod(m, profile, ctx, i) };
+                        } catch (e) {
+                            // A family refusing the profile (a level under its requirement, no axe or pickaxe, a
+                            // pickaxe above its Mining level) drops the method; any other error is a fault, named by
+                            // forMethod.
+                            if (e instanceof ProfileError) return undefined;
+                            if (!(e instanceof ModelError)) throw e;
+                            first ??= e;
+                        }
                     }
+                    // A method with walk pairs may close over none of its accepted ways: out, as a lap that does not
+                    // close is not a fault. Any other method's ModelError is one.
+                    if (first && !m.ways.some(w => w.walks)) throw first;
+                    return undefined;
                 });
-                if (!rates) continue;
+                if (!found) continue;
+                const { way, rates } = found;
                 const xpPerHour = rates.xpPerHour[skill] ?? 0;
                 const measured = forMethod(m, () => measuredFigures(m, skill, ctx, way));
                 ranked.push({ method: m, way, xpPerHour, rates, hazard, measured });

@@ -230,14 +230,22 @@ function xpReader(data: GameData): (trigger: string, loc: string, course: Course
         // Whether a proc's body, or a proc it calls (the lap proc aside), has a stat_advance(agility, ...): the
         // procs followed.
         const advancing = new Map<string, boolean>();
+        const open: string[] = [];
         const advances = (call: string): boolean => {
             const known = advancing.get(call);
             if (known !== undefined) return known;
-            advancing.set(call, false);
+            // A proc reached again while its body is still read closes a cycle through another proc (a proc calling
+            // itself adds nothing and is skipped below): caching a guess for it would misread the procs on the cycle.
+            if (open.includes(call))
+                throw new ModelError(`${trigger}: procs call each other in a cycle (${[...open, call].join(' -> ')})`);
+            open.push(call);
             const code = codeOf(procs.get(call)?.body ?? '');
             const yes =
                 code.search(STAT_ADVANCE) >= 0 ||
-                [...code.matchAll(/~([a-z0-9_]+)/g)].some(m => `~${m[1]}` !== lapProc && advances(`~${m[1]}`));
+                [...code.matchAll(/~([a-z0-9_]+)/g)].some(
+                    m => `~${m[1]}` !== lapProc && `~${m[1]}` !== call && advances(`~${m[1]}`),
+                );
+            open.pop();
             advancing.set(call, yes);
             return yes;
         };

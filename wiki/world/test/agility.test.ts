@@ -288,6 +288,14 @@ describe('agility: one lap of a course', () => {
         expect(e).toBeInstanceOf(ModelError);
         expect(e.message).toBe('oploc1,t_pipe gives agility xp 2 ways: which runs is not read');
     });
+    test('procs that call each other in a cycle are a ModelError, not a proc read as giving no xp', () => {
+        // t_a calls t_b first, t_b calls t_a back, and only t_c (called by t_a after) has the stat_advance.
+        const cyclic = edited(
+            x => x.replace('stat_advance(agility, 40);', '~t_a;'),
+            '\n[proc,t_a]\n~t_b;\n~t_c;\n[proc,t_b]\n~t_a;\n[proc,t_c]\nstat_advance(agility, 40);\n',
+        );
+        fault(() => xp(cyclic), /^oploc1,t_pipe: procs call each other in a cycle \(~t_a -> ~t_b -> ~t_a\)$/);
+    });
     test("a called proc's literal stat_advance counts; the loc's own trigger wins over its category's", () => {
         const viaProc = edited(
             x => x.replace('stat_advance(agility, 40);', '~t_pipe_xp;'),

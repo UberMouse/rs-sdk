@@ -403,3 +403,51 @@ describe('methodHazard', () => {
         expect(q.bestMethods('woodcutting', at('woodcutting', 50), { multiway: false })).toEqual([]);
     });
 });
+
+describe('bestMethods over ways that may not model', () => {
+    // A lap-like family: it models over a way whose first walk exists (walks[0] not null), as an agility lap closes.
+    const lap: Family = {
+        ...woodcutting,
+        id: 'lap',
+        model: (s, p, profile, w, walks) => {
+            if (walks?.[0] === null) throw new ModelError('the lap does not close');
+            return woodcutting.model(s, p, profile, w);
+        },
+    };
+    const lapModel: MethodModel = { ...model, families: new Map([...model.families, ['lap', lap]]) };
+    const lapMethod = (ways: WorldMethod['ways']) =>
+        methodQuery({ ...world, methods: [{ ...chop('lap-way', tree, {}), family: 'lap', ways }] }, lapModel);
+    const ranked = (q: ReturnType<typeof lapMethod>, opts?: BestOptions) =>
+        q.bestMethods('woodcutting', at('woodcutting', 50), opts).map(r => [r.method.def.id, r.way]);
+
+    test('the first way that models is rated, not the first accepted', () => {
+        const q = lapMethod([
+            { reach: [], legs: [], walks: [null] },
+            { reach: ['quest:shortcut'], legs: [], walks: [3] },
+        ]);
+        expect(ranked(q)).toEqual([['lap-way', 1]]);
+        expect(ranked(q, { met: () => true })).toEqual([['lap-way', 1]]);
+    });
+
+    test('no accepted way models: the method drops out and the query goes on', () => {
+        const q = lapMethod([
+            { reach: [], legs: [], walks: [null] },
+            { reach: ['quest:shortcut'], legs: [], walks: [3] },
+        ]);
+        expect(ranked(q, { met: none })).toEqual([]);
+        const both = methodQuery(
+            {
+                ...world,
+                methods: [
+                    ...world.methods,
+                    { ...chop('lap-way', tree, {}), family: 'lap', ways: [{ reach: [], legs: [], walks: [null] }] },
+                ],
+            },
+            lapModel,
+        );
+        expect(both.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.method.def.id)).not.toContain(
+            'lap-way',
+        );
+        expect(both.bestMethods('woodcutting', at('woodcutting', 50)).length).toBe(4);
+    });
+});
