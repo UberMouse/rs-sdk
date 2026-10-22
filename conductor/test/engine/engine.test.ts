@@ -977,6 +977,16 @@ describe('a stop in a fight', () => {
         expect(r.sends).toEqual(['attack']);
     });
 
+    test('death during the settle ends failed with the death reason, and the dead bot does not eat', async () => {
+        const states = fighting(30, 20, t => ({ hp: t >= 10 ? 0 : 10, dead: t === 10, food: 2 }));
+        const r = await runTask([step('fight', attackAndWait)], states, { stops });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('reached 0.05 min; interrupt:death: died');
+        expect(r.result.endedBy).toBe('interrupt:death');
+        expect(r.result.durationMs).toBe(10 * TICK_MS);
+        expect(r.sends).toEqual(['attack']);
+    });
+
     test('a stop with no attacker (stale inCombat, last hit long ago) ends on its tick', async () => {
         const stale = timeline(30, () => ({ inCombat: true, lastDamageTick: 0 })).map(s => ({
             ...s,

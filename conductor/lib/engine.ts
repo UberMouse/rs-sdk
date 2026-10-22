@@ -15,7 +15,16 @@ import { closeModalUntil } from '../actions/modal';
 import { type Command, log, type Op, wait } from '../core/op';
 import { type BankMemory, bankMemory, watchBank } from './bank-memory';
 import { sleep } from './env';
-import { findFood, guardLabel, GUARDS, isAttacked, lowHpGuard, underFire, wildernessGuard } from './interrupts';
+import {
+    deathGuard,
+    findFood,
+    guardLabel,
+    GUARDS,
+    isAttacked,
+    lowHpGuard,
+    underFire,
+    wildernessGuard,
+} from './interrupts';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import {
     type Outcome,
@@ -345,18 +354,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
-    /** The run's enabled shared guards (not the task's own), which the settle runs under; set once they are built. */
-    let settleGuards: readonly Guard[] = [];
     /** One per run, so the dialog guard fires at most once a tick even across consecutive steps. */
     const firedAt = new Map<string, number>();
 
     /**
      * A `done` run that ends while the bot is attacked waits up to SETTLE_TICKS for the fight to end,
-     * so no fight is left running on auto-retaliate with no controller. It sends nothing itself: the
-     * server keeps the bot's attack going and auto-retaliate answers any other attacker. Under the
-     * shared guards only and with no stops (the stop that ended the run would fire again); TickStall
-     * still ends it. An abort guard that ends without an outcome (an eat) resumes the wait on what is
-     * left of the budget; one that fails makes the run `failed`.
+     * under the shared guards only and with no stops (the stop that ended the run would fire again);
+     * TickStall still ends it. An abort guard that ends without an outcome (an eat) resumes the wait on
+     * what is left of the budget; one that fails makes the run `failed`.
      */
     const settle = async (end: End): Promise<End> => {
         const from = driver.state().tick;
@@ -392,7 +397,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 ? await settle({ status: endStatus, reason: endReason, by: endBy })
                 : { status: endStatus, reason: endReason, by: endBy };
         if (status !== 'done') await takeScreenshot(status);
-        await eatIfHurt();
+        if (by !== guardLabel(deathGuard.name)) await eatIfHurt();
         const s = stateOrNull();
         const xpGained = s ? xpGainedSince(s, xpBefore) : {};
         const levelsGained: Record<string, { from: number; to: number }> = {};
@@ -482,7 +487,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     // In a fight (or just hit) at low HP with no food (where the guard would fail the run) a task that keeps going holds the guard
     // off; out of combat the guard still waits for HP to regenerate. `when` is pure, so food is read here.
     const goesOnWithoutFood = !!def.keepGoingWithoutFood?.(ctx.params);
-    const guards: Guard[] = enabled.map(g => ({
+    const wrap = (g: (typeof enabled)[number]): Guard => ({
         name: guardLabel(g.name),
         policy: g.policy,
         critical: g.critical,
@@ -501,8 +506,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 throw new AsyncGuard(`guard "${label}" returned a promise: async guards are not supported`);
             return out as ReturnType<Guard['run']>;
         },
-    }));
-    settleGuards = guards.slice(0, shared.length);
+    });
+    const guards = enabled.map(wrap);
+    /** The settle runs under the shared guards only, sharing their per-guard state by name. */
+    const settleGuards = shared.map(wrap);
 
     let signature = progressSignature(initial);
     let lastProgressAt = now();
