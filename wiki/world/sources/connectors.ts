@@ -355,6 +355,8 @@ function evaluator(
                     return { live: [{ ...p, env }], ended: [] };
                 }
                 case 'return':
+                    if (s.values.length > 1)
+                        throw new Unfollowed(`\`${s.text}\` (${at(file, s)}) returns ${s.values.length} values`);
                     return { live: [], ended: [s.value ? { ...p, returned: evaluate(s.value, p.env, file) } : p] };
                 case 'if': {
                     const c = evaluate(s.cond, p.env, file);

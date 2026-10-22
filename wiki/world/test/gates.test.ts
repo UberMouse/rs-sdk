@@ -508,6 +508,18 @@ describe('scanGates: obj categories, quest points, and conditions it cannot read
         );
     });
 
+    test('a checker returning several values is skipped, naming it', () => {
+        const text = `[proc,pair_checker]()(obj, int)
+if (inv_total(inv, rune_axe) > 0) {
+    return(rune_axe, 1);
+}
+return(null);
+`;
+        expect(toolCheckers(parseCallables('test.rs2', text), new Map([['rune_axe', 'weapon_axe']])).skipped).toEqual([
+            '~pair_checker (test.rs2:1): returns 2 values (line 3)',
+        ]);
+    });
+
     test('a tool checker against null: any obj of its category, held or worn', () =>
         expect(gatedSets(move('oploc1,axetree', '0_50_50_9_9'))).toEqual([
             ['category:weapon_axe:held'],

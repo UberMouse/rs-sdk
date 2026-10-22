@@ -48,10 +48,10 @@ const jewels = (share: number): Record<string, number> => ({
     chaos_talisman: (share * 4) / 128,
 });
 
-/** Underground (Edgeville dungeon's moss giants are at z 9903, phase 4 survey §5), legends quest not done. */
+/** Underground (Varrock Sewers' moss giants, (3158, 9903) in wiki/npcs/moss-giant.md), legends quest not done. */
 const DUNGEON: DropContext = { varps: { legendsquest: 0 }, coord: { level: 0, x: 3158, z: 9903 } };
 
-describe('drop tables of the seed NPCs (phase 4 survey §1.8)', () => {
+describe('drop tables of the seed NPCs, from drop tables/scripts/*.rs2', () => {
     test('giant (hill giant): giant.rs2, by hand', () => {
         // :7 big_bones (all.npc's death_drop for giant); then random(128) (:9), each branch its slice:
         // 0-4 iron_full_helm (:11-12), 5-8 iron_dagger, 9-11 iron_kiteshield, 12-13 steel_longsword, 14-19 3 iron_arrow,

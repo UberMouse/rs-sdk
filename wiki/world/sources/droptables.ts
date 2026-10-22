@@ -1,8 +1,11 @@
-// What an NPC drops per kill (phase 4 survey §1.8): the engine's death script for it, `[ai_queue3,<npc>]`, else its
-// category's, else the global default (npc_combat.rs2:3, `npc_default_death`), run offline over every roll at once.
-// Each path through the script carries its chance; a `random(n)` value is the set of whole numbers it can take, and a
-// comparison splits it: `if ($random < 5)` sends 5/128 of the path one way with `$random` now 0-4, and the rest the
-// other with 5-127. Each `obj_add` adds its path's chance times its count (the mean, for a rolled count) to the obj.
+// What an NPC drops per kill: the engine's death script for it, `[ai_queue3,<npc>]` (drop tables/scripts/*.rs2), else
+// its category's, else the global default (skill_combat/scripts/npc/npc_combat.rs2:3, `npc_default_death`), run
+// offline over every roll at once. Each path through the script carries its chance; a `random(n)` value is the set of
+// whole numbers it can take, and a comparison splits it: `if ($random < 5)` sends 5/128 of the path one way with
+// `$random` now 0-4, and the rest the other with 5-127. The set is the path's, not the local's: every local holding
+// that roll or a sum of it (`calc($random + 1)`), in this script or a caller, sees the narrowing. The chances a split
+// makes add up to the path's, and the paths out of the script to 1; anything else is a ModelError. Each `obj_add`
+// adds its path's chance times its count (the mean, for a rolled count) to the obj.
 // Paths are under server/content/scripts/ unless they name the engine or the compiler; the engine is
 // server/engine/src/engine, the compiler server/engine/node_modules/@lostcityrs/runescript/dist/runescript.js.
 //
@@ -15,7 +18,8 @@
 //   the condition.
 // - A proc that ends without a `return` returns 0 for each `int` and -1 (null) for anything else, and a `def_<type>`
 //   with no value holds the same (the compiler's generateDefaultReturns and visitDeclarationStatement): `~randomjewel`
-//   past its last branch returns (null, 0).
+//   past its last branch returns (null, 0). A `return` with other than the declared values doesn't compile (the
+//   compiler's visitReturnStatement, checkTypeMatch), so is a ModelError here.
 // - `obj_add` of a null obj or a -1 count adds nothing (script/handlers/ObjOps.ts:20-25).
 // Tertiary drops are left out: the `~trail_*` clue procs (`~trail_easycluedrop(128, npc_coord)`, drop
 // tables/scripts/man.rs2:20-21; `gosub(trail_checkmediumdrop)`, chicken.rs2:11). So are the effects that drop nothing:
@@ -65,7 +69,8 @@ type Ranges = [lo: number, hi: number][];
 
 type Value =
     | { t: 'int'; n: number }
-    | { t: 'roll'; ranges: Ranges }
+    /** A `random` call's result plus `off`: the values it can still take are the path's `rolls` of `root`, plus `off`. */
+    | { t: 'roll'; root: number; off: number }
     /** -1 for an obj or other config: `null`, a proc's default return (see the header). */
     | { t: 'null' }
     /** A bare name: an obj, an inventory (`worn`), a dbrow, a dbtable column (`drop_table:drop`), `npc_coord`. */
@@ -77,11 +82,15 @@ interface Path {
     p: number;
     /** The script's locals, by `$name`. */
     env: ReadonlyMap<string, Value>;
+    /** The values each `random` call made on the way here can still take, by its roll's `root`. */
+    rolls: ReadonlyMap<number, Ranges>;
 }
 
 interface Ended extends Path {
-    /** What a `return` returned; null for a path that ran off the end or returned nothing. */
+    /** What a `return` returned; null for a path that ran off the end, which returns the declared defaults. */
     ret: Value[] | null;
+    /** The `return`'s `file:line`. */
+    at?: string;
 }
 
 interface Flow {
@@ -98,7 +107,13 @@ interface Out {
 const size = (r: Ranges): number => r.reduce((s, [lo, hi]) => s + hi - lo + 1, 0);
 const set = (env: ReadonlyMap<string, Value>, name: string, v: Value): ReadonlyMap<string, Value> =>
     new Map(env).set(name, v);
-const shift = (ranges: Ranges, k: number): Value => ({ t: 'roll', ranges: ranges.map(([lo, hi]) => [lo + k, hi + k]) });
+const shift = (ranges: Ranges, k: number): Ranges => ranges.map(([lo, hi]) => [lo + k, hi + k]);
+/** The values `v` can take on `path`. */
+const rangesOf = (path: Path, v: Value & { t: 'roll' }): Ranges => shift(path.rolls.get(v.root)!, v.off);
+/** `path`'s rolls with `v` now only `ranges`: its root, and so every value derived from it, narrowed. */
+const narrow = (path: Path, v: Value & { t: 'roll' }, ranges: Ranges): ReadonlyMap<number, Ranges> =>
+    new Map(path.rolls).set(v.root, shift(ranges, -v.off));
+const total = (paths: readonly { p: number }[]): number => paths.reduce((s, x) => s + x.p, 0);
 const mean = (r: Ranges): number => r.reduce((s, [lo, hi]) => s + ((lo + hi) / 2) * (hi - lo + 1), 0) / size(r);
 
 /** The whole numbers `x op k` holds for, as ranges. */
@@ -188,9 +203,15 @@ export function readDropTables(
             if ('error' in s) throw new ModelError(`${what}: ${s.error}`);
             return s;
         };
-        const fork = (path: Path, p: number, env = path.env): Path => {
+        let roots = 0;
+        const fork = (path: Path, change: Partial<Path> = {}): Path => {
             if (++steps > MAX_STEPS) throw new ModelError(`${what}: more than ${MAX_STEPS} steps of paths`);
-            return { p, env };
+            return { p: path.p, env: path.env, rolls: path.rolls, ...change };
+        };
+        /** Raises unless `paths` carry chance `p` between them: no chance is lost or made at a split. */
+        const conserved = (paths: readonly { p: number }[], p: number, file: string, node: Expr | Stmt): void => {
+            if (Math.abs(total(paths) - p) > 1e-9)
+                fail(file, node, `splits a chance of ${p} into ${total(paths)}, which is not read`);
         };
 
         /** A name, `^constant` or param value as a Value: a whole number, null, or a name. */
@@ -216,8 +237,8 @@ export function readDropTables(
                 if (op === '/' && r.n !== 0) return { t: 'int', n: Math.trunc(l.n / r.n) };
             }
             if (l.t === 'roll' && r.t === 'int' && (op === '+' || op === '-'))
-                return shift(l.ranges, op === '+' ? r.n : -r.n);
-            if (l.t === 'int' && r.t === 'roll' && op === '+') return shift(r.ranges, l.n);
+                return { ...l, off: l.off + (op === '+' ? r.n : -r.n) };
+            if (l.t === 'int' && r.t === 'roll' && op === '+') return { ...r, off: r.off + l.n };
             return fail(file, node, `is arithmetic on a ${l.t} and a ${r.t}, which is not read`);
         };
 
@@ -239,12 +260,22 @@ export function readDropTables(
                     : fail(file, node, `gives ${o.vals.length} values`),
             );
 
+        /** Every expression in order, as `evalAll`, each giving exactly one value (a proc's tuple is a ModelError). */
+        const each = (exprs: readonly Expr[], path: Path, file: string): Out[] => {
+            let outs: Out[] = [{ path, vals: [] }];
+            for (const e of exprs)
+                outs = outs.flatMap(o =>
+                    single(evalExpr(e, o.path, file), file, e).map(r => ({ path: r.path, vals: [...o.vals, r.v] })),
+                );
+            return outs;
+        };
+
         function evalExpr(e: Expr, path: Path, file: string): Out[] {
             if (e.t === 'num') return [{ path, vals: [{ t: 'int', n: e.n }] }];
             if (e.t === 'bin') {
                 if (!['+', '-', '*', '/'].includes(e.op))
                     return fail(file, e, 'is a condition outside an if, which is not read');
-                return evalAll([e.l, e.r], path, file).map(o => ({
+                return each([e.l, e.r], path, file).map(o => ({
                     path: o.path,
                     vals: [arith(e.op, o.vals[0]!, o.vals[1]!, file, e)],
                 }));
@@ -274,13 +305,19 @@ export function readDropTables(
                 return one(literal(name, file, e));
             }
             const ofArgs = (f: (vals: Value[]) => Value): Out[] =>
-                evalAll(args, path, file).map(o => ({ path: o.path, vals: [f(o.vals)] }));
+                each(args, path, file).map(o => ({ path: o.path, vals: [f(o.vals)] }));
             switch (name) {
                 case 'random':
                 case 'randominc':
-                    return ofArgs(([n]) => {
-                        const hi = int(n!, file, e) - (name === 'random' ? 1 : 0);
-                        return hi < 0 ? fail(file, e, 'rolls an empty range') : { t: 'roll', ranges: [[0, hi]] };
+                    // A new roll each time it runs, its own root.
+                    return each(args, path, file).map(o => {
+                        const hi = int(o.vals[0]!, file, e) - (name === 'random' ? 1 : 0);
+                        if (hi < 0) return fail(file, e, 'rolls an empty range');
+                        const root = ++roots;
+                        return {
+                            path: fork(o.path, { rolls: new Map(o.path.rolls).set(root, [[0, hi]]) }),
+                            vals: [{ t: 'roll', root, off: 0 }],
+                        };
                     });
                 case 'calc':
                     return evalAll(args, path, file);
@@ -346,11 +383,18 @@ export function readDropTables(
                 if (o.vals.length !== script.params.length)
                     return fail(file, node, `passes ${o.vals.length} values to ${script.params.length} parameters`);
                 const env = new Map(script.params.map((p, i) => [p, o.vals[i]!]));
-                const flow = run(script.body, [fork(o.path, o.path.p, env)], c.file);
-                return [...flow.live.map(p => ({ ...p, ret: null })), ...flow.ended].map(end => ({
-                    path: fork(o.path, end.p),
-                    vals: end.ret ?? defaults,
-                }));
+                const flow = run(script.body, [fork(o.path, { env })], c.file);
+                // Back in the caller's locals, with the rolls as the proc left them: a roll it was passed and
+                // compared stays narrowed here.
+                return [...flow.live.map(p => ({ ...p, ret: null })), ...flow.ended].map(end => {
+                    if (end.ret && end.ret.length !== types.length)
+                        fail(
+                            file,
+                            node,
+                            `returns ${end.ret.length} values at ${end.at}, not the ${types.length} declared`,
+                        );
+                    return { path: fork(end, { env: o.path.env }), vals: end.ret ?? defaults };
+                });
             });
         }
 
@@ -369,25 +413,24 @@ export function readDropTables(
             if (cond.t !== 'bin' || !(cond.op in NEGATE)) return fail(file, cond, 'is no comparison');
             const yes: Path[] = [];
             const no: Path[] = [];
-            for (const o of evalAll([cond.l, cond.r], path, file)) {
+            for (const o of each([cond.l, cond.r], path, file)) {
                 const [l, r] = o.vals as [Value, Value];
                 if (l.t === 'roll' || r.t === 'roll') {
                     const [roll, k, op] =
                         l.t === 'roll' ? [l, r, cond.op] : [r as Value & { t: 'roll' }, l, FLIP[cond.op]!];
                     const n = int(k, file, cond);
-                    const all = size(roll.ranges);
+                    const now = rangesOf(o.path, roll);
+                    const all = size(now);
                     for (const [out, o2] of [
                         [yes, op],
                         [no, NEGATE[op]!],
                     ] as const) {
-                        const ranges = intersect(roll.ranges, allowed(o2, n));
+                        const ranges = intersect(now, allowed(o2, n));
                         if (!ranges.length) continue;
-                        // Every local holding this roll (the same object, copies included) stays narrowed on the
-                        // paths it split: the next else-if sees the rest.
-                        const narrowed: Value = { t: 'roll', ranges };
-                        let env = o.path.env;
-                        for (const [name, v] of env) if (v === roll) env = set(env, name, narrowed);
-                        out.push(fork(o.path, (o.path.p * size(ranges)) / all, env));
+                        // The roll's root narrows on the paths it split: the next else-if sees the rest.
+                        out.push(
+                            fork(o.path, { p: (o.path.p * size(ranges)) / all, rolls: narrow(o.path, roll, ranges) }),
+                        );
                     }
                     continue;
                 }
@@ -405,6 +448,7 @@ export function readDropTables(
                 } else return fail(file, cond, `compares a ${l.t} with a ${r.t}`);
                 (truth ? yes : no).push(o.path);
             }
+            conserved([...yes, ...no], path.p, file, cond);
             return { yes, no };
         }
 
@@ -418,14 +462,25 @@ export function readDropTables(
             if (!data.objs.has(obj.v.replace(/^cert_/, '')))
                 return fail(file, s, `adds ${obj.v}, which the game does not have`);
             const n =
-                count.t === 'int' ? count.n : count.t === 'roll' ? mean(count.ranges) : fail(file, s, 'adds no count');
+                count.t === 'int'
+                    ? count.n
+                    : count.t === 'roll'
+                      ? mean(rangesOf(path, count))
+                      : fail(file, s, 'adds no count');
             counts.set(obj.v, (counts.get(obj.v) ?? 0) + path.p * n);
         }
 
         function stmt(s: Stmt, path: Path, file: string): Flow {
             switch (s.t) {
                 case 'return':
-                    return { live: [], ended: evalAll(s.values, path, file).map(o => ({ ...o.path, ret: o.vals })) };
+                    return {
+                        live: [],
+                        ended: evalAll(s.values, path, file).map(o => ({
+                            ...o.path,
+                            ret: o.vals,
+                            at: `${file}:${s.line}`,
+                        })),
+                    };
                 case 'if': {
                     const { yes, no } = split(s.cond, path, file);
                     const a = run(s.yes, yes, file);
@@ -436,8 +491,15 @@ export function readDropTables(
                     const out: Flow = { live: [], ended: [] };
                     for (const { path: p, v } of single(evalExpr(s.subject, path, file), file, s.subject)) {
                         if (v.t !== 'roll' && v.t !== 'int') return fail(file, s, 'switches on no whole number');
-                        let rest: Ranges = v.t === 'roll' ? v.ranges : [[v.n, v.n]];
+                        let rest: Ranges = v.t === 'roll' ? rangesOf(p, v) : [[v.n, v.n]];
                         const all = size(rest);
+                        // A case runs with the roll's root narrowed to the values it takes.
+                        const taking = (ranges: Ranges): Path =>
+                            fork(p, {
+                                p: (p.p * size(ranges)) / all,
+                                ...(v.t === 'roll' && { rolls: narrow(p, v, ranges) }),
+                            });
+                        const weights: Path[] = [];
                         for (const c of [...s.cases.filter(x => x.keys), ...s.cases.filter(x => !x.keys)]) {
                             const keys = c.keys?.map(k => int(single(evalExpr(k, p, file), file, k)[0]!.v, file, k));
                             const taken = keys
@@ -448,12 +510,19 @@ export function readDropTables(
                                 : rest;
                             if (keys) rest = keys.reduce((r, k) => intersect(r, allowed('!', k)), rest);
                             if (!taken.length) continue;
-                            const f = run(c.body, [fork(p, (p.p * size(taken)) / all)], file);
+                            const start = taking(taken);
+                            weights.push(start);
+                            const f = run(c.body, [start], file);
                             out.live.push(...f.live);
                             out.ended.push(...f.ended);
                         }
                         // A value no case takes, with no default, runs on past the switch.
-                        if (size(rest) && !s.cases.some(c => !c.keys)) out.live.push(fork(p, (p.p * size(rest)) / all));
+                        if (size(rest) && !s.cases.some(c => !c.keys)) {
+                            const on = taking(rest);
+                            weights.push(on);
+                            out.live.push(on);
+                        }
+                        conserved(weights, p.p, file, s);
                     }
                     return out;
                 }
@@ -478,7 +547,7 @@ export function readDropTables(
                     if (!s.name.startsWith('$')) return fail(file, s, `sets ${s.name}, which is not read`);
                     return {
                         live: single(evalExpr(s.value, path, file), file, s.value).map(o =>
-                            fork(o.path, o.path.p, set(o.path.env, s.name, o.v)),
+                            fork(o.path, { env: set(o.path.env, s.name, o.v) }),
                         ),
                         ended: [],
                     };
@@ -486,14 +555,14 @@ export function readDropTables(
                     if (!s.value) {
                         // `def_int $x;` holds 0, any other type -1 (see the header).
                         const v: Value = s.text.startsWith('def_int ') ? { t: 'int', n: 0 } : { t: 'null' };
-                        return { live: [fork(path, path.p, set(path.env, s.names[0]!, v))], ended: [] };
+                        return { live: [fork(path, { env: set(path.env, s.names[0]!, v) })], ended: [] };
                     }
                     const live = evalAll([s.value], path, file).map(o => {
                         if (o.vals.length !== s.names.length)
                             return fail(file, s, `sets ${s.names.length} locals from ${o.vals.length} values`);
                         let env = o.path.env;
                         s.names.forEach((n, i) => (env = set(env, n, o.vals[i]!)));
-                        return fork(o.path, o.path.p, env);
+                        return fork(o.path, { env });
                     });
                     return { live, ended: [] };
                 }
@@ -512,8 +581,9 @@ export function readDropTables(
                             ended: call(name, args ?? [], path, file, s.call).map(o => ({ ...o.path, ret: null })),
                         };
                     if (name === 'obj_add') {
-                        for (const o of evalAll(args ?? [], path, file)) objAdd(o.vals, o.path, file, s);
-                        return { live: [path], ended: [] };
+                        const outs = evalAll(args ?? [], path, file);
+                        for (const o of outs) objAdd(o.vals, o.path, file, s);
+                        return { live: outs.map(o => o.path), ended: [] };
                     }
                     return fail(file, s, `calls ${name}, which is not read`);
                 }
@@ -530,7 +600,16 @@ export function readDropTables(
             return out;
         }
 
-        run(parse(`ai_queue3 ${key}`, death).body, [{ p: 1, env: new Map() }], death.file);
+        const flow = run(
+            parse(`ai_queue3 ${key}`, death).body,
+            [{ p: 1, env: new Map(), rolls: new Map() }],
+            death.file,
+        );
+        const out = total([...flow.live, ...flow.ended]);
+        if (Math.abs(out - 1) > 1e-9)
+            throw new ModelError(
+                `${what}: its paths carry a chance of ${out} between them, not 1 (${death.file}:${death.line})`,
+            );
         return {
             npc,
             at: `${death.file}:${death.line}`,

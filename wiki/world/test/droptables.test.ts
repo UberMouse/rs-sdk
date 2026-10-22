@@ -48,6 +48,13 @@ param=death_drop,null
 category=birds
 [plain]
 [tabled]
+[deriver]
+[passer]
+[switchcopier]
+[tupled]
+[summed]
+[emptied]
+[barer]
 `);
 
 // The global default (skill_combat/scripts/npc/npc_combat.rs2:3,96-101), the random_range proc
@@ -164,6 +171,59 @@ def_namedobj $o;
 def_int $n;
 $o, $n = ~roll_on_drop_table(tabled_drops);
 obj_add(npc_coord, $o, $n, ^lootdrop_duration);
+
+[ai_queue3,deriver]
+def_int $r = random(10);
+if (calc($r + 1) < 5) {
+    if ($r < 3) {
+        obj_add(npc_coord, sword, 1, ^lootdrop_duration);
+    }
+}
+def_int $s = calc($r + 1);
+if ($s < 5) {
+    obj_add(npc_coord, coins, $s, ^lootdrop_duration);
+}
+
+[ai_queue3,passer]
+def_int $r = random(4);
+if (~low($r) = ^true) {
+    if ($r < 1) {
+        obj_add(npc_coord, sword, 1, ^lootdrop_duration);
+    }
+}
+[proc,low](int $x)(boolean)
+if ($x < 2) {
+    return(^true);
+}
+return(^false);
+
+[ai_queue3,switchcopier]
+def_int $a = random(4);
+def_int $b = $a;
+switch_int ($a) {
+    case 0, 1 : obj_add(npc_coord, sword, 1, ^lootdrop_duration);
+    case default :
+        if ($b < 3) {
+            obj_add(npc_coord, coins, 1, ^lootdrop_duration);
+        }
+}
+
+[ai_queue3,tupled]
+if (~pair < 3) {
+    obj_add(npc_coord, sword, 1, ^lootdrop_duration);
+}
+[proc,pair]()(int, int)
+return(1, 2);
+
+[ai_queue3,summed]
+obj_add(npc_coord, coins, calc(~nothing + 1), ^lootdrop_duration);
+[proc,nothing]
+mes("Nothing.");
+
+[ai_queue3,emptied]
+obj_add(npc_coord, coins, ~bare, ^lootdrop_duration);
+[proc,bare]()(int)
+return;
 `;
 
 const DBROWS = parseDbrows(`
@@ -241,6 +301,30 @@ describe('readDropTables on scripted death scripts', () => {
         // random(16) is 0-15. Walking the list, $total falls 16 -> 8 -> 2 -> 0: $rand >= 8 (8/16) coins x5, then
         // $rand >= 2 (6/16) ruby x1, then $rand >= 0 (2/16) sapphire x2. coins 2.5, ruby 0.375, sapphire 0.25.
         expect(counts('tabled')).toEqual({ coins: 2.5, ruby: 0.375, sapphire: 0.25 });
+    });
+
+    test('a roll compared after arithmetic narrows the roll itself; a count read from a shifted roll is its mean', () => {
+        // random(10) is 0-9. calc($r + 1) < 5 holds for $r 0-3 (4/10); there $r < 3 is 3 of the 4: sword 0.3 (a $r
+        // left 0-9 would give 4/10 x 3/10 = 0.12). $s = $r + 1 is 1-10; $s < 5 is $s 1-4 (4/10), mean 2.5: coins 1.
+        expect(counts('deriver')).toEqual({ coins: 1, sword: expect.closeTo(0.3, 12) });
+    });
+
+    test('a roll passed to a proc and compared there stays narrowed in the caller', () => {
+        // ~low($r) is true for $r 0-1 (2/4); there $r < 1 is 1 of the 2: sword 1/4 (a $r left 0-3: 2/4 x 1/4 = 1/8).
+        expect(counts('passer')).toEqual({ sword: 0.25 });
+    });
+
+    test('a switch narrows every local holding its roll in each case', () => {
+        // Keys 0 and 1 are 2/4 sword. The default takes $a 2-3, so $b (a copy) < 3 is 2 alone: coins 1/4 (a stale
+        // 0-3 $b would give 2/4 x 3/4 = 3/8).
+        expect(counts('switchcopier')).toEqual({ coins: 0.25, sword: 0.5 });
+    });
+
+    test('a proc giving other than one value where one is read, or a return short of its declared values', () => {
+        expect(() => tables('tupled')).toThrow(/`~pair` \(drops\.rs2:\d+\) gives 2 values/);
+        expect(() => tables('summed')).toThrow(/`~nothing` \(drops\.rs2:\d+\) gives 0 values/);
+        // The compiler rejects `return;` in a proc declaring (int), so it is no default 0 here.
+        expect(() => tables('emptied')).toThrow(/returns 0 values at drops\.rs2:\d+, not the 1 declared/);
     });
 
     test('an unsupported read is a ModelError naming file:line, raised only for the npc that reaches it', () => {
