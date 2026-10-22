@@ -257,14 +257,18 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
   `OVERRIDES` (names, hazards) and `LEFT_OUT`; it is not hand-curated. `lib/banks.ts` `nearestBank`
   picks the fewest run ticks over the graph, not the straight line. The walker plans every walk over
   that graph (`lib/walk-graph.ts` `planWay`): the doors it can open, the connectors `climb` uses, and
-  the moves `actions/cross.ts` makes (scripted moves, teleports, gate jumps; a roll priced at the bot's
+  the moves `actions/cross.ts` makes (scripted moves, a queued script's included; teleports by an item used
+  on a loc, an npc's op and dialogue or an item op; gate jumps; a roll priced at the bot's
   current level, one whose failure can take its hitpoints left refused), with a bank detour for an obj
   a move needs when the plan's bank record holds it. It does not take transports, nor a crossing `cross` can't
   make (`crossingRefusal`: the gnome gliders' interface clicks).
 
-Known gaps, listed by the build's unreached report: the scripted moves whose landing no bound run settles (a
-`map_findsquare`, a coord kept in a varp; the build report lists them); banker clusters across booths; unnamed
-underground areas outside the walker's `planeOf`.
+The unreached report was worked per `world-index-unreached-spec.md`: the sites nobody walks to (walled in by
+collision, behind a minigame or a quest window) are `EXPECTED_UNREACHED` rows in `areas.ts`, each citing its
+script, and the build fails on a stale one. The report is expected to be empty: the pockets players reach by a crossing the
+index misses are rows too, their reasons naming the crossing (`wiki/world/README.md`, "The unreached report"), and
+deriving those crossings is in `conductor/roadmap.md` (Review follow-ups). Outside the report: banker clusters
+across booths; unnamed underground areas outside the walker's `planeOf`.
 
 ## Phase 3 as built
 

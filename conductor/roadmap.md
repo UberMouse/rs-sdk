@@ -260,3 +260,27 @@ Review findings `task-review` deferred because their fix needs work outside the 
   a shared `lib/food.ts` taking `{ food, eatBelow }` and have both tasks import it (contract T5).
 - Brief accuracy: the conductor's dispatch told a runner "Falador has a furnace, an anvil" (false: no
   Falador anvil, `learnings/smithing.md:48`) and cost it ~25 turns; briefs state only facts a page confirms.
+- World index: make a new unreached site a `bun wiki/world/build.ts --check` failure, as the report is expected
+  to be empty (`build.ts` prints it as a warning only).
+- World index: derive the moves of side-effect gate candidates, which give no edge (`reach.ts` takes only
+  `kind: 'gate'`): the Dwarf Cannon cave (`mcannoncave`, `mcannon_cave.rs2:10`), the Regicide pit traps
+  (`quest_regicide.rs2:239`), the desert mine cart (`quest_desertrescue.rs2:829`), the Underground Pass pipes
+  (`upass_pipe4`, `upass_pipe6`).
+- World index: give the desert mining camp's mine doors (`thttmineentrance*`) their teleport into the mine
+  (`quest_desertrescue.rs2:435`); their gate rows have no `to`, so the fill crosses them as a surface door.
+- World index: Holgart's boat to the fishing platform (`holgart_ardougne.rs2:105`) as a curated crossing under
+  its Sea Slug stage; it is in `TRANSPORTS_OUT_OF_SCOPE`.
+- World index: settle the Underground Pass obstacles: the spear traps' and collapsed bridges' moves no bound run
+  settles (`upass_obstacles.rs2:150`, `:368`), then recheck the three pockets' entries.
+- World index: the Kharazi jungle cuts as chained moves: each cut moves the player two tiles on, onto open ground
+  or the next jungle loc (`jungle_tree.rs2:141`, `:149`), and the locs stand on tiles the map flags blocked, so
+  the `opens` rows free no way through.
+- World index: approach-op gates used from range get their stands from the script: the Baxtorian Falls crossing
+  rock is thrown from the bank 8 tiles north (`quest_waterfall.rs2:222`), so its row derives no landing and the
+  islet the overhanging tree's rope row is used from (`:254`, landing on the ledge) is never reached; the
+  Underground Pass guide rope is shot from z 9720 on (`upass_bridge.rs2:38`) while the tiles beside it are the
+  chasm's.
+- World index: the Hazeel Cult sewer raft as a crossing behind puzzle state: it reaches the passage's end only
+  with all five valves turned right (`quest_hazeelcult.rs2:38`).
+- World index: the Regicide dense-forest crossings at (2165, 3189) and (2173, 3156) exactmove onto tiles off
+  walkable land (`quest_regicide.rs2:462`), which leaves tree:tirannwn:1 unreached.

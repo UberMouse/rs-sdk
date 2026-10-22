@@ -107,6 +107,23 @@ describe('cross: a loc op move', () => {
         }
     });
 
+    test('a refusal-like message after the bot moved off its start does not end the move', async () => {
+        const step = tile(2460, 3382);
+        const { result, driver } = await run(gateMove, base.build(), {
+            react: reactTo(
+                'interactLoc',
+                change(w => w.player({ at: step }).message("You're already wearing that.")),
+            ),
+        });
+        expect(result).toMatchObject({ ok: false, reason: 'no-move' });
+        expect(driver.state().tick).toBe(crossWaitTicks(gateMove));
+    });
+
+    test('a fall-like message on a move with no roll does not end it as fell', async () => {
+        const { result } = await run(gateMove, base.build(), { react: fallsUntil(2) }, () => true);
+        expect(result).toMatchObject({ ok: false, reason: 'no-move' });
+    });
+
     test('no loc in sight, after a scan: no-target, nothing sent', async () => {
         const { result, sends, driver } = await run(gateMove, world().player({ at: STAND }).build());
         expect(result).toMatchObject({ ok: false, reason: 'no-target' });

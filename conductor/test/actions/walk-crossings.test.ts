@@ -8,7 +8,7 @@ import { locSizes } from '../../../wiki/world/place';
 import { at, Grid } from '../../../wiki/world/test/grid';
 import type { Crossing } from '../../../wiki/world/types';
 import type { Pathfinder } from '../../actions/paths';
-import { WALK_RESERVE_TICKS, type WalkOptions, type WalkResult, walkTo } from '../../actions/walk';
+import { MAX_FALLS, WALK_RESERVE_TICKS, type WalkOptions, type WalkResult, walkTo } from '../../actions/walk';
 import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { interpret } from '../../core/interpret';
 import { configId } from '../../lib/packs';
@@ -80,6 +80,8 @@ function game(opts: {
     spent?: boolean;
     refuse?: boolean;
     slip?: boolean;
+    /** A fall off the log balance that puts the bot here (the roll's fail tile). */
+    slipTo?: { x: number; z: number };
     banked?: { name: string; count: number }[];
     also?: (a: BotAction) => Effect | undefined;
 }) {
@@ -96,14 +98,18 @@ function game(opts: {
                             .build()
                   : moveTo(opts.landing ?? EAST);
         if (a.type === 'interactLoc' && a.locId === LOG_ID)
-            return opts.slip ? t => world(t).message('You slip and fall.').build() : moveTo({ x: 3217, z: 3231 });
+            return opts.slipTo
+                ? moveTo(opts.slipTo)
+                : opts.slip
+                  ? t => world(t).message('You slip and fall.').build()
+                  : moveTo({ x: 3217, z: 3231 });
         return opts.also?.(a) ?? bank(a, s);
     });
 }
 
 interface WalkSetup {
     /** The plan's bank record (ActionContext.bank). */
-    bank?: (item: string) => number | undefined;
+    bank?: (item: string) => number;
     paths?: Pathfinder;
     opts?: WalkOptions;
     /** The step's ticks: the walk runs as a step with this many ticks left at its start (ActionContext.stepTicksLeft). */
@@ -226,6 +232,19 @@ describe('a rolled move that keeps failing', () => {
         expect(attempts).toBeGreaterThan(1);
         expect(w.result).toMatchObject({ ok: false, reason: 'timeout', advancing: true });
         expect(w.driver.state().tick).toBeLessThanOrEqual(w.end - WALK_RESERVE_TICKS);
+    });
+
+    test('one that drops the bot off it is given up on after MAX_FALLS falls, and the walk says so', async () => {
+        const off = { x: 3212, z: 3231 };
+        const dropped: Crossing = {
+            ...rolled,
+            roll: { ...rolled.roll!, fail: { ticks: 5, damage: 0, to: at(0, off.x, off.z), back: 3 } },
+        };
+        const w = await walk(base.build(), island([dropped]), game({ slipTo: off }));
+        const attempts = w.sends.filter(s => s === 'Walk-across Log balance').length;
+        expect(attempts).toBe(MAX_FALLS);
+        expect(w.result).toMatchObject({ ok: false, reason: 'cross-failed' });
+        expect(w.result.message).toMatch(/fail tile.*fell 3 times/);
     });
 });
 

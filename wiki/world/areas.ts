@@ -1285,6 +1285,17 @@ export type ExpectedUnreached = ({ area: string } | { site: string }) & {
     source: string;
 };
 
+/**
+ * A site walled in by collision: `why` says where, `wall` names a loc or map flag that walls it with its map square
+ * line, and `source` is the op it is used by.
+ */
+const walledIn = (
+    site: string,
+    why: string,
+    wall: string,
+    source = 'skill_woodcutting/scripts/woodcut.rs2:1',
+): ExpectedUnreached => ({ site, reason: `walled in by collision: ${why} (${wall})`, source });
+
 export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     {
         area: 'tutorial-island',
@@ -1339,21 +1350,23 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: "the blighted Fisher Realm, the quest's: the whistle takes a player who gave Percival one (%grail >= ^grail_given_whistle) to the restored realm",
         source: 'quests/quest_grail/scripts/quest_grail.rs2:38',
     })),
-    {
-        site: 'tree:fisher-realm:6',
-        reason: "walled in by collision on the restored realm's south edge, past a drystone wall: no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
-        source: 'quests/quest_grail/scripts/quest_grail.rs2:41',
-    },
+    walledIn(
+        'tree:fisher-realm:6',
+        "on the restored realm's south edge, past a drystone wall, where no loc or npc op on or beside its pocket moves the player",
+        "the report's hints are its trees' own",
+        'quests/quest_grail/scripts/quest_grail.rs2:41',
+    ),
     {
         site: 'pickpocket:rogues-castle:2',
         reason: "walled in on the castle's second floor: the stairs land beside their own loc, and the map places no door on that floor (maps/m51_61.jm2), so no walk gets from the landing to the rogues' room",
         source: 'ladders+stairs/scripts/stairs.rs2:249',
     },
-    {
-        site: 'tree:crash-island:1',
-        reason: "walled in by collision south of the gliders' beach: no loc or npc op on or beside its pocket moves the player (the report's hints are its tree's own)",
-        source: 'quests/quest_mm/scripts/mm_waydar.rs2:116',
-    },
+    walledIn(
+        'tree:crash-island:1',
+        "south of the gliders' beach, where no loc or npc op on or beside its pocket moves the player",
+        "the report's hint is its tree's own",
+        'quests/quest_mm/scripts/mm_waydar.rs2:116',
+    ),
     // North Tirannwn and the forest north of the Arandar pass: one stretch of land the grand wall round Prifddinas
     // (grandwall1) and the forest close in.
     ...[
@@ -1371,11 +1384,13 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     ...[5, 10, 13, 15, 17, 18, 23]
         .map(i => `tree:kandarin:${i}`)
         .concat(['tree:swamp:1', 'tree:swamp:3'])
-        .map((site): ExpectedUnreached => ({
-            site,
-            reason: "walled in by collision north of the Tree Gnome Stronghold's fence (gnomefence, as maps/m37_54.jm2:4631): no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
-            source: 'skill_woodcutting/scripts/woodcut.rs2:1',
-        })),
+        .map(site =>
+            walledIn(
+                site,
+                'the forest north of the Tree Gnome Stronghold, past its north fence',
+                'gnomefence at maps/m37_54.jm2:4631',
+            ),
+        ),
     ...['range:west-ardougne:0', 'water-source:kandarin:2'].map((site): ExpectedUnreached => ({
         site,
         reason: "in the mourner headquarters, whose door lets a player in only at two Biohazard stages wearing a doctor's gown (^biohazard_poisoned_stew, ^biohazard_found_distillator) and is locked at every other, the quest done included (doors.rs2:69)",
@@ -1386,8 +1401,8 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: 'inside the Fight Arena, whose door opens only at two of its stages (^arena_entered_ogre_fight, ^arena_defeated_ogre); after the quest it is locked, and a guard by it attacks the player (khazard_guard.rs2:132)',
         source: 'quests/quest_arena/scripts/quest_arena.rs2:95',
     })),
-    // Locs no tile a walk gets to can use: walled in by collision, with no loc or npc op on or beside their pockets that
-    // moves the player but their own; the reason names a loc or map flag that walls each, with its map square line.
+    // Locs no tile a walk gets to can use, built by `walledIn`; the reason names a loc or map flag that walls each, with
+    // its map square line.
     ...(
         [
             [
@@ -1480,11 +1495,114 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
                 'potters_wheels.loc:5; crate3 at maps/m52_52.jm2:5351, egypt_plantpotted at :5392',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
+            [
+                'tree:misthalin:38',
+                "trees in a thicket by the Exam Centre's fence, used only from a tile the bushes close in",
+                'bush1 at maps/m52_52.jm2:6024',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'fishing-spot:brimhaven-dungeon:0',
+                "two lava eel spots in the dungeon's lava, fished only from a tile beside them (lavafish_loc.rs2:6): the tiles beside them are lava the map flags blocked, or ground behind the dungeon's cave walls that no walk gets to",
+                'f1, as maps/m42_148.jm2:3968; loc_5091 at :7226',
+                'skill_fishing/scripts/fishing_spots/lavafish_loc.rs2:5',
+            ],
+            [
+                'fire:feldip-hills:0',
+                "a fire in a ruined room east of Gu'Tanoth whose crumbling walls close it in",
+                'crumblywall1 at maps/m39_47.jm2:6117',
+                'skill_cooking/scripts/cooking.rs2:2',
+            ],
+            [
+                'tree:kandarin:45',
+                "a willow on a patch of bank the river's water closes in",
+                'f1, as maps/m40_54.jm2:185',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:tirannwn:16',
+                'in a strip between the grand wall and a cliff, whose edges the map flags blocked',
+                'f1, as maps/m35_52.jm2:3724',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:tirannwn:26',
+                "on a strip of shore south of the Castle Wars arena, which water and the edge of the map's land close in",
+                'f1, as maps/m36_48.jm2:2820',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
+            [
+                'tree:wilderness:159',
+                'burnt dead trees on a plateau whose edge the map flags blocked',
+                'f1, as maps/m52_60.jm2:569',
+                'skill_woodcutting/scripts/woodcut.rs2:1',
+            ],
         ] as const
-    ).map(([site, why, wall, source]): ExpectedUnreached => ({
+    ).map(([site, why, wall, source]) => walledIn(site, why, wall, source)),
+    // Stretches of land with several trees walled in alike: no loc or npc op on or beside one moves the player onto it,
+    // and those the reason names lead off it.
+    ...(
+        [
+            [
+                [0, 1, 2, 3, 4, 6]
+                    .map(i => `tree:feldip-hills:${i}`)
+                    .concat(
+                        [9, 11, 14, 16].map(i => `tree:kandarin:${i}`),
+                        ['tree:tirannwn:30', 'tree:tirannwn:37'],
+                    ),
+                "the land south of the Castle Wars arena and west of the ogres' plateau, which railings, drystone walls and cliffs the map flags blocked close in; the ogres' caves and battlement and Toban's cave on its edge lead off it",
+                'railing at maps/m38_46.jm2:4136, drystonewall at maps/m38_48.jm2:6449',
+            ],
+            [
+                [
+                    'tree:kandarin:1',
+                    'tree:kandarin:12',
+                    ...[19, 21, 27, 29, 31, 32, 33, 34, 38].map(i => `tree:tirannwn:${i}`),
+                ],
+                'a dead forest north of the Castle Wars arena, which dead trees, an old fence and tiles the map flags blocked close in',
+                'deadtree1 at maps/m37_51.jm2:4139, oldfencing at maps/m36_51.jm2:5112',
+            ],
+            [
+                ['tree:misthalin:43', 'tree:morytania:0', 'tree:morytania:1'],
+                'a strip east of the Dig Site, which bushes and tiles the map flags blocked close in',
+                'f1, as maps/m52_52.jm2:3243',
+            ],
+            [
+                ['tree:misthalin:44', 'tree:misthalin:46', 'tree:misthalin:47'],
+                "a strip east of the Dig Site, which the Dig Site's bushes and tiles the map flags blocked close in",
+                'digsitebush at maps/m52_53.jm2:7221',
+            ],
+            [
+                ['tree:morytania:12', 'tree:morytania:14', 'tree:morytania:15'],
+                "a stretch of Morytania's swamp, which swamp plants, dead trees and tiles the map flags blocked close in",
+                'deadtree2_swamp at maps/m55_51.jm2:4342',
+            ],
+            [
+                ['tree:kandarin:4', 'tree:tirannwn:36'],
+                'the forest west of the Tree Gnome Stronghold, past its west fence',
+                'gnomefence at maps/m37_54.jm2:4748',
+            ],
+        ] as const
+    ).flatMap(([sites, why, wall]) => sites.map(site => walledIn(site, why, wall))),
+    {
+        site: 'tree:kandarin:77',
+        reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
+        source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:18',
+    },
+    ...['water-source:castle-wars:0', 'water-source:tirannwn:0'].map((site): ExpectedUnreached => ({
         site,
-        reason: `walled in by collision: ${why} (${wall})`,
-        source,
+        reason: "in the Castle Wars arena, a minigame: a player is put in it only as a game starts ([queue,castlewars_start]) or into a free place in one under way (castlewars_controller.rs2:119), from a team's waiting room",
+        source: 'minigames/game_castlewars/scripts/castlewars_controller.rs2:146',
+    })),
+    {
+        site: 'fire:kandarin:14',
+        reason: "upstairs in a building inside the Fight Arena's walls, whose doors let a player in only mid-quest (Khazard armour worn from ^arena_obtained_armour, or brought back after jail); from ^arena_freed_servils on the guard attacks (@khazard_guard_generals_pet, quest_arena.rs2:43)",
+        source: 'quests/quest_arena/scripts/quest_arena.rs2:42',
+    },
+    ...['rock:dig-site-dungeon:1', 'rock:dig-site-dungeon:3'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "the Dig Site dungeon's copy from before the blockage is cleared: the winches' rope lands in it only before ^itexam_removed_blockage (area_digsite.rs2:627), and in the copy south of it after",
+        source: 'quests/quest_itexam/scripts/area_digsite.rs2:630',
     })),
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
     ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(
@@ -1494,4 +1612,75 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
             source: 'skill_runecraft/scripts/runecraft.rs2:45',
         }),
     ),
+    // Land players do get to, by a crossing the index does not read yet: each reason names it, and
+    // conductor/roadmap.md (Review follow-ups) tracks deriving it. An entry goes stale once its crossing lands.
+    ...[...[1, 3, 4, 5, 7, 9, 11, 12, 14, 15, 18, 19, 20].map(i => `tree:karamja:${i}`), 'tree:kharazi-jungle:0'].map(
+        (site): ExpectedUnreached => ({
+            site,
+            reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). The locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), and no row says the chain of cuts',
+            source: 'quests/quest_legends/scripts/jungle_tree.rs2:161',
+        }),
+    ),
+    ...[0, 1, 2, 3].map((i): ExpectedUnreached => ({
+        site: `fire:goblin-cave:${i}`,
+        reason: "in Dwarf Cannon's goblin cave, whose entrance by the Fishing Guild always telejumps the player in (mcannoncave, mcannon_cave.rs2:10); gate-list.ts reads its check as a side effect, and a side-effect gate candidate gives no edge",
+        source: 'quests/quest_mcannon/scripts/locs/mcannon_cave.rs2:10',
+    })),
+    ...['rock:tirannwn:1', 'rock:arandar:0', 'tree:tirannwn:20', 'tree:arandar:0'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "past Regicide's pit traps, which players jump (@regicide_jump_pitfall, quest_regicide.rs2:239: an agility roll, :275, then an exactmove three tiles on, or a fall into the pit); gate-list.ts reads their checks as side effects, and a side-effect gate candidate gives no edge",
+        source: 'quests/quest_regicide/scripts/quest_regicide.rs2:280',
+    })),
+    ...['altar:underground-pass:1', 'fire:underground-pass:3', 'furnace:underground-pass:0'].map(
+        (site): ExpectedUnreached => ({
+            site,
+            reason: "in the Underground Pass past its spear traps, whose moves no bound run settles (the build report's scripted moves with no settled landing): the other ops on its edge give no way in from land a walk gets to (the mud pile, quest_upass.rs2:149, the railings, :226, and the ledge, upass_obstacles.rs2:246), and the pipe (upass_pipe4, upass_obstacles.rs2:61) is a side-effect gate candidate, which gives no edge",
+            source: 'quests/quest_upass/scripts/upass_obstacles.rs2:150',
+        }),
+    ),
+    ...['fishing-spot:kandarin:7', 'range:kandarin:7'].map((site): ExpectedUnreached => ({
+        site,
+        reason: "on the fishing platform, which Holgart's boat telejumps the player to (holgart_ardougne.rs2:105); his dialogue goes by Sea Slug's stage, so gates.ts leaves the boat out as a quest boat (TRANSPORTS_OUT_OF_SCOPE)",
+        source: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:105',
+    })),
+    {
+        site: 'fire:ardougne-sewers:0',
+        reason: 'at the end of the Hazeel Cult sewer, where the raft takes the player only once all five valves above are turned right (~count_correct_valves); fewer leave them at an island on the way or where they are, and gate-list.ts reads the raft as not a gate',
+        source: 'quests/quest_hazeelcult/scripts/quest_hazeelcult.rs2:38',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:0',
+        reason: "on the desert mining camp's mine floor, where the lower mine cart takes the player (oploc2,touristtrap_minecart: a dialogue choice and an agility roll; gate-list.ts reads its check as a side effect, which gives no edge) from the barrel room, itself past the mine cave and the mine doors, whose teleport into the mine (quest_desertrescue.rs2:435) the doors' gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:1',
+        reason: "rocks on the desert mining camp's mine floor, reached as rock:desert-mining-camp-mine:0 is (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, and the rock is mined from the floor too",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
+    },
+    {
+        site: 'rock:desert-mining-camp-mine:2',
+        reason: "in the desert mining camp's barrel room, past the mine cave, whose gate row lands there (quest_desertrescue.rs2:488), from the tunnel inside the mine doors; that tunnel is entered from outside only by the doors' teleport into the mine, which their gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
+        source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:435',
+    },
+    {
+        site: 'tree:baxtorian-falls:0',
+        reason: "on the Baxtorian Falls ledge, which the rope tied to the overhanging tree lets the player down to (quest_waterfall.rs2:262; its gate row lands); the tree is used from the river's islet, reached only by the rope thrown on the crossing rock (aplocu,crossing_rock_waterfall_quest, :213), whose script throws from the bank north of it (inzone, :222) while a gate row is run from the tiles beside its loc, so that row derives no landing (the fill's rows it could not use)",
+        source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:222',
+    },
+    {
+        site: 'tree:tirannwn:1',
+        reason: "past Regicide's dense forest: both crossings on the pocket's edge (regicide_cross_over3 at (2165, 3189) and (2173, 3156)) exactmove the player onto tiles off walkable land, which the gate rows leave out (the build report's gate landings off walkable land)",
+        source: 'quests/quest_regicide/scripts/quest_regicide.rs2:462',
+    },
+    {
+        site: 'fire:underground-pass:0',
+        reason: "in the Underground Pass, past obstacles the index does not settle: the collapsed bridges' moves no bound run settles (upass_obstacles.rs2:368, the build report's scripted moves with no settled landing), the tunnels down from the level above (cavewalltunnel_upass_down, quest_upass.rs2:407) start on land no walk gets to, and the pipe (upass_pipe6, upass_obstacles.rs2:330) is a side-effect gate candidate, which gives no edge",
+        source: 'quests/quest_upass/scripts/upass_obstacles.rs2:368',
+    },
+    {
+        site: 'fire:underground-pass:1',
+        reason: "west of the Underground Pass's old bridge, which players drop by shooting a lit arrow at its guide rope from the ledge north-east of it (aploc1,oldbridge_guiderope: east of the rope and from z 9720 on, upass_bridge.rs2:34, :38); its gate row lands here, but a gate row is run from the tiles beside its loc, and those are the chasm's. The lever (:89) and the swamp's bubbles (upass_obstacles.rs2:33) only move the player off",
+        source: 'quests/quest_upass/scripts/upass_bridge.rs2:33',
+    },
 ];

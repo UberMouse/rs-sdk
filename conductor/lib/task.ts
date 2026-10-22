@@ -63,9 +63,10 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
     readonly walkWorld?: WalkWorld;
     /**
      * The bank's count of an item by name as last seen open: the plan's record before this run, then what the run's
-     * own states show (ActionContext); unset when no plan has seen the bank open.
+     * own states show (ActionContext); 0 for an item the record does not list. Unset when no plan has seen the bank
+     * open.
      */
-    bank?(item: string): number | undefined;
+    bank?(item: string): number;
     /**
      * Ticks the running generator step (or guard op) has left of its budget (stepBudgetTicks): waiting
      * this many more is within it, one more ends the run `stuck`. Undefined outside one. An op that

@@ -219,6 +219,15 @@ that names no such area or site, and on one no unreached site matches, so an ent
 reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
 but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes,
 and its reason names a loc or map flag that walls it with the map square line (`hedge at maps/m45_54.jm2:5352`).
+One entry's reason may cover several sites walled in alike (the decoration trees of the Feldip Hills behind its
+railings and dry stone walls). Before adding an entry, read the hints on and beside its pocket to confirm none
+moves the player, or, when one does but the index can't model it, name that crossing in the reason.
+
+The table also holds the pockets players do get into by a crossing the index misses (the Kharazi jungle's cuts,
+the Dwarf Cannon cave, the Regicide pit traps, the desert mining camp's mine, the fishing platform, parts of the
+Underground Pass, and more): each reason names the crossing and cites its script line, and
+`conductor/roadmap.md` (Review follow-ups) tracks deriving them. An entry goes stale, and fails the build, once
+its crossing is derived and its sites are reached, so it is removed with the derivation.
 
 The fill's own warning before it, the rows it could not use, says why each is left out: a landing not on land (a
 middle ladder on the top level), a wall whose side the row can't read, or a gate row with no derived landing, with
