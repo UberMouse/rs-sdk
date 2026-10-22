@@ -291,7 +291,7 @@ Built per `conductor/docs/world-index-phase3-spec.md`; the hand-written referenc
   same. A plan names its method (`PlanDef.method`), checked both ways by `conductor/test/plans.test.ts`.
 - **`query.ts`** has `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
   multiway })`: `met` omitted counts every token as met but a way's `skill:` tokens, which are held to the profile's
-  levels either way (`methodRate` rates any profile over the first way that models, and checks no gate); a hazard is the maximum over the gather, processor and
+  levels either way. `methodRate` rates any profile over the first way that models, and checks no gate. A hazard is the maximum over the gather, processor and
   bank sites; a ProfileError drops a method and a data fault throws a MethodError naming it; the ranking is by
   floor XP/hr, ties by id, and each result carries its rated way and its measured figures.
 - **No calibration report in the build.** The comparison is `stats.ts --methods` (percent of floor), not a
@@ -334,7 +334,7 @@ reference is the Methods section of `wiki/world/README.md`. Where it differs fro
   records what its runs wore.
 - **Method legs.** `model/legs.ts` prices a leg over a random landing (the essence mine) at the chance-weighted mean
   of the walks on, a teleport at its script's delays, and carries the came-from context of the npc whose teleport an
-  earlier leg crossed. Legs are kept at one decimal. `distance.ts` is unchanged: nearest-bank figures still use the worst
+  earlier leg crossed. Legs can be fractional (a chance-weighted mean); the training pages print them at one decimal. `distance.ts` is unchanged: nearest-bank figures still use the worst
   landing and the kind's constant.
 - **Records.** The phase 3b records are linked to their promoted plans; `WORLD_FORMAT` is 20. Seven training pages
   (Smithing, Magic, Agility, Runecraft, Crafting, Fletching, Firemaking) joined the set.

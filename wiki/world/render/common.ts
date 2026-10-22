@@ -218,7 +218,7 @@ export function reachSummary(sites: readonly Pick<Site, 'reach' | 'stand'>[]): s
     const unreached = sites.filter(s => s.stand && !s.reach.length).length;
     const noStand = sites.filter(s => !s.stand).length;
     return (
-        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest locking the features counts), ${unreached} it does ` +
+        `${free} a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), ${unreached} it does ` +
         `not reach (unreached)${noStand ? `, ${noStand} with no stand tile (no stand)` : ''}`
     );
 }
