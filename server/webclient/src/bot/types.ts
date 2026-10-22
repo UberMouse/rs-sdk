@@ -131,6 +131,11 @@ export interface NearbyPlayer {
     distance: number;
     /** See NearbyNpc.reachable. */
     reachable?: boolean;
+    /** Current client-observed combat target. This is populated only while the
+     * target is corroborated by the entity's combat cycle. */
+    combatTargetType?: 'npc' | 'player' | 'none';
+    combatTargetIndex?: number;
+    inCombat?: boolean;
 }
 
 export interface GroundItem {
