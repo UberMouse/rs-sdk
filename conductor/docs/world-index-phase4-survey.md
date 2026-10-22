@@ -115,7 +115,7 @@ Read-only research at main 3be5b410a. Paths: `S/` = `server/content/scripts/`, `
 | NPC melee attack roll | `(npc_attack + 9) * (attackbonus + 64)` | `S/skill_combat/scripts/npc/npc_combat_melee.rs2:12-17` |
 | NPC melee max hit | `combat_maxhit((npc_str + 9) * (strengthbonus + 64))` | `npc_combat_melee.rs2:2-8` |
 | NPC swing | rolls against the player's defence roll for the NPC's damagetype; damage `randominc(max)`; `%npc_action_delay = clock + attackrate` | `npc_combat_melee.rs2:20-48` |
-| Default NPC AI | `ai_opplayer2` -> `npc_default_attack`; **198 per-NPC `ai_opplayer2/ai_applayer2` overrides exist** (dragons: 1/4 dragonfire) | `npc_combat.rs2:1-4,57-75`; `S/npc/scripts/dragon.rs2:17-20,60-65` |
+| Default NPC AI | `ai_opplayer2` -> `npc_default_attack`; **198 `ai_opplayer2/ai_applayer2` triggers: 184 keyed by NPC, 13 by category (`_witch`, `_snail`, ...), 1 the global default `[ai_opplayer2,_]`; the engine looks up NPC, then category, then global (`E/engine/script/ScriptProvider.ts:124-134`): 178 NPCs have an override** (dragons: 1/4 dragonfire) | `npc_combat.rs2:1-4,57-75`; `S/npc/scripts/dragon.rs2:17-20,60-65` |
 | Dragonfire | max 30 (+20 when the magic roll wins), 5 with the anti-dragon shield, 10 with protect from magic, -15 with antifire | `dragon.rs2:99-133` |
 | Retaliation | a hit queues `ai_queue1`: if ready, `%npc_action_delay = clock + attackrate/2` and the NPC moves to opplayer2. Retreat at `retreat` HP | `npc_combat.rs2:7-28,318-322,367-370` |
 | Respawn | `npc_del` -> `removeNpc(npc, respawnrate)`, scaled `trunc((4000-min(players,2000))*rate/4000)` (60 -> 59 for one player) | `E/engine/script/handlers/NpcOps.ts:117`; `E/engine/World.ts:1507-1513,2042-2046` |
