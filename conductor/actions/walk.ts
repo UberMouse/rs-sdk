@@ -44,7 +44,7 @@ import { BANK_TRANSFER_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS, 
 import { CLIMB_MAX_TICKS, climb } from './climb';
 import type { ActionContext } from './context';
 import { courseSectionOf, leaveCourse } from './course';
-import { cross, crossAttemptTicks } from './cross';
+import { cross, crossAttemptTicks, retryFits } from './cross';
 import { GATE_ATTEMPT_TICKS, GATE_MAX_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
 import { interactLoc } from './interact';
 import { canPayToll, isEastOfToll, isTollGate, payToll, TOLL_GATE_LOCS, TOLL_LEVEL, TOLL_MAX_TICKS } from './toll';
@@ -380,11 +380,16 @@ interface Learned {
     met: Set<string>;
     avoid: Set<string>;
     absent: Set<string>;
+    /** The failed rolls of each move (by moveKey) that cross() did not try again. */
+    falls: Map<string, number>;
     /** The last hop that failed, for the message when no way is left. */
     failed?: string;
     /** A hop's stand the walk could not walk to: with no way left on the plane, the walk falls back to walkOnPlane. */
     unreached?: boolean;
 }
+
+/** A rolled move that fell this many times on one walk, with no retry left, is given up on for the rest of it. */
+export const MAX_FALLS = 3;
 
 /** A leg's failures that end the walk however optional its hop: the budget spent, a web, no player. */
 const FINAL_LEG: ReadonlySet<string> = new Set(['timeout', 'no-time', 'no-blade', 'no-player']);
@@ -410,7 +415,7 @@ function targetsOf(dest: Tile, tolerance: number): Tile[] {
 /** The way from where the bot stands to `dest`, over what the bot carries and the walk has learned. */
 function planRoute(ctx: ActionContext, s: BotWorldState, dest: Tile, tolerance: number, rec: Learned) {
     const p = s.player!;
-    const world = ctx.walkWorld ?? defaultWorld();
+    const world = worldOf(ctx);
     const seen = accountOf(s);
     const account: Account = { ...seen, met: new Set([...(seen.met ?? []), ...rec.met]) };
     const banks = world.banks.filter(b => meetsOneOf(account, b.reach)).map(b => b.stand);
@@ -435,6 +440,8 @@ let builtWorld: WalkWorld | undefined;
 /** The world index's walk world: its graph, the connector table, the banks a task may pick on its own. */
 const defaultWorld = (): WalkWorld =>
     (builtWorld ??= { graph: worldGraph(), connectors: CONNECTORS, banks: BANKS.filter(b => b.auto) });
+/** The walk world a walk plans on: the context's, else the world index's. */
+const worldOf = (ctx: ActionContext): WalkWorld => ctx.walkWorld ?? defaultWorld();
 
 /** The first hop of a way the walk acts on: a door is opened along the walk to the next one. */
 const firstHop = (hops: readonly Hop[] | undefined) => hops?.find(h => h.kind !== 'door');
@@ -482,7 +489,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
     const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, own);
     if (noTime) return noTime;
     const deadline = start.tick + maxTicks;
-    const rec: Learned = { met: new Set(opts.met ?? []), avoid: new Set(), absent: new Set() };
+    const rec: Learned = { met: new Set(opts.met ?? []), avoid: new Set(), absent: new Set(), falls: new Map() };
     for (let hop = 0; hop <= MAX_WALK_HOPS; hop++) {
         const s = ctx.state();
         const p = s.player;
@@ -557,14 +564,16 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                 return again?.kind === 'cross' && moveKey(again.move) === moveKey(next.move);
             });
     }
-    return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_WALK_HOPS} hops` };
+    const why = rec.failed ? `; the last hop that failed: ${rec.failed}` : '';
+    return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_WALK_HOPS} hops${why}` };
 }
 
 /**
  * Makes a move of the way (cross.ts; the Gnome Stronghold gate by gate.ts's passGate), noting what the walk learns:
  * the wizard it came in by (an npc the graph's came-from requirements name), a move refused (given up on for the rest
  * of the walk). A failed roll is tried again where it leaves the bot while `stillBest` holds and another attempt ends
- * by `deadline`; one that leaves it elsewhere is planned again from there.
+ * by `deadline`; one that leaves it elsewhere (or is not tried again) is planned again from there, until the move has
+ * fallen MAX_FALLS times on the walk, when it is given up on and named as the hop that failed.
  */
 function* crossHop(
     ctx: ActionContext,
@@ -588,7 +597,7 @@ function* crossHop(
     const r = yield* cross(ctx, m, { deadline, retry: () => !m.roll?.fail.to && stillBest() });
     if (r.ok) {
         const came = m.act.kind === 'npc-op' ? cameFrom(m.act.npc) : undefined;
-        if (came && (ctx.walkWorld ?? defaultWorld()).graph.cameFrom.has(came)) {
+        if (came && worldOf(ctx).graph.cameFrom.has(came)) {
             for (const t of rec.met) if (t.startsWith(CAME_FROM)) rec.met.delete(t);
             rec.met.add(came);
         }
@@ -596,7 +605,21 @@ function* crossHop(
         return;
     }
     if (r.reason === 'fell') {
-        yield* log(`walk: ${r.message}; planning again from here`);
+        // A fall the walk's budget left no time to try again ends in its timeout, not as the move's.
+        if (!retryFits(m, ctx.state().tick, deadline)) {
+            yield* log(`walk: ${r.message}; no time to try it again`);
+            return;
+        }
+        const key = moveKey(m);
+        const falls = (rec.falls.get(key) ?? 0) + 1;
+        rec.falls.set(key, falls);
+        if (falls < MAX_FALLS) {
+            yield* log(`walk: ${r.message}; planning again from here`);
+            return;
+        }
+        rec.avoid.add(key);
+        rec.failed = `${r.message} (fell ${falls} times)`;
+        yield* log(`walk: fell: ${rec.failed}; planning without it`);
         return;
     }
     rec.avoid.add(moveKey(m));

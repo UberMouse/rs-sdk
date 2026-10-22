@@ -57,6 +57,10 @@ export const crossAttemptTicks = (m: Move): number => sightTicks(m) + crossWaitT
 /** The ticks a failed roll of `m` waits before it is tried again: the failure's own delays. */
 const retryDelayTicks = (m: Move): number => m.roll?.fail.ticks ?? 1;
 
+/** Whether a retry of `m` at `tick`, its delay and another attempt at its worst, ends by `deadline`. */
+export const retryFits = (m: Move, tick: number, deadline: number | undefined): boolean =>
+    deadline === undefined || tick + retryDelayTicks(m) + crossAttemptTicks(m) <= deadline;
+
 export type CrossResult =
     | { ok: true; at: Tile; attempts: number }
     | {
@@ -173,8 +177,8 @@ function* sendAct(ctx: ActionContext, m: Move): Op<Sent> {
  * Makes the move `m`: sends its act, answers its choices (Act `choices`, in order, by their text) as they are shown,
  * and waits until the bot stands on one of its landings, or, for a teleport, until it has carried the bot off (another
  * plane, or TELEPORT_JUMP tiles from where it stood). `refused` is the game turning it down (obstacle.ts's refusals,
- * "I can't reach that!", a refusal message, a discarded op, a choice dialog the row has no answer for); `fell` a
- * failed roll (obstacle.ts's fall messages, or the bot moved to the roll's fail tile), which is tried again while
+ * "I can't reach that!", a refusal message while the bot has not moved, a discarded op, a choice dialog the row has no answer for);
+ * `fell` a failed roll of a rolled move (obstacle.ts's fall messages, or the bot moved to the roll's fail tile), which is tried again while
  * `opts.retry` holds and another attempt fits before `opts.deadline`, up to CROSS_MAX_ATTEMPTS; `no-move` nothing in
  * crossWaitTicks. The bot should stand on or near the move's approach (walkTo there first).
  */
@@ -195,12 +199,18 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
             if (m.landings.some(l => sameTile(l, p))) return true;
             return m.via === 'teleport' && (p.level !== start.level || chebyshev(p, start) >= TELEPORT_JUMP);
         };
-        const refusal = (s: BotWorldState): string | null =>
-            messageSince(s, cursor, OBSTACLE_REFUSED) ??
-            messageSince(s, cursor, CANT_REACH) ??
-            messageSince(s, cursor, REFUSAL);
+        // REFUSAL's words are broad: they count only while the bot still stands where the attempt started.
+        const refusal = (s: BotWorldState): string | null => {
+            const p = here(s);
+            return (
+                messageSince(s, cursor, OBSTACLE_REFUSED) ??
+                messageSince(s, cursor, CANT_REACH) ??
+                (p && sameTile(p, start) ? messageSince(s, cursor, REFUSAL) : null)
+            );
+        };
+        // A fall message is a failed roll only on a move that has one.
         const fall = (s: BotWorldState): string | null => {
-            const said = messageSince(s, cursor, OBSTACLE_FELL);
+            const said = m.roll ? messageSince(s, cursor, OBSTACLE_FELL) : null;
             if (said) return said;
             const to = m.roll?.fail.to;
             const p = here(s);
@@ -243,10 +253,7 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
         if (no) return { ok: false, reason: 'refused', message: `${where(m)}: ${no}` };
         const slip = fall(w.state);
         if (slip) {
-            const fits =
-                opts.deadline === undefined ||
-                ctx.state().tick + retryDelayTicks(m) + crossAttemptTicks(m) <= opts.deadline;
-            if (attempt >= CROSS_MAX_ATTEMPTS || !fits || !opts.retry?.())
+            if (attempt >= CROSS_MAX_ATTEMPTS || !retryFits(m, ctx.state().tick, opts.deadline) || !opts.retry?.())
                 return { ok: false, reason: 'fell', message: `${where(m)}: ${slip}` };
             // The failure's own delays, before the next try is sent.
             yield* ticks(retryDelayTicks(m));

@@ -19,8 +19,8 @@ export interface ActionContext {
     stepTicksLeft?(): number | undefined;
     /**
      * The bank's count of an item (by name, as the bank names it) as last seen open: the plan's record before this
-     * run (lib/plan.ts PlanView.bank), then what the run itself has seen (lib/bank-memory.ts); undefined when not
-     * known. walkTo plans a bank detour on it.
+     * run (lib/plan.ts PlanView.bank), then what the run itself has seen (lib/bank-memory.ts); 0 for an item the
+     * record does not list. Absent when no bank record exists. walkTo plans a bank detour on it.
      */
-    bank?(item: string): number | undefined;
+    bank?(item: string): number;
 }

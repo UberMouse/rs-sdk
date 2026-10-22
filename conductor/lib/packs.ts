@@ -17,11 +17,14 @@ interface Pack {
 
 const packs = new Map<PackKind, Pack>();
 
+/** The content pack of `kind`, which pack() reads (and throws on when it is not there). */
+export const packFile = (kind: PackKind): string => join(REPO_ROOT, `server/content/pack/${kind}.pack`);
+
 function pack(kind: PackKind): Pack {
     let p = packs.get(kind);
     if (p) return p;
     p = { names: new Map(), ids: new Map() };
-    for (const line of readFileSync(join(REPO_ROOT, `server/content/pack/${kind}.pack`), 'utf8').split('\n')) {
+    for (const line of readFileSync(packFile(kind), 'utf8').split('\n')) {
         const eq = line.indexOf('=');
         if (eq <= 0) continue;
         const [id, name] = [Number(line.slice(0, eq)), line.slice(eq + 1).trim()];

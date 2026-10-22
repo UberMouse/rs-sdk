@@ -39,6 +39,7 @@ import {
     type ReachCollision,
     type ReachGraph,
     type ReachInput,
+    WALL_SHAPES,
 } from '../../wiki/world/reach';
 import { CAME_FROM, minimalSets } from '../../wiki/world/requirements';
 import { readConfigs } from '../../wiki/world/sources/configs';
@@ -53,8 +54,6 @@ import { WORLD } from './world-index';
 const INF = 0x7fffffff;
 /** Half ticks in a tick: a run step is one. */
 const HALVES = 2;
-/** reach.ts's wall shapes: a gate row of one of them with no `to` is a door, crossed between its two tiles. */
-const WALL_SHAPES: ReadonlySet<number> = new Set([0, 1, 2, 3, 9]);
 /** A new account's hitpoints: the damage rule's floor when the account does not say. */
 const BASE_HITPOINTS = 10;
 const wild = (t: Tile): boolean => isInWilderness(t.level, t.x, t.z);
@@ -546,8 +545,8 @@ export const BANK_DETOUR_TICKS = 4;
 
 /** What a bank detour may draw on (planWay). */
 export interface Detour {
-    /** The bank's count of an obj (by config name) as last seen open; undefined when not known. */
-    bank(obj: string): number | undefined;
+    /** The bank's count of an obj (by config name) as last seen open; 0 for one the record does not list. */
+    bank(obj: string): number;
     /** The banks a detour may go to, by stand tile. */
     banks: readonly Tile[];
     /** Free inventory slots: an obj not carried yet needs one (a stackable one carried adds to its stack). */
@@ -573,7 +572,7 @@ export function planWay(from: Tile, targets: readonly Tile[], opts: WalkSearch &
     let free = detour.free;
     let added = false;
     for (const obj of ['coins', ...b.bankable]) {
-        const count = detour.bank(obj) ?? 0;
+        const count = detour.bank(obj);
         if (count <= 0) continue;
         const carried = obj === 'coins' ? coins : (held.get(obj) ?? 0);
         if (!(carried > 0 && detour.stackable(obj))) {

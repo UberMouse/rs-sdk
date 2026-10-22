@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, w
 import { dirname, join } from 'node:path';
 import { z } from 'zod/v4';
 import { type BotEnv, controllerCount, FETCH_TIMEOUT_MS, REPO_ROOT } from './env';
+import { configName, packFile } from './packs';
 import { errMessage, fileStamp } from './util';
 
 /** Newest save format the engine reads (PlayerLoading.SAV_VERSION). */
@@ -312,21 +313,11 @@ function levelForXp(tenths: number): number {
     return 1;
 }
 
-let objNames: Map<number, string> | undefined;
-/** Item id -> config name, from this checkout's content pack (ids are the same in every checkout). */
-function objName(id: number): string {
-    if (!objNames) {
-        objNames = new Map();
-        const pack = join(REPO_ROOT, 'server/content/pack/obj.pack');
-        if (existsSync(pack)) {
-            for (const line of readFileSync(pack, 'utf8').split('\n')) {
-                const eq = line.indexOf('=');
-                if (eq > 0) objNames.set(Number(line.slice(0, eq)), line.slice(eq + 1).trim());
-            }
-        }
-    }
-    return objNames.get(id) ?? `obj_${id}`;
-}
+/**
+ * Item id -> config name, from this checkout's content pack (ids are the same in every checkout); `obj_<id>` for an id
+ * it does not list, or with no pack in the checkout.
+ */
+const objName = (id: number): string => (existsSync(packFile('obj')) && configName('obj', id)) || `obj_${id}`;
 
 export interface SaveItem {
     id: number;

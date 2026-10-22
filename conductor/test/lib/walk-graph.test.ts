@@ -402,8 +402,8 @@ describe('bank detours for an obj a crossing needs', () => {
     });
     const graph = graphOf({ crossings: [talisman, move({}, 3231)] });
     const NEAR_BANK = at(0, 3210, 3216);
-    const detour = (count: number | undefined, banks = [NEAR_BANK], free = 27): Detour => ({
-        bank: obj => (obj === 'air_talisman' ? count : undefined),
+    const detour = (count: number, banks = [NEAR_BANK], free = 27): Detour => ({
+        bank: obj => (obj === 'air_talisman' ? count : 0),
         banks,
         free,
         stackable: () => false,
@@ -421,8 +421,7 @@ describe('bank detours for an obj a crossing needs', () => {
         expect(crossed(way)).toEqual([talisman.act]);
     });
 
-    test('skipped when the bank count is unknown or none: the free way north', () => {
-        expect(plan(detour(undefined))).toEqual(free);
+    test('skipped when the bank holds none: the free way north', () => {
         expect(plan(detour(0))).toEqual(free);
         expect(crossed(free)).toEqual([{ kind: 'loc-op', loc: 'log_balance', op: 1 }]);
     });
@@ -453,7 +452,7 @@ describe('what a bank detour withdraws', () => {
     const START = at(0, 3210, 3220);
     const NEAR_BANK = at(0, 3210, 3216);
     const banked = (obj: string, count: number): Detour => ({
-        bank: o => (o === obj ? count : undefined),
+        bank: o => (o === obj ? count : 0),
         banks: [NEAR_BANK],
         free: 27,
         stackable: () => false,
