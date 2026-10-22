@@ -133,8 +133,11 @@ export const clickTicks = (k: number): number => k + 2;
 /**
  * Ticks from a `weakqueue(d)` call to its script running: d when it is called from a click or dialog (before the
  * tick's queue pass), d + 1 when it is called from inside a queue script, as the player's queue list is walked
- * (Player.ts:966-976: the new entry goes on the tail after the walk's cursor is saved, LinkList.ts:97-111, so it
- * is not reached until the next tick).
+ * (Player.ts:966-976; enqueueScript puts the new entry on the tail with addTail, Player.ts:897). That holds when the
+ * running entry is the list's tail, as the walk's cursor is saved before the script runs and restored after
+ * (LinkList.ts:97-111), so the new entry is not reached until the next tick. It assumes the player has one weak-queue
+ * entry in these loops: with another entry pending behind the running one, a new tail would be reached in the same
+ * walk and d = 0 would run that tick.
  */
 export const queueTicks = (d: number, fromQueue: boolean): number => (fromQueue ? d + 1 : d);
 
