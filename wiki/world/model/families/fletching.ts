@@ -51,19 +51,26 @@ function cut(log: string, product: string, count: number, level: number, xp: num
 
 export const fletching: FamilyFactory = data => {
     const logs = dbIndex(data.dbrows, 'fletch_bow_table', 'log');
-    // The bow rows by the unstrung bow each cuts: its log's row and the column, shortbow or longbow, naming it.
-    const cuts = new Map<string, { row: DbRow; column: 'shortbow' | 'longbow' }>();
-    for (const row of logs.values())
+    // The bow rows by the unstrung bow each cuts: its log, its row and the column, shortbow or longbow, naming it.
+    const cuts = new Map<string, { log: string; row: DbRow; column: 'shortbow' | 'longbow' }>();
+    for (const [log, row] of logs)
         for (const column of ['shortbow', 'longbow'] as const) {
             const bow = row.data[column]?.[0]?.[0];
-            if (bow) cuts.set(bow, { row, column });
+            if (!bow) continue;
+            const prior = cuts.get(bow);
+            if (prior) throw new ModelError(`fletch_bow_table cuts ${bow} in both ${prior.row.row} and ${row.row}`);
+            cuts.set(bow, { log, row, column });
         }
-    // The stringing rows by their product: the fletching_table rows whose item is an unstrung bow.
-    const strings = new Map<string, DbRow>();
+    // The stringing rows by their product, with the unstrung bow each takes: the fletching_table rows whose item is
+    // one.
+    const strings = new Map<string, { item: string; row: DbRow }>();
     for (const row of data.dbrows.filter(r => r.table === 'fletching_table')) {
         const item = row.data.item?.[0]?.[0];
         const product = row.data.product?.[0]?.[0];
-        if (item && product && first(data.objs.get(item), 'category') === UNSTRUNG) strings.set(product, row);
+        if (!item || !product || first(data.objs.get(item), 'category') !== UNSTRUNG) continue;
+        const prior = strings.get(product);
+        if (prior) throw new ModelError(`fletching_table strings ${product} in both ${prior.row.row} and ${row.row}`);
+        strings.set(product, { item, row });
     }
 
     return {
@@ -85,21 +92,21 @@ export const fletching: FamilyFactory = data => {
             }
             const bow = cuts.get(p.product);
             if (bow) {
-                const log = bow.row.data.log![0]![0]!;
-                if (p.log && p.log !== log) throw new ModelError(`${p.product} is cut from ${log}, not ${p.log}`);
+                if (p.log && p.log !== bow.log)
+                    throw new ModelError(`${p.product} is cut from ${bow.log}, not ${p.log}`);
                 // The column's product, level and experience (:62-66).
-                return cut(log, p.product, 1, int(bow.row, bow.column, 1), int(bow.row, bow.column, 2), profile);
+                return cut(bow.log, p.product, 1, int(bow.row, bow.column, 1), int(bow.row, bow.column, 2), profile);
             }
-            const row = strings.get(p.product);
-            if (!row) throw new ModelError(`fletching makes no ${p.product}: not a cut or a strung product`);
+            const strung = strings.get(p.product);
+            if (!strung) throw new ModelError(`fletching makes no ${p.product}: not a cut or a strung product`);
             if (p.log) throw new ModelError(`stringing ${p.product} takes no log param`);
-            const item = row.data.item![0]![0]!;
+            const { item, row } = strung;
             requireLevel(profile, 'fletching', int(row, 'level'), `stringing ${p.product}`);
             return {
                 // One bow a use, with no delay (bows.rs2:35-42): the server runs up to USER_EVENTS_PER_TICK OpHeldU
-                // packets a tick (OpHeldU.ts:5). The trip's last tick of strings has room for the click after them,
-                // so the fraction is the most it costs.
-                ticksPerAttempt: 1 / USER_EVENTS_PER_TICK,
+                // packets a tick (OpHeldU.ts:5), so a trip's m bows take ceil(m / USER_EVENTS_PER_TICK) ticks.
+                ticksPerAttempt: 1,
+                perTick: USER_EVENTS_PER_TICK,
                 success: 1,
                 xpTenths: { fletching: int(row, 'experience') },
                 products: [{ obj: p.product, count: int(row, 'product', 1) }],

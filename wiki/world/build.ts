@@ -1011,7 +1011,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
     // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
     // The model is built once: the training pages rate the methods with it too.
-    const model = methodModel({ dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts });
+    const model = methodModel(
+        { dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts },
+        zones,
+    );
     const methods = resolveMethods(
         METHODS,
         { world: { sites, features }, ...model, quests: graph.quests },

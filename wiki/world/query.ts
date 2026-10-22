@@ -14,8 +14,8 @@
 //   rates the first one `met` accepts every token of (conductor/lib/account.ts meetsOneOf's semantics: `[]` needs
 //   nothing). With `met` omitted every token counts as met, so nothing is filtered on reach and each method is rated
 //   over its shortest way: the query can't know the account, and each result names the way it rated.
-// - Hazards: the deepest Wilderness level of the sites the method stands at (its site, processor and bank), and
-//   whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
+// - Hazards: the deepest Wilderness level of the sites and tiles the method stands at (its site, processors and
+//   bank), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
 //   requirement set, not the tiles it crosses.
 import { loadFreshWorld } from './load';
 import type { CycleRates } from './model/cycle';
@@ -27,7 +27,7 @@ import {
     measuredFigures,
     methodModel,
     methodRate as rateMethod,
-    sinkSites,
+    sinkStops,
     trains,
     type MeasuredFigure,
     type MethodContext,
@@ -47,14 +47,14 @@ export interface BestOptions {
     met?: (token: string) => boolean;
     /** The deepest Wilderness level a method's sites may be at (0: none in the Wilderness). Omitted: no limit. */
     maxWilderness?: number;
-    /** false: no method with a multiway site. Omitted or true: multiway sites count. */
+    /** false: no method with a multiway site or tile. Omitted or true: multiway ones count. */
     multiway?: boolean;
 }
 
 export interface Hazard {
-    /** The deepest Wilderness level of the method's sites, 0 outside it. */
+    /** The deepest Wilderness level of the method's sites and tiles, 0 outside it. */
     wildernessLevel: number;
-    /** Whether any of the method's sites is multiway. */
+    /** Whether any of the method's sites and tiles is multiway. */
     multiway: boolean;
 }
 
@@ -78,22 +78,19 @@ export interface MethodQuery {
     bestMethods(skill: Skill, profile: Profile, opts?: BestOptions): RankedMethod[];
 }
 
-/**
- * The hazard of a method's sites: the gather site and the sites its sink stops at. A bare tile stop is not counted:
- * method.ts refuses one in the Wilderness, and whether it is multiway is not known here.
- */
+/** The hazard of a method's stops: the gather site and the sites and bare tiles its sink stops at. */
 export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink'>): Hazard {
-    const sites = [m.site, ...sinkSites(m.sink)];
+    const stops = [m.site, ...sinkStops(m.sink)];
     return {
-        wildernessLevel: Math.max(...sites.map(s => s.wildernessLevel)),
-        multiway: sites.some(s => s.multiway),
+        wildernessLevel: Math.max(...stops.map(s => s.wildernessLevel)),
+        multiway: stops.some(s => s.multiway),
     };
 }
 
 /** The query over `world`'s methods, rated with `model` (methodModel). */
 export function methodQuery(world: Pick<World, 'sites' | 'features' | 'methods'>, model: MethodModel): MethodQuery {
     const ctx: MethodContext = { world, ...model };
-    const methods = world.methods.map(wm => fromWorldMethod(wm, world));
+    const methods = world.methods.map(wm => fromWorldMethod(wm, world, model.zones));
     const byId = new Map(methods.map(m => [m.def.id, m]));
     return {
         methodRate(id, profile) {

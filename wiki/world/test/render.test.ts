@@ -148,6 +148,7 @@ const NO_MODEL: RenderData['model'] = {
     },
     foods: new Map(),
     tools: { axe: [], pickaxe: [] },
+    zones: { f2p: new Set(), multiway: new Set() },
 };
 
 const data: RenderData = {

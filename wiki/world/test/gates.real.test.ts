@@ -243,6 +243,33 @@ describe('gates.ts', () => {
         }
     });
 
+    test("every quest check on a loc's config in a use gate's script has a row (the wheel's two ops, say)", () => {
+        const text = new Map(scripts);
+        const varps = quests.map(q => `%${q.varp} `);
+        const checked: string[] = [];
+        for (const file of new Set(USE_GATES.map(g => g.source.split(':')[0]!))) {
+            const lines = text.get(file)!.split('\n');
+            lines.forEach((line, i) => {
+                const configs = line.match(/^if\s*\((loc_type = \w+(?: \| loc_type = \w+)*)\) \{$/)?.[1];
+                if (!configs || !varps.some(v => lines[i + 1]!.includes(v))) return;
+                for (const c of configs.split(' | ').map(x => x.slice('loc_type = '.length)))
+                    checked.push(`${c} ${file}:${i + 1}`);
+            });
+        }
+        expect(checked).toEqual([
+            'doric_anvil skill_smithing/scripts/smithing/smithing.rs2:53',
+            'viking_anvil skill_smithing/scripts/smithing/smithing.rs2:66',
+            'viking_furnace skill_smithing/scripts/smelting/smelting.rs2:2',
+            'viking_furnace2 skill_smithing/scripts/smelting/smelting.rs2:2',
+            'viking_furnace skill_smithing/scripts/smelting/smelting.rs2:32',
+            'viking_furnace2 skill_smithing/scripts/smelting/smelting.rs2:32',
+            'viking_spinningwheel skill_crafting/scripts/spinning/spinning.rs2:2',
+            'viking_spinningwheel skill_crafting/scripts/spinning/spinning.rs2:37',
+        ]);
+        const gated = new Set(USE_GATES.map(g => g.config));
+        expect(checked.filter(c => !gated.has(c.split(' ')[0]!))).toEqual([]);
+    });
+
     test('the toll gate is placed at the Al Kharid border, both leaves', () =>
         expect(
             gates

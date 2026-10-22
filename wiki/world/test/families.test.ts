@@ -338,6 +338,8 @@ const data: GameData = {
 };
 const families = buildFamilies(data);
 const family = (id: string): Family => families.get(id)!;
+/** The families over `dbrows` in place of DBROWS. */
+const withRows = (dbrows: string) => buildFamilies({ ...data, dbrows: parseDbrows(dbrows) });
 
 /** A site of `kind` holding one feature per [config, subtype], and the world they are in. */
 function at(kind: FeatureKind, features: [config: string, subtype: string][]): { site: Site; world: World } {
@@ -978,13 +980,12 @@ describe('spinning', () => {
         fails('spinning', wheel, { obj: 'logs' }, profile(99), /logs has no spinning struct/);
         fails('spinning', wheel, {}, profile(99), /needs an obj param/);
         fails('spinning', at('furnace', [['furnace', '']]), { obj: 'flax' }, profile(99), /not a spinning wheel/);
-        // Rellekka's wheel refuses a player without The Fremennik Trials (spinning.rs2:37-42).
-        fails(
-            'spinning',
-            at('spinning-wheel', [['viking_spinningwheel', '']]),
-            { obj: 'flax' },
-            profile(99),
-            /the Fremennik wheel: needs The Fremennik Trials, not modelled/,
+    });
+
+    test("Rellekka's wheel spins as any other: its quest is in the site's reach (gates.ts USE_GATES)", () => {
+        const viking = at('spinning-wheel', [['viking_spinningwheel', '']]);
+        expect(family('spinning').model(viking.site, { obj: 'flax' }, profile(10), viking.world)).toEqual(
+            family('spinning').model(wheel.site, { obj: 'flax' }, profile(10), wheel.world),
         );
     });
 });
@@ -1010,9 +1011,10 @@ describe('fletching', () => {
             tools: ['knife'],
         });
         // bows.rs2:35-42: stringing_willow_longbow, one bow and a bow string a use, 415 tenths, no delay: 5 OpHeldU a
-        // tick (USER_EVENTS_PER_TICK), 1/5 of a tick a bow.
+        // tick (USER_EVENTS_PER_TICK), whole ticks of 5 bows.
         expect(family('fletching').model(trees.site, { product: 'willow_longbow' }, profile(40), trees.world)).toEqual({
-            ticksPerAttempt: 0.2,
+            ticksPerAttempt: 1,
+            perTick: 5,
             success: 1,
             xpTenths: { fletching: 415 },
             products: [{ obj: 'willow_longbow', count: 1 }],
@@ -1054,6 +1056,20 @@ describe('fletching', () => {
         // Arrows are in fletching_table too, but their item is no unstrung bow.
         fails('fletching', trees, { product: 'bronze_arrow' }, profile(99), /fletching makes no bronze_arrow/);
         fails('fletching', trees, {}, profile(99), /needs a product param/);
+    });
+
+    test('a bow two rows make fails the build of the family, naming both', () => {
+        expect(() =>
+            withRows(DBROWS.replace('data=shortbow,unstrung_willow_shortbow', 'data=shortbow,unstrung_longbow')),
+        ).toThrow('fletch_bow_table cuts unstrung_longbow in both fletching_normal and fletching_willow');
+        expect(() =>
+            withRows(
+                DBROWS.replace(
+                    'data=item,bronze_arrowheads\ndata=metal,bronze\ndata=product,bronze_arrow,15',
+                    'data=item,unstrung_willow_longbow\ndata=metal,bronze\ndata=product,willow_longbow,15',
+                ),
+            ),
+        ).toThrow('fletching_table strings willow_longbow in both stringing_willow_longbow and fletching_bronze_arrow');
     });
 });
 

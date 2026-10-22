@@ -41,7 +41,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `spinning-wheel:rellekka:0` | (2617, 3659) | Spinning wheel 1 | no | no | - | - |
+| `spinning-wheel:rellekka:0` | (2617, 3659) | Spinning wheel 1 | no | no | - | The Fremennik Trials done |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 

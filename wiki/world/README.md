@@ -44,7 +44,7 @@ reads the npc pages on disk.
 
 A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to get to its stand tile
 (`wiki/world/reach.ts`, `reachGraph` then `fillReach`), joined with a quest that locks the use of its locs
-(`USE_GATES` in `gates.ts`: the Doric and Rellekka anvils, the Rellekka furnaces): its minimal requirement
+(`USE_GATES` in `gates.ts`: the Doric and Rellekka anvils, the Rellekka furnaces and spinning wheel): its minimal requirement
 sets, `[[]]` for none and `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
 `place.ts`, with a wall check), because a bot talks to an npc from beside it. The fill keeps at most
 `MAX_SETS` (24) sets per tile.

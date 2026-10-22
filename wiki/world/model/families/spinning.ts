@@ -1,7 +1,7 @@
 // Spinning at a spinning wheel from its menu (oploc2 Spin -> ~skill_multi2_header -> a Make button):
 // skill_crafting/scripts/spinning/spinning.rs2, on the input's spinning struct (configs/spinning/spinning.struct,
-// `oc_param(<obj>, crafting_spinning_struct)`). A process step with no fail roll. Rellekka's wheel refuses a player
-// without The Fremennik Trials (spinning.rs2:37-42), which this does not model.
+// `oc_param(<obj>, crafting_spinning_struct)`). A process step with no fail roll. Rellekka's wheel needs The Fremennik
+// Trials (spinning.rs2:2-6, :37-42): its site's reach carries it (gates.ts USE_GATES).
 import { ModelError, type ActionModel } from '../family';
 import { param, queueTicks, requireLevel, stringParams, type FamilyFactory } from './common';
 
@@ -9,9 +9,6 @@ import { param, queueTicks, requireLevel, stringParams, type FamilyFactory } fro
 export interface SpinningParams {
     obj?: string;
 }
-
-/** The wheel spinning.rs2:37-42 refuses without The Fremennik Trials. */
-const VIKING_WHEEL = 'viking_spinningwheel';
 
 /** The levelrequire param's default (skill_combat/configs/combat.param:81-83). */
 const LEVEL_DEFAULT = 0;
@@ -26,12 +23,10 @@ export const spinning: FamilyFactory = data => ({
     id: 'spinning',
     skills: ['crafting'],
     kinds: ['spinning-wheel'],
-    model(site, params, profile, world): ActionModel {
+    model(site, params, profile): ActionModel {
         const p = stringParams(params, 'spinning', ['obj']);
         if (site.kind !== 'spinning-wheel')
             throw new ModelError(`site ${site.id} is a ${site.kind} site, not a spinning wheel`);
-        if (site.features.some(i => world.features[i]!.config === VIKING_WHEEL))
-            throw new ModelError(`site ${site.id} is the Fremennik wheel: needs The Fremennik Trials, not modelled`);
         if (!p.obj) throw new ModelError('spinning needs an obj param (the obj spun)');
         const name = param(data.objs.get(p.obj), 'crafting_spinning_struct');
         const struct = name === undefined ? undefined : data.structs.get(name);

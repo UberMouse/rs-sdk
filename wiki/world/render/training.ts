@@ -5,6 +5,7 @@
 import {
     forMethod,
     fromWorldMethod,
+    isTileStop,
     measuredFigures,
     methodModels,
     methodRate,
@@ -67,7 +68,7 @@ function bySkill(methods: readonly ResolvedMethod[]): Map<Skill, ResolvedMethod[
 /** Every training page and the README, as repo-relative paths and text. */
 export function renderTraining(world: World, data: TrainingData): Page[] {
     const ctx: MethodContext = { world, ...data.model };
-    const methods = world.methods.map(wm => fromWorldMethod(wm, world));
+    const methods = world.methods.map(wm => fromWorldMethod(wm, world, data.model.zones));
     const pages = bySkill(methods);
     const out: Page[] = [...pages].map(([skill, ms]) => [trainingPath(skill), skillPage(skill, ms, world, data, ctx)]);
     out.push([TRAINING_README, readme(pages)]);
@@ -133,7 +134,7 @@ function skillPage(
             const stop = (s: Stop): string =>
                 s === 'here'
                     ? 'here'
-                    : 'tile' in s
+                    : isTileStop(s)
                       ? `at (${s.tile.x}, ${s.tile.z}, ${s.tile.level})`
                       : `at ${where(s)}`;
             const at = m.sink.steps.map((s, i) => `${steps[i]!.family} ${stop(s)}`);

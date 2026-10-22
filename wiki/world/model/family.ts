@@ -48,6 +48,12 @@ export interface ActionModel {
      * action comes later after the step's arrival or click than the cadence does (the spinning menu's button tick).
      */
     start?: number;
+    /**
+     * On a process step: the most actions one tick runs, where an action takes no tick of its own (a bow strung each
+     * user event). A trip's actions of the step take whole ticks, ceil(actions / perTick) of ticksPerItem, in place of
+     * ticksPerItem each.
+     */
+    perTick?: number;
     /** A feature runs out: with `chance` (in (0, 1]) per success, then stays down `respawnTicks`. Absent: it never does. */
     deplete?: { chance: number; respawnTicks: number };
     /** With `deplete`: the site's features of the target, which the player works in turn (the resource cap's k). */

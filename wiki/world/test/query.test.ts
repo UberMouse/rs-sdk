@@ -3,10 +3,11 @@
 import { describe, expect, test } from 'bun:test';
 import { ModelError, ProfileError, type Family } from '../model/family';
 import type { Item } from '../model/items';
-import { MethodError, type MethodModel } from '../model/method';
+import { MethodError, tileStop, tileStopId, type MethodModel } from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
 import type { Skill } from '../model/server';
 import { methodHazard, methodQuery, type BestOptions } from '../query';
+import { zoneKey } from '../sources/zones';
 import { WORLD_FORMAT, type Site, type Tile, type World, type WorldMethod } from '../types';
 
 const tile = (x: number, z: number): Tile => ({ level: 0, x, z });
@@ -82,6 +83,7 @@ const model: MethodModel = {
         return item;
     },
     foods: new Map(),
+    zones: { f2p: new Set(), multiway: new Set() },
     tools: {
         axe: [
             { obj: 'rune_axe', level: 41 },
@@ -373,5 +375,31 @@ describe('methodHazard', () => {
             wildernessLevel: 5,
             multiway: false,
         });
+    });
+
+    // A multiway zone outside the Wilderness, as most of multiway.csv's are (Castle Wars, Karamja).
+    const multi = tile(3240, 3200);
+    const zones = { f2p: new Set<string>(), multiway: new Set([zoneKey(multi)]) };
+    /** A method at the tree that stops at `t`. */
+    const hazardAt = (t: Tile) => methodHazard({ site: tree, sink: { mode: 'process', steps: [tileStop(t, zones)] } });
+
+    test("a bare tile stop counts: its zone's multiway, and its Wilderness level", () => {
+        expect(hazardAt(multi)).toEqual({ wildernessLevel: 0, multiway: true });
+        // z 3600 is in the Wilderness's first box (z 3520 up): floor((3600 - 3520) / 8) + 1 = 11 (sources/zones.ts).
+        expect(hazardAt(tile(3210, 3600))).toEqual({ wildernessLevel: 11, multiway: false });
+    });
+
+    test("a world.json tile stop is rebuilt with its hazard from the model's zones", () => {
+        const tiled: WorldMethod = {
+            ...burn,
+            id: 'tree-burn-tile',
+            sink: { mode: 'process', steps: [{ family: 'firemaking', at: multi, params: {} }], end: 'bank' },
+            processors: [tileStopId(multi)],
+        };
+        const q = methodQuery({ ...world, methods: [tiled] }, { ...model, zones });
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.hazard)).toEqual([
+            { wildernessLevel: 0, multiway: true },
+        ]);
+        expect(q.bestMethods('woodcutting', at('woodcutting', 50), { multiway: false })).toEqual([]);
     });
 });

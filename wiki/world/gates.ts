@@ -516,4 +516,10 @@ export const USE_GATES: readonly UseGate[] = [
     // Both the use-on op and the Smelt op (oploc2) check it.
     { config: 'viking_furnace', requires: ['quest:viking'], source: 'skill_smithing/scripts/smelting/smelting.rs2:2' },
     { config: 'viking_furnace2', requires: ['quest:viking'], source: 'skill_smithing/scripts/smelting/smelting.rs2:2' },
+    // Both the use-on op and the Spin op (oploc2, :37-42) check it.
+    {
+        config: 'viking_spinningwheel',
+        requires: ['quest:viking'],
+        source: 'skill_crafting/scripts/spinning/spinning.rs2:2',
+    },
 ];

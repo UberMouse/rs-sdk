@@ -8,6 +8,7 @@ import { loadWorld } from '../load';
 import { METHODS } from '../methods';
 import { readGameData } from '../model/families/index';
 import {
+    isTileStop,
     measuredProfile,
     methodModel,
     methodRate,
@@ -58,7 +59,7 @@ describe("each seed is at its plan's sites", () => {
             expect(m.sink.bank?.id).toBe(bank);
             expect(
                 m.sink.mode === 'process'
-                    ? m.sink.steps.map(s => (s === 'here' ? s : 'tile' in s ? tileStopId(s.tile) : s.id))
+                    ? m.sink.steps.map(s => (s === 'here' ? s : isTileStop(s) ? tileStopId(s.tile) : s.id))
                     : null,
             ).toEqual(processor === null ? null : [processor]);
             expect(m.ways[0]!.reach).toEqual([]);

@@ -96,6 +96,7 @@ const model: TrainingData['model'] = {
         return item;
     },
     foods: new Map(),
+    zones: { f2p: new Set(), multiway: new Set() },
     tools: {
         axe: [
             { obj: 'rune_axe', level: 41 },

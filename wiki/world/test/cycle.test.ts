@@ -604,6 +604,40 @@ describe('process sink, chained steps', () => {
                 }).trip.successes,
             ).toBe(13.5);
         });
+
+        test('strung 5 a tick (perTick): a trip takes whole ticks of them', () => {
+            const strung: ActionModel = { ...string, ticksPerAttempt: 1, perTick: 5 };
+            // Withdrawn unstrung bows, strung at the bank: a bow's and a string's slot each, 28 / 2 = 14 a trip;
+            // ceil(14 / 5) = 3 ticks, not 2.8.
+            const withdrawn = run({
+                gather: { withdraw: 'unstrung' },
+                sink: { mode: 'process', steps: [[strung]], end: 'bank', legs: [], here: [false] },
+            });
+            expect(withdrawn.trip).toMatchObject({ successes: 14, process: 3 });
+            // The chain all 'here': 26 bows a trip (above), 26 x 3 = 78 cutting and ceil(26 / 5) = 6 stringing.
+            const chained = run({
+                gather: chop,
+                sink: { mode: 'process', steps: [[cut], [strung]], end: 'bank', legs: [20, 20], here: [true, true] },
+            });
+            expect(chained.trip).toMatchObject({ successes: 26, process: 84 });
+            fails(
+                {
+                    gather: chop,
+                    sink: {
+                        mode: 'process',
+                        steps: [[cut], [{ ...strung, perTick: 2.5 }]],
+                        end: 'bank',
+                        legs: [20, 20],
+                        here: [true, true],
+                    },
+                },
+                /perTick 2.5 is not a whole number >= 1/,
+            );
+            fails(
+                { gather: { ...chop, perTick: 5 }, sink: { mode: 'drop' } },
+                /a gather with a restart, a start or a perTick/,
+            );
+        });
     });
 
     test('fails with a reason where it is not modelled', () => {
@@ -818,11 +852,11 @@ describe('restarts', () => {
     test('fails where it is not modelled', () => {
         fails(
             { gather: { ...smelt, consumes: [] }, sink: { mode: 'bank', legs } },
-            /a gather with a restart or a start/,
+            /a gather with a restart, a start or a perTick/,
         );
         fails(
             { gather: { ...smelt, consumes: [], restart: undefined, start: 1 }, sink: { mode: 'bank', legs } },
-            /a gather with a restart or a start/,
+            /a gather with a restart, a start or a perTick/,
         );
         // Stackable feathers made into stackable runes: the trip never ends.
         const vein: ActionModel = {

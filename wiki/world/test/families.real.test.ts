@@ -380,9 +380,7 @@ describe('spinning, fletching, firemaking and flax picking (hand-worked in famil
             [{ obj: 'bow_string', count: 1 }],
         ]);
         const rellekka = world.sites.find(s => s.id === 'spinning-wheel:rellekka:0')!;
-        expect(() => families.get('spinning')!.model(rellekka, { obj: 'flax' }, p, world)).toThrow(
-            /needs The Fremennik Trials/,
-        );
+        expect(families.get('spinning')!.model(rellekka, { obj: 'flax' }, p, world)).toEqual(spin);
         const field = world.sites.find(s => s.id === 'flax:flax:0')!;
         const pick = families.get('pick')!.model(field, {}, p, world);
         expect([pick.ticksPerAttempt, pick.deplete, pick.features]).toEqual([
@@ -392,10 +390,10 @@ describe('spinning, fletching, firemaking and flax picking (hand-worked in famil
         ]);
         const cut = families.get('fletching')!.model(field, { product: 'unstrung_willow_longbow' }, p, world);
         const strung = families.get('fletching')!.model(field, { product: 'willow_longbow' }, p, world);
-        expect([cut.ticksPerAttempt, cut.xpTenths, strung.ticksPerAttempt, strung.consumes]).toEqual([
+        expect([cut.ticksPerAttempt, cut.xpTenths, strung.perTick, strung.consumes]).toEqual([
             3,
             { fletching: 415 },
-            0.2,
+            5,
             [
                 { obj: 'unstrung_willow_longbow', count: 1 },
                 { obj: 'bow_string', count: 1 },
@@ -408,10 +406,11 @@ describe('spinning, fletching, firemaking and flax picking (hand-worked in famil
     });
 });
 
-test('the anvils and furnaces a quest locks need it (gates.ts USE_GATES)', () => {
-    const ids = ['anvil:asgarnia:1', 'anvil:rellekka:0', 'furnace:rellekka:0'];
+test('the anvils, furnaces and spinning wheel a quest locks need it (gates.ts USE_GATES)', () => {
+    const ids = ['anvil:asgarnia:1', 'anvil:rellekka:0', 'furnace:rellekka:0', 'spinning-wheel:rellekka:0'];
     expect(ids.map(id => world.sites.find(s => s.id === id)?.reach)).toEqual([
         [['quest:doric']],
+        [['quest:viking']],
         [['quest:viking']],
         [['quest:viking']],
     ]);

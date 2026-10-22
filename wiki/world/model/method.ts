@@ -3,7 +3,7 @@
 // then its floor at a profile (cycle.ts).
 import type { Measured, MethodDef } from '../methods';
 import { SINKS, type wayFinder } from '../distance';
-import { wildernessLevel } from '../sources/zones';
+import { isMultiway, readZones, wildernessLevel, type Zones } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
 import {
     SINK_KINDS,
@@ -47,11 +47,23 @@ export interface MethodWay {
 
 /**
  * A process step's stop at a bare tile: the family has no site kinds (firemaking), so the record's tile is the stop
- * itself, priced like any tile under each way's requirement set.
+ * itself, priced like any tile under each way's requirement set. Its hazard is the tile's, as a site's is its tiles'.
  */
 export interface TileStop {
     tile: Tile;
+    wildernessLevel: number;
+    multiway: boolean;
 }
+
+/** The stop at `tile`, with its Wilderness level and whether its zone is multiway (sources/zones.ts). */
+export const tileStop = (tile: Tile, zones: Zones): TileStop => ({
+    tile,
+    wildernessLevel: wildernessLevel(tile),
+    multiway: isMultiway(zones, tile),
+});
+
+/** Whether a stop is a bare tile rather than a site. */
+export const isTileStop = (s: Site | TileStop): s is TileStop => 'tile' in s;
 
 /** A process step's place: a site, a bare tile, or `'here'`, where the previous action stands. */
 export type Stop = Site | TileStop | 'here';
@@ -92,18 +104,24 @@ export interface MethodContext {
     /** Hitpoints each food heals (items.ts readFoods). */
     foods: ReadonlyMap<string, number>;
     tools: Tools;
+    /** The free-to-play and multiway zones: a bare tile stop's hazard. */
+    zones: Zones;
     quests?: QuestFacts;
 }
 
-/** What the model reads besides the world and the quests: the families, items, foods and tool tiers. */
+/** What the model reads besides the world and the quests: the families, items, foods, tool tiers and zones. */
 export type MethodModel = Omit<MethodContext, 'world' | 'quests'>;
 
-/** The model from the game data; build.ts builds it once, for resolving the methods and for the training pages. */
-export const methodModel = (data: GameData): MethodModel => ({
+/**
+ * The model from the game data and the zones (read from the maps when not given); build.ts builds it once, for
+ * resolving the methods and for the training pages.
+ */
+export const methodModel = (data: GameData, zones: Zones = readZones()): MethodModel => ({
     families: buildFamilies(data),
     items: readItems(data.objs),
     foods: readFoods(data.dbrows),
     tools: readTools(data.objs),
+    zones,
 });
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -161,11 +179,11 @@ export const sinkStops = (sink: ResolvedMethod['sink']): (Site | TileStop)[] =>
 
 /** The sites among a sink's stops: its tile stops left out. */
 export const sinkSites = (sink: ResolvedMethod['sink']): Site[] =>
-    sinkStops(sink).filter((s): s is Site => !('tile' in s));
+    sinkStops(sink).filter((s): s is Site => !isTileStop(s));
 
 /** A stop's id and the tile its legs start and end at. */
-const stopId = (s: Site | TileStop): string => ('tile' in s ? tileStopId(s.tile) : s.id);
-const standOf = (s: Site | TileStop): Tile => ('tile' in s ? s.tile : s.stand!);
+const stopId = (s: Site | TileStop): string => (isTileStop(s) ? tileStopId(s.tile) : s.id);
+const standOf = (s: Site | TileStop): Tile => (isTileStop(s) ? s.tile : s.stand!);
 
 /** A withdraw record's obj, or a ModelError. */
 function withdrawObj(def: MethodDef): string {
@@ -219,11 +237,8 @@ function locate(
                     throw new ModelError(
                         `the process step family ${step.family} has no site kinds: give its tile or 'here'`,
                     );
-                // The hazard counts sites only (query.ts methodHazard): a tile in the Wilderness would go unseen.
-                if (wildernessLevel(step.at) > 0)
-                    throw new ModelError(`a bare tile step in the Wilderness, ${coord(step.at)}, is not modelled`);
                 last = undefined;
-                return { tile: step.at };
+                return tileStop(step.at, ctx.zones);
             }
             last = step.at ? siteAt(ctx.world, kinds, step.at) : nearest(kinds);
             return last;
@@ -245,12 +260,17 @@ function locate(
     const tour = [site, ...stops, site].filter((s, i, all) => i === 0 || stopId(s) !== stopId(all[i - 1]!));
     const pairs = family?.walks?.(site, def.params, ctx.world);
     const ways: MethodWay[] = [];
+    // The legs no set walks, to name in the error when none does.
+    const unwalked = new Set<string>();
     for (const reach of minimalSets(joined, ctx.quests)) {
         const legs: Leg[] = [];
         for (let i = 0; i + 1 < tour.length; i++) {
             const [a, b] = [tour[i]!, tour[i + 1]!];
             const way = finder.runTicksBetween(standOf(a), standOf(b), reach);
-            if (!way) break;
+            if (!way) {
+                unwalked.add(`${stopId(a)} to ${stopId(b)}`);
+                break;
+            }
             legs.push({ from: stopId(a), to: stopId(b), ...way });
         }
         if (legs.length !== tour.length - 1) continue;
@@ -261,7 +281,10 @@ function locate(
         const walks = pairs.map(w => finder.runTicksBetween(w.from, w.to, reach)?.runTicks);
         if (walks.every(w => w !== undefined)) ways.push({ reach, legs, walks: walks as number[] });
     }
-    if (!ways.length) throw new ModelError(`no requirement set gets to every site and walks each leg`);
+    if (!ways.length)
+        throw new ModelError(
+            `no requirement set gets to every site and walks each leg${unwalked.size ? ` (no walk from ${[...unwalked].join(', or ')})` : ''}`,
+        );
     const travel = (w: MethodWay) => w.legs.reduce((t, l) => t + l.runTicks, 0);
     ways.sort(
         (a, b) => travel(a) - travel(b) || a.reach.length - b.reach.length || cmp(a.reach.join(), b.reach.join()),
@@ -295,7 +318,7 @@ export function methodModels(
         const stop = stops[i];
         if (stop === undefined) throw new ModelError(`no site for process step ${i + 1}`);
         // A tile stop's family has no site kinds and reads no site: it is handed the last one.
-        if (stop !== 'here' && !('tile' in stop)) last = stop;
+        if (stop !== 'here' && !isTileStop(stop)) last = stop;
         const family = familyOf(ctx, step.family);
         return paramList(step.params).map(p => family.model(last, p, profile, world));
     });
@@ -486,10 +509,11 @@ export function toWorldMethod(m: ResolvedMethod): WorldMethod {
 const STALE = '; world.json is stale or hand-edited: run `bun run world`';
 
 /**
- * A world.json method back as a ResolvedMethod over `world`'s sites, for the model to rate. Throws when it names a
- * site world.json has not, or one whose stand has moved: the file is not one build.ts wrote.
+ * A world.json method back as a ResolvedMethod over `world`'s sites, for the model to rate; a bare tile stop's hazard
+ * from `zones` (read from the maps when not given and a tile stop needs them). Throws when it names a site world.json
+ * has not, or one whose stand has moved: the file is not one build.ts wrote.
  */
-export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): ResolvedMethod {
+export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>, zones?: Zones): ResolvedMethod {
     const { site, stand, bank, processors, skill, minLevel, levels, ways, ...def } = wm;
     const byId = (id: string | undefined, what: string): Site => {
         const s = id === undefined ? undefined : world.sites.find(x => x.id === id);
@@ -513,7 +537,7 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>): R
             const tile = (def.sink.mode === 'process' ? def.sink.steps[i]?.at : undefined) ?? 'here';
             if (tile === 'here' || tileStopId(tile) !== id)
                 throw new MethodError(wm.id, `world.json's process step ${id} is not the record's tile${STALE}`);
-            return { tile };
+            return tileStop(tile, (zones ??= readZones()));
         });
         // A process sink that banks names its bank, but a withdrawal's, which is its site.
         const banks = def.sink.end === 'bank' && def.family !== WITHDRAW;

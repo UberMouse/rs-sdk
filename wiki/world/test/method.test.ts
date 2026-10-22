@@ -19,6 +19,7 @@ import { locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { parseConfigs } from '../sources/configs';
 import { parseDbrows } from '../sources/dbrows';
+import { zoneKey, type Zones } from '../sources/zones';
 import type { Feature, FeatureKind, Nearest, Rect, Site, Tile } from '../types';
 import { at, Grid } from './grid';
 
@@ -202,9 +203,11 @@ const sites: Site[] = [
     site('pickpocket:town:0', [at(0, 3215, 3210)], 'guard1', 'guard1', at(0, 3215, 3211), { nearest: nearA(6) }),
 ];
 
+// One multiway zone, outside the Wilderness: the one holding (3210, 3220).
+const zones: Zones = { f2p: new Set(), multiway: new Set([zoneKey(at(0, 3210, 3220))]) };
 const ctx: MethodContext = {
     world: { sites, features },
-    ...methodModel(data),
+    ...methodModel(data, zones),
 };
 const finder = wayFinder(
     reachGraph({
@@ -642,7 +645,8 @@ describe('process steps, withdrawals and walks', () => {
         const tile = at(0, 3210, 3220);
         markedAt.length = 0;
         const m = resolveMethod(burnLure([{ family: 'burning', at: tile, params: fish }]), burnt, finder);
-        expect(m.sink).toEqual({ mode: 'process', steps: [{ tile }] });
+        // Its hazard is the tile's: in the multiway zone, outside the Wilderness.
+        expect(m.sink).toEqual({ mode: 'process', steps: [{ tile, wildernessLevel: 0, multiway: true }] });
         // The spot's stand (3201, 3220) to the tile: 9 steps, 5 run ticks, and back; no requirement of its own.
         expect(m.ways).toEqual([
             {
@@ -657,8 +661,8 @@ describe('process steps, withdrawals and walks', () => {
         expect(new Set(markedAt)).toEqual(new Set(['fishing-spot:river:0']));
         const wm = toWorldMethod(m);
         expect(wm.processors).toEqual(['tile:3210,3220,0']);
-        expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites })).toEqual(m);
-        expect(() => fromWorldMethod({ ...wm, processors: ['tile:3211,3220,0'] }, { sites })).toThrow(
+        expect(fromWorldMethod(JSON.parse(JSON.stringify(wm)), { sites }, zones)).toEqual(m);
+        expect(() => fromWorldMethod({ ...wm, processors: ['tile:3211,3220,0'] }, { sites }, zones)).toThrow(
             /process step tile:3211,3220,0 is not the record's tile; world.json is stale/,
         );
         // A bank after it names its tile: tile -> bank a's stand (3220, 3222), 10 steps, 5 run ticks.
@@ -692,10 +696,10 @@ describe('process steps, withdrawals and walks', () => {
             burnLure([{ family: 'burning', at: tile, params: fish }], 'bank'),
             /nothing is nearest a bare tile step: give the bank tile/,
         );
-        // The hazard counts sites only, so a tile in the Wilderness (z 3520 and up, level 1 there) is refused.
+        // A tile no walk gets to drops every way: the error names the leg.
         refused(
-            burnLure([{ family: 'burning', at: at(0, 3210, 3520), params: fish }]),
-            /a bare tile step in the Wilderness, \(3210, 3520, 0\), is not modelled/,
+            burnLure([{ family: 'burning', at: at(0, 3210, 3240), params: fish }]),
+            /no requirement set gets to every site and walks each leg \(no walk from fishing-spot:river:0 to tile:3210,3240,0\)$/,
         );
     });
 
