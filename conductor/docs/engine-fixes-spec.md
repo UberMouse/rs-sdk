@@ -152,8 +152,17 @@ outputs, `wiki/skills/attack.md`, `conductor/roadmap.md`.
   holds); "the plan's stops do not wait for a fight" becomes "the plan's stops wait out a fight" (stops at tick 9
   with `inCombat: false`); a new case for a fight longer than the cap.
 - [ ] Smoke `combat.itest.ts`: a `combat` run with a stop that lands mid-fight (e.g. `xp:<skill>:1` on a target
-  taking several hits) ends with `result.inCombat === false` and `durationMs` past the stop; a second run started
+  taking several hits) ends with a "fight settled" reason and `durationMs` past the stop; a second run started
   at once is not refused "in combat". Its RESULT lines are in the report.
+- [ ] A plan whose stop or `until` fired ends with the settle's status: a guard failing in the settle (death, low
+  HP) makes the plan `failed`, not `done`.
+
+**Amendment (2026-10-22, after Task 6's smoke):** the first criterion asked for `result.inCombat === false`.
+`TaskResult.inCombat` is the client's raw flag, which outlasts a fight by about 20 ticks; the settle ends on
+`isAttacked` (the flag plus an attacker next to the bot or a recent hit), the same test the start refusal uses, so
+the live result can read `inCombat: true` with the fight over. The contract field keeps its meaning; the smoke
+asserts the settle and the unrefused second run instead. Task 6's implementer found that `plan.ts` let a
+`planEnd` from a stop or `until` override a settle that failed; the second criterion pins the fix.
 
 ## Out of scope for this spec
 
