@@ -1,5 +1,5 @@
-// Not ported: sdk/actions.ts has no mining method; closest upstream is interactLoc @ 4c2069cc0.
-// bot.* has no mining method, and bot.interactLoc wraps a walk and an animation wait that mining doesn't need.
+// Not ported: predates upstream's bot.mineRock (sdk/actions.ts @ df3d8888a) and is not a port of it; written
+// against interactLoc @ 4c2069cc0, which wraps a walk and an animation wait that mining doesn't need.
 // Takes the ore pattern from the caller, interacts by the loc's published Mine option, and leaves
 // threats and dialogs (a level-up as the ore lands) to the guards.
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
