@@ -84,16 +84,19 @@ export function swingDamage(swing: Swing, remaining: number): number[] {
  * chance or max hit of 0).
  */
 function perKill(swing: Swing, hp: number, perSwing: (damage: number) => number): number {
+    // Every roll 1..max damages (a roll past the cap folds onto the cap), so the chance a swing damages is
+    // hit*max/(max+1) whatever the remaining HP, without the cancellation of 1 - P(0) at a tiny hit chance.
+    const damaging = (swing.hit * swing.max) / (swing.max + 1);
+    if (!(damaging > 0)) return Infinity;
     const v = [0];
     for (let h = 1; h <= hp; h++) {
-        const dist = swingDamage(swing, h);
-        const damaging = 1 - dist[0]!;
-        if (damaging <= 0) return Infinity;
-        let sum = dist[0]! * perSwing(0);
-        for (let d = 1; d < dist.length; d++) sum += dist[d]! * (perSwing(d) + v[h - d]!);
+        let sum = 0;
+        swingDamage(swing, h).forEach((p, d) => {
+            sum += p * (perSwing(d) + (d > 0 ? (v[h - d] ?? 0) : 0));
+        });
         v.push(sum / damaging);
     }
-    return v[hp]!;
+    return v[hp] ?? 0;
 }
 
 /** The expected swings to take an NPC from `hp` to 0 (swingDamage's distribution); Infinity when none can damage. */
@@ -101,8 +104,15 @@ export function expectedSwings(swing: Swing, hp: number): number {
     return perKill(swing, hp, () => 1);
 }
 
+/** Hitpoints' XP rate per 100 of damage*10, for every style (combat.rs2:167). */
+const HITPOINTS_XP_RATE = 133;
+/** The rate per 100 for accurate, aggressive and defensive melee, to the one skill the style trains (combat.rs2:145-150). */
+const STYLE_XP_RATE = 400;
+/** The rate per 100 for controlled melee, to each of Attack, Strength and Defence; written apart from Hitpoints' (combat.rs2:151-153). */
+const CONTROLLED_XP_RATE = 133;
+
 /**
- * The XP, in the script's tenths before XP_RATE, one hit of `damage` pays at `rate` per 100 (the script's 400 or 133)
+ * The XP, in the script's tenths before XP_RATE, one hit of `damage` pays at `rate` per 100 (the constants below)
  * and the NPC's `combat_xp_multiplier` per 1000: `scale(mult, 1000, scale(rate, 100, damage*10))`, each scale
  * truncated (combat.rs2:89,146-167).
  */
@@ -116,7 +126,7 @@ function hitXp(damage: number, rate: number, multiplier: number): number {
  * `multiplier` is the NPC's `combat_xp_multiplier` param.
  */
 export function hitpointsXpPerKill(swing: Swing, hp: number, multiplier: number): number {
-    return perKill(swing, hp, d => hitXp(d, 133, multiplier));
+    return perKill(swing, hp, d => hitXp(d, HITPOINTS_XP_RATE, multiplier));
 }
 
 /**
@@ -132,11 +142,11 @@ export function styleXpPerKill(
     multiplier: number,
 ): Partial<Record<Skill, number>> {
     if (style === 'controlled') {
-        const each = perKill(swing, hp, d => hitXp(d, 133, multiplier));
+        const each = perKill(swing, hp, d => hitXp(d, CONTROLLED_XP_RATE, multiplier));
         return { attack: each, strength: each, defence: each };
     }
     const skill: Skill = style === 'accurate' ? 'attack' : style === 'aggressive' ? 'strength' : 'defence';
-    return { [skill]: perKill(swing, hp, d => hitXp(d, 400, multiplier)) };
+    return { [skill]: perKill(swing, hp, d => hitXp(d, STYLE_XP_RATE, multiplier)) };
 }
 
 /** The base levels the combat level is taken from. */
