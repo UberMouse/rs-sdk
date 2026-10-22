@@ -1347,21 +1347,23 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: "the blighted Fisher Realm, the quest's: the whistle takes a player who gave Percival one (%grail >= ^grail_given_whistle) to the restored realm",
         source: 'quests/quest_grail/scripts/quest_grail.rs2:38',
     })),
-    {
-        site: 'tree:fisher-realm:6',
-        reason: "walled in by collision on the restored realm's south edge, past a drystone wall: no loc or npc op on or beside its pocket moves the player (the report's hints are its trees' own)",
-        source: 'quests/quest_grail/scripts/quest_grail.rs2:41',
-    },
+    walledIn(
+        'tree:fisher-realm:6',
+        "on the restored realm's south edge, past a drystone wall, where no loc or npc op on or beside its pocket moves the player",
+        "the report's hints are its trees' own",
+        'quests/quest_grail/scripts/quest_grail.rs2:41',
+    ),
     {
         site: 'pickpocket:rogues-castle:2',
         reason: "walled in on the castle's second floor: the stairs land beside their own loc, and the map places no door on that floor (maps/m51_61.jm2), so no walk gets from the landing to the rogues' room",
         source: 'ladders+stairs/scripts/stairs.rs2:249',
     },
-    {
-        site: 'tree:crash-island:1',
-        reason: "walled in by collision south of the gliders' beach: no loc or npc op on or beside its pocket moves the player (the report's hints are its tree's own)",
-        source: 'quests/quest_mm/scripts/mm_waydar.rs2:116',
-    },
+    walledIn(
+        'tree:crash-island:1',
+        "south of the gliders' beach, where no loc or npc op on or beside its pocket moves the player",
+        "the report's hint is its tree's own",
+        'quests/quest_mm/scripts/mm_waydar.rs2:116',
+    ),
     // North Tirannwn and the forest north of the Arandar pass: one stretch of land the grand wall round Prifddinas
     // (grandwall1) and the forest close in.
     ...[
@@ -1396,8 +1398,8 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         reason: 'inside the Fight Arena, whose door opens only at two of its stages (^arena_entered_ogre_fight, ^arena_defeated_ogre); after the quest it is locked, and a guard by it attacks the player (khazard_guard.rs2:132)',
         source: 'quests/quest_arena/scripts/quest_arena.rs2:95',
     })),
-    // Locs no tile a walk gets to can use: walled in by collision, with no loc or npc op on or beside their pockets that
-    // moves the player but their own; the reason names a loc or map flag that walls each, with its map square line.
+    // Locs no tile a walk gets to can use, built by `walledIn`; the reason names a loc or map flag that walls each, with
+    // its map square line.
     ...(
         [
             [
@@ -1612,7 +1614,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     ...[...[1, 3, 4, 5, 7, 9, 11, 12, 14, 15, 18, 19, 20].map(i => `tree:karamja:${i}`), 'tree:kharazi-jungle:0'].map(
         (site): ExpectedUnreached => ({
             site,
-            reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). All but a few of the jungle locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), so their gate rows, which open the locs, free no way through, and no row says the chain of cuts',
+            reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). The locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), and no row says the chain of cuts',
             source: 'quests/quest_legends/scripts/jungle_tree.rs2:161',
         }),
     ),
@@ -1650,7 +1652,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     },
     {
         site: 'rock:desert-mining-camp-mine:1',
-        reason: "rocks on the desert mining camp's mine floor, reached as rock:desert-mining-camp-mine:0 is (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, a nook the cave walls and an adamantite rock close in (cavewall_face1 at maps/m51_147.jm2:6452, adamantiterock1 at :6543), though that rock is used from the floor too",
+        reason: "rocks on the desert mining camp's mine floor, reached as rock:desert-mining-camp-mine:0 is (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, and the rock is mined from the floor too",
         source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
     },
     {

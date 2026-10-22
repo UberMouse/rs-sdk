@@ -42,17 +42,17 @@ The wiki today was generated per page type, with hand-written tables standing in
 
 The game data has everything needed:
 
-| Source | Gives |
-|---|---|
-| `server/content/maps/*.jm2` | every loc (`level x z: id shape rotation`) and NPC spawn (`level x z: id`) per map square, and tile flags (bridge `f2`) |
-| `server/content/pack/*.pack` | id -> config name for locs, NPCs, objs |
-| `scripts/**/configs/*.loc`, `*.npc`, `*.obj` (and `_unpack/*/all.*`) | names, ops, categories, stats, params |
-| `scripts/**/configs/*.dbrow` | what a loc yields: `trees.dbrow` (level, xp, product, respawn, success chance per axe), `mine.dbrow`, fishing structs and params |
-| `scripts/**/*.rs2` triggers | what can be used: `[oploc1,_tree]`, `[oploc1,_mining_rock_normal]`, `@openbank` callers, `[opnpc3,_bank_teller]` |
-| `scripts/ladders+stairs/scripts/*.rs2` | connector landings (`case <level>_<mx>_<mz>_<x>_<z> : p_telejump(...)`) |
-| `maps/labels.txt` | 136 world-map labels (seed for the area file) |
-| `maps/free2play.csv`, `maps/multiway.csv` | F2P and multi-combat zones, per 8x8 zone |
-| `sdk/pathfinding.ts` (rsmod collision data, door index) | walkability, offline |
+| Source                                                               | Gives                                                                                                                            |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `server/content/maps/*.jm2`                                          | every loc (`level x z: id shape rotation`) and NPC spawn (`level x z: id`) per map square, and tile flags (bridge `f2`)          |
+| `server/content/pack/*.pack`                                         | id -> config name for locs, NPCs, objs                                                                                           |
+| `scripts/**/configs/*.loc`, `*.npc`, `*.obj` (and `_unpack/*/all.*`) | names, ops, categories, stats, params                                                                                            |
+| `scripts/**/configs/*.dbrow`                                         | what a loc yields: `trees.dbrow` (level, xp, product, respawn, success chance per axe), `mine.dbrow`, fishing structs and params |
+| `scripts/**/*.rs2` triggers                                          | what can be used: `[oploc1,_tree]`, `[oploc1,_mining_rock_normal]`, `@openbank` callers, `[opnpc3,_bank_teller]`                 |
+| `scripts/ladders+stairs/scripts/*.rs2`                               | connector landings (`case <level>_<mx>_<mz>_<x>_<z> : p_telejump(...)`)                                                          |
+| `maps/labels.txt`                                                    | 136 world-map labels (seed for the area file)                                                                                    |
+| `maps/free2play.csv`, `maps/multiway.csv`                            | F2P and multi-combat zones, per 8x8 zone                                                                                         |
+| `sdk/pathfinding.ts` (rsmod collision data, door index)              | walkability, offline                                                                                                             |
 
 Worked example (2026-10-11, scanning for `@openbank` locs and NPCs): 25 bank sites; no Lumbridge
 bank in this cache; no Port Phasmatys (map square `m57_54` is absent); Canifis is one ground-floor
@@ -265,7 +265,7 @@ Built per `conductor/docs/world-index-phase2-spec.md`; the hand-written referenc
 
 The unreached report was worked per `world-index-unreached-spec.md`: the sites nobody walks to (walled in by
 collision, behind a minigame or a quest window) are `EXPECTED_UNREACHED` rows in `areas.ts`, each citing its
-script, and the build fails on a stale one. The report now lists none: the pockets players reach by a crossing the
+script, and the build fails on a stale one. The report is expected to be empty: the pockets players reach by a crossing the
 index misses are rows too, their reasons naming the crossing (`wiki/world/README.md`, "The unreached report"), and
 deriving those crossings is in `conductor/roadmap.md` (Review follow-ups). Outside the report: banker clusters
 across booths; unnamed underground areas outside the walker's `planeOf`.
@@ -290,7 +290,7 @@ Built per `conductor/docs/world-index-phase3-spec.md`; the hand-written referenc
   at each run's start levels and tool, and prints the paste-ready entry only when every counted run started the
   same. A plan names its method (`PlanDef.method`), checked both ways by `conductor/test/plans.test.ts`.
 - **`query.ts`** has `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
-  multiway })`: `met` omitted counts every token as met; a hazard is the maximum over the gather, processor and
+multiway })`: `met` omitted counts every token as met; a hazard is the maximum over the gather, processor and
   bank sites; a ProfileError drops a method and a data fault throws a MethodError naming it; the ranking is by
   floor XP/hr, ties by id, and each result carries its rated way and its measured figures.
 - **No calibration report in the build.** The comparison is `stats.ts --methods` (percent of floor), not a
