@@ -7,9 +7,12 @@
 // - A run's start levels are read from the recording of its first phase run (its first state); its tool is the best
 //   axe or pickaxe the woodcutting or mining checker would pick, at those levels, from what the bot held at the start
 //   of any of its phase runs (inventory or worn), null when none shows one. Its worn objs are those of its first phase
-//   run's start, the profile's `worn` for its floor (a combat method's gear in place of the record's). A combat method's
-//   run (one training Attack, Strength, Defence or Hitpoints) records the base levels of every skill the combat level
-//   is taken from, not only those it trains: they set its hits, its damage taken and the npcs' aggression.
+//   run's start that the method's families read (model/method.ts wornRead: every one for combat, a staff of fire for
+//   superheat, none for woodcutting), by obj config name: the profile's `worn` for its floor, over the record's gear
+//   slot by slot. A worn item whose display name maps to no one obj config is a line to fill in the entry, and its run
+//   has no floor. A combat method's run (one training Attack, Strength, Defence or Hitpoints) records the base levels
+//   of every skill the combat level is taken from, not only those it trains: they set its hits, its damage taken and
+//   the npcs' aggression.
 // - The gap weighs each run's floor at its own start by its hours, so runs at different levels each meet their own
 //   floor. Runs with no recorded start count in neither side of it.
 import type { BotWorldState } from '../../sdk/types';
@@ -75,9 +78,6 @@ export function runStart(state: BotWorldState): RunStart {
     };
 }
 
-/** An item's name as its obj config name, as methods.ts names objs: `Rune scimitar` is `rune_scimitar`. */
-const objName = (name: string): string => name.toLowerCase().replaceAll(' ', '_');
-
 /** The skills a melee method trains, any of which makes a run record the combat level's skills (COMBAT_LEVEL). */
 const MELEE: readonly Skill[] = ['attack', 'strength', 'defence', 'hitpoints'];
 /** The skills the combat level is taken from (combat_level.rs2:1-10, wiki/world/model/combat.ts combatLevel). */
@@ -100,8 +100,13 @@ export interface MethodRun {
      * level); absent when its recording shows none.
      */
     levels?: Partial<Record<Skill, number>>;
-    /** The objs it wore at that start, by obj config name; absent when the start does not show them. */
+    /**
+     * The objs it wore at that start that the method reads (MethodRunsInput.wornRead), by obj config name; absent
+     * when none or the start does not show them.
+     */
     worn?: string[];
+    /** Those worn objs read whose display name maps to no one obj config (MethodRunsInput.objName): absent for none. */
+    unnamedWorn?: string[];
     /** The best tool of the method's kind it held at any of its phase runs' starts, at its start level; null when none. */
     tool: string | null;
     /** The floor's XP/hr at its start levels and tool (rounded), or why there is none. */
@@ -139,6 +144,8 @@ export interface MethodRuns {
     gap: Partial<Record<Skill, { pct: number; shortfall: number }>>;
     /** The `measured` entry for methods.ts: present when every counted run started at the same levels, tool and worn objs. */
     entry?: Measured;
+    /** The entry's worn items with no obj config name (MethodRun.unnamedWorn), for formatMeasured to leave to fill. */
+    unnamedWorn?: string[];
 }
 
 export interface MethodRunsInput {
@@ -153,6 +160,10 @@ export interface MethodRunsInput {
     /** A phase run's start, from its recording; undefined when it has none. */
     start(phaseRun: TimedResult): RunStart | undefined;
     tools: Tools;
+    /** The worn objs the method's families read (wiki/world/model/method.ts wornRead): every one, or these. */
+    wornRead(method: Pick<WorldMethod, 'id'>): 'all' | ReadonlySet<string>;
+    /** An item's obj config name by its display name (wiki/world/model/items.ts readObjNames); undefined for none. */
+    objName(name: string): string | undefined;
     /** The floor at a measured entry's profile (wiki/world/model/method.ts measuredProfile). */
     floor(method: Pick<WorldMethod, 'id' | 'skill'>, measured: Measured): CycleRates;
 }
@@ -175,6 +186,9 @@ export function methodRuns(input: MethodRunsInput): MethodRuns[] {
     const plans = selectResults(input.results, input.since === undefined ? {} : { since: input.since });
     return input.methods.map(m => methodRunsOf(m, plans, phaseRuns, input));
 }
+
+/** A run's worn objs as one string, a start that shows none the same as one that wore none. */
+const wornKey = (r: MethodRun): string => `${(r.worn ?? []).join()};${(r.unnamedWorn ?? []).join()}`;
 
 function methodRunsOf(
     m: MethodRunsInput['methods'][number],
@@ -264,9 +278,10 @@ function methodRunsOf(
     const same = starts.every(
         r =>
             r.tool === first.tool &&
-            r.worn?.join() === first.worn?.join() &&
+            wornKey(r) === wornKey(first) &&
             recorded.every(s => r.levels![s] === first.levels![s]),
     );
+    if (same && first.unnamedWorn) out.unnamedWorn = first.unnamedWorn;
     if (same)
         out.entry = {
             xpPerHour: out.counted.xpPerHour,
@@ -300,13 +315,23 @@ function runOf(
     const levels: Partial<Record<Skill, number>> = {};
     for (const s of recordedSkills(skills)) if (first.levels[s] !== undefined) levels[s] = first.levels[s];
     figures.levels = levels;
-    if (first.worn) figures.worn = first.worn.map(objName);
+    const read = input.wornRead(m);
+    const worn = (first.worn ?? []).map(name => ({ name, obj: input.objName(name) }));
+    const wornRead = worn.filter(w => read === 'all' || (w.obj !== undefined && read.has(w.obj)));
+    const named = wornRead.flatMap(w => (w.obj === undefined ? [] : [w.obj]));
+    const unnamed = wornRead.flatMap(w => (w.obj === undefined ? [w.name] : []));
+    if (named.length) figures.worn = named;
+    if (unnamed.length) figures.unnamedWorn = unnamed;
     if (toolKind) {
-        const held = new Set(starts.flatMap(st => (st?.held ?? []).map(objName)));
+        const held = new Set(starts.flatMap(st => (st?.held ?? []).map(input.objName)));
         figures.tool = bestTool(
             input.tools[toolKind].filter(t => held.has(t.obj)),
             first.levels[m.skill] ?? 1,
         );
+    }
+    if (unnamed.length) {
+        figures.floorError = `worn ${unnamed.join(', ')}: no one obj config has that name, so no floor`;
+        return { figures };
     }
     // The floor at the run's start levels: a run that levels up trains above them for part of its time, so this
     // floor understates what the run's levels made possible (levelRange shows where that happened).
@@ -379,8 +404,16 @@ const record = (r: Partial<Record<string, number>>): string =>
         .map(([k, v]) => `${k}: ${literal(v!)}`)
         .join(', ')} }`;
 
-/** A `measured` entry as methods.ts formats one; a tool the method reads but no run showed is a line to fill. */
-export function formatMeasured(entry: Measured, toolKind: MethodRuns['toolKind'], indent = ''): string {
+/**
+ * A `measured` entry as methods.ts formats one; a tool the method reads but no run showed, and a worn item with no obj
+ * config name (`unnamedWorn`), are lines to fill.
+ */
+export function formatMeasured(
+    entry: Measured,
+    toolKind: MethodRuns['toolKind'],
+    indent = '',
+    unnamedWorn: readonly string[] = [],
+): string {
     const lines = [
         '{',
         `    xpPerHour: ${record(entry.xpPerHour)},`,
@@ -393,6 +426,7 @@ export function formatMeasured(entry: Measured, toolKind: MethodRuns['toolKind']
                 ]
               : []),
         ...(entry.worn ? [`    worn: [${entry.worn.map(o => `'${o}'`).join(', ')}],`] : []),
+        ...unnamedWorn.map(name => `    // worn: '<FILL IN: the obj config name of ${name}>',`),
         `    bot: '${entry.bot}',`,
         `    date: '${entry.date}',`,
         `    hours: ${entry.hours},`,
@@ -420,7 +454,8 @@ function runRow(r: MethodRun, toolKind: MethodRuns['toolKind']): string {
     else {
         cells.push(levelsText(r.levels));
         if (toolKind) cells.push(r.tool ?? `no ${toolKind} held`);
-        if (r.worn?.length) cells.push(`worn ${r.worn.join(', ')}`);
+        const worn = [...(r.worn ?? []), ...(r.unnamedWorn ?? []).map(n => `${n} (no obj config)`)];
+        if (worn.length) cells.push(`worn ${worn.join(', ')}`);
     }
     cells.push(`${r.hours.toFixed(2)} h`);
     for (const [s, measured] of Object.entries(r.xpPerHour)) {
@@ -487,7 +522,7 @@ export function formatMethodRuns(list: MethodRuns[]): string[] {
                     (r.toolKind ? `, ${r.entry.tool ?? `no ${r.toolKind} held (fill it in the entry)`}` : ''),
             );
             out.push('  measured entry (methods.ts):');
-            out.push(formatMeasured(r.entry, r.toolKind, '    '));
+            out.push(formatMeasured(r.entry, r.toolKind, '    ', r.unnamedWorn));
         } else {
             out.push(`  the runs started at different levels${r.toolKind ? `, ${r.toolKind}s` : ''} or worn objs:`);
             for (const run of r.perRun) out.push(`    ${runRow(run, r.toolKind)}`);

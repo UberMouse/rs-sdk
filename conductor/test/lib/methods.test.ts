@@ -8,6 +8,7 @@ import type { BotWorldState } from '../../../sdk/types';
 import type { Measured } from '../../../wiki/world/methods';
 import type { CycleRates } from '../../../wiki/world/model/cycle';
 import { readGameData } from '../../../wiki/world/model/families/index';
+import { readObjNames } from '../../../wiki/world/model/items';
 import { fromWorldMethod, measuredFigures, methodModel } from '../../../wiki/world/model/method';
 import type { Tools } from '../../../wiki/world/model/profile';
 import {
@@ -23,6 +24,7 @@ import {
 import { errorResult } from '../../lib/run-cli';
 import { readStartState, type TimedResult } from '../../lib/runs';
 import { WORLD } from '../../lib/world-index';
+import { readConfigs } from '../../../wiki/world/sources/configs';
 
 describe('checkPlanMethods', () => {
     test('a link both sides record passes; a plan with no method is only listed', () => {
@@ -123,6 +125,14 @@ const SAME: Record<string, RunStart> = { ...STARTS, 'mining-50': { levels: { min
 /** A floor of 4,000 XP/h per Mining level the run started at. */
 const perLevel = (_: unknown, m: Measured) => ({ xpPerHour: { mining: m.level.mining! * 4_000 } }) as CycleRates;
 
+/** The game's obj config names by display name. */
+const OBJ_NAMES = readObjNames(readConfigs('obj'));
+/** The worn objs each method here reads: a melee method every one, a superheat one the staff of fire, others none. */
+const WORN_READ: Record<string, 'all' | ReadonlySet<string>> = {
+    giants: 'all',
+    superheat: new Set(['staff_of_fire']),
+};
+
 function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
     return {
         bot: 'tester',
@@ -131,6 +141,8 @@ function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
         results: RESULTS,
         start: r => STARTS[r.logFile],
         tools: TOOLS,
+        wornRead: m => WORN_READ[m.id] ?? new Set(),
+        objName: OBJ_NAMES,
         floor: perLevel,
         ...o,
     };
@@ -158,6 +170,15 @@ const byRun = (run1: RunStart, run2: RunStart) => (run: TimedResult) => (run.par
 /** The GIANTS entry of run-1 started at SCIMITAR and run-2 at `run2`. */
 const giantsEntry = (run2: RunStart) =>
     methodRuns(input({ methods: [GIANTS], start: byRun(SCIMITAR, run2) }))[0]!.entry;
+
+/** SAME, run-1 wearing `worn` and run-2 nothing. */
+const dressed = (worn: string[]): Record<string, RunStart> => ({
+    ...SAME,
+    'mining-10': { ...SAME['mining-10']!, worn },
+    'mining-50': { ...SAME['mining-50']!, worn: [] },
+});
+/** A start at Magic 50 and Smithing 40, wearing `worn`. */
+const caster = (worn: string[]): RunStart => ({ levels: { magic: 50, smithing: 40 }, held: worn, worn });
 
 describe('methodRuns', () => {
     test("the method's plans' whole runs: its skills' XP over their total hours, other plans and skills left out", () => {
@@ -300,12 +321,56 @@ describe('methodRuns', () => {
             expect(giantsEntry(fighter(['Rune scimitar', 'Amulet of power'], { mining: 71 }))).toBeDefined();
         });
 
+        test('a start recorded before worn objs were read wore what an empty one did', () => {
+            const unread = { ...SCIMITAR, worn: undefined };
+            const bare = fighter([]);
+            const r = methodRuns(input({ methods: [GIANTS], start: byRun(unread, bare) }))[0]!;
+            expect(r.entry).toBeDefined();
+            expect(r.entry!.worn).toBeUndefined();
+        });
+
+        test('display names map through the obj configs; one that maps to none is a line to fill and no floor', () => {
+            // `Pirate's hook` is the config piratehook, not pirate's_hook; no obj is named `Dragon dagger(p++)`.
+            const start = fighter(['Amulet of glory(4)', "Pirate's hook", 'Dragon dagger(p++)']);
+            const r = methodRuns(input({ methods: [GIANTS], start: byRun(start, start) }))[0]!;
+            expect(r.entry!.worn).toEqual(['amulet_of_glory_4', 'piratehook']);
+            expect(r.unnamedWorn).toEqual(['Dragon dagger(p++)']);
+            expect(r.perRun[0]!.floorError).toBe(
+                'worn Dragon dagger(p++): no one obj config has that name, so no floor',
+            );
+            const lines = formatMeasured(r.entry!, r.toolKind, '', r.unnamedWorn);
+            expect(lines).toContain("    worn: ['amulet_of_glory_4', 'piratehook'],");
+            expect(lines).toContain("    // worn: '<FILL IN: the obj config name of Dragon dagger(p++)>',");
+        });
+
         test("a run's row names its worn objs", () => {
             const lines = formatMethodRuns(
                 methodRuns(input({ methods: [GIANTS], start: byRun(fighter(['Rune scimitar']), fighter([])) })),
             );
             expect(lines.find(l => l.includes(' run-1 '))).toContain('worn rune_scimitar');
             expect(lines.find(l => l.includes(' run-2 '))).not.toContain('worn');
+        });
+    });
+
+    describe('a skilling method: only the worn objs its families read', () => {
+        test('mining runs in different armour, a pickaxe wielded or not, still make one entry, wearing none', () => {
+            const r = methodRuns(input({ start: run => dressed(['Iron full helm', 'Rune pickaxe'])[run.logFile] }))[0]!;
+            expect(r.entry).toBeDefined();
+            expect(r.entry!.worn).toBeUndefined();
+            expect(r.perRun.map(p => p.worn)).toEqual([undefined, undefined]);
+        });
+
+        test('a superheat pair with and without the staff of fire splits; the staff alone is recorded', () => {
+            const SUPER = {
+                id: 'superheat',
+                plans: ['iron-bulk'],
+                skill: 'magic' as const,
+                levels: { magic: 43, smithing: 30 },
+            };
+            const entry = (run1: string[], run2: string[]) =>
+                methodRuns(input({ methods: [SUPER], start: byRun(caster(run1), caster(run2)) }))[0]!.entry;
+            expect(entry(['Staff of fire', 'Iron full helm'], ['Iron full helm'])).toBeUndefined();
+            expect(entry(['Staff of fire', 'Iron full helm'], ['Staff of fire'])!.worn).toEqual(['staff_of_fire']);
         });
     });
 

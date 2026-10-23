@@ -19,7 +19,8 @@
 // into the knowledge base from here, not from a single run.
 import { join, resolve } from 'node:path';
 import { readGameData } from '../../wiki/world/model/families/index';
-import { methodModel } from '../../wiki/world/model/method';
+import { readObjNames } from '../../wiki/world/model/items';
+import { methodModel, wornRead } from '../../wiki/world/model/method';
 import { formatMethodRuns, measuredFloor, methodRuns, runStart } from '../lib/methods';
 import { REPO_ROOT } from '../lib/env';
 import { loadResults, readStartState, selectResults } from '../lib/runs';
@@ -69,7 +70,9 @@ if (values.methods) {
         fail(`--methods counts whole plan runs: no --task or --phases\n${usage}`, 2);
     // Imported here: the world index loads world.json on import, which only --methods needs.
     const { WORLD } = await import('../lib/world-index');
-    const model = methodModel(readGameData());
+    const data = readGameData();
+    const model = methodModel(data);
+    const reads = new Map(WORLD.methods.map(m => [m.id, wornRead(m, model)]));
     // A recording that can't be read (empty, another version) reads as missing: a plan run whose first phase run's it
     // is has no recorded start.
     const unreadable = new Map<string, string>();
@@ -89,6 +92,8 @@ if (values.methods) {
             }
         },
         tools: model.tools,
+        wornRead: m => reads.get(m.id)!,
+        objName: readObjNames(data.objs),
         floor: measuredFloor(WORLD, model),
     });
     if (unreadable.size)
