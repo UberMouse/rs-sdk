@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Karamja](../places/karamja.md) | (2925, 3143) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Karamja](../places/karamja.md) | (2925, 3143) | 1 | 3 | (2922, 3140)-(2928, 3146) | 100 ticks | - | yes |
 
 ## Interactions
 

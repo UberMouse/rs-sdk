@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Seers' Village (Kandarin)](../places/seers-village.md) | (2733, 3472) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2733, 3472) | 1 | 5 | (2728, 3467)-(2738, 3477) | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | no |
 
 ## Interactions
 

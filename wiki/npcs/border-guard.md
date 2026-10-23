@@ -23,10 +23,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Misthalin](../places/misthalin.md) | (3267, 3228) | 2 | yes |
-| [Toll gate (Kharidian Desert)](../places/toll-gate.md) | (3268, 3228) | 2 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Misthalin](../places/misthalin.md) | (3267, 3228) | 2 | 0 | (3267, 3226)-(3267, 3229) | 100 ticks | - | yes |
+| [Toll gate (Kharidian Desert)](../places/toll-gate.md) | (3268, 3228) | 2 | 0 | (3268, 3226)-(3268, 3229) | 100 ticks | - | yes |
 
 ## Interactions
 

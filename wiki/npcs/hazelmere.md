@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Kandarin](../places/kandarin.md) | (2678, 3086) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Kandarin](../places/kandarin.md) | (2678, 3086) L1 | 1 | 0 | (2678, 3086)-(2678, 3086) | 100 ticks | - | no |
 
 ## Interactions
 

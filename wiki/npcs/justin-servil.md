@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2601, 3168) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2601, 3168) | 1 | 0 | (2601, 3168)-(2601, 3168) | 100 ticks | - | no |
 
 ## Interactions
 

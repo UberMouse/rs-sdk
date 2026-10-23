@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2603, 4582) | 1 | no |
-| [Ship Yard (Karamja)](../places/ship-yard.md) | (2999, 3043) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2603, 4582) | 1 | 0 | (2603, 4582)-(2603, 4582) | 100 ticks | - | no |
+| [Ship Yard (Karamja)](../places/ship-yard.md) | (2999, 3043) | 1 | 5 | (2994, 3038)-(3006, 3054) | 10 ticks | - | no |
 
 ## Drops
 

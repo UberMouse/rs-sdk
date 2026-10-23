@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2928, 3546) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2928, 3546) | 1 | 5 | (2923, 3541)-(2933, 3551) | 100 ticks | - | no |
 
 ## Interactions
 

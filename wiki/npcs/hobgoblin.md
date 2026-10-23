@@ -10,39 +10,39 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2515, 9570) | 5 | no |
-| - | (2521, 9561) | 2 | no |
-| - | (2531, 9556) | 2 | no |
-| - | (3469, 9796) | 1 | no |
-| - | (3469, 9797) | 1 | no |
-| [Asgarnia](../places/asgarnia.md) | (2906, 3291) | 3 | yes |
-| [Asgarnia](../places/asgarnia.md) | (2909, 3294) | 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | (2919, 3268) | 2 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9578) | 3 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9594) | 3 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3019, 9591) | 1 | yes |
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2566, 9632) | 1 | no |
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2573, 9626) | 1 | no |
-| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2911, 3280) | 4 | yes |
-| [Crandor](../places/crandor.md) | (2821, 3287) | 3 | yes |
-| [Crandor](../places/crandor.md) | (2824, 3298) | 1 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3118, 9871) | 1 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3124, 9875) | 2 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3126, 9878) | 2 | yes |
-| [Kandarin](../places/kandarin.md) | (2445, 3358) | 3 | no |
-| [Kandarin](../places/kandarin.md) | (2446, 3362) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2449, 3330) | 3 | no |
-| [Kandarin](../places/kandarin.md) | (2656, 3720) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2659, 3729) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2672, 3728) | 2 | no |
-| [Karamja](../places/karamja.md) | (2791, 3013) | 3 | no |
-| [Wilderness](../places/wilderness.md) | (3085, 3742) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3086, 3761) | 22 | yes |
-| [Wilderness](../places/wilderness.md) | (3094, 3746) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3106, 3761) | 2 | yes |
-| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2697, 9689) | 4 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2515, 9570) | 5 | 15 | (2498, 9553)-(2534, 9588) | 100 ticks | - | no |
+| - | (2521, 9561) | 2 | 15 | (2504, 9546)-(2537, 9576) | 100 ticks | - | no |
+| - | (2531, 9556) | 2 | 15 | (2514, 9540)-(2548, 9571) | 100 ticks | - | no |
+| - | (3469, 9796) | 1 | 15 | (3450, 9781)-(3486, 9813) | 60 ticks | - | no |
+| - | (3469, 9797) | 1 | 15 | (3454, 9782)-(3484, 9812) | 100 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3291) | 3 | 15 | (2890, 3273)-(2923, 3310) | 100 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (2909, 3294) | 1 | 3 | (2906, 3291)-(2912, 3297) | 100 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (2919, 3268) | 2 | 15 | (2902, 3251)-(2935, 3284) | 100 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9578) | 3 | 15 | (2995, 9563)-(3031, 9594) | 100 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3012, 9594) | 3 | 15 | (2995, 9578)-(3031, 9610) | 100 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3019, 9591) | 1 | 3 | (3016, 9588)-(3022, 9594) | 100 ticks | - | yes |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2566, 9632) | 1 | 15 | (2551, 9617)-(2581, 9647) | 100 ticks | - | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2573, 9626) | 1 | 15 | (2558, 9611)-(2588, 9641) | 100 ticks | - | no |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2911, 3280) | 4 | 15 | (2894, 3258)-(2930, 3300) | 100 ticks | - | yes |
+| [Crandor](../places/crandor.md) | (2821, 3287) | 3 | 15 | (2803, 3267)-(2837, 3306) | 100 ticks | - | yes |
+| [Crandor](../places/crandor.md) | (2824, 3298) | 1 | 15 | (2809, 3283)-(2839, 3313) | 100 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3118, 9871) | 1 | 3 | (3115, 9868)-(3121, 9874) | 100 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3124, 9875) | 2 | 15 | (3107, 9859)-(3141, 9890) | 100 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3126, 9878) | 2 | 15 | (3108, 9861)-(3143, 9897) | 4 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2445, 3358) | 3 | 3 | (2440, 3354)-(2449, 3362) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2446, 3362) | 2 | 15 | (2430, 3346)-(2462, 3377) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2449, 3330) | 3 | 3 | (2445, 3326)-(2454, 3334) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2656, 3720) | 1 | 3 | (2653, 3717)-(2659, 3723) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2659, 3729) | 2 | 3 | (2653, 3724)-(2664, 3734) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2672, 3728) | 2 | 3 | (2666, 3722)-(2678, 3734) | 100 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2791, 3013) | 3 | 15 | (2772, 2998)-(2809, 3028) | 100 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3085, 3742) | 1 | 15 | (3070, 3727)-(3100, 3757) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3086, 3761) | 22 | 15 | (3060, 3727)-(3114, 3789) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3094, 3746) | 1 | 15 | (3079, 3731)-(3109, 3761) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3106, 3761) | 2 | 15 | (3090, 3743)-(3122, 3778) | 100 ticks | - | yes |
+| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2697, 9689) | 4 | 3 | (2691, 9684)-(2702, 9696) | 100 ticks | - | no |
 
 ## Drops
 

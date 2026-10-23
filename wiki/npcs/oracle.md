@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3015, 3504) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ice Mountain (Asgarnia)](../places/ice-mountain.md) | (3015, 3504) | 1 | 5 | (3010, 3499)-(3020, 3509) | 100 ticks | - | yes |
 
 ## Interactions
 

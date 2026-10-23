@@ -91,7 +91,10 @@ const CONSTANTS = new Map([
     ['^map_findsquare_lineofwalk', constant('0')],
     ['^map_findsquare_lineofsight', constant('1')],
 ]);
-const cluster = (config: string, t: Tile) => ({ config, centre: t, bbox: { x1: t.x, z1: t.z, x2: t.x, z2: t.z } });
+const cluster = (config: string, t: Tile) => {
+    const box = { x1: t.x, z1: t.z, x2: t.x, z2: t.z };
+    return { config, centre: t, bbox: box, roam: box };
+};
 const SPAWNS = [
     cluster('wizard_a', at(0, 3205, 3225)),
     cluster('wizard_b', at(0, 3210, 3228)),

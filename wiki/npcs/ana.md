@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3302, 9466) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3302, 9466) | 1 | 3 | (3299, 9463)-(3305, 9469) | 100 ticks | - | no |
 
 ## Interactions
 

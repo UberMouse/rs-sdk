@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Draynor jail (Draynor Village)](../places/jail.md) | (3128, 3244) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3128, 3244) | 1 | 5 | (3123, 3239)-(3133, 3249) | 100 ticks | - | yes |
 
 ## Interactions
 

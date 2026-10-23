@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2187, 3149) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Tyras Camp (Tirannwn)](../places/tyras-camp.md) | (2187, 3149) | 1 | 5 | (2182, 3144)-(2192, 3154) | 100 ticks | - | no |
 
 ## Interactions
 

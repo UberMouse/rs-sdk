@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2531, 3330) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2531, 3330) L1 | 1 | 5 | (2526, 3325)-(2536, 3335) | 100 ticks | - | no |
 
 ## Interactions
 

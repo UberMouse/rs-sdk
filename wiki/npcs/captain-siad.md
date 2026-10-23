@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3291, 3032) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3291, 3032) L1 | 1 | 0 | (3291, 3032)-(3291, 3032) | 100 ticks | - | no |
 
 ## Interactions
 

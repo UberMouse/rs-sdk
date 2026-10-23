@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Haunted Mine](../places/haunted-mine.md) | (2788, 4455) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2788, 4455) | 1 | 0 | (2788, 4455)-(2788, 4455) | 1 ticks | - | no |
 
 ## Interactions
 

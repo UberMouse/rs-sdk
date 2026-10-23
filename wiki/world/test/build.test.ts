@@ -57,6 +57,9 @@ const world: World = {
             bbox: { x1: 4, z1: 5, x2: 6, z2: 5, level: 0 },
             count: 2,
             f2p: true,
+            wander: 0,
+            respawnTicks: 100,
+            roam: { x1: 4, z1: 5, x2: 6, z2: 5, level: 0 },
             reach: [[]],
         },
     ],
@@ -240,7 +243,7 @@ describe('serializeWorld', () => {
                 '  ],',
                 '  "sites": [],',
                 '  "npcSpawns": [',
-                '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true,"reach":[[]]}',
+                '    {"config":"man","areaPath":["town"],"centre":{"level":0,"x":5,"z":5},"bbox":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"count":2,"f2p":true,"wander":0,"respawnTicks":100,"roam":{"x1":4,"z1":5,"x2":6,"z2":5,"level":0},"reach":[[]]}',
                 '  ],',
                 '  "connectors": [',
                 '    {"feature":0,"loc":{"level":0,"x":1,"z":2},"op":1,"opName":"Climb-up","direction":"up","landing":{"level":1,"x":1,"z":3},"stand":{"level":0,"x":1,"z":3},"relative":true,"source":"ladders+stairs/scripts/ladders.rs2:81"},',
@@ -1297,6 +1300,9 @@ describe('reach on sites and npc spawn clusters', () => {
         bbox: { x1, z1: 0, x2, z2: 0, level: 0 },
         count: 2,
         f2p: false,
+        wander: 0,
+        respawnTicks: 100,
+        roam: { x1, z1: 0, x2, z2: 0, level: 0 },
     });
 
     test("a site's reach is its stand's sets; one with no stand, or a stand no set reaches, has none", () => {
@@ -1378,10 +1384,12 @@ describe('reach on sites and npc spawn clusters', () => {
         // The engine's entity test: from a tile sharing an edge with the npc, but not through the wall.
         const walled: StepCollision = {
             walkable: () => true,
+            land: () => true,
             reached: (from, npc) => edge(from, npc) && !across31(from, npc.x),
             canStep: (_l, x, z, dx, _dz) => !across31({ level: 0, x, z }, x + dx),
         };
-        const goblin = { ...cluster(30, 30), centre: tile(30, 5), bbox: { x1: 30, z1: 5, x2: 30, z2: 5, level: 0 } };
+        const box = { x1: 30, z1: 5, x2: 30, z2: 5, level: 0 };
+        const goblin = { ...cluster(30, 30), centre: tile(30, 5), bbox: box, roam: box };
         const reachBeside = (collision: StepCollision) =>
             addReach({ sites: [], npcSpawns: [goblin] }, only, c => besideCluster(c, collision)).npcSpawns[0]!.reach;
         expect(besideCluster(goblin, walled)).not.toContainEqual(across);

@@ -24,16 +24,16 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3624) | 1 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) | 1 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3033, 3630) | 4 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) | 1 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) L1 | 1 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3027, 3630) L1 | 5 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3624) L1 | 1 | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) L1 | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3624) | 1 | 5 | (3017, 3619)-(3027, 3629) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) | 1 | 5 | (3017, 3634)-(3027, 3644) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3033, 3630) | 4 | 5 | (3024, 3619)-(3041, 3643) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) | 1 | 5 | (3031, 3634)-(3041, 3644) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) L1 | 1 | 5 | (3017, 3634)-(3027, 3644) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3027, 3630) L1 | 5 | 5 | (3017, 3619)-(3040, 3642) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3624) L1 | 1 | 5 | (3031, 3619)-(3041, 3629) | 100 ticks | - | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) L1 | 1 | 5 | (3031, 3634)-(3041, 3644) | 100 ticks | - | yes |
 
 ## Drops
 

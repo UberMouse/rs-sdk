@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3541) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3541) | 1 | 0 | (2893, 3541)-(2893, 3541) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 1 | 2 | (2898, 3530)-(2902, 3534) | 100 ticks | - | no |
 
 ## Interactions
 

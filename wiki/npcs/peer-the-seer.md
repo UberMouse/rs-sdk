@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2634, 3668) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2634, 3668) | 1 | 2 | (2632, 3666)-(2636, 3670) | 100 ticks | - | no |
 
 ## Interactions
 

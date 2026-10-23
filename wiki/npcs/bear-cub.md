@@ -11,12 +11,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2690, 3613) | 2 | no |
-| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2692, 3611) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2721, 3643) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2721, 3644) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2690, 3613) | 2 | 12 | (2677, 3600)-(2703, 3626) | 100 ticks | - | no |
+| [Fremennik Province (Kandarin)](../places/fremennik-province.md) | (2692, 3611) | 2 | 12 | (2679, 3598)-(2705, 3624) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2721, 3643) | 2 | 12 | (2707, 3631)-(2735, 3655) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2721, 3644) | 2 | 12 | (2709, 3629)-(2733, 3658) | 100 ticks | - | no |
 
 ## Drops
 

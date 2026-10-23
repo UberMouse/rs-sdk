@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Miscellania and Etceteria](../places/miscellania.md) | (2502, 3868) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2502, 3868) L1 | 1 | 2 | (2500, 3866)-(2504, 3870) | 100 ticks | - | no |
 
 ## Interactions
 

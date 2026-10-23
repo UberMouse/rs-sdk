@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2622, 3277) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2622, 3277) | 1 | 3 | (2619, 3274)-(2625, 3280) | 60 ticks | - | no |
 
 ## Drops
 

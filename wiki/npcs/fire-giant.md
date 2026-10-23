@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2574, 9892) | 10 | no |
-| - | (3050, 10342) | 5 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2658, 9501) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9481) | 3 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2667, 9496) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2628, 9543) L2 | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2632, 9585) L2 | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2634, 9577) L2 | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2637, 9560) L2 | 5 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2574, 9892) | 10 | 15 | (2547, 9868)-(2604, 9913) | 4 ticks | - | no |
+| - | (3050, 10342) | 5 | 3 | (3043, 10335)-(3057, 10350) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2658, 9501) | 1 | 3 | (2655, 9498)-(2661, 9504) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9481) | 3 | 3 | (2652, 9477)-(2667, 9485) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2667, 9496) | 1 | 3 | (2664, 9493)-(2670, 9499) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2628, 9543) L2 | 1 | 3 | (2625, 9540)-(2631, 9546) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2632, 9585) L2 | 1 | 3 | (2629, 9582)-(2635, 9588) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2634, 9577) L2 | 1 | 3 | (2631, 9574)-(2637, 9580) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2637, 9560) L2 | 5 | 3 | (2627, 9548)-(2646, 9569) | 60 ticks | - | no |
 
 ## Drops
 

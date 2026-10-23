@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2764, 3288) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2764, 3288) L1 | 1 | 5 | (2759, 3283)-(2769, 3293) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [McGrubor's Wood (Kandarin)](../places/mcgrubors-wood.md) | (2650, 3469) | 4 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [McGrubor's Wood (Kandarin)](../places/mcgrubors-wood.md) | (2650, 3469) | 4 | 5 | (2643, 3463)-(2656, 3474) | 100 ticks | - | no |
 
 ## Drops
 

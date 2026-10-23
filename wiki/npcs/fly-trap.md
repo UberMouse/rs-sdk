@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2758, 3156) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2758, 3156) | 2 | 0 | (2755, 3155)-(2761, 3156) | 100 ticks | - | no |
 
 ## Drops
 

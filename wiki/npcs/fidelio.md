@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Canifis (Morytania)](../places/canifis.md) | (3475, 3497) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Canifis (Morytania)](../places/canifis.md) | (3475, 3497) | 1 | 3 | (3472, 3494)-(3478, 3500) | 100 ticks | - | no |
 
 ## Interactions
 

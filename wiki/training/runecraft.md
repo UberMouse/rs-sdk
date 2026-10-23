@@ -7,9 +7,9 @@ Min is the level the whole method needs, every skill of it at that level togethe
 
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `earth-runecraft-aubury-essence` | [Rune essence mine](../places/rune-essence-mine.md) `rock:rune-essence-mine:1` | 131k at 9 | 131k | 131k | 144k | 160k | 180k | 180k | 180k | 180k | 180k | 180k | 17.7k | travel | - |
+| `earth-runecraft-aubury-essence` | [Rune essence mine](../places/rune-essence-mine.md) `rock:rune-essence-mine:1` | 134k at 9 | 134k | 134k | 148k | 165k | 186k | 186k | 186k | 186k | 186k | 186k | 18.3k | travel | - |
 
 - `earth-runecraft-aubury-essence`: Essence from Aubury's mine, crafted into earth runes, the runes kept. Plans: earth-runecraft-28. In by Aubury's teleport (its landings' mean), out by the portal back to him. The plan's bank, wield-by-combat and bank are a one-time prologue; unmeasured, as its runs' figures include it: seed it from stats.ts --phases after its next goal. The record names the mine's rock with the fastest trip; the plan mines whichever rock its mining task finds.
   - **Requires**: Reach: carry Earth talisman + Rune Mysteries Quest done. Levels: Mining 1, Runecraft 9, each with the other skills at 99; every skill at once: 9. Tools: best pickaxe usable (wielded), Earth talisman.
-  - **Sink**: runecraft at [Earth altar](../places/earth-altar.md) `rc-altar:earth-altar:0`, then keep; legs 53.9 + 74.4 run ticks.
+  - **Sink**: runecraft at [Earth altar](../places/earth-altar.md) `rc-altar:earth-altar:0`, then keep; legs 53.9 + 67.9 run ticks.
   - **Supplies/hr** at 99: none.

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | (2761, 3497) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | (2761, 3497) | 1 | 5 | (2756, 3492)-(2766, 3502) | 100 ticks | - | no |
 
 ## Interactions
 

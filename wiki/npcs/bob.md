@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2924, 3565) | 1 | no |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3232, 3203) | 1 | yes |
-| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2748, 3559) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2924, 3565) | 1 | 30000 | (-27076, -26435)-(32924, 33565) | 100 ticks | - | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3232, 3203) | 1 | 0 | (3232, 3203)-(3232, 3203) | 100 ticks | - | yes |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2748, 3559) | 1 | 5 | (2743, 3554)-(2753, 3564) | 100 ticks | - | no |
 
 ## Interactions
 

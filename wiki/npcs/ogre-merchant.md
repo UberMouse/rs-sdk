@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2528, 3048) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2528, 3048) | 1 | 2 | (2526, 3046)-(2530, 3050) | 100 ticks | - | no |
 
 ## Drops
 

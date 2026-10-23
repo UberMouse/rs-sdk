@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2478, 3463) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2478, 3463) L1 | 1 | 1 | (2477, 3462)-(2479, 3464) | 100 ticks | - | no |
 
 ## Interactions
 

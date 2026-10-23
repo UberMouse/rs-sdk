@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2526, 2979) | 5 | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2547, 2985) | 4 | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2598, 2966) | 8 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2526, 2979) | 5 | 5 | (2518, 2970)-(2535, 2988) | 100 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2547, 2985) | 4 | 5 | (2538, 2977)-(2556, 2993) | 100 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2598, 2966) | 8 | 5 | (2590, 2957)-(2608, 2975) | 100 ticks | - | no |
 
 ## Drops
 

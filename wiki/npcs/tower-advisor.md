@@ -10,12 +10,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2666, 3427) L2 | 1 | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2667, 3430) L2 | 1 | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3426) L2 | 1 | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2670, 3429) L2 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2666, 3427) L2 | 1 | 0 | (2666, 3427)-(2666, 3427) | 100 ticks | - | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2667, 3430) L2 | 1 | 0 | (2667, 3430)-(2667, 3430) | 100 ticks | - | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3426) L2 | 1 | 0 | (2669, 3426)-(2669, 3426) | 100 ticks | - | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2670, 3429) L2 | 1 | 0 | (2670, 3429)-(2670, 3429) | 100 ticks | - | no |
 
 ## Interactions
 

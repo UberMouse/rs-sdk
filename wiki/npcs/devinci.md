@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2933, 3219) | 1 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3274, 3390) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2933, 3219) | 1 | 1 | (2932, 3218)-(2934, 3220) | 100 ticks | - | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3274, 3390) | 1 | 0 | (3274, 3390)-(3274, 3390) | 100 ticks | - | yes |
 
 ## Interactions
 

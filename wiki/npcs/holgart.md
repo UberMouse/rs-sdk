@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2782, 3276) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2720, 3306) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2799, 3320) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2782, 3276) | 1 | 2 | (2780, 3274)-(2784, 3278) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2720, 3306) | 1 | 2 | (2718, 3304)-(2722, 3308) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2799, 3320) | 1 | 2 | (2797, 3318)-(2801, 3322) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -36,11 +36,11 @@ checked against the game.
 |---|---|---|---|
 | A1 | Fishing spot positions are spawn tiles; spots teleport among their `fishing_movement_enum` tiles every 280-530 ticks from tick 1 | `S/skill_fishing/configs/fishing.npc` (`timer=1`, `param=fishing_movement_enum`), `fishing_movement.enum`, `fishing_movement.rs2:1-12` | 40 of 52 fishing sites; 271 enum tiles vs 132 spawns; 17 sites have enum tiles >10 tiles outside the site bbox. **In progress in the other session** (pages now list `tiles`) |
 | A2 | One movement pool split into several sites | 8 enums over 17 sites (`0_34_50` feeds 3 Tirannwn sites; Entrana, Baxtorian Falls, Rimmington, Al Kharid, Barbarian Village, slimy eel east, `0_33_51` 2 each) | 17 sites |
-| A3 | Npc wander range ignored: clusters are the spawn tiles' bbox | `E/.../NpcType.ts:101` (wanderrange 5, maxrange +2), `Npc.ts:702-735`; nothing in `W/` reads it | ~74% of 4537 npc clusters wander past their bbox; 133 of 150 pickpocket sites roam ≥5 (`knight_of_ardougne` 15 round one tile) |
+| A3 | Npc wander range ignored: clusters are the spawn tiles' bbox | `E/.../NpcType.ts:101` (wanderrange 5, maxrange +2), `Npc.ts:702-735`; nothing in `W/` reads it | 92.5% (4198) of 4537 npc clusters wander past their bbox (re-derived in Task 2; the audit had ~74%); 133 of 150 pickpocket sites roam ≥5 (`knight_of_ardougne` 15 round one tile) |
 | A4 | Respawn time not on sites or `npcSpawns` (the combat model has it: `W/model/npcs.ts:126`) | `NpcOps.ts:117` `respawnrate`, default 100 | rats 4 ticks ×410, blessed spiders 600 ×52 |
 | A5 | Fishing pages show option names only, not level, tool, bait, catch, XP; `readSpots` already parses them for methods | `fishing.struct` (`productexp`, `success_low/high`), op scripts (`memberfish.rs2:14` shark 76 harpoon, `rarefish.rs2:23` lobster 40, `:128` tuna/swordfish 35) | every fishing page |
 | A6 | Shop rule keeps the first `~openshop` of an npc | `W/classify.ts:355-359` (`.find(Boolean)`); Razmire `quest_mortton/scripts/razmire_keelgan.rs2:240,:243` | ~5 npcs |
-| A7 | Script movement beyond wander | imps `npc_tele` up to 20 tiles (`npc/scripts/imp.rs2`); Canifis citizens `npc_changetype` to werewolves (`area_canifis/scripts/canafis_citizen.rs2:15-20`) | 47 imps, ~20 citizens |
+| A7 | Script movement beyond wander | imps `npc_tele` up to 20 tiles (`npc/scripts/imp.rs2`); Canifis citizens `npc_changetype` to werewolves (`area_canifis/scripts/canafis_citizen.rs2:19-22`) | 47 imps (1 config), 20 citizens (6 configs). Over every config (Task 2): 103 move by an ai script of their own, 62 of them placed (522 spawns in 251 clusters); 36 of those are fishing spots (`fishing_movement.rs2`, already `Site.movement`) |
 
 ### 1.2 Classification rules keyed too narrowly
 
@@ -138,8 +138,8 @@ Files: `W/build.ts` (or `W/test/*.real.test.ts`), `W/classify.ts` for 1.
 - **Fishing pools**: one site per movement enum (A2); site `tiles` = the enum's tiles (A1, landing in the other
   session); stand and `nearest` from the pool. Coordinate with that session before starting.
 - **Wander and respawn** (A3, A4): `wander` (effective `wanderrange`, 0 for `nomove`/no-wander modes) and
-  `respawnTicks` on `NpcSpawn` and npc-kind sites; grow `bbox` and `besideCluster` by wander. Read via
-  `W/sources/configs.ts`.
+  `respawnTicks` on `NpcSpawn` and npc-kind sites, and a `roam` rect beside `bbox` (`bbox` grown by wander;
+  `bbox` itself unchanged, user decision), which `besideCluster` builds from. Read in `W/sources/npc-movement.ts`.
 - **Fishing yields** (A5): per option, a Level / Tool / Bait / Catch / XP table on the fishing pages, from what
   `readSpots` already parses plus `fishing.struct`; note the two-fish roll (second fish rolled first).
 - **Every shop of an npc** (A6): a shop feature per distinct inv.

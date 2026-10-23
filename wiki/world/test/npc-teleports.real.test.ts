@@ -29,13 +29,16 @@ const sites = world.sites.filter(s => s.areaPath.includes('rune-essence-mine'));
 describe('the essence mine teleports', () => {
     const teleports = rows.filter(c => c.act.kind === 'npc-op');
 
-    test("one per wizard, by the op its trigger has, under Rune Mysteries, from beside the wizard's spawn", () => {
+    test('one per wizard, by the op its trigger has, under Rune Mysteries, from beside where the wizard wanders', () => {
         expect(teleports.map(c => c.act)).toEqual(WIZARDS.map(([npc, op]) => ({ kind: 'npc-op', npc, op })));
         for (const c of teleports) {
             expect(c.via).toBe('teleport');
             expect(c.requires).toEqual([['quest:runemysteries']]);
             expect(c.source).toBe('skill_runecraft/scripts/essence_mine.rs2:25');
-            expect(c.from.every(t => Math.max(Math.abs(t.x - c.at.x), Math.abs(t.z - c.at.z)) <= 1)).toBe(true);
+            const { npc } = c.act as { npc: string };
+            const spawn = world.npcSpawns.find(n => n.config === npc && n.centre.x === c.at.x && n.centre.z === c.at.z);
+            const { x1, z1, x2, z2 } = spawn!.roam;
+            expect(c.from.every(t => t.x >= x1 - 1 && t.x <= x2 + 1 && t.z >= z1 - 1 && t.z <= z2 + 1)).toBe(true);
         }
     });
 

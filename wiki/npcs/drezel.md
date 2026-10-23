@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (3440, 9895) | 1 | no |
-| [Temple (Morytania)](../places/temple.md) | (3417, 3489) L2 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (3440, 9895) | 1 | 5 | (3435, 9890)-(3445, 9900) | 100 ticks | - | no |
+| [Temple (Morytania)](../places/temple.md) | (3417, 3489) L2 | 1 | 5 | (3412, 3484)-(3422, 3494) | 100 ticks | - | no |
 
 ## Interactions
 

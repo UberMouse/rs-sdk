@@ -24,20 +24,20 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2885, 9933) | 3 | no |
-| - | (2886, 9957) | 4 | no |
-| [Asgarnia](../places/asgarnia.md) | (2824, 3510) | 1 | no |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3056, 9566) | 2 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3065, 9571) | 1 | yes |
-| [Kandarin](../places/kandarin.md) | (2804, 3507) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2811, 3506) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2817, 3514) | 1 | no |
-| [Wilderness](../places/wilderness.md) | (2949, 3927) | 2 | no |
-| [Wilderness](../places/wilderness.md) | (2953, 3896) | 5 | yes |
-| [Wilderness](../places/wilderness.md) | (2955, 3945) | 1 | no |
-| [Wilderness](../places/wilderness.md) | (2978, 3956) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2885, 9933) | 3 | 10 | (2870, 9917)-(2901, 9951) | 60 ticks | - | no |
+| - | (2886, 9957) | 4 | 10 | (2873, 9940)-(2900, 9975) | 60 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (2824, 3510) | 1 | 3 | (2821, 3507)-(2827, 3513) | 60 ticks | - | no |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3056, 9566) | 2 | 3 | (3049, 9561)-(3060, 9571) | 60 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3065, 9571) | 1 | 3 | (3053, 9568)-(3068, 9590) | 60 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2804, 3507) | 1 | 3 | (2801, 3504)-(2807, 3510) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2811, 3506) | 1 | 3 | (2808, 3503)-(2814, 3509) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2817, 3514) | 1 | 3 | (2814, 3511)-(2820, 3517) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (2949, 3927) | 2 | 10 | (2937, 3903)-(2975, 3946) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (2953, 3896) | 5 | 3 | (2944, 3871)-(2966, 3905) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (2955, 3945) | 1 | 3 | (2952, 3942)-(2958, 3948) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (2978, 3956) | 1 | 9 | (2968, 3933)-(2991, 3965) | 60 ticks | - | no |
 
 ## Drops
 

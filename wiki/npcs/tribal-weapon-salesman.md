@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2661, 3419) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2661, 3419) | 1 | 5 | (2656, 3414)-(2666, 3424) | 100 ticks | - | no |
 
 ## Interactions
 

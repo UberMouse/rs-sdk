@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3130, 9929) | 9 | no |
-| [Wilderness](../places/wilderness.md) | (3160, 3568) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3169, 3578) | 2 | yes |
-| [Wilderness](../places/wilderness.md) | (3172, 3561) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3175, 3572) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3179, 3564) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3184, 3580) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3189, 3563) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3190, 3570) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3130, 9929) | 9 | 5 | (3118, 9916)-(3139, 9940) | 100 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3160, 3568) | 1 | 5 | (3155, 3563)-(3165, 3573) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3169, 3578) | 2 | 5 | (3162, 3571)-(3176, 3584) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3172, 3561) | 1 | 5 | (3167, 3556)-(3177, 3566) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3175, 3572) | 1 | 5 | (3170, 3567)-(3180, 3577) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3179, 3564) | 1 | 5 | (3174, 3559)-(3184, 3569) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3184, 3580) | 1 | 5 | (3179, 3575)-(3189, 3585) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3189, 3563) | 1 | 5 | (3184, 3558)-(3194, 3568) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3190, 3570) | 1 | 5 | (3185, 3565)-(3195, 3575) | 100 ticks | - | yes |
 
 ## Drops
 

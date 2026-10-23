@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Varrock (Misthalin)](../places/varrock.md) | (3271, 3411) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3271, 3411) | 1 | 3 | (3268, 3408)-(3274, 3414) | 100 ticks | - | yes |
 
 ## Interactions
 

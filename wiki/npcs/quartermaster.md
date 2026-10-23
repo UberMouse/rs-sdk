@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Tirannwn](../places/tirannwn.md) | (2194, 3140) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Tirannwn](../places/tirannwn.md) | (2194, 3140) | 1 | 5 | (2189, 3135)-(2199, 3145) | 100 ticks | - | no |
 
 ## Interactions
 

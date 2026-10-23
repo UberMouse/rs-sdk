@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ape Atoll](../places/ape-atoll.md) | (2775, 2798) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2775, 2798) | 1 | 2 | (2773, 2796)-(2777, 2800) | 100 ticks | - | no |
 
 ## Interactions
 

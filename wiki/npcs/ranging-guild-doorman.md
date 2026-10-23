@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Hemenster (Kandarin)](../places/hemenster.md) | (2658, 3439) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2658, 3439) | 1 | 1 | (2657, 3438)-(2659, 3440) | 100 ticks | - | no |
 
 ## Interactions
 

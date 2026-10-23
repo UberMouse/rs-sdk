@@ -72,7 +72,8 @@ export interface Area {
     notes?: string;
 }
 
-export interface Site {
+/** A site's NpcRoam fields are present on a site whose features are all npcs, and absent on others. */
+export interface Site extends Partial<NpcRoam> {
     id: string;
     kind: FeatureKind;
     /** Area ids from the root to the deepest containing area; empty when none contains it. */
@@ -103,6 +104,31 @@ export interface Site {
     course?: Course;
     /** On a `fishing-spot` site, where its spots of each subtype can be, by subtype (sources/fishing-movement.ts). */
     movement?: Record<string, SpotMovement>;
+}
+
+/**
+ * How the npcs of a spawn cluster or an npc site move on their own and come back (sources/npc-movement.ts), from
+ * their configs: the most any of them wanders, the fastest respawn, and the first scripted move.
+ */
+export interface NpcRoam {
+    /**
+     * Chebyshev tiles past `bbox` an npc walks without a player: the largest of its configs' `wanderrange` (0 for one
+     * that does not wander), or the reach of a patrol's coords past `bbox`.
+     */
+    wander: number;
+    /** The least of its configs' `respawnrate`, before the engine's player-count scaling. */
+    respawnTicks: number;
+    /** `bbox` grown by `wander` on every side: where its npcs can be. */
+    roam: Rect;
+    /** Present when one of its configs moves further by a script of its own. */
+    moves?: NpcMove;
+}
+
+/** Scripted movement past wander: a script an npc config runs on itself that teleports it or changes its type. */
+export interface NpcMove {
+    how: 'teleports' | 'changes-type';
+    /** The `npc_tele` or `npc_changetype` call, as `file:line`. */
+    source: string;
 }
 
 /**
@@ -169,7 +195,7 @@ export type Nearest = Partial<Record<SinkKind, NearestSink>>;
  * single-linkage within the `npc` radius), but per config and whatever the config classifies as, so
  * an npc no feature kind takes still has a place.
  */
-export interface NpcSpawn {
+export interface NpcSpawn extends NpcRoam {
     config: string;
     /** Area ids from the root to the deepest containing area; empty when none contains it. */
     areaPath: string[];
@@ -180,8 +206,8 @@ export interface NpcSpawn {
     f2p: boolean;
     /**
      * The minimal requirement sets a walk from the Lumbridge spawn needs to get beside the cluster (reach.ts): the
-     * cheapest over the tiles its npcs are used from (place.ts besideCluster: its bbox, and the tiles round it
-     * that step onto it or the engine's entity reach test passes from), not one tile's; `[]` when none of them is
+     * cheapest over the tiles its npcs are used from (place.ts besideCluster: the tiles of its roam its npcs walk
+     * to, and the tiles round them that step onto one or the engine's entity reach test passes from), not one tile's; `[]` when none of them is
      * reached.
      */
     reach: string[][];
@@ -530,7 +556,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 22;
+export const WORLD_FORMAT = 23;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

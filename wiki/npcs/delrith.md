@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Misthalin](../places/misthalin.md) | (3229, 3369) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Misthalin](../places/misthalin.md) | (3229, 3369) | 1 | 2 | (3227, 3367)-(3231, 3371) | 100 ticks | changes-type (quests/quest_demon/scripts/delrith.rs2:9) | yes |
 
 ## Drops
 

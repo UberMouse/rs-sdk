@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3330) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3330) | 1 | 2 | (3108, 3328)-(3112, 3332) | 100 ticks | - | yes |
 
 ## Interactions
 

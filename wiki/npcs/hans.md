@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3207, 3233) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3207, 3233) | 1 | 28 | (3179, 3205)-(3235, 3261) | 100 ticks | - | yes |
 
 ## Interactions
 

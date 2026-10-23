@@ -43,13 +43,24 @@ runs the three in that order on the world in memory, so a check sees fresh pages
 (`bun wiki/generate-<x>.ts`), npcs and shops refuse a world.json built from other game data, and items
 reads the npc pages on disk.
 
+Each cluster, and each site whose features are all npcs (a pickpocket or npc site, not a bank whose booths
+are locs), says how its npcs move (`sources/npc-movement.ts`, from the `.npc` configs and the engine's
+defaults in `NpcType.ts`): `wander`, the Chebyshev tiles past its spawns an npc walks on its own (its
+`wanderrange` when its `defaultmode` wanders and its `moverestrict` is not `nomove`, else 0; for a patrol,
+how far its patrol coords reach past the spawns); `roam`, the `bbox` grown by `wander`; `respawnTicks`, the
+config's `respawnrate`; and `moves`, the first `npc_tele` or `npc_changetype` an ai trigger of its own (or its
+category's) runs, by any depth of calls: imps teleport, Canifis citizens turn into werewolves. A cluster of
+several configs takes the largest wander, the fastest respawn and any move. `bbox` stays the spawns' box, so
+stand tiles and a method's site lookup do not move with it.
+
 ## Reach and requirements
 
 A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to get to its stand tile
 (`wiki/world/reach.ts`, `reachGraph` then `fillReach`), joined with a quest that locks the use of its locs
 (`USE_GATES` in `gates.ts`: the Doric and Rellekka anvils, the Rellekka furnaces and spinning wheel): its minimal requirement
 sets, `[[]]` for none and `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
-`place.ts`, with a wall check), because a bot talks to an npc from beside it. The fill keeps at most
+`place.ts`: the tiles of its roam a walk of steps from its spawns gets to, and the ring round them, with every
+door shut, as an npc opens none, and a wall check), because a bot talks to an npc from beside it, wherever it has wandered to. The fill keeps at most
 `MAX_SETS` (24) sets per tile.
 
 The pages show it in a Requires column: `-` for none, the sets joined with "or", `unreached`, or `no stand`

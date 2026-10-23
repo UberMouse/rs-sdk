@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3284, 3931) | 10 | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3289, 3931) L1 | 2 | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3290, 3933) L2 | 6 | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3282, 3936) L3 | 2 | no |
-| [Wilderness](../places/wilderness.md) | (3078, 3913) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3284, 3931) | 10 | 5 | (3271, 3919)-(3297, 3944) | 100 ticks | - | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3289, 3931) L1 | 2 | 5 | (3283, 3925)-(3294, 3936) | 100 ticks | - | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3290, 3933) L2 | 6 | 5 | (3281, 3924)-(3301, 3944) | 100 ticks | - | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3282, 3936) L3 | 2 | 5 | (3276, 3929)-(3287, 3943) | 100 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3078, 3913) | 2 | 5 | (3071, 3904)-(3084, 3921) | 100 ticks | - | no |
 
 ## Drops
 

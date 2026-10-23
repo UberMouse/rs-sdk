@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9766) | 3 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2904, 9802) | 4 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2914, 9799) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9766) | 3 | 4 | (2891, 9759)-(2904, 9773) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2904, 9802) | 4 | 4 | (2888, 9792)-(2915, 9812) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2914, 9799) | 2 | 4 | (2907, 9793)-(2921, 9805) | 60 ticks | - | no |
 
 ## Drops
 

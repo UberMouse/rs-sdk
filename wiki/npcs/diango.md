@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3079, 3250) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3079, 3250) | 1 | 5 | (3074, 3245)-(3084, 3255) | 100 ticks | - | yes |
 
 ## Interactions
 

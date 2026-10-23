@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2906, 3537) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2906, 3537) | 1 | 1 | (2905, 3536)-(2907, 3538) | 100 ticks | - | no |
 
 ## Interactions
 

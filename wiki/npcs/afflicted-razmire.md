@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Mort'ton (Morytania)](../places/mortton.md) | (3489, 3296) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Mort'ton (Morytania)](../places/mortton.md) | (3489, 3296) | 1 | 5 | (3484, 3291)-(3494, 3301) | 100 ticks | - | no |
 
 ## Interactions
 

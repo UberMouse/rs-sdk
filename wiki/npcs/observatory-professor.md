@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Kandarin](../places/kandarin.md) | (2438, 3186) | 1 | no |
-| [Observatory (Kandarin)](../places/observatory.md) | (2439, 3160) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Kandarin](../places/kandarin.md) | (2438, 3186) | 1 | 5 | (2433, 3181)-(2443, 3191) | 100 ticks | - | no |
+| [Observatory (Kandarin)](../places/observatory.md) | (2439, 3160) | 1 | 5 | (2434, 3155)-(2444, 3165) | 100 ticks | - | no |
 
 ## Interactions
 

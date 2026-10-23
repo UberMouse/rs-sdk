@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | 1 | no |
-| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | 1 | no |
-| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | 2 | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | 7 | yes |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | 1 | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2795, 3185) | 6 | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3162) | 9 | no |
-| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | (3041, 3954) | 12 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | 1 | 5 | (2801, 3180)-(2811, 3190) | 50 ticks | - | no |
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | 1 | 5 | (2806, 3193)-(2816, 3203) | 50 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | 15 | (2996, 3167)-(3034, 3209) | 4 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | 2 | 5 | (2981, 9577)-(2996, 9588) | 50 ticks | - | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | 7 | 5 | (2979, 9564)-(3005, 9589) | 50 ticks | - | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | 1 | 5 | (2756, 3181)-(2768, 3196) | 50 ticks | - | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2795, 3185) | 6 | 5 | (2784, 3177)-(2804, 3193) | 50 ticks | - | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3162) | 9 | 5 | (2787, 3152)-(2807, 3173) | 50 ticks | - | no |
+| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | (3041, 3954) | 12 | 5 | (3034, 3945)-(3048, 3963) | 50 ticks | - | no |
 
 ## Drops
 

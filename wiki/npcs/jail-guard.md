@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3109, 3237) | 1 | yes |
-| [Draynor jail (Draynor Village)](../places/jail.md) | (3120, 3238) | 1 | yes |
-| [Draynor jail (Draynor Village)](../places/jail.md) | (3124, 3249) | 2 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3109, 3237) | 1 | 5 | (3104, 3232)-(3114, 3242) | 60 ticks | - | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3120, 3238) | 1 | 5 | (3115, 3233)-(3125, 3243) | 60 ticks | - | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3124, 3249) | 2 | 5 | (3116, 3243)-(3132, 3254) | 60 ticks | - | yes |
 
 ## Drops
 

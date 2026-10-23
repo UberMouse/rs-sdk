@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Morytania](../places/morytania.md) | (3522, 3284) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Morytania](../places/morytania.md) | (3522, 3284) | 1 | 1 | (3521, 3283)-(3523, 3285) | 100 ticks | - | no |
 
 ## Interactions
 

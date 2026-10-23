@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3087) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3087) L1 | 1 | 0 | (2595, 3087)-(2595, 3087) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3363, 3341) | 3 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3363, 3341) | 3 | 2 | (3358, 3337)-(3366, 3345) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2702, 9447) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2712, 9435) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2723, 9458) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2726, 9445) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2702, 9447) | 1 | 5 | (2697, 9442)-(2707, 9452) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2712, 9435) | 1 | 5 | (2707, 9430)-(2717, 9440) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2723, 9458) | 1 | 5 | (2718, 9453)-(2728, 9463) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2726, 9445) | 1 | 5 | (2721, 9440)-(2731, 9450) | 60 ticks | - | no |
 
 ## Drops
 

@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Karamja](../places/karamja.md) | (2906, 3095) | 1 | no |
-| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2524, 4567) | 1 | no |
-| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2540, 4566) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Karamja](../places/karamja.md) | (2906, 3095) | 1 | 32 | (2874, 3063)-(2938, 3127) | 50 ticks | - | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2524, 4567) | 1 | 0 | (2524, 4567)-(2524, 4567) | 100 ticks | - | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2540, 4566) | 1 | 0 | (2540, 4566)-(2540, 4566) | 100 ticks | - | no |
 
 ## Drops
 

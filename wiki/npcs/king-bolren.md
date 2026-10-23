@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2542, 3169) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2542, 3169) | 1 | 1 | (2541, 3168)-(2543, 3170) | 100 ticks | - | no |
 
 ## Interactions
 

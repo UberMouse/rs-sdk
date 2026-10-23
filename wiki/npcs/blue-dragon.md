@@ -24,15 +24,15 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2568, 9437) | 1 | no |
-| - | (2579, 9445) | 1 | no |
-| - | (2590, 9461) | 1 | no |
-| - | (2592, 9431) | 1 | no |
-| - | (2607, 9451) | 2 | no |
-| [Heroes' Guild mine](../places/heroes-guild-mine.md) | (2908, 9905) | 1 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2900, 9800) | 3 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2568, 9437) | 1 | 8 | (2557, 9424)-(2576, 9451) | 60 ticks | - | no |
+| - | (2579, 9445) | 1 | 8 | (2565, 9423)-(2588, 9455) | 60 ticks | - | no |
+| - | (2590, 9461) | 1 | 6 | (2580, 9452)-(2596, 9467) | 30 ticks | - | no |
+| - | (2592, 9431) | 1 | 8 | (2580, 9423)-(2600, 9445) | 60 ticks | - | no |
+| - | (2607, 9451) | 2 | 8 | (2596, 9428)-(2625, 9468) | 60 ticks | - | no |
+| [Heroes' Guild mine](../places/heroes-guild-mine.md) | (2908, 9905) | 1 | 4 | (2904, 9901)-(2912, 9909) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2900, 9800) | 3 | 4 | (2888, 9792)-(2915, 9812) | 60 ticks | - | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3358, 3276) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3358, 3276) | 1 | 5 | (3353, 3271)-(3363, 3281) | 100 ticks | - | no |
 
 ## Interactions
 

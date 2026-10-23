@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fisher Realm](../places/fisher-realm.md) | (2791, 4722) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2791, 4722) | 1 | 0 | (2791, 4722)-(2791, 4722) | 10 ticks | - | no |
 
 ## Drops
 

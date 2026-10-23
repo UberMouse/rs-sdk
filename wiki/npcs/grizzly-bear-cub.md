@@ -11,14 +11,14 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Regicide camp](../places/regicide-camp.md) | (2345, 4579) | 1 | no |
-| [Tirannwn](../places/tirannwn.md) | (2197, 3218) | 1 | no |
-| [Tirannwn](../places/tirannwn.md) | (2200, 3220) | 2 | no |
-| [Tirannwn](../places/tirannwn.md) | (2217, 3171) | 1 | no |
-| [Tirannwn](../places/tirannwn.md) | (2291, 3156) | 1 | no |
-| [Tirannwn](../places/tirannwn.md) | (2292, 3153) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Regicide camp](../places/regicide-camp.md) | (2345, 4579) | 1 | 12 | (2333, 4567)-(2357, 4591) | 100 ticks | - | no |
+| [Tirannwn](../places/tirannwn.md) | (2197, 3218) | 1 | 12 | (2185, 3206)-(2209, 3230) | 100 ticks | - | no |
+| [Tirannwn](../places/tirannwn.md) | (2200, 3220) | 2 | 12 | (2187, 3206)-(2213, 3234) | 100 ticks | - | no |
+| [Tirannwn](../places/tirannwn.md) | (2217, 3171) | 1 | 12 | (2205, 3159)-(2229, 3183) | 100 ticks | - | no |
+| [Tirannwn](../places/tirannwn.md) | (2291, 3156) | 1 | 12 | (2279, 3144)-(2303, 3168) | 100 ticks | - | no |
+| [Tirannwn](../places/tirannwn.md) | (2292, 3153) | 1 | 12 | (2280, 3141)-(2304, 3165) | 100 ticks | - | no |
 
 ## Drops
 

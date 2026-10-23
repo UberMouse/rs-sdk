@@ -24,21 +24,21 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2010, 4712) | 2 | no |
-| - | (3109, 9558) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3111, 3167) | 2 | yes |
-| [Misthalin](../places/misthalin.md) | (3148, 3200) | 1 | yes |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2589, 3084) | 1 | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2593, 3084) L1 | 1 | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2588, 3087) L2 | 2 | no |
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3109, 3158) | 2 | yes |
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L1 | 2 | yes |
-| [Yanille (Kandarin)](../places/yanille.md) | (2588, 3090) | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2586, 3089) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2595, 3090) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2593, 3090) L2 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2010, 4712) | 2 | 5 | (2005, 4705)-(2015, 4719) | 60 ticks | - | no |
+| - | (3109, 9558) | 1 | 5 | (3104, 9553)-(3114, 9563) | 60 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3111, 3167) | 2 | 5 | (3106, 3161)-(3116, 3173) | 60 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3148, 3200) | 1 | 5 | (3143, 3195)-(3153, 3205) | 100 ticks | - | yes |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2589, 3084) | 1 | 5 | (2584, 3079)-(2594, 3089) | 60 ticks | - | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2593, 3084) L1 | 1 | 5 | (2588, 3079)-(2598, 3089) | 60 ticks | - | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2588, 3087) L2 | 2 | 5 | (2581, 3080)-(2594, 3093) | 60 ticks | - | no |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3109, 3158) | 2 | 5 | (3102, 3153)-(3115, 3163) | 60 ticks | - | yes |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L1 | 2 | 5 | (3102, 3152)-(3117, 3162) | 60 ticks | - | yes |
+| [Yanille (Kandarin)](../places/yanille.md) | (2588, 3090) | 1 | 5 | (2583, 3085)-(2593, 3095) | 60 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2586, 3089) L1 | 1 | 5 | (2581, 3084)-(2591, 3094) | 60 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2595, 3090) L1 | 1 | 5 | (2590, 3085)-(2600, 3095) | 60 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2593, 3090) L2 | 1 | 5 | (2588, 3085)-(2598, 3095) | 60 ticks | - | no |
 
 ## Drops
 

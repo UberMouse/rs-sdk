@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Mage Arena chamber](../places/mage-arena-chamber.md) | (2541, 4715) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Mage Arena chamber](../places/mage-arena-chamber.md) | (2541, 4715) | 1 | 1 | (2540, 4714)-(2542, 4716) | 100 ticks | - | no |
 
 ## Interactions
 

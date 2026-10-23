@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | (3143, 3444) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | (3143, 3444) | 1 | 3 | (3140, 3441)-(3146, 3447) | 100 ticks | - | yes |
 
 ## Interactions
 

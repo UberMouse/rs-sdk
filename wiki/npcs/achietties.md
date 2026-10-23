@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | (2903, 3510) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | (2903, 3510) | 1 | 1 | (2902, 3509)-(2904, 3511) | 100 ticks | - | no |
 
 ## Interactions
 

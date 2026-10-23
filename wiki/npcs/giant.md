@@ -24,20 +24,20 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (3045, 10313) | 6 | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | 2 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | 1 | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | 9 | yes |
-| [Kandarin](../places/kandarin.md) | (2507, 3149) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2547, 3146) | 2 | no |
-| [Wilderness](../places/wilderness.md) | (3094, 3849) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3104, 3875) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3110, 3854) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3117, 3854) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3300, 3649) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3308, 3661) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (3045, 10313) | 6 | 20 | (3009, 10286)-(3066, 10341) | 60 ticks | - | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | 2 | 3 | (3096, 9829)-(3103, 9839) | 60 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | 1 | 3 | (3103, 9824)-(3109, 9830) | 60 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | 9 | 3 | (3104, 9828)-(3125, 9853) | 60 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2507, 3149) | 1 | 3 | (2504, 3146)-(2510, 3152) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2547, 3146) | 2 | 3 | (2542, 3141)-(2551, 3150) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3094, 3849) | 1 | 3 | (3091, 3846)-(3097, 3852) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3104, 3875) | 1 | 3 | (3101, 3872)-(3107, 3878) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3110, 3854) | 1 | 3 | (3107, 3851)-(3113, 3857) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3117, 3854) | 1 | 3 | (3114, 3851)-(3120, 3857) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3300, 3649) | 1 | 3 | (3297, 3646)-(3303, 3652) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3308, 3661) | 1 | 3 | (3305, 3658)-(3311, 3664) | 60 ticks | - | yes |
 
 ## Drops
 

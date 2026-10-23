@@ -23,11 +23,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Haunted Mine](../places/haunted-mine.md) | (2789, 4569) | 2 | no |
-| [Haunted Mine](../places/haunted-mine.md) | (2791, 4560) | 1 | no |
-| [Haunted Mine](../places/haunted-mine.md) | (2802, 4594) | 6 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2789, 4569) | 2 | 8 | (2778, 4559)-(2800, 4579) | 100 ticks | - | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2791, 4560) | 1 | 8 | (2783, 4552)-(2799, 4568) | 100 ticks | - | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2802, 4594) | 6 | 8 | (2788, 4579)-(2816, 4609) | 100 ticks | - | no |
 
 ## Drops
 

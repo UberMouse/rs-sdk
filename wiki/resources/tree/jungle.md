@@ -31,7 +31,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 | [Karamja](../../places/karamja.md) | `tree:karamja:3` | (2793, 2901) | (2793, 2901) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:4` | (2809, 2914) | (2809, 2914) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:5` | (2813, 2925) | (2813, 2925) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | 26 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 152 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | 26 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 151 ticks via The Grand Tree done |
 | [Karamja](../../places/karamja.md) | `tree:karamja:7` | (2827, 2900) | (2827, 2900) | 1 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:9` | (2857, 2907) | (2857, 2906) | 3 | no | no | - | unreached | - |
 | [Karamja](../../places/karamja.md) | `tree:karamja:10` | (2866, 2937) | (2866, 2941) | 50 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 175 ticks via The Grand Tree done |

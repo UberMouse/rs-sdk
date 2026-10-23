@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Rantz's cave](../places/rantzs-cave.md) | (2640, 9391) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Rantz's cave](../places/rantzs-cave.md) | (2640, 9391) | 1 | 3 | (2637, 9388)-(2643, 9394) | 100 ticks | - | no |
 
 ## Interactions
 

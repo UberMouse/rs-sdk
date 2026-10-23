@@ -23,10 +23,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Kandarin](../places/kandarin.md) | (2725, 3602) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2738, 3597) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Kandarin](../places/kandarin.md) | (2725, 3602) | 1 | 6 | (2719, 3596)-(2731, 3608) | 20 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2738, 3597) | 1 | 6 | (2732, 3591)-(2744, 3603) | 20 ticks | - | no |
 
 ## Drops
 

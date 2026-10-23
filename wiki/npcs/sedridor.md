@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (3103, 9571) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (3103, 9571) | 1 | 5 | (3098, 9566)-(3108, 9576) | 100 ticks | - | yes |
 
 ## Interactions
 

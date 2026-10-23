@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3038, 3695) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3038, 3695) | 1 | 5 | (3027, 3690)-(3044, 3705) | 100 ticks | - | yes |
 
 ## Drops
 

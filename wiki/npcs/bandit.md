@@ -23,12 +23,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3032, 3695) | 1 | yes |
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3034, 3684) | 2 | yes |
-| [Wilderness](../places/wilderness.md) | (3031, 3703) | 2 | yes |
-| [Wilderness](../places/wilderness.md) | (3040, 3703) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3032, 3695) | 1 | 5 | (3027, 3690)-(3044, 3705) | 100 ticks | - | yes |
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3034, 3684) | 2 | 5 | (3026, 3678)-(3042, 3690) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3031, 3703) | 2 | 5 | (3024, 3696)-(3038, 3710) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3040, 3703) | 1 | 5 | (3035, 3698)-(3045, 3708) | 100 ticks | - | yes |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Wilderness](../places/wilderness.md) | (3036, 3707) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Wilderness](../places/wilderness.md) | (3036, 3707) | 1 | 3 | (3033, 3704)-(3039, 3710) | 100 ticks | - | yes |
 
 ## Interactions
 

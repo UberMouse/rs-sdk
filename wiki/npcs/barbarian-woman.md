@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2550, 3563) | 1 | no |
-| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2548, 3558) | 1 | no |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | 2 | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | 3 | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2550, 3563) | 1 | 10 | (2536, 3550)-(2564, 3580) | 50 ticks | - | no |
+| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2548, 3558) | 1 | 10 | (2538, 3548)-(2558, 3568) | 50 ticks | - | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | 2 | 10 | (3065, 3426)-(3096, 3455) | 50 ticks | - | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | 3 | 10 | (3065, 3399)-(3096, 3439) | 50 ticks | - | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | 1 | 10 | (3215, 3385)-(3235, 3405) | 50 ticks | - | yes |
 
 ## Drops
 

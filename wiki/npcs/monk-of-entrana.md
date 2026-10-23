@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Entrana](../places/entrana.md) | (2835, 3335) | 3 | no |
-| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | 3 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Entrana](../places/entrana.md) | (2835, 3335) | 3 | 5 | (2825, 3330)-(2844, 3341) | 100 ticks | - | no |
+| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | 3 | 5 | (3040, 3229)-(3054, 3241) | 100 ticks | - | yes |
 
 ## Interactions
 

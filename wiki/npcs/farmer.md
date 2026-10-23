@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3035, 3296) | 1 | yes |
-| [Kandarin](../places/kandarin.md) | (2648, 3361) | 3 | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2538, 3852) | 1 | no |
-| [Misthalin](../places/misthalin.md) | (3154, 3293) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3165, 3324) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3227, 3290) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3233, 3308) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3240, 3345) | 1 | yes |
-| [Misthalin](../places/misthalin.md) | (3262, 3325) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3035, 3296) | 1 | 14 | (3021, 3282)-(3049, 3310) | 50 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2648, 3361) | 3 | 14 | (2631, 3337)-(2666, 3381) | 50 ticks | - | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2538, 3852) | 1 | 10 | (2528, 3842)-(2548, 3862) | 100 ticks | - | no |
+| [Misthalin](../places/misthalin.md) | (3154, 3293) | 1 | 14 | (3140, 3279)-(3168, 3307) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3165, 3324) | 1 | 14 | (3151, 3310)-(3179, 3338) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3227, 3290) | 1 | 14 | (3213, 3276)-(3241, 3304) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3233, 3308) | 1 | 14 | (3219, 3294)-(3247, 3322) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3240, 3345) | 1 | 14 | (3226, 3331)-(3254, 3359) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3262, 3325) | 1 | 14 | (3248, 3311)-(3276, 3339) | 50 ticks | - | yes |
 
 ## Drops
 

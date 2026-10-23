@@ -10,23 +10,23 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Misthalin](../places/misthalin.md) | (3145, 3202) | 1 | yes |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2619, 3671) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2622, 3654) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2625, 3664) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2630, 3676) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2634, 3651) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2643, 3674) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2650, 3652) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2655, 3691) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2666, 3678) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3658) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3670) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3710) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3695) | 1 | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2685, 3653) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Misthalin](../places/misthalin.md) | (3145, 3202) | 1 | 5 | (3140, 3197)-(3150, 3207) | 100 ticks | - | yes |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2619, 3671) | 1 | 12 | (2607, 3659)-(2631, 3683) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2622, 3654) | 1 | 12 | (2610, 3642)-(2634, 3666) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2625, 3664) | 1 | 12 | (2613, 3652)-(2637, 3676) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2630, 3676) | 1 | 12 | (2618, 3664)-(2647, 3688) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2634, 3651) | 1 | 12 | (2622, 3639)-(2646, 3663) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2643, 3674) | 1 | 12 | (2631, 3658)-(2662, 3695) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2650, 3652) | 1 | 12 | (2638, 3640)-(2662, 3664) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2655, 3691) | 1 | 12 | (2643, 3679)-(2667, 3703) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2666, 3678) | 1 | 12 | (2654, 3666)-(2678, 3690) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3658) | 1 | 12 | (2656, 3646)-(2680, 3670) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3670) | 1 | 12 | (2656, 3658)-(2680, 3682) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2668, 3710) | 1 | 12 | (2656, 3698)-(2680, 3722) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3695) | 1 | 12 | (2661, 3683)-(2685, 3707) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2685, 3653) | 1 | 12 | (2673, 3641)-(2697, 3665) | 60 ticks | - | no |
 
 ## Interactions
 

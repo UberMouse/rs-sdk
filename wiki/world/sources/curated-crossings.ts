@@ -67,7 +67,7 @@ export interface CuratedCrossingInput {
     /** What the gate scan makes of a loc or npc op trigger (gate-scan.ts scanTrigger). */
     scanOf: (t: Trigger) => TriggerScan;
     /** Every npc spawn cluster (place.ts spawnClusters). */
-    spawns: readonly Pick<Placed<NpcSpawn>, 'config' | 'centre' | 'bbox'>[];
+    spawns: readonly Pick<Placed<NpcSpawn>, 'config' | 'centre' | 'bbox' | 'roam'>[];
     /** Every placed loc. */
     locs: readonly PlacedLoc[];
     collision: TeleportCollision & StepCollision;

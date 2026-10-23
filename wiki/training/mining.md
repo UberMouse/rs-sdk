@@ -7,7 +7,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `earth-runecraft-aubury-essence` | [Rune essence mine](../places/rune-essence-mine.md) `rock:rune-essence-mine:1` | 101k at 9 | 101k | 101k | 111k | 123k | 138k | 138k | 138k | 138k | 138k | 138k | 17.7k | travel | - |
+| `earth-runecraft-aubury-essence` | [Rune essence mine](../places/rune-essence-mine.md) `rock:rune-essence-mine:1` | 103k at 9 | 103k | 103k | 114k | 127k | 143k | 143k | 143k | 143k | 143k | 143k | 18.3k | travel | - |
 | `iron-al-kharid-3rock-drop` | [Al Kharid mine (Kharidian Desert)](../places/al-kharid-mine.md) `rock:al-kharid-mine:0` | 679k at 15 | - | 741k | 891k | 975k | 1.05M | 1.07M | 1.07M | 1.07M | 1.07M | 1.07M | 0 | resource | - |
 | `iron-se-varrock-bank` | [Varrock East mine (Misthalin)](../places/varrock-east-mine.md) `rock:varrock-east-mine:0` | 529k at 15 | - | 565k | 729k | 925k | 1.17M | 1.23M | 1.25M | 1.25M | 1.25M | 1.25M | 24.4k | travel | 544k at 99 (50%) |
 | `iron-se-varrock-drop` | [Varrock East mine (Misthalin)](../places/varrock-east-mine.md) `rock:varrock-east-mine:0` | 679k at 15 | - | 741k | 1.05M | 1.3M | 1.4M | 1.43M | 1.43M | 1.43M | 1.43M | 1.43M | 0 | resource | 1.17M at 99 (85%) |
@@ -17,7 +17,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 
 - `earth-runecraft-aubury-essence`: Essence from Aubury's mine, crafted into earth runes, the runes kept. Plans: earth-runecraft-28. In by Aubury's teleport (its landings' mean), out by the portal back to him. The plan's bank, wield-by-combat and bank are a one-time prologue; unmeasured, as its runs' figures include it: seed it from stats.ts --phases after its next goal. The record names the mine's rock with the fastest trip; the plan mines whichever rock its mining task finds.
   - **Requires**: Reach: carry Earth talisman + Rune Mysteries Quest done. Levels: Mining 1, Runecraft 9, each with the other skills at 99; every skill at once: 9. Tools: best pickaxe usable (wielded), Earth talisman.
-  - **Sink**: runecraft at [Earth altar](../places/earth-altar.md) `rc-altar:earth-altar:0`, then keep; legs 53.9 + 74.4 run ticks.
+  - **Sink**: runecraft at [Earth altar](../places/earth-altar.md) `rc-altar:earth-altar:0`, then keep; legs 53.9 + 67.9 run ticks.
   - **Supplies/hr** at 99: none.
 - `iron-al-kharid-3rock-drop`: Iron at the Al Kharid mine, the three rocks one tile reaches, dropped as mined. `at` is the stand tile, and area 1 takes the three iron rocks the reach test passes from it; respawn-bound from the mid 50s. No promoted plan. Unmeasured here: wiki/skills/mining.md's ~1.03M/h at 99 (conductor2w1, 2026-10-11, 4-minute runs, adamant pickaxe) has no stats.ts --methods entry to seed it.
   - **Requires**: Reach: none. Levels: Mining 15. Tools: best pickaxe usable (wielded).

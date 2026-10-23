@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ape Atoll](../places/ape-atoll.md) | (2764, 2803) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2764, 2803) | 1 | 2 | (2762, 2801)-(2766, 2805) | 100 ticks | teleports (quests/quest_mm/scripts/mm_jail.rs2:216) | no |
 
 ## Interactions
 

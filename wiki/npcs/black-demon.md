@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2707, 9483) | 4 | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3088, 9959) | 3 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2857, 9779) | 2 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2863, 9769) | 1 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2869, 9776) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2707, 9483) | 4 | 6 | (2694, 9473)-(2721, 9495) | 60 ticks | - | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3088, 9959) | 3 | 6 | (3078, 9951)-(3098, 9967) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2857, 9779) | 2 | 6 | (2848, 9770)-(2866, 9787) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2863, 9769) | 1 | 6 | (2857, 9763)-(2869, 9775) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2869, 9776) | 1 | 6 | (2863, 9770)-(2875, 9782) | 60 ticks | - | no |
 
 ## Drops
 

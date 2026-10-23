@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Burthorpe Games Room](../places/burthorpe-games-room.md) | (2201, 4942) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Burthorpe Games Room](../places/burthorpe-games-room.md) | (2201, 4942) | 1 | 5 | (2196, 4937)-(2206, 4947) | 100 ticks | - | no |
 
 ## Interactions
 

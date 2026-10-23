@@ -11,10 +11,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Morytania](../places/morytania.md) | (3416, 3514) | 11 | no |
-| [Morytania](../places/morytania.md) | (3429, 3463) | 10 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Morytania](../places/morytania.md) | (3416, 3514) | 11 | 3 | (3409, 3506)-(3423, 3521) | 35 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3429, 3463) | 10 | 3 | (3420, 3455)-(3437, 3471) | 35 ticks | - | no |
 
 ## Drops
 

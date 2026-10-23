@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2354, 9907) | 31 | no |
-| [Underground Pass](../places/underground-pass.md) | (2399, 9682) | 4 | no |
-| [Underground Pass](../places/underground-pass.md) | (2435, 9723) | 8 | no |
-| [Underground Pass](../places/underground-pass.md) | (2436, 9690) | 9 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2354, 9907) | 31 | 10 | (2319, 9863)-(2374, 9928) | 70 ticks | - | no |
+| [Underground Pass](../places/underground-pass.md) | (2399, 9682) | 4 | 10 | (2377, 9670)-(2412, 9695) | 60 ticks | - | no |
+| [Underground Pass](../places/underground-pass.md) | (2435, 9723) | 8 | 10 | (2412, 9708)-(2448, 9735) | 100 ticks | - | no |
+| [Underground Pass](../places/underground-pass.md) | (2436, 9690) | 9 | 15 | (2418, 9671)-(2456, 9714) | 140 ticks | - | no |
 
 ## Drops
 

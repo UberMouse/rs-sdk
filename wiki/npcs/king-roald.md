@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Varrock Palace (Varrock)](../places/palace.md) | (3222, 3476) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Varrock Palace (Varrock)](../places/palace.md) | (3222, 3476) | 1 | 5 | (3217, 3471)-(3227, 3481) | 100 ticks | - | yes |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fisher Realm](../places/fisher-realm.md) | (2634, 4688) L1 | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2634, 4688) L1 | 1 | 5 | (2629, 4683)-(2639, 4693) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -24,30 +24,30 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2840, 3589) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2885, 3531) | 2 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2892, 3532) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3533) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3538) | 10 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2894, 3532) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 2 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3539) | 1 | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2909, 3542) | 2 | no |
-| [Watchtower quest area](../places/watchtower-quest-area.md) | (2924, 4702) | 1 | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3073) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3102) | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2545, 3090) | 5 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3096) L1 | 6 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2537, 3078) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2551, 3109) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2556, 3073) L1 | 2 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2570, 3109) L1 | 2 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2600, 3109) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2610, 3107) L1 | 1 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2615, 3074) L1 | 3 | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2619, 3097) L1 | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2840, 3589) | 1 | 0 | (2840, 3589)-(2840, 3589) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2885, 3531) | 2 | 5 | (2880, 3523)-(2890, 3538) | 50 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2892, 3532) | 1 | 0 | (2892, 3532)-(2892, 3532) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3533) | 1 | 0 | (2893, 3533)-(2893, 3533) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3538) | 10 | 0 | (2891, 3537)-(2895, 3539) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2894, 3532) | 1 | 0 | (2894, 3532)-(2894, 3532) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3532) | 2 | 0 | (2900, 3531)-(2900, 3533) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2900, 3539) | 1 | 5 | (2895, 3534)-(2905, 3544) | 50 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2909, 3542) | 2 | 5 | (2902, 3534)-(2916, 3547) | 50 ticks | - | no |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | (2924, 4702) | 1 | 5 | (2919, 4697)-(2929, 4707) | 100 ticks | - | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3073) L1 | 1 | 5 | (2590, 3068)-(2600, 3078) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3102) | 1 | 5 | (2535, 3097)-(2545, 3107) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2545, 3090) | 5 | 8 | (2527, 3077)-(2555, 3102) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3096) L1 | 6 | 5 | (2528, 3081)-(2544, 3112) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2537, 3078) L1 | 1 | 5 | (2532, 3073)-(2542, 3083) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2551, 3109) L1 | 1 | 5 | (2546, 3104)-(2556, 3114) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2556, 3073) L1 | 2 | 5 | (2548, 3068)-(2563, 3078) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2570, 3109) L1 | 2 | 5 | (2562, 3104)-(2577, 3114) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2600, 3109) L1 | 1 | 5 | (2595, 3104)-(2605, 3114) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2610, 3107) L1 | 1 | 5 | (2605, 3102)-(2615, 3112) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2615, 3074) L1 | 3 | 5 | (2604, 3068)-(2625, 3082) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2619, 3097) L1 | 2 | 5 | (2613, 3090)-(2625, 3104) | 100 ticks | - | no |
 
 ## Drops
 

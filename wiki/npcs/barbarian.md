@@ -24,15 +24,15 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2548, 3565) | 4 | no |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3417) | 6 | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3440) | 5 | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3432) | 1 | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3428) L2 | 1 | yes |
-| [Kandarin](../places/kandarin.md) | (2534, 3568) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2544, 3577) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2548, 3565) | 4 | 10 | (2536, 3550)-(2564, 3580) | 50 ticks | - | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3417) | 6 | 10 | (3065, 3399)-(3096, 3439) | 50 ticks | - | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3440) | 5 | 10 | (3065, 3426)-(3096, 3455) | 50 ticks | - | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3432) | 1 | 10 | (3086, 3422)-(3106, 3442) | 50 ticks | - | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3428) L2 | 1 | 10 | (3086, 3418)-(3106, 3438) | 50 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2534, 3568) | 1 | 10 | (2524, 3558)-(2544, 3578) | 50 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2544, 3577) | 1 | 10 | (2534, 3567)-(2554, 3587) | 50 ticks | - | no |
 
 ## Drops
 

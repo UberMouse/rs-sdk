@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Zanaris](../places/zanaris.md) | (3252, 9572) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Zanaris](../places/zanaris.md) | (3252, 9572) | 1 | 2 | (3250, 9570)-(3254, 9574) | 100 ticks | - | no |
 
 ## Interactions
 

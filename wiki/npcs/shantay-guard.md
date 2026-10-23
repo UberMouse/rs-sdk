@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3303, 3118) | 1 | yes |
-| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3125) | 3 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3303, 3118) | 1 | 0 | (3303, 3118)-(3303, 3118) | 100 ticks | - | yes |
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3125) | 3 | 3 | (3296, 3120)-(3310, 3132) | 100 ticks | - | yes |
 
 ## Drops
 

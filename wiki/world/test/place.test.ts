@@ -1,7 +1,18 @@
 import { describe, expect, test } from 'bun:test';
-import { buildSites, locSizes, spawnClusters, type LocReach, type Placed, type SiteCollision } from '../place';
+import {
+    besideCluster,
+    buildSites,
+    locSizes,
+    roamOf,
+    spawnClusters,
+    type LocReach,
+    type Placed,
+    type SiteCollision,
+    type StepCollision,
+} from '../place';
 import type { Config } from '../sources/configs';
 import { stepAt, type CourseDef } from '../sources/courses';
+import type { NpcMovement } from '../sources/npc-movement';
 import type { Zones } from '../sources/zones';
 import { zoneKey } from '../sources/zones';
 import type { Feature, FeatureKind, Site, Tile } from '../types';
@@ -281,8 +292,17 @@ describe('buildSites: access flags', () => {
 });
 
 const spawn = (config: string, x: number, z: number, level = 0) => ({ config, tile: { level, x, z } });
+/** Scripted configs' movement: a man wanders 2, a knight 15 and respawns fast, a statue stays, an imp teleports. */
+const MOVEMENT: Record<string, NpcMovement> = {
+    man: { wander: 2, respawnTicks: 100 },
+    knight: { wander: 15, respawnTicks: 25 },
+    statue: { wander: 0, respawnTicks: 100 },
+    imp: { wander: 5, respawnTicks: 30, moves: { how: 'teleports', source: 'imp.rs2:21' } },
+    guard: { wander: 0, patrol: { x1: 95, z1: 98, x2: 110, z2: 100, level: 0 }, respawnTicks: 100 },
+};
+const movement = (config: string): NpcMovement => MOVEMENT[config] ?? { wander: 0, respawnTicks: 100 };
 const clusters = (ss: ReturnType<typeof spawn>[], resolve: (t: Tile) => string[] = oneArea, zones = noZones) =>
-    spawnClusters(ss, resolve, zones);
+    spawnClusters(ss, resolve, zones, movement);
 
 describe('spawnClusters', () => {
     test('spawns of a config within 6 tiles, chained, are one cluster with their mean, box and count', () => {
@@ -295,6 +315,9 @@ describe('spawnClusters', () => {
                 bbox: { x1: 100, z1: 100, x2: 112, z2: 101, level: 0 },
                 count: 3,
                 f2p: false,
+                wander: 2,
+                respawnTicks: 100,
+                roam: { x1: 98, z1: 98, x2: 114, z2: 103, level: 0 },
             },
         ]);
     });
@@ -473,5 +496,118 @@ describe('shores', () => {
             free: freeOffOrigin,
         });
         expect(out[0]!.stand!.x).not.toBe(0);
+    });
+});
+
+/** Collision with one wall, between x `west` and `west + 1`, and the entity test from a tile sharing an edge. */
+function wallEastOf(west: number): StepCollision {
+    const across = (a: number, b: number): boolean => Math.min(a, b) === west && Math.max(a, b) === west + 1;
+    return {
+        walkable: () => true,
+        land: () => true,
+        reached: (from, n) => Math.abs(from.x - n.x) + Math.abs(from.z - n.z) === 1 && !across(from.x, n.x),
+        canStep: (_l, x, _z, dx) => !across(x, x + dx),
+    };
+}
+
+/** Within 3 tiles of (100, 100): the land Bob walks on. */
+const inBox = (x: number, z: number): boolean => Math.abs(x - 100) <= 3 && Math.abs(z - 100) <= 3;
+const box1 = (x: number, z: number) => ({ x1: x, z1: z, x2: x, z2: z, level: 0 });
+
+describe('roam', () => {
+    const box = { x1: 100, z1: 100, x2: 104, z2: 101, level: 0 };
+
+    test('a cluster wanders as its config does, its roam the bbox grown by it; at 0 the roam is the bbox', () => {
+        const [knight] = clusters([spawn('knight', 100, 100)]);
+        expect(knight).toMatchObject({ wander: 15, respawnTicks: 25, roam: { x1: 85, z1: 85, x2: 115, z2: 115 } });
+        expect(knight!.bbox).toEqual({ x1: 100, z1: 100, x2: 100, z2: 100, level: 0 });
+        const [statue] = clusters([spawn('statue', 100, 100), spawn('statue', 103, 101)]);
+        expect(statue!.roam).toEqual(statue!.bbox);
+        expect(statue!.moves).toBeUndefined();
+    });
+
+    test('of several configs: the largest wander, the fastest respawn, and a move when one has it', () => {
+        expect(roamOf(['man', 'imp', 'knight'], box, movement)).toEqual({
+            wander: 15,
+            respawnTicks: 25,
+            roam: { x1: 85, z1: 85, x2: 119, z2: 116, level: 0 },
+            moves: { how: 'teleports', source: 'imp.rs2:21' },
+        });
+    });
+
+    test("a patrol wanders as far as its coords' box reaches past the bbox", () => {
+        // The box reaches 5 tiles west (95) and 6 east (110) of x 100-104; z 98-100 reaches 2 south of 100-101.
+        expect(roamOf(['guard'], box, movement).wander).toBe(6);
+    });
+
+    test('a site of npcs gets the roam of its configs; one with a loc, or built without movement, has none', () => {
+        const npcs = [npc('pickpocket', 'man', 100, 100), npc('pickpocket', 'knight', 102, 100)];
+        const [site] = buildSites(npcs, oneArea, noZones, stubCollision(), { ...quiet, movement });
+        expect(site).toMatchObject({ wander: 15, respawnTicks: 25, roam: { x1: 85, z1: 85, x2: 117, z2: 115 } });
+        const bank = [booth(100, 100), banker(100, 101)];
+        const [withLoc] = buildSites(bank, oneArea, noZones, stubCollision(blockedBy(bank)), { ...quiet, movement });
+        expect(withLoc!.roam).toBeUndefined();
+        expect(buildSites(npcs, oneArea, noZones, stubCollision(), quiet)[0]!.roam).toBeUndefined();
+    });
+
+    test('besideCluster takes the roam, and leaves out the ring tiles across a wall at its edge', () => {
+        // A man at (100, 100) wanders 2: roam x 98-102. A wall runs between x 102 and 103.
+        const [man] = clusters([spawn('man', 100, 100)]);
+        const beside = besideCluster(man!, wallEastOf(102));
+        const has = (x: number, z: number) => beside.some(t => t.x === x && t.z === z);
+        // Roam tiles two past the spawn, and the ring past the open west side.
+        expect(has(102, 102)).toBe(true);
+        expect(has(97, 100)).toBe(true);
+        expect([97, 100, 103].map(z => has(103, z))).toEqual([false, false, false]);
+        // The 5x5 roam, and its ring but the 7 tiles of the east column.
+        expect(beside).toHaveLength(5 * 5 + 7 * 7 - 5 * 5 - 7);
+    });
+
+    test('besideCluster leaves out the roam tiles across a wall the npc cannot walk through, and the ring past them', () => {
+        // The wall runs between x 101 and 102, inside the roam: x 102 is neither walked to nor beside.
+        const [man] = clusters([spawn('man', 100, 100)]);
+        const beside = besideCluster(man!, wallEastOf(101));
+        expect(beside.some(t => t.x >= 102)).toBe(false);
+        // Roam x 98-101 (4x5), the west column (7) and the north and south rows over x 98-101 (2x4).
+        expect(beside).toHaveLength(4 * 5 + 7 + 2 * 4);
+        expect(beside).toEqual([...beside].sort((a, b) => a.x - b.x || a.z - b.z));
+    });
+
+    test('besideCluster shuts the doors the collision has open: no npc walks through one, no player is beside past one', () => {
+        // The man's roam is x 98-102; a door at x 101-102, z 100 is open in the collision until walled.
+        let shut = false;
+        const doorway: StepCollision = {
+            ...wallEastOf(101),
+            canStep: (_l, x, z, dx, dz) =>
+                !(Math.min(x, x + dx) === 101 && Math.max(x, x + dx) === 102) || (!shut && z === 100 && dz === 0),
+            walled: f => {
+                shut = true;
+                try {
+                    return f();
+                } finally {
+                    shut = false;
+                }
+            },
+        };
+        const [man] = clusters([spawn('man', 100, 100)]);
+        expect(besideCluster(man!, doorway).some(t => t.x >= 102)).toBe(false);
+        // Left open, the npc walks through it.
+        const { walled: _, ...open } = doorway;
+        expect(besideCluster(man!, open).some(t => t.x === 102)).toBe(true);
+    });
+
+    test('besideCluster costs the land a walk gets to, not a roam the size of the map', () => {
+        // Bob the cat wanders 30000 (quest_death.npc); here the collision data's land is the 7x7 round his spawn.
+        const islet: StepCollision = {
+            walkable: () => true,
+            land: (_l, x, z) => inBox(x, z),
+            reached: () => false,
+            canStep: () => true,
+        };
+        const bob = roamOf(['bob'], box1(100, 100), () => ({ wander: 30000, respawnTicks: 100 }));
+        expect(bob.roam.x2).toBe(30100);
+        const beside = besideCluster({ ...bob, bbox: box1(100, 100), centre: { level: 0, x: 100, z: 100 } }, islet);
+        // The 7x7 of land, and the ring round it, which steps onto it.
+        expect(beside).toHaveLength(9 * 9);
     });
 });

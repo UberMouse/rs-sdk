@@ -20,8 +20,8 @@ The options of each spot config placed in the world (its npc config).
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:0` | (2694, 2706) | (2695, 2706) | 1 | no | yes | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 92 ticks via Monkey Madness done |
-| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2742) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 128 ticks via wear any mm greegree + Monkey Madness done |
+| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:0` | (2694, 2706) | (2695, 2706) | 1 | no | yes | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 90 ticks via Monkey Madness done |
+| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2742) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 126 ticks via wear any mm greegree + Monkey Madness done |
 | [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
 | [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | 6 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
 | [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2647, 3710) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 145 ticks |

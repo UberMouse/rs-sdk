@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Kharidian Desert](../places/kharidian-desert.md) | (3171, 3025) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Kharidian Desert](../places/kharidian-desert.md) | (3171, 3025) | 1 | 3 | (3168, 3022)-(3174, 3028) | 100 ticks | - | no |
 
 ## Interactions
 

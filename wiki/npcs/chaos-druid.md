@@ -11,13 +11,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2613, 9485) | 7 | no |
-| - | (2614, 9522) | 4 | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3110, 9936) | 11 | no |
-| [Kandarin](../places/kandarin.md) | (2562, 3356) | 4 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2934, 9849) | 6 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2613, 9485) | 7 | 5 | (2606, 9477)-(2621, 9493) | 50 ticks | - | no |
+| - | (2614, 9522) | 4 | 5 | (2608, 9516)-(2621, 9530) | 50 ticks | - | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3110, 9936) | 11 | 5 | (3099, 9920)-(3120, 9948) | 50 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2562, 3356) | 4 | 5 | (2556, 3350)-(2568, 3363) | 50 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2934, 9849) | 6 | 5 | (2924, 9841)-(2942, 9857) | 50 ticks | - | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Lumber Yard (Misthalin)](../places/lumber-yard.md) | (3306, 3512) L1 | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Lumber Yard (Misthalin)](../places/lumber-yard.md) | (3306, 3512) L1 | 1 | 5 | (3301, 3507)-(3311, 3517) | 100 ticks | - | yes |
 
 ## Interactions
 

@@ -11,11 +11,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2860, 9841) | 4 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2864, 9851) | 1 | no |
-| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2734, 9691) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2860, 9841) | 4 | 3 | (2853, 9834)-(2870, 9850) | 178 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2864, 9851) | 1 | 3 | (2861, 9848)-(2867, 9854) | 178 ticks | - | no |
+| [Witchaven dungeon](../places/witchaven-dungeon.md) | (2734, 9691) | 2 | 3 | (2731, 9685)-(2737, 9696) | 178 ticks | - | no |
 
 ## Drops
 

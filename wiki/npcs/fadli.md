@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | (3383, 3269) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | (3383, 3269) | 1 | - | - | - | - | no |
 
 ## Interactions
 

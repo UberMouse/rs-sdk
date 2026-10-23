@@ -23,13 +23,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3007, 3273) | 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | (3009, 3280) | 1 | yes |
-| [Kandarin](../places/kandarin.md) | (2735, 3521) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2749, 3521) | 1 | no |
-| [Misthalin](../places/misthalin.md) | (3110, 3295) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3007, 3273) | 1 | 8 | (2999, 3265)-(3015, 3281) | 100 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (3009, 3280) | 1 | 8 | (3001, 3272)-(3017, 3288) | 100 ticks | - | yes |
+| [Kandarin](../places/kandarin.md) | (2735, 3521) | 1 | 8 | (2727, 3513)-(2743, 3529) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2749, 3521) | 1 | 8 | (2741, 3513)-(2757, 3529) | 100 ticks | - | no |
+| [Misthalin](../places/misthalin.md) | (3110, 3295) | 1 | 8 | (3102, 3287)-(3118, 3303) | 100 ticks | - | yes |
 
 ## Drops
 

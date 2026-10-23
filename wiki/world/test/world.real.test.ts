@@ -598,6 +598,9 @@ describe('npc locations', () => {
                 bbox: { x1: 2660, z1: 3653, x2: 2660, z2: 3653, level: 0 },
                 count: 1,
                 f2p: false,
+                wander: 2,
+                respawnTicks: 100,
+                roam: { x1: 2658, z1: 3651, x2: 2662, z2: 3655, level: 0 },
                 reach: [[]],
             },
         ]);

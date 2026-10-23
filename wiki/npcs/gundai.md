@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | (2534, 4714) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | (2534, 4714) | 1 | 5 | (2529, 4709)-(2539, 4719) | 100 ticks | - | no |
 
 ## Interactions
 

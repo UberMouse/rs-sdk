@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2851, 3598) | 1 | no |
-| [Asgarnia](../places/asgarnia.md) | (2894, 3698) | 5 | no |
-| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2863, 3600) | 5 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2851, 3598) | 1 | 0 | (2851, 3598)-(2851, 3598) | 50 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (2894, 3698) | 5 | 0 | (2886, 3696)-(2902, 3700) | 50 ticks | - | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2863, 3600) | 5 | 5 | (2849, 3579)-(2881, 3605) | 50 ticks | - | no |
 
 ## Drops
 

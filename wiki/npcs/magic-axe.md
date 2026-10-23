@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Dwarven Mine](../places/dwarven-mine.md) | (2956, 9778) | 2 | no |
-| [Dwarven Mine](../places/dwarven-mine.md) | (2960, 9791) | 4 | no |
-| [Dwarven Mine](../places/dwarven-mine.md) | (2966, 9775) | 1 | no |
-| [Wilderness](../places/wilderness.md) | (3191, 3960) | 9 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (2956, 9778) | 2 | 10 | (2945, 9765)-(2967, 9790) | 60 ticks | - | no |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2960, 9791) | 4 | 10 | (2945, 9777)-(2976, 9805) | 60 ticks | - | no |
+| [Dwarven Mine](../places/dwarven-mine.md) | (2966, 9775) | 1 | 10 | (2956, 9765)-(2976, 9785) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3191, 3960) | 9 | 10 | (3177, 3948)-(3204, 3971) | 60 ticks | - | no |
 
 ## Drops
 

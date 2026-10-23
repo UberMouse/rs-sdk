@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2960, 3336) L2 | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2960, 3336) L2 | 1 | 5 | (2955, 3331)-(2965, 3341) | 100 ticks | - | yes |
 
 ## Interactions
 

@@ -56,7 +56,10 @@ const scan: GateScanInput = {
     loadoutProcs: {},
     names: new Set(),
 };
-const cluster = (config: string, t: Tile) => ({ config, centre: t, bbox: { x1: t.x, z1: t.z, x2: t.x, z2: t.z } });
+const cluster = (config: string, t: Tile) => {
+    const box = { x1: t.x, z1: t.z, x2: t.x, z2: t.z };
+    return { config, centre: t, bbox: box, roam: box };
+};
 const SPAWNS = [cluster('pilot', at(0, 3205, 3210)), cluster('pilot', at(0, 3220, 3210))];
 const STAIRS = at(0, 3210, 3220);
 // The whistle's landing (3228, 3228) is blocked, and a sealed room in the back zone no walk from the landing enters.

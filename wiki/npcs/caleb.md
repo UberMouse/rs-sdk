@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Catherby (Kandarin)](../places/catherby.md) | (2819, 3451) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Catherby (Kandarin)](../places/catherby.md) | (2819, 3451) | 1 | 5 | (2814, 3446)-(2824, 3456) | 100 ticks | - | no |
 
 ## Interactions
 

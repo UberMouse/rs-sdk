@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2840, 3497) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2840, 3497) | 1 | 20 | (2820, 3477)-(2860, 3517) | 180 ticks | - | no |
 
 ## Drops
 

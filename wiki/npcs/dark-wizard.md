@@ -24,14 +24,14 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3334) | 7 | no |
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L1 | 4 | no |
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L2 | 4 | no |
-| [Draynor willows (Draynor Village)](../places/draynor-willows.md) | (3085, 3237) | 2 | yes |
-| [Misthalin](../places/misthalin.md) | (3227, 3369) | 11 | yes |
-| [Wilderness](../places/wilderness.md) | (2982, 3568) | 8 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3334) | 7 | 3 | (2902, 3328)-(2913, 3340) | 100 ticks | - | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L1 | 4 | 3 | (2903, 3330)-(2912, 3339) | 100 ticks | - | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L2 | 4 | 3 | (2903, 3329)-(2913, 3339) | 100 ticks | - | no |
+| [Draynor willows (Draynor Village)](../places/draynor-willows.md) | (3085, 3237) | 2 | 3 | (3081, 3233)-(3088, 3241) | 100 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3227, 3369) | 11 | 3 | (3220, 3360)-(3235, 3377) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (2982, 3568) | 8 | 3 | (2973, 3559)-(2991, 3578) | 100 ticks | - | yes |
 
 ## Drops
 

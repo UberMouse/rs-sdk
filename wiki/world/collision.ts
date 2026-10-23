@@ -5,7 +5,8 @@ import { collisionPaths, EXTRA_DOORS, SLASH_WEBS } from '../../conductor/actions
 import collisionData from '../../sdk/collision-data.json';
 import { initPathfinding, isZoneAllocated } from '../../sdk/pathfinding';
 import * as rsmod from '../../server/vendor/rsmod-pathfinder';
-import type { ReachCollision } from './reach';
+import type { StepCollision } from './place';
+import type { ReachCollision, WallEdit } from './reach';
 import type { ConnectorCollision } from './sources/connectors';
 import type { TeleportCollision } from './sources/dbrow-teleports';
 
@@ -44,6 +45,19 @@ export const siteCollision: ConnectorCollision = {
 
 const ZONES = collisionData.zones as [number, number, number][];
 
+/** Every door the bundle lists and the walker's own (EXTRA_DOORS), to wall again: edited takes each one's shape. */
+const DOORS: WallEdit[] = [
+    ...(collisionData.doors as [number, number, number, number, number, number][]).map(
+        ([level, x, z, shape, angle]) => ({
+            tile: { level, x, z },
+            shape,
+            angle,
+        }),
+    ),
+    ...EXTRA_DOORS.map(d => ({ tile: { level: d.level, x: d.x, z: d.z }, shape: d.shape, angle: d.angle })),
+];
+let walling = false;
+
 /** Whether a tile is new to `done`, which then holds it: each tile is edited once. */
 function once(done: Set<string>, level: number, x: number, z: number): boolean {
     const key = `${level} ${x} ${z}`;
@@ -58,7 +72,7 @@ function once(done: Set<string>, level: number, x: number, z: number): boolean {
  * findsquare ring reads (sources/dbrow-teleports.ts), on the same rsmod instance. An edit runs on the rsmod
  * instance sdk/pathfinding.ts fills and is undone after, so nothing else in the process sees it.
  */
-export const reachCollision: ReachCollision & TeleportCollision = {
+export const reachCollision: ReachCollision & TeleportCollision & Pick<StepCollision, 'walled'> = {
     ...siteCollision,
     zones: ZONES,
     canStep: collisionPaths.canStep,
@@ -111,6 +125,16 @@ export const reachCollision: ReachCollision & TeleportCollision = {
             return f();
         } finally {
             for (const u of undo.toReversed()) u();
+        }
+    },
+    // Inside a walled run a nested one runs as it is, so a caller can wall a batch once.
+    walled(f) {
+        if (walling) return f();
+        walling = true;
+        try {
+            return reachCollision.edited({ close: DOORS, open: [] }, f);
+        } finally {
+            walling = false;
         }
     },
 };

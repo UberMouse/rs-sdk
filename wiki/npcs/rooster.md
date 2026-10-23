@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Miscellania and Etceteria](../places/miscellania.md) | (2518, 3865) | 1 | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2606, 3877) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2518, 3865) | 1 | 5 | (2506, 3849)-(2523, 3876) | 50 ticks | - | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2606, 3877) | 1 | 5 | (2596, 3869)-(2611, 3883) | 50 ticks | - | no |
 
 ## Drops
 

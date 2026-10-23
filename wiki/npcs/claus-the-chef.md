@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9670) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9670) | 1 | 1 | (2565, 9669)-(2567, 9671) | 100 ticks | - | no |
 
 ## Interactions
 

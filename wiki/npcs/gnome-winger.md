@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3483) | 1 | no |
-| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3493) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3483) | 1 | 5 | (2388, 3478)-(2398, 3488) | 0 ticks | - | no |
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2393, 3493) | 1 | 5 | (2388, 3488)-(2398, 3498) | 0 ticks | - | no |
 
 ## Interactions
 

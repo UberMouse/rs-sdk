@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9685) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9685) | 1 | 5 | (2926, 9680)-(2936, 9690) | 100 ticks | - | no |
 
 ## Interactions
 

@@ -11,10 +11,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (3461, 9700) | 2 | no |
-| - | (3461, 9715) | 6 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (3461, 9700) | 2 | 9 | (3449, 9689)-(3472, 9711) | 50 ticks | changes-type (minigames/game_mortton/scripts/mortton_shades.rs2:107) | no |
+| - | (3461, 9715) | 6 | 9 | (3449, 9702)-(3473, 9732) | 50 ticks | changes-type (minigames/game_mortton/scripts/mortton_shades.rs2:107) | no |
 
 ## Drops
 

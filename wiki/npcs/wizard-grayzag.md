@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3161) L2 | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3161) L2 | 1 | 5 | (3105, 3156)-(3115, 3166) | 60 ticks | - | yes |
 
 ## Drops
 

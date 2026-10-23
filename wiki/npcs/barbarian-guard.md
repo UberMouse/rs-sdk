@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2544, 3569) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2544, 3569) | 2 | 2 | (2542, 3565)-(2546, 3573) | 100 ticks | - | no |
 
 ## Drops
 

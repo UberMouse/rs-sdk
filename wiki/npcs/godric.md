@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2827, 10077) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2827, 10077) | 1 | 2 | (2825, 10075)-(2829, 10079) | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | no |
 
 ## Interactions
 

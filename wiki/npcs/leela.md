@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3113, 3263) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3113, 3263) | 1 | 5 | (3108, 3258)-(3118, 3268) | 100 ticks | - | yes |
 
 ## Interactions
 

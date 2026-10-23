@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2576, 3027) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2576, 3027) | 1 | 5 | (2571, 3022)-(2581, 3032) | 100 ticks | - | no |
 
 ## Interactions
 

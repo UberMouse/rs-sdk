@@ -24,36 +24,36 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9528) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9544) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2640, 9583) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2642, 9518) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2645, 9488) | 3 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9535) | 2 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9554) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2651, 9564) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2653, 9574) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2654, 9587) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9548) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2663, 9556) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2670, 9544) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2673, 9592) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9544) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9594) | 1 | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2682, 9573) | 1 | no |
-| [Crandor](../places/crandor.md) | (2831, 3244) | 3 | yes |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2553, 3406) | 4 | no |
-| [Kandarin](../places/kandarin.md) | (2695, 3211) | 5 | no |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3158, 9903) | 2 | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3165, 9879) | 2 | yes |
-| [Wilderness](../places/wilderness.md) | (3139, 3818) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | yes |
-| [Wilderness](../places/wilderness.md) | (3141, 3826) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9528) | 1 | 3 | (2633, 9525)-(2639, 9531) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2636, 9544) | 1 | 3 | (2633, 9541)-(2639, 9547) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2640, 9583) | 1 | 3 | (2637, 9580)-(2643, 9586) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2642, 9518) | 1 | 3 | (2639, 9515)-(2645, 9521) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2645, 9488) | 3 | 3 | (2639, 9481)-(2650, 9495) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9535) | 2 | 3 | (2642, 9529)-(2651, 9540) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2647, 9554) | 1 | 3 | (2644, 9551)-(2650, 9557) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2651, 9564) | 1 | 3 | (2648, 9561)-(2654, 9567) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2653, 9574) | 1 | 3 | (2650, 9571)-(2656, 9577) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2654, 9587) | 1 | 3 | (2651, 9584)-(2657, 9590) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9548) | 1 | 3 | (2656, 9545)-(2662, 9551) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2663, 9556) | 1 | 3 | (2660, 9553)-(2666, 9559) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2670, 9544) | 1 | 3 | (2667, 9541)-(2673, 9547) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2673, 9592) | 1 | 3 | (2670, 9589)-(2676, 9595) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9544) | 1 | 3 | (2677, 9541)-(2683, 9547) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9594) | 1 | 3 | (2677, 9591)-(2683, 9597) | 60 ticks | - | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2682, 9573) | 1 | 3 | (2679, 9570)-(2685, 9576) | 60 ticks | - | no |
+| [Crandor](../places/crandor.md) | (2831, 3244) | 3 | 3 | (2824, 3239)-(2837, 3249) | 60 ticks | - | yes |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | 9 | (2519, 9832)-(2539, 9855) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | 9 | (2532, 9831)-(2555, 9856) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | 9 | (2529, 9804)-(2555, 9831) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2553, 3406) | 4 | 3 | (2546, 3398)-(2559, 3412) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2695, 3211) | 5 | 3 | (2688, 3201)-(2702, 3219) | 60 ticks | - | no |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3158, 9903) | 2 | 3 | (3154, 9897)-(3162, 9908) | 60 ticks | - | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3165, 9879) | 2 | 10 | (3153, 9868)-(3193, 9901) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3139, 3818) | 1 | 3 | (3136, 3815)-(3142, 3821) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | 9 | (3131, 3793)-(3152, 3814) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3141, 3826) | 1 | 3 | (3138, 3823)-(3144, 3829) | 60 ticks | - | yes |
 
 ## Drops
 

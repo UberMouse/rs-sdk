@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3120, 9974) | 4 | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3122, 9992) | 7 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3120, 9974) | 4 | 4 | (3114, 9967)-(3128, 9980) | 60 ticks | - | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3122, 9992) | 7 | 4 | (3112, 9984)-(3130, 10000) | 60 ticks | - | no |
 
 ## Drops
 

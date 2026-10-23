@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2902, 3604) | 1 | no |
-| [Asgarnia](../places/asgarnia.md) | (2906, 3623) | 1 | no |
-| [Asgarnia](../places/asgarnia.md) | (2921, 3611) | 5 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2902, 3604) | 1 | 0 | (2902, 3604)-(2902, 3604) | 100 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3623) | 1 | 0 | (2906, 3623)-(2906, 3623) | 100 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (2921, 3611) | 5 | 0 | (2916, 3601)-(2923, 3622) | 100 ticks | - | no |
 
 ## Drops
 

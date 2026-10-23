@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2602, 3154) | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2616, 3168) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Fight Arena (Kandarin)](../places/fight-arena.md) | (2602, 3154) | 1 | 0 | (2602, 3154)-(2602, 3154) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2616, 3168) | 1 | 1 | (2615, 3167)-(2617, 3169) | 100 ticks | teleports (quests/quest_arena/scripts/jeremy_servil.rs2:153) | no |
 
 ## Interactions
 

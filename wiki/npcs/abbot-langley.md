@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Monastery (Asgarnia)](../places/monastery.md) | (3058, 3484) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Monastery (Asgarnia)](../places/monastery.md) | (3058, 3484) | 1 | 3 | (3055, 3481)-(3061, 3487) | 100 ticks | - | yes |
 
 ## Interactions
 

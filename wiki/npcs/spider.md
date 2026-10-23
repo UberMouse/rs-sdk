@@ -24,99 +24,99 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2330, 9914) | 1 | no |
-| - | (2339, 9914) | 1 | no |
-| - | (2349, 9895) | 48 | no |
-| - | (2565, 9443) | 1 | no |
-| - | (2576, 9454) | 1 | no |
-| - | (2586, 9423) | 1 | no |
-| - | (2588, 9431) | 1 | no |
-| - | (2600, 9432) | 1 | no |
-| - | (2609, 9447) | 5 | no |
-| - | (2671, 4559) | 3 | no |
-| - | (2694, 9104) | 1 | no |
-| - | (2694, 9138) | 1 | no |
-| - | (2697, 9171) | 1 | no |
-| - | (2698, 9127) | 1 | no |
-| - | (2701, 9179) | 1 | no |
-| - | (2702, 9202) | 2 | no |
-| - | (2704, 9194) | 2 | no |
-| - | (2708, 9106) | 2 | no |
-| - | (2708, 9173) | 2 | no |
-| - | (2711, 9137) | 1 | no |
-| - | (2716, 9096) | 1 | no |
-| - | (2716, 9146) | 1 | no |
-| - | (2722, 9173) | 1 | no |
-| - | (2727, 9199) | 4 | no |
-| - | (2729, 9180) | 2 | no |
-| - | (2734, 9123) | 3 | no |
-| - | (2734, 9170) | 1 | no |
-| - | (2746, 9104) | 2 | no |
-| - | (2748, 9143) | 1 | no |
-| - | (2761, 9094) | 1 | no |
-| - | (2761, 9144) | 1 | no |
-| - | (2764, 9103) | 1 | no |
-| - | (2765, 9116) | 2 | no |
-| - | (2766, 9133) | 1 | no |
-| - | (2767, 9163) | 1 | no |
-| - | (2768, 9193) | 6 | no |
-| - | (2781, 9140) | 1 | no |
-| - | (2784, 9093) | 1 | no |
-| - | (2786, 9196) | 3 | no |
-| - | (2788, 9102) | 1 | no |
-| - | (2788, 9168) | 8 | no |
-| - | (2793, 9117) | 1 | no |
-| - | (2793, 9130) | 1 | no |
-| - | (2798, 9138) | 1 | no |
-| - | (2799, 9099) | 1 | no |
-| - | (2799, 9200) | 3 | no |
-| - | (2800, 9162) | 1 | no |
-| - | (2810, 9104) | 1 | no |
-| - | (2810, 9124) | 1 | no |
-| - | (2920, 9486) | 1 | no |
-| - | (2929, 9659) | 1 | yes |
-| - | (2933, 9651) | 2 | yes |
-| - | (3111, 9747) | 4 | yes |
-| - | (2678, 4579) L1 | 3 | no |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3322, 3139) | 3 | yes |
-| [Ape Atoll](../places/ape-atoll.md) | (2753, 2799) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2761, 2770) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2767, 2794) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2770, 2766) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2775, 2777) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2780, 2791) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2796, 2763) | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2797, 2784) | 3 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2734, 2792) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2767, 2765) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2769, 2798) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2778, 2768) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2793, 2789) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2794, 2780) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2806, 2787) L1 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2749, 2768) L2 | 1 | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2752, 2798) L2 | 1 | no |
-| [Kandarin](../places/kandarin.md) | (2544, 3189) | 4 | no |
-| [Kandarin](../places/kandarin.md) | (2672, 3108) | 2 | no |
-| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | (3213, 9620) | 4 | yes |
-| [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3169, 3244) | 2 | yes |
-| [Misthalin](../places/misthalin.md) | (3166, 3248) | 2 | yes |
-| [Morytania](../places/morytania.md) | (3566, 3457) | 1 | no |
-| [Morytania](../places/morytania.md) | (3567, 3503) | 1 | no |
-| [Morytania](../places/morytania.md) | (3597, 3489) | 1 | no |
-| [Morytania](../places/morytania.md) | (3611, 3462) | 1 | no |
-| [Morytania](../places/morytania.md) | (3620, 3500) | 1 | no |
-| [Morytania](../places/morytania.md) | (3636, 3484) | 1 | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2893, 9832) | 3 | no |
-| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2537, 3182) | 5 | no |
-| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3392) | 1 | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3206, 9879) | 2 | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3211, 9890) | 4 | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3262, 9869) | 3 | yes |
-| [Wilderness](../places/wilderness.md) | (2988, 3685) | 6 | yes |
-| [Wilderness](../places/wilderness.md) | (3170, 3885) | 17 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2330, 9914) | 1 | 8 | (2322, 9906)-(2338, 9922) | 70 ticks | - | no |
+| - | (2339, 9914) | 1 | 8 | (2331, 9906)-(2347, 9922) | 70 ticks | - | no |
+| - | (2349, 9895) | 48 | 10 | (2319, 9863)-(2374, 9928) | 70 ticks | - | no |
+| - | (2565, 9443) | 1 | 8 | (2557, 9424)-(2576, 9451) | 60 ticks | - | no |
+| - | (2576, 9454) | 1 | 8 | (2568, 9446)-(2584, 9462) | 70 ticks | - | no |
+| - | (2586, 9423) | 1 | 8 | (2578, 9415)-(2594, 9431) | 70 ticks | - | no |
+| - | (2588, 9431) | 1 | 8 | (2580, 9423)-(2600, 9445) | 60 ticks | - | no |
+| - | (2600, 9432) | 1 | 8 | (2592, 9424)-(2608, 9440) | 70 ticks | - | no |
+| - | (2609, 9447) | 5 | 8 | (2596, 9428)-(2625, 9468) | 60 ticks | - | no |
+| - | (2671, 4559) | 3 | 10 | (2661, 4548)-(2681, 4570) | 100 ticks | - | no |
+| - | (2694, 9104) | 1 | 5 | (2689, 9099)-(2699, 9109) | 4 ticks | - | no |
+| - | (2694, 9138) | 1 | 5 | (2689, 9133)-(2699, 9143) | 4 ticks | - | no |
+| - | (2697, 9171) | 1 | 5 | (2692, 9166)-(2702, 9176) | 4 ticks | - | no |
+| - | (2698, 9127) | 1 | 5 | (2692, 9122)-(2703, 9135) | 4 ticks | - | no |
+| - | (2701, 9179) | 1 | 5 | (2696, 9174)-(2706, 9184) | 4 ticks | - | no |
+| - | (2702, 9202) | 2 | 5 | (2694, 9197)-(2709, 9207) | 4 ticks | - | no |
+| - | (2704, 9194) | 2 | 5 | (2696, 9189)-(2711, 9199) | 4 ticks | - | no |
+| - | (2708, 9106) | 2 | 10 | (2694, 9093)-(2722, 9122) | 4 ticks | - | no |
+| - | (2708, 9173) | 2 | 5 | (2702, 9165)-(2714, 9180) | 4 ticks | - | no |
+| - | (2711, 9137) | 1 | 10 | (2700, 9120)-(2725, 9147) | 4 ticks | - | no |
+| - | (2716, 9096) | 1 | 5 | (2709, 9090)-(2721, 9101) | 4 ticks | - | no |
+| - | (2716, 9146) | 1 | 5 | (2711, 9141)-(2724, 9152) | 4 ticks | - | no |
+| - | (2722, 9173) | 1 | 5 | (2717, 9168)-(2727, 9178) | 4 ticks | - | no |
+| - | (2727, 9199) | 4 | 5 | (2718, 9190)-(2737, 9208) | 4 ticks | - | no |
+| - | (2729, 9180) | 2 | 5 | (2721, 9173)-(2737, 9186) | 4 ticks | - | no |
+| - | (2734, 9123) | 3 | 10 | (2719, 9108)-(2751, 9140) | 4 ticks | - | no |
+| - | (2734, 9170) | 1 | 5 | (2729, 9165)-(2739, 9175) | 4 ticks | - | no |
+| - | (2746, 9104) | 2 | 10 | (2731, 9090)-(2758, 9117) | 4 ticks | - | no |
+| - | (2748, 9143) | 1 | 5 | (2737, 9138)-(2757, 9151) | 4 ticks | - | no |
+| - | (2761, 9094) | 1 | 5 | (2756, 9089)-(2766, 9099) | 4 ticks | - | no |
+| - | (2761, 9144) | 1 | 5 | (2756, 9139)-(2766, 9149) | 4 ticks | - | no |
+| - | (2764, 9103) | 1 | 5 | (2759, 9098)-(2769, 9108) | 4 ticks | - | no |
+| - | (2765, 9116) | 2 | 5 | (2756, 9105)-(2777, 9125) | 4 ticks | - | no |
+| - | (2766, 9133) | 1 | 5 | (2759, 9128)-(2771, 9138) | 4 ticks | - | no |
+| - | (2767, 9163) | 1 | 5 | (2762, 9158)-(2772, 9168) | 4 ticks | - | no |
+| - | (2768, 9193) | 6 | 5 | (2756, 9182)-(2778, 9210) | 4 ticks | - | no |
+| - | (2781, 9140) | 1 | 5 | (2772, 9135)-(2786, 9149) | 4 ticks | - | no |
+| - | (2784, 9093) | 1 | 5 | (2776, 9087)-(2789, 9098) | 4 ticks | - | no |
+| - | (2786, 9196) | 3 | 5 | (2777, 9185)-(2795, 9209) | 4 ticks | - | no |
+| - | (2788, 9102) | 1 | 5 | (2783, 9097)-(2793, 9108) | 4 ticks | - | no |
+| - | (2788, 9168) | 8 | 5 | (2771, 9158)-(2801, 9180) | 4 ticks | - | no |
+| - | (2793, 9117) | 1 | 5 | (2788, 9107)-(2804, 9122) | 4 ticks | - | no |
+| - | (2793, 9130) | 1 | 5 | (2788, 9124)-(2798, 9135) | 4 ticks | - | no |
+| - | (2798, 9138) | 1 | 5 | (2793, 9133)-(2803, 9143) | 4 ticks | - | no |
+| - | (2799, 9099) | 1 | 5 | (2794, 9092)-(2806, 9104) | 4 ticks | - | no |
+| - | (2799, 9200) | 3 | 5 | (2792, 9191)-(2814, 9215) | 4 ticks | - | no |
+| - | (2800, 9162) | 1 | 5 | (2795, 9157)-(2805, 9167) | 4 ticks | - | no |
+| - | (2810, 9104) | 1 | 5 | (2804, 9099)-(2815, 9109) | 4 ticks | - | no |
+| - | (2810, 9124) | 1 | 5 | (2805, 9118)-(2815, 9129) | 4 ticks | - | no |
+| - | (2920, 9486) | 1 | 8 | (2912, 9478)-(2928, 9494) | 70 ticks | - | no |
+| - | (2929, 9659) | 1 | 8 | (2921, 9651)-(2937, 9667) | 70 ticks | - | yes |
+| - | (2933, 9651) | 2 | 15 | (2915, 9625)-(2951, 9669) | 4 ticks | - | yes |
+| - | (3111, 9747) | 4 | 15 | (3095, 9730)-(3131, 9769) | 4 ticks | - | yes |
+| - | (2678, 4579) L1 | 3 | 10 | (2667, 4566)-(2689, 4592) | 100 ticks | - | no |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3322, 3139) | 3 | 8 | (3311, 3130)-(3332, 3149) | 70 ticks | - | yes |
+| [Ape Atoll](../places/ape-atoll.md) | (2753, 2799) | 1 | 5 | (2748, 2794)-(2758, 2804) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2761, 2770) | 1 | 5 | (2756, 2765)-(2766, 2775) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2767, 2794) | 1 | 5 | (2762, 2789)-(2772, 2799) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2770, 2766) | 1 | 5 | (2761, 2756)-(2781, 2771) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2775, 2777) | 1 | 5 | (2770, 2772)-(2780, 2782) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2780, 2791) | 1 | 5 | (2775, 2786)-(2785, 2796) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2796, 2763) | 1 | 5 | (2791, 2758)-(2801, 2768) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2797, 2784) | 3 | 5 | (2783, 2770)-(2810, 2802) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2734, 2792) L1 | 1 | 5 | (2729, 2787)-(2739, 2797) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2767, 2765) L1 | 1 | 5 | (2762, 2760)-(2772, 2770) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2769, 2798) L1 | 1 | 5 | (2764, 2793)-(2774, 2803) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2778, 2768) L1 | 1 | 5 | (2773, 2763)-(2783, 2773) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2793, 2789) L1 | 1 | 5 | (2785, 2784)-(2802, 2796) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2794, 2780) L1 | 1 | 5 | (2789, 2775)-(2802, 2785) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2806, 2787) L1 | 1 | 5 | (2801, 2782)-(2811, 2792) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2749, 2768) L2 | 1 | 5 | (2744, 2763)-(2754, 2773) | 4 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2752, 2798) L2 | 1 | 5 | (2747, 2793)-(2757, 2803) | 4 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2544, 3189) | 4 | 15 | (2526, 3171)-(2572, 3213) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2672, 3108) | 2 | 8 | (2663, 3099)-(2689, 3122) | 60 ticks | - | no |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | (3213, 9620) | 4 | 8 | (3201, 9608)-(3224, 9632) | 70 ticks | - | yes |
+| [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3169, 3244) | 2 | 10 | (3158, 3233)-(3180, 3255) | 60 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3166, 3248) | 2 | 10 | (3155, 3232)-(3177, 3259) | 60 ticks | - | yes |
+| [Morytania](../places/morytania.md) | (3566, 3457) | 1 | 15 | (3551, 3442)-(3581, 3472) | 100 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3567, 3503) | 1 | 15 | (3552, 3488)-(3582, 3518) | 100 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3597, 3489) | 1 | 15 | (3582, 3474)-(3612, 3504) | 100 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3611, 3462) | 1 | 15 | (3596, 3447)-(3626, 3477) | 100 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3620, 3500) | 1 | 15 | (3605, 3485)-(3635, 3515) | 100 ticks | - | no |
+| [Morytania](../places/morytania.md) | (3636, 3484) | 1 | 15 | (3621, 3469)-(3651, 3499) | 100 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2893, 9832) | 3 | 8 | (2883, 9820)-(2904, 9842) | 70 ticks | - | no |
+| [Tree Gnome Village (Kandarin)](../places/tree-gnome-village.md) | (2537, 3182) | 5 | 8 | (2527, 3172)-(2549, 3191) | 70 ticks | - | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3392) | 1 | 25 | (3213, 3365)-(3274, 3418) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3206, 9879) | 2 | 8 | (3197, 9869)-(3214, 9888) | 70 ticks | - | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3211, 9890) | 4 | 8 | (3202, 9879)-(3220, 9901) | 70 ticks | - | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3262, 9869) | 3 | 15 | (3238, 9852)-(3277, 9885) | 4 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (2988, 3685) | 6 | 10 | (2972, 3667)-(3003, 3702) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3170, 3885) | 17 | 8 | (3154, 3871)-(3186, 3901) | 70 ticks | - | yes |
 
 ## Drops
 

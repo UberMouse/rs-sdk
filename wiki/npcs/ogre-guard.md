@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2502, 3012) | 2 | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2528, 3019) | 2 | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2550, 3030) | 2 | no |
-| [Kandarin](../places/kandarin.md) | (2506, 3062) | 2 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2502, 3012) | 2 | 5 | (2496, 3006)-(2508, 3017) | 100 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2528, 3019) | 2 | 5 | (2521, 3013)-(2534, 3024) | 100 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2550, 3030) | 2 | 2 | (2547, 3027)-(2553, 3033) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2506, 3062) | 2 | 5 | (2500, 3057)-(2512, 3067) | 100 ticks | - | no |
 
 ## Drops
 

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Underground Pass](../places/underground-pass.md) | (2383, 9630) | 4 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Underground Pass](../places/underground-pass.md) | (2383, 9630) | 4 | 15 | (2355, 9603)-(2427, 9658) | 4 ticks | - | no |
 
 ## Drops
 

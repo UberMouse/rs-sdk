@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (3046, 9640) L3 | 1 | yes |
-| [Asgarnia](../places/asgarnia.md) | (2854, 3235) | 1 | yes |
-| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3100, 3258) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (3046, 9640) L3 | 1 | 0 | (3046, 9640)-(3046, 9640) | 100 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (2854, 3235) | 1 | 0 | (2854, 3235)-(2854, 3235) | 100 ticks | - | yes |
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | (3100, 3258) | 1 | 5 | (3095, 3253)-(3105, 3263) | 100 ticks | - | yes |
 
 ## Interactions
 

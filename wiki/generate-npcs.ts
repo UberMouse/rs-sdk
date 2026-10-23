@@ -12,7 +12,7 @@ import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
 import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
-import type { FeatureKind, NpcSpawn, Site, Tile, World } from './world/types';
+import type { FeatureKind, NpcRoam, NpcSpawn, Site, Tile, World } from './world/types';
 import { readPack } from './world/sources/packs';
 import { cmp, packId } from './world/util';
 
@@ -50,6 +50,7 @@ interface LocationRow {
     centre: Tile;
     spawns: number;
     f2p: boolean;
+    roam?: NpcRoam; // the cluster's, or the site's; a site holding locs has none
 }
 
 interface DropEntry {
@@ -308,7 +309,7 @@ function npcLocator(world: World): (configs: string[]) => LocationRow[] {
             const kinds = bySite.get(config);
             if (!kinds) {
                 for (const c of clusters.get(config) || []) {
-                    rows.push({ areaPath: c.areaPath, centre: c.centre, spawns: c.count, f2p: c.f2p });
+                    rows.push({ areaPath: c.areaPath, centre: c.centre, spawns: c.count, f2p: c.f2p, roam: c });
                 }
                 continue;
             }
@@ -319,7 +320,11 @@ function npcLocator(world: World): (configs: string[]) => LocationRow[] {
         }
         for (const [site, tiles] of inSites) {
             const centre = centreOf(tiles);
-            rows.push({ areaPath: site.areaPath, centre, spawns: tiles.length, f2p: site.f2p });
+            const { wander, respawnTicks, roam, moves } = site;
+            const roamed = wander === undefined || respawnTicks === undefined || !roam
+                ? undefined
+                : { wander, respawnTicks, roam, ...(moves ? { moves } : {}) };
+            rows.push({ areaPath: site.areaPath, centre, spawns: tiles.length, f2p: site.f2p, roam: roamed });
         }
         return rows;
     };
@@ -1015,8 +1020,10 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
     if (page.locations.length > 0) {
         lines.push(page.locations.length > 1 ? '## Locations' : '## Location');
         lines.push('');
-        lines.push('| Area | Centre | Spawns | F2P |');
-        lines.push('|------|--------|--------|-----|');
+        // Wander and roam are how far the npcs walk on their own (Chebyshev tiles past the spawns' box, and that
+        // box grown by it); a scripted move past that is named with its line.
+        lines.push('| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |');
+        lines.push('|------|--------|--------|--------|------|---------|-------|-----|');
 
         const rows = [...page.locations].sort((a, b) =>
             cmp(areas.label(a.areaPath), areas.label(b.areaPath)) ||
@@ -1024,7 +1031,17 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
         );
         for (const row of rows) {
             const area = areaCell(pagePath, areas, row.areaPath);
-            lines.push(`| ${area} | ${coord(row.centre)} | ${row.spawns} | ${row.f2p ? 'yes' : 'no'} |`);
+            const r = row.roam;
+            const roamCells = r
+                ? [
+                      String(r.wander),
+                      `(${r.roam.x1}, ${r.roam.z1})-(${r.roam.x2}, ${r.roam.z2})`,
+                      `${r.respawnTicks} ticks`,
+                      r.moves ? `${r.moves.how} (${r.moves.source})` : '-',
+                  ]
+                : ['-', '-', '-', '-'];
+            const f2p = row.f2p ? 'yes' : 'no';
+            lines.push(`| ${area} | ${coord(row.centre)} | ${row.spawns} | ${roamCells.join(' | ')} | ${f2p} |`);
         }
         lines.push('');
     } else if (primary.hasPatrol || primary.defaultmode === 'patrol') {

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Zanaris](../places/zanaris.md) | (3153, 9544) | 6 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Zanaris](../places/zanaris.md) | (3153, 9544) | 6 | 3 | (3146, 9536)-(3160, 9552) | 40 ticks | - | no |
 
 ## Drops
 

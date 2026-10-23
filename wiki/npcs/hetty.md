@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Rimmington (Asgarnia)](../places/rimmington.md) | (2968, 3206) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2968, 3206) | 1 | 5 | (2963, 3201)-(2973, 3211) | 100 ticks | - | yes |
 
 ## Interactions
 

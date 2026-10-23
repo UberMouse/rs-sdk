@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | 1 | 5 | (2666, 3235)-(2676, 3245) | 500 ticks | - | no |
 
 ## Drops
 

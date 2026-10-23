@@ -23,10 +23,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Wilderness](../places/wilderness.md) | (3037, 3671) | 2 | yes |
-| [Wilderness](../places/wilderness.md) | (3038, 3661) | 2 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Wilderness](../places/wilderness.md) | (3037, 3671) | 2 | 5 | (3031, 3665)-(3043, 3677) | 100 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3038, 3661) | 2 | 5 | (3032, 3655)-(3044, 3666) | 100 ticks | - | yes |
 
 ## Drops
 

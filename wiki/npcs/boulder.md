@@ -10,12 +10,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| - | (2396, 9595) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2373, 4692) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2386, 4689) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2392, 4678) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| - | (2396, 9595) | 1 | 0 | (2396, 9595)-(2396, 9595) | 100 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2373, 4692) | 1 | 0 | (2373, 4692)-(2373, 4692) | 100 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2386, 4689) | 1 | 0 | (2386, 4689)-(2386, 4689) | 100 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2392, 4678) | 1 | 0 | (2392, 4678)-(2392, 4678) | 100 ticks | - | no |
 
 ## Interactions
 

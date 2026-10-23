@@ -42,6 +42,7 @@ import {
     type Placed,
     type PlacedLoc,
     type SiteOptions,
+    type StepCollision,
 } from './place';
 import {
     actName,
@@ -80,6 +81,7 @@ import {
     type UseGate,
 } from './gates';
 import { readConstants } from './sources/constants';
+import { npcMovements, readMovementDefaults } from './sources/npc-movement';
 import {
     deriveGateLandings,
     deriveScriptedMoves,
@@ -390,7 +392,7 @@ export const failed = (r: BuildReport): boolean =>
 export interface BuildInput {
     generatedFrom: string;
     areas: readonly Area[];
-    collision: ReachCollision & TeleportCollision;
+    collision: ReachCollision & TeleportCollision & Pick<StepCollision, 'walled'>;
 }
 
 /** The written order: kind, x, z, level, config, then the rest of a feature's identity. */
@@ -820,9 +822,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         const config = packs.npc.name.get(n.id);
         return config === undefined ? [] : [{ config, tile: n.tile }];
     });
-    const placedSpawns = spawnClusters(spawns, resolve, zones);
-
     const constants = readConstants();
+    const movements = npcMovements(npcConfigs, scripts, readMovementDefaults(), constants);
+    const movement = (config: string) => {
+        const m = movements.get(config);
+        if (!m) throw new Error(`npc ${config} is placed but has no config`);
+        return m;
+    };
+    const placedSpawns = spawnClusters(spawns, resolve, zones, movement);
+
     const { connectors, underived, oneWay } = deriveConnectors({
         features,
         triggers,
@@ -1014,11 +1022,16 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         },
         courses: { defs: courses, step: courseStep },
         shore: f => (f.kind === 'fishing-spot' ? movementEnum(npcConfigs.get(f.config)) : undefined),
+        movement,
     }).sort((a, b) => cmp(a.id, b.id));
-    const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
-        sets: useSets(features, USE_GATES),
-        quests: graph.quests,
-    });
+    // The doors walled once for every cluster's beside tiles (place.ts besideCluster), not once per cluster.
+    const walled = collision.walled ?? (<T>(f: () => T): T => f());
+    const reached = walled(() =>
+        addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
+            sets: useSets(features, USE_GATES),
+            quests: graph.quests,
+        }),
+    );
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
     // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).

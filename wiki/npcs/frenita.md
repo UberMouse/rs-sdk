@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Yanille (Kandarin)](../places/yanille.md) | (2566, 3098) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Yanille (Kandarin)](../places/yanille.md) | (2566, 3098) | 1 | 5 | (2561, 3093)-(2571, 3103) | 100 ticks | - | no |
 
 ## Interactions
 

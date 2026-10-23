@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Dwarven Mine](../places/dwarven-mine.md) | (3036, 9846) | 1 | yes |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (3036, 9846) | 1 | 13 | (3023, 9833)-(3049, 9859) | 100 ticks | - | yes |
 
 ## Interactions
 

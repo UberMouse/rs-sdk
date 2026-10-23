@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | F2P |
-|------|--------|--------|-----|
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2401, 4705) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2405, 4712) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2412, 4723) | 1 | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4731) | 1 | no |
+| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
+|------|--------|--------|--------|------|---------|-------|-----|
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2401, 4705) | 1 | 3 | (2398, 4702)-(2404, 4708) | 102 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2405, 4712) | 1 | 3 | (2402, 4709)-(2408, 4715) | 102 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2412, 4723) | 1 | 3 | (2409, 4720)-(2415, 4726) | 102 ticks | - | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4731) | 1 | 3 | (2411, 4728)-(2417, 4734) | 102 ticks | - | no |
 
 ## Drops
 

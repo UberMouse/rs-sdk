@@ -6,8 +6,10 @@ import type { Pathfinder } from '../../conductor/actions/paths';
 import type { Config } from './sources/configs';
 import { first } from './sources/configs';
 import type { CourseDef, CourseStep } from './sources/courses';
+import { STEPS } from './reach';
+import type { NpcMovement } from './sources/npc-movement';
 import { isF2p, isMultiway, wildernessLevel, type Zones } from './sources/zones';
-import type { Course, Feature, FeatureKind, NpcSpawn, Rect, Site, Tile } from './types';
+import type { Course, Feature, FeatureKind, NpcRoam, NpcSpawn, Rect, Site, Tile } from './types';
 import { cmp, push, uniqueTiles } from './util';
 
 /**
@@ -114,6 +116,8 @@ export interface SiteOptions {
      * sources/fishing-movement.ts, so the spots sharing one are one place to fish).
      */
     shore?: (f: Feature) => string | undefined;
+    /** Each npc config's movement (sources/npc-movement.ts): a site whose features are all npcs gets their NpcRoam. */
+    movement?: (config: string) => NpcMovement;
 }
 
 // The packer's forceapproach bits (server/engine/tools/pack/config/LocConfig.ts:149): every side
@@ -288,35 +292,90 @@ export function grownBox(b: Rect, level: number): Tile[] {
     return out;
 }
 
+/**
+ * The NpcRoam of npcs of `configs` spawned in `bbox`. A patrol's wander is how far its coords' box reaches past
+ * `bbox` on any side, on whatever level the box is.
+ */
+export function roamOf(configs: readonly string[], bbox: Rect, movement: (config: string) => NpcMovement): NpcRoam {
+    const ms = [...new Set(configs)].sort().map(c => movement(c));
+    const wanderOf = ({ wander, patrol: p }: NpcMovement): number =>
+        p ? Math.max(wander, bbox.x1 - p.x1, p.x2 - bbox.x2, bbox.z1 - p.z1, p.z2 - bbox.z2) : wander;
+    const wander = Math.max(0, ...ms.map(wanderOf));
+    const moves = ms.find(m => m.moves)?.moves;
+    return {
+        wander,
+        respawnTicks: Math.min(...ms.map(m => m.respawnTicks)),
+        roam: { ...bbox, x1: bbox.x1 - wander, z1: bbox.z1 - wander, x2: bbox.x2 + wander, z2: bbox.z2 + wander },
+        ...(moves ? { moves } : {}),
+    };
+}
+
 /** SiteCollision with the one-tile step test the walker routes by (reach.ts ReachCollision.canStep). */
 export interface StepCollision extends SiteCollision {
     canStep(level: number, x: number, z: number, dx: number, dz: number): boolean;
+    /**
+     * The tile's zone is in the collision data (collision.ts): the open mainland the pathfinder allocates around it
+     * walks, but is no land an npc walks to.
+     */
+    land(level: number, x: number, z: number): boolean;
+    /**
+     * Runs `f` with every door the collision has open for the walker walled again (collision.ts), as an npc opens
+     * none and a player beside a closed door is not beside what is behind it. Absent: `f` runs on the collision as
+     * it is.
+     */
+    walled?<T>(f: () => T): T;
 }
 
 /**
- * The tiles an npc of a cluster is used from (NpcSpawn.reach): every tile of its bbox, where its spawns stand
- * and wander, and each tile of the ring round it that can step onto a bbox tile, or from which the engine's
- * entity reach test passes to one (reachedEntity, server/engine/src/engine/GameMap.ts:446, which
- * Player.ts:1201 asks of an npc target): a ring tile across a wall from the box is not one. An npc used by an
- * approach op from further off (a banker across its booth, interface_bank/scripts/banker.rs2:7) is not
- * modelled: such a cluster reads as its beside tiles do.
+ * The tiles an npc of a cluster is used from (NpcSpawn.reach): where its npcs can be, and each tile round them
+ * that can step onto one, or from which the engine's entity reach test passes to one (reachedEntity,
+ * server/engine/src/engine/GameMap.ts:446, which Player.ts:1201 asks of an npc target): a tile across a wall is
+ * not one. Where its npcs can be is every tile of its bbox, where its spawns stand, and each tile of its roam a
+ * walk of one-tile steps the collision allows gets to from the bbox, as an npc walks to its wander destination a
+ * step at a time (MoveStrategy.NAIVE, Npc.ts:78), on land (StepCollision.land), with doors shut
+ * (StepCollision.walled): a roam tile behind a wall or a door is not one, and a roam the size of the map (Bob the cat's `wanderrange=30000`) costs the land the walk gets to, not its
+ * box. An npc used by an approach
+ * op from further off (a banker across its booth, interface_bank/scripts/banker.rs2:7) is not modelled: such a
+ * cluster reads as its beside tiles do. By x, then z.
  */
-export function besideCluster(c: Pick<NpcSpawn, 'bbox' | 'centre'>, collision: StepCollision): Tile[] {
-    const { bbox } = c;
-    const inside = (x: number, z: number): boolean => x >= bbox.x1 && x <= bbox.x2 && z >= bbox.z1 && z <= bbox.z2;
-    return grownBox(bbox, c.centre.level).filter(t => {
-        if (inside(t.x, t.z)) return true;
-        for (let dx = -1; dx <= 1; dx++)
-            for (let dz = -1; dz <= 1; dz++) {
-                const [x, z] = [t.x + dx, t.z + dz];
-                if (!inside(x, z)) continue;
-                if (collision.canStep(t.level, t.x, t.z, dx, dz)) return true;
-                // An npc as a 1x1 rectangle (shape -2, GameMap.ts:447).
-                const npc = { level: t.level, x, z, width: 1, length: 1, forceapproach: 0, shape: -2, rotation: 0 };
-                if (collision.reached(t, npc)) return true;
-            }
-        return false;
+export function besideCluster(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: StepCollision): Tile[] {
+    return collision.walled ? collision.walled(() => besideTiles(c, collision)) : besideTiles(c, collision);
+}
+
+function besideTiles(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: StepCollision): Tile[] {
+    const { bbox, roam } = c;
+    const level = c.centre.level;
+    const inRoam = (x: number, z: number): boolean => x >= roam.x1 && x <= roam.x2 && z >= roam.z1 && z <= roam.z2;
+    // Tiles by x * SPAN + z: z stays under SPAN (the underground sits at z + 6400).
+    const SPAN = 1 << 15;
+    const at = (k: number): Tile => ({ level, x: Math.floor(k / SPAN), z: k % SPAN });
+    const walked = new Set<number>();
+    for (let x = bbox.x1; x <= bbox.x2; x++) for (let z = bbox.z1; z <= bbox.z2; z++) walked.add(x * SPAN + z);
+    const queue = [...walked];
+    while (queue.length) {
+        const { x, z } = at(queue.pop()!);
+        for (const [dx, dz] of STEPS) {
+            const k = (x + dx) * SPAN + z + dz;
+            if (walked.has(k) || !inRoam(x + dx, z + dz) || !collision.land(level, x + dx, z + dz)) continue;
+            if (!collision.canStep(level, x, z, dx, dz)) continue;
+            walked.add(k);
+            queue.push(k);
+        }
+    }
+    const ring = new Set<number>();
+    for (const k of walked)
+        for (const [dx, dz] of STEPS) if (!walked.has(k + dx * SPAN + dz)) ring.add(k + dx * SPAN + dz);
+    const beside = [...ring].filter(k => {
+        const t = at(k);
+        return STEPS.some(([dx, dz]) => {
+            const [x, z] = [t.x + dx, t.z + dz];
+            if (!walked.has(x * SPAN + z)) return false;
+            if (collision.canStep(level, t.x, t.z, dx, dz)) return true;
+            // An npc as a 1x1 rectangle (shape -2, GameMap.ts:447).
+            return collision.reached(t, { level, x, z, width: 1, length: 1, forceapproach: 0, shape: -2, rotation: 0 });
+        });
     });
+    return [...walked, ...beside].sort((a, b) => a - b).map(at);
 }
 
 /**
@@ -484,7 +543,7 @@ export function buildSites(
     resolve: (t: Tile) => string[],
     zones: Zones,
     collision: SiteCollision,
-    { size, log, walked, free, approach, courses, shore }: SiteOptions,
+    { size, log, walked, free, approach, courses, shore, movement }: SiteOptions,
 ): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
@@ -562,6 +621,13 @@ export function buildSites(
                 multiway: tiles.some(t => isMultiway(zones, t)),
                 wildernessLevel: tiles.reduce((max, t) => Math.max(max, wildernessLevel(t)), 0),
                 ...(lap ? { course: courseOf(features, members, lap) } : {}),
+                ...(movement && fs.every(f => f.source === 'npc')
+                    ? roamOf(
+                          fs.map(f => f.config),
+                          bbox,
+                          movement,
+                      )
+                    : {}),
             });
         });
     }
@@ -574,12 +640,13 @@ const byTile = (a: Tile, b: Tile): number => a.x - b.x || a.z - b.z || a.level -
  * Clusters each npc config's spawns as buildSites clusters a kind's features: per config, level and
  * leaf area, single-linkage within the `npc` radius. Two spawns on one tile are two placements and
  * count twice. Clusters come out sorted by config, then by their first tile (x, z, level), which no
- * two clusters of one config share.
+ * two clusters of one config share. Each gets its config's NpcRoam (roamOf).
  */
 export function spawnClusters(
     spawns: readonly { config: string; tile: Tile }[],
     resolve: (t: Tile) => string[],
     zones: Zones,
+    movement: (config: string) => NpcMovement,
 ): Placed<NpcSpawn>[] {
     const paths = spawns.map(s => resolve(s.tile));
     const groups = new Map<string, number[]>();
@@ -588,15 +655,18 @@ export function spawnClusters(
     for (const members of groups.values())
         for (const c of cluster(spawns, members, SITE_RADIUS.npc)) {
             const tiles = c.map(i => spawns[i]!.tile).sort(byTile);
+            const config = spawns[c[0]!]!.config;
+            const bbox = bboxOf(tiles);
             out.push({
                 first: tiles[0]!,
                 spawn: {
-                    config: spawns[c[0]!]!.config,
+                    config,
                     areaPath: paths[c[0]!]!,
                     centre: centreOf(tiles),
-                    bbox: bboxOf(tiles),
+                    bbox,
                     count: c.length,
                     f2p: tiles.some(t => isF2p(zones, t)),
+                    ...roamOf([config], bbox, movement),
                 },
             });
         }
