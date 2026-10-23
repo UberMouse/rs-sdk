@@ -131,7 +131,7 @@ negligible, over 90% of the hour was searching and walking. [v 2026-10-24 conduc
 at its own spawn tile after 100 ticks and its first idle teleport chance comes 70 ticks after spawn (all.npc `timer=70`,
 `imp.rs2` ai_timer 50%), so camping the spawn tiles of imps already killed should keep meeting them.
 
-Combat-task areas that cover a cluster: Lumbridge `{x:3217,z:3240,radius:35}`, Varrock `{x:3215,z:3425,radius:45}` (Ardougne south `{x:2632,z:3222,radius:22}` untested).
+Combat-task areas: `combat` attacks only targets inside `area`, and radius 22-35 areas left imps in view but outside the area on many idle ticks (Varrock west (3183,3395) r25: 32 ticks, imps 13-15 tiles from the bot; Edgeville (3085,3445) r25: 28 ticks; Lumbridge north (3225,3290) r30: 17 ticks, nearest 6 tiles). Use radius 50 or more, kept short of the Wilderness (z 3520). [v 2026-10-24 conductor3 local, ticks of plan run 2026-10-23T22-20-18-422Z]
 
 ## Catalog coverage
 
