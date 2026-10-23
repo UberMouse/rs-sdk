@@ -58,9 +58,9 @@ chaos druids + Herblore + melee + Prayer.
 reads (melee-20: 9.1 M for a 7 min run, thieving-gp 7.6 M) and 3 of 8 plan runs were killed or restarted by plan
 bugs (below), not by the game. At these curves, size a goal to a milestone that unlocks something, not to levels:
 "melee 40 + Prayer 49 -> 60 (hill giants, one plan)", "Thieving 99 + 100k gp banked", "Fishing/Cooking 99 +
-Agility 52", with each plan phase carrying its own `until` and `when` gates written up front. (The retro also proposed running a
-verified promoted plan from the conductor with no runner; that changes the skill's one-driver invariant, so it is the
-user's call, raised 07:35.)
+Agility 52", with each plan phase carrying its own `until` and `when` gates written up front. Runners keep driving the bot, on
+Sonnet (user, 07:37: "Keep runners, bigger goals, run them on sonnet instead of opus"); the conductor's general-purpose
+dispatches pass `model: sonnet` too.
 
 Account (2026-10-23 07:30): total ~340; Thieving 62, Cooking 71, Fishing 68, Prayer 49, Attack 27, HP 26, Str/Def 20;
 steel axe, fly rod and 50+ trout/salmon banked or held, ~1.8k coins; at Catherby.
