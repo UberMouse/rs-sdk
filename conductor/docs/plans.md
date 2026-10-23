@@ -140,6 +140,8 @@ next tick therefore reads as its pre-withdraw contents until it is next opened.
 today's chain step "withdraw first". A one-shot chain ends through the plan's `until` (e.g.
 `until: v => v.runs('burn') > 0`), since running out of applicable phases is a failure.
 
+`runs()` counts are per run-task process and reset when the run is restarted, so a one-shot buy or withdraw phase gated on `runs()` fires again after a restart. Gate it on held state instead (coins, items held or banked); `tools-food` gates its axe purchase on Coins >= 200. [v 2026-10-23 conductor3 local]
+
 ### `onFail`
 
 `'fail' | 'continue' | (r: TaskResult) => 'fail' | 'continue'`
