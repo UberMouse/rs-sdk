@@ -101,11 +101,16 @@ tiles, so a small area leaves them outside):
 | Varrock edge (3213,3495) | up to 50 | x 3200-3218, z 3492-3517, beside the Wilderness boundary (z 3520): never hunt there |
 | Ardougne south, Karamja | not visited | - |
 
-Only Lumbridge and Varrock had imps in game on 2026-10-23: the Yanille, Falador-south and Draynor spawn tiles held 0
-(Ardougne south and Karamja were not visited), although `wiki/npcs/imp.md` lists those spawns and matches the map data.
-Hunt Lumbridge or Varrock. Working `combat` areas: radius 35 around Lumbridge (3217,3240); radius 45 around Varrock
-(3215,3425); the Varrock imps that drift north to z 3492-3517 are at the Wilderness edge, so the plan caps that area
-at z 3470.
+Imps drift away from their spawn tiles and do not come back until killed, so on a server that has been up a while
+the spawn clusters are empty and the imps are scattered: the Yanille, Falador-south and Draynor spawn tiles held 0 on
+2026-10-23. The idle teleport moves an imp up to 20 tiles from where it stands, not from its spawn
+(`npc_tele(map_findsquare(npc_coord, 0, 20, ...))`, `npc/scripts/imp.rs2:15-22`). Once it is more than `maxrange`
+(27 = wanderrange 25 + 2) from its spawn, its wander steps back are invalid (`server/engine/src/engine/entity/Npc.ts:812`).
+The 500-ticks-stuck reset that would send it home is cleared by every teleport, since a teleport counts as movement
+(`Npc.ts:373-377,730`). A kill respawns the imp at its own spawn tile 100 ticks later. [server data 2026-10-24] Camping one
+area therefore waits for strays: a 175 s Lumbridge phase (radius 35) saw no imp in its area on any tick
+(questw6 `2026-10-23T11-22-32-049Z-combat`). Hunt by moving through many areas and leaving each one as soon as it
+is empty. The Varrock imps that drift north to z 3492-3517 are at the Wilderness edge, so cap areas there at z 3470.
 
 Proven run (plan `imp-catcher`, promoted; `respawnWaitTicks: 300`, wide areas): the whole quest took 21 earlier kills
 plus a final resume run of 141 min from 3 White + 2 Red beads held (stepRuns: finish 1, imp-lumbridge 12, imp-varrock
