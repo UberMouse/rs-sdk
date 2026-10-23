@@ -148,6 +148,11 @@ describe("wearing: the profile's worn objs over the record's gear, slot by slot"
         expect(worn([])).toEqual([]);
     });
 
+    test('a worn obj the game has no config for is a ProfileError, not the item lookup ModelError', () => {
+        expect(() => worn(['sword'], ['no_such_obj'])).toThrow(ProfileError);
+        expect(() => worn(['no_such_obj'], ['ring'])).toThrow(ProfileError);
+    });
+
     test("a ring alone keeps the record's weapon; the profile's own weapon replaces it", () => {
         expect(worn(['sword'], ['ring'])).toEqual(['sword', 'ring']);
         expect(worn(['sword', 'ring'], ['spear'])).toEqual(['ring', 'spear']);

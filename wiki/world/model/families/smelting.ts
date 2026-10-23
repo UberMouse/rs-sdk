@@ -71,7 +71,7 @@ export const smelting: FamilyFactory = data => ({
     id: 'smelting',
     skills: ['smithing'],
     kinds: ['furnace'],
-    worn: [GOLDSMITH],
+    worn: [GOLDSMITH, RING_OF_FORGING],
     model(site, params, profile): ActionModel {
         const p = stringParams(params, 'smelting', ['bar']);
         if (site.kind !== 'furnace') throw new ModelError(`site ${site.id} is a ${site.kind} site, not a furnace`);

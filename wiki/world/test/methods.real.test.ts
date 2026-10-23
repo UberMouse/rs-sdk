@@ -15,10 +15,12 @@ import {
     resolveMethod,
     resolveMethods,
     tileStopId,
+    methodModels,
     wornRead,
     type MethodContext,
 } from '../model/method';
 import { readObjNames } from '../model/items';
+import { ModelError, ProfileError } from '../model/family';
 import { profileOf, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 import { locSizes } from '../place';
@@ -209,6 +211,51 @@ describe('the game data the cycle reads', () => {
         ).toEqual(['staff_of_fire', 'gauntlets_of_goldsmithing']);
         expect(wornRead(seed('willow-draynor-bank'), ctx)).toEqual(new Set());
         expect(wornRead({ family: 'combat', sink: { mode: 'bank' } }, ctx)).toBe('all');
+    });
+
+    test('smelting iron reads the ring of forging worn (smelting.rs2:200-202), so a measured run keeps it', () => {
+        const read = wornRead(seed('iron-se-varrock-smelt-lumbridge-kiteshield'), ctx);
+        expect(read).not.toBe('all');
+        expect((read as Set<string>).has('ring_of_forging')).toBe(true);
+    });
+
+    // A family that tests a worn obj the declaration omits would have lib/methods.ts drop it from a measured run.
+    test('every worn obj a family tests membership of is in its declared Family.worn', () => {
+        const checked = new Set<string>();
+        for (const m of methods) {
+            if (m.def.gear?.length) continue;
+            const tested = new Set<string>();
+            let iterated = false;
+            const worn = new Proxy([] as string[], {
+                get(t, k, r) {
+                    if (k === 'includes')
+                        return (o: string) => {
+                            tested.add(o);
+                            return false;
+                        };
+                    if (k === 'indexOf' || k === 'lastIndexOf')
+                        return (o: string) => {
+                            tested.add(o);
+                            return -1;
+                        };
+                    if (typeof k === 'symbol' || typeof t[k as keyof typeof t] === 'function') iterated = true;
+                    return Reflect.get(t, k, r);
+                },
+            });
+            try {
+                methodModels(m, everyAt(99, {}, { worn }), ctx);
+            } catch (e) {
+                if (!(e instanceof ModelError || e instanceof ProfileError)) throw e;
+            }
+            const declared = wornRead(m.def, ctx);
+            if (declared === 'all') continue;
+            for (const o of tested) expect([m.def.id, o, declared.has(o)]).toEqual([m.def.id, o, true]);
+            // Iterating worn reads which of them it holds: only a declaration naming some can answer for it.
+            if (iterated) expect([m.def.id, declared.size > 0]).toEqual([m.def.id, true]);
+            for (const o of tested) checked.add(o);
+        }
+        // The guard saw the ring read: it observes reads, not nothing.
+        expect(checked.has('ring_of_forging')).toBe(true);
     });
 
     test('an obj by its display name: the one config of that name, or of several the wearable one', () => {
