@@ -259,6 +259,7 @@ export const combat: FamilyFactory = data => {
         id: 'combat',
         skills: ['attack', 'strength', 'defence', 'hitpoints'],
         kinds: ['npc'],
+        worn: 'all',
         walks(site, params, world) {
             return pairsOf(spawns(site, params, world).features.map(f => f.tile));
         },

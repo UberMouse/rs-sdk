@@ -22,12 +22,21 @@ export interface Item {
     cost: number;
     /** It has a `wearpos`: ideal play wields a tool like it (an axe, a pickaxe) rather than carry it. */
     wearable: boolean;
+    /**
+     * The slots it takes worn: its `wearpos`, `wearpos2` and `wearpos3` (a two-handed sword's `wearpos2=lefthand`, the
+     * shield's). Equipping it takes off every worn obj sharing one (~wearpos_conflicts, player/scripts/equip.rs2:417,
+     * 475-488). Absent in a test's item that has none.
+     */
+    wearpos?: readonly string[];
     /** Config `category`, which a script trigger can name (`_<category>`, the food triggers of consume.rs2). */
     category?: string;
 }
 
 /** An obj's Item; throws a ModelError naming it when the game has no such obj. */
 export type Items = (obj: string) => Item;
+
+/** The config keys of the slots an obj takes worn. */
+const WEARPOS = ['wearpos', 'wearpos2', 'wearpos3'] as const;
 
 /** ObjType.ts's default `cost` (server/engine/src/cache/config/ObjType.ts:147), for a config with no `cost=` line. */
 const DEFAULT_COST = 1;
@@ -51,8 +60,26 @@ export function readItems(objs: ReadonlyMap<string, Config>): Items {
             stackable: first(cfg, 'stackable') === 'yes',
             cost: cost === undefined ? DEFAULT_COST : Number(cost),
             wearable: first(cfg, 'wearpos') !== undefined,
+            wearpos: WEARPOS.flatMap(k => cfg[k] ?? []),
             category: first(cfg, 'category'),
         };
+    };
+}
+
+/**
+ * The obj config a display name (`name=`, as the client shows it: `Amulet of glory(4)`) is: the one config with that
+ * name, or of several the one that can be worn; undefined when none is, or several are.
+ */
+export function readObjNames(objs: ReadonlyMap<string, Config>): (name: string) => string | undefined {
+    const byName = new Map<string, string[]>();
+    for (const [obj, cfg] of objs) {
+        const name = first(cfg, 'name');
+        if (name !== undefined) byName.set(name, [...(byName.get(name) ?? []), obj]);
+    }
+    return name => {
+        const all = byName.get(name) ?? [];
+        const one = all.length === 1 ? all : all.filter(o => first(objs.get(o), 'wearpos') !== undefined);
+        return one.length === 1 ? one[0] : undefined;
     };
 }
 
@@ -153,7 +180,7 @@ export function readEquipment(
     const read = (obj: string): Equipment => {
         const cfg = data.objs.get(obj);
         if (!cfg) throw new ModelError(`no obj ${obj}`);
-        const wearpos = (['wearpos', 'wearpos2', 'wearpos3'] as const).flatMap(k => cfg[k] ?? []);
+        const wearpos = WEARPOS.flatMap(k => cfg[k] ?? []);
         if (!wearpos.length) throw new ModelError(`obj ${obj} cannot be worn: it has no wearpos`);
         const what = `obj ${obj}`;
         return {

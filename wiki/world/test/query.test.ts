@@ -427,6 +427,26 @@ describe('methodHazard', () => {
         );
     });
 
+    test("an area record's sites count: their Wilderness level and multiway, and their Wilderness for aggression", () => {
+        // The site's own are 0 and single-way; a site of the area is multiway at Wilderness level 2.
+        const areaHazard = { wildernessLevel: 2, multiway: true };
+        const hunted = { site: tree, sink: { mode: 'drop' } as const, npcs: giants, areaHazard };
+        // Combat 57 is past the giants' limit of 56, but the Wilderness lifts it.
+        expect(methodHazard(hunted, at('woodcutting', 45))).toEqual({
+            wildernessLevel: 2,
+            multiway: true,
+            aggressive: true,
+            maxHit: 4,
+        });
+        const q = methodQuery({ ...world, methods: [chop('tree-area', tree, { areaHazard })] }, model);
+        const ids = (opts: BestOptions) =>
+            q.bestMethods('woodcutting', at('woodcutting', 50), opts).map(r => r.method.def.id);
+        expect(ids({})).toEqual(['tree-area']);
+        expect(ids({ multiway: false })).toEqual([]);
+        expect(ids({ maxWilderness: 1 })).toEqual([]);
+        expect(ids({ maxWilderness: 2 })).toEqual(['tree-area']);
+    });
+
     test('bestMethods({ aggressive: false }) drops the method at combat 56 and keeps it at 57', () => {
         const q = methodQuery({ ...world, methods: [chop('tree-hunted', tree, { npcs: giants })] }, model);
         const ids = (level: number, opts?: BestOptions) =>

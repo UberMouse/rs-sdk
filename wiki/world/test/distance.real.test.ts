@@ -33,7 +33,7 @@ test('searching every context in full finds what the improvement-only searches f
     const full = nearestSinks(graph, world.sites, { full: true, context });
     expect(full.report.contexts).toEqual(nearestSinks(graph, world.sites, { context }).report.contexts);
     for (const s of world.sites) expect([s.id, full.nearest.get(s.id)]).toEqual([s.id, nearest.get(s.id)]);
-    // ~3 minutes on a loaded machine since npc sites search for a bank too.
+    // Two searches of every site's nearest sinks, the full one over every context: 300 s gives it room on a busy machine.
 }, 300_000);
 
 // Walk legs bots ran between a site and its bank, from the per-tick positions of conductor run recordings

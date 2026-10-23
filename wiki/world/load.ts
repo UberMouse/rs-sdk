@@ -15,7 +15,7 @@ const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== nul
 /**
  * Whether `x` is a world.json of this format: its format, a string generatedFrom, the ten lists and
  * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields, a
- * site's course and a method's npcs (crossingModelProblem).
+ * site's course and a method's npcs and area hazard (crossingModelProblem).
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&
@@ -198,8 +198,11 @@ function courseProblem(s: Parsed, features: number): string | undefined {
     return undefined;
 }
 
-/** What is wrong with a World.methods row's npcs hazard, or undefined: it may have none. */
+/** What is wrong with a World.methods row's npcs or area hazard, or undefined: it may have neither. */
 function npcsProblem(m: Parsed): string | undefined {
+    const a = m.areaHazard;
+    if (a !== undefined && (!isObject(a) || !isCount(a.wildernessLevel) || typeof a.multiway !== 'boolean'))
+        return 'its areaHazard needs a wildernessLevel, a count, and multiway, a boolean';
     const n = m.npcs;
     if (n === undefined) return undefined;
     if (
@@ -216,7 +219,7 @@ function npcsProblem(m: Parsed): string | undefined {
 }
 
 /**
- * The first malformed crossing-model field of `world`, site course or method npcs, as `<list>[<i>]: <what>`, or
+ * The first malformed crossing-model field of `world`, site course or method npcs and area hazard, as `<list>[<i>]: <what>`, or
  * undefined.
  */
 function crossingModelProblem(world: World): string | undefined {

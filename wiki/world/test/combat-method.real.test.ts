@@ -45,6 +45,9 @@ const query = methodQuery({ ...world, methods: [toWorldMethod(resolved)] }, mode
 /** Every skill at `level`, the record's scimitar worn (its gear, as the profile names none). */
 const at = (level: number): Profile => profileAt('attack', level, { tools: model.tools });
 
+/** The record's Attack XP/hr at 60 in every skill, wearing `worn` over its gear. */
+const rate = (worn: string[]) => query.methodRate(giants.id, { ...at(60), worn }).xpPerHour.attack!;
+
 /** The styles styleParams gives the record for `skill`, at 60 in every skill. */
 const styles = (skill: Skill) => styleParams(giants, at(60), ctx, skill).map(p => (p as { style: string }).style);
 
@@ -124,13 +127,12 @@ describe('the style follows the queried skill', () => {
         expect(query.methodRate(giants.id, at(60), 'strength').xpPerHour.strength).toBe(rated('strength').xpPerHour);
     });
 
-    test('a profile wearing objs of its own wears them in place of the record gear', () => {
-        // Unarmed (the profile's iron med helm is no weapon) swings every 4 ticks, the scimitar also 4; the scimitar's
-        // slash bonus makes the record's kill faster.
-        const own = { ...at(60), worn: ['iron_med_helm'] };
-        expect(query.methodRate(giants.id, own).xpPerHour.attack!).toBeLessThan(
-            query.methodRate(giants.id, at(60)).xpPerHour.attack!,
-        );
+    test("a profile's own worn objs take their slots; the record's gear keeps the rest", () => {
+        // An iron med helm is no weapon: the record's rune scimitar stays, and the helm has no attack or strength
+        // bonus, so the kill is as fast. A bronze scimitar in the weapon slot replaces the rune one, and its lower
+        // slash and strength bonuses make the kill slower.
+        expect(rate(['iron_med_helm'])).toBe(rate([]));
+        expect(rate(['bronze_scimitar'])).toBeLessThan(rate([]));
     });
 });
 

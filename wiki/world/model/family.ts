@@ -146,6 +146,11 @@ export interface Family {
      * that suits the skill it is ranked for (model/method.ts). Throws a ProfileError for gear the profile can't wear.
      */
     styles?(params: unknown, profile: Profile): { styles: StyleChoice[]; quests: string[] };
+    /**
+     * The worn objs `model` reads from the profile: `'all'` for a family whose action rests on the whole gear (combat's
+     * bonuses, weapon and styles), or these obj config names (a staff whose rune a cast takes free); absent: none.
+     */
+    worn?: 'all' | readonly string[];
     /** Optional, for a family that acts on npcs: the npcs at the site as a hazard. */
     hazard?(site: Site, params: unknown, world: ModelWorld): NpcHazard;
 }

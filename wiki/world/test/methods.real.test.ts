@@ -15,8 +15,10 @@ import {
     resolveMethod,
     resolveMethods,
     tileStopId,
+    wornRead,
     type MethodContext,
 } from '../model/method';
+import { readObjNames } from '../model/items';
 import { profileOf, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 import { locSizes } from '../place';
@@ -180,6 +182,9 @@ test("each skill's own level, the others at 99, and the whole method's", () => {
     });
 });
 
+/** The seed record `id`. */
+const seed = (id: string) => METHODS.find(m => m.id === id)!;
+
 describe('the game data the cycle reads', () => {
     test('food heals and item slots', () => {
         // consume_normal.dbrow: trout `stat_heal,hitpoints,7,0`, salmon 9, lobster 12.
@@ -187,10 +192,32 @@ describe('the game data the cycle reads', () => {
         expect(ctx.foods.get('salmon')).toBe(9);
         expect(ctx.foods.get('lobster')).toBe(12);
         // Coins and feathers stack; coins have no cost line, so the engine's 1. A pickaxe is wielded, a rod carried.
-        expect(ctx.items('coins')).toEqual({ stackable: true, cost: 1, wearable: false });
+        expect(ctx.items('coins')).toEqual({ stackable: true, cost: 1, wearable: false, wearpos: [] });
         expect(ctx.items('feather').stackable).toBe(true);
         expect(ctx.items('adamant_pickaxe').wearable).toBe(true);
         expect(ctx.items('fly_fishing_rod').wearable).toBe(false);
+        // 2hswords.obj: rune_2h_sword `wearpos=righthand`, `wearpos2=lefthand`, the shield's slot too.
+        expect(ctx.items('rune_2h_sword').wearpos).toEqual(['righthand', 'lefthand']);
+    });
+
+    test('the worn objs a method reads: a superheat step its staves and the gauntlets, a woodcutting gather none', () => {
+        const superheat = wornRead(seed('iron-khazard-superheat-platebody-drop'), ctx);
+        // magic_staff.dbrow:26 lists the staff of fire; superheat.rs2:57 tests the goldsmith gauntlets worn.
+        expect(superheat).not.toBe('all');
+        expect(
+            [...(superheat as Set<string>)].filter(o => /^staff_of_fire$|^gauntlets_of_goldsmithing$/.test(o)),
+        ).toEqual(['staff_of_fire', 'gauntlets_of_goldsmithing']);
+        expect(wornRead(seed('willow-draynor-bank'), ctx)).toEqual(new Set());
+        expect(wornRead({ family: 'combat', sink: { mode: 'bank' } }, ctx)).toBe('all');
+    });
+
+    test('an obj by its display name: the one config of that name, or of several the wearable one', () => {
+        const byName = readObjNames(data.objs);
+        expect(byName('Amulet of glory(4)')).toBe('amulet_of_glory_4');
+        expect(byName('Rune scimitar')).toBe('rune_scimitar');
+        // Two configs are `Robe of zamorak` (zamrobetop, zamrobebottom), both worn: neither is the one.
+        expect(byName('Robe of zamorak')).toBeUndefined();
+        expect(byName('No such thing')).toBeUndefined();
     });
 });
 

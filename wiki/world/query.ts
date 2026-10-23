@@ -19,12 +19,12 @@
 //   each method is rated over its shortest way the profile's levels let in: the query can't know the account, and
 //   each result names the way it rated.
 // - Hazards: the deepest Wilderness level of the sites and tiles the method stands at (its site, processors and
-//   bank), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
+//   bank, and an `area` record's sites its spawns are in), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
 //   requirement set, not the tiles it crosses. A method at npcs (combat) adds whether one there hunts the profile, at
 //   its combat level, and the largest max hit there (ResolvedMethod.npcs); neither adds modelled damage.
 // - Style: a combat method is rated on the style of its gear that suits the queried skill (model/method.ts
 //   styleParams): Attack accurate, Strength aggressive, Defence defensive, Hitpoints and Prayer the best of them. The
-//   gear is the record's, or the profile's worn objs when it names some.
+//   gear is the record's, with the profile's worn objs in the slots they take (model/method.ts wearing).
 import { loadFreshWorld } from './load';
 import type { CycleRates } from './model/cycle';
 import { readGameData } from './model/families/index';
@@ -95,7 +95,8 @@ export interface RankedMethod {
 export interface MethodQuery {
     /**
      * The floor of method `id` at `profile`, over its shortest way, rated for `skill` (by default the method's: the
-     * style a combat method swings). Throws for an unknown id or a profile it can't model.
+     * style a combat method swings). Throws for an unknown id, a skill it does not train (Prayer for a kill that buries no
+     * bones) or a profile it can't model.
      */
     methodRate(id: string, profile: Profile, skill?: Skill): CycleRates;
     /** The methods that train `skill` and pass `opts` at `profile`, by floor XP/hr of it (highest first), then id. */
@@ -103,14 +104,18 @@ export interface MethodQuery {
 }
 
 /**
- * The hazard of a method's stops (the gather site and the sites and bare tiles its sink stops at) and its npcs, at
- * `profile`'s combat level (from its base levels, as `~player_combat_level` reads `stat_base`). An npc's Wilderness
- * test is the gather site's: the player stands there to fight it.
+ * The hazard of a method's stops (the gather site and the sites and bare tiles its sink stops at, and an `area`
+ * record's sites, ResolvedMethod.areaHazard) and its npcs, at `profile`'s combat level (from its base levels, as
+ * `~player_combat_level` reads `stat_base`). An npc's Wilderness test is the gather site's, or with an area its
+ * deepest site's: the player stands there to fight it.
  */
-export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink' | 'npcs'>, profile: Profile): Hazard {
-    const stops = [m.site, ...sinkStops(m.sink)];
+export function methodHazard(
+    m: Pick<ResolvedMethod, 'site' | 'sink' | 'npcs' | 'areaHazard'>,
+    profile: Profile,
+): Hazard {
+    const stops = [m.site, ...sinkStops(m.sink), ...(m.areaHazard ? [m.areaHazard] : [])];
     const combat = combatLevelOf(profile);
-    const wild = m.site.wildernessLevel > 0;
+    const wild = Math.max(m.site.wildernessLevel, m.areaHazard?.wildernessLevel ?? 0) > 0;
     return {
         wildernessLevel: Math.max(...stops.map(s => s.wildernessLevel)),
         multiway: stops.some(s => s.multiway),
@@ -132,7 +137,10 @@ export function methodQuery(
         methodRate(id, profile, skill) {
             const m = byId.get(id);
             if (!m) throw new Error(`No method ${id} in world.json (it has ${[...byId.keys()].join(', ')})`);
-            return forMethod(m, () => rateMethod(m, profile, ctx, undefined, skill));
+            return forMethod(m, () => {
+                if (skill !== undefined && !trains(m, skill)) throw new ModelError(`it does not train ${skill}`);
+                return rateMethod(m, profile, ctx, undefined, skill);
+            });
         },
         bestMethods(skill, profile, opts = {}) {
             const met = opts.met ?? (() => true);

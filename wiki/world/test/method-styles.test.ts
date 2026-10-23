@@ -3,7 +3,7 @@
 // uncalibrated kill's food. The real hill giants are in combat-method.real.test.ts.
 import { describe, expect, test } from 'bun:test';
 import { ModelError, ProfileError, type Family, type StyleChoice } from '../model/family';
-import { gatherSite, styleParams, wearing, type MethodModel } from '../model/method';
+import { CALIBRATED_NPCS, gatherSite, styleParams, wearing, type MethodModel } from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
 import type { Skill } from '../model/server';
 import { methodQuery } from '../query';
@@ -51,10 +51,22 @@ const melee: Family = {
     },
 };
 
+/** The slots each obj here takes worn: the greatsword both hands, as a two-handed sword's wearpos and wearpos2 do. */
+const WEARPOS: Record<string, string[]> = {
+    sword: ['righthand'],
+    spear: ['righthand'],
+    greatsword: ['righthand', 'lefthand'],
+    shield: ['lefthand'],
+    ring: ['ring'],
+};
+
 const model: MethodModel = {
     families: new Map([['melee', melee]]),
-    items: () => {
-        throw new ModelError('no items here');
+    items: obj => {
+        if (obj === 'trout') return { stackable: false, cost: 1, wearable: false, category: 'category_58' };
+        const wearpos = WEARPOS[obj];
+        if (!wearpos) throw new ModelError(`no item ${obj} here`);
+        return { stackable: false, cost: 1, wearable: true, wearpos };
     },
     foods: new Map([['trout', 7]]),
     zones: { f2p: new Set(), multiway: new Set() },
@@ -126,13 +138,34 @@ describe('styleParams: the style follows the skill', () => {
     });
 });
 
-describe('wearing', () => {
-    test("the record's gear when the profile names none; the profile's own otherwise", () => {
-        expect(wearing(method, at(50)).worn).toEqual(['sword']);
-        expect(wearing(method, at(50, ['spear'])).worn).toEqual(['spear']);
-        expect(wearing({}, at(50)).worn).toEqual([]);
+/** What a profile wearing `own` wears for a record of `gear`. */
+const worn = (gear: string[] | undefined, own: string[] = []) => wearing({ gear }, at(50, own), model.items).worn;
+
+describe("wearing: the profile's worn objs over the record's gear, slot by slot", () => {
+    test("the record's gear when the profile names none; none when neither does", () => {
+        expect(worn(['sword'])).toEqual(['sword']);
+        expect(worn(undefined, ['ring'])).toEqual(['ring']);
+        expect(worn([])).toEqual([]);
+    });
+
+    test("a ring alone keeps the record's weapon; the profile's own weapon replaces it", () => {
+        expect(worn(['sword'], ['ring'])).toEqual(['sword', 'ring']);
+        expect(worn(['sword', 'ring'], ['spear'])).toEqual(['ring', 'spear']);
+    });
+
+    test('a two-handed sword and a shield take each other off, whichever side wears it', () => {
+        expect(worn(['sword', 'shield', 'ring'], ['greatsword'])).toEqual(['ring', 'greatsword']);
+        expect(worn(['greatsword', 'ring'], ['shield'])).toEqual(['ring', 'shield']);
+    });
+
+    test("a ring alone swings the record's sword's styles; a spear its own", () => {
+        expect(styles('attack', at(50, ['ring']))).toEqual(['accurate']);
+        expect(styles('attack', at(50, ['spear']))).toEqual(['controlled']);
     });
 });
+
+/** A 5 run tick leg. */
+const leg = (from: Site, to: Site) => ({ from: from.id, to: to.id, runTicks: 5, requires: [] });
 
 describe('the rate on the chosen style', () => {
     const q = methodQuery({ sites: [pen], features: [], methods: [method] }, model);
@@ -161,6 +194,39 @@ describe('the rate on the chosen style', () => {
         const r = q.methodRate('pen-kill', at(50));
         expect(r.suppliesPerHour).toEqual([]);
         expect(r.trip.eat).toBe(0);
+    });
+
+    test('a calibrated npc is eaten for, by params.npc or, with none, the npc of the site', () => {
+        // The kill banked 5 run ticks off, so the trout is restocked.
+        const booth: Site = { ...pen, id: 'bank:booth:0', kind: 'bank', features: [] };
+        const banked = (params: unknown): WorldMethod => ({
+            ...method,
+            params,
+            sink: { mode: 'bank' },
+            bank: booth.id,
+            ways: [{ reach: [], legs: [leg(pen, booth), leg(booth, pen)] }],
+        });
+        const cows = [{ kind: 'npc', subtype: 'cow', tile: pen.centre } as Feature];
+        const eaten = (params: unknown) =>
+            methodQuery({ sites: [pen, booth], features: cows, methods: [banked(params)] }, model)
+                .methodRate('pen-kill', at(50))
+                .suppliesPerHour.map(x => x.obj);
+        expect(eaten({ npc: 'cow' })).toEqual([]);
+        const calibrated = CALIBRATED_NPCS as Set<string>;
+        calibrated.add('cow');
+        try {
+            expect(eaten({ npc: 'cow' })).toEqual(['trout']);
+            expect(eaten({})).toEqual(['trout']);
+            expect(eaten({ npc: 'bull' })).toEqual([]);
+            expect(() => eaten({ npc: 7 })).toThrow(/pen-kill: a combat method's params.npc is not an npc config: 7/);
+        } finally {
+            calibrated.delete('cow');
+        }
+    });
+
+    test('Prayer, which a kill that buries no bones does not train, is no rate', () => {
+        expect(() => q.methodRate('pen-kill', at(50), 'prayer')).toThrow(/pen-kill: it does not train prayer/);
+        expect(q.bestMethods('prayer', at(50))).toEqual([]);
     });
 });
 

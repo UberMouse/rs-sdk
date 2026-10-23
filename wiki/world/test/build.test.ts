@@ -620,6 +620,25 @@ test("loadWorld reads a method's npcs back, and refuses a malformed one, naming 
     );
 });
 
+test("loadWorld reads a method's area hazard back, and refuses a malformed one, naming its row", () => {
+    const method = world.methods[0]!;
+    const areaHazard = { wildernessLevel: 3, multiway: true };
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, serializeWorld({ ...world, methods: [{ ...method, areaHazard }] }));
+        expect(loadWorld(file).methods[0]!.areaHazard).toEqual(areaHazard);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
+    const why = (a: unknown): string => refused({ ...world, methods: [method, { ...method, areaHazard: a }] });
+    const shape =
+        'is not a world.json: methods[1]: its areaHazard needs a wildernessLevel, a count, and multiway, a boolean: regenerate it with bun run world';
+    expect(why({ ...areaHazard, wildernessLevel: -1 })).toBe(shape);
+    expect(why({ wildernessLevel: 3 })).toBe(shape);
+    expect(why(true)).toBe(shape);
+});
+
 test('byWritten orders by kind, then x, z, level and config', () => {
     const fs = [tree(5, 1), tree(1, 9, 'oaktree'), { ...tree(1, 1), kind: 'rock' as const }, tree(1, 9)];
     expect(fs.sort(byWritten).map(f => `${f.kind} ${f.tile.x},${f.tile.z} ${f.config}`)).toEqual([

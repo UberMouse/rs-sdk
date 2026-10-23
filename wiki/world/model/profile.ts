@@ -32,7 +32,8 @@ export interface Profile {
     glory: boolean;
     /**
      * Objs worn, by obj config name: what a family reads (a staff of fire, a ring of forging) and the gear gearOf
-     * sums; none by default.
+     * sums; none by default. A method with `gear` wears it under these (model/method.ts wearing): each of these takes
+     * its slots, the record's gear keeps the rest, so a ring alone leaves the record's weapon on.
      */
     worn: string[];
     /** The attack, strength and defence prayers on, by the percentage each gives; none by default. */

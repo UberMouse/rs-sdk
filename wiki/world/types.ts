@@ -539,6 +539,14 @@ export interface WorldMethod extends MethodDef {
     ways: MethodWay[];
     /** The npcs where it acts, as a hazard (ResolvedMethod.npcs). */
     npcs?: NpcHazard;
+    /** An `area` record's: the sites its features lie in, as a hazard (ResolvedMethod.areaHazard). */
+    areaHazard?: AreaHazard;
+}
+
+/** The deepest Wilderness level of some sites, and whether any of them is multiway. */
+export interface AreaHazard {
+    wildernessLevel: number;
+    multiway: boolean;
 }
 
 export interface World {

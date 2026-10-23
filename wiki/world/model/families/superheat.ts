@@ -4,7 +4,7 @@
 // Smithing 30 makes steel (:27-30); the model assumes no coal is carried.
 import { ModelError, type ActionModel } from '../family';
 import { clickTicks, int, param, requireLevel, stringParams, type FamilyFactory } from './common';
-import { barStruct, barXp } from './smelting';
+import { barStruct, barXp, GOLDSMITH } from './smelting';
 
 /** `ore`: the ore's obj config (`iron_ore`). */
 export interface SuperheatParams {
@@ -32,6 +32,7 @@ export const superheat: FamilyFactory = data => {
         id: 'superheat',
         skills: ['magic', 'smithing'],
         kinds: [],
+        worn: [...staffRunes.keys(), GOLDSMITH],
         model(_site, params, profile): ActionModel {
             const p = stringParams(params, 'superheat', ['ore']);
             if (!spell) throw new ModelError(`no magic_spell_table row for ${SPELL}`);
