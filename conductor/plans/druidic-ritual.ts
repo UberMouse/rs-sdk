@@ -41,7 +41,8 @@ export default definePlan({
                 name: 'suit',
                 when: v =>
                     (v.state.player?.worldZ ?? 0) > 9000 &&
-                    (v.state.player?.inCombat === true || v.state.nearbyNpcs.some(n => /suit of armour/i.test(n.name))),
+                    (v.state.player?.combat.inCombat === true ||
+                        v.state.nearbyNpcs.some(n => /suit of armour/i.test(n.name))),
                 onFail: 'continue',
             },
         ),
