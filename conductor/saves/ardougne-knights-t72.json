@@ -1,0 +1,313 @@
+{
+    "name": "ardougne-knights-t72",
+    "purpose": "Thieving 72, HP 26, East Ardougne market (2650,3295), ~1900 coins, trout/salmon. Tests thieving Knight of Ardougne with area (2660,3306,14).",
+    "source": {
+        "kind": "snapshot",
+        "bot": "conductor3w1"
+    },
+    "sha1": "3e2965a62763cb7c3a3af39b4bca916deeb1cf3e",
+    "createdAt": "2026-10-23T07:33:48.220Z",
+    "saveVersion": 9,
+    "summary": {
+        "position": {
+            "x": 2484,
+            "z": 3437,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 28,
+            "Defence": 20,
+            "Strength": 20,
+            "Hitpoints": 26,
+            "Prayer": 49,
+            "Cooking": 71,
+            "Fishing": 68,
+            "Agility": 28,
+            "Thieving": 72
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1900
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 552,
+                "name": "amulet_of_ghostspeak",
+                "count": 1
+            },
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            },
+            {
+                "id": 1171,
+                "name": "wooden_shield",
+                "count": 1
+            }
+        ],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1861
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1931,
+                "name": "pot_empty",
+                "count": 1
+            },
+            {
+                "id": 1205,
+                "name": "bronze_dagger",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 841,
+                "name": "shortbow",
+                "count": 1
+            },
+            {
+                "id": 882,
+                "name": "bronze_arrow",
+                "count": 25
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 25
+            },
+            {
+                "id": 558,
+                "name": "mindrune",
+                "count": 15
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 6
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 4
+            },
+            {
+                "id": 559,
+                "name": "bodyrune",
+                "count": 2
+            },
+            {
+                "id": 317,
+                "name": "raw_shrimp",
+                "count": 4
+            },
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 303,
+                "name": "net",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 321,
+                "name": "raw_anchovies",
+                "count": 5
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 5
+            },
+            {
+                "id": 1353,
+                "name": "steel_axe",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 17
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 15
+            },
+            {
+                "id": 309,
+                "name": "fly_fishing_rod",
+                "count": 1
+            },
+            {
+                "id": 314,
+                "name": "feather",
+                "count": 81
+            },
+            {
+                "id": 1438,
+                "name": "air_talisman",
+                "count": 1
+            }
+        ],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "20": 26345490,
+            "21": 337957128,
+            "22": 352519296,
+            "23": 69208080,
+            "24": -2145897952,
+            "25": 34,
+            "28": -1,
+            "59": -1,
+            "63": 6,
+            "64": 43977978,
+            "101": 2,
+            "107": 5,
+            "152": 1,
+            "166": 2,
+            "168": 2,
+            "169": 2,
+            "181": -1,
+            "209": -1,
+            "275": -1,
+            "281": 1000,
+            "300": 1000,
+            "367": -1
+        }
+    }
+}

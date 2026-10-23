@@ -275,11 +275,40 @@ describe('thieving: failure streaks', () => {
         expect(logged(r)[0]).toBe('pickpocket Man failed: Man left view before the attempt');
     });
 
-    test('no Man in the area waits, then fails after twenty looks', async () => {
+    test('no Man in the area waits, then fails after a hundred looks', async () => {
         const r = await simulate(thieving, { params: PARAMS, timeline: base.series(1) });
-        expect(r.result.reason).toBe('pickpocket: no free reachable Man in the area');
-        expect(r.driver.state().tick).toBe(19 * 3);
+        expect(r.result.reason).toBe('pickpocket: no free reachable Man in the area after 100 looks');
+        expect(r.driver.state().tick).toBe(99 * 3);
         expect(r.sends).toEqual([]);
+    });
+
+    test('a Man that wanders back into the area after a long gap is picked, not a failure', async () => {
+        const t = thief(['success']);
+        const r = await simulate(thieving, {
+            params: PARAMS,
+            timeline: base.series(200, (w, i) => (i >= 150 ? manAt(w) : w)),
+            react: t.react,
+            stops: xp(8),
+        });
+        expect(r.result.reason).toBe('reached +8 Thieving xp');
+        expect(r.sends).toContain(PICK);
+    });
+
+    test('waiting away from the area centre walks back to it, then picks the Man who arrives', async () => {
+        const edge = { x: SPOT.x + 5, z: SPOT.z };
+        const t = thief(['success'], walking());
+        const r = await simulate(thieving, {
+            params: PARAMS,
+            timeline: world()
+                .player({ at: edge })
+                .skill('Thieving', 1, 0)
+                .series(120, (w, i) => (i >= 100 ? manAt(w, SPOT.x + 1, SPOT.z) : w)),
+            react: walking(t.react),
+            stops: xp(8),
+        });
+        expect(r.result.reason).toBe('reached +8 Thieving xp');
+        expect(logged(r).some(m => String(m).includes('walking back toward the area centre'))).toBe(true);
+        expect(r.driver.state().player?.worldX).toBeLessThan(edge.x);
     });
 
     test('a Man outside the area or already fighting is no target', async () => {
@@ -288,7 +317,7 @@ describe('thieving: failure streaks', () => {
             inCombat: true,
         });
         const r = await simulate(thieving, { params: PARAMS, timeline: w.series(1) });
-        expect(r.result.reason).toBe('pickpocket: no free reachable Man in the area');
+        expect(r.result.reason).toBe('pickpocket: no free reachable Man in the area after 100 looks');
     });
 
     test('a failed walk to the Man is a failed attempt', async () => {

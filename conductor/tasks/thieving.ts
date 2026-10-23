@@ -12,7 +12,7 @@ import {
 } from '../actions/pickpocket';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, ticks, wait } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { LOW_HP_FRACTION } from '../lib/threat';
 import { exactName, findSkill } from '../lib/util';
@@ -41,8 +41,15 @@ export const PICKPOCKET_LEVELS: Readonly<Record<string, number>> = {
 };
 
 const DEFAULT_EAT_BELOW = 0.6;
-const NO_TARGET_LIMIT = 20;
+/**
+ * Looks with no free reachable target before failing (100 x NO_TARGET_WAIT_TICKS = 300 ticks of waiting, plus any
+ * recentre walks). Roaming NPCs such as the Ardougne Knights leave the area, fight, or go behind doors for a while.
+ */
+const NO_TARGET_LIMIT = 100;
 const NO_TARGET_WAIT_TICKS = 3;
+/** With an area, after this many looks (then every NO_TARGET_RECENTRE_EVERY) the bot walks back toward the area centre (within the walk tolerance), where the NPCs pass. */
+const NO_TARGET_RECENTRE_AFTER = 5;
+const NO_TARGET_RECENTRE_EVERY = 20;
 /** Attempts in a row that never reached the NPC (walk failed, NPC gone, unreachable, no result). */
 const PICK_FAIL_LIMIT = 6;
 const PICK_RETRY_TICKS = 1;
@@ -148,7 +155,7 @@ export default defineTask({
     description:
         'Pickpocket one kind of NPC (`npc`, exact name, e.g. "Man") repeating until stopped: picks the nearest ' +
         'reachable one inside the optional `area`, waits out the 8-tick stun after a caught attempt (1 damage, ' +
-        '2 for warriors; the NPC does not fight back), eats optional `food` below `eatBelow` (with no food held it waits for HP to regenerate, and fails if it does not), and stays put when the NPC walks off. Loot (coins) accumulates; ' +
+        '2 for warriors; the NPC does not fight back), eats optional `food` below `eatBelow` (with no food held it waits for HP to regenerate, and fails if it does not), and, when no free NPC is in the area, waits (walking back toward the area centre every so often) and fails after 100 looks (300 ticks). Loot (coins) accumulates; ' +
         "`stopWhenFull` ends the run done on a full inventory. Refuses an NPC above the bot's Thieving level " +
         '(Man/Woman 1, Farmer 10, Warrior 25, Guard 40...), areas reaching the Wilderness, and NPCs with no ' +
         'pickpocket config. Verified spot: Men around Lumbridge castle (3222,3218, radius 6) at Thieving 1.',
@@ -229,10 +236,22 @@ export default defineTask({
                 const target = pickTarget(state, ctx.params);
                 const noTarget = ctx.streak('noTarget');
                 if (!target) {
-                    if (noTarget.add() >= NO_TARGET_LIMIT)
+                    const looks = noTarget.add();
+                    if (looks >= NO_TARGET_LIMIT)
                         return {
-                            fail: `no free reachable ${ctx.params.npc} ${ctx.params.area ? 'in the area' : 'in view'}`,
+                            fail: `no free reachable ${ctx.params.npc} ${ctx.params.area ? 'in the area' : 'in view'} after ${looks} looks`,
                         };
+                    const area = ctx.params.area;
+                    if (
+                        area &&
+                        looks >= NO_TARGET_RECENTRE_AFTER &&
+                        (looks - NO_TARGET_RECENTRE_AFTER) % NO_TARGET_RECENTRE_EVERY === 0
+                    ) {
+                        // Waiting at the area's edge (or out of the NPCs' sight) only sees what wanders past it.
+                        yield* log(`no ${ctx.params.npc} free for ${looks} looks: walking back toward the area centre`);
+                        const failure = yield* walkToArea(ctx, area);
+                        if (failure) return { fail: failure };
+                    }
                     yield* ticks(NO_TARGET_WAIT_TICKS);
                     return;
                 }
