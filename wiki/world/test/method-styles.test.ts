@@ -150,7 +150,8 @@ describe("wearing: the profile's worn objs over the record's gear, slot by slot"
 
     test('a worn obj the game has no config for is a ProfileError, not the item lookup ModelError', () => {
         expect(() => worn(['sword'], ['no_such_obj'])).toThrow(ProfileError);
-        expect(() => worn(['no_such_obj'], ['ring'])).toThrow(ProfileError);
+        // In the record's own gear it is a record-shape error: the lookup's ModelError.
+        expect(() => worn(['no_such_obj'], ['ring'])).toThrow(ModelError);
     });
 
     test("a ring alone keeps the record's weapon; the profile's own weapon replaces it", () => {

@@ -240,16 +240,18 @@ function withdrawObj(def: MethodDef): string {
  */
 export function wearing(def: Pick<MethodDef, 'gear'>, profile: Profile, items: Items): Profile {
     if (!def.gear?.length) return profile;
-    // A worn obj the game has no config for is the profile's mistake, as in profileOf's gear.
-    const wearposOf = (o: string): readonly string[] => {
+    const wearposOf = (o: string): readonly string[] => items(o).wearpos ?? [];
+    // A worn obj the game has no config for is the profile's mistake, as in profileOf's gear; in the record's gear it
+    // is a record-shape error (the ModelError of the item lookup).
+    const profileWearpos = (o: string): readonly string[] => {
         try {
-            return items(o).wearpos ?? [];
+            return wearposOf(o);
         } catch (e) {
             if (e instanceof ModelError) throw new ProfileError(e.message);
             throw e;
         }
     };
-    const taken = new Set(profile.worn.flatMap(wearposOf));
+    const taken = new Set(profile.worn.flatMap(profileWearpos));
     const kept = def.gear.filter(o => !wearposOf(o).some(slot => taken.has(slot)));
     return { ...profile, worn: [...kept, ...profile.worn] };
 }

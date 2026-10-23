@@ -222,6 +222,7 @@ describe('the game data the cycle reads', () => {
     // A family that tests a worn obj the declaration omits would have lib/methods.ts drop it from a measured run.
     test('every worn obj a family tests membership of is in its declared Family.worn', () => {
         const checked = new Set<string>();
+        const unchecked: string[] = [];
         for (const m of methods) {
             if (m.def.gear?.length) continue;
             const tested = new Set<string>();
@@ -246,6 +247,7 @@ describe('the game data the cycle reads', () => {
                 methodModels(m, everyAt(99, {}, { worn }), ctx);
             } catch (e) {
                 if (!(e instanceof ModelError || e instanceof ProfileError)) throw e;
+                unchecked.push(m.def.id);
             }
             const declared = wornRead(m.def, ctx);
             if (declared === 'all') continue;
@@ -256,6 +258,40 @@ describe('the game data the cycle reads', () => {
         }
         // The guard saw the ring read: it observes reads, not nothing.
         expect(checked.has('ring_of_forging')).toBe(true);
+        // A method that throws before a family reads worn escapes the guard; none does at level 99, and one that
+        // starts to shows here.
+        expect(unchecked).toEqual([]);
+    });
+
+    // No seed smelts gold, so the guard above never sees the goldsmith gauntlets read (smelting.rs2:216): iron's
+    // record with its smelting step on a gold bar.
+    test('smelting a gold bar reads the goldsmith gauntlets worn, and the record declares them', () => {
+        const base = methods.find(m => m.def.id === 'iron-se-varrock-smelt-lumbridge-kiteshield')!;
+        const sink = base.def.sink as { mode: 'process'; steps: { family: string; params: unknown }[] };
+        const gold = {
+            ...base,
+            def: {
+                ...base.def,
+                sink: {
+                    ...base.def.sink,
+                    steps: sink.steps.map(s => (s.family === 'smelting' ? { ...s, params: { bar: 'gold_bar' } } : s)),
+                },
+            },
+        } as typeof base;
+        const tested = new Set<string>();
+        const worn = new Proxy([] as string[], {
+            get(t, k, r) {
+                if (k === 'includes')
+                    return (o: string) => {
+                        tested.add(o);
+                        return false;
+                    };
+                return Reflect.get(t, k, r);
+            },
+        });
+        methodModels(gold, everyAt(99, {}, { worn }), ctx);
+        expect(tested.has('gauntlets_of_goldsmithing')).toBe(true);
+        expect((wornRead(gold.def, ctx) as Set<string>).has('gauntlets_of_goldsmithing')).toBe(true);
     });
 
     test('an obj by its display name: the one config of that name, or of several the wearable one', () => {
