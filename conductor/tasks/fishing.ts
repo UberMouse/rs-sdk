@@ -26,7 +26,9 @@ interface Method {
 }
 
 // Levels, options and tools from server/content/scripts/skill_fishing (saltfish, freshfish and rarefish
-// .rs2, fishing.npc). Members-only spots (Net/Harpoon: big net, shark) are left out.
+// .rs2, memberfish.rs2, fishing.npc). Bots play members worlds, so the Net/Harpoon spot's shark is in. Its other
+// option, big net (Net, level 16), catches mackerel, cod and bass among boots, seaweed, gloves, oysters and caskets
+// that fill the inventory with junk; it is left out.
 const METHODS = {
     net: {
         option: /^net$/i,
@@ -71,6 +73,14 @@ const METHODS = {
         level: 35,
         fish: [/^raw tuna$/i, /^raw swordfish$/i],
     },
+    shark: {
+        option: /^harpoon$/i,
+        otherOption: /^net$/i,
+        tool: /^harpoon$/i,
+        toolName: 'harpoon',
+        level: 76,
+        fish: [/^raw shark$/i],
+    },
     cage: {
         option: /^cage$/i,
         otherOption: /^harpoon$/i,
@@ -109,13 +119,25 @@ const STEP_TIMEOUT_MS = 300_000;
 /** The no-spot wait runs inside one step, so its step budget must cover it (plus the walk and a cast). */
 const NO_SPOT_STEP_TIMEOUT_MS = Math.max(STEP_TIMEOUT_MS, (NO_SPOT_GIVE_UP_TICKS + 200) * TICK_MS);
 
-const Params = z.object({
-    method: z.enum(METHOD_NAMES).default('net'),
-    /** Stay near here; walk back when further than `radius`. Omit to fish wherever the bot is. */
-    area: AreaSchema.optional(),
-    /** What to do when the inventory is full: drop the fish and keep fishing, or end the run holding them. */
-    onFull: z.enum(['drop', 'stop']).default('drop'),
-});
+const Params = z
+    .object({
+        method: z.enum(METHOD_NAMES).default('net'),
+        /** Stay near here; walk back when further than `radius`. Omit to fish wherever the bot is. */
+        area: AreaSchema.optional(),
+        /** What to do when the inventory is full: drop the fish and keep fishing, or end the run holding them. */
+        onFull: z.enum(['drop', 'stop']).default('drop'),
+        /**
+         * A second method to fish while no spot of `method` is fishable in the area (e.g. method harpoon, fallback shark
+         * at Catherby, where the Cage/Harpoon spot is often away while the Net/Harpoon ones are not). A spot of `method`
+         * coming back is taken as soon as the current catch lands. Its tool, bait and level are checked up front too. It only
+         * helps where the two methods use different spot types in the area; must differ from `method`.
+         */
+        fallback: z.enum(METHOD_NAMES).optional(),
+    })
+    .refine(p => p.fallback === undefined || p.fallback !== p.method, {
+        message: 'fallback must differ from method',
+        path: ['fallback'],
+    });
 
 type FishingParams = z.infer<typeof Params>;
 interface FishingMemory {
@@ -123,25 +145,34 @@ interface FishingMemory {
     noSpotSinceTick: number | null;
     /** The spot the bot is fishing, while its last send landed: the server keeps fishing without a resend. */
     fishing: { index: number; x: number; z: number } | null;
+    /** The method last cast, to log a switch between `method` and `fallback`. */
+    active: MethodName | null;
 }
 type Ctx = TaskContext<FishingParams, FishingMemory>;
 
-const method = (params: FishingParams): Method => METHODS[params.method];
-const fishHeld = (ctx: Ctx) => countAny(ctx.state(), method(ctx.params).fish);
-const fullWithoutFish = (ctx: Ctx) => ({ fail: `inventory full with no ${ctx.params.method} fish` });
+/** The methods the task fishes, in preference order: `method`, then `fallback`. */
+const kinds = (params: FishingParams): MethodName[] =>
+    params.fallback && params.fallback !== params.method ? [params.method, params.fallback] : [params.method];
+const allFish = (params: FishingParams): RegExp[] => kinds(params).flatMap(k => [...METHODS[k].fish]);
+const fishHeld = (ctx: Ctx) => countAny(ctx.state(), allFish(ctx.params));
+const fullWithoutFish = (ctx: Ctx) => ({
+    fail: `inventory full with no ${kinds(ctx.params).join('/')} fish`,
+});
 
-/** Why the bot can't fish now (no tool, no bait), or null. */
+/** Why the bot can't fish now (no tool, no bait for `method` or `fallback`), or null. */
 function missingSupply(ctx: Ctx): string | null {
-    const { tool, toolName, bait } = method(ctx.params);
     const inv = ctx.state().inventory;
-    if (!inv.some(i => tool.test(i.name))) return `no ${toolName} in inventory`;
-    if (bait && !inv.some(i => bait.item.test(i.name))) return `no ${bait.name} in inventory`;
+    for (const k of kinds(ctx.params)) {
+        const { tool, toolName, bait }: Method = METHODS[k];
+        if (!inv.some(i => tool.test(i.name))) return `no ${toolName} in inventory`;
+        if (bait && !inv.some(i => bait.item.test(i.name))) return `no ${bait.name} in inventory`;
+    }
     return null;
 }
 
-/** A spot of the task's method the bot can reach, wherever it is. */
-function ofMethod(params: FishingParams): (npc: NearbyNpc) => boolean {
-    const m = method(params);
+/** A spot of method `kind` the bot can reach, wherever it is. */
+function ofMethod(kind: MethodName): (npc: NearbyNpc) => boolean {
+    const m = METHODS[kind];
     return n =>
         SPOT_NAME.test(n.name) &&
         n.reachable !== false &&
@@ -149,10 +180,19 @@ function ofMethod(params: FishingParams): (npc: NearbyNpc) => boolean {
         n.options.some(o => m.otherOption.test(o));
 }
 
-/** A spot of the task's method the bot can fish now, inside the area. */
-function fishable(params: FishingParams): (npc: NearbyNpc) => boolean {
-    const ok = ofMethod(params);
+/** A spot of method `kind` the bot can fish now, inside the area. */
+function fishable(params: FishingParams, kind: MethodName): (npc: NearbyNpc) => boolean {
+    const ok = ofMethod(kind);
     return n => ok(n) && inArea(params.area, tileOf(n));
+}
+
+/** The method to fish now: the first of `kinds` with a fishable spot in view, and those spots; none if no kind has one. */
+function pickKind(ctx: Ctx): { kind: MethodName; spots: NearbyNpc[] } | null {
+    for (const kind of kinds(ctx.params)) {
+        const spots = ctx.state().nearbyNpcs.filter(fishable(ctx.params, kind));
+        if (spots.length > 0) return { kind, spots };
+    }
+    return null;
 }
 
 /** No spot of the kind in reach: stay put (returnToAreaStep keeps us inside) and wait, failing after NO_SPOT_GIVE_UP_TICKS. */
@@ -160,21 +200,29 @@ function* waitForSpot(ctx: Ctx): Op<Outcome> {
     const now = ctx.state().tick;
     if (ctx.memory.noSpotSinceTick === null) {
         ctx.memory.noSpotSinceTick = now;
-        yield* log(`no ${ctx.params.method} fishing spot available, waiting`);
+        yield* log(`no ${kinds(ctx.params).join('/')} fishing spot available, waiting`);
     }
     const since = ctx.memory.noSpotSinceTick;
     const left = Math.max(0, since + NO_SPOT_GIVE_UP_TICKS - now);
-    const isFishable = fishable(ctx.params);
-    const found = yield* wait('fishing spot', s => s.nearbyNpcs.some(isFishable), left);
+    const isFishable = kinds(ctx.params).map(k => fishable(ctx.params, k));
+    const found = yield* wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left);
     if (found.kind === 'met') return;
     const seconds = Math.round(((found.state.tick - since) * TICK_MS) / 1000);
     const { area } = ctx.params;
-    const outside = found.state.nearbyNpcs.find(ofMethod(ctx.params));
-    const where = outside ? `; spot exists outside area at (${tileOf(outside).x},${tileOf(outside).z})` : '';
+    const kindsText = kinds(ctx.params).join('/');
+    const outsideKinds = kinds(ctx.params).map(k => ({ k, ok: ofMethod(k) }));
+    let where = '';
+    for (const n of found.state.nearbyNpcs) {
+        const hit = outsideKinds.find(o => o.ok(n));
+        if (hit) {
+            where = `; ${hit.k} spot exists outside area at (${tileOf(n).x},${tileOf(n).z})`;
+            break;
+        }
+    }
     return {
         fail: area
-            ? `area depleted: no reachable ${ctx.params.method} fishing spot in radius ${area.radius} for ${seconds}s${where}`
-            : `no reachable ${ctx.params.method} fishing spot nearby for ${seconds}s`,
+            ? `area depleted: no reachable ${kindsText} fishing spot in radius ${area.radius} for ${seconds}s${where}`
+            : `no reachable ${kindsText} fishing spot nearby for ${seconds}s`,
     };
 }
 
@@ -183,7 +231,10 @@ export default defineTask({
     description:
         'Fish at fishing spots with one `method`: net (small fishing net, shrimps/anchovies, level 1), bait (fishing rod + bait, ' +
         'sardine/herring, 5), lure (fly fishing rod + feathers, trout/salmon, 20), pike (rod + bait at a Lure/Bait spot, 25), ' +
-        'harpoon (tuna/swordfish, 35), cage (lobster pot, lobster, 40). The tool and any bait must be in the inventory. ' +
+        'harpoon (tuna/swordfish at a Cage/Harpoon spot, 35), shark (harpoon at a Net/Harpoon spot, raw shark, 76; members), ' +
+        'cage (lobster pot, lobster, 40). `fallback` (e.g. method harpoon, fallback shark) names a second method fished while no ' +
+        'spot of `method` is fishable in the area (needs its tool and level too); a `method` spot coming back is taken once the ' +
+        'current catch lands. Big net is not supported. The tool and any bait must be in the inventory. ' +
         'When the inventory is full, `onFull` "drop" (default) drops the fish and keeps fishing, "stop" ends the run done ' +
         '("inventory full: N fish") holding them, e.g. to feed a cooking task. Spots hop between tiles every 112-212 s; it follows them. ' +
         'With a small `area` the spot can be away from it for up to ~3.5 minutes per hop, and the task waits for it, failing ' +
@@ -191,13 +242,11 @@ export default defineTask({
         'Fails on missing tool/bait (also when the bait runs out) or too low a level. ' +
         'In combat it pauses fishing and fails after 40 ticks of combat, or at once if auto-retaliate is off. ' +
         'With `area` it stays within `radius` of that centre; without it, it fishes wherever the bot stands. ' +
-        'Spots (only the Draynor net spot is smoke-tested live): Draynor Village Net/Bait spots hop among four tiles: ' +
-        '(3086,3227) and (3086,3228) inside the recommended area {x:3086,z:3227,radius:2}, (3085,3230) and (3085,3231) outside it ' +
-        '(dark wizards at (3084,3236) attack a combat-5 bot at the northern two, so the area excludes them). Al Kharid Net/Bait spots at (3267,3148) and (3276,3140), behind the ' +
-        "10gp toll gate, bank (3269,3167), range (3271,3180); hazards unchecked. Lumbridge's only spot is River Lum Lure/Bait " +
-        'at (3238,3252) (lure or pike), unverified live; Lumbridge Swamp has none. Refuses areas reaching the Wilderness.',
+        'Live-tested at the Fishing Guild (Fishing 68; Net/Harpoon spot near (2605,3418)); Catherby seen only in a run log. ' +
+        'Draynor Village Net/Bait spots: use area {x:3086,z:3227,radius:2} (dark wizards attack at the northern tiles). ' +
+        'Refuses areas reaching the Wilderness.',
     params: Params,
-    memory: (): FishingMemory => ({ noSpotSinceTick: null, fishing: null }),
+    memory: (): FishingMemory => ({ noSpotSinceTick: null, fishing: null, active: null }),
     // Fishing re-sends an interaction that would cancel auto-retaliate, so a bot under attack must not.
     guards: [underAttackGuard],
     stepTimeoutMs: NO_SPOT_STEP_TIMEOUT_MS,
@@ -206,10 +255,12 @@ export default defineTask({
     preflight(ctx) {
         const refused = missingSupply(ctx);
         if (refused) return refused;
-        const need = method(ctx.params).level;
         const skill = findSkill(ctx.state(), 'Fishing');
         if (!skill) return 'no Fishing skill in state';
-        if (skill.baseLevel < need) return `${ctx.params.method} needs fishing ${need}, bot has ${skill.baseLevel}`;
+        for (const k of kinds(ctx.params)) {
+            const need = METHODS[k].level;
+            if (skill.baseLevel < need) return `${k} needs fishing ${need}, bot has ${skill.baseLevel}`;
+        }
         return refuseArea(ctx.params.area);
     },
 
@@ -236,7 +287,7 @@ export default defineTask({
                 ctx.memory.fishing = null;
                 let dropped = 0;
                 let problem = '';
-                for (const kind of method(ctx.params).fish) {
+                for (const kind of allFish(ctx.params)) {
                     if (countItems(ctx.state(), kind) === 0) continue;
                     const r = yield* drop(ctx, kind);
                     if (r.ok) dropped += r.slotsDropped;
@@ -251,9 +302,15 @@ export default defineTask({
             name: 'fish',
             when: () => true,
             *run(ctx) {
-                const isFishable = fishable(ctx.params);
-                const spots = ctx.state().nearbyNpcs.filter(isFishable);
                 const mem = ctx.memory;
+                const picked = pickKind(ctx);
+                if (!picked) {
+                    mem.fishing = null;
+                    return yield* waitForSpot(ctx);
+                }
+                // `spots` are all of one kind; a spot of an earlier kind returning replaces the current one at once.
+                const { kind, spots } = picked;
+                const m = METHODS[kind];
                 const last = mem.fishing;
                 // Still fishing the spot the last send started, if it hasn't moved: wait, don't recast.
                 const current = last
@@ -263,15 +320,16 @@ export default defineTask({
                       })
                     : undefined;
                 const spot = current ?? spots.sort((a, b) => a.distance - b.distance)[0];
-                if (!spot) {
-                    mem.fishing = null;
-                    return yield* waitForSpot(ctx);
-                }
+                if (!spot) return yield* waitForSpot(ctx);
                 mem.noSpotSinceTick = null;
+                if (mem.active !== kind) {
+                    if (mem.active !== null || kind !== ctx.params.method) yield* log(`fishing ${kind}`);
+                    mem.active = kind;
+                }
                 // Cut off mid-wait (a guard, a stop): what the server is doing is unknown, so cast again.
                 const resume = !!current;
                 mem.fishing = null;
-                const caught = yield* fish(ctx, spot, method(ctx.params).option, method(ctx.params).fish, { resume });
+                const caught = yield* fish(ctx, spot, m.option, m.fish, { resume });
                 const fails = ctx.streak('fishFails');
                 const moves = ctx.streak('spotMoves');
                 if (caught.ok) {
