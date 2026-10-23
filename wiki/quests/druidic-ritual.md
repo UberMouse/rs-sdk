@@ -18,7 +18,7 @@
 
 - 4 Quest Points
 - 250 Herblore XP
-- Access to the Herblore skill
+- Not needed for Herblore in this revision: see [Herblore](../skills/herblore.md) [v 2026-10-23 conductor3w5 local]
 
 ## Walkthrough
 
