@@ -8,80 +8,54 @@ Goal: 99 in all 19 skills (total level 1881) on the local server (members world,
 
 ## Now
 
-State at 2026-10-16 (retro #9): conductor2, rev 289, 25x XP, total 1265/1881 (22.1% of max XP). Thieving/Mining 99,
-Cooking 83, WC 80, Fishing 79, FM 78, Def/HP 73, Att/Str/Crafting 70, Magic 66, Prayer/Smithing 60, RC 55, Agility 52,
-Ranged 40, Fletching 30, Herblore 28.
+conductor3, a fresh account started 2026-10-23 (local, members, 25x XP). conductor2's rows (to 2026-10-22) are in
+git: `git show b7d3bcdc1:conductor/roadmap.md`. The route was re-planned from the world index alone, not from
+`learnings/` (user, 2026-10-23): four research agents rated candidates with the rate model
+(`resolveMethods([...METHODS, ...scratch])` rates a record not yet in `methods.ts`, as
+`wiki/world/test/methods.real.test.ts` does); their reports are summarised in Max route below.
 
-**Hours to max** (XP to 99 / rate; one account, so legs add up; 2026-10-16 measured unless marked):
+**The XP curve.** This server's 99 is 998,458 XP (`conductor/lib/xp.ts`; it doubles every 10 levels, not 7), so a
+max is ~19M XP. Low and mid bands, unlock timing and quest rewards weigh far more than on the standard curve: quest XP
+goes through `stat_advance` at 25x, so Waterfall Quest alone is Attack and Strength 83.
 
-| Row | XP left | Rate | Hours | Status |
-|---|---|---|---|---|
-| Agility 52->99 | 961k | Wilderness course, plan agility-wilderness: w4 52->84 in ~18 min (~1.05M/h), rerun +587k in ~31 min (~1.14M/h, 37 laps, 2 eats) | ~0.9 | measured on a worker; the food-out leave -> Edgeville bank -> enter leg never fired (food lasted), unproven |
-| Smithing 60->99 + Magic 66->99 | 932k + 897k | Khazard superheat 514k Smith + 727k Magic/h | 1.8 (Magic done inside it) | measured; needs ~100k gp, ~700 natures, Staff of fire first (leg prep ~1.5 h incl. knights ~95k gp/h) |
-| Crafting 70->99 | 865k | 322k/h flax-spin | 2.7 | measured; lever = pick share (43%) |
-| Runecraft 55->99 | 950k | earth v2 (nearest cluster) 153k measured on w1 | 6.2 | measured 2026-10-16 (w1 55->64 in 18 min); +4% with a rune-drop step |
-| Att/Str/Def 70->99 + HP 73->99 | 862k/865k/828k + 831k | hill giants 582k/541k/635k; HP rides along | 3.7 (world index floor at 70, wiki/training/: hill giants 720k/775k/718k with the mithril scimitar, food trips in; a rune scimitar +27-29%) | path fixed (smoke passed 2026-10-22), moss giants plan awaits a measure run |
-| Prayer 60->99 | 928k | quests Priest in Peril 35k + Holy Grail 275k (Merlin's Crystal first), then green dragons + anti-dragon shield ~170k/h (research estimate: the world index does not model dragons) alongside melee | ~4-5 (estimate; ~11 at hill giants' 57k) | research 2026-10-16; quests first |
-| Ranged 40->99 | 982k | ~0.75-1.4 h (research estimate: the world index models melee only): willow shortbow rapid + steel/mithril arrows on hill giants (~700k-1M/h), later yew/magic shortbow + adamant | ~1.2 (estimate) | research 2026-10-16; kill overhead binds, not weapon; worker measure next |
-| Fletching 30->99 | 991k | Seers willow longbows chop + cut + string: ~971k/h measured on w3 (40->79 in 15 min) + WC ~830k/h alongside | ~1.0 | measured on a worker; plan willow-longbows + `fletching` string option committed (ffb928721); needs ~500 banked bow strings (flax-spin) |
-| Herblore 28->99 | 992k | quests ~403k (Jungle Potion, Digsite, Eadgar's Ruse needs Death Plateau + Troll Stronghold, Shades of Mort'ton), then chaos druids herbs + newt potions ~70-100k/h (model) | ~6-8.5 (model) | **long pole**: herb drops bind; any extra herb/secondary source is the lever |
-| WC 80 + FM 78 | 730k + 760k | 1.43M/h chop+burn | ~1.0 | measured; yews/maples for Fletching logs fit here |
-| Fishing 79 + Cooking 83 | 743k + 654k | ~1.1M/h lure-cook | ~0.8 | measured |
+**Floor hours to 99** (model, tick-perfect; bots measure ~55-85% of it): ~27 h in all, ~40 h expected. Long poles:
+Herblore 7-11 h (herbs only drop: no shop sells one), Runecraft ~5.6 h (earth, travel-bound), Prayer ~3 h after
+melee (bones only). Every other skill is 0.3-2 h. Explore goals go to the long poles first: herb sources and drop
+tables (research in flight 2026-10-23, the user asked for drop tables and time-to-drop: a rune scimitar is not sold,
+Fire giants drop it 1/128), Runecraft altar and essence layouts, Prayer by quests and dragons.
 
-Total about 27-33 h of play plus ~10% logistics. Binding rows: Herblore (5-10 h, unknown), Runecraft (6.2 h), melee
-(2.5-3.7 h), Prayer (~3 h, unknown), Crafting (2.7 h). Everything gathering-side is under 2 h. Order of legs on
-main: (1) Crafting 70 done; (2) knights ~100k gp (runner ad21c74d7890d02f9) -> Yanille natures + Staff of fire ->
-khazard-superheat to Smithing 99 (+Magic 99, gives Smith 90 for the rune scimitar); (3) w4 Wilderness agility 52->99;
-(4) melee 70->99 on moss giants with a smithed rune scimitar (else hill giants);
-(5) Runecraft earth v2 (can run any time; no prerequisites beyond essence-mine); (6) Ranged + Prayer on giants;
-(7) WC/FM -> Fletching; (8) Crafting 99; (9) Herblore last (needs the herb-source research).
+**Pairings** (processing takes minutes; gathering sets the time): WC + FM/Fletching (willows win for chop-and-process),
+Fishing + Cooking, flax + Crafting (strings feed Fletching), iron + Smithing + Magic (superheat), essence + Runecraft,
+chaos druids + Herblore + melee + Prayer.
 
-In flight at retro #9: knights leg and Khazard chain (main), w4 Wilderness plan bank-round-trip proof, w1 earth
-v2, w2 moss giants (first run failed: `to-giants` travel "No path to (3158, 9895) from (3151, 9894)": the moss
-giant room is in the Varrock Sewers, not the Edgeville Dungeon; fixed by the sewers walk box, manhole connector
-and web slash, smoke walk-varrock-sewers passed 2026-10-22), research on Fletching+Ranged and Prayer+Herblore.
+**Opening queue** (objectives in order; revise as goals report):
+1. Thieving 40 (Lumbridge men, then Al-Kharid warriors with shrimp food) and a raw chicken banked: in progress.
+2. Tools and food: steel axe (Bob, Lumbridge, 200; the best axe any shop sells), fly rod (5); Fishing net 1-20, lure
+   to ~50 with Cooking alongside; ~40 cooked trout/salmon banked (food for thieving and the Wilderness course).
+3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47), Rune Mysteries (essence), Imp Catcher (Magic 44,
+   superheat at 43), Waterfall (Att/Str 83), Druidic Ritual (only if Herblore is gated: worker check in flight).
+4. Thieving 40-55 Ardougne guards, 55-99 knights; stay on knights for the gp (166k/h at 99) the route needs: adamant
+   pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
+5. Agility: gnome course 1-52, Wilderness course 52-99.
+6. Gathering 99s with their pairings; melee per the drop research (a rune scimitar hunt can be a training leg).
 
-Open conductor loop: write the measured XP/h and next optimization into the Max route row the same turn as each
-GOAL report (rows were stale at retro #7, #8 and Hitpoints/Agility again at #9). Journal worker results at the
-moment they arrive: the w4 Wilderness 52->84 result (18 min) was never journaled before the run was stopped.
-
-Tick-perfect pass status (conductor skill, Optimizing a method): Mining (6.75 ticks/ore, floor), Runecraft earth,
-Agility Wilderness, Smithing superheat and Crafting flax have tick budgets. Thieving, melee, Ranged, WC/FM and
-Fishing/Cooking finished goals with no budget, spot search or A/B (melee has a world index floor,
-wiki/training/strength.md; the hill giants' fight phases of 2026-10-16 ran at 81-85% of it with food trips left out,
-wiki/world/test/methods.real.test.ts). Highest hours still unbudgeted: Herblore, Prayer, Ranged (research only).
-
-
-- Catalog: `woodcutting`, `pickup`, `firemaking` (line burn), `fletching`, `mining`, `combat`
-  (melee/Ranged/Magic), `bank`, `shop`, `smithing` (smelt + anvil), `cooking`, `fishing`, `thieving`,
-  `crafting` (pottery), `fill`, `agility` (Gnome course), `travel` (waypoints, gates, `flee`), `walkTo`
-  across levels. Promoted plans in `conductor/plans/`: chop-burn, chop-fletch, fish-cook-bank,
-  lure-cook-bank, pottery-craft, iron-smith, gnome-agility, guard-thieve, ranged-magic-chickens
-  (mine-ore and fish-cook are drafts in `runs/conductor2/plans/`).
-- The bank is ONE account-wide bank: any booth reaches the same items. Bank at the nearest booth; never
-  walk to another town to fetch coins or items.
-- Measured (XP/hr): Thieving Falador guards with food 1.27M (~520 gp/min; without food 373k-482k),
-  Mining iron SE Varrock adamant ~875k, WC oaks steel ~780k, FM 690k-1.16M, cooking pot 345k, Fishing
-  lure at the Lumbridge river ~1.1M (19k XP/min; net 95-200k), Agility Gnome ~2.2k XP/lap, Smithing
-  131-140k, Crafting pottery ~65k, Fletching shafts 70k. Melee is 5-10x slower than gathering.
-- Failure lessons this run (plan/brief faults, not task code): size fishing areas to cover hopped
-  spots; do not order training before the purchases it needs (buy runes/arrows first); briefs state only
-  confirmed facts (banks are account-wide); runners start every run in the background.
-- Standing rules: bank leftovers and superseded tools between goals (task-runner rule); bank cooked
-  food each loop; always use food when thieving (user); skip tool tiers when 25x XP makes the cheaper
-  one enough; never walk through the Varrock stone circle (3223,3373) (dark wizards killed the bot):
-  use `travel` waypoints (Varrock W -> SE mine via (3260,3400); Falador -> Varrock W via (3035,3385),
-  (3100,3420)).
+Account: Attack 21, Strength 20, Defence 20, HP 23, Prayer 20 (melee-chickens, 7 min); 155 feathers; no coins yet.
 
 ## Unlocks
 
-Skills and areas gated behind something other than levels. Check the quest page for its own
-requirements before planning it.
+Skills and areas gated behind something other than levels, and quests whose 25x XP reward skips a band. Check the
+quest page for its own requirements before planning it. Status is conductor3's.
 
-| Unlock | Needs | Page |
-|---|---|---|
-| Herblore training | Druidic Ritual (done on conductor2) | `wiki/quests/druidic-ritual.md` |
-| Runecraft training | Rune Mysteries (done on conductor2) | `wiki/quests/rune-mysteries.md` |
+| Unlock | Needs | Status | Page |
+|---|---|---|---|
+| Runecraft (essence mine) | Rune Mysteries (plan rune-mysteries) | todo | `wiki/quests/rune-mysteries.md` |
+| Herblore | Druidic Ritual: the identify and brew scripts may not check it in this revision (worker check 2026-10-23) | checking | `wiki/quests/druidic-ritual.md` |
+| Prayer 47 | Restless Ghost (plan restless-ghost, ~5 min) | todo | `wiki/quests/` |
+| Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | todo | `wiki/quests/` |
+| Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
+| Defence 85 + Prayer 80 | Holy Grail (Merlin's Crystal first) | later | `wiki/quests/` |
+| Baby blue dragons (Prayer 60-99) | dusty key (Velrak, Taverley dungeon jail) | later | - |
+| Anti-dragon shield | Dragon Slayer started (Champions' Guild, 32 QP; `oziach.rs2:14`) | later | - |
 
 ## Backlog
 
@@ -155,33 +129,36 @@ on its own.
 
 ## Max route
 
-The plan to max as fast as possible, filled in while exploring (conductor skill: Explore, then
-Execute). One row per skill: the fastest **measured** method so far (local, 25x XP), its rate and
-band, and what is left between it and tick-perfect. Explore goals target the empty or wide rows.
-First drafts are assumed suboptimal; a rate here is a floor, not the route's final number.
+The plan to max as fast as possible (conductor skill: Explore, then Execute). One row per skill: the planned route
+by band with its model floor (research 2026-10-23, world index; ~55-85% of floor is what bots measure), floor hours
+to 99, what conductor3 measured, and the next step. Explore goals target the long poles and the unmeasured rows.
 
-| Skill | Lvl | Best measured method | XP/h | Gap to close / next |
-|---|---|---|---|---|
-| Thieving | 99 | Falador guards, Trout/Salmon, one East booth (plan guard-thieve) | 2.2M (82-99, 683k in 19 min) | at 99, done; no tick budget taken (pickpocket delay vs stun/eat ticks); only matters if XP is wanted from it |
-| Mining | 99 | iron power-mine, drop each ore (02b861cd5), a 4-rock layout (SE Varrock or Rimmington, area mode) | 1.167M (6.75 ticks/ore) | at the engine floor for iron: 5-tick swing + a step; 3-rock spots are respawn-bound (7.6); standing still and roll-tick clicks gain nothing |
-| Fishing | 79 | Lumbridge lure, cook + bank (plan lure-cook-bank) | ~1.1M | drop vs cook; better spot at 80+ |
-| Cooking | 83 | Lumbridge pot, inside lure-cook-bank | 345k (alone) | a range next to a bank; cook while fishing |
-| Woodcutting | 80 | Draynor willows chop + burn (plan willow-burn), steel axe | 667k (WC) / ~1.43M with FM | no tick budget yet: 5 trees (respawn waits), 12-tile walk to the burn line, axe tier; yews/maples at 80+. Spot search + A/B pending |
-| Firemaking | 78 | willow logs line burn inside willow-burn | 768k | 2nd burn line costs a walk-back; maple/yew logs |
-| Agility | 52 | Gnome course (plans gnome-agility, agility-52), done 2026-10-16 | gnome ~254k lap-only (~130k/h incl. walk); worker 10-min runs 2026-10-16: Wilderness course 1.086M/h (Agility 55->77, 180,045 XP, 4 falls in ~90 obstacles, 1 Salmon), Barbarian 404k/h (41->63, 3 falls in ~140) | Wilderness clean lap 115 ticks / 15,035 XP (gate 20, door 16, pipe 16+2, rope 6, stones 16+1, log 17+2, rocks 11 + level-up 3; ~13 idle); a fall lap 145-167; ~1.17M/h with no falls. Barbarian clean lap 74-76 ticks / 3,487 XP (~12-15 idle). Skeletons (lvl 22) hit 2-8 HP/lap at the rocks/log; wolves stay off. Blockers cleared (e281bd984: agility courses, travel wilderness opt-in, low-hp held-eat retry 130441a10). w4 plan 2026-10-16: Agility 52->84 in 18 min (~1.05M/h incl. food trips), run stopped at 28 min by the conductor. Next: main bot 52 -> 99 on Wilderness (~1.0 h), prove the bank round trip first |
-| Magic | 66 | Wind Blast + Staff of air on hill giants (plan magic-blast-giants), 41->66 in 641 s; superheat leg (Smithing row) carries it further | ~673k (41-66, one run) | predicted: rune-bound, not time-bound: 41-99 is ~800-2,000 casts (<1 h at 5 ticks/cast) on a high-HP target: Fire Bolt (staff of fire) -> Wind/Fire Blast (death runes, Aubury 1000 stock, price ramps ~1%/unit short, cap 6x); ~50-140k gp. Alchemy not worth the nature-rune detour Superheat (Smithing row) would pay ~1,325 Magic XP per cast alongside Smithing: ~994 casts for Smithing 60->99 take Magic most of the way to 99, so combat-spell training only needs to bridge to 43 (or 66 for the Magic Guild natures) Measured 2026-10-16 (main, plan magic-blast-giants): Wind Blast + Staff of air on hill giants, Magic 41->66 in 641 s, ~673k Magic/h casting (10.9 ticks/cast incl. kills, loot, bury; ~4 casts/kill); 145 death runes cost 7,417 gp at Aubury (ramp), staves 1,500 each at Zaff. Defence also gained +32k (check whether the combat task's Magic style splits XP to Defence, a loss if so). Rest of Magic comes from superheat |
-| Ranged | 40 | Shortbow, Lumbridge chickens (14,400 XP in 10 min of plan) | ~86k (13-40) | research 2026-10-16 (ranged.md): willow shortbow rapid (3 ticks) + steel/mithril arrows from Dargaud on hill giants models 1.1-1.4 h for 40->99 (~9.8k damage, 281 kills); the per-kill overhead (find, approach, arrow pickup, eat) is the lever, ammo tier only 10-25%. Next: worker run to measure ticks/kill |
-| Smithing | 60 | iron-bulk (7c188f8fb fixes): mine stock, Al Kharid furnace loads, Varrock West anvil kiteshields; done 52->60 in 926 s (2026-10-16) | ~112k/h (28,750 XP, incl 243 s travel; ore already banked); iron-smith loop 140k is still faster | per-load budget (retro #7 runner): mine 25 ore ~175 ticks, bank+walk ~140, smelt 25 ore -> 13 bars 288 (50% iron failures), smith 4 kiteshields ~30: walks + smelt idle dominate. Both iron methods are capped near 115-140k = 8 h to 99. Next: steel bars (coal, no failures) and Ring of Forging per-tick check on a worker; Mining 99 makes coal free; mithril/adamant bars give 2-2.5x XP/bar; Superheat needs nature runes Research 2026-10-16 (scripts, unmeasured): Superheat Item on iron ore (Magic 43; 1 nature + 4 fire) never fails (`skill_magic/scripts/spells/superheat.rs2` has no fail branch), pays the smelt XP (312.5) plus 1,325 Magic XP per cast, needs no furnace: cast at Varrock West bank, smith platebodies at (3188,3424); predicted ~1.0M smith-only, ~570k incl. mining, 60->99 in ~1.6 h, Magic to ~99 on the way. Never carry 2+ coal (iron + 2 coal superheats to steel). Gate: ~1,000 nature runes (Magic Guild needs Magic 66, Mage Arena is in the Wilderness, or craft at the nature altar) and ~20-40k gp. Next: superheat task + cast-tick measurement on a worker, nature-rune supply research Supply chain (research 2026-10-16, server data): Staff of fire (Zaff, 1,500 gp) replaces all fire runes; ~1,000 nature runes only from the Magic Guild (Magic 66, ~94.8k gp with the 1%/unit price ramp; Lundail has 250, Wilderness 55); crafting natures is out (nature talisman only from ~4/128 random-jewel drops). Coins: Knights of Ardougne pickpocket est. 90-100k gp/h at Thieving 99 (Falador guards measured 56k/h). Magic 41->66: ~106 blast casts (~110 death runes, Aubury, ~7-8k gp). Order: bank coin check -> thieve to ~105k -> staff + blast runes -> Magic 66 -> Yanille natures -> superheat (~2.5 h prep, then ~1.6 h for Smithing 99 + Magic ~99) Measured 2026-10-16 (worker w2, task `spell-items`): superheat = 3 ticks/cast, exactly 312.5 Smithing + 1,325 Magic per cast, 26 ore in 78 ticks (31 s), 0 dropped casts (the op holds the p_delay tick; without it every 2nd cast was lost). Cast-only ~940k Smithing + ~4M Magic XP/h: Magic 43->57 in 26 casts, so Magic 99 arrives in ~750 casts. Next: a restock plan (bank 26 ore + natures at Varrock West, superheat, smith platebodies at (3188,3424), bank) and its tick budget Loops measured 2026-10-16 (w2, 10 min each): superheat-banked 1.125M Smithing + 1.59M Magic/h (bank 33 ticks, cast 75, walk 22, smith 5 platebodies ~53 of which ~28 approach/menu); superheat-mine (SE Varrock mine -> anvil 3247,3404 -> Varrock E bank) 407k/h, 519 ticks per 25 ore, 37% walk/bank. Banked + separate bulk mining ~= mine loop. Next: Port Khazard iron (9 rocks at 2630,3143) is 22 tiles from an anvil (2651,3165); natures stack in one slot, so mine -> superheat -> smith -> drop platebodies needs no bank: measured 2026-10-16 (w2, plan khazard-superheat, smithing onDone drop): steady ~514k Smithing + 727k Magic + 480k Mining/h, 410-tick cycle = mine 25 ore 192 (7.7/ore, adamant pickaxe; 9 rocks never ran dry), cast 75, walk 40, smith 5 + drop ~63, walk back ~42; walking 20% (Varrock 37%). Mining is the long pole: a rune pickaxe is the next lever. Banked-ore 1.125M remains best for ore already in the bank |
-| Hitpoints | 73 | from combat (~180k/h alongside giants) | - | finishes with melee: 831k left, ~4.6 h at 180k/h alongside, so HP, not Att/Str/Def, may bind the melee leg unless the target/weapon raises damage dealt |
-| Crafting | 70 | Seers flax pick -> spin -> bank (plan flax-spin, now travels to Seers from anywhere), main account 35->70 2026-10-16 | ~322k measured on main (44->70, 111,750 XP in 1,247 s, 32 loops) | tick budget per 28-flax loop: spin ~132 ticks (47%), pick ~122 (43%), bank ~30 (10%). ~2.7 h to 99 at this rate. Next: the pick share is the lever (no flax shop known); research Crafting 70-99 alternatives (battlestaves at 66+ via orbs, gem cutting from the Ardougne gem stall) before the next Crafting leg |
-| Fletching | 30 | arrow shafts | ~971k measured on w3 (willow longbows, 40->79, 15 min; arrow shafts 70k) | Seers willow-longbow loop (fletching.md): per 13-bow trip chop ~120 ticks (grove NW of the bank, 9.2 ticks/log), bank ~27, cut + string ~76. Plan willow-longbows promoted 2026-10-16. Levers: Make-10 restart after level-ups (~6 ticks each), several string uses per tick (server takes 5 packets/tick), a better axe for the chop share |
-| Attack/Strength/Defence | 70/70/70 | hill giants ("Giant", lvl 28) + Mithril scimitar, burying bones (plans `hill-giants`, `giants-att-def`) | main account 2026-10-16: Str 54->70 541k/h (598 s), Att 40->68 582k/h (654 s), Def 40->70 635k/h (664 s); Prayer ~60k/h and HP ~180k/h alongside; food ~28-55 fish/h, falling above combat 65 | ~48 ticks/kill (Str run: fight 100, loot 25, bury 25, dialog 38, low-hp 7 step runs over ~25 kills); restock: Edgeville bank 60 s + walk back ~180 s. Plan notes: fight phases onFail continue (combat with no food caps NPC level at 5), two travel phases (direct from Edgeville; Al Kharid waypoints only from the south). Next 70->99: same giants lose value as levels rise (giants hunt only below combat 56, so no aggro now); a stronger target + adamant/rune scimitar; stop burying once Prayer quests run Next (world index floor, wiki/training/, at Att/Str/Def 70): the fight phases above ran at 81-85% of the floor at their start levels with food trips left out (Str 634k, Att 708k, Def 786k; wiki/world/test/methods.real.test.ts); moss giants (60 HP vs 35, 4 spawns in the Varrock Sewers west pocket (3158,9903)/(3165,9879), via the Varrock East manhole and a web slash) floor 5-8% over hill giants at equal gear, food trips left out of both (moss giant damage uncalibrated), worker measure in flight; then Rune scimitar (not sold: smith at Smithing 90 from 2 runite ore, Wilderness (3060,3885) or Lava Maze) + smithed adamant armour (Smithing 77-88) after the superheat leg: the rune scimitar lifts the hill giants' floor 27-29% (Str 775k -> 983k/h at 70). Scimitars swing every 4 ticks, longswords 5, so no bought weapon beats it; dragon scimitar does not exist; Protect from Melee drains too fast to beat food. Per-kill overhead (loot/bury/dialog ~18 ticks) is worth ~0.3-0.5 h |
-| Prayer | 60 | Restless Ghost via `interact` task on w5 (+28,125 Prayer, 301 s); big bones buried at hill giants ~57k/h alongside Str | quests 28k per 5 min is the best rate so far (~340k/h equivalent); Priest in Peril 35k, Holy Grail 275k next; baby blue dragon bones untested | research 2026-10-16 (prayer.md): no altar multiplier or bone shop, bury only. Quests first: Priest in Peril 35k, Merlin's Crystal -> Holy Grail 275k (+382k Defence). Then melee on green dragons (Wilderness, free anti-dragon shield caps dragonfire at 5) ~170k Prayer/h modelled, 2.2x hill giants per HP. Pyres at Mort'ton (up to 22.5 XP/HP + Firemaking) unresearched |
-| Herblore | 28 | Druidic Ritual done; no training method measured (research in flight 2026-10-16) | - | research 2026-10-16 (herblore.md): no herb shop; chaos druids ~0.45 herbs/kill, only newt secondaries buyable -> ~459 XP/herb, ~70-100k/h. Quests ~403k first (Jungle Potion 19k, Digsite 50k, Eadgar's Ruse 275k, Mort'ton 58k). Next: quest chain feasibility (Death Plateau, Troll Stronghold) and a herb-source search (sinister chest, Sanfew goutweed swap) |
-| Runecraft | 55 | earth ruins via Aubury teleport, plan earth-runecraft-28 (v2: nearest essence cluster, bank withdraws pickaxe + talisman), main 45->55; v2 measured on w1 55->64 | ~153k measured (w1, 42.4k XP in 1,080 s, 10 trips of 26 essence; v1 140k) | trip ~252 ticks: enter-mine 64, landing walk + mine 108-114 (walk now 8-14, was ~25), portal 5-9, craft 69. Next: a drop step for the rune stack (27 essence, +4%, needs a drop task: none in the catalog); enter-mine + craft walking are 53% of the trip (check run is on); rune pickaxe ~171k if one drops. Researched 2026-10-16: no other altar pays (runecraft.md) |
+| Skill | Lvl | Planned route (bands, floor XP/h) | Floor h | Measured (conductor3) | Next |
+|---|---|---|---|---|---|
+| Thieving | 1 | Man 1-25 -> Al-Kharid warrior 25-40 (476-633k) -> Ardougne guard 40-55 (0.77-1.13M) -> Knight of Ardougne 55-99 (2.0-7.0M; food 155 lobster-equivalents/h at 55, 52 at 99) | 0.28 | - | goal Thieving 40 running |
+| Agility | 1 | gnome course 1-52 (319k) -> Wilderness course 52-99 (1.58-1.91M, salmon) | 0.66 | - | after knights (both in Kandarin) |
+| Woodcutting | 1 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | - | steel axe at Bob's |
+| Firemaking | 1 | trees-lumbridge-burn 1-30, willow-draynor-burn 30-99 (with WC) | 0.56 with WC | - | |
+| Fletching | 1 | cut + string at a bank 1-40, willow-seers-longbow-bank 40-99 (474 strings from flax) | 0.54 with WC | - | |
+| Mining | 1 | copper/tin 1-15 -> iron from a 3-rock stand tile, Al Kharid, dropped 15-99 (679k-1.07M, respawn-bound from 57); adamant pickaxe only (3.2k, rune doesn't pay back) | 0.98 | - | |
+| Smithing | 1 | bronze then iron 1-33 -> superheat iron platebodies at Varrock East 33-99 (Magic alongside; ~1,055 natures, ~22k gp) | 0.64-1.15 | - | |
+| Magic | 1 | Imp Catcher to 44, then superheat with Smithing; fire strike/bolt/blast 0.43 h as the alternative (~45k gp) | ~0.4 | - | |
+| Fishing | 1 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (547k-2.16M; banking +10 min) | 0.53 | - | fly rod |
+| Cooking | 1 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (0.83-1.36M plus Fishing) | 0.85 with Fishing | - | |
+| Crafting | 1 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat; spot unverified) | 1.3-2.0 | - | |
+| Herblore | 1 | herbs from chaos druids, Taverley dungeon (~200-320 herbs/h), quests (Jungle Potion 42, Eadgar's Ruse 80) | 7-11 | - | **long pole**: drop research ranks herb sources |
+| Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
+| Attack / Strength / Defence | 21/20/20 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens) | drop research: rune scimitar from Fire giants 1/128 |
+| Hitpoints | 23 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
+| Prayer | 20 | Restless Ghost 47 -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | ~3 after melee | - | **long pole** |
+| Ranged | 1 | willow shortbow + mithril arrows on giants (by hand: 300k at 20 -> 1.48M at 99), ~72k gp arrows, 80% picked up | 0.81 | - | |
 
-Route-wide: banks are one account-wide bank; the walk ops pay the Al Kharid toll gate both ways
-(09c37ed56), so routes through Al Kharid need 10 gp, not a detour.
+Model gaps the research found (fix where a route row leans on them): no walk between a site's features is priced
+(multi-rock sites overstated: `iron-se-varrock-drop` 1.43M where no tile reaches all 4 rocks); `BANK_TICKS = 0`
+inflates bank-standing floors; the training pages may rate every level with a rune axe (checking 2026-10-23);
+Ranged and Magic combat unmodelled; no family for herblore, arrows, gems; chaos druids are not npc sites in
+`classify.ts`; the stall family ignores being caught; pickpocket with food can't rate non-stackable loot; adult
+dragons and trolls are ModelErrors.
 
 ## Experiments
 
