@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+    applyPhaseEvent,
     applyPlanEvent,
     applyRunEvent,
     foldPhase,
@@ -12,6 +13,7 @@ import {
     nameOf,
     newRun,
     openRun,
+    parseGained,
     PHASE_LINES,
     planStats,
     type RunSummary,
@@ -307,6 +309,26 @@ describe('planStats', () => {
         });
     });
 
+    test("the open run's XP so far counts, rated over the time to its latest progress", () => {
+        const { run, apply, select } = plan();
+        select(0, 'walk');
+        apply(60_000, { type: 'phase-end', status: 'done', reason: 'there', durationMs: 60_000, xpGained: {} });
+        select(60_000, 'fish');
+        // fishing since 60 s; its log's latest progress, at 150 s, says +4500; now is 160 s
+        const st = planStats(run, 160_000, { xp: { Fishing: 4500 }, at: 150_000 });
+        expect(st.phases[1]).toEqual({
+            phase: 'fish',
+            runs: 1,
+            fails: 0,
+            timeMs: 100_000,
+            xp: { Fishing: 4500 },
+            xpTimeMs: 90_000,
+        });
+        expect(st).toMatchObject({ productiveMs: 100_000, xp: { Fishing: 4500 }, xpTimeMs: 150_000 });
+        // without it the open run has no XP yet
+        expect(planStats(run, 160_000).phases[1]).toMatchObject({ xp: null, xpTimeMs: 0 });
+    });
+
     test('runs without phase-end XP (older logs) leave their phase and the plan unrated', () => {
         const { run, apply, select } = plan();
         select(0, 'fish');
@@ -325,5 +347,21 @@ describe('planStats', () => {
         }
         expect(st.elapsedMs).toBe(run.endedAt! - run.startedAt);
         expect(st.phases.find(p => p.phase === 'craft-bowl')).toMatchObject({ runs: 1, fails: 1 });
+    });
+});
+
+describe('phase log XP', () => {
+    test('parseGained reads the progress summary', () => {
+        expect(parseGained('Thieving +25290, Hitpoints +12')).toEqual({ Thieving: 25290, Hitpoints: 12 });
+        expect(parseGained('')).toEqual({});
+    });
+
+    test('progress sets the XP so far and when; the result replaces it', () => {
+        const log = foldPhase('2026-10-11T01-00-00-000Z-thieving', [
+            { t: 5, type: 'progress', stepRuns: {}, gained: 'Thieving +300' },
+        ] as LogEvent[]);
+        expect(log).toMatchObject({ xpGained: { Thieving: 300 }, xpAt: 5 });
+        applyPhaseEvent(log, { t: 9, type: 'result', status: 'done', reason: 'ok', xpGained: { Thieving: 420 } });
+        expect(log).toMatchObject({ xpGained: { Thieving: 420 }, xpAt: 9 });
     });
 });

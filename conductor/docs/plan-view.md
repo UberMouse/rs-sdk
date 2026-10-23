@@ -42,8 +42,9 @@ control, so it is safe beside a running plan or task-runner. It binds to 127.0.0
   and `until` as the plan source writes them (read from its `phase(...)` call; a phase a helper
   builds says so), each marked ✓ or ✗ by what it answered at the choice that started the phase
   run shown below, with the values it read there (`inv('Raw tuna') = 0`). Then its runs and
-  failures, its share of the plan's time, time per run, XP and XP/h (over finished runs: each
-  run's XP is on its `phase-end`, or the result's totals once the plan ends). Under it, the
+  failures, its share of the plan's time, time per run, XP and XP/h (each finished run's XP is on
+  its `phase-end`, the run in progress's on its log's latest `progress`, rated over the time to
+  it; the result's totals once the plan ends). Under it, the
   plan's time split into productive (phases that gained XP), overhead (phases that gained none),
   unrated (XP not known yet) and between phases, and its XP/h. The running phase is highlighted.
 - **Phase run, or task run.** The open run (or the one picked): for a phase, the selection that

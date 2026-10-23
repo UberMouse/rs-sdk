@@ -199,8 +199,12 @@ const addXp = (into: Record<string, number>, xp: Record<string, number>) => {
 };
 export const xpTotal = (xp: Record<string, number>): number => Object.values(xp).reduce((a, b) => a + b, 0);
 
-/** Per phase: the result's totals once it ends, else the phase runs' own (each run's XP from its phase-end). */
-export function planStats(run: Run, now: number): PlanStats {
+/**
+ * Per phase: the result's totals once it ends, else the phase runs' own (each run's XP from its
+ * phase-end). `open` is the run in progress's XP so far, from its log's latest progress, rated over
+ * the time to that progress: without it a phase that runs most of the plan shows no XP until it ends.
+ */
+export function planStats(run: Run, now: number, open?: { xp: Record<string, number>; at: number }): PlanStats {
     const totals = run.result?.phases;
     const phases = run.phases.map(({ phase }): PhaseStats => {
         const mine = run.runs.filter(r => r.phase === phase);
@@ -222,7 +226,14 @@ export function planStats(run: Run, now: number): PlanStats {
         for (const r of mine) {
             const ms = r.durationMs ?? (r.endedAt ?? now) - r.startedAt;
             timeMs += ms;
-            if (r.endedAt === null) continue;
+            if (r.endedAt === null) {
+                if (open && !totals) {
+                    xp ??= {};
+                    addXp(xp, open.xp);
+                    xpTimeMs += Math.max(0, open.at - r.startedAt);
+                }
+                continue;
+            }
             if (!r.xpGained) unknown = true;
             else {
                 xp ??= {};
@@ -241,7 +252,7 @@ export function planStats(run: Run, now: number): PlanStats {
     const known = phases.every(p => p.xp || !run.runs.some(r => r.phase === p.phase && r.endedAt !== null));
     const xp: Record<string, number> = {};
     for (const p of phases) if (p.xp) addXp(xp, p.xp);
-    const open = openRun(run);
+    const openEntry = openRun(run);
     return {
         phases,
         elapsedMs,
@@ -250,7 +261,10 @@ export function planStats(run: Run, now: number): PlanStats {
         unratedMs,
         betweenMs: Math.max(0, elapsedMs - productiveMs - overheadMs - unratedMs),
         xp: known ? xp : null,
-        xpTimeMs: elapsedMs - (open && !totals ? now - open.startedAt : 0),
+        // To the end of the last finished run, or to the open run's latest progress when it is counted.
+        xpTimeMs:
+            elapsedMs -
+            (openEntry && !totals ? now - (open ? Math.max(openEntry.startedAt, open.at) : openEntry.startedAt) : 0),
     };
 }
 
@@ -420,6 +434,9 @@ export interface PhaseLog {
     stepRuns: Record<string, number>;
     /** The latest progress event's XP summary, e.g. "Crafting +315". */
     gained: string;
+    /** The same as a record, and when it was logged; the result's XP once it ends. Null before the first progress. */
+    xpGained: Record<string, number> | null;
+    xpAt: number | null;
     /** The last PHASE_LINES step, log and stop events, oldest first. */
     lines: { t: number; kind: 'step' | 'log' | 'stop'; text: string }[];
     result: TaskResult | null;
@@ -434,6 +451,8 @@ export function newPhaseLog(runId: string): PhaseLog {
         step: null,
         stepRuns: {},
         gained: '',
+        xpGained: null,
+        xpAt: null,
         lines: [],
         result: null,
     };
@@ -464,6 +483,8 @@ export function applyPhaseEvent(log: PhaseLog, e: LogEvent): void {
             const runs = record<number>(e.stepRuns);
             if (runs) log.stepRuns = { ...runs };
             log.gained = str(e.gained) ?? log.gained;
+            log.xpGained = parseGained(log.gained);
+            log.xpAt = e.t;
             return;
         }
         case 'log':
@@ -475,8 +496,17 @@ export function applyPhaseEvent(log: PhaseLog, e: LogEvent): void {
         case 'result':
             log.result = resultOf<TaskResult>(e);
             log.stepRuns = { ...log.result.stepRuns };
+            log.xpGained = log.result.xpGained;
+            log.xpAt = e.t;
             return;
     }
+}
+
+/** The engine's progress summary, "Thieving +25290, Hitpoints +12", as a record; "" is none yet. */
+export function parseGained(gained: string): Record<string, number> {
+    const xp: Record<string, number> = {};
+    for (const m of gained.matchAll(/([A-Za-z]+) \+(\d+)/g)) xp[m[1]!] = Number(m[2]);
+    return xp;
 }
 
 export function foldPhase(runId: string, events: LogEvent[]): PhaseLog {

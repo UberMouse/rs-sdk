@@ -629,7 +629,14 @@ function conditionsOf(reply: RunReply): NonNullable<typeof conditionsFor> {
 /** Why each phase runs (its conditions, and what they read and answered), and where the plan's time and XP went. */
 function phaseTable(reply: RunReply): HTMLElement {
     const { run } = reply;
-    const stats = planStats(run, Date.now());
+    // The open run's XP so far, from its streamed log: a phase that runs most of the plan earns it there.
+    const openEntry = viewing === live ? openRun(run) : null;
+    const openLog = openEntry ? phaseLogFor(openEntry, run) : null;
+    const stats = planStats(
+        run,
+        Date.now(),
+        openLog?.xpGained && openLog.xpAt !== null ? { xp: openLog.xpGained, at: openLog.xpAt } : undefined,
+    );
     const { conditions } = conditionsOf(reply);
     // The choice that started the phase run shown below: the latest one, unless a run was picked.
     const entry = shownEntry(run);
@@ -711,7 +718,7 @@ function phaseTable(reply: RunReply): HTMLElement {
         h(
             'p',
             { class: 'muted hint' },
-            "In selection order: at each choice the first phase whose when holds (and whose until does not) runs. The marks, and the values each condition read, are from the choice that started the phase run shown below. Share is of the plan's elapsed time; XP/h is over a phase's finished runs.",
+            "In selection order: at each choice the first phase whose when holds (and whose until does not) runs. The marks, and the values each condition read, are from the choice that started the phase run shown below. Share is of the plan's elapsed time; XP and XP/h count the run in progress up to its latest progress report.",
         ),
         h(
             'div',
