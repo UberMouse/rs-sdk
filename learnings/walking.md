@@ -77,7 +77,7 @@ if (dist > 5) {
 
 ### Varrock: general store to the palace (known walker issue)
 
-- (3212, 3428) had no path to King Roald (3222, 3476) (`No path ... no waypoints`), and a walk from the Varrock general store north to the palace got `Stuck at (3213, 3438)` three times. Adding a waypoint at (3236, 3437) (`{to:{x:3216,z:3452}, tolerance:2, waypoints:[{x:3236,z:3437}]}`) walks it. Walker/world fault, not fixed at source. [v 2026-10-23 questw5 local]
+- (3212, 3428) had no path to King Roald (3222, 3476) (`No path ... no waypoints`), and a walk from the Varrock general store north to the palace got `Stuck at (3213, 3438)` three times. Adding a waypoint at (3236, 3437) (`{to:{x:3216,z:3452}, tolerance:2, waypoints:[{x:3236,z:3437}]}`) walks it. Walker/world fault, not fixed at source. A Reldo walk also got `Stuck at (3212, 3438)` 8 times (questw4); a plain `travel` to (3210,3470) got through in 7 s. [v 2026-10-23 questw5 local; v 2026-10-23 questw4 local]
 
 ### Lumbridge cooking pot to Varrock East bank
 

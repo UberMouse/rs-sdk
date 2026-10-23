@@ -9,8 +9,8 @@
 | Members | yes (all quest objs `members=yes`, `configs/waterfall.obj`) |
 | Skill or quest requirements | none |
 
-Everything on this page is from the server scripts, map files and the world index; no run has done the quest yet
-[server data, unverified in game 2026-10-23]. Script paths are under `server/content/scripts/`; a bare
+Everything on this page is from the server scripts, map files and the world index; no run has finished the quest yet
+[server data, unverified in game 2026-10-23]; the errands are the only part proven in game (Plan status below). Script paths are under `server/content/scripts/`; a bare
 `quest_waterfall.rs2:N` (and `almera.rs2`, `hudon.rs2`, `golrie.rs2`, `baxtorian_book.rs2`, `waterfall_pillars.rs2`,
 `waterfall_journal.rs2`) is in `quests/quest_waterfall/scripts/`. Tiles are (x, z, level) from the map files
 (`server/content/maps/m39_53`, `m39_54`, `m39_149`, `m39_153`, `m40_154`).
@@ -317,3 +317,17 @@ Format as `conductor/saves/*.json` (`source.spec`: `position`, `skills`, `invent
   Adamant full helm (slot 0), Rune scimitar (3), Adamant platebody (4), Adamant kiteshield (5), Adamant platelegs (7);
   inventory Rope, Glarial's amulet (295), Glarial's urn (296), 6 each Air, Earth, Water rune, 15 Lobster; varp 65 = 4
   (the ledge door moves the stage only from 4), varp 66 = 0.
+
+## Plan status (in progress)
+
+Draft `conductor/runs/questw2/plans/waterfall-quest.ts` (worker questw2), a full state machine, not promoted.
+
+- Proven in game: bank-start at Catherby, buy the Rope from Arhein (Catherby), buy 6 each Air, Earth and Water runes
+  from Betty (Port Sarim; 72 gp for the 18); the Catherby -> Betty -> Arhein errands took about 4 min of walking
+  (prices: the generated shop pages). [v 2026-10-23 questw2 local]
+- A walk from the Catherby bank to the Ardougne North bank worked in run 1. Walks from Port Sarim or Falador to the
+  Ardougne North bank looped through the Wizards' Tower and the essence-mine portal until the walk fix (main
+  9e3d23f41). [v 2026-10-23 questw2 local]
+- Unrun: Almera onward (raft, Hudon, swim, Hadley bookcase, Golrie cellar, tomb, rope throws, pillars, fire giants).
+  Fire giant, moss giant and shadow spider survivability at combat 33 (HP 26) is unmeasured. Start used: a copy of
+  conductor3 (combat 33, HP 26) at Catherby with 1895 coins and a food-stocked bank. [v 2026-10-23 questw2 local]
