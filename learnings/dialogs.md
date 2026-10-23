@@ -64,6 +64,10 @@ for (let i = 0; i < 20; i++) {
 }
 ```
 
+## Dialog text as evidence
+
+- `state.recentDialogs` holds the last 10 dialog pages, so a plan predicate can test text a step left behind (e.g. a quest line) when the quest varp is not visible. Runner-reported from Priest in Peril (`wiki/quests/priest-in-peril.md`); the page text was not found in the run logs. [unverified 2026-10-23 questw5 local]
+
 ## Shop Interfaces
 
 ```typescript

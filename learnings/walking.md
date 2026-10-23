@@ -73,6 +73,10 @@ if (dist > 5) {
 - From (3235, 3220) to Varrock West bank (3185, 3436) the conductor `walkTo` op arrives in one walk
   of 133 ticks with 38 sends, opening no door on the way. [v 2026-10-10 integration-tests local]
 
+### Varrock: general store to the palace (known walker issue)
+
+- (3212, 3428) had no path to King Roald (3222, 3476) (`No path ... no waypoints`), and a walk from the Varrock general store north to the palace got `Stuck at (3213, 3438)` three times. Adding a waypoint at (3236, 3437) (`{to:{x:3216,z:3452}, tolerance:2, waypoints:[{x:3236,z:3437}]}`) walks it. Walker/world fault, not fixed at source. [v 2026-10-23 questw5 local]
+
 ### Lumbridge cooking pot to Varrock East bank
 
 - Pot (3232, 3238) -> Varrock East bank (3254, 3420) walked cleanly on every trip of the lure-cook-bank plan (3 trips per run), no hazards met. [v 2026-10-11 conductor2 local]
