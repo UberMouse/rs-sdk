@@ -1,5 +1,5 @@
 import { z } from 'zod/v4';
-import type { NearbyLoc, NearbyNpc } from '../../sdk/types';
+import type { BotWorldState, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import {
     CONVERSE_MAX_TICKS,
     converse,
@@ -10,7 +10,7 @@ import {
 } from '../actions/talk';
 import { useItemOnLoc } from '../actions/use';
 import { WALK_MAX_TICKS } from '../actions/walk';
-import { log, type Op, send, ticks } from '../core/op';
+import { log, type Op, send, ticks, wait } from '../core/op';
 import {
     AtSchema,
     atSpot,
@@ -32,6 +32,14 @@ const FAIL_LIMIT = 3;
 /** Loops (2 ticks each) the NPC, loc or dialog may be missing before the task fails. */
 const MISSING_LIMIT = 3;
 const MISSING_WAIT_TICKS = 2;
+/**
+ * Ticks a conversation that `travels` gets to carry the player away after its dialog closes: the sail proc's
+ * p_delay is 7 ticks on the sailors' routes and 13-14 on the Entrana monks' (interface_boat/scripts/sail.rs2:22,
+ * areas/area_entrana/scripts/monk_of_entrana.rs2), plus slack.
+ */
+export const TRAVEL_WAIT_TICKS = 24;
+/** Tiles the game must move the player (or a plane change) for a journey to count as made. */
+export const TRAVEL_MIN_JUMP = 8;
 /** A walk, then a conversation of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
 /** A conversation changes nothing the watchdog sees until its item arrives: outlast the longest. */
@@ -67,11 +75,22 @@ const Params = z
          * `at` or `use`. Fails after a short wait when no dialog is open.
          */
         continue: z.boolean().default(false),
+        /**
+         * The conversation ends in a journey (a sailor, the Monk of Entrana): once its dialog has closed, wait for
+         * the game to carry the player away (at least TRAVEL_MIN_JUMP tiles or to another plane) and be done on
+         * arrival, so the next task starts at the destination. Fails when no journey follows (fare unaffordable,
+         * armour or weapons refused on the way to Entrana).
+         */
+        travels: z.boolean().default(false),
     })
     .refine(p => p.continue || p.npc !== undefined || p.use !== undefined, 'give an npc to talk to, a use, or both')
     .refine(
         p => !p.continue || (p.npc === undefined && p.use === undefined && p.at === undefined),
         '`continue` takes the open dialog as it is: give no npc, use or at',
+    )
+    .refine(
+        p => !p.travels || (!p.continue && p.npc !== undefined),
+        '`travels` needs an npc to talk to and not `continue`: a teleport inside an open dialog (the Merlin crate) is done when the dialog closes',
     );
 
 type TalkParams = z.infer<typeof Params>;
@@ -80,6 +99,10 @@ interface TalkMemory {
     used: number;
     /** Choices answered in the open conversation (converse updates it at each click). */
     progress: TalkProgress;
+    /** Where the open conversation began, to tell a journey from standing still. */
+    from: { x: number; z: number; level: number } | null;
+    /** The conversation of a `travels` talk is over; only the journey is left to wait for (a cut-off step must not talk again). */
+    talked: boolean;
 }
 type Ctx = TaskContext<TalkParams, TalkMemory>;
 
@@ -127,10 +150,11 @@ export default defineTask({
         '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
         'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
         "Done once the dialog has closed after the last choice. Fails with the dialog's options when an expected option is missing or an unexpected choice appears, " +
-        'and when the dialog closes with choices left. E.g. {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}. ' +
+        'and when the dialog closes with choices left. `travels: true` for a conversation that ends in a ship journey: waits for the arrival (the game moves the player), ' +
+        'so the next task (interact Cross on the gangplank) starts there; fails when no journey follows. E.g. {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}. ' +
         'Recipes and hazards: wiki/quests/rune-mysteries.md, learnings/hazards.md (Varrock stone circle dark wizards).',
     params: Params,
-    memory: (): TalkMemory => ({ used: 0, progress: { answered: 0 } }),
+    memory: (): TalkMemory => ({ used: 0, progress: { answered: 0 }, from: null, talked: false }),
     // The conversation is a dialog this task opens and answers itself: the dialog guard must not click under it.
     allow: ['dialog'],
     stepTimeoutMs: STEP_TIMEOUT_MS,
@@ -229,7 +253,7 @@ export default defineTask({
                     yield* ticks(1);
                     return;
                 }
-                if (!ctx.state().dialog.isOpen) {
+                if (!ctx.memory.talked && !ctx.state().dialog.isOpen) {
                     // A new conversation; an open dialog is one a cut-off step left, resumed where it was.
                     progress.answered = 0;
                     const npc = findNpc(ctx);
@@ -252,13 +276,41 @@ export default defineTask({
                         return;
                     }
                     fails.reset();
+                    // Recorded once the dialog is open: the walk to the NPC is not the journey.
+                    const me = ctx.state().player;
+                    ctx.memory.from = me ? { x: me.worldX, z: me.worldZ, level: me.level } : null;
+                }
+                if (ctx.memory.from === null) {
+                    // A resumed conversation: the journey has not begun while its dialog is open.
+                    const me = ctx.state().player;
+                    if (me) ctx.memory.from = { x: me.worldX, z: me.worldZ, level: me.level };
                 }
                 const choices = ctx.params.choices.map(matcher);
-                const r = yield* converse(ctx, choices, progress);
-                if (r.ok)
-                    return {
-                        done: `talked to ${ctx.params.npc}, ${r.answered} choice${r.answered === 1 ? '' : 's'} made`,
+                const r = ctx.memory.talked
+                    ? { ok: true as const, answered: progress.answered }
+                    : yield* converse(ctx, choices, progress);
+                if (r.ok) {
+                    ctx.memory.talked = ctx.params.travels;
+                    const said = `talked to ${ctx.params.npc}, ${r.answered} choice${r.answered === 1 ? '' : 's'} made`;
+                    if (!ctx.params.travels) return { done: said };
+                    const from = ctx.memory.from;
+                    const away = (s: BotWorldState) => {
+                        const p = s.player;
+                        if (!p || from === null) return false;
+                        return (
+                            p.level !== from.level ||
+                            Math.max(Math.abs(p.worldX - from.x), Math.abs(p.worldZ - from.z)) >= TRAVEL_MIN_JUMP
+                        );
                     };
+                    const w = yield* wait('journey', away, TRAVEL_WAIT_TICKS);
+                    if (w.kind === 'timeout')
+                        return {
+                            fail: `no journey followed the talk with ${ctx.params.npc} (fare unpaid, or weapons or armour refused?)`,
+                        };
+                    // The arrival message box ("The ship arrives at ...") is the next task's to start from, not to trip over.
+                    yield* closeDialog(ctx, 'close the arrival message');
+                    return { done: `${said}, arrived at (${w.state.player?.worldX},${w.state.player?.worldZ})` };
+                }
                 yield* closeDialog(ctx, 'close dialog after a failed talk');
                 return { fail: r.message };
             },

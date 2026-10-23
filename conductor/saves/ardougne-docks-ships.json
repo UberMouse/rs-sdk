@@ -1,0 +1,47 @@
+{
+    "name": "ardougne-docks-ships",
+    "purpose": "Ardougne docks (2677,3277), 100 coins, no gear. Tests the Ardougne-Brimhaven crossing (talk Captain Barnaby, customs officer).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2677,
+                "z": 3277
+            },
+            "skills": {
+                "Hitpoints": 25
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 100
+                }
+            ]
+        }
+    },
+    "sha1": "da83725165e5ff45534f15201941ae6fe47ed4a9",
+    "createdAt": "2026-10-23T08:10:14.465Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2677,
+            "z": 3277,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

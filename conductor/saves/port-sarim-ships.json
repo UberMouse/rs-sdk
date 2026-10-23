@@ -1,0 +1,56 @@
+{
+    "name": "port-sarim-ships",
+    "purpose": "Port Sarim docks (3029,3212), 200 coins, 3 salmon, no weapons or armour. Tests ship crossings (talk to the sailor, Cross the gangplank).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3029,
+                "z": 3212
+            },
+            "skills": {
+                "Hitpoints": 25
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 200
+                },
+                {
+                    "id": 329,
+                    "count": 3
+                }
+            ]
+        }
+    },
+    "sha1": "0dcdb48528eaf080e539e919d9dbddc90fbf805a",
+    "createdAt": "2026-10-23T08:06:16.785Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3029,
+            "z": 3212,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 200
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 3
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
