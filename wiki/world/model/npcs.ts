@@ -211,3 +211,53 @@ export function readNpcCombat(
         };
     };
 }
+
+/** How an `all.hunt` mode hunts players, as far as aggression goes. */
+export interface HuntMode {
+    /**
+     * It hunts players and attacks the one it finds: `type=player` (Npc.ts:272 hunts players only for it) and a
+     * `find_newmode` of `opplayer2` or `applayer2`, the attack modes the default melee AI runs on (npc_combat.rs2:1-4;
+     * the hunt sets it as the interaction, Npc.ts:978). A queue mode runs a script instead (Npc.ts:968-975) and
+     * counts as not attacking.
+     */
+    attacks: boolean;
+    /**
+     * `check_nottoostrong=outside_wilderness`: outside the Wilderness it skips a player whose combat level is above
+     * twice its vislevel (Npc.ts:1011). `off` (HuntType.ts's default) skips none.
+     */
+    notTooStrong: boolean;
+}
+
+/** The mode of a config's `huntmode=`, or undefined for one `all.hunt` has not. */
+export type HuntModes = (mode: string) => HuntMode | undefined;
+
+/** The hunt modes from the `.hunt` configs (`_unpack/<rev>/all.hunt`); a key the engine defaults is its default. */
+export function readHuntModes(configs: ReadonlyMap<string, Config>): HuntModes {
+    return mode => {
+        const cfg = configs.get(mode);
+        if (!cfg) return undefined;
+        return {
+            attacks:
+                first(cfg, 'type') === 'player' &&
+                ['opplayer2', 'applayer2'].includes(first(cfg, 'find_newmode') ?? ''),
+            notTooStrong: first(cfg, 'check_nottoostrong') === 'outside_wilderness',
+        };
+    };
+}
+
+/**
+ * The highest combat level npc `n` hunts outside the Wilderness: undefined when it hunts no player (no huntmode, one
+ * that does not attack, or `huntrange` under 1: Npc.ts:267 hunts nothing then), null when it hunts any (no
+ * `notTooStrong`), else twice its vislevel (Npc.ts:1011). In the Wilderness it hunts any level. Throws a ModelError
+ * for a huntmode no `.hunt` config defines.
+ */
+export function huntsUpTo(
+    n: Pick<NpcCombat, 'npc' | 'huntMode' | 'huntRange' | 'visLevel'>,
+    modes: HuntModes,
+): number | null | undefined {
+    if (n.huntMode === undefined || n.huntRange < 1) return undefined;
+    const mode = modes(n.huntMode);
+    if (!mode) throw new ModelError(`npc ${n.npc} has huntmode ${n.huntMode}, which no .hunt config defines`);
+    if (!mode.attacks) return undefined;
+    return mode.notTooStrong ? n.visLevel * 2 : null;
+}

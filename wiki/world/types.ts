@@ -1,4 +1,5 @@
 import type { MethodDef } from './methods';
+import type { NpcHazard } from './model/family';
 import type { MethodWay } from './model/method';
 import type { Skill } from './model/server';
 
@@ -92,7 +93,7 @@ export interface Site {
      */
     reach: string[][];
     /**
-     * On a resource or processor site (distance.ts SINKS), the nearest site of each sink kind it takes its
+     * On a resource, processor or npc site (distance.ts SINKS), the nearest site of each sink kind it takes its
      * products to (a bank, and a furnace, range or anvil where phase 3 processes on the way), by run ticks from
      * this site's stand under its own reach sets (distance.ts); a kind with none such is left out. Absent on other
      * kinds.
@@ -513,7 +514,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 20;
+export const WORLD_FORMAT = 21;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the
@@ -536,6 +537,8 @@ export interface WorldMethod extends MethodDef {
     levels: Partial<Record<Skill, number>>;
     /** One per minimal requirement set that walks every leg, shortest travel first. */
     ways: MethodWay[];
+    /** The npcs where it acts, as a hazard (ResolvedMethod.npcs). */
+    npcs?: NpcHazard;
 }
 
 export interface World {

@@ -252,10 +252,10 @@ describe('bestMethods', () => {
         expect(ids({ multiway: true })).toEqual(['tree-drop', 'wild-drop', 'tree-bank', 'tree-burn-bank']);
         const r = query.bestMethods('woodcutting', at('woodcutting', 50));
         expect(r.map(x => [x.method.def.id, x.hazard])).toEqual([
-            ['tree-drop', { wildernessLevel: 0, multiway: false }],
-            ['wild-drop', { wildernessLevel: 5, multiway: false }],
-            ['tree-bank', { wildernessLevel: 0, multiway: true }],
-            ['tree-burn-bank', { wildernessLevel: 0, multiway: false }],
+            ['tree-drop', { wildernessLevel: 0, multiway: false, aggressive: false }],
+            ['wild-drop', { wildernessLevel: 5, multiway: false, aggressive: false }],
+            ['tree-bank', { wildernessLevel: 0, multiway: true, aggressive: false }],
+            ['tree-burn-bank', { wildernessLevel: 0, multiway: false, aggressive: false }],
         ]);
     });
 
@@ -378,9 +378,10 @@ describe('methodRate', () => {
 
 describe('methodHazard', () => {
     test('a drop method: its site alone', () => {
-        expect(methodHazard({ site: wildTree, sink: { mode: 'drop' } })).toEqual({
+        expect(methodHazard({ site: wildTree, sink: { mode: 'drop' } }, at('woodcutting', 50))).toEqual({
             wildernessLevel: 5,
             multiway: false,
+            aggressive: false,
         });
     });
 
@@ -388,12 +389,53 @@ describe('methodHazard', () => {
     const multi = tile(3240, 3200);
     const zones = { f2p: new Set<string>(), multiway: new Set([zoneKey(multi)]) };
     /** A method at the tree that stops at `t`. */
-    const hazardAt = (t: Tile) => methodHazard({ site: tree, sink: { mode: 'process', steps: [tileStop(t, zones)] } });
+    const hazardAt = (t: Tile) =>
+        methodHazard({ site: tree, sink: { mode: 'process', steps: [tileStop(t, zones)] } }, at('woodcutting', 50));
 
     test("a bare tile stop counts: its zone's multiway, and its Wilderness level", () => {
-        expect(hazardAt(multi)).toEqual({ wildernessLevel: 0, multiway: true });
+        expect(hazardAt(multi)).toEqual({ wildernessLevel: 0, multiway: true, aggressive: false });
         // z 3600 is in the Wilderness's first box (z 3520 up): floor((3600 - 3520) / 8) + 1 = 11 (sources/zones.ts).
-        expect(hazardAt(tile(3210, 3600))).toEqual({ wildernessLevel: 11, multiway: false });
+        expect(hazardAt(tile(3210, 3600))).toEqual({ wildernessLevel: 11, multiway: false, aggressive: false });
+    });
+
+    // A giant-like hunter: cowardly at vislevel 28 hunts up to combat 28 x 2 = 56 outside the Wilderness (Npc.ts:1011).
+    // Every skill at 44 is combat 56, at 45 combat 57: 10 x (44 + 44 + 22) + 13 x 88 = 2244, / 40 = 56; 1120 + 1170 =
+    // 2290, / 40 = 57 (combat_level.rs2:1-10).
+    const giants = { maxHit: 4, hunters: [{ npc: 'giant', upTo: 56 }] };
+
+    test('aggressive: a hunter at its limit and not past it; any level for one with no limit or in the Wilderness', () => {
+        const hunted = { site: tree, sink: { mode: 'drop' } as const, npcs: giants };
+        expect(methodHazard(hunted, at('woodcutting', 44))).toEqual({
+            wildernessLevel: 0,
+            multiway: false,
+            aggressive: true,
+            maxHit: 4,
+        });
+        expect(methodHazard(hunted, at('woodcutting', 45)).aggressive).toBe(false);
+        const always = { ...hunted, npcs: { maxHit: 4, hunters: [{ npc: 'x', upTo: null }] } };
+        expect(methodHazard(always, at('woodcutting', 99)).aggressive).toBe(true);
+        expect(methodHazard({ ...hunted, site: wildTree }, at('woodcutting', 99)).aggressive).toBe(true);
+        // A retreat is passed through; npcs with no hunter are no aggression.
+        expect(methodHazard({ ...hunted, npcs: { maxHit: 1, hunters: [], retreat: 3 } }, at('woodcutting', 1))).toEqual(
+            {
+                wildernessLevel: 0,
+                multiway: false,
+                aggressive: false,
+                maxHit: 1,
+                retreat: 3,
+            },
+        );
+    });
+
+    test('bestMethods({ aggressive: false }) drops the method at combat 56 and keeps it at 57', () => {
+        const q = methodQuery({ ...world, methods: [chop('tree-hunted', tree, { npcs: giants })] }, model);
+        const ids = (level: number, opts?: BestOptions) =>
+            q.bestMethods('woodcutting', at('woodcutting', level), opts).map(r => r.method.def.id);
+        expect(ids(44, { aggressive: false })).toEqual([]);
+        expect(ids(45, { aggressive: false })).toEqual(['tree-hunted']);
+        // Omitted or true, it counts at any level.
+        expect(ids(44)).toEqual(['tree-hunted']);
+        expect(ids(44, { aggressive: true })).toEqual(['tree-hunted']);
     });
 
     test("a world.json tile stop is rebuilt with its hazard from the model's zones", () => {
@@ -405,7 +447,7 @@ describe('methodHazard', () => {
         };
         const q = methodQuery({ ...world, methods: [tiled] }, { ...model, zones });
         expect(q.bestMethods('woodcutting', at('woodcutting', 50)).map(r => r.hazard)).toEqual([
-            { wildernessLevel: 0, multiway: true },
+            { wildernessLevel: 0, multiway: true, aggressive: false },
         ]);
         expect(q.bestMethods('woodcutting', at('woodcutting', 50), { multiway: false })).toEqual([]);
     });

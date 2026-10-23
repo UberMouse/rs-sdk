@@ -7,6 +7,7 @@
 // hazard, not modelled damage.
 import { readDropTables, type DropTable, type DropTables } from '../../sources/droptables';
 import type { Site, Tile, World } from '../../types';
+import { cmp } from '../../util';
 import {
     combatRoll,
     effectiveLevel,
@@ -21,9 +22,17 @@ import {
     type MeleeStyle,
     type Swing,
 } from '../combat';
-import { ModelError, ProfileError, type ActionModel } from '../family';
+import { ModelError, ProfileError, type ActionModel, type NpcHazard } from '../family';
 import { readCombatStyles, readEquipment, type Bonus, type CombatStyles, type Equipments } from '../items';
-import { readNpcCombat, type DamageType, type NpcCombat, type NpcCombats } from '../npcs';
+import {
+    huntsUpTo,
+    readHuntModes,
+    readNpcCombat,
+    type DamageType,
+    type HuntModes,
+    type NpcCombat,
+    type NpcCombats,
+} from '../npcs';
 import { paramValue } from '../params';
 import { gearOf, readPrayers, type Prayers } from '../profile';
 import { readDefault, type ServerDefault } from '../server';
@@ -191,6 +200,7 @@ interface Readers {
     prayers: Prayers;
     drops: DropTables;
     deathTicks: number;
+    hunts: HuntModes;
 }
 
 function readers(data: GameData): Readers {
@@ -203,6 +213,7 @@ function readers(data: GameData): Readers {
         prayers: readPrayers(data),
         drops: readDropTables(data),
         deathTicks: readDeathTicks(death).value,
+        hunts: readHuntModes(data.hunts ?? new Map()),
     };
 }
 
@@ -226,12 +237,18 @@ function pairsOf(tiles: Tile[]): { from: Tile; to: Tile }[] {
     return tiles.flatMap((from, i) => tiles.flatMap((to, j) => (i === j ? [] : [{ from, to }])));
 }
 
+const paramsOf = (params: unknown) => stringParams(params, 'combat', ['npc', 'style']);
+
+/** The site's spawns of the npc, whatever the style. */
+const spawns = (site: Site, params: unknown, world: Pick<World, 'features'>) =>
+    targetFeatures(site, world, 'npc', paramsOf(params).npc);
+
 /** The params' style and the site's spawns of the npc. */
 function target(site: Site, params: unknown, world: Pick<World, 'features'>) {
-    const p = stringParams(params, 'combat', ['npc', 'style']);
+    const p = paramsOf(params);
     if (!STYLES.includes(p.style as MeleeStyle))
         throw new ModelError(`combat needs a style param, one of ${STYLES.join(', ')}, not ${p.style}`);
-    return { style: p.style as MeleeStyle, ...targetFeatures(site, world, 'npc', p.npc) };
+    return { style: p.style as MeleeStyle, ...spawns(site, params, world) };
 }
 
 export const combat: FamilyFactory = data => {
@@ -243,7 +260,38 @@ export const combat: FamilyFactory = data => {
         skills: ['attack', 'strength', 'defence', 'hitpoints'],
         kinds: ['npc'],
         walks(site, params, world) {
-            return pairsOf(target(site, params, world).features.map(f => f.tile));
+            return pairsOf(spawns(site, params, world).features.map(f => f.tile));
+        },
+        styles(params, profile) {
+            const p = paramsOf(params);
+            read ??= readers(data);
+            const gear = gearOf(profile, read);
+            // A weapon may list a style twice, once per damage type: `model` swings the better of them.
+            const melee = gear.styles.styles.filter(s => s.kind === 'melee');
+            const styles = melee.filter((s, i) => melee.findIndex(o => o.style === s.style) === i);
+            return {
+                styles: styles.map(s => ({ params: { ...p, style: s.style }, skills: [...s.skills, 'hitpoints'] })),
+                quests: gear.quests,
+            };
+        },
+        hazard(site, params, world) {
+            const { subtype } = spawns(site, params, world);
+            read ??= readers(data);
+            const configs = [
+                ...new Set(
+                    site.features.map(i => world.features[i]!).flatMap(f => (f.kind === 'npc' ? [f.subtype] : [])),
+                ),
+            ].sort(cmp);
+            let max = 0;
+            const hunters: NpcHazard['hunters'] = [];
+            for (const config of configs) {
+                const n = read.npcs(config);
+                max = Math.max(max, maxHit(npcEffectiveLevel(n.levels.strength), n.strengthBonus));
+                const upTo = huntsUpTo(n, read.hunts);
+                if (upTo !== undefined) hunters.push({ npc: config, upTo });
+            }
+            const retreat = read.npcs(subtype).retreat;
+            return { maxHit: max, hunters, ...(retreat !== undefined ? { retreat } : {}) };
         },
         model(site, params, profile, world, walks): ActionModel {
             const { style, subtype, features } = target(site, params, world);

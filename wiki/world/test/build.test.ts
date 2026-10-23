@@ -591,6 +591,35 @@ test("loadWorld reads an agility-course site's course back, and refuses a malfor
         );
 });
 
+test("loadWorld reads a method's npcs back, and refuses a malformed one, naming its row", () => {
+    const method = world.methods[0]!;
+    const npcs = {
+        maxHit: 4,
+        hunters: [
+            { npc: 'giant', upTo: 56 },
+            { npc: 'dragon', upTo: null },
+        ],
+        retreat: 3,
+    };
+    const dir = mkdtempSync(join(tmpdir(), 'world-'));
+    try {
+        const file = join(dir, 'world.json');
+        writeFileSync(file, serializeWorld({ ...world, methods: [{ ...method, npcs }] }));
+        expect(loadWorld(file).methods[0]!.npcs).toEqual(npcs);
+    } finally {
+        rmSync(dir, { recursive: true });
+    }
+    const why = (n: unknown): string => refused({ ...world, methods: [method, { ...method, npcs: n }] });
+    const shape =
+        'is not a world.json: methods[1]: its npcs needs a maxHit, a list of hunters, and a retreat, when it has one, as a count: regenerate it with bun run world';
+    expect(why({ ...npcs, maxHit: -1 })).toBe(shape);
+    expect(why({ maxHit: 4 })).toBe(shape);
+    expect(why({ ...npcs, retreat: 'low' })).toBe(shape);
+    expect(why({ ...npcs, hunters: [{ npc: 'giant' }] })).toBe(
+        'is not a world.json: methods[1]: a hunter needs an npc and an upTo, a combat level or null: regenerate it with bun run world',
+    );
+});
+
 test('byWritten orders by kind, then x, z, level and config', () => {
     const fs = [tree(5, 1), tree(1, 9, 'oaktree'), { ...tree(1, 1), kind: 'rock' as const }, tree(1, 9)];
     expect(fs.sort(byWritten).map(f => `${f.kind} ${f.tile.x},${f.tile.z} ${f.config}`)).toEqual([

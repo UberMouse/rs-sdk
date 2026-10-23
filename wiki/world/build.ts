@@ -1022,6 +1022,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             params: readConfigs('param'),
             constants,
             scripts,
+            hunts: readConfigs('hunt'),
         },
         zones,
     );

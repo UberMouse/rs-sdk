@@ -22,6 +22,8 @@ export interface GameData {
     constants: ReadonlyMap<string, Constant>;
     /** The .rs2 files, by path relative to server/content/scripts, for values a script writes inline (fishing). */
     scripts: [file: string, text: string][];
+    /** The `.hunt` configs, the npcs' hunt modes (an npc's aggression); absent in a test's data that has none. */
+    hunts?: ReadonlyMap<string, Config>;
 }
 
 export const readGameData = (): GameData => ({
@@ -33,6 +35,7 @@ export const readGameData = (): GameData => ({
     params: readConfigs('param'),
     constants: readConstants(),
     scripts: readScripts(),
+    hunts: readConfigs('hunt'),
 });
 
 /** A family module: built once from the game data, then asked for any number of models. */

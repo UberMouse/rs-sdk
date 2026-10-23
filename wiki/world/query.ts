@@ -20,7 +20,11 @@
 //   each result names the way it rated.
 // - Hazards: the deepest Wilderness level of the sites and tiles the method stands at (its site, processors and
 //   bank), and whether any of them is multiway. The legs between them don't count: world.json keeps a leg's run ticks and
-//   requirement set, not the tiles it crosses.
+//   requirement set, not the tiles it crosses. A method at npcs (combat) adds whether one there hunts the profile, at
+//   its combat level, and the largest max hit there (ResolvedMethod.npcs); neither adds modelled damage.
+// - Style: a combat method is rated on the style of its gear that suits the queried skill (model/method.ts
+//   styleParams): Attack accurate, Strength aggressive, Defence defensive, Hitpoints and Prayer the best of them. The
+//   gear is the record's, or the profile's worn objs when it names some.
 import { loadFreshWorld } from './load';
 import type { CycleRates } from './model/cycle';
 import { readGameData } from './model/families/index';
@@ -38,7 +42,7 @@ import {
     type MethodModel,
     type ResolvedMethod,
 } from './model/method';
-import type { Profile } from './model/profile';
+import { combatLevelOf, type Profile } from './model/profile';
 import { SKILLS, type Skill } from './model/server';
 import { lowestLevel } from './roll';
 import type { World } from './types';
@@ -55,6 +59,8 @@ export interface BestOptions {
     maxWilderness?: number;
     /** false: no method with a multiway site or tile. Omitted or true: multiway ones count. */
     multiway?: boolean;
+    /** false: no method where an npc hunts the profile (Hazard.aggressive). Omitted or true: those count. */
+    aggressive?: boolean;
 }
 
 export interface Hazard {
@@ -62,6 +68,15 @@ export interface Hazard {
     wildernessLevel: number;
     /** Whether any of the method's sites and tiles is multiway. */
     multiway: boolean;
+    /**
+     * Whether an npc where the method acts hunts the profile: one that hunts players with its combat level at most
+     * the npc's limit, or any level in the Wilderness (model/npcs.ts huntsUpTo). False for a method at no npcs.
+     */
+    aggressive: boolean;
+    /** The largest max hit of the npcs where the method acts; absent for a method at none. */
+    maxHit?: number;
+    /** The target npc's `retreat` HP, at which it runs instead of fighting back (not priced); absent when none. */
+    retreat?: number;
 }
 
 export interface RankedMethod {
@@ -78,18 +93,30 @@ export interface RankedMethod {
 }
 
 export interface MethodQuery {
-    /** The floor of method `id` at `profile`, over its shortest way. Throws for an unknown id or a profile it can't model. */
-    methodRate(id: string, profile: Profile): CycleRates;
+    /**
+     * The floor of method `id` at `profile`, over its shortest way, rated for `skill` (by default the method's: the
+     * style a combat method swings). Throws for an unknown id or a profile it can't model.
+     */
+    methodRate(id: string, profile: Profile, skill?: Skill): CycleRates;
     /** The methods that train `skill` and pass `opts` at `profile`, by floor XP/hr of it (highest first), then id. */
     bestMethods(skill: Skill, profile: Profile, opts?: BestOptions): RankedMethod[];
 }
 
-/** The hazard of a method's stops: the gather site and the sites and bare tiles its sink stops at. */
-export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink'>): Hazard {
+/**
+ * The hazard of a method's stops (the gather site and the sites and bare tiles its sink stops at) and its npcs, at
+ * `profile`'s combat level (from its base levels, as `~player_combat_level` reads `stat_base`). An npc's Wilderness
+ * test is the gather site's: the player stands there to fight it.
+ */
+export function methodHazard(m: Pick<ResolvedMethod, 'site' | 'sink' | 'npcs'>, profile: Profile): Hazard {
     const stops = [m.site, ...sinkStops(m.sink)];
+    const combat = combatLevelOf(profile);
+    const wild = m.site.wildernessLevel > 0;
     return {
         wildernessLevel: Math.max(...stops.map(s => s.wildernessLevel)),
         multiway: stops.some(s => s.multiway),
+        aggressive: (m.npcs?.hunters ?? []).some(h => h.upTo === null || wild || combat <= h.upTo),
+        ...(m.npcs ? { maxHit: m.npcs.maxHit } : {}),
+        ...(m.npcs?.retreat !== undefined ? { retreat: m.npcs.retreat } : {}),
     };
 }
 
@@ -102,19 +129,20 @@ export function methodQuery(
     const methods = world.methods.map(wm => fromWorldMethod(wm, world, model.zones));
     const byId = new Map(methods.map(m => [m.def.id, m]));
     return {
-        methodRate(id, profile) {
+        methodRate(id, profile, skill) {
             const m = byId.get(id);
             if (!m) throw new Error(`No method ${id} in world.json (it has ${[...byId.keys()].join(', ')})`);
-            return forMethod(m, () => rateMethod(m, profile, ctx));
+            return forMethod(m, () => rateMethod(m, profile, ctx, undefined, skill));
         },
         bestMethods(skill, profile, opts = {}) {
             const met = opts.met ?? (() => true);
             const ranked: RankedMethod[] = [];
             for (const m of methods) {
                 if (!trains(m, skill)) continue;
-                const hazard = methodHazard(m);
+                const hazard = methodHazard(m, profile);
                 if (opts.maxWilderness !== undefined && hazard.wildernessLevel > opts.maxWilderness) continue;
                 if (opts.multiway === false && hazard.multiway) continue;
+                if (opts.aggressive === false && hazard.aggressive) continue;
                 // The first way `met` accepts that models: a family that picks among walk pairs may close its lap over
                 // one way's walks and not another's.
                 const found = forMethod(m, () => {
@@ -123,7 +151,7 @@ export function methodQuery(
                         if (!w.reach.every(met)) continue;
                         if (!SKILLS.every(s => profile.levels[s] >= lowestLevel([w.reach], s))) continue;
                         try {
-                            return { way: i, rates: rateMethod(m, profile, ctx, i) };
+                            return { way: i, rates: rateMethod(m, profile, ctx, i, skill) };
                         } catch (e) {
                             // A family refusing the profile (a level under its requirement, no axe or pickaxe, a
                             // pickaxe above its Mining level) drops the method; any other error is a fault, named by

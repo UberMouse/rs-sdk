@@ -263,9 +263,13 @@ describe('what is not modelled', () => {
         expect(() => combat.model(chickens, params, level1, world, walks)).toThrow(/walks to no other spawn/);
     });
 
-    test('a style is one of the four melee styles', () => {
-        expect(() => combat.walks!(chickens, { npc: 'chicken' }, world)).toThrow(ModelError);
-        expect(() => combat.walks!(chickens, { style: 'rapid' }, world)).toThrow(/one of accurate, aggressive/);
+    test('a style is one of the four melee styles; the walks, priced before a style is picked, need none', () => {
+        const walks = combat.walks!(chickens, { npc: 'chicken' }, world).map(() => 3);
+        expect(walks).toHaveLength(72);
+        expect(() => combat.model(chickens, { npc: 'chicken' }, level1, world, walks)).toThrow(ModelError);
+        expect(() => combat.model(chickens, { npc: 'chicken', style: 'rapid' }, level1, world, walks)).toThrow(
+            /one of accurate, aggressive/,
+        );
     });
 
     test('walks: each spawn to every other, in spawn order', () => {

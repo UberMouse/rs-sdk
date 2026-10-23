@@ -85,6 +85,27 @@ export interface ActionModel {
     tools?: string[];
 }
 
+/** One style a family's action may take with the profile's gear (combat: a melee style of the worn weapon). */
+export interface StyleChoice {
+    /** The record's params with the style set, as `model` takes them. */
+    params: unknown;
+    /** The skills its XP goes to. */
+    skills: Skill[];
+}
+
+/** The npcs at a site of npcs, as a hazard: what they hit for and which hunt players. */
+export interface NpcHazard {
+    /** The largest max hit of their default melee AI (npc_combat_melee.rs2:2-8). */
+    maxHit: number;
+    /**
+     * Each npc config there that hunts players, by name, and the highest combat level it hunts outside the
+     * Wilderness: null for any (model/npcs.ts huntsUpTo). Empty when none hunts.
+     */
+    hunters: { npc: string; upTo: number | null }[];
+    /** The target's `retreat` HP (ActionModel.retreat), when it has one. */
+    retreat?: number;
+}
+
 /** Thrown by `Family.model` when it can't model the case, with the reason. */
 export class ModelError extends Error {}
 
@@ -119,4 +140,12 @@ export interface Family {
      * throws a ModelError when the ones that walk don't do. A process step's family that has them fails the record.
      */
     walks?(site: Site, params: unknown, world: ModelWorld): { from: Tile; to: Tile }[];
+    /**
+     * Optional, for a family whose action takes a style the worn weapon offers (combat): each style the profile's
+     * gear allows, in the weapon's order, and the quest varps the gear's wield checks read. A method rates the style
+     * that suits the skill it is ranked for (model/method.ts). Throws a ProfileError for gear the profile can't wear.
+     */
+    styles?(params: unknown, profile: Profile): { styles: StyleChoice[]; quests: string[] };
+    /** Optional, for a family that acts on npcs: the npcs at the site as a hazard. */
+    hazard?(site: Site, params: unknown, world: ModelWorld): NpcHazard;
 }

@@ -7,6 +7,7 @@
 //   rows are; run logs stay out of the repo. The levels are the ones at the start of the measured runs, read from the
 //   runs' tick recordings.
 // - A measured figure above the floor at its levels is a model bug to find, not a figure to edit.
+import type { Loot } from './model/cycle';
 import type { Skill } from './model/server';
 import type { Tile } from './types';
 
@@ -25,8 +26,18 @@ export interface MethodDef {
     family: string;
     /** A tile in the site. */
     at: Tile;
-    /** The family's params: tree type, tool, fish, npc ... */
+    /**
+     * The family's params: tree type, tool, fish ... A combat record's are `{ npc }` (the npc config, omitted when the
+     * site has one kind of npc); the style is not a param, as the method swings the one that suits the skill it is
+     * rated for (model/method.ts).
+     */
     params: unknown;
+    /**
+     * Where the action's features are: the features of the site's kind within this many tiles of `at` (Chebyshev, on
+     * `at`'s level), across sites, in place of the site's own. Omitted: the site's. A combat record's spawns of its npc
+     * span sites (the Edgeville dungeon's hill giants are three).
+     */
+    area?: number;
     /**
      * Where the products go. `bank` omitted: the nearest bank of the site, or of the last process step's site. A
      * process sink runs its steps in order, each taking a product of the gather or of an earlier step, then (`end`)
@@ -38,6 +49,13 @@ export interface MethodDef {
         | { mode: 'process'; steps: ProcessStepDef[]; end: 'bank' | 'drop' | 'keep'; bank?: Tile };
     /** The obj eaten to cover the action's damage (pickpocket stuns, agility falls), restocked at the bank. */
     food?: string;
+    /**
+     * The objs worn, by obj config name (a combat record's weapon and armour): the profile's `worn` when it names
+     * none; a profile that names some wears those instead.
+     */
+    gear?: string[];
+    /** What a kill's drops go to (model/cycle.ts Loot); a combat record with bones to bury trains Prayer too. */
+    loot?: Loot;
     /** Promoted plans that run it (conductor/plans/). */
     plans?: string[];
     measured?: Measured[];
@@ -62,11 +80,14 @@ export interface ProcessStepDef {
 export interface Measured {
     /** Game XP per hour, XP_RATE included, as stats.ts prints it. */
     xpPerHour: Partial<Record<Skill, number>>;
-    /** The base level at the start of the measured runs, boosts excluded. */
+    /**
+     * The base level at the start of the measured runs, boosts excluded: of each skill the method trains, and for a
+     * melee method every skill the combat level is taken from.
+     */
     level: Partial<Record<Skill, number>>;
     /** The axe or pickaxe the runs used, when the family reads one from the profile. */
     tool?: string;
-    /** The objs worn in the runs that a family reads (Profile.worn). */
+    /** The objs worn in the runs (Profile.worn): all of them, as stats.ts records it, or those a family reads. */
     worn?: string[];
     bot: string;
     /** YYYY-MM-DD. */

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { ModelError } from '../model/family';
 import { readBoneXp, readCombatStyles, readEquipment, readUnarmedAttackRate } from '../model/items';
 import { readStyleSkills } from '../model/combat';
-import { NPC_DEFAULTS, readNpcCombat, readVisLevelDefault } from '../model/npcs';
+import { huntsUpTo, NPC_DEFAULTS, readHuntModes, readNpcCombat, readVisLevelDefault } from '../model/npcs';
 import { paramInt } from '../model/params';
 import { parseConfigs } from '../sources/configs';
 import { collectConstants } from '../sources/constants';
@@ -221,6 +221,59 @@ describe('readNpcCombat', () => {
             'a\n            if (!vislevel) {\n                // TODO\n                client.p1(95);\n                client.p2(7);\n';
         expect(readVisLevelDefault('NpcConfig.ts', text)).toEqual({ value: 7, at: 'NpcConfig.ts:2' });
         expect(() => readVisLevelDefault('NpcConfig.ts', 'nothing')).toThrow(/has it moved/);
+    });
+});
+
+// all.hunt's shapes: cowardly (nottoostrong outside the Wilderness), aggressive_melee (off), a queue mode, and an
+// empty entry (HuntType.ts defaults: type off).
+const HUNTS = readHuntModes(
+    parseConfigs(`
+[cowardly]
+type=player
+check_nottoostrong=outside_wilderness
+find_newmode=opplayer2
+
+[aggressive_ranged]
+type=player
+check_nottoostrong=off
+find_newmode=applayer2
+
+[queue1_trigger]
+type=player
+check_nottoostrong=outside_wilderness
+find_newmode=queue1
+
+[bigmonster_melee]
+`),
+);
+
+/** An npc's hunt fields. */
+const npc = (huntMode: string | undefined, huntRange = 2, visLevel = 28) => ({
+    npc: 'n',
+    huntMode,
+    huntRange,
+    visLevel,
+});
+
+describe('huntsUpTo', () => {
+    test('a hunt that attacks: twice the vislevel with nottoostrong, any level without', () => {
+        // Hill giant: cowardly, vislevel 28: skips a player above 28 x 2 = 56 outside the Wilderness (Npc.ts:1011).
+        expect(huntsUpTo(npc('cowardly'), HUNTS)).toBe(56);
+        expect(huntsUpTo(npc('aggressive_ranged'), HUNTS)).toBeNull();
+        // vislevel=hide packs as 0: no level is at most 0.
+        expect(huntsUpTo(npc('cowardly', 2, 0), HUNTS)).toBe(0);
+    });
+
+    test('no hunt: no huntmode, huntrange 0 (Npc.ts:267), a queue mode, an entry with no type', () => {
+        expect(huntsUpTo(npc(undefined), HUNTS)).toBeUndefined();
+        expect(huntsUpTo(npc('cowardly', 0), HUNTS)).toBeUndefined();
+        expect(huntsUpTo(npc('queue1_trigger'), HUNTS)).toBeUndefined();
+        expect(huntsUpTo(npc('bigmonster_melee'), HUNTS)).toBeUndefined();
+    });
+
+    test('a huntmode no .hunt config defines is a ModelError', () => {
+        expect(() => huntsUpTo(npc('nosuch'), HUNTS)).toThrow(ModelError);
+        expect(() => huntsUpTo(npc('nosuch'), HUNTS)).toThrow(/huntmode nosuch, which no .hunt config defines/);
     });
 });
 
