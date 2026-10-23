@@ -86,22 +86,37 @@ Single imps (a few kills per respawn cycle only): Edgeville (3078,3499) 9 run ti
 north of Varrock (3234,3506), (3261,3514); Champions' Guild (3205,3355); Lumbridge (3217,3226); Draynor (3073,3250);
 (3214,3281), (3240,3307); Kharidian Desert (3299,3273); Melzar's Maze (2941,3236, needs its keys).
 
-Seen in game (one look per site, standing in the area, nearby NPC list): Yanille north from (2600,3122) and (2615,3124),
-radius 15: no imps (only cows and Khazard guards); Falador south (3009,3307) and Draynor (3073,3250): no imps. Lumbridge
-(spawn (3217,3226), seen at (3217,3235)): present, fought, ~2 kills at ~55 s per kill. Ardougne south, Karamja, Varrock
-untested. A single look does not show the spawn is absent: imps teleport (up to 20 tiles when hit, every 50-200 ticks
-out of combat), so tiles can be empty at a given tick. Settle it with repeated looks over a few minutes at one site.
+Seen in game (imps in view per cluster over two plan runs, 2026-10-23; imps wander and flee 25+ tiles from their spawn
+tiles, so a small area leaves them outside):
+
+| Cluster (looked from) | Imps seen | Where they were |
+|---|---|---|
+| Yanille north (2609,3125; also (2600,3122), (2614,3132), (2615,3124)) | 0 | only cows, a Khazard Guard and Hengrad |
+| Falador south (3011,3312) | 0 | - |
+| Draynor (3073,3252) | 0 | - |
+| Lumbridge (3217,3228) | ~35 per run with a wide area | drift to x 3184-3211, z 3237-3252 |
+| Varrock east (3238,3392) | 0-4 | mostly x 3190-3236, z 3264-3380 |
+| Varrock west (3177,3405) | up to 23 | around (3179-3189, 3388-3394) |
+| Varrock north (3246,3458) | 0-1 | - |
+| Varrock edge (3213,3495) | up to 50 | x 3200-3218, z 3492-3517, beside the Wilderness boundary (z 3520): never hunt there |
+| Ardougne south, Karamja | not visited | - |
+
+The generated spawn list above (`wiki/npcs/imp.md`) matches the map data, but the Yanille, Falador-south and Draynor
+spawn tiles held no imps when looked at, while Lumbridge and Varrock held many: hunt Lumbridge or Varrock. Working
+`combat` areas: radius 35 around Lumbridge (3217,3240); radius 45 around Varrock (3215,3425) (imps drift north to z
+3492-3517, near the Wilderness; keep the area clear of it). Rate with wide areas: ~21 kills per 60 min (one per 3 min);
+5 beads in 21 kills, consistent with the 5/128-per-colour table; expect ~50-60 kills (~2 h) for all four colours.
 [v 2026-10-23 questw6 local]
 
-Combat-task areas that cover a cluster: Yanille `{x:2609,z:3125,radius:15}`, Ardougne south `{x:2632,z:3222,radius:22}`.
+Combat-task areas that cover a cluster: Lumbridge `{x:3217,z:3240,radius:35}`, Varrock `{x:3215,z:3425,radius:45}` (Ardougne south `{x:2632,z:3222,radius:22}` untested).
 
 ## Catalog coverage
 
 | Step | Task | Params (sketch) | Notes |
 |---|---|---|---|
 | 1 start | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}, choices:["^Give me a quest!$","^Give me a quest please"]}` | The walk climbs the Wizards' Tower stairs (`conductor/lib/connectors.ts` OVERRIDES, ungated rows; logs the lesser demon hazard). Those stairs were walked only in integration tests (`learnings/walking.md`). Anchor the first regex: "Give me a quest" also matches the "or else" option. |
-| reach the imps | `travel` / `bank` | `{to:{x:2609,z:3125}}` | Yanille is a long walk from Misthalin; bank there. |
-| 2 beads | `combat` | `{target:"Imp", area:{x:2609,z:3125,radius:15}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. Current limitation: on a single imp `combat` gives up `no free reachable Imp in the area` after ~60 ticks, while the imp respawns after 100 ticks, so it does not wait for the respawn. [v 2026-10-23 questw6 local] |
+| reach the imps | `travel` / `bank` | `{to:{x:3217,z:3240}}` | Lumbridge (bank nearby) or Varrock; Yanille's tiles held no imps. |
+| 2 beads | `combat` | `{target:"Imp", area:{x:3217,z:3240,radius:35}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. `combat` gave up `no free reachable Imp in the area` when the imps had wandered outside a small (radius 15-25) area; nothing showed it refusing a visible, reachable imp inside the radius. The plan idle rail ("phases make no progress") ended a hunt after ~3 empty phases; `respawnWaitTicks` is being tried as the fix (not yet shown to work). [v 2026-10-23 questw6 local] |
 | 3 finish | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}}` (no choices) | Plan `until: v => v.questDone('imp')`. |
 
 No step needs a new task. Nice-to-have: a `loot` mode that skips an item already held (duplicate beads take slots).
