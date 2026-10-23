@@ -136,6 +136,29 @@ function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
     };
 }
 
+/** A melee method over the iron-bulk runs (the plan's name is all methodRuns matches on). */
+const GIANTS = {
+    id: 'giants',
+    plans: ['iron-bulk'],
+    skill: 'attack' as const,
+    levels: { attack: 40, strength: 1, defence: 1, hitpoints: 10 },
+};
+/** The base levels of the seven skills the combat level is taken from. */
+const COMBAT = { attack: 60, strength: 55, defence: 50, hitpoints: 58, prayer: 43, ranged: 30, magic: 33 };
+/** A start at COMBAT and Mining 70, wearing `worn` (by display name), with `o` over those levels. */
+const fighter = (worn: string[], o: Record<string, number> = {}): RunStart => ({
+    levels: { ...COMBAT, mining: 70, ...o },
+    held: ['Lobster', ...worn],
+    worn,
+});
+const SCIMITAR = fighter(['Rune scimitar', 'Amulet of power']);
+/** Every phase run of run-1 starts at `run1`, of run-2 at `run2`. */
+const byRun = (run1: RunStart, run2: RunStart) => (run: TimedResult) => (run.partOf === 'run-1' ? run1 : run2);
+
+/** The GIANTS entry of run-1 started at SCIMITAR and run-2 at `run2`. */
+const giantsEntry = (run2: RunStart) =>
+    methodRuns(input({ methods: [GIANTS], start: byRun(SCIMITAR, run2) }))[0]!.entry;
+
 describe('methodRuns', () => {
     test("the method's plans' whole runs: its skills' XP over their total hours, other plans and skills left out", () => {
         const [r] = methodRuns(input());
@@ -247,6 +270,45 @@ describe('methodRuns', () => {
         expect(r!.entry).toBeDefined();
     });
 
+    describe('a combat method: worn objs and every combat-level skill', () => {
+        test("the entry records every combat-level skill and the worn objs by config name, the floor's too", () => {
+            const seen: Measured[] = [];
+            const [r] = methodRuns(
+                input({
+                    methods: [GIANTS],
+                    start: byRun(SCIMITAR, SCIMITAR),
+                    floor: (_, m) => {
+                        seen.push(m);
+                        return { xpPerHour: {} } as CycleRates;
+                    },
+                }),
+            );
+            // Prayer, Ranged and Magic are trained by no melee style but set the combat level; Mining is left out.
+            expect(r!.entry).toMatchObject({ level: COMBAT, worn: ['rune_scimitar', 'amulet_of_power'] });
+            expect(r!.entry!.tool).toBeUndefined();
+            expect(seen.map(m => [m.level, m.worn])).toEqual([
+                [COMBAT, ['rune_scimitar', 'amulet_of_power']],
+                [COMBAT, ['rune_scimitar', 'amulet_of_power']],
+            ]);
+            expect(formatMeasured(r!.entry!, r!.toolKind)).toContain("    worn: ['rune_scimitar', 'amulet_of_power'],");
+        });
+
+        test('runs that wore different objs, or started at a different untrained combat skill, have no entry', () => {
+            expect(giantsEntry(fighter(['Rune scimitar']))).toBeUndefined();
+            expect(giantsEntry(fighter(['Rune scimitar', 'Amulet of power'], { prayer: 44 }))).toBeUndefined();
+            // A Mining level, which a melee method neither trains nor reads, doesn't split them.
+            expect(giantsEntry(fighter(['Rune scimitar', 'Amulet of power'], { mining: 71 }))).toBeDefined();
+        });
+
+        test("a run's row names its worn objs", () => {
+            const lines = formatMethodRuns(
+                methodRuns(input({ methods: [GIANTS], start: byRun(fighter(['Rune scimitar']), fighter([])) })),
+            );
+            expect(lines.find(l => l.includes(' run-1 '))).toContain('worn rune_scimitar');
+            expect(lines.find(l => l.includes(' run-2 '))).not.toContain('worn');
+        });
+    });
+
     test('a method with no runs, or none with a recording, has no entry', () => {
         expect(methodRuns(input({ methods: [LURE] }))[0]).toMatchObject({ method: 'lure-cook', runs: 0 });
         const [r] = methodRuns(input({ start: () => undefined }));
@@ -310,7 +372,7 @@ describe('formatMeasured / formatMethodRuns', () => {
             `iron-bank (plans: iron-bulk) · runs 2 · 1.00 h · last ${date}`,
             '  mining: measured 100,000/h · floor 244,000/h · 41% of floor, 144,000/h short',
             "  levels moved over the runs: mining 60-62 (each run's floor is at its start levels, so one that levelled understates)",
-            '  the runs started at different levels or pickaxes:',
+            '  the runs started at different levels, pickaxes or worn objs:',
             `    ${date} run-1 · mining 60 · rune_pickaxe · 0.50 h · mining 120,000/h of 240,000/h (50%)`,
             `    ${date} run-2 · mining 62 · no pickaxe held · 0.50 h · mining 80,000/h of 248,000/h (32.3%)`,
             '  narrow --since to runs at one level for a pasteable measured entry',
@@ -363,7 +425,11 @@ describe('readStartState / runStart', () => {
             // 200 KB of random hex compresses to ~100 KB: more than the 64 KB first read.
             const log = recording(dir, { blob: randomBytes(100_000).toString('hex') });
             const start = readStartState(log)!;
-            expect(runStart(start)).toEqual({ levels: { mining: 60 }, held: ['Rune pickaxe', 'Bronze axe'] });
+            expect(runStart(start)).toEqual({
+                levels: { mining: 60 },
+                held: ['Rune pickaxe', 'Bronze axe'],
+                worn: ['Bronze axe'],
+            });
         } finally {
             rmSync(dir, { recursive: true, force: true });
         }

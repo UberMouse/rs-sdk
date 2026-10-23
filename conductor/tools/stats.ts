@@ -8,8 +8,9 @@
 //
 // `--methods`: per curated training method (wiki/world/methods.ts), its plans' whole runs: the XP/hr of
 // each skill it trains beside its floor at the levels each run started on, the gap, and a `measured`
-// entry to paste into methods.ts when the runs all started at the same levels and tool, else a table of
-// the runs (lib/methods.ts says where each figure comes from).
+// entry to paste into methods.ts when the runs all started at the same levels, tool and worn objs, else a
+// table of the runs (lib/methods.ts says where each figure comes from: a combat method's entry records every
+// skill of the combat level and the gear worn).
 //
 // `--root` reads conductor/runs/ of another checkout (this one by default), as plan-view.ts does.
 //

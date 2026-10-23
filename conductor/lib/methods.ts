@@ -6,7 +6,10 @@
 //   plan counted once by its own `plan:<name>` result (runs.ts selectResults), so it covers the plan's every leg.
 // - A run's start levels are read from the recording of its first phase run (its first state); its tool is the best
 //   axe or pickaxe the woodcutting or mining checker would pick, at those levels, from what the bot held at the start
-//   of any of its phase runs (inventory or worn), null when none shows one.
+//   of any of its phase runs (inventory or worn), null when none shows one. Its worn objs are those of its first phase
+//   run's start, the profile's `worn` for its floor (a combat method's gear in place of the record's). A combat method's
+//   run (one training Attack, Strength, Defence or Hitpoints) records the base levels of every skill the combat level
+//   is taken from, not only those it trains: they set its hits, its damage taken and the npcs' aggression.
 // - The gap weighs each run's floor at its own start by its hours, so runs at different levels each meet their own
 //   floor. Runs with no recorded start count in neither side of it.
 import type { BotWorldState } from '../../sdk/types';
@@ -48,10 +51,12 @@ export function checkPlanMethods(
     return { errors, unlinked: plans.filter(p => p.method === undefined).map(p => p.name) };
 }
 
-/** What a run started with: its base levels and the items it held (inventory and worn). */
+/** What a run started with: its base levels, the items it held (inventory and worn), and those it wore. */
 export interface RunStart {
     levels: Partial<Record<Skill, number>>;
     held: string[];
+    /** Absent in a start recorded before it was read. */
+    worn?: string[];
 }
 
 /** The game's skill name (`Mining`, a result's XP key) as a model Skill, or undefined for one the model has not. */
@@ -63,8 +68,24 @@ export function runStart(state: BotWorldState): RunStart {
         const skill = skillOf(k.name);
         if (skill) levels[skill] = k.baseLevel;
     }
-    return { levels, held: [...state.inventory, ...state.equipment].map(i => i.name) };
+    return {
+        levels,
+        held: [...state.inventory, ...state.equipment].map(i => i.name),
+        worn: state.equipment.map(i => i.name),
+    };
 }
+
+/** An item's name as its obj config name, as methods.ts names objs: `Rune scimitar` is `rune_scimitar`. */
+const objName = (name: string): string => name.toLowerCase().replaceAll(' ', '_');
+
+/** The skills a melee method trains, any of which makes a run record the combat level's skills (COMBAT_LEVEL). */
+const MELEE: readonly Skill[] = ['attack', 'strength', 'defence', 'hitpoints'];
+/** The skills the combat level is taken from (combat_level.rs2:1-10, wiki/world/model/combat.ts combatLevel). */
+const COMBAT_LEVEL: readonly Skill[] = ['attack', 'strength', 'defence', 'hitpoints', 'prayer', 'ranged', 'magic'];
+
+/** The skills whose start levels a run of a method training `skills` records. */
+const recordedSkills = (skills: readonly Skill[]): Skill[] =>
+    skills.some(s => MELEE.includes(s)) ? [...new Set([...skills, ...COMBAT_LEVEL])] : [...skills];
 
 /** One plan run of a method. */
 export interface MethodRun {
@@ -74,8 +95,13 @@ export interface MethodRun {
     hours: number;
     /** Each skill the method trains: its XP over the run's time. */
     xpPerHour: Partial<Record<Skill, number>>;
-    /** The trained skills' base levels at its first phase run's start; absent when its recording shows none. */
+    /**
+     * The trained skills' base levels at its first phase run's start (a combat method's: every skill of the combat
+     * level); absent when its recording shows none.
+     */
     levels?: Partial<Record<Skill, number>>;
+    /** The objs it wore at that start, by obj config name; absent when the start does not show them. */
+    worn?: string[];
     /** The best tool of the method's kind it held at any of its phase runs' starts, at its start level; null when none. */
     tool: string | null;
     /** The floor's XP/hr at its start levels and tool (rounded), or why there is none. */
@@ -111,7 +137,7 @@ export interface MethodRuns {
     floorError?: string;
     /** Each trained skill with a floor: the counted runs' XP over their floors' XP, and the XP/hr short of it. */
     gap: Partial<Record<Skill, { pct: number; shortfall: number }>>;
-    /** The `measured` entry for methods.ts: present when every counted run started at the same levels and tool. */
+    /** The `measured` entry for methods.ts: present when every counted run started at the same levels, tool and worn objs. */
     entry?: Measured;
 }
 
@@ -234,12 +260,19 @@ function methodRunsOf(
 
     const starts = out.perRun.filter(r => r.levels);
     const first = starts[0]!;
-    const same = starts.every(r => r.tool === first.tool && skills.every(s => r.levels![s] === first.levels![s]));
+    const recorded = recordedSkills(skills);
+    const same = starts.every(
+        r =>
+            r.tool === first.tool &&
+            r.worn?.join() === first.worn?.join() &&
+            recorded.every(s => r.levels![s] === first.levels![s]),
+    );
     if (same)
         out.entry = {
             xpPerHour: out.counted.xpPerHour,
             level: first.levels!,
             ...(first.tool !== null && { tool: first.tool }),
+            ...(first.worn?.length && { worn: first.worn }),
             bot: input.bot,
             date: starts.at(-1)!.date,
             hours: Math.round(counted.hours * 10_000) / 10_000,
@@ -265,12 +298,11 @@ function runOf(
     const first = starts[0];
     if (!first) return { figures };
     const levels: Partial<Record<Skill, number>> = {};
-    for (const s of skills) if (first.levels[s] !== undefined) levels[s] = first.levels[s];
+    for (const s of recordedSkills(skills)) if (first.levels[s] !== undefined) levels[s] = first.levels[s];
     figures.levels = levels;
+    if (first.worn) figures.worn = first.worn.map(objName);
     if (toolKind) {
-        const held = new Set(
-            starts.flatMap(st => (st?.held ?? []).map(name => name.toLowerCase().replaceAll(' ', '_'))),
-        );
+        const held = new Set(starts.flatMap(st => (st?.held ?? []).map(objName)));
         figures.tool = bestTool(
             input.tools[toolKind].filter(t => held.has(t.obj)),
             first.levels[m.skill] ?? 1,
@@ -283,6 +315,7 @@ function runOf(
             xpPerHour: figures.xpPerHour,
             level: levels,
             ...(figures.tool !== null && { tool: figures.tool }),
+            ...(figures.worn?.length && { worn: figures.worn }),
             bot: input.bot,
             date: figures.date,
             hours,
@@ -359,6 +392,7 @@ export function formatMeasured(entry: Measured, toolKind: MethodRuns['toolKind']
                     `    // tool: '<FILL IN: the ${toolKind} the runs used, e.g. ${toolKind === 'axe' ? 'rune_axe' : 'rune_pickaxe'}>',`,
                 ]
               : []),
+        ...(entry.worn ? [`    worn: [${entry.worn.map(o => `'${o}'`).join(', ')}],`] : []),
         `    bot: '${entry.bot}',`,
         `    date: '${entry.date}',`,
         `    hours: ${entry.hours},`,
@@ -386,6 +420,7 @@ function runRow(r: MethodRun, toolKind: MethodRuns['toolKind']): string {
     else {
         cells.push(levelsText(r.levels));
         if (toolKind) cells.push(r.tool ?? `no ${toolKind} held`);
+        if (r.worn?.length) cells.push(`worn ${r.worn.join(', ')}`);
     }
     cells.push(`${r.hours.toFixed(2)} h`);
     for (const [s, measured] of Object.entries(r.xpPerHour)) {
@@ -454,7 +489,7 @@ export function formatMethodRuns(list: MethodRuns[]): string[] {
             out.push('  measured entry (methods.ts):');
             out.push(formatMeasured(r.entry, r.toolKind, '    '));
         } else {
-            out.push(`  the runs started at different levels${r.toolKind ? ` or ${r.toolKind}s` : ''}:`);
+            out.push(`  the runs started at different levels${r.toolKind ? `, ${r.toolKind}s` : ''} or worn objs:`);
             for (const run of r.perRun) out.push(`    ${runRow(run, r.toolKind)}`);
             out.push('  narrow --since to runs at one level for a pasteable measured entry');
         }
