@@ -25,8 +25,9 @@ export interface Account {
     /** Objs worn, by config name: `item:<obj>:worn`. */
     worn?: ReadonlySet<string>;
     /**
-     * Other tokens the caller has checked and the account meets: a quest done (`quest:<id>`, which meets every stage
-     * of it too), a category of obj carried or worn (`category:<category>:held`), the wizard the way came in by
+     * Other tokens the caller has checked and the account meets: a quest done (`quest:<id>`, which meets its stages up
+     * to its completion value, lib/quests.ts; a gate above that is met only when listed), a category of obj carried or
+     * worn (`category:<category>:held`), the wizard the way came in by
      * (`other:came from <npc>`). A token neither here nor a skill, coins, an obj or `members` is not met.
      */
     met?: ReadonlySet<string>;
@@ -66,7 +67,8 @@ export function accountOf(state: BotWorldState): Account {
         worn.add(obj);
         categories(obj, 'worn');
     }
-    // The quest tab's colours: a quest done meets `quest:<id>` and every stage of it, one started meets `quest:<id>>=1`.
+    // The quest tab's colours: a quest done meets `quest:<id>` and its stages up to its completion value (a gate above
+    // it is met only when listed), one started meets `quest:<id>>=1`.
     for (const id of Object.keys(QUESTS)) {
         const progress = questProgress(state, id);
         if (progress === 'done') met.add(`quest:${id}`);
@@ -94,9 +96,18 @@ export function meetsToken(account: Account, token: string): boolean {
     // The way out of the essence mine returns to the wizard the way came in by: with one on record only its way is
     // met; with none, any wizard's (the portal lands where the game says, and the walk goes on from there).
     if (token.startsWith(CAME_FROM)) return ![...(account.met ?? [])].some(t => t.startsWith(CAME_FROM));
-    // A quest done meets every stage gate of it.
-    const stage = /^(quest:[a-z0-9_]+)>=\d+$/.exec(token);
-    return !!stage && !!account.met?.has(stage[1]!);
+    // A quest stage meets every lower stage of it, and a quest done meets every stage up to its completion value. A
+    // gate above that value (Priest in Peril's holy barrier needs 61, the tab is green from 60) is a step after
+    // completion that the tab cannot show, so it is met only when the caller lists that token.
+    const stage = /^quest:([a-z0-9_]+)>=(\d+)$/.exec(token);
+    if (!stage) return false;
+    const [, id, n] = stage;
+    if (account.met?.has(`quest:${id}`) && Number(n) <= (QUESTS[id!]?.complete ?? Infinity)) return true;
+    for (const t of account.met ?? []) {
+        const m = /^quest:([a-z0-9_]+)>=(\d+)$/.exec(t);
+        if (m && m[1] === id && Number(m[2]) >= Number(n)) return true;
+    }
+    return false;
 }
 
 /** Whether the account meets every token of a requirement set (`[]` is met by any account). */

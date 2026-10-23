@@ -41,6 +41,35 @@ describe('meetsToken', () => {
         expect(meetsToken(NO_ACCOUNT, 'quest:legends>=3')).toBe(false);
     });
 
+    test('a stage listed in met meets every lower stage of the same quest, not a higher one or another quest', () => {
+        const a = account({ met: new Set(['quest:priestperil>=5']) });
+        expect(meetsToken(a, 'quest:priestperil>=5')).toBe(true);
+        expect(meetsToken(a, 'quest:priestperil>=4')).toBe(true);
+        expect(meetsToken(a, 'quest:priestperil>=1')).toBe(true);
+        expect(meetsToken(a, 'quest:priestperil>=6')).toBe(false);
+        expect(meetsToken(a, 'quest:priestperil>=61')).toBe(false);
+        expect(meetsToken(a, 'quest:priest>=4')).toBe(false);
+        expect(meetsToken(a, 'quest:priestperil')).toBe(false);
+    });
+
+    test('a quest done does not meet a stage above its completion value unless that stage is listed', () => {
+        const done = account({ met: new Set(['quest:priestperil']) });
+        expect(meetsToken(done, 'quest:priestperil>=60')).toBe(true);
+        expect(meetsToken(done, 'quest:priestperil>=61')).toBe(false);
+        const listed = account({ met: new Set(['quest:priestperil', 'quest:priestperil>=61']) });
+        expect(meetsToken(listed, 'quest:priestperil>=61')).toBe(true);
+        expect(meetsToken(listed, 'quest:priestperil>=8')).toBe(true);
+    });
+
+    test('a quest id missing from QUESTS keeps done-meets-every-stage; mm completes at 9', () => {
+        const unknown = account({ met: new Set(['quest:notaquest']) });
+        expect(meetsToken(unknown, 'quest:notaquest>=99')).toBe(true);
+        expect(meetsToken(unknown, 'quest:other>=1')).toBe(false);
+        const mm = account({ met: new Set(['quest:mm']) });
+        expect(meetsToken(mm, 'quest:mm>=9')).toBe(true);
+        expect(meetsToken(mm, 'quest:mm>=10')).toBe(false);
+    });
+
     test('a token the account cannot settle is not met', () => {
         expect(meetsToken(account({ levels: { fishing: 99 }, coins: 1000 }), 'unknown:thing')).toBe(false);
     });
