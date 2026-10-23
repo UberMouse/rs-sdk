@@ -1,0 +1,98 @@
+{
+    "name": "waterfall-gnome-cellar",
+    "purpose": "Waterfall Quest stage 3 (varp 65 = 3), Att/Str/Def 52, HP 55 (combat ~60), steel scimitar, kiteshield and armour worn, empty inventory, at Tree Gnome Village by the cellar ladder (2533,3155), standing south of it at (2533,3157). Tests walks down the cellar ladder and through the cellar and Glarial's tomb planes.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2533,
+                "z": 3157
+            },
+            "skills": {
+                "Attack": 52,
+                "Strength": 52,
+                "Defence": 52,
+                "Hitpoints": 55
+            },
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1193,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1157,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1119,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1069,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "65": 3
+            }
+        }
+    },
+    "sha1": "38c8a173a7527510818f119a6514f0cd2c638327",
+    "createdAt": "2026-10-23T07:15:24.841Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2533,
+            "z": 3157,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 52,
+            "Defence": 52,
+            "Strength": 52,
+            "Hitpoints": 55
+        },
+        "inventory": [],
+        "worn": [
+            {
+                "id": 1157,
+                "name": "steel_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1119,
+                "name": "steel_platebody",
+                "count": 1
+            },
+            {
+                "id": 1193,
+                "name": "steel_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1069,
+                "name": "steel_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "65": 3,
+            "281": 1000
+        }
+    }
+}

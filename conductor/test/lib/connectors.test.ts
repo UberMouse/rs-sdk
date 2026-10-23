@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'bun:test';
+import { canTravel, CollisionType } from '../../../server/vendor/rsmod-pathfinder';
+import { initPathfinding } from '../../../sdk/pathfinding';
 import { WORLD_FORMAT, type Connector as Row, type World } from '../../../wiki/world/types';
 import { collisionPaths } from '../../actions/paths';
 import { NO_ACCOUNT } from '../../lib/account';
@@ -26,6 +28,33 @@ const names = (chain: readonly { name: string; direction: string }[] | null) =>
 /** A connector as `<direction> <name> loc <tile> stand <tile> to <tile>`. */
 const row = (c: Connector) => `${c.direction} ${c.name} loc ${show(c.loc)} stand ${show(c.stand)} to ${show(c.to)}`;
 
+/** The tiles a walk reaches from `from` in the collision data (doors open), within a box round it. */
+const fill = (from: { x: number; z: number }) => {
+    const seen = new Set<string>([`${from.x},${from.z}`]);
+    const queue = [from];
+    while (queue.length) {
+        const t = queue.pop()!;
+        for (const [dx, dz] of [
+            [1, 0],
+            [-1, 0],
+            [0, 1],
+            [0, -1],
+            [1, 1],
+            [1, -1],
+            [-1, 1],
+            [-1, -1],
+        ] as const) {
+            const n = { x: t.x + dx, z: t.z + dz };
+            const k = `${n.x},${n.z}`;
+            if (seen.has(k) || Math.abs(n.x - from.x) > 120 || Math.abs(n.z - from.z) > 80) continue;
+            if (!canTravel(0, t.x, t.z, dx, dz, 1, 0, CollisionType.NORMAL)) continue;
+            seen.add(k);
+            queue.push(n);
+        }
+    }
+    return [...seen].map(k => k.split(',').map(Number) as [number, number]);
+};
+
 describe('planeOf', () => {
     test('is the level, with underground (z >= 6400) apart', () => {
         expect(planeOf(0, 3222, 3222)).toBe('0');
@@ -49,6 +78,50 @@ describe('planeOf', () => {
         expect(planeOf(0, 3236, 9858)).toBe('0u-varrock-sewers');
         expect(planeOf(0, 3151, 9894)).toBe('0u-edgeville');
         expect(planeOf(2, 3241, 9905)).toBe('2u');
+    });
+
+    test("the quest dungeons are named areas: the mausoleum, the gnome cellar, Glarial's tomb and the Waterfall dungeon", () => {
+        for (const [x, z] of [
+            [3405, 9906],
+            [3440, 9887],
+            [3403, 9881],
+            [3441, 9895],
+        ])
+            expect(planeOf(0, x!, z!), `${x},${z}`).toBe('0u-mausoleum');
+        for (const [x, z] of [
+            [2533, 9556],
+            [2515, 9581],
+            [2548, 9566],
+        ])
+            expect(planeOf(0, x!, z!), `${x},${z}`).toBe('0u-gnome-cellar');
+        for (const [x, z] of [
+            [2557, 9844],
+            [2542, 9811],
+            [2530, 9845],
+        ])
+            expect(planeOf(0, x!, z!), `${x},${z}`).toBe('0u-glarial-tomb');
+        for (const [x, z] of [
+            [2575, 9861],
+            [2589, 9888],
+            [2565, 9916],
+        ])
+            expect(planeOf(0, x!, z!), `${x},${z}`).toBe('0u-waterfall');
+        // The chalice-room pocket joins the dungeon by scripted moves only: its own plane.
+        expect(planeOf(0, 2603, 9912)).toBe('0u-waterfall-chalice');
+        // Neither the Ardougne cellars nor the Taverley Dungeon are in a quest area.
+        expect(planeOf(0, 2565, 9627)).toBe('0u');
+        expect(planeOf(0, 2885, 9797)).toBe('0u-taverley');
+    });
+
+    test('a quest area holds the whole collision flood fill of its landing, not only its ladder', () => {
+        initPathfinding();
+        for (const [from, plane] of [
+            [{ x: 3405, z: 9906 }, '0u-mausoleum'],
+            [{ x: 2533, z: 9556 }, '0u-gnome-cellar'],
+            [{ x: 2557, z: 9844 }, '0u-glarial-tomb'],
+            [{ x: 2575, z: 9861 }, '0u-waterfall'],
+        ] as const)
+            for (const [x, z] of fill(from)) expect(planeOf(0, x, z), `${plane} ${x},${z}`).toBe(plane);
     });
 });
 
@@ -99,6 +172,7 @@ describe('the table is a view of world.json', () => {
             'into an underground area planeOf does not name',
             'not up or down',
             'op Cross, which climb does not send',
+            'op Pass-through, which climb does not send',
         ]);
         // The Varrock Sewers manhole (opened, then `Climb down` with a space) and its ladder up are in the table.
         expect(whyOf('manholeclosed', 3237, 3458)).toEqual([]);
@@ -414,6 +488,7 @@ const ONE_WAY = [
     'up 1:2370,3133',
     'up 1:2429,3074',
     'down 1:2544,3111',
+    'up 0:2556,9844',
     'down 1:2631,3322',
     'up 1:2668,3428',
     'down 1:2784,3286',
@@ -432,6 +507,7 @@ const ONE_WAY = [
     'up 0:3049,3208',
     'down 1:3057,3483',
     'down 1:3187,3414',
+    'down 0:3422,3485',
 ];
 
 describe('the table against the collision data', () => {
@@ -491,5 +567,99 @@ describe("Seers' Village spinning house", () => {
     test('the landing reaches the wheel, and the ground stand reaches the bank, in the collision data', () => {
         expect(collisionPaths.findPath(at(1, 2714, 3470), at(1, 2712, 3471), []).reachedDestination).toBe(true);
         expect(collisionPaths.findPath(at(0, 2714, 3470), at(0, 2727, 3493), []).reachedDestination).toBe(true);
+    });
+});
+
+const acc = (...met: string[]) => ({ levels: {}, coins: 0, met: new Set(met) });
+
+describe('the quest dungeons: Priest in Peril and the Waterfall Quest', () => {
+    test('the rows are in the table, with their names', () => {
+        expect(CONNECTORS.filter(c => c.loc.x === 3405 && c.loc.z % 6400 >= 3507).map(row)).toEqual([
+            'down Paterdomus mausoleum trapdoor loc 0:3405,3507 stand 0:3405,3506 to 0:3405,9906',
+            'up Paterdomus mausoleum ladder loc 0:3405,9907 stand 0:3405,9906 to 0:3405,3506',
+        ]);
+        // The east trapdoor has its own script (holy_barrier.rs2, in classify.ts CONNECTOR_SCRIPTS), not the generic trapdoor's.
+        expect(CONNECTORS.filter(c => c.loc.x === 3422 && c.loc.z === 3485).map(row)).toEqual([
+            'down Paterdomus temple east trapdoor loc 0:3422,3485 stand 0:3423,3485 to 0:3440,9887',
+        ]);
+        expect(CONNECTORS.filter(c => c.loc.x === 2533 && c.loc.z % 6400 >= 3155).map(row)).toEqual([
+            'down Tree Gnome Village cellar ladder loc 0:2533,3155 stand 0:2533,3156 to 0:2533,9556',
+            'up Tree Gnome Village cellar ladder loc 0:2533,9555 stand 0:2533,9556 to 0:2533,3156',
+        ]);
+        expect(CONNECTORS.filter(c => c.loc.x === 2556 && c.loc.z === 9844).map(row)).toEqual([
+            "up Glarial's tomb ladder loc 0:2556,9844 stand 0:2557,9844 to 0:2557,3444",
+        ]);
+    });
+
+    test('the holy barrier is a world row (gated by the world graph), not a climb', () => {
+        expect(WORLD.connectors.some(r => r.opName === 'Pass-through' && r.loc.x === 3440 && r.loc.z === 9886)).toBe(
+            true,
+        );
+        expect(CONNECTORS.some(c => c.loc.x === 3440 && c.loc.z === 9886)).toBe(false);
+    });
+
+    test('a walk from the temple floor goes down the trapdoor and back up the ladder', () => {
+        expect(names(planConnectors(at(0, 3409, 3489), at(0, 3405, 9906)))).toEqual([
+            'down Paterdomus mausoleum trapdoor',
+        ]);
+        expect(names(planConnectors(at(0, 3405, 9906), at(0, 3405, 3500)))).toEqual(['up Paterdomus mausoleum ladder']);
+        expect(names(planConnectors(at(2, 3409, 3485), at(0, 3405, 9906)))).toEqual([
+            'down Ladder, Temple',
+            'down Staircase, Temple',
+            'down Paterdomus mausoleum trapdoor',
+        ]);
+    });
+
+    test("the dungeon's inner gates need the quest stages the plan says it has", () => {
+        const drezel = at(0, 3440, 9895);
+        expect(planConnectors(at(0, 3400, 3489), drezel)).toBeNull();
+        expect(
+            planConnectors(at(0, 3400, 3489), drezel, undefined, acc('quest:priestperil>=4', 'quest:priestperil>=5')),
+        ).toBeNull();
+        expect(
+            names(
+                planConnectors(
+                    at(0, 3400, 3489),
+                    drezel,
+                    undefined,
+                    acc('quest:priestperil>=4', 'quest:priestperil>=5', 'quest:priestperil>=8'),
+                ),
+            ),
+        ).toEqual(['down Paterdomus mausoleum trapdoor']);
+    });
+
+    test('the east trapdoor leads from Morytania to Drezel, ungated', () => {
+        expect(names(planConnectors(at(0, 3426, 3485), at(0, 3440, 9895)))).toEqual([
+            'down Paterdomus temple east trapdoor',
+        ]);
+    });
+
+    test("the gnome cellar and Glarial's tomb ladders are planned", () => {
+        expect(names(planConnectors(at(0, 2533, 3157), at(0, 2533, 9556)))).toEqual([
+            'down Tree Gnome Village cellar ladder',
+        ]);
+        expect(names(planConnectors(at(0, 2533, 9556), at(0, 2533, 3157)))).toEqual([
+            'up Tree Gnome Village cellar ladder',
+        ]);
+        expect(names(planConnectors(at(0, 2550, 9844), at(0, 2557, 3444)))).toEqual(["up Glarial's tomb ladder"]);
+        // The tomb is entered by a scripted move (the pebble on the tombstone), not a connector.
+        expect(planConnectors(at(0, 2533, 9556), at(0, 2557, 9844))).toBeNull();
+    });
+});
+
+describe('Keep Le Faye: the locked front door', () => {
+    // quest_arthur.rs2 `_keep_lefaye_door`: from outside "The door is securely locked" (it opens from inside in game);
+    // sdk/pathfinding.ts keeps the wall of both its tiles (ONE_WAY_DOORS), so no route goes through it either way. The
+    // keep's wiki rows are unreached by design: it is entered by Merlin's Crystal's jetty crate, a scripted move.
+    test('a walk from Catherby is not planned through the door; the stairs inside still serve', () => {
+        expect(planConnectors(at(0, 2810, 3440), at(2, 2769, 3403))).toBeNull();
+        expect(names(planConnectors(at(0, 2775, 3398), at(2, 2769, 3403)))).toEqual([
+            'up Staircase, Keep Le Faye',
+            'up Staircase, Keep Le Faye',
+        ]);
+        for (const z of [3401, 3402]) {
+            const r = collisionPaths.findPath(at(0, 2764, z), at(0, 2761, z), []);
+            expect(r.reachedDestination, `door tile z ${z}`).toBe(false);
+        }
     });
 });

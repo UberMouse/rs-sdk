@@ -25,3 +25,4 @@
 | `connector:temple:3` | (3417, 3485) L1 | Staircase 1 | down (3417, 3486) by Climb-down | no | no | - | Priest in Peril at stage 4 |
 | `connector:temple:4` | (3417, 3492) | Staircase 1 | up (3416, 3493) L1 by Climb-up | no | no | - | Priest in Peril at stage 4 |
 | `connector:temple:5` | (3417, 3493) L1 | Staircase 1 | down (3417, 3494) by Climb-down | no | no | - | Priest in Peril at stage 4 |
+| `connector:temple:6` | (3422, 3485) | Trapdoor 1 | down (3440, 9887) by Open, then Climb-down | no | no | - | Priest in Peril at stage 61 |

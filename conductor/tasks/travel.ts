@@ -29,6 +29,10 @@ const Point = z.object({ x: z.number(), z: z.number() });
 const Params = z.object({
     /** The destination. `level` defaults to the bot's own (0 across the surface/underground divide). */
     to: Point.extend({ level: z.number().int().optional() }),
+    /**
+     * Requirement tokens for every walk of the trip; see AtSchema.met in lib/spot.ts for what they are and examples.
+     */
+    met: z.array(z.string()).default([]),
     /** Tiles from `to` that count as arrived. */
     tolerance: z.number().int().min(1).default(3),
     /** Points to pass in order before `to` (to keep to a safe road, or to cross a stretch the route finder cannot). */
@@ -103,7 +107,7 @@ export default defineTask({
     description:
         'Walk to a point `to` {x,z,level?} within `tolerance` (default 3) tiles, optionally through `waypoints` [{x,z}] first ' +
         '(a safe road, e.g. north of z 3240 past the Draynor dark wizards). Uses the walkTo op, so it opens the doors and gates ' +
-        'on its route and climbs the stairs of lib/connectors.ts; it never enters the Wilderness unless `wilderness: true` (then `to` may be inside it, e.g. the Wilderness agility course door 2998,3915 from Edgeville; needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and the low-hp guard fails the run when low in a fight with no food (except with `flee`, which walks on); death still ends it; walking is not stopped by attacks, so skeletons and wolves en route cost HP, not the run; carry only food and no valuables: a PvP or skeleton death loses the inventory). A destination inside the Gnome ' +
+        "on its route and climbs the stairs, ladders and trapdoors of lib/connectors.ts (including the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar, Glarial's tomb (its ladder out only: a pebble move enters it)); `met` [tokens] names requirements the plan knows the account meets that the state does not show (e.g. `quest:priestperil>=4` for the Priest in Peril temple door, which the walk plans through only with it); it never enters the Wilderness unless `wilderness: true` (then `to` may be inside it, e.g. the Wilderness agility course door 2998,3915 from Edgeville; needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and the low-hp guard fails the run when low in a fight with no food (except with `flee`, which walks on); death still ends it; walking is not stopped by attacks, so skeletons and wolves en route cost HP, not the run; carry only food and no valuables: a PvP or skeleton death loses the inventory). A destination inside the Gnome " +
         'Stronghold (the agility course start 2474,3436) goes via its entrance gate at 2459,3383, opened here ' +
         "(declining Femi's boxes dialog once). Far trips take several walks (Lumbridge to the Gnome Stronghold is about 700 tiles). " +
         'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold crosses White Wolf Mountain, ' +
@@ -181,7 +185,10 @@ export default defineTask({
                 const goal = wp ?? (gate ? GNOME_GATE.stand : to);
                 const tolerance = wp ? WAYPOINT_TOLERANCE : gate ? GATE_STAND_TOLERANCE : ctx.params.tolerance;
                 const before = tilesTo(ctx, goal.x, goal.z);
-                const r: WalkResult = yield* walkTo(ctx, goal.x, goal.z, tolerance, wp ? {} : { level: to.level });
+                const r: WalkResult = yield* walkTo(ctx, goal.x, goal.z, tolerance, {
+                    ...(wp ? {} : { level: to.level }),
+                    met: ctx.params.met,
+                });
                 const fails = ctx.streak('walkFails');
                 if (r.ok) {
                     fails.reset();

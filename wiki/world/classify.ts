@@ -60,7 +60,8 @@ const STATIONS: Record<string, FeatureKind> = {
  * The scripts whose loc op triggers make a loc a `connector`: the ladders and staircases, the generic
  * trapdoor and manhole, whose Open swaps in the open loc and whose Climb-down moves the player
  * (general_use/scripts/trapdoors.rs2, manholes.rs2), and the ships' gangplanks between quay and deck
- * (general_use/scripts/gangplank.rs2, loc categories gangplank_board and gangplank_disembark).
+ * (general_use/scripts/gangplank.rs2, loc categories gangplank_board and gangplank_disembark), and the Paterdomus
+ * east trapdoor and holy barrier (areas/area_mausoleum/scripts/holy_barrier.rs2).
  * sources/connectors.ts reads their landings.
  */
 export const CONNECTOR_SCRIPTS: readonly string[] = [
@@ -68,6 +69,9 @@ export const CONNECTOR_SCRIPTS: readonly string[] = [
     'general_use/scripts/trapdoors.rs2',
     'general_use/scripts/manholes.rs2',
     'general_use/scripts/gangplank.rs2',
+    // Priest in Peril's east trapdoor (`pipeastsidetrapdoor`: Open, then Climb-down into the mausoleum dungeon) has
+    // its own scripts, shaped as the generic trapdoor's; the holy barrier (the way back up) is in the same file.
+    'areas/area_mausoleum/scripts/holy_barrier.rs2',
 ];
 
 /** Whether a script file is in a source: a directory (ending in `/`) that holds it, or that one file. */

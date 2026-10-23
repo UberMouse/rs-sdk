@@ -260,6 +260,7 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - Knowledge: `learnings/banking.md` lacks the stand tiles in `lib/banks.ts` (Varrock East verified by smoke 2026-10-10T01-34-59-869Z-bank; Falador West/East, Edgeville map-data only; Draynor/Al Kharid skip reasons) (contract T6).
 - essence-mine: done 2026-10-16: `interactNpc(npc, option)` is in `conductor/actions/interact.ts` (with tests) and the Aubury Teleport uses it; the other raw `interactNpc` sends (bank, shop, fish, attack, pickpocket) still inline theirs.
 - Knowledge: no `wiki/skills/runecraft.md` or learnings entry for the essence-mine landing spots, the portal exit coord (defaults to Sedridor when unset), or talisman-on-ruins entry (contract T6).
+- interact/talk: `at.met` (lib/spot.ts AtSchema, requirement tokens such as `quest:priestperil>=4` passed to the walk) reaches both tasks but neither description mentions it; add the sentence from travel's description (interact.ts/talk.ts were owned by other changes during the quest-routing review) (contract T3).
 - Engine/lib: `Counter` has no read method (tasks read with `add(0)`); add `value()` (shop review).
 - Lib: pickup and fletching copy the same `attacked` step (fail on any `inCombat`); make it a
   shared guard in `lib/interrupts.ts` beside `underAttackGuard` (code-quality Q4, contract T1).

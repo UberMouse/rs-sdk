@@ -70,12 +70,19 @@ const populatedZones = new Set<string>();
 
 // One-way doors that should NOT be unmasked in the door index.
 // These doors can only be opened from one side; routing through them traps the bot.
+// The planner treats a listed door as a wall in BOTH directions (the door is not indexed), even where the game opens it
+// from the other side.
 const ONE_WAY_DOORS = new Set<string>([
     '0,3108,3353', // Draynor Manor front door (west tile) — only opens from outside
     '0,3109,3353', // Draynor Manor front door (east tile) — only opens from outside
     '0,2924,9654', // Melzar's Maze basement 'funexit' door — only opens from the maze side
     '0,2927,9649', // Melzar's Maze basement 'funexit' door — only opens from the maze side
     '0,2931,9640', // Melzar's Maze basement 'funexit' door — only opens from the maze side
+    // Keep Le Faye front door: locked from outside (quest_arthur.rs2 _keep_lefaye_door: "securely locked"). In game it
+    // opens from inside (p_teleport west), but the planner walls it both ways: the keep is entered and left by Merlin's
+    // Crystal's jetty crate.
+    '0,2763,3401', // Keep Le Faye front door (south tile)
+    '0,2763,3402', // Keep Le Faye front door (north tile)
 ]);
 
 function doorKey(level: number, x: number, z: number): string {

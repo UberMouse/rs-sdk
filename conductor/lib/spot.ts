@@ -29,6 +29,12 @@ export const AtSchema = z.object({
     z: z.number(),
     level: z.number().int().optional(),
     tolerance: z.number().int().min(1).default(DEFAULT_TOLERANCE),
+    /**
+     * Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts):
+     * `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through
+     * the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.
+     */
+    met: z.array(z.string()).optional(),
 });
 export type At = z.infer<typeof AtSchema>;
 
@@ -53,7 +59,10 @@ export function walkToSpotStep<P extends { at?: At }, M extends object>(failLimi
             // Narrowing only: when() guarantees it.
             if (!at) return;
             const before = ctx.distanceTo(at.x, at.z);
-            const r = yield* walkTo(ctx, at.x, at.z, at.tolerance, at.level === undefined ? {} : { level: at.level });
+            const r = yield* walkTo(ctx, at.x, at.z, at.tolerance, {
+                ...(at.level === undefined ? {} : { level: at.level }),
+                ...(at.met ? { met: at.met } : {}),
+            });
             const fails = ctx.streak('walkFails');
             // `ok` while not at the spot (another floor, a different measure) must count as a failure, or this loops.
             if ((r.ok && here(ctx)) || timedOutAdvancing(r, before, ctx.distanceTo(at.x, at.z))) {

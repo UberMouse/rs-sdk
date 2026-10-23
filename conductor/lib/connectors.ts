@@ -45,8 +45,11 @@ export const UNDERGROUND_Z = 6400;
  * The underground areas, as boxes of tiles (inclusive), the first match wins: the Taverley Dungeon (m44..46_152..153,
  * which interleaves with the mine's west edge, so it is two boxes listed before the mine), the mapsquares of
  * m45..47_152..153 (the Dwarven Mine under Falador, with the Mining Guild), the Varrock Sewers, the Edgeville
- * Dungeon and m48_149 (the Wizards' Tower basement). A box with a `level` holds tiles of that level only; one
- * without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
+ * Dungeon, m48_149 (the Wizards' Tower basement), and four quest areas, each the bounding box (plus a margin of
+ * 2 tiles) of a collision flood fill from its ladder's landing: the Paterdomus mausoleum dungeon (Priest in Peril),
+ * the Tree Gnome Village cellar (Golrie's), Glarial's tomb and the Waterfall dungeon with the chalice room (Waterfall
+ * Quest; the dungeon is joined to the surface by scripted moves, not a ladder). A box with a `level` holds tiles of
+ * that level only; one without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
  * connector into them.
  */
 const UNDERGROUND_AREAS: readonly {
@@ -68,6 +71,17 @@ const UNDERGROUND_AREAS: readonly {
     // The Edgeville Dungeon, including its Wilderness part north of z 9920.
     { id: 'edgeville', minX: 3072, maxX: 3199, minZ: 9792, maxZ: 9983 },
     { id: 'basement', minX: 3072, maxX: 3135, minZ: 9536, maxZ: 9599 },
+    // Priest in Peril: the Paterdomus mausoleum dungeon (flood fill x 3403..3441, z 9881..9906 from the west ladder's
+    // landing (3405, 9906), which also reaches the east trapdoor's landing (3440, 9887) by Drezel).
+    { id: 'mausoleum', minX: 3401, maxX: 3443, minZ: 9879, maxZ: 9908 },
+    // Waterfall Quest: Golrie's cellar under the Tree Gnome Village (flood fill x 2508..2552, z 9552..9584 from the
+    // ladder's landing (2533, 9556)), Glarial's tomb (x 2526..2557, z 9809..9848 from the ladder (2556, 9844)) and the
+    // Waterfall dungeon (x 2561..2595, z 9861..9917 from its entry (2575, 9861); the chalice room x 2599..2608,
+    // z 9890..9916 is a separate pocket, its own area: only scripted moves (the statue and the Door (2604, 9900)) join it to the dungeon).
+    { id: 'gnome-cellar', minX: 2506, maxX: 2554, minZ: 9550, maxZ: 9586 },
+    { id: 'glarial-tomb', minX: 2524, maxX: 2559, minZ: 9807, maxZ: 9850 },
+    { id: 'waterfall', minX: 2559, maxX: 2597, minZ: 9859, maxZ: 9919 },
+    { id: 'waterfall-chalice', minX: 2597, maxX: 2610, minZ: 9888, maxZ: 9918 },
 ];
 
 /** The plane a tile is on: its level; at level 0 underground, `u` and the area appended. */
@@ -148,6 +162,17 @@ export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
     // Varrock: the manhole (closed: "Open", then "Climb down") into the Varrock Sewers and the ladder back.
     [key(0, 3237, 3458), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
     [key(0, 3237, 9858), { name: 'Varrock Sewers manhole', hazard: VARROCK_SEWERS }],
+    // Paterdomus, north of the temple: the trapdoor (closed: "Open", then Climb-down) into the mausoleum dungeon and its
+    // ladder back. The temple's east trapdoor (3422, 3485), beside the Large door, lands by Drezel at (3440, 9887); the
+    // way back from there is the ladder at the west end or, from quest stage 61, the holy barrier.
+    [key(0, 3405, 3507), { name: 'Paterdomus mausoleum trapdoor' }],
+    [key(0, 3405, 9907), { name: 'Paterdomus mausoleum ladder' }],
+    [key(0, 3422, 3485), { name: 'Paterdomus temple east trapdoor' }],
+    // Tree Gnome Village: the ladder down into Golrie's cellar (Waterfall Quest) and the ladder back.
+    [key(0, 2533, 3155), { name: 'Tree Gnome Village cellar ladder' }],
+    [key(0, 2533, 9555), { name: 'Tree Gnome Village cellar ladder' }],
+    // Glarial's tomb (Waterfall Quest), entered by the pebble on the tombstone: its ladder up to (2557, 3444).
+    [key(0, 2556, 9844), { name: "Glarial's tomb ladder" }],
     // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
     [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
     [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],

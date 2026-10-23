@@ -1,0 +1,119 @@
+{
+    "name": "pip-temple-stage5",
+    "purpose": "Priest in Peril stage 5 (varp 302 = 5), Att/Str/Def 36, HP 38 (combat ~42), steel scimitar, kiteshield and armour worn, a Bucket and a Golden key, no food, on the Paterdomus temple ground floor inside the Large door (3410,3489). Tests walks through the temple and down its mausoleum trapdoor.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3410,
+                "z": 3489
+            },
+            "skills": {
+                "Attack": 36,
+                "Strength": 36,
+                "Defence": 36,
+                "Hitpoints": 38
+            },
+            "inventory": [
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 2944,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1193,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1157,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1119,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1069,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "302": 5
+            }
+        }
+    },
+    "sha1": "9350cf68dce9cf6271a9c8a6f4f9454db22d04bb",
+    "createdAt": "2026-10-23T07:15:24.437Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3410,
+            "z": 3489,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 36,
+            "Defence": 36,
+            "Strength": 36,
+            "Hitpoints": 38
+        },
+        "inventory": [
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 2944,
+                "name": "pipkey_gold",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1157,
+                "name": "steel_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1119,
+                "name": "steel_platebody",
+                "count": 1
+            },
+            {
+                "id": 1193,
+                "name": "steel_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1069,
+                "name": "steel_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "302": 5
+        }
+    }
+}

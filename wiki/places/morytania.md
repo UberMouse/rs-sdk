@@ -103,5 +103,5 @@
 | [Mort Myre Swamp](mort-myre-swamp.md) | npc 4 |
 | [Mort'ton](mortton.md) | shop 1, water-source 1, tree 3 |
 | [River Salve](river-salve.md) | - |
-| [Temple](temple.md) | altar 1, tree 1, connector 6 |
+| [Temple](temple.md) | altar 1, tree 1, connector 7 |
 | [The Hollows](the-hollows.md) | npc 2 |

@@ -470,3 +470,27 @@ describe('travel: wilderness opt-in', () => {
         expect(r.sends).toContain('Eat Shrimps');
     });
 });
+
+describe('travel: met', () => {
+    // The Paterdomus temple's Large door opens from outside from Priest in Peril stage 4 (the world graph's gate row
+    // `quest:priestperil>=4`); the bot cannot read the stage, so a walk plans through it only when the plan says so.
+    const OUTSIDE = world().player({ at: { x: 3400, z: 3489 } });
+    const upstairs = { x: 3416, z: 3487, level: 1 };
+    test('without met the walk does not plan through the stage-gated door', async () => {
+        const r = await simulate(travel, { params: { to: upstairs }, timeline: OUTSIDE.series(1), react: walking() });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/can't travel to .*No connector/);
+        expect(r.sends).toEqual([]);
+    });
+
+    test('met reaches the walk: the route is planned through the door to the stairs', async () => {
+        const r = await simulate(travel, {
+            params: { to: upstairs, met: ['quest:priestperil>=4'] },
+            timeline: OUTSIDE.series(1),
+            react: walking(),
+        });
+        // The scripted world has no staircase in sight, so the climb fails; the walk to its stand tile was planned.
+        expect(r.sends[0]).toBe('walk to (3417, 3486)');
+        expect(r.result.reason).not.toMatch(/No connector/);
+    });
+});

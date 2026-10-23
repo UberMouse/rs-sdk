@@ -15,15 +15,15 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `npc:keep-le-faye:0` | (2759, 3401) | Giant bat 1 | no | no | - | - |
-| `npc:keep-le-faye:1` | (2769, 3398) | Renegade Knight 3 | no | no | - | - |
-| `npc:keep-le-faye:2` | (2770, 3402) L1 | Renegade Knight 5 | no | no | - | - |
-| `npc:keep-le-faye:3` | (2769, 3403) L2 | Sir Mordred 1 | no | no | - | - |
+| `npc:keep-le-faye:1` | (2769, 3398) | Renegade Knight 3 | no | no | - | unreached |
+| `npc:keep-le-faye:2` | (2770, 3402) L1 | Renegade Knight 5 | no | no | - | unreached |
+| `npc:keep-le-faye:3` | (2769, 3403) L2 | Sir Mordred 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
 | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|
-| `connector:keep-le-faye:0` | (2769, 3398) L1 | Staircase 1 | up (2769, 3401) L2 by Climb-up | no | no | - | - |
-| `connector:keep-le-faye:1` | (2769, 3399) L2 | Staircase 1 | down (2769, 3397) L1 by Climb-down | no | no | - | - |
-| `connector:keep-le-faye:2` | (2769, 3404) | Staircase 1 | up (2769, 3407) L1 by Climb-up | no | no | - | - |
-| `connector:keep-le-faye:3` | (2769, 3405) L1 | Staircase 1 | down (2769, 3403) by Climb-down | no | no | - | - |
+| `connector:keep-le-faye:0` | (2769, 3398) L1 | Staircase 1 | up (2769, 3401) L2 by Climb-up | no | no | - | unreached |
+| `connector:keep-le-faye:1` | (2769, 3399) L2 | Staircase 1 | down (2769, 3397) L1 by Climb-down | no | no | - | unreached |
+| `connector:keep-le-faye:2` | (2769, 3404) | Staircase 1 | up (2769, 3407) L1 by Climb-up | no | no | - | unreached |
+| `connector:keep-le-faye:3` | (2769, 3405) L1 | Staircase 1 | down (2769, 3403) by Climb-down | no | no | - | unreached |
