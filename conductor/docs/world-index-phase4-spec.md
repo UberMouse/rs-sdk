@@ -160,7 +160,9 @@ only), `conductor/lib/methods.ts`, `conductor/tools/stats.ts`, tests.
 - A worker fixture bot (made by the test, at set levels and gear, no food or ample food) fights hill giants and
   records per kill: ticks, HP lost (hitsplats or HP deltas plus food healed) and the kill ledger if the engine writes
   one (§1.5 `NpcOps.ts:96-116`).
-- Compare with the model at the same profile. Within 25% on damage per kill and ticks per kill: write the measured
+- Compare with the model at the same profile. Within 25% on damage per kill and fight ticks per kill (from the
+  player's first swing to the kill; the gap between kills is the task's overhead, not the floor's, by the user's
+  decision of 2026-10-23 after the first calibration): write the measured
   figures to the method's calibration record, which opens the food gate for that NPC. Outside: investigate the
   survey §7 candidates (armour, NPC swing cadence, retaliation flinch, gaps between kills), fix the model, and re-run;
   never loosen the tolerance.
