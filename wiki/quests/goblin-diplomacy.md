@@ -50,3 +50,20 @@ None.
 | General Wartface       | Goblin Village, north of Falador             |
 | General Bentnoze       | Goblin Village, north of Falador             |
 | Goblins                | Various locations; common near Lumbridge     |
+
+## Verified run (plan `goblin-diplomacy`)
+
+`conductor/plans/goblin-diplomacy.ts` ran the whole quest on worker questw1 in 898 s: goblin-mail grind 461 s, Aggie 67, Wyson 59, Falador leg 61, onions 22, redberries 26, Port Sarim bartender 31. Start with 35+ gp (3 x 5 gp dyes + 20 gp for woad), a weapon and food. [v 2026-10-23 questw1 local]
+
+| Need | Where | Notes |
+|---|---|---|
+| Goblin mail x3 | Lumbridge goblins around (3254, 3236), radius 20 | the grind is half the run [v 2026-10-23 questw1 local] |
+| Redberries x3 | ground spawns SE Varrock (3267, 3371), (3271, 3366), (3278, 3374) | keep clear of the stone-circle dark wizards (`learnings/hazards.md`); the plan goes via (3260, 3335) [v 2026-10-23 questw1 local] |
+| Onions x2 | Lumbridge field plants (3188-3191, 3266-3268), loc "Onion", option Pick | [v 2026-10-23 questw1 local] |
+| Woad leaves x2 | Wyson the Gardener (3027, 3379): "I'm looking for woad leaves", then "How about 20 coins?" gives 2 leaves | [v 2026-10-23 questw1 local] |
+| Dyes | Aggie (3086, 3259): "Can you make dyes for me please?", then "What do you need to make <colour> dye?", then "Okay, make me some <colour> dye please." 5 gp per dye | red, yellow, blue; [v 2026-10-23 questw1 local] |
+| Orange dye, dyed mail | red on yellow dye; dye on mail; all item-on-item (`items` task, combine) | [v 2026-10-23 questw1 local] |
+| Generals | Wartface/Bentnoze at (2957, 3511) | see below |
+
+- Generals: option 3 "Do you want me to pick an armour colour for you?" exists only at stage 1. Stage 2 takes the orange mail, stage 3 the blue, stage 4 the plain (brown) one. The plan hands in orange, blue, then plain. [v 2026-10-23 questw1 local]
+- The Port Sarim bartender starts the quest; the plan is restart-safe (phases come from held items, quest tab and position). [v 2026-10-23 questw1 local]
