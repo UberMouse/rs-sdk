@@ -104,10 +104,17 @@ export interface MethodQuery {
 }
 
 /**
+ * Whether a method's npcs are fought in the Wilderness: its gather site is there, or with an area its deepest site.
+ * The player stands there to fight them, so there a hunter hunts every combat level (methodHazard).
+ */
+export function fightsInWilderness(m: Pick<ResolvedMethod, 'site' | 'areaHazard'>): boolean {
+    return Math.max(m.site.wildernessLevel, m.areaHazard?.wildernessLevel ?? 0) > 0;
+}
+
+/**
  * The hazard of a method's stops (the gather site and the sites and bare tiles its sink stops at, and an `area`
  * record's sites, ResolvedMethod.areaHazard) and its npcs, at `profile`'s combat level (from its base levels, as
- * `~player_combat_level` reads `stat_base`). An npc's Wilderness test is the gather site's, or with an area its
- * deepest site's: the player stands there to fight it.
+ * `~player_combat_level` reads `stat_base`). An npc's Wilderness test is fightsInWilderness.
  */
 export function methodHazard(
     m: Pick<ResolvedMethod, 'site' | 'sink' | 'npcs' | 'areaHazard'>,
@@ -115,7 +122,7 @@ export function methodHazard(
 ): Hazard {
     const stops = [m.site, ...sinkStops(m.sink), ...(m.areaHazard ? [m.areaHazard] : [])];
     const combat = combatLevelOf(profile);
-    const wild = Math.max(m.site.wildernessLevel, m.areaHazard?.wildernessLevel ?? 0) > 0;
+    const wild = fightsInWilderness(m);
     return {
         wildernessLevel: Math.max(...stops.map(s => s.wildernessLevel)),
         multiway: stops.some(s => s.multiway),

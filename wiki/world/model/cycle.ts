@@ -365,11 +365,13 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     if (source.restart || source.start || source.perTick !== undefined)
         throw new ModelError('a gather with a restart, a start or a perTick is not modelled');
     const tpi = withdraw === undefined ? ticksPerItem(source) : 0;
-    // A bury takes a swing gap of its own (BURY_SWING_GAP).
-    if (buries > 0 && buries > tpi / source.attackRate!)
-        throw new ModelError(
-            `${buries} bones a kill but ${tpi / source.attackRate!} swings: at most one bury a swing is modelled`,
-        );
+    // A bury takes a swing gap of its own (BURY_SWING_GAP). A kill's swings are its attempt's ticks less its free ticks
+    // (ticksPerAttempt = swings x attackRate + freeTicks, families/combat.ts); the pickup's are not swings either.
+    if (buries > 0) {
+        const swings = (source.ticksPerAttempt - (source.freeTicks ?? 0)) / source.success / source.attackRate!;
+        if (buries > swings)
+            throw new ModelError(`${buries} bones a kill but ${swings} swings: at most one bury a swing is modelled`);
+    }
     const p = source.success;
     const failsPerSuccess = (1 - p) / p;
     const stepModels = sink.mode === 'process' ? sink.steps : [];
@@ -536,6 +538,9 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     // inequality the charge is at most the play's: an undercharge, by at most min(the mean eat ticks, the mean gap) a
     // success, where some kills' eats outrun their gap though the mean gap covers the mean eats (EAT_DELAY 3, a gap
     // of 2 and an eat every second kill: 0 charged, 0.5 paid). None at a gap of 0, or one no kill's eats outrun. The
+    // charge is a floor on another count too: it assumes every eat lands in the gap after the killing swing. An eat
+    // mid-fight (where a bot eating at low HP mostly eats) adds its whole EAT_DELAY to the pending swing's
+    // %action_delay (consume.rs2:130) with no gap to absorb it: there play pays the full EAT_DELAY an eat. The
     // buries are charged as if the swings ran back to back: a bury holds the player (p_delay), so it can't go during a
     // run.
     const gapTicks = (source.freeTicks ?? 0) + pickup;

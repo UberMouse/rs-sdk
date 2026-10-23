@@ -153,7 +153,8 @@ const STYLE_XP_RATE = 400;
 const CONTROLLED_XP_RATE = 133;
 
 /**
- * The XP, in the script's tenths before XP_RATE, one hit of `damage` pays at `rate` per 100 (the constants below)
+ * The XP, in the script's tenths before the XP_RATE multiplier (model/server.ts), one hit of `damage` pays at `rate`
+ * per 100 (HITPOINTS_XP_RATE, STYLE_XP_RATE or CONTROLLED_XP_RATE above)
  * and the NPC's `combat_xp_multiplier` per 1000: `scale(mult, 1000, scale(rate, 100, damage*10))`, each scale
  * truncated (combat.rs2:89,146-167).
  */

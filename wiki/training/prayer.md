@@ -3,13 +3,13 @@
 
 3 methods train Prayer, from wiki/world/methods.ts. Every XP/hr is the floor: the tick-perfect rate, not a forecast ([README](README.md) says what each column means). XP/hr is game XP, the server's XP rate (x25) included; gp/hr is the products kept at item value (obj `cost`); Supplies/hr is how many of each supply an hour uses, and their gp value.
 
-Min is the level the whole method needs, every skill of it at that level together; a level column has Prayer at that level and every other skill at it or at the method's own level of it, whichever is higher, and `-` under the method's Prayer level. kills/hr, gp/hr, the binding term and Supplies/hr are at 99. A kill swings the weapon's style that suits Prayer (Attack accurate, Strength aggressive, Defence defensive; Hitpoints and Prayer the best of its styles). Measured is a bot's XP/hr at the level its runs started at, and in brackets it over the floor there. Below the table, each method: what it requires, its sink, a kill's hazard, its supplies, and who measured it.
+Min is the level the whole method needs, every skill of it at that level together; a level column has Prayer at that level and every other skill at it or at the method's own level of it, whichever is higher, and `-` under the method's Prayer level. kills/hr, gp/hr, the binding term and Supplies/hr are at 99. A kill swings the weapon's style that suits Prayer (Attack accurate, Strength aggressive, Defence defensive; Hitpoints and Prayer the best of its styles). Measured is a bot's XP/hr at the level its runs started at, and in brackets it over the floor there. A † marks a kill whose damage no worker run has calibrated: its XP/hr and gp/hr leave out food trips. Below the table, each method: what it requires, its sink, a kill's hazard, its supplies, and who measured it.
 
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | kills/hr | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `chickens-lumbridge` | [Misthalin](../places/misthalin.md) `npc:misthalin:38` | 34k at 1 | 60.2k | 82.9k | 97.9k | 115k | 121k | 126k | 130k | 133k | 135k | 137k | 1.22k | 12.2k | player | - |
 | `hill-giants-edgeville` | [Edgeville Dungeon](../places/edgeville-dungeon.md) `npc:edgeville-dungeon:8` | 19.2k at 20 | 12.3k | 19.2k | 30.5k | 46.5k | 57.9k | 67.8k | 83k | 92.5k | 101k | 109k | 291 | 5.04k | player | - |
-| `moss-giants-varrock-sewers` | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 14.3k at 20 | 9.84k | 14.3k | 21.6k | 32k | 39.4k | 45.8k | 56k | 62.4k | 68.1k | 73.5k | 196 | 7.53k | player | - |
+| `moss-giants-varrock-sewers` † | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 14.3k at 20 | 9.84k | 14.3k | 21.6k | 32k | 39.4k | 45.8k | 56k | 62.4k | 68.1k | 73.5k | 196 | 7.53k | player | - |
 
 - `chickens-lumbridge`: Chickens north of Lumbridge, bones buried, feathers kept. A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.
   - **Requires**: Reach: none. Levels: Attack 1, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 1. Tools: none. Gear: Bronze scimitar.
@@ -20,7 +20,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Requires**: Reach: none. Levels: Attack 20, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 20. Tools: none. Gear: Mithril scimitar, Iron kiteshield. Food: Trout.
   - **Sink**: bank at [Edgeville bank (Edgeville)](../places/edgeville-bank.md) `bank:edgeville-bank:0`; legs 105 + 105 run ticks.
   - **Hazard**: Giant hunts players of combat 56 and below; the npcs there hit for at most 4; single-way.
-  - **Supplies/hr** at 99: 42.4 Trout; 847 gp.
+  - **Supplies/hr** at 99: 42.4 Trout; 847 gp; eat ticks charged as if eaten between kills (a floor).
 - `moss-giants-varrock-sewers`: Moss giants in the Varrock Sewers, big bones buried, food from Varrock East. The four spawns of the sewers' west pocket. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.
   - **Requires**: Reach: none. Levels: Attack 20, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 20. Tools: none. Gear: Mithril scimitar, Iron kiteshield. Food: Trout.
   - **Sink**: bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 134 + 134 run ticks.

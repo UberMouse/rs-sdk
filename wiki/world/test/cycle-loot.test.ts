@@ -222,6 +222,17 @@ describe('loot policy', () => {
             /3 bones a kill but 2 swings: at most one bury a swing/,
         );
     });
+
+    test("a kill's free and pickup ticks are not swings: the bury guard counts only the swings", () => {
+        // 12 ticks with 4 free is 2 swings at attackrate 4; the 4-tick pickup adds none. 2 bones fit, 3 do not.
+        const slow = { ...kill, ticksPerAttempt: 12, freeTicks: 4, pickupTicks: 4, pAnyOf: () => 1 };
+        const bones = (count: number) => ({ ...slow, products: [{ obj: 'bones', count }] });
+        expect(looted({ bones: 'bury' }, bones(2)).trip.bury).toBe(0);
+        fails(
+            { gather: bones(3), sink: bank, loot: { bones: 'bury' }, boneXp },
+            /3 bones a kill but 2 swings: at most one bury a swing/,
+        );
+    });
 });
 
 describe('food with kept loot', () => {

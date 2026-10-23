@@ -19,7 +19,7 @@ import {
 } from '../model/method';
 import { profileAt, toolKindOfObj, type Profile, type Tools } from '../model/profile';
 import { SKILLS, TICKS_PER_HOUR, XP_RATE, type Skill } from '../model/server';
-import { methodHazard } from '../query';
+import { fightsInWilderness, methodHazard } from '../query';
 import { first } from '../sources/configs';
 import type { Site, World } from '../types';
 import { cmp } from '../util';
@@ -181,7 +181,7 @@ function skillPage(
     const hazard = (m: ResolvedMethod): string[] => {
         if (!m.npcs) return [];
         const h = methodHazard(m, column(m, 99));
-        const wild = Math.max(m.site.wildernessLevel, m.areaHazard?.wildernessLevel ?? 0) > 0;
+        const wild = fightsInWilderness(m);
         const upTo = (n: number | null): string =>
             wild ? 'every combat level (Wilderness)' : n === null ? 'any combat level' : `combat ${n} and below`;
         const hunters = m.npcs.hunters.length
@@ -214,11 +214,19 @@ function skillPage(
             const supplies = top.suppliesPerHour.map(x => `${compact(x.count)} ${obj(x.obj)}`);
             const plans = m.def.plans?.length ? ` Plans: ${m.def.plans.join(', ')}.` : '';
             const gate = gated(m, models);
-            const supplied = supplies.length ? `${supplies.join(', ')}; ${compact(top.suppliesGpPerHour)} gp` : 'none';
+            // A kill's eats are charged as if each fell between kills (model/cycle.ts swingEats): a floor.
+            const eats =
+                isKill(models) && top.suppliesPerHour.some(x => x.obj === m.def.food)
+                    ? '; eat ticks charged as if eaten between kills (a floor)'
+                    : '';
+            const supplied = supplies.length
+                ? `${supplies.join(', ')}; ${compact(top.suppliesGpPerHour)} gp${eats}`
+                : 'none';
             return {
+                gated: gate !== '',
                 tiers: ts.flatMap(t => tier(t) ?? []),
                 row: [
-                    `\`${m.def.id}\``,
+                    `\`${m.def.id}\`${gate ? ' †' : ''}`,
                     where(m.site),
                     `${compact(xp(m, column(m, m.minLevel)))} at ${m.minLevel}`,
                     ...LEVEL_COLUMNS.map(l => (l < own ? '-' : compact(xp(m, column(m, l))))),
@@ -259,8 +267,12 @@ function skillPage(
                   'defensive; Hitpoints and Prayer the best of its styles). '
                 : '') +
             "Measured is a bot's XP/hr at the " +
-            'level its runs started at, and in brackets it over the floor there. Below the table, each method: what it ' +
-            `requires, its sink, ${kills ? "a kill's hazard, " : ''}its supplies, and who measured it.`,
+            'level its runs started at, and in brackets it over the floor there. ' +
+            (rated.some(r => r.gated)
+                ? 'A † marks a kill whose damage no worker run has calibrated: its XP/hr and gp/hr leave out food trips. '
+                : '') +
+            `Below the table, each method: what it requires, its sink, ${kills ? "a kill's hazard, " : ''}its supplies, ` +
+            'and who measured it.',
         '',
         ...table(
             [

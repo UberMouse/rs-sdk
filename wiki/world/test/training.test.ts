@@ -461,7 +461,7 @@ describe('a kill method (a gather on an attack rate)', () => {
     });
     const render = (methods: WorldMethod[], calibrated: string[] = []) =>
         new Map(renderTraining({ ...world, sites: [...world.sites, rats], methods }, killData(calibrated)));
-    test('uncalibrated: kills/hr, each page on its own style, the hazard, and Food/hr uncalibrated', () => {
+    test('uncalibrated: kills/hr, each page on its own style, the hazard, Food/hr uncalibrated and the † row', () => {
         // The gate shut: no food, no drops, so the inventory never fills and a trip is one kill of 8 ticks:
         // 9000 / 8 = 1125 kills/h (1.13k). Attack (accurate) 1125 x 40 x 25 = 1,125,000 (1.13M) at every level;
         // Strength's page swings aggressive for the same.
@@ -469,8 +469,11 @@ describe('a kill method (a gather on an attack rate)', () => {
         const attack = rendered.get('wiki/training/attack.md')!;
         expect(attack).toContain('| 90 | 99 | kills/hr | gp/hr | Binding | Measured |');
         expect(attack).toContain('kills/hr, gp/hr, the binding term and Supplies/hr are at 99. A kill swings');
+        expect(attack).toContain(
+            'A † marks a kill whose damage no worker run has calibrated: its XP/hr and gp/hr leave out food trips. ',
+        );
         expect(rowIn(attack, 'rat-fight')).toEqual([
-            '`rat-fight`',
+            '`rat-fight` †',
             '[Town](../places/town.md) `npc:town:0`',
             '1.13M at 1',
             ...times(10, '1.13M'),
@@ -496,6 +499,8 @@ describe('a kill method (a gather on an attack rate)', () => {
             ),
         ).get('wiki/training/attack.md')!;
         expect(safe).toContain('  - **Supplies/hr** at 99: none.\n');
+        expect(rowIn(safe, 'rat-fight')[0]).toBe('`rat-fight`');
+        expect(safe).not.toContain('†');
         // A page with no kill has no kills/hr column.
         expect(rendered.get('wiki/training/woodcutting.md')).toBeUndefined();
         expect(new Map(renderTraining(world, data)).get('wiki/training/woodcutting.md')).not.toContain('kills/hr');
@@ -555,7 +560,11 @@ describe('a kill method (a gather on an attack rate)', () => {
         const cells = rowIn(attack, 'rat-fight-fed');
         expect(cells.slice(2, 3)).toEqual(['974k at 1']);
         expect(cells.slice(-4)).toEqual(['974', '0', 'player', '-']);
-        expect(attack).toContain('  - **Supplies/hr** at 99: 325 Trout; 1.62k gp.\n');
+        expect(attack).toContain(
+            '  - **Supplies/hr** at 99: 325 Trout; 1.62k gp; eat ticks charged as if eaten between kills (a floor).\n',
+        );
+        expect(cells[0]).toBe('`rat-fight-fed`');
+        expect(attack).not.toContain('†');
     });
 });
 

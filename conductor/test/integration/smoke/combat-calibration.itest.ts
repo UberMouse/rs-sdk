@@ -8,12 +8,13 @@
 // Each run's RESULT lines are also written to <runId>.calibration.ndjson beside its log. Damage and fight ticks that
 // agree within CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand. The 25% model gate
 // lives on the pooled record (wiki/world/test/combat-method.real.test.ts): a single run's standard error (~0.9 HP on
-// damage) is too wide to carry it. Once the giant is calibrated a run instead has to be consistent with its record,
-// within 3 combined standard errors on damage and on fight ticks (consistentWithRecord), so a game or engine change
-// that moves the figures fails here. The model-vs-run agreement is printed, not asserted.
+// damage) is too wide to carry it. A run instead has to be consistent with the giant's record, within 3 combined
+// standard errors on damage and on fight ticks (consistentWithRecord), so a game or engine change that moves the
+// figures fails here. The model-vs-run agreement is printed, not asserted.
 //
-// The profile: Defence 1 and no armour, so most of the giant's swings hit and the damage a kill is large enough to
-// measure; combat level 92, over the giants' hunt cutoff (56), so no second giant joins between kills. Strength,
+// The profile is the record's (RUN, read from CALIBRATIONS). The fixture's weapon and food ids and the task's params
+// name its gear, skill and loot by hand, so the file throws when the record moves off them. It is Defence 1 and no
+// armour, so most of the giant's swings hit and the damage a kill is large enough to measure; combat level 92, over the giants' hunt cutoff (56), so no second giant joins between kills. Strength,
 // Hitpoints and Prayer, the skills the run trains, at 99: the local XP table levels them every few kills below it,
 // which would move the max hit off the modelled profile, and a level-up's dialog interrupts the fight. A mithril
 // scimitar on Strength (aggressive, which trains neither Attack nor Defence), as the plan; lobsters, more than the
@@ -51,17 +52,28 @@ const LOBSTERS = 27;
 const MIN_KILLS = 8;
 const MINUTES = 7;
 
-/** The run's profile, as a calibration record holds it. */
+/** The hill giant's calibration record in wiki/world/methods.ts: the run repeats its profile. */
+const CALIBRATION = CALIBRATIONS.find(c => c.npc === 'giant');
+if (!CALIBRATION) throw new Error('wiki/world/methods.ts CALIBRATIONS has no hill giant (npc giant) record');
+/** The run's profile, the record's. */
 const RUN: CalibrationRun = {
-    npc: 'giant',
-    at: { level: 0, x: 3113, z: 9840 },
-    area: 14,
-    levels: { attack: 70, strength: 99, defence: 1, hitpoints: 99, prayer: 99 },
-    worn: ['mithril_scimitar'],
-    skill: 'strength',
-    food: 'lobster',
-    loot: { bones: 'bury' },
+    npc: CALIBRATION.npc,
+    at: CALIBRATION.at,
+    area: CALIBRATION.area,
+    levels: CALIBRATION.levels,
+    worn: CALIBRATION.worn,
+    skill: CALIBRATION.skill,
+    food: CALIBRATION.food,
+    loot: CALIBRATION.loot,
 };
+// The fixture's weapon and food ids and the task's params below name these: a record on other gear needs them changed.
+if (
+    JSON.stringify(RUN.worn) !== '["mithril_scimitar"]' ||
+    RUN.food !== 'lobster' ||
+    RUN.skill !== 'strength' ||
+    RUN.loot.bones !== 'bury'
+)
+    throw new Error(`the hill giant record's gear, skill or loot moved off the smoke's: ${JSON.stringify(RUN)}`);
 
 /** The model's figures for RUN: the world index resolved over the committed world.json. */
 function modelled() {
@@ -83,7 +95,7 @@ test(
         await withFixtureBot(
             {
                 position: GIANTS,
-                skills: { Attack: 70, Strength: 99, Defence: 1, Hitpoints: 99, Prayer: 99 },
+                skills: Object.fromEntries(Object.entries(RUN.levels).filter(([, l]) => l !== undefined)),
                 equipment: [{ id: MITHRIL_SCIMITAR, count: 1, slot: WEAPON_SLOT }],
                 inventory: Array.from({ length: LOBSTERS }, () => ({ id: LOBSTER, count: 1 })),
             },
@@ -110,8 +122,8 @@ test(
                     damage: agrees(model.damage, perKill.damage.mean),
                     fight: agrees(model.fight, perKill.fight.mean),
                 };
-                const record = CALIBRATIONS.find(c => c.npc === RUN.npc)?.measured;
-                const consistent = record && {
+                const record = CALIBRATION.measured;
+                const consistent = {
                     damage: consistentWithRecord(perKill.damage, { mean: record.damage, se: record.damageSe }),
                     fight: consistentWithRecord(perKill.fight, { mean: record.fight, se: record.fightSe }),
                 };
@@ -128,7 +140,6 @@ test(
                 writeFileSync(run.result.logFile.replace(/\.ndjson$/, '.calibration.ndjson'), lines.join('\n') + '\n');
                 for (const line of lines) console.log(line);
                 expect(perKill.kills, detail).toBeGreaterThanOrEqual(MIN_KILLS);
-                if (!consistent) return;
                 // Fewer than two kills leave no standard error: nothing to judge (MIN_KILLS above already fails that).
                 if (consistent.damage === null || consistent.fight === null)
                     console.log('no standard error on this run: record consistency not asserted');
