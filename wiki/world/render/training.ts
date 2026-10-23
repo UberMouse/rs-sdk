@@ -102,23 +102,24 @@ function skillPage(
     // The tool tier a page's columns pick the best of, by the obj that is one.
     const tier = (t: string): keyof Tools | null => toolKindOfObj(ctx.tools, t);
 
-    // The models at 99, a kill's on the first style the page's skill rates.
-    const models = (m: ResolvedMethod) => {
-        const top = column(m, 99);
-        return methodModels(m, top, ctx, undefined, styleParams(m.def, top, ctx, skill)[0]);
-    };
+    // Each method's models at 99, a kill's on the first style the page's skill rates: built once per method.
+    type Models = ReturnType<typeof methodModels>;
+    const at99 = new Map(
+        methods.map(m =>
+            forMethod(m, () => {
+                const top = column(m, 99);
+                return [m, methodModels(m, top, ctx, undefined, styleParams(m.def, top, ctx, skill)[0])] as const;
+            }),
+        ),
+    );
     // The tools the method carries at 99: a tier stands for the best of it usable at each column.
-    const held = (m: ResolvedMethod): string[] => {
-        const { gather, steps } = models(m);
+    const held = ({ gather, steps }: Models): string[] => {
         const actions = [...('withdraw' in gather ? [] : [gather]), ...steps.flat()];
         return [...new Set(actions.flatMap(a => a.tools ?? []))];
     };
     // A kill: a gather on an attack rate (the combat family).
-    const isKill = (m: ResolvedMethod): boolean => {
-        const { gather } = models(m);
-        return !('withdraw' in gather) && gather.attackRate !== undefined;
-    };
-    const kills = methods.some(m => forMethod(m, () => isKill(m)));
+    const isKill = ({ gather }: Models): boolean => !('withdraw' in gather) && gather.attackRate !== undefined;
+    const kills = [...at99.values()].some(isKill);
     const tools = (ts: readonly string[]): string =>
         ts
             .map(t => {
@@ -175,45 +176,44 @@ function skillPage(
         });
 
     // A kill's npcs as a hazard (ResolvedMethod.npcs, methodHazard at 99): who hunts, how hard they hit, the zones,
-    // and the target's retreat, which the floor leaves out.
+    // and the target's retreat, which the floor leaves out. In the Wilderness a hunter hunts every combat level, as
+    // methodHazard has it.
     const hazard = (m: ResolvedMethod): string[] => {
         if (!m.npcs) return [];
         const h = methodHazard(m, column(m, 99));
+        const wild = Math.max(m.site.wildernessLevel, m.areaHazard?.wildernessLevel ?? 0) > 0;
+        const upTo = (n: number | null): string =>
+            wild ? 'every combat level (Wilderness)' : n === null ? 'any combat level' : `combat ${n} and below`;
         const hunters = m.npcs.hunters.length
-            ? m.npcs.hunters
-                  .map(
-                      x =>
-                          `${npcName(x.npc)} hunts players of ${x.upTo === null ? 'any combat level' : `combat ${x.upTo} and below`}`,
-                  )
-                  .join('; ')
+            ? m.npcs.hunters.map(x => `${npcName(x.npc)} hunts players of ${upTo(x.upTo)}`).join('; ')
             : 'no npc there hunts players';
+        // An npc that can't hit (max hit 0) has no hit to state and no retreat that spares the player.
+        const hits = m.npcs.maxHit > 0;
         const zone = h.wildernessLevel > 0 ? `, Wilderness level ${h.wildernessLevel}` : '';
         const retreat =
-            m.npcs.retreat === undefined
+            m.npcs.retreat === undefined || !hits
                 ? ''
                 : ` The target retreats at ${m.npcs.retreat} HP and stops hitting back; the floor prices the kill as if it fought on.`;
-        return [
-            `  - **Hazard**: ${hunters}; the npcs there hit for at most ${m.npcs.maxHit}; ${h.multiway ? 'multiway' : 'single-way'}${zone}.${retreat}`,
-        ];
+        const maxHit = hits ? `; the npcs there hit for at most ${m.npcs.maxHit}` : '';
+        return [`  - **Hazard**: ${hunters}${maxHit}; ${h.multiway ? 'multiway' : 'single-way'}${zone}.${retreat}`];
     };
     // The food gate (model/method.ts uncalibrated): a kill that takes damage, of an npc no run has calibrated, eats
     // nothing in its floor. An npc that can't hit (the chicken's max hit 0) has no damage to gate.
-    const gated = (m: ResolvedMethod): string => {
-        const { gather } = models(m);
-        return isKill(m) && !('withdraw' in gather) && (gather.damage ?? 0) > 0 && uncalibrated(m, ctx)
+    const gated = (m: ResolvedMethod, { gather }: Models): string =>
+        !('withdraw' in gather) && gather.attackRate !== undefined && (gather.damage ?? 0) > 0 && uncalibrated(m, ctx)
             ? 'Food/hr uncalibrated: no worker run has checked the damage these kills take (wiki/world/methods.ts ' +
-                  'CALIBRATIONS), so the XP/hr leaves out food trips'
+              'CALIBRATIONS), so the XP/hr leaves out food trips'
             : '';
-    };
     const rated = methods.map(m =>
         forMethod(m, () => {
             const own = m.levels[skill]!;
             const top = rateFor(m, column(m, 99));
-            const ts = held(m);
+            const models = at99.get(m)!;
+            const ts = held(models);
             const ms = measured(m);
             const supplies = top.suppliesPerHour.map(x => `${compact(x.count)} ${obj(x.obj)}`);
             const plans = m.def.plans?.length ? ` Plans: ${m.def.plans.join(', ')}.` : '';
-            const gate = gated(m);
+            const gate = gated(m, models);
             const supplied = supplies.length ? `${supplies.join(', ')}; ${compact(top.suppliesGpPerHour)} gp` : 'none';
             return {
                 tiers: ts.flatMap(t => tier(t) ?? []),
@@ -223,7 +223,7 @@ function skillPage(
                     `${compact(xp(m, column(m, m.minLevel)))} at ${m.minLevel}`,
                     ...LEVEL_COLUMNS.map(l => (l < own ? '-' : compact(xp(m, column(m, l))))),
                     ...(kills
-                        ? [isKill(m) ? compact((TICKS_PER_HOUR / top.trip.total) * top.trip.successes) : '-']
+                        ? [isKill(models) ? compact((TICKS_PER_HOUR / top.trip.total) * top.trip.successes) : '-']
                         : []),
                     compact(top.gpPerHour),
                     top.binding,
@@ -327,9 +327,9 @@ function readme(pages: ReadonlyMap<Skill, readonly ResolvedMethod[]>): string {
             'level every skill needs at once (Min); the tools (an axe or pickaxe is the best usable at the level, ' +
             "wielded, its Attack level not checked); the gear it wears (a kill's weapon and armour); the food it eats.",
         '- **Sink**: drop, bank, or a process step then bank, with the run ticks of each leg.',
-        "- **Hazard**, a kill's: the npcs there that hunt players and up to which combat level, the largest max hit " +
-            "among them, whether it is multiway or in the Wilderness, and the target's retreat HP, which the floor " +
-            'leaves out.',
+        "- **Hazard**, a kill's: the npcs there that hunt players and up to which combat level (every one in the " +
+            'Wilderness), the largest max hit among them, whether it is multiway or in the Wilderness, and the ' +
+            "target's retreat HP, which the floor leaves out; an npc that can't hit has neither.",
         '- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99. A kill eats food only once a ' +
             "worker run has checked the model's damage on its npc (wiki/world/methods.ts CALIBRATIONS); until then, " +
             'where the npc can hit, it says Food/hr uncalibrated, and its XP/hr leaves out food trips.',
