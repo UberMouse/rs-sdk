@@ -444,3 +444,31 @@ describe('useOnNpc', () => {
         expect(result).toMatchObject({ ok: false, reason: 'refused' });
     });
 });
+
+describe('interact: dialog pages the client recorded', () => {
+    const levelUp = ['Congratulations, you just advanced a Woodcutting level.'];
+
+    test('a message box page alone is the effect (the Chaos altar)', async () => {
+        const { result } = await runOp(
+            after(x => x.recentDialog(['Snarthon Candtrick Termanto'])),
+            ctx => interact(ctx, coffin, /^open$/i),
+        );
+        expect(result).toEqual({ ok: true, effect: 'a dialog page appeared: "Snarthon Candtrick Termanto"' });
+    });
+
+    test('a level-up page alone is not the effect of a discarded op', async () => {
+        const states = after(x => x.recentDialog(levelUp), INTERACT_WAIT_TICKS + 3).map((s, i) =>
+            feedback(i === 0 ? 0 : 1)(s),
+        );
+        const { result } = await runOp(states, ctx => interact(ctx, coffin, /^open$/i));
+        expect(result).toMatchObject({ ok: false, reason: 'rejected' });
+    });
+
+    test('a refusal message beside a stray page is a failure, not the effect', async () => {
+        const { result } = await runOp(
+            after(x => x.message('Nothing interesting happens.').recentDialog(['Some NPC line'])),
+            ctx => interact(ctx, coffin, /^open$/i),
+        );
+        expect(result).toMatchObject({ ok: false, reason: 'refused' });
+    });
+});

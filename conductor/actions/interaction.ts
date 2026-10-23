@@ -6,7 +6,7 @@ import { type Op, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
 import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc, sendUseOnNpc } from './interact';
-import { CANT_REACH, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
+import { CANT_REACH, dialogPageSince, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
 
 /** Ticks to wait for the effect (10 s as `use`: the walk up to the target plus the action). */
 export const INTERACT_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
@@ -163,6 +163,12 @@ function verdictOf(
     }
     const refusal = messages.find(m => REFUSAL.test(m.text));
     if (refusal) return { kind: 'failed', reason: 'refused', message: `${name}: "${refusal.text}"` };
+    if (!expect) {
+        // A message box the op opened can be clicked away (the dialog guard) before the wait sees it open; the
+        // page the client recorded is still the effect (the Chaos altar's inscription). A refusal outranks it.
+        const page = dialogPageSince(s, cursor);
+        if (page) return { kind: 'effect', effect: `a dialog page appeared: "${page}"` };
+    }
     const bare = expect ? undefined : messages.find(m => s.tick - m.tick >= grace);
     return bare ? { kind: 'effect', effect: `game message "${bare.text}"` } : null;
 }

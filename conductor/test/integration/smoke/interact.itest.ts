@@ -232,3 +232,45 @@ test(
     },
     itestTimeout({ taskMinutes: 2 }),
 );
+
+// Port Sarim jeweller's Door (quests/quest_arthur/scripts/quest_arthur.rs2 oploc1,jewellersdoor): with the Lady's
+// test started (bit 2 of varp 15) opening it starts the Beggar's choice dialog, which `choices` answers. The Beggar gives Excalibur for one Bread (beggar.rs2).
+const JEWELLER_DOOR = { x: 3015, z: 3246 };
+const ARTHUR_VARP = 14;
+const EXCALIBUR_COMPONENTS_VARP = 15;
+const EXCALIBUR_STARTED_MASK = 4;
+const BREAD = 2309;
+
+test(
+    'interact opens the jeweller door and answers the beggar it starts',
+    async () => {
+        await withFixtureBot(
+            {
+                position: JEWELLER_DOOR,
+                inventory: [{ id: BREAD, count: 1 }],
+                varps: { [ARTHUR_VARP]: 4, [EXCALIBUR_COMPONENTS_VARP]: EXCALIBUR_STARTED_MASK },
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Door$',
+                        option: '^Open$',
+                        tile: { x: 3016, z: 3246 },
+                        choices: ['Yes certainly'],
+                    },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.reason, detail).toMatch(/1 choice made/);
+                // Bread given, Excalibur received.
+                expect(run.result.inventoryDelta.Excalibur, detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);

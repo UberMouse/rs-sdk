@@ -167,6 +167,7 @@ for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temp
   he asks "Have you got any bread for me yet?", choose "Yes, here you go.", `beggar.rs2:1-13`, `quest_arthur.rs2:212-215`).
 - Refused the beggar ("No I don't have any bread with me.", which the dialog guard's decline would pick): bit 3 is set;
   as above.
+- Catalog recipe for the beggar door: `interact {target:"loc", name:"^Door$", option:"^Open$", tile:{x:3016,z:3246}, choices:["Yes certainly"]}` from (3015,3246) answers the dialog the Door opens (without `choices` the guard would pick the decline). The Chaos altar `interact` Check ends done on its inscription page. [v 2026-10-24 questw3 local]
 - Lost Excalibur at stage 4-5: talk to the Lady again ("I seek the sword Excalibur."), which resets bits 2-4, and redo
   the beggar. At stage 6 or later (and after the quest) she sells it back for 500 coins (`lady_of_the_lake.rs2:20-35`).
 - Lost or burned the candle (a wrong phrase) at stage 4: ask the Candle maker "Have you got any black candles?"
