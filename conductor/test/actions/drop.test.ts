@@ -84,4 +84,25 @@ describe('dropOres', () => {
         const { result } = await runOp(mixed.series(1), ctx => dropOres(ctx, LOGS), { respond: refuse });
         expect(result).toBe(0);
     });
+
+    test('untilDialog ends the wait on a dialog the drop opens, with the item still held', async () => {
+        const bones = world().inv('Bat bones', 1, { id: 530 });
+        const spirit = { text: 'Suddenly a mighty spirit appears!', options: [] };
+        const { result, sends, driver } = await runOp(
+            [bones.build(), bones.tick(1).build(), bones.tick(2).dialog(spirit).build()],
+            ctx => drop(ctx, /bat bones/i, 1, { untilDialog: true }),
+        );
+        expect(result).toEqual({ ok: true, slotsDropped: 0, dialogOpened: true });
+        expect(sends).toHaveLength(1);
+        expect(driver.state().tick).toBeLessThan(DROP_WAIT_TICKS);
+    });
+
+    test('without untilDialog the same dialog is no evidence', async () => {
+        const bones = world().inv('Bat bones', 1, { id: 530 });
+        const spirit = { text: 'Suddenly a mighty spirit appears!', options: [] };
+        const { result } = await runOp([bones.build(), bones.dialog(spirit).tick(1).build()], ctx =>
+            drop(ctx, /bat bones/i, 1),
+        );
+        expect(result).toMatchObject({ ok: false, reason: 'timeout' });
+    });
 });

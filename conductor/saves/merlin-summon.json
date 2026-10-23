@@ -1,0 +1,86 @@
+{
+    "name": "merlin-summon",
+    "purpose": "Merlin's Crystal step 8-11 state (varps 14=4, 15=1) at the magic symbol (2780,3515) holding Black candle, Tinderbox, Bat bones, Excalibur; combat ~40. Tests items task: light candle, drop bones.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2780,
+                "z": 3515
+            },
+            "skills": {
+                "Attack": 33,
+                "Strength": 33,
+                "Defence": 33,
+                "Hitpoints": 33
+            },
+            "inventory": [
+                {
+                    "id": 38,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 530,
+                    "count": 1
+                },
+                {
+                    "id": 35,
+                    "count": 1
+                }
+            ],
+            "varps": {
+                "14": 4,
+                "15": 1
+            }
+        }
+    },
+    "sha1": "e17db35a8d040f21e8e863cedf50083e8d8ab8bd",
+    "createdAt": "2026-10-23T07:04:15.001Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2780,
+            "z": 3515,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 33,
+            "Defence": 33,
+            "Strength": 33,
+            "Hitpoints": 33
+        },
+        "inventory": [
+            {
+                "id": 38,
+                "name": "unlit_black_candle",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 530,
+                "name": "bat_bones",
+                "count": 1
+            },
+            {
+                "id": 35,
+                "name": "excalibur",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "14": 4,
+            "15": 1,
+            "281": 1000
+        }
+    }
+}

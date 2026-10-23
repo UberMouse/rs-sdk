@@ -1,0 +1,134 @@
+{
+    "name": "geared-melee",
+    "purpose": "Full adamant set, rune scimitar and amulet of power worn, runes and a rope in the pack, at Lumbridge (3222,3218). Tests items task unequip/equip.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 60
+            },
+            "inventory": [
+                {
+                    "id": 556,
+                    "count": 50
+                },
+                {
+                    "id": 558,
+                    "count": 30
+                },
+                {
+                    "id": 954,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1161,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1731,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1123,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1199,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1073,
+                    "count": 1,
+                    "slot": 7
+                }
+            ]
+        }
+    },
+    "sha1": "c217ebb5cebe22a27424e5c75d61146848a453ef",
+    "createdAt": "2026-10-23T07:04:15.539Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 60
+        },
+        "inventory": [
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 50
+            },
+            {
+                "id": 558,
+                "name": "mindrune",
+                "count": 30
+            },
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1161,
+                "name": "adamant_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1731,
+                "name": "amulet_of_power",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1123,
+                "name": "adamant_platebody",
+                "count": 1
+            },
+            {
+                "id": 1199,
+                "name": "adamant_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1073,
+                "name": "adamant_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

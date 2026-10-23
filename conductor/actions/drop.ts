@@ -12,7 +12,7 @@ import type { ActionContext } from './context';
 export const DROP_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 
 export type DropResult =
-    | { ok: true; slotsDropped: number }
+    | { ok: true; slotsDropped: number; dialogOpened?: true }
     | {
           ok: false;
           reason: 'invalid-amount' | 'no-item' | 'send-failed' | 'timeout' | 'too-few';
@@ -24,8 +24,17 @@ export type DropResult =
  * Drops `amount` inventory slots (a stack is one slot) of the first item matching `item`, one at a
  * time, waiting for each to leave the inventory. The item id is pinned at the start, so the pattern
  * can't drift onto another item it also matches. `'all'` drops every slot of it.
+ *
+ * Some drops act on the item instead of (or before) dropping it: Bat bones dropped on the magic symbol
+ * summon Thrantax and stay in the pack. With `untilDialog` a dialog the drop opens also ends the wait,
+ * and the op returns `ok` with `dialogOpened` (the item may still be held) and drops no more.
  */
-export function* drop(ctx: ActionContext, item: RegExp, amount: number | 'all' = 'all'): Op<DropResult> {
+export function* drop(
+    ctx: ActionContext,
+    item: RegExp,
+    amount: number | 'all' = 'all',
+    opts: { untilDialog?: boolean } = {},
+): Op<DropResult> {
     let wanted = Number.POSITIVE_INFINITY;
     if (amount !== 'all') {
         const valid = validateActionQuantity(amount, { max: INVENTORY_SLOTS });
@@ -47,7 +56,9 @@ export function* drop(ctx: ActionContext, item: RegExp, amount: number | 'all' =
         if (!sent.success) return { ok: false, reason: 'send-failed', slotsDropped, message: sent.message };
         const w = yield* wait(
             `drop ${current.name}`,
-            st => st.inventory.filter(matches).length < slotsBefore,
+            st =>
+                st.inventory.filter(matches).length < slotsBefore ||
+                (!!opts.untilDialog && st.dialog.isOpen && !s.dialog.isOpen),
             DROP_WAIT_TICKS,
         );
         if (w.kind === 'timeout')
@@ -56,6 +67,12 @@ export function* drop(ctx: ActionContext, item: RegExp, amount: number | 'all' =
                 reason: 'timeout',
                 slotsDropped,
                 message: `Drop of ${first.name} (slot ${current.slot}) was not observed`,
+            };
+        if (opts.untilDialog && w.state.dialog.isOpen && !s.dialog.isOpen)
+            return {
+                ok: true,
+                slotsDropped: w.state.inventory.filter(matches).length < slotsBefore ? slotsDropped + 1 : slotsDropped,
+                dialogOpened: true,
             };
         slotsDropped++;
         s = w.state;
