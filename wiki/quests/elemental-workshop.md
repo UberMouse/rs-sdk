@@ -27,7 +27,7 @@ Quest id `elemental_workshop`; varp `elemental_workshop_bits` (id 299), complete
 
 ## Walkthrough (verified route)
 
-Plan `conductor/plans/elemental-workshop.ts`: from a fresh load of `lib:elemental-workshop-start` (Seers' Village bank (2725,3492), Att 45 Str 50 Def 40 HP 50, Mining/Smithing/Crafting 20, steel scimitar worn, knife, bronze pickaxe, hammer, needle, thread, leather, 4 coal, 14 lobsters) the quest finished in 279 s. Status: proven; a one-field fix plus a rerun is pending before promotion. [v 2026-10-23 questw6 local]
+Plan `conductor/plans/elemental-workshop.ts`: from a fresh load of `lib:elemental-workshop-start` (Seers' Village bank (2725,3492), Att 45 Str 50 Def 40 HP 50, Mining/Smithing/Crafting 20, steel scimitar worn, knife, bronze pickaxe, hammer, needle, thread, leather, 4 coal, 14 lobsters) the quest finished in 227-279 s (two fresh-load runs; the `defend` phase fights the aggressive workshop elementals). Promoted. [v 2026-10-23 questw6 local]
 
 1. **Bookcase** (2716,3481) in a house (door (2713,3483)); stand (2714,3481), tolerance 1. Gives a "Battered book" once. Read it (option "Read") to start the quest (tab yellow).
 2. Use a knife (or any slash weapon) on the book: "Battered key". Neither is consumed; keep the book for the shield.
