@@ -2,9 +2,9 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Quartermaster](../npcs/quartermaster.md) |
 | **Location** | Quests |
-| **Coordinates** | not placed: regicidegeneralshopkeeper.rs2 opens it from Quartermaster, whose shop site records another of their shops; Quartermaster at (2194, 3140) in [Tirannwn](../places/tirannwn.md) |
+| **Coordinates** | (2194, 3140) in [Tirannwn](../places/tirannwn.md) |
 | **Type** | General Store |
 
 ## Stock

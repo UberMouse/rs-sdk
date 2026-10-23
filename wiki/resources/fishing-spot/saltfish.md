@@ -5,7 +5,7 @@ In-game name: Fishing spot. 9 sites with 23 placed in all; 5 of the sites in F2P
 
 ## Data
 
-The options of each spot config placed in the world (its npc config).
+The options of each spot config placed in the world (its npc or loc config).
 
 | Config | Name | Options |
 |---|---|---|
@@ -18,6 +18,21 @@ The options of each spot config placed in the world (its npc config).
 | 0_47_57_saltfish | Fishing spot | Net, Bait |
 | 0_48_50_saltfish | Fishing spot | Net, Bait |
 | 0_51_49_saltfish | Fishing spot | Net, Bait |
+
+What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+
+| Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
+|---|---|---|---|---|---|---|---|---|
+| Net | 1 | Small fishing net | - | Raw shrimps | 10 | 48 | 256 | skill_fishing/scripts/fishing_spots/saltfish.rs2:60 |
+| Net | 15 | Small fishing net | - | Raw anchovies | 40 | 24 | 128 | skill_fishing/scripts/fishing_spots/saltfish.rs2:60 |
+| Bait | 5 | Fishing rod | Fishing bait | Raw sardine | 20 | 32 | 192 | skill_fishing/scripts/fishing_spots/saltfish.rs2:128 |
+| Bait | 10 | Fishing rod | Fishing bait | Raw herring | 30 | 24 | 128 | skill_fishing/scripts/fishing_spots/saltfish.rs2:128 |
+
+Where an option catches two fish, ~fish_roll rolls the higher-level one first, from its level, and the other only when that roll misses (skill_fishing/scripts/fishing.rs2:46-72; ~fish_roll_loc's :75-103 the same); the bait goes only on a catch.
+
+Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Fishing level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+The server multiplies the base XP by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Zaff](../npcs/zaff.md) |
 | **Location** | Varrock |
 | **Coordinates** | (3203, 3433) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |

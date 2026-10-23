@@ -3,6 +3,7 @@
 // `fishing_struct` param (configs/fishing.obj) names its struct (configs/fishing.struct): success_low/high and
 // productexp. Spots move (fishing_movement.rs2) but never run out, so the model has no `deplete`.
 import { codeOf } from '../../classify';
+import type { Config } from '../../sources/configs';
 import { parseCallables, parseTriggers } from '../../sources/triggers';
 import { ModelError, type ActionModel } from '../family';
 import { statRandomChance } from '../../roll';
@@ -82,10 +83,22 @@ export function parseCatch(body: string, source: string): Catch | null {
     return { ...base, fish1: high.fish1, fish2: { obj: high.fish2!, level: Number(guard) } };
 }
 
-/** A spot's catches by tool, and the tools its scripts check that no catch covers (a custom roll: big net). */
+/** What one op trigger on a spot fishes with. */
+export interface SpotOp {
+    /** The tool its body or a label it jumps to checks, the key into Spot.catches; null when none checks one. */
+    tool: string | null;
+    /** `file:line` of the body that checks the tool, else of the trigger. */
+    source: string;
+}
+
+/**
+ * A spot's catches by tool, the tools its scripts check that no catch covers (a custom roll: big net), and each op
+ * trigger's tool by its op (`1`-`5`, `u`).
+ */
 export interface Spot {
     catches: Map<string, Catch>;
     unmodelled: Set<string>;
+    ops: Map<string, SpotOp>;
 }
 
 /**
@@ -98,7 +111,7 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
     const spots = new Map<string, Spot>();
     for (const t of files.flatMap(([f, text]) => parseTriggers(f, text))) {
         if (t.kind !== 'op') continue;
-        const spot = spots.get(t.target) ?? { catches: new Map(), unmodelled: new Set() };
+        const spot = spots.get(t.target) ?? { catches: new Map(), unmodelled: new Set(), ops: new Map() };
         spots.set(t.target, spot);
         const bodies = [
             { body: t.body, source: `${t.file}:${t.line}` },
@@ -107,9 +120,11 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
                 return label ? [{ body: label.body, source: `${label.file}:${label.line}` }] : [];
             }),
         ];
+        let op: SpotOp = { tool: null, source: `${t.file}:${t.line}` };
         for (const { body, source } of bodies) {
             const c = parseCatch(body, source);
             const tool = codeOf(body).match(TOOL)?.[1];
+            if (tool && op.tool === null) op = { tool, source };
             if (c) {
                 const prior = spot.catches.get(c.tool);
                 if (prior && JSON.stringify({ ...prior, source: '' }) !== JSON.stringify({ ...c, source: '' }))
@@ -117,21 +132,28 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
                 spot.catches.set(c.tool, prior ?? c);
             } else if (tool && /~fish_roll|stat_random\(fishing/.test(codeOf(body))) spot.unmodelled.add(tool);
         }
+        spot.ops.set(t.op, op);
     }
     for (const spot of spots.values()) for (const tool of spot.catches.keys()) spot.unmodelled.delete(tool);
     return spots;
 }
 
+/** A fish's roll (`success_low`/`success_high`) and XP in tenths (`productexp`), from its fishing struct. */
+export function fishStruct(
+    objs: ReadonlyMap<string, Config>,
+    structs: ReadonlyMap<string, Config>,
+    obj: string,
+): { low: number; high: number; xp: number } {
+    const name = param(objs.get(obj), 'fishing_struct');
+    const struct = name === undefined ? undefined : structs.get(name);
+    const [low, high, xp] = ['success_low', 'success_high', 'productexp'].map(k => Number(param(struct, k)));
+    if (![low, high, xp].every(Number.isFinite)) throw new Error(`${obj} has no complete fishing struct (${name})`);
+    return { low: low!, high: high!, xp: xp! };
+}
+
 export const fishing: FamilyFactory = data => {
     const spots = readSpots(data.scripts);
-    /** A fish's roll and XP from its fishing struct. */
-    const fish = (obj: string): { low: number; high: number; xp: number } => {
-        const name = param(data.objs.get(obj), 'fishing_struct');
-        const struct = name === undefined ? undefined : data.structs.get(name);
-        const [low, high, xp] = ['success_low', 'success_high', 'productexp'].map(k => Number(param(struct, k)));
-        if (![low, high, xp].every(Number.isFinite)) throw new Error(`${obj} has no complete fishing struct (${name})`);
-        return { low: low!, high: high!, xp: xp! };
-    };
+    const fish = (obj: string) => fishStruct(data.objs, data.structs, obj);
     return {
         id: 'fishing',
         skills: ['fishing'],

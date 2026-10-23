@@ -3,6 +3,7 @@
 // and the paths pages link by.
 import { params } from '../classify';
 import { parseRequirement } from '../requirements';
+import type { Spot } from '../model/families/fishing';
 import { first, type Config } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
 import type { Feature, FeatureKind, SinkKind, Site, Tile, World } from '../types';
@@ -121,6 +122,11 @@ export interface PageData {
     dbrows: readonly DbRow[];
     npcConfigs: ReadonlyMap<string, Config>;
     objConfigs: ReadonlyMap<string, Config>;
+    locConfigs: ReadonlyMap<string, Config>;
+    /** The struct configs: a fish's `fishing_struct` param names its roll and XP (fishStruct). */
+    structs: ReadonlyMap<string, Config>;
+    /** Every fishing spot subtype's catches and ops, as readSpots reads them. */
+    fishingSpots: ReadonlyMap<string, Spot>;
     /** The title each explicit `~openshop(<inv>, ..., "<title>")` call gives its inv (openshopTitles). */
     shopTitles: ReadonlyMap<string, string>;
     /** Each quest's name in the quest list, by its questlist component (`zanaris` -> `Lost City`). */

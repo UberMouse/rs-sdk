@@ -1,6 +1,7 @@
 // wiki/resources/<kind>/<subtype>.md: what the game data says about one resource subtype (the dbrow the
-// skill script reads, or a fishing spot's options), then every site holding it.
+// skill script reads, or a fishing spot's options and what each catches), then every site holding it.
 import { rockSubtype, treeSubtype } from '../classify';
+import { fishStruct } from '../model/families/fishing';
 import { statRandomRule } from '../roll';
 import { first } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
@@ -103,6 +104,106 @@ function lapSection(site: Site, world: World): string[] {
     ];
 }
 
+/** A config placed in the world, and whether it is a loc or an npc. */
+type Placed = Pick<Feature, 'config' | 'source'>;
+
+const SPOT_OPS = ['1', '2', '3', '4', '5'];
+
+/**
+ * A fishing spot's options, then what each option catches: its level, tool, bait and fish from the spot scripts
+ * (readSpots), each fish's XP and roll from its fishing struct. An option whose catch readSpots cannot read has a row
+ * saying so, citing the script, so no option is left out.
+ */
+function fishingSection(subtype: string, configs: readonly Placed[], data: PageData): string[] {
+    const f = facts(data);
+    const cfgs = configs.map(c => ({
+        config: c.config,
+        cfg: (c.source === 'loc' ? data.locConfigs : data.npcConfigs).get(c.config),
+    }));
+    // A `hidden` op is one the scripts re-enter (p_opnpc, p_oploc: memberfish.rs2, lavafish_loc.rs2), not an option a
+    // player clicks.
+    const shown = (cfg: (typeof cfgs)[number]['cfg']): [op: string, name: string][] =>
+        SPOT_OPS.flatMap(op => {
+            const name = first(cfg, `op${op}`);
+            return name === undefined || name === 'hidden' ? [] : [[op, name]];
+        });
+    const options = new Map<string, Set<string>>();
+    for (const { cfg } of cfgs)
+        for (const [op, name] of shown(cfg)) options.set(op, (options.get(op) ?? new Set()).add(name));
+    const spot = data.fishingSpots.get(subtype);
+    let twoFish = false;
+    const rows = [...options]
+        .sort(([a], [b]) => cmp(a, b))
+        .flatMap(([op, names]): string[][] => {
+            const option = [...names].sort(cmp).join(' / ');
+            const o = spot?.ops.get(op);
+            const c = o?.tool ? spot!.catches.get(o.tool) : undefined;
+            if (!c) {
+                const where = o ? o.source : `no op${op} trigger on ${subtype} in skill_fishing/scripts/fishing_spots`;
+                const tool = o?.tool ? f.objName(o.tool) : '-';
+                return [
+                    [
+                        option,
+                        '-',
+                        tool,
+                        '-',
+                        "can't read this catch: not a plain ~fish_roll loop",
+                        '-',
+                        '-',
+                        '-',
+                        where,
+                    ],
+                ];
+            }
+            if (c.fish2) twoFish = true;
+            const fish = [{ obj: c.fish1, level: c.level }, ...(c.fish2 ? [c.fish2] : [])];
+            return fish.map(({ obj, level }) => {
+                const s = fishStruct(data.objConfigs, data.structs, obj);
+                return [
+                    option,
+                    String(level),
+                    f.objName(c.tool),
+                    c.bait ? f.objName(c.bait) : '-',
+                    f.objName(obj),
+                    String(s.xp / 10),
+                    String(s.low),
+                    String(s.high),
+                    c.source,
+                ];
+            });
+        });
+    return [
+        'The options of each spot config placed in the world (its npc or loc config).',
+        '',
+        ...table(
+            ['Config', 'Name', 'Options'],
+            cfgs.map(({ config, cfg }) => [
+                config,
+                first(cfg, 'name') ?? config,
+                shown(cfg)
+                    .map(([, n]) => n)
+                    .join(', ') || '-',
+            ]),
+        ),
+        '',
+        "What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.",
+        '',
+        ...(rows.length
+            ? table(['Option', 'Level', 'Tool', 'Bait', 'Catch', 'Base XP', 'Low', 'High', 'Source'], rows)
+            : ['No config of this subtype shows an option.']),
+        '',
+        ...(twoFish
+            ? [
+                  "Where an option catches two fish, ~fish_roll rolls the higher-level one first, from its level, and the other only when that roll misses (skill_fishing/scripts/fishing.rs2:46-72; ~fish_roll_loc's :75-103 the same); the bait goes only on a catch.",
+                  '',
+              ]
+            : []),
+        statRandomRule('Fishing'),
+        '',
+        'The server multiplies the base XP by its xpRate (25 on the local server, learnings/local-server.md).',
+    ];
+}
+
 /**
  * The data section of a subtype's page, by kind; `configs` are the placed configs of the subtype, `holding` its
  * sites.
@@ -110,7 +211,7 @@ function lapSection(site: Site, world: World): string[] {
 function dataSection(
     kind: ResourceKind,
     subtype: string,
-    configs: readonly string[],
+    configs: readonly Placed[],
     holding: readonly Site[],
     world: World,
     data: PageData,
@@ -193,20 +294,7 @@ function dataSection(
             ];
         }
         case 'fishing-spot':
-            return [
-                'The options of each spot config placed in the world (its npc config).',
-                '',
-                ...table(
-                    ['Config', 'Name', 'Options'],
-                    configs.map(c => {
-                        const cfg = data.npcConfigs.get(c);
-                        const ops = ['op1', 'op2', 'op3', 'op4', 'op5']
-                            .map(op => first(cfg, op))
-                            .filter((o): o is string => o !== undefined && o !== 'hidden');
-                        return [c, first(cfg, 'name') ?? c, ops.join(', ') || '-'];
-                    }),
-                ),
-            ];
+            return fishingSection(subtype, configs, data);
         case 'stall': {
             const rows = f.rows('stealing', r => value(r, 'loc') === subtype);
             if (!rows.length) return NO_ROW('stealing');
@@ -327,7 +415,9 @@ export function renderResources(world: World, data: PageData): Page[] {
             const path = resourcePath(kind, subtype);
             if (out.has(path)) throw new Error(`${kind} subtypes share the page ${path}`);
             const title = !TITLED_BY_NAME.has(kind) ? subtype : named.get(name)! > 1 ? `${name} (${subtype})` : name;
-            const configs = [...new Set(features.map(f => f.config))].sort(cmp);
+            const configs = [
+                ...new Map(features.map(f => [f.config, { config: f.config, source: f.source }])).values(),
+            ].sort((a, b) => cmp(a.config, b.config));
             const f2p = holding.filter(s => s.f2p).length;
             const row = (s: Site): string[] => [
                 areaCell(path, areas, s.areaPath),

@@ -8,7 +8,7 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `shop:varrock:0` | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | no | - | - |
-| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - | - |
+| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1, Zaff's Superior Staffs! (staffshop) 1 | yes | no | - | - |
 | `shop:varrock:2` | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - | - |
 | `shop:varrock:3` | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | no | - | - |
 | `shop:varrock:4` | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | no | - | - |

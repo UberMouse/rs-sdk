@@ -176,6 +176,21 @@ describe('rules', () => {
         expect(one('npc', 'zaff', { param: ['owned_shop,a'] }, { triggers })?.subtype).toBe('b');
     });
 
+    test('every inv the triggers open is a shop of its own, each once; owned_shop only when none is named', () => {
+        // Razmire's Talk-to reaches two store labels (razmire_keelgan.rs2:240, :243); a third label repeats one.
+        const triggers = [trig('a.rs2', 'npc', 'razmire', '\n@general;\n@building;\n@again;', false, '1')];
+        const callables = [
+            label('@general', '\n~openshop(generalstore, 400, 1300, 30, "General");'),
+            label('@building', '\n~openshop(buildingstore, 650, 1050, 40, "Builders");'),
+            label('@again', '\n~openshop(generalstore, 400, 1300, 30, "General");'),
+        ];
+        const cfg = { name: ['Razmire'], param: ['owned_shop,ownstore'] };
+        expect(classify('npc', 'razmire', cfg, { triggers, callables })).toEqual([
+            { kind: 'shop', subtype: 'buildingstore', name: 'Razmire' },
+            { kind: 'shop', subtype: 'generalstore', name: 'Razmire' },
+        ]);
+    });
+
     test('a call inside a // comment does not count; one in a string does not end the line', () => {
         const commented = [trig('a.rs2', 'loc', 'chest', '\n// @openbank;\n~x; // ~openshop(a, 1, 1, 1, "S");')];
         expect(one('loc', 'chest', {}, { triggers: commented })).toBeNull();
@@ -403,6 +418,23 @@ describe('type changes', () => {
             ],
         );
         expect(run('npc', 'afflicted')).toEqual([{ kind: 'shop', subtype: 'store', name: 'Razmire' }]);
+    });
+
+    test('changed-into configs give every distinct shop they open, each once', () => {
+        const run = among(
+            'npc',
+            [
+                ['afflicted', { name: ['Razmire'] }],
+                ['keeper', { name: ['Razmire'] }],
+                ['other', { name: ['Razmire'] }],
+            ],
+            [
+                trig('a.rs2', 'npc', 'afflicted', '\nnpc_changetype(keeper, 200);\nnpc_changetype(other, 200);'),
+                trig('a.rs2', 'npc', 'keeper', '\n~openshop(a, 1, 1, 1, "A");\n~openshop(b, 1, 1, 1, "B");'),
+                trig('a.rs2', 'npc', 'other', '\n~openshop(c, 1, 1, 1, "C");\n~openshop(a, 1, 1, 1, "A");'),
+            ],
+        );
+        expect(run('npc', 'afflicted').map(x => x.subtype)).toEqual(['a', 'b', 'c']);
     });
 
     test('a changed-into kind arrives through the op that makes the change, for the clash rule', () => {

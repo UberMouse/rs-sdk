@@ -2,9 +2,9 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Zaff](../npcs/zaff.md) |
 | **Location** | Varrock |
-| **Coordinates** | not placed: zaff.rs2 opens it from Zaff, whose shop site records another of their shops; Zaff at (3203, 3433) in [Varrock (Misthalin)](../places/varrock.md) |
+| **Coordinates** | (3203, 3433) in [Varrock (Misthalin)](../places/varrock.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

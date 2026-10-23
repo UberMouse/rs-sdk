@@ -5,11 +5,21 @@ In-game name: Fishing spot. 3 sites with 3 placed in all; 0 of the sites in F2P;
 
 ## Data
 
-The options of each spot config placed in the world (its npc config).
+The options of each spot config placed in the world (its npc or loc config).
 
 | Config | Name | Options |
 |---|---|---|
 | 0_43_47_karambwanji | Fishing spot | Net |
+
+What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+
+| Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
+|---|---|---|---|---|---|---|---|---|
+| Net | - | Small fishing net | - | can't read this catch: not a plain ~fish_roll loop | - | - | - | skill_fishing/scripts/fishing_spots/tbwt.rs2:25 |
+
+Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Fishing level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+The server multiplies the base XP by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

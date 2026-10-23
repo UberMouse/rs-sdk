@@ -5,7 +5,7 @@ In-game name: Fishing spot. 5 sites with 24 placed in all; 1 of the sites in F2P
 
 ## Data
 
-The options of each spot config placed in the world (its npc config).
+The options of each spot config placed in the world (its npc or loc config).
 
 | Config | Name | Options |
 |---|---|---|
@@ -14,6 +14,20 @@ The options of each spot config placed in the world (its npc config).
 | 0_41_57_rarefish | Fishing spot | Cage, Harpoon |
 | 0_44_53_rarefish | Fishing spot | Cage, Harpoon |
 | 0_45_49_rarefish | Fishing spot | Cage, Harpoon |
+
+What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+
+| Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
+|---|---|---|---|---|---|---|---|---|
+| Cage | 40 | Lobster pot | - | Raw lobster | 90 | 6 | 95 | skill_fishing/scripts/fishing_spots/rarefish.rs2:79 |
+| Harpoon | 35 | Harpoon | - | Raw tuna | 80 | 8 | 64 | skill_fishing/scripts/fishing_spots/rarefish.rs2:185 |
+| Harpoon | 50 | Harpoon | - | Raw swordfish | 100 | 4 | 48 | skill_fishing/scripts/fishing_spots/rarefish.rs2:185 |
+
+Where an option catches two fish, ~fish_roll rolls the higher-level one first, from its level, and the other only when that roll misses (skill_fishing/scripts/fishing.rs2:46-72; ~fish_roll_loc's :75-103 the same); the bait goes only on a catch.
+
+Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Fishing level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+The server multiplies the base XP by its xpRate (25 on the local server, learnings/local-server.md).
 
 ## Sites
 

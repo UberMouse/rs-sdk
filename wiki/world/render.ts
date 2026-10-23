@@ -5,6 +5,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, join, relative } from 'path';
 import { ROOT, SCRIPTS, WORLD_JSON } from './paths';
+import { readSpots } from './model/families/fishing';
 import type { MethodModel } from './model/method';
 import { link } from './render/common';
 import { renderPlaces } from './render/places';
@@ -13,7 +14,7 @@ import { renderServices } from './render/services';
 import { renderTraining, type TrainingData } from './render/training';
 import { first, parseConfigs, readConfigs } from './sources/configs';
 import { readDbrows } from './sources/dbrows';
-import { readCallables, readTriggers } from './sources/triggers';
+import { readCallables, readScripts, readTriggers } from './sources/triggers';
 import { refuseSymlink, WIKI_README } from './stale';
 import type { World } from './types';
 import { cmp } from './util';
@@ -129,6 +130,9 @@ export function readRenderData(model: MethodModel): RenderData {
         dbrows: readDbrows(),
         npcConfigs: readConfigs('npc'),
         objConfigs: readConfigs('obj'),
+        locConfigs: readConfigs('loc'),
+        structs: readConfigs('struct'),
+        fishingSpots: readSpots(readScripts()),
         model,
         shopTitles: openshopTitles([...readTriggers(), ...readCallables()].map(s => s.body)),
         questNames: questListNames(readFileSync(join(SCRIPTS, QUESTLIST), 'utf8')),

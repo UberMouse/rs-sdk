@@ -54,6 +54,8 @@ interface ShopPage {
     shopTitle: string;
     inventory: ShopInventory;
     owners: ShopOwner[];
+    /** Npcs with a shop feature of this inventory in the world index that no owned_shop param names (Razmire). */
+    keepers: string[];
     location: string;
     isGeneralStore: boolean;
 }
@@ -267,11 +269,11 @@ function readOpeners(): Map<string, Openers> {
  *   the mean tile of those features there, which is the shopkeeper's spawn when one keeps it, and the
  *   site's area linked to its place page.
  * - A shop no site records is "not placed", with the reason in the data (world.real.test.ts pins
- *   these pages): no script opens the inventory, or one does but classify.ts gives its shopkeeper the
- *   first shop its script opens (members worlds, a quest stage, a menu choice). Where that script is
- *   reached from the shopkeeper's own op trigger, the shopkeeper's shop sites follow, as they are
- *   this shop's too; a call reached only through a dialogue choice's label argument
- *   (razmire_keelgan.rs2) names no npc, so only the file is given.
+ *   these pages): no script opens the inventory, or one does but no shop feature has it (classify.ts
+ *   gives a shopkeeper a feature per inventory its triggers open, so only an unplaced or unclassified
+ *   opener leaves one out). Where that script is reached from an npc's own op trigger, the npc's shop
+ *   sites follow; a call reached only through a dialogue choice's label argument names no npc, so
+ *   only the file is given.
  */
 function shopLocator(world: World): (inv: string, pagePath: string) => string {
     const areas = areasOf(world);
@@ -497,8 +499,20 @@ export function shopPages(
 
     const built: ShopPage[] = [];
 
+    // inventory -> npc config -> name, from the world index's npc shop features.
+    const featureKeepers = new Map<string, Map<string, string>>();
+    for (const f of world.features) {
+        if (f.kind !== 'shop' || f.source !== 'npc') continue;
+        if (!featureKeepers.has(f.subtype)) featureKeepers.set(f.subtype, new Map());
+        featureKeepers.get(f.subtype)!.set(f.config, f.name);
+    }
+
     for (const [shopName, inventory] of allShops) {
         const owners = shopOwners.get(shopName) || [];
+        const ownerConfigs = new Set(owners.map(o => o.npcConfigName));
+        const keepers = [...new Set(
+            [...(featureKeepers.get(shopName) || [])].filter(([config]) => !ownerConfigs.has(config)).map(([, name]) => name)
+        )].sort(cmp);
         const primaryOwner = owners[0];
 
         const shopTitle = (primaryOwner?.shopTitle || prettifyConfigName(shopName)).replace(/\.$/, '');
@@ -511,6 +525,7 @@ export function shopPages(
             shopTitle,
             inventory,
             owners,
+            keepers,
             location,
             isGeneralStore: inventory.allstock,
         });
@@ -578,11 +593,12 @@ function generateShopMarkdown(
     lines.push('|---|---|');
 
     // Owner(s)
-    if (page.owners.length > 0) {
-        const ownerLinks = page.owners.map(o => {
-            const npcSlug = slugify(o.npcDisplayName);
+    const ownerNames = [...page.owners.map(o => o.npcDisplayName), ...page.keepers];
+    if (ownerNames.length > 0) {
+        const ownerLinks = ownerNames.map(name => {
+            const npcSlug = slugify(name);
             const npcPagePath = `../npcs/${npcSlug}.md`;
-            return `[${o.npcDisplayName}](${npcPagePath})`;
+            return `[${name}](${npcPagePath})`;
         });
         lines.push(`| **Owner** | ${ownerLinks.join(', ')} |`);
     } else {

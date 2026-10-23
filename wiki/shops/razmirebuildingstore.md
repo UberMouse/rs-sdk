@@ -2,9 +2,9 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Afflicted(Razmire)](../npcs/afflicted-razmire.md) |
 | **Location** | Unpack |
-| **Coordinates** | not placed: razmire_keelgan.rs2 opens it, but no shop site records it |
+| **Coordinates** | (3489, 3296) in [Mort'ton (Morytania)](../places/mortton.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

@@ -2,9 +2,9 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Dommik](../npcs/dommik.md) |
 | **Location** | Al Kharid |
-| **Coordinates** | not placed: dommik.rs2 opens it from Dommik, whose shop site records another of their shops; Dommik at (3322, 3194) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
+| **Coordinates** | (3322, 3194) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
 | **Type** | Specialty Shop |
 
 ## Stock

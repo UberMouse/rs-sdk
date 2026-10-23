@@ -33,7 +33,8 @@ interface Match {
     ops: string[];
 }
 
-type Rule = (on: 'loc' | 'npc', config: string, cfg: Config) => Match | null;
+/** A rule's matches on a config: one, or several of its kind (an npc that opens two shops), or none. */
+type Rule = (on: 'loc' | 'npc', config: string, cfg: Config) => Match | readonly Match[] | null;
 
 /** A match made by data rather than a trigger: it shares an op with every other match. */
 const ANY_OP = '*';
@@ -217,7 +218,7 @@ function clash(a: string[], b: string[]): string | undefined {
 }
 
 // The fallback: an attackable npc no other rule claimed, so it never counts as a second match.
-const npc: Rule = (on, config, cfg) =>
+const npc = (on: 'loc' | 'npc', config: string, cfg: Config): Match | null =>
     on === 'npc' && OPS.some(op => first(cfg, op) === 'Attack') && hasCombatStats(cfg)
         ? { kind: 'npc', subtype: config, ops: [ANY_OP] }
         : null;
@@ -348,15 +349,19 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     // A shop opens through ~openshop(<inv>, ...) or, for most shopkeepers, ~openshop_activenpc, which
     // opens the npc's owned_shop param (shop/scripts/shop.rs2). The subtype is the inv either way; an
     // explicit call names its inv, so it wins over owned_shop, which is right only when none is named.
+    // Every inv the triggers reach is a shop of its own: Razmire's dialogue opens two
+    // (quest_mortton/scripts/razmire_keelgan.rs2:240, :243).
     const shop: Rule = (on, config, cfg) => {
         const ts = reaching(on, config, cfg, /~openshop(\(|_activenpc\b)/);
         if (!ts.length) return null;
         const owned = on === 'npc' ? params(cfg).get('owned_shop') : undefined;
-        const explicit = ts
-            .flatMap(t => reach(t.body))
-            .map(({ body }) => body.match(/~openshop\(([a-z0-9_]+)/)?.[1])
-            .find(Boolean);
-        return { kind: 'shop', subtype: explicit ?? owned ?? '', ops: opsOf(ts) };
+        const explicit = new Set(
+            ts
+                .flatMap(t => reach(t.body))
+                .flatMap(({ body }) => [...body.matchAll(/~openshop\(([a-z0-9_]+)/g)].map(m => m[1]!)),
+        );
+        const invs = explicit.size ? [...explicit].sort(cmp) : [owned ?? ''];
+        return invs.map(subtype => ({ kind: 'shop', subtype, ops: opsOf(ts) }));
     };
 
     // The tanning interface opens from areas/area_alkharid/scripts/tanner.rs2 [label,tan_leather_choices].
@@ -430,7 +435,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         const cfg = configsOf(on).get(config) ?? {};
         return rules.flatMap(([n, r]) => {
             const hit = r(on, config, cfg);
-            return hit ? [[n, hit] as const] : [];
+            return (hit === null ? [] : Array.isArray(hit) ? hit : [hit]).map(h => [n, h] as const);
         });
     };
 
@@ -479,9 +484,20 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         // search turns it into the looted loc_2572, also a thieving chest: skill_thieving/scripts/
         // chest/trapped_chest.rs2), so a changed-into hit adds only kinds not yet found.
         const hits = [...ruleHits(on, config)];
-        for (const hit of changedHits(on, config)) if (!hits.some(([, h]) => h.kind === hit[1].kind)) hits.push(hit);
+        // Two changed-into configs of one kind and subtype are one use.
+        const own = new Set(hits.map(([, h]) => h.kind));
+        const changed = new Set<string>();
+        for (const [n, h] of changedHits(on, config)) {
+            const use = `${h.kind}:${h.subtype}`;
+            if (own.has(h.kind) || changed.has(use)) continue;
+            changed.add(use);
+            hits.push([n, h]);
+        }
+        // Matches of one kind do not clash: one rule's several (Razmire's two shops through one Talk-to)
+        // are one use reached the same way, and so are changed-into configs' of one kind.
         hits.forEach(([a, x], i) => {
             for (const [b, y] of hits.slice(i + 1)) {
+                if (x.kind === y.kind) continue;
                 const op = clash(x.ops, y.ops);
                 if (op !== undefined) throw new Error(`${key} matches rules ${a}, ${b} through op ${op}`);
             }

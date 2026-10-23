@@ -795,7 +795,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
 
     const unpacked: string[] = [];
     const features: Feature[] = [];
-    // One feature per kind classify gives a placement (Fadli is a bank and a shop). Spawns without
+    // One feature per use classify gives a placement (Fadli is a bank and a shop, Razmire two shops). Spawns without
     // combat stats need no filter: classify.ts gives the `npc` kind only to configs that have them.
     const place = (source: 'loc' | 'npc', id: number, rest: Pick<Feature, 'tile' | 'shape' | 'rotation'>): void => {
         const config = packs[source].name.get(id);

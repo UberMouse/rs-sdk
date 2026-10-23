@@ -289,10 +289,16 @@ function npcLocator(world: World, movement: (config: string) => NpcMovement): (c
 
     // config -> kind -> site -> the config's spawn tiles in it
     const bySite = new Map<string, Map<FeatureKind, Map<Site, Tile[]>>>();
+    // A config of two subtypes of one kind (Razmire's two shops) has a feature of each on every spawn: one subtype's
+    // features count the spawns.
+    const subtypeOf = new Map<string, string>();
     world.features.forEach((f, i) => {
         if (f.source !== 'npc') return;
         const site = siteOf.get(i);
         if (!site) throw new Error(`world.json: feature ${i} (${f.config}) is in no site`);
+        const key = `${f.config}:${f.kind}`;
+        if ((subtypeOf.get(key) ?? f.subtype) !== f.subtype) return;
+        subtypeOf.set(key, f.subtype);
         if (!bySite.has(f.config)) bySite.set(f.config, new Map());
         const kinds = bySite.get(f.config)!;
         if (!kinds.has(f.kind)) kinds.set(f.kind, new Map());

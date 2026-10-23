@@ -58,7 +58,11 @@ describe('classifier on the real game data', () => {
     });
 
     test('shops and the tanners', () => {
-        expect(c('npc', 'zaff')).toMatchObject([{ kind: 'shop', subtype: 'memberstaffshop' }]);
+        // Both branches of `if(map_members = ^true)` (area_varrock/scripts/zaff.rs2:15-18).
+        expect(c('npc', 'zaff')).toMatchObject([
+            { kind: 'shop', subtype: 'memberstaffshop' },
+            { kind: 'shop', subtype: 'staffshop' },
+        ]);
         expect(c('npc', 'tanner')[0]?.kind).toBe('tanner');
         expect(c('npc', 'werewolftanner')[0]?.kind).toBe('tanner');
     });
@@ -71,9 +75,12 @@ describe('classifier on the real game data', () => {
         expect(c('npc', 'noobbanker')).toEqual([{ kind: 'bank', subtype: 'banker', name: 'Banker' }]);
         // Its @multi2 passes tan_leather_choices (minigames/game_ranging/scripts/leatherworker.rs2).
         expect(c('npc', 'ranging_guild_leatherworker')).toMatchObject([{ kind: 'tanner' }]);
-        // Talk-to reaches @razmire_talk's store menu, the general store first
-        // (quests/quest_mortton/scripts/razmire_keelgan.rs2).
-        expect(c('npc', 'razmire_keelgan_afflicted')).toMatchObject([{ kind: 'shop', subtype: 'razmiregeneralstore' }]);
+        // Talk-to reaches @razmire_talk's store menu, which opens both stores
+        // (quests/quest_mortton/scripts/razmire_keelgan.rs2:240, :243).
+        expect(c('npc', 'razmire_keelgan_afflicted')).toMatchObject([
+            { kind: 'shop', subtype: 'razmirebuildingstore' },
+            { kind: 'shop', subtype: 'razmiregeneralstore' },
+        ]);
     });
 
     test('the Shantay jail fine opens the bank, but makes neither Shantay nor his prison door a bank', () => {
@@ -84,13 +91,16 @@ describe('classifier on the real game data', () => {
     test('every loc and npc config classifies without two rules clashing; only Fadli has two kinds', () => {
         const errors: string[] = [];
         const multi: string[] = [];
+        const shops: string[] = [];
         for (const [on, configs] of [
             ['loc', locConfigs],
             ['npc', npcConfigs],
         ] as const) {
             for (const name of configs.keys()) {
                 try {
-                    if (c(on, name).length > 1) multi.push(`${on}:${name}`);
+                    const out = c(on, name);
+                    if (new Set(out.map(x => x.kind)).size > 1) multi.push(`${on}:${name}`);
+                    if (out.filter(x => x.kind === 'shop').length > 1) shops.push(`${on}:${name}`);
                 } catch (e) {
                     errors.push((e as Error).message);
                 }
@@ -98,5 +108,15 @@ describe('classifier on the real game data', () => {
         }
         expect(errors).toEqual([]);
         expect(multi).toEqual(['npc:duel_fadli']);
+        // Configs opening two inventories (world.real.test.ts has the five placed ones); razmire_keelgan, the form a
+        // serum turns Razmire into (razmire_keelgan.rs2:36), opens them on op3 and op4 (:1-25) and is placed nowhere.
+        expect(shops.sort()).toEqual([
+            'npc:dommik',
+            'npc:razmire_keelgan',
+            'npc:razmire_keelgan_afflicted',
+            'npc:regicidegeneralshopkeeper',
+            'npc:rommik',
+            'npc:zaff',
+        ]);
     });
 });

@@ -181,6 +181,9 @@ const data: RenderData = {
         ['rune_axe', { name: ['Rune axe'] }],
         ['dramen_staff', { name: ['Dramen staff'] }],
     ]),
+    locConfigs: new Map(),
+    structs: new Map(),
+    fishingSpots: new Map(),
     shopTitles: new Map(),
     questNames: new Map(),
     readmeBody: '\nHand-written.\n',
@@ -531,11 +534,47 @@ const namedData: RenderData = {
         ['fadli', { param: ['owned_shop,rottenshop', "shop_title,Fadli's Shop"] }],
         ['junkman', { param: ['owned_shop,othershop', 'shop_title,Other Shop'] }],
     ]),
-    objConfigs: new Map([
+    objConfigs: new Map<string, Config>([
         ['iron_ore', { name: ['Iron ore'] }],
         ['cake', { name: ['Cake'] }],
         ['coins', { name: ['Coins'] }],
         ['bronze_axe', { name: ['Bronze axe'] }],
+        ['net', { name: ['Small fishing net'] }],
+        ['fishing_rod', { name: ['Fishing rod'] }],
+        ['raw_shrimp', { name: ['Raw shrimps'], param: ['fishing_struct,fs_shrimps'] }],
+        ['raw_anchovies', { name: ['Raw anchovies'], param: ['fishing_struct,fs_anchovies'] }],
+    ]),
+    locConfigs: new Map(),
+    structs: new Map([
+        ['fs_shrimps', { param: ['productexp,100', 'success_low,48', 'success_high,256'] }],
+        ['fs_anchovies', { param: ['productexp,400', 'success_low,24', 'success_high,128'] }],
+    ]),
+    // Net catches shrimps, anchovies from 15; Bait's rod has no catch readSpots reads.
+    fishingSpots: new Map([
+        [
+            'saltfish',
+            {
+                catches: new Map([
+                    [
+                        'net',
+                        {
+                            tool: 'net',
+                            level: 1,
+                            delay: 4,
+                            fish1: 'raw_shrimp',
+                            fish2: { obj: 'raw_anchovies', level: 15 },
+                            bait: null,
+                            source: 'saltfish.rs2:60',
+                        },
+                    ],
+                ]),
+                unmodelled: new Set(['fishing_rod']),
+                ops: new Map([
+                    ['1', { tool: 'net', source: 'saltfish.rs2:26' }],
+                    ['3', { tool: 'fishing_rod', source: 'saltfish.rs2:84' }],
+                ]),
+            },
+        ],
     ]),
     shopTitles: new Map([['rottenshop', 'Shop of Distaste']]),
     questNames: new Map(),
@@ -702,12 +741,26 @@ describe('in-game names and resource data', () => {
         `);
         expect(dataOf('wiki/resources/fishing-spot/saltfish.md')).toMatchInlineSnapshot(`
           "
-          The options of each spot config placed in the world (its npc config).
+          The options of each spot config placed in the world (its npc or loc config).
 
           | Config | Name | Options |
           |---|---|---|
           | 0_1_saltfish | Fishing spot | Net, Bait |
           | 0_2_saltfish | Fishing spot | - |
+
+          What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+
+          | Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
+          |---|---|---|---|---|---|---|---|---|
+          | Net | 1 | Small fishing net | - | Raw shrimps | 10 | 48 | 256 | saltfish.rs2:60 |
+          | Net | 15 | Small fishing net | - | Raw anchovies | 40 | 24 | 128 | saltfish.rs2:60 |
+          | Bait | - | Fishing rod | - | can't read this catch: not a plain ~fish_roll loop | - | - | - | saltfish.rs2:84 |
+
+          Where an option catches two fish, ~fish_roll rolls the higher-level one first, from its level, and the other only when that roll misses (skill_fishing/scripts/fishing.rs2:46-72; ~fish_roll_loc's :75-103 the same); the bait goes only on a catch.
+
+          Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Fishing level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
+
+          The server multiplies the base XP by its xpRate (25 on the local server, learnings/local-server.md).
 
           "
         `);

@@ -640,6 +640,15 @@ describe('fishing', () => {
             'skill_fishing/scripts/fishing_spots/freshfish.rs2:4',
         );
         expect([...spots.get('memberfish')!.unmodelled]).toEqual(['big_net']);
+        // Each op names the tool of the label it jumps to, read or not.
+        expect(spots.get('freshfish')!.ops).toEqual(
+            new Map([
+                ['4', { tool: 'fly_fishing_rod', source: 'skill_fishing/scripts/fishing_spots/freshfish.rs2:4' }],
+            ]),
+        );
+        expect(spots.get('memberfish')!.ops).toEqual(
+            new Map([['4', { tool: 'big_net', source: 'skill_fishing/scripts/fishing_spots/memberfish.rs2:2' }]]),
+        );
     });
 
     test('trout and salmon fly fishing at Fishing 40', () => {

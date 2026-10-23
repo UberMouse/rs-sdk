@@ -7,7 +7,7 @@ The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `shop:tirannwn:0` | (2194, 3140) | Quartermaster's Stores (regicide_general_shop_2) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `shop:tirannwn:0` | (2194, 3140) | Quartermaster's Stores (regicide_general_shop) 1, Quartermaster's Stores (regicide_general_shop_2) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## [Water sources](../services/water-source.md)
 

@@ -2,7 +2,7 @@
 
 | Detail | |
 |---|---|
-| **Owner** | Unknown |
+| **Owner** | [Afflicted(Razmire)](../npcs/afflicted-razmire.md) |
 | **Location** | Unpack |
 | **Coordinates** | (3489, 3296) in [Mort'ton (Morytania)](../places/mortton.md) |
 | **Type** | General Store |

@@ -1,11 +1,15 @@
 // Fishing spots over the committed world.json and the real game data: where a shore's spots can move to, the area
-// that covers them, the Catherby shore's region, and the shark catch beside tuna and swordfish.
+// that covers them, the Catherby shore's region, the shark catch beside tuna and swordfish, and what each page says
+// every option catches.
 import { describe, expect, test } from 'bun:test';
+import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
 import { reachCollision } from '../collision';
 import { loadWorld } from '../load';
 import { METHODS } from '../methods';
 import { readGameData } from '../model/families/index';
 import { legFinder } from '../model/legs';
+import { ROOT } from '../paths';
 import { methodModel, methodRate, resolveMethods, type MethodContext } from '../model/method';
 import { profileOf, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
@@ -113,5 +117,54 @@ describe('sharks', () => {
             );
         expect(fishXp('shark-catherby-cook-bank', 84)).toBeGreaterThan(450_000);
         expect(fishXp('shark-catherby-cook-bank', 99)).toBeGreaterThan(fishXp('shark-catherby-cook-bank', 84));
+    });
+});
+
+/** A page's table rows under `header`, as cells. */
+const rows = (page: string, header: string): string[][] => {
+    const lines = page.split('\n');
+    const at = lines.indexOf(header);
+    if (at < 0) return [];
+    const out: string[][] = [];
+    for (const line of lines.slice(at + 2)) {
+        if (!line.startsWith('|')) break;
+        out.push(line.slice(2, -2).split(' | '));
+    }
+    return out;
+};
+
+describe('fishing pages', () => {
+    const dir = join(ROOT, 'wiki/resources/fishing-spot');
+    const pages = new Map(readdirSync(dir).map(f => [f.replace(/\.md$/, ''), readFileSync(join(dir, f), 'utf8')]));
+    const YIELDS = '| Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |';
+    const UNREAD = "can't read this catch: not a plain ~fish_roll loop";
+
+    test('every option of every spot config has a catch row, or one saying the catch is not read', () => {
+        expect(pages.size).toBeGreaterThan(0);
+        for (const [subtype, page] of pages) {
+            const options = new Set(rows(page, '| Config | Name | Options |').flatMap(r => r[2]!.split(', ')));
+            options.delete('-');
+            const caught = rows(page, YIELDS);
+            expect([subtype, [...new Set(caught.map(r => r[0]))].sort()]).toEqual([subtype, [...options].sort()]);
+            for (const r of caught) {
+                expect(r[4] === UNREAD || r[1] !== '-').toBe(true);
+                expect(r[8]).toMatch(/^skill_fishing\/scripts\/fishing_spots\/[a-z_]+\.rs2:\d+$/);
+            }
+        }
+    });
+
+    test('shark, lobster, tuna and swordfish read as their scripts and fishing.struct have them', () => {
+        // memberfish.rs2:14 and rarefish.rs2:23, :128, :175 gate them; fishing.struct holds the XP tenths and roll.
+        const catches = (subtype: string) => rows(pages.get(subtype)!, YIELDS).map(r => r.slice(0, 8).join(' | '));
+        expect(catches('memberfish')).toContain('Harpoon | 76 | Harpoon | - | Raw shark | 110 | 3 | 40');
+        expect(catches('rarefish')).toEqual([
+            'Cage | 40 | Lobster pot | - | Raw lobster | 90 | 6 | 95',
+            'Harpoon | 35 | Harpoon | - | Raw tuna | 80 | 8 | 64',
+            'Harpoon | 50 | Harpoon | - | Raw swordfish | 100 | 4 | 48',
+        ]);
+        expect(pages.get('rarefish')).toContain('~fish_roll rolls the higher-level one first');
+        // Big net, karambwanji, karambwan and lava eel roll their own way: each says so.
+        for (const subtype of ['memberfish', 'category_632', 'category_633', '0_45_152_lavafish', 'loc_2630'])
+            expect(rows(pages.get(subtype)!, YIELDS).some(r => r[4] === UNREAD)).toBe(true);
     });
 });

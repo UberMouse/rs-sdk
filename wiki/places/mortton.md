@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `shop:mortton:0` | (3489, 3296) | Razmire General Store. (razmiregeneralstore) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `shop:mortton:0` | (3489, 3296) | Razmire Builders Merchants. (razmirebuildingstore) 1, Razmire General Store. (razmiregeneralstore) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## [Water sources](../services/water-source.md)
 
