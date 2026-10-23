@@ -103,6 +103,8 @@ if (gate) {
 
 A `--until minutes:N` stop can land while the player is fighting. The next `combat` run is then refused ("in combat at (x,z)") until the fight ends; wait for `player.combat.inCombat` to clear (or kill the target) before relaunching. Level-up dialogs during fights (10 in 2 min at low levels) are handled by the engine's dialog interrupt. [v 2026-10-09 conductor1 local]
 
+A level-up dialog can interrupt the until-level check, so a plan's combat phase may end one kill late and overshoot its target by a level (Attack 21 for a goal of 20). [v 2026-10-23 conductor3 local]
+
 ## Finding New Targets
 
 After killing an NPC, find the next one quickly:
