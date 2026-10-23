@@ -17,10 +17,16 @@ const anyBead = (v: { inv(n: string): number }) => BEADS.some(b => v.inv(b) > 0)
 const started = (v: PlanView) => v.quest('imp') !== 'none' || anyBead(v);
 const hasAll = (v: { inv(n: string): number }) => BEADS.every(b => v.inv(b) > 0);
 
-// Areas stay south of z 3520 (the Wilderness).
+// Camp the Falador-south spawn cluster with a wide area and a long respawn wait; the wide stray areas behind it run only
+// when the camp phase ends empty. combat attacks only inside `area`, so every area is wide. Areas stay south of z 3520
+// (the Wilderness).
 const SPOTS = [
-    { name: 'imp-lumbridge', x: 3217, z: 3240, radius: 35 },
-    { name: 'imp-varrock', x: 3215, z: 3425, radius: 45 },
+    { name: 'imp-camp-falador-s', x: 3012, z: 3311, radius: 55, wait: 600 },
+    { name: 'imp-lumbridge', x: 3205, z: 3240, radius: 60, wait: 60 },
+    { name: 'imp-draynor', x: 3073, z: 3252, radius: 55, wait: 60 },
+    { name: 'imp-champions', x: 3205, z: 3355, radius: 55, wait: 0 },
+    { name: 'imp-varrock-e', x: 3235, z: 3400, radius: 60, wait: 0 },
+    { name: 'imp-edgeville', x: 3085, z: 3455, radius: 55, wait: 0 },
 ];
 const isSpot = (name: string | undefined) => SPOTS.some(s => s.name === name);
 
@@ -39,7 +45,13 @@ export default definePlan({
         ...SPOTS.map((s, i) =>
             phase(
                 combat,
-                { target: 'Imp', area: { x: s.x, z: s.z, radius: s.radius }, loot: BEADS, respawnWaitTicks: 300 },
+                {
+                    target: 'Imp',
+                    area: { x: s.x, z: s.z, radius: s.radius },
+                    loot: BEADS,
+                    respawnWaitTicks: s.wait,
+                    skill: 'Strength',
+                },
                 {
                     name: s.name,
                     // Ring: after a spot fails the next one runs; any other previous phase starts at the first spot
