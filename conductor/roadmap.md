@@ -67,6 +67,28 @@ dispatches pass `model: sonnet` too.
 (thieve-55-coins, 263 turns) was dispatched before the rule and spent its turns polling (four `sleep` calls blocked by
 the harness, a nonexistent Monitor tool, three SubagentHandback repeats refused as "already delivered").
 
+**Account 2026-10-24 (retro #3):** total 595; Thieving/Cooking/Fishing 99, Strength 54, Agility 52, Prayer 49, Magic 44
+(Imp Catcher done 23:50, Falador-south r55 camp ~85 kills/h), HP 42, Attack 28, Defence 20, ten skills at 1. Imp
+Catcher amulet in hand. Crafting 80 resumed 2026-10-24 after Imp Catcher (runner in flight; draft
+`conductor/runs/conductor3/plans/crafting80.ts`, `interact` `npcId` 43 for woolly sheep landed 4778e2480).
+
+**Queue now (retro #3), in order.** Quest plans proven on workers by the quest-library session (Cook's Assistant, Restless
+Ghost, Rune Mysteries, Priest in Peril to 61, Imp Catcher, Knight's Sword, Elemental Workshop; Druidic Ritual, Ernest, Goblin
+Diplomacy, Romeo & Juliet plans exist, Waterfall proven to the chest, Digsite and Merlin walkthroughs written) are the cheapest
+XP left: run them in this order because each unlocks or lumps a band.
+1. Melee to a safe floor (Att 28 -> ~40, Def 20 -> ~40) with `combat` `targetRange: "visible"` once landed (the
+   modified combat.ts in the tree), because Knight's Sword (blurite fight killed a combat-55 start), Waterfall and
+   Priest in Peril fights need it. Hill giants plan (`hill-giants`, bones for Prayer) is the vehicle.
+2. Mine to 10, then **Knight's Sword** (Smithing 1 -> ~82, 318k XP; plan `knights-sword`, 761 s) before any Smithing.
+3. **Waterfall** (Att/Str 83 at 25x) once its plan is landed; then **Elemental Workshop** (plan `elemental-workshop`, 227-279 s;
+   server script says Crafting 50k + Smithing 50k, unconfirmed by a run: record the measured XP).
+4. Druidic Ritual (Herblore 28 lump; Digsite checks Herblore 10) then **Digsite**
+   (Mining 382k + Herblore 50k) before any Mining past 10; Priest in Peril to 61 for Morytania.
+5. 32 QP set (Romeo & Juliet, Goblin Diplomacy, Ernest, Cook's Assistant, + route quests) -> rune sword, Dragon Slayer.
+6. Then (Crafting 80 is in flight now) gathering/production 99s from the new floors, and the long poles (Herblore, Runecraft, Prayer).
+Before each run, check the plan's `until`/`when` gates and the combat floor: three plan runs this week were killed or
+mis-gated, not lost to the game.
+
 Account (2026-10-23 09:00): total 490; Thieving 99, Cooking 95, Fishing 91, Agility 52, Prayer 49, Attack 28, HP 26,
 Str/Def 20, the other nine skills at 1; ~25.5k coins banked; at Ardougne.
 Next milestone: Fishing 99 + Cooking 99 (sharks, see Experiments), then melee/Prayer (Waterfall, hill giants), then the
@@ -82,13 +104,13 @@ quest page for its own requirements before planning it. Status is conductor3's.
 | Runecraft (essence mine) | Rune Mysteries (plan rune-mysteries) | done (conductor3 2026-10-23, 342 s) | `wiki/quests/rune-mysteries.md` |
 | Herblore | nothing: identify and brew check only members + level (worker conductor3w5, 2026-10-23); Druidic Ritual only for its XP lump | open | `wiki/quests/druidic-ritual.md` |
 | Prayer 47 | Restless Ghost (plan restless-ghost, ~5 min) | done (conductor3 2026-10-23: Prayer 20 -> 49, 359 s) | `wiki/quests/` |
-| Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | todo | `wiki/quests/` |
-| Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
+| Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | done (conductor3 2026-10-23 23:50: Magic 1 -> 44, Strength 42 -> 54; best plan = r55 camp at the Falador-south spawn cluster, ~85 kills/h) | `wiki/quests/` |
+| Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo; route proven to the chest on a worker (quest-library), plan not yet promoted; reward unverified | `wiki/quests/` |
 | Defence 85 + Prayer 80 | Holy Grail (Merlin's Crystal first) | later | `wiki/quests/` |
 | Baby blue dragons (Prayer 60-99) | dusty key: kill the jailer (combat 47, 2933,9693, always drops the jail key, `jailer.rs2:10`), open Velrak's cell, and he gives it; aggressive black knights nearby | later | - |
 | Anti-dragon shield | Dragon Slayer started: the Guildmaster inside the Champions' Guild, whose door needs 32 QP (`champions_guild.rs2:2`; Oziach has no QP check) | later | - |
 | 32 QP (rune sword, Dragon Slayer) | route quests (RG, RM, Imp, Waterfall, PiP, Druidic, Merlin, Grail) = 17 QP, plus Romeo & Juliet 5, Goblin Diplomacy 5, Ernest the Chicken 4, Cook's Assistant 1 = 32 exactly (no skill checks, goblins L2-5 only); spares Sheep Shearer, Doric's Quest. Plans being built in quest-library | todo | `wiki/quests/README.md` |
-| Smithing 1 -> 82 | The Knight's Sword: Mining 10 only (blurite, `mining.rs2:58`); reward Smithing 318,125 (`quest_squire.rs2:223`); redberry pie, 2 iron bars, pickaxe; ice warriors (L57) near the blurite route. Mine to 10 just before it, do it before any Smithing training | todo, from scripts; plan queued in quest-library | `wiki/quests/README.md` |
+| Smithing 1 -> 82 | The Knight's Sword (plan `knights-sword` proven on questw4, 761 s, committed fa7187248; a combat-55 start died at the blurite fight, so melee ~40+ and food first): Mining 10 only (blurite, `mining.rs2:58`); reward Smithing 318,125 (`quest_squire.rs2:223`); redberry pie, 2 iron bars, pickaxe; ice warriors (L57) near the blurite route. Mine to 10 just before it, do it before any Smithing training | todo; plan proven, not yet run on conductor3 | `wiki/quests/README.md` |
 | Mining 1 -> 85, Herblore 28 -> 57 | Digsite (members): Thieving 25, Agility 10, Herblore 10, checked mid-quest and boostable; reward Mining 382,500 + Herblore 50,000 (`quest_itexam.rs2:41-42`), no fights. So Druidic Ritual first; do it before any Mining training past 10 | todo, from scripts; plan queued after Knight's Sword | `wiki/quests/README.md` |
 | Ranged 79, Fletching 75 | Temple of Ikov | todo, from scripts | `wiki/quests/README.md` |
 | Morytania, Nature Spirit | Priest in Peril stage 61: one more talk to Drezel after completion (`holy_barrier.rs2`); the PiP plan includes it | todo | `wiki/quests/README.md` |
@@ -200,7 +222,7 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 | Fletching | 1 | cut + string at a bank 1-40, willow-seers-longbow-bank 40-99 (474 strings from flax) | 0.54 with WC | - | |
 | Mining | 1 | copper/tin 1-15 -> iron from a 3-rock stand tile, Al Kharid, dropped 15-99 (679k-1.07M, respawn-bound from 57); adamant pickaxe only (3.2k, rune doesn't pay back) | 0.98 | - | |
 | Smithing | 1 | bronze then iron 1-33 -> superheat iron platebodies at Varrock East 33-99 (Magic alongside; ~1,055 natures, ~22k gp) | 0.64-1.15 | - | |
-| Magic | 1 | Imp Catcher to 44, then superheat with Smithing; fire strike/bolt/blast 0.43 h as the alternative (~45k gp) | ~0.4 | - | |
+| Magic | 44 | Imp Catcher to 44, then superheat with Smithing; fire strike/bolt/blast 0.43 h as the alternative (~45k gp) | ~0.4 | Imp Catcher 1 -> 44 (21,875 XP quest lump) | |
 | Fishing | 99 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (`lure-lumbridge-drop`, 547k-2.16M; banking +10 min) | 0.53 | net 1-10 in thieving-40; lure-cook-bank cycle (tools-food) 54-68 ~551k/h, ~85% of the `lure-lumbridge-cook-bank` floor; Catherby swordfish 68-91 +466.5k in ~48 min (~580k/h, radius-5 area idle); 91-99 with plan `catherby-shark-fallback` (harpoon + shark fallback, area (2848,3427) r15): +413.5k in 28.2 min, 880k/h = 92.9% of the `swordfish-catherby-cook-bank` floor, no idle phases, fallback never needed | done. Gap left: the Fishing Guild variant (shorter legs, unmeasured) for the route's 68-99 band |
 | Cooking | 99 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (`swordfish-catherby-cook-bank`, 0.83-1.36M plus Fishing) | 0.85 with Fishing | shrimps 1-34 in thieving-40; lure-cook-bank 54-71 ~746k/h, ~80% of floor (tools-food); Catherby swordfish 71-93 +547k in ~48 min (~680k/h); 95-99 +262.5k in 186 s of cooking phases (~5.1M/h of range time) riding on Fishing | done. Cooking finishes before Fishing on this method: at 99 the plan banks raw fish and skips the range |
 | Crafting | 1 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat; spot unverified) | 1.3-2.0 | - | |
@@ -231,6 +253,23 @@ their shapes. Miscellania's coal, maples and fish need the kingdom quest and los
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
+
+- Area undershoot check at the first run (retro #3): Catherby fishing r5 -> r14 and Imp Catcher r22-35 (including an r22 the
+  conductor wrote into a brief) -> r55 (~30 kills/h -> ring ~19/h -> camp ~85/h) were each caught by the user, not a log. Hypothesis:
+  a gather/combat task that logs "targets in view outside the area: N of M ticks" in its RESULT (the tick records
+  already hold it; the runner computed it by hand after the user's message, runner turn 1522) lets the runner widen
+  the area in run 1 with no user. Variants: (a) task RESULT counter `seenOutsideArea`, runner brief rule "if > 10% of
+  idle ticks, widen to cover every seen target tile + margin before run 2"; (b) `combat` `targetRange: "visible"`
+  (user's idea, in review) which removes the area as the limit. Metric: idle ticks per kill and runs before the area stops growing.
+- Runner restart after a harness kill (retro #3): the imp run was SIGTERMed at 61 min by low-memory (another session's world
+  build), the runner reported and waited for the conductor (the notice told it not to restart), cost ~2 min and a
+  conductor turn; the plan was resumable. Hypothesis: a runner may resume a resumable plan once when RESULT is
+  `killed by SIGTERM` and `free -g` shows >8 GiB free. Status: proposal for task-runner.md.
+- Review delegate hygiene (retro #3): `Task-review: fishing shark fallback` (general-purpose, 354 turns, 39.8 M cache reads,
+  267 Monitor calls) polled a fix author with `Monitor sleep N; echo` loops; its sibling reviews cost 0.9 M. Fix proposed in
+  the task-review skill brief: "while a dispatched agent runs, end your turn; do not poll", and "never edit task files
+  yourself: dispatch task-author for fixes" (the interact review committed 4778e2480 with the reviewer's own C fixes).
+  Metric: cache reads per review.
 
 - Catherby swordfish idle gaps (retro #2): the 08:12 run (87.8% of Fishing floor, 70% of Cooking) cycled fishing 152 s,
   339 s, 180 s for the same 26 fish, then 60-100 s of cook-swordfish, cook-tuna and bank per cycle (about 25% of the
@@ -360,3 +399,9 @@ Review findings `task-review` deferred because their fix needs work outside the 
   tick 501 and again at 502, inside the eat delay, so the server refused the second and the run ended "could not eat
   Lobster: Failed to use inventory item"; the same ended the first calibration's run 2, one outside the pooled three.
   Gate the second eat on the first's effect.
+- combat: the `visible` target mode is uncommitted (in review) in the tree (combat.ts, combat.test.ts, combat.itest.ts);
+  the Mordred/Monk itests failed in default mode when authored (unverified against HEAD): re-run them on HEAD before committing.
+- Plans: promote `imp-catcher` camp variant only (the roaming ring plan in `conductor/runs/conductor3/plans/` stays a draft: ~19 kills/h).
+- Runner token use (retro #3): after the 2026-10-23 prompt fixes runners cost 0.1-0.9 M cache reads (fishcook99 0.34 M, imp roaming
+  0.92 M, resume 0.10 M) against 5-14 M for the three before (thieve-55 13.9 M, melee-20 9.1 M, crafting80 6.9 M). Fixed; the leak
+  moved to review delegates (above).
