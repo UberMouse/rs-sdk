@@ -38,7 +38,7 @@ None.
 
 ## Dialog choices (verified)
 
-Run by the `talk` task (plan `conductor/plans/rune-mysteries.ts`; whole quest took 321 s from Lumbridge). Choices, from `server/content/scripts/areas/{area_lumbridge/duke_horacio,area_wizard_tower/sedridor,area_varrock/aubury}.rs2`:
+Run by the `talk` task (plan `conductor/plans/rune-mysteries.ts`; whole quest took 321 s from Lumbridge; 342 s from the Lumbridge graveyard right after Restless Ghost, unchanged [v 2026-10-23 conductor3 local]). Choices, from `server/content/scripts/areas/{area_lumbridge/duke_horacio,area_wizard_tower/sedridor,area_varrock/aubury}.rs2`:
 
 | NPC | Stand | Choices in order |
 |-----|-------|------------------|
