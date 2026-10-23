@@ -70,7 +70,7 @@ Tinderbox and chisel (Falador general store), vial and pestle and mortar (Jatix,
 
 ## Gotchas
 
-- Panning tray: the only source is a ground spawn on a Table at (3369,3378) (map m52_52, obj 677). `pickup` refuses it even from the adjacent (3369,3379): "Panning tray is present in the area but unreachable (waited 90s)"; the state lists it `[UNREACHABLE]`. Same class as the Lumbridge pot spawn (`learnings/walking.md`). The plan is paused on this; unsolved. [v 2026-10-23 questw1 local]
+- Panning tray: the only source is a ground spawn on a Table at (3369,3378) (map m52_52, obj 677); the state lists it `[UNREACHABLE]` (blocked tile). `pickup {area:{x:3369,z:3379,radius:4}, items:[{item:"Panning tray",count:1}]}` takes it from the adjacent (3369,3379) (items on blocked tiles: `learnings/walking.md`). [v 2026-10-24 questw7 local]
 - The `thieving` task refuses "Digsite workman" ("no pickpocket config"); the draft steals with `interact` "Steal-from". A failed or empty steal leaves the state unchanged, so the plan idle rail ends the plan "nothing left to do"; the draft alternates two steal phases at east and west anchors. [v 2026-10-23 questw1 local]
 
 ## Key NPCs & Locations
