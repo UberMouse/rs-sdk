@@ -179,6 +179,13 @@ export default definePlan({
   `until(v)`: ends the phase `done` early, checked every tick. `onFail`: `'fail'` (default),
   `'continue'` (skip it for the next selection, so a fallback below gets the turn), or
   `r => 'fail' | 'continue'`; `maxFails` (default 3) consecutive failures fail the plan anyway.
+- **Size a gathering `area` to overshoot, never undershoot.** It must cover every tile the targets
+  can occupy, including where fishing spots move to and every rock or tree of the kind, plus a few
+  tiles of margin. A tight area makes the bot stand waiting ("no ... spot available, waiting")
+  while a target sits just outside it. A wide area only costs a few tiles of walking (user,
+  2026-10-23). Catherby harpoon: radius 5 waited 275 s and then failed; the spots ranged over
+  x 2836-2860. When a run shows targets the world index doesn't list, say so under lessons with
+  the tiles.
 - The view `v`: `v.inv(item)` (exact name, case-insensitive, or a RegExp), `v.full`, `v.free`,
   `v.bank(item)` (as last seen open during this plan; `undefined` before), `v.level(skill)`,
   `v.hp` (`{ current, max }`), `v.runs(phase)` (finished runs of that phase; an unknown name

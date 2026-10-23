@@ -198,6 +198,15 @@ it orchestrated (2026-10-11). After every goal, for each method it used:
    nothing, and the budget is worked from the logs as above (or write the record first, when
    the world index models the family). Every idle tick is a gap: walking between targets,
    waits on state, drops or banking that stop the action, travel the plan could avoid.
+   Find the gaps; don't wait for the user to spot them:
+   - grep the goal's phase logs for waits (`waiting`, `depleted`, `moved away`);
+   - compare each phase's durations across runs (a spread of 2x or more is a gap);
+   - read the bot's visible targets in `.ticks.ndjson.gz` during the waits.
+   An area too tight for where its targets move is the usual cause (overshoot it). So is a task
+   skipping a target kind the account can use.
+   **When a run shows the world index wrong** (spot tiles, movement, a region label, a missing
+   family or spot kind), fix the index at its source in the same turn: a world-index agent on
+   `wiki/world/`, then `bun run world`. A note alone doesn't fix it (user, 2026-10-23).
 2. **Close the gaps in parallel**, each with its own agent:
    - a **spot search** (a read-only agent on the world index: `wiki/world.json`,
      `wiki/resources/`, `wiki/services/`) for the layout that removes walking. That means
