@@ -44,15 +44,21 @@ script walked the bot under attack and it died, 2026-10-11).
    receive the conductor's messages (the user had to kill a run to get a correction through,
    2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
    the anchored `pgrep` match below; it prints its RESULT on SIGTERM), then act on it.
-4. **Check in on a plan's first run** (a new draft, or one you changed): right after starting it,
-   start a check-in in the background too, and end your turn:
-   `sleep 120; tail -n 30 $(ls -t conductor/runs/<bot>/*-plan-<name>.ndjson | head -1); ls -t
+4. **One check-in on a plan's first run** (a new draft, or one you changed; a promoted plan run
+   unchanged gets none): right after starting it, start one check-in in the background, its sleep
+   sized to when the riskiest untried phase should have run (the errands and the first loop: 120 to
+   300 s), and end your turn:
+   `sleep 180; tail -n 30 $(ls -t conductor/runs/<bot>/*-plan-<name>.ndjson | head -1); ls -t
    conductor/runs/<bot>/*.ndjson | head -3; bun sdk/cli.ts <bot> | head -40`.
    When it reports, judge whether the plan does what you meant: the phase it chose, the bot's
    position and inventory, steps that repeat or stall, the tail of the newest phase log, and
-   `bun conductor/tools/screenshot.ts <bot>` if a rendering client is attached. Fine: start another
-   check-in, until every phase has run once. Wrong: stop the run (item 3), fix the draft, run it
-   again. A plan once ran training before its shopping was done, which a 2-minute look shows.
+   `bun conductor/tools/screenshot.ts <bot>` if a rendering client is attached. Fine: end your turn
+   and wait for the run's own completion, with no second check-in. Wrong: stop the run (item 3),
+   fix the draft, run it again (that new draft gets its one check-in). A plan once ran training
+   before its shopping was done, which a 2-minute look shows.
+   Every wake re-reads your whole context, so a turn that only says you are waiting is pure
+   cost: you are woken only by the run's completion, the one check-in, and a conductor message
+   (the user, 2026-10-23: runners "waste a lot of tokens on pointless turns").
 5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`.
