@@ -618,4 +618,231 @@ export const METHODS: MethodDef[] = [
         plans: ['melee-chickens'],
         notes: 'A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.',
     },
+    {
+        id: 'net-draynor-drop',
+        name: 'Shrimps netted at Draynor, dropped',
+        family: 'fishing',
+        at: { level: 0, x: 3085, z: 3230 },
+        params: { spot: 'saltfish', tool: 'net' },
+        sink: { mode: 'drop' },
+        notes:
+            'The small net on the Draynor sea spots (anchovies from 15), each catch dropped: Fishing from 1 to fly ' +
+            'fishing at 20. No promoted plan (fish-cook-bank nets here but cooks and banks the catch); unmeasured.',
+        source: 'research-gathering 2026-10-23: every fishing site rated with resolveMethods',
+    },
+    {
+        id: 'lure-lumbridge-drop',
+        name: 'Fly fishing at the River Lum, dropped',
+        family: 'fishing',
+        at: { level: 0, x: 3238, z: 3252 },
+        params: { tool: 'fly_fishing_rod' },
+        sink: { mode: 'drop' },
+        notes:
+            'Trout and salmon on the fly rod, a feather a catch, each catch dropped; every fly spot ties on a drop sink, ' +
+            'and this one is nearest the spawn. No promoted plan (lure-cook-bank cooks and banks the catch); unmeasured.',
+        source: 'research-gathering 2026-10-23',
+    },
+    {
+        id: 'oak-draynor-drop',
+        name: 'Oaks south of Draynor, dropped',
+        family: 'woodcutting',
+        at: { level: 0, x: 3102, z: 3242 },
+        params: { tree: 'oak' },
+        sink: { mode: 'drop' },
+        notes:
+            'The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest ' +
+            'the spawn. No promoted plan; unmeasured.',
+        source: 'research-gathering 2026-10-23: every tree site rated with resolveMethods',
+    },
+    {
+        id: 'iron-al-kharid-3rock-drop',
+        name: 'Iron at the Al Kharid mine, the three rocks one tile reaches, dropped as mined',
+        family: 'mining',
+        at: { level: 0, x: 3295, z: 3310 },
+        area: 1,
+        params: { rock: 'iron' },
+        sink: { mode: 'drop' },
+        notes:
+            '`at` is the stand tile, and area 1 takes the three iron rocks the reach test passes from it; respawn-bound ' +
+            "from the mid 50s. No promoted plan. Unmeasured here: wiki/skills/mining.md's ~1.03M/h at 99 " +
+            '(conductor2w1, 2026-10-11, 4-minute runs, adamant pickaxe) has no stats.ts --methods entry to seed it.',
+        source: 'research-gathering 2026-10-23: rock clusters from reachTiles',
+    },
+    {
+        id: 'man-catherby-pickpocket',
+        name: 'Pickpocketing the men at Catherby, food from Catherby',
+        family: 'pickpocket',
+        at: { level: 0, x: 2804, z: 3430 },
+        params: { npc: 'man' },
+        food: 'shrimp',
+        sink: { mode: 'bank' },
+        notes:
+            'Thieving 1-10: the highest man floor of the sites a walk reaches with no requirement, the bank 6 run ticks ' +
+            'away. No promoted plan; unmeasured.',
+        source: 'research-economy 2026-10-23: every pickpocket site rated with resolveMethods',
+    },
+    {
+        id: 'man-lumbridge-pickpocket',
+        name: 'Pickpocketing the men in the Lumbridge castle courtyard, food from Draynor',
+        family: 'pickpocket',
+        at: { level: 0, x: 3219, z: 3219 },
+        params: { npc: 'man' },
+        food: 'shrimp',
+        sink: { mode: 'bank' },
+        notes:
+            'The men thieving-40 picks (area 3222,3218 r6), beside the spawn; about 10% under the Catherby floor for ' +
+            'the 83-tick walk to Draynor bank. thieving-40 also fights chickens and picks Al-Kharid warriors, so it ' +
+            'names no method; unmeasured.',
+        source: 'research-economy 2026-10-23',
+    },
+    {
+        id: 'farmer-ardougne-pickpocket',
+        name: 'Pickpocketing the farmers north of East Ardougne, food from Ardougne North',
+        family: 'pickpocket',
+        at: { level: 0, x: 2648, z: 3360 },
+        params: { npc: 'farmer1' },
+        food: 'shrimp',
+        sink: { mode: 'bank' },
+        notes: 'Thieving 10-25 band. No promoted plan; unmeasured.',
+        source: 'research-economy 2026-10-23',
+    },
+    {
+        id: 'al-kharid-warrior-pickpocket',
+        name: 'Pickpocketing the Al-Kharid warriors in the palace, food from Al Kharid',
+        family: 'pickpocket',
+        at: { level: 0, x: 3292, z: 3172 },
+        params: { npc: 'al_kharid_warrior' },
+        food: 'trout',
+        sink: { mode: 'bank' },
+        notes:
+            'Thieving 25-40 band, beside the warrior women in Ardougne. thieving-40 picks them on shrimps among other ' +
+            'phases, so it names no method; unmeasured.',
+        source: 'research-economy 2026-10-23',
+    },
+    {
+        id: 'warrior-woman-ardougne-pickpocket',
+        name: 'Pickpocketing the warrior women in East Ardougne, food from Ardougne South',
+        family: 'pickpocket',
+        at: { level: 0, x: 2628, z: 3294 },
+        params: { npc: 'warrior_woman' },
+        food: 'trout',
+        sink: { mode: 'bank' },
+        notes: 'Thieving 25-40 band, beside the Al-Kharid warriors. No promoted plan; unmeasured.',
+        source: 'research-economy 2026-10-23',
+    },
+    {
+        id: 'ardougne-guard-north-pickpocket',
+        name: 'Pickpocketing the Ardougne guards by Ardougne North bank',
+        family: 'pickpocket',
+        at: { level: 0, x: 2636, z: 3339 },
+        params: { npc: 'ardougne_guard' },
+        food: 'trout',
+        sink: { mode: 'bank' },
+        notes: 'Thieving 40-55 band, before the Knights of Ardougne. No promoted plan; unmeasured.',
+        source: 'research-economy 2026-10-23',
+    },
+    {
+        id: 'cows-falador-farm',
+        name: 'Cows on the farm east of Falador, bones buried, food from Falador East',
+        family: 'combat',
+        at: { level: 0, x: 3027, z: 3307 },
+        area: 10,
+        params: { npc: 'cow' },
+        gear: ['steel_scimitar', 'amulet_of_strength'],
+        food: 'lobster',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        notes:
+            'Melee 1-25 band: seven cows, max hit 1, none hunts. No promoted plan; unmeasured, and uncalibrated (no ' +
+            'CALIBRATIONS record), so it eats nothing yet.',
+        source: 'research-combat 2026-10-23: a survey of every reachable npc site',
+    },
+    {
+        id: 'scorpions-dwarven-mine',
+        name: 'Scorpions in the Dwarven Mine, food from Falador East',
+        family: 'combat',
+        at: { level: 0, x: 3038, z: 9771 },
+        area: 10,
+        params: { npc: 'scorpion' },
+        gear: ['adamant_scimitar', 'amulet_of_strength'],
+        food: 'lobster',
+        sink: { mode: 'bank' },
+        notes:
+            'Melee 30-50 band: eleven spawns, the best floor at 30-50 of the single-way sites a walk reaches with no ' +
+            'quest. They hunt low combat levels and drop no bones (no Prayer). No promoted plan; unmeasured and ' +
+            'uncalibrated.',
+        source: 'research-combat 2026-10-23',
+    },
+    {
+        id: 'moss-giants-kandarin',
+        name: 'Moss giants in Kandarin north-west of Ardougne, big bones buried, food from Ardougne North',
+        family: 'combat',
+        at: { level: 0, x: 2549, z: 3408 },
+        area: 10,
+        params: { npc: 'mossgiant' },
+        gear: ['rune_scimitar', 'amulet_of_strength'],
+        food: 'lobster',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        notes:
+            'Melee 50-99 band: four spawns, single-way (the Varrock Sewers pocket is not), a few percent over the hill ' +
+            'giants on the floor. A rune scimitar needs Attack 40 and no shop sells one. No promoted plan; unmeasured ' +
+            'and uncalibrated.',
+        source: 'research-combat 2026-10-23',
+    },
+    {
+        id: 'baby-blue-dragons-taverley',
+        name: 'Baby blue dragons in Taverley Dungeon, baby dragon bones buried, food from Falador West',
+        family: 'combat',
+        at: { level: 0, x: 2895, z: 9765 },
+        area: 12,
+        params: { npc: 'babybluedragon' },
+        gear: ['rune_scimitar', 'amulet_of_strength'],
+        food: 'lobster',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        notes:
+            "Prayer 60-99 band: the best Prayer floor the index rates. The way in needs the dusty key (the site's " +
+            'Requires: carry Dusty key). Only adult dragons breathe fire (npc/scripts/dragon.rs2). No promoted plan; ' +
+            'unmeasured and uncalibrated.',
+        source: 'research-combat 2026-10-23',
+    },
+    {
+        id: 'flax-gnome-spin-bank',
+        name: 'Flax picked in the Gnome Stronghold, spun into bow strings at its wheel, banked there',
+        family: 'pick',
+        at: { level: 0, x: 2478, z: 3402 },
+        params: {},
+        sink: {
+            mode: 'process',
+            steps: [{ family: 'spinning', at: { level: 1, x: 2475, z: 3398 }, params: { obj: 'flax' } }],
+            end: 'bank',
+            bank: { level: 1, x: 2445, z: 3425 },
+        },
+        notes:
+            "The Seers flax-spin method's Stronghold twin, a higher floor. No run has checked the flax field, the " +
+            'wheel or the walk between; no promoted plan; unmeasured.',
+        source: 'research-artisan 2026-10-23',
+    },
+    {
+        id: 'swordfish-catherby-cook-bank',
+        name: 'Tuna and swordfish harpooned at Catherby, cooked on the Catherby range, banked at Catherby',
+        family: 'fishing',
+        at: { level: 0, x: 2841, z: 3430 },
+        params: { spot: 'rarefish', tool: 'harpoon' },
+        sink: {
+            mode: 'process',
+            steps: [
+                {
+                    family: 'cooking',
+                    at: { level: 0, x: 2817, z: 3444 },
+                    params: [{ food: 'raw_tuna' }, { food: 'raw_swordfish' }],
+                },
+            ],
+            end: 'bank',
+            bank: { level: 0, x: 2809, z: 3443 },
+        },
+        notes: 'Cooking 60-99 band, Fishing alongside. No promoted plan; unmeasured.',
+        source: 'research-artisan 2026-10-23',
+    },
 ];

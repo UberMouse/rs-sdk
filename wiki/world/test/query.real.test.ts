@@ -13,13 +13,19 @@ const profile: Profile = {
     worn: [],
 };
 
-test('at Mining 60 with an adamant pickaxe the seed iron methods rank, the bank one below the drop one', () => {
+test('at Mining 60 with an adamant pickaxe the iron methods rank, the seeds first and their bank one below the drop one', () => {
     const ranked = bestMethods('mining', profile, { met: () => false, maxWilderness: 0, multiway: false });
-    expect(ranked.map(r => r.method.def.id)).toEqual(['iron-se-varrock-drop', 'iron-se-varrock-bank']);
+    // Al Kharid's three rocks bind on their respawn below the four south-east Varrock rocks' floors.
+    expect(ranked.map(r => r.method.def.id)).toEqual([
+        'iron-se-varrock-drop',
+        'iron-se-varrock-bank',
+        'iron-al-kharid-3rock-drop',
+    ]);
     for (const r of ranked) {
         expect(r.xpPerHour).toBe(methodRate(r.method.def.id, profile).xpPerHour.mining!);
-        // Each seed's one measured figure, below its floor (methods.real.test.ts checks every figure).
-        expect(r.measured.map(x => x.xpPerHour < x.floor)).toEqual([true]);
+        // Each seed's one measured figure, below its floor (methods.real.test.ts checks every figure); Al Kharid's
+        // record is unmeasured.
+        expect(r.measured.map(x => x.xpPerHour < x.floor)).toEqual(r.method.def.measured ? [true] : []);
     }
     expect(bestMethods('mining', profile)).toEqual(ranked);
 });
