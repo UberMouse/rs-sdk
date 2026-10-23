@@ -79,7 +79,17 @@ quest page for its own requirements before planning it. Status is conductor3's.
 | Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
 | Defence 85 + Prayer 80 | Holy Grail (Merlin's Crystal first) | later | `wiki/quests/` |
 | Baby blue dragons (Prayer 60-99) | dusty key: kill the jailer (combat 47, 2933,9693, always drops the jail key, `jailer.rs2:10`), open Velrak's cell, and he gives it; aggressive black knights nearby | later | - |
-| Anti-dragon shield | Dragon Slayer started (Champions' Guild, 32 QP; `oziach.rs2:14`) | later | - |
+| Anti-dragon shield | Dragon Slayer started: the Guildmaster inside the Champions' Guild, whose door needs 32 QP (`champions_guild.rs2:2`; Oziach has no QP check) | later | - |
+| 32 QP (rune sword, Dragon Slayer) | route quests (RG, RM, Imp, Waterfall, PiP, Druidic, Merlin, Grail) = 17 QP, plus Romeo & Juliet 5, Goblin Diplomacy 5, Ernest the Chicken 4, Cook's Assistant 1 = 32 exactly (no skill checks, goblins L2-5 only); spares Sheep Shearer, Doric's Quest. Plans being built in quest-library | todo | `wiki/quests/README.md` |
+| Smithing 1 -> 82 | The Knight's Sword (no fight) | todo, from scripts | `wiki/quests/README.md` |
+| Mining 1 -> 85, Herblore 28 -> 57 | Digsite | todo, from scripts | `wiki/quests/README.md` |
+| Ranged 79, Fletching 75 | Temple of Ikov | todo, from scripts | `wiki/quests/README.md` |
+| Morytania, Nature Spirit | Priest in Peril stage 61: one more talk to Drezel after completion (`holy_barrier.rs2`); the PiP plan includes it | todo | `wiki/quests/README.md` |
+
+Quest index facts above are from the server scripts, unverified in game (quest-library, 2026-10-23). Leave out of
+any route: Shield of Arrav, Hero's Quest, Throne of Miscellania and Legends' Quest each need two players (one per
+gang). Order traps: Ned won't help with Prince Ali Rescue while hired for Dragon Slayer; starting Biohazard before
+Plague City's dig blocks Plague City. Other top quest XP after the route: Dragon Slayer, Fremennik Trials.
 
 ## Backlog
 
