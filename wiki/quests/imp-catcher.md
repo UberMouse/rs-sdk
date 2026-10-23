@@ -119,6 +119,18 @@ colours: above the ~53 expected, inside the ~92 90th percentile. Spare duplicate
 `respawnWaitTicks: 300` the plan idle rail never fired; each phase ended on a kill (Varrock phases mostly ended
 `no free reachable Imp`, 1 kill in 11 runs). [v 2026-10-23 questw6 local]
 
+Roaming ring measured (plan `imp-catcher` draft, not promoted; 10 areas, Lumbridge `respawnWaitTicks: 60`, the others 0,
+skill Strength; killed by SIGTERM for low system memory at ~61 min, no RESULT): ~19 kills (15,300 Strength XP at 800 per
+kill, 25x) in ~59 min of hunting, ~3.1 min per kill, worse than the two-area camp above (~2 min per kill); 2 beads (White,
+Red). Each empty area ended its phase in 32-120 s (typically 45-110 s): the ~60-tick minimum look limit (20 looks x 3
+ticks, even with `respawnWaitTicks: 0`) plus the walk to the next area; 4.5 laps. The plan idle rail did not fire (a
+position change counts as progress). Kills came from Lumbridge (~1 per lap), Draynor, Falador south, Edgeville, Varrock
+east and Champions' Guild (usually 1 kill, then empty); Falador, Varrock west, Varrock north and Lumbridge north gave none
+in any lap. Imp density on 2026-10-24 was far below what 2026-10-23 saw. Search dominates: a fight is ~10-20 s, looting is
+negligible, over 90% of the hour was searching and walking. [v 2026-10-24 conductor3 local] Untested: a killed imp respawns
+at its own spawn tile after 100 ticks and its first idle teleport chance comes 70 ticks after spawn (all.npc `timer=70`,
+`imp.rs2` ai_timer 50%), so camping the spawn tiles of imps already killed should keep meeting them.
+
 Combat-task areas that cover a cluster: Lumbridge `{x:3217,z:3240,radius:35}`, Varrock `{x:3215,z:3425,radius:45}` (Ardougne south `{x:2632,z:3222,radius:22}` untested).
 
 ## Catalog coverage
