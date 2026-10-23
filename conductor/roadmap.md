@@ -167,7 +167,8 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 
 Model gaps the research found (fix where a route row leans on them): no walk between a site's features is priced
 (multi-rock sites overstated: `iron-se-varrock-drop` 1.43M where no tile reaches all 4 rocks); `BANK_TICKS = 0`
-inflates bank-standing floors; the training pages may rate every level with a rune axe (checking 2026-10-23);
+inflates bank-standing floors (the training pages rate every Woodcutting level with a rune axe, and that is right: no
+axe has a level check, `woodcut.rs2:197`; a smithed or dropped rune axe works from level 1);
 Ranged and Magic combat unmodelled; no family for herblore, arrows, gems; chaos druids (and men, druids, unicorns)
 are not combat npc features, and their drop table needs `%itgronigen`, which the drop varps don't set; the
 combat model can't do food with no bank trip (hill giants); the stall family ignores being caught; pickpocket with food can't rate non-stackable loot; adult
