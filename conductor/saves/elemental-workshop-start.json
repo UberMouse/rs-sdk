@@ -1,0 +1,279 @@
+{
+    "name": "elemental-workshop-start",
+    "purpose": "Elemental Workshop start: Att 45 Str 50 Def 40 HP 50 Mining/Smithing/Crafting 20, steel scimitar worn, knife, bronze pickaxe, hammer, needle, thread, leather, 4 coal (separate slots), 14 lobsters, Seers' Village bank (2725,3492).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2725,
+                "z": 3492
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 50,
+                "Defence": 40,
+                "Hitpoints": 50,
+                "Mining": 20,
+                "Smithing": 20,
+                "Crafting": 20
+            },
+            "inventory": [
+                {
+                    "id": 946,
+                    "count": 1
+                },
+                {
+                    "id": 1265,
+                    "count": 1
+                },
+                {
+                    "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 1733,
+                    "count": 1
+                },
+                {
+                    "id": 1734,
+                    "count": 1
+                },
+                {
+                    "id": 1741,
+                    "count": 1
+                },
+                {
+                    "id": 453,
+                    "count": 1
+                },
+                {
+                    "id": 453,
+                    "count": 1
+                },
+                {
+                    "id": 453,
+                    "count": 1
+                },
+                {
+                    "id": 453,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "6aa4363b620061c2f0568dd21dd307de85888777",
+    "createdAt": "2026-10-23T22:42:42.383Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2725,
+            "z": 3492,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 40,
+            "Strength": 50,
+            "Hitpoints": 50,
+            "Crafting": 20,
+            "Smithing": 20,
+            "Mining": 20
+        },
+        "inventory": [
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 1733,
+                "name": "needle",
+                "count": 1
+            },
+            {
+                "id": 1734,
+                "name": "thread",
+                "count": 1
+            },
+            {
+                "id": 1741,
+                "name": "leather",
+                "count": 1
+            },
+            {
+                "id": 453,
+                "name": "coal",
+                "count": 1
+            },
+            {
+                "id": 453,
+                "name": "coal",
+                "count": 1
+            },
+            {
+                "id": 453,
+                "name": "coal",
+                "count": 1
+            },
+            {
+                "id": 453,
+                "name": "coal",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
