@@ -107,39 +107,41 @@ the spawn clusters are empty and the imps are scattered: the Yanille, Falador-so
 (`npc_tele(map_findsquare(npc_coord, 0, 20, ...))`, `npc/scripts/imp.rs2:15-22`). Once it is more than `maxrange`
 (27 = wanderrange 25 + 2) from its spawn, its wander steps back are invalid (`server/engine/src/engine/entity/Npc.ts:812`).
 The 500-ticks-stuck reset that would send it home is cleared by every teleport, since a teleport counts as movement
-(`Npc.ts:373-377,730`). A kill respawns the imp at its own spawn tile 100 ticks later. [server data 2026-10-24] Camping one
-area therefore waits for strays: a 175 s Lumbridge phase (radius 35) saw no imp in its area on any tick
-(questw6 `2026-10-23T11-22-32-049Z-combat`). Hunt by moving through many areas and leaving each one as soon as it
-is empty. The Varrock imps that drift north to z 3492-3517 are at the Wilderness edge, so cap areas there at z 3470.
+(`Npc.ts:373-377,730`). A kill respawns the imp at its own spawn tile 100 ticks later. [server data 2026-10-24] Camping a
+small area therefore waits for strays: a 175 s Lumbridge phase (radius 35) saw no imp in its area on any tick
+(questw6 `2026-10-23T11-22-32-049Z-combat`). The Varrock imps that drift north to z 3492-3517 are at the Wilderness
+edge, so cap areas there at z 3470.
 
-Proven run (plan `imp-catcher`, promoted; `respawnWaitTicks: 300`, wide areas): the whole quest took 21 earlier kills
-plus a final resume run of 141 min from 3 White + 2 Red beads held (stepRuns: finish 1, imp-lumbridge 12, imp-varrock
-11; 58,500 Attack XP at 800 per kill = ~73 kills, about one kill per 2 min). About 94 kills in total for all four
-colours: above the ~53 expected, inside the ~92 90th percentile. Spare duplicates at the end: 1 White, 3 Black. With
-`respawnWaitTicks: 300` the plan idle rail never fired; each phase ended on a kill (Varrock phases mostly ended
-`no free reachable Imp`, 1 kill in 11 runs). [v 2026-10-23 questw6 local]
+Best measured method (promoted plan `imp-catcher`, `conductor/plans/imp-catcher.ts`): a camp phase at the Falador-south
+spawn cluster, area (3012,3311) radius 55, `respawnWaitTicks: 600`, skill Strength, then a stray ring of radius 55-60
+areas (Lumbridge (3205,3240) r60, Draynor (3073,3252) r55, Champions' Guild (3205,3355) r55, Varrock east (3235,3400)
+r60, Edgeville (3085,3455) r55) that runs only when the camp ends empty; the ring was never needed. Start, leave-tower and
+finish phases are the same as before. Final run (2026-10-23T23-25-56, camp phase 4,036 ticks = 1,406 s): ~33 kills in
+23.4 min, ~85 kills/h, ~120 ticks per kill including respawn waits (estimated from 800 Strength XP per kill, not
+counted). Plan done ("plan until met") in 1,470.8 s, +26,300 Strength, +8,635 Hitpoints, +21,875 Magic. It started
+holding White + Red beads, so it is proven from that state; its start and leave-tower phases ran in the earlier run
+2026-10-23T22-20-18. The ticks do not show whether kills were respawns on the camp tiles or strays, so that the spawn
+camp is what works is unverified. [v 2026-10-24 conductor3 local]
 
-Roaming ring measured (plan `imp-catcher` draft, not promoted; 10 areas, Lumbridge `respawnWaitTicks: 60`, the others 0,
-skill Strength; killed by SIGTERM for low system memory at ~61 min, no RESULT): ~19 kills (15,300 Strength XP at 800 per
-kill, 25x) in ~59 min of hunting, ~3.1 min per kill, worse than the two-area camp above (~2 min per kill); 2 beads (White,
-Red). Each empty area ended its phase in 32-120 s (typically 45-110 s): the ~60-tick minimum look limit (20 looks x 3
-ticks, even with `respawnWaitTicks: 0`) plus the walk to the next area; 4.5 laps. The plan idle rail did not fire (a
-position change counts as progress). Kills came from Lumbridge (~1 per lap), Draynor, Falador south, Edgeville, Varrock
-east and Champions' Guild (usually 1 kill, then empty); Falador, Varrock west, Varrock north and Lumbridge north gave none
-in any lap. Imp density on 2026-10-24 was far below what 2026-10-23 saw. Search dominates: a fight is ~10-20 s, looting is
-negligible, over 90% of the hour was searching and walking. [v 2026-10-24 conductor3 local] Untested: a killed imp respawns
-at its own spawn tile after 100 ticks and its first idle teleport chance comes 70 ticks after spawn (all.npc `timer=70`,
-`imp.rs2` ai_timer 50%), so camping the spawn tiles of imps already killed should keep meeting them.
+Rates for comparison: ~85 kills/h camp above; ~30 kills/h for the earlier two-area
+Lumbridge/Varrock camp (r35/r45, `respawnWaitTicks: 300`; 94 kills in all for four colours, ~53 expected, 90th
+percentile ~92); ~19 kills/h for a ring of 10 small areas with `respawnWaitTicks` 0-60, where search and walking took
+over 90% of the time (each empty area cost 32-120 s). Imp density on 2026-10-24 was far below 2026-10-23. A killed imp's
+first idle teleport chance comes 70 ticks after spawn (all.npc `timer=70`, `imp.rs2` ai_timer 50%). [v 2026-10-24
+conductor3 local]
 
-Combat-task areas: `combat` attacks only targets inside `area`, and radius 22-35 areas left imps in view but outside the area on many idle ticks (Varrock west (3183,3395) r25: 32 ticks, imps 13-15 tiles from the bot; Edgeville (3085,3445) r25: 28 ticks; Lumbridge north (3225,3290) r30: 17 ticks, nearest 6 tiles). Use radius 50 or more, kept short of the Wilderness (z 3520). [v 2026-10-24 conductor3 local, ticks of plan run 2026-10-23T22-20-18-422Z]
+- A harness SIGTERM under low system memory kills a background `run-task` (no RESULT line). A plan restarted afterwards
+  resumes from the inventory and quest tab. [v 2026-10-24 conductor3 local]
+
+Combat-task areas: `combat` attacks only targets inside `area`, and radius 22-35 areas left imps in view but outside the area on many idle ticks (Varrock west (3183,3395) r25: 32 ticks, imps 13-15 tiles from the bot; Edgeville (3085,3445) r25: 28 ticks; Lumbridge north (3225,3290) r30: 17 ticks, nearest 6 tiles). Use radius 50 or more, kept short of the Wilderness: `squareReachesWilderness` is a square test, so centre z + radius must stay below 3520 (Edgeville centre z 3455 r55 is accepted). [v 2026-10-24 conductor3 local, ticks of plan run 2026-10-23T22-20-18-422Z]
 
 ## Catalog coverage
 
 | Step | Task | Params (sketch) | Notes |
 |---|---|---|---|
 | 1 start | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}, choices:["^Give me a quest!$","^Give me a quest please"]}` (worked, proven; the finish talk with no choices also worked) | The walk climbs the Wizards' Tower stairs (`conductor/lib/connectors.ts` OVERRIDES, ungated rows; logs the lesser demon hazard). Those stairs were walked only in integration tests (`learnings/walking.md`). Anchor the first regex: "Give me a quest" also matches the "or else" option. |
-| reach the imps | `travel` / `bank` | `{to:{x:3217,z:3240}}` | Lumbridge (bank nearby) or Varrock; Yanille's tiles held no imps. |
-| 2 beads | `combat` | `{target:"Imp", area:{x:3217,z:3240,radius:35}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. `combat` gave up `no free reachable Imp in the area` when the imps had wandered outside a small (radius 15-25) area; nothing showed it refusing a visible, reachable imp inside the radius. The plan idle rail ("phases make no progress") ended a hunt after ~3 empty phases; `respawnWaitTicks: 300` on the combat params fixed it (rail never fired in the proof run). [v 2026-10-23 questw6 local] |
+| reach the imps | `travel` / `bank` | `{to:{x:3012,z:3311}}` | Falador south (the plan's camp); Yanille's tiles held no imps. |
+| 2 beads | `combat` | `{target:"Imp", area:{x:3012,z:3311,radius:55}, respawnWaitTicks:600, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. `combat` gave up `no free reachable Imp in the area` when the imps had wandered outside a small (radius 15-25) area; nothing showed it refusing a visible, reachable imp inside the radius. The plan idle rail ("phases make no progress") ended a hunt after ~3 empty phases; a long `respawnWaitTicks` (300-600) on the combat params fixed it (rail never fired in the proof runs). [v 2026-10-23 questw6 local] |
 | 3 finish | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}}` (no choices) | Plan `until: v => v.questDone('imp')`. |
 
 No step needs a new task. Nice-to-have: a `loot` mode that skips an item already held (duplicate beads take slots).
