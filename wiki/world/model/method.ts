@@ -347,6 +347,15 @@ function killNpc(def: MethodDef, site: Site, world: Pick<World, 'features'>): st
     return targetFeatures(gatherSite(def, site, world), world, 'npc', undefined).subtype;
 }
 
+/**
+ * Whether the food gate is shut for a kill record: its npc is not among the calibrated (ctx.calibrated, by default
+ * CALIBRATED_NPCS), so its kills eat no food and its floor leaves out food trips.
+ */
+export const uncalibrated = (
+    m: Pick<ResolvedMethod, 'def' | 'site'>,
+    ctx: Pick<MethodContext, 'world' | 'calibrated'>,
+): boolean => !(ctx.calibrated ?? CALIBRATED_NPCS).has(killNpc(m.def, m.site, ctx.world));
+
 type Finder = ReturnType<typeof wayFinder>;
 
 /**
@@ -751,9 +760,7 @@ function rateAt(
         items: ctx.items,
         food,
         ...(m.def.loot ? { loot: m.def.loot, ...(ctx.boneXp ? { boneXp: ctx.boneXp } : {}) } : {}),
-        ...(kill && !(ctx.calibrated ?? CALIBRATED_NPCS).has(killNpc(m.def, m.site, ctx.world))
-            ? { uncalibrated: true }
-            : {}),
+        ...(kill && uncalibrated(m, ctx) ? { uncalibrated: true } : {}),
     });
 }
 

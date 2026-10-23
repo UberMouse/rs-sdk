@@ -8,7 +8,7 @@ Generated from `server/content` at `fb264971634d877c8d7f8dc3d93c608d6d879a0f`: 2
 | [wiki/places/](../places/) | 225 | area: the sites whose deepest area it is, by kind, then each child area with its sites summed |
 | [wiki/resources/](../resources/) | 95 | resource subtype (tree, rock, fishing spot, stall, thieving chest, pickpocket target, flax, agility course): its dbrow or script data, then every site |
 | [wiki/services/](../services/) | 15 | service kind (bank, shop, furnace, anvil, range, altar, ...): every site |
-| [wiki/training/](../training/) | 13 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
+| [wiki/training/](../training/) | 18 | skill a curated method (wiki/world/methods.ts) trains: each method's floor XP/hr by level beside what the bots measured, and a README |
 
 <!-- Hand-written below this line: build.ts keeps it as it is. -->
 
@@ -244,7 +244,7 @@ known offline).
 ## Methods
 
 A method is a curated record in `wiki/world/methods.ts` (`MethodDef`): a family (the kind of action: woodcutting,
-mining, fishing, pickpocket, stall, cooking; `model/families/`), a tile `at` in the gather site, the family's params,
+mining, fishing, pickpocket, stall, cooking, combat; `model/families/`), a tile `at` in the gather site, the family's params,
 a sink and the promoted plans that run it. The sink is `drop`, `bank`, or `process`: ordered steps, each a family and
 its params at a tile, `'here'` (where the previous action stands) or, omitted, the nearest site of the family's kinds,
 then `end: bank | drop | keep` for what the last step makes. The `withdraw` family (params `{ obj }`) is a source
@@ -257,8 +257,8 @@ The **floor** (`model/cycle.ts`) is the tick-perfect rate of a method at a profi
 formulas (`model/`, each citing its script) for ideal play over the shortest way, with no tick wasted and banking at
 its minimum tick cost. Legs are run ticks. A bot measures at or below it, and the gap is what a tick-perfect pass
 works on; a measured figure above its floor is a model bug. The pages in `wiki/training/` show the floor by level
-beside the measured figures; `methodRate(id, profile)` and `bestMethods(skill, profile, { met, maxWilderness,
-multiway })` in `query.ts` give it to code, `bestMethods` ranked by floor XP/hr.
+beside the measured figures; `methodRate(id, profile, skill?)` and `bestMethods(skill, profile, { met, maxWilderness,
+multiway, aggressive })` in `query.ts` give it to code, `bestMethods` ranked by floor XP/hr.
 
 What a record can say, beyond a gather and a sink (the code is the reference; each is worked from its script):
 
@@ -286,8 +286,24 @@ What a record can say, beyond a gather and a sink (the code is the reference; ea
   each way's reach set into `MethodWay.walks`, and the family picks. A course gate on the lap's skill (the Barbarian
   course's Agility 35) shows as a `skill:` token of the way. The Wilderness ridge gates are not an obstacle of the lap
   and are left out of its floor.
-- **Food** (`MethodDef.food`) covers a family's `failDamage` (a pickpocket stun) and `damage` (a lap's falls), restocked
-  at the bank.
+- **Food** (`MethodDef.food`) covers a family's `failDamage` (a pickpocket stun) and `damage` (a lap's falls, a
+  kill's hits once calibrated: below), restocked at the bank.
+- **Kills.** A `combat` record (melee: `model/families/combat.ts`, the formulas in `model/combat.ts`) has one kill of
+  its npc a success: `params: { npc }` (omitted when the site has one kind), `area` (a radius around `at` that gathers
+  the npc's spawns across sites), `gear` (its worn objs; a query's `Profile.worn` takes their slots one by one) and
+  `loot` (`model/cycle.ts` Loot: stackables kept, bones buried, banked or left, other drops left unless `keep` names
+  them). A kill is the expected swings at the weapon's attack rate plus the run to the nearest other spawn past the
+  swing cooldown; the respawn caps the rate; the pickup, a bury's swing gap and each eat are priced. The style is no
+  param: a record is rated for the queried skill on the style that suits it (`styleParams`: Attack accurate, Strength
+  aggressive, Defence defensive, Hitpoints and Prayer the best of them), and trains the skills its weapon's styles
+  give, Prayer too when it buries. An npc whose melee AI a script overrides is a ModelError. `ResolvedMethod.npcs`
+  (max hit, the npcs that hunt and up to which combat level, the target's retreat, which the floor leaves out) and
+  `areaHazard` feed `methodHazard` and `bestMethods`' `aggressive` filter. Ranged and Magic are not modelled yet.
+- **The food gate.** A kill eats food only once its npc has a record in `CALIBRATIONS` (`methods.ts`): worker runs whose
+  damage and fight ticks a kill agree with `killFigures` within `CALIBRATION_TOLERANCE` (25%), from
+  `conductor/test/integration/smoke/combat-calibration.itest.ts` and `conductor/tools/combat-ledger.ts`. Until then it
+  eats nothing, its trips end on a full inventory, and its page says Food/hr uncalibrated: its XP/hr leaves out food
+  trips. `test/combat-method.real.test.ts` holds each record to the model.
 - **Worn items** are `Profile.worn` (obj config names: a staff of fire, a ring of forging), which a family reads;
   `Measured.worn` records what a measured run wore.
 - **Use gates.** A site's reach also carries what using its feature asks (`USE_GATES` in `gates.ts`: Doric's anvil
@@ -298,8 +314,9 @@ What a record can say, beyond a gather and a sink (the code is the reference; ea
   delays (`model/legs.ts`); the rest of the index still prices them at the worst landing.
 
 Measured figures are curated, not read at build time: when a goal finishes, `bun conductor/tools/stats.ts <bot>
---methods` prints the paste-ready `measured` entry (XP/hr, the levels and tool the runs started at, bot, date, hours,
-the command), and the conductor pastes it into the record. A plan names its method (`PlanDef.method`, see
+--methods` prints the paste-ready `measured` entry (XP/hr, the levels and tool the runs started at, the objs they wore
+and for a melee method every combat-level skill, bot, date, hours, the command), and the conductor pastes it into the
+record. A plan names its method (`PlanDef.method`, see
 `conductor/docs/plans.md`) and the record lists the plan back.
 
 Adding a method:
@@ -326,6 +343,8 @@ Adding a method:
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |
 | A method's tile, params, sink, plans or a measured figure | its record in `wiki/world/methods.ts`, then `bun run world` |
 | A method's floor (a formula, a cycle or tool rule) | the family module in `wiki/world/model/families/`, or `model/` (`cycle.ts`, `rate.ts`, `roll.ts`), with its hand-worked test |
+| A kill's floor: hit chance, max hit, swings, damage taken, an npc's stats, styles or bonuses, drops | `wiki/world/model/combat.ts`, `model/families/combat.ts`, `model/npcs.ts`, `model/items.ts`, `sources/droptables.ts`, with a hand-worked test |
+| A kill's Food/hr (the food gate) | a calibration run (`conductor/test/integration/smoke/combat-calibration.itest.ts`), then its record in `CALIBRATIONS` in `wiki/world/methods.ts` |
 
 Then run `bun run world` and commit the code with the regenerated files. What is learned in game
 about a place (a hazard, a route, a rate measured) goes in `learnings/` per the `knowledge` skill,

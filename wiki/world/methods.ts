@@ -575,4 +575,46 @@ export const METHODS: MethodDef[] = [
         ],
         notes: "The plan's fetch phase is a restock guard. The measured run carried its steel axe; the floor wields it.",
     },
+    {
+        id: 'hill-giants-edgeville',
+        name: 'Hill giants in the Edgeville dungeon, big bones buried, food from Edgeville',
+        family: 'combat',
+        at: { level: 0, x: 3113, z: 9840 },
+        area: 14,
+        params: { npc: 'giant' },
+        gear: ['mithril_scimitar', 'iron_kiteshield'],
+        food: 'trout',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        plans: ['hill-giants', 'giants-att-def'],
+        notes:
+            'The plans eat trout and salmon; the record names trout, the smaller heal of the two. A rune scimitar ' +
+            "(Attack 40) is the next weapon tier. Unmeasured: the plans' runs (conductor2, 2026-10-16) fought on the " +
+            'food they started with and never banked, so none is a whole cycle; test/methods.real.test.ts holds the ' +
+            'fight-only floor above them.',
+    },
+    {
+        id: 'moss-giants-varrock-sewers',
+        name: 'Moss giants in the Varrock Sewers, big bones buried, food from Varrock East',
+        family: 'combat',
+        at: { level: 0, x: 3159, z: 9900 },
+        area: 22,
+        params: { npc: 'mossgiant' },
+        gear: ['mithril_scimitar', 'iron_kiteshield'],
+        food: 'trout',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        notes: "The four spawns of the sewers' west pockets. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.",
+    },
+    {
+        id: 'chickens-lumbridge',
+        name: 'Chickens north of Lumbridge, bones buried, feathers kept',
+        family: 'combat',
+        at: { level: 0, x: 3230, z: 3299 },
+        params: { npc: 'chicken' },
+        gear: ['bronze_scimitar'],
+        loot: { bones: 'bury' },
+        sink: { mode: 'drop' },
+        notes: 'A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.',
+    },
 ];

@@ -9,7 +9,7 @@ import { readGameData } from '../model/families/index';
 import { legFinder } from '../model/legs';
 import {
     isTileStop,
-    measuredProfile,
+    measuredFigures,
     methodModel,
     methodRate,
     resolveMethod,
@@ -133,6 +133,10 @@ describe("each seed is at its plan's sites", () => {
         ['willow-seers-longbow-bank', 'tree:seers-village:1', ['here', 'here'], 'bank:seers-village-bank:0', []],
         ['trees-lumbridge-burn', 'tree:lumbridge-trees:0', ['tile:3230,3240,0'], null, []],
         ['willow-draynor-burn', 'tree:draynor-willows:0', ['tile:3088,3247,0'], null, []],
+        // The phase 4 kills: the plans' fight areas, banked for food where they eat.
+        ['hill-giants-edgeville', 'npc:edgeville-dungeon:8', null, 'bank:edgeville-bank:0', []],
+        ['moss-giants-varrock-sewers', 'npc:varrock-sewers:0', null, 'bank:varrock-east-bank:0', []],
+        ['chickens-lumbridge', 'npc:misthalin:38', null, null, []],
     ];
     for (const [id, site, steps, bank, reach] of b3)
         test(id, () => {
@@ -146,6 +150,17 @@ describe("each seed is at its plan's sites", () => {
             ).toEqual(steps);
             expect(m.ways[0]!.reach).toEqual(reach);
         });
+
+    test("the kills' spawns: one walk per ordered pair of their npc's spawns in the area", () => {
+        // Hill giants: the 12 of npc:edgeville-dungeon:5/7/8 (2 + 1 + 9); moss giants: the sewers' 4 (2 + 2 of
+        // npc:varrock-sewers:0/1, the spiders of :1 left out); chickens: the 9 of npc:misthalin:38.
+        for (const [id, spawns] of [
+            ['hill-giants-edgeville', 12],
+            ['moss-giants-varrock-sewers', 4],
+            ['chickens-lumbridge', 9],
+        ] as const)
+            expect([id, method(id).ways[0]!.walks?.length]).toEqual([id, spawns * (spawns - 1)]);
+    });
 
     test('iron-se-varrock-drop has no legs', () => {
         expect(method('iron-se-varrock-drop').ways).toEqual([{ reach: [], legs: [] }]);
@@ -305,16 +320,55 @@ describe('the game data the cycle reads', () => {
 });
 
 describe('the floor at the measured levels is at or above every measured figure', () => {
+    // Each skill's floor rated for that skill, as the pages set it beside the figure (measuredFigures): a combat
+    // method swings the style that suits it.
     for (const def of METHODS)
         for (const [i, measured] of (def.measured ?? []).entries())
             test(`${def.id} #${i} (${measured.bot} ${measured.date})`, () => {
                 const m = method(def.id);
-                const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx);
-                for (const [skill, xp] of Object.entries(measured.xpPerHour) as [Skill, number][]) {
-                    const at = floor.xpPerHour[skill] ?? 0;
-                    expect({ skill, floor: at, measured: xp, atOrAbove: at >= xp }).toMatchObject({ atOrAbove: true });
-                }
+                for (const skill of Object.keys(measured.xpPerHour) as Skill[])
+                    for (const { xpPerHour: xp, floor } of measuredFigures(m, skill, ctx).filter(
+                        f => f.measured === measured,
+                    ))
+                        expect({ skill, floor, measured: xp, atOrAbove: floor >= xp }).toMatchObject({
+                            atOrAbove: true,
+                        });
             });
+});
+
+describe("hill-giants-edgeville against the plans' fight phases (no whole cycle measured)", () => {
+    // conductor2's runs of 2026-10-16 (stats.ts conductor2 --task combat --phases): each fought on the food it
+    // started with and never banked, so they are no measured figure, and the floor they meet is the fight alone, the
+    // food gate shut (no food trips). Start levels from each fight phase's recording (runs.ts readStartState); the
+    // combat task wields the mithril scimitar and iron kiteshield, and bronze arrows sat in the ammo slot.
+    const shut: MethodContext = { ...ctx, calibrated: new Set() };
+    const worn = ['mithril_scimitar', 'iron_kiteshield', 'bronze_arrow'];
+    const cases: [string, Partial<Record<Skill, number>>, Partial<Record<Skill, number>>][] = [
+        [
+            'Strength 54->70 (plan hill-giants, 2026-10-16T07-28-01-599Z, 598 s)',
+            { attack: 40, defence: 40, strength: 54, hitpoints: 50, ranged: 40, prayer: 15, magic: 41 },
+            { strength: 541_098, hitpoints: 178_701, prayer: 59_816 },
+        ],
+        [
+            'Attack 40->68 (plan giants-att-def, 2026-10-16T07-39-28-098Z, 654 s)',
+            { attack: 40, defence: 40, strength: 70, hitpoints: 59, ranged: 40, prayer: 36, magic: 41 },
+            { attack: 582_473, hitpoints: 192_133, prayer: 54_656 },
+        ],
+        [
+            'Defence 40->70 (its fight-defence phase 2026-10-16T07-57-40-225Z, 11.1 min)',
+            { attack: 70, defence: 40, strength: 70, hitpoints: 66, ranged: 40, prayer: 44, magic: 41 },
+            { defence: 634_507, hitpoints: 209_506, prayer: 63_803 },
+        ],
+    ];
+    for (const [name, levels, measured] of cases)
+        test(name, () => {
+            const m = method('hill-giants-edgeville');
+            const profile = everyAt(1, levels, { worn });
+            for (const [skill, xp] of Object.entries(measured) as [Skill, number][]) {
+                const floor = methodRate(m, profile, shut, undefined, skill).xpPerHour[skill] ?? 0;
+                expect({ skill, floor, measured: xp, atOrAbove: floor >= xp }).toMatchObject({ atOrAbove: true });
+            }
+        });
 });
 
 describe('earth runes from the essence mine (survey §1e)', () => {

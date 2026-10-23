@@ -230,8 +230,9 @@ Each phase is usable when it lands.
    access flags on every site; `connectors.ts` and `banks.ts` become views. See "Phase 2 as built".
 3. **Rate model and methods (built).** Gathering, cooking and thieving families, curated method records, the
    floor, `training/` pages, `query.ts`, calibration against `stats.ts`. See "Phase 3 as built".
-4. **Combat.** Accuracy, max hit, gear bonuses, kills/hr, drop tables and aggression hazards, as a
-   combat family on the phase 3 contract (`ActionModel`), with methods in `methods.ts`.
+4. **Combat (melee built).** Accuracy, max hit, gear bonuses, kills/hr, drop tables and aggression hazards, as a
+   combat family on the phase 3 contract (`ActionModel`), with methods in `methods.ts`. See "Phase 4 as built";
+   Ranged and Magic come later.
 
 ## Phase 2 as built
 
@@ -345,3 +346,72 @@ Known gaps:
   on a given trip (`conductor/roadmap.md`, Review follow-ups).
 - Firemaking line resets and HP regeneration are left out of the floor; pottery and Wilderness combat are not modelled.
 - Several records have no measured figure yet (`conductor/roadmap.md`, Review follow-ups).
+
+## Phase 4 as built
+
+Built per `conductor/docs/world-index-phase4-spec.md` (survey: `world-index-phase4-survey.md`); the hand-written
+reference is the Methods section of `wiki/world/README.md`. Melee only: Attack, Strength, Defence, Hitpoints and
+Prayer (by burying). Where it differs from phase 3b:
+
+- **Formulas** (`model/combat.ts`): effective levels, attack and defence rolls, the exact hit chance, max hit, the
+  per-swing damage capped at the npc's remaining HP, E[swings] a kill by a DP over HP (`expectedSwings`), Hitpoints XP
+  truncated per hit, the style's XP and the combat level, each citing its script.
+- **Game data** (`model/npcs.ts`, `model/items.ts`, `sources/droptables.ts`): npc combat stats with the
+  `combat.param` defaults, how each hunts (`huntsUpTo`), its retreat HP and any AI override script; worn bonuses,
+  attack rates, the weapon category's styles, wield levels and `bone_exp`; the drop-table scripts parsed into expected
+  counts a kill. `model/profile.ts` gained `prayers` and `boosts` (none by default; no drain or decay) and reads gear
+  from `worn`.
+- **The combat family** (`model/families/combat.ts`): one kill a success. Its ticks are E[swings] x the weapon's
+  attack rate plus the run from the spawn to its nearest other spawn past the swing cooldown (`killGaps`, a mean over
+  the area's spawns); the death ticks (`npc_death.rs2`) and the scaled respawn set the resource cap; the drops' pickup
+  is priced on the kills that drop what is taken. The npc's default melee AI hits back at the profile's defence
+  (`damage`). An npc with an AI override is a ModelError naming the script, and one the melee scripts special-case
+  (`SPECIAL_NPCS`) is one too; a kill whose swing survival runs past `MAX_SWINGS` is a ProfileError.
+- **Records** (`methods.ts`): `gear` (the worn objs, overlaid slot by slot by a query's `Profile.worn`: each worn obj
+  takes its slots off the record's, `wearing`), `area` (a radius around `at` that gathers the npc's spawns across
+  sites: the Edgeville dungeon's hill giants are three sites), `params: { npc }` and `loot` (`model/cycle.ts` Loot:
+  stackables kept; bones buried in place, banked or left; other drops left unless `keep` names them). A bury costs what its
+  swing gap (`BURY_SWING_GAP`) runs past the attack rate and gives `bone_exp`; each eat on a kill adds `EAT_DELAY` past the kill's
+  free ticks.
+- **Style by skill.** The style is no param: `styleParams` rates a record for the queried skill on the weapon's style
+  that suits it (Attack accurate, Strength aggressive, Defence defensive; Hitpoints and Prayer the best of them), and
+  `ResolvedMethod.levels` lists the skills its gear's styles train, Prayer too when it buries.
+- **Hazards.** `ResolvedMethod.npcs` carries the largest max hit there, the npcs that hunt and up to which combat
+  level, and the target's retreat; `areaHazard` the deepest Wilderness level and multiway over the area's sites.
+  `query.ts` `methodHazard` makes a method aggressive at the profile's combat level (always in the Wilderness), and
+  `bestMethods(skill, profile, { aggressive: false })` drops those. npc sites have a nearest bank (`distance.ts` SINKS),
+  so a combat record banks for food at it; `WORLD_FORMAT` is 21.
+- **The food gate.** A kill eats food only for an npc in `CALIBRATIONS` (`methods.ts`; `CALIBRATED_NPCS`): until a
+  worker run has checked the model's damage on it, its cycle eats nothing, its trips end on a full inventory, and the
+  pages say Food/hr uncalibrated. A record is written when `killFigures` (`model/method.ts`) at the runs' profile is
+  within `CALIBRATION_TOLERANCE` (25%) of the runs' damage and fight ticks a kill (first swing to killing swing);
+  the whole kill's ticks and the gap between kills are reported only, as the gap is the combat task's overhead, not the
+  floor's (the user's decision of 2026-10-23). The runs are `conductor/test/integration/smoke/combat-calibration.itest.ts`,
+  measured with `conductor/tools/combat-ledger.ts`. The hill giant is calibrated (72 kills: damage 7.99 measured
+  against 6.69 modelled, fight 25.9 ticks against 23.0; the gap 16.4 against 7.5 is a `conductor/roadmap.md` Review
+  follow-up); the moss giant and the chicken are not.
+- **Pages.** `wiki/training/` gained Attack, Strength, Defence, Hitpoints and Prayer, each rated on its own style, with
+  a kills/hr column (at 99) on a page with a kill, the gear in Requires, a Hazard line per kill, and Food/hr in
+  Supplies or "uncalibrated".
+- **Records.** `hill-giants-edgeville` (plans hill-giants and giants-att-def), `moss-giants-varrock-sewers` and
+  `chickens-lumbridge`; magic-blast-giants and ranged-magic-chickens stay unlinked. None has a measured figure: the
+  plans' runs of 2026-10-16 fought on the food they started with and never banked, so none is a whole cycle.
+  `test/methods.real.test.ts` holds the hill giants' floor at the start levels of those fight phases, food trips left
+  out, above what they measured (they ran at 81-85% of it).
+
+Accepted deviations:
+
+- A retreat (`npcs.retreat`: the chicken's 1 HP) is priced as if the npc fought on; the page notes it.
+- Legends' Quest counts as not complete in the drop context (`DROP_VARPS`), as a Profile holds no quest state: the
+  jewel table's drops are the smaller set.
+- A noted drop (`cert_<obj>`) is priced at the unnoted obj's cost, stackable (`model/items.ts`), as the engine gives it.
+- The pickup of kept or buried drops is priced (`pickupTicks` on the kills that drop one); left drops are not picked up.
+- `Profile.worn` overlays the record's gear per slot, so a query naming a helm keeps the record's weapon.
+
+Known gaps:
+
+- Ranged, Magic, prayer drain, potion decay, cannon, specials and multi-target attacks; green dragons, dragonfire and
+  any Wilderness combat; damage from other aggressive npcs in multiway; HP regeneration in food cycles.
+- `stats.ts --methods` (`conductor/lib/methods.ts` measuredFloor) rates every skill of a method on its first skill's
+  style, so a combat method's Strength and Defence floors read 0 there; the pages and the real-data tests rate each
+  skill on its own style.
