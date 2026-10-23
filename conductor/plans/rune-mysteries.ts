@@ -5,6 +5,7 @@
 // research notes; Sedridor takes the notes: the quest is complete and the talisman comes back.
 // Dialog texts from server/content/scripts/areas/{area_lumbridge/duke_horacio,area_wizard_tower/sedridor,area_varrock/aubury}.rs2.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { QUEST_TAB_REQUIRED } from '@conductor/lib/quests';
 import talk from '@conductor/tasks/talk';
 
 const duke = { npc: 'Duke Horacio', at: { x: 3211, z: 3221, level: 1 } };
@@ -39,5 +40,6 @@ export default definePlan({
         ),
         phase(talk, { ...duke, choices: ['quests for me', 'Sure, no problem'] }, { name: 'duke' }),
     ],
-    until: v => v.runs('sedridor-notes') > 0,
+    requires: { ...QUEST_TAB_REQUIRED },
+    until: v => v.questDone('runemysteries'),
 });

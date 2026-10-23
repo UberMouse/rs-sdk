@@ -383,6 +383,12 @@ export interface InterfaceState {
     options: Array<{ index: number; text: string }>;
 }
 
+/** One entry of the quest tab: the quest's name and its text colour (red not started, yellow started, green complete). */
+export interface QuestTabEntry {
+    name: string;
+    colour: number;
+}
+
 export interface PrayerState {
     /** Active state of each prayer (indexed 0-14) */
     activePrayers: boolean[];
@@ -448,6 +454,8 @@ export interface BotState {
     modalInterface: number;
     /** Prayer state (active prayers, prayer points) */
     prayers: PrayerState;
+    /** The quest tab entries with the colour the server gave each (the only quest progress the client holds). */
+    questTab: QuestTabEntry[];
     /** Authoritative client varp 78: a PK skull is currently active. */
     isSkulled: boolean;
     /** Authoritative client varp 172: server auto-retaliation is enabled. */

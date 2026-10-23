@@ -4,10 +4,11 @@
 //   open the coffin in the graveyard behind the chapel, talk to the Restless ghost (it stays 100 ticks after
 //   the coffin is opened) -> Wizards' Tower basement: take the Skull from the ground (a level-13 skeleton
 //   appears and attacks; flee it to the coffin) -> open the coffin again, use the Skull on it.
-// The quest state itself is not readable, so a phase whose conversation depends on it (Aereck, the ghost) runs
-// with onFail 'continue' and the next phase is chosen from `last`: a conversation from a later quest state
-// offers other choices, fails, and the plan moves on.
+// The quest tab (green = done) ends the plan, but it shows no stage, so a phase whose conversation depends on the
+// stage (Aereck, the ghost) runs with onFail 'continue' and the next phase is chosen from `last`: a conversation
+// from a later quest state offers other choices, fails, and the plan moves on.
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
+import { QUEST_TAB_REQUIRED } from '@conductor/lib/quests';
 import interact from '@conductor/tasks/interact';
 import pickup from '@conductor/tasks/pickup';
 import talk from '@conductor/tasks/talk';
@@ -81,5 +82,6 @@ export default definePlan({
             { name: 'aerick', onFail: 'continue' },
         ),
     ],
-    until: v => v.runs('use-skull') > 0,
+    requires: { ...QUEST_TAB_REQUIRED },
+    until: v => v.questDone('priest'),
 });

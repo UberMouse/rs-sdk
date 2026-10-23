@@ -1,11 +1,12 @@
 // What an account meets of the world index's requirement tokens (wiki/world/requirements.ts): a site's `reach` sets,
 // and the requirement of each door, connector and crossing a walk takes (lib/walk-graph.ts). Read from the bot's own
-// state, which has its skills and items but not its quests: a token the state cannot settle counts as not met, so a
-// walk is never planned through a door or to a bank that may refuse the bot. The caller adds what it has checked
-// (a quest done) to `met`.
+// state, which has its skills and items and, from the quest tab, which quests are done or started (not their stage):
+// a token the state cannot settle counts as not met, so a walk is never planned through a door or to a bank that may
+// refuse the bot. The caller adds what it has checked to `met`.
 import type { BotWorldState } from '../../sdk/types';
 import { CAME_FROM } from '../../wiki/world/requirements';
 import { configName, objInfo } from './packs';
+import { QUESTS, questProgress } from './quests';
 import { countItems } from './util';
 
 export interface Account {
@@ -36,7 +37,7 @@ export const NO_ACCOUNT: Account = { levels: {}, coins: 0 };
 
 /**
  * The account as a bot's state shows it: its base and current levels, the coins it carries, the objs it carries and
- * wears (by config name, with their categories in `met`). Quests and the rest are not read, so they are not met.
+ * wears (by config name, with their categories in `met`). Quests are read from the quest tab (done, or started for `>=1`); the rest is not read, so it is not met.
  */
 export function accountOf(state: BotWorldState): Account {
     const levels: Record<string, number> = {};
@@ -64,6 +65,12 @@ export function accountOf(state: BotWorldState): Account {
         if (!obj) continue;
         worn.add(obj);
         categories(obj, 'worn');
+    }
+    // The quest tab's colours: a quest done meets `quest:<id>` and every stage of it, one started meets `quest:<id>>=1`.
+    for (const id of Object.keys(QUESTS)) {
+        const progress = questProgress(state, id);
+        if (progress === 'done') met.add(`quest:${id}`);
+        else if (progress === 'started') met.add(`quest:${id}>=1`);
     }
     return { levels, current, coins: countItems(state, /^coins$/i), held, worn, met };
 }

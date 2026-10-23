@@ -520,6 +520,12 @@ export const PRAYER_LEVELS: number[] = [
     37, 40, 43, // protect_from_magic, protect_from_missiles, protect_from_melee
 ];
 
+/** One entry of the quest tab: the quest's name and its text colour (red not started, yellow started, green complete). */
+export interface QuestTabEntry {
+    name: string;
+    colour: number;
+}
+
 export interface PrayerState {
     /** Active state of each prayer (indexed 0-14, matching PRAYER_NAMES order) */
     activePrayers: boolean[];
@@ -591,6 +597,8 @@ export interface BotWorldState {
     combatStyle?: CombatStyleState;
     combatEvents: CombatEvent[];
     prayers: PrayerState;
+    /** The quest tab entries with the colour the server gave each; absent on a client that predates it. */
+    questTab?: QuestTabEntry[];
     /** Absent when the connected client predates authoritative PK-skull telemetry. */
     isSkulled?: boolean;
     /** Absent when the connected client predates authoritative auto-retaliate telemetry. */

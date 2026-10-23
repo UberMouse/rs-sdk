@@ -129,8 +129,20 @@ keeps every phase choice re-derivable from a run's recorded states.
 | `v.bank(item)`      | bank count as last seen open during this plan; `undefined` before that  |
 | `v.level(skill)`    | base level                                                              |
 | `v.hp`              | `{ current, max }`                                                      |
+| `v.quest(id)`       | `'none'`, `'started'` or `'done'` from the quest tab (see below)        |
+| `v.questDone(id)`   | the quest tab shows the quest green                                     |
 | `v.runs(phase)`     | times that phase has run in this plan                                   |
 | `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
+
+`v.quest` and `v.questDone` take the id of `conductor/lib/quests.ts` (the content's `questlist:` name:
+`imp`, `runemysteries`, `priest`, `fortress`, ...; an unknown id throws). Quest varps are not sent to the
+client, so progress comes from the quest tab: the server colours each entry red, yellow or green at login
+and on every progress change, and the client state carries those colours (`state.questTab`). That is three
+states, not the stage number: a phase that needs the exact stage still chooses from the inventory and the
+previous phase, and uses `questDone` for its `until`. A state with no quest tab (a client that predates it,
+or before the login script ran) reads `'none'`, so `questDone` is false until the tab is seen; a quest plan
+declares `requires: { ...QUEST_TAB_REQUIRED }` (from `lib/quests`) so it fails fast with a reason instead of
+looping on such a state.
 
 `v.bank` exists because "smelt once enough ore is banked" needs it and the state only shows the bank
 while it is open: the runner keeps the last bank contents it saw in any phase. The client lists the bank

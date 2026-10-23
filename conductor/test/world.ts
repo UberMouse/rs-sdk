@@ -8,6 +8,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PLAYER_TARGET_OFFSET } from '../lib/interrupts';
+import { QUESTS } from '../lib/quests';
 import { Items } from '../../sdk/test/utils/save-generator';
 import type { BotWorldState, CombatStyleOption, DialogOption, GroundItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 
@@ -309,6 +310,20 @@ export class World {
         const options: DialogOption[] = (d.options ?? []).map((text, index) => ({ index, text }));
         return this.with({
             dialog: { isOpen: true, options, isWaiting: false, ...(d.text !== undefined && { text: d.text }) },
+        });
+    }
+
+    /**
+     * The quest tab as the server colours it after login: every quest of lib/quests.ts red (not started) except the
+     * ones given, which are yellow (`started`) or green (`done`).
+     */
+    quests(progress: Record<string, 'started' | 'done'>): World {
+        const colours = { none: 0xf80000, started: 0xf8f800, done: 0x00f800 };
+        return this.with({
+            questTab: Object.entries(QUESTS).map(([id, q]) => ({
+                name: q.name,
+                colour: colours[progress[id] ?? 'none'],
+            })),
         });
     }
 

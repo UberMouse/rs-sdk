@@ -14,6 +14,7 @@ import {
     type PlanResult,
     type Predicate,
 } from '../../lib/plan';
+import { QUEST_TAB_REQUIRED } from '../../lib/quests';
 import { SETTLE_TICKS } from '../../lib/engine';
 import { defineTask, type Outcome } from '../../lib/task';
 import { countItems, TICK_MS } from '../../lib/util';
@@ -316,6 +317,75 @@ describe('selection', () => {
         );
         expect(selected(r)).toEqual(['train']);
         expect(r.result.status).toBe('done');
+    });
+
+    test('v.quest reads the quest tab; the plan ends when v.questDone holds', async () => {
+        const seen: string[] = [];
+        const def = plan(
+            [
+                phase(
+                    train,
+                    {},
+                    {
+                        when: v => {
+                            seen.push(v.quest('imp'));
+                            return true;
+                        },
+                    },
+                ),
+            ],
+            v => v.questDone('imp'),
+        );
+        const r = await sim(def, {
+            timeline: [
+                BASE.quests({}).build(),
+                BASE.quests({ imp: 'started' }).build(),
+                BASE.quests({ imp: 'done' }).build(),
+            ],
+        });
+        expect(r.result.status).toBe('done');
+        expect(seen[0]).toBe('none');
+    });
+
+    test('a quest already done passes the plan before any phase', async () => {
+        const r = await sim(
+            plan([phase(train, {})], v => v.questDone('runemysteries')),
+            { timeline: [BASE.quests({ runemysteries: 'done' }).build()] },
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.runs).toEqual([]);
+    });
+
+    test('a state with no quest tab reads none', async () => {
+        const seen: string[] = [];
+        const r = await sim(
+            plan(
+                [
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => {
+                                seen.push(v.quest('imp'));
+                                return true;
+                            },
+                        },
+                    ),
+                ],
+                v => v.runs('train') > 0 && !v.questDone('imp'),
+            ),
+        );
+        expect(r.result.status).toBe('done');
+        expect(seen[0]).toBe('none');
+    });
+
+    test('QUEST_TAB_REQUIRED fails a plan on a state with no quest tab, but a done quest ends it first', async () => {
+        const def = needs({ ...QUEST_TAB_REQUIRED }, v => v.questDone('imp'));
+        const blind = await sim(def);
+        expect(blind.result).toMatchObject({ status: 'failed', reason: 'plan requires quest tab (state.questTab)' });
+        expect(blind.runs).toEqual([]);
+        const done = await sim(def, { timeline: [BASE.quests({ imp: 'done' }).build()] });
+        expect(done.result.status).toBe('done');
     });
 
     test('no applicable phase fails the plan, logging what the selection saw', async () => {

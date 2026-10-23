@@ -89,6 +89,23 @@ describe('meetsToken: objs carried and worn, and the wizard on record', () => {
     });
 });
 
+describe('quests from the quest tab', () => {
+    test('a quest done meets its token and every stage; one started meets stage 1 only', () => {
+        const a = accountOf(world().quests({ runemysteries: 'done', imp: 'started' }).build());
+        expect(meetsToken(a, 'quest:runemysteries')).toBe(true);
+        expect(meetsToken(a, 'quest:runemysteries>=4')).toBe(true);
+        expect(meetsToken(a, 'quest:imp')).toBe(false);
+        expect(meetsToken(a, 'quest:imp>=1')).toBe(true);
+        expect(meetsToken(a, 'quest:imp>=2')).toBe(false);
+        expect(meetsToken(a, 'quest:priest')).toBe(false);
+        expect(meetsToken(a, 'quest:priest>=1')).toBe(false);
+    });
+
+    test('a state with no quest tab meets no quest', () => {
+        expect(meetsToken(accountOf(world().build()), 'quest:runemysteries')).toBe(false);
+    });
+});
+
 describe('accountOf', () => {
     test("a bot's base and current levels by lower-case name, the coins and objs it carries, what it wears", () => {
         const built = world()

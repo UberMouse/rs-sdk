@@ -13,6 +13,7 @@ import type { Driver } from '../core/interpret';
 import { bankMemory, watchBank } from './bank-memory';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { guardLabel } from './interrupts';
+import { type QuestProgress, QUESTS, questProgress } from './quests';
 import { checkStops, describeStop, type StopCondition, validateStops } from './stop';
 import type { Sinks, TaskDef, TaskResult, TaskStatus } from './task';
 import { countItems, errMessage, exactName, findSkill, INVENTORY_SLOTS, TICK_MS, xpGainedSince } from './util';
@@ -32,6 +33,13 @@ export interface PlanView {
     bank(item: string | RegExp): number | undefined;
     /** Base level; throws on an unknown skill. */
     level(skill: string): number;
+    /**
+     * A quest's progress as the quest tab shows it: 'none' (red), 'started' (yellow) or 'done' (green). The id is the
+     * `questlist:` name of lib/quests.ts; throws on an unknown id. A state with no quest tab reads 'none'.
+     */
+    quest(id: string): QuestProgress;
+    /** Whether the quest tab shows the quest complete (green). */
+    questDone(id: string): boolean;
     /** Hit points; `{ current: 0, max: 0 }` in a state with no player (the client is not in game). */
     hp: { current: number; max: number };
     /** Finished runs of that phase in this plan; throws on a name the plan has no phase for. */
@@ -383,6 +391,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 const k = findSkill(s, skill);
                 if (!k) throw new Error(`unknown skill "${skill}"; skills: ${s.skills.map(x => x.name).join(', ')}`);
                 return k.baseLevel;
+            },
+            quest: id => {
+                if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
+                return questProgress(s, id) ?? 'none';
+            },
+            questDone: id => {
+                if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
+                return questProgress(s, id) === 'done';
             },
             hp: { current: s.player?.hp ?? 0, max: s.player?.maxHp ?? 0 },
             runs: name => {

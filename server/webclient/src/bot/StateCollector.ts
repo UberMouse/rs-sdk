@@ -58,6 +58,7 @@ import {
     type DialogState,
     type InterfaceState,
     type PrayerState,
+    type QuestTabEntry,
     type OpFeedbackState
 } from './types.js';
 import type { ScanProvider } from './ActionExecutor.js';
@@ -120,6 +121,7 @@ export class BotStateCollector implements ScanProvider {
 
     // Cached prayer component map (built once on first use)
     private prayerComponentMap: PrayerComponentMap | null = null;
+    private questTabIds: number[] | null = null;
 
     // Answers "could the routefinder actually get there?" for every published
     // entity, from the same collision map the dispatch paths route over.
@@ -189,6 +191,7 @@ export class BotStateCollector implements ScanProvider {
             modalOpen: (c.mainModalId ?? -1) !== -1,
             modalInterface: c.mainModalId ?? -1,
             prayers: this.collectPrayerState(),
+            questTab: this.collectQuestTab(),
             // These policy-critical settings are ordinary server varps. Keep
             // them explicit rather than making controllers infer state from a
             // head icon or blindly click a control that might already be set.
@@ -324,6 +327,31 @@ export class BotStateCollector implements ScanProvider {
         } catch { /* ignore errors */ }
 
         return defaultState;
+    }
+
+    /**
+     * The quest tab as the client holds it: each entry's quest name and its text colour. The server's login script
+     * (update_questlist, content/scripts/general/scripts/quests.rs2) colours every entry red (not started), yellow
+     * (started) or green (complete) with if_setcolour, and quest varps themselves are never transmitted. The entries
+     * are the buttons that share a layer with the "FREE QUESTS:" heading, found once and cached.
+     */
+    private collectQuestTab(): QuestTabEntry[] {
+        try {
+            if (!this.questTabIds) {
+                const heading = IfType.list.findIndex(com => com?.text === 'FREE QUESTS:');
+                if (heading < 0) return [];
+                const layer = IfType.list[heading].layerId;
+                const ids: number[] = [];
+                for (let i = 0; i < IfType.list.length; i++) {
+                    const com = IfType.list[i];
+                    if (com && com.layerId === layer && com.buttonType > 0 && com.text) ids.push(i);
+                }
+                this.questTabIds = ids;
+            }
+            return this.questTabIds.map(id => ({ name: IfType.list[id].text as string, colour: IfType.list[id].colour }));
+        } catch {
+            return [];
+        }
     }
 
     private collectDialogState(): DialogState {
