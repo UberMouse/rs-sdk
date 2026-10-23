@@ -33,7 +33,7 @@ chaos druids + Herblore + melee + Prayer.
 2. Tools and food: steel axe (Bob, Lumbridge, 200; the best axe any shop sells), fly rod (5); Fishing net 1-20, lure
    to ~50 with Cooking alongside; ~40 cooked trout/salmon banked (food for thieving and the Wilderness course).
 3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47), Rune Mysteries (essence), Imp Catcher (Magic 44,
-   superheat at 43), Waterfall (Att/Str 83), Druidic Ritual (only if Herblore is gated: worker check in flight).
+   superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
 4. Thieving 40-55 Ardougne guards, 55-99 knights; stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
 5. Agility: gnome course 1-52, Wilderness course 52-99.
@@ -49,7 +49,7 @@ quest page for its own requirements before planning it. Status is conductor3's.
 | Unlock | Needs | Status | Page |
 |---|---|---|---|
 | Runecraft (essence mine) | Rune Mysteries (plan rune-mysteries) | todo | `wiki/quests/rune-mysteries.md` |
-| Herblore | Druidic Ritual: the identify and brew scripts may not check it in this revision (worker check 2026-10-23) | checking | `wiki/quests/druidic-ritual.md` |
+| Herblore | nothing: identify and brew check only members + level (worker conductor3w5, 2026-10-23); Druidic Ritual only for its XP lump | open | `wiki/quests/druidic-ritual.md` |
 | Prayer 47 | Restless Ghost (plan restless-ghost, ~5 min) | todo | `wiki/quests/` |
 | Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | todo | `wiki/quests/` |
 | Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
