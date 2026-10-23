@@ -7,7 +7,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | kills/hr | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `chickens-lumbridge` | [Misthalin](../places/misthalin.md) `npc:misthalin:38` | 86.4k at 1 | 159k | 220k | 260k | 288k | 309k | 324k | 345k | 353k | 360k | 366k | 1.22k | 12.2k | player | - |
+| `chickens-lumbridge` | [Misthalin](../places/misthalin.md) `npc:misthalin:38` | 86.4k at 1 | 159k | 220k | 260k | 288k | 309k | 324k | 345k | 353k | 360k | 366k | 1.22k | 12.2k | player | 28.2k at 1 (33%) |
 | `cows-falador-farm` † | [Asgarnia](../places/asgarnia.md) `npc:asgarnia:29` | 159k at 5 | 170k | 314k | 378k | 431k | 437k | 442k | 449k | 451k | 453k | 455k | 569 | 0 | resource | - |
 | `hill-giants-edgeville` | [Edgeville Dungeon](../places/edgeville-dungeon.md) `npc:edgeville-dungeon:8` | 170k at 20 | 78.9k | 170k | 278k | 381k | 537k | 629k | 718k | 861k | 941k | 1.02M | 290 | 5.03k | player | - |
 | `moss-giants-varrock-sewers` † | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 208k at 20 | 106k | 208k | 330k | 443k | 621k | 724k | 823k | 992k | 1.08M | 1.17M | 195 | 7.5k | player | - |
@@ -20,6 +20,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Sink**: drop.
   - **Hazard**: no npc there hunts players; single-way.
   - **Supplies/hr** at 99: none.
+  - **Measured**: 28.2k at 1 by conductor3 on 2026-10-23.
 - `cows-falador-farm`: Cows on the farm east of Falador, bones buried, food from Falador East. Melee 1-25 band: seven cows, max hit 1, none hunts. No promoted plan; unmeasured, and uncalibrated (no CALIBRATIONS record), so it eats nothing yet.
   - **Requires**: Reach: none. Levels: Attack 5, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 5. Tools: none. Gear: Steel scimitar, Amulet of strength. Food: Lobster.
   - **Sink**: bank at [Falador East bank (Falador)](../places/falador-east-bank.md) `bank:falador-east-bank:0`; legs 36 + 36 run ticks.

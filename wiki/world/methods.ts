@@ -616,6 +616,16 @@ export const METHODS: MethodDef[] = [
         loot: { bones: 'bury' },
         sink: { mode: 'drop' },
         plans: ['melee-chickens'],
+        measured: [
+            {
+                xpPerHour: { attack: 29_915, defence: 28_206, strength: 28_206, hitpoints: 28_052, prayer: 27_881 },
+                level: { attack: 1, defence: 1, strength: 1, hitpoints: 10, prayer: 1, ranged: 1, magic: 1 },
+                bot: 'conductor3',
+                date: '2026-10-23',
+                hours: 0.117,
+                from: 'stats.ts conductor3 --methods',
+            },
+        ],
         notes: 'A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.',
     },
     {
