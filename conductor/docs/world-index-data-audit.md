@@ -1,0 +1,185 @@
+# World index data audit: survey and fix plan
+
+Read-only audit, 2026-10-23, at main d46044057, with another session's uncommitted Catherby fishing fix in the tree
+(it adds spot movement tiles to fishing sites and edits the Asgarnia, Kandarin and Catherby rects in `areas.ts`).
+Paths: `S/` = `server/content/scripts/`, `E/` = `server/engine/src/`, `W/` = `wiki/world/`. The audit's scratch
+scripts were not kept; the checks in §2.2 replace them.
+
+Why: a runner sized its Catherby fishing area from the index and lost minutes idle. The index listed 2 harpoon
+tiles, filed one site under Asgarnia, had no spot movement and no sharks. Each cause turned out to be a class.
+
+## 0. Headlines
+
+- **The builder reads part of the engine data and stops.** Fishing spots move on tick 1 (`timer=1` on every spot
+  config, `E/engine/entity/Npc.ts:551`, `S/skill_fishing/scripts/fishing_movement.rs2`), so a spawn tile is almost never
+  where the spot is; npc `wanderrange` (default 5, up to 63) is read nowhere in `W/`.
+- **Hand-curated rects were never fitted to what is in them**, and no check catches a site filed in the wrong area.
+  Port Sarim's rect misses 5 of its ~6 shops.
+- **Site geometry hides the extent.** One tree site is 1245 trees of six species over 155×411 tiles; clustering is
+  per leaf area, so one mine splits at an area edge; the stand tile is the walkable tile nearest the centre, wherever
+  that is. `bbox` is in world.json but no page or runner brief shows it.
+- **Rules key on one script directory or one category**, so features implemented elsewhere fall out silently.
+- **Whole feature kinds are absent**: crops and pickables, ground item spawns, mill, livestock.
+- **Curated tables can't say a use gate by quest state**, and `EXPECTED_UNREACHED` names sites by an ordinal id that
+  any clustering change renumbers.
+- **Verified fine**: tree and rock depletion and respawn, the mining and woodcutting formulas, fishing's roll order
+  and cadence, the guild skill gates, all 801 script citations in the curated tables.
+
+## 1. Findings
+
+Counts are from the committed world.json unless marked. CONFIRMED = read in the engine and the index; SUSPECTED = not
+checked against the game.
+
+### 1.1 Engine data the builder doesn't read
+
+| # | Finding | Evidence | Scale |
+|---|---|---|---|
+| A1 | Fishing spot positions are spawn tiles; spots teleport among their `fishing_movement_enum` tiles every 280-530 ticks from tick 1 | `S/skill_fishing/configs/fishing.npc` (`timer=1`, `param=fishing_movement_enum`), `fishing_movement.enum`, `fishing_movement.rs2:1-12` | 40 of 52 fishing sites; 271 enum tiles vs 132 spawns; 17 sites have enum tiles >10 tiles outside the site bbox. **In progress in the other session** (pages now list `tiles`) |
+| A2 | One movement pool split into several sites | 8 enums over 17 sites (`0_34_50` feeds 3 Tirannwn sites; Entrana, Baxtorian Falls, Rimmington, Al Kharid, Barbarian Village, slimy eel east, `0_33_51` 2 each) | 17 sites |
+| A3 | Npc wander range ignored: clusters are the spawn tiles' bbox | `E/.../NpcType.ts:101` (wanderrange 5, maxrange +2), `Npc.ts:702-735`; nothing in `W/` reads it | ~74% of 4537 npc clusters wander past their bbox; 133 of 150 pickpocket sites roam ≥5 (`knight_of_ardougne` 15 round one tile) |
+| A4 | Respawn time not on sites or `npcSpawns` (the combat model has it: `W/model/npcs.ts:126`) | `NpcOps.ts:117` `respawnrate`, default 100 | rats 4 ticks ×410, blessed spiders 600 ×52 |
+| A5 | Fishing pages show option names only, not level, tool, bait, catch, XP; `readSpots` already parses them for methods | `fishing.struct` (`productexp`, `success_low/high`), op scripts (`memberfish.rs2:14` shark 76 harpoon, `rarefish.rs2:23` lobster 40, `:128` tuna/swordfish 35) | every fishing page |
+| A6 | Shop rule keeps the first `~openshop` of an npc | `W/classify.ts:355-359` (`.find(Boolean)`); Razmire `quest_mortton/scripts/razmire_keelgan.rs2:240,:243` | ~5 npcs |
+| A7 | Script movement beyond wander | imps `npc_tele` up to 20 tiles (`npc/scripts/imp.rs2`); Canifis citizens `npc_changetype` to werewolves (`area_canifis/scripts/canafis_citizen.rs2:15-20`) | 47 imps, ~20 citizens |
+
+### 1.2 Classification rules keyed too narrowly
+
+| # | Finding | Evidence | Scale |
+|---|---|---|---|
+| B1 | Stall rule reads only `skill_thieving/scripts/stalls/`; Ape Atoll's stalls are in a quest dir | `W/classify.ts:422`; `S/quests/quest_mm/scripts/aa_market.rs2:1-13` (`@attempt_steal_aa_stall(level, low, high, xp, respawn)`) | 5 stalls (two at level 65) |
+| B2 | `STATIONS` maps category `watersource` but not `well` | `W/classify.ts:44-57`; `S/general_use/configs/water_sources.loc:24,:57` | 15 wells (bucket only, `water_sources.rs2:69`) |
+| B3 | Fishing subtypes fall back to raw labels | `W/classify.ts:336`: `category_632` (karambwanji), `category_633` (karambwan), `loc_2027` (waterfall fly), `loc_2630` (lava eel loc) | page names |
+| B4 | Odd ones | `newbierange` not a range (its furnace is); `trappedchaosaltar` unclassified; Duel Arena nurses (Heal) unclassified | low value |
+
+Nothing lists placed features whose op triggers no rule claimed, which is how B1 and B2 stayed hidden.
+
+### 1.3 Kinds the index doesn't have
+
+| # | Feature | Engine | Placed |
+|---|---|---|---|
+| C1 | Crops: wheat, potato, cabbage, onion | `S/general_use/scripts/pickables.rs2:2-60` (`[oploc2,...]`, respawn 20-50 in the call); `W/classify.ts:379-380` leaves them out on purpose | 1,936 |
+| C2 | Other pickables: banana trees, pineapples, Kharidian cacti (knife), Miscellania heather | `area_karamja/scripts/banana_tree.rs2`, `area_desert/scripts/kharidian_cactus.rs2` | ~400 |
+| C3 | Ground item spawns | 1,204 `==== OBJ ====` map entries; `W/sources/maps.ts parseMapSquare` skips the section; only `wiki/generate-items.ts:743` reads them, deduped by mapsquare with no tile | 1,204 |
+| C4 | Flour mill chain: hoppers, levers, flour bins | `S/general_use/scripts/windmills.rs2` | 4 mills |
+| C5 | Livestock: sheep to shear, cows to milk | `general_use/scripts/shear_sheep.rs2` (57 sheep); `npc/scripts/cow_milking.rs2` (`[opnpcu,cow]`; cows are only combat `npc:cow`) | 57 + 52 |
+
+### 1.4 Area geometry (`W/areas.ts`)
+
+The validator (`W/area-resolve.ts`) checks ids, parents, cycles, inverted rects and that a child sits inside its
+parent; `build.ts` fails only on a covered site outside every area. A site in the wrong area, or one resource split
+across two areas, passes. Rects look like map-label squares never refit to their features (labels themselves sit
+inside their rects).
+
+| # | Area | Committed rect | What falls outside |
+|---|---|---|---|
+| D1 | Port Sarim (line 148) | x 3023-3064, z 3197-3244 | `shop:asgarnia:4-8` (x 3012-3028), `range:asgarnia:2`, `fire:asgarnia:6`, `pickpocket:asgarnia:4`: ~9 sites as plain Asgarnia |
+| D2 | Crafting Guild (line 73) | x 2909-2932 | interior is east: tanner, spinning wheel, pottery wheel, water source, a rock (x 2933-2941) |
+| D3 | Entrana | x2 2881 over z 3347-3410 | mainland coast (`tree:entrana:3` reach `[[]]`); its south edge is fixed in the working tree |
+| D4 | Catherby | working tree's shore rect is z 3415-3440 | `shop:kandarin:3` (2834, 3445) still outside |
+| D5 | SUSPECTED, 1-3 tiles out | Taverley shop and water sources, Burthorpe anvil, Chaos Temple altar, Champions' Guild range, Brimhaven/Shilo/Tai Bwo Wannai shops, Bandit Camp (2 shops, range, fishing), Camelot altar, Exam Centre pottery, Edgeville shop | ~15 sites |
+
+The near-miss scan found 47 service and resource sites within 3 tiles of a named area they're not in, 129 within 10.
+
+### 1.5 Site geometry (`W/place.ts`)
+
+| # | Finding | Evidence | Scale |
+|---|---|---|---|
+| E1 | Clustering runs per (kind, leaf area, level), so one place splits at an area edge | `place.ts` `buildSites`/`cluster` | pairs within `SITE_RADIUS` in different areas: rock 6 (Coal Trucks mine 2 + 16 coal, 90% outside its rect; Arandar limestone; Shilo gems; Pirates' Hideout), pickpocket 13, npc 84, tree 274, anvil 1, flax 1 (Rellekka 2 + 18), shop 1 |
+| E2 | Trees cluster by kind, not species, and single-linkage chains forests | `place.ts:144-165` | `tree:kandarin:60`: 1245 trees (970 normal, 155 oak, 79 maple, 30 willow, 7 magic, 4 yew) over x 2608-2763, z 3291-3702; 170 of 795 tree sites span ≥20 tiles |
+| E3 | One radius per kind both over-merges forests and under-merges mines and town squares | near-miss pairs (radius < gap ≤ 2×radius): rock 24 (Al Kharid iron 11 apart), pickpocket 95 (Al Kharid men: 4 sites in one square), fishing 7 | |
+| E4 | Stand = walkable candidate nearest the centre; may not reach most members, or any bank | `place.ts` `standTile` | members unwalkable from the stand: `fishing-spot:kandarin:1` 7 of 9, `tirannwn:1` 3 of 4, `desert-mining-camp-mine:1` 21 of 22 (SUSPECTED gate); 2 fishing and 23 tree stands in pockets cut off from every bank. Mid-way through the other session's rebuild, Catherby's stand landed inside Harry's shop (a 111-tile pocket entered only by the Taverley cellar ladder), giving Falador West at 266 ticks behind a dusty key; nothing flagged it |
+| E5 | Nearest bank is priced from the stand only | `W/distance.ts` | farthest member's walk minus the stand's: fishing p90 43 tiles, max 226; tree p90 28 |
+| E6 | `bbox` and `features` are in world.json but not on the pages or in the runner brief | `W/types.ts:75`; `W/render/resources.ts`; `.claude/agents/task-runner.md` ("size to overshoot") | every site; rock members up to 21 tiles from the centre, pickpocket 26 |
+
+### 1.6 Curated tables and what they can express
+
+| # | Finding | Evidence | Scale |
+|---|---|---|---|
+| F1 | `EXPECTED_UNREACHED` and other entries name sites by ordinal id; the build fails only on an entry matching nothing, so a renumbered id silently hides a different site | `W/areas.ts` (81 distinct `kind:area:n` ids at HEAD); the working-tree Catherby edit already renumbered `tree:asgarnia:23` to `:20` and removed `:6` | 172 sites suppressed |
+| F2 | `USE_GATES` gates by loc config only; quest-state uses are missing | Viking stalls `S/skill_thieving/scripts/stalls/stealing.rs2:35,:42` (`%viking < ^viking_complete`); Miscellania coal (`mining.rs2:32-48`, `%misc_quest`) and maples (`woodcut.rs2:68-77`), and its intercept procs take the yield | 4 stall sites, Miscellania coal, maple and fishing sites |
+| F3 | Stall family ignores guards (5 tiles, line of sight) and the 10-tick post-combat block | `W/model/families/stall.ts` returns `success: 1`; `stealing.rs2` `stealing_check_for_guard` | latent: no stall record yet |
+| F4 | Shilo cart priced flat `coins:10`; script charges 5% of carried coins, 10-200 | `W/gates.ts:136`; `S/.../hajedy.rs2:51-55` | 1 transport pair |
+| F5 | Moves the crossing model can't say | interface-only gliders (walker refuses, reach counts); two-op moves and loc spells (Legends cavern); ~20 sites in `EXPECTED_UNREACHED` by crossings the index misses; 193 scripted moves whose landing no run settles; 79 unpriced fail-backs (28 Brimhaven arena); 32 lock-picked doors with no roll (priced free); 48 `other:` requirements, including the Barbarian Outpost gate's barcrawl | tracked in part in roadmap Review follow-ups |
+
+## 2. Plan
+
+Decisions (user, 2026-10-23): this doc is the deliverable, no build yet; all four new-kind groups are in scope
+(ground items, pickables, wells + Ape Atoll stalls, mill + livestock); method records (§3) stay with the conductor
+and are listed in the roadmap.
+
+Order matters: 2.1 first because every later step renumbers sites; 2.2 before 2.5 so the refits are driven by a
+check rather than by eye; 2.4 after 2.3 because merged fishing pools and wander-grown boxes change what clusters.
+
+### 2.1 Stable site keys (F1)
+
+Key every curated site reference (`EXPECTED_UNREACHED`, method `at` already uses a tile) by a tile in the site, or by
+area + kind + subtype, resolved at build time; fail the build when a key resolves to more than one site or none.
+Files: `W/areas.ts` (`walledIn` and the entries), its resolver in `W/build.ts`. Done when renumbering every site
+(shuffle the cluster order in a test) leaves the suppressed set unchanged.
+
+### 2.2 Build checks for each class
+
+Make these `--check` failures with a reviewed allowlist (each entry with a reason), so a class can't come back:
+
+1. **Unclaimed triggers** (B1, B2, C): every placed loc or npc config with an op trigger, a gather or processing
+   shape (`inv_add`, `~pickup_loc_floor`, `stat_advance`, `~openshop`) and no feature kind. The output is the to-do
+   list for 2.6.
+2. **Near-miss area** (D): a covered non-tree site within 3 tiles of a named leaf area's rects but resolved to
+   another area.
+3. **Split resource** (E1, D): same-config sites whose bboxes are within `SITE_RADIUS` but in different areas.
+4. **Stand connectivity** (E4): a stand whose walk component holds neither a bank-reaching path nor most of the
+   site's member stands.
+5. **Moving feature outside its site** (A1, A2): an enum tile outside its site's tiles, or one enum feeding two sites.
+
+Files: `W/build.ts` (or `W/test/*.real.test.ts`), `W/classify.ts` for 1.
+
+### 2.3 Engine reads (A)
+
+- **Fishing pools**: one site per movement enum (A2); site `tiles` = the enum's tiles (A1, landing in the other
+  session); stand and `nearest` from the pool. Coordinate with that session before starting.
+- **Wander and respawn** (A3, A4): `wander` (effective `wanderrange`, 0 for `nomove`/no-wander modes) and
+  `respawnTicks` on `NpcSpawn` and npc-kind sites; grow `bbox` and `besideCluster` by wander. Read via
+  `W/sources/configs.ts`.
+- **Fishing yields** (A5): per option, a Level / Tool / Bait / Catch / XP table on the fishing pages, from what
+  `readSpots` already parses plus `fishing.struct`; note the two-fish roll (second fish rolled first).
+- **Every shop of an npc** (A6): a shop feature per distinct inv.
+- **Imps, Canifis citizens** (A7): mark as roaming / state-changing on their clusters rather than model them.
+
+### 2.4 Site geometry (E)
+
+- Cluster per kind and level across leaf areas, then assign the site's area by its members' majority (E1).
+- Trees per subtype (species) (E2); per-kind radius with a walk-distance link instead of Chebyshev, so a wall or river
+  splits and a town square joins (E3).
+- Stand from the walk component holding most members and a way to a bank (E4).
+- `nearest` as a range over member stands (min and max ticks), the max on the page (E5).
+- Render `bbox` (or span) in the Sites tables and say in `W/README.md` and `.claude/agents/task-runner.md` to size a
+  gather area from `bbox` plus margin (E6). This one has no dependency and can go first.
+
+### 2.5 Area refits (D)
+
+Work the 2.2 near-miss and split lists: Port Sarim, Crafting Guild, Entrana east edge, Catherby's shop row, then each
+SUSPECTED row, each against collision and the features named after the place. Rects only; no engine or content change.
+
+### 2.6 New kinds (C, B)
+
+In order of bot use: wells and Ape Atoll stalls (rule fixes, B1-B2; the stall page needs a reader for the call's
+arguments), ground item spawns (C3: an `obj-spawn` list with tile, quantity and respawn in world.json, resolved to
+areas like any site; the item pages then read it instead of `parseObjSpawns`), pickables (C1-C2: a `pickable` kind,
+subtype the obj, respawn from the call), then mill (C4) and livestock (C5: shear and milk as npc-kind features). Fix
+the raw fishing subtype names (B3) with a name table in the same pass.
+
+### 2.7 Curated table forms (F2-F5)
+
+- `USE_GATES` keyed by zone or var as well as config: the Viking stalls under `quest:viking`; Miscellania coal, maple
+  and fishing under the kingdom quest, with a note that the yield is intercepted (F2).
+- Stall family: guards in sight and the post-combat block before any stall record is written (F3).
+- Scaled fares: a coins requirement that can say a percentage with a floor and cap, or the cap as the price (F4).
+- F5 is the existing Review follow-ups list in `conductor/roadmap.md`; add the 32 lock-picked doors' missing roll and
+  the barcrawl `other:` on the Barbarian Outpost gate there.
+
+## 3. Out of scope: method records
+
+Modelled catches and resources with no `methods.ts` record are left to the conductor's method research (roadmap,
+Max route, "Model gaps"): sharks (`harpoon@76`, memberfish), lobsters (`lobster_pot@40`), pike, slimy eels, every
+ore but iron and essence, maple, yew and magic trees, and all stalls. Big-net, karambwan and lava eel catches raise a
+ModelError until `parseCatch` learns their shapes.

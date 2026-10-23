@@ -207,6 +207,14 @@ are not combat npc features, and their drop table needs `%itgronigen`, which the
 combat model can't do food with no bank trip (hill giants); the stall family ignores being caught; pickpocket with food can't rate non-stackable loot; adult
 dragons and trolls are ModelErrors.
 
+Method records missing (world index data audit 2026-10-23, `conductor/docs/world-index-data-audit.md` §3; the
+conductor adds them through method research, not the data fixes): the family models rate these, but `methods.ts` has no
+record, so `bestMethods` can't offer them: sharks (`harpoon@76` on memberfish, Catherby and the Fishing Guild),
+lobsters (`lobster_pot@40`), pike, slimy eels; every ore but iron and essence (tin, copper, coal, mithril, adamant,
+gold, silver, clay, limestone, runite, blurite); maple, yew and magic trees; every stall (13 types, 17 sites; fix the
+stall family's guard check first). Big-net, karambwan and lava eel catches are ModelErrors until `parseCatch` reads
+their shapes. Miscellania's coal, maples and fish need the kingdom quest and lose their yield to the intercept procs.
+
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
