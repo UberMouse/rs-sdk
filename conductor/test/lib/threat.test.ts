@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { type GuardRun, lowHpGuard } from '../../lib/interrupts';
 import { isLowHp, LOW_HP_FRACTION, LOW_HP_MAX_FRACTION, lowHpFraction } from '../../lib/threat';
 import { world } from '../world';
 
@@ -24,5 +25,23 @@ describe('isLowHp', () => {
         expect(isLowHp(at(30), 2)).toBe(true);
         expect(isLowHp(at(45), 3)).toBe(false);
         expect(isLowHp(at(38), 3)).toBe(true);
+    });
+});
+
+const crowd = (inCombat: boolean) =>
+    world()
+        .player({ maxHp: 50, hp: 30, inCombat })
+        .npcBeside('Goblin', { attacking: true })
+        .npcBeside('Goblin', { attacking: true })
+        .npcBeside('Goblin', { attacking: true })
+        .build();
+
+describe('lowHpGuard line', () => {
+    test('does not eat at 60% beside three NPCs fighting someone else', () => {
+        expect(lowHpGuard.when(crowd(false), {} as GuardRun)).toBe(false);
+    });
+
+    test('eats at 60% with three attackers on the bot', () => {
+        expect(lowHpGuard.when(crowd(true), {} as GuardRun)).toBe(true);
     });
 });
