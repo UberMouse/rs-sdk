@@ -112,6 +112,8 @@ Smelt a gold bar with a mould at a furnace. Gems can be added for bonus stats.
 Spin flax on a spinning wheel (a ground-level wheel at (3081, 3430) in Barbarian Village is unverified) to create bowstrings (level 10, 15 XP each; wool to ball of wool needs no level, 2.5 XP). Useful for Fletching.
 
 - **Seers' Village loop (plan `conductor/plans/flax-spin.ts`; tasks `pick`, `spinning`):** pick flax in the field (2732-2755, 3433-3456; area (2743, 3445) r10; 3 in 16 picks remove the plant until it respawns), climb the ladder at (2715, 3470) (stand (2714, 3470) on both floors) to the spinning wheel at (2711, 3471) on level 1, spin all 28 (Make X), bank at the Seers bank (2727, 3494) on level 0. 375 XP per bow string at 25x. About 300 ticks per 28 strings: walk to the wheel 26-32, spin 97-118 (each level-up stops the spin queue and it is restarted), bank 31, walk back 33, pick 88 (3.1 ticks per flax). Crafting 43 -> 61 in 10 min, +51,000 XP (~306k XP/h; 315-340k once level-ups thin out). [v 2026-10-16 conductor2w1 local]
+- **Wool (shearing):** Sheep have no Shear option; use Shears on the Sheep (interact task: target npc + `use`). Message "You get some wool."; about 2.8 s per wool; "The sheep manages to get away" about 1 in 4 tries. Sheep stand at the stile north of Ardougne (2647, 3375) and in the field beyond it (2650, 3372). Shears: Khazard General Store, 1 gp (`learnings/shops.md`). [v 2026-10-23 conductor3 local]
+- **Gnome Stronghold wheel platform (2476, 3398, level 1):** the interact task's own walk found no path from there to (2653, 3367) in Ardougne; run a `travel` phase first. [v 2026-10-23 conductor3 local]
 
 ## Battlestaves (Members)
 
