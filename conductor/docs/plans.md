@@ -219,9 +219,11 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   and known bank counts), each phase run's start (`phase-start`, naming its log) and end
   (`phase-end`, with the run's own `durationMs` and `xpGained`), and the plan's result. The plan viewer ([`plan-view.md`](plan-view.md)) reads it.
 - The last stdout line stays `RESULT <json>`: a `TaskResult` with `task: "plan:<name>"`, the plan's
-  totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and two
+  totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and three
   extra fields: `phases`, one entry per phase `{ phase, task, runs, statuses, durationMs, xpGained,
-lastReason }`, and `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`.
+lastReason }`, `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`, and
+  `bankDelta`, the bank as last seen open less as first seen open (the bank changes only while
+  open, so that is the plan's change to it; absent when the plan never saw the bank open).
   The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.

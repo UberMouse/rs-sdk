@@ -78,7 +78,7 @@ export interface Run {
     selections: Selection[];
     runs: PhaseRunEntry[];
     /** The result event, with the time it was logged; a task run's has no phase totals. */
-    result: (TaskResult & Partial<Pick<PlanResult, 'phases' | 'recent'>> & { t: number }) | null;
+    result: (TaskResult & Partial<Pick<PlanResult, 'phases' | 'recent' | 'bankDelta'>> & { t: number }) | null;
     /** The plan a task log names itself a phase of (its result's partOf); null for a plan or a run of its own. */
     partOf: string | null;
     /** close-error and exception events, in order. */
@@ -156,6 +156,7 @@ function resultOf<R extends TaskResult>(e: LogEvent): R & { t: number } {
         stepRuns: record<number>(o.stepRuns) ?? {},
         ...(Array.isArray(o.phases) && { phases: o.phases }),
         ...(Array.isArray(o.recent) && { recent: o.recent }),
+        ...(record(o.bankDelta) && { bankDelta: record<number>(o.bankDelta) }),
     } as unknown as R & { t: number };
 }
 

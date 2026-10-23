@@ -1096,6 +1096,30 @@ describe('the view', () => {
         ]);
     });
 
+    test("the result's bankDelta runs from the bank as first seen open to as last seen; none without a look", async () => {
+        const timeline = BASE.series(8, (w, i) => {
+            if (i === 2)
+                return w.bank([
+                    { name: 'Copper ore', count: 10 },
+                    { name: 'Tin ore', count: 4 },
+                ]);
+            return i === 5
+                ? w.bank([
+                      { name: 'Tin ore', count: 7 },
+                      { name: 'Bronze bar', count: 3 },
+                  ])
+                : w;
+        });
+        const def = plan(
+            [phase(watch, {}, { until: v => v.state.tick >= 7 }), phase(train, {})],
+            v => v.runs('watch') > 0,
+        );
+        const r = await sim(def, { timeline });
+        expect(r.result.bankDelta).toEqual({ 'Copper ore': -10, 'Tin ore': 3, 'Bronze bar': 3 });
+        const unseen = await sim(def, { timeline: BASE.series(8, w => w) });
+        expect(unseen.result).not.toHaveProperty('bankDelta');
+    });
+
     test('inv matches a name exactly, ignoring case, or a pattern; free and full count slots', async () => {
         const views: { inv: number[]; free: number; full: boolean }[] = [];
         await sim(

@@ -271,11 +271,26 @@ export interface PhaseRunRef {
 export interface PlanResult extends TaskResult {
     /** One entry per phase, in plan order, run or not. */
     phases: PhaseSummary[];
+    /**
+     * The bank's change over the plan: as last seen open, less as first seen open (it changes only
+     * while open, so that is the bank the plan started with). Absent when the plan never saw it open.
+     */
+    bankDelta?: Record<string, number>;
     /** The last RECENT_RUNS phase runs, oldest first. */
     recent: PhaseRunRef[];
 }
 
 type End = { status: TaskStatus; reason: string };
+
+/** after - before, per item, leaving out the unchanged. */
+function countsDelta(before: Record<string, number>, after: Record<string, number>): Record<string, number> {
+    const delta: Record<string, number> = {};
+    for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) {
+        const d = (after[name] ?? 0) - (before[name] ?? 0);
+        if (d !== 0) delta[name] = d;
+    }
+    return delta;
+}
 
 /** Adds one phase run, ended as `ref` says, to its phase's summary and to `recent`. */
 function tally(
@@ -360,10 +375,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
     /** The bank as last seen open in any state the plan or a phase read: item name -> count. */
     const bankSeen = bankMemory();
+    /** The bank as first seen open: the bank the plan started with, for the result's bankDelta. */
+    let bankFirst: ReadonlyMap<string, number> | null = null;
     let seen: BotWorldState | null = null;
     const observe = (s: BotWorldState): BotWorldState => {
         seen = s;
-        return bankSeen.observe(s);
+        bankSeen.observe(s);
+        bankFirst ??= bankSeen.counts();
+        return s;
     };
     /** A phase's driver, with every state it hands out observed for the bank memory. */
     const watched = (d: Driver): Driver => watchBank(d, { ...bankSeen, observe });
@@ -487,12 +506,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             const from = levelBefore[k.name] ?? k.baseLevel;
             if (k.baseLevel > from) levelsGained[k.name] = { from, to: k.baseLevel };
         }
-        const inventoryDelta: Record<string, number> = {};
-        const invAfter = inventoryCounts(s);
-        for (const name of new Set([...Object.keys(invBefore), ...Object.keys(invAfter)])) {
-            const d = (invAfter[name] ?? 0) - (invBefore[name] ?? 0);
-            if (d !== 0) inventoryDelta[name] = d;
-        }
+        const bankLast = bankSeen.counts();
         const p = s.player;
         const stepRuns: Record<string, number> = {};
         for (const sum of runs.phases) if (sum.runs) stepRuns[sum.phase] = sum.runs;
@@ -509,7 +523,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             lastStep: runs.lastStep,
             xpGained: xpGainedSince(s, xpBefore),
             levelsGained,
-            inventoryDelta,
+            inventoryDelta: countsDelta(invBefore, inventoryCounts(s)),
+            ...(bankFirst &&
+                bankLast && { bankDelta: countsDelta(Object.fromEntries(bankFirst), Object.fromEntries(bankLast)) }),
             finalPos: p ? { x: p.worldX, z: p.worldZ, level: p.level } : null,
             hp: p ? { current: p.hp, max: p.maxHp } : null,
             inCombat: p ? p.combat.inCombat : null,

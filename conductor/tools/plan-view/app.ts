@@ -106,6 +106,12 @@ const xpText = (xp: Record<string, number> | undefined) =>
         .map(([k, v]) => `${k} +${num(v)}`)
         .join(', ') || 'none';
 
+/** Item count changes, signed: "Coins -5, Tuna +29". */
+const deltaText = (delta: Record<string, number>) =>
+    Object.entries(delta)
+        .map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${num(v)}`)
+        .join(', ') || 'unchanged';
+
 type Status = 'done' | 'failed' | 'stuck' | 'error' | 'running' | 'killed';
 const STATUS: Record<Status, { icon: string; label: string; cls: string }> = {
     done: { icon: '✓', label: 'done', cls: 'good' },
@@ -481,18 +487,15 @@ function runHeader(reply: RunReply): HTMLElement {
                                 ),
                             )
                           : null,
-                      h(
-                          'span',
-                          {},
-                          'inventory ',
-                          h(
-                              'b',
-                              {},
-                              Object.entries(r.inventoryDelta)
-                                  .map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`)
-                                  .join(', ') || 'unchanged',
-                          ),
-                      ),
+                      h('span', {}, 'inventory ', h('b', {}, deltaText(r.inventoryDelta))),
+                      r.bankDelta
+                          ? h(
+                                'span',
+                                { title: 'From the bank as first seen open in this plan to as last seen' },
+                                'bank ',
+                                h('b', {}, deltaText(r.bankDelta)),
+                            )
+                          : null,
                   ),
               )
             : run.state === 'killed'

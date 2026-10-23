@@ -34,7 +34,7 @@ control, so it is safe beside a running plan or task-runner. It binds to 127.0.0
 - **Run header.** State (running, ended with its status, or "no result" for a run whose process
   is gone without one), duration, the run's stops (`run until`), the plan's own `until` as its
   source writes it with what it read at the latest choice, `requires`, session, and on the end,
-  the result's reason, XP, levels and inventory delta.
+  the result's reason, XP, levels, inventory delta and (plans) bank delta.
 - **Timeline** (plans). One lane per phase in plan order, a bar per phase run coloured by status
   (with an icon and label in the legend and the tooltip), and a "now" line while it runs. Click a
   bar to open that run below.
