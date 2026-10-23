@@ -709,6 +709,88 @@ describe('interact: an item used on an NPC', () => {
     });
 });
 
+describe('interact: npcId filter and shorn sheep', () => {
+    const field = world()
+        .player({ at: { x: 2647, z: 3373 } })
+        .inv('Shears', 1, { id: 1735 })
+        .npc('Sheep', 2647, 3374, { index: 3, id: 42, options: ['Attack'] })
+        .npc('Sheep', 2650, 3372, { index: 4, id: 43, options: ['Attack'] });
+    const params = { target: 'npc', name: '^Sheep$', npcId: 43, use: { item: '^Shears$' } };
+    const sheared = (a: BotAction) =>
+        a.type === 'useItemOnNpc'
+            ? (s: ReturnType<typeof field.build>) => world(s).inv('Wool', 1, { id: 1737 }).build()
+            : undefined;
+
+    test('picks the woolly sheep over a nearer shorn one', async () => {
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params,
+            timeline: field.series(60),
+            react: a => {
+                sent.push(a);
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.filter(a => a.type === 'useItemOnNpc')).toEqual([
+            expect.objectContaining({ type: 'useItemOnNpc', npcIndex: 4 }),
+        ]);
+    });
+
+    test('a list of ids matches any of them', async () => {
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params: { ...params, npcId: [42, 43] },
+            timeline: field.series(60),
+            react: a => {
+                sent.push(a);
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.filter(a => a.type === 'useItemOnNpc')).toEqual([expect.objectContaining({ npcIndex: 3 })]);
+    });
+
+    test('no id match reports none in sight', async () => {
+        const r = await simulate(interact, {
+            params: { ...params, npcId: 99 },
+            timeline: field.series(30),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no reachable npc');
+    });
+
+    test('npcId needs target npc', async () => {
+        const r = await simulate(interact, {
+            params: { target: 'loc', name: 'x', option: 'y', npcId: 43 },
+            timeline: field.series(3),
+        });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('npcId');
+    });
+
+    test('"already been shorn" moves on to another sheep without waiting', async () => {
+        const two = world()
+            .player({ at: { x: 2647, z: 3373 } })
+            .inv('Shears', 1, { id: 1735 })
+            .npc('Sheep', 2647, 3374, { index: 3, id: 43, options: ['Attack'] })
+            .npc('Sheep', 2650, 3372, { index: 4, id: 43, options: ['Attack'] });
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params,
+            timeline: two.series(80),
+            react: a => {
+                if (a.type !== 'useItemOnNpc') return undefined;
+                sent.push(a);
+                if (sent.length === 1) return s => world(s).message('This sheep has already been shorn.').build();
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.map(a => (a.type === 'useItemOnNpc' ? a.npcIndex : -1))).toEqual([3, 4]);
+    });
+});
+
 describe('interact: the Wilderness opt-in', () => {
     const altar = world()
         .player({ at: { x: 3239, z: 3600 } })

@@ -68,6 +68,11 @@ const Params = z
          */
         tile: TileSchema.optional(),
         /**
+         * Only NPCs of this type id (NearbyNpc.id, the config id in server/content/pack/npc.pack), one or several, among
+         * those `name` matches: the woolly Sheep (43) beside a sheared one (42), both named "Sheep". NPC targets only.
+         */
+        npcId: z.union([z.number().int().min(0), z.array(z.number().int().min(0)).min(1)]).optional(),
+        /**
          * Also take a target the client cannot route to (an islet in a river, a rock across water) and send the
          * op from the stand tile `at`, leaving the reach check to the server. Needs `at`.
          */
@@ -89,6 +94,7 @@ const Params = z
     .refine(p => (p.option === undefined) !== (p.use === undefined), 'give an option, or a use (not both)')
     .refine(p => p.use === undefined || p.target === 'loc' || p.target === 'npc', 'a use works on a loc or an NPC')
     .refine(p => p.tile === undefined || p.target !== 'item', 'a tile picks a loc or an NPC, not an inventory item')
+    .refine(p => p.npcId === undefined || p.target === 'npc', 'npcId picks an NPC type, so it needs target "npc"')
     .refine(
         p => !p.unreachable || (p.at !== undefined && p.target !== 'item'),
         'unreachable needs `at` and a loc or NPC',
@@ -108,7 +114,8 @@ const byDistance = <T extends { distance: number }>(xs: T[]) => xs.sort((a, b) =
 
 /** What matches `name` (and `tile`) in view, nearest first; `unreachable` counts those the client cannot route to and the task leaves. */
 function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number } {
-    const { target, name, tile, unreachable: takeUnreachable } = ctx.params;
+    const { target, name, tile, npcId, unreachable: takeUnreachable } = ctx.params;
+    const ids = npcId === undefined ? undefined : [npcId].flat();
     const state = ctx.state();
     const rx = matcher(name);
     if (target === 'item') {
@@ -116,7 +123,9 @@ function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number 
         return { targets: items.map(item => ({ kind: 'item', item })), unreachable: 0 };
     }
     if (target === 'npc') {
-        const named: NearbyNpc[] = state.nearbyNpcs.filter(n => rx.test(n.name) && (!tile || onTile(npcTile(n), tile)));
+        const named: NearbyNpc[] = state.nearbyNpcs.filter(
+            n => rx.test(n.name) && (!ids || ids.includes(n.id)) && (!tile || onTile(npcTile(n), tile)),
+        );
         const usable = byDistance(named.filter(n => takeUnreachable || n.reachable !== false));
         return { targets: usable.map(npc => ({ kind: 'npc', npc })), unreachable: named.length - usable.length };
     }
@@ -124,6 +133,9 @@ function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number 
     const usable = byDistance(named.filter(l => takeUnreachable || l.reachable !== false));
     return { targets: usable.map(loc => ({ kind: 'loc', loc })), unreachable: named.length - usable.length };
 }
+
+/** A refusal that is about this one NPC, not the use: the next try takes another (a sheep already shorn). */
+const NPC_SKIP = /already been shorn/i;
 
 /** The tile an NPC stands on: its own tile when the state gives one, else the (x, z) it reports. */
 const npcTile = (n: NearbyNpc) => ({ x: n.tileX ?? n.x, z: n.tileZ ?? n.z });
@@ -143,7 +155,7 @@ export default defineTask({
     description:
         'One interaction with an NPC, a loc or an inventory item by option, or one item used on a loc, done when its effect is seen. Params: `target` ("loc" | "npc" | "item"), ' +
         '`name` (regex), `option` (regex on the option text, e.g. "Open", "Search", "Wear", "Talk-to"), optional `at` {x,z,level?,tolerance?} ' +
-        '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
+        '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `npcId` (a number or list: the NPC type id, NearbyNpc.id) narrows an NPC match to those types (the woolly Sheep 43, not a sheared 42); "This sheep has already been shorn." on a `use` moves on to another NPC; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
         "(one pillar of six, a crate beside plain crates; a loc's tile is its south-west corner); `unreachable: true` (needs `at`) also takes a loc or NPC the client cannot route to " +
         'and sends the op from the stand tile, the server owning the reach check (swim to a rock, throw a rope across water); ' +
         '`use` {item: name regex, or {id}} instead of `option` (loc or NPC targets) uses that inventory item on the loc or NPC ' +
@@ -153,7 +165,7 @@ export default defineTask({
         '(Drop, Destroy, Release, Empty) on an item, Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
         '(then it needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and death still ends the run; carry only food and no valuables; the bot is left in the Wilderness, so whatever runs next, a plan phase or a `travel` out, must opt in to the Wilderness too). Fails with the options on offer when the target has none matching, ' +
         'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
-        'E.g. {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
+        'E.g. {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"} (Ardougne sheep field); {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
     params: Params,
     memory: (): Memory => ({ refusedNpcs: [] }),
     allowWilderness: params => params.wilderness,
@@ -240,15 +252,19 @@ export default defineTask({
                     return { done: `${what} on ${name}: ${r.effect}` };
                 }
                 yield* log(`${what} on ${name} failed (${r.reason}): ${r.message}`);
-                // Only a send that never landed is worth repeating: an option sent twice can undo itself (Open, Wear).
+                // Repeat only a send that never landed (an option sent twice can undo itself: Open, Wear), or a use
+                // refused over this one NPC, which the next try leaves for another.
+                const skipped =
+                    held !== undefined && chosen.kind === 'npc' && r.reason === 'refused' && NPC_SKIP.test(r.message);
                 if (
-                    r.reason === 'rejected' &&
+                    (r.reason === 'rejected' || skipped) &&
                     held &&
                     chosen.kind === 'npc' &&
                     !ctx.memory.refusedNpcs.includes(chosen.npc.index)
                 )
                     ctx.memory.refusedNpcs.push(chosen.npc.index);
-                if (r.reason !== 'send-failed' && r.reason !== 'rejected') return { fail: `${r.reason}: ${r.message}` };
+                if (r.reason !== 'send-failed' && r.reason !== 'rejected' && !skipped)
+                    return { fail: `${r.reason}: ${r.message}` };
                 if (fails.add() >= FAIL_LIMIT)
                     return { fail: `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})` };
             },

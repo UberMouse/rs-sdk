@@ -197,3 +197,38 @@ test(
     },
     itestTimeout({ taskMinutes: 2 }),
 );
+
+// Sheep shearing (server/content/scripts/general_use/scripts/shear_sheep.rs2): Shears used on the woolly Sheep
+// (npc 43) give wool; a sheared one (42) answers "This sheep has already been shorn.". Inside the fenced field north
+// of Ardougne.
+const SHEEP_FIELD = { x: 2654, z: 3365 };
+const SHEARS = 1735;
+const WOOLLY_SHEEP = 43;
+
+test(
+    'interact shears a woolly sheep picked by npcId',
+    async () => {
+        await withFixtureBot(
+            { position: SHEEP_FIELD, inventory: [{ id: SHEARS, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'npc',
+                        name: '^Sheep$',
+                        npcId: WOOLLY_SHEEP,
+                        use: { item: '^Shears$' },
+                        expect: 'you get some wool',
+                    },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta?.Wool, detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
