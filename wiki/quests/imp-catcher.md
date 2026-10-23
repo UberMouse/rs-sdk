@@ -8,12 +8,14 @@
 | Reward | Amulet of accuracy, 875 Magic XP base = **21,875 Magic XP** at 25x (Magic 1 -> 44 on this server's level table) |
 
 Script paths below are under `server/content/scripts/`. Everything on this page comes from the server
-scripts and map data [server data, unverified in game 2026-10-23] unless it carries a `[v ...]` tag.
+scripts and map data [server data, unverified in game 2026-10-23] unless it carries a `[v ...]` tag. The spawn lists
+below were re-read against `maps/*.jm2` (npc id 708 lines) on 2026-10-23 and match; whether an imp stands on a spawn
+tile at a given moment is a separate matter (next section).
 
 ## Requirements and hazards
 
 - No quest or skill requirement: Mizgog's start dialog checks nothing (`areas/area_wizard_tower/scripts/wizard_mizgog.rs2:1-5`).
-- Imps are level 2, 8 HP, not aggressive (no `huntmode`, `givechase=false`), with -42 attack and strength bonuses
+- Imps are level 2, 8 HP, not aggressive (no `huntmode`, `givechase=false`), with -42 attack and -37 strength bonuses
   (`_unpack/225/all.npc:5266-5294`): a combat-3 bot kills them; no food needed.
 - Imps teleport: a hit that does not kill has a 1 in 10 chance to send the imp to a random tile up to 20 away
   (`npc/scripts/imp.rs2:10-23`), and out of combat for 8 ticks it may teleport every 50-200 ticks (`imp.rs2:1-8`). An
@@ -21,6 +23,9 @@ scripts and map data [server data, unverified in game 2026-10-23] unless it carr
 - The Wizards' Tower top floor (Mizgog's floor) has a lesser demon (level 82, `huntmode=cowardly`) at (3110, 3157)
   level 2 (`learnings/hazards.md`). The SDK pathfinder finds no route from its spawn to the stairs landing (3104, 3161)
   or to Mizgog's spawn: it is shut in. [server data: collision probe 2026-10-23]
+- Leaving the tower: a `walk` from the top floor (level 2) to a far destination fails `No path ... path ends 531 tiles
+  away at (3103,3162)`. Walk to the ground floor (3109, 3168, 0) first, then make the long trip (then 230 s to Yanille).
+  Mizgog's talk and start dialog from the top floor worked ("2 choices made"). [v 2026-10-23 questw6 local]
 
 ## Quest state
 
@@ -81,6 +86,13 @@ Single imps (a few kills per respawn cycle only): Edgeville (3078,3499) 9 run ti
 north of Varrock (3234,3506), (3261,3514); Champions' Guild (3205,3355); Lumbridge (3217,3226); Draynor (3073,3250);
 (3214,3281), (3240,3307); Kharidian Desert (3299,3273); Melzar's Maze (2941,3236, needs its keys).
 
+Seen in game (one look per site, standing in the area, nearby NPC list): Yanille north from (2600,3122) and (2615,3124),
+radius 15: no imps (only cows and Khazard guards); Falador south (3009,3307) and Draynor (3073,3250): no imps. Lumbridge
+(spawn (3217,3226), seen at (3217,3235)): present, fought, ~2 kills at ~55 s per kill. Ardougne south, Karamja, Varrock
+untested. A single look does not show the spawn is absent: imps teleport (up to 20 tiles when hit, every 50-200 ticks
+out of combat), so tiles can be empty at a given tick. Settle it with repeated looks over a few minutes at one site.
+[v 2026-10-23 questw6 local]
+
 Combat-task areas that cover a cluster: Yanille `{x:2609,z:3125,radius:15}`, Ardougne south `{x:2632,z:3222,radius:22}`.
 
 ## Catalog coverage
@@ -89,7 +101,7 @@ Combat-task areas that cover a cluster: Yanille `{x:2609,z:3125,radius:15}`, Ard
 |---|---|---|---|
 | 1 start | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}, choices:["^Give me a quest!$","^Give me a quest please"]}` | The walk climbs the Wizards' Tower stairs (`conductor/lib/connectors.ts` OVERRIDES, ungated rows; logs the lesser demon hazard). Those stairs were walked only in integration tests (`learnings/walking.md`). Anchor the first regex: "Give me a quest" also matches the "or else" option. |
 | reach the imps | `travel` / `bank` | `{to:{x:2609,z:3125}}` | Yanille is a long walk from Misthalin; bank there. |
-| 2 beads | `combat` | `{target:"Imp", area:{x:2609,z:3125,radius:15}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. |
+| 2 beads | `combat` | `{target:"Imp", area:{x:2609,z:3125,radius:15}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. Current limitation: on a single imp `combat` gives up `no free reachable Imp in the area` after ~60 ticks, while the imp respawns after 100 ticks, so it does not wait for the respawn. [v 2026-10-23 questw6 local] |
 | 3 finish | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}}` (no choices) | Plan `until: v => v.questDone('imp')`. |
 
 No step needs a new task. Nice-to-have: a `loot` mode that skips an item already held (duplicate beads take slots).
