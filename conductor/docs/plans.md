@@ -60,6 +60,8 @@ The runner does what the engine does with steps, one level up:
 3. It ends `done` (by itself or by its `until`): back to 1. It ends `failed` or `stuck`: apply its
    `onFail`. It ends `error`: the plan ends `error` (a bug, not the world).
 
+A phase's `when` is checked only at step 1, between phase runs, never during one: a phase without its own `until` keeps running past the level or count at which a later phase's `when` would hold. Put an `until` on an open-ended training phase when a later stage starts at a level. [v 2026-10-23 conductor3 local]
+
 Choosing from state and not from a position in a list is what makes a plan resume: after a
 restart, or a dispatch onto a half-full inventory, the first applicable phase is still the right
 one.
