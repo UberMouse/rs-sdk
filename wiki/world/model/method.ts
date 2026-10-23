@@ -1,7 +1,7 @@
 // A curated method (methods.ts) resolved against the world: its site, its sink sites, the legs of its cycle in run
 // ticks under each requirement set that gets to all of them, and the lowest level its families can model it at;
 // then its floor at a profile (cycle.ts).
-import type { Measured, MethodDef } from '../methods';
+import { CALIBRATIONS, type Calibration, type Measured, type MethodDef } from '../methods';
 import { SINKS, type Way, type wayFinder } from '../distance';
 import { isMultiway, readZones, wildernessLevel, type Zones } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
@@ -138,6 +138,8 @@ export interface MethodContext {
     /** An obj's `bone_exp` (items.ts readBoneXp), for a record whose `loot` buries; absent in a test that has none. */
     boneXp?: (obj: string) => number;
     quests?: QuestFacts;
+    /** The npcs whose kills eat food (the food gate); CALIBRATED_NPCS when absent. */
+    calibrated?: ReadonlySet<string>;
 }
 
 /** What the model reads besides the world and the quests: the families, items, foods, tool tiers and zones. */
@@ -330,9 +332,9 @@ export function styleParams(
 
 /**
  * The npcs, by config, whose kill's modelled damage has been checked against a worker's run on them (the food gate):
- * until then the cycle eats no food for a kill of one (CycleInput.uncalibrated). None is yet.
+ * those of methods.ts CALIBRATIONS. Until then the cycle eats no food for a kill of one (CycleInput.uncalibrated).
  */
-export const CALIBRATED_NPCS: ReadonlySet<string> = new Set<string>();
+export const CALIBRATED_NPCS: ReadonlySet<string> = new Set(CALIBRATIONS.map(c => c.npc));
 
 /**
  * The npc config a kill record fights: its params' `npc`, or with none the one npc of its gather site, as the combat
@@ -612,6 +614,67 @@ export function methodRate(
     return rate(m, profile, ctx, skill, chosen);
 }
 
+/** What a calibration run measures of a kill, as the model gives it. */
+export interface KillFigures {
+    /** HP the npc's swings take off the player a kill (ActionModel.damage). */
+    damage: number;
+    /**
+     * Ticks a kill takes at the site: the fight, the gap to the next, the pickup, the bury and the eats, as the cycle
+     * counts them a success (its trip less the travel and the bank), the food eaten as for a calibrated npc.
+     */
+    ticks: number;
+}
+
+/**
+ * A kill record's figures at `profile`, swinging the style styleParams gives for `skill`; a ModelError when it gives
+ * several (a calibration run swings one) or the record is no kill.
+ */
+export function killFigures(m: ResolvedMethod, profile: Profile, ctx: MethodContext, skill: Skill): KillFigures {
+    return forMethod(m, () => {
+        const styles = styleParams(m.def, profile, ctx, skill);
+        if (styles.length !== 1) throw new ModelError(`${styles.length} styles train ${skill}, not one`);
+        const { gather } = methodModels(m, profile, ctx, undefined, styles[0]);
+        if ('withdraw' in gather || gather.attackRate === undefined) throw new ModelError('it is not a kill');
+        const calibrated = new Set([killNpc(m.def, m.site, ctx.world)]);
+        const { trip } = rateAt(m, profile, { ...ctx, calibrated }, undefined, styles[0]);
+        return {
+            damage: gather.damage ?? 0,
+            ticks: (trip.gather + trip.bury + trip.eat + trip.wait) / trip.successes,
+        };
+    });
+}
+
+/** What a calibration run fought and how: a Calibration less its figures. */
+export type CalibrationRun = Pick<Calibration, 'npc' | 'at' | 'area' | 'levels' | 'worn' | 'skill' | 'food' | 'loot'>;
+
+/** The combat record a calibration fought: its npc at its site, its gear, food and loot, banked for food. */
+export const calibrationMethod = (c: CalibrationRun): MethodDef => ({
+    id: `calibration-${c.npc.replaceAll('_', '-')}`,
+    name: `The ${c.npc} calibration run`,
+    family: 'combat',
+    at: c.at,
+    ...(c.area !== undefined ? { area: c.area } : {}),
+    params: { npc: c.npc },
+    gear: c.worn,
+    food: c.food,
+    loot: c.loot,
+    sink: { mode: 'bank' },
+});
+
+/** A calibration's profile: its levels (1 for a skill it leaves out) and worn objs. */
+export const calibrationProfile = (c: CalibrationRun, tools: Tools): Profile =>
+    profileOf(Object.fromEntries(SKILLS.map(s => [s, c.levels[s] ?? 1])) as Record<Skill, number>, {
+        tools,
+        worn: c.worn,
+    });
+
+/** How far a model figure may be from a run's, as a share of the run's, for the run to calibrate it (spec Task 8). */
+export const CALIBRATION_TOLERANCE = 0.25;
+
+/** Whether a model figure is within CALIBRATION_TOLERANCE of a measured one. */
+export const agrees = (model: number, measured: number): boolean =>
+    Math.abs(model - measured) <= CALIBRATION_TOLERANCE * measured;
+
 /**
  * The floor at the best of styleParams' candidates for `skill`. A candidate the profile can't swing (a ProfileError)
  * is passed over when another can; any other error stops it.
@@ -671,7 +734,9 @@ function rateAt(
         items: ctx.items,
         food,
         ...(m.def.loot ? { loot: m.def.loot, ...(ctx.boneXp ? { boneXp: ctx.boneXp } : {}) } : {}),
-        ...(kill && !CALIBRATED_NPCS.has(killNpc(m.def, m.site, ctx.world)) ? { uncalibrated: true } : {}),
+        ...(kill && !(ctx.calibrated ?? CALIBRATED_NPCS).has(killNpc(m.def, m.site, ctx.world))
+            ? { uncalibrated: true }
+            : {}),
     });
 }
 

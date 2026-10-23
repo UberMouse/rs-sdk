@@ -4,11 +4,23 @@
 import { describe, expect, test } from 'bun:test';
 import { reachCollision } from '../collision';
 import { loadWorld } from '../load';
-import type { MethodDef } from '../methods';
+import { CALIBRATIONS, type MethodDef } from '../methods';
 import { combatLevel } from '../model/combat';
 import { readGameData } from '../model/families/index';
 import { legFinder } from '../model/legs';
-import { methodModel, resolveMethod, styleParams, toWorldMethod, type MethodContext } from '../model/method';
+import {
+    agrees,
+    CALIBRATED_NPCS,
+    calibrationMethod,
+    calibrationProfile,
+    killFigures,
+    methodModel,
+    methodModels,
+    resolveMethod,
+    styleParams,
+    toWorldMethod,
+    type MethodContext,
+} from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
 import type { Skill } from '../model/server';
 import { locSizes } from '../place';
@@ -179,4 +191,42 @@ describe('npc sites carry a nearest bank (distance.ts SINKS)', () => {
         expect(giantsSite.nearest?.bank?.runTicks).toBeGreaterThan(0);
         expect(resolved.sink).toEqual({ mode: 'bank', bank: world.sites.find(s => s.id === 'bank:edgeville-bank:0')! });
     });
+});
+
+describe('killFigures: a kill as a calibration run measures it', () => {
+    test("the npc's damage and the ticks at the site a kill, as if calibrated", () => {
+        const profile = { ...at(70), levels: { ...at(70).levels, defence: 1, hitpoints: 60 } };
+        const m = resolveMethod({ ...giants, gear: ['mithril_scimitar'] }, ctx, legs);
+        const f = killFigures(m, profile, ctx, 'strength');
+        const { gather } = methodModels(m, profile, ctx, undefined, { npc: 'giant', style: 'aggressive' });
+        if ('withdraw' in gather) throw new Error('a kill');
+        expect(f.damage).toBe(gather.damage!);
+        // A big bone every kill. The lobsters (12 HP) a kill's damage eats hold the next swing 3 x damage / 12 ticks
+        // (EAT_DELAY), under the pickup's ticks, so they cost none; the bury's swing gap (BURY_SWING_GAP 3) is under
+        // the scimitar's 4: the ticks are the kill's and the pickup's.
+        expect((3 * f.damage) / 12).toBeLessThan(gather.pickupTicks!);
+        expect(f.ticks).toBeCloseTo(gather.ticksPerAttempt + gather.pickupTicks!, 9);
+    });
+
+    test('a skill every style trains (Hitpoints) has no one style: a ModelError', () => {
+        expect(() => killFigures(resolved, at(60), ctx, 'hitpoints')).toThrow(/styles train hitpoints, not one/);
+    });
+});
+
+describe('the calibration records (methods.ts CALIBRATIONS)', () => {
+    test('CALIBRATED_NPCS is their npcs, one record each', () => {
+        const npcs = CALIBRATIONS.map(c => c.npc);
+        expect(new Set(npcs).size).toBe(npcs.length);
+        expect([...CALIBRATED_NPCS].sort()).toEqual([...npcs].sort());
+    });
+
+    for (const c of CALIBRATIONS)
+        test(`${c.npc}: the model still gives the recorded figures, within the tolerance of the run's`, () => {
+            const m = resolveMethod(calibrationMethod(c), ctx, legs);
+            const f = killFigures(m, calibrationProfile(c, model.tools), ctx, c.skill);
+            expect(f.damage).toBeCloseTo(c.model.damage, 6);
+            expect(f.ticks).toBeCloseTo(c.model.ticks, 6);
+            expect(agrees(f.damage, c.measured.damage)).toBe(true);
+            expect(agrees(f.ticks, c.measured.ticks)).toBe(true);
+        });
 });

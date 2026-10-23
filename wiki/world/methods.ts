@@ -98,6 +98,47 @@ export interface Measured {
     from: string;
 }
 
+/**
+ * Worker runs against one npc, their measured figures per kill beside the model's at the runs' profile
+ * (model/method.ts killFigures). A record opens the food gate for its npc (CALIBRATED_NPCS): its kills eat the
+ * method's food. It is written only when both figures agree within CALIBRATION_TOLERANCE, and
+ * test/combat-method.real.test.ts holds them there. The runs are the calibration smoke's
+ * (conductor/test/integration/smoke/combat-calibration.itest.ts), measured with conductor/tools/combat-ledger.ts.
+ */
+export interface Calibration {
+    /** The npc config. */
+    npc: string;
+    /** Where the runs fought, as a combat record's `at` and `area`. */
+    at: Tile;
+    area?: number;
+    /** The base levels of the runs, 1 for a skill left out. */
+    levels: Partial<Record<Skill, number>>;
+    /** The objs worn. */
+    worn: string[];
+    /** The skill the runs trained: their style is the one styleParams gives for it. */
+    skill: Skill;
+    food: string;
+    loot: Loot;
+    measured: {
+        kills: number;
+        /** Mean HP the npc's hitsplats took a kill, and its standard error. */
+        damage: number;
+        damageSe: number;
+        /** Mean ticks from a kill to the next, and its standard error. */
+        ticks: number;
+        ticksSe: number;
+    };
+    /** killFigures at the runs' profile when the record was written. */
+    model: { damage: number; ticks: number };
+    /** YYYY-MM-DD. */
+    date: string;
+    /** The runs, as `<bot>/<runId>` (conductor/runs/<bot>/<runId>.ticks.ndjson.gz). */
+    runs: string[];
+}
+
+/** The calibrated npcs: at most one record each. */
+export const CALIBRATIONS: Calibration[] = [];
+
 export const METHODS: MethodDef[] = [
     {
         id: 'iron-se-varrock-bank',

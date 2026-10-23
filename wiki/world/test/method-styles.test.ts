@@ -202,7 +202,7 @@ describe('the rate on the chosen style', () => {
         expect(r.trip.eat).toBe(0);
     });
 
-    test('a calibrated npc is eaten for, by params.npc or, with none, the npc of the site', () => {
+    test("the food gate: a calibrated npc's kills eat the model's damage, by params.npc or the site's npc", () => {
         // The kill banked 5 run ticks off, so the trout is restocked.
         const booth: Site = { ...pen, id: 'bank:booth:0', kind: 'bank', features: [] };
         const banked = (params: unknown): WorldMethod => ({
@@ -213,21 +213,30 @@ describe('the rate on the chosen style', () => {
             ways: [{ reach: [], legs: [leg(pen, booth), leg(booth, pen)] }],
         });
         const cows = [{ kind: 'npc', subtype: 'cow', tile: pen.centre } as Feature];
-        const eaten = (params: unknown) =>
-            methodQuery({ sites: [pen, booth], features: cows, methods: [banked(params)] }, model)
-                .methodRate('pen-kill', at(50))
-                .suppliesPerHour.map(x => x.obj);
+        const rated = (params: unknown, calibrated?: string[]) =>
+            methodQuery(
+                { sites: [pen, booth], features: cows, methods: [banked(params)] },
+                calibrated ? { ...model, calibrated: new Set(calibrated) } : model,
+            ).methodRate('pen-kill', at(50));
+        const eaten = (params: unknown, calibrated?: string[]) =>
+            rated(params, calibrated).suppliesPerHour.map(x => x.obj);
+        // No calibration record names a cow: CALIBRATED_NPCS, the default, leaves it out.
+        expect(CALIBRATED_NPCS.has('cow')).toBe(false);
         expect(eaten({ npc: 'cow' })).toEqual([]);
-        const calibrated = CALIBRATED_NPCS as Set<string>;
-        calibrated.add('cow');
-        try {
-            expect(eaten({ npc: 'cow' })).toEqual(['trout']);
-            expect(eaten({})).toEqual(['trout']);
-            expect(eaten({ npc: 'bull' })).toEqual([]);
-            expect(() => eaten({ npc: 7 })).toThrow(/pen-kill: a combat method's params.npc is not an npc config: 7/);
-        } finally {
-            calibrated.delete('cow');
-        }
+        expect(rated({ npc: 'cow' }).trip.eat).toBe(0);
+        expect(eaten({ npc: 'cow' }, ['cow'])).toEqual(['trout']);
+        expect(eaten({}, ['cow'])).toEqual(['trout']);
+        expect(eaten({ npc: 'bull' }, ['cow'])).toEqual([]);
+        expect(() => eaten({ npc: 7 }, ['cow'])).toThrow(
+            /pen-kill: a combat method's params.npc is not an npc config: 7/,
+        );
+        // Calibrated, the Food/hr is the model's damage: accurate pays 40 Attack XP x 25 (XP_RATE) a kill, so the kills
+        // an hour are the Attack XP/hr over 1000; each takes 3 HP (the family's damage), 3/7 of a trout (heals 7).
+        const r = rated({ npc: 'cow' }, ['cow']);
+        const kills = r.xpPerHour.attack! / 1000;
+        expect(r.suppliesPerHour[0]!.count).toBeCloseTo((kills * 3) / 7, 9);
+        // Each trout eaten holds the next swing EAT_DELAY (3) ticks, as the kill has no free ticks: 9/7 a kill.
+        expect(r.trip.eat / r.trip.successes).toBeCloseTo(9 / 7, 9);
     });
 
     test('Prayer, which a kill that buries no bones does not train, is no rate', () => {
