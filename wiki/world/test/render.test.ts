@@ -571,7 +571,14 @@ const namedData: RenderData = {
                 unmodelled: new Set(['fishing_rod']),
                 ops: new Map([
                     ['1', { tool: 'net', source: 'saltfish.rs2:26' }],
-                    ['3', { tool: 'fishing_rod', source: 'saltfish.rs2:84' }],
+                    [
+                        '3',
+                        {
+                            tool: 'fishing_rod',
+                            source: 'saltfish.rs2:84',
+                            unread: 'it rolls with ~fish_roll_x, not ~fish_roll',
+                        },
+                    ],
                 ]),
             },
         ],
@@ -748,13 +755,13 @@ describe('in-game names and resource data', () => {
           | 0_1_saltfish | Fishing spot | Net, Bait |
           | 0_2_saltfish | Fishing spot | - |
 
-          What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+          What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp / 10 (productexp is in tenths of XP), Low and High its success_low and success_high.
 
           | Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
           |---|---|---|---|---|---|---|---|---|
           | Net | 1 | Small fishing net | - | Raw shrimps | 10 | 48 | 256 | saltfish.rs2:60 |
           | Net | 15 | Small fishing net | - | Raw anchovies | 40 | 24 | 128 | saltfish.rs2:60 |
-          | Bait | - | Fishing rod | - | can't read this catch: not a plain ~fish_roll loop | - | - | - | saltfish.rs2:84 |
+          | Bait | - | Fishing rod | - | can't read this catch: it rolls with ~fish_roll_x, not ~fish_roll | - | - | - | saltfish.rs2:84 |
 
           Where an option catches two fish, ~fish_roll rolls the higher-level one first, from its level, and the other only when that roll misses (skill_fishing/scripts/fishing.rs2:46-72; ~fish_roll_loc's :75-103 the same); the bait goes only on a catch.
 

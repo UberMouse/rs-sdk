@@ -13,11 +13,11 @@ The options of each spot config placed in the world (its npc or loc config).
 | general_karambwan | Fishing spot | Fish |
 | lubufu_karambwan | Fishing spot | Fish |
 
-What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp / 10 (productexp is in tenths of XP), Low and High its success_low and success_high.
 
 | Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
 |---|---|---|---|---|---|---|---|---|
-| Fish | - | Karambwan vessel | - | can't read this catch: not a plain ~fish_roll loop | - | - | - | skill_fishing/scripts/fishing_spots/tbwt.rs2:99 |
+| Fish | - | Karambwan vessel | - | can't read this catch: it rolls inline with stat_random(fishing, ...), not ~fish_roll | - | - | - | skill_fishing/scripts/fishing_spots/tbwt.rs2:99 |
 
 Low and high are the stat_random bounds: an attempt succeeds with chance (low + 1)/256 at Fishing level 1, rising evenly to (high + 1)/256 at 99 (server/engine/src/engine/script/handlers/PlayerOps.ts).
 

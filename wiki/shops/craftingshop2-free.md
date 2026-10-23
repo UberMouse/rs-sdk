@@ -2,12 +2,14 @@
 
 | Detail | |
 |---|---|
-| **Owner** | [Dommik](../npcs/dommik.md) |
+| **Owner** | Unknown |
 | **Location** | Al Kharid |
-| **Coordinates** | (3322, 3194) in [Al Kharid (Kharidian Desert)](../places/al-kharid.md) |
+| **Coordinates** | not placed: dommik.rs2 opens it only off members worlds, on the other branch of a map_members test |
 | **Type** | Specialty Shop |
 
 ## Stock
+
+No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|

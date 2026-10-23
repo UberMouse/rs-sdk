@@ -137,7 +137,7 @@ describe('fishing pages', () => {
     const dir = join(ROOT, 'wiki/resources/fishing-spot');
     const pages = new Map(readdirSync(dir).map(f => [f.replace(/\.md$/, ''), readFileSync(join(dir, f), 'utf8')]));
     const YIELDS = '| Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |';
-    const UNREAD = "can't read this catch: not a plain ~fish_roll loop";
+    const UNREAD = "can't read this catch: ";
 
     test('every option of every spot config has a catch row, or one saying the catch is not read', () => {
         expect(pages.size).toBeGreaterThan(0);
@@ -147,7 +147,7 @@ describe('fishing pages', () => {
             const caught = rows(page, YIELDS);
             expect([subtype, [...new Set(caught.map(r => r[0]))].sort()]).toEqual([subtype, [...options].sort()]);
             for (const r of caught) {
-                expect(r[4] === UNREAD || r[1] !== '-').toBe(true);
+                expect(r[4]!.startsWith(UNREAD) || r[1] !== '-').toBe(true);
                 expect(r[8]).toMatch(/^skill_fishing\/scripts\/fishing_spots\/[a-z_]+\.rs2:\d+$/);
             }
         }
@@ -163,8 +163,26 @@ describe('fishing pages', () => {
             'Harpoon | 50 | Harpoon | - | Raw swordfish | 100 | 4 | 48',
         ]);
         expect(pages.get('rarefish')).toContain('~fish_roll rolls the higher-level one first');
-        // Big net, karambwanji, karambwan and lava eel roll their own way: each says so.
-        for (const subtype of ['memberfish', 'category_632', 'category_633', '0_45_152_lavafish', 'loc_2630'])
-            expect(rows(pages.get(subtype)!, YIELDS).some(r => r[4] === UNREAD)).toBe(true);
+        // Big net, karambwanji, karambwan and lava eel each say what readSpots doesn't read: big net's own roll
+        // (memberfish.rs2:113), the inline stat_random rolls (tbwt.rs2:52, :124), the oily rod's own check
+        // (lavafish.rs2:47, lavafish_loc.rs2:38).
+        const unread = (subtype: string) =>
+            rows(pages.get(subtype)!, YIELDS).flatMap(r =>
+                r[4]!.startsWith(UNREAD) ? [r[4]!.slice(UNREAD.length)] : [],
+            );
+        expect(
+            Object.fromEntries(
+                ['memberfish', 'category_632', 'category_633', '0_45_152_lavafish', 'loc_2630'].map(s => [
+                    s,
+                    unread(s),
+                ]),
+            ),
+        ).toEqual({
+            memberfish: ['it rolls with ~fish_roll_big_net, not ~fish_roll'],
+            category_632: ['it rolls inline with stat_random(fishing, ...), not ~fish_roll'],
+            category_633: ['it rolls inline with stat_random(fishing, ...), not ~fish_roll'],
+            '0_45_152_lavafish': ['no ~check_fish_equipment call names its tool'],
+            loc_2630: ['no ~check_fish_equipment call names its tool'],
+        });
     });
 });

@@ -7,7 +7,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `shop:rimmington:0` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1, Rommiks Crafty Supplies. (craftingshop_free) 1 | yes | no | - | - |
+| `shop:rimmington:0` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - | - |
 | `shop:rimmington:1` | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)

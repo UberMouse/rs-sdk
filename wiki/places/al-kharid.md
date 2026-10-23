@@ -12,7 +12,7 @@
 | `shop:al-kharid:2` | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes | yes | - | - |
 | `shop:al-kharid:3` | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes | yes | - | - |
 | `shop:al-kharid:4` | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes | yes | - | - |
-| `shop:al-kharid:5` | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1, Dommiks Crafting Store. (craftingshop2_free) 1 | yes | yes | - | - |
+| `shop:al-kharid:5` | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes | yes | - | - |
 
 ## [Tanners](../services/tanner.md)
 

@@ -647,8 +647,36 @@ describe('fishing', () => {
             ]),
         );
         expect(spots.get('memberfish')!.ops).toEqual(
-            new Map([['4', { tool: 'big_net', source: 'skill_fishing/scripts/fishing_spots/memberfish.rs2:2' }]]),
+            new Map([
+                [
+                    '4',
+                    {
+                        tool: 'big_net',
+                        source: 'skill_fishing/scripts/fishing_spots/memberfish.rs2:2',
+                        unread: 'it rolls with ~fish_roll_big_net, not ~fish_roll',
+                    },
+                ],
+            ]),
         );
+    });
+
+    test('an op with no catch read says which part of parseCatch its scripts do not fit', () => {
+        // Shaped as lavafish.rs2's oily rod check, tbwt.rs2's inline karambwanji roll, and a loop with no reset.
+        const file = 'skill_fishing/scripts/fishing_spots/odd.rs2';
+        const text = [
+            '[opnpc1,lava] if (~oil_rod_fishing_check_requirements = false) { return; } ~fish_roll(raw_lava_eel, null, fishing_rod, fishing_bait);',
+            '[opnpc1,inline] if (~check_fish_equipment(net) = false) { return; } if (stat_random(fishing, 100, 250) = true) { inv_add(inv, karambwanji, 1); }',
+            '[opnpc1,noloop] if (~check_fish_equipment(net) = false) { return; } if (stat(fishing) < 5) { return; } ~fish_roll(raw_shrimp, null, net, null);',
+            '[opnpc1,none] if (~check_fish_equipment(net) = false) { return; } mes("Nothing.");',
+        ].join('\n');
+        const spots = readSpots([[file, text]]);
+        const unread = (spot: string) => spots.get(spot)!.ops.get('1')!.unread;
+        expect(unread('lava')).toBe('no ~check_fish_equipment call names its tool');
+        expect(unread('inline')).toBe('it rolls inline with stat_random(fishing, ...), not ~fish_roll');
+        expect(unread('noloop')).toBe('its %action_delay loop is not the one parseCatch reads');
+        expect(unread('none')).toBe('it calls no ~fish_roll');
+        // A read catch leaves its op without one.
+        expect(readSpots(data.scripts).get('freshfish')!.ops.get('4')!.unread).toBeUndefined();
     });
 
     test('trout and salmon fly fishing at Fishing 40', () => {

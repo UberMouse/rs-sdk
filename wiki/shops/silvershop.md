@@ -9,6 +9,8 @@
 
 ## Stock
 
+No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|
 | [Unstrung symbol](../items/unstrung-symbol.md) | 2 | 200 gp | 120 gp |

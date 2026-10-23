@@ -2,12 +2,14 @@
 
 | Detail | |
 |---|---|
-| **Owner** | [Rommik](../npcs/rommik.md) |
+| **Owner** | Unknown |
 | **Location** | Rimmington |
-| **Coordinates** | (2946, 3205) in [Rimmington (Asgarnia)](../places/rimmington.md) |
+| **Coordinates** | not placed: rommik.rs2 opens it only off members worlds, on the other branch of a map_members test |
 | **Type** | Specialty Shop |
 
 ## Stock
+
+No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|

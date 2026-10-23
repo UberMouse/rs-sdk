@@ -22,7 +22,7 @@ The options of each spot config placed in the world (its npc or loc config).
 | 0_48_53_freshfish | Fishing spot | Lure, Bait |
 | 0_50_50_freshfish | Fishing spot | Lure, Bait |
 
-What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.
+What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp / 10 (productexp is in tenths of XP), Low and High its success_low and success_high.
 
 | Option | Level | Tool | Bait | Catch | Base XP | Low | High | Source |
 |---|---|---|---|---|---|---|---|---|

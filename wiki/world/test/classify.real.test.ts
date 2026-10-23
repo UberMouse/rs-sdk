@@ -58,11 +58,9 @@ describe('classifier on the real game data', () => {
     });
 
     test('shops and the tanners', () => {
-        // Both branches of `if(map_members = ^true)` (area_varrock/scripts/zaff.rs2:15-18).
-        expect(c('npc', 'zaff')).toMatchObject([
-            { kind: 'shop', subtype: 'memberstaffshop' },
-            { kind: 'shop', subtype: 'staffshop' },
-        ]);
+        // The members branch of `if(map_members = ^true)` only (area_varrock/scripts/zaff.rs2:15-18): staffshop is
+        // the free world's.
+        expect(c('npc', 'zaff')).toEqual([{ kind: 'shop', subtype: 'memberstaffshop', name: 'Zaff' }]);
         expect(c('npc', 'tanner')[0]?.kind).toBe('tanner');
         expect(c('npc', 'werewolftanner')[0]?.kind).toBe('tanner');
     });
@@ -108,15 +106,13 @@ describe('classifier on the real game data', () => {
         }
         expect(errors).toEqual([]);
         expect(multi).toEqual(['npc:duel_fadli']);
-        // Configs opening two inventories (world.real.test.ts has the five placed ones); razmire_keelgan, the form a
-        // serum turns Razmire into (razmire_keelgan.rs2:36), opens them on op3 and op4 (:1-25) and is placed nowhere.
+        // Configs opening two inventories on a members world (world.real.test.ts has the two placed ones);
+        // razmire_keelgan, the form a serum turns Razmire into (razmire_keelgan.rs2:36), opens them on op3 and op4
+        // (:1-25) and is placed nowhere. Zaff, Rommik and Dommik open a second only off members worlds.
         expect(shops.sort()).toEqual([
-            'npc:dommik',
             'npc:razmire_keelgan',
             'npc:razmire_keelgan_afflicted',
             'npc:regicidegeneralshopkeeper',
-            'npc:rommik',
-            'npc:zaff',
         ]);
     });
 });

@@ -7,6 +7,7 @@
 
 import { readFileSync, readdirSync } from 'fs';
 import { basename, join, relative } from 'path';
+import { codeOf, membersCode } from './world/classify';
 import { loadFreshWorld } from './world/load';
 import { centreOf } from './world/place';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
@@ -218,6 +219,7 @@ const OPENSHOP = /~openshop\(\s*([a-z0-9_]+)\s*,/g;
 interface Openers {
     files: Set<string>; // script file names making the call
     npcs: Set<string>; // npc configs whose own op trigger reaches the call
+    members: boolean; // some call is on a branch a members world runs (classify.ts membersCode)
 }
 
 /** A script body without its `//` comments, so a commented-out call is no call. */
@@ -231,7 +233,7 @@ const code = (body: string): string => body.split('\n').map(line => line.replace
 function readOpeners(): Map<string, Openers> {
     const openers = new Map<string, Openers>();
     const opener = (inv: string): Openers => {
-        if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set() });
+        if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set(), members: false });
         return openers.get(inv)!;
     };
     const invsIn = (body: string): string[] => [...code(body).matchAll(OPENSHOP)].map(m => m[1]!);
@@ -242,11 +244,14 @@ function readOpeners(): Map<string, Openers> {
 
     const callables = readCallables();
     const callable = new Map(callables.map(c => [c.call, c.body]));
+    const membersInvs = (body: string): string[] => [...membersCode(codeOf(body)).matchAll(OPENSHOP)].map(m => m[1]!);
     for (const c of callables) {
         for (const inv of invsIn(c.body)) opener(inv).files.add(basename(c.file));
+        for (const inv of membersInvs(c.body)) opener(inv).members = true;
     }
     for (const t of readTriggers()) {
         for (const inv of invsIn(t.body)) opener(inv).files.add(basename(t.file));
+        for (const inv of membersInvs(t.body)) opener(inv).members = true;
         if (t.on !== 'npc' || t.category) continue;
         const bodies = [t.body];
         const seen = new Set<string>();
@@ -269,7 +274,8 @@ function readOpeners(): Map<string, Openers> {
  *   the mean tile of those features there, which is the shopkeeper's spawn when one keeps it, and the
  *   site's area linked to its place page.
  * - A shop no site records is "not placed", with the reason in the data (world.real.test.ts pins
- *   these pages): no script opens the inventory, or one does but no shop feature has it (classify.ts
+ *   these pages): no script opens the inventory, or one opens it only off members worlds (classify.ts
+ *   reads members worlds only, membersCode), or one does but no shop feature has it (classify.ts
  *   gives a shopkeeper a feature per inventory its triggers open, so only an unplaced or unclassified
  *   opener leaves one out). Where that script is reached from an npc's own op trigger, the npc's shop
  *   sites follow; a call reached only through a dialogue choice's label argument names no npc, so
@@ -308,6 +314,7 @@ function shopLocator(world: World): (inv: string, pagePath: string) => string {
         const o = openers.get(inv);
         if (!o) return 'not placed: no script opens this inventory';
         const files = [...o.files].sort().join(', ');
+        if (!o.members) return `not placed: ${files} opens it only off members worlds, on the other branch of a map_members test`;
         // Shop features of the npcs whose trigger opens it: none has this inventory, or it would be placed.
         const keepers = shops.filter(s => o.npcs.has(s.f.config));
         if (keepers.length === 0) return `not placed: ${files} opens it, but no shop site records it`;
@@ -618,6 +625,14 @@ function generateShopMarkdown(
     // Stock table with computed prices
     lines.push('## Stock');
     lines.push('');
+    // The multipliers come from an owned_shop owner's params; an ~openshop call passes its own
+    // ($shop_buy, $shop_sell: shop/scripts/shop.rs2:3), which this page does not read.
+    if (!primaryOwner) {
+        lines.push(
+            `No npc's \`owned_shop\` param names this shop, so these prices use this page's default multipliers (${sellToPlayerMul} to buy, ${buyFromPlayerMul} to sell, per mille of value), not a shopkeeper's: an \`~openshop\` call passes its own.`,
+        );
+        lines.push('');
+    }
     lines.push('| Item | Stock | Buy Price | Sell Price |');
     lines.push('|------|-------|-----------|------------|');
 

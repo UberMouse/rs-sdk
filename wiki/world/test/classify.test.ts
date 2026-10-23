@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { classifier, type Classified } from '../classify';
+import { classifier, membersCode, type Classified } from '../classify';
 import type { Config } from '../sources/configs';
 import type { CourseDef } from '../sources/courses';
 import type { Callable, Trigger } from '../sources/triggers';
@@ -189,6 +189,42 @@ describe('rules', () => {
             { kind: 'shop', subtype: 'buildingstore', name: 'Razmire' },
             { kind: 'shop', subtype: 'generalstore', name: 'Razmire' },
         ]);
+    });
+
+    test('an inv opened only on the branch a members world skips is no shop', () => {
+        // zaff.rs2:15-18 opens staffshop in the else of `if(map_members = ^true)`; an `if (map_members = ^false)`
+        // block is the free world's too. A test of map_members with anything else can run on either world.
+        const body = [
+            '',
+            'if(map_members = ^true) {',
+            '    ~openshop(members, 1, 1, 1, "M");',
+            '} else if (%x = 1) {',
+            '    ~openshop(free1, 1, 1, 1, "F");',
+            '} else {',
+            '    @free_label;',
+            '}',
+            'if (map_members = ^false) {',
+            '    ~openshop(free2, 1, 1, 1, "F");',
+            '} else {',
+            '    ~openshop(members2, 1, 1, 1, "M");',
+            '}',
+            'if (map_members = ^false | %y = 1) {',
+            '    ~openshop(either, 1, 1, 1, "E");',
+            '}',
+        ].join('\n');
+        const triggers = [trig('a.rs2', 'npc', 'zaff', body, false, '3')];
+        const callables = [label('@free_label', '\n~openshop(free3, 1, 1, 1, "F");')];
+        expect(classify('npc', 'zaff', { name: ['Zaff'] }, { triggers, callables }).map(x => x.subtype)).toEqual([
+            'either',
+            'members',
+            'members2',
+        ]);
+        // Blanking keeps every line and column.
+        expect(
+            membersCode(body)
+                .split('\n')
+                .map(l => l.length),
+        ).toEqual(body.split('\n').map(l => l.length));
     });
 
     test('a call inside a // comment does not count; one in a string does not end the line', () => {
@@ -435,6 +471,24 @@ describe('type changes', () => {
             ],
         );
         expect(run('npc', 'afflicted').map(x => x.subtype)).toEqual(['a', 'b', 'c']);
+    });
+
+    test('changed-into configs of another kind give it once, from the first walked, whatever their subtypes', () => {
+        // One booth and one chest a loc turns into are one bank use; only a shop's subtype (its inv) splits.
+        const run = among(
+            'loc',
+            [
+                ['crate', { name: ['Crate'] }],
+                ['booth', { name: ['Bank booth'] }],
+                ['chest', { name: ['Bank chest'] }],
+            ],
+            [
+                trig('a.rs2', 'loc', 'crate', '\nloc_change(booth, 10);\nloc_change(chest, 10);'),
+                trig('a.rs2', 'loc', 'booth', '\n@openbank;'),
+                trig('a.rs2', 'loc', 'chest', '\n@openbank;'),
+            ],
+        );
+        expect(run('loc', 'crate')).toEqual([{ kind: 'bank', subtype: 'booth', name: 'Crate' }]);
     });
 
     test('a changed-into kind arrives through the op that makes the change, for the clash rule', () => {

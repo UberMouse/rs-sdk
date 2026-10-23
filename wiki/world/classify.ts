@@ -150,6 +150,49 @@ export function codeOf(body: string): string {
         .join('\n');
 }
 
+/** The index just past the `}` closing the block whose `{` is at `code[open]`; code.length if none. */
+function blockEnd(code: string, open: number): number {
+    let depth = 0;
+    for (let i = open; i < code.length; i++) {
+        if (code[i] === '{') depth++;
+        else if (code[i] === '}' && --depth === 0) return i + 1;
+    }
+    return code.length;
+}
+
+/**
+ * Code (codeOf) with the branch a members world never runs blanked: an `if (map_members = ^true)`'s
+ * else chain, an `if (map_members = ^false)`'s own block. Zaff opens staffshop only in the else of
+ * `if(map_members = ^true)` (area_varrock/scripts/zaff.rs2:15-18), and bots play members worlds only.
+ * Only a test of map_members alone is read: `map_members = ^false | ...` can run on either world.
+ * Blanking keeps every line and column, as codeOf does.
+ */
+export function membersCode(code: string): string {
+    const out = code.split('');
+    const blank = (from: number, to: number): void => {
+        for (let i = from; i < to; i++) if (out[i] !== '\n') out[i] = ' ';
+    };
+    for (const m of code.matchAll(/\bif\s*\(\s*map_members\s*=\s*\^(true|false)\s*\)\s*\{/g)) {
+        const open = m.index + m[0].length - 1;
+        const end = blockEnd(code, open);
+        if (m[1] === 'false') {
+            blank(open + 1, end - 1);
+            continue;
+        }
+        // The else chain: `else if (...) { }` repeats until a plain `else { }` or anything else.
+        let at = end;
+        for (;;) {
+            const next = /^\s*else\b\s*(if\s*\([^{]*)?\{/.exec(code.slice(at));
+            if (!next) break;
+            const close = blockEnd(code, at + next[0].length - 1);
+            blank(at, close);
+            at = close;
+            if (!next[1]) break;
+        }
+    }
+    return out.join('');
+}
+
 /** A callable's parameter names, from the `(type $name, ...)` list that starts its body. */
 const paramsOf = (body: string): string[] =>
     [...(body.match(/^\(([^)]*)\)/)?.[1] ?? '').matchAll(/\$([a-z0-9_]+)/g)].map(m => m[1]!);
@@ -247,7 +290,7 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     const byTarget = new Map<string, Trigger[]>();
     for (const t of input.triggers) push(byTarget, `${t.on}:${t.category ? '_' : ''}${t.target}`, t);
     const callables = new Map(
-        (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: codeOf(c.body) }]),
+        (input.callables ?? []).map(c => [c.call, { params: paramsOf(c.body), body: membersCode(codeOf(c.body)) }]),
     );
 
     /** The triggers on a config, by its name or its category. */
@@ -275,12 +318,13 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
      * chat.rs2), and `~open_chest(duel_chestopen)` runs `loc_change($other_chest, 300)` (general_use/
      * scripts/chests.rs2). `jump(<label>)` is a call. Each callee is followed once per argument list
      * (and once more if also reached below a bank side effect); only bare names are bound, so the
-     * lists are finite and a cycle ends.
+     * lists are finite and a cycle ends. Every body is its membersCode, so a call only a free world
+     * makes is not followed.
      */
     const reach = (raw: string): Reached[] => {
         const cached = reached.get(raw);
         if (cached) return cached;
-        const out: Reached[] = [{ body: codeOf(raw), banking: true }];
+        const out: Reached[] = [{ body: membersCode(codeOf(raw)), banking: true }];
         const seen = new Set<string>();
         for (let i = 0; i < out.length; i++) {
             const { body, banking } = out[i]!;
@@ -350,7 +394,8 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
     // opens the npc's owned_shop param (shop/scripts/shop.rs2). The subtype is the inv either way; an
     // explicit call names its inv, so it wins over owned_shop, which is right only when none is named.
     // Every inv the triggers reach is a shop of its own: Razmire's dialogue opens two
-    // (quest_mortton/scripts/razmire_keelgan.rs2:240, :243).
+    // (quest_mortton/scripts/razmire_keelgan.rs2:240, :243). One a members world never opens is no shop:
+    // reach reads membersCode, so Zaff's staffshop (area_varrock/scripts/zaff.rs2:17-18) is not one.
     const shop: Rule = (on, config, cfg) => {
         const ts = reaching(on, config, cfg, /~openshop(\(|_activenpc\b)/);
         if (!ts.length) return null;
@@ -484,11 +529,13 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         // search turns it into the looted loc_2572, also a thieving chest: skill_thieving/scripts/
         // chest/trapped_chest.rs2), so a changed-into hit adds only kinds not yet found.
         const hits = [...ruleHits(on, config)];
-        // Two changed-into configs of one kind and subtype are one use.
+        // Changed-into configs of one kind are one use, the first walked. A shop's subtype is the inv it opens,
+        // and an npc opening two invs keeps two shops (the shop rule's one match per inv), so for shops each
+        // inv is a use of its own.
         const own = new Set(hits.map(([, h]) => h.kind));
         const changed = new Set<string>();
         for (const [n, h] of changedHits(on, config)) {
-            const use = `${h.kind}:${h.subtype}`;
+            const use = h.kind === 'shop' ? `shop:${h.subtype}` : h.kind;
             if (own.has(h.kind) || changed.has(use)) continue;
             changed.add(use);
             hits.push([n, h]);

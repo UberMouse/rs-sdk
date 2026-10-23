@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { BANKS } from '../../../conductor/lib/banks';
 import { AREAS } from '../areas';
-import { codeOf } from '../classify';
+import { codeOf, membersCode } from '../classify';
 import { buildWorld, COVERED } from '../build';
 import { reachCollision, siteCollision } from '../collision';
 import { SCRIPTS, WIKI } from '../paths';
@@ -56,6 +56,9 @@ const pagePlaces = (page: string): string[] =>
     ].map(m => m[1]!);
 /** A script opening `inv` as a shop. */
 const opens = (inv: string): RegExp => new RegExp(`~openshop\\(\\s*${inv}\\s*,`);
+/** The inventories the ~openshop calls in `bodies` name. */
+const invsIn = (bodies: string[]): Set<string> =>
+    new Set(bodies.flatMap(b => [...b.matchAll(/~openshop\(\s*([a-z0-9_]+)\s*,/g)].map(m => m[1]!)));
 
 test('the build covers every site it must place', () => expect(report.uncovered).toEqual([]));
 
@@ -458,7 +461,13 @@ describe('resources and shops', () => {
     // opens it, so these pages have no shop site, each for a reason in the data.
     /** Inventories no script opens: no `~openshop(<inv>, ...)` anywhere in server/content/scripts. */
     const UNOPENED = ['fishrestaurant', 'foodshop', 'furstall', 'silvershop', 'spiceshop'];
-    test('every shop page in wiki/shops has a shop site, but for inventories no script opens', () => {
+    /**
+     * Inventories opened only on the branch of a map_members test a members world skips, by their pages
+     * (rommik.rs2:15-16, dommik.rs2:6-7, zaff.rs2:17-18): bots play members worlds, so no shop site has them.
+     */
+    const FREE_ONLY = ['craftingshop-free', 'craftingshop2-free', 'staffshop'];
+    const UNPLACED = [...UNOPENED, ...FREE_ONLY].sort();
+    test('every shop page in wiki/shops has a shop site, but for inventories no members world opens', () => {
         const shops = sitesOf('shop').flatMap(featuresOf);
         const names = new Set(shops.map(f => f.name.toLowerCase()));
         // A page without a known owner is named after its inventory, the shop feature's subtype.
@@ -473,39 +482,40 @@ describe('resources and shops', () => {
                 const owners = [...owner.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]!.toLowerCase());
                 return !owners.some(o => names.has(o)) && !invs.has(norm(slug));
             });
-        expect(missing.sort()).toEqual(UNOPENED);
+        expect(missing.sort()).toEqual(UNPLACED);
     });
 
     test('the pages without a site are explained by the data', () => {
         const bodies = [...readTriggers(), ...readCallables()].map(s => s.body).join('\n');
         for (const inv of UNOPENED) expect(bodies).not.toMatch(opens(inv));
+        // The free-world inventories are opened, but only on a branch membersCode blanks; no other is.
+        const all = [...readTriggers(), ...readCallables()].map(s => codeOf(s.body));
+        const members = invsIn(all.map(membersCode));
+        expect([...invsIn(all)].filter(inv => !members.has(inv)).sort()).toEqual(
+            FREE_ONLY.map(p => p.replaceAll('-', '_')).sort(),
+        );
     });
 
     test('an npc opening several inventories has a shop feature of each, as its script opens them', () => {
-        // Every inventory an ~openshop call names is some shop feature's subtype, so none is dropped.
+        // Every inventory an ~openshop call names on a members world is some shop feature's subtype, so none is
+        // dropped.
         const shops = sitesOf('shop').flatMap(featuresOf);
-        const bodies = [...readTriggers(), ...readCallables()].map(s => codeOf(s.body));
-        const opened = new Set(bodies.flatMap(b => [...b.matchAll(/~openshop\(\s*([a-z0-9_]+)\s*,/g)].map(m => m[1]!)));
+        const bodies = [...readTriggers(), ...readCallables()].map(s => membersCode(codeOf(s.body)));
+        const opened = invsIn(bodies);
         const subtypes = new Set(shops.map(f => f.subtype));
         expect([...opened].filter(inv => !subtypes.has(inv))).toEqual([]);
-        // The five npcs with two: by members world (rommik.rs2:13-16, dommik.rs2:4-7, zaff.rs2:15-18), by quest
-        // stage (regicidegeneralshopkeeper.rs2:11-14), by menu choice (razmire_keelgan.rs2:240, :243).
+        // The two placed npcs with two: by quest stage (regicidegeneralshopkeeper.rs2:11-14), by menu choice
+        // (razmire_keelgan.rs2:240, :243).
         const script: Record<string, string> = {
-            dommik: 'areas/area_alkharid/scripts/dommik.rs2',
             razmire_keelgan_afflicted: 'quests/quest_mortton/scripts/razmire_keelgan.rs2',
             regicidegeneralshopkeeper: 'quests/quest_regicide/scripts/regicidegeneralshopkeeper.rs2',
-            rommik: 'areas/area_rimmington/scripts/rommik.rs2',
-            zaff: 'areas/area_varrock/scripts/zaff.rs2',
         };
         const several = [...new Set(shops.map(f => f.config))]
             .map(npc => [npc, [...new Set(shopSubtypesOf(npc))].sort()] as const)
             .filter(([, invs]) => invs.length > 1);
         expect(Object.fromEntries(several)).toEqual({
-            dommik: ['craftingshop2', 'craftingshop2_free'],
             razmire_keelgan_afflicted: ['razmirebuildingstore', 'razmiregeneralstore'],
             regicidegeneralshopkeeper: ['regicide_general_shop', 'regicide_general_shop_2'],
-            rommik: ['craftingshop', 'craftingshop_free'],
-            zaff: ['memberstaffshop', 'staffshop'],
         });
         for (const [npc, invs] of several) {
             const text = readFileSync(join(SCRIPTS, script[npc]!), 'utf8');
@@ -529,7 +539,7 @@ describe('resources and shops', () => {
             expect(row).toMatch(/^\(\d+, \d+\)( L\d)? in \[[^\]]+\]\(\.\.\/places\/[a-z0-9-]+\.md\)(; |$)/);
             return false;
         });
-        expect(notPlaced.map(f => f.replace(/\.md$/, '')).sort()).toEqual(UNOPENED);
+        expect(notPlaced.map(f => f.replace(/\.md$/, '')).sort()).toEqual(UNPLACED);
     });
 });
 

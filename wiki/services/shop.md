@@ -23,7 +23,7 @@
 | [Falador (Asgarnia)](../places/falador.md) | `shop:falador:2` | (2973, 3312) | (2973, 3312) | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes | - |
 | [Falador (Asgarnia)](../places/falador.md) | `shop:falador:3` | (2979, 3383) | (2979, 3383) | Cassies' Shield Shop. (shieldshop) 1 | yes | - |
 | [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `shop:heros-guild:0` | (2894, 3510) L1 | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | Hero's Quest done |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2946, 3205) | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1, Rommiks Crafty Supplies. (craftingshop_free) 1 | yes | - |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:0` | (2946, 3205) | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | - |
 | [Rimmington (Asgarnia)](../places/rimmington.md) | `shop:rimmington:1` | (2948, 3216) | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | - |
 | [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:0` | (2201, 4942) | (2203, 4942) | The Toad and Chicken (death_pub) 1 | no | - |
 | [Burthorpe Games Room](../places/burthorpe-games-room.md) | `shop:burthorpe-games-room:1` | (2207, 4958) | (2207, 4958) | The Toad and Chicken (death_pub) 1 | no | - |
@@ -80,7 +80,7 @@
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:2` | (3316, 3164) | (3316, 3164) | Ranael's Super Skirt Store. (skirtshop) 1 | yes | - |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:3` | (3316, 3175) | (3316, 3175) | Louies' Armoured Legs Bazaar. (legsshop) 1 | yes | - |
 | [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:4` | (3316, 3183) | (3316, 3183) | Al-Kharid General Store (generalshop3) 2 | yes | - |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:5` | (3322, 3194) | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1, Dommiks Crafting Store. (craftingshop2_free) 1 | yes | - |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `shop:al-kharid:5` | (3322, 3194) | (3322, 3194) | Dommiks Crafting Store. (craftingshop2) 1 | yes | - |
 | [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | `shop:bedabin-camp:0` | (3169, 3037) | (3169, 3036) | Bedabin Village Bartering (bedabincampshop) 8 | no | 1 Shantay pass (used up) |
 | [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | `shop:duel-arena:0` | (3381, 3267) | (3381, 3268) | Shop of Distaste (duel_rottenfruitshop) 1 | no | - |
 | [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `shop:duel-arena-bank:0` | (3383, 3269) | (3383, 3269) | Shop of Distaste (duel_rottenfruitshop) 1 | no | - |
@@ -98,7 +98,7 @@
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:0` | (3211, 3247) | (3211, 3247) | Lumbridge General Store (generalshop1) 2 | yes | - |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | `shop:lumbridge:1` | (3232, 3203) | (3232, 3203) | Bob's Brilliant Axes. (axeshop) 1 | yes | - |
 | [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:0` | (3204, 3398) | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:1` | (3203, 3433) | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1, Zaff's Superior Staffs! (staffshop) 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:1` | (3203, 3433) | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | - |
 | [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:2` | (3204, 3417) | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | - |
 | [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:3` | (3218, 3413) | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | - |
 | [Varrock (Misthalin)](../places/varrock.md) | `shop:varrock:4` | (3229, 3438) | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | - |

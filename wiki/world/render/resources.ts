@@ -147,7 +147,7 @@ function fishingSection(subtype: string, configs: readonly Placed[], data: PageD
                         '-',
                         tool,
                         '-',
-                        "can't read this catch: not a plain ~fish_roll loop",
+                        `can't read this catch: ${o?.unread ?? 'no op trigger'}`,
                         '-',
                         '-',
                         '-',
@@ -186,7 +186,7 @@ function fishingSection(subtype: string, configs: readonly Placed[], data: PageD
             ]),
         ),
         '',
-        "What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp, Low and High its success_low and success_high.",
+        "What each option catches, from the spot's script (Source) and each fish's fishing struct (skill_fishing/configs/fishing.struct): Base XP is its productexp / 10 (productexp is in tenths of XP), Low and High its success_low and success_high.",
         '',
         ...(rows.length
             ? table(['Option', 'Level', 'Tool', 'Bait', 'Catch', 'Base XP', 'Low', 'High', 'Source'], rows)

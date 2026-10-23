@@ -89,6 +89,27 @@ export interface SpotOp {
     tool: string | null;
     /** `file:line` of the body that checks the tool, else of the trigger. */
     source: string;
+    /** What about its bodies parseCatch does not read, when the spot has no catch for its tool (unreadOf). */
+    unread?: string;
+}
+
+/**
+ * Why an op's bodies (its trigger's and its labels' code) give no catch, by the first rule of parseCatch they break:
+ * lava eels check their oily rod with ~oil_rod_fishing_check_requirements, not ~check_fish_equipment (lavafish.rs2,
+ * lavafish_loc.rs2); a big net rolls through ~fish_roll_big_net (memberfish.rs2:150) and karambwan(ji) inline with
+ * stat_random (tbwt.rs2).
+ */
+function unreadOf(code: string): string {
+    if (!TOOL.test(code)) return 'no ~check_fish_equipment call names its tool';
+    const own = code.match(/~fish_roll_(?!loc\b)[a-z0-9_]+/)?.[0];
+    if (!/~fish_roll(_loc)?\(/.test(code))
+        return own
+            ? `it rolls with ${own}, not ~fish_roll`
+            : /stat_random\(fishing\b/.test(code)
+              ? 'it rolls inline with stat_random(fishing, ...), not ~fish_roll'
+              : 'it calls no ~fish_roll';
+    if (!ROLL_BRANCH.test(code)) return 'its %action_delay loop is not the one parseCatch reads';
+    return 'its ~fish_roll calls are not one catch: another tool or bait, or a second call without a level guard';
 }
 
 /**
@@ -109,6 +130,7 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
     const files = scripts.filter(([f]) => f.startsWith(FISHING_SPOTS));
     const labels = new Map(files.flatMap(([f, text]) => parseCallables(f, text)).map(c => [c.call, c] as const));
     const spots = new Map<string, Spot>();
+    const pending: [Spot, SpotOp, code: string][] = [];
     for (const t of files.flatMap(([f, text]) => parseTriggers(f, text))) {
         if (t.kind !== 'op') continue;
         const spot = spots.get(t.target) ?? { catches: new Map(), unmodelled: new Set(), ops: new Map() };
@@ -120,11 +142,15 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
                 return label ? [{ body: label.body, source: `${label.file}:${label.line}` }] : [];
             }),
         ];
-        let op: SpotOp = { tool: null, source: `${t.file}:${t.line}` };
+        const op: SpotOp = { tool: null, source: `${t.file}:${t.line}` };
+        pending.push([spot, op, bodies.map(b => codeOf(b.body)).join('\n')]);
         for (const { body, source } of bodies) {
             const c = parseCatch(body, source);
             const tool = codeOf(body).match(TOOL)?.[1];
-            if (tool && op.tool === null) op = { tool, source };
+            if (tool && op.tool === null) {
+                op.tool = tool;
+                op.source = source;
+            }
             if (c) {
                 const prior = spot.catches.get(c.tool);
                 if (prior && JSON.stringify({ ...prior, source: '' }) !== JSON.stringify({ ...c, source: '' }))
@@ -135,6 +161,8 @@ export function readSpots(scripts: readonly [file: string, text: string][]): Map
         spot.ops.set(t.op, op);
     }
     for (const spot of spots.values()) for (const tool of spot.catches.keys()) spot.unmodelled.delete(tool);
+    for (const [spot, op, code] of pending)
+        if (op.tool === null || !spot.catches.has(op.tool)) op.unread = unreadOf(code);
     return spots;
 }
 
