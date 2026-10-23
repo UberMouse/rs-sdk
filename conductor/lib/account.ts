@@ -4,9 +4,10 @@
 // a token the state cannot settle counts as not met, so a walk is never planned through a door or to a bank that may
 // refuse the bot. The caller adds what it has checked to `met`.
 import type { BotWorldState } from '../../sdk/types';
-import { CAME_FROM } from '../../wiki/world/requirements';
+import { ANY_CAME_FROM, CAME_FROM } from '../../wiki/world/requirements';
 import { configName, objInfo } from './packs';
 import { QUESTS, questProgress } from './quests';
+import { inEssenceMine } from './runecraft';
 import { countItems } from './util';
 
 export interface Account {
@@ -74,6 +75,8 @@ export function accountOf(state: BotWorldState): Account {
         if (progress === 'done') met.add(`quest:${id}`);
         else if (progress === 'started') met.add(`quest:${id}>=1`);
     }
+    // Inside the essence mine any wizard's way out is open until the caller knows the one the bot came in by.
+    if (inEssenceMine(state)) met.add(ANY_CAME_FROM);
     return { levels, current, coins: countItems(state, /^coins$/i), held, worn, met };
 }
 
@@ -93,9 +96,13 @@ export function meetsToken(account: Account, token: string): boolean {
     if (item) return item[2] === 'held' ? (account.held?.get(item[1]!) ?? 0) > 0 : !!account.worn?.has(item[1]!);
     const consume = /^consume:([a-z0-9_]+):(\d+)$/.exec(token);
     if (consume) return (account.held?.get(consume[1]!) ?? 0) >= Number(consume[2]);
-    // The way out of the essence mine returns to the wizard the way came in by: with one on record only its way is
-    // met; with none, any wizard's (the portal lands where the game says, and the walk goes on from there).
-    if (token.startsWith(CAME_FROM)) return ![...(account.met ?? [])].some(t => t.startsWith(CAME_FROM));
+    // The way out of the essence mine returns to the wizard the way came in by: met by the wizard on record, or, with
+    // none on record, by `ANY_CAME_FROM` (a bot already inside the mine, which the caller checked). Never otherwise: a
+    // plan that went in by one wizard and out by another's portal cannot be walked.
+    if (token.startsWith(CAME_FROM)) {
+        const record = [...(account.met ?? [])].filter(t => t.startsWith(CAME_FROM) && t !== ANY_CAME_FROM);
+        return record.length === 0 && !!account.met?.has(ANY_CAME_FROM);
+    }
     // A quest stage meets every lower stage of it, and a quest done meets every stage up to its completion value. A
     // gate above that value (Priest in Peril's holy barrier needs 61, the tab is green from 60) is a step after
     // completion that the tab cannot show, so it is met only when the caller lists that token.

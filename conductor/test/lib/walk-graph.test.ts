@@ -5,6 +5,7 @@ import { readConfigs } from '../../../wiki/world/sources/configs';
 import { at, Grid } from '../../../wiki/world/test/grid';
 import { CROSSING_TICKS } from '../../../wiki/world/distance';
 import { expectedTicks, statRandomChance } from '../../../wiki/world/roll';
+import { ANY_CAME_FROM } from '../../../wiki/world/requirements';
 import type { Crossing, Gate, Roll, Transport, World } from '../../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
@@ -292,8 +293,12 @@ describe('the essence mine portals: the way back to the wizard on record', () =>
         expect(landed(['other:came from wiz_b'])).toEqual([byB]);
     });
 
-    test('with none on record, the nearest exit (the walk goes on from wherever the portal lands)', () => {
-        expect(landed([])).toEqual([byB]);
+    test('in the mine with none on record, the nearest exit (the walk goes on from wherever the portal lands)', () => {
+        expect(landed([ANY_CAME_FROM])).toEqual([byB]);
+    });
+
+    test('with none on record and not known to be in the mine, no portal is taken', () => {
+        expect(landed([])).toBeUndefined();
     });
 });
 

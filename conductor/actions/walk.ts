@@ -412,12 +412,20 @@ function targetsOf(dest: Tile, tolerance: number): Tile[] {
     return out;
 }
 
+/**
+ * The account a walk plans for: what the state shows (`accountOf`, which adds the essence mine's any-wizard way out)
+ * and what the walk has learned (`learned`; a wizard on record beats that wildcard in meetsToken).
+ */
+export function walkAccount(s: BotWorldState, learned: Iterable<string>): Account {
+    const seen = accountOf(s);
+    return { ...seen, met: new Set([...(seen.met ?? []), ...learned]) };
+}
+
 /** The way from where the bot stands to `dest`, over what the bot carries and the walk has learned. */
 function planRoute(ctx: ActionContext, s: BotWorldState, dest: Tile, tolerance: number, rec: Learned) {
     const p = s.player!;
     const world = worldOf(ctx);
-    const seen = accountOf(s);
-    const account: Account = { ...seen, met: new Set([...(seen.met ?? []), ...rec.met]) };
+    const account = walkAccount(s, rec.met);
     const banks = world.banks.filter(b => meetsOneOf(account, b.reach)).map(b => b.stand);
     const counted = ctx.bank;
     const detour: Detour | undefined = counted && {
