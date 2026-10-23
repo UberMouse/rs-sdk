@@ -624,9 +624,9 @@ export interface KillFigures {
     /** HP the npc's swings take off the player a kill (ActionModel.damage). */
     damage: number;
     /**
-     * Ticks from the first swing to the killing swing: the kill's n swings (families/combat.ts expectedSwings) at the
+     * Ticks from the first swing to the killing swing: the kill's n swings (wiki/world/model/families/combat.ts expectedSwings) at the
      * weapon's attack rate, n x attackRate in its ticksPerAttempt less the cooldown after the killing swing
-     * (families/combat.ts:399), so (n - 1) x attackRate. A run's eat between two swings lengthens its fight; the
+     * (wiki/world/model/families/combat.ts:399), so (n - 1) x attackRate. A run's eat between two swings lengthens its fight; the
      * model puts its eats' ticks in `gap`.
      */
     fight: number;

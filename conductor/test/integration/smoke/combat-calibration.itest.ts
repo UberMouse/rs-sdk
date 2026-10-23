@@ -6,8 +6,11 @@
 // kills; the calibration pools several runs' recordings (`bun conductor/tools/combat-ledger.ts <recordings>... --npc
 // Giant`).
 // Each run's RESULT lines are also written to <runId>.calibration.ndjson beside its log. Damage and fight ticks that
-// agree within CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand; once the giant is
-// calibrated, the model's damage and fight ticks must still agree with each run.
+// agree within CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand. The 25% model gate
+// lives on the pooled record (wiki/world/test/combat-method.real.test.ts): a single run's standard error (~0.9 HP on
+// damage) is too wide to carry it. Once the giant is calibrated a run instead has to be consistent with its record,
+// within 3 combined standard errors on damage and on fight ticks (consistentWithRecord), so a game or engine change
+// that moves the figures fails here. The model-vs-run agreement is printed, not asserted.
 //
 // The profile: Defence 1 and no armour, so most of the giant's swings hit and the damage a kill is large enough to
 // measure; combat level 92, over the giants' hunt cutoff (56), so no second giant joins between kills. Strength,
@@ -17,13 +20,13 @@
 // kills need.
 import { expect, test } from 'bun:test';
 import { writeFileSync } from 'node:fs';
+import { CALIBRATIONS } from '../../../../wiki/world/methods';
 import { reachCollision } from '../../../../wiki/world/collision';
 import { loadWorld } from '../../../../wiki/world/load';
 import { readGameData } from '../../../../wiki/world/model/families/index';
 import { legFinder } from '../../../../wiki/world/model/legs';
 import {
     agrees,
-    CALIBRATED_NPCS,
     calibrationMethod,
     calibrationProfile,
     type CalibrationRun,
@@ -36,7 +39,7 @@ import { reachGraph } from '../../../../wiki/world/reach';
 import { questFacts } from '../../../../wiki/world/requirements';
 import { readConfigs } from '../../../../wiki/world/sources/configs';
 import { recordingFile } from '../../../core/drivers/recording';
-import { recordingLedger } from '../../../tools/combat-ledger';
+import { consistentWithRecord, recordingLedger } from '../../../tools/combat-ledger';
 import { itestTimeout, runTask, withFixtureBot } from '../harness';
 
 const GIANTS = { x: 3107, z: 9834 };
@@ -107,6 +110,11 @@ test(
                     damage: agrees(model.damage, perKill.damage.mean),
                     fight: agrees(model.fight, perKill.fight.mean),
                 };
+                const record = CALIBRATIONS.find(c => c.npc === RUN.npc)?.measured;
+                const consistent = record && {
+                    damage: consistentWithRecord(perKill.damage, { mean: record.damage, se: record.damageSe }),
+                    fight: consistentWithRecord(perKill.fight, { mean: record.fight, se: record.fightSe }),
+                };
                 const lines = [
                     {
                         measured: perKill,
@@ -114,13 +122,17 @@ test(
                         unattributed: ledger.unattributed,
                         run: `${name}/${run.result.runId}`,
                     },
-                    { model, agreement, status: run.result.status },
+                    { model, agreement, consistent, status: run.result.status },
                 ].map(o => `RESULT ${JSON.stringify(o)}`);
                 // run.ts shows a passing file's output to no one: the lines go beside the run's log too.
                 writeFileSync(run.result.logFile.replace(/\.ndjson$/, '.calibration.ndjson'), lines.join('\n') + '\n');
                 for (const line of lines) console.log(line);
                 expect(perKill.kills, detail).toBeGreaterThanOrEqual(MIN_KILLS);
-                if (CALIBRATED_NPCS.has(RUN.npc)) expect(agreement, detail).toEqual({ damage: true, fight: true });
+                if (!consistent) return;
+                // Fewer than two kills leave no standard error: nothing to judge (MIN_KILLS above already fails that).
+                if (consistent.damage === null || consistent.fight === null)
+                    console.log('no standard error on this run: record consistency not asserted');
+                else expect(consistent, detail).toEqual({ damage: true, fight: true });
             },
             { connect: false },
         );

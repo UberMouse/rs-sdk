@@ -5,7 +5,7 @@
 // after a death, a bank trip or a flee, events without an id and a client restart; and two runs pooled.
 import { describe, expect, test } from 'bun:test';
 import type { BotWorldState, CombatEvent } from '../../../sdk/types';
-import { AWAY, combatLedger, mean, poolLedgers } from '../../tools/combat-ledger';
+import { AWAY, combatLedger, consistentWithRecord, mean, poolLedgers } from '../../tools/combat-ledger';
 
 interface Step {
     tick: number;
@@ -290,5 +290,26 @@ describe('mean', () => {
     test('none is NaN; one has no standard error', () => {
         expect(mean([])).toEqual({ mean: NaN, se: NaN });
         expect(mean([4])).toEqual({ mean: 4, se: NaN });
+    });
+});
+
+describe('consistentWithRecord', () => {
+    // The hill giant record: damage 7.986 +- 0.532. Limit = 3 x sqrt(se^2 + 0.532^2), worked by hand below.
+    const record = { mean: 7.986, se: 0.532 };
+
+    test('run itbxt3d6mz3d, 9.42 +- 0.90, is consistent', () => {
+        // |9.42 - 7.986| = 1.434 <= 3 x sqrt(0.81 + 0.283) = 3 x 1.0455 = 3.14.
+        expect(consistentWithRecord({ mean: 9.42, se: 0.9 }, record)).toBe(true);
+    });
+
+    test('a drifted run is not', () => {
+        // |12.5 - 7.986| = 4.514 > 3 x sqrt(0.81 + 0.283) = 3.14.
+        expect(consistentWithRecord({ mean: 12.5, se: 0.9 }, record)).toBe(false);
+        expect(consistentWithRecord({ mean: 3.0, se: 0.9 }, record)).toBe(false);
+    });
+
+    test('a run with no standard error (fewer than two kills) is not judged', () => {
+        expect(consistentWithRecord({ mean: 20, se: NaN }, record)).toBeNull();
+        expect(consistentWithRecord(mean([4]), record)).toBeNull();
     });
 });

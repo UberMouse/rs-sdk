@@ -95,6 +95,20 @@ export function mean(values: number[]): Mean {
     return { mean: m, se: Math.sqrt(variance / n) };
 }
 
+/** How many combined standard errors a run's mean may sit from its calibration record's. */
+export const RECORD_SIGMAS = 3;
+
+/**
+ * Whether a run's per-kill mean is consistent with the calibration record's: within RECORD_SIGMAS of the two standard
+ * errors combined. A regression check that the game and engine still behave as when the record was taken, not the
+ * model's 25% gate (a single run's error is too wide to carry that). A run with no finite standard error (fewer than
+ * two kills) can't be judged: null.
+ */
+export function consistentWithRecord(run: Mean, record: Mean): boolean | null {
+    if (!Number.isFinite(run.se) || !Number.isFinite(run.mean)) return null;
+    return Math.abs(run.mean - record.mean) <= RECORD_SIGMAS * Math.sqrt(run.se ** 2 + record.se ** 2);
+}
+
 export interface LedgerOptions {
     /** The npc's name (exact, case-insensitive). */
     npc: string;
@@ -117,11 +131,12 @@ export function combatLedger(states: Iterable<BotWorldState>, o: LedgerOptions):
     /** Where the player stood since the previous kill, and whether it showed 0 HP or had the bank open. */
     let tiles: { level: number; x: number; z: number }[] = [];
     let downOrBanked = false;
-    /** The npcs in view the player has hit since they last showed HP above 0, by index: the tick of the first splat. */
+    /** The npcs in view the player has hit until killed or out of view, by index: the tick of the first splat. */
     const hit = new Map<number, number>();
     /** The npcs in view seen at 0 HP since. */
     const dead = new Set<number>();
     let seen = 0;
+    let newest = 0;
     let revision: number | undefined;
     let hp: number | undefined;
     let foodCount: number | undefined;
@@ -134,9 +149,11 @@ export function combatLedger(states: Iterable<BotWorldState>, o: LedgerOptions):
         for (const i of hit.keys()) if (!inView.has(i)) hit.delete(i);
         for (const i of dead) if (!inView.has(i)) dead.delete(i);
         const events = s.combatEvents ?? [];
+        newest = seen;
         for (const e of events) {
             if (e.observationId === undefined)
                 throw new Error(`a combat event at tick ${e.tick} has no observationId: it can't be counted once`);
+            newest = Math.max(newest, e.observationId);
             if (e.observationId <= seen) continue;
             if (e.targetType === 'player') {
                 if (e.sourceType !== 'npc' || !inView.has(e.sourceIndex)) {
@@ -153,7 +170,7 @@ export function combatLedger(states: Iterable<BotWorldState>, o: LedgerOptions):
                 if (!hit.has(e.targetIndex)) hit.set(e.targetIndex, e.tick);
             }
         }
-        for (const e of events) seen = Math.max(seen, e.observationId!);
+        seen = newest;
         const now = s.player?.hp;
         if (now !== undefined && hp !== undefined) {
             if (now < hp) open.hpLost += hp - now;

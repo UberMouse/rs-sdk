@@ -55,10 +55,10 @@ const giants: MethodDef = {
 const resolved = resolveMethod(giants, ctx, legs);
 const query = methodQuery({ ...world, methods: [toWorldMethod(resolved)] }, model);
 
-/** Every skill at `level`, the record's scimitar worn (its gear, as the profile names none). */
+/** Every skill at `level`, the test method's rune scimitar worn (its gear, as the profile names none). */
 const at = (level: number): Profile => profileAt('attack', level, { tools: model.tools });
 
-/** The record's Attack XP/hr at 60 in every skill, wearing `worn` over its gear. */
+/** The test method's Attack XP/hr at 60 in every skill, wearing `worn` over its gear. */
 const rate = (worn: string[]) => query.methodRate(giants.id, { ...at(60), worn }).xpPerHour.attack!;
 
 /** The record's ticks a kill at 60 in every skill wearing `worn`, its eats left out. */
@@ -147,7 +147,7 @@ describe('the style follows the queried skill', () => {
     });
 
     test("a profile's own worn objs take their slots; the record's gear keeps the rest", () => {
-        // An iron med helm is no weapon: the record's rune scimitar stays, and the helm has no attack or strength
+        // An iron med helm is no weapon: the test method's rune scimitar stays, and the helm has no attack or strength
         // bonus, so the kill takes as many ticks (its defence bonus cuts the calibrated giant's hits, so the eats and
         // the rate differ). A bronze scimitar in the weapon slot replaces the rune one, and its lower slash and
         // strength bonuses make the kill slower.
