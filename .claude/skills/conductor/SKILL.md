@@ -127,7 +127,8 @@ Seed `invariants` with the list below on the first write.
      spots/targets from `wiki/skills/<skill>.md` §Verified training spots and `learnings/`. Rank the
      curated methods with `bestMethods(skill, profile, { met, maxWilderness, multiway })`
      (`wiki/world/query.ts`) or read `wiki/training/<skill>.md`; both give the floor XP/hr beside
-     what bots measured.
+     what bots measured. A result with `rates.uncalibrated` is a kill whose rates leave out food
+     trips (overstated); the pages mark it †.
    - **Exploit** the variant with the best XP/hr in `stats.ts` that is safe for the bot's level.
    - **Explore** about one goal in five: name an untried variant from roadmap §Experiments or a
      spot the knowledge base lists without stats for the runner to try short, then compare in

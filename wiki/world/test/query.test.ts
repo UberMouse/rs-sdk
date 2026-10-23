@@ -520,3 +520,67 @@ describe('bestMethods over ways that may not model', () => {
         expect(both.bestMethods('woodcutting', at('woodcutting', 50)).length).toBe(4);
     });
 });
+
+// A kill of `npc` banked at the town bank, eating trout.
+const kill = (id: string, npc: string): WorldMethod => ({
+    ...chop(id, tree, {
+        params: { npc },
+        food: 'trout',
+        sink: { mode: 'bank' },
+        bank: bank.id,
+        ways: [{ reach: [], legs: [leg(tree, bank, 10), leg(bank, tree, 10)] }],
+    }),
+    family: 'fighting',
+    skill: 'strength',
+    levels: { strength: 1 },
+    minLevel: 1,
+});
+
+describe('uncalibrated', () => {
+    // A kill of npc `giant` or `goblin` at the tree site: 4 ticks a swing, 2 damage a kill, trout (heals 5) for food.
+    const fighting: Family = {
+        id: 'fighting',
+        skills: ['strength'],
+        kinds: ['tree'],
+        model: () => ({
+            ticksPerAttempt: 8,
+            success: 1,
+            xpTenths: { strength: 40 },
+            products: [],
+            consumes: [],
+            damage: 2,
+            attackRate: 4,
+        }),
+    };
+    const killModel: MethodModel = {
+        ...model,
+        families: new Map([...model.families, ['fighting', fighting]]),
+        items: obj =>
+            obj === 'trout'
+                ? { stackable: false, cost: 20, wearable: false, category: 'category_58' }
+                : model.items(obj),
+        foods: new Map([['trout', 5]]),
+        calibrated: new Set(['giant']),
+    };
+    const q = methodQuery(
+        { ...world, methods: [kill('giant-kill', 'giant'), kill('goblin-kill', 'goblin'), drop] },
+        killModel,
+    );
+    const flag = (id: string) => q.methodRate(id, at('strength', 50)).uncalibrated;
+
+    test('a kill of an npc no run has calibrated says so, in methodRate and in bestMethods', () => {
+        expect(flag('goblin-kill')).toBe(true);
+        const ranked = q.bestMethods('strength', at('strength', 50));
+        expect(ranked.map(r => [r.method.def.id, r.rates.uncalibrated])).toEqual(
+            expect.arrayContaining([
+                ['giant-kill', false],
+                ['goblin-kill', true],
+            ]),
+        );
+    });
+
+    test('a calibrated kill, and a method that is no kill, do not', () => {
+        expect(flag('giant-kill')).toBe(false);
+        expect(q.methodRate('tree-drop', at('woodcutting', 50)).uncalibrated).toBe(false);
+    });
+});

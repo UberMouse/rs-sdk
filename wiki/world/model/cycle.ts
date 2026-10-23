@@ -256,6 +256,11 @@ export interface CycleRates {
     /** Supplies used per hour (bait, feathers, a step's runes, the withdrawn obj, food) and their value. */
     suppliesPerHour: { obj: string; count: number }[];
     suppliesGpPerHour: number;
+    /**
+     * The gather is a kill that takes damage whose npc no run has calibrated (the food gate): the rates leave out its
+     * food trips, so xpPerHour and gpPerHour are overstated. The training pages mark it with a dagger.
+     */
+    uncalibrated: boolean;
 }
 
 /** Adds `count` of `obj` into `into`, keeping first-seen order. */
@@ -530,19 +535,23 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
     // (:129-131), so it costs ticks only where the next action waits on that. A stun's eats cost eatTicksPerFail. On a
     // kill (an attackRate) each food for `damage` holds the next swing EAT_DELAY ticks (player_melee.rs2:8-11), however
     // many a kill takes: each adds its own, and the %eat_delay gate (:122-126) lets the next in 3 ticks on, before the
-    // pushed swing. Off a kill the food for `damage` costs no ticks. A kill's free ticks (freeTicks, and the pickup's
-    // when the drops are taken) absorb the eats: k eats after the killing swing push the next swing to attackRate + k *
-    // EAT_DELAY after it, which costs only past the gap. Charged as max(0, the mean eats' EAT_DELAYs - the mean gap) a
-    // success, where play pays the mean of max(0, a kill's eats' EAT_DELAYs - its gap): the gap differs by kill (the
-    // spawn's run in freeTicks, a pickup on the kills that drop what is taken) and the eats come whole. By Jensen's
-    // inequality the charge is at most the play's: an undercharge, by at most min(the mean eat ticks, the mean gap) a
-    // success, where some kills' eats outrun their gap though the mean gap covers the mean eats (EAT_DELAY 3, a gap
-    // of 2 and an eat every second kill: 0 charged, 0.5 paid). None at a gap of 0, or one no kill's eats outrun. The
-    // charge is a floor on another count too: it assumes every eat lands in the gap after the killing swing. An eat
-    // mid-fight (where a bot eating at low HP mostly eats) adds its whole EAT_DELAY to the pending swing's
-    // %action_delay (consume.rs2:130) with no gap to absorb it: there play pays the full EAT_DELAY an eat. The
-    // buries are charged as if the swings ran back to back: a bury holds the player (p_delay), so it can't go during a
-    // run.
+    // pushed swing. Off a kill the food for `damage` costs no ticks.
+    //
+    // A kill's free ticks (freeTicks, and the pickup's when the drops are taken) absorb the eats: k eats after the
+    // killing swing push the next swing to attackRate + k * EAT_DELAY after it, which costs only past the gap. Charged
+    // as max(0, the mean eats' EAT_DELAYs - the mean gap) a success, where play pays the mean of max(0, a kill's eats'
+    // EAT_DELAYs - its gap): the gap differs by kill (the spawn's run in freeTicks, a pickup on the kills that drop
+    // what is taken) and the eats come whole.
+    //
+    // The charge is a floor, on two counts. By Jensen's inequality it is at most the play's, by at most min(the mean
+    // eat ticks, the mean gap) a success, where some kills' eats outrun their gap though the mean gap covers the mean
+    // eats (EAT_DELAY 3, a gap of 2 and an eat every second kill: 0 charged, 0.5 paid); none at a gap of 0, or one no
+    // kill's eats outrun. And it assumes every eat lands in the gap after the killing swing: an eat mid-fight (where a
+    // bot eating at low HP mostly eats) adds its whole EAT_DELAY to the pending swing's %action_delay
+    // (consume.rs2:130) with no gap to absorb it, so there play pays the full EAT_DELAY an eat.
+    //
+    // The buries are charged as if the swings ran back to back: a bury holds the player (p_delay), so it can't go
+    // during a run.
     const gapTicks = (source.freeTicks ?? 0) + pickup;
     const swingEats =
         food && source.attackRate !== undefined ? Math.max(0, (EAT_DELAY * damage) / food.heal - gapTicks) : 0;
@@ -583,5 +592,6 @@ export function cycle({ gather, sink, items, food: named, loot, boneXp, uncalibr
         gpPerHour: value(dropped ? itemsPerHour.filter(x => items(x.obj).stackable) : itemsPerHour),
         suppliesPerHour,
         suppliesGpPerHour: value(suppliesPerHour),
+        uncalibrated: !!uncalibrated && (source.damage ?? 0) > 0,
     };
 }

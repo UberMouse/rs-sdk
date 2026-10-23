@@ -85,7 +85,10 @@ export interface RankedMethod {
     way: number;
     /** The floor's XP/hr of the queried skill at the profile, over that way. */
     xpPerHour: number;
-    /** The whole floor at the profile over that way (model/cycle.ts). */
+    /**
+     * The whole floor at the profile over that way (model/cycle.ts). Its `uncalibrated` marks a kill whose rates leave
+     * out food trips (xpPerHour and gpPerHour overstated): weigh it against the calibrated methods.
+     */
     rates: CycleRates;
     hazard: Hazard;
     /** The method's measured figures for the queried skill, each beside the floor at its own levels and tool over `way`. */

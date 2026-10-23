@@ -1,10 +1,10 @@
-// The damage calibration (conductor/docs/world-index-phase4-spec.md, Task 8): a fixture bot fights the Edgeville
-// dungeon's hill giants with the combat task as the hill-giants plan runs it, and the kills in its recording
-// (conductor/tools/combat-ledger.ts) are set beside the world index's model at the same profile (killFigures). It
-// prints a RESULT line of each: damage, fight ticks (first swing to killing swing), whole-kill ticks and the gap
-// between kills, the last two reported only. run.ts gives a file 10 minutes, so a run stops at 7 and gets a dozen-odd
-// kills; the calibration pools several runs' recordings (`bun conductor/tools/combat-ledger.ts <recordings>... --npc
-// Giant`).
+// The damage calibration (conductor/docs/world-index-phase4-spec.md, "Task 8 — Damage calibration"): a fixture bot
+// fights the Edgeville dungeon's hill giants with the combat task as the hill-giants plan runs it, and the kills in
+// its recording (conductor/tools/combat-ledger.ts) are set beside the world index's model at the same profile
+// (killFigures). It prints a RESULT line of each: damage, fight ticks (first swing to killing swing), whole-kill ticks
+// and the gap between kills, the last two reported only. run.ts gives a file 10 minutes, so a run stops at 7 and gets
+// a dozen-odd kills; the calibration pools several runs' recordings (`bun conductor/tools/combat-ledger.ts
+// <recordings>... --npc Giant`).
 // Each run's RESULT lines are also written to <runId>.calibration.ndjson beside its log. Damage and fight ticks that
 // agree within CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand. The 25% model gate
 // lives on the pooled record (wiki/world/test/combat-method.real.test.ts): a single run's standard error (~0.9 HP on
@@ -13,12 +13,13 @@
 // figures fails here. The model-vs-run agreement is printed, not asserted.
 //
 // The profile is the record's (RUN, read from CALIBRATIONS). The fixture's weapon and food ids and the task's params
-// name its gear, skill and loot by hand, so the file throws when the record moves off them. It is Defence 1 and no
-// armour, so most of the giant's swings hit and the damage a kill is large enough to measure; combat level 92, over the giants' hunt cutoff (56), so no second giant joins between kills. Strength,
-// Hitpoints and Prayer, the skills the run trains, at 99: the local XP table levels them every few kills below it,
-// which would move the max hit off the modelled profile, and a level-up's dialog interrupts the fight. A mithril
-// scimitar on Strength (aggressive, which trains neither Attack nor Defence), as the plan; lobsters, more than the
-// kills need.
+// name its gear, skill and loot by hand, so the file throws when the record moves off them. The record is Defence 1
+// and no armour, so most of the giant's swings hit and the damage a kill is large enough to measure; its combat level
+// is over the giants' hunt cutoff, so no second giant joins between kills. The skills the run trains (Strength,
+// Hitpoints, Prayer) are at 99: the local XP table levels them every few kills below it, which would move the max hit
+// off the modelled profile, and a level-up's dialog interrupts the fight. The file throws when the record moves off
+// Defence 1 or those 99s. A mithril scimitar on Strength (aggressive, which trains neither Attack nor Defence), as the
+// plan; lobsters, more than the kills need.
 import { expect, test } from 'bun:test';
 import { writeFileSync } from 'node:fs';
 import { CALIBRATIONS } from '../../../../wiki/world/methods';
@@ -71,9 +72,13 @@ if (
     JSON.stringify(RUN.worn) !== '["mithril_scimitar"]' ||
     RUN.food !== 'lobster' ||
     RUN.skill !== 'strength' ||
-    RUN.loot.bones !== 'bury'
+    RUN.loot.bones !== 'bury' ||
+    RUN.levels.defence !== 1 ||
+    !(['strength', 'hitpoints', 'prayer'] as const).every(s => RUN.levels[s] === 99)
 )
-    throw new Error(`the hill giant record's gear, skill or loot moved off the smoke's: ${JSON.stringify(RUN)}`);
+    throw new Error(
+        `the hill giant record's gear, skill, loot or levels moved off the smoke's: ${JSON.stringify(RUN)}`,
+    );
 
 /** The model's figures for RUN: the world index resolved over the committed world.json. */
 function modelled() {
