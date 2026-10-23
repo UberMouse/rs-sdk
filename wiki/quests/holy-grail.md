@@ -168,8 +168,8 @@ Draynor Manor; Ardougne for the Karamja trips. Karamja and Entrana have none.
 | Crossing | Bot can route it? |
 |---|---|
 | Camelot stairs; Merlin's workshop door (gate `quest:grail>=1`, `wiki/world/gate-list.ts:1435`) | yes (probe 18 run ticks; the account reads "started" from the quest tab) |
-| Entrana boat, both ways | **no**: no walk takes a ship (`conductor/lib/walk-graph.ts` header), and gangplanks are left out of the climb table ("op Cross, which climb does not send", `conductor/lib/connectors.ts` LEFT_OUT). The loadout rule `entrana` is in world.json. |
-| Karamja / Brimhaven ships, both ways | **no**, as Entrana |
+| Entrana boat, both ways | **no walk**, but a `talk` (`travels:true`) plus gangplank `interact` phase pair does it: see [ships](../../learnings/ships.md). The loadout rule `entrana` is in world.json. |
+| Karamja / Brimhaven ships, both ways | as Entrana: [ships](../../learnings/ships.md) |
 | Draynor Manor stairs, whistle door | yes (probe above) |
 | Whistle, six heads -> blighted realm (stage < 9) | **no**: the world index has the blighted realm as expected unreached (`wiki/world/areas.ts:1340-1357`) |
 | Whistle, blighted realm -> Karamja | **no** (probe: no way from the castle or the landing) |
@@ -184,10 +184,10 @@ Draynor Manor; Ardougne for the Karamja trips. Karamja and Entrana have none.
 |---|---|---|
 | 1 Arthur | `talk` | `{npc:"^King Arthur$", at:{x:2764,z:3515}, choices:["Tell me of this quest","I'd enjoy trying that"]}` |
 | 2 Merlin | `talk` | `{npc:"^Merlin$", at:{x:2767,z:3500,level:1}, choices:["Thank you for the advice"]}`; the walk to `at` opens the workshop door, which spawns him. Unverified. |
-| 3 Entrana | `bank`, then **gap**, `talk` | bank weapons and armour (`depositAllExcept`); `talk {npc:"^Monk of Entrana$", at:{x:3047,z:3235}, choices:["I'm ready to go"]}` boards; **gap**: getting off the deck. `interact {target:"loc", name:"^Gangplank$", option:"^Cross$"}` may work but the disembark shows no message or animation, so it counts only if the loc leaving view is read as "the loc is gone" (`conductor/actions/interaction.ts:60-73`); unverified. Then `talk {npc:"^High Priest$", at:{x:2851,z:3349}, choices:["Ok, I will go searching"]}`. |
+| 3 Entrana | `bank`, `talk`, `interact` | bank weapons and armour (`depositAllExcept`); `talk {npc:"^Monk of Entrana$", at:{x:3047,z:3235}, choices:["I'm ready to go"]}` boards; then disembark with `interact` Cross on the gangplank by `tile` (recipe, with `travels:true` on the talk, in [ships](../../learnings/ships.md)). Then `talk {npc:"^High Priest$", at:{x:2851,z:3349}, choices:["Ok, I will go searching"]}`. |
 | 4 Galahad | `talk` | `{npc:"^Galahad$", at:{x:2612,z:3474}, choices:["I seek an item from the realm"]}` |
 | 5 whistles | `travel`, `interact`, `pickup` | `travel {to:{x:3106,z:3362,level:2}}`; `interact {target:"loc", name:"^Door$", option:"^Open$", at:{x:3106,z:3362,level:2}}` (or let the walk open it); `pickup {area:{x:3107,z:3359,level:2,radius:1}, items:[{name:"Magic whistle",count:2}]}` |
-| 6 Karamja | `talk` + **gap** | ship as step 3 (Barnaby `choices:["Yes please"]`), then the gangplank gap; `travel {to:{x:2741,z:3235}}` |
+| 6 Karamja | `talk` + `interact` | ship as step 3 (Barnaby `choices:["Yes please"]`, see [ships](../../learnings/ships.md)); `travel {to:{x:2741,z:3235}}` |
 | 6 blow whistle | **gap** | `interact {target:"item", name:"^Magic whistle$", option:"^Blow$"}` sends it, but a teleport shows no effect the task reads (no dialog, inventory, worn, animation or message change; `interaction.ts:60-73`), so it fails "no-effect" after the teleport has happened. `travel` cannot use the crossing before the quest is done. Needs a position-jump effect in `interact`, or a teleport task that checks the landing. Same gap at steps 11 and 13. |
 | 7 Titan | `combat` | `{target:"Black Knight Titan", area:{x:2791,z:4722,radius:4}, weapon:"Excalibur", food:["Lobster"], maxLevelGap:40}` with phase `until: v => (v.state.player?.worldX ?? 9999) < 2791` (the kill moves the bot west; `combat` never ends on its own and the Titan respawns in 10 ticks). No task turns on Protect from Melee (**gap**, optional). |
 | 8 Fisherman, bell | `talk`, `pickup` | `talk {npc:"^Fisherman$", choices:["get into the castle"]}`; `pickup {area:{x:2762,z:4694,radius:1}, items:[{name:"Grail bell",count:1}]}` |

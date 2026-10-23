@@ -25,7 +25,7 @@ None.
 ## Walkthrough
 
 1. Speak to **Redbeard Frank** at the pub in **Port Sarim**. He will tell you about buried pirate treasure in exchange for some Karamja rum.
-2. Travel to **Karamja** via the ship from Port Sarim (30 gp fare). Buy **Karamja rum** from the Karamja Wines, Spirits and Beers shop, not the general store (`karamja.inv:1-10`). [server data, unverified in game 2026-10-23]
+2. Travel to **Karamja** via the ship from Port Sarim (30 gp fare). Buy **Karamja rum** from the Karamja Wines, Spirits and Beers shop, not the general store (`karamja.inv:1-10`). [server data, unverified in game 2026-10-23] Phase recipe: [ships](../../learnings/ships.md).
 3. Speak to **Luthas** at the banana plantation on Karamja. He asks you to fill a crate with bananas. Use the rum on the banana crate to hide it inside, then fill the rest with bananas and talk to Luthas to send the crate.
 4. Return to Port Sarim. Go to **Wyndin's food store** near the docks. Equip a **white apron** before entering. Search the back crate to retrieve the rum.
 5. Bring the rum to Redbeard Frank. He gives you a **key** and tells you the treasure is in Varrock.

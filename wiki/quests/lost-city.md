@@ -29,7 +29,7 @@
 1. Speak to the group of **Adventurers** camped in **Lumbridge Swamp**. They are searching for a lost city.
 2. Find the unusual tree to the west of the camp. Attempt to chop it and **Shamus** the leprechaun will appear.
 3. Talk to Shamus. He tells you that you need a **Dramen staff** to enter Zanaris.
-4. Travel to **Entrana** via the monks at Port Sarim (members world only). The monk refuses you if you carry or wear any item in a weapon or armour category, axes and pickaxes included; an item with no category (Ice gloves) passes. Source: `[proc,has_entrana_restricted_items]` in `server/content/scripts/areas/area_port_sarim/scripts/monk_of_entrana.rs2`.
+4. Travel to **Entrana** via the monks at Port Sarim (members world only). The monk refuses you if you carry or wear any item in a weapon or armour category, axes and pickaxes included; an item with no category (Ice gloves) passes. Source: `[proc,has_entrana_restricted_items]` in `server/content/scripts/areas/area_port_sarim/scripts/monk_of_entrana.rs2`. Phase recipe: [ships](../../learnings/ships.md).
 5. On Entrana, find the ladder to the northeast and descend into the dungeon.
 6. Kill **zombies** in the dungeon to obtain a **bronze axe**.
 7. Navigate past the **Greater Demons** deeper in the dungeon. Do not engage them unless necessary.
