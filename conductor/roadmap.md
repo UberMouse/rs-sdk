@@ -46,15 +46,24 @@ chaos druids + Herblore + melee + Prayer.
    (tools-food, Fishing 68, Cooking 71, 50+ fish banked, 15 min).
 3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47) and Rune Mysteries (essence) done 07:06; Imp Catcher (Magic 44,
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
-4. Thieving 40-55 guards (Falador: guard-thieve, measured 93% of floor; Ardougne rates the same), 55-99 knights (in
-   progress: to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
+4. Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
+   knights (in progress, 07:30: bot at Catherby (2834,3443) after `travel` Falador -> Ardougne crossed White Wolf Mountain
+   and a lvl 38 wolf took ~10 HP in 30 s at combat 32; Catherby -> Ardougne is west of the wolves; to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
 5. Agility: gnome course 1-52, Wilderness course 52-99.
 6. Gathering 99s with their pairings. Melee: mithril scimitar (Zeke, 1,040), then the rune sword once at 32 QP. No
    fire giant hunt. Melee 50+ at Edgeville chaos druids doubles as the herb source.
 
-Account (2026-10-23 06:51): total 302; Cooking 71, Fishing 68, Thieving 40, Attack 27, HP 25, Str/Def/Prayer 20; steel
-axe and 50+ trout/salmon banked, fly rod and ~105 feathers held, ~156 coins; at Varrock East bank.
+**Goal sizing (retro, 07:30).** Seven runner dispatches in 80 min each got a 4-15 min goal; a runner costs 0.7-9 M cache
+reads (melee-20: 9.1 M for a 7 min run, thieving-gp 7.6 M) and 3 of 8 plan runs were killed or restarted by plan
+bugs (below), not by the game. At these curves, size a goal to a milestone that unlocks something, not to levels:
+"melee 40 + Prayer 49 -> 60 (hill giants, one plan)", "Thieving 99 + 100k gp banked", "Fishing/Cooking 99 +
+Agility 52", with each plan phase carrying its own `until` and `when` gates written up front. (The retro also proposed running a
+verified promoted plan from the conductor with no runner; that changes the skill's one-driver invariant, so it is the
+user's call, raised 07:35.)
+
+Account (2026-10-23 07:30): total ~340; Thieving 62, Cooking 71, Fishing 68, Prayer 49, Attack 27, HP 26, Str/Def 20;
+steel axe, fly rod and 50+ trout/salmon banked or held, ~1.8k coins; at Catherby.
 
 ## Unlocks
 
@@ -87,6 +96,17 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   which left the bot standing in the fight. 4882c35a3 added `TaskDef.keepGoingWithoutFood`, which `travel`
   sets for `flee`: the guard no longer fails in combat or after a recent hit with no food (death and
   wilderness guards unchanged), with unit and smoke tests.
+- **Plan gate bugs, three in one morning (idea, task-author/runner fix)**: (a) `guards` phase with no `until` kept
+  thieving past 55 (run killed by hand); (b) tools-food `buy-axe` re-fired after the axe was banked, `when` gated on
+  `inv` only, and the bank `upTo` took 27 of 155 feathers (fixed f2491ac8a); (c) `runs()` resets on restart. Proposal:
+  `plan` validator (in `run-task.ts --plan` load) warns on a phase that is the last of its skill with no `until`, and
+  on a `shop buy` whose `when` lacks a coin or bank-held check; document in `conductor/docs/plans.md`.
+- **White Wolf Mountain crossing (idea)**: every overland walk Asgarnia <-> Kandarin crosses it, and the wolves
+  (cowardly, huntrange 2) hunt players up to combat 50 (lvl 25) and 76 (lvl 38). An `avoid` zone can't help with no
+  other overland path; the options are combat 51+ (then only the lvl 38s), plenty of food with `travel` flee:true and
+  minFood, or the boats (Port Sarim -> Karamja -> Brimhaven -> Ardougne, 30 gp each, unverified for bots). Batch the
+  Kandarin goals (knights, gnome agility, Catherby fishing, Seers flax and longbows, moss giants (2549,3408)) so the
+  account crosses once each way.
 - **Run-task auto-journal + plan nudge (idea)**: runners still journal in batches and chain plain runs
   after four prompt fixes; make it structural (see the retrospective #4 proposals): `run-task.ts
   --objective <title> --journal <path>` appends the mechanical journal line itself, and the RESULT
@@ -180,6 +200,12 @@ dragons and trolls are ModelErrors.
 ## Experiments
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
+
+- Goal sizing (retro 07:30): hypothesis, runner overhead (0.7-9 M cache reads each, ~6 min goals) dominates at this
+  server's XP curve; milestone-sized goals with a runner, and known plans run by the conductor, cut tokens per XP
+  at equal XP/h. Metric: cache-read tokens per 100k XP over the next 10 dispatches. Status: start with the next goal.
+- Thieving gp: Falador guards 540k/h with 9 trout per 6 min (~1.5 trout/min, ~280 gp/min) vs knights at 62+; measure
+  knights XP/h and gp/h once at Ardougne, and compare with staying at Falador guards until 70 (no mountain crossing).
 
 - Orphaned runner stop (retro #9): after a Claude Code restart the conductor called TaskStop on dead runner agents (turns 4492/4496) and the harness SIGTERMed their live child `run-task` (w4 Wilderness plan, 40 min cap, stopped at 28). Fix proposed in the conductor skill: after a restart never TaskStop a runner whose run-task pid is live (`pgrep`); resume a new runner that waits on the pid. Metric: `killed by SIGTERM` lines whose cause is a stop.
 - Runner handback discipline (retro #7): the smithing runner called SubagentHandback with message "placeholder"
