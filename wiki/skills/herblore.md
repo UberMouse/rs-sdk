@@ -1,6 +1,6 @@
 # Herblore
 
-Herblore is used to create potions and poisons. Requires completion of **Druidic Ritual** quest to begin training.
+Herblore is used to create potions and poisons. Druidic Ritual is **not** needed in this revision: identifying a herb checks only a members world and the Herblore level (`skill_herblore/scripts/identifying/identify.rs2:59-73`, whose comment says early OSRS had no Druidic Ritual check), and `attempt_brew_potion` (`brewing/brew_potion.rs2:98-147`) has no quest check either; a worker with the quest not started identified a grimy guam and brewed an Attack potion. The quest is still worth its XP reward. [v 2026-10-23 conductor3w5 local]
 
 ## Herb Identification
 
