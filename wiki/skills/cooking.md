@@ -68,7 +68,7 @@ Pizza/cake/kebab/wrap rows give the XP of the step at that level (pizza 143 at 3
 |---|---|---|---|---|---|
 | Lumbridge Range | (3230, 3196) | 1 | south of Bob's Brilliant Axes; reachable from x 3231 and from (3230,3195), not from the west tiles (3229,3195..3197): from the west the cooking task walks round to it. Not the quest-gated castle "Cooking range" | - | 2026-10-11 conductor2w3 local |
 | Lumbridge general store Cooking pot | (3232, 3238) | 1 | open ground, no side caveat; 7 shrimps in 16 s; cooking area radius 6. Burns very few salmon/trout at Cooking 60-83 (Cooking +227,500 xp in 18 min alongside lure fishing) | ~210k xp/hr in the lure-cook-bank plan | 2026-10-11 conductor2 local |
-| Catherby range (swordfish) | (2817, 3444) | 45 | plan `conductor/plans/catherby-swordfish.ts` cooks the fill at the range (53 s for 26 swordfish), banks at (2809, 3443). Cooking 71->93 in two plan runs (+547,000 XP). See [fishing](fishing.md) | ~840k xp/hr in the 1020 s run (plan total) | 2026-10-23 conductor3 local |
+| Catherby range (swordfish) | (2817, 3444) | 45 | plan `conductor/plans/catherby-swordfish.ts` cooks the fill at the range (53 s for 26 swordfish), banks at (2809, 3443). Cooking 71->99 in plan runs (95->99 was +262,500 XP in 186 s of cooking-phase time; at Cooking 99 skip the range and bank raw fish). See [fishing](fishing.md) | ~5.1M xp/hr of cooking-phase time at 95-99 (swordfish/tuna); ~840k xp/hr plan total in the 1020 s run | 2026-10-23 conductor3 local |
 
 ## Notes
 
