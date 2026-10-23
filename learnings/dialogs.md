@@ -66,7 +66,8 @@ for (let i = 0; i < 20; i++) {
 
 ## Dialog text as evidence
 
-- `state.recentDialogs` holds the last 10 dialog pages, so a plan predicate can test text a step left behind (e.g. a quest line) when the quest varp is not visible. Runner-reported from Priest in Peril (`wiki/quests/priest-in-peril.md`); the page text was not found in the run logs. [unverified 2026-10-23 questw5 local]
+- `state.recentDialogs` holds the last 10 dialog pages, so a plan predicate can test text a step left behind (e.g. a quest line) when the quest varp is not visible. Priest in Peril's plan tested "find the key to your cell" after the cell talk and advanced on it [v 2026-10-23 questw5 local]. Drezel's stage-61 line ("keep it equipped whenever I fight werewolves") did not show up in the proof run, so do not gate on it (`wiki/quests/priest-in-peril.md`).
+- Stale inventory after a `talk` use phase: right after a `talk` phase with `use` ends, the plan's next phase selection can still read the old inventory, so the same use phase is chosen again and fails `use-items: no item matching #<id> in the inventory to use on <loc>` (seen on fill at the Well and pour at the Coffin, each repeated once, ~10 s lost). Give such phases `onFail: 'continue'`; the plan moves on. [v 2026-10-23 questw5 local]
 
 ## Shop Interfaces
 
