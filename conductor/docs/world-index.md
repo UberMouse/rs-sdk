@@ -412,6 +412,3 @@ Known gaps:
 
 - Ranged, Magic, prayer drain, potion decay, cannon, specials and multi-target attacks; green dragons, dragonfire and
   any Wilderness combat; damage from other aggressive npcs in multiway; HP regeneration in food cycles.
-- `stats.ts --methods` (`conductor/lib/methods.ts` measuredFloor) rates every skill of a method on its first skill's
-  style, so a combat method's Strength and Defence floors read 0 there; the pages and the real-data tests rate each
-  skill on its own style.

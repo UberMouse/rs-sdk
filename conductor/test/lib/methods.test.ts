@@ -11,6 +11,7 @@ import { readGameData } from '../../../wiki/world/model/families/index';
 import { readObjNames } from '../../../wiki/world/model/items';
 import { fromWorldMethod, measuredFigures, methodModel } from '../../../wiki/world/model/method';
 import type { Tools } from '../../../wiki/world/model/profile';
+import type { Skill } from '../../../wiki/world/model/server';
 import {
     checkPlanMethods,
     formatMeasured,
@@ -298,8 +299,8 @@ describe('methodRuns', () => {
                 input({
                     methods: [GIANTS],
                     start: byRun(SCIMITAR, SCIMITAR),
-                    floor: (_, m) => {
-                        seen.push(m);
+                    floor: (_, m, skill) => {
+                        if (skill === 'attack') seen.push(m);
                         return { xpPerHour: {} } as CycleRates;
                     },
                 }),
@@ -312,6 +313,24 @@ describe('methodRuns', () => {
                 [COMBAT, ['rune_scimitar', 'amulet_of_power']],
             ]);
             expect(formatMeasured(r!.entry!, r!.toolKind)).toContain("    worn: ['rune_scimitar', 'amulet_of_power'],");
+        });
+
+        test("each trained skill's floor is rated for that skill, its style the best for it", () => {
+            // A stub whose style for each skill trains only that skill: 1,000 XP/h of it, none of the others.
+            const asked: string[] = [];
+            const [r] = methodRuns(
+                input({
+                    methods: [GIANTS],
+                    start: byRun(SCIMITAR, SCIMITAR),
+                    floor: (_, __, skill) => {
+                        asked.push(skill);
+                        return { xpPerHour: { [skill]: 1_000 } } as unknown as CycleRates;
+                    },
+                }),
+            );
+            expect(asked.slice(0, 4)).toEqual(['attack', 'strength', 'defence', 'hitpoints']);
+            expect(r!.perRun[0]!.floor).toEqual({ attack: 1_000, strength: 1_000, defence: 1_000, hitpoints: 1_000 });
+            expect(r!.floor).toEqual({ attack: 1_000, strength: 1_000, defence: 1_000, hitpoints: 1_000 });
         });
 
         test('runs that wore different objs, or started at a different untrained combat skill, have no entry', () => {
@@ -536,12 +555,15 @@ describe('measuredFloor (world.json)', () => {
         const floor = measuredFloor(WORLD, model);
         const ctx = { world: WORLD, ...model };
         let checked = 0;
+        // Every skill a figure measured, not only the method's own: a combat method rates each for its best style.
         for (const wm of WORLD.methods) {
-            const figures = measuredFigures(fromWorldMethod(wm, WORLD), wm.skill, ctx);
-            for (const f of figures) {
-                expect(floor(wm, f.measured).xpPerHour[wm.skill] ?? 0).toBe(f.floor);
-                checked++;
-            }
+            const m = fromWorldMethod(wm, WORLD);
+            const skills = new Set((wm.measured ?? []).flatMap(e => Object.keys(e.xpPerHour) as Skill[]));
+            for (const skill of skills)
+                for (const f of measuredFigures(m, skill, ctx)) {
+                    expect(floor(wm, f.measured, skill).xpPerHour[skill] ?? 0).toBe(f.floor);
+                    checked++;
+                }
         }
         expect(checked).toBeGreaterThan(0);
     });

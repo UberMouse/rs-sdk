@@ -164,8 +164,8 @@ export interface MethodRunsInput {
     wornRead(method: Pick<WorldMethod, 'id'>): 'all' | ReadonlySet<string>;
     /** An item's obj config name by its display name (wiki/world/model/items.ts readObjNames); undefined for none. */
     objName(name: string): string | undefined;
-    /** The floor at a measured entry's profile (wiki/world/model/method.ts measuredProfile). */
-    floor(method: Pick<WorldMethod, 'id' | 'skill'>, measured: Measured): CycleRates;
+    /** The floor at a measured entry's profile (wiki/world/model/method.ts measuredProfile), rated for `skill`. */
+    floor(method: Pick<WorldMethod, 'id' | 'skill'>, measured: Measured, skill: Skill): CycleRates;
 }
 
 const HOUR_MS = 3_600_000;
@@ -335,25 +335,30 @@ function runOf(
     }
     // The floor at the run's start levels: a run that levels up trains above them for part of its time, so this
     // floor understates what the run's levels made possible (levelRange shows where that happened).
+    const entry: Measured = {
+        xpPerHour: figures.xpPerHour,
+        level: levels,
+        ...(figures.tool !== null && { tool: figures.tool }),
+        ...(figures.worn?.length && { worn: figures.worn }),
+        bot: input.bot,
+        date: figures.date,
+        hours,
+        from: input.command,
+    };
     try {
-        const rates = input.floor(m, {
-            xpPerHour: figures.xpPerHour,
-            level: levels,
-            ...(figures.tool !== null && { tool: figures.tool }),
-            ...(figures.worn?.length && { worn: figures.worn }),
-            bot: input.bot,
-            date: figures.date,
-            hours,
-            from: input.command,
-        }).xpPerHour;
-        figures.floor = {};
+        // Each skill rated for itself: a method with styles swings the best style for the skill it is rated for.
+        const rates: Partial<Record<Skill, number>> = {};
+        const floors: Partial<Record<Skill, number>> = {};
         for (const s of skills) {
-            const floor = rates[s] ?? 0;
-            figures.floor[s] = Math.round(floor);
+            const floor = input.floor(m, entry, s).xpPerHour[s] ?? 0;
+            rates[s] = floor;
+            floors[s] = Math.round(floor);
             if (floor > 0 && hours > 0) figures.pct[s] = Math.round(((xp[s] ?? 0) / (floor * hours)) * 1000) / 10;
         }
+        figures.floor = floors;
         return { figures, rates };
     } catch (e) {
+        figures.pct = {};
         figures.floorError = errMessage(e);
         return { figures };
     }
@@ -388,10 +393,10 @@ export function measuredFloor(
 ): MethodRunsInput['floor'] {
     const query = methodQuery(world, model);
     const byId = new Map(world.methods.map(m => [m.id, m]));
-    return (m, measured) => {
+    return (m, measured, skill) => {
         const def = byId.get(m.id);
         if (!def) throw new Error(`No method ${m.id} in world.json`);
-        return query.methodRate(m.id, measuredProfile({ def, skill: def.skill }, measured, model.tools));
+        return query.methodRate(m.id, measuredProfile({ def, skill: def.skill }, measured, model.tools), skill);
     };
 }
 
