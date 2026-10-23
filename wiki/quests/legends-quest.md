@@ -20,11 +20,11 @@
 
 ### Skill Requirements
 
-- 107 Quest Points
-- 50 Strength
-- 50 Thieving
-- 50 Crafting
-- 50 Mining
+- 107 Quest Points at the guild door (`legends_guard.rs2:50-53`) [server data, unverified in game 2026-10-23]
+- 50 Strength (`quest_legends.rs2:457`)
+- 50 Thieving (`:414`)
+- 50 Crafting (`radimus_notes.rs2:73`)
+- 52 Mining (`quest_legends.rs2:524`) [server data, unverified in game 2026-10-23]
 - 50 Smithing
 - 50 Woodcutting
 - 50 Agility
@@ -37,7 +37,7 @@
 - Papyrus (3)
 - Charcoal (3)
 - Gold bars (2)
-- Cut sapphire, emerald, ruby, diamond
+- Opal, jade, red topaz, sapphire, emerald, ruby, diamond (7 gems)
 - Hammer
 - Machete
 - Pickaxe
@@ -51,7 +51,7 @@
 
 ## Rewards
 
-- 7,650 XP in 4 skills of your choice
+- Four picks of 7,650 XP each from 12 skills, repeats allowed (`radimus_erkle.rs2:87-122`) [server data, unverified in game 2026-10-23]
 - Access to the Legends' Guild
 - Dragon square shield (ability to combine halves)
 
@@ -83,7 +83,7 @@
 2. Navigate gate puzzles by pulling levers in the correct sequence.
 3. Push boulders to clear passages.
 4. Solve the riddle door by using runes that spell **SMELL** (Soul, Mind, Earth, Law, Law).
-5. Place gems (sapphire, emerald, ruby, diamond) in the correct receptacles to open the final door.
+5. Place 7 gems (opal, jade, red topaz, sapphire, emerald, ruby, diamond; `legends_gem_data.dbrow`) on the rocks in the correct receptacles to open the final door.
 
 ### Phase 5 - Demon Fight (First Encounter)
 

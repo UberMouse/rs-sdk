@@ -7,6 +7,7 @@ import {
     SETTLE_MAX_TICKS,
     SETTLE_STABLE_TICKS,
     useOn,
+    useOnNpc,
 } from '../../actions/interaction';
 import { type World, world } from '../world';
 import { refuse, runOp } from './harness';
@@ -412,5 +413,34 @@ describe('interact: settling after a game-driven move', () => {
         const run = await runOp(states, ctx => useOn(ctx, item, loc));
         expect(run.result).toEqual({ ok: true, effect: 'an animation started' });
         expect(run.driver.ticksElapsed).toBe(1 + 2 + 8 + SETTLE_STABLE_TICKS);
+    });
+});
+
+describe('useOnNpc', () => {
+    const cows = START.inv('Bucket', 1, { id: 1925 }).npc('Cow', 3254, 3270, { index: 9 });
+    const { inventory, nearbyNpcs } = cows.build();
+    const bucket = inventory[0]!;
+    const cow = nearbyNpcs[0]!;
+
+    test('sends useItemOnNpc and settles on the inventory change', async () => {
+        const milked = START.inv('Bucket of milk', 1, { id: 1927 }).npc('Cow', 3254, 3270, { index: 9 });
+        const states = [cows.build(), ...Array.from({ length: 8 }, (_, i) => milked.tick(2 + i).build())];
+        const { result, sends } = await runOp(states, ctx => useOnNpc(ctx, bucket, cow));
+        expect(result).toEqual({ ok: true, effect: 'the inventory changed' });
+        expect(sends).toEqual([{ type: 'useItemOnNpc', itemSlot: 0, npcIndex: 9, reason: 'use Bucket on Cow' }]);
+    });
+
+    test("the cow's refusal is a refusal", async () => {
+        const states = [
+            cows.build(),
+            ...Array.from({ length: 3 }, (_, i) =>
+                cows
+                    .tick(2 + i)
+                    .message("The cow doesn't want that.")
+                    .build(),
+            ),
+        ];
+        const { result } = await runOp(states, ctx => useOnNpc(ctx, bucket, cow));
+        expect(result).toMatchObject({ ok: false, reason: 'refused' });
     });
 });

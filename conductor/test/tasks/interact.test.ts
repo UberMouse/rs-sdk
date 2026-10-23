@@ -576,11 +576,136 @@ describe('interact: an item used on a loc', () => {
         const both = await simulate(interact, { params: { ...params, option: 'swim' }, timeline: rope.series(3) });
         expect(both.result.status).toBe('error');
         expect(both.result.reason).toContain('give an option, or a use');
-        const npc = await simulate(interact, { params: { ...params, target: 'npc' }, timeline: rope.series(3) });
-        expect(npc.result.status).toBe('error');
-        expect(npc.result.reason).toContain('a use works on a loc');
+        const item = await simulate(interact, { params: { ...params, target: 'item' }, timeline: rope.series(3) });
+        expect(item.result.status).toBe('error');
+        expect(item.result.reason).toContain('a use works on a loc or an NPC');
         const neither = await simulate(interact, { params: { target: 'loc', name: 'x' }, timeline: rope.series(3) });
         expect(neither.result.status).toBe('error');
+    });
+});
+
+describe('interact: an item used on an NPC', () => {
+    const pasture = world()
+        .player({ at: { x: 3253, z: 3270 } })
+        .inv('Bucket', 1, { id: 1925 })
+        .npc('Cow', 3256, 3270, { index: 7, options: ['Attack'] })
+        .npc('Cow', 3262, 3270, { index: 8, options: ['Attack'] });
+    const params = { target: 'npc', name: '^cow$', use: { item: '^bucket$' } };
+    const milked = (a: BotAction) =>
+        a.type === 'useItemOnNpc'
+            ? (s: ReturnType<typeof pasture.build>) => ({
+                  ...s,
+                  inventory: s.inventory.map(i => ({ ...i, id: 1927, name: 'Bucket of milk' })),
+              })
+            : undefined;
+
+    test('is sent once to the nearest cow and done when the inventory changes', async () => {
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params,
+            timeline: pasture.series(60),
+            react: a => {
+                sent.push(a);
+                return milked(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('interact: use /^bucket$/ on ^cow$: the inventory changed');
+        expect(sent.filter(a => a.type === 'useItemOnNpc')).toEqual([
+            expect.objectContaining({ type: 'useItemOnNpc', itemSlot: 0, npcIndex: 7 }),
+        ]);
+    });
+
+    test('expect matches the milking message', async () => {
+        const r = await simulate(interact, {
+            params: { ...params, expect: 'you milk the cow' },
+            timeline: pasture.series(60),
+            react: a => (a.type === 'useItemOnNpc' ? s => world(s).message('You milk the cow.').build() : undefined),
+        });
+        expect(r.result.reason).toBe('interact: use /^bucket$/ on ^cow$: "You milk the cow."');
+    });
+
+    test('no bucket is refused in preflight', async () => {
+        const r = await simulate(interact, {
+            params,
+            timeline: world().npc('Cow', 3256, 3270, { index: 7 }).series(3),
+        });
+        expect(r.result.reason).toContain('preflight: no item matching /^bucket$/');
+    });
+
+    test('a refusal message fails at once without a resend', async () => {
+        const r = await simulate(interact, {
+            params,
+            timeline: pasture.series(60),
+            react: a =>
+                a.type === 'useItemOnNpc' ? s => world(s).message("The cow doesn't want that.").build() : undefined,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('refused');
+        expect(r.sends).toEqual(['use Bucket on Cow']);
+    });
+
+    test('a discarded op is retried on another cow', async () => {
+        const sent: BotAction[] = [];
+        let n = 0;
+        const r = await simulate(interact, {
+            params,
+            timeline: pasture.series(80),
+            react: a => {
+                if (a.type !== 'useItemOnNpc') return undefined;
+                sent.push(a);
+                if (++n === 1)
+                    return s => ({
+                        ...s,
+                        opFeedback: {
+                            mapFlagUnsetCount: 1,
+                            lastMapFlagUnsetTick: -1,
+                            opRejectedCount: 1,
+                            lastOpRejectedTick: -1,
+                        },
+                    });
+                return milked(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.map(a => (a.type === 'useItemOnNpc' ? a.npcIndex : -1))).toEqual([7, 8]);
+    });
+
+    test('a discarded option on an NPC is retried on the same one, not recorded as refused', async () => {
+        const monks = world()
+            .npc('Monk', 3100, 3200, { index: 4, options: ['Talk-to'] })
+            .npc('Monk', 3105, 3200, { index: 5, options: ['Talk-to'] });
+        let n = 0;
+        const r = await simulate(interact, {
+            params: { target: 'npc', name: 'monk', option: 'talk' },
+            timeline: monks.series(60),
+            react: a => {
+                if (a.type !== 'interactNpc') return undefined;
+                if (++n === 1)
+                    return s => ({
+                        ...s,
+                        opFeedback: {
+                            mapFlagUnsetCount: 1,
+                            lastMapFlagUnsetTick: -1,
+                            opRejectedCount: 1,
+                            lastOpRejectedTick: -1,
+                        },
+                    });
+                return undefined;
+            },
+        });
+        const targets = r.sends.filter(x => x.startsWith('Talk-to'));
+        expect(targets.length).toBeGreaterThan(1);
+        expect(new Set(targets).size).toBe(1);
+    });
+
+    test('a cow out of sight fails after the missing limit', async () => {
+        const r = await simulate(interact, {
+            params,
+            timeline: world().inv('Bucket', 1).series(30),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no reachable npc');
     });
 });
 

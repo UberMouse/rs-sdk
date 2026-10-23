@@ -46,7 +46,7 @@ chaos druids + Herblore + melee + Prayer.
    (tools-food, Fishing 68, Cooking 71, 50+ fish banked, 15 min).
 3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47) and Rune Mysteries (essence) done 07:06; Imp Catcher (Magic 44,
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
-4. Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
+4. (done, Thieving 99 at 09:00; knights 72-99 in 17 min, 2.96M/h) Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
    knights (in progress, 07:30: bot at Catherby (2834,3443) after `travel` Falador -> Ardougne crossed White Wolf Mountain
    and a lvl 38 wolf took ~10 HP in 30 s at combat 32; Catherby -> Ardougne is west of the wolves; to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
@@ -62,8 +62,15 @@ Agility 52", with each plan phase carrying its own `until` and `when` gates writ
 Sonnet (user, 07:37: "Keep runners, bigger goals, run them on sonnet instead of opus"); the conductor's general-purpose
 dispatches pass `model: sonnet` too.
 
-Account (2026-10-23 07:30): total ~340; Thieving 62, Cooking 71, Fishing 68, Prayer 49, Attack 27, HP 26, Str/Def 20;
-steel axe, fly rod and 50+ trout/salmon banked or held, ~1.8k coins; at Catherby.
+**Goal sizing worked (retro #2, 09:00).** After the milestone rule a runner cost ~1 M cache reads for a 17-50 min goal
+(Kandarin agility+swordfish 1.0 M, knights 99 1.0 M) against 0.7-9 M for 4-15 min goals before; the one 5 M runner
+(thieve-55-coins, 263 turns) was dispatched before the rule and spent its turns polling (four `sleep` calls blocked by
+the harness, a nonexistent Monitor tool, three SubagentHandback repeats refused as "already delivered").
+
+Account (2026-10-23 09:00): total 490; Thieving 99, Cooking 95, Fishing 91, Agility 52, Prayer 49, Attack 28, HP 26,
+Str/Def 20, the other nine skills at 1; ~25.5k coins banked; at Ardougne.
+Next milestone: Fishing 99 + Cooking 99 (sharks, see Experiments), then melee/Prayer (Waterfall, hill giants), then the
+gathering/production 99s from level 1.
 
 ## Unlocks
 
@@ -111,6 +118,12 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   `inv` only, and the bank `upTo` took 27 of 155 feathers (fixed f2491ac8a); (c) `runs()` resets on restart. Proposal:
   `plan` validator (in `run-task.ts --plan` load) warns on a phase that is the last of its skill with no `until`, and
   on a `shop buy` whose `when` lacks a coin or bank-held check; document in `conductor/docs/plans.md`.
+- **Runner wait idiom (done: task-runner.md already says so since 1e8b41494/fafa3391d; that runner predates them; Monitor note added)**: the thieving runner lost ~30 turns to harness-blocked `sleep N;
+  cmd` calls and a nonexistent Monitor tool (transcript aeed6c5a: turns 77/144/153/196/200); the plan run is a
+  background command, so say in task-runner.md: wait with `while pgrep ...; do sleep 10; done` in one call (the form
+  that worked 6x) or end the turn and be woken by the notification; never `sleep N` followed by a command.
+- **Fishing/Cooking 91-99 and the high-gp track (next)**: sharks at the Guild or Catherby (fallback in review), then
+  gp: ~25.5k banked covers the adamant pickaxe (3.2k) and the mithril scimitar (Zeke); more gp from knights when needed.
 - **White Wolf Mountain crossing (idea)**: every overland walk Asgarnia <-> Kandarin crosses it, and the wolves
   (cowardly, huntrange 2) hunt players up to combat 50 (lvl 25) and 76 (lvl 38). An `avoid` zone can't help with no
   other overland path; the options are combat 51+ (then only the lvl 38s), plenty of food with `travel` flee:true and
@@ -180,7 +193,7 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 
 | Skill | Lvl | Planned route (bands, floor XP/h) | Floor h | Measured (conductor3) | Next |
 |---|---|---|---|---|---|
-| Thieving | 72 | Man 1-25 -> Al-Kharid warrior 25-40 (476-633k) -> guards 40-55 (Falador or Ardougne, 0.76-1.13M) -> Knight of Ardougne 55-99 (2.0-7.0M; food 155 lobster-equivalents/h at 55, 52 at 99) | 0.28 | thieving-40: 1-40 in 11 min; Falador guards 40-62 +65.5k in 5.8 min (~678k/h); knights 62-72 +80k in 211 s (~1.36M/h, ~55% of floor), ~700 gp/min | knight task fails on 'no free reachable Knight' after ~210 s: bounded-wait fix authoring; then knights to 99 + gp |
+| Thieving | 99 | Man 1-25 -> Al-Kharid warrior 25-40 (476-633k) -> guards 40-55 (Falador or Ardougne, 0.76-1.13M) -> Knight of Ardougne 55-99 (2.0-7.0M; food 155 lobster-equivalents/h at 55, 52 at 99) | 0.28 | thieving-40: 1-40 in 11 min; Falador guards 40-62 ~678k/h; knights 72-99 in one 17-min run (plan knight-thieve-bankfood, area (2659,3308) r20, banked swordfish/tuna): 2.96M/h = 96.8% of floor, ~1,160 gp/min | done (conductor3 2026-10-23) |
 | Agility | 52 | gnome course 1-52 (319k) -> Wilderness course 52-99 (1.58-1.91M, salmon) | 0.66 | gnome 1-52 in 550 s of laps (+37.8k, ~247k/h, 77% of the 319k floor; plan agility-from-ardougne, travel from Ardougne 107 s by the west route) | Wilderness course 52-99 next time the account is north-east (needs food; hazards) |
 | Woodcutting | 1 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | - | steel axe at Bob's |
 | Firemaking | 1 | trees-lumbridge-burn 1-30, willow-draynor-burn 30-99 (with WC) | 0.56 with WC | - | |
@@ -219,9 +232,17 @@ their shapes. Miscellania's coal, maples and fish need the kingdom quest and los
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
+- Catherby swordfish idle gaps (retro #2): the 08:12 run (87.8% of Fishing floor, 70% of Cooking) cycled fishing 152 s,
+  339 s, 180 s for the same 26 fish, then 60-100 s of cook-swordfish, cook-tuna and bank per cycle (about 25% of the
+  wall time not fishing). Cause of the 339 s cycle (conductor, from its ticks): no Cage/Harpoon spot in view for ~130 s while 4-5
+  Net/Harpoon (shark) spots were; the fishing task's shark fallback (in review) closes it. Variants: (b) Fishing Guild sharks/swordfish
+  (`shark-fishing-guild-cook-bank`, `swordfish-fishing-guild-cook-bank`: records exist, no runs; Guild needs Fishing 68,
+  range and bank beside the dock) for 91-99 on a worker first; (c) cook while fishing is impossible, so shrink the
+  non-fishing 25% with one cook phase for both fish. Metric: Fishing XP/h vs 561k/h measured. Needs the shark fallback
+  in fishing.ts landed.
 - Goal sizing (retro 07:30): hypothesis, runner overhead (0.7-9 M cache reads each, ~6 min goals) dominates at this
   server's XP curve; milestone-sized goals with a runner, and known plans run by the conductor, cut tokens per XP
-  at equal XP/h. Metric: cache-read tokens per 100k XP over the next 10 dispatches. Status: start with the next goal.
+  at equal XP/h. Metric: cache-read tokens per 100k XP over the next 10 dispatches. Status: confirmed on two goals (retro #2): ~1 M cache reads per 17-50 min runner.
 - Thieving gp: Falador guards 540k/h with 9 trout per 6 min (~1.5 trout/min, ~280 gp/min) vs knights at 62+; measure
   knights XP/h and gp/h once at Ardougne, and compare with staying at Falador guards until 70 (no mountain crossing).
 
@@ -270,6 +291,7 @@ Review findings `task-review` deferred because their fix needs work outside the 
 (most findings are fixed in the same pass).
 
 - walkTo: the Wizards' Tower stairs/ladder room (x 3103..3107, z 3159..3163) is entered by a diagonal elf door (3107,3162) that `sdk/collision-data.json` lacks, so `collisionPaths` finds no route in from outside and `walkTo` into the tower ends `no-path` (connectors work from inside the room); needs diagonal-door support in the SDK collision data or in `walkOnPlane` (game G3)
+- combat itest: the Mordred case's bot is left standing by Sir Mordred after the run; he respawns (100 ticks), attacks it, and the logged-off player cannot leave combat, so a combat smoke re-run within a few minutes fails `no free reachable Sir Mordred` until that player dies; needs integration-harness teardown that moves or logs out a fixture bot left in an aggressive NPC's range (contract T8)
 - walkTo: connector `hazard` is only logged (`walk: WARNING at ...`); add an opt-in `WalkOptions` gate (e.g. a combat floor on the Falador mine stairs: scorpions hunt combat 28 and under) that returns a distinct reason, and make the shop task use it before walking into the Dwarven Mine; touches tasks outside the walk change (safety S1)
 - walkTo: a quest-stage gate above the quest's completion value (`quest:priestperil>=61`, the holy barrier; `quest:mm>=10`) is met only when the caller lists it in `met` (lib/account.ts `meetsToken`), so a walk through one for an account with the quest done but the token unlisted ends a bare `no-path` that does not name the gate; make the no-path diagnosis name the unmet requirement tokens of the dropped edges, and have the first task or plan that crosses the barrier or goes to Ape Atoll pass the token (robustness R6)
 - crafting: station helpers (find/walk-to wheel and oven) are local copies of the ones in smithing.ts; refactor both into lib/ (touches smithing.ts, out of the crafting review's scope) (code-quality Q4)

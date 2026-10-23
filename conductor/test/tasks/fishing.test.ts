@@ -115,7 +115,7 @@ describe('fishing: fishing', () => {
             timeline: northern.player({ at: { x: 3086, z: 3227 } }).series(1),
         });
         expect(only.result.reason).toBe(
-            'fish: area depleted: no reachable net fishing spot in radius 2 for 280s; spot exists outside area at (3085,3230)',
+            'fish: area depleted: no reachable net fishing spot in radius 2 for 280s; net spot exists outside area at (3085,3230)',
         );
     });
 
@@ -251,7 +251,7 @@ describe('fishing: no spot, area', () => {
             timeline: base.player({ at: SPOT }).npc('Fishing spot', 3100, 3228, { options: NET_OPTIONS }).series(1),
         });
         expect(r.result.reason).toBe(
-            'fish: area depleted: no reachable net fishing spot in radius 4 for 280s; spot exists outside area at (3100,3228)',
+            'fish: area depleted: no reachable net fishing spot in radius 4 for 280s; net spot exists outside area at (3100,3228)',
         );
         expect(r.driver.state().tick).toBe(700);
         expect(r.sends).toEqual([]);
@@ -313,5 +313,113 @@ describe('fishing: under attack', () => {
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toStartWith('interrupt:under-attack:');
         expect(r.result.reason).toContain('Goblin (level 5)');
+    });
+});
+
+const lvl84 = world().skill('Fishing', 84, 0).inv('Harpoon', 1, { id: 311 });
+const memberfish = (w: World, index = 4, x = 2605, z = 3418) =>
+    w.npc('Fishing spot', x, z, { index, options: ['Net', 'Harpoon'] });
+const rarefish = (w: World, index = 5, x = 2601, z = 3420) =>
+    w.npc('Fishing spot', x, z, { index, options: ['Cage', 'Harpoon'] });
+const sharkCaught = (w: World, n: number) => w.inv('Raw shark', n, { id: 383 }).skill('Fishing', 84, 100 * n);
+const tunaCaught = (w: World, n: number) => w.inv('Raw tuna', 1, { id: 359 }).skill('Fishing', 84, 100 * n);
+
+describe('fishing: shark and fallback', () => {
+    test('the shark method picks the Net/Harpoon spot, not the Cage/Harpoon one', async () => {
+        const w = rarefish(memberfish(lvl84)).player({ at: { x: 2601, z: 3420 } });
+        const r = await simulate(fishing, {
+            params: { method: 'shark' },
+            timeline: w.series(12, (x, i) => (i >= 6 ? sharkCaught(x, 1) : x)),
+            stops: xp(100),
+        });
+        expect(r.result.reason).toBe('reached +100 Fishing xp');
+        expect(r.sends).toEqual(['Harpoon Fishing spot']);
+        expect(r.commands[0]).toMatchObject({ action: { npcIndex: 4 } });
+    });
+
+    test('the harpoon method ignores a Net/Harpoon spot without a fallback', async () => {
+        const r = await simulate(fishing, { params: { method: 'harpoon' }, timeline: memberfish(lvl84).series(1) });
+        expect(r.result.reason).toBe('fish: no reachable harpoon fishing spot nearby for 280s');
+    });
+
+    test('the shark method is gated at level 76', async () => {
+        const r = await simulate(fishing, {
+            params: { method: 'shark' },
+            timeline: memberfish(lvl84.skill('Fishing', 75, 0)).series(1),
+        });
+        expect(r.result.reason).toBe('preflight: shark needs fishing 76, bot has 75');
+    });
+
+    test('a fallback is gated by its level and tool too', async () => {
+        const low = await simulate(fishing, {
+            params: { method: 'harpoon', fallback: 'shark' },
+            timeline: memberfish(lvl84.skill('Fishing', 60, 0)).series(1),
+        });
+        expect(low.result.reason).toBe('preflight: shark needs fishing 76, bot has 60');
+        const noTool = await simulate(fishing, {
+            params: { method: 'bait', fallback: 'shark' },
+            timeline: world().skill('Fishing', 84, 0).inv('Fishing rod', 1, { id: 307 }).series(1),
+        });
+        expect(noTool.result.reason).toBe('preflight: no fishing bait in inventory');
+    });
+
+    test('only memberfish in the area: fishes shark; the main spot returning is taken once the catch lands', async () => {
+        const area = { x: 2605, z: 3418, radius: 8 };
+        const r = await simulate(fishing, {
+            params: { method: 'harpoon', fallback: 'shark', area },
+            timeline: memberfish(lvl84)
+                .player({ at: { x: 2605, z: 3417 } })
+                .series(90, (w, i) => {
+                    // The Cage/Harpoon spot appears at tick 10; the shark lands at 15, the tuna at 60.
+                    const seen = i >= 10 ? rarefish(w) : w;
+                    return i >= 60 ? tunaCaught(sharkCaught(seen, 1), 2) : i >= 15 ? sharkCaught(seen, 1) : seen;
+                }),
+            stops: xp(200),
+        });
+        expect(r.result.reason).toBe('reached +200 Fishing xp');
+        // Shark spot first; after the catch at 15 the harpoon spot (index 5) is cast, not the shark spot again.
+        const casts = r.commands.flatMap(c => ('action' in c && 'npcIndex' in c.action ? [c.action.npcIndex] : []));
+        expect(casts).toEqual([4, 5]);
+        expect(logged(r)).toEqual(['fishing shark', 'fishing harpoon']);
+    });
+
+    test('with no spot of either method in the area it waits and fails naming both', async () => {
+        const area = { x: 2605, z: 3418, radius: 8 };
+        const r = await simulate(fishing, {
+            params: { method: 'harpoon', fallback: 'shark', area },
+            timeline: lvl84.player({ at: { x: 2605, z: 3417 } }).series(1),
+        });
+        expect(r.result.reason).toBe(
+            'fish: area depleted: no reachable harpoon/shark fishing spot in radius 8 for 280s',
+        );
+    });
+
+    test('a spot outside the area is not a fallback, but is named when it is a fallback kind', async () => {
+        const area = { x: 2605, z: 3418, radius: 3 };
+        const r = await simulate(fishing, {
+            params: { method: 'harpoon', fallback: 'shark', area },
+            timeline: memberfish(lvl84, 4, 2640, 3418)
+                .player({ at: { x: 2605, z: 3418 } })
+                .series(1),
+        });
+        expect(r.result.reason).toBe(
+            'fish: area depleted: no reachable harpoon/shark fishing spot in radius 3 for 280s; shark spot exists outside area at (2640,3418)',
+        );
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a fallback equal to the method is rejected', () => {
+        expect(fishing.params.safeParse({ method: 'shark', fallback: 'shark' }).success).toBe(false);
+        expect(fishing.params.safeParse({ method: 'harpoon', fallback: 'shark' }).success).toBe(true);
+    });
+
+    test('a full inventory drops fish of both methods', async () => {
+        const mixed = memberfish(lvl84).inv('Raw tuna', 14, { id: 359 }).inv('Raw shark', 13, { id: 383 });
+        const r = await simulate(fishing, {
+            params: { method: 'harpoon', fallback: 'shark' },
+            timeline: mixed.series(10),
+            respond: a => (a.type === 'dropItem' ? undefined : { success: false, message: 'nc' }),
+        });
+        expect([...new Set(r.sends.filter(s => s.startsWith('drop')))]).toEqual(['drop Raw tuna', 'drop Raw shark']);
     });
 });

@@ -19,7 +19,7 @@ None.
 
 ## Rewards
 
-- 815 Crafting XP
+- 200 Crafting XP (`quest_gobdip.rs2:62`) [server data, unverified in game 2026-10-23]
 - Gold bar
 
 ## Walkthrough

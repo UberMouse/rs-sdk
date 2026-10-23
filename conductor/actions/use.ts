@@ -4,7 +4,7 @@
 // SDK has no bot.* method for item on item, only sdk.sendUseItemOnItem; useItemOnItem here waits for
 // the same evidence useItemOnLoc does. Both also end at once on the game's refusal ("Nothing
 // interesting happens."), which upstream waits out to its timeout.
-import type { BotAction, BotWorldState, InventoryItem, NearbyLoc } from '../../sdk/types';
+import type { BotAction, BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
@@ -76,3 +76,11 @@ export const useOnLocAction = (item: InventoryItem, loc: NearbyLoc): BotAction =
 export function* useItemOnLoc(ctx: ActionContext, item: InventoryItem, loc: NearbyLoc): Op<UseResult> {
     return yield* used(ctx, item, loc.name, useOnLocAction(item, loc));
 }
+
+/** The send for inventory `item` used on `npc` (an empty bucket on a cow). */
+export const useOnNpcAction = (item: InventoryItem, npc: NearbyNpc): BotAction => ({
+    type: 'useItemOnNpc',
+    itemSlot: item.slot,
+    npcIndex: npc.index,
+    reason: `use ${item.name} on ${npc.name}`,
+});

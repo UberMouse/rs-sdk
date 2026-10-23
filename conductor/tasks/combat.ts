@@ -1,9 +1,10 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyNpc } from '../../sdk/types';
+import { type BotWorldState, type NearbyNpc, PRAYER_LEVELS } from '../../sdk/types';
 import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { CAST_DELAY_TICKS, CAST_WAIT_TICKS, cast } from '../actions/cast';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
+import { prayerActive, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
@@ -39,6 +40,8 @@ const BURY_WAIT_TICKS = Math.ceil(5_000 / TICK_MS);
 const NO_PLAYER_WAIT_TICKS = 1;
 const NO_TARGET_LIMIT = 20;
 const NO_TARGET_WAIT_TICKS = 3;
+/** The most `respawnWaitTicks` may ask for; the watchdog window counts it. */
+export const MAX_RESPAWN_WAIT_TICKS = 600;
 const ATTACK_FAIL_LIMIT = 6;
 export const ATTACK_RETRY_TICKS = 1;
 /** The attack's own send takes a tick; walkTo's reserveTicks must count it (WALK_RESERVE_TICKS). */
@@ -53,6 +56,10 @@ const ATTACK_WALK_BEYOND = 2;
 const STYLE_FAIL_LIMIT = 3;
 const EQUIP_FAIL_LIMIT = 3;
 const BURY_FAIL_LIMIT = 3;
+const PRAYER_FAIL_LIMIT = 3;
+const LEVEL_UP_FAIL_LIMIT = 3;
+/** How long a click on a level-up box gets to show the next page or close it (3 s). */
+const LEVEL_UP_WAIT_TICKS = Math.ceil(3_000 / TICK_MS);
 const CAST_FAIL_LIMIT = 6;
 /** Casts at one target before the run gives up on it: a chicken takes two or three, a level-gap cow ten. */
 const CASTS_PER_TARGET_LIMIT = 40;
@@ -75,6 +82,7 @@ const LOOT_GIVE_UP_TICKS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_T
  */
 export const SILENT_STREAK_TICKS = [
     FIGHT_GIVE_UP_TICKS,
+    MAX_RESPAWN_WAIT_TICKS + NO_TARGET_WAIT_TICKS,
     LOOT_GIVE_UP_TICKS,
     failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
     failStreakTicks(ATTACK_FAIL_LIMIT, WALK_MAX_TICKS + AFTER_WALK_TICKS),
@@ -88,33 +96,90 @@ const STEP_TIMEOUT_MS = 300_000;
 /** Without food, preflight refuses NPCs above this combat level (chickens are 1, cows 2). */
 const NO_FOOD_MAX_NPC_LEVEL = 5;
 
-const Params = z.object({
-    /** Exact NPC name (case-insensitive), e.g. "Chicken", "Cow". */
-    target: z.string().trim().min(1),
-    /**
-     * The skill to train. Attack/Strength/Defence pick the melee style that trains it; Ranged needs a bow
-     * as `weapon` and `ammo`; Magic needs a `spell`.
-     */
-    skill: z.enum(SKILLS).default('Attack'),
-    /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
-    area: AreaSchema,
-    /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
-    weapon: z.string().trim().optional(),
-    shield: z.string().trim().optional(),
-    /** Ranged: the ammunition item name to wield (e.g. "Bronze arrow"); also what `loot` should list to reuse fallen arrows. */
-    ammo: z.string().trim().optional(),
-    /** Magic: the combat spell cast on each target; its runes come from the inventory; a worn Staff of air/water/earth/fire covers only its own rune. */
-    spell: z.enum(COMBAT_SPELL_NAMES).optional(),
-    /** Food item names to eat when HP falls below `eatBelow` of max. The engine also eats any food below 50%. */
-    food: z.array(z.string().trim()).default([]),
-    eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW),
-    /** Bury bones for Prayer XP (also picks bones up). */
-    buryBones: z.boolean().default(false),
-    /** Ground item names to pick up after a kill (exact, case-insensitive), e.g. ["Feather", "Cowhide"]. */
-    loot: z.array(z.string().trim()).default([]),
-    /** Refuse (and never attack) NPCs with combat level above the bot's combat level plus this. */
-    maxLevelGap: z.number().min(0).default(DEFAULT_MAX_LEVEL_GAP),
-});
+/** Prayers that switch each other off (prayer_deactivate in the server's prayers.dbrow), by tab index. */
+const PRAYER_CONFLICTS: readonly (readonly number[])[] = [
+    [0, 3, 9], // Thick, Rock, Steel Skin
+    [1, 4, 10], // Burst of, Superhuman, Ultimate Strength
+    [2, 5, 11], // Clarity of Thought, Improved, Incredible Reflexes
+    [12, 13, 14], // Protect from Magic, Missiles, Melee
+];
+
+const Params = z
+    .object({
+        /** Exact NPC name (case-insensitive), e.g. "Chicken", "Cow". */
+        target: z.string().trim().min(1),
+        /**
+         * The skill to train. Attack/Strength/Defence pick the melee style that trains it; Ranged needs a bow
+         * as `weapon` and `ammo`; Magic needs a `spell`.
+         */
+        skill: z.enum(SKILLS).default('Attack'),
+        /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
+        area: AreaSchema,
+        /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
+        weapon: z.string().trim().optional(),
+        shield: z.string().trim().optional(),
+        /** Ranged: the ammunition item name to wield (e.g. "Bronze arrow"); also what `loot` should list to reuse fallen arrows. */
+        ammo: z.string().trim().optional(),
+        /** Magic: the combat spell cast on each target; its runes come from the inventory; a worn Staff of air/water/earth/fire covers only its own rune. */
+        spell: z.enum(COMBAT_SPELL_NAMES).optional(),
+        /** Food item names to eat when HP falls below `eatBelow` of max. The engine also eats any food below 50%. */
+        food: z.array(z.string().trim()).default([]),
+        eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW),
+        /** Bury bones for Prayer XP (also picks bones up). */
+        buryBones: z.boolean().default(false),
+        /** Ground item names to pick up after a kill (exact, case-insensitive), e.g. ["Feather", "Cowhide"]. */
+        loot: z.array(z.string().trim()).default([]),
+        /** Refuse (and never attack) NPCs with combat level above the bot's combat level plus this. */
+        maxLevelGap: z.number().min(0).default(DEFAULT_MAX_LEVEL_GAP),
+        /**
+         * Only attack NPCs of this exact combat level, for NPCs that share a name across levels (the Monks of
+         * Zamorak are 17, 22 and 30; only the level-30 one drops the Golden key). An NPC already attacking the
+         * bot is fought whatever its level, as the server refuses any other attack while one is on the bot.
+         */
+        level: z.number().int().min(1).optional(),
+        /** Only attack NPCs of at least / at most this combat level (`level` as a range). */
+        minLevel: z.number().int().min(1).optional(),
+        maxLevel: z.number().int().min(1).optional(),
+        /**
+         * End the run `done` as soon as a quest dialog opens, leaving it open for the next phase (Sir Mordred's
+         * death opens Morgan Le Faye's choice, which the shared dialog guard would answer "No. He deserves to
+         * die."). The dialog guard is off for the run, so level-up dialogs are clicked away by the task itself.
+         */
+        stopOnDialog: z.boolean().default(false),
+        /**
+         * How long to keep waiting for a target to appear (a single imp or boss respawns in 50-100 ticks) before
+         * failing "no free reachable ...". Default 0: the usual 20 looks, about 60 ticks. Capped at MAX_RESPAWN_WAIT_TICKS.
+         */
+        respawnWaitTicks: z.number().int().min(0).max(MAX_RESPAWN_WAIT_TICKS).default(0),
+        /**
+         * Prayers to hold on for the fight, by name ("Protect from Melee"): turned on once a target is picked (before the
+         * attack), back off when the run ends (only those it turned on). The run fails when the prayer points run out.
+         */
+        prayers: z
+            .array(
+                z
+                    .string()
+                    .trim()
+                    .refine(n => prayerIndex(n) !== undefined, { message: 'not a prayer name' }),
+            )
+            .superRefine((names, c) => {
+                // Each of a group switches the others off, so the prayer-on step would turn them on in turn for ever.
+                for (const group of PRAYER_CONFLICTS) {
+                    const held = names.filter(n => group.includes(prayerIndex(n) ?? -1));
+                    if (new Set(held.map(n => prayerIndex(n))).size > 1)
+                        c.addIssue({ code: 'custom', message: `prayers switch each other off: ${held.join(', ')}` });
+                }
+            })
+            .default([]),
+    })
+    .refine(p => p.minLevel === undefined || p.maxLevel === undefined || p.minLevel <= p.maxLevel, {
+        message: 'minLevel is above maxLevel',
+        path: ['minLevel'],
+    })
+    .refine(p => p.level === undefined || (p.minLevel === undefined && p.maxLevel === undefined), {
+        message: '`level` cannot be combined with minLevel / maxLevel',
+        path: ['level'],
+    });
 
 type CombatParams = z.infer<typeof Params>;
 interface CombatMemory {
@@ -126,6 +191,12 @@ interface CombatMemory {
     lootSkipped: Map<string, number>;
     /** The NPC the Magic step is casting at, and the casts so far. */
     castTarget: { index: number; casts: number } | null;
+    /** An attack or cast has been sent this run (or a fight was found on): a dialog after that may be the fight's. */
+    fought: boolean;
+    /** The tick a level-up page was last clicked: its unlock page ("You can now wield Steel Weaponry!") follows. */
+    levelUpClickedAtTick: number | null;
+    /** The prayers this run turned on, which `onEnd` turns off again (a prayer already on at the start is not ours). */
+    prayersTurnedOn: string[];
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
@@ -193,6 +264,57 @@ const wantsToEat = (s: BotWorldState, p: CombatParams) =>
 
 const matches = (npc: NearbyNpc, p: CombatParams) => exactName(p.target).test(npc.name);
 
+/** The NPC's combat level passes the `level` / `minLevel` / `maxLevel` filter. */
+const levelWanted = (npc: NearbyNpc, p: CombatParams) =>
+    (p.level === undefined || npc.combatLevel === p.level) &&
+    (p.minLevel === undefined || npc.combatLevel >= p.minLevel) &&
+    (p.maxLevel === undefined || npc.combatLevel <= p.maxLevel);
+
+/** The target as the filter names it, for messages: `Monk of Zamorak (level 30)`. */
+function targetLabel(p: CombatParams): string {
+    const range =
+        p.level !== undefined
+            ? `level ${p.level}`
+            : p.minLevel !== undefined || p.maxLevel !== undefined
+              ? `level ${p.minLevel ?? 1}-${p.maxLevel ?? '+'}`
+              : '';
+    return range ? `${p.target} (${range})` : p.target;
+}
+
+/** The configured prayers that are off. */
+const prayersOff = (s: BotWorldState, p: CombatParams) => p.prayers.filter(n => !prayerActive(s, prayerIndex(n) ?? -1));
+
+const notContinue = (x: string) => x !== '' && !/^click here to continue$/i.test(x.trim());
+/**
+ * A dialog's text for a log or a reason: what the NPC says, or the choices on offer. The "Click here to
+ * continue" button label is dropped: the speaker and the line sit in `allComponents` beside it.
+ */
+const dialogText = (s: BotWorldState) => {
+    const choices = s.dialog.options.map(o => o.text).filter(notContinue);
+    const shown = choices.length > 0 ? choices : (s.dialog.allComponents ?? []).map(c => c.text);
+    const parts = [...new Set([s.dialog.text ?? '', ...shown].filter(notContinue))];
+    return (parts.length > 0 ? parts.join(' | ') : s.dialog.options.map(o => o.text).join(' | ')).slice(0, 80);
+};
+/** What the dialog shows, to tell that a click moved it to another page. */
+const dialogPage = (s: BotWorldState) =>
+    JSON.stringify([
+        s.dialog.pageId,
+        s.dialog.text,
+        s.dialog.options.map(o => o.text),
+        s.dialog.allComponents?.map(c => c.text),
+    ]);
+const dialogWords = (s: BotWorldState) =>
+    [s.dialog.text ?? '', ...(s.dialog.allComponents ?? []).map(c => c.text)].join(' ');
+/** The level-up box (levelup.dbrow: "Congratulations, you just advanced an attack level."): not a quest dialog. */
+const isLevelUp = (s: BotWorldState) => /you just advanced an? \w+ level/i.test(dialogWords(s));
+/**
+ * The page a level-up opens after its click (levelup_unlocks_*.rs2 objbox: "You can now wield Steel Weaponry!",
+ * "Members can now cook ...", "You are now qualified to enter ..."); only taken as one right after a level-up click.
+ */
+const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords(s));
+/** How long after a level-up click an unlock page still counts as part of it. */
+const UNLOCK_PAGE_TICKS = LEVEL_UP_WAIT_TICKS + 2;
+
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
 /** Reachable wanted ground items near the fight spot, nearest first. */
@@ -228,6 +350,7 @@ function pickTarget(state: BotWorldState, p: CombatParams) {
             matches(n, p) &&
             n.reachable !== false &&
             !n.inCombat &&
+            levelWanted(n, p) &&
             n.options.some(o => ATTACK_OPTION.test(o)) &&
             inArea(p.area, n),
     );
@@ -255,7 +378,13 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
         const p = state.player;
         return { fail: `fight lasted over ${FIGHT_TIMEOUT_MS / 1000}s at (${p?.worldX},${p?.worldZ})` };
     }
-    const w = yield* wait('kill', s => !fighting(s) || wantsToEat(s, ctx.params), FIGHT_SLICE_TICKS);
+    ctx.memory.fought = true;
+    const { stopOnDialog } = ctx.params;
+    const w = yield* wait(
+        'kill',
+        s => !fighting(s) || wantsToEat(s, ctx.params) || (stopOnDialog && s.dialog.isOpen),
+        FIGHT_SLICE_TICKS,
+    );
     // The fight being timed is over; a later fight starts a fresh clock.
     if (!fighting(w.state)) ctx.memory.fightStartedAtTick = null;
 }
@@ -266,6 +395,7 @@ function* walkAndAttack(ctx: Ctx, npc: NearbyNpc): Op<{ ok: true } | { ok: false
         const walked = yield* walkTo(ctx, npc.x, npc.z, ATTACK_WALK_BEYOND, { reserveTicks: AFTER_WALK_TICKS });
         if (!walked.ok) return { ok: false, message: `Cannot reach ${npc.name}: ${walked.message}` };
     }
+    ctx.memory.fought = true;
     return yield* attack(ctx, npc);
 }
 
@@ -288,8 +418,9 @@ function* chooseTarget(ctx: Ctx, engaged?: NearbyNpc): Op<{ target: NearbyNpc } 
                 fail: `${picked.tooStrong.name} is level ${picked.tooStrong.combatLevel}, above limit ${picked.limit}`,
             },
         };
-    if (noTarget.add() >= NO_TARGET_LIMIT)
-        return { outcome: { fail: `no free reachable ${ctx.params.target} in the area` } };
+    const lookLimit = Math.max(NO_TARGET_LIMIT, Math.ceil(ctx.params.respawnWaitTicks / NO_TARGET_WAIT_TICKS));
+    if (noTarget.add() >= lookLimit)
+        return { outcome: { fail: `no free reachable ${targetLabel(ctx.params)} in the area` } };
     yield* ticks(NO_TARGET_WAIT_TICKS);
     return { outcome: undefined };
 }
@@ -335,7 +466,11 @@ export default defineTask({
         'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones) and a loot list; an NPC already attacking the bot is fought first. ' +
         'Refuses areas reaching the Wilderness and NPCs more than `maxLevelGap` (default 5) levels above the bot. ' +
         'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
-        'Weapon/shield need the bot to meet their wield requirement. Spots: Lumbridge chickens (3231,3295, ' +
+        'Weapon/shield need the bot to meet their wield requirement. `level` (or `minLevel`/`maxLevel`) attacks only NPCs ' +
+        'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
+        'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, failing when the prayer points run out; ' +
+        "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
+        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
@@ -344,10 +479,38 @@ export default defineTask({
         noAmmoSinceTick: null,
         lootSkipped: new Map(),
         castTarget: null,
+        fought: false,
+        levelUpClickedAtTick: null,
+        prayersTurnedOn: [],
     }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
     startInCombat: startsInCombat,
+    // With `stopOnDialog` the run ends when a dialog opens and leaves it for the next phase: the shared dialog
+    // guard would click through it or answer a choice with its decline pattern ("No. He deserves to die.").
+    allowGuards: p => (p.stopOnDialog ? ['dialog'] : []),
+
+    /**
+     * The prayers this run turned on, off again, whatever ended the run (done, a stop, a failure); the points
+     * drain while one is on. Not with `stopOnDialog`'s quest dialog open: every prayer click starts with
+     * `if_close`, which would close the dialog left for the next phase (the prayers are named in its reason).
+     * Without `stopOnDialog` no dialog is the run's to keep, so the click may close whatever is open.
+     */
+    *onEnd(ctx) {
+        const s = ctx.state();
+        const on = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
+        if (on.length === 0) return;
+        const clicked = ctx.memory.levelUpClickedAtTick;
+        const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
+        if (ctx.params.stopOnDialog && s.dialog.isOpen && !isLevelUp(s) && !unlock) {
+            yield* log(`dialog open, leaving prayers on: ${on.join(', ')}`);
+            return;
+        }
+        for (const name of on) {
+            const r = yield* setPrayer(ctx, name, false);
+            if (!r.ok) yield* log(`could not turn ${name} off: ${r.message}`);
+        }
+    },
 
     preflight(ctx) {
         const s = ctx.state();
@@ -361,15 +524,64 @@ export default defineTask({
             const refusal = refuseSpell(s, p);
             if (refusal) return refusal;
         }
-        const seen = s.nearbyNpcs.filter(n => matches(n, p));
+        for (const name of p.prayers) {
+            const i = prayerIndex(name) ?? 0;
+            if (s.prayers.prayerLevel < (PRAYER_LEVELS[i] ?? 1))
+                return `${name} needs Prayer ${PRAYER_LEVELS[i]}, the bot has ${s.prayers.prayerLevel}`;
+        }
+        if (p.prayers.length > 0 && s.prayers.prayerPoints <= 0) return 'no prayer points left for prayers';
+        const seen = s.nearbyNpcs.filter(n => matches(n, p) && levelWanted(n, p));
         const lowest = Math.min(...seen.map(n => n.combatLevel));
         const limit = levelLimit(s, p);
         if (seen.length > 0 && lowest > limit)
-            return `${p.target} is level ${lowest}, above the limit ${limit} (combat ${s.player.combatLevel} + ${p.maxLevelGap}${foodInInventory(s, p) ? '' : `, capped at ${NO_FOOD_MAX_NPC_LEVEL} without food`})`;
+            return `${targetLabel(p)} is level ${lowest}, above the limit ${limit} (combat ${s.player.combatLevel} + ${p.maxLevelGap}${foodInInventory(s, p) ? '' : `, capped at ${NO_FOOD_MAX_NPC_LEVEL} without food`})`;
         return refuseArea(p.area);
     },
 
     steps: [
+        {
+            name: 'dialog-open',
+            when: ctx => ctx.params.stopOnDialog && ctx.state().dialog.isOpen,
+            *run(ctx) {
+                const s = ctx.state();
+                const levelUpFails = ctx.streak('levelUpFails');
+                // A level-up lands mid-fight like any other fight's; it is not what the plan waits for. Nor is
+                // the unlock page that follows its click.
+                const clicked = ctx.memory.levelUpClickedAtTick;
+                const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
+                if (!isLevelUp(s) && !unlock) {
+                    if (!ctx.memory.fought) return { fail: `dialog open before any fight: ${dialogText(s)}` };
+                    const left = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
+                    return {
+                        done: `dialog opened: ${dialogText(s)}${left.length ? `; prayers still on: ${left.join(', ')}` : ''}`,
+                    };
+                }
+                // One page at a time, not `dismiss`: the last hit's level-up can sit in front of the quest
+                // dialog, and clicking on past its pages would answer or skip the very dialog left open.
+                const page = dialogPage(s);
+                const sent = yield* send({
+                    type: 'clickDialogOption',
+                    optionIndex: s.dialog.options[0]?.index ?? 0,
+                    reason: 'continue level-up dialog',
+                });
+                // A click the client rejects usually met a dialog that had just closed under a stale state: look again.
+                const moved = sent.success
+                    ? yield* wait(
+                          'level-up page',
+                          st => !st.dialog.isOpen || dialogPage(st) !== page,
+                          LEVEL_UP_WAIT_TICKS,
+                      )
+                    : null;
+                if (moved?.kind === 'met') {
+                    ctx.memory.levelUpClickedAtTick = s.tick;
+                    levelUpFails.reset();
+                    return;
+                }
+                if (levelUpFails.add() >= LEVEL_UP_FAIL_LIMIT)
+                    return { fail: `level-up dialog would not clear${sent.success ? '' : `: ${sent.message}`}` };
+                yield* ticks(1);
+            },
+        },
         {
             name: 'equip',
             when: ctx => {
@@ -439,6 +651,38 @@ export default defineTask({
             },
         },
         returnToAreaStep<CombatParams>(params => params.area),
+        {
+            name: 'out-of-prayer',
+            // An empty prayer tab mid-fight leaves the bot unprotected: end the run, not the fight.
+            when: ctx => ctx.params.prayers.length > 0 && ctx.state().prayers.prayerPoints <= 0,
+            run: () => ({ fail: 'out of prayer points' }),
+        },
+        {
+            name: 'prayer-on',
+            // On once a target is picked (before the fight step walks to it and attacks) or a fight is on.
+            when: ctx => {
+                const s = ctx.state();
+                const p = ctx.params;
+                if (prayersOff(s, p).length === 0) return false;
+                return fighting(s) || attackers(s).length > 0 || !!pickTarget(s, p).target;
+            },
+            *run(ctx) {
+                const prayerFails = ctx.streak('prayerFails');
+                for (const name of prayersOff(ctx.state(), ctx.params)) {
+                    const r = yield* setPrayer(ctx, name, true);
+                    if (r.ok) {
+                        prayerFails.reset();
+                        if (!ctx.memory.prayersTurnedOn.includes(name)) ctx.memory.prayersTurnedOn.push(name);
+                        yield* log(`prayer ${name} on`);
+                        continue;
+                    }
+                    if (r.reason === 'no-points') return { fail: 'out of prayer points' };
+                    if (r.reason === 'level') return { fail: r.message };
+                    if (prayerFails.add() >= PRAYER_FAIL_LIMIT)
+                        return { fail: `could not turn ${name} on: ${r.message}` };
+                }
+            },
+        },
         {
             name: 'eat',
             when: ctx => wantsToEat(ctx.state(), ctx.params),
@@ -542,6 +786,7 @@ export default defineTask({
                 const { target } = chosen;
 
                 const castFails = ctx.streak('castFails');
+                ctx.memory.fought = true;
                 const r = yield* cast(ctx, target, COMBAT_SPELLS[name].component, name);
                 if (r.ok) {
                     castFails.reset();

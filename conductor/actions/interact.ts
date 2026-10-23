@@ -7,7 +7,7 @@
 // the evidence wait is left to the caller.
 import type { InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send } from '../core/op';
-import { useOnLocAction } from './use';
+import { useOnLocAction, useOnNpcAction } from './use';
 
 export type InteractResult = { ok: true } | { ok: false; reason: 'no-option' | 'send-failed'; message: string };
 
@@ -98,4 +98,9 @@ export function* interactItem(item: InventoryItem, option: number | RegExp): Op<
             reason: `${picked.label} ${item.name}`,
         }),
     );
+}
+
+/** Sends inventory `item` used on `npc` once, without waiting for evidence: as sendUseOnLoc, `ok` only means sent. */
+export function* sendUseOnNpc(item: InventoryItem, npc: NearbyNpc): Op<InteractResult> {
+    return sentResult(yield* send(useOnNpcAction(item, npc)));
 }

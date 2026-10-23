@@ -29,7 +29,7 @@ The grounds inside the guild's wooden barricade (wood_wall_barricadel in map squ
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `npc:ranging-guild:0` | (2655, 3428) | Guard 2 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:1` | (2659, 3438) | Guard 1 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:1` | (2659, 3438) | Guard 1 | no | yes | - | - |
 | `npc:ranging-guild:2` | (2663, 3425) | Guard 1 | no | yes | - | 40 Ranged |
 | `npc:ranging-guild:3` | (2668, 3415) | Guard 2 | no | yes | - | 40 Ranged |
 | `npc:ranging-guild:4` | (2671, 3439) | Guard 3 | no | yes | - | 40 Ranged |

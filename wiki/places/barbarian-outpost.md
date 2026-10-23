@@ -14,4 +14,4 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:barbarian-outpost:0` | (2550, 3564) | Barbarian 4, Barbarian woman 1, Chicken 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
+| `npc:barbarian-outpost:0` | (2550, 3564) | Barbarian 4, Barbarian woman 1, Chicken 3 | no | no | - | - |

@@ -7,14 +7,15 @@ Min is the level the whole method needs, every skill of it at that level togethe
 
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `agility-gnome-course` | [Gnome Stronghold agility course (Tree Gnome Stronghold)](../places/gnome-agility-course.md) `agility-course:gnome-agility-course:0` | 319k at 1 | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 0 | player | - |
+| `agility-gnome-course` | [Gnome Stronghold agility course (Tree Gnome Stronghold)](../places/gnome-agility-course.md) `agility-course:gnome-agility-course:0` | 319k at 1 | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 319k | 0 | player | 207k at 1 (65%) |
 | `agility-barbarian-course` | [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) `agility-course:barbarian-agility-course:0` | 497k at 35 | - | - | - | 504k | 523k | 538k | 561k | 568k | 578k | 581k | 0 | player | - |
 | `agility-wilderness-course` | [Wilderness agility course (Wilderness)](../places/wilderness-agility-course.md) `agility-course:wilderness-agility-course:0` | 1.58M at 52 | - | - | - | - | - | 1.6M | 1.67M | 1.71M | 1.81M | 1.91M | 0 | player | 1M at 52 (63%); 1.16M at 89 (65%) |
 
-- `agility-gnome-course`: Laps of the Gnome Stronghold Agility Course. Plans: gnome-agility. No obstacle rolls, so no food, and no product: the drop sink drops nothing. The plan's bank and travel from Varrock are a one-time prologue; unmeasured, as its runs' figures include it: seed it from stats.ts --phases (the agility phase) after its next goal.
+- `agility-gnome-course`: Laps of the Gnome Stronghold Agility Course. Plans: gnome-agility, agility-from-ardougne. No obstacle rolls, so no food, and no product: the drop sink drops nothing. The plan's bank and travel from Varrock are a one-time prologue; unmeasured, as its runs' figures include it: seed it from stats.ts --phases (the agility phase) after its next goal.
   - **Requires**: Reach: none. Levels: Agility 1. Tools: none.
   - **Sink**: drop.
   - **Supplies/hr** at 99: none.
+  - **Measured**: 207k at 1 by conductor3 on 2026-10-23.
 - `agility-barbarian-course`: Laps of the Barbarian Outpost Agility Course, food from the nearest bank. No promoted plan. Falls hurt below Agility 93 (the log's roll is certain from there); the food covers them.
   - **Requires**: Reach: Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility. Levels: Agility 35. Tools: none. Food: Salmon.
   - **Sink**: bank at [Ardougne North bank (East Ardougne)](../places/ardougne-north-bank.md) `bank:ardougne-north-bank:0`; legs 140 + 139 run ticks.

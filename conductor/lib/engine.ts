@@ -357,6 +357,19 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
+    /**
+     * The task's `onEnd` cleanup, once, best effort: under no guards and no stops (the stop that ended the run
+     * would fire again). Skipped when the params never parsed. Never throws; a failure is logged.
+     */
+    const runOnEnd = async () => {
+        if (!def.onEnd || !parsed.success) return;
+        try {
+            await interpret(def.onEnd(ctx), { driver: view });
+        } catch (e) {
+            say(`onEnd failed: ${errMessage(e)}`);
+        }
+    };
+
     /** One per run, so the dialog guard fires at most once a tick even across consecutive steps. */
     const firedAt = new Map<string, number>();
 
@@ -400,7 +413,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 ? await settle({ status: endStatus, reason: endReason, by: endBy })
                 : { status: endStatus, reason: endReason, by: endBy };
         if (status !== 'done') await takeScreenshot(status);
+        // Eating first: a slow onEnd must not delay it at low HP.
         if (by !== guardLabel(deathGuard.name)) await eatIfHurt();
+        await runOnEnd();
         const s = stateOrNull();
         const xpGained = s ? xpGainedSince(s, xpBefore) : {};
         const levelsGained: Record<string, { from: number; to: number }> = {};
@@ -459,7 +474,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         return finish('error', errMessage(e));
     }
     // A task built without defineTask (a cast, JSON) bypasses the AllowableGuard type.
-    const critical = GUARDS.filter(g => g.critical && def.allow?.includes(g.name as never)).map(g => g.name);
+    // `allowGuards` counts too: it must not be a way round the refusal.
+    const allowed: readonly string[] = [...(def.allow ?? []), ...(def.allowGuards?.(ctx.params) ?? [])];
+    const critical = GUARDS.filter(g => g.critical && allowed.includes(g.name)).map(g => g.name);
     if (critical.length) return finish('error', `task allows critical guard(s): ${critical.join(', ')}`);
     // Guards share episodes, step counts and the suspend bookkeeping by name.
     const names = [...GUARDS, ...(def.guards ?? [])].map(g => g.name);
@@ -483,7 +500,6 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
 
     // Each guard's episode state, from when it first runs until its `when` is next checked false.
     const episodes = new Map<string, object>();
-    const allowed: readonly string[] = def.allow ?? [];
     const inWilderness = !!def.allowWilderness?.(ctx.params);
     const shared = GUARDS.filter(g => !allowed.includes(g.name) && !(inWilderness && g.name === wildernessGuard.name));
     const enabled = [...shared, ...(def.guards ?? [])];
@@ -641,7 +657,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     try {
         const opening = driver.state();
         const leftover =
-            leftoverModal(opening) ?? (strayChoice(opening) && !def.allow?.includes('dialog') ? STRAY_CHOICE : null);
+            leftoverModal(opening) ?? (strayChoice(opening) && !allowed.includes('dialog') ? STRAY_CHOICE : null);
         if (leftover) {
             begin(LEFTOVER_STEP);
             stepRuns[LEFTOVER_STEP] = 1;

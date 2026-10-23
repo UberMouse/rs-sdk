@@ -33,9 +33,9 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2988, 3275) | (2988, 3276) | 1 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:18` | (2931, 3227) | (2931, 3228) | 4 | yes | no | - | - | Falador East bank (Falador), 73 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:29` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - | - | Falador East bank (Falador), 41 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | 1 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:15` | (2931, 3227) | (2931, 3228) | 4 | yes | no | - | - | Falador East bank (Falador), 73 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:26` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - | - | Falador East bank (Falador), 41 ticks |
 | [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | 2 | yes | yes | - | - | Falador East bank (Falador), 26 ticks |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
 | [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 25 ticks |

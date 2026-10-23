@@ -57,6 +57,7 @@ import {
     type ReachReport,
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
+import { movementEnum, siteMovement } from './sources/fishing-movement';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
 import { readCourses, stepAt } from './sources/courses';
 import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossings } from './sources/curated-crossings';
@@ -1006,11 +1007,13 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         size: locSizes(locConfigs),
         log: line => log.push(line),
         walked: fill.reached,
+        free: t => fill.setsAt(t).some(set => set.length === 0),
         approach: {
             range: config => apRange(config, first(npcConfigs.get(config), 'category')),
             inSight: sightOf(collision, placedLocs, locConfigs),
         },
         courses: { defs: courses, step: courseStep },
+        shore: f => (f.kind === 'fishing-spot' ? movementEnum(npcConfigs.get(f.config)) : undefined),
     }).sort((a, b) => cmp(a.id, b.id));
     const reached = addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
         sets: useSets(features, USE_GATES),
@@ -1023,7 +1026,20 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         reached: fill.reachedAt,
         context: cameFromContext(reachInput.world.crossings),
     });
-    const sites = reached.sites.map(s => (SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s));
+    const movementEnums = readConfigs('enum');
+    const sites = reached.sites.map(s => {
+        const withNearest = SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s;
+        return s.kind === 'fishing-spot'
+            ? {
+                  ...withNearest,
+                  movement: siteMovement(
+                      s.features.map(i => features[i]!),
+                      npcConfigs,
+                      movementEnums,
+                  ),
+              }
+            : withNearest;
+    });
     // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
     // The model is built once: the training pages rate the methods with it too.
     const model = methodModel(

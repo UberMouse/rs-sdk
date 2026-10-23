@@ -22,3 +22,25 @@ The options of each spot config placed in the world (its npc config).
 | [Brimhaven (Karamja)](../../places/brimhaven.md) | `fishing-spot:brimhaven:0` | (2768, 3165) | (2767, 3165) | 1 | no | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 73 ticks via 30 coins |
 | [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | (2515, 4590) | 1 | no | no | - | unreached | - |
 | [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | (2528, 4590) | 1 | no | no | - | unreached | - |
+
+## Movement
+
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+
+| Site | Cover centre | Cover radius | Tiles |
+|---|---|---|---|
+| `fishing-spot:karamja:3` | (2899, 3119) | 3 | 1 |
+| `fishing-spot:karamja:4` | (2912, 3119) | 3 | 1 |
+| `fishing-spot:brimhaven:0` | (2768, 3165) | 3 | 1 |
+| `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | 3 | 1 |
+| `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | 3 | 1 |
+
+`fishing-spot:karamja:3` tiles: (2899, 3119)
+
+`fishing-spot:karamja:4` tiles: (2912, 3119)
+
+`fishing-spot:brimhaven:0` tiles: (2768, 3165)
+
+`fishing-spot:tai-bwo-wannai-trio-area:0` tiles: (2515, 4591)
+
+`fishing-spot:tai-bwo-wannai-trio-area:1` tiles: (2528, 4591)

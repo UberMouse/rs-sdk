@@ -5,18 +5,18 @@
 
 | Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:0` | (2856, 3334) | (2856, 3335) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 67 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:1` | (2917, 3318) | (2917, 3319) | Range 1 | yes | - | Falador East bank (Falador), 66 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:2` | (3019, 3237) | (3018, 3237) | Range 1 | yes | - | Draynor bank (Draynor Village), 53 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:3` | (3036, 3342) | (3037, 3342) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:4` | (3039, 3367) | (3039, 3366) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:5` | (3046, 3375) | (3047, 3375) | Range 1 | yes | - | Falador East bank (Falador), 24 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:6` | (3052, 3356) | (3051, 3356) | Range 1 | yes | - | Falador East bank (Falador), 21 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:0` | (2917, 3318) | (2917, 3319) | Range 1 | yes | - | Falador East bank (Falador), 66 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:1` | (3019, 3237) | (3018, 3237) | Range 1 | yes | - | Draynor bank (Draynor Village), 53 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:2` | (3036, 3342) | (3037, 3342) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:3` | (3039, 3367) | (3039, 3366) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:4` | (3046, 3375) | (3047, 3375) | Range 1 | yes | - | Falador East bank (Falador), 24 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:5` | (3052, 3356) | (3051, 3356) | Range 1 | yes | - | Falador East bank (Falador), 21 ticks |
 | [Falador (Asgarnia)](../places/falador.md) | `range:falador:0` | (2969, 3330) | (2968, 3331) | Range 2 | yes | - | Falador West bank (Falador), 32 ticks |
 | [Falador (Asgarnia)](../places/falador.md) | `range:falador:1` | (2988, 3365) | (2989, 3365) | Range 1 | yes | - | Falador East bank (Falador), 15 ticks |
 | [Rimmington (Asgarnia)](../places/rimmington.md) | `range:rimmington:0` | (2970, 3209) | (2969, 3209) | Range 1 | yes | - | Draynor bank (Draynor Village), 74 ticks |
 | [Entrana](../places/entrana.md) | `range:entrana:0` | (2822, 3351) | (2821, 3351) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 70 ticks |
 | [Entrana](../places/entrana.md) | `range:entrana:1` | (2844, 3367) | (2844, 3368) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 88 ticks |
+| [Entrana](../places/entrana.md) | `range:entrana:2` | (2856, 3334) | (2856, 3335) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 67 ticks |
 | [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:0` | (2630, 4731) | (2630, 4730) | Range 1 | no | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done | Ardougne South bank (East Ardougne), 93 ticks via 30 coins + carry Magic whistle |
 | [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:1` | (2758, 4731) | (2758, 4730) | Range 1 | no | unreached | - |
 | [Kandarin](../places/kandarin.md) | `range:kandarin:0` | (2445, 3188) | (2444, 3188) | Range 1 | no | - | Castle Wars bank chest (Castle Wars), 61 ticks |

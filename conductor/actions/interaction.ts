@@ -5,7 +5,7 @@ import type { BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../s
 import { type Op, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc } from './interact';
+import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc, sendUseOnNpc } from './interact';
 import { CANT_REACH, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
 
 /** Ticks to wait for the effect (10 s as `use`: the walk up to the target plus the action). */
@@ -19,7 +19,7 @@ export const MESSAGE_GRACE_TICKS = 2;
 
 /** Game messages that say the interaction did nothing. */
 export const REFUSAL =
-    /nothing interesting happens|maybe i should|can't do that|cannot do that|you need|you'll need|too busy|you don't have|you haven't|you are not|you're not|isn't possible|already|don't see that being any help|little far with that strong current|can't get a good shot|remember putting that type of rune/i;
+    /nothing interesting happens|maybe i should|can't do that|cannot do that|you need|you'll need|too busy|doesn't want that|you don't have|you haven't|you are not|you're not|isn't possible|already|don't see that being any help|little far with that strong current|can't get a good shot|remember putting that type of rune/i;
 
 /** What to interact with. */
 export type InteractTarget =
@@ -208,6 +208,22 @@ export function* useOn(
     opts: InteractOptions = {},
 ): Op<InteractionResult> {
     return yield* attempt(ctx, { kind: 'loc', loc }, `use ${item.name}`, () => sendUseOnLoc(item, loc), {
+        ...opts,
+        settle: true,
+    });
+}
+
+/**
+ * Uses inventory `item` on `npc`, sent once, judged and settled as `useOn` (the NPC is not tracked for a
+ * change: the effect is the inventory, a dialog, the player moved, or a message).
+ */
+export function* useOnNpc(
+    ctx: ActionContext,
+    item: InventoryItem,
+    npc: NearbyNpc,
+    opts: InteractOptions = {},
+): Op<InteractionResult> {
+    return yield* attempt(ctx, { kind: 'npc', npc }, `use ${item.name}`, () => sendUseOnNpc(item, npc), {
         ...opts,
         settle: true,
     });

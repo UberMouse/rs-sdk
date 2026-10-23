@@ -8,7 +8,7 @@ import { log, type Op, send, ticks, wait } from '../../core/op';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { LUMBRIDGE, timeline, world, worldState } from '../world';
+import { attackedFrom, LUMBRIDGE, timeline, world, worldState } from '../world';
 import { runDef, runTask } from './harness';
 
 const zOf = (s: BotWorldState) => s.player?.worldZ ?? 0;
@@ -497,5 +497,196 @@ describe('task guards', () => {
         expect(r.result.status).toBe('error');
         expect(r.result.reason).toBe('task guard name(s) taken: dialog');
         expect(r.sends).toEqual([]);
+    });
+});
+
+/** A task that finishes at tick 4; `allowGuards` and `onEnd` come from the caller. */
+const hookTask = (hooks: { allowGuards?: () => ['dialog']; onEnd?: (ctx: { state(): BotWorldState }) => Op<void> }) =>
+    defineTask({
+        name: 'hooks',
+        description: 'allowGuards and onEnd',
+        params: z.object({}),
+        ...hooks,
+        steps: [finishAt(4), idleStep],
+    });
+
+describe('allowGuards', () => {
+    test('adds to `allow` for the run, per its params: the dialog guard stays out of the way', async () => {
+        const open = dialogAt(0, 9);
+        const guarded = await runDef(hookTask({}), open);
+        expect(continues(guarded)).toBeGreaterThan(0);
+
+        const allowed = await runDef(hookTask({ allowGuards: () => ['dialog'] }), open);
+        expect(allowed.result.status).toBe('done');
+        expect(continues(allowed)).toBe(0);
+        expect(allowed.result.stepRuns['interrupt:dialog']).toBeUndefined();
+    });
+});
+
+const turnOff = (_ctx?: unknown): Op<void> =>
+    (function* () {
+        yield* send(act('cleanup'));
+    })();
+
+describe('onEnd', () => {
+    test('runs once as the run ends, after a done and after a failure', async () => {
+        const done = await runDef(hookTask({ onEnd: turnOff }), timeline(10));
+        expect(done.result.status).toBe('done');
+        expect(done.sends).toEqual(['cleanup']);
+
+        const failed = await runDef(
+            defineTask({
+                name: 'hooks',
+                description: 'onEnd after a fail',
+                params: z.object({}),
+                onEnd: turnOff,
+                steps: [{ name: 'fail', when: () => true, run: () => ({ fail: 'no' }) }],
+            }),
+            timeline(10),
+        );
+        expect(failed.result.status).toBe('failed');
+        expect(failed.sends).toEqual(['cleanup']);
+    });
+
+    test('a cleanup that throws is logged and does not change the result', async () => {
+        const r = await runDef(
+            hookTask({
+                onEnd: () =>
+                    (function* (): Op<void> {
+                        yield* ticks(0);
+                        throw new Error('boom');
+                    })(),
+            }),
+            timeline(10),
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: at tick 4');
+    });
+});
+
+/** A choice dialog open for the whole run, as an earlier run left it. */
+const strayChoice = timeline(10).map(s =>
+    world(s)
+        .dialog({ options: ['No.', 'Yes.'] })
+        .build(),
+);
+
+/** Attacks, then waits on the fight: the stop that ends the run lands mid-fight. */
+function* attackAndWait(): Op<Outcome> {
+    yield* send(act('attack'));
+    yield* wait('never', () => false, 1000);
+    return { done: 'unreachable' };
+}
+
+const settleTask = (hooks: { allowGuards?: () => ['dialog'] }) =>
+    defineTask({
+        name: 'hooks',
+        description: 'settle',
+        params: z.object({}),
+        ...hooks,
+        steps: [{ name: 'fight', when: () => true, run: attackAndWait }],
+    });
+
+describe('allowGuards and onEnd in the engine', () => {
+    test('a choice dialog open at the start is not refused or declined under allowGuards', async () => {
+        const r = await runDef(hookTask({ allowGuards: () => ['dialog'] }), strayChoice);
+        expect(r.result.status).toBe('done');
+        expect(r.sends).not.toContain('decline stray choice');
+        expect(r.result.stepRuns['interrupt:dialog']).toBeUndefined();
+    });
+
+    test('a task with neither hook keeps the stray-choice refusal and the dialog guard', async () => {
+        const r = await runDef(hookTask({}), strayChoice, {
+            react: a => (a.type === 'clickDialogOption' ? s => world(s).dialog(false).build() : undefined),
+        });
+        expect(r.sends[0]).toBe('decline stray choice');
+    });
+
+    test('the settle after a stop omits the dialog guard under allowGuards, and keeps it otherwise', async () => {
+        const stops = [{ kind: 'minutes' as const, minutes: 0.05 }];
+        // Attacked from tick 3 until 20, with a dialog open on ticks 12-14, inside the settle (the stop is at tick 8).
+        const states = timeline(30, t => ({ dialog: t >= 12 && t <= 14 })).map((s, i) =>
+            attackedFrom(world(s), i, 20).build(),
+        );
+        const allowed = await runDef(settleTask({ allowGuards: () => ['dialog'] }), states, { stops });
+        expect(allowed.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        expect(continues(allowed)).toBe(0);
+        const guarded = await runDef(settleTask({}), states, { stops });
+        expect(continues(guarded)).toBeGreaterThan(0);
+    });
+
+    test('allowGuards cannot be a way round the critical-guard refusal', async () => {
+        const sneaky = hookTask({ allowGuards: (() => ['death']) as never });
+        const r = await runDef(sneaky, timeline(10));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('task allows critical guard(s): death');
+    });
+
+    test('onEnd runs once after the fight settles on a stop', async () => {
+        const ticksSeen: number[] = [];
+        const def = defineTask({
+            name: 'hooks',
+            description: 'onEnd after settle',
+            params: z.object({}),
+            *onEnd(ctx) {
+                ticksSeen.push(ctx.state().tick);
+                yield* send(act('cleanup'));
+            },
+            steps: [{ name: 'fight', when: () => true, run: attackAndWait }],
+        });
+        const states = timeline(30).map((s, i) => attackedFrom(world(s), i, 20).build());
+        const r = await runDef(def, states, { stops: [{ kind: 'minutes' as const, minutes: 0.05 }] });
+        expect(r.result.reason).toBe('reached 0.05 min; fight settled in 12 ticks');
+        expect(r.sends).toEqual(['attack', 'cleanup']);
+        expect(ticksSeen).toHaveLength(1);
+        expect(ticksSeen[0]).toBeGreaterThanOrEqual(20);
+    });
+
+    test('onEnd runs exactly once on a watchdog end and on an error end', async () => {
+        const watchdog = await runDef(
+            defineTask({
+                name: 'hooks',
+                description: 'watchdog',
+                params: z.object({}),
+                onEnd: turnOff,
+                stuckAfterMs: 5 * 400,
+                steps: [idleStep],
+            }),
+            timeline(3),
+        );
+        expect(watchdog.result.status).toBe('stuck');
+        expect(watchdog.sends).toEqual(['cleanup']);
+
+        const errored = await runDef(
+            defineTask({
+                name: 'hooks',
+                description: 'error',
+                params: z.object({}),
+                onEnd: turnOff,
+                steps: [
+                    {
+                        name: 'boom',
+                        when: () => true,
+                        run: () => {
+                            throw new Error('boom');
+                        },
+                    },
+                ],
+            }),
+            timeline(10),
+        );
+        expect(errored.result.status).toBe('error');
+        expect(errored.sends).toEqual(['cleanup']);
+    });
+
+    test('on an end at low HP the eat comes before onEnd', async () => {
+        const hurt = timeline(10, t => ({ hp: t >= 4 ? 3 : 10, food: 2 }));
+        const r = await runDef(hookTask({ onEnd: turnOff }), hurt);
+        // The guard's eats leave HP flat, so the watchdog ends the run low: the engine's own eat, then onEnd.
+        expect(r.result.status).toBe('stuck');
+        expect(r.sends.at(-1)).toBe('cleanup');
+        expect(r.sends.filter(x => x === 'cleanup')).toHaveLength(1);
+        expect(r.sends.indexOf('Eat Shrimps')).toBeGreaterThanOrEqual(0);
+        expect(r.sends.lastIndexOf('Eat Shrimps')).toBeLessThan(r.sends.indexOf('cleanup'));
     });
 });

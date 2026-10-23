@@ -935,3 +935,514 @@ describe('combat: Magic', () => {
         expect(r.result.reason).toBe('cast: no free reachable Chicken in the area');
     });
 });
+
+/** The prayer tab as the client publishes it: 15 flags, points and the base level. */
+const prayerTab = (
+    s: BotWorldState,
+    p: { active?: number[]; points?: number; level?: number } = {},
+): BotWorldState => ({
+    ...s,
+    prayers: {
+        activePrayers: Array.from({ length: 15 }, (_, i) => p.active?.includes(i) ?? false),
+        prayerPoints: p.points ?? 30,
+        prayerLevel: p.level ?? 43,
+    },
+});
+const MELEE = 14;
+/** A toggle flips the prayer's flag from the next tick on, as the client does. */
+const prayerReact: TimelineOptions['react'] = (action, state) => {
+    if (action.type !== 'togglePrayer') return undefined;
+    const next = !state.prayers.activePrayers[action.prayerIndex];
+    return s => ({
+        ...s,
+        prayers: {
+            ...s.prayers,
+            activePrayers: s.prayers.activePrayers.map((v, i) => (i === action.prayerIndex ? next : v)),
+        },
+    });
+};
+
+const MONK = 'Monk of Zamorak';
+const MONK_AREA = { x: 3413, z: 3488, radius: 6 };
+const monkParams = { target: MONK, area: MONK_AREA, food: ['Shrimps'] };
+/** Three monks of one name, the nearest the weakest, and the bot well above all of them. */
+const monks = world()
+    .player({ at: { x: 3413, z: 3488 }, combatLevel: 40 })
+    .skill('Attack', 40, 0)
+    .combatStyle(0)
+    .inv('Shrimps', 2)
+    .npc(MONK, 3414, 3488, { index: 20, combatLevel: 17, options: ['Attack'] })
+    .npc(MONK, 3415, 3488, { index: 21, combatLevel: 22, options: ['Attack'] })
+    .npc(MONK, 3415, 3489, { index: 22, combatLevel: 30, options: ['Attack'] });
+/** A fight with NPC `index` from tick 2, the kill (and 25 xp) at tick 6. */
+const killOf = (w: World, index: number, n = 20) =>
+    w.series(n, (f, i) => (i >= 6 ? f.fighting(false).skill('Attack', 40, 25) : i >= 2 ? f.fighting(index) : f));
+
+describe('combat: level filter', () => {
+    test('`level` attacks only the NPC of that level, though others of the name stand nearer', async () => {
+        const r = await simulate(combat, {
+            params: { ...monkParams, level: 30 },
+            timeline: killOf(monks, 22),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(r)).toEqual([22]);
+    });
+
+    test('`minLevel` and `maxLevel` bound a range', async () => {
+        const r = await simulate(combat, {
+            params: { ...monkParams, minLevel: 20, maxLevel: 25 },
+            timeline: killOf(monks, 21),
+            stops: xp(25),
+        });
+        expect(attacked(r)).toEqual([21]);
+    });
+
+    test('with no NPC of the level around, the run fails after looking, naming the level', async () => {
+        const weak = world()
+            .player({ at: { x: 3413, z: 3488 }, combatLevel: 40 })
+            .skill('Attack', 40, 0)
+            .combatStyle(0)
+            .inv('Shrimps', 2)
+            .npc(MONK, 3414, 3488, { index: 20, combatLevel: 17, options: ['Attack'] });
+        const r = await simulate(combat, { params: { ...monkParams, level: 30 }, timeline: weak.series(1) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('fight: no free reachable Monk of Zamorak (level 30) in the area');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a monk of another level that is already attacking the bot is fought first', async () => {
+        const attacking = monks.npc(MONK, 3414, 3489, {
+            index: 23,
+            combatLevel: 22,
+            options: ['Attack'],
+            attacking: true,
+        });
+        const r = await simulate(combat, {
+            params: { ...monkParams, level: 30 },
+            timeline: killOf(attacking.player({ lastDamageTick: 0 }).fighting(23), 23),
+            stops: xp(25),
+        });
+        expect(attacked(r)).toEqual([]);
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+    });
+});
+
+describe('combat: stopOnDialog', () => {
+    const choice = ['No. He deserves to die.', 'Tell me how to untrap Merlin and I might.'];
+    /** A fight that ends on tick 6 with Morgan Le Faye's choice open (the last state repeats). */
+    const mordredFalls = coop.series(8, (w, i) => {
+        if (i >= 6) return w.fighting(false).dialog({ options: choice });
+        return i >= 2 ? w.fighting(CHICKEN) : w;
+    });
+
+    test('ends done as the dialog opens and answers nothing, leaving it open', async () => {
+        const r = await simulate(combat, { params: { ...PARAMS, stopOnDialog: true }, timeline: mordredFalls });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toMatch(/^dialog-open: dialog opened: No\. He deserves to die\. \| Tell me how/);
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+        expect(r.result.stepRuns['interrupt:dialog']).toBeUndefined();
+    });
+
+    test('without it the dialog guard declines the choice nobody took (the decline that kills Mordred)', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: mordredFalls });
+        expect(r.sends).toContain('decline stray choice');
+    });
+
+    test('a level-up box mid-fight is clicked away and the fight goes on', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: kill(coop, 20, 8, (w, i) =>
+                i === 4
+                    ? w.dialog({
+                          text: 'Congratulations, you just advanced an attack level.',
+                          options: ['Click here to continue'],
+                      })
+                    : w,
+            ),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends).toEqual([ATTACK, 'continue level-up dialog']);
+    });
+
+    test('the unlock page after a level-up click is clicked away too; a real quest dialog after it ends the run', async () => {
+        const levelUp = {
+            text: 'Congratulations, you just advanced an attack level.',
+            options: ['Click here to continue'],
+        };
+        const unlock = { text: 'You can now wield Steel Weaponry!', options: ['Click here to continue'] };
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(16, (w, i) => {
+                if (i >= 10) return w.fighting(false).dialog({ options: ['No. He deserves to die.', 'Ok then.'] });
+                if (i >= 8) return w.fighting(CHICKEN).dialog(unlock);
+                if (i >= 6) return w.fighting(CHICKEN).dialog(levelUp);
+                return i >= 2 ? w.fighting(CHICKEN) : w;
+            }),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('dialog-open: dialog opened: No. He deserves to die. | Ok then.');
+        expect(r.sends).toEqual([ATTACK, 'continue level-up dialog', 'continue level-up dialog']);
+    });
+
+    test('an "advanced" wording is needed: bare "Congratulations" from a quest NPC ends the run', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(8, (w, i) =>
+                i >= 6
+                    ? w.fighting(false).dialog({ text: 'Congratulations, you have done it!', options: ['Thanks'] })
+                    : i >= 2
+                      ? w.fighting(CHICKEN)
+                      : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toContain('Congratulations, you have done it!');
+        expect(r.sends).toEqual([ATTACK]);
+    });
+
+    test('an unlock-wording dialog with no level-up click before it is a quest dialog', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(8, (w, i) =>
+                i >= 6
+                    ? w.fighting(false).dialog({ text: 'You can now go through the door.', options: ['Ok'] })
+                    : i >= 2
+                      ? w.fighting(CHICKEN)
+                      : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([ATTACK]);
+    });
+
+    test('a dialog open before any fight fails the run instead of ending it done', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(3, w => w.dialog({ options: ['Yes', 'No'] })),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('dialog-open: dialog open before any fight: Yes | No');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a level-up in front of the quest dialog is clicked once, and the quest dialog is left open', async () => {
+        const levelUp = {
+            text: 'Congratulations, you just advanced a strength level.',
+            options: ['Click here to continue'],
+        };
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(14, (w, i) => {
+                if (i >= 8) return w.fighting(false).dialog({ options: ['No. He deserves to die.', 'Ok then.'] });
+                if (i >= 6) return w.fighting(false).dialog(levelUp);
+                return i >= 2 ? w.fighting(CHICKEN) : w;
+            }),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('dialog-open: dialog opened: No. He deserves to die. | Ok then.');
+        expect(r.sends).toEqual([ATTACK, 'continue level-up dialog']);
+    });
+});
+
+/** Toggles prayers on, but ignores a toggle off. */
+const onOnly: TimelineOptions['react'] = (a, s) =>
+    a.type === 'togglePrayer' && s.prayers.activePrayers[a.prayerIndex] ? undefined : prayerReact(a, s);
+
+const tab = (ws: BotWorldState[], p?: Parameters<typeof prayerTab>[1]) => ws.map(s => prayerTab(s, p));
+
+describe('combat: stopOnDialog failures and wording', () => {
+    const levelUp = {
+        text: 'Congratulations, you just advanced an attack level.',
+        options: ['Click here to continue'],
+    };
+    const levelUpWorld = coop.series(30, (w, i) =>
+        i >= 6 ? w.fighting(false).dialog(levelUp) : i >= 2 ? w.fighting(CHICKEN) : w,
+    );
+
+    test('a level-up page whose click is rejected three times fails with the send message', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: levelUpWorld,
+            respond: a => (a.type === 'clickDialogOption' ? { success: false, message: 'not connected' } : undefined),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('dialog-open: level-up dialog would not clear: not connected');
+        expect(r.sends.filter(s => s === 'continue level-up dialog')).toHaveLength(3);
+    });
+
+    test('a level-up page that never changes after three clicks fails without a suffix', async () => {
+        const r = await simulate(combat, { params: { ...PARAMS, stopOnDialog: true }, timeline: levelUpWorld });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('dialog-open: level-up dialog would not clear');
+    });
+
+    test("the reason names what the NPC says, not the page's continue button (Mordred's Morgan)", async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop
+                .series(10, (w, i) =>
+                    i >= 6
+                        ? w.fighting(false).dialog({ options: ['Click here to continue'] })
+                        : i >= 2
+                          ? w.fighting(CHICKEN)
+                          : w,
+                )
+                .map((s, i) =>
+                    i < 6
+                        ? s
+                        : {
+                              ...s,
+                              dialog: {
+                                  ...s.dialog,
+                                  allComponents: [
+                                      'Morgan Le Faye',
+                                      'STOP! Please... spare my son.',
+                                      'Click here to continue',
+                                  ].map((text, id) => ({ id, type: 4, buttonType: 0, option: '', text })),
+                              },
+                          },
+                ),
+        });
+        expect(r.result.reason).toBe('dialog-open: dialog opened: Morgan Le Faye | STOP! Please... spare my son.');
+    });
+});
+
+describe('combat: prayers', () => {
+    const params = { ...PARAMS, prayers: ['Protect from Melee'] };
+
+    test('turns the prayer on as the target comes within reach, and off when the run ends', async () => {
+        const r = await simulate(combat, {
+            params,
+            timeline: tab(kill(coop, 20, 6)),
+            react: prayerReact,
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends).toEqual(['Protect from Melee on', ATTACK, 'Protect from Melee off']);
+        expect(r.steps.slice(0, 2)).toEqual(['prayer-on', 'fight']);
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(false);
+    });
+
+    test('a far target gets the prayer before the walk and the attack, so the first hit lands protected', async () => {
+        const r = await simulate(combat, {
+            params,
+            timeline: tab(kill(chickenAt(base, COOP.x + 5, COOP.z), 30, 10)),
+            react: walking(prayerReact),
+            stops: xp(25),
+        });
+        expect(r.sends).toEqual([
+            'Protect from Melee on',
+            `walk to (${COOP.x + 5}, ${COOP.z})`,
+            ATTACK,
+            'Protect from Melee off',
+        ]);
+    });
+
+    test('a prayer already on is left alone, and not ours to turn off at the end', async () => {
+        const r = await simulate(combat, {
+            params,
+            timeline: tab(kill(coop, 20, 6), { active: [MELEE] }),
+            react: prayerReact,
+            stops: xp(25),
+        });
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(true);
+    });
+
+    test('stopOnDialog leaves the prayer on under the open quest dialog and names it in the reason', async () => {
+        const choice = ['No. He deserves to die.', 'Tell me how to untrap Merlin and I might.'];
+        const timeline = tab(
+            coop.series(10, (w, i) => {
+                if (i >= 6) return w.fighting(false).dialog({ options: choice });
+                return i >= 2 ? w.fighting(CHICKEN) : w;
+            }),
+        );
+        const r = await simulate(combat, {
+            params: { ...params, stopOnDialog: true },
+            timeline,
+            react: prayerReact,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe(
+            `dialog-open: dialog opened: ${choice.join(' | ')}; prayers still on: Protect from Melee`,
+        );
+        expect(r.sends).toEqual(['Protect from Melee on', ATTACK]);
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(true);
+    });
+
+    test('Protect Item is the game spelling, and the sdk spelling is accepted too', async () => {
+        for (const prayers of [['Protect Item'], ['Protect Items']]) {
+            const r = await simulate(combat, {
+                params: { ...PARAMS, prayers },
+                timeline: tab(kill(coop, 20, 6), { level: 20 }),
+            });
+            expect(r.result.reason).toMatch(/^preflight: Protect Items? needs Prayer 25, the bot has 20$/);
+        }
+    });
+
+    test('a toggle that will not turn the prayer off at the end is logged', async () => {
+        const r = await simulate(combat, { params, timeline: tab(kill(coop, 40, 6)), react: onOnly, stops: xp(25) });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(logged(r)).toContain('could not turn Protect from Melee off: Protect from Melee did not turn off');
+    });
+
+    test('a level-up page open when the run stops does not keep the prayer on', async () => {
+        const levelUp = {
+            text: 'Congratulations, you just advanced an attack level.',
+            options: ['Click here to continue'],
+        };
+        const r = await simulate(combat, {
+            params,
+            timeline: tab(kill(coop, 20, 6, (w, i) => (i === 5 ? w.dialog(levelUp) : w))),
+            react: prayerReact,
+            stops: xp(25),
+        });
+        expect(r.sends.at(-1)).toBe('Protect from Melee off');
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(false);
+    });
+
+    test('the unlock page after a level-up click does not keep the prayer on either', async () => {
+        const levelUp = {
+            text: 'Congratulations, you just advanced an attack level.',
+            options: ['Click here to continue'],
+        };
+        const unlock = { text: 'You can now wield Steel Weaponry!', options: ['Click here to continue'] };
+        const r = await simulate(combat, {
+            params: { ...params, stopOnDialog: true },
+            timeline: tab(
+                coop.series(20, (w, i) => {
+                    if (i >= 9) return w.fighting(false).dialog(unlock).skill('Attack', 1, 25);
+                    if (i >= 8) return w.fighting(false).dialog(unlock);
+                    if (i >= 6) return w.fighting(CHICKEN).dialog(levelUp);
+                    return i >= 2 ? w.fighting(CHICKEN) : w;
+                }),
+            ),
+            react: prayerReact,
+            stops: xp(25),
+        });
+        expect(r.sends).toEqual([
+            'Protect from Melee on',
+            ATTACK,
+            'continue level-up dialog',
+            'continue level-up dialog',
+            'Protect from Melee off',
+        ]);
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(false);
+    });
+
+    test('two prayers that switch each other off are an invalid param', async () => {
+        for (const prayers of [
+            ['Protect from Melee', 'Protect from Missiles'],
+            ['Thick Skin', 'Steel Skin'],
+            ['Burst of Strength', 'Ultimate Strength'],
+            ['Clarity of Thought', 'Improved Reflexes'],
+        ]) {
+            const r = await simulate(combat, { params: { ...PARAMS, prayers }, timeline: coop.series(1) });
+            expect(r.result.status).toBe('error');
+            expect(r.result.reason).toContain('prayers switch each other off');
+        }
+        const ok = await simulate(combat, {
+            params: { ...PARAMS, prayers: ['Thick Skin', 'Burst of Strength', 'Clarity of Thought'] },
+            timeline: tab(coop.series(1), { level: 20 }),
+        });
+        expect(ok.result.reason).not.toContain('switch each other off');
+    });
+
+    test('running out of prayer points mid-fight fails the run, and the prayer is turned off', async () => {
+        const w = kill(coop, 30, 20);
+        const timeline = w.map((s, i) => prayerTab(s, { active: i < 8 ? [MELEE] : [], points: i < 8 ? 3 : 0 }));
+        const r = await simulate(combat, { params, timeline, react: prayerReact });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('out-of-prayer: out of prayer points');
+    });
+
+    test('a failing toggle fails the run after three tries', async () => {
+        const r = await simulate(combat, {
+            params,
+            timeline: tab(coop.series(1)),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(
+            /^prayer-on: could not turn Protect from Melee on: Protect from Melee did not turn on$/,
+        );
+        expect(r.sends).toEqual(Array<string>(3).fill('Protect from Melee on'));
+    });
+
+    test('preflight refuses a prayer the level does not allow, and an empty prayer tab', async () => {
+        const low = await simulate(combat, { params, timeline: tab(coop.series(1), { level: 20 }) });
+        expect(low.result.reason).toBe('preflight: Protect from Melee needs Prayer 43, the bot has 20');
+        const dry = await simulate(combat, { params, timeline: tab(coop.series(1), { points: 0 }) });
+        expect(dry.result.reason).toBe('preflight: no prayer points left for prayers');
+    });
+
+    test('an unknown prayer name is an invalid param', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, prayers: ['Protect from Fire'] },
+            timeline: coop.series(1),
+        });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('not a prayer name');
+    });
+});
+
+/** No chicken until tick `at`, then one beside the bot. */
+const respawns = (at: number) => base.series(at + 10, (w, i) => (i >= at ? chickenAt(w) : w).fighting(false));
+const kills = (at: number) =>
+    base.series(at + 20, (w, i) => {
+        if (i < at) return w;
+        const f = chickenAt(w);
+        return i >= at + 14 ? f.fighting(false).skill('Attack', 1, 25) : i >= at + 8 ? f.fighting(CHICKEN) : f;
+    });
+
+describe('combat: level params', () => {
+    test('minLevel above maxLevel, and `level` with a range, are invalid params', async () => {
+        for (const extra of [
+            { minLevel: 30, maxLevel: 20 },
+            { level: 30, minLevel: 20 },
+            { level: 30, maxLevel: 40 },
+        ]) {
+            const r = await simulate(combat, { params: { ...PARAMS, ...extra }, timeline: coop.series(1) });
+            expect(r.result.status).toBe('error');
+        }
+        const ok = await simulate(combat, {
+            params: { ...PARAMS, minLevel: 1, maxLevel: 5 },
+            timeline: kill(coop),
+            stops: xp(25),
+        });
+        expect(ok.result.status).toBe('done');
+    });
+});
+
+describe('combat: respawnWaitTicks', () => {
+    test('by default a target that returns after 100 ticks is too late: the run fails after the usual looks', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: respawns(100) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(r.driver.state().tick).toBeLessThan(100);
+    });
+
+    test('with respawnWaitTicks the loop waits for the target and then fights it', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, respawnWaitTicks: 150 },
+            timeline: kills(100),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends).toEqual([ATTACK]);
+    });
+
+    test('and fails once the wait is used up', async () => {
+        const r = await simulate(combat, { params: { ...PARAMS, respawnWaitTicks: 150 }, timeline: respawns(400) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(r.driver.state().tick).toBeGreaterThanOrEqual(140);
+        expect(r.driver.state().tick).toBeLessThan(170);
+    });
+
+    test('is capped, so a huge wait is an invalid param', async () => {
+        const r = await simulate(combat, { params: { ...PARAMS, respawnWaitTicks: 5000 }, timeline: coop.series(1) });
+        expect(r.result.status).toBe('error');
+    });
+});

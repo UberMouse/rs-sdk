@@ -8,7 +8,7 @@
 
 ## Requirements
 
-- 25 Agility
+- 25 Agility, checked partway through the quest, not at the start (`quest_grandtree.rs2:25`) [server data, unverified in game 2026-10-23]
 - Ability to defeat a Black Demon (level 172)
 - Recommended: Tree Gnome Village quest complete
 
@@ -18,7 +18,7 @@
 
 ## Rewards
 
-- 11,200 Agility XP
+- 7,900 Agility XP (`quest_grandtree.rs2:199`) [server data, unverified in game 2026-10-23]
 - 18,400 Attack XP
 - 2,150 Magic XP
 - Access to spirit tree teleportation network

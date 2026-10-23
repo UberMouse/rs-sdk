@@ -10,11 +10,8 @@
 
 ## Requirements
 
-- 14 Magic
-- 14 Herblore
-- 15 Thieving
-- 25 Agility
-- 40 Mining
+- 18 Agility to climb the wall to the tower before the quest starts (`quest_itwatchtower.rs2:2`); a guard blocks the ladder (`:87-94`) [server data, unverified in game 2026-10-23]
+- Mid-quest: 25 Agility (`:393`), 15 Thieving (`ogre_trader.rs2:22`), 14 Herblore (`ogre_potion.rs2:45`), 14 Magic (`ogre_shaman.rs2:23`), 40 Mining (`:483`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -30,7 +27,7 @@
 ## Rewards
 
 - 4 Quest Points
-- 12,000 Magic XP
+- 15,300 Magic XP (`quest_itwatchtower.rs2:533`) [server data, unverified in game 2026-10-23]
 - 5,000 gp
 - Watchtower Teleport spell (requires 58 Magic)
 
@@ -38,7 +35,7 @@
 
 ### Getting Started
 
-1. Climb the rocks to reach the **Watchtower** north of Yanille.
+1. Climb the wall (Agility 18) to reach the **Watchtower** north of Yanille.
 2. Speak to the watchtower wizard. The ogres are planning an invasion and the tower's magic defences are failing.
 3. Search the **bushes** outside the watchtower for clues about the ogre threat.
 
@@ -46,7 +43,7 @@
 
 4. Travel to the ogre settlement to the west. Meet **Og**, one of the ogre chieftains.
 5. Use a rope to **swing to the island** where a jangerberry bush grows (or bring your own jangerberries).
-6. Fight and defeat **Gorad** (level 56), another ogre chieftain.
+6. Fight and defeat **Gorad** (level 68, `ogre.npc:164`) [server data, unverified in game 2026-10-23], another ogre chieftain.
 7. Obtain a **gold bar** from **Toban**, the third chieftain, through dialogue.
 8. **Assemble the statue** using the gold bar and other components to gain access to the Ogre city.
 
@@ -77,7 +74,7 @@
 ### Completion
 
 18. Place all crystals on the watchtower pillars to restore the tower's magical defences.
-19. Speak to the watchtower wizard to complete the quest and unlock the **Watchtower Teleport** spell.
+19. Pull the lever with all four crystals placed: that completes the quest and grants the rewards (`quest_itwatchtower.rs2:513-536`). [server data, unverified in game 2026-10-23] The Watchtower Teleport also needs the scroll read (Magic 58, `teleport.rs2:26,35`).
 
 ## Key NPCs & Locations
 
@@ -85,7 +82,7 @@
 |----------------|------|----------|
 | Watchtower Wizard | Quest start and completion | Watchtower, N of Yanille |
 | Og | Ogre chieftain | Ogre settlement, W of Yanille |
-| Gorad | Level 56 ogre chieftain | Ogre settlement |
+| Gorad | Level 68 ogre chieftain | Ogre settlement |
 | Toban | Ogre chieftain, provides gold bar | Ogre settlement |
 | Ogre Shamans | Must be eliminated | Various locations in Gu'Tanoth |
 | Scavid creatures | Teach Scavid language | Caves beneath Gu'Tanoth |

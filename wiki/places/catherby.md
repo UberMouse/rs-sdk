@@ -36,6 +36,13 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `tree:catherby:0` | (2787, 3442) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:catherby:1` | (2846, 3437) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
+
+## Fishing spots
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `fishing-spot:catherby:0` | (2847, 3427) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 2, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | - |
 
 ## Pickpocket targets
 
@@ -60,6 +67,7 @@
 | `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | down (2812, 3451) by Climb-down | no | no | - | - |
 | `connector:catherby:10` | (2825, 3445) | Ladder 1 | up (2824, 3445) L1 by Climb-up | no | no | - | - |
 | `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | down (2824, 3445) by Climb-down | no | no | - | - |
+| `connector:catherby:12` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
 
 ## Areas within
 

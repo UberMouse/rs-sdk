@@ -106,6 +106,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     allow?: readonly AllowableGuard[];
     /**
+     * Guards this task handles itself only for some params, added to `allow` (combat with `stopOnDialog` leaves
+     * a quest dialog open for the next phase, so the dialog guard must not answer it). Every other run keeps the guard.
+     */
+    allowGuards?(params: z.infer<S>): readonly AllowableGuard[];
+    /**
      * This task's own guards (being attacked while skilling), checked after the shared ones in this
      * order, at the same points and with the same episodes. Names must differ from the shared guards'.
      */
@@ -128,6 +133,14 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * guard's fail. `death` still ends the run.
      */
     keepGoingWithoutFood?(params: z.infer<S>): boolean;
+    /**
+     * Best-effort cleanup once as the run ends, whatever ended it (done, fail, a stop, the watchdog), after any
+     * fight has settled and the low-HP eat before leaving has run: for state the task changed that would outlast
+     * it (combat's prayers). An op like a step's, under no guards and no stops; it should cost a few ticks and
+     * must be a no-op when there is nothing to undo.
+     * Never fails the run: a throw is logged.
+     */
+    onEnd?(ctx: TaskContext<z.infer<S>, M>): Op<void>;
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];

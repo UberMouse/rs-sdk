@@ -205,7 +205,7 @@
 
 | Area | Sites in it |
 |---|---|
-| [Barbarian Village](barbarian-village.md) | shop 1, fire 1, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, tree 9, rock 1, fishing-spot 2, npc 4, connector 4 |
+| [Barbarian Village](barbarian-village.md) | shop 1, fire 1, spinning-wheel 1, pottery-wheel 1, pottery-oven 1, tree 9, rock 1, fishing-spot 1, npc 4, connector 4 |
 | [Champions' Guild](champions-guild.md) | shop 2, tree 2, npc 3 |
 | [Cooks' Guild](cooks-guild.md) | tree 1, npc 1, connector 4 |
 | [Dig Site](dig-site.md) | tree 2 |

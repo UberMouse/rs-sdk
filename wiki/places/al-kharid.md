@@ -79,4 +79,4 @@
 | Area | Sites in it |
 |---|---|
 | [Al Kharid bank](al-kharid-bank.md) | bank 1 |
-| [Al Kharid river](al-kharid-river.md) | fishing-spot 2, npc 1 |
+| [Al Kharid river](al-kharid-river.md) | fishing-spot 1, npc 1 |

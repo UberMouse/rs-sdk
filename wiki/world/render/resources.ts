@@ -278,6 +278,30 @@ function dataSection(
     }
 }
 
+/**
+ * Where a fishing spot moves (Site.movement): the area that covers every tile it can stand on, to copy into a plan,
+ * then the tiles themselves.
+ */
+function movementSection(holding: Site[], subtype: string): string[] {
+    const sites = holding.filter(s => s.movement?.[subtype]);
+    if (!sites.length) return [];
+    return [
+        '## Movement',
+        '',
+        "A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.",
+        '',
+        ...table(
+            ['Site', 'Cover centre', 'Cover radius', 'Tiles'],
+            sites.map(s => {
+                const m = s.movement![subtype]!;
+                return [`\`${s.id}\``, coord(m.centre), String(m.radius), String(m.tiles.length)];
+            }),
+        ),
+        '',
+        ...sites.flatMap(s => [`\`${s.id}\` tiles: ${s.movement![subtype]!.tiles.map(t => coord(t)).join(', ')}`, '']),
+    ];
+}
+
 // Kinds whose subtype is a config: their pages are titled by the in-game name, with the config
 // beside it only where another subtype of the kind shares the name (man, man2 and man3 are all Man).
 const TITLED_BY_NAME: ReadonlySet<ResourceKind> = new Set<ResourceKind>(['pickpocket', 'stall']);
@@ -347,6 +371,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                         holding.map(row),
                     ),
                     '',
+                    ...(kind === 'fishing-spot' ? movementSection(holding, subtype) : []),
                 ].join('\n'),
             );
         }

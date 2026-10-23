@@ -126,7 +126,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - | Temple of Ikov at stage 10 |
+| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - | - |
 | `npc:varrock:1` | (3177, 3405) | Imp 1 | yes | no | - | - |
 | `npc:varrock:2` | (3213, 3502) | Imp 1 | yes | no | - | - |
 | `npc:varrock:3` | (3225, 3395) | Barbarian woman 1 | yes | no | - | - |

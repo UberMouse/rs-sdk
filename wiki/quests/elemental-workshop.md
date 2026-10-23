@@ -29,7 +29,6 @@
 - 5,000 Crafting XP
 - 5,000 Smithing XP
 - Elemental Shield
-- Access to the Elemental Workshop
 
 ## Walkthrough
 

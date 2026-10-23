@@ -16,7 +16,7 @@
 
 ## Rewards
 
-- 11,500 Attack XP
+- 11,450 Attack XP (`quest_tree.rs2:98`) [server data, unverified in game 2026-10-23]
 - Gnome amulet of protection
 - Access to spirit trees for teleportation
 

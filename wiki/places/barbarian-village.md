@@ -74,4 +74,4 @@
 
 | Area | Sites in it |
 |---|---|
-| [Barbarian Village fishing](barbarian-village-fishing.md) | tree 1, fishing-spot 2 |
+| [Barbarian Village fishing](barbarian-village-fishing.md) | tree 1, fishing-spot 1 |

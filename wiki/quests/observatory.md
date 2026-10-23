@@ -10,9 +10,7 @@
 
 ## Requirements
 
-### Skill Requirements
-
-- 10 Crafting
+No skill requirement is checked by the scripts (`observatory_professor.rs2`) [server data, unverified in game 2026-10-23].
 
 ## Items Needed
 

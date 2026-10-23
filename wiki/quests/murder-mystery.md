@@ -14,7 +14,7 @@ No skill or quest requirements.
 
 ## Items Needed
 
-- Pot of flour (obtainable during quest)
+- An empty pot, filled from the mansion's flour barrel (needs the guards' permission, so after starting; `quest_murder.rs2:177-190`) [server data, unverified in game 2026-10-23]
 - Flypaper (obtainable during quest)
 
 ## Rewards

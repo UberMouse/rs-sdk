@@ -107,10 +107,10 @@
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `pickpocket:east-ardougne:0` | (2580, 3298) | [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 1, [Paladin](../resources/pickpocket/paladin.md) 7, [Warrior woman](../resources/pickpocket/warrior_woman.md) 3 | no | no | - | - |
-| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | [Paladin](../resources/pickpocket/paladin.md) 8 | no | no | - | 61 Thieving |
+| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | [Paladin](../resources/pickpocket/paladin.md) 8 | no | no | - | - |
 | `pickpocket:east-ardougne:2` | (2573, 3322) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
 | `pickpocket:east-ardougne:3` | (2584, 3304) L1 | [Paladin](../resources/pickpocket/paladin.md) 5 | no | no | - | 61 Thieving |
-| `pickpocket:east-ardougne:4` | (2613, 3317) | [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | 13 Thieving |
+| `pickpocket:east-ardougne:4` | (2613, 3317) | [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
 | `pickpocket:east-ardougne:5` | (2628, 3294) | [Hero](../resources/pickpocket/hero.md) 1, [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | no | no | - | - |
 | `pickpocket:east-ardougne:6` | (2621, 3293) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
 | `pickpocket:east-ardougne:7` | (2636, 3339) | [Guard](../resources/pickpocket/ardougne_guard.md) 3 | no | no | - | - |

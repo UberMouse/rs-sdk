@@ -9,8 +9,7 @@ Fishing spots on the river south of the bank.
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fishing-spot:al-kharid-river:0` | (3267, 3148) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - | - |
-| `fishing-spot:al-kharid-river:1` | (3276, 3140) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | - | - |
+| `fishing-spot:al-kharid-river:0` | (3272, 3144) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | yes | - | - |
 
 ## Monsters
 

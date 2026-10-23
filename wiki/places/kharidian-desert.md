@@ -50,7 +50,7 @@
 
 | Area | Sites in it |
 |---|---|
-| [Al Kharid](al-kharid.md) | bank 1, shop 6, tanner 1, furnace 1, range 3, water-source 1, tree 1, fishing-spot 2, pickpocket 5, npc 2, connector 7 |
+| [Al Kharid](al-kharid.md) | bank 1, shop 6, tanner 1, furnace 1, range 3, water-source 1, tree 1, fishing-spot 1, pickpocket 5, npc 2, connector 7 |
 | [Al Kharid mine](al-kharid-mine.md) | rock 2, npc 2 |
 | [Bedabin Camp](bedabin-camp.md) | shop 1, npc 2 |
 | [Desert Mining Camp](desert-mining-camp.md) | rock 1, npc 4 |

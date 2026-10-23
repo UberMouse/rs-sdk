@@ -13,13 +13,13 @@
 
 ## Items Needed
 
-- Redberry pie (or pie to befriend Thurgo)
+- Redberry pie for Thurgo
 - 2 Iron bars
 
 ## Rewards
 
-- 12,725 Smithing XP
-- Blurite sword
+- 12,725 Smithing XP (`quest_squire.rs2:223`) [server data, unverified in game 2026-10-23]
+- No sword: the Squire takes the blurite sword when you hand it over (`quest_squire.rs2:100`) [server data, unverified in game 2026-10-23]
 
 ## Walkthrough
 
@@ -42,3 +42,15 @@
 | Sir Vyvin               | White Knights' Castle, 2nd floor              |
 | Blurite cave            | Near Thurgo's hut, south of Port Sarim        |
 | Ice Warriors (level 57) | Inside the blurite cave                       |
+
+## Script and run notes
+
+Quest varp `%squire` stages: 1 started, 2 spoken to Reldo, 3 pie given, 4 spoken to Thurgo, 5 looking for the portrait, 6 looking for blurite, 7 complete (`quest_squire.constant`, `quest.constant`). [server data, unverified in game 2026-10-23]
+
+- Reldo's "What do you know about the Imcando dwarves?" option appears only at stage 1 (`reldo.rs2`). [server data, unverified in game 2026-10-23]
+- Thurgo offers "Would you like a redberry pie?" only while a redberry pie is held (`thurgo_inquire`); Thurgo's talk at stage 2 is that path. [server data, unverified in game 2026-10-23]
+- The Squire's status report ("I have found an Imcando dwarf but he needs a picture...") advances stage 4 to 5. [server data, unverified in game 2026-10-23]
+- Sir Vyvin's cupboard is at (2984,3336) level 2, a closed loc: Open, then Search. Vyvin must be farther than 1 tile from the bot (`npc_find(coord, sir_vyvin, 1, 0)`), else he shouts and the search is refused. At stage 5 or later it gives a portrait whenever none is held in the inventory or bank (`cupboards.rs2`). [server data, unverified in game 2026-10-23]
+- Thurgo takes the portrait at stage 5 (moving to 6); at stage 6 any talk goes straight to the sword check (blurite ore + 2 iron bars, else a refusal). [server data, unverified in game 2026-10-23]
+- Cave: the Asgarnian Ice Dungeon. Entry ladder `Climb-down` at (3008,3150), stand (3009,3150), lands (3009,9550); exit `Climb-up` ladder (3008,9550). Blurite rocks are named "Rocks blurite ore": rock 0 (3049,9567) (`interact` Mine, `tile` (3049,9566)), rock 2 (3067,9582). The ice warriors and giants near it beat a combat-52 bot with 10 salmon; see [hazards](../../learnings/hazards.md). [v 2026-10-23 questw4 local]
+- Drogo's Mining Emporium lists iron bars at 28 gp but had stock 0. [v 2026-10-23 questw4 local]

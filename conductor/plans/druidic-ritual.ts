@@ -14,14 +14,21 @@ const ench = ['Enchanted beef', 'Enchanted chicken', 'Enchanted rat', 'Enchanted
 const food = (v: PlanView) => FOOD.reduce((n, f) => n + v.inv(f), 0);
 const allRaw = (v: PlanView) => raws.every(r => v.inv(r) > 0);
 const anyRaw = (v: PlanView) => raws.some(r => v.inv(r) > 0);
-const lastWas = (v: PlanView, ...names: string[]) => v.last !== null && names.includes(v.last.phase);
+// Restart-safe: no v.runs()/v.last. "Sanfew has been spoken to" is read from position: the bot is in Sanfew's
+// upstairs room or underground in Taverley Dungeon (it only goes there from Sanfew with the raws).
+const atSanfewOrBelow = (v: PlanView) => {
+    const p = v.state.player;
+    if (!p) return false;
+    if (p.worldZ > 9000) return true;
+    return p.level === 1 && Math.abs(p.worldX - 2897) <= 6 && Math.abs(p.worldZ - 3426) <= 6;
+};
 const hunt = (name: string, target: string, meat: string, area: { x: number; z: number; radius: number }) =>
     phase(
         combat,
         { target, area, food: FOOD, loot: [meat], skill: 'Strength' },
         {
             name,
-            when: v => v.inv(meat) === 0 && !anyEnch(v) && food(v) >= 3 && v.runs('cauldron') === 0,
+            when: v => v.inv(meat) === 0 && !anyEnch(v) && food(v) >= 3 && v.quest('druid') !== 'done',
             until: v => v.inv(meat) > 0,
         },
     );
@@ -51,9 +58,7 @@ export default definePlan({
             { ...kaqemeex },
             {
                 name: 'kaqemeex-finish',
-                when: v =>
-                    lastWas(v, 'sanfew-turnin') ||
-                    (v.quest('druid') === 'started' && !anyRaw(v) && !anyEnch(v) && v.runs('cauldron') > 0),
+                when: v => v.quest('druid') === 'started' && !anyRaw(v) && !anyEnch(v),
             },
         ),
         phase(talk, { ...sanfew }, { name: 'sanfew-turnin', when: v => ench.every(e => v.inv(e) > 0) }),
@@ -65,17 +70,20 @@ export default definePlan({
             },
             {
                 name: 'cauldron',
-                when: v => anyRaw(v) && (v.runs('sanfew-start') > 0 || lastWas(v, 'sanfew-start', 'cauldron', 'suit')),
+                when: v => anyRaw(v) && v.quest('druid') === 'started' && atSanfewOrBelow(v),
                 onFail: 'continue',
                 maxFails: 8,
             },
         ),
         phase(
             talk,
-            { ...sanfew, choices: ['sent to assist|help purify|assist you', 'do that then'] },
+            {
+                ...sanfew,
+                choices: ['sent to assist|help purify|assist you|meant to be doing', 'do that then|get on with it'],
+            },
             {
                 name: 'sanfew-start',
-                when: v => allRaw(v) && v.quest('druid') === 'started' && v.runs('cauldron') === 0,
+                when: v => allRaw(v) && v.quest('druid') === 'started',
             },
         ),
         phase(

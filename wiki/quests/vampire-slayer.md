@@ -15,7 +15,7 @@ Ability to defeat a level 34 Vampire (Count Draynor).
 - Beer (purchased or found)
 - Garlic (from Morgan's cupboard in Draynor Village)
 - Stake (from Dr. Harlow)
-- Hammer (from Dr. Harlow or brought separately)
+- Hammer (bring one; Harlow only tells you a general store hammer will do, `harlow.rs2:50-53`) [server data, unverified in game 2026-10-23]
 
 ## Rewards
 
@@ -25,7 +25,7 @@ Ability to defeat a level 34 Vampire (Count Draynor).
 
 1. Speak to **Morgan** in his house in **Draynor Village**. He tells you about the vampire terrorising the village.
 2. Search the **cupboard** upstairs in Morgan's house to obtain **garlic**.
-3. Travel to the **Jolly Boar Inn** northeast of Varrock. Buy or bring a **beer** and speak to **Dr. Harlow**. Give him the beer. He provides a **stake** and a **hammer**.
+3. Travel to the **Jolly Boar Inn** northeast of Varrock. Buy or bring a **beer** and speak to **Dr. Harlow**. Give him the beer. He provides a **stake** only; buy the **hammer** at a general store.
 4. With garlic, stake, and hammer in your inventory, enter **Draynor Manor** and go down to the basement.
 5. Open the coffin to fight **Count Draynor** (level 34). Having garlic in your inventory weakens him.
 6. When the Count's health is low enough, your character automatically uses the stake and hammer to finish him off. Silverlight or other weapons can be used for the fight itself.

@@ -126,6 +126,63 @@ describe('talk: conversation', () => {
     });
 });
 
+const parse = (p: object) => (talk.params as { safeParse(x: unknown): { success: boolean } }).safeParse(p);
+
+describe('talk: continue an open dialog', () => {
+    const CRATE_PAGES: Page[] = [[], ['Yes.', 'No.'], [], [], ['Yes.', 'No.'], null];
+    const open = base.dialog({ text: 'page 0', options: [] });
+
+    test('answers the choices of the open dialog without looking for anyone', async () => {
+        const script = dialogScript(CRATE_PAGES, () => false, 1);
+        const r = await simulate(talk, {
+            params: { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] },
+            timeline: open.series(40),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('continue-dialog: continued the open dialog, 2 choices made');
+        expect(r.sends.filter(s => /Talk-to/.test(s))).toEqual([]);
+        expect(clicks(r)).toHaveLength(CRATE_PAGES.length - 1);
+        expect(r.steps).toEqual(['continue-dialog']);
+    });
+
+    test('with no dialog open it fails after a short wait and sends nothing', async () => {
+        const r = await simulate(talk, { params: { continue: true, choices: ['Yes'] }, timeline: base.series(40) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('continue-dialog: no dialog is open to continue');
+        expect(r.driver.commands.filter(c => c.type === 'send')).toEqual([]);
+    });
+
+    test('a dialog opening a tick late is still continued', async () => {
+        const script = dialogScript([[], null], () => false, 1);
+        const r = await simulate(talk, {
+            params: { continue: true },
+            timeline: base.series(2).concat(open.series(40)),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+    });
+
+    test('a missing option fails with the dialog options and closes it', async () => {
+        const r = await simulate(talk, {
+            params: { continue: true, choices: ['Maybe'] },
+            timeline: open.series(40),
+            react: dialogScript(CRATE_PAGES, () => false, 1).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no option matching /Maybe/i');
+        expect(r.driver.commands.filter(isClose)).toHaveLength(1);
+    });
+
+    test('the schema refuses continue together with npc, use or at, and still needs one mode', () => {
+        expect(parse({ continue: true, choices: ['Yes'] }).success).toBe(true);
+        expect(parse({ continue: true, npc: DUKE }).success).toBe(false);
+        expect(parse({ continue: true, at: { x: 1, z: 2 } }).success).toBe(false);
+        expect(parse({ choices: ['Yes'] }).success).toBe(false);
+        expect(parse({ npc: DUKE }).success).toBe(true);
+    });
+});
+
 describe('talk: finding the NPC', () => {
     test('no such NPC in sight fails after waiting a few loops', async () => {
         const r = await simulate(talk, { params: dukeParams, timeline: base.series(30) });
@@ -471,5 +528,75 @@ describe('talk: using items on a loc by tile, and an item by id', () => {
             timeline: monuments.series(10),
         });
         expect(r.result.reason).toBe('use-items: no item matching #2954 in the inventory to use on ^monument$');
+    });
+});
+
+describe('talk: travels', () => {
+    const sailor = base.npcBeside('Captain Tobias', { options: ['Talk-to'] });
+    const sailParams = { npc: 'Captain Tobias', choices: ['Yes please'], travels: true };
+    const PAGES: Page[] = [[], ['Yes please.', 'No, thank you.'], null];
+    /** The ship lands the player far away at tick `at`; the sail interface hides the dialog meanwhile. */
+    const sails = (at: number, to: { x: number; z: number; level?: number }) =>
+        sailor.series(60, (w, i) => (i >= at ? w.player({ at: to }) : w));
+
+    test('is done on arrival, after the dialog has closed, not when it closes', async () => {
+        const r = await simulate(talk, {
+            params: sailParams,
+            timeline: sails(14, { x: 2956, z: 3143, level: 1 }),
+            react: dialogScript(PAGES).react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('talk: talked to Captain Tobias, 1 choice made, arrived at (2956,3143)');
+    });
+
+    test('a plane change alone counts as the journey', async () => {
+        const here = sailor.build().player;
+        const r = await simulate(talk, {
+            params: sailParams,
+            timeline: sailor.series(60, (w, i) =>
+                i >= 12 ? w.player({ at: { x: here?.worldX ?? 0, z: here?.worldZ ?? 0, level: 1 } }) : w,
+            ),
+            react: dialogScript(PAGES).react,
+        });
+        expect(r.result.status).toBe('done');
+    });
+
+    test('a conversation that ends with nobody sailing fails with the reason', async () => {
+        const r = await simulate(talk, {
+            params: sailParams,
+            timeline: sailor.series(80),
+            react: dialogScript(PAGES).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            'talk: no journey followed the talk with Captain Tobias (fare unpaid, or weapons or armour refused?)',
+        );
+    });
+
+    test('the schema refuses travels with continue, or without an npc', () => {
+        expect(parse(sailParams).success).toBe(true);
+        expect(parse({ continue: true, travels: true, choices: ['Yes'] }).success).toBe(false);
+        expect(parse({ use: { items: ['bones'], onLoc: '^altar$' }, travels: true }).success).toBe(false);
+    });
+
+    test('the walk to the sailor is not the journey', async () => {
+        // The player is carried 10 tiles in the first ticks (the walk to the NPC), before the dialog opens; nothing sails.
+        const r = await simulate(talk, {
+            params: sailParams,
+            timeline: sailor.series(80, (w, i) => (i >= 1 ? w.player({ at: { x: 3100, z: 3100 } }) : w)),
+            react: dialogScript(PAGES).react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no journey followed');
+    });
+
+    test('without travels the move is not waited for', async () => {
+        const r = await simulate(talk, {
+            params: { npc: 'Captain Tobias', choices: ['Yes please'] },
+            timeline: sailor.series(60),
+            react: dialogScript(PAGES).react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('talk: talked to Captain Tobias, 1 choice made');
     });
 });

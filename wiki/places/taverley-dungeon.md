@@ -73,7 +73,7 @@ Ladder up south of Taverley at (2884, 3397).
 | `npc:taverley-dungeon:39` | (2925, 9769) | Chaos dwarf 1 | no | no | - | - |
 | `npc:taverley-dungeon:40` | (2932, 9797) | Chaos dwarf 2, Lesser demon 5 | no | no | - | - |
 | `npc:taverley-dungeon:41` | (2932, 9755) | Poison Scorpion 2 | no | no | - | - |
-| `npc:taverley-dungeon:42` | (2931, 9696) | Dwarf 2, Jailer 1, Rat 4 | no | no | - | carry Jail key |
+| `npc:taverley-dungeon:42` | (2931, 9696) | Dwarf 2, Jailer 1, Rat 4 | no | no | - | - |
 | `npc:taverley-dungeon:43` | (2930, 9822) | Black Knight 1 | no | no | - | - |
 | `npc:taverley-dungeon:44` | (2936, 9837) | Ghost 2 | no | no | - | - |
 | `npc:taverley-dungeon:45` | (2935, 9772) | Poison Scorpion 2 | no | no | - | - |

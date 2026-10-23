@@ -444,3 +444,34 @@ describe('buildSites: agility courses', () => {
         );
     });
 });
+
+const spot = (config: string, x: number, z: number): Feature => ({
+    ...npc('fishing-spot', 'rarefish', x, z),
+    config,
+});
+const shore = (f: Feature): string | undefined =>
+    f.config.startsWith('a') ? 'a' : f.config.startsWith('b') ? 'b' : undefined;
+const freeOffOrigin = (t: Tile): boolean => t.x !== 0;
+const shoreSites = (fs: Feature[]): Placed<Site>[] =>
+    buildSites(fs, oneArea, noZones, stubCollision(), { ...quiet, shore });
+
+describe('shores', () => {
+    test('spots sharing a shore are one site however far apart, others stay apart', () => {
+        const fs = [spot('a1', 0, 0), spot('a2', 40, 0), spot('b1', 100, 0), spot('c1', 200, 0)];
+        expect(shoreSites(fs).map(s => s.features.length)).toEqual([2, 1, 1]);
+    });
+
+    test('clusters holding a shore each are joined into one site', () => {
+        const fs = [spot('a1', 0, 0), spot('b1', 4, 0), spot('a2', 50, 0), spot('b2', 54, 0), spot('x1', 100, 0)];
+        expect(shoreSites(fs).map(s => [...s.features].sort())).toEqual([[0, 1, 2, 3], [4]]);
+    });
+
+    test('the stand is a tile reached with no requirement when one exists', () => {
+        const out = buildSites([spot('a1', 0, 0)], oneArea, noZones, stubCollision(), {
+            ...quiet,
+            shore,
+            free: freeOffOrigin,
+        });
+        expect(out[0]!.stand!.x).not.toBe(0);
+    });
+});

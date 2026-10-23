@@ -19,7 +19,7 @@
 ## Rewards
 
 - 1 Quest Point
-- 1,000 Thieving XP
+- 1,500 Thieving XP (`quest_hazeelcult.rs2:172`) [server data, unverified in game 2026-10-23]
 - 2,000 gp
 - Hazeel's Mark (armour, if siding with Clivet)
 
@@ -34,12 +34,13 @@
 4. He asks you to help resurrect Hazeel by retrieving a sacred scroll.
 5. Poison the Carnillean dog by using poison on the **stove** inside the mansion.
 6. Retrieve the **Hazeel amulet** from the mansion.
-7. Navigate the **sewer valve puzzle** beneath the cave. Set the 5 valves as follows:
+7. Navigate the **sewer valve puzzle** beneath the cave. Set the 5 valves as follows (valve 3 is the only one turned left, `quest_hazeelcult.rs2:55-70`; the raft advances one island per correct valve):
    - Valve 1: Right
    - Valve 2: Right
-   - Valve 3: Right
-   - Valve 4: Left
+   - Valve 3: Left
+   - Valve 4: Right
    - Valve 5: Right
+[server data, unverified in game 2026-10-23]
 8. This opens the path to the **scroll**. Retrieve it and bring it back to Clivet.
 9. The cult performs the ritual and **Hazeel** is summoned. Quest complete.
 

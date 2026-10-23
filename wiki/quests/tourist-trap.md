@@ -16,9 +16,9 @@
 
 ## Items Needed
 
-- Desert robes or waterskins (desert heat protection)
+- A desert shirt, desert robe and desert boots: a slave trades his clothes only for all three (`mining_slave.rs2:146-160`) [server data, unverified in game 2026-10-23]
 - 5 gp for a Shantay pass, which the pass takes on the way in
-- 100 gp (cart bribe)
+- Optional 100 gp cart bribe; telling the driver "Prison riot in ten minutes" works without paying (`mine_cart_driver.rs2:83-97`) [server data, unverified in game 2026-10-23]
 - Feathers (for dart crafting)
 - Bronze bar (for dart crafting)
 - Combat gear
@@ -27,7 +27,7 @@
 
 - 2 Quest Points
 - 4,650 XP (choose 2 skills from Agility, Fletching, Smithing, or Thieving)
-- Ability to smith dart tips
+- Ability to smith dart tips, unlocked partway through the quest once Al Shabim has taught you darts, not at completion (`smithing.rs2:109,226`) [server data, unverified in game 2026-10-23]
 - Slave robes
 - 6 bronze darts
 
@@ -59,7 +59,7 @@
 10. Navigate into the **mines** using the mine cart system.
 11. Find **Ana** in the mining area. Help her escape by hiding her in a **barrel**.
 12. Use the **winch** mechanism to lift the barrel with Ana out of the mines.
-13. Load the barrel onto a cart. **Bribe the cart driver 100 gp** to transport Ana safely out.
+13. Load the barrel onto a cart. Get the cart driver to leave: bribe him 100 gp, or warn him of a prison riot, or ride the cart yourself (`mine_cart_driver.rs2:78-97`). [server data, unverified in game 2026-10-23]
 
 ### Completion
 

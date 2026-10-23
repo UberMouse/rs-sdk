@@ -14,7 +14,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `warrior-woman-ardougne-pickpocket` | [East Ardougne (Kandarin)](../places/east-ardougne.md) `pickpocket:east-ardougne:5` | 476k at 25 | - | - | 529k | 633k | 768k | 911k | 1.1M | 1.37M | 1.7M | 2.16M | 59.9k | player | - |
 | `ardougne-guard-north-pickpocket` | [East Ardougne (Kandarin)](../places/east-ardougne.md) `pickpocket:east-ardougne:7` | 771k at 40 | - | - | - | 771k | 1M | 1.27M | 1.62M | 2.13M | 2.83M | 3.9M | 100k | player | - |
 | `guard-falador-pickpocket` | [Falador (Asgarnia)](../places/falador.md) `pickpocket:falador:4` | 760k at 40 | - | - | - | 760k | 991k | 1.25M | 1.6M | 2.11M | 2.81M | 3.88M | 99.5k | player | 2.07M at 82 (93%) |
-| `knight-ardougne-pickpocket` | [East Ardougne (Kandarin)](../places/east-ardougne.md) `pickpocket:east-ardougne:8` | 2.01M at 55 | - | - | - | - | - | 2.26M | 2.9M | 3.81M | 5.06M | 7M | 166k | player | 3.71M at 99 (53%) |
+| `knight-ardougne-pickpocket` | [East Ardougne (Kandarin)](../places/east-ardougne.md) `pickpocket:east-ardougne:8` | 2.01M at 55 | - | - | - | - | - | 2.26M | 2.9M | 3.81M | 5.06M | 7M | 166k | player | 2.96M at 72 (97%); 3.71M at 99 (53%) |
 
 - `man-catherby-pickpocket`: Pickpocketing the men at Catherby, food from Catherby. Thieving 1-10: the highest man floor of the sites a walk reaches with no requirement, the bank 6 run ticks away. No promoted plan; unmeasured.
   - **Requires**: Reach: none. Levels: Thieving 1. Tools: none. Food: Shrimps.
@@ -45,8 +45,8 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Sink**: bank at [Falador East bank (Falador)](../places/falador-east-bank.md) `bank:falador-east-bank:0`; legs 21 + 21 run ticks.
   - **Supplies/hr** at 99: 59 Trout; 1.18k gp.
   - **Measured**: 2.07M at 82 by conductor2 on 2026-10-11.
-- `knight-ardougne-pickpocket`: Pickpocketing the Knights of Ardougne in the market, food from Ardougne South. knight-thieve also fishes and cooks its lobsters at Catherby, so it names no method; the measured figure comes from its thieving and Ardougne South bank phases.
+- `knight-ardougne-pickpocket`: Pickpocketing the Knights of Ardougne in the market, food from Ardougne South. Plans: knight-thieve-bankfood. knight-thieve also fishes and cooks its lobsters at Catherby, so it names no method; the measured figure comes from its thieving and Ardougne South bank phases. knight-thieve-bankfood eats banked swordfish/tuna (any cooked fish) instead, with a one-time travel in from Catherby.
   - **Requires**: Reach: none. Levels: Thieving 55. Tools: none. Food: Lobster.
   - **Sink**: bank at [Ardougne South bank (East Ardougne)](../places/ardougne-south-bank.md) `bank:ardougne-south-bank:0`; legs 22 + 22 run ticks.
   - **Supplies/hr** at 99: 51.7 Lobster; 7.75k gp.
-  - **Measured**: 3.71M at 99 by conductor2w3 on 2026-10-16.
+  - **Measured**: 2.96M at 72 by conductor3 on 2026-10-23; 3.71M at 99 by conductor2w3 on 2026-10-16.

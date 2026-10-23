@@ -33,13 +33,13 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:11` | (2905, 3372) | (2905, 3372) | 19 | no | no | - | - | Falador West bank (Falador), 88 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2988, 3275) | (2988, 3276) | 14 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:16` | (2922, 3406) | (2922, 3407) | 13 | no | no | - | - | Falador West bank (Falador), 74 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:25` | (2996, 3191) | (2995, 3190) | 13 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:27` | (3023, 3172) | (3023, 3172) | 3 | yes | no | - | - | Draynor bank (Draynor Village), 78 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:8` | (2905, 3372) | (2905, 3372) | 19 | no | no | - | - | Falador West bank (Falador), 88 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | 14 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2922, 3406) | (2922, 3407) | 13 | no | no | - | - | Falador West bank (Falador), 74 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:22` | (2996, 3191) | (2995, 3190) | 13 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:24` | (3023, 3172) | (3023, 3172) | 3 | yes | no | - | - | Draynor bank (Draynor Village), 78 ticks |
 | [Rimmington (Asgarnia)](../../places/rimmington.md) | `tree:rimmington:1` | (2975, 3200) | (2975, 3201) | 9 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
-| [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2843, 3375) | (2844, 3378) | 16 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 90 ticks |
+| [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2842, 3372) | (2840, 3369) | 16 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 89 ticks |
 | [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:13` | (2606, 3057) | (2606, 3057) | 3 | no | no | - | - | Yanille bank (Yanille), 37 ticks |
 | [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:15` | (2649, 2955) | (2649, 2956) | 4 | no | no | - | - | Yanille bank (Yanille), 110 ticks |
 | [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:16` | (2649, 2997) | (2648, 2997) | 1 | no | no | - | - | Yanille bank (Yanille), 109 ticks |

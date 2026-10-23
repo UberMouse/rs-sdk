@@ -168,6 +168,8 @@ default 3) fails the plan. A preflight refusal is a `failed` phase like any othe
 used as an implicit `when`, so a missing tinderbox fails loudly rather than leaving the plan chopping
 forever.
 
+A phase that fails `continue` with no fallback phase whose `when` holds leaves nothing to select, so the plan ends `failed` with `no phase applies` after that one failure; give a `continue` phase a fallback (a restock, a travel phase). [v 2026-10-23 conductor3 local]
+
 ## The runner's safety rails
 
 - **No progress.** A phase run is idle when it ends with total XP, inventory and position as they

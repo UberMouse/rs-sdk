@@ -10,12 +10,9 @@
 
 ## Requirements
 
-- Completion of **Shield of Arrav**, **Lost City**, **Merlin's Crystal**, and **Dragon Slayer**
-- 55 Quest Points
-- 50 Mining
-- 25 Herblore
-- 53 Fishing
-- 53 Cooking
+- Completion of **Shield of Arrav** (either gang), **Lost City**, **Merlin's Crystal**, and **Dragon Slayer**; 55 Quest Points (`quest_hero.rs2:1-7`) [server data, unverified in game 2026-10-23]
+- Mid-quest: 25 Herblore (`brew_potion.rs2:121`), 53 Fishing (`lavafish.rs2:84`), 53 Cooking, 50 Mining (`white_wolf_mountain.rs2:20`) [server data, unverified in game 2026-10-23]
+- Two accounts: the armband needs one player from each gang, who trade a candlestick (`brimhaven_restaurant.rs2:2`, `brimhaven_blackarm_hq.rs2:2`, `grip.rs2:59-61`). A solo bot cannot finish it. See [Shield of Arrav](shield-of-arrav.md) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -34,7 +31,7 @@
 - 3,075 XP each in Attack, Defence, Strength, and Hitpoints
 - XP in Ranged, Fishing, Cooking, Woodcutting, Firemaking, Smithing, Mining, and Herblore
 - Access to the Hero's Guild
-- Ability to purchase Dragon Axe and Dragon Mace
+- Ability to purchase and wield the Dragon Battleaxe and Dragon Mace (Helemos' shop, `heroes_guild.inv:7-8`; wield `tier60.rs2:4,6`) [server data, unverified in game 2026-10-23]
 
 ## Walkthrough
 
@@ -61,8 +58,8 @@ This item requires cooperation between members of the **Black Arm Gang** and **P
 ### Item 3: Cooked Lava Eel
 
 11. Speak to **Gerrant** in Port Sarim's fishing shop. He helps you create an **Oily Fishing Rod** using blamish oil (made from Harralander potion and blamish snail slime).
-12. Travel to **Taverley Dungeon** and navigate past the **Blue Dragons** (bring antifire protection).
-13. Fish at the lava stream using the Oily Fishing Rod and bait to catch a **Lava Eel**.
+12. Travel to a lava eel spot: the Lava Maze in the Wilderness ([Lava Maze](../places/lava-maze.md)) or the Brimhaven Dungeon, which costs 875 coins at Saniboch (`karam_dungeon.rs2:8`; [Brimhaven Dungeon](../places/brimhaven-dungeon.md)). The Taverley Dungeon has no lava eels. [server data, unverified in game 2026-10-23]
+13. Fish at the lava with the Oily Fishing Rod and bait (Fishing 53) to catch a **Lava Eel**.
 14. Cook the lava eel to obtain a **Cooked Lava Eel**.
 
 ### Completion
@@ -78,5 +75,4 @@ This item requires cooperation between members of the **Black Arm Gang** and **P
 | Firebird | Drops Firebird Feather | Entrana |
 | Gerrant | Creates Oily Fishing Rod | Port Sarim fishing shop |
 | ScarFace Pete's Mansion | Master Thieves Armband location | Brimhaven |
-| Blue Dragons | Guard path to lava stream | Taverley Dungeon |
-| Lava stream | Fishing spot for Lava Eel | Taverley Dungeon |
+| Lava eel spots | Fishing spot for Lava Eel | Lava Maze (Wilderness), Brimhaven Dungeon |

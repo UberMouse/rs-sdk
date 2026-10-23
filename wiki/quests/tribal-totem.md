@@ -20,7 +20,7 @@
 
 ## Rewards
 
-- 1,250 Thieving XP
+- 1,775 Thieving XP (`quest_totem.rs2:163`) [server data, unverified in game 2026-10-23]
 - 5 Cooked swordfish
 
 ## Walkthrough

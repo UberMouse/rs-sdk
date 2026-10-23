@@ -90,6 +90,12 @@ export interface SiteOptions {
      */
     walked?: (t: Tile) => boolean;
     /**
+     * Whether a walk from the spawn needs nothing to get to a tile: of the candidates a walk gets to, the first (in
+     * the order below) that is free is the stand, as a tile the fresh account gets to beats one behind a key (a
+     * sandbar at the Catherby shore). Absent: the first walked candidate stands.
+     */
+    free?: (t: Tile) => boolean;
+    /**
      * An npc used by approach ops from further off than beside it (sources/triggers.ts approachRange): its range by
      * config, and whether a player on one tile sees another (the engine's line of sight). Absent: none is.
      */
@@ -102,6 +108,12 @@ export interface SiteOptions {
      * the features hold that kind.
      */
     courses?: { defs: readonly CourseDef[]; step: (f: Feature) => CourseStep | undefined };
+    /**
+     * The shore a feature belongs to, or undefined: features with the same shore in one kind, level and leaf area
+     * are one site however far apart they stand (a fishing spot moves over every tile of its enum,
+     * sources/fishing-movement.ts, so the spots sharing one are one place to fish).
+     */
+    shore?: (f: Feature) => string | undefined;
 }
 
 // The packer's forceapproach bits (server/engine/tools/pack/config/LocConfig.ts:149): every side
@@ -165,6 +177,31 @@ function cluster(features: readonly { tile: Tile }[], members: number[], radius:
     const groups = new Map<number, number[]>();
     members.forEach((i, k) => push(groups, root(k), i));
     return [...groups.values()];
+}
+
+/** `clusters` with those that hold a feature of one shore (SiteOptions.shore) merged. */
+function joinShores(features: readonly Feature[], clusters: number[][], shore: SiteOptions['shore']): number[][] {
+    if (!shore) return clusters;
+    const byShore = new Map<string, number[]>();
+    const out: number[][] = [];
+    for (const c of clusters) {
+        const keys = [...new Set(c.flatMap(i => shore(features[i]!) ?? []))];
+        const into = keys.map(k => byShore.get(k)).find(m => m !== undefined);
+        const target = into ?? c;
+        if (into) into.push(...c);
+        else out.push(c);
+        for (const k of keys) {
+            const held = byShore.get(k);
+            if (held && held !== target) {
+                // A cluster joining two merged sites: fold the other into this one.
+                target.push(...held);
+                out.splice(out.indexOf(held), 1);
+                for (const [key, v] of byShore) if (v === held) byShore.set(key, target);
+            }
+            byShore.set(k, target);
+        }
+    }
+    return out;
 }
 
 interface Candidate {
@@ -303,7 +340,7 @@ function standTile(
     centre: Tile,
     bbox: Rect,
     collision: SiteCollision,
-    { size, walked = () => true, approach }: Pick<SiteOptions, 'size' | 'walked' | 'approach'>,
+    { size, walked = () => true, free, approach }: Pick<SiteOptions, 'size' | 'walked' | 'free' | 'approach'>,
 ): Tile | null {
     const locs = members.filter(i => features[i]!.source === 'loc');
     let found: Candidate[];
@@ -342,7 +379,8 @@ function standTile(
             a.tile.x - b.tile.x ||
             a.tile.z - b.tile.z,
     );
-    return found[0]?.tile ?? null;
+    const freeStand = free && found.find(c => walked(c.tile) && free(c.tile));
+    return (freeStand ?? found[0])?.tile ?? null;
 }
 
 /** Counts per subtype, or per kind where the kind has no subtypes, with keys in sorted order. */
@@ -446,7 +484,7 @@ export function buildSites(
     resolve: (t: Tile) => string[],
     zones: Zones,
     collision: SiteCollision,
-    { size, log, walked, approach, courses }: SiteOptions,
+    { size, log, walked, free, approach, courses, shore }: SiteOptions,
 ): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));
     const groups = new Map<string, number[]>();
@@ -461,7 +499,11 @@ export function buildSites(
     const byArea = new Map<string, number[][]>();
     for (const [key, members] of groups) {
         const area = key.slice(0, key.lastIndexOf('\0'));
-        const clusters = cluster(features, members, SITE_RADIUS[features[members[0]!]!.kind]);
+        const clusters = joinShores(
+            features,
+            cluster(features, members, SITE_RADIUS[features[members[0]!]!.kind]),
+            shore,
+        );
         for (const c of clusters) c.sort((a, b) => byFeature(features[a]!, features[b]!) || a - b);
         byArea.set(area, [...(byArea.get(area) ?? []), ...clusters]);
     }
@@ -501,9 +543,11 @@ export function buildSites(
                 stand = standTile(features, lap.first, kind, last, bbox, collision, {
                     size,
                     walked,
+                    free,
                     approach,
                 });
-            } else stand = standTile(features, members, kind, centre, bbox, collision, { size, walked, approach });
+            } else
+                stand = standTile(features, members, kind, centre, bbox, collision, { size, walked, free, approach });
             if (!stand) log(`place: site ${id} has no stand tile`);
             sites.push({
                 id,

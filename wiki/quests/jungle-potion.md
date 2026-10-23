@@ -8,7 +8,8 @@
 
 ## Requirements
 
-- Druidic Ritual quest complete
+- Druidic Ritual quest complete (`trufitus.rs2:280`) [server data, unverified in game 2026-10-23]
+- Herblore 3 to identify the herbs (`identify.rs2:66`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 

@@ -52,3 +52,35 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+// The Fishing Guild's Net/Harpoon (memberfish) spots near (2604,3416); the guild needs Fishing 68. The guild has no
+// Net/Bait spot, so method net never has a spot there and the shark fallback has to engage; every catch is a shark.
+// (Method harpoon could not prove it: the guild's Cage/Harpoon and Net/Harpoon spots share their tiles.) Spots hop
+// among the guild's tiles, so the area is wide enough to follow them.
+const GUILD = { x: 2604, z: 3416 };
+const GUILD_AREA = { x: GUILD.x, z: GUILD.z, radius: 12 };
+const HARPOON = { id: 311, count: 1 };
+
+test(
+    'fishing task falls back to sharks at the Fishing Guild',
+    async () => {
+        await withFixtureBot(
+            { position: GUILD, skills: { Fishing: 84 }, inventory: [NET, HARPOON] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'fishing',
+                    { method: 'net', fallback: 'shark', area: GUILD_AREA, onFull: 'drop' },
+                    ['xp:Fishing:1100', 'minutes:4'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.xpGained.Fishing, detail).toBeGreaterThanOrEqual(1100);
+                // Only the shark fallback can have fished here, so the XP is sharks.
+                expect(run.stdout + run.stderr, detail).toContain('fishing shark');
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);

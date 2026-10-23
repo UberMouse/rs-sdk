@@ -29,10 +29,10 @@
 2. Go to the front door of the witch's house. Look under the **potted plants** near the door to find the **door key**.
 3. Enter the house. Go upstairs to the bedroom and search the cupboard to find the witch's **diary**. Read it to learn clues about the combination.
 4. Go to the basement. Search the cupboard to obtain a **magnet**.
-5. Equip your **leather gloves** (required to avoid being hurt by the magnet puzzle).
+5. Wear your **leather gloves** at the iron gate to the garden; bare hands take a shock (`quest_ball.rs2:34-37`), the magnet puzzle does not hurt. [server data, unverified in game 2026-10-23]
 6. Use the **cheese** on the **mouse hole** in the basement to lure the mouse. Then use the **magnet** to retrieve the key the mouse carries.
-7. Go out to the yard. Be careful to avoid the **witch** who patrols the garden -- if she catches you, she will teleport you out of the house. Time your movements to stay out of her path.
-8. Search the **fountain** in the yard. Consult the diary for the correct combination to retrieve the key from inside.
+7. Go out to the yard. Be careful to avoid the **witch** who patrols the garden -- if she sees you, she curses you and teleports you out, and if the mouse-door stage is done it resets to started, deleting the shed key and ball (`witch.rs2:24-29`). Time your movements to stay out of her path. [server data, unverified in game 2026-10-23]
+8. Search the **fountain** in the yard (second option): the secret compartment holds the shed key. There is no combination to enter (`quest_ball.rs2:162-168`). [server data, unverified in game 2026-10-23]
 9. Use the key to open the **shed** in the backyard.
 10. Inside the shed, the **Witch's Experiment** attacks. It has 4 phases, each a different form with increasing combat level:
     - Phase 1: Level 19
