@@ -332,6 +332,12 @@ actual state honestly in `Bot:` (the last RESULT's `inCombat` and `hp`, or `bun 
 <bot>`), and the conductor handles an unsafe end. Then write your state file per "Before a
 report" above and end your turn with one of these reports.
 
+SubagentHandback delivers one report per runner. Once it has delivered one (a DECISION NEEDED,
+or a report before a script-fault resume), every later report goes by `SendMessage` to `main`,
+the same text, and then you end your turn. A hand-back that answers "already delivered" means
+send it that way now, never retry. A runner that kept retrying sat for 25 min with its GOAL report
+undelivered, waking on every leftover check-in (2026-10-23).
+
 **A decision** (the goal stays yours: set `pendingDecision`, and the conductor answers with
 `SendMessage`, which resumes you with this context; carry on from its answer):
 
