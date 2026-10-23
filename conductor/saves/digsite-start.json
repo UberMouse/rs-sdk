@@ -1,0 +1,143 @@
+{
+    "name": "digsite-start",
+    "purpose": "Digsite Quest start: lumbridge-quests combat (Att 40 Str 47 Def 40 HP 48, steel scimitar, 8 salmon) + Thieving 25, Agility 10, Herblore 10, 100 coins, at Lumbridge (3222,3218)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 15,
+                "Thieving": 25,
+                "Agility": 10,
+                "Herblore": 10
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 100
+        }
+    },
+    "sha1": "ca65fc25bac46cc4bb7155be6130e0d9e0900544",
+    "createdAt": "2026-10-23T09:53:23.828Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 15,
+            "Herblore": 10,
+            "Agility": 10,
+            "Thieving": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

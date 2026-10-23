@@ -1,0 +1,210 @@
+{
+    "name": "digsite-probe-exam2",
+    "purpose": "probe: Digsite exam 2 pending (itexamlevel 3), cert1, trowel, opal, jar, brush, rope, tools, charcoal; at the examiner",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3361,
+                "z": 3346
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 15,
+                "Thieving": 25,
+                "Agility": 10,
+                "Herblore": 10
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 691,
+                    "count": 1
+                },
+                {
+                    "id": 676,
+                    "count": 1
+                },
+                {
+                    "id": 1609,
+                    "count": 1
+                },
+                {
+                    "id": 669,
+                    "count": 1
+                },
+                {
+                    "id": 670,
+                    "count": 1
+                },
+                {
+                    "id": 954,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 1755,
+                    "count": 1
+                },
+                {
+                    "id": 229,
+                    "count": 1
+                },
+                {
+                    "id": 233,
+                    "count": 1
+                },
+                {
+                    "id": 973,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 90,
+            "varps": {
+                "131": 3
+            }
+        }
+    },
+    "sha1": "8af4bae8b2de07cca0a47a652cc4ec6ca8c2203d",
+    "createdAt": "2026-10-23T10:12:07.251Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3361,
+            "z": 3346,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 15,
+            "Herblore": 10,
+            "Agility": 10,
+            "Thieving": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 90
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 691,
+                "name": "level1certificate",
+                "count": 1
+            },
+            {
+                "id": 676,
+                "name": "trowel",
+                "count": 1
+            },
+            {
+                "id": 1609,
+                "name": "opal",
+                "count": 1
+            },
+            {
+                "id": 669,
+                "name": "specimen_jar",
+                "count": 1
+            },
+            {
+                "id": 670,
+                "name": "specimen_brush",
+                "count": 1
+            },
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 1755,
+                "name": "chisel",
+                "count": 1
+            },
+            {
+                "id": 229,
+                "name": "vial_empty",
+                "count": 1
+            },
+            {
+                "id": 233,
+                "name": "pestle_and_mortar",
+                "count": 1
+            },
+            {
+                "id": 973,
+                "name": "charcoal",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "131": 3,
+            "281": 1000
+        }
+    }
+}

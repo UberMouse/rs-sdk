@@ -1,0 +1,183 @@
+{
+    "name": "digsite-probe-exam1",
+    "purpose": "probe: Digsite exam 1 pending (itexamlevel 2), tea, panning tray (stands in for the table pickup), tools; at the examiner",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3361,
+                "z": 3346
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 15,
+                "Thieving": 25,
+                "Agility": 10,
+                "Herblore": 10
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 1755,
+                    "count": 1
+                },
+                {
+                    "id": 229,
+                    "count": 1
+                },
+                {
+                    "id": 233,
+                    "count": 1
+                },
+                {
+                    "id": 1978,
+                    "count": 1
+                },
+                {
+                    "id": 677,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 90,
+            "varps": {
+                "131": 2
+            }
+        }
+    },
+    "sha1": "286555a6df56e6290e6f0a01f632e27a2681cc5b",
+    "createdAt": "2026-10-23T11:27:45.869Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3361,
+            "z": 3346,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 15,
+            "Herblore": 10,
+            "Agility": 10,
+            "Thieving": 25
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 90
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 1755,
+                "name": "chisel",
+                "count": 1
+            },
+            {
+                "id": 229,
+                "name": "vial_empty",
+                "count": 1
+            },
+            {
+                "id": 233,
+                "name": "pestle_and_mortar",
+                "count": 1
+            },
+            {
+                "id": 1978,
+                "name": "cup_of_tea",
+                "count": 1
+            },
+            {
+                "id": 677,
+                "name": "tray_empty",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "131": 2,
+            "281": 1000
+        }
+    }
+}
