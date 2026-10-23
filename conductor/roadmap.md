@@ -289,3 +289,11 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - willow-longbows: the floor cuts and strings each bow as it is chopped (26 logs a trip) where the plan carries 13 strings and chops 13 a trip; a plan lever.
 - Levers, not model gaps: the Wilderness ridge gates (excluded from the `agility-wilderness-course` lap floor; the agility task crosses them each lap) and the runecraft landing (the floor takes the mean over the mine's landings, about 150 tiles from 22 squares; the plan mines whichever rock it finds).
 - Phase 4 note: the Wilderness combat opt-in comes later, with Prayer (user decision).
+- combat task (tick-perfect): the between-kill overhead at the hill giants is 16.4 ticks measured against 7.5
+  modelled (Task 8 calibration, 72 kills over runs itbxt3d6mz3d, itjtbdy3yqle, itfdyu1jmi8j): the walk to the bones,
+  the pickup and the bury run one after another, leftover bones are buried too, and the next attack comes 2-3 ticks
+  after the decision. The world index calibrates the fight only; this is the task's to close.
+- combat task: the low-HP eat double-sends. In run itfdyu1jmi8j/2026-10-23T02-38-12-489Z-combat the guard sent Eat at
+  tick 501 and again at 502, inside the eat delay, so the server refused the second and the run ended "could not eat
+  Lobster: Failed to use inventory item"; the same ended the first calibration's run 2, one outside the pooled three.
+  Gate the second eat on the first's effect.

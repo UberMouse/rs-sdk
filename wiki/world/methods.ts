@@ -101,7 +101,7 @@ export interface Measured {
 /**
  * Worker runs against one npc, their measured figures per kill beside the model's at the runs' profile
  * (model/method.ts killFigures). A record opens the food gate for its npc (CALIBRATED_NPCS): its kills eat the
- * method's food. It is written only when both figures agree within CALIBRATION_TOLERANCE, and
+ * method's food. It is written only when its damage and fight ticks agree within CALIBRATION_TOLERANCE, and
  * test/combat-method.real.test.ts holds them there. The runs are the calibration smoke's
  * (conductor/test/integration/smoke/combat-calibration.itest.ts), measured with conductor/tools/combat-ledger.ts.
  */
@@ -119,17 +119,28 @@ export interface Calibration {
     skill: Skill;
     food: string;
     loot: Loot;
+    /**
+     * The runs' kills (combat-ledger.ts perKill, its interrupted kills left out): per kill the mean and its standard
+     * error of the HP the npc's hitsplats took, the fight ticks (first swing to killing swing), the whole kill's ticks
+     * (killing swing to killing swing) and the gap between (killing swing to the next kill's first swing).
+     */
     measured: {
         kills: number;
-        /** Mean HP the npc's hitsplats took a kill, and its standard error. */
+        excluded: number;
         damage: number;
         damageSe: number;
-        /** Mean ticks from a kill to the next, and its standard error. */
+        fight: number;
+        fightSe: number;
         ticks: number;
         ticksSe: number;
+        gap: number;
+        gapSe: number;
     };
-    /** killFigures at the runs' profile when the record was written. */
-    model: { damage: number; ticks: number };
+    /**
+     * killFigures at the runs' profile when the record was written. Damage and fight are held within
+     * CALIBRATION_TOLERANCE of the measured; ticks and gap are reported only (the gap is the combat task's overhead).
+     */
+    model: { damage: number; fight: number; ticks: number; gap: number };
     /** YYYY-MM-DD. */
     date: string;
     /** The runs, as `<bot>/<runId>` (conductor/runs/<bot>/<runId>.ticks.ndjson.gz). */
@@ -137,7 +148,38 @@ export interface Calibration {
 }
 
 /** The calibrated npcs: at most one record each. */
-export const CALIBRATIONS: Calibration[] = [];
+export const CALIBRATIONS: Calibration[] = [
+    {
+        // Edgeville dungeon's hill giants, as the hill-giants plan fights them, at Defence 1 unarmoured.
+        npc: 'giant',
+        at: { level: 0, x: 3113, z: 9840 },
+        area: 14,
+        levels: { attack: 70, strength: 99, defence: 1, hitpoints: 99, prayer: 99 },
+        worn: ['mithril_scimitar'],
+        skill: 'strength',
+        food: 'lobster',
+        loot: { bones: 'bury' },
+        measured: {
+            kills: 72,
+            excluded: 0,
+            damage: 7.9861,
+            damageSe: 0.5324,
+            fight: 25.9444,
+            fightSe: 1.1043,
+            ticks: 42.1159,
+            ticksSe: 1.6583,
+            gap: 16.4348,
+            gapSe: 1.1592,
+        },
+        model: { damage: 6.689157678, fight: 23.041069272, ticks: 30.541069272, gap: 7.5 },
+        date: '2026-10-23',
+        runs: [
+            'itbxt3d6mz3d/2026-10-23T02-09-07-292Z-combat',
+            'itjtbdy3yqle/2026-10-23T02-26-21-689Z-combat',
+            'itfdyu1jmi8j/2026-10-23T02-38-12-489Z-combat',
+        ],
+    },
+];
 
 export const METHODS: MethodDef[] = [
     {

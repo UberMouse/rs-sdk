@@ -1,6 +1,7 @@
 // A melee method end to end over the committed world.json and the real game data: a test-only hill giant record
 // (methods.ts seeds none yet) resolved over the Edgeville dungeon's three giant sites, then rated through methodQuery
-// on the style each skill picks, with its aggression hazard at two combat levels and its uncalibrated food.
+// on the style each skill picks, with its aggression hazard at two combat levels and its food: eaten by the hill
+// giant's calibration record (methods.ts CALIBRATIONS), none without it.
 import { describe, expect, test } from 'bun:test';
 import { reachCollision } from '../collision';
 import { loadWorld } from '../load';
@@ -22,7 +23,7 @@ import {
     type MethodContext,
 } from '../model/method';
 import { profileAt, type Profile } from '../model/profile';
-import type { Skill } from '../model/server';
+import { TICKS_PER_HOUR, type Skill } from '../model/server';
 import { locSizes } from '../place';
 import { methodQuery } from '../query';
 import { reachGraph } from '../reach';
@@ -59,6 +60,12 @@ const at = (level: number): Profile => profileAt('attack', level, { tools: model
 
 /** The record's Attack XP/hr at 60 in every skill, wearing `worn` over its gear. */
 const rate = (worn: string[]) => query.methodRate(giants.id, { ...at(60), worn }).xpPerHour.attack!;
+
+/** The record's ticks a kill at 60 in every skill wearing `worn`, its eats left out. */
+const killTicks = (worn: string[]) => {
+    const { trip } = query.methodRate(giants.id, { ...at(60), worn });
+    return trip.gather / trip.successes;
+};
 
 /** The styles styleParams gives the record for `skill`, at 60 in every skill. */
 const styles = (skill: Skill) => styleParams(giants, at(60), ctx, skill).map(p => (p as { style: string }).style);
@@ -141,9 +148,11 @@ describe('the style follows the queried skill', () => {
 
     test("a profile's own worn objs take their slots; the record's gear keeps the rest", () => {
         // An iron med helm is no weapon: the record's rune scimitar stays, and the helm has no attack or strength
-        // bonus, so the kill is as fast. A bronze scimitar in the weapon slot replaces the rune one, and its lower
-        // slash and strength bonuses make the kill slower.
-        expect(rate(['iron_med_helm'])).toBe(rate([]));
+        // bonus, so the kill takes as many ticks (its defence bonus cuts the calibrated giant's hits, so the eats and
+        // the rate differ). A bronze scimitar in the weapon slot replaces the rune one, and its lower slash and
+        // strength bonuses make the kill slower.
+        expect(killTicks(['iron_med_helm'])).toBe(killTicks([]));
+        expect(killTicks(['bronze_scimitar'])).toBeGreaterThan(killTicks([]));
         expect(rate(['bronze_scimitar'])).toBeLessThan(rate([]));
     });
 });
@@ -165,8 +174,20 @@ describe('hazard and food', () => {
         expect(query.bestMethods('attack', at(45))[0]!.hazard.aggressive).toBe(false);
     });
 
-    test('the kill is uncalibrated: the named lobster is not eaten and no Food/hr shows', () => {
+    test("the hill giant is calibrated (CALIBRATIONS): the named lobster is eaten for the model's damage", () => {
+        expect(CALIBRATED_NPCS.has('giant')).toBe(true);
         const r = query.methodRate(giants.id, at(60));
+        // Food/hr is the kills an hour (TICKS_PER_HOUR / the trip's ticks x its kills) times the HP each takes
+        // (killFigures' damage, swinging accurate for Attack) over the lobster's heal.
+        const { damage } = killFigures(resolved, at(60), ctx, 'attack');
+        const kills = (TICKS_PER_HOUR / r.trip.total) * r.trip.successes;
+        expect(r.suppliesPerHour).toEqual([{ obj: 'lobster', count: expect.any(Number) }]);
+        expect(r.suppliesPerHour[0]!.count).toBeCloseTo((kills * damage) / model.foods.get('lobster')!, 6);
+    });
+
+    test('uncalibrated, the same kill eats no lobster and shows no Food/hr', () => {
+        const shut = { ...model, calibrated: new Set<string>() };
+        const r = methodQuery({ ...world, methods: [toWorldMethod(resolved)] }, shut).methodRate(giants.id, at(60));
         expect(r.suppliesPerHour).toEqual([]);
         expect(r.trip.eat).toBe(0);
     });
@@ -206,6 +227,10 @@ describe('killFigures: a kill as a calibration run measures it', () => {
         // the scimitar's 4: the ticks are the kill's and the pickup's.
         expect((3 * f.damage) / 12).toBeLessThan(gather.pickupTicks!);
         expect(f.ticks).toBeCloseTo(gather.ticksPerAttempt + gather.pickupTicks!, 9);
+        // The fight is the kill's swings but the last's cooldown: ticksPerAttempt is n x 4 (the scimitar's
+        // attackrate) plus the free ticks before the next swing, so (n - 1) x 4. The gap is the rest of the kill.
+        expect(f.fight).toBeCloseTo(gather.ticksPerAttempt - gather.freeTicks! - 4, 9);
+        expect(f.gap).toBeCloseTo(f.ticks - f.fight, 9);
     });
 
     test('a skill every style trains (Hitpoints) has no one style: a ModelError', () => {
@@ -221,12 +246,13 @@ describe('the calibration records (methods.ts CALIBRATIONS)', () => {
     });
 
     for (const c of CALIBRATIONS)
-        test(`${c.npc}: the model still gives the recorded figures, within the tolerance of the run's`, () => {
+        test(`${c.npc}: the model still gives the recorded figures, its damage and fight within the runs'`, () => {
             const m = resolveMethod(calibrationMethod(c), ctx, legs);
             const f = killFigures(m, calibrationProfile(c, model.tools), ctx, c.skill);
-            expect(f.damage).toBeCloseTo(c.model.damage, 6);
-            expect(f.ticks).toBeCloseTo(c.model.ticks, 6);
+            for (const k of ['damage', 'fight', 'ticks', 'gap'] as const) expect(f[k]).toBeCloseTo(c.model[k], 6);
             expect(agrees(f.damage, c.measured.damage)).toBe(true);
-            expect(agrees(f.ticks, c.measured.ticks)).toBe(true);
+            expect(agrees(f.fight, c.measured.fight)).toBe(true);
+            for (const se of [c.measured.damageSe, c.measured.fightSe, c.measured.ticksSe, c.measured.gapSe])
+                expect(Number.isFinite(se)).toBe(true);
         });
 });

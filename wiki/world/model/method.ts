@@ -614,15 +614,29 @@ export function methodRate(
     return rate(m, profile, ctx, skill, chosen);
 }
 
-/** What a calibration run measures of a kill, as the model gives it. */
+/**
+ * What a calibration run measures of a kill, as the model gives it. The run's figures are
+ * conductor/tools/combat-ledger.ts KillRow's, on the same definitions: `fight` from the player's first swing on the
+ * kill's npc to its killing swing (the ledger's first hitsplat on it to its 0 HP, each shown a tick after its swing),
+ * `gap` from the killing swing to the first swing of the next kill, `ticks` their sum.
+ */
 export interface KillFigures {
     /** HP the npc's swings take off the player a kill (ActionModel.damage). */
     damage: number;
+    /**
+     * Ticks from the first swing to the killing swing: the kill's n swings (families/combat.ts expectedSwings) at the
+     * weapon's attack rate, n x attackRate in its ticksPerAttempt less the cooldown after the killing swing
+     * (families/combat.ts:399), so (n - 1) x attackRate. A run's eat between two swings lengthens its fight; the
+     * model puts its eats' ticks in `gap`.
+     */
+    fight: number;
     /**
      * Ticks a kill takes at the site: the fight, the gap to the next, the pickup, the bury and the eats, as the cycle
      * counts them a success (its trip less the travel and the bank), the food eaten as for a calibrated npc.
      */
     ticks: number;
+    /** `ticks` less `fight`: the killing swing's cooldown and what the cycle puts between kills. */
+    gap: number;
 }
 
 /**
@@ -637,10 +651,9 @@ export function killFigures(m: ResolvedMethod, profile: Profile, ctx: MethodCont
         if ('withdraw' in gather || gather.attackRate === undefined) throw new ModelError('it is not a kill');
         const calibrated = new Set([killNpc(m.def, m.site, ctx.world)]);
         const { trip } = rateAt(m, profile, { ...ctx, calibrated }, undefined, styles[0]);
-        return {
-            damage: gather.damage ?? 0,
-            ticks: (trip.gather + trip.bury + trip.eat + trip.wait) / trip.successes,
-        };
+        const fight = gather.ticksPerAttempt - (gather.freeTicks ?? 0) - gather.attackRate;
+        const ticks = (trip.gather + trip.bury + trip.eat + trip.wait) / trip.successes;
+        return { damage: gather.damage ?? 0, fight, ticks, gap: ticks - fight };
     });
 }
 
@@ -668,7 +681,11 @@ export const calibrationProfile = (c: CalibrationRun, tools: Tools): Profile =>
         worn: c.worn,
     });
 
-/** How far a model figure may be from a run's, as a share of the run's, for the run to calibrate it (spec Task 8). */
+/**
+ * How far a model figure may be from a run's, as a share of the run's, for the run to calibrate it (spec Task 8): the
+ * damage and the fight ticks a kill. The gap between kills is the combat task's overhead, not the floor's: reported
+ * only.
+ */
 export const CALIBRATION_TOLERANCE = 0.25;
 
 /** Whether a model figure is within CALIBRATION_TOLERANCE of a measured one. */

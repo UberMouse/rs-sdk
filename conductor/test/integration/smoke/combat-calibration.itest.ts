@@ -1,11 +1,13 @@
 // The damage calibration (conductor/docs/world-index-phase4-spec.md, Task 8): a fixture bot fights the Edgeville
 // dungeon's hill giants with the combat task as the hill-giants plan runs it, and the kills in its recording
 // (conductor/tools/combat-ledger.ts) are set beside the world index's model at the same profile (killFigures). It
-// prints a RESULT line of each. run.ts gives a file 10 minutes, so a run stops at 7 and gets a dozen-odd kills; the
-// calibration pools several runs' recordings (`bun conductor/tools/combat-ledger.ts <recordings>... --npc Giant`).
-// Each run's RESULT lines are also written to <runId>.calibration.ndjson beside its log. Figures that agree within
-// CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand; once the giant is calibrated, the
-// model must still agree with each run.
+// prints a RESULT line of each: damage, fight ticks (first swing to killing swing), whole-kill ticks and the gap
+// between kills, the last two reported only. run.ts gives a file 10 minutes, so a run stops at 7 and gets a dozen-odd
+// kills; the calibration pools several runs' recordings (`bun conductor/tools/combat-ledger.ts <recordings>... --npc
+// Giant`).
+// Each run's RESULT lines are also written to <runId>.calibration.ndjson beside its log. Damage and fight ticks that
+// agree within CALIBRATION_TOLERANCE are copied into wiki/world/methods.ts CALIBRATIONS by hand; once the giant is
+// calibrated, the model's damage and fight ticks must still agree with each run.
 //
 // The profile: Defence 1 and no armour, so most of the giant's swings hit and the damage a kill is large enough to
 // measure; combat level 92, over the giants' hunt cutoff (56), so no second giant joins between kills. Strength,
@@ -72,7 +74,7 @@ function modelled() {
 }
 
 test(
-    'hill giant kills: damage and ticks per kill beside the model',
+    'hill giant kills: damage and fight ticks per kill beside the model',
     async () => {
         const model = modelled();
         await withFixtureBot(
@@ -100,19 +102,25 @@ test(
                 const detail = `${JSON.stringify(run.result)}\n${run.stderr.split('\n').slice(-40).join('\n')}`;
                 const ledger = recordingLedger(recordingFile(run.result.logFile), { npc: 'Giant', food: ['Lobster'] });
                 const { perKill } = ledger;
+                // The gate's figures: damage and fight ticks a kill. Whole-kill ticks and the gap are reported only.
                 const agreement = {
                     damage: agrees(model.damage, perKill.damage.mean),
-                    ticks: agrees(model.ticks, perKill.ticks.mean),
+                    fight: agrees(model.fight, perKill.fight.mean),
                 };
                 const lines = [
-                    { measured: perKill, npcHitsplats: ledger.npcHitsplats, run: `${name}/${run.result.runId}` },
-                    { model: { damage: model.damage, ticks: model.ticks }, agreement, status: run.result.status },
+                    {
+                        measured: perKill,
+                        npcHitsplats: ledger.npcHitsplats,
+                        unattributed: ledger.unattributed,
+                        run: `${name}/${run.result.runId}`,
+                    },
+                    { model, agreement, status: run.result.status },
                 ].map(o => `RESULT ${JSON.stringify(o)}`);
                 // run.ts shows a passing file's output to no one: the lines go beside the run's log too.
                 writeFileSync(run.result.logFile.replace(/\.ndjson$/, '.calibration.ndjson'), lines.join('\n') + '\n');
                 for (const line of lines) console.log(line);
                 expect(perKill.kills, detail).toBeGreaterThanOrEqual(MIN_KILLS);
-                if (CALIBRATED_NPCS.has(RUN.npc)) expect(agreement, detail).toEqual({ damage: true, ticks: true });
+                if (CALIBRATED_NPCS.has(RUN.npc)) expect(agreement, detail).toEqual({ damage: true, fight: true });
             },
             { connect: false },
         );
