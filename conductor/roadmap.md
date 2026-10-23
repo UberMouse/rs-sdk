@@ -46,7 +46,7 @@ chaos druids + Herblore + melee + Prayer.
    (tools-food, Fishing 68, Cooking 71, 50+ fish banked, 15 min).
 3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47) and Rune Mysteries (essence) done 07:06; Imp Catcher (Magic 44,
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
-4. Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
+4. (done, Thieving 99 at 09:00; knights 72-99 in 17 min, 2.96M/h) Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
    knights (in progress, 07:30: bot at Catherby (2834,3443) after `travel` Falador -> Ardougne crossed White Wolf Mountain
    and a lvl 38 wolf took ~10 HP in 30 s at combat 32; Catherby -> Ardougne is west of the wolves; to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
@@ -62,8 +62,15 @@ Agility 52", with each plan phase carrying its own `until` and `when` gates writ
 Sonnet (user, 07:37: "Keep runners, bigger goals, run them on sonnet instead of opus"); the conductor's general-purpose
 dispatches pass `model: sonnet` too.
 
-Account (2026-10-23 07:30): total ~340; Thieving 62, Cooking 71, Fishing 68, Prayer 49, Attack 27, HP 26, Str/Def 20;
-steel axe, fly rod and 50+ trout/salmon banked or held, ~1.8k coins; at Catherby.
+**Goal sizing worked (retro #2, 09:00).** After the milestone rule a runner cost ~1 M cache reads for a 17-50 min goal
+(Kandarin agility+swordfish 1.0 M, knights 99 1.0 M) against 0.7-9 M for 4-15 min goals before; the one 5 M runner
+(thieve-55-coins, 263 turns) was dispatched before the rule and spent its turns polling (four `sleep` calls blocked by
+the harness, a nonexistent Monitor tool, three SubagentHandback repeats refused as "already delivered").
+
+Account (2026-10-23 09:00): total 490; Thieving 99, Cooking 95, Fishing 91, Agility 52, Prayer 49, Attack 28, HP 26,
+Str/Def 20, the other nine skills at 1; ~25.5k coins banked; at Ardougne.
+Next milestone: Fishing 99 + Cooking 99 (sharks, see Experiments), then melee/Prayer (Waterfall, hill giants), then the
+gathering/production 99s from level 1.
 
 ## Unlocks
 
@@ -111,6 +118,12 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   `inv` only, and the bank `upTo` took 27 of 155 feathers (fixed f2491ac8a); (c) `runs()` resets on restart. Proposal:
   `plan` validator (in `run-task.ts --plan` load) warns on a phase that is the last of its skill with no `until`, and
   on a `shop buy` whose `when` lacks a coin or bank-held check; document in `conductor/docs/plans.md`.
+- **Runner wait idiom (done: task-runner.md already says so since 1e8b41494/fafa3391d; that runner predates them; Monitor note added)**: the thieving runner lost ~30 turns to harness-blocked `sleep N;
+  cmd` calls and a nonexistent Monitor tool (transcript aeed6c5a: turns 77/144/153/196/200); the plan run is a
+  background command, so say in task-runner.md: wait with `while pgrep ...; do sleep 10; done` in one call (the form
+  that worked 6x) or end the turn and be woken by the notification; never `sleep N` followed by a command.
+- **Fishing/Cooking 91-99 and the high-gp track (next)**: sharks at the Guild or Catherby (fallback in review), then
+  gp: ~25.5k banked covers the adamant pickaxe (3.2k) and the mithril scimitar (Zeke); more gp from knights when needed.
 - **White Wolf Mountain crossing (idea)**: every overland walk Asgarnia <-> Kandarin crosses it, and the wolves
   (cowardly, huntrange 2) hunt players up to combat 50 (lvl 25) and 76 (lvl 38). An `avoid` zone can't help with no
   other overland path; the options are combat 51+ (then only the lvl 38s), plenty of food with `travel` flee:true and
@@ -219,9 +232,17 @@ their shapes. Miscellania's coal, maples and fish need the kingdom quest and los
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
+- Catherby swordfish idle gaps (retro #2): the 08:12 run (87.8% of Fishing floor, 70% of Cooking) cycled fishing 152 s,
+  339 s, 180 s for the same 26 fish, then 60-100 s of cook-swordfish, cook-tuna and bank per cycle (about 25% of the
+  wall time not fishing). Cause of the 339 s cycle (conductor, from its ticks): no Cage/Harpoon spot in view for ~130 s while 4-5
+  Net/Harpoon (shark) spots were; the fishing task's shark fallback (in review) closes it. Variants: (b) Fishing Guild sharks/swordfish
+  (`shark-fishing-guild-cook-bank`, `swordfish-fishing-guild-cook-bank`: records exist, no runs; Guild needs Fishing 68,
+  range and bank beside the dock) for 91-99 on a worker first; (c) cook while fishing is impossible, so shrink the
+  non-fishing 25% with one cook phase for both fish. Metric: Fishing XP/h vs 561k/h measured. Needs the shark fallback
+  in fishing.ts landed.
 - Goal sizing (retro 07:30): hypothesis, runner overhead (0.7-9 M cache reads each, ~6 min goals) dominates at this
   server's XP curve; milestone-sized goals with a runner, and known plans run by the conductor, cut tokens per XP
-  at equal XP/h. Metric: cache-read tokens per 100k XP over the next 10 dispatches. Status: start with the next goal.
+  at equal XP/h. Metric: cache-read tokens per 100k XP over the next 10 dispatches. Status: confirmed on two goals (retro #2): ~1 M cache reads per 17-50 min runner.
 - Thieving gp: Falador guards 540k/h with 9 trout per 6 min (~1.5 trout/min, ~280 gp/min) vs knights at 62+; measure
   knights XP/h and gp/h once at Ardougne, and compare with staying at Falador guards until 70 (no mountain crossing).
 

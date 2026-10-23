@@ -246,7 +246,7 @@ then journals the run itself when it ends.
 - Every run goes in the background (`run_in_background`), however short (Every run, item 3); read
   its RESULT from the output file the completion notification names. Never `sleep N; tail` (the
   harness blocks a foreground sleep) and never a `pgrep` loop: a run you started reports its own
-  end. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
+  end. Runners have no Monitor tool; the completion notification is the only wake-up. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
   always with the anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell
   itself and never ends.
 - `No game client is attached`: stop and report it; don't start a client. `already has N
