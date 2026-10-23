@@ -18,7 +18,7 @@ overstocked on that item, not that the sale failed.
 
 | Shop | Location | Coordinates | What They Sell |
 |------|----------|-------------|----------------|
-| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
+| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. Pot 1 gp, Bucket 2 gp; buys Salmon ~18 gp each (55 gp for 3). [v 2026-10-23 questw3 local] Stock list otherwise [v 2026-10-09 conductor1 local] |
 | Every general store (Lumbridge, Rimmington (2947, 3217), Falador, Varrock, Edgeville) | various | - | Stock only 2 Buckets and 2 Jugs each (as the `wiki/shops/` pages list): a 14-bucket buy fills 2, so buy at several shops. [v 2026-10-11 conductor2 local] |
 | Aubury's Rune Shop | Varrock | (3253, 3402) | Air and Mind runes (and others). Prices climb as you buy: 110 Mind + 110 Air cost 1079 gp (about 5 gp/rune for bulk), well above the ~770 gp the wiki base prices suggest; read the log's shop lines for real prices. [v 2026-10-11 conductor2 local] |
 | Aubury's Rune Shop, Death runes | Varrock | (3253, 3402) | Aubury stocks them (`varrock.inv` `[runeshop]`: 1000, base 150 in the config); Zaff's staff shop does not (`[staffshop]` lists only staves, and `wiki/shops/staffshop.md` agrees). 145 Death runes cost 7,417 gp (51 gp average, 1% ramp). [v 2026-10-16 conductor2 local]

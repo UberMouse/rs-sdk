@@ -15,6 +15,8 @@ if (!result.success) console.warn(result.reason, result.message);
 
 `reachable` on a loc or NPC is judged from the player's current tile, so the same target flips as you move. A Range open on one side only reads `false` from the other: the Lumbridge Range at (3230,3196) is reachable from its east (x 3231) and from (3230,3195) but not from the west tiles (3229,3195..3197), though the west tile is adjacent. `walkTo(x, z, tolerance)` aimed at such a loc does not help: the pathfinder stops next to it on the near side. Instead stand on tiles around the loc, one at a time, and re-read `reachable` after each (the cooking task's `approach`). [v 2026-10-11 conductor2w3 local]
 
+Ground items can sit on blocked tiles: the Lumbridge kitchen pot spawn (3210,3212) and the bucket spawn (3225,3294) read unreachable even from an adjacent tile, so `pickup` (which skips unreachable items) never takes them; buy them instead (`learnings/shops.md`). [v 2026-10-23 questw3 local]
+
 ## Long Distance Walking
 
 `walkTo()` supports long routes. Use waypoints when you intentionally need a
