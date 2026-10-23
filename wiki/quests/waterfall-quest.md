@@ -328,6 +328,15 @@ Draft `conductor/runs/questw2/plans/waterfall-quest.ts` (worker questw2), a full
 - A walk from the Catherby bank to the Ardougne North bank worked in run 1. Walks from Port Sarim or Falador to the
   Ardougne North bank looped through the Wizards' Tower and the essence-mine portal until the walk fix (main
   9e3d23f41). [v 2026-10-23 questw2 local]
-- Unrun: Almera onward (raft, Hudon, swim, Hadley bookcase, Golrie cellar, tomb, rope throws, pillars, fire giants).
+- Proven in game on questw2 (plan runs 4-8, start from a copy of conductor3, combat 33): start, bank-runes (Catherby -> Ardougne North bank 160 s, no loop with the essence-mine walk fix), Almera (60 s), raft, Hudon, swim, Hadley's bookcase (Book on Baxtorian), read, to-cellar travel (110 s), cellar down, key crate, Golrie, door, pebble, then the pebble on the tombstone, which teleports the bot into the tomb at (2554, 9844) (exit ladder at (2555, 9844)), and the chest (amulet). Not proven: urn, tomb exit, rope throws, falls dungeon, pillars, statue, chalice. Prices: rope 23 gp, runes 72 gp. [v 2026-10-23 questw2 local]
+- Gotchas from those runs [v 2026-10-23 questw2 local]:
+  - The forced Hudon dialog on landing never sets stage 2 (the dialog guard closes it); talk to Hudon from the island instead. `interact` Talk-to on Hudon was unreachable at (2512, 3478); use `talk`.
+  - The bookcase gives the Book on Baxtorian only at stage >= 2.
+  - Hadley's house -> Tree Gnome Village ladder has no path: see `learnings/walking.md`.
+  - Searching the crate in Golrie's cellar draws Zombies and Giant bats.
+  - The use-items step (pebble on tombstone) reports Timeout (150 s) although the teleport worked; check position, not the result.
+  - The plan view is stale for a tick after a search; guard reads with `v.last`.
+- Tomb death: a combat-35 account (Atk 42, Def 20, HP 33) died in Glarial's tomb. The tomb forbids gear, so the bot is unarmed and unarmoured; with little food it went 33/33 -> 12 -> dead on the chest -> urn leg (about 33 tiles past roaming Skeleton (22), Zombies (24, 13) and two Moss giants (42); auto-retaliation cost about 25 HP/min). The urn run then failed `in combat at (2531, 9844)`. Planned protocol (not yet proven): stronger generated saves, Protect from Melee before the tombstone, eat between tomb steps, flee `travel` to the exit ladder when HP is low. See `learnings/hazards.md`. [v 2026-10-23 questw2 local]
+- Unrun: urn onward (tomb exit, rope throws, pillars, fire giants).
   Fire giant, moss giant and shadow spider survivability at combat 33 (HP 26) is unmeasured. Start used: a copy of
   conductor3 (combat 33, HP 26) at Catherby with 1895 coins and a food-stocked bank. [v 2026-10-23 questw2 local]

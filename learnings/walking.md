@@ -94,6 +94,8 @@ if (dist > 5) {
 
 - Camelot first floor (Lancelot's, L1) -> Catherby: the walk stops 54 tiles short at (2767, 3497). `travel` to the level-0 courtyard (2762, 3508) first, then on. See [Merlin's Crystal](../wiki/quests/merlins-crystal.md). [v 2026-10-23 questw3 local]
 
+- Hadley's house (Waterfall Quest) -> Tree Gnome Village ladder: the walk finds no path. `travel` to (2533, 3157) first, then climb down. [v 2026-10-23 questw2 local]
+
 ### Smithing loop legs (avoid the Varrock stone circle)
 
 - Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).
