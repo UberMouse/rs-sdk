@@ -3,7 +3,7 @@
 // on any level and members-only ones included (bots always play on members worlds). The curated facts the game data
 // does not give are laid over them by a tile of the site (OVERRIDES): a bank a task must never pick on its own, and
 // why.
-import { resolveSiteKeys, type SiteKey } from '../../wiki/world/site-key';
+import { resolveSiteKeys, type SiteKey, type SiteKeyWorld, siteKeyName } from '../../wiki/world/site-key';
 import type { Area } from './area';
 import { type Account, meetsOneOf, NO_ACCOUNT } from './account';
 import { CONNECTORS, MAX_HOPS, type Tile } from './connectors';
@@ -47,15 +47,32 @@ export const OVERRIDES: readonly (readonly [SiteKey, Override])[] = [
     [bankAt(3186, 3436), { stand: { level: 0, x: 3185, z: 3436 } }],
 ];
 
-/** OVERRIDES by the id of the site each key resolves to; a key naming no bank site, or several, throws at import. */
-const OVERRIDE_BY_ID: ReadonlyMap<string, Override> = (() => {
+/**
+ * `overrides` by the id of the site each key resolves to; a key naming no one site, or two overrides naming
+ * the same site, throws.
+ */
+export function overridesById(
+    overrides: readonly (readonly [SiteKey, Override])[],
+    world: SiteKeyWorld,
+): Map<string, Override> {
     const { ids, invalid } = resolveSiteKeys(
-        OVERRIDES.map(([key]) => key),
-        WORLD,
+        overrides.map(([key]) => key),
+        world,
     );
     if (invalid.length) throw new Error(`banks.ts OVERRIDES names no one bank site: ${invalid.join('; ')}`);
-    return new Map(OVERRIDES.map(([key, o]) => [ids.get(key)!, o]));
-})();
+    const byId = new Map<string, Override>();
+    const keyOf = new Map<string, SiteKey>();
+    for (const [key, o] of overrides) {
+        const id = ids.get(key)!;
+        const first = keyOf.get(id);
+        if (first) throw new Error(`banks.ts OVERRIDES: ${siteKeyName(first)} and ${siteKeyName(key)} both name ${id}`);
+        keyOf.set(id, key);
+        byId.set(id, o);
+    }
+    return byId;
+}
+
+const OVERRIDE_BY_ID = overridesById(OVERRIDES, WORLD);
 
 /** A bank site's name: its area's (`Varrock West bank` is Varrock West). */
 const nameOf = (areaId: string | undefined): string | undefined =>

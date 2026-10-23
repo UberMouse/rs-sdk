@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
-import { BANKS, bankArea, nearestBank } from '../../lib/banks';
+import { BANKS, bankArea, nearestBank, overridesById } from '../../lib/banks';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
 import { nearestWay } from '../../lib/walk-graph';
 import { WORLD } from '../../lib/world-index';
@@ -122,4 +122,53 @@ describe("the walk's ticks are wiki/world/distance.ts's", () => {
                 runTicks: site.nearest!.bank!.runTicks,
             });
         });
+});
+
+describe('overridesById resolves the curated overrides against a world', () => {
+    const world = {
+        sites: [
+            { id: 'bank:a:0', kind: 'bank' as const, features: [0] },
+            { id: 'bank:a:1', kind: 'bank' as const, features: [1, 2] },
+            { id: 'bank:a:2', kind: 'bank' as const, features: [2] },
+        ],
+        features: [{ tile: at(0, 1, 0) }, { tile: at(0, 2, 0) }, { tile: at(0, 3, 0) }],
+    };
+    const key = (x: number) => ({ kind: 'bank' as const, at: at(0, x, 0) });
+
+    test('a good list maps each site id to its override', () => {
+        const byId = overridesById(
+            [
+                [key(1), { skip: 'a' }],
+                [key(2), { skip: 'b' }],
+            ],
+            world,
+        );
+        expect([...byId]).toEqual([
+            ['bank:a:0', { skip: 'a' }],
+            ['bank:a:1', { skip: 'b' }],
+        ]);
+    });
+
+    test('a key naming no bank site throws, naming it', () => {
+        expect(() => overridesById([[key(9), { skip: 'a' }]], world)).toThrow(/bank \(9, 0, 0\): no site holds it/);
+    });
+
+    test('a key two sites hold throws, naming the sites', () => {
+        expect(() => overridesById([[key(3), { skip: 'a' }]], world)).toThrow(
+            /bank \(3, 0, 0\): sites bank:a:1, bank:a:2/,
+        );
+    });
+
+    test('two overrides for one site throw, naming both keys', () => {
+        const one = { ...world, sites: [{ ...world.sites[1]!, features: [0, 1] }] };
+        expect(() =>
+            overridesById(
+                [
+                    [key(1), { skip: 'a' }],
+                    [key(2), { skip: 'b' }],
+                ],
+                one,
+            ),
+        ).toThrow(/bank \(1, 0, 0\) and bank \(2, 0, 0\) both name bank:a:1/);
+    });
 });

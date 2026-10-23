@@ -223,16 +223,7 @@ hints' scripts, then either add the missing connector, gate or transport (the de
 entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
-reached or gone.
-
-A curated table names a site by a `SiteKey` (`site-key.ts`), never by its id: `{ kind, at }`, the site of that
-kind holding a feature on the tile `at` (`siteAt('tree', 2166, 3091)` in `areas.ts`; the report prints it as
-`tree (2166, 3091, 0)`). A site id (`tree:kandarin:7`) is an ordinal within its kind and leaf area, so a change to
-the clustering or the areas renumbers it, and an entry naming it would silently name another site. A feature
-belongs to exactly one site whatever happens to the others, where a site's bbox can overlap others', so a tile of
-one names it. Take any of the site's features' tiles from `world.json`; the build fails on a key no site of its
-kind holds, or several do. `EXPECTED_UNREACHED` and the bank `OVERRIDES` in `conductor/lib/banks.ts` are keyed so;
-ids stay in `world.json` and on the pages. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
+reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
 but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes,
 and its reason names a loc or map flag that walls it with the map square line (`hedge at maps/m45_54.jm2:5352`).
 One entry's reason may cover several sites walled in alike (the decoration trees of the Feldip Hills behind its
@@ -249,6 +240,15 @@ The fill's own warning before it, the rows it could not use, says why each is le
 middle ladder on the top level), a wall whose side the row can't read, or a gate row with no derived landing, with
 what stopped the derivation (no tile on land reaches the loc, every landing off walkable land, a construct not
 known offline).
+
+A curated table names a site by a `SiteKey` (`site-key.ts`), never by its id: `{ kind, at }`, the site of that
+kind holding a feature on the tile `at` (`siteAt('tree', 2166, 3091)` in `areas.ts`; the report prints it as
+`tree (2166, 3091, 0)`). A site id (`tree:kandarin:7`) is an ordinal within its kind and leaf area, so a change to
+the clustering or the areas renumbers it, and an entry naming it would silently name another site. A feature
+belongs to exactly one site whatever happens to the others, where a site's bbox can overlap others', so a tile of
+one names it. Take any of the site's features' tiles from `world.json`; the build fails on a key no site of its
+kind holds, or several do. `EXPECTED_UNREACHED` and the bank `OVERRIDES` in `conductor/lib/banks.ts` are keyed so;
+ids stay in `world.json` and on the pages.
 
 ## Methods
 
