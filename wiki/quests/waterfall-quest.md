@@ -9,8 +9,8 @@
 | Members | yes (all quest objs `members=yes`, `configs/waterfall.obj`) |
 | Skill or quest requirements | none |
 
-Everything on this page is from the server scripts, map files and the world index; no run has finished the quest yet
-[server data, unverified in game 2026-10-23]; the errands are the only part proven in game (Plan status below). Script paths are under `server/content/scripts/`; a bare
+Most of this page is from the server scripts, map files and the world index [server data]; one run finished the quest
+from `lib:waterfall-tomb` (Plan status below), the from-start proof has not yet. Script paths are under `server/content/scripts/`; a bare
 `quest_waterfall.rs2:N` (and `almera.rs2`, `hudon.rs2`, `golrie.rs2`, `baxtorian_book.rs2`, `waterfall_pillars.rs2`,
 `waterfall_journal.rs2`) is in `quests/quest_waterfall/scripts/`. Tiles are (x, z, level) from the map files
 (`server/content/maps/m39_53`, `m39_54`, `m39_149`, `m39_153`, `m40_154`).
@@ -336,7 +336,10 @@ Draft `conductor/runs/questw2/plans/waterfall-quest.ts` (worker questw2), a full
   - Searching the crate in Golrie's cellar draws Zombies and Giant bats.
   - The use-items step (pebble on tombstone) reports Timeout (150 s) although the teleport worked; check position, not the result.
   - The plan view is stale for a tick after a search; guard reads with `v.last`.
-- Tomb death: a combat-35 account (Atk 42, Def 20, HP 33) died in Glarial's tomb. The tomb forbids gear, so the bot is unarmed and unarmoured; with little food it went 33/33 -> 12 -> dead on the chest -> urn leg (about 33 tiles past roaming Skeleton (22), Zombies (24, 13) and two Moss giants (42); auto-retaliation cost about 25 HP/min). The urn run then failed `in combat at (2531, 9844)`. Planned protocol (not yet proven): stronger generated saves, Protect from Melee before the tombstone, eat between tomb steps, flee `travel` to the exit ladder when HP is low. See `learnings/hazards.md`. [v 2026-10-23 questw2 local]
-- Unrun: urn onward (tomb exit, rope throws, pillars, fire giants).
-  Fire giant, moss giant and shadow spider survivability at combat 33 (HP 26) is unmeasured. Start used: a copy of
-  conductor3 (combat 33, HP 26) at Catherby with 1895 coins and a food-stocked bank. [v 2026-10-23 questw2 local]
+- Tomb protocol that survived [v 2026-10-23 questw2 local]: from `lib:waterfall-tomb` (Att/Str/Def 45, HP 50, Prayer 43, Agility 52, no gear, 20 swordfish) tomb chest -> urn -> exit ladder took about 90 s with 2 flees: eat on the surface, `travel` to the exit ladder (2555, 9844) whenever in combat, eat inside the tomb. (A combat-35 account, HP 33, little food, died on the chest -> urn leg: 33/33 -> 12 -> dead, auto-retaliation about 25 HP/min.) Combat's `prayers` param turns prayers on only during a fight and off at run end; there is no standalone prayer task.
+- Re-entering the tomb: the pebble on the tombstone works at any stage. `talk` use-items reports "Timeout using X on Y" after the successful teleport (burned 475 s of retries until the phase got `onFail` continue); check position instead.
+- Hudon: Talk-to works from the island (`interact` is unreachable); the bookcase gives the book only after the Hudon talk (stage 2).
+- Completed once on questw2 from `lib:waterfall-tomb` (tomb, rope throws, key crate, door1/door2, pillars 1-6, chalice); the statue phase failed on a walk but the quest still completed. Phase times: tomb ~90 s, bank-runes walk Catherby -> Ardougne 160 s, Betty runes 110 s, Almera 57 s, to-cellar 106 s. [v 2026-10-23 questw2 local]
+- From-start proof (`lib:waterfall-start`) died at the falls-dungeon key crate (2588, 9888): the three Skeletons (45) kept the unarmed-or-lightly-geared bot in combat (dungeon-fight 286 s, +27,300 Attack XP) until the food ran out; then combat refused ("above the limit 5 ... capped at 5 without food"), door1 failed "in combat" repeatedly and the bot died (respawn Lumbridge). Fire giants (86) stand by door1. Only Glarial's tomb forbids gear; the falls dungeon does not, so bank weapon and armour before the tomb and withdraw them at the Ardougne bank after it, then wear them with 25+ food for the dungeon. Gear-after-tomb is the chosen fix, unproven. [v 2026-10-23 questw2 local]
+- Saves (`conductor/saves/`): `waterfall-tomb` (stage 3, pebble + rope + 20 swordfish, bank runes 6 each + 20 swordfish, 1000 coins, at the tombstone (2560, 3445), no gear); `waterfall-start` (stage 0, at Catherby bank (2809, 3441), 500 coins, bank 20 swordfish + 10 tuna; being regenerated with gear and 30 swordfish).
+- Unproven: the from-start run through the dungeon with gear.
