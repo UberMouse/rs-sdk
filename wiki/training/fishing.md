@@ -10,7 +10,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `net-draynor-drop` | [Draynor fishing (Draynor Village)](../places/draynor-fishing.md) `fishing-spot:draynor-fishing:0` | 71.3k at 1 | 97.2k | 359k | 434k | 511k | 592k | 659k | 728k | 789k | 853k | 908k | 0 | player | - |
 | `lure-lumbridge-drop` | [Lumbridge (Misthalin)](../places/lumbridge.md) `fishing-spot:lumbridge:0` | 547k at 20 | - | 547k | 1.06M | 1.25M | 1.44M | 1.59M | 1.75M | 1.9M | 2.03M | 2.16M | 0 | player | - |
 | `lure-lumbridge-cook-bank` | [Lumbridge (Misthalin)](../places/lumbridge.md) `fishing-spot:lumbridge:0` | 373k at 25 | - | 344k | 531k | 575k | 614k | 640k | 666k | 689k | 708k | 725k | 16.4k | travel | 490k at 67 (74%) |
-| `swordfish-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 350k at 45 | - | - | - | 321k | 658k | 720k | 803k | 866k | 939k | 1.01M | 66.7k | player | - |
+| `swordfish-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 350k at 45 | - | - | - | 321k | 658k | 720k | 803k | 866k | 939k | 1.01M | 66.7k | player | 880k at 91 (93%) |
 | `swordfish-fishing-guild-cook-bank` | [Fishing Guild (Kandarin)](../places/fishing-guild.md) `fishing-spot:fishing-guild:0` | 791k at 68 | - | - | - | - | - | - | 813k | 878k | 953k | 1.02M | 67.7k | player | - |
 | `shark-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 481k at 80 | - | - | - | - | - | - | - | 481k | 533k | 584k | 58k | player | - |
 | `shark-fishing-guild-cook-bank` | [Fishing Guild (Kandarin)](../places/fishing-guild.md) `fishing-spot:fishing-guild:0` | 484k at 80 | - | - | - | - | - | - | - | 484k | 537k | 589k | 58.5k | player | - |
@@ -28,10 +28,11 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Sink**: cooking at [Lumbridge (Misthalin)](../places/lumbridge.md) `fire:lumbridge:2`, then bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 25 + 114 + 105 run ticks.
   - **Supplies/hr** at 99: 492 Feather; 984 gp.
   - **Measured**: 490k at 67 by conductor2 on 2026-10-11.
-- `swordfish-catherby-cook-bank`: Tuna and swordfish harpooned at Catherby, cooked on the Catherby range, banked at Catherby. Plans: catherby-swordfish. Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.
+- `swordfish-catherby-cook-bank`: Tuna and swordfish harpooned at Catherby, cooked on the Catherby range, banked at Catherby. Plans: catherby-swordfish, catherby-shark-fallback. Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.
   - **Requires**: Reach: none. Levels: Fishing 35, Cooking 45, each with the other skills at 99; every skill at once: 45. Tools: Harpoon.
   - **Sink**: cooking at [Catherby (Kandarin)](../places/catherby.md) `range:catherby:0`, then bank at [Catherby bank (Catherby)](../places/catherby-bank.md) `bank:catherby-bank:0`; legs 20 + 8 + 23 run ticks.
   - **Supplies/hr** at 99: none.
+  - **Measured**: 880k at 91 by conductor3 on 2026-10-23.
 - `swordfish-fishing-guild-cook-bank`: Tuna and swordfish harpooned at the Fishing Guild, cooked on its range, banked in the guild. Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.
   - **Requires**: Reach: 68 Fishing. Levels: Fishing 68, Cooking 45, each with the other skills at 99; every skill at once: 68. Tools: Harpoon.
   - **Sink**: cooking at [Fishing Guild (Kandarin)](../places/fishing-guild.md) `range:fishing-guild:0`, then bank at [Fishing Guild bank (Fishing Guild)](../places/fishing-guild-bank.md) `bank:fishing-guild-bank:0`; legs 12 + 16 + 15 run ticks.

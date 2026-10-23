@@ -872,7 +872,17 @@ export const METHODS: MethodDef[] = [
             end: 'bank',
             bank: { level: 0, x: 2809, z: 3443 },
         },
-        plans: ['catherby-swordfish'],
+        plans: ['catherby-swordfish', 'catherby-shark-fallback'],
+        measured: [
+            {
+                xpPerHour: { fishing: 880_118 },
+                level: { fishing: 91, cooking: 95 },
+                bot: 'conductor3',
+                date: '2026-10-23',
+                hours: 0.4698,
+                from: 'stats.ts conductor3 --methods --since 2026-10-23T09:20:00Z (plan catherby-shark-fallback; cooking left out: it stopped at 99 partway, so its rate counts fishing-only time)',
+            },
+        ],
         notes: 'Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.',
         source: 'research-artisan 2026-10-23',
     },
