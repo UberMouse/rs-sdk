@@ -14,7 +14,8 @@ Decisions (user, 2026-10-23), beyond the design doc:
 - Check 3 (split resource) ships now for covered kinds other than `tree`; trees get it in the 2.4 spec, once
   they cluster per species across areas (Task 5).
 - Check 5 (moving feature outside its site) goes with the fishing-pool merge, after the other session's Catherby
-  fix lands: that fix already reads `fishing_movement_enum`.
+  fix lands: that fix already reads `fishing_movement_enum`. It landed on main (8bdc4b697) during Task 1, so main
+  is merged in after Task 1 and the pool's remainder is Task 8 (user, 2026-10-23).
 - Order: the engine reads (2.3) land before the checks (2.2), so each allowlist is written once, against the data
   the index ends this spec with.
 
@@ -89,6 +90,14 @@ sites and their features that returns each key's site id, and reports a key that
       in the report), with no invalid or stale entries; `world.json` and every page are byte-identical to before.
 - [ ] `W/README.md` says curated references use a `SiteKey` and why.
 - [ ] Out of scope: changing how sites cluster or are numbered.
+
+## Merge of main, after Task 1
+
+Main's 8bdc4b697 (fishing spots carry their movement tiles, `W/sources/fishing-movement.ts`; `SiteOptions.shore`
+and `free`; `Site.movement`; the Catherby shore filed under Kandarin; shark records) is merged into the branch after
+Task 1 is reviewed, before Task 2. Conflicts in `W/areas.ts` keep the `SiteKey` entries; main's renumbered or
+removed ids are re-checked by `bun run world` (no invalid or stale entry). Pages regenerated in the merge commit.
+Later tasks build on main's `COVER_MARGIN`, `coverOf` and `Site.movement` rather than duplicating them.
 
 ## Task 2 — Npc wander, respawn and scripted movement
 
@@ -172,8 +181,10 @@ trigger names an inv.
 Every Sites table gets a `Box` column: the site's `bbox` as `x x1-x2, z z1-z2` (one tile: the coord), and, for a
 site with a `roam` (Task 2), a `Roam` column in the same form, where the kind's pages hold npc-sourced sites
 (pickpocket, npc, a bank's bankers if shown). Also an `Area to copy` cell or line that turns the box into a plan
-`area`: the box's centre and the Chebyshev radius that covers it plus 3 tiles of margin (use `roam` where there is
-one). State the margin in one constant, used by the page and named in the guidance.
+`area`: the box's centre and the Chebyshev radius that covers it plus the margin (use `roam` where there is one).
+Use main's `COVER_MARGIN` and `coverOf` (`W/sources/fishing-movement.ts`; move them to a shared module if they
+outgrow fishing) rather than a second constant or formula; a fishing site's area to copy is its movement cover,
+which main's Movement section already prints, so its row points there rather than repeating it.
 
 `W/README.md` and the task-runner bullet say: size a gather area from the site's Box (Roam for npcs) plus the
 margin, as the page's "Area to copy" gives it, never from the centre and a guessed radius; a tight area idles the
@@ -236,8 +247,9 @@ sites' member use tiles); tests; README; the design doc §1.5 E4 counts.
 A site with a stand and a non-empty `reach` (unreached sites are the unreached report's) fails when either:
 
 - **Members cut off**: fewer than half its features are usable from the stand's walk component. A feature is usable
-  when one of the tiles it is used from (locs: `reachTiles`; npcs and fishing spots: the walkable beside tiles
-  `besideCluster` or `grownBox` give) is in the component. The component is the tiles a walk from the stand reaches
+  when one of the tiles it is used from (locs: `reachTiles`; npcs: the walkable beside tiles `besideCluster`
+  gives; fishing spots: the walkable tiles beside each of the site's `movement` tiles, since a spot can stand on any
+  of them) is in the component. The component is the tiles a walk from the stand reaches
   by steps and by crossings that need nothing (an empty requirement set), bounded to the site's bbox grown by
   `2 * SITE_RADIUS[kind]` (enough for every member, cheap for big forests). Use `W/reach.ts`'s graph (`ReachGraph`,
   `edgeFrom`, `stepMask`) rather than a second step model.
@@ -286,6 +298,32 @@ cutscene prop), with the trigger's line as `source`.
 - [ ] README documents the check and that its allowlist is 2.6's to-do list.
 - [ ] Out of scope: adding any new kind or rule (2.6), ground item spawns (C3: not a trigger).
 
+## Task 8 — Fishing pools: check 5, stand from the pool
+
+**Files:** `W/checks.ts`, `W/allow.ts`, `W/place.ts` (`standTile` for fishing sites), `W/build.ts`,
+`W/sources/fishing-movement.ts` (reused); tests (extend `W/test/fishing-spots.real.test.ts`); README; the design
+doc §1.1 A1/A2 rows and §2.3's fishing-pool bullet (mark what main's 8bdc4b697 and this task did).
+
+Main's `shore` join merges spots sharing an enum only within one kind, leaf area and level, so a pool can still be
+split.
+
+- **Check 5, moving feature outside its site (A1, A2):** an enum feeding fishing features of two or more sites; and
+  a site whose `movement` tiles reach past its leaf area's rects (a pool filed in one area that roams into
+  another). Findings by `SiteKey` and enum name; allowlisted with reasons, as the other checks are.
+- **Stand from the pool:** a fishing site's stand candidates are the walkable tiles beside any of its `movement`
+  tiles (not only the spawns' grown bbox), preferring, after main's `walked`/`free` order, the one nearest the
+  movement cover's centre; `nearest` is then priced from that stand as today.
+
+### Acceptance criteria
+
+- [ ] A real test reproduces, before the allowlist, every enum that still feeds several sites at the merged HEAD
+      (re-derive from the doc's A2 list: `0_34_50` in Tirannwn and the others) and any pool roaming out of its area.
+- [ ] Unit test: a scripted pool whose spawns sit at one end of its enum gets a stand beside the enum's middle.
+- [ ] Catherby's stand stays on the shore (main's test still passes); stand changes on other fishing sites are
+      listed in the report with before/after.
+- [ ] Findings allowlisted; `bun run world` clean; doc rows updated.
+- [ ] Out of scope: clustering across leaf areas (2.4), which is what would remove most check 5 findings.
+
 ## Out of scope for this spec
 
 The next specs, in this order:
@@ -299,5 +337,4 @@ The next specs, in this order:
    fishing subtype names (B3), working check 1's allowlist down.
 4. **2.7 curated table forms** (F2-F5).
 
-Also later: the fishing-pool merge (A1, A2: one site per movement enum, tiles, stand and nearest from the pool) and
-check 5, after the other session's fix lands. Method records (§3) stay with the conductor's roadmap.
+Method records (§3) stay with the conductor's roadmap.
