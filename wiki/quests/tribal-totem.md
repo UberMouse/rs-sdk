@@ -52,6 +52,11 @@ Speak to Kangai Mau at the Shrimp and Parrot pub in Brimhaven. He explains that 
 2. Navigate through the mansion. Pick the lock on the door using the password **"KURT"**.
 3. Search the chest in the locked room to find the tribal totem.
 
+### Door combination lock (server data, unverified in game 2026-10-24)
+
+- The mansion door (`combodoor`) opens interface `tribal_door2` with four letter wheels: up arrows com_48/50/52/54, down com_47/49/51/53; the letters show in com_43-46. Each press changes a wheel by 1 in 0-25 (A-Z), wrapping both ways; all wheels reset to A when the interface opens (`quest_totem.rs2:55-100`).
+- The same wheel logic (`calc_tribaldoor_value`) drives Peer's riddle door in the Fremennik Trials, see [fremennik-trials.md](fremennik-trials.md).
+
 ### Completing the Quest
 
 Return the totem to Kangai Mau at the Shrimp and Parrot pub in Brimhaven.
