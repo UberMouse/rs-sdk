@@ -8,7 +8,7 @@ import { type Page, dialogScript } from '../dialog-script';
 import { fakePaths } from '../paths';
 import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
-import { attackedFrom, world } from '../world';
+import { attackedFrom, type World, world } from '../world';
 
 const DUKE = 'Duke Horacio';
 const base = world();
@@ -128,6 +128,9 @@ describe('talk: conversation', () => {
 
 const parse = (p: object) => (talk.params as { safeParse(x: unknown): { success: boolean } }).safeParse(p);
 
+const underAttack = (w: World) =>
+    w.player({ inCombat: true }).npcBeside('Goblin', { attacking: true, inCombat: true, combatLevel: 2 });
+
 describe('talk: continue an open dialog', () => {
     const CRATE_PAGES: Page[] = [[], ['Yes.', 'No.'], [], [], ['Yes.', 'No.'], null];
     const open = base.dialog({ text: 'page 0', options: [] });
@@ -144,6 +147,25 @@ describe('talk: continue an open dialog', () => {
         expect(r.sends.filter(s => /Talk-to/.test(s))).toEqual([]);
         expect(clicks(r)).toHaveLength(CRATE_PAGES.length - 1);
         expect(r.steps).toEqual(['continue-dialog']);
+    });
+
+    test('continues an open dialog while attacked: the dialog is the way out of the fight', async () => {
+        const r = await simulate(talk, {
+            params: { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] },
+            timeline: underAttack(open).series(40),
+            react: dialogScript(CRATE_PAGES, () => false, 1).react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toStartWith('continue-dialog: continued the open dialog, 2 choices made');
+    });
+
+    test('continue with no dialog open is still refused while attacked', async () => {
+        const r = await simulate(talk, {
+            params: { continue: true },
+            timeline: underAttack(base).series(10),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('in combat at');
     });
 
     test('with no dialog open it fails after a short wait and sends nothing', async () => {

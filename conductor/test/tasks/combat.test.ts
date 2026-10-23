@@ -279,16 +279,45 @@ describe('combat: starting in a fight', () => {
         expect(r.sends).toEqual([]);
     });
 
-    test('is refused at low HP, whether the attacker is a target or not', async () => {
-        const goblin = await simulate(combat, { params: PARAMS, timeline: attackedBy('Goblin', 20, 2, 4).series(3) });
-        expect(goblin.result.reason).toStartWith('in combat at');
-        const chicken = await simulate(combat, {
-            params: PARAMS,
-            timeline: attackedBy('Chicken', CHICKEN, 1, 4).series(3),
+    test('starts at low HP against a target attacker: the low-HP guard eats during the run, no refusal', async () => {
+        const hurt = attackedBy('Chicken', CHICKEN, 1, 4).inv('Shrimps', 3);
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'] },
+            timeline: hurt.series(12, (f, i) =>
+                i >= 8 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0, hp: i >= 2 ? 8 : 4 }),
+            ),
+            stops: xp(25),
         });
-        expect(chicken.result.status).toBe('failed');
-        expect(chicken.result.reason).toStartWith('in combat at');
-        expect(chicken.sends).toEqual([]);
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
+    test('at low HP with no food the run starts and the guard ends it (no "in combat" refusal)', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: attackedBy('Chicken', CHICKEN, 1, 4).series(6, f => f.player({ lastDamageTick: 0, hp: 4 })),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).not.toStartWith('in combat at');
+        expect(r.result.reason).toContain('no food');
+    });
+
+    test('starts when one of several attackers is a target, though another is stronger than the bot', async () => {
+        const mixed = attackedBy('Chicken', CHICKEN, 1).npc('Giant', COOP.x - 1, COOP.z, {
+            index: 21,
+            options: ['Attack'],
+            attacking: true,
+            combatLevel: 28,
+        });
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: mixed.series(10, (f, i) =>
+                i >= 6 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0 }),
+            ),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(r)[0]).toBe(CHICKEN);
     });
 
     test('a stale inCombat flag (no target, last hit 17 ticks ago, nobody attacking) does not refuse', async () => {
@@ -1444,5 +1473,65 @@ describe('combat: respawnWaitTicks', () => {
     test('is capped, so a huge wait is an invalid param', async () => {
         const r = await simulate(combat, { params: { ...PARAMS, respawnWaitTicks: 5000 }, timeline: coop.series(1) });
         expect(r.result.status).toBe('error');
+    });
+});
+
+/** 49 max HP, `n` Chickens (the target) all fighting the bot, at `hp`; the fight dies out at tick 8. */
+const swarm = (n: number, hp: number) => {
+    let w = base.player({ maxHp: 49, hp, inCombat: true, lastDamageTick: 0 }).inv('Shrimps', 6);
+    for (let k = 0; k < n; k++)
+        w = w.npc('Chicken', COOP.x + 1, COOP.z + k, {
+            index: CHICKEN + k,
+            options: ['Attack'],
+            attacking: true,
+            combatLevel: 1,
+        });
+    return w.series(12, (f, i) =>
+        i >= 8 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0 }),
+    );
+};
+
+describe('combat: the low-HP line rises with the attackers on the bot', () => {
+    test('three attackers at 30/49 (61%): the guard eats before the first attack', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: swarm(3, 30),
+            react: healing(5),
+            stops: xp(25),
+        });
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
+    test('a single attacker at 30/49 is not over-eaten: it fights on', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: swarm(1, 30),
+            stops: xp(25),
+        });
+        expect(r.sends).not.toContain('Eat Shrimps');
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+    });
+});
+
+describe('combat: an eat the server ignored under fire', () => {
+    test('is sent again after a short wait, not after the full eat wait', async () => {
+        let ignored = false;
+        const healingReact = healing(20)!;
+        const react: TimelineOptions['react'] = (action, state) => {
+            if (!ignored && action.type === 'useInventoryItem') {
+                ignored = true; // the server's 2-tick eat delay: no message, no effect
+                return undefined;
+            }
+            return healingReact(action, state);
+        };
+        const hurt = swarm(3, 10);
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: hurt,
+            react,
+            stops: xp(25),
+        });
+        expect(r.sends.slice(0, 2)).toEqual(['Eat Shrimps', 'Eat Shrimps']);
+        expect(r.result.reason).toBe('reached +25 Attack xp');
     });
 });

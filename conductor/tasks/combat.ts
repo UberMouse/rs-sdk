@@ -10,7 +10,6 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { attackers, recentlyHit } from '../lib/interrupts';
-import { isLowHp } from '../lib/threat';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -440,24 +439,24 @@ function countCast(ctx: Ctx, target: NearbyNpc) {
 }
 
 /**
- * Combat may start in a fight (arriving at aggressive hill giants, an attack mid-plan) when something faces the
- * bot and every such attacker is a target of this task, or winnable: its level no higher than the bot's with HP
- * and HP above the eat threshold, which every attacker needs (the standing under-attack rule). An unknown attacker (a hit with none next to the
- * bot) or a stronger one keeps the engine's refusal. The pick step fights the attacker first.
+ * Combat may start in a fight (arriving at aggressive hill giants, an attack mid-plan, a mining phase swarmed in a
+ * dungeon) when something faces the bot and at least one such attacker is a target of this task, or every one is
+ * winnable (its level no higher than the bot's). Fighting is this task's purpose, and the plan has no other way
+ * out: eat/interact tasks are refused under attack. Low HP does not refuse: the low-HP guard eats during the run.
+ * An unknown attacker (a hit with none next to the bot) keeps the engine's refusal. The pick step fights the
+ * attacker first.
  */
 export function startsInCombat(p: CombatParams, state: BotWorldState): boolean {
     const foes = attackers(state);
     const me = state.player;
     if (!me || foes.length === 0) return false;
-    // Low HP refuses either way: the plan eats first, and the run starts healthy.
-    if (isLowHp(state)) return false;
-    return foes.every(n => matches(n, p) || n.combatLevel <= me.combatLevel);
+    return foes.some(n => matches(n, p)) || foes.every(n => n.combatLevel <= me.combatLevel);
 }
 
 export default defineTask({
     name: 'combat',
     description:
-        'Train a combat skill on one kind of NPC inside an area: wields the given weapon/shield, sets the attack ' +
+        'Train a combat skill on one kind of NPC inside an area (starts even while under attack when an attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run): wields the given weapon/shield, sets the attack ' +
         'style for `skill` (Attack/Strength/Defence/Ranged), attacks the nearest reachable matching NPC that is not ' +
         'fighting someone else, waits for the kill, repeats. Ranged: `weapon` is a bow and `ammo` its arrows (wielded; ' +
         'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +

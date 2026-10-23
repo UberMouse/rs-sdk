@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { EAT_WAIT_TICKS, eat } from '../../actions/eat';
+import { EAT_ATTEMPT_TICKS, EAT_WAIT_TICKS, eat } from '../../actions/eat';
 import { world } from '../world';
 import { refuse, runOp } from './harness';
 
@@ -49,6 +49,12 @@ describe('eat', () => {
         const { result, driver } = await runOp(hurt.series(1), ctx => eat(ctx, shrimps));
         expect(result).toEqual({ ok: false, reason: 'timeout', message: 'Failed to eat Shrimps' });
         expect(driver.state().tick).toBe(EAT_WAIT_TICKS);
+    });
+
+    test('a shorter wait is a timeout after that many ticks', async () => {
+        const { result, driver } = await runOp(hurt.series(1), ctx => eat(ctx, shrimps, EAT_ATTEMPT_TICKS));
+        expect(result).toMatchObject({ ok: false, reason: 'timeout' });
+        expect(driver.state().tick).toBeLessThan(EAT_WAIT_TICKS);
     });
 
     test('a refused send is send-failed', async () => {
