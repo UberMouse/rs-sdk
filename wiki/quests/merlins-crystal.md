@@ -1,61 +1,217 @@
 # Merlin's Crystal
 
-| Detail     | Info          |
-|------------|---------------|
-| Difficulty | Intermediate  |
-| Length     | Long          |
-| Quest Points | 6 QP       |
+| Detail | Info |
+|---|---|
+| Quest id (`v.quest`, `conductor/lib/quests.ts:85`) | `arthur` |
+| Varp | `%arthur` (varp 14, `quests/quest_arthur/configs/quest_arthur.varp:1`) |
+| Side varp | `%excalibur_components_progress` (varp 15, bit flags, `quest_arthur.varp:4`) |
+| Complete at | 7 (`general/configs/quest.constant:4`) |
+| Quest points | 6 (`general/configs/quest.constant:73`) |
+| Members | yes (Excalibur, black candle and bat bones are members objs) |
+
+Everything on this page is read from the server scripts and game data on 2026-10-23 (paths are under
+`server/content/scripts/`); none of it has been run by a bot yet. Coordinates are `(x, z)` with ` L<n>` above
+level 0.
 
 ## Requirements
 
-- Ability to defeat Sir Mordred (level 39)
-
-## Items Needed
-
-- Tinderbox
-- Bucket
-- Bread
-- Insect repellent (obtainable during quest)
-- Bat bones (obtainable during quest)
+- No quests, no skill levels. The journal asks for the ability to beat a level 39 enemy (Sir Mordred,
+  `quests/quest_arthur/scripts/arthur_journal.rs2:10`).
+- Excalibur needs Attack 20 to wield (`levelrequire/scripts/tier20.rs2:16`); this quest only uses it from the
+  inventory.
 
 ## Rewards
 
-- 6 Quest Points
-- Excalibur sword
+- 6 quest points and the quest-complete scroll (`quests/quest_arthur/scripts/quest_arthur.rs2:273-276`). No XP:
+  the quest has no `stat_advance`.
+- Excalibur stays with the player. Completing Merlin's Crystal is what lets King Arthur start Holy Grail
+  (`areas/area_camelot/scripts/king_arthur.rs2:43`).
 
-## Walkthrough
+## Stages
 
-1. Speak to **King Arthur** at **Camelot Castle**. He asks you to free Merlin, who has been trapped inside a crystal by Morgan Le Faye.
-2. Talk to **Sir Gawain** in Camelot. He tells you about Keep Le Faye.
-3. Talk to **Sir Lancelot** in Camelot. He suggests hiding in a delivery crate to infiltrate the keep.
-4. Go to the **candle maker's shop** in Catherby. Buy or obtain a **black candle**.
-5. Travel west of the **Catherby bank** and hide inside the **crate** to be smuggled into **Keep Le Faye**.
-6. Fight your way to the 3rd floor and defeat **Sir Mordred** (level 39). **Morgan Le Faye** appears and tells you how to free Merlin in exchange for sparing her son.
-7. Obtain **bat bones** from bats (found in various locations).
-8. Get **insect repellent** from the Catherby farming shop.
-9. Use the insect repellent on a **beehive** near Catherby to safely collect **wax**.
-10. Use the wax on the black candle to prepare it for the ritual.
-11. Travel south of **Taverley** and speak to the **Lady of the Lake**. She tells you that Excalibur is in Port Sarim.
-12. Go to the **jewellery shop** in **Port Sarim**. Give **bread** to the **beggar** outside. He reveals himself as a test and gives you **Excalibur**.
-13. Travel to the **Chaos Temple** in the level 12 **Wilderness**. Read the inscription on the altar to learn the incantation needed for the ritual.
-14. Return to **Camelot Castle**. Go to the room with the **pentagram** on the ground floor.
-15. Light the black candle on the pentagram, drop the bat bones, and recite the incantation to summon the demon **Thrantax**. He agrees to shatter the crystal.
-16. Go to the southeast top floor of Camelot. Use **Excalibur** on Merlin's crystal to free him.
-17. Report back to **King Arthur** to complete the quest.
+`quests/quest_arthur/configs/quest_arthur.constant:1-7`.
 
-## Key NPCs & Locations
+| Value | Constant | Set by |
+|---|---|---|
+| 0 | `^arthur_not_started` | - |
+| 1 | `^arthur_started` | King Arthur, "I want to become a Knight of the Round Table!" (`king_arthur.rs2:81-92`) |
+| 2 | `^arthur_spoken_gawain` | Sir Gawain, "Do you know how Merlin got trapped?" (`sir_gawain.rs2:16`, `:35-40`) |
+| 3 | `^arthur_spoken_lancelot` | Sir Lancelot, "Any ideas on how to get into Morgan Le Faye's stronghold?", offered only at stage 2 (`sir_lancelot.rs2:15`, `:30-34`) |
+| 4 | `^arthur_spoken_morgan_lefaye` | Morgan Le Faye after Sir Mordred is beaten, "Tell me how to untrap Merlin and I might." (`sir_mordred.rs2:28-41`) |
+| 5 | `^arthur_excalibur_bound` | Thrantax bound with the right words at the magic symbol (`quest_arthur.rs2:181-193`) |
+| 6 | `^arthur_freed_merlin` | Excalibur used on the Giant crystal at stage 5 (`quest_arthur.rs2:249-267`) |
+| 7 | `^arthur_complete` | King Arthur at stage 6 (`king_arthur.rs2:48-51`, queue at `quest_arthur.rs2:273`) |
 
-| NPC / Location        | Where to Find                                      |
-|-----------------------|----------------------------------------------------|
-| King Arthur           | Camelot Castle                                     |
-| Sir Gawain            | Camelot Castle                                     |
-| Sir Lancelot          | Camelot Castle                                     |
-| Keep Le Faye          | Accessed via crate west of Catherby bank           |
-| Sir Mordred           | 3rd floor of Keep Le Faye (level 39)               |
-| Morgan Le Faye        | Keep Le Faye                                       |
-| Candle maker          | Catherby                                           |
-| Lady of the Lake      | South of Taverley                                  |
-| Beggar / Excalibur    | Outside jewellery shop, Port Sarim                 |
-| Chaos Temple          | Level 12 Wilderness                                |
-| Pentagram room        | Ground floor, Camelot Castle                       |
-| Merlin's Crystal      | Southeast top floor, Camelot Castle                |
+Bits of `%excalibur_components_progress` (`quest_arthur.constant:9-13`), none shown in the quest tab:
+
+| Bit | Constant | Set by | Cleared by |
+|---|---|---|---|
+| 0 | `^chaosaltar_index` | Check on the Chaos altar at stage 4 (`quest_arthur.rs2:142-148`) | binding Thrantax (`:190`), Excalibur on the crystal (`:260`) |
+| 1 | `^blackcandle_index` | Candle maker, "Have you got any black candles?" at stage 4; toggled again when he trades the candle (`areas/area_catherby/scripts/candle_maker.rs2:12`, `:36`) | binding Thrantax (`:190`) |
+| 2 | `^excalibur_started` | The Lady of the Lake, "I seek the sword Excalibur." (`areas/area_taverly/scripts/lady_of_the_lake.rs2:42-43`) | the same talk again (reset), the crystal (`:260`) |
+| 3 | `^excalibur_spoken_beggar` | refusing the beggar ("No I don't have any bread with me.", `quests/quest_arthur/scripts/beggar.rs2:48-51`) | as bit 2 |
+| 4 | `^excalibur_rewarded` | giving the beggar bread (`beggar.rs2:35-46`) | as bit 2 |
+
+The plan view sees only `none` / `started` / `done` from the quest tab (`conductor/docs/plans.md`), so a plan picks
+its phase from the inventory and the previous phase, and ends on `v.questDone('arthur')`.
+
+## Walkthrough (bot route)
+
+Each step: who or what (config display name), where, the exact dialog choices, items, stage change.
+
+1. **King Arthur** (2764, 3515), Camelot ground floor, wanders. Choices: "I want to become a Knight of the Round
+   Table!". Stage 0 -> 1.
+2. **Sir Gawain** (2763, 3506), Camelot ground floor. Choices: "Do you know how Merlin got trapped?", then "Thank you
+   for the information." (or "Any idea how to get into Morgan Le Faye's stronghold?", which only says he is
+   stumped). Stage 1 -> 2.
+3. **Sir Lancelot** (2759, 3515) L1, Camelot first floor; staircase (2750, 3510) up to (2750, 3513) L1. Choices: "Any
+   ideas on how to get into Morgan Le Faye's stronghold?" (option 3 of 3). Stage 2 -> 3.
+4. **Crate** (`merlincrate_empty`, op "Hide-in") at (2801, 3442), Catherby, south-west of the bank. Works from stage
+   3 (`quest_arthur.rs2:3`); before that "You have no reason to do that...". Dialog: a message box, then
+   "Yes." (hide), about 20 message boxes of the voyage, then "Yes." (get out) (`quest_arthur.rs2:2-34`, `:68-77`).
+   Lands at (2778, 3401) on the Keep Le Faye jetty. The keep's Large door (2763, 3401/3402) is locked from
+   outside (`quest_arthur.rs2:94-97`); the crate is the only way in.
+5. **Sir Mordred** (2769, 3403) L2, top floor of Keep Le Faye. From the jetty: staircase (2769, 3404) up to (2769,
+   3407) L1, then staircase (2769, 3398) up to (2769, 3401) L2. Talk-to or Attack starts the fight
+   (`sir_mordred.rs2:1-5`). At stage 3 his death is caught (`sir_mordred.rs2:7-13`): he is healed, the fight
+   stops and **Morgan Le Faye** appears at (2770, 3403) L2. Choices: "Tell me how to untrap Merlin and I
+   might." (stage 3 -> 4), then any of "So where can I find Excalibur?", "What are the magic words?", "OK I will go
+   do all that." (the last ends it; Morgan vanishes, `sir_mordred.rs2:73-77`). Do not pick "No. He deserves to
+   die." (kills Mordred, no stage change) or "Ok then." (Morgan leaves, no stage change). Leave the keep by the
+   **Crate** (`merlincrate_empty2`, "Hide-in") at (2779, 3401) on the jetty: "Yes." then "Yes."; it puts the player
+   at (2802, 3441) in Catherby (`quest_arthur.rs2:38-66`). The Large door also opens from inside, west
+   (`quest_arthur.rs2:94-116`).
+6. **Chaos altar** (`thrantaxaltar`, op "Check") at (3239, 3608), the small Chaos Temple in Wilderness level 12.
+   Only at exactly stage 4 (`quest_arthur.rs2:143`); sets bit 0 and shows the words "Snarthon Candtrick
+   Termanto". No NPCs spawn within 12 tiles of it (world index). PvP Wilderness: carry nothing of value.
+7. **Black candle** (`unlit_black_candle`):
+   - **Candle maker** (2800, 3439), Catherby candle shop. At stage 4 choose "Have you got any black candles?"
+     (sets bit 1, `candle_maker.rs2:17-36`).
+   - Wax: pick up the **Insect repellent** ground spawn at (2807, 3450) (Catherby house; not sold anywhere,
+     wiki/items/insect-repellent.md). Use it on a **Beehive** (nine `merlin_beehive` at x 2755-2762, z 3440-3447,
+     west Catherby): "You see bees leaving the hive." The repellent is not used up (`areas/area_seers/scripts/bees.rs2:16-22`).
+     Then use an empty **Bucket** on the hive (or "Take-from" with a bucket held) for a **Bucket of wax**
+     (`bees.rs2:24-36`). The next take needs the repellent again; without it the bees sting for 2.
+     Buckets: Arhein's store (2803, 3430), 2 gp, or a ground spawn at (2766, 3441) by the hives.
+   - Talk to the Candle maker again with the wax: no choices; Bucket of wax -> Black candle (`candle_maker.rs2:1-14`).
+8. **Light it**: use a Tinderbox on the Black candle (`skill_firemaking/scripts/firemaking.rs2:13-27`,
+   `light_source.rs2:1-11`) -> **Lit black candle**. It stays lit while carried (only a few quest areas put
+   candles out).
+9. **Bat bones**: always dropped by **Giant bat** (level 27, 32 HP, max hit 3; wiki/npcs/giant-bat.md). Nearest:
+   (2752, 3409) and (2753, 3396) just west of Keep Le Faye on the Catherby side, one more in the keep courtyard
+   (2759, 3401); five around (2571-2594, 3473-3481) east of the Coal Trucks.
+10. **Excalibur**:
+    - **The Lady of the Lake** (2924, 3405), south of Taverley. At stage 4+ with no Excalibur in inventory, bank
+      or worn, choose "I seek the sword Excalibur." (sets bit 2; `lady_of_the_lake.rs2:4-5`, `:37-43`).
+    - Port Sarim jeweller's **Door** (`jewellersdoor`, "Open") at (3016, 3246). With bit 2 set, opening it puts a
+      **Beggar** at (3016, 3247) and starts his dialog (`quest_arthur.rs2:210-223`). Hold one **Bread** and choose
+      "Yes certainly.": the bread is taken, he turns into the Lady and gives **Excalibur** (bit 4,
+      `beggar.rs2:18-46`). The Ladder (3013, 3244) inside only gets "I don't think you are worthy enough"
+      (`quest_arthur.rs2:225-237`).
+11. **Summon Thrantax** at the magic symbol (2780, 3515), Camelot (`^camelot_magic_symbol`,
+    `quest_arthur.constant:18`). Stand within one tile of it (x 2779-2781, z 3514-3516) at exactly stage 4, with
+    bit 0 set and a Lit black candle held, and **Drop** the Bat bones (`opheld5`, `quest_arthur.rs2:150-206`). The
+    bones are not used up and the drop does not happen inside that square. The player is forced 2 tiles west,
+    **Thrantax The Mighty** appears, and a choice of three phrases opens in random order. Choose "Snarthon
+    Candtrick Termanto": stage 4 -> 5, bits 0-1 cleared. Either wrong phrase deletes the lit candle and Thrantax
+    attacks (level 92, 80 HP; `_unpack/225/all.npc:4789`). Without bit 0: "I think I'd better learn the words of
+    binding..."; without the candle or at another stage: "You can sense a powerful presence here...".
+12. **Giant crystal** (`merlins_crystal`, 2x2) at (2767, 3493) L2, Camelot's south-east tower: ladder (2769, 3493)
+    up to (2768, 3493) L1, ladder (2767, 3491) up to (2766, 3491) L2. Use **Excalibur** (from the inventory, not
+    worn) on it at stage 5: stage 5 -> 6, the side varp is reset to 0 (`quest_arthur.rs2:239-267`). Before stage 5:
+    "... but it seems to be protected by a dark force."
+13. **King Arthur** at stage 6: no choices (`king_arthur.rs2:42`, `:48-51`). Stage 6 -> 7, quest complete.
+
+Steps 6-10 can be done in any order once stage 4 is reached; step 11 needs 6, 7-8 and 9 done; step 12 needs 10 and 11.
+
+## Fights
+
+| NPC (config) | Where | Level | HP | Att / Str / Def | Bonuses | Max hit | Notes |
+|---|---|---|---|---|---|---|---|
+| Sir Mordred (`sir_mordred`) | (2769, 3403) L2 | 39 | 38 | 33 / 33 / 33 | att +20, str +16; def stab 99, slash 82, **crush 45** | 5 | slash attacks, attack rate 4 (default); respawn 50 ticks (`keep_le_faye.npc:45-91`) |
+| Renegade Knight (`renegade_knight`) | 3 on L0 near (2769, 3398), 5 on L1 near (2770, 3402) | 37 | 48 | 28 / 28 / 28 | as Mordred, crush def 62 | 5 | `huntmode=cowardly`: they do not attack (`keep_le_faye.npc:1-43`) |
+| Thrantax The Mighty (`thrantax`) | the magic symbol | 92 | 80 | 80 / 80 / 80 | crush | ~9 | only after a wrong phrase; avoid |
+| Giant bat | see step 9 | 27 | 32 | 22 / 22 / 22 | none | 3 | flees when attacked |
+
+Max hits from the engine formula (`skill_combat/scripts/npc/npc_combat_melee.rs2:2-8`: (str + 9) x (str bonus + 64)
+/ 640, rounded). Safe minimum for Mordred: **Attack, Strength and Defence 40, Hitpoints 40**, a crush weapon (his
+crush defence is lowest) and 5 or more lobsters. From the same formulas such a bot kills him in about 60 s and
+takes about 30-55 damage (more without armour). The combat task's default `maxLevelGap` (5) needs combat level
+34 or more for a level 39 target.
+
+Losing to Mordred: a normal death; he respawns in 50 ticks and the stage is unchanged. Come back with the crate.
+
+## Items
+
+| Item | Get it | Used / consumed |
+|---|---|---|
+| Bread | Ardougne Baker's Stall (Baker, (2654, 3311) / (2669, 3310)), 12 gp, stock 10; West Ardougne general store (2464, 3287), 14 gp. Wydin's Port Sarim Food Store lists bread with stock 0. The tutorial-skip starter kit has one. | consumed by the beggar |
+| Bucket | Arhein (2803, 3430) 2 gp, or ground spawn (2766, 3441) | becomes the wax |
+| Insect repellent | ground spawn (2807, 3450) only | reusable |
+| Tinderbox | Arhein 1 gp | reusable |
+| Bat bones | Giant bat drop | not consumed by the summon |
+| Black candle -> Lit black candle | Candle maker, for one Bucket of wax | lost on a wrong phrase |
+| Excalibur | the beggar (step 10) | kept |
+| Food, crush weapon, armour | for Mordred | - |
+| Coins | 500 only if Excalibur must be bought back (below) | - |
+
+Banks: Catherby (2809, 3443), stand (2809, 3441), for the Catherby and Keep Le Faye steps; Seers' Village (2726, 3495)
+for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temple.
+
+## Recovery
+
+- Lost bread before the beggar: open the jeweller's Door again with bread held; the Beggar respawns (bit 3 set:
+  he asks "Have you got any bread for me yet?", choose "Yes, here you go.", `beggar.rs2:1-13`, `quest_arthur.rs2:212-215`).
+- Refused the beggar ("No I don't have any bread with me.", which the dialog guard's decline would pick): bit 3 is set;
+  as above.
+- Lost Excalibur at stage 4-5: talk to the Lady again ("I seek the sword Excalibur."), which resets bits 2-4, and redo
+  the beggar. At stage 6 or later (and after the quest) she sells it back for 500 coins (`lady_of_the_lake.rs2:20-35`).
+- Lost or burned the candle (a wrong phrase) at stage 4: ask the Candle maker "Have you got any black candles?"
+  again and bring another Bucket of wax (the bit toggles, `candle_maker.rs2:12`, `:36`).
+- Lost the bat bones: kill another Giant bat.
+- Morgan dialog closed or answered wrong (stage still 3): fight Mordred again (respawn 50 ticks).
+
+## Movement
+
+| Crossing | Bot can route it? |
+|---|---|
+| Camelot stairs (2750, 3510) and tower ladders (2769, 3493), (2767, 3491) | yes: `travel`/`at` climb them (walk-graph probe, 16-18 run ticks from the courtyard) |
+| Catherby crate to Keep Le Faye | **no**: a scripted ride the world index leaves out as a quest transport (`wiki/world/gate-list.ts:961-963`); do it with `interact` + `talk` (Catherby coverage below) |
+| Keep Le Faye front door (2763, 3401/3402) | **planner wrong**: the SDK masks it as an ordinary door (not in `ONE_WAY_DOORS`, `sdk/pathfinding.ts:73-79`), so a walk from Catherby plans straight through it (probe: Catherby -> Mordred 45 run ticks, no hop) and is refused in game ("The door is securely locked"). From inside it opens west. |
+| Keep crate back to Catherby (`merlincrate_empty2`) | the world index has it only as far as the crate interior (2778, 9839); the way out is a varp coord it cannot follow |
+| Keep stairs (2769, 3404), (2769, 3398) | yes (probe: jetty -> Mordred 14 run ticks) |
+| Port Sarim jeweller's ladder | yes (a scripted crossing), but not needed |
+| Chaos Temple (Wilderness 12) | `travel` with `wilderness: true` (probe: Edgeville -> altar ~100 run ticks); `interact` refuses a target there |
+
+## Catalog coverage
+
+| Step | Task | Params / notes |
+|---|---|---|
+| 1-3 Arthur, Gawain, Lancelot | `talk` | `{npc:"^King Arthur$", at:{x:2764,z:3515}, choices:["Knight of the Round Table"]}`; `{npc:"^Sir Gawain$", choices:["how Merlin got trapped","Thank you for the information"]}`; `{npc:"^Sir Lancelot$", at:{x:2759,z:3515,level:1}, choices:["get into Morgan Le Faye's stronghold"]}` |
+| 4 crate in | `interact` then `talk` | `{target:"loc", name:"^Crate$", option:"^Hide-in$", at:{x:2801,z:3443}}`, then a `talk` with no `at` and `choices:["^Yes\\.$","^Yes\\.$"]` continues the open dialog (the `npc` is required by the schema but unused while a dialog is open; the Priest in Peril pattern). Unverified. |
+| 5 Mordred | `combat` + `talk` (risky) | `combat {target:"Sir Mordred", area:{x:2769,z:3403,level:2,radius:3}, food:[...]}` with a phase `until: v => v.state.dialog.isOpen`, then `talk {npc:"Morgan Le Faye", choices:["untrap Merlin","OK I will go do all that"]}`. **Gap**: while `combat` runs, the dialog guard declines a choice it does not answer, and its decline pattern (`DECLINE_CHOICE` `^no\b`, `conductor/actions/dismiss.ts:113`) picks "No. He deserves to die." The `until` should end the phase first, but the engine then settles the fight under the shared guards (`conductor/lib/engine.ts:369-386`), so the guard may still answer. Needs a `combat` option to stop on a dialog (or answer `choices`). |
+| 5 crate out | `interact` + `talk` | as step 4 on the jetty crate (2779, 3401) |
+| 6 Chaos altar | none | **Gap**: `interact` refuses Wilderness targets (`conductor/tasks/interact.ts`). Needs a `wilderness: true` opt-in (with `minFood`, as `travel` has). `travel {to:{x:3239,z:3606}, wilderness:true}` gets there. |
+| 7 candle maker, wax | `talk`, `pickup`, `talk` (use) | `talk {npc:"^Candle maker$", choices:["black candles"]}`; `pickup {area:{x:2807,z:3450,radius:1}, items:[{name:"Insect repellent",count:1}]}`; `talk {use:{items:["^Insect repellent$"], onLoc:"^Beehive$"}, at:{x:2758,z:3444}}`; `talk {use:{items:["^Bucket$"], onLoc:"^Beehive$"}}`; `talk {npc:"^Candle maker$"}` |
+| 8 light candle | none | **Gap**: item on item (Tinderbox on Black candle). No task uses an item on another item; needs an `interact` item target with a second item, or `talk` `use` with `onItem`. |
+| 9 bat bones | `combat` | `{target:"Giant bat", area:{x:2752,z:3405,radius:8}, loot:["Bat bones"]}` with `until: v => v.inv("Bat bones") >= 1`. Bats flee; unverified. |
+| 10 Lady, beggar | `talk`, `interact` + `talk` | `talk {npc:"Lady of the Lake", at:{x:2924,z:3405}, choices:["I seek the sword Excalibur"]}`; `interact {target:"loc", name:"^Door$", option:"^Open$", at:{x:3017,z:3246}}` then `talk {npc:"^Beggar$", choices:["Yes certainly"]}`. A `travel` whose route opens this door after the Lady triggers the beggar mid-walk, and the guard's decline answers "No I don't have any bread with me." (bit 3; recover as above). |
+| 11 summon | none, then `talk` | **Gap**: Drop on an item at a spot. `interact` refuses Drop on items and there is no drop task (only `conductor/actions/drop.ts`). Needs a drop with `at` (tolerance 1) that leaves the opened dialog for a following `talk {npc:"Thrantax", choices:["^Snarthon Candtrick Termanto$"]}`. |
+| 12 crystal | `talk` (use) | `{use:{items:["^Excalibur$"], onLoc:"^Giant crystal$"}, at:{x:2766,z:3491,level:2}}` |
+| 13 Arthur | `talk` | `{npc:"^King Arthur$"}` |
+| banking, shops | `bank`, `shop` | Arhein (bucket, tinderbox), Baker (bread) |
+
+Blocking gaps, in order: the Wilderness altar check (6), lighting the candle (8), dropping the bat bones on the symbol
+(11); then the Mordred-to-Morgan dialog (5) and the keep door the walker thinks is open.
+
+## Suggested library saves
+
+Members world. Generated saves (`conductor/tools/library.ts generate`, spec keys `position`, `skills`, `inventory`,
+`equipment`, `bank`, `varps`).
+
+- `merlins-crystal-start`: Attack/Strength/Defence 45, Hitpoints 45 (combat ~50); worn a crush weapon (e.g. a
+  mithril mace) and iron or better armour; inventory 10 lobsters (379), 1 bread (2309), 1 tinderbox (590), 1 bucket
+  (1925), 600 coins; bank empty; varps `{"14":0}`; at Camelot (2758, 3505). Runs the whole quest.
+- `merlins-crystal-summon`: the same stats; varps `{"14":4,"15":1}` (stage 4, altar words read); inventory lit black
+  candle (32), bat bones (530), Excalibur (35), 5 lobsters; at the magic symbol (2780, 3515). Tests steps 11-13 (the
+  drop-and-chant gap) without the Wilderness. A wrong phrase there costs the only candle.
