@@ -13,6 +13,7 @@ import {
     newRun,
     openRun,
     PHASE_LINES,
+    planStats,
     type RunSummary,
     stampTime,
     summarize,
@@ -76,6 +77,32 @@ describe('foldRun, a plan', () => {
         apply({ type: 'phase-end', phase: 'a', runId: 'r-a', status: 'done', reason: 'ok' });
         expect(openRun(run)).toBeNull();
         expect(run.runs[0]).toMatchObject({ status: 'done', reason: 'ok', endedAt: 10 });
+    });
+
+    test("a select's reads, the plan's own and each phase's; phase-end's time and XP", () => {
+        const run = newRun('plan', '2026-10-11T01-00-00-000Z-plan-p', 'b');
+        const apply = (e: Record<string, unknown>) => applyPlanEvent(run, { t: 10, ...e } as LogEvent);
+        apply({ type: 'start', plan: 'p', phases: [{ phase: 'a', task: 'a', params: {} }], requires: [], stops: [] });
+        apply({
+            type: 'select',
+            phase: 'a',
+            checks: { a: 'chosen' },
+            reads: { a: { "inv('Logs')": 3 } },
+            planReads: { "level('Fishing')": 65 },
+            last: null,
+            inventory: {},
+            free: 28,
+            bank: null,
+        });
+        expect(run.selections[0]).toMatchObject({
+            reads: { a: { "inv('Logs')": 3 } },
+            planReads: { "level('Fishing')": 65 },
+        });
+        apply({ type: 'phase-end', status: 'done', reason: 'ok', durationMs: 9, xpGained: { Fishing: 50 } });
+        expect(run.runs[0]).toMatchObject({ durationMs: 9, xpGained: { Fishing: 50 } });
+        // a log from before them
+        apply({ type: 'select', phase: 'a', checks: {}, last: null, inventory: {}, free: 28, bank: null });
+        expect(run.selections[1]).toMatchObject({ reads: {}, planReads: null });
     });
 
     test('a kill ends the phase in progress as the result counts it', () => {
@@ -229,5 +256,74 @@ describe('sessions', () => {
     test('stampTime reads a runId stamp', () => {
         expect(stampTime(PLAN)).toBe(Date.parse('2026-10-11T00:21:22.727Z'));
         expect(stampTime('plan-x')).toBeNull();
+    });
+});
+
+/** A plan of walk, fish and bank phases, at t (ms) from 0. */
+const plan = () => {
+    const run = newRun('plan', '2026-10-11T01-00-00-000Z-plan-p', 'b');
+    const apply = (t: number, e: Record<string, unknown>) => applyPlanEvent(run, { t, ...e } as LogEvent);
+    apply(0, {
+        type: 'start',
+        plan: 'p',
+        phases: [
+            { phase: 'walk', task: 'travel', params: {} },
+            { phase: 'fish', task: 'fishing', params: {} },
+            { phase: 'bank', task: 'bank', params: {} },
+        ],
+        requires: [],
+        stops: [],
+    });
+    const select = (t: number, phase: string) =>
+        apply(t, { type: 'select', phase, checks: {}, last: null, inventory: {}, free: 28, bank: null });
+    return { run, apply, select };
+};
+
+describe('planStats', () => {
+    test('a running plan: time per phase with the open run, XP over finished runs, and the gaps between', () => {
+        const { run, apply, select } = plan();
+        select(1_000, 'walk');
+        apply(61_000, { type: 'phase-end', status: 'done', reason: 'there', durationMs: 60_000, xpGained: {} });
+        select(62_000, 'fish');
+        const fishXp = { Fishing: 3000, Cooking: 0 };
+        apply(182_000, { type: 'phase-end', status: 'done', reason: 'full', durationMs: 120_000, xpGained: fishXp });
+        select(183_000, 'fish');
+        // fish's second run is open; now is 243 s in
+        const st = planStats(run, 243_000);
+        expect(st.phases).toEqual([
+            { phase: 'walk', runs: 1, fails: 0, timeMs: 60_000, xp: {}, xpTimeMs: 60_000 },
+            { phase: 'fish', runs: 2, fails: 0, timeMs: 180_000, xp: fishXp, xpTimeMs: 120_000 },
+            { phase: 'bank', runs: 0, fails: 0, timeMs: 0, xp: null, xpTimeMs: 0 },
+        ]);
+        expect(st).toMatchObject({
+            elapsedMs: 243_000,
+            productiveMs: 180_000,
+            overheadMs: 60_000,
+            unratedMs: 0,
+            betweenMs: 3_000,
+            xp: { Fishing: 3000, Cooking: 0 },
+            // to the end of the last finished run: the open one's 60 s have no XP yet
+            xpTimeMs: 183_000,
+        });
+    });
+
+    test('runs without phase-end XP (older logs) leave their phase and the plan unrated', () => {
+        const { run, apply, select } = plan();
+        select(0, 'fish');
+        apply(10_000, { type: 'phase-end', status: 'failed', reason: 'no spot' });
+        const st = planStats(run, 20_000);
+        expect(st.phases[1]).toEqual({ phase: 'fish', runs: 1, fails: 1, timeMs: 10_000, xp: null, xpTimeMs: 0 });
+        expect(st).toMatchObject({ unratedMs: 10_000, productiveMs: 0, xp: null });
+    });
+
+    test("an ended plan takes each phase's totals from its result", () => {
+        const run = foldRun('plan', PLAN, 'conductor2', events(PLAN));
+        const st = planStats(run, 0);
+        for (const summary of run.result!.phases!) {
+            const ps = st.phases.find(p => p.phase === summary.phase)!;
+            expect(ps).toMatchObject({ timeMs: summary.durationMs, xp: summary.xpGained });
+        }
+        expect(st.elapsedMs).toBe(run.endedAt! - run.startedAt);
+        expect(st.phases.find(p => p.phase === 'craft-bowl')).toMatchObject({ runs: 1, fails: 1 });
     });
 });

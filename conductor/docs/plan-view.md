@@ -29,20 +29,28 @@ control, so it is safe beside a running plan or task-runner. It binds to 127.0.0
   straight from the browser, so it needs the engine started with `WORLD_FEED=true`
   (`conductor/local/up.sh` does); the panel says when the feed is off or the bot isn't logged in.
   "3D view" turns it off (remembered per browser); "Open in a new tab" opens it full size.
+  The bot panel sits to its right, as tall as the view (drag the handle under it to resize both);
+  with the view off it runs down beside the plan.
 - **Run header.** State (running, ended with its status, or "no result" for a run whose process
-  is gone without one), duration, stops, `requires`, session, and on the end, the result's
-  reason, XP, levels and inventory delta.
+  is gone without one), duration, the run's stops (`run until`), the plan's own `until` as its
+  source writes it with what it read at the latest choice, `requires`, session, and on the end,
+  the result's reason, XP, levels and inventory delta.
 - **Timeline** (plans). One lane per phase in plan order, a bar per phase run coloured by status
   (with an icon and label in the legend and the tooltip), and a "now" line while it runs. Click a
   bar to open that run below.
-- **Phases** (plans). Each phase's task, params, its answer at the latest selection (`chosen`,
-  `when false`, `until holds`, `skipped: failed last`, or "not checked" below the chosen one),
-  runs, outcomes, time, XP and last reason. The running phase is highlighted.
+- **Phases** (plans). Why each phase runs and what it is worth, in selection order. Its `when`
+  and `until` as the plan source writes them (read from its `phase(...)` call; a phase a helper
+  builds says so), each marked ✓ or ✗ by what it answered at the choice that started the phase
+  run shown below, with the values it read there (`inv('Raw tuna') = 0`). Then its runs and
+  failures, its share of the plan's time, time per run, XP and XP/h (over finished runs: each
+  run's XP is on its `phase-end`, or the result's totals once the plan ends). Under it, the
+  plan's time split into productive (phases that gained XP), overhead (phases that gained none),
+  unrated (XP not known yet) and between phases, and its XP/h. The running phase is highlighted.
 - **Phase run, or task run.** The open run (or the one picked): for a phase, the selection that
   started it (each phase's answer, the inventory, free slots and the bank as last seen); for a
   task run, its params. Then the steps entered and the last 200 lines of its log.
-- **Bot.** Live position, HP, combat, inventory, equipment and skills, from an observe-mode
-  connection. It is the bot now, not at the time of a past run.
+- **Bot** (beside the 3D view). Live position, HP, combat, inventory, equipment and skills, from
+  an observe-mode connection. It is the bot now, not at the time of a past run.
 - **Plan source** (plans). The copy of the plan file that ran; clicking a phase name highlights
   its line.
 

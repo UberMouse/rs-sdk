@@ -8,6 +8,8 @@ import {
     isPlan,
     type Phase,
     phase,
+    type PlanView,
+    recordReads,
     type PhaseRun,
     type PlanDef,
     planParams,
@@ -397,6 +399,7 @@ describe('selection', () => {
             type: 'select',
             phase: null,
             checks: { burn: 'when false' },
+            reads: { burn: { "inv('Logs')": 0 } },
             last: null,
             inventory: { Bones: 24 },
             free: 4,
@@ -1233,12 +1236,17 @@ describe('the result and the plan log', () => {
             logFile: '/logs/phase-0-train.ndjson',
         });
         expect(r.events[5]).toMatchObject({ type: 'phase-start', index: 1, runId: 'phase-1-train' });
+        // the plan's until read runs('train') at each choice: 0 before the first run, 1 before the second
+        expect(r.events[1]).toMatchObject({ type: 'select', planReads: { "runs('train')": 0 } });
+        expect(r.events[4]).toMatchObject({ type: 'select', planReads: { "runs('train')": 1 } });
         expect(r.events[3]).toEqual({
             type: 'phase-end',
             phase: 'train',
             runId: 'phase-0-train',
             status: 'done',
             reason: 'train: trained',
+            durationMs: r.runs[0]!.result.durationMs,
+            xpGained: r.runs[0]!.result.xpGained,
         });
         expect(r.events.at(-1)).toEqual({ type: 'result', ...r.result });
     });
@@ -1324,5 +1332,44 @@ describe('a kill', () => {
         );
         expect(killed!.recent).toMatchObject([{ phase: 'chop', status: 'done' }]);
         expect(killed!.phases.find(p => p.phase === 'chop')!.statuses).toEqual({ done: 1 });
+    });
+});
+
+describe('recordReads', () => {
+    const v = {
+        state: { player: { worldX: 3200, worldZ: 3400 }, inventory: [{ name: 'Logs', count: 1 }] },
+        inv: (item: string | RegExp) => (String(item).includes('Logs') ? 3 : 0),
+        bank: () => undefined,
+        free: 25,
+        last: { phase: 'fish', status: 'done', reason: 'full' },
+    } as unknown as PlanView;
+
+    test('calls by how they were written, fields, and scalars off state by path; the answers unchanged', () => {
+        const reads = {};
+        const rv = recordReads(v, reads);
+        expect(rv.inv('Logs') > 0 && rv.inv(/^raw /i) === 0).toBe(true);
+        expect(rv.bank('Coins')).toBeUndefined();
+        expect(rv.free).toBe(25);
+        expect(rv.state.player?.worldX).toBe(3200);
+        expect(rv.last?.phase).toBe('fish');
+        // arrays are handed over as they are, unrecorded
+        expect(rv.state.inventory.length).toBe(1);
+        expect(reads).toEqual({
+            "inv('Logs')": 3,
+            'inv(/^raw /i)': 0,
+            "bank('Coins')": null,
+            free: 25,
+            'state.player.worldX': 3200,
+            last: { phase: 'fish', status: 'done', reason: 'full' },
+        });
+    });
+
+    test('keeps at most 12 distinct reads, a repeat updating its own', () => {
+        const reads: Record<string, unknown> = {};
+        const rv = recordReads(v, reads);
+        for (let i = 0; i < 20; i++) rv.inv(`item ${i}`);
+        rv.inv('item 0');
+        expect(Object.keys(reads)).toHaveLength(12);
+        expect(reads["inv('item 19')"]).toBeUndefined();
     });
 });

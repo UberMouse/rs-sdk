@@ -53,8 +53,10 @@ The runner does what the engine does with steps, one level up:
 
 1. Check each phase's `when` in order; the first that holds runs. None holds: the plan ends
    `failed` (`no phase applies (last: <phase> <status>: <reason>)`, the last part once a phase has
-   run), and the plan log's `select` event shows what each phase's `when` and `until` answered,
-   the last phase run, and the inventory, free slots and known bank counts.
+   run), and the plan log's `select` event shows what each phase's `when` and `until` answered
+   and what they read off the view (`reads`, by phase: `{ "inv('Logs')": 0 }`; the plan's own
+   `until`'s in `planReads`), the last phase run, and the inventory, free slots and known bank
+   counts.
 2. Run it as a normal `executeTask`: its own preflight, memory, guards, watchdog, step budget and
    leftover-modal close.
 3. It ends `done` (by itself or by its `until`): back to 1. It ends `failed` or `stuck`: apply its
@@ -215,7 +217,7 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   CLI's `pid` and Claude Code `session` (`source`), a `select` event per phase choice (the phase
   chosen, what each phase's `when` and `until` answered, the last phase run, inventory, free slots
   and known bank counts), each phase run's start (`phase-start`, naming its log) and end
-  (`phase-end`), and the plan's result. The plan viewer ([`plan-view.md`](plan-view.md)) reads it.
+  (`phase-end`, with the run's own `durationMs` and `xpGained`), and the plan's result. The plan viewer ([`plan-view.md`](plan-view.md)) reads it.
 - The last stdout line stays `RESULT <json>`: a `TaskResult` with `task: "plan:<name>"`, the plan's
   totals (`xpGained`, `inventoryDelta`, `durationMs`, ...), `stepRuns` keyed by phase, and two
   extra fields: `phases`, one entry per phase `{ phase, task, runs, statuses, durationMs, xpGained,

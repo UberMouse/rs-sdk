@@ -148,7 +148,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
   plus `recent`: the last 3 phase runs `{ phase, runId, logFile, status, reason }`. Kept compact:
   its size does not grow with the number of runs beyond the per-phase entries.
 - Plan log events: `start` (plan name, phases, stops), `select` (phase + the summary above),
-  `phase-end` (phase, runId, status, reason), `result` (the PlanResult).
+  `phase-end` (phase, runId, status, reason, durationMs, xpGained), `result` (the PlanResult).
 
 ### Acceptance criteria
 - [ ] Unit tests on scripted worlds cover: selection order and `when` defaults; a producer →

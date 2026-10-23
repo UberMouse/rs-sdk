@@ -24,7 +24,7 @@
         </header>
         <div class="layout">
             <nav id="sessions" class="sidebar" aria-label="Runs by session"></nav>
-            <div class="content">
+            <div id="content" class="content">
                 <!-- Outside #main, which re-renders: moving an iframe in the DOM reloads it. -->
                 <section id="world" class="card world" aria-labelledby="world-h">
                     <div class="world-head">
@@ -47,6 +47,8 @@
                         hidden
                     ></div>
                 </section>
+                <!-- Beside the 3D view; re-rendered in place, like #main. -->
+                <aside id="bot-panel" class="card bot-panel" aria-label="Bot"></aside>
                 <main id="main">
                     <p class="empty">Loading…</p>
                 </main>

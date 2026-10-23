@@ -6,12 +6,16 @@ import {
     applyRunEvent,
     type BotSnapshot,
     type PhaseLog,
+    openRun,
     type PhaseRunEntry,
+    planStats,
     type Run,
     type RunSummary,
     type Selection,
     type SessionGroup,
+    xpTotal,
 } from './model';
+import { conditionReads, type PhaseConditions, phaseConditions, planUntil, sourceLine } from './source';
 import type { TaskStatus } from '../../lib/task';
 import type { BotInfo, LiveEvents, RunReply, SessionsReply } from './server';
 import type { WorldInfo } from './world';
@@ -92,6 +96,11 @@ function dur(ms: number): string {
     return `${Math.floor(m / 60)}h ${pad(m % 60)}m`;
 }
 const num = (n: number) => n.toLocaleString();
+const compactFmt = new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 });
+const compact = (n: number) => compactFmt.format(n);
+const pct = (part: number, whole: number) => (whole > 0 ? `${Math.round((100 * part) / whole)}%` : '—');
+/** XP per hour over `ms`. */
+const perHour = (xp: number, ms: number) => (ms > 0 ? (xp * 3_600_000) / ms : 0);
 const xpText = (xp: Record<string, number> | undefined) =>
     Object.entries(xp ?? {})
         .map(([k, v]) => `${k} +${num(v)}`)
@@ -296,6 +305,7 @@ function render() {
     $('conn').textContent = connected ? '' : 'reconnecting…';
     renderSessions();
     renderMain();
+    renderBot();
     // Its status reads the bot snapshot; the iframe stays put unless its source changes.
     renderWorld();
 }
@@ -377,18 +387,8 @@ function renderMain() {
     // A task run of its own is one phase run: no timeline, phases or source to show.
     main.replaceChildren(
         ...(run.kind === 'plan'
-            ? [
-                  runHeader(run),
-                  timeline(run),
-                  h(
-                      'div',
-                      { class: 'cols' },
-                      h('div', { class: 'stack' }, phaseTable(run), phasePanel(run)),
-                      botPanel(),
-                  ),
-                  sourcePanel(viewing),
-              ]
-            : [runHeader(run), h('div', { class: 'cols' }, phasePanel(run), botPanel())]),
+            ? [runHeader(viewing), timeline(run), phaseTable(viewing), phasePanel(run), sourcePanel(viewing)]
+            : [runHeader(viewing), phasePanel(run)]),
     );
     const src = main.querySelector('.source');
     const key = `${run.runId}:${sourcePhase}`;
@@ -401,7 +401,11 @@ function renderMain() {
     if (lines && stick) lines.scrollTop = lines.scrollHeight;
 }
 
-function runHeader(run: Run): HTMLElement {
+function runHeader(reply: RunReply): HTMLElement {
+    const { run } = reply;
+    const until = run.kind === 'plan' ? conditionsOf(reply).until : null;
+    // What the plan's until read at the latest choice: how far it is from its end.
+    const untilReads = Object.entries(run.selections.at(-1)?.planReads ?? {});
     const st = runStatus({ state: run.state, status: run.result?.status ?? null });
     const end = run.endedAt ?? Date.now();
     const r = run.result;
@@ -432,7 +436,22 @@ function runHeader(run: Run): HTMLElement {
             h('span', {}, 'started ', h('b', {}, dayClock(run.startedAt))),
             h('span', {}, run.state === 'running' ? 'running for ' : 'took ', h('b', {}, dur(end - run.startedAt))),
             run.kind === 'plan' ? h('span', {}, 'phase runs ', h('b', {}, run.runs.length)) : null,
-            stops ? h('span', {}, 'until ', h('b', {}, stops)) : null,
+            stops ? h('span', { title: 'Stops given to this run' }, 'run until ', h('b', {}, stops)) : null,
+            until
+                ? h(
+                      'span',
+                      { class: 'plan-until', title: `The plan's own until: ${until}` },
+                      'plan until ',
+                      h('code', {}, until),
+                      untilReads.length
+                          ? h(
+                                'span',
+                                { class: 'muted' },
+                                ` (${untilReads.map(([k, v]) => `${k} = ${readText(v)}`).join(', ')})`,
+                            )
+                          : null,
+                  )
+                : null,
             run.requires.length ? h('span', {}, 'requires ', h('b', {}, run.requires.join(', '))) : null,
             run.session ? h('span', {}, 'session ', h('b', { class: 'mono' }, run.session.slice(0, 8))) : null,
             h('span', { class: 'mono muted', title: run.sourceFile ?? '' }, run.runId),
@@ -587,21 +606,38 @@ function timeline(run: Run): HTMLElement {
 
 // ---- phase table ----
 
-function phaseTable(run: Run): HTMLElement {
-    const lastSel = run.selections.at(-1);
-    const open = run.runs.at(-1);
-    const current = open && open.endedAt === null ? open.phase : null;
+/** The viewed run's conditions, its phases' and its own until, read from its source once. */
+let conditionsFor: {
+    runId: string;
+    conditions: Record<string, PhaseConditions | null>;
+    until: string | null;
+} | null = null;
+function conditionsOf(reply: RunReply): NonNullable<typeof conditionsFor> {
+    const { run } = reply;
+    if (conditionsFor?.runId !== run.runId)
+        conditionsFor = {
+            runId: run.runId,
+            conditions: reply.source ? phaseConditions(reply.source, run.phases) : {},
+            until: reply.source ? planUntil(reply.source) : null,
+        };
+    return conditionsFor;
+}
+
+/** Why each phase runs (its conditions, and what they read and answered), and where the plan's time and XP went. */
+function phaseTable(reply: RunReply): HTMLElement {
+    const { run } = reply;
+    const stats = planStats(run, Date.now());
+    const { conditions } = conditionsOf(reply);
+    // The choice that started the phase run shown below: the latest one, unless a run was picked.
+    const entry = shownEntry(run);
+    const sel = entry ? run.selections[entry.selection] : run.selections.at(-1);
+    const current = openRun(run)?.phase ?? null;
     const rows = run.phases.map((p, i) => {
-        const mine = run.runs.filter(r => r.phase === p.phase);
-        const counts = new Map<Status, number>();
-        for (const r of mine) {
-            const st = phaseRunStatus(r, run);
-            counts.set(st, (counts.get(st) ?? 0) + 1);
-        }
-        const summary = run.result?.phases?.find(x => x.phase === p.phase);
-        const ms = summary?.durationMs ?? mine.reduce((n, r) => n + ((r.endedAt ?? Date.now()) - r.startedAt), 0);
-        const check = lastSel ? (lastSel.checks[p.phase] ?? 'not checked') : '—';
-        const last = mine.at(-1);
+        const ps = stats.phases[i]!;
+        const cond = conditions[p.phase];
+        const last = run.runs.filter(r => r.phase === p.phase).at(-1);
+        const xp = ps.xp ? xpTotal(ps.xp) : null;
+        const share = stats.elapsedMs > 0 ? ps.timeMs / stats.elapsedMs : 0;
         return h(
             'tr',
             { class: current === p.phase ? 'current' : null },
@@ -611,47 +647,60 @@ function phaseTable(run: Run): HTMLElement {
                 {},
                 h('button', { type: 'button', class: 'linkish', onclick: () => highlight(p.phase) }, p.phase),
                 p.task !== p.phase ? h('div', { class: 'muted' }, p.task) : null,
-                h(
-                    'details',
-                    { class: 'params' },
-                    h('summary', {}, 'params'),
-                    h('pre', {}, JSON.stringify(p.params, null, 2)),
-                ),
+                cond?.onFail ? h('div', { class: 'muted' }, `on fail: ${cond.onFail.replace(/^'|'$/g, '')}`) : null,
             ),
+            conditionCell(reply, p.phase, cond, sel),
             h(
                 'td',
-                {},
-                h(
-                    'span',
-                    { class: `check ${check === 'chosen' ? 'chosen' : check === 'not checked' ? 'not' : ''}` },
-                    check,
-                ),
-            ),
-            h('td', { class: 'num' }, mine.length),
-            h(
-                'td',
-                {},
-                h(
-                    'div',
-                    { class: 'chips' },
-                    [...counts].map(([k, n]) => badge(k, `${n}`)),
-                ),
-            ),
-            h('td', { class: 'num' }, mine.length ? dur(ms) : ''),
-            h('td', {}, summary ? xpText(summary.xpGained) : ''),
-            h(
-                'td',
-                { class: 'reason' },
+                { class: 'num' },
                 last
                     ? h(
                           'button',
-                          { type: 'button', class: 'linkish', onclick: () => pickRun(last.index) },
-                          last.reason ?? 'running…',
+                          {
+                              type: 'button',
+                              class: 'linkish',
+                              title: `Last: ${last.reason ?? 'running…'}`,
+                              onclick: () => pickRun(last.index),
+                          },
+                          ps.runs,
                       )
-                    : '',
+                    : '0',
+                ps.fails ? [' ', badge('failed', `${ps.fails}`)] : null,
+            ),
+            h(
+                'td',
+                { class: 'share' },
+                ps.runs
+                    ? [
+                          h('span', { class: 'meter' }, h('span', { style: `width:${(100 * share).toFixed(1)}%` })),
+                          h('span', { class: 'num' }, `${pct(ps.timeMs, stats.elapsedMs)} · ${dur(ps.timeMs)}`),
+                      ]
+                    : null,
+            ),
+            h('td', { class: 'num' }, ps.runs ? dur(ps.timeMs / ps.runs) : ''),
+            h(
+                'td',
+                { class: 'num', title: ps.xp ? xpText(ps.xp) : null },
+                !ps.runs ? '' : xp === null ? h('span', { class: 'muted' }, '—') : xp ? `+${compact(xp)}` : '0',
+            ),
+            h(
+                'td',
+                { class: 'num', title: ps.xp ? rates(ps.xp, ps.xpTimeMs) : null },
+                xp ? `${compact(perHour(xp, ps.xpTimeMs))}/h` : '',
             ),
         );
     });
+    const total = stats.xp ? xpTotal(stats.xp) : null;
+    const parts: [string, number, string][] = [
+        ['productive', stats.productiveMs, 'in phases that gained XP'],
+        ['overhead', stats.overheadMs, 'in phases that gained none: walking, banking, buying'],
+        [
+            'unrated',
+            stats.unratedMs,
+            'in phases whose XP is not known yet: a first run still going, or a log from before phase-end carried XP',
+        ],
+        ['between phases', stats.betweenMs, 'choosing the next phase and starting its run'],
+    ];
     return h(
         'section',
         { class: 'card' },
@@ -659,21 +708,21 @@ function phaseTable(run: Run): HTMLElement {
         h(
             'p',
             { class: 'muted hint' },
-            'In selection order: the first phase whose when holds runs. "Last check" is what each answered at the latest selection.',
+            "In selection order: at each choice the first phase whose when holds (and whose until does not) runs. The marks, and the values each condition read, are from the choice that started the phase run shown below. Share is of the plan's elapsed time; XP/h is over a phase's finished runs.",
         ),
         h(
             'div',
             { class: 'table-wrap' },
             h(
                 'table',
-                {},
+                { class: 'phases' },
                 h(
                     'thead',
                     {},
                     h(
                         'tr',
                         {},
-                        ['#', 'Phase', 'Last check', 'Runs', 'Outcomes', 'Time', 'XP', 'Last reason'].map(t =>
+                        ['#', 'Phase', 'Runs when', 'Runs', 'Share of time', 'Avg / run', 'XP', 'XP/h'].map(t =>
                             h('th', {}, t),
                         ),
                     ),
@@ -681,8 +730,119 @@ function phaseTable(run: Run): HTMLElement {
                 h('tbody', {}, rows),
             ),
         ),
+        h(
+            'div',
+            { class: 'kv' },
+            parts
+                .filter(([, ms]) => pct(ms, stats.elapsedMs) !== '0%')
+                .map(([label, ms, tip]) =>
+                    h('span', { title: `${dur(ms)} ${tip}` }, `${label} `, h('b', {}, pct(ms, stats.elapsedMs))),
+                ),
+            total
+                ? h(
+                      'span',
+                      { title: stats.xp ? rates(stats.xp, stats.xpTimeMs) : null },
+                      'plan ',
+                      h('b', {}, `${compact(perHour(total, stats.xpTimeMs))} XP/h`),
+                  )
+                : null,
+        ),
     );
 }
+/** A phase's conditions, each marked with how it answered at `sel`, and the values they read there. */
+function conditionCell(
+    reply: RunReply,
+    phase: string,
+    cond: PhaseConditions | null | undefined,
+    sel: Selection | undefined,
+): HTMLElement {
+    const answer = sel ? (sel.checks[phase] ?? 'not checked') : null;
+    const held = answer === 'chosen' || answer === 'until holds';
+    const line = (kw: string, text: string, ok: boolean | null, label: string) =>
+        h(
+            'code',
+            { title: `${kw} ${text}${ok === null ? '' : `: ${label}`}` },
+            mark(ok, label),
+            h('span', { class: 'kw' }, `${kw} `),
+            text,
+        );
+    const read = sel?.reads[phase] ?? {};
+    // && and || stop at the first part that decides: a read the condition did not reach is listed
+    // as such, not left out, once the log records reads at all and the phase was asked.
+    const asked = answer === 'chosen' || answer === 'when false' || answer === 'until holds';
+    const unreached =
+        asked && Object.keys(sel?.reads ?? {}).length
+            ? conditionReads(`${cond?.when ?? ''} ${cond?.until ?? ''}`).filter(k => !(k in read))
+            : [];
+    const reads = Object.entries(read);
+    return h(
+        'td',
+        { class: `cond${answer === 'not checked' ? ' unchecked' : ''}` },
+        cond?.when
+            ? line(
+                  'when',
+                  cond.when,
+                  answer === 'when false' ? false : held ? true : null,
+                  answer === 'when false' ? 'false' : 'true',
+              )
+            : null,
+        cond?.until
+            ? line(
+                  'until',
+                  cond.until,
+                  answer === 'until holds' ? false : answer === 'chosen' ? true : null,
+                  answer === 'until holds' ? 'holds, so not started' : 'does not hold',
+              )
+            : null,
+        !cond?.when && !cond?.until
+            ? h(
+                  'span',
+                  { class: 'muted' },
+                  answer === 'chosen' ? mark(true, 'chosen') : null,
+                  !reply.source
+                      ? 'no source to read'
+                      : cond
+                        ? 'always'
+                        : 'not a phase() call of its own: see the source',
+              )
+            : null,
+        answer === 'chosen' ? h('div', { class: 'tag chosen' }, 'chosen') : null,
+        answer === 'skipped: failed last' ? h('div', { class: 'tag' }, '⏭ skipped: failed last time') : null,
+        answer === 'not checked' ? h('div', { class: 'tag' }, 'not checked: an earlier phase was chosen') : null,
+        reads.length || unreached.length
+            ? h(
+                  'div',
+                  { class: 'reads' },
+                  reads.map(([k, v]) => h('span', {}, `${k} = `, h('b', {}, readText(v)))),
+                  unreached.map(k =>
+                      h(
+                          'span',
+                          {
+                              class: 'unreached',
+                              title: 'Not read: an earlier part of the condition already decided it (&& and || stop there)',
+                          },
+                          `${k} `,
+                          h('i', {}, 'not reached'),
+                      ),
+                  ),
+              )
+            : null,
+    );
+}
+/** ✓ or ✗ with its meaning for a screen reader; nothing when the condition was not asked. */
+const mark = (ok: boolean | null, label: string) =>
+    ok === null
+        ? null
+        : h('span', { class: `mark ${ok ? 'yes' : 'no'}`, role: 'img', 'aria-label': label }, ok ? '✓' : '✗');
+/** A read value: null is what bank() gives before the bank has been seen open. */
+const readText = (v: unknown) => (v === null ? 'unknown' : typeof v === 'object' ? JSON.stringify(v) : String(v));
+
+/** Each skill's XP/h over `ms`, for a tooltip. */
+const rates = (xp: Record<string, number>, ms: number) =>
+    Object.entries(xp)
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => `${k} ${num(Math.round(perHour(n, ms)))}/h`)
+        .join(', ') || 'no XP';
 
 function highlight(phase: string) {
     sourcePhase = phase;
@@ -812,11 +972,20 @@ function countChips(counts: Record<string, number>): HTMLElement {
 
 // ---- bot panel ----
 
-function botPanel(): HTMLElement {
+/** Fills the panel beside the 3D view in place, keeping where the viewer scrolled it to. */
+function renderBot() {
+    const panel = $('bot-panel');
+    const scroll = panel.scrollTop;
+    panel.replaceChildren();
+    add(panel, botPanel());
+    panel.scrollTop = scroll;
+}
+
+function botPanel(): Child[] {
     const b = botSnap;
     const watching = viewing === live;
     const title = h('h2', {}, `Bot${bot ? ` · ${bot}` : ''}`);
-    if (!b) return h('aside', { class: 'card' }, title, h('p', { class: 'muted' }, 'connecting…'));
+    if (!b) return [title, h('p', { class: 'muted' }, 'connecting…')];
     const stMap: Record<BotSnapshot['status'], Status> = {
         live: 'running',
         stale: 'stuck',
@@ -827,9 +996,7 @@ function botPanel(): HTMLElement {
     const p = b.player;
     const slots = [...b.inventory];
     while (slots.length < b.slots) slots.push({ name: '', count: 0 });
-    return h(
-        'aside',
-        { class: 'card' },
+    return [
         title,
         h('div', {}, badge(stMap[b.status], label), b.message ? h('span', { class: 'muted' }, ` ${b.message}`) : null),
         !watching ? h('div', { class: 'sub-h' }, 'Now, not at the time of the plan shown.') : null,
@@ -898,7 +1065,7 @@ function botPanel(): HTMLElement {
                   ),
               ]
             : null,
-    );
+    ];
 }
 
 // ---- source ----
@@ -925,16 +1092,6 @@ function sourcePanel(reply: RunReply): HTMLElement {
         ),
     );
 }
-/** The line declaring a phase: its `name:`, or for a phase named after its task, the phase(<task>, ...) call. */
-function sourceLine(lines: string[], phase: string, task: string): number {
-    const named = lines.findIndex(l => l.includes(`name: '${phase}'`));
-    if (named >= 0) return named;
-    const call = new RegExp(`phase\\(\\s*${escapeRe(toIdent(task))}\\b`);
-    return lines.findIndex(l => call.test(l));
-}
-const escapeRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-/** Task name -> the identifier plans import it as: "fish-cook" -> "fishCook". */
-const toIdent = (task: string) => task.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
 
 /** Comments muted and strings tinted; enough to read a plan, not a TypeScript highlighter. */
 function tint(line: string): Child[] {
@@ -1102,6 +1259,8 @@ function renderWorld() {
     status.textContent = worldStatus(isolated);
     tab.hidden = !ready;
     if (world) tab.href = worldSrc(world);
+    // With the frame shown the bot panel sits beside it; without, it runs down beside the plan.
+    $('content').classList.toggle('world-shown', worldOpen && !!ready);
     if (!worldOpen || !ready) {
         // Unloading it stops the renderer and closes its feed connection.
         frame.replaceChildren();

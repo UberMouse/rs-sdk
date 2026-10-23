@@ -301,6 +301,50 @@ class PredicateError extends Error {
 
 const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
 
+/** What a phase's predicates read at a selection: each call or field as written (`inv('Logs')`), with what it gave. */
+export type Reads = Record<string, unknown>;
+/** Reads one selection keeps per phase: a helper scanning the state must not flood the plan log. */
+const MAX_READS = 12;
+
+/**
+ * `v`, noting into `reads` what a predicate reads off it: its calls with their arguments, its other
+ * fields, and the scalars it reads off `state` by path (`state.player.worldX`). Arrays are handed
+ * over unrecorded. Read-only, so the predicate's answer is the same as on `v`.
+ */
+export function recordReads(v: PlanView, reads: Reads): PlanView {
+    const note = (key: string, value: unknown) => {
+        if (key in reads || Object.keys(reads).length < MAX_READS) reads[key] = value === undefined ? null : value;
+    };
+    const watch = (obj: object, path: string): object =>
+        new Proxy(obj, {
+            get(target, key, receiver) {
+                const value: unknown = Reflect.get(target, key, receiver);
+                if (typeof key === 'symbol' || Array.isArray(value)) return value;
+                if (value !== null && typeof value === 'object') return watch(value, `${path}.${key}`);
+                if (typeof value !== 'function') note(`${path}.${key}`, value);
+                return value;
+            },
+        });
+    return new Proxy(v, {
+        get(target, key, receiver) {
+            const value: unknown = Reflect.get(target, key, receiver);
+            if (typeof key === 'symbol') return value;
+            if (key === 'state') return watch(value as object, 'state');
+            if (typeof value !== 'function') {
+                note(key, value);
+                return value;
+            }
+            return (...args: unknown[]) => {
+                const out: unknown = value.apply(target, args);
+                note(`${key}(${args.map(argText).join(', ')})`, out);
+                return out;
+            };
+        },
+    });
+}
+const argText = (a: unknown) =>
+    typeof a === 'string' ? `'${a}'` : a instanceof RegExp ? String(a) : (JSON.stringify(a) ?? String(a));
+
 /**
  * What the idle rail compares: total XP, inventory and position. Not HP: a phase that only waited
  * while HP regenerated (or only lost some) has made no progress.
@@ -573,18 +617,27 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             if (stop) return finish('done', stop);
             const v = view(s);
             // No fight to wait out here: no phase is running, and none is started.
-            if (planUntil && ask(null, 'until', () => planUntil(v))) return finish('done', PLAN_UNTIL);
+            const planReads: Reads = {};
+            if (planUntil && ask(null, 'until', () => planUntil(recordReads(v, planReads))))
+                return finish('done', PLAN_UNTIL);
             for (const [need, holds] of Object.entries(def.requires ?? {}))
                 if (!ask(null, `requires "${need}"`, () => holds(v))) return finish('failed', `plan requires ${need}`);
 
-            /** What each phase's predicates answered, in plan order up to the one chosen. */
+            /** What each phase's predicates answered, in plan order up to the one chosen, and what they read. */
             const checks: Record<string, string> = {};
+            const reads: Record<string, Reads> = {};
             const answer = (p: Phase): string => {
                 const { when, until } = p;
                 if (p.name === skip) return 'skipped: failed last';
-                if (when && !ask(p, 'when', () => when(v))) return 'when false';
-                if (until && ask(p, 'until', () => until(v))) return 'until holds';
-                return 'chosen';
+                const read: Reads = {};
+                const rv = recordReads(v, read);
+                try {
+                    if (when && !ask(p, 'when', () => when(rv))) return 'when false';
+                    if (until && ask(p, 'until', () => until(rv))) return 'until holds';
+                    return 'chosen';
+                } finally {
+                    if (Object.keys(read).length) reads[p.name] = read;
+                }
             };
             let entry: (typeof entries)[number] | undefined;
             for (const e of entries) {
@@ -599,6 +652,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 type: 'select',
                 phase: entry?.phase.name ?? null,
                 checks,
+                reads,
+                ...(planUntil && { planReads }),
                 last,
                 inventory: inventoryCounts(s),
                 free: v.free,
@@ -715,6 +770,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 runId: run.runId,
                 status: result.status,
                 reason: result.reason,
+                // Per run, so a viewer can rate a phase while the plan runs; the result has only totals.
+                durationMs: result.durationMs,
+                xpGained: result.xpGained,
             });
 
             if (ext.error) return finish('error', ext.error);

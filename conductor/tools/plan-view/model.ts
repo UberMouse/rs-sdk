@@ -23,6 +23,10 @@ export interface Selection {
     /** The phase chosen; null when none applied (the plan then fails). */
     phase: string | null;
     checks: Record<string, string>;
+    /** What each phase's predicates read, by phase (`inv('Logs')` -> 3); empty in logs from before it was logged. */
+    reads: Record<string, Record<string, unknown>>;
+    /** What the plan's own until read; null for a plan without one, or a log from before it was logged. */
+    planReads: Record<string, unknown> | null;
     last: { phase: string; status: TaskStatus; reason: string } | null;
     inventory: Record<string, number>;
     free: number;
@@ -44,6 +48,9 @@ export interface PhaseRunEntry {
     reason: string | null;
     /** The selection that started it, an index into `Run.selections`; -1 for a task run's. */
     selection: number;
+    /** The engine's own time and XP for it, from phase-end; null while it runs, or in logs from before them. */
+    durationMs: number | null;
+    xpGained: Record<string, number> | null;
 }
 
 /**
@@ -158,6 +165,94 @@ export const openRun = (run: Run): PhaseRunEntry | null => {
     return r && r.endedAt === null ? r : null;
 };
 
+/** Where one phase's share of a plan run went, and what it earned. */
+export interface PhaseStats {
+    phase: string;
+    runs: number;
+    /** Runs that ended failed, stuck or error. */
+    fails: number;
+    /** Time in its runs, the one in progress included. */
+    timeMs: number;
+    /** XP of its finished runs and their time, the rate being one over the other; xp is null while a finished run has none logged. */
+    xp: Record<string, number> | null;
+    xpTimeMs: number;
+}
+
+/** A plan run's time and XP, phase by phase. */
+export interface PlanStats {
+    phases: PhaseStats[];
+    elapsedMs: number;
+    /** Phase time in phases that gained XP, that gained none, and whose XP is not known yet. */
+    productiveMs: number;
+    overheadMs: number;
+    unratedMs: number;
+    /** The rest of the elapsed time: choosing phases and starting their runs. */
+    betweenMs: number;
+    /** XP of the finished phase runs, and the plan's time to the end of the last of them; null when one is not known. */
+    xp: Record<string, number> | null;
+    xpTimeMs: number;
+}
+
+const addXp = (into: Record<string, number>, xp: Record<string, number>) => {
+    for (const [k, n] of Object.entries(xp)) into[k] = (into[k] ?? 0) + n;
+};
+export const xpTotal = (xp: Record<string, number>): number => Object.values(xp).reduce((a, b) => a + b, 0);
+
+/** Per phase: the result's totals once it ends, else the phase runs' own (each run's XP from its phase-end). */
+export function planStats(run: Run, now: number): PlanStats {
+    const totals = run.result?.phases;
+    const phases = run.phases.map(({ phase }): PhaseStats => {
+        const mine = run.runs.filter(r => r.phase === phase);
+        const fails = mine.filter(r => r.status !== null && r.status !== 'done').length;
+        const summary = totals?.find(x => x.phase === phase);
+        if (summary)
+            return {
+                phase,
+                runs: mine.length,
+                fails,
+                timeMs: summary.durationMs,
+                xp: summary.xpGained,
+                xpTimeMs: summary.durationMs,
+            };
+        let timeMs = 0;
+        let xpTimeMs = 0;
+        let xp: Record<string, number> | null = null;
+        let unknown = false;
+        for (const r of mine) {
+            const ms = r.durationMs ?? (r.endedAt ?? now) - r.startedAt;
+            timeMs += ms;
+            if (r.endedAt === null) continue;
+            if (!r.xpGained) unknown = true;
+            else {
+                xp ??= {};
+                addXp(xp, r.xpGained);
+                xpTimeMs += ms;
+            }
+        }
+        return { phase, runs: mine.length, fails, timeMs, xp: unknown ? null : xp, xpTimeMs };
+    });
+    const elapsedMs = (run.endedAt ?? now) - run.startedAt;
+    const sum = (f: (p: PhaseStats) => boolean) => phases.filter(f).reduce((n, p) => n + p.timeMs, 0);
+    const productiveMs = sum(p => !!p.xp && xpTotal(p.xp) > 0);
+    const overheadMs = sum(p => !!p.xp && xpTotal(p.xp) === 0);
+    const unratedMs = sum(p => !p.xp);
+    // A phase with no finished run yet has no XP to miss; one whose finished runs logged none does.
+    const known = phases.every(p => p.xp || !run.runs.some(r => r.phase === p.phase && r.endedAt !== null));
+    const xp: Record<string, number> = {};
+    for (const p of phases) if (p.xp) addXp(xp, p.xp);
+    const open = openRun(run);
+    return {
+        phases,
+        elapsedMs,
+        productiveMs,
+        overheadMs,
+        unratedMs,
+        betweenMs: Math.max(0, elapsedMs - productiveMs - overheadMs - unratedMs),
+        xp: known ? xp : null,
+        xpTimeMs: elapsedMs - (open && !totals ? now - open.startedAt : 0),
+    };
+}
+
 /** Folds one plan-log event into `run`, in place. Unknown events and malformed fields are ignored. */
 export function applyPlanEvent(run: Run, e: LogEvent): void {
     switch (e.type) {
@@ -180,6 +275,8 @@ export function applyPlanEvent(run: Run, e: LogEvent): void {
                 t: e.t,
                 phase,
                 checks: record<string>(e.checks) ?? {},
+                reads: record<Record<string, unknown>>(e.reads) ?? {},
+                planReads: record(e.planReads),
                 last: lastOf(e.last),
                 inventory: record<number>(e.inventory) ?? {},
                 free: num(e.free) ?? 0,
@@ -197,6 +294,8 @@ export function applyPlanEvent(run: Run, e: LogEvent): void {
                     status: null,
                     reason: null,
                     selection: run.selections.length - 1,
+                    durationMs: null,
+                    xpGained: null,
                 });
             return;
         }
@@ -214,6 +313,8 @@ export function applyPlanEvent(run: Run, e: LogEvent): void {
             r.endedAt = e.t;
             r.status = status(e.status);
             r.reason = str(e.reason);
+            r.durationMs = num(e.durationMs);
+            r.xpGained = record<number>(e.xpGained);
             return;
         }
         case 'close-error':
@@ -265,6 +366,8 @@ export function applyTaskEvent(run: Run, e: LogEvent): void {
                     status: null,
                     reason: null,
                     selection: -1,
+                    durationMs: null,
+                    xpGained: null,
                 },
             ];
             return;
@@ -283,6 +386,8 @@ export function applyTaskEvent(run: Run, e: LogEvent): void {
                 r.endedAt = e.t;
                 r.status = run.result.status;
                 r.reason = run.result.reason;
+                r.durationMs = run.result.durationMs;
+                r.xpGained = run.result.xpGained;
             }
             return;
         }
