@@ -48,7 +48,7 @@ resume so you know to read them.
 | Field | Meaning |
 |---|---|
 | `skill` | owner skill name (a directory under `.claude/skills/`) |
-| `sessionId` | the session that owns the run, `$CLAUDE_CODE_SESSION_ID`: written on the first write, and rewritten with your own id on every resume or handoff (the owner is whoever resumed) |
+| `sessionId` | the session that owns the run, `$CLAUDE_CODE_SESSION_ID`: written on the first write, and rewritten with your own id on every resume or handoff (the owner is whoever resumed). The `rs-ops` mod's autocompact treats only this session as the conductor (*Autocompact*, below) |
 | `phase` | owner-defined string. **`done` is reserved**: the run is finished |
 | `goal` | one line: what the run is for |
 | `standingInstructions` | the user's instructions that outlive one turn, **verbatim**, never paraphrased |
@@ -89,7 +89,8 @@ Owner skills add their own fields as further top-level keys, and say what they m
 5. **Absolute paths** for anything the hook prints: its reader cannot assume a cwd.
 6. **`inFlight` is a claim.** Add an entry when you dispatch, remove it when its notification
    arrives. `[]` asserts "nothing is running". A missing or non-array `inFlight` means
-   "unknown" — omit it if you aren't tracking background work.
+   "unknown" — omit it if you aren't tracking background work. Autocompact reads it to decide
+   whether an idle conductor is waiting on background work (*Autocompact*, below).
 7. **`pending` means runnable.** A task blocked on the user is `blocked-needs-human`, and so is
    every task that depends on it, transitively.
 8. **Write `phase: "done"` when the run finishes.** A finished run left at another phase makes
@@ -118,6 +119,17 @@ For standalone use, this section *is* the §Resuming the hook points at.
 
 **Handoff.** When the user asks for one, or says they will `/compact`: rewrite the file now and
 give them its absolute path and the owner skill's path. That is the whole handoff.
+
+### Autocompact
+
+The `rs-ops` mod (`.claude/skills/rs-ops/README.md`) compacts an idle main session before its
+context fills. Its rule 1 compacts a run of `skill` `conductor` or `sdd-loop`, not `done`, whose
+`sessionId` is this session, when the main loop is idle over 25% context and `inFlight` holds
+anything but a `gate` entry. The compaction is told to keep those entries and the
+`standingInstructions` verbatim. Its summary opens with "Compacted by rs-ops autocompact (rule N,
+X%)", and the SessionStart hook then re-surfaces the file as after any compaction: resume as
+above. So keep `inFlight` current. A stale entry gets an idle conductor compacted early, and a
+missing one keeps it from compacting until the 75% failsafe.
 
 ## Mixing it into a skill
 

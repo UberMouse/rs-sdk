@@ -57,3 +57,6 @@ conductor/runs/
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# engine type declarations copied into a mod by hand (.claude/skills/rs-ops/README.md)
+.claude/skills/*/.claude-plugin/types/

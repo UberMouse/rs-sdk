@@ -155,7 +155,9 @@ Rules for every agent working in this repo:
 - **Game knowledge goes in the knowledge base** per the `knowledge` skill, not in task code
   comments or agent prompts.
 - **Long runs keep state on disk** in `.durable-state/` (the `durable-state` skill), so they
-  survive compaction and resumes.
+  survive compaction and resumes. The `rs-ops` mod (`.claude/skills/rs-ops/README.md`)
+  compacts an idle conductor over 25% context while its `inFlight` lists background work, and
+  any idle session at 75% after a cancellable toast; `/rs-autocompact` shows or switches it.
 - **`conductor/` and `wiki/world/` code is formatted and linted**: oxfmt (`.oxfmtrc.json`) and oxlint
   (`.oxlintrc.json`, warnings denied). Finish code edits with `bun run verify:conductor` and
   `bun test conductor` (`bun run fmt` formats in place). A Claude Code hook formats and lints each

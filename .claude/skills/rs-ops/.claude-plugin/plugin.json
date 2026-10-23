@@ -1,0 +1,15 @@
+{
+  "name": "rs-ops",
+  "version": "0.1.0",
+  "description": "rs-sdk session operations: idle autocompact for the conductor (ported from kawaka's kx-ops).",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "autocompact": {
+      "type": "string",
+      "title": "Autocompact",
+      "description": "Idle auto-compaction in rs-sdk sessions (user settings): on = an idle conductor over 25% plus a cancellable failsafe for any idle session at 75%; conductor-only = the conductor rule alone; off = never. /rs-autocompact on|off overrides it for one session.",
+      "default": "on",
+      "options": ["on", "conductor-only", "off"]
+    }
+  }
+}
