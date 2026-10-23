@@ -22,6 +22,7 @@ const below = (v: PlanView) => (v.state.player?.worldZ ?? 0) > 9000;
 
 export default definePlan({
     name: 'giants-att-def',
+    method: 'hill-giants-edgeville',
     description:
         'Attack 70 then Defence 70 on Edgeville Dungeon hill giants with a Mithril scimitar, burying big bones',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },

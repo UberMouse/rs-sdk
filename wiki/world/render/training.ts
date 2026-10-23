@@ -9,14 +9,17 @@ import {
     measuredFigures,
     methodModels,
     methodRate,
+    styleParams,
     trains,
+    uncalibrated,
     type MethodContext,
     type MethodModel,
     type ResolvedMethod,
     type Stop,
 } from '../model/method';
 import { profileAt, toolKindOfObj, type Profile, type Tools } from '../model/profile';
-import { SKILLS, XP_RATE, type Skill } from '../model/server';
+import { SKILLS, TICKS_PER_HOUR, XP_RATE, type Skill } from '../model/server';
+import { fightsInWilderness, methodHazard } from '../query';
 import { first } from '../sources/configs';
 import type { Site, World } from '../types';
 import { cmp } from '../util';
@@ -90,18 +93,33 @@ function skillPage(
     // The page's skill at `level`, every other skill at that level raised to the method's own level of it.
     const column = (m: ResolvedMethod, level: number): Profile =>
         profileAt(skill, level, { tools: ctx.tools, atLeast: m.levels });
-    const xp = (m: ResolvedMethod, profile: Profile): number => methodRate(m, profile, ctx).xpPerHour[skill] ?? 0;
+    // Rated for the page's skill: a kill swings the style that suits it (methodRate).
+    const rateFor = (m: ResolvedMethod, profile: Profile) => methodRate(m, profile, ctx, undefined, skill);
+    const xp = (m: ResolvedMethod, profile: Profile): number => rateFor(m, profile).xpPerHour[skill] ?? 0;
+    const npcName = (id: string): string => first(data.npcConfigs.get(id), 'name') ?? id;
     const where = (s: Site): string => `${areaCell(path, areas, s.areaPath)} \`${s.id}\``;
     const bankAt = (s: Site): string => `bank at ${where(s)}`;
     // The tool tier a page's columns pick the best of, by the obj that is one.
     const tier = (t: string): keyof Tools | null => toolKindOfObj(ctx.tools, t);
 
+    // Each method's models at 99, a kill's on the first style the page's skill rates: built once per method.
+    type Models = ReturnType<typeof methodModels>;
+    const at99 = new Map(
+        methods.map(m =>
+            forMethod(m, () => {
+                const top = column(m, 99);
+                return [m, methodModels(m, top, ctx, undefined, styleParams(m.def, top, ctx, skill)[0])] as const;
+            }),
+        ),
+    );
     // The tools the method carries at 99: a tier stands for the best of it usable at each column.
-    const held = (m: ResolvedMethod): string[] => {
-        const { gather, steps } = methodModels(m, column(m, 99), ctx);
+    const held = ({ gather, steps }: Models): string[] => {
         const actions = [...('withdraw' in gather ? [] : [gather]), ...steps.flat()];
         return [...new Set(actions.flatMap(a => a.tools ?? []))];
     };
+    // A kill: a gather on an attack rate (the combat family).
+    const isKill = ({ gather }: Models): boolean => !('withdraw' in gather) && gather.attackRate !== undefined;
+    const kills = [...at99.values()].some(isKill);
     const tools = (ts: readonly string[]): string =>
         ts
             .map(t => {
@@ -121,6 +139,7 @@ function skillPage(
             `Reach: ${r === '-' ? 'none' : r}.`,
             `Levels: ${levels(m)}.`,
             `Tools: ${tools(ts)}.`,
+            ...(m.def.gear?.length ? [`Gear: ${m.def.gear.map(obj).join(', ')}.`] : []),
             ...(m.def.food ? [`Food: ${obj(m.def.food)}.`] : []),
         ].join(' ');
     };
@@ -149,27 +168,71 @@ function skillPage(
         measuredFigures(m, skill, ctx).map(({ measured: x, xpPerHour: got, floor }) => {
             const at = x.level[skill] === undefined ? '' : ` at ${x.level[skill]}`;
             const tool = x.tool ? `, with the ${obj(x.tool)}` : '';
+            const worn = x.worn?.length ? `, wearing ${x.worn.map(obj).join(', ')}` : '';
             return {
                 cell: `${compact(got)}${at} (${percent(got, floor)})`,
-                by: `${compact(got)}${at} by ${x.bot} on ${x.date}${tool}`,
+                by: `${compact(got)}${at} by ${x.bot} on ${x.date}${tool}${worn}`,
             };
         });
 
+    // A kill's npcs as a hazard (ResolvedMethod.npcs, methodHazard at 99): who hunts, how hard they hit, the zones,
+    // and the target's retreat, which the floor leaves out. In the Wilderness a hunter hunts every combat level, as
+    // methodHazard has it.
+    const hazard = (m: ResolvedMethod): string[] => {
+        if (!m.npcs) return [];
+        const h = methodHazard(m, column(m, 99));
+        const wild = fightsInWilderness(m);
+        const upTo = (n: number | null): string =>
+            wild ? 'every combat level (Wilderness)' : n === null ? 'any combat level' : `combat ${n} and below`;
+        const hunters = m.npcs.hunters.length
+            ? m.npcs.hunters.map(x => `${npcName(x.npc)} hunts players of ${upTo(x.upTo)}`).join('; ')
+            : 'no npc there hunts players';
+        // An npc that can't hit (max hit 0) has no hit to state and no retreat that spares the player.
+        const hits = m.npcs.maxHit > 0;
+        const zone = h.wildernessLevel > 0 ? `, Wilderness level ${h.wildernessLevel}` : '';
+        const retreat =
+            m.npcs.retreat === undefined || !hits
+                ? ''
+                : ` The target retreats at ${m.npcs.retreat} HP and stops hitting back; the floor prices the kill as if it fought on.`;
+        const maxHit = hits ? `; the npcs there hit for at most ${m.npcs.maxHit}` : '';
+        return [`  - **Hazard**: ${hunters}${maxHit}; ${h.multiway ? 'multiway' : 'single-way'}${zone}.${retreat}`];
+    };
+    // The food gate (model/method.ts uncalibrated): a kill that takes damage, of an npc no run has calibrated, eats
+    // nothing in its floor. An npc that can't hit (the chicken's max hit 0) has no damage to gate.
+    const gated = (m: ResolvedMethod, { gather }: Models): string =>
+        !('withdraw' in gather) && gather.attackRate !== undefined && (gather.damage ?? 0) > 0 && uncalibrated(m, ctx)
+            ? 'Food/hr uncalibrated: no worker run has checked the damage these kills take (wiki/world/methods.ts ' +
+              'CALIBRATIONS), so the XP/hr leaves out food trips'
+            : '';
     const rated = methods.map(m =>
         forMethod(m, () => {
             const own = m.levels[skill]!;
-            const top = methodRate(m, column(m, 99), ctx);
-            const ts = held(m);
+            const top = rateFor(m, column(m, 99));
+            const models = at99.get(m)!;
+            const ts = held(models);
             const ms = measured(m);
             const supplies = top.suppliesPerHour.map(x => `${compact(x.count)} ${obj(x.obj)}`);
             const plans = m.def.plans?.length ? ` Plans: ${m.def.plans.join(', ')}.` : '';
+            const gate = gated(m, models);
+            // A kill's eats are charged as if each fell between kills (model/cycle.ts swingEats): a floor.
+            const eats =
+                isKill(models) && top.suppliesPerHour.some(x => x.obj === m.def.food)
+                    ? '; eat ticks charged as if eaten between kills (a floor)'
+                    : '';
+            const supplied = supplies.length
+                ? `${supplies.join(', ')}; ${compact(top.suppliesGpPerHour)} gp${eats}`
+                : 'none';
             return {
+                gated: gate !== '',
                 tiers: ts.flatMap(t => tier(t) ?? []),
                 row: [
-                    `\`${m.def.id}\``,
+                    `\`${m.def.id}\`${gate ? ' †' : ''}`,
                     where(m.site),
                     `${compact(xp(m, column(m, m.minLevel)))} at ${m.minLevel}`,
                     ...LEVEL_COLUMNS.map(l => (l < own ? '-' : compact(xp(m, column(m, l))))),
+                    ...(kills
+                        ? [isKill(models) ? compact((TICKS_PER_HOUR / top.trip.total) * top.trip.successes) : '-']
+                        : []),
                     compact(top.gpPerHour),
                     top.binding,
                     ms.map(x => x.cell).join('; ') || '-',
@@ -178,7 +241,8 @@ function skillPage(
                     `- \`${m.def.id}\`: ${m.def.name}.${plans}${m.def.notes ? ` ${m.def.notes}` : ''}`,
                     `  - **Requires**: ${requires(m, ts)}`,
                     `  - **Sink**: ${sink(m)}.`,
-                    `  - **Supplies/hr** at 99: ${supplies.length ? `${supplies.join(', ')}; ${compact(top.suppliesGpPerHour)} gp` : 'none'}.`,
+                    ...hazard(m),
+                    `  - **Supplies/hr** at 99: ${supplied}${gate ? `; ${gate}` : ''}.`,
                     ...(ms.length ? [`  - **Measured**: ${ms.map(x => x.by).join('; ')}.`] : []),
                 ],
             };
@@ -197,12 +261,30 @@ function skillPage(
         `Min is the level the whole method needs, every skill of it at that level together; a level column has ${name} ` +
             `at that level and every other skill at it or at the method's own level of it, whichever is higher` +
             `${tiers.length ? `, with the best ${tiers.join(' and ')} usable there` : ''}, and \`-\` under the ` +
-            `method's ${name} level. gp/hr, the binding term and Supplies/hr are at 99. Measured is a bot's XP/hr at the ` +
-            'level its runs started at, and in brackets it over the floor there. Below the table, each method: what it ' +
-            'requires, its sink, its supplies, and who measured it.',
+            `method's ${name} level. ${kills ? 'kills/hr, ' : ''}gp/hr, the binding term and Supplies/hr are at 99. ` +
+            (kills
+                ? `A kill swings the weapon's style that suits ${name} (Attack accurate, Strength aggressive, Defence ` +
+                  'defensive; Hitpoints and Prayer the best of its styles). '
+                : '') +
+            "Measured is a bot's XP/hr at the " +
+            'level its runs started at, and in brackets it over the floor there. ' +
+            (rated.some(r => r.gated)
+                ? 'A † marks a kill whose damage no worker run has calibrated: its XP/hr and gp/hr leave out food trips. '
+                : '') +
+            `Below the table, each method: what it requires, its sink, ${kills ? "a kill's hazard, " : ''}its supplies, ` +
+            'and who measured it.',
         '',
         ...table(
-            ['Method', 'Where', 'Min', ...LEVEL_COLUMNS.map(String), 'gp/hr', 'Binding', 'Measured'],
+            [
+                'Method',
+                'Where',
+                'Min',
+                ...LEVEL_COLUMNS.map(String),
+                ...(kills ? ['kills/hr'] : []),
+                'gp/hr',
+                'Binding',
+                'Measured',
+            ],
             rated.map(r => r.row),
         ),
         '',
@@ -240,6 +322,9 @@ function readme(pages: ReadonlyMap<Skill, readonly ResolvedMethod[]>): string {
             "every skill of the method needs together; a level column has the page's skill at that level, the others " +
             "at it or their own level, the best tools usable there, no amulet of glory; `-` under the page's skill's " +
             'own level.',
+        "- **kills/hr**, on a page with a kill (the combat family): the kills an hour at 99, on the style the page's " +
+            'skill swings (Attack accurate, Strength aggressive, Defence defensive; Hitpoints and Prayer the best of ' +
+            "the weapon's styles); `-` for a method that is no kill.",
         '- **gp/hr**: the products kept, at item value (`cost`), at 99; a drop sink keeps only stackable ones.',
         '- **Binding**, at 99: `player` (the actions are most of a trip), `travel` (the legs and drops are), or ' +
             "`resource` (the features can't respawn fast enough).",
@@ -252,10 +337,16 @@ function readme(pages: ReadonlyMap<Skill, readonly ResolvedMethod[]>): string {
         '- **Requires**: what a walk from the Lumbridge spawn needs to get to every site of the method (as the place ' +
             'pages read Requires; `none` for nothing); each skill at its own lowest level, the others at 99, and the ' +
             'level every skill needs at once (Min); the tools (an axe or pickaxe is the best usable at the level, ' +
-            'wielded, its Attack level not checked); the food it eats.',
+            "wielded, its Attack level not checked); the gear it wears (a kill's weapon and armour); the food it eats.",
         '- **Sink**: drop, bank, or a process step then bank, with the run ticks of each leg.',
-        '- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99.',
-        '- **Measured**: each figure with the bot that ran it, the date, and the axe or pickaxe it used, if any.',
+        "- **Hazard**, a kill's: the npcs there that hunt players and up to which combat level (every one in the " +
+            'Wilderness), the largest max hit among them, whether it is multiway or in the Wilderness, and the ' +
+            "target's retreat HP, which the floor leaves out; an npc that can't hit has neither.",
+        '- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99. A kill eats food only once a ' +
+            "worker run has checked the model's damage on its npc (wiki/world/methods.ts CALIBRATIONS); until then, " +
+            'where the npc can hit, it says Food/hr uncalibrated, and its XP/hr leaves out food trips.',
+        '- **Measured**: each figure with the bot that ran it, the date, the axe or pickaxe it used, if any, and the ' +
+            'objs it wore, if recorded.',
         '',
         '## Adding a method',
         '',

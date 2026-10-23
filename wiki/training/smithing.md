@@ -20,14 +20,14 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Requires**: Reach: none. Levels: Mining 15, Magic 43, Smithing 33, each with the other skills at 99; every skill at once: 43. Tools: best pickaxe usable (wielded), Hammer.
   - **Sink**: superheat here, then smithing at [Port Khazard (Kandarin)](../places/port-khazard.md) `anvil:port-khazard:0`, then drop; legs 34 + 33 run ticks.
   - **Supplies/hr** at 99: 860 Nature rune, 3.44k Fire rune; 31k gp.
-  - **Measured**: 463k at 60 by conductor2w2 on 2026-10-16, with the Adamant pickaxe.
+  - **Measured**: 463k at 60 by conductor2w2 on 2026-10-16, with the Adamant pickaxe, wearing Staff of fire.
 - `iron-se-varrock-superheat-platebody-bank`: Iron at the south-east Varrock mine, superheated there, smithed into platebodies, banked at Varrock East. Plans: superheat-mine. The plan carries the pickaxe and walks to the anvil by a waypoint; the floor wields the pickaxe and runs the shortest way.
   - **Requires**: Reach: none. Levels: Mining 15, Magic 43, Smithing 33, each with the other skills at 99; every skill at once: 43. Tools: best pickaxe usable (wielded), Hammer.
   - **Sink**: superheat here, then smithing at [Varrock (Misthalin)](../places/varrock.md) `anvil:varrock:3`, then bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 50 + 18 + 46 run ticks.
   - **Supplies/hr** at 99: 708 Nature rune, 2.83k Fire rune; 25.5k gp.
-  - **Measured**: 328k at 60 by conductor2w2 on 2026-10-16, with the Adamant pickaxe.
+  - **Measured**: 328k at 60 by conductor2w2 on 2026-10-16, with the Adamant pickaxe, wearing Staff of fire.
 - `superheat-iron-varrock-east-platebody`: Banked iron ore superheated at Varrock East, smithed into platebodies at the south-east anvil. Plans: superheat-banked. The plan withdraws 25 ore and 30 nature runes a trip and casts at the bank.
   - **Requires**: Reach: none. Levels: Magic 43, Smithing 33, each with the other skills at 99; every skill at once: 43. Tools: Hammer.
   - **Sink**: superheat here, then smithing at [Varrock (Misthalin)](../places/varrock.md) `anvil:varrock:3`, then bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 18 + 18 run ticks.
   - **Supplies/hr** at 99: 1.65k Iron ore, 1.65k Nature rune, 6.62k Fire rune; 87.7k gp.
-  - **Measured**: 1.12M at 60 by conductor2w2 on 2026-10-16.
+  - **Measured**: 1.12M at 60 by conductor2w2 on 2026-10-16, wearing Staff of fire.

@@ -68,7 +68,7 @@ import { cmp } from './util';
  * or loot to a bank (conductor/docs/world-index.md, "Analysis: training methods"); on the way ore is smelted at a
  * furnace, raw fish cooked on a range, and the bars a furnace makes smithed at an anvil. Fires cook too, but phase 3
  * models a range (the spec's "range for raw fish"), so fires are not range sinks. An agility course's bank is where
- * its food comes from.
+ * its food comes from, and an npc site's where a kill's loot goes and its food comes from.
  */
 export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     tree: ['bank'],
@@ -86,6 +86,7 @@ export const SINKS: Partial<Record<FeatureKind, readonly SinkKind[]>> = {
     'spinning-wheel': ['bank'],
     'pottery-wheel': ['bank'],
     'pottery-oven': ['bank'],
+    npc: ['bank'],
 };
 
 /**

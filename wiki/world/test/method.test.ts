@@ -92,6 +92,7 @@ param=fishing_struct,fishing_struct_trout
 [raw_salmon]
 param=fishing_struct,fishing_struct_salmon
 [trout]
+category=category_58
 [salmon]
 [burntfish2]
 [fly_fishing_rod]
@@ -147,6 +148,9 @@ const data: GameData = {
     objs: parseConfigs(OBJS),
     locs: parseConfigs(LOCS),
     structs: parseConfigs(STRUCTS),
+    npcs: new Map(),
+    params: new Map(),
+    constants: new Map(),
     scripts: [['skill_fishing/scripts/fishing_spots/freshfish.rs2', FRESHFISH]],
 };
 
@@ -331,6 +335,35 @@ describe('resolving a record', () => {
     test("a sink behind a requirement: the method asks it, joined with the site's", () => {
         const m = resolve({ ...mine, sink: { mode: 'bank', bank: at(0, 3225, 3205) } });
         expect(m.ways.map(w => w.reach)).toEqual([['quest:x']]);
+    });
+
+    test("an area record's hazard: the deepest Wilderness level and any multiway of the sites its area gathers from", () => {
+        // The shut rock's site multiway, the gated rock's at Wilderness level 3.
+        const flagged = sites.map(s =>
+            s.id === 'rock:shut:0'
+                ? { ...s, multiway: true }
+                : s.id === 'rock:gated:0'
+                  ? { ...s, wildernessLevel: 3 }
+                  : s,
+        );
+        const c: MethodContext = { ...ctx, world: { sites: flagged, features } };
+        // From (3202, 3200): the shut rock (3200, 3230) is 30 tiles off, the gated one (3200, 3240) 40.
+        const wide = resolveMethod({ ...mine, area: 40 }, c, finder);
+        expect(wide.site.id).toBe('rock:mine:0');
+        expect(wide.areaHazard).toEqual({ wildernessLevel: 3, multiway: true });
+        expect(fromWorldMethod(toWorldMethod(wide), { sites: flagged }).areaHazard).toEqual({
+            wildernessLevel: 3,
+            multiway: true,
+        });
+        expect(resolveMethod({ ...mine, area: 30 }, c, finder).areaHazard).toEqual({
+            wildernessLevel: 0,
+            multiway: true,
+        });
+        expect(resolveMethod({ ...mine, area: 2 }, c, finder).areaHazard).toEqual({
+            wildernessLevel: 0,
+            multiway: false,
+        });
+        expect(resolveMethod(mine, c, finder).areaHazard).toBeUndefined();
     });
 });
 

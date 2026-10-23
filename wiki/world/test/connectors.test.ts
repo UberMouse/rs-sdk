@@ -481,6 +481,23 @@ describe('what stops a derivation is reported, never guessed', () => {
         ]);
     });
 
+    test('a return of several values ends that path, named with its line', () => {
+        const file = 'ladders+stairs/scripts/pair.rs2';
+        const text = `[oploc1,pairstairs]
+return(1, 2);
+p_telejump(1_50_50_30_30);
+`;
+        const out = deriveWith(
+            [file, text],
+            [loc('pairstairs', at(0, 3230, 3230))],
+            new Map([['pairstairs', { op1: ['Climb-up'] }]]),
+        );
+        expect(out.underived.map(u => u.reason)).toEqual([
+            `\`return\` (${lineOf(file, text, 'return(1, 2)')}) returns 2 values`,
+        ]);
+        expect(out.connectors).toEqual([]);
+    });
+
     test('a jump to a label no script defines', () => {
         const out = derive([loc('loststairs', at(0, 3295, 3295))]);
         expect(out.underived.map(u => u.reason)).toEqual([

@@ -2,7 +2,7 @@
 // connector scripts (sources/connectors.ts), the sail scripts (sources/transports.ts), the loadout
 // procs (sources/loadout.ts) and the quest varp assignments (sources/quests.ts). It reads statements
 // (`switch_*` with `case` lists, `if`/`else` with or without braces, `def_*` with or without a value,
-// `$local =` and `%varp =`, `while`, `return`, calls) and expressions (calls, names,
+// `$local =` and `%varp =`, `while`, `return` of none, one or several values, calls) and expressions (calls, names,
 // `interface:component` references, numbers, coords, strings, comparisons and arithmetic, joined by `&`
 // and `|`). Anything else is a ParseError naming its line, which a reader reports, never guesses past.
 import { codeOf } from '../classify';
@@ -91,7 +91,8 @@ export type Stmt = Node &
         | { t: 'if'; cond: Expr; yes: Stmt[]; no: Stmt[] }
         /** A loop; its `text` is the whole source line it starts on, as a ParseError would name it. */
         | { t: 'while'; cond: Expr; body: Stmt[] }
-        | { t: 'return'; value: Expr | null }
+        /** `value` the one value returned, else null; `values` every value, `return(coins, 10)` returning two. */
+        | { t: 'return'; value: Expr | null; values: Expr[] }
         /** `$local = ...`, `def_<type> $local = ...` or `%varp = ...`. */
         | { t: 'set'; name: string; value: Expr }
         /**
@@ -200,14 +201,18 @@ class Parser {
         }
         if (t.v === 'return') {
             this.i++;
-            let value: Expr | null = null;
+            const values: Expr[] = [];
             if (this.is('(')) {
                 this.next();
-                if (!this.is(')')) value = this.expr();
+                while (!this.is(')')) {
+                    if (values.length) this.expect(',');
+                    values.push(this.expr());
+                }
                 this.expect(')');
             }
             this.expect(';');
-            return { t: 'return', value, text: 'return', line: t.line };
+            const value = values.length === 1 ? values[0]! : null;
+            return { t: 'return', value, values, text: 'return', line: t.line };
         }
         if (t.v.startsWith('$') && this.peek(1)?.v === ',') {
             const names: string[] = [];

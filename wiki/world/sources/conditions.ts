@@ -125,6 +125,10 @@ export function toolCheckers(
         const walk = (stmts: readonly Stmt[], guard: string | undefined): void => {
             for (const st of stmts)
                 if (st.t === 'return') {
+                    if (st.values.length > 1) {
+                        other ??= `returns ${st.values.length} values (line ${st.line})`;
+                        continue;
+                    }
                     const v = st.value;
                     if (v?.t === 'name' && v.args === null && v.name === 'null') continue;
                     if (v?.t !== 'name' || v.args !== null) other ??= `returns \`${v?.text ?? ''}\``;

@@ -8,8 +8,10 @@ import type { BotWorldState } from '../../../sdk/types';
 import type { Measured } from '../../../wiki/world/methods';
 import type { CycleRates } from '../../../wiki/world/model/cycle';
 import { readGameData } from '../../../wiki/world/model/families/index';
+import { readObjNames } from '../../../wiki/world/model/items';
 import { fromWorldMethod, measuredFigures, methodModel } from '../../../wiki/world/model/method';
 import type { Tools } from '../../../wiki/world/model/profile';
+import type { Skill } from '../../../wiki/world/model/server';
 import {
     checkPlanMethods,
     formatMeasured,
@@ -23,6 +25,7 @@ import {
 import { errorResult } from '../../lib/run-cli';
 import { readStartState, type TimedResult } from '../../lib/runs';
 import { WORLD } from '../../lib/world-index';
+import { readConfigs } from '../../../wiki/world/sources/configs';
 
 describe('checkPlanMethods', () => {
     test('a link both sides record passes; a plan with no method is only listed', () => {
@@ -123,6 +126,14 @@ const SAME: Record<string, RunStart> = { ...STARTS, 'mining-50': { levels: { min
 /** A floor of 4,000 XP/h per Mining level the run started at. */
 const perLevel = (_: unknown, m: Measured) => ({ xpPerHour: { mining: m.level.mining! * 4_000 } }) as CycleRates;
 
+/** The game's obj config names by display name. */
+const OBJ_NAMES = readObjNames(readConfigs('obj'));
+/** The worn objs each method here reads: a melee method every one, a superheat one the staff of fire, others none. */
+const WORN_READ: Record<string, 'all' | ReadonlySet<string>> = {
+    giants: 'all',
+    superheat: new Set(['staff_of_fire']),
+};
+
 function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
     return {
         bot: 'tester',
@@ -131,10 +142,44 @@ function input(o: Partial<MethodRunsInput> = {}): MethodRunsInput {
         results: RESULTS,
         start: r => STARTS[r.logFile],
         tools: TOOLS,
+        wornRead: m => WORN_READ[m.id] ?? new Set(),
+        objName: OBJ_NAMES,
         floor: perLevel,
         ...o,
     };
 }
+
+/** A melee method over the iron-bulk runs (the plan's name is all methodRuns matches on). */
+const GIANTS = {
+    id: 'giants',
+    plans: ['iron-bulk'],
+    skill: 'attack' as const,
+    levels: { attack: 40, strength: 1, defence: 1, hitpoints: 10 },
+};
+/** The base levels of the seven skills the combat level is taken from. */
+const COMBAT = { attack: 60, strength: 55, defence: 50, hitpoints: 58, prayer: 43, ranged: 30, magic: 33 };
+/** A start at COMBAT and Mining 70, wearing `worn` (by display name), with `o` over those levels. */
+const fighter = (worn: string[], o: Record<string, number> = {}): RunStart => ({
+    levels: { ...COMBAT, mining: 70, ...o },
+    held: ['Lobster', ...worn],
+    worn,
+});
+const SCIMITAR = fighter(['Rune scimitar', 'Amulet of power']);
+/** Every phase run of run-1 starts at `run1`, of run-2 at `run2`. */
+const byRun = (run1: RunStart, run2: RunStart) => (run: TimedResult) => (run.partOf === 'run-1' ? run1 : run2);
+
+/** The GIANTS entry of run-1 started at SCIMITAR and run-2 at `run2`. */
+const giantsEntry = (run2: RunStart) =>
+    methodRuns(input({ methods: [GIANTS], start: byRun(SCIMITAR, run2) }))[0]!.entry;
+
+/** SAME, run-1 wearing `worn` and run-2 nothing. */
+const dressed = (worn: string[]): Record<string, RunStart> => ({
+    ...SAME,
+    'mining-10': { ...SAME['mining-10']!, worn },
+    'mining-50': { ...SAME['mining-50']!, worn: [] },
+});
+/** A start at Magic 50 and Smithing 40, wearing `worn`. */
+const caster = (worn: string[]): RunStart => ({ levels: { magic: 50, smithing: 40 }, held: worn, worn });
 
 describe('methodRuns', () => {
     test("the method's plans' whole runs: its skills' XP over their total hours, other plans and skills left out", () => {
@@ -247,6 +292,107 @@ describe('methodRuns', () => {
         expect(r!.entry).toBeDefined();
     });
 
+    describe('a combat method: worn objs and every combat-level skill', () => {
+        test("the entry records every combat-level skill and the worn objs by config name, the floor's too", () => {
+            const seen: Measured[] = [];
+            const [r] = methodRuns(
+                input({
+                    methods: [GIANTS],
+                    start: byRun(SCIMITAR, SCIMITAR),
+                    floor: (_, m, skill) => {
+                        if (skill === 'attack') seen.push(m);
+                        return { xpPerHour: {} } as CycleRates;
+                    },
+                }),
+            );
+            // Prayer, Ranged and Magic are trained by no melee style but set the combat level; Mining is left out.
+            expect(r!.entry).toMatchObject({ level: COMBAT, worn: ['rune_scimitar', 'amulet_of_power'] });
+            expect(r!.entry!.tool).toBeUndefined();
+            expect(seen.map(m => [m.level, m.worn])).toEqual([
+                [COMBAT, ['rune_scimitar', 'amulet_of_power']],
+                [COMBAT, ['rune_scimitar', 'amulet_of_power']],
+            ]);
+            expect(formatMeasured(r!.entry!, r!.toolKind)).toContain("    worn: ['rune_scimitar', 'amulet_of_power'],");
+        });
+
+        test("each trained skill's floor is rated for that skill, its style the best for it", () => {
+            // A stub whose style for each skill trains only that skill: 1,000 XP/h of it, none of the others.
+            const asked: string[] = [];
+            const [r] = methodRuns(
+                input({
+                    methods: [GIANTS],
+                    start: byRun(SCIMITAR, SCIMITAR),
+                    floor: (_, __, skill) => {
+                        asked.push(skill);
+                        return { xpPerHour: { [skill]: 1_000 } } as unknown as CycleRates;
+                    },
+                }),
+            );
+            expect(asked.slice(0, 4)).toEqual(['attack', 'strength', 'defence', 'hitpoints']);
+            expect(r!.perRun[0]!.floor).toEqual({ attack: 1_000, strength: 1_000, defence: 1_000, hitpoints: 1_000 });
+            expect(r!.floor).toEqual({ attack: 1_000, strength: 1_000, defence: 1_000, hitpoints: 1_000 });
+        });
+
+        test('runs that wore different objs, or started at a different untrained combat skill, have no entry', () => {
+            expect(giantsEntry(fighter(['Rune scimitar']))).toBeUndefined();
+            expect(giantsEntry(fighter(['Rune scimitar', 'Amulet of power'], { prayer: 44 }))).toBeUndefined();
+            // A Mining level, which a melee method neither trains nor reads, doesn't split them.
+            expect(giantsEntry(fighter(['Rune scimitar', 'Amulet of power'], { mining: 71 }))).toBeDefined();
+        });
+
+        test('a start recorded before worn objs were read wore what an empty one did', () => {
+            const unread = { ...SCIMITAR, worn: undefined };
+            const bare = fighter([]);
+            const r = methodRuns(input({ methods: [GIANTS], start: byRun(unread, bare) }))[0]!;
+            expect(r.entry).toBeDefined();
+            expect(r.entry!.worn).toBeUndefined();
+        });
+
+        test('display names map through the obj configs; one that maps to none is a line to fill and no floor', () => {
+            // `Pirate's hook` is the config piratehook, not pirate's_hook; no obj is named `Dragon dagger(p++)`.
+            const start = fighter(['Amulet of glory(4)', "Pirate's hook", 'Dragon dagger(p++)']);
+            const r = methodRuns(input({ methods: [GIANTS], start: byRun(start, start) }))[0]!;
+            expect(r.entry!.worn).toEqual(['amulet_of_glory_4', 'piratehook']);
+            expect(r.unnamedWorn).toEqual(['Dragon dagger(p++)']);
+            expect(r.perRun[0]!.floorError).toBe(
+                'worn Dragon dagger(p++): no one obj config has that name, so no floor',
+            );
+            const lines = formatMeasured(r.entry!, r.toolKind, '', r.unnamedWorn);
+            expect(lines).toContain("    worn: ['amulet_of_glory_4', 'piratehook'],");
+            expect(lines).toContain("    // worn: '<FILL IN: the obj config name of Dragon dagger(p++)>',");
+        });
+
+        test("a run's row names its worn objs", () => {
+            const lines = formatMethodRuns(
+                methodRuns(input({ methods: [GIANTS], start: byRun(fighter(['Rune scimitar']), fighter([])) })),
+            );
+            expect(lines.find(l => l.includes(' run-1 '))).toContain('worn rune_scimitar');
+            expect(lines.find(l => l.includes(' run-2 '))).not.toContain('worn');
+        });
+    });
+
+    describe('a skilling method: only the worn objs its families read', () => {
+        test('mining runs in different armour, a pickaxe wielded or not, still make one entry, wearing none', () => {
+            const r = methodRuns(input({ start: run => dressed(['Iron full helm', 'Rune pickaxe'])[run.logFile] }))[0]!;
+            expect(r.entry).toBeDefined();
+            expect(r.entry!.worn).toBeUndefined();
+            expect(r.perRun.map(p => p.worn)).toEqual([undefined, undefined]);
+        });
+
+        test('a superheat pair with and without the staff of fire splits; the staff alone is recorded', () => {
+            const SUPER = {
+                id: 'superheat',
+                plans: ['iron-bulk'],
+                skill: 'magic' as const,
+                levels: { magic: 43, smithing: 30 },
+            };
+            const entry = (run1: string[], run2: string[]) =>
+                methodRuns(input({ methods: [SUPER], start: byRun(caster(run1), caster(run2)) }))[0]!.entry;
+            expect(entry(['Staff of fire', 'Iron full helm'], ['Iron full helm'])).toBeUndefined();
+            expect(entry(['Staff of fire', 'Iron full helm'], ['Staff of fire'])!.worn).toEqual(['staff_of_fire']);
+        });
+    });
+
     test('a method with no runs, or none with a recording, has no entry', () => {
         expect(methodRuns(input({ methods: [LURE] }))[0]).toMatchObject({ method: 'lure-cook', runs: 0 });
         const [r] = methodRuns(input({ start: () => undefined }));
@@ -310,7 +456,7 @@ describe('formatMeasured / formatMethodRuns', () => {
             `iron-bank (plans: iron-bulk) · runs 2 · 1.00 h · last ${date}`,
             '  mining: measured 100,000/h · floor 244,000/h · 41% of floor, 144,000/h short',
             "  levels moved over the runs: mining 60-62 (each run's floor is at its start levels, so one that levelled understates)",
-            '  the runs started at different levels or pickaxes:',
+            '  the runs started at different levels, pickaxes or worn objs:',
             `    ${date} run-1 · mining 60 · rune_pickaxe · 0.50 h · mining 120,000/h of 240,000/h (50%)`,
             `    ${date} run-2 · mining 62 · no pickaxe held · 0.50 h · mining 80,000/h of 248,000/h (32.3%)`,
             '  narrow --since to runs at one level for a pasteable measured entry',
@@ -363,7 +509,11 @@ describe('readStartState / runStart', () => {
             // 200 KB of random hex compresses to ~100 KB: more than the 64 KB first read.
             const log = recording(dir, { blob: randomBytes(100_000).toString('hex') });
             const start = readStartState(log)!;
-            expect(runStart(start)).toEqual({ levels: { mining: 60 }, held: ['Rune pickaxe', 'Bronze axe'] });
+            expect(runStart(start)).toEqual({
+                levels: { mining: 60 },
+                held: ['Rune pickaxe', 'Bronze axe'],
+                worn: ['Bronze axe'],
+            });
         } finally {
             rmSync(dir, { recursive: true, force: true });
         }
@@ -405,12 +555,15 @@ describe('measuredFloor (world.json)', () => {
         const floor = measuredFloor(WORLD, model);
         const ctx = { world: WORLD, ...model };
         let checked = 0;
+        // Every skill a figure measured, not only the method's own: a combat method rates each for its best style.
         for (const wm of WORLD.methods) {
-            const figures = measuredFigures(fromWorldMethod(wm, WORLD), wm.skill, ctx);
-            for (const f of figures) {
-                expect(floor(wm, f.measured).xpPerHour[wm.skill] ?? 0).toBe(f.floor);
-                checked++;
-            }
+            const m = fromWorldMethod(wm, WORLD);
+            const skills = new Set((wm.measured ?? []).flatMap(e => Object.keys(e.xpPerHour) as Skill[]));
+            for (const skill of skills)
+                for (const f of measuredFigures(m, skill, ctx)) {
+                    expect(floor(wm, f.measured, skill).xpPerHour[skill] ?? 0).toBe(f.floor);
+                    checked++;
+                }
         }
         expect(checked).toBeGreaterThan(0);
     });

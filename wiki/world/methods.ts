@@ -7,6 +7,7 @@
 //   rows are; run logs stay out of the repo. The levels are the ones at the start of the measured runs, read from the
 //   runs' tick recordings.
 // - A measured figure above the floor at its levels is a model bug to find, not a figure to edit.
+import type { Loot } from './model/cycle';
 import type { Skill } from './model/server';
 import type { Tile } from './types';
 
@@ -25,8 +26,18 @@ export interface MethodDef {
     family: string;
     /** A tile in the site. */
     at: Tile;
-    /** The family's params: tree type, tool, fish, npc ... */
+    /**
+     * The family's params: tree type, tool, fish ... A combat record's are `{ npc }` (the npc config, omitted when the
+     * site has one kind of npc); the style is not a param, as the method swings the one that suits the skill it is
+     * rated for (model/method.ts).
+     */
     params: unknown;
+    /**
+     * Where the action's features are: the features of the site's kind within this many tiles of `at` (Chebyshev, on
+     * `at`'s level), across sites, in place of the site's own. Omitted: the site's. A combat record's spawns of its npc
+     * span sites (the Edgeville dungeon's hill giants are three).
+     */
+    area?: number;
     /**
      * Where the products go. `bank` omitted: the nearest bank of the site, or of the last process step's site. A
      * process sink runs its steps in order, each taking a product of the gather or of an earlier step, then (`end`)
@@ -38,6 +49,13 @@ export interface MethodDef {
         | { mode: 'process'; steps: ProcessStepDef[]; end: 'bank' | 'drop' | 'keep'; bank?: Tile };
     /** The obj eaten to cover the action's damage (pickpocket stuns, agility falls), restocked at the bank. */
     food?: string;
+    /**
+     * The objs worn, by obj config name (a combat record's weapon and armour): the profile's `worn` when it names
+     * none; a profile that names some wears those instead.
+     */
+    gear?: string[];
+    /** What a kill's drops go to (model/cycle.ts Loot); a combat record with bones to bury trains Prayer too. */
+    loot?: Loot;
     /** Promoted plans that run it (conductor/plans/). */
     plans?: string[];
     measured?: Measured[];
@@ -62,11 +80,14 @@ export interface ProcessStepDef {
 export interface Measured {
     /** Game XP per hour, XP_RATE included, as stats.ts prints it. */
     xpPerHour: Partial<Record<Skill, number>>;
-    /** At the start of the measured runs. */
+    /**
+     * The base level at the start of the measured runs, boosts excluded: of each skill the method trains, and for a
+     * melee method every skill the combat level is taken from.
+     */
     level: Partial<Record<Skill, number>>;
     /** The axe or pickaxe the runs used, when the family reads one from the profile. */
     tool?: string;
-    /** The objs worn in the runs that a family reads (Profile.worn). */
+    /** The objs worn in the runs (Profile.worn): all of them, as stats.ts records it, or those a family reads. */
     worn?: string[];
     bot: string;
     /** YYYY-MM-DD. */
@@ -76,6 +97,89 @@ export interface Measured {
     /** The stats.ts command (or commands) the figure is read from. */
     from: string;
 }
+
+/**
+ * Worker runs against one npc, their measured figures per kill beside the model's at the runs' profile
+ * (model/method.ts killFigures). A record opens the food gate for its npc (CALIBRATED_NPCS): its kills eat the
+ * method's food. It is written only when its damage and fight ticks agree within CALIBRATION_TOLERANCE, and
+ * test/combat-method.real.test.ts holds them there. The runs are the calibration smoke's
+ * (conductor/test/integration/smoke/combat-calibration.itest.ts), measured with conductor/tools/combat-ledger.ts.
+ */
+export interface Calibration {
+    /** The npc config. */
+    npc: string;
+    /** Where the runs fought, as a combat record's `at` and `area`. */
+    at: Tile;
+    area?: number;
+    /** The base levels of the runs, 1 for a skill left out. */
+    levels: Partial<Record<Skill, number>>;
+    /** The objs worn. */
+    worn: string[];
+    /** The skill the runs trained: their style is the one styleParams gives for it. */
+    skill: Skill;
+    food: string;
+    loot: Loot;
+    /**
+     * The runs' kills (combat-ledger.ts perKill, its interrupted kills left out): per kill the mean and its standard
+     * error of the HP the npc's hitsplats took, the fight ticks (first swing to killing swing), the whole kill's ticks
+     * (killing swing to killing swing) and the gap between (killing swing to the next kill's first swing).
+     */
+    measured: {
+        kills: number;
+        excluded: number;
+        damage: number;
+        damageSe: number;
+        fight: number;
+        fightSe: number;
+        ticks: number;
+        ticksSe: number;
+        gap: number;
+        gapSe: number;
+    };
+    /**
+     * killFigures at the runs' profile when the record was written. Damage and fight are held within
+     * CALIBRATION_TOLERANCE of the measured; ticks and gap are reported only (the gap is the combat task's overhead).
+     */
+    model: { damage: number; fight: number; ticks: number; gap: number };
+    /** YYYY-MM-DD. */
+    date: string;
+    /** The runs, as `<bot>/<runId>` (conductor/runs/<bot>/<runId>.ticks.ndjson.gz). */
+    runs: string[];
+}
+
+/** The calibrated npcs: at most one record each. */
+export const CALIBRATIONS: Calibration[] = [
+    {
+        // Edgeville dungeon's hill giants, as the hill-giants plan fights them, at Defence 1 unarmoured.
+        npc: 'giant',
+        at: { level: 0, x: 3113, z: 9840 },
+        area: 14,
+        levels: { attack: 70, strength: 99, defence: 1, hitpoints: 99, prayer: 99 },
+        worn: ['mithril_scimitar'],
+        skill: 'strength',
+        food: 'lobster',
+        loot: { bones: 'bury' },
+        measured: {
+            kills: 72,
+            excluded: 0,
+            damage: 7.9861,
+            damageSe: 0.5324,
+            fight: 25.9444,
+            fightSe: 1.1043,
+            ticks: 42.1159,
+            ticksSe: 1.6583,
+            gap: 16.4348,
+            gapSe: 1.1592,
+        },
+        model: { damage: 6.689157678, fight: 23.041069272, ticks: 30.541069272, gap: 7.5 },
+        date: '2026-10-23',
+        runs: [
+            'itbxt3d6mz3d/2026-10-23T02-09-07-292Z-combat',
+            'itjtbdy3yqle/2026-10-23T02-26-21-689Z-combat',
+            'itfdyu1jmi8j/2026-10-23T02-38-12-489Z-combat',
+        ],
+    },
+];
 
 export const METHODS: MethodDef[] = [
     {
@@ -470,5 +574,47 @@ export const METHODS: MethodDef[] = [
             },
         ],
         notes: "The plan's fetch phase is a restock guard. The measured run carried its steel axe; the floor wields it.",
+    },
+    {
+        id: 'hill-giants-edgeville',
+        name: 'Hill giants in the Edgeville dungeon, big bones buried, food from Edgeville',
+        family: 'combat',
+        at: { level: 0, x: 3113, z: 9840 },
+        area: 14,
+        params: { npc: 'giant' },
+        gear: ['mithril_scimitar', 'iron_kiteshield'],
+        food: 'trout',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        plans: ['hill-giants', 'giants-att-def'],
+        notes:
+            'The plans eat trout and salmon; the record names trout, the smaller heal of the two. A rune scimitar ' +
+            "(Attack 40) is the next weapon tier. Unmeasured: the plans' runs (conductor2, 2026-10-16) fought on the " +
+            'food they started with and never banked, so none is a whole cycle; test/methods.real.test.ts holds the ' +
+            'fight-only floor above them.',
+    },
+    {
+        id: 'moss-giants-varrock-sewers',
+        name: 'Moss giants in the Varrock Sewers, big bones buried, food from Varrock East',
+        family: 'combat',
+        at: { level: 0, x: 3159, z: 9900 },
+        area: 22,
+        params: { npc: 'mossgiant' },
+        gear: ['mithril_scimitar', 'iron_kiteshield'],
+        food: 'trout',
+        loot: { bones: 'bury' },
+        sink: { mode: 'bank' },
+        notes: "The four spawns of the sewers' west pocket. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.",
+    },
+    {
+        id: 'chickens-lumbridge',
+        name: 'Chickens north of Lumbridge, bones buried, feathers kept',
+        family: 'combat',
+        at: { level: 0, x: 3230, z: 3299 },
+        params: { npc: 'chicken' },
+        gear: ['bronze_scimitar'],
+        loot: { bones: 'bury' },
+        sink: { mode: 'drop' },
+        notes: 'A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.',
     },
 ];

@@ -1,6 +1,7 @@
 // What the formula families share: the game data they read, how a family finds its target at a site and checks
 // its params, and the engine timings and rolls more than one skill script is built from.
 import { readConfigs, type Config } from '../../sources/configs';
+import { readConstants, type Constant } from '../../sources/constants';
 import { readDbrows, type DbRow } from '../../sources/dbrows';
 import { readScripts } from '../../sources/triggers';
 import type { Feature, FeatureKind, Site, World } from '../../types';
@@ -15,8 +16,14 @@ export interface GameData {
     objs: ReadonlyMap<string, Config>;
     locs: ReadonlyMap<string, Config>;
     structs: ReadonlyMap<string, Config>;
+    npcs: ReadonlyMap<string, Config>;
+    /** The `.param` configs, whose `default=` a config without the param gets. */
+    params: ReadonlyMap<string, Config>;
+    constants: ReadonlyMap<string, Constant>;
     /** The .rs2 files, by path relative to server/content/scripts, for values a script writes inline (fishing). */
     scripts: [file: string, text: string][];
+    /** The `.hunt` configs, the npcs' hunt modes (an npc's aggression); absent in a test's data that has none. */
+    hunts?: ReadonlyMap<string, Config>;
 }
 
 export const readGameData = (): GameData => ({
@@ -24,7 +31,11 @@ export const readGameData = (): GameData => ({
     objs: readConfigs('obj'),
     locs: readConfigs('loc'),
     structs: readConfigs('struct'),
+    npcs: readConfigs('npc'),
+    params: readConfigs('param'),
+    constants: readConstants(),
     scripts: readScripts(),
+    hunts: readConfigs('hunt'),
 });
 
 /** A family module: built once from the game data, then asked for any number of models. */

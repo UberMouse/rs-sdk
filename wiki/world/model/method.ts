@@ -1,7 +1,7 @@
 // A curated method (methods.ts) resolved against the world: its site, its sink sites, the legs of its cycle in run
 // ticks under each requirement set that gets to all of them, and the lowest level its families can model it at;
 // then its floor at a profile (cycle.ts).
-import type { Measured, MethodDef } from '../methods';
+import { CALIBRATIONS, type Calibration, type Measured, type MethodDef } from '../methods';
 import { SINKS, type Way, type wayFinder } from '../distance';
 import { isMultiway, readZones, wildernessLevel, type Zones } from '../sources/zones';
 import { canonicalSet, minimalSets, type QuestFacts } from '../requirements';
@@ -11,16 +11,18 @@ import {
     type FeatureKind,
     type SinkKind,
     type Site,
+    type AreaHazard,
     type Tile,
     type World,
     type WorldMethod,
 } from '../types';
 import { cmp, tileKey } from '../util';
 import { cycle, type CycleRates, type CycleSink, type Withdraw } from './cycle';
-import { ModelError, type ActionModel, type Family } from './family';
+import { ModelError, ProfileError, type ActionModel, type Family, type NpcHazard } from './family';
+import { targetFeatures } from './families/common';
 import { buildFamilies, type GameData } from './families/index';
 import { tourLegs, type LegFinder } from './legs';
-import { readFoods, readItems, type Items } from './items';
+import { readBoneXp, readFoods, readItems, type Items } from './items';
 import { profileAt, profileOf, readTools, toolKindOfObj, type Profile, type Tools } from './profile';
 import { SKILLS, type Skill } from './server';
 
@@ -89,7 +91,11 @@ export interface ResolvedMethod {
     sink: { mode: 'drop' } | { mode: 'bank'; bank: Site } | { mode: 'process'; steps: Stop[]; bank?: Site };
     /** One per minimal set that reaches the method's sites and walks its legs; shortest travel first. */
     ways: MethodWay[];
-    /** The family's first skill, which a level column trains. */
+    /**
+     * The first skill it trains (`levels`' first), which a level column trains: the gather family's first skill, or
+     * for a family whose styles come from the gear (Family.styles) the first, in SKILLS order, of the skills the
+     * record's gear's styles train.
+     */
     skill: Skill;
     /**
      * The lowest level of `skill` (every other skill at it too) at which the families model the method and some way's
@@ -101,15 +107,27 @@ export interface ResolvedMethod {
      * Each skill the method trains (the gather family's, then the process steps'), and the lowest level of it at which
      * the families model the method with the other skills of the method at 99: what each skill itself needs (fly
      * fishing and cooking trout and salmon: Fishing 20, Cooking 25, where `minLevel`, every skill at once, is 25),
-     * raised to the lowest level of it any way's reach asks.
+     * raised to the lowest level of it any way's reach asks. A gather family with styles trains the skills of the
+     * styles the record's gear allows, in SKILLS order, and Prayer when its loot buries bones; each level is rated on
+     * the style that suits that skill (methodRate).
      */
     levels: Partial<Record<Skill, number>>;
+    /** On a method whose gather family has a hazard (Family.hazard, combat): the npcs where it acts. */
+    npcs?: NpcHazard;
+    /**
+     * On an `area` record: the sites of its kind whose features its area gathers (gatherSite), which may be others than
+     * `site`, as a hazard: their deepest Wilderness level and whether any is multiway.
+     */
+    areaHazard?: AreaHazard;
 }
 
 /** What resolving and modelling a method reads. */
 export interface MethodContext {
-    /** The crossing and gate rows where a family reads them (ModelWorld). */
-    world: Pick<World, 'sites' | 'features'> & Partial<Pick<World, 'crossings' | 'gates'>>;
+    /**
+     * The crossing and gate rows where a family reads them (ModelWorld); the quests where a record's gear needs one
+     * to be worn (a wield check reading a quest varp).
+     */
+    world: Pick<World, 'sites' | 'features'> & Partial<Pick<World, 'crossings' | 'gates' | 'quests'>>;
     families: ReadonlyMap<string, Family>;
     items: Items;
     /** Hitpoints each food heals (items.ts readFoods). */
@@ -117,7 +135,11 @@ export interface MethodContext {
     tools: Tools;
     /** The free-to-play and multiway zones: a bare tile stop's hazard. */
     zones: Zones;
+    /** An obj's `bone_exp` (items.ts readBoneXp), for a record whose `loot` buries; absent in a test that has none. */
+    boneXp?: (obj: string) => number;
     quests?: QuestFacts;
+    /** The npcs whose kills eat food (the food gate); CALIBRATED_NPCS when absent. */
+    calibrated?: ReadonlySet<string>;
 }
 
 /** What the model reads besides the world and the quests: the families, items, foods, tool tiers and zones. */
@@ -133,6 +155,7 @@ export const methodModel = (data: GameData, zones: Zones = readZones()): MethodM
     foods: readFoods(data.dbrows),
     tools: readTools(data.objs),
     zones,
+    boneXp: readBoneXp(data),
 });
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -167,7 +190,7 @@ function siteAt(world: MethodContext['world'], kinds: readonly FeatureKind[], t:
 }
 
 /** The family by id; throws a ModelError naming the known ones. */
-function familyOf(ctx: MethodContext, id: string): Family {
+function familyOf(ctx: Pick<MethodContext, 'families'>, id: string): Family {
     const f = ctx.families.get(id);
     if (!f) throw new ModelError(`no family ${id} (${[...ctx.families.keys()].join(', ')})`);
     return f;
@@ -211,6 +234,128 @@ function withdrawObj(def: MethodDef): string {
     return obj;
 }
 
+/**
+ * The profile a record is modelled at: `profile` wearing the record's gear, but for each of the profile's own worn
+ * objs (a query's), which takes its slots (Item.wearpos) off the record's: equipping an obj takes off every worn one
+ * sharing a slot with it, a two-handed sword the shield too (~wearpos_conflicts, player/scripts/equip.rs2:417,
+ * 475-488).
+ */
+export function wearing(def: Pick<MethodDef, 'gear'>, profile: Profile, items: Items): Profile {
+    if (!def.gear?.length) return profile;
+    const wearposOf = (o: string): readonly string[] => items(o).wearpos ?? [];
+    // A worn obj the game has no config for is the profile's mistake, as in profileOf's gear; in the record's gear it
+    // is a record-shape error (the ModelError of the item lookup).
+    const profileWearpos = (o: string): readonly string[] => {
+        try {
+            return wearposOf(o);
+        } catch (e) {
+            if (e instanceof ModelError) throw new ProfileError(e.message);
+            throw e;
+        }
+    };
+    const taken = new Set(profile.worn.flatMap(profileWearpos));
+    const kept = def.gear.filter(o => !wearposOf(o).some(slot => taken.has(slot)));
+    return { ...profile, worn: [...kept, ...profile.worn] };
+}
+
+/**
+ * The worn objs a record's families read (Family.worn), the gather's and each process step's: `'all'` when one reads
+ * every one (combat), else those they name, empty for none.
+ */
+export function wornRead(
+    def: Pick<MethodDef, 'family' | 'sink'>,
+    ctx: Pick<MethodContext, 'families'>,
+): 'all' | Set<string> {
+    const ids = [
+        ...(def.family === WITHDRAW ? [] : [def.family]),
+        ...(def.sink.mode === 'process' ? def.sink.steps.map(s => s.family) : []),
+    ];
+    const read = new Set<string>();
+    for (const id of ids) {
+        const worn = familyOf(ctx, id).worn ?? [];
+        if (worn === 'all') return 'all';
+        for (const o of worn) read.add(o);
+    }
+    return read;
+}
+
+/** gatherSite's features by world, then site, `at` and area: a page rates one record at many profiles. */
+const areas = new WeakMap<readonly unknown[], Map<string, number[]>>();
+
+/**
+ * The site a record's gather acts at: `site`, or with an `area`, `site` with its features replaced by every feature
+ * of its kind within `area` tiles of `at` (Chebyshev, on `at`'s level), across sites, in index order.
+ */
+export function gatherSite(def: Pick<MethodDef, 'at' | 'area'>, site: Site, world: Pick<World, 'features'>): Site {
+    const { at, area } = def;
+    if (area === undefined) return site;
+    if (!(Number.isInteger(area) && area >= 0)) throw new ModelError(`area ${area} is not a whole number of tiles`);
+    let memo = areas.get(world.features);
+    if (!memo) areas.set(world.features, (memo = new Map()));
+    const key = `${site.id} ${tileKey(at)} ${area}`;
+    let features = memo.get(key);
+    if (!features) {
+        features = world.features.flatMap((f, i) =>
+            f.kind === site.kind &&
+            f.tile.level === at.level &&
+            Math.max(Math.abs(f.tile.x - at.x), Math.abs(f.tile.z - at.z)) <= area
+                ? [i]
+                : [],
+        );
+        memo.set(key, features);
+    }
+    return { ...site, features };
+}
+
+/**
+ * The params to rate a record at for `skill`, one per candidate style: the record's own params for a family without
+ * styles. With styles (Family.styles, at the profile's gear): those whose skills include `skill`, of them the ones
+ * that train the fewest skills (accurate, not controlled, for Attack); every style when all or none include it
+ * (Hitpoints, which every style trains, and Prayer, which a bury trains). The rate takes the best of them.
+ */
+export function styleParams(
+    def: MethodDef,
+    profile: Profile,
+    ctx: Pick<MethodContext, 'families' | 'items'>,
+    skill: Skill,
+): unknown[] {
+    if (def.family === WITHDRAW) return [def.params];
+    const family = familyOf(ctx, def.family);
+    if (!family.styles) return [def.params];
+    const { styles } = family.styles(def.params, wearing(def, profile, ctx.items));
+    if (!styles.length) throw new ProfileError(`the gear has no ${def.family} style`);
+    const training = styles.filter(s => s.skills.includes(skill));
+    if (!training.length || training.length === styles.length) return styles.map(s => s.params);
+    const fewest = Math.min(...training.map(s => s.skills.length));
+    return training.filter(s => s.skills.length === fewest).map(s => s.params);
+}
+
+/**
+ * The npcs, by config, whose kill's modelled damage has been checked against a worker's run on them (the food gate):
+ * those of methods.ts CALIBRATIONS. Until then the cycle eats no food for a kill of one (CycleInput.uncalibrated).
+ */
+export const CALIBRATED_NPCS: ReadonlySet<string> = new Set(CALIBRATIONS.map(c => c.npc));
+
+/**
+ * The npc config a kill record fights: its params' `npc`, or with none the one npc of its gather site, as the combat
+ * family takes it (targetFeatures). A ModelError for an `npc` that is not a string.
+ */
+function killNpc(def: MethodDef, site: Site, world: Pick<World, 'features'>): string {
+    const npc = (def.params as { npc?: unknown } | null | undefined)?.npc;
+    if (typeof npc === 'string') return npc;
+    if (npc !== undefined) throw new ModelError(`a combat method's params.npc is not an npc config: ${String(npc)}`);
+    return targetFeatures(gatherSite(def, site, world), world, 'npc', undefined).subtype;
+}
+
+/**
+ * Whether the food gate is shut for a kill record: its npc is not among the calibrated (ctx.calibrated, by default
+ * CALIBRATED_NPCS), so its kills eat no food and its floor leaves out food trips.
+ */
+export const uncalibrated = (
+    m: Pick<ResolvedMethod, 'def' | 'site'>,
+    ctx: Pick<MethodContext, 'world' | 'calibrated'>,
+): boolean => !(ctx.calibrated ?? CALIBRATED_NPCS).has(killNpc(m.def, m.site, ctx.world));
+
 type Finder = ReturnType<typeof wayFinder>;
 
 /**
@@ -244,6 +389,23 @@ function pairWalks(
         const way = wayBetween(finder, from, to, reach);
         if (!way) unreached.set(tileKey(from), [...dead, to]);
         return way?.runTicks ?? null;
+    });
+}
+
+/**
+ * What wearing a record's gear asks: `quest:<id>` for each quest varp the gear's wield checks read (Family.styles),
+ * by the quest of world.quests whose varp, or one of whose `or` varps, it is. A ModelError for a varp no quest has.
+ */
+function gearTokens(def: MethodDef, ctx: MethodContext): string[] {
+    if (!def.gear?.length || def.family === WITHDRAW) return [];
+    const family = familyOf(ctx, def.family);
+    if (!family.styles) return [];
+    const { quests: varps } = family.styles(def.params, profileAt('attack', 99, { tools: ctx.tools, worn: def.gear }));
+    return varps.map(v => {
+        const q = ctx.world.quests?.find(x => x.varp === v || x.or?.some(o => o.varp === v));
+        if (!q)
+            throw new ModelError(`the gear's wield checks read varp ${v}, which no quest of world.quests is read from`);
+        return `quest:${q.id}`;
     });
 }
 
@@ -305,15 +467,15 @@ function locate(
     const stops = sinkStops(sink);
     for (const s of sinkSites(sink))
         if (!s.stand || !s.reach.length) throw new ModelError(`sink site ${s.id} has no stand a walk reaches`);
-    // Every set that gets to all the method's sites: one reach set of each, joined, the minimal ones kept. A tile stop
-    // adds none of its own: a way that can't walk to it is dropped below.
+    // Every set that gets to all the method's sites: one reach set of each, joined with what wearing the gear asks,
+    // the minimal ones kept. A tile stop adds none of its own: a way that can't walk to it is dropped below.
     const joined = [site, ...sinkSites(sink)].reduce<string[][]>(
         (acc, s) => acc.flatMap(a => s.reach.map(r => canonicalSet([...a, ...r], ctx.quests))),
-        [[]],
+        [gearTokens(def, ctx)],
     );
     // site -> each stop -> site, a stop the same as the one before it (two steps at one anvil) walked to once.
     const tour = [site, ...stops, site].filter((s, i, all) => i === 0 || stopId(s) !== stopId(all[i - 1]!));
-    const pairs = family?.walks?.(site, def.params, ctx.world);
+    const pairs = family?.walks?.(gatherSite(def, site, ctx.world), def.params, ctx.world);
     const ways: MethodWay[] = [];
     // The legs no set walks, to name in the error when none does.
     const unwalked = new Set<string>();
@@ -359,19 +521,22 @@ const paramList = (params: unknown): unknown[] => (Array.isArray(params) ? param
  * from `way`; throws a ModelError when a family can't. With no `way`, the first of the method's ways (in their order)
  * whose gather models, the first's error when none does: a family that picks among walk pairs (Family.walks) may close
  * a lap over one way's walks and not another's. A step `'here'` or at a bare tile is modelled at the previous step's
- * site.
+ * site. The gather is modelled at its `gatherSite` with `params` (by default the record's; a style of styleParams for
+ * a family with styles), and every model at the profile `wearing` the record's gear.
  */
 export function methodModels(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
     way?: MethodWay,
+    params: unknown = m.def.params,
 ): { gather: ActionModel | Withdraw; steps: ActionModel[][]; way: MethodWay | undefined } {
     const { world } = ctx;
+    const wornProfile = wearing(m.def, profile, ctx.items);
     const gatherOver = (w: MethodWay | undefined): ActionModel | Withdraw =>
         m.def.family === WITHDRAW
             ? { withdraw: withdrawObj(m.def) }
-            : familyOf(ctx, m.def.family).model(m.site, m.def.params, profile, world, w?.walks);
+            : familyOf(ctx, m.def.family).model(gatherSite(m.def, m.site, world), params, wornProfile, world, w?.walks);
     let chosen = way ?? m.ways[0];
     let gather: ActionModel | Withdraw | undefined;
     if (way || !m.ways.some(w => w.walks)) gather = gatherOver(chosen);
@@ -398,7 +563,7 @@ export function methodModels(
         // A tile stop's family has no site kinds and reads no site: it is handed the last one.
         if (stop !== 'here' && !isTileStop(stop)) last = stop;
         const family = familyOf(ctx, step.family);
-        return paramList(step.params).map(p => family.model(last, p, profile, world));
+        return paramList(step.params).map(p => family.model(last, p, wornProfile, world));
     });
     return { gather, steps, way: chosen };
 }
@@ -435,29 +600,144 @@ export function measuredFigures(m: ResolvedMethod, skill: Skill, ctx: MethodCont
     return (m.def.measured ?? []).flatMap(measured => {
         const xpPerHour = measured.xpPerHour[skill];
         if (xpPerHour === undefined) return [];
-        const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx, way).xpPerHour[skill] ?? 0;
+        const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx, way, skill).xpPerHour[skill] ?? 0;
         return [{ measured, xpPerHour, floor }];
     });
 }
 
 /**
  * The floor of a resolved method at `profile`, over its `way`th way; by default the first, in order (the shortest),
- * whose gather models (methodModels).
+ * whose gather models (methodModels). Rated for `skill` (by default the method's `skill`): a family with styles swings
+ * the style styleParams gives for it, the best of them by `skill`'s XP/hr when it gives several.
  */
-export function methodRate(m: ResolvedMethod, profile: Profile, ctx: MethodContext, way?: number): CycleRates {
-    if (way === undefined) return rate(m, profile, ctx);
+export function methodRate(
+    m: ResolvedMethod,
+    profile: Profile,
+    ctx: MethodContext,
+    way?: number,
+    skill: Skill = m.skill,
+): CycleRates {
+    if (way === undefined) return rate(m, profile, ctx, skill);
     const chosen = m.ways[way];
     if (!chosen) throw new MethodError(m.def.id, `no way ${way} (${m.ways.length} ways)`);
-    return rate(m, profile, ctx, chosen);
+    return rate(m, profile, ctx, skill, chosen);
 }
 
+/**
+ * What a calibration run measures of a kill, as the model gives it. The run's figures are
+ * conductor/tools/combat-ledger.ts KillRow's, on the same definitions: `fight` from the player's first swing on the
+ * kill's npc to its killing swing (the ledger's first hitsplat on it to its 0 HP, each shown a tick after its swing),
+ * `gap` from the killing swing to the first swing of the next kill, `ticks` their sum.
+ */
+export interface KillFigures {
+    /** HP the npc's swings take off the player a kill (ActionModel.damage). */
+    damage: number;
+    /**
+     * Ticks from the first swing to the killing swing: the kill's n swings (wiki/world/model/families/combat.ts expectedSwings) at the
+     * weapon's attack rate, n x attackRate in its ticksPerAttempt less the cooldown after the killing swing
+     * (wiki/world/model/families/combat.ts:399), so (n - 1) x attackRate. A run's eat between two swings lengthens its fight; the
+     * model puts its eats' ticks in `gap`.
+     */
+    fight: number;
+    /**
+     * Ticks a kill takes at the site: the fight, the gap to the next, the pickup, the bury and the eats, as the cycle
+     * counts them a success (its trip less the travel and the bank), the food eaten as for a calibrated npc.
+     */
+    ticks: number;
+    /** `ticks` less `fight`: the killing swing's cooldown and what the cycle puts between kills. */
+    gap: number;
+}
+
+/**
+ * A kill record's figures at `profile`, swinging the style styleParams gives for `skill`; a ModelError when it gives
+ * several (a calibration run swings one) or the record is no kill.
+ */
+export function killFigures(m: ResolvedMethod, profile: Profile, ctx: MethodContext, skill: Skill): KillFigures {
+    return forMethod(m, () => {
+        const styles = styleParams(m.def, profile, ctx, skill);
+        if (styles.length !== 1) throw new ModelError(`${styles.length} styles train ${skill}, not one`);
+        const { gather } = methodModels(m, profile, ctx, undefined, styles[0]);
+        if ('withdraw' in gather || gather.attackRate === undefined) throw new ModelError('it is not a kill');
+        const calibrated = new Set([killNpc(m.def, m.site, ctx.world)]);
+        const { trip } = rateAt(m, profile, { ...ctx, calibrated }, undefined, styles[0]);
+        const fight = gather.ticksPerAttempt - (gather.freeTicks ?? 0) - gather.attackRate;
+        const ticks = (trip.gather + trip.bury + trip.eat + trip.wait) / trip.successes;
+        return { damage: gather.damage ?? 0, fight, ticks, gap: ticks - fight };
+    });
+}
+
+/** What a calibration run fought and how: a Calibration less its figures. */
+export type CalibrationRun = Pick<Calibration, 'npc' | 'at' | 'area' | 'levels' | 'worn' | 'skill' | 'food' | 'loot'>;
+
+/** The combat record a calibration fought: its npc at its site, its gear, food and loot, banked for food. */
+export const calibrationMethod = (c: CalibrationRun): MethodDef => ({
+    id: `calibration-${c.npc.replaceAll('_', '-')}`,
+    name: `The ${c.npc} calibration run`,
+    family: 'combat',
+    at: c.at,
+    ...(c.area !== undefined ? { area: c.area } : {}),
+    params: { npc: c.npc },
+    gear: c.worn,
+    food: c.food,
+    loot: c.loot,
+    sink: { mode: 'bank' },
+});
+
+/** A calibration's profile: its levels (1 for a skill it leaves out) and worn objs. */
+export const calibrationProfile = (c: CalibrationRun, tools: Tools): Profile =>
+    profileOf(Object.fromEntries(SKILLS.map(s => [s, c.levels[s] ?? 1])) as Record<Skill, number>, {
+        tools,
+        worn: c.worn,
+    });
+
+/**
+ * How far a model figure may be from a run's, as a share of the run's, for the run to calibrate it (spec Task 8): the
+ * damage and the fight ticks a kill. The gap between kills is the combat task's overhead, not the floor's: reported
+ * only.
+ */
+export const CALIBRATION_TOLERANCE = 0.25;
+
+/** Whether a model figure is within CALIBRATION_TOLERANCE of a measured one. */
+export const agrees = (model: number, measured: number): boolean =>
+    Math.abs(model - measured) <= CALIBRATION_TOLERANCE * measured;
+
+/**
+ * The floor at the best of styleParams' candidates for `skill`. A candidate the profile can't swing (a ProfileError)
+ * is passed over when another can; any other error stops it.
+ */
 function rate(
     m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
     profile: Profile,
     ctx: MethodContext,
+    skill: Skill,
     over?: MethodWay,
 ): CycleRates {
-    const { gather, steps, way } = methodModels(m, profile, ctx, over);
+    const candidates = styleParams(m.def, profile, ctx, skill);
+    let best: CycleRates | undefined;
+    let refused: ProfileError | undefined;
+    for (const params of candidates) {
+        let r: CycleRates;
+        try {
+            r = rateAt(m, profile, ctx, over, params);
+        } catch (e) {
+            if (!(e instanceof ProfileError)) throw e;
+            refused ??= e;
+            continue;
+        }
+        if (!best || (r.xpPerHour[skill] ?? 0) > (best.xpPerHour[skill] ?? 0)) best = r;
+    }
+    if (!best) throw refused ?? new ModelError(`no style for ${skill}`);
+    return best;
+}
+
+function rateAt(
+    m: Pick<ResolvedMethod, 'def' | 'site' | 'sink' | 'ways'>,
+    profile: Profile,
+    ctx: MethodContext,
+    over: MethodWay | undefined,
+    params: unknown,
+): CycleRates {
+    const { gather, steps, way } = methodModels(m, profile, ctx, over, params);
     if (!way) throw new ModelError('it has no way to walk');
     const legs = way.legs.map(l => l.runTicks);
     const sink: CycleSink =
@@ -472,7 +752,16 @@ function rate(
         if (heal === undefined) throw new ModelError(`${m.def.food} is not a food with a fixed heal`);
         food = { obj: m.def.food, heal };
     }
-    return cycle({ gather, sink, items: ctx.items, food });
+    // A kill (a gather on `attackRate`) eats no food for its damage until its npc is calibrated.
+    const kill = !('withdraw' in gather) && gather.attackRate !== undefined;
+    return cycle({
+        gather,
+        sink,
+        items: ctx.items,
+        food,
+        ...(m.def.loot ? { loot: m.def.loot, ...(ctx.boneXp ? { boneXp: ctx.boneXp } : {}) } : {}),
+        ...(kill && uncalibrated(m, ctx) ? { uncalibrated: true } : {}),
+    });
 }
 
 /**
@@ -489,7 +778,8 @@ export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFin
         if (skill === undefined) throw new ModelError('it trains no skill');
         // A process step whose input neither the gather nor an earlier step gives (a misnamed food) would do nothing
         // at every level. A step's input is its first consumes; the others are supplies.
-        const top = methodModels({ def, ...located }, profileAt(skill, 99, { tools: ctx.tools }), ctx);
+        const top99 = profileAt(skill, 99, { tools: ctx.tools });
+        const top = methodModels({ def, ...located }, top99, ctx, undefined, styleParams(def, top99, ctx, skill)[0]);
         const given = new Set('withdraw' in top.gather ? [top.gather.withdraw] : top.gather.products.map(x => x.obj));
         for (const step of top.steps) {
             for (const m of step) {
@@ -507,7 +797,7 @@ export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFin
             let reason = '';
             for (let level = 1; level <= 99; level++) {
                 try {
-                    rate({ def, ...located }, profileAt(s, level, { tools: ctx.tools, atLeast }), ctx);
+                    rate({ def, ...located }, profileAt(s, level, { tools: ctx.tools, atLeast }), ctx, s);
                     return { level, reason };
                 } catch (e) {
                     if (!(e instanceof ModelError)) throw e;
@@ -532,7 +822,18 @@ export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFin
                 throw new ModelError(`no ${s} level models it with the others at 99 (${own.reason})`);
             levels[s] = Math.max(own.level, lowestLevel(reaches, s));
         }
-        return { def, ...located, skill, minLevel, levels };
+        const hazard = def.family === WITHDRAW ? undefined : familyOf(ctx, def.family).hazard;
+        const npcs = hazard?.(gatherSite(def, located.site, ctx.world), def.params, ctx.world);
+        const areaHazard = def.area === undefined ? undefined : areaHazardOf(def, located.site, ctx.world);
+        return {
+            def,
+            ...located,
+            skill,
+            minLevel,
+            levels,
+            ...(npcs ? { npcs } : {}),
+            ...(areaHazard ? { areaHazard } : {}),
+        };
     } catch (e) {
         if (e instanceof MethodError) throw e;
         // Any other error (rate.ts rejecting a bad model, say) is the record's failure too: name it.
@@ -541,11 +842,32 @@ export function resolveMethod(def: MethodDef, ctx: MethodContext, finder: LegFin
     }
 }
 
-/** The skills a record trains: its family's (none for a withdrawal), then its process steps', each once. */
+/** ResolvedMethod.areaHazard: over the sites of `site`'s kind that hold a feature gatherSite gathers. */
+function areaHazardOf(def: MethodDef, site: Site, world: MethodContext['world']): AreaHazard {
+    const gathered = new Set(gatherSite(def, site, world).features);
+    const sites = world.sites.filter(s => s.kind === site.kind && s.features.some(i => gathered.has(i)));
+    return {
+        wildernessLevel: Math.max(0, ...sites.map(s => s.wildernessLevel)),
+        multiway: sites.some(s => s.multiway),
+    };
+}
+
+/**
+ * The skills a record trains: its family's (none for a withdrawal), then its process steps', each once. A family with
+ * styles trains those of the styles the record's gear allows (at 99 in every skill, so any gear is worn), in SKILLS
+ * order, and Prayer when the loot buries bones (bury_bone.rs2:15).
+ */
 function methodSkills(def: MethodDef, ctx: MethodContext): Skill[] {
     const steps = def.sink.mode === 'process' ? def.sink.steps.map(s => s.family) : [];
-    const families = [...(def.family === WITHDRAW ? [] : [def.family]), ...steps];
-    return [...new Set(families.flatMap(f => familyOf(ctx, f).skills))];
+    const gather = def.family === WITHDRAW ? undefined : familyOf(ctx, def.family);
+    let own = gather?.skills ?? [];
+    if (gather?.styles) {
+        const top = wearing(def, profileAt('attack', 99, { tools: ctx.tools }), ctx.items);
+        const trained = new Set(gather.styles(def.params, top).styles.flatMap(st => st.skills));
+        if (def.loot?.bones === 'bury') trained.add('prayer');
+        own = SKILLS.filter(sk => trained.has(sk));
+    }
+    return [...new Set([...own, ...steps.flatMap(f => familyOf(ctx, f).skills)])];
 }
 
 /**
@@ -582,6 +904,8 @@ export function toWorldMethod(m: ResolvedMethod): WorldMethod {
         minLevel: m.minLevel,
         levels: m.levels,
         ways: m.ways,
+        ...(m.npcs ? { npcs: m.npcs } : {}),
+        ...(m.areaHazard ? { areaHazard: m.areaHazard } : {}),
     };
 }
 
@@ -594,7 +918,7 @@ const STALE = '; world.json is stale or hand-edited: run `bun run world`';
  * has not, or one whose stand has moved: the file is not one build.ts wrote.
  */
 export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>, zones?: Zones): ResolvedMethod {
-    const { site, stand, bank, processors, skill, minLevel, levels, ways, ...def } = wm;
+    const { site, stand, bank, processors, skill, minLevel, levels, ways, npcs, areaHazard, ...def } = wm;
     const byId = (id: string | undefined, what: string): Site => {
         const s = id === undefined ? undefined : world.sites.find(x => x.id === id);
         if (!s)
@@ -623,7 +947,17 @@ export function fromWorldMethod(wm: WorldMethod, world: Pick<World, 'sites'>, zo
         const banks = def.sink.end === 'bank' && def.family !== WITHDRAW;
         sink = { mode: 'process', steps, ...(banks ? { bank: byId(bank, 'bank') } : {}) };
     }
-    return { def, site: at, sink, ways, skill, minLevel, levels };
+    return {
+        def,
+        site: at,
+        sink,
+        ways,
+        skill,
+        minLevel,
+        levels,
+        ...(npcs ? { npcs } : {}),
+        ...(areaHazard ? { areaHazard } : {}),
+    };
 }
 
 /** Every record resolved, and the failures as MethodError messages; two records with one id fail both. */

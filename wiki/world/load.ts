@@ -14,8 +14,8 @@ const isObject = (x: unknown): x is Parsed => typeof x === 'object' && x !== nul
 
 /**
  * Whether `x` is a world.json of this format: its format, a string generatedFrom, the ten lists and
- * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields
- * (crossingModelProblem).
+ * the loadoutRules object. Their items are taken as build.ts wrote them, but for the crossing model's fields, a
+ * site's course and a method's npcs and area hazard (crossingModelProblem).
  */
 const isWorld = (x: Parsed): x is Parsed & World =>
     x.format === WORLD_FORMAT &&
@@ -198,10 +198,34 @@ function courseProblem(s: Parsed, features: number): string | undefined {
     return undefined;
 }
 
-/** The first malformed crossing-model field of `world`, or site course, as `<list>[<i>]: <what>`, or undefined. */
+/** What is wrong with a World.methods row's npcs or area hazard, or undefined: it may have neither. */
+function npcsProblem(m: Parsed): string | undefined {
+    const a = m.areaHazard;
+    if (a !== undefined && (!isObject(a) || !isCount(a.wildernessLevel) || typeof a.multiway !== 'boolean'))
+        return 'its areaHazard needs a wildernessLevel, a count, and multiway, a boolean';
+    const n = m.npcs;
+    if (n === undefined) return undefined;
+    if (
+        !isObject(n) ||
+        !isCount(n.maxHit) ||
+        !Array.isArray(n.hunters) ||
+        (n.retreat !== undefined && !isCount(n.retreat))
+    )
+        return 'its npcs needs a maxHit, a list of hunters, and a retreat, when it has one, as a count';
+    for (const h of n.hunters)
+        if (!isObject(h) || !isName(h.npc) || (h.upTo !== null && !isCount(h.upTo)))
+            return 'a hunter needs an npc and an upTo, a combat level or null';
+    return undefined;
+}
+
+/**
+ * The first malformed crossing-model field of `world`, site course or method npcs and area hazard, as `<list>[<i>]: <what>`, or
+ * undefined.
+ */
 function crossingModelProblem(world: World): string | undefined {
     const rows: [string, readonly unknown[], (x: Parsed) => string | undefined][] = [
         ['sites', world.sites, s => courseProblem(s, world.features.length)],
+        ['methods', world.methods, npcsProblem],
         ['crossings', world.crossings, crossingProblem],
         ['gates', world.gates, gateProblem],
         ['transports', world.transports, t => (t.act === undefined ? undefined : actProblem(t.act))],

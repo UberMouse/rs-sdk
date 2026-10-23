@@ -32,6 +32,29 @@ export interface ActionModel {
      */
     damage?: number;
     /**
+     * On an action that swings on `%action_delay` (a kill): the ticks from one swing to the next, the weapon's
+     * `attackrate` (skill_combat/scripts/player/player_melee.rs2:55-60). An eat adds to that delay, so the food
+     * `damage` takes costs EAT_DELAY ticks each; a bury fits between two swings when this is at least
+     * BURY_SWING_GAP (cycle.ts).
+     */
+    attackRate?: number;
+    /**
+     * On a kill (with `attackRate`): ticks per success, already in ticksPerAttempt, from the end of the swing cooldown
+     * after the killing swing to the next target's first swing (the run beyond it). The eats `damage` takes spend them
+     * before they hold a swing (cycle.ts).
+     */
+    freeTicks?: number;
+    /**
+     * On a kill: ticks a success adds when it drops any of the products the cycle takes (kept or buried): the wait for
+     * the drop and the step onto it. They are free ticks for the eats too, and come off `deplete.respawnTicks`, as the
+     * target's respawn does not wait on them. Needs `pAnyOf`.
+     */
+    pickupTicks?: number;
+    /** With `pickupTicks`: the chance a success drops at least one of `objs`, of its products. */
+    pAnyOf?: (objs: ReadonlySet<string>) => number;
+    /** On a kill: the npc's `retreat` HP, at which it runs instead of fighting back; not priced, a note for the page. */
+    retreat?: number;
+    /**
      * Inputs one product of a process step takes (5 bars a platebody); default 1. A step's chained input is its
      * `consumes[0]`, whose count must be `batch`. The load rounds down to whole batches where the step's input per
      * success is a whole number.
@@ -60,6 +83,27 @@ export interface ActionModel {
     features?: number;
     /** Objs the action needs held, worn or in the inventory (an axe, a pickaxe, a fishing rod); bait is in `consumes`. */
     tools?: string[];
+}
+
+/** One style a family's action may take with the profile's gear (combat: a melee style of the worn weapon). */
+export interface StyleChoice {
+    /** The record's params with the style set, as `model` takes them. */
+    params: unknown;
+    /** The skills its XP goes to. */
+    skills: Skill[];
+}
+
+/** The npcs at a site of npcs, as a hazard: what they hit for and which hunt players. */
+export interface NpcHazard {
+    /** The largest max hit of their default melee AI (npc_combat_melee.rs2:2-8). */
+    maxHit: number;
+    /**
+     * Each npc config there that hunts players, by name, and the highest combat level it hunts outside the
+     * Wilderness: null for any (model/npcs.ts huntsUpTo). Empty when none hunts.
+     */
+    hunters: { npc: string; upTo: number | null }[];
+    /** The target's `retreat` HP (ActionModel.retreat), when it has one. */
+    retreat?: number;
 }
 
 /** Thrown by `Family.model` when it can't model the case, with the reason. */
@@ -96,4 +140,17 @@ export interface Family {
      * throws a ModelError when the ones that walk don't do. A process step's family that has them fails the record.
      */
     walks?(site: Site, params: unknown, world: ModelWorld): { from: Tile; to: Tile }[];
+    /**
+     * Optional, for a family whose action takes a style the worn weapon offers (combat): each style the profile's
+     * gear allows, in the weapon's order, and the quest varps the gear's wield checks read. A method rates the style
+     * that suits the skill it is ranked for (model/method.ts). Throws a ProfileError for gear the profile can't wear.
+     */
+    styles?(params: unknown, profile: Profile): { styles: StyleChoice[]; quests: string[] };
+    /**
+     * The worn objs `model` reads from the profile: `'all'` for a family whose action rests on the whole gear (combat's
+     * bonuses, weapon and styles), or these obj config names (a staff whose rune a cast takes free); absent: none.
+     */
+    worn?: 'all' | readonly string[];
+    /** Optional, for a family that acts on npcs: the npcs at the site as a hazard. */
+    hazard?(site: Site, params: unknown, world: ModelWorld): NpcHazard;
 }

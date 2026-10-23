@@ -9,14 +9,18 @@ import { readGameData } from '../model/families/index';
 import { legFinder } from '../model/legs';
 import {
     isTileStop,
-    measuredProfile,
+    measuredFigures,
     methodModel,
     methodRate,
     resolveMethod,
     resolveMethods,
     tileStopId,
+    methodModels,
+    wornRead,
     type MethodContext,
 } from '../model/method';
+import { readObjNames } from '../model/items';
+import { ModelError, ProfileError } from '../model/family';
 import { profileOf, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
 import { locSizes } from '../place';
@@ -129,6 +133,10 @@ describe("each seed is at its plan's sites", () => {
         ['willow-seers-longbow-bank', 'tree:seers-village:1', ['here', 'here'], 'bank:seers-village-bank:0', []],
         ['trees-lumbridge-burn', 'tree:lumbridge-trees:0', ['tile:3230,3240,0'], null, []],
         ['willow-draynor-burn', 'tree:draynor-willows:0', ['tile:3088,3247,0'], null, []],
+        // The phase 4 kills: the plans' fight areas, banked for food where they eat.
+        ['hill-giants-edgeville', 'npc:edgeville-dungeon:8', null, 'bank:edgeville-bank:0', []],
+        ['moss-giants-varrock-sewers', 'npc:varrock-sewers:0', null, 'bank:varrock-east-bank:0', []],
+        ['chickens-lumbridge', 'npc:misthalin:38', null, null, []],
     ];
     for (const [id, site, steps, bank, reach] of b3)
         test(id, () => {
@@ -142,6 +150,17 @@ describe("each seed is at its plan's sites", () => {
             ).toEqual(steps);
             expect(m.ways[0]!.reach).toEqual(reach);
         });
+
+    test("the kills' spawns: one walk per ordered pair of their npc's spawns in the area", () => {
+        // Hill giants: the 12 of npc:edgeville-dungeon:5/7/8 (2 + 1 + 9); moss giants: the sewers' 4 (2 + 2 of
+        // npc:varrock-sewers:0/1, the spiders of :1 left out); chickens: the 9 of npc:misthalin:38.
+        for (const [id, spawns] of [
+            ['hill-giants-edgeville', 12],
+            ['moss-giants-varrock-sewers', 4],
+            ['chickens-lumbridge', 9],
+        ] as const)
+            expect([id, method(id).ways[0]!.walks?.length]).toEqual([id, spawns * (spawns - 1)]);
+    });
 
     test('iron-se-varrock-drop has no legs', () => {
         expect(method('iron-se-varrock-drop').ways).toEqual([{ reach: [], legs: [] }]);
@@ -180,6 +199,9 @@ test("each skill's own level, the others at 99, and the whole method's", () => {
     });
 });
 
+/** The seed record `id`. */
+const seed = (id: string) => METHODS.find(m => m.id === id)!;
+
 describe('the game data the cycle reads', () => {
     test('food heals and item slots', () => {
         // consume_normal.dbrow: trout `stat_heal,hitpoints,7,0`, salmon 9, lobster 12.
@@ -187,24 +209,166 @@ describe('the game data the cycle reads', () => {
         expect(ctx.foods.get('salmon')).toBe(9);
         expect(ctx.foods.get('lobster')).toBe(12);
         // Coins and feathers stack; coins have no cost line, so the engine's 1. A pickaxe is wielded, a rod carried.
-        expect(ctx.items('coins')).toEqual({ stackable: true, cost: 1, wearable: false });
+        expect(ctx.items('coins')).toEqual({ stackable: true, cost: 1, wearable: false, wearpos: [] });
         expect(ctx.items('feather').stackable).toBe(true);
         expect(ctx.items('adamant_pickaxe').wearable).toBe(true);
         expect(ctx.items('fly_fishing_rod').wearable).toBe(false);
+        // 2hswords.obj: rune_2h_sword `wearpos=righthand`, `wearpos2=lefthand`, the shield's slot too.
+        expect(ctx.items('rune_2h_sword').wearpos).toEqual(['righthand', 'lefthand']);
+    });
+
+    test('the worn objs a method reads: a superheat step its staves and the gauntlets, a woodcutting gather none', () => {
+        const superheat = wornRead(seed('iron-khazard-superheat-platebody-drop'), ctx);
+        // magic_staff.dbrow:26 lists the staff of fire; superheat.rs2:57 tests the goldsmith gauntlets worn.
+        expect(superheat).not.toBe('all');
+        expect(
+            [...(superheat as Set<string>)].filter(o => /^staff_of_fire$|^gauntlets_of_goldsmithing$/.test(o)),
+        ).toEqual(['staff_of_fire', 'gauntlets_of_goldsmithing']);
+        expect(wornRead(seed('willow-draynor-bank'), ctx)).toEqual(new Set());
+        expect(wornRead({ family: 'combat', sink: { mode: 'bank' } }, ctx)).toBe('all');
+    });
+
+    test('smelting iron reads the ring of forging worn (smelting.rs2:200-202), so a measured run keeps it', () => {
+        const read = wornRead(seed('iron-se-varrock-smelt-lumbridge-kiteshield'), ctx);
+        expect(read).not.toBe('all');
+        expect((read as Set<string>).has('ring_of_forging')).toBe(true);
+    });
+
+    // A family that tests a worn obj the declaration omits would have lib/methods.ts drop it from a measured run.
+    test('every worn obj a family tests membership of is in its declared Family.worn', () => {
+        const checked = new Set<string>();
+        const unchecked: string[] = [];
+        for (const m of methods) {
+            if (m.def.gear?.length) continue;
+            const tested = new Set<string>();
+            let iterated = false;
+            const worn = new Proxy([] as string[], {
+                get(t, k, r) {
+                    if (k === 'includes')
+                        return (o: string) => {
+                            tested.add(o);
+                            return false;
+                        };
+                    if (k === 'indexOf' || k === 'lastIndexOf')
+                        return (o: string) => {
+                            tested.add(o);
+                            return -1;
+                        };
+                    if (typeof k === 'symbol' || typeof t[k as keyof typeof t] === 'function') iterated = true;
+                    return Reflect.get(t, k, r);
+                },
+            });
+            try {
+                methodModels(m, everyAt(99, {}, { worn }), ctx);
+            } catch (e) {
+                if (!(e instanceof ModelError || e instanceof ProfileError)) throw e;
+                unchecked.push(m.def.id);
+            }
+            const declared = wornRead(m.def, ctx);
+            if (declared === 'all') continue;
+            for (const o of tested) expect([m.def.id, o, declared.has(o)]).toEqual([m.def.id, o, true]);
+            // Iterating worn reads which of them it holds: only a declaration naming some can answer for it.
+            if (iterated) expect([m.def.id, declared.size > 0]).toEqual([m.def.id, true]);
+            for (const o of tested) checked.add(o);
+        }
+        // The guard saw the ring read: it observes reads, not nothing.
+        expect(checked.has('ring_of_forging')).toBe(true);
+        // A method that throws before a family reads worn escapes the guard; none does at level 99, and one that
+        // starts to shows here.
+        expect(unchecked).toEqual([]);
+    });
+
+    // No seed smelts gold, so the guard above never sees the goldsmith gauntlets read (smelting.rs2:216): iron's
+    // record with its smelting step on a gold bar.
+    test('smelting a gold bar reads the goldsmith gauntlets worn, and the record declares them', () => {
+        const base = methods.find(m => m.def.id === 'iron-se-varrock-smelt-lumbridge-kiteshield')!;
+        const sink = base.def.sink as { mode: 'process'; steps: { family: string; params: unknown }[] };
+        const gold = {
+            ...base,
+            def: {
+                ...base.def,
+                sink: {
+                    ...base.def.sink,
+                    steps: sink.steps.map(s => (s.family === 'smelting' ? { ...s, params: { bar: 'gold_bar' } } : s)),
+                },
+            },
+        } as typeof base;
+        const tested = new Set<string>();
+        const worn = new Proxy([] as string[], {
+            get(t, k, r) {
+                if (k === 'includes')
+                    return (o: string) => {
+                        tested.add(o);
+                        return false;
+                    };
+                return Reflect.get(t, k, r);
+            },
+        });
+        methodModels(gold, everyAt(99, {}, { worn }), ctx);
+        expect(tested.has('gauntlets_of_goldsmithing')).toBe(true);
+        expect((wornRead(gold.def, ctx) as Set<string>).has('gauntlets_of_goldsmithing')).toBe(true);
+    });
+
+    test('an obj by its display name: the one config of that name, or of several the wearable one', () => {
+        const byName = readObjNames(data.objs);
+        expect(byName('Amulet of glory(4)')).toBe('amulet_of_glory_4');
+        expect(byName('Rune scimitar')).toBe('rune_scimitar');
+        // Two configs are `Robe of zamorak` (zamrobetop, zamrobebottom), both worn: neither is the one.
+        expect(byName('Robe of zamorak')).toBeUndefined();
+        expect(byName('No such thing')).toBeUndefined();
     });
 });
 
 describe('the floor at the measured levels is at or above every measured figure', () => {
+    // Each skill's floor rated for that skill, as the pages set it beside the figure (measuredFigures): a combat
+    // method swings the style that suits it.
     for (const def of METHODS)
         for (const [i, measured] of (def.measured ?? []).entries())
             test(`${def.id} #${i} (${measured.bot} ${measured.date})`, () => {
                 const m = method(def.id);
-                const floor = methodRate(m, measuredProfile(m, measured, ctx.tools), ctx);
-                for (const [skill, xp] of Object.entries(measured.xpPerHour) as [Skill, number][]) {
-                    const at = floor.xpPerHour[skill] ?? 0;
-                    expect({ skill, floor: at, measured: xp, atOrAbove: at >= xp }).toMatchObject({ atOrAbove: true });
-                }
+                for (const skill of Object.keys(measured.xpPerHour) as Skill[])
+                    for (const { xpPerHour: xp, floor } of measuredFigures(m, skill, ctx).filter(
+                        f => f.measured === measured,
+                    ))
+                        expect({ skill, floor, measured: xp, atOrAbove: floor >= xp }).toMatchObject({
+                            atOrAbove: true,
+                        });
             });
+});
+
+describe("hill-giants-edgeville against the plans' fight phases (no whole cycle measured)", () => {
+    // conductor2's runs of 2026-10-16 (stats.ts conductor2 --task combat --phases): each fought on the food it
+    // started with and never banked, so they are no measured figure, and the floor they meet is the fight alone, the
+    // food gate shut (no food trips). Start levels from each fight phase's recording (runs.ts readStartState); the
+    // combat task wields the mithril scimitar and iron kiteshield, and bronze arrows sat in the ammo slot.
+    const shut: MethodContext = { ...ctx, calibrated: new Set() };
+    const worn = ['mithril_scimitar', 'iron_kiteshield', 'bronze_arrow'];
+    const cases: [string, Partial<Record<Skill, number>>, Partial<Record<Skill, number>>][] = [
+        [
+            'Strength 54->70 (plan hill-giants, 2026-10-16T07-28-01-599Z, 598 s)',
+            { attack: 40, defence: 40, strength: 54, hitpoints: 50, ranged: 40, prayer: 15, magic: 41 },
+            { strength: 541_098, hitpoints: 178_701, prayer: 59_816 },
+        ],
+        [
+            'Attack 40->68 (plan giants-att-def, 2026-10-16T07-39-28-098Z, 654 s)',
+            { attack: 40, defence: 40, strength: 70, hitpoints: 59, ranged: 40, prayer: 36, magic: 41 },
+            { attack: 582_473, hitpoints: 192_133, prayer: 54_656 },
+        ],
+        [
+            'Defence 40->70 (its fight-defence phase 2026-10-16T07-57-40-225Z, 11.1 min)',
+            { attack: 70, defence: 40, strength: 70, hitpoints: 66, ranged: 40, prayer: 44, magic: 41 },
+            { defence: 634_507, hitpoints: 209_506, prayer: 63_803 },
+        ],
+    ];
+    for (const [name, levels, measured] of cases)
+        test(name, () => {
+            const m = method('hill-giants-edgeville');
+            const profile = everyAt(1, levels, { worn });
+            for (const [skill, xp] of Object.entries(measured) as [Skill, number][]) {
+                const floor = methodRate(m, profile, shut, undefined, skill).xpPerHour[skill] ?? 0;
+                expect({ skill, floor, measured: xp, atOrAbove: floor >= xp }).toMatchObject({ atOrAbove: true });
+            }
+        });
 });
 
 describe('earth runes from the essence mine (survey §1e)', () => {

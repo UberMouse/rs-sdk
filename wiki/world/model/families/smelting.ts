@@ -46,7 +46,7 @@ export function barStruct(data: GameData, bar: string): BarStruct {
 }
 
 /** The obj smelting.rs2 and superheat.rs2 test for, worn, to give 2.5x XP on a gold bar. */
-const GOLDSMITH = 'gauntlets_of_goldsmithing';
+export const GOLDSMITH = 'gauntlets_of_goldsmithing';
 
 /**
  * A bar's Smithing XP in tenths: the struct's productexp, `scale(5, 2, xp)` (xp * 5 / 2, truncated) for a gold bar
@@ -71,6 +71,7 @@ export const smelting: FamilyFactory = data => ({
     id: 'smelting',
     skills: ['smithing'],
     kinds: ['furnace'],
+    worn: [GOLDSMITH, RING_OF_FORGING],
     model(site, params, profile): ActionModel {
         const p = stringParams(params, 'smelting', ['bar']);
         if (site.kind !== 'furnace') throw new ModelError(`site ${site.id} is a ${site.kind} site, not a furnace`);

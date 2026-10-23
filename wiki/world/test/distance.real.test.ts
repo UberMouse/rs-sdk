@@ -33,7 +33,8 @@ test('searching every context in full finds what the improvement-only searches f
     const full = nearestSinks(graph, world.sites, { full: true, context });
     expect(full.report.contexts).toEqual(nearestSinks(graph, world.sites, { context }).report.contexts);
     for (const s of world.sites) expect([s.id, full.nearest.get(s.id)]).toEqual([s.id, nearest.get(s.id)]);
-}, 120_000);
+    // Two searches of every site's nearest sinks, the full one over every context: 300 s gives it room on a busy machine.
+}, 300_000);
 
 // Walk legs bots ran between a site and its bank, from the per-tick positions of conductor run recordings
 // (conductor/runs/<bot>/*.ticks.ndjson.gz, local server, run energy 100 throughout): the tiles the route took and

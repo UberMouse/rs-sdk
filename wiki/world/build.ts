@@ -1013,7 +1013,17 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     // Every curated method resolved over the same graph, with the sites' nearest sinks (model/method.ts).
     // The model is built once: the training pages rate the methods with it too.
     const model = methodModel(
-        { dbrows, objs: objConfigs, locs: locConfigs, structs: readConfigs('struct'), scripts },
+        {
+            dbrows,
+            objs: objConfigs,
+            locs: locConfigs,
+            structs: readConfigs('struct'),
+            npcs: npcConfigs,
+            params: readConfigs('param'),
+            constants,
+            scripts,
+            hunts: readConfigs('hunt'),
+        },
         zones,
     );
     const methods = resolveMethods(

@@ -2,6 +2,7 @@
 import type { Family } from '../family';
 import type { FamilyFactory, GameData } from './common';
 import { agility } from './agility';
+import { combat } from './combat';
 import { cooking } from './cooking';
 import { firemaking } from './firemaking';
 import { fishing } from './fishing';
@@ -21,6 +22,7 @@ export { readGameData, type GameData } from './common';
 
 export const FAMILIES: Readonly<Record<string, FamilyFactory>> = {
     agility,
+    combat,
     cooking,
     firemaking,
     fishing,

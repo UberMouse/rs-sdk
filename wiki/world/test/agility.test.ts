@@ -46,6 +46,9 @@ const data: GameData = {
     objs: new Map(),
     locs: parseConfigs(''),
     structs: new Map(),
+    npcs: new Map(),
+    params: new Map(),
+    constants: new Map(),
     scripts: [['skill_agility/scripts/t_course.rs2', SCRIPT]],
 };
 const family: Family = agility(data);

@@ -26,6 +26,15 @@ describe('parseScript', () => {
             'return return',
         ]));
 
+    test('a return of none, one or several values: `value` only for one', () => {
+        const body = parse('()(namedobj, int)\nreturn (coins, 10);\nreturn(true);\nreturn;').body;
+        expect(body.map(s => (s.t === 'return' ? [s.value?.text ?? null, s.values.map(v => v.text)] : s.t))).toEqual([
+            [null, ['coins', '10']],
+            ['true', ['true']],
+            [null, []],
+        ]);
+    });
+
     test('a def with no value, several locals from one call, and a loop', () =>
         expect(
             shape(
