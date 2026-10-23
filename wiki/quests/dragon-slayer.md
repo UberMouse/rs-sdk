@@ -8,14 +8,13 @@
 
 ## Requirements
 
-- 32 Quest Points
-- 33 Magic (for Telegrab spell)
+- 32 Quest Points: the Champions' Guild door refuses under 32 (`champions_guild.rs2:2`) [server data, unverified in game 2026-10-23]
 - Ability to defeat Elvarg (level 83 dragon)
 
 ## Items Needed
 
 - Silk
-- Wizard's Mind Bomb (or 33 Magic)
+- Wizard's Mind Bomb (the Oracle's door takes all four items, `magic_door.rs2:10`) [server data, unverified in game 2026-10-23]
 - Unfired bowl
 - Lobster pot
 - 3 Planks
@@ -45,11 +44,11 @@
 
 ### Map Piece 2 - Wormbrain
 
-4. Go to **Port Sarim Jail**. Speak to **Wormbrain** the goblin in his cell. He has the second map piece. Use the **Telegrab** spell (33 Magic required) to take the piece, or pay him 10,000 gp.
+4. Go to **Port Sarim Jail**. Speak to **Wormbrain** the goblin in his cell. He has the second map piece. Kill him (the piece drops, `wormbrain.rs2:9-10`) or pay him 10,000 gp (`wormbrain.rs2:60-71`). No Magic level is needed. [server data, unverified in game 2026-10-23]
 
 ### Map Piece 3 - Melzar's Maze
 
-5. Travel to **Melzar's Maze** south of the Crafting Guild. Use the **maze key** (from the Guildmaster) to enter. Navigate the maze by killing the correct monsters on each floor to obtain keys that open the corresponding doors. Defeat **Melzar the Mad** and the **lesser demon** at the end to obtain the third **map piece**.
+5. Travel to **Melzar's Maze** south of the Crafting Guild. Use the **maze key** to enter; Oziach in Edgeville hands it over when asked about the first map piece (`oziach.rs2:122-125`). [server data, unverified in game 2026-10-23] Navigate the maze by killing the correct monsters on each floor to obtain keys that open the corresponding doors. Defeat **Melzar the Mad** and the **lesser demon** at the end to obtain the third **map piece**.
 
 ### Preparing the Ship
 
@@ -59,7 +58,7 @@
 
 ### Anti-Dragon Shield
 
-9. Speak to the **Duke of Lumbridge** on the 2nd floor of Lumbridge Castle. He gives you the **anti-dragon shield**, which is essential for surviving Elvarg's fire breath.
+9. Speak to the **Duke of Lumbridge** on the 2nd floor of Lumbridge Castle. He gives you the **anti-dragon shield** once Oziach has told you about it (`duke_horacio.rs2:4`) [server data, unverified in game 2026-10-23], and it is essential for surviving Elvarg's fire breath.
 
 ### Sailing to Crandor
 

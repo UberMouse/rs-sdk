@@ -12,19 +12,14 @@
 
 ### Quest Prerequisites
 
-- Biohazard
-- Plague City
+- Biohazard complete (`king_lathas.rs2:73`); Plague City comes with it [server data, unverified in game 2026-10-23]
 
 ### Skill Requirements
 
-- 25 Ranged
-- Ability to defeat 3 level 91 demons
-
-### Recommended
-
-- 50 Agility
-- 50 Thieving
-- 43 Prayer
+- 25 Ranged, base level (`king_lathas.rs2:95`) [server data, unverified in game 2026-10-23]
+- 50 Thieving to pick the cage lock (`quest_upass.rs2:248`); whether that cage is on the required path is unverified [server data, unverified in game 2026-10-23]
+- Ability to defeat the demons Kalrag (89), Othainian, Doomion and Holthion (91) (`quest_upass.npc:617,654,685,716`) [server data, unverified in game 2026-10-23]
+- Agility and Prayer are not checked: ledge obstacles only roll Agility for a fall chance (`upass_obstacles.rs2:22,113`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -37,8 +32,7 @@
 
 - 3,000 Agility XP
 - 3,000 Attack XP
-- Staff of Iban
-- Iban Blast spell
+- Staff of Iban (wielding needs 50 Magic and 50 Attack; Iban Blast needs 50 Magic), 15 death runes and 30 fire runes, all given when the doll destroys Iban, before the quest ends (`quest_upass.rs2:673-678`) [server data, unverified in game 2026-10-23]
 
 ## Walkthrough
 
@@ -74,7 +68,7 @@ Speak to King Lathas in East Ardougne Castle. He tasks you with traversing the U
 2. Equip Zamorak robes (top and bottom) before proceeding.
 3. Combine all 4 ritual items to create the doll of Iban.
 4. Activate the doll at the well of Iban to destroy his spirit.
-5. Collect the Staff of Iban from the well.
+5. The staff and runes drop into your inventory as Iban dies; the temple then collapses.
 6. Return to King Lathas to complete the quest.
 
 ## Key NPCs & Locations
@@ -84,6 +78,6 @@ Speak to King Lathas in East Ardougne Castle. He tasks you with traversing the U
 | King Lathas               | Quest start, East Ardougne Castle         |
 | Koftik                    | Guide at West Ardougne cave entrance      |
 | Paladins (level 62)       | Drop colored crests in Level 2            |
-| Iban (level 91 demon)     | Final encounter at the well               |
+| Iban                      | Destroyed with the doll at the well, not fought |
 | West Ardougne cave        | Dungeon entrance                          |
 | Iban's Tomb               | Final area, ritual completion             |

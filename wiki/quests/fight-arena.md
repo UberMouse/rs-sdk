@@ -8,7 +8,7 @@
 
 ## Requirements
 
-- Ability to defeat enemies of levels 44, 55, and 132 (all safespottable)
+- Ability to defeat enemies of levels 44, 63 and 137 (all safespottable) [server data, unverified in game 2026-10-23] (`quest_arena.npc:488,518,463`)
 
 ## Items Needed
 
@@ -16,7 +16,7 @@
 
 ## Rewards
 
-- 3,375 Thieving XP
+- 2,175 Thieving XP (`quest_arena.rs2:271`) [server data, unverified in game 2026-10-23]
 - 12,175 Attack XP
 - 1,000 gp
 
@@ -33,9 +33,9 @@
 5. **Free Jeremy.** Take the keys from the guard and use them on Jeremy's prison door to release him.
 
 6. **Fight in the arena.** You will be forced to fight three opponents in succession:
-   - **Khazard Ogre** (level 55)
+   - **Khazard Ogre** (level 63)
    - **Khazard Scorpion** (level 44)
-   - **Bouncer** (level 132) - General Khazard's pet dog
+   - **Bouncer** (level 137) - General Khazard's pet dog
 
    All three can be safespotted using the arena terrain.
 
@@ -51,6 +51,6 @@
 | Jeremy | Prison cells near the Fight Arena |
 | Khazard armour chest | NE house near the Fight Arena |
 | Tavern | Near the Fight Arena |
-| Khazard Ogre (level 55) | Fight Arena |
+| Khazard Ogre (level 63) | Fight Arena |
 | Khazard Scorpion (level 44) | Fight Arena |
-| Bouncer (level 132) | Fight Arena |
+| Bouncer (level 137) | Fight Arena |

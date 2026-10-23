@@ -12,16 +12,15 @@
 
 ### Skill Requirements
 
-- 25 Thieving
-- 10 Agility
-- 10 Herblore
+- Mid-quest: 25 Thieving, the only source of the rock sample and brush (`digsite_workman.rs2:62`); 10 Agility (`area_digsite.rs2:617`); 10 Herblore to mix the compound (`itexam_chemistry.rs2:21`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
 - Cup of tea (for an examiner)
 - Pestle and mortar
 - Vial
-- Tinderbox
+- Tinderbox (to ignite the compound on the bricks, not an ingredient)
+- Charcoal (ground with the pestle and mortar)
 
 ## Rewards
 
@@ -57,10 +56,10 @@ Speak to one of the Examiners at the Digsite Examination Centre, located southea
 2. Collect an Arcenia root from inside the shaft.
 3. Collect and identify ammonium nitrate from the specimen trays.
 4. Obtain nitroglycerin (found in a barrel within the Digsite).
-5. Combine the ammonium nitrate, nitroglycerin, Arcenia root, and a tinderbox to create a chemical compound.
-6. Use the compound on the brick barrier blocking the deeper excavation area to destroy it.
+5. Mix in order: ammonium nitrate + nitroglycerin, then ground charcoal, then Arcenia root, giving the explosive compound (`itexam_chemistry.rs2:32-67`). [server data, unverified in game 2026-10-23]
+6. Use the compound on the brick barrier, then use the tinderbox on the bricks to ignite it (`area_digsite.rs2:715-731`). [server data, unverified in game 2026-10-23]
 7. Retrieve the stone tablet from beyond the barrier.
-8. Return the stone tablet to the Examiners to complete the quest.
+8. Give the stone tablet to the Archaeological expert (not the Examiners); he pays 2 gold bars and completes the quest (`arcaeological_expert.rs2:88-102`). [server data, unverified in game 2026-10-23]
 
 ## Key NPCs & Locations
 

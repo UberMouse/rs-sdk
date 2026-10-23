@@ -9,6 +9,7 @@
 ## Requirements
 
 - No skill requirements
+- Biohazard must not have been started: Elena's mud patch is "filled in and packed hard" once it has (`mud_patch.rs2:15`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 

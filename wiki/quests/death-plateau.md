@@ -8,8 +8,7 @@
 
 ## Requirements
 
-- Ability to fight trolls in combat
-- 10 Cooking (for cooked trout)
+- No skill level or combat is checked; the cooked trout and bread are items handed to Tenzing [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 

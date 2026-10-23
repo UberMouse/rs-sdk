@@ -8,10 +8,9 @@
 
 ## Requirements
 
-- Jungle Potion quest complete
-- Druidic Ritual quest complete
-- 32 Agility
-- 20 Crafting
+- Jungle Potion quest complete (`mosol_rei.rs2:2`, `trufitus.rs2`); Druidic Ritual is needed only through it [server data, unverified in game 2026-10-23]
+- 32 Agility mid-quest (`quest_zombiequeen.rs2:390,619`), 15 Agility at a crossing (`:527`) [server data, unverified in game 2026-10-23]
+- Crafting 15, 16 and 20 for the beads (`quest_zombiequeen.rs2:1254,1270,1285`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -29,9 +28,9 @@
 
 ## Walkthrough
 
-1. **Start the quest.** Speak to Mosol Rei near the walled village deep in the Karamja jungle. He warns you about the undead that plague the area.
+1. **Get the Wampum Belt.** Mosol Rei, near the walled village deep in the Karamja jungle, warns you about the undead and gives the belt (needs Jungle Potion, `mosol_rei.rs2:2`). [server data, unverified in game 2026-10-23]
 
-2. **Obtain the Wampum Belt.** Get the Wampum Belt from Mosol and bring it to Trufitus, who is located to the north.
+2. **Start the quest.** Show the belt to Trufitus; the quest starts with him (`trufitus.rs2:86`). [server data, unverified in game 2026-10-23]
 
 3. **Explore the temple.** Travel east to find an ancient temple. Search the mound near the temple entrance and navigate the underground passages.
 
@@ -49,11 +48,9 @@
 7. **Craft the Beads of the Dead.** Using the bone items and your crafting supplies, create the Beads of the Dead required to enter the final area.
 
 8. **Fight the undead.** Defeat 3 undead opponents in succession:
-   - Undead Zombie (level 86)
-   - Undead Skeleton (level 65)
-   - Undead Ghost (level 88)
+   - Nazastarool, three forms: levels 91, 68 and 93 (`quest_zombiequeen.npc:234,272,310`) [server data, unverified in game 2026-10-23]
 
-   **Do not retreat** during these fights. Leaving the area will reset the encounters.
+   Each defeated form is saved in the quest varp; the next form spawns when you try to take the corpse, and nothing resets on leaving (`quest_zombiequeen.rs2:1545-1573`). [server data, unverified in game 2026-10-23]
 
 9. **Retrieve the corpse.** After defeating all three undead, retrieve Rashiliyia's corpse.
 
@@ -68,8 +65,6 @@
 | Ancient temple | East of starting area |
 | Tribal Statue | Karamja jungle |
 | Tomb | SW of the temple area |
-| Undead Zombie (level 86) | Underground tomb area |
-| Undead Skeleton (level 65) | Underground tomb area |
-| Undead Ghost (level 88) | Underground tomb area |
+| Nazastarool (levels 91, 68, 93) | Underground tomb area |
 | Shilo Village | Southern Karamja (accessible after quest) |
 | Gem rocks | Inside Shilo Village |

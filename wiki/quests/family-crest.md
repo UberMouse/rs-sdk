@@ -40,13 +40,14 @@
 
 1. Speak to **Dimintheis** southeast of East Varrock bank. He tells you his family crest was broken into three pieces by his three sons.
 2. Travel to Catherby and find the **Chef** (eldest son) northeast of the village.
-3. He requires you to bring him **5 cooked fish** of a specific type. Catch and cook them, then deliver.
+3. He requires one of each of 5 cooked fish: swordfish, bass, tuna, salmon and shrimp (`crest_caleb.rs2:51,66`). [server data, unverified in game 2026-10-23]
 4. He gives you his piece of the crest and directs you to the second brother.
 
 ### Part 2: The Gem Trader
 
 5. Speak to the **Gem Trader** in Al Kharid. He tells you about his brother, a nobleman.
-6. Find the **nobleman** near the gold rocks. He needs a perfect gold bar.
+6. Find the **nobleman** (Avan) by the gold rocks. He wants a ruby ring and a ruby necklace both made of perfect gold, not a bar (`crest_man.rs2:32-35,53-58`). [server data, unverified in game 2026-10-23]
+6b. Ask **Boot the dwarf** about "very high quality gold"; he points to underground east of Ardougne (`crest_boot.rs2:17-20`), and Avan won't take the jewellery before that. [server data, unverified in game 2026-10-23]
 7. Enter the dungeon and navigate past **level 122 Hellhounds** to find the **perfect gold ore**.
 8. Smelt the perfect gold ore into a **perfect gold bar**.
 9. Use the perfect gold bar to craft a **ruby ring** and **ruby necklace** for the brothers.
@@ -55,8 +56,8 @@
 ### Part 3: The Wizard
 
 11. Find the **Wizard** (third son) at the **Jolly Boar Inn** northeast of Varrock.
-12. He has been poisoned. Use an **antipoison** to cure him.
-13. He tells you about **Chronozon** (level 139) who holds the final piece.
+12. He has been poisoned by a spider. Use the standard **antipoison** on him (`crest_johnathon.rs2:18-24`). [server data, unverified in game 2026-10-23]
+13. He tells you about **Chronozon** (level 170, `quest_crest.npc:38`) who holds the final piece. [server data, unverified in game 2026-10-23]
 14. Travel to the **Wilderness Dungeon** to fight Chronozon.
 15. **Important**: You must cast all 4 blast spells (Wind Blast, Water Blast, Earth Blast, Fire Blast) on Chronozon to defeat him. He cannot be killed without all four.
 16. Collect the final crest piece from Chronozon's drop.
@@ -73,7 +74,8 @@
 | Dimintheis | Quest start and completion | SE of East Varrock bank |
 | Chef (eldest son) | Holds crest piece 1 | NE of Catherby |
 | Gem Trader (second son) | Directs to crest piece 2 | Al Kharid |
-| Nobleman | Needs perfect gold items | Near gold rocks |
+| Nobleman (Avan) | Needs perfect gold ring and necklace with rubies | Near gold rocks |
+| Boot | Dwarf who points to the perfect gold | Mountain home |
 | Wizard (third son) | Poisoned, directs to Chronozon | Jolly Boar Inn, NE Varrock |
-| Chronozon | Level 139 boss, holds crest piece 3 | Wilderness Dungeon |
+| Chronozon | Level 170 boss, holds crest piece 3 | Wilderness Dungeon |
 | Hellhounds | Level 122, guard dungeon path | Dungeon near gold rocks |

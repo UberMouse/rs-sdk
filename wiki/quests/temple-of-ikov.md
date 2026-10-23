@@ -28,7 +28,6 @@
 - 1 Quest Point
 - 10,500 Ranged XP
 - 8,000 Fletching XP
-- Boots of Lightness
 - Pendant of Lucien (if siding with Lucien)
 
 ## Walkthrough
@@ -38,7 +37,7 @@
 
 ### Boots of Lightness
 
-3. Explore the dungeon and find the **Boots of Lightness** in the temple basement. These reduce your weight significantly.
+3. Explore the dungeon and pick up the **Boots of Lightness** in the temple basement. They are a ground spawn, not a quest reward: neither completion script gives them (`quest_ikov.rs2:60-76`). [server data, unverified in game 2026-10-23] They reduce your weight significantly.
 
 ### Bridge Crossing
 
@@ -51,7 +50,7 @@
 
 ### Ice Arrows
 
-7. Search the **chests** in the armoury area to collect approximately **50 ice arrows**. You will need these for the upcoming fight.
+7. Search the **chests** in the armoury area to collect approximately **50 ice arrows**; only one chest at a time holds arrows, 1 to 5 per find, then it moves (`ikov_dungeon.rs2:115-121`). [server data, unverified in game 2026-10-23] You will need these for the upcoming fight.
 
 ### Fighting Lesarkus
 

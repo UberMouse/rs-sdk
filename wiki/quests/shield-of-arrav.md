@@ -8,7 +8,7 @@
 
 ## Requirements
 
-- Another player to complete the quest (each player must join a different gang)
+- Another player: each shield half is behind a door only its gang opens (`quest_blackarmgang.rs2:17,101`) and the Curator needs both halves in one inventory (`curator.rs2:7-8`), so one account cannot finish it [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -44,10 +44,8 @@ One player must join the **Phoenix Gang** and the other must join the **Black Ar
 
 ### Completing the Quest
 
-6. Trade shield halves between the two players so each has one half.
-7. Take both halves to the **Varrock Museum** curator, **Haig Halen**. He combines them and gives each player a **certificate half**.
-8. Trade certificate halves so each player has a complete certificate.
-9. Bring the complete certificate to **King Roald** in Varrock Palace to claim the reward.
+6. One player takes both halves (trade them) to the **Varrock Museum** curator, **Haig Halen**. He keeps the shield and writes **two identical certificates** (`curator.rs2:18-20`); there are no certificate halves to trade. [server data, unverified in game 2026-10-23]
+7. Hand one certificate to the partner. Each player takes one to **King Roald** in Varrock Palace for the 600 gp (`quest_blackarmgang.rs2:118-128`). [server data, unverified in game 2026-10-23]
 
 ## Key NPCs & Locations
 

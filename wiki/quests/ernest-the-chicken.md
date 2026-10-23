@@ -12,7 +12,7 @@ None.
 
 ## Items Needed
 
-None (all items are found during the quest).
+A spade (the other items are found during the quest).
 
 ## Rewards
 
@@ -35,7 +35,7 @@ None (all items are found during the quest).
 
 ### Rubber Tubing (Compost Heap)
 
-7. Search the **compost heap** in the manor grounds to find a **key** (you may need a spade).
+7. Search the **compost heap** in the manor grounds to find a **key** (a spade is required: use it on the heap, `quest_haunted.rs2:13-20`) [server data, unverified in game 2026-10-23].
 8. Use the key on the locked door behind the staircase on the ground floor.
 9. Pick up the **rubber tubing** inside the room.
 

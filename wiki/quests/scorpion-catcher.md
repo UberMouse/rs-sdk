@@ -10,8 +10,8 @@
 
 ## Requirements
 
-- 31 Prayer
-- Completion of the **Barcrawl** miniquest
+- 31 Prayer (base level, for the monastery, `prayer_guild.rs2:28`) [server data, unverified in game 2026-10-23]
+- The **Barcrawl** is checked only at the Barbarian Outpost gate (`outpost_gate.rs2:2`); Thormac's start check is commented out (`thormac.rs2:9-17`) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 

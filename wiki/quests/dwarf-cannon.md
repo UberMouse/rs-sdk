@@ -12,10 +12,6 @@
 
 - No mandatory skill requirements
 
-### Recommended
-
-- 20 Agility (for shortcuts)
-
 ## Items Needed
 
 - None required (all items obtained during quest)
@@ -26,7 +22,7 @@
 - 750 Crafting XP
 - Ability to purchase the Dwarf Multicannon (750,000 gp)
 - Ability to craft cannonballs
-- Ammo mould
+- (no ammo mould: the commander takes it back, `lawgof2.rs2:201`; Nulodion's shop sells it afterwards, `dwarven_workshop.inv:14`) [server data, unverified in game 2026-10-23]
 
 ## Walkthrough
 
@@ -40,7 +36,7 @@
 8. Return to the dwarf camp. The commander asks you to fix the broken cannon.
 9. Repair the **cannon** in the shed by using the toolkit on it.
 10. The commander needs cannonball ammunition. Travel to **Nulodion** at South Ice Mountain.
-11. Speak to Nulodion to receive the **ammo mould** and instructions for crafting cannonballs.
+11. Speak to Nulodion to receive the **ammo mould** and notes to carry back for crafting cannonballs.
 12. Return to the commander to complete the quest.
 
 ## Key NPCs & Locations

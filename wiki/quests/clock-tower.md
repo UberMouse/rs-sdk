@@ -8,7 +8,7 @@
 
 ## Requirements
 
-- Ability to get past level 48 ogres
+- None checked by the scripts; the ogres are not a requirement [server data, unverified in game 2026-10-23]
 - Ice gloves (optional, for handling the black cog through fire)
 
 ## Items Needed
@@ -26,7 +26,7 @@
 
 2. **Enter the dungeon.** Climb down the ladder in the clock tower to access the dungeon. Colored floor bricks indicate the paths to each cog. You can only carry one cog at a time.
 
-3. **Retrieve the Red Cog.** Follow the red brick path. You will need to get past level 48 ogres. Bring the red cog back up and place it on the **1st floor (1F) pole**.
+3. **Retrieve the Red Cog.** Follow the red brick path. Ogres are on this path (their level is unchecked). Bring the red cog back up and place it on the **1st floor (1F) pole**.
 
 4. **Retrieve the White Cog.** Follow the white brick path through an area with poison rats. Bring the white cog back up and place it on the **3rd floor (3F) pole**.
 

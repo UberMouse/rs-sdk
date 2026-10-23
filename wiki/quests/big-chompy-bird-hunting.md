@@ -13,6 +13,7 @@
 ### Skill Requirements
 
 - 5 Fletching
+- 5 Crafting (making ogre arrows, `ogre_arrows.rs2:56`) [server data, unverified in game 2026-10-23]
 - 30 Cooking
 - 30 Ranged
 

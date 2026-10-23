@@ -11,6 +11,7 @@
 ## Requirements
 
 - Completion of **Death Plateau**
+- Agility 15 for the rocks on the way (`quest_troll.rs2:7`; boostable) [server data, unverified in game 2026-10-23]
 - Ability to survive combat against trolls (max hit 42)
 
 ## Items Needed
@@ -31,7 +32,7 @@
 
 1. Speak to **Denulth** in Burthorpe to start the quest.
 2. Traverse Death Plateau using the path established in the prerequisite quest.
-3. At the Arena Gate, fight **Dad** (a troll). He hits hard but is manageable with Protect from Melee.
+3. At the Arena Gate, fight **Dad** (a troll). He hits hard but is manageable with Protect from Melee. Dad (level 101) is beaten down to under 20 HP, not killed (`quest_troll.npc:548`). [server data, unverified in game 2026-10-23]
 4. After defeating Dad, navigate through the cave system past several aggressive trolls.
 5. Cross the troll marketplace area. The trolls here are named after items they have eaten.
 6. Defeat the **Troll General**. He can be safespotted from behind rocks in the room.

@@ -8,9 +8,9 @@
 
 ## Requirements
 
-- Completion of Priest in Peril
-- Completion of The Restless Ghost
-- 18 Crafting
+- Priest in Peril at stage 61 (one more talk with Drezel after completion) and the Wolfbane dagger held (`drezel.rs2:14-18`) [server data, unverified in game 2026-10-23]
+- Ghostspeak amulet worn; The Restless Ghost only needs to be started, its completion is never checked (`father_urhney.rs2:5,50`) [server data, unverified in game 2026-10-23]
+- 18 Crafting, needed mid-quest for the sickle (`jewellery.rs2:307`) [server data, unverified in game 2026-10-23]
 - Ability to defeat a level 30 monster
 
 ## Items Needed

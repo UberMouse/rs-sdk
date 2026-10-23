@@ -8,7 +8,8 @@
 
 ## Requirements
 
-- Completion of Plague City
+- Plague City complete: Elena's house door opens only at its completion (`doors.rs2:1-5`, area_ardougne_east) [server data, unverified in game 2026-10-23]
+- Do not start Biohazard before Plague City's digging: the mud patch stays packed once Biohazard has started ([Plague City](plague-city.md)) [server data, unverified in game 2026-10-23]
 
 ## Items Needed
 
@@ -27,11 +28,11 @@
 3. Use the pigeons at the **watchtower** near the Mourner headquarters to create a distraction.
 4. Obtain a **rotten apple** and use it to contaminate the **cauldron** inside the Mourner headquarters, poisoning the Mourners' food.
 5. Get a **doctor's gown** from **Nurse Sarah** at the church.
-6. Wearing the doctor's gown, enter the **Mourner headquarters**. Fight **2 Mourners** inside and retrieve Elena's **distillator**.
+6. Wearing the doctor's gown, enter the **Mourner headquarters**. Kill the one **sick mourner** (level 13, `mourner.npc:145`); he drops the gate key (`mourner.rs2:75-78`). Retrieve Elena's **distillator**. [server data, unverified in game 2026-10-23]
 7. Return the distillator to **Elena**. She prepares sample **vials** for you to deliver.
 8. Travel to the **Chemist** west of **Rimmington** and obtain **touch paper** for the analysis.
-9. Give the vials to **three children** in East Ardougne. They will smuggle the samples past the Varrock guards for you since the guards will search adult travellers.
-10. Travel to Varrock and collect the vials from the children at the **Dancing Donkey Inn**.
+9. Give one vial each to the three errand boys **Chancy**, **Hops** and **DeVinci** in Rimmington (not Ardougne; `chancy.rs2`, `hops.rs2`, `devinci.rs2`). They carry them past the Varrock guards.
+10. Travel to Varrock and collect the vials from the three at the **Dancing Donkey Inn** (`chancy.rs2:29`). [server data, unverified in game 2026-10-23]
 11. Wearing priestly attire, visit **Guidor** in Varrock to have the samples analysed.
 12. Guidor reveals that the **plague is fabricated** -- the samples show no trace of disease.
 13. Report this discovery to **Elena** in Ardougne.

@@ -13,13 +13,13 @@
 
 ## Items Needed
 
-- Redberry pie (or pie to befriend Thurgo)
+- Redberry pie for Thurgo
 - 2 Iron bars
 
 ## Rewards
 
-- 12,725 Smithing XP
-- Blurite sword
+- 12,725 Smithing XP (`quest_squire.rs2:223`) [server data, unverified in game 2026-10-23]
+- No sword: the Squire takes the blurite sword when you hand it over (`quest_squire.rs2:100`) [server data, unverified in game 2026-10-23]
 
 ## Walkthrough
 
