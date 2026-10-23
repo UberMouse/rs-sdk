@@ -122,15 +122,21 @@ const sameDoor = (a: DoorInfo, b: DoorInfo) => a.level === b.level && a.x === b.
 const isMasked = (d: DoorInfo) => MASKED.some(e => sameDoor(e, d));
 const maskedAt = (level: number, x: number, z: number) => MASKED.find(d => d.level === level && d.x === x && d.z === z);
 
+/** A door of the SDK's index or one of MASKED stands on the tile. */
+const doorKnownAt = (level: number, x: number, z: number): boolean =>
+    maskedAt(level, x, z) !== undefined || getDoorAt(level, x, z) !== undefined;
+
 /**
- * The route with a waypoint on each masked door's tile (a web, a diagonal door) and on the tile before it. A
- * route's waypoints are only where it turns, so a door in the middle of a straight run has none near it, and
- * the walk (which opens a door when a waypoint is beside it) would walk into the closed door before trying it.
+ * The route with a waypoint on each door's tile (any door of the SDK's index, a web, a diagonal door) and on the
+ * tile before it. A route's waypoints are only where it turns, so a door in the middle of a straight run has none
+ * near it, and the walk (which opens a door when a waypoint is beside it) would send one long leg through the
+ * closed door: the client finds no route to a destination behind it and does not move. The first segment runs
+ * from `from`, the bot's own tile. Example: the Varrock square alley's double door at (3212..3213, 3470).
  */
-export function withDoorStops(waypoints: Waypoint[]): Waypoint[] {
+export function withDoorStops(waypoints: Waypoint[], from?: Waypoint): Waypoint[] {
     const out: Waypoint[] = [];
     for (const [i, b] of waypoints.entries()) {
-        const a = waypoints[i - 1];
+        const a = i === 0 ? from : waypoints[i - 1];
         if (a && a.level === b.level) {
             const n = Math.max(Math.abs(b.x - a.x), Math.abs(b.z - a.z));
             const at = (k: number): Waypoint => ({
@@ -140,7 +146,7 @@ export function withDoorStops(waypoints: Waypoint[]): Waypoint[] {
             });
             for (let k = 1; k <= n; k++) {
                 const t = at(k);
-                if (!maskedAt(t.level, t.x, t.z)) continue;
+                if (!doorKnownAt(t.level, t.x, t.z)) continue;
                 // Before it, then on it; the segment's own ends are waypoints already.
                 const prev = at(k - 1);
                 const last = out.at(-1);
@@ -216,7 +222,7 @@ export const collisionPaths: Pathfinder = {
                     error: `Destination (${to.x}, ${to.z}) is unreachable — path ends ${remaining} tiles away at (${last.x}, ${last.z}). The target may be underground or on a different plane that requires a ladder/stairs to access.`,
                 };
         }
-        return { success: true, waypoints: withDoorStops(waypoints), reachedDestination };
+        return { success: true, waypoints: withDoorStops(waypoints, from), reachedDestination };
     },
     doorsAlong: waypoints => {
         // The door index fills on load, which findDoorsAlongPath alone does not trigger.

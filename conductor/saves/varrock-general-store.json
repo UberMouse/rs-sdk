@@ -1,0 +1,54 @@
+{
+    "name": "varrock-general-store",
+    "purpose": "Combat ~50 with a Lobster at the Varrock general store door (3219,3415); fresh login there. Walk to the palace (King Roald 3222,3476) through the west-square alley (3213,3438).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3219,
+                "z": 3415,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "028afef8e290b0e0e6dc436c6db6d1e40c6bf90c",
+    "createdAt": "2026-10-23T22:25:19.990Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3219,
+            "z": 3415,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

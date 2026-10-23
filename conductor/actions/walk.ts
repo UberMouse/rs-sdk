@@ -394,6 +394,39 @@ export const MAX_FALLS = 3;
 /** A leg's failures that end the walk however optional its hop: the budget spent, a web, no player. */
 const FINAL_LEG: ReadonlySet<string> = new Set(['timeout', 'no-time', 'no-blade', 'no-player']);
 
+/** Cycles of the same hops, each ending the same way, after which a walk ends `stuck` (the essence-mine hop loop). */
+export const HOP_REPEAT_LIMIT = 4;
+/** The longest hop cycle looked for: a hop and its way back, or a hop, a landing fix and the way back. */
+const HOP_CYCLE_MAX = 3;
+/** The hops a run has made since a walk last arrived, as `name from -> to` (or `name failed: reason`), newest last. */
+const hopHistory = new WeakMap<object, string[]>();
+
+/**
+ * Notes a hop the walk made (or failed) in the run's history, and says the hop sequence it is repeating when the
+ * last HOP_REPEAT_LIMIT cycles of 1 to HOP_CYCLE_MAX hops are the same, each hop ending as before: a walk that
+ * keeps making the same hops and never arrives (which no timeout or failure streak stops, each walk ending
+ * differently or advancing). A run of a task is one ctx, so the history spans the walks of a bank or travel loop.
+ */
+function repeatedHops(ctx: ActionContext, entry: string): string | undefined {
+    const h = hopHistory.get(ctx) ?? [];
+    hopHistory.set(ctx, h);
+    h.push(entry);
+    if (h.length > HOP_CYCLE_MAX * HOP_REPEAT_LIMIT) h.shift();
+    for (let period = 1; period <= HOP_CYCLE_MAX; period++) {
+        const n = period * HOP_REPEAT_LIMIT;
+        if (h.length < n) continue;
+        const tail = h.slice(-n);
+        if (tail.every((e, i) => e === tail[i % period])) return tail.slice(0, period).join('; ');
+    }
+    return undefined;
+}
+
+const stuckOnHops = (cycle: string): WalkResult => ({
+    ok: false,
+    reason: 'stuck',
+    message: `Repeating the same hops ${HOP_REPEAT_LIMIT} times without arriving: ${cycle}`,
+});
+
 /** Gives up on a move or a bank detour for the rest of the walk: the move avoided, the detour's objs absent. */
 function giveUp(h: Extract<Hop, { kind: 'cross' | 'bank' }>, rec: Learned): void {
     if (h.kind === 'cross') rec.avoid.add(moveKey(h.move));
@@ -490,8 +523,10 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         p0 &&
         planeOf(p0.level, p0.worldX, p0.worldZ) === planeOf(dest.level, dest.x, dest.z) &&
         chebyshev(posOf(p0), dest) <= tolerance
-    )
+    ) {
+        hopHistory.delete(ctx);
         return { ok: true, message: 'Already at destination' };
+    }
     // On its own level a walk names the destination as walkOnPlane does.
     const own = p0?.level === dest.level ? `(${dest.x}, ${dest.z})` : what;
     const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, own);
@@ -511,7 +546,10 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             };
         const here = { level: p.level, x: p.worldX, z: p.worldZ };
         const samePlane = planeOf(here.level, here.x, here.z) === planeOf(dest.level, dest.x, dest.z);
-        if (samePlane && chebyshev(here, dest) <= tolerance) return { ok: true, message: 'Arrived' };
+        if (samePlane && chebyshev(here, dest) <= tolerance) {
+            hopHistory.delete(ctx);
+            return { ok: true, message: 'Arrived' };
+        }
         const way = planRoute(ctx, s, dest, tolerance, rec);
         const next = firstHop(way?.hops);
         if (!next) {
@@ -525,7 +563,10 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                     maxTicks: deadline - s.tick,
                     reserveTicks: reserve,
                 });
-                if (last.ok) return last;
+                if (last.ok) {
+                    hopHistory.delete(ctx);
+                    return last;
+                }
                 // A fallback after the graph's way was given up on says why it was, as cross-failed would.
                 const why = !way && rec.failed ? `; no way left to ${what}: ${rec.failed}` : '';
                 return failedLeg({ ...last, message: last.message + why }, hop > 0);
@@ -548,6 +589,11 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         if (!walked.ok) {
             if (next.kind === 'climb' || FINAL_LEG.has(walked.reason))
                 return failedLeg(walked, progressed, `walking to the ${name}: `);
+            const again = repeatedHops(
+                ctx,
+                `${name} failed at (${here.x}, ${here.z}) level ${here.level}: ${walked.reason}`,
+            );
+            if (again) return stuckOnHops(again);
             giveUp(next, rec);
             rec.failed = `walking to the ${name}: ${walked.message}`;
             rec.unreached = true;
@@ -559,6 +605,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             const message = `No time for the ${name}: the step has ${left} ticks left and needs ${hopTicks(next) + reserve}`;
             return failedLeg({ ok: false, reason: 'no-time', message }, progressed);
         }
+        let crossed = true; // climb and bank hops always count; a failed bank hop is still recorded
         if (next.kind === 'climb') {
             const c = next.connector;
             if (c.hazard) yield* log(`walk: WARNING at the ${c.name}: ${c.hazard}`);
@@ -567,10 +614,16 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             yield* log(`walk: climbed ${c.direction} the ${c.name}`);
         } else if (next.kind === 'bank') yield* bankHop(ctx, next, rec);
         else
-            yield* crossHop(ctx, next, rec, deadline, () => {
+            crossed = yield* crossHop(ctx, next, rec, deadline, () => {
                 const again = firstHop(planRoute(ctx, ctx.state(), dest, tolerance, rec)?.hops);
                 return again?.kind === 'cross' && moveKey(again.move) === moveKey(next.move);
             });
+        // A move that fell or was refused has its own limits (MAX_FALLS, giving the move up).
+        if (!crossed) continue;
+        const after = ctx.state().player;
+        const landed = after ? `(${after.worldX}, ${after.worldZ}) level ${after.level}` : 'nowhere';
+        const cycle = repeatedHops(ctx, `${name} from (${here.x}, ${here.z}) level ${here.level} to ${landed}`);
+        if (cycle) return stuckOnHops(cycle);
     }
     const why = rec.failed ? `; the last hop that failed: ${rec.failed}` : '';
     return { ok: false, reason: 'gave-up', message: `Could not reach ${what} in ${MAX_WALK_HOPS} hops${why}` };
@@ -581,7 +634,8 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
  * the wizard it came in by (an npc the graph's came-from requirements name), a move refused (given up on for the rest
  * of the walk). A failed roll is tried again where it leaves the bot while `stillBest` holds and another attempt ends
  * by `deadline`; one that leaves it elsewhere (or is not tried again) is planned again from there, until the move has
- * fallen MAX_FALLS times on the walk, when it is given up on and named as the hop that failed.
+ * fallen MAX_FALLS times on the walk, when it is given up on and named as the hop that failed. Returns whether the
+ * move was made.
  */
 function* crossHop(
     ctx: ActionContext,
@@ -589,7 +643,7 @@ function* crossHop(
     rec: Learned,
     deadline: number,
     stillBest: () => boolean,
-): Op<void> {
+): Op<boolean> {
     const m = h.move;
     const name = hopName(h);
     if (isGnomeGate(m)) {
@@ -600,7 +654,7 @@ function* crossHop(
             rec.failed = `${name}: ${r.message}`;
             yield* log(`walk: ${rec.failed}; planning without it`);
         }
-        return;
+        return r.ok;
     }
     const r = yield* cross(ctx, m, { deadline, retry: () => !m.roll?.fail.to && stillBest() });
     if (r.ok) {
@@ -610,29 +664,30 @@ function* crossHop(
             rec.met.add(came);
         }
         yield* log(`walk: crossed ${name}${r.attempts > 1 ? ` in ${r.attempts} attempts` : ''}`);
-        return;
+        return true;
     }
     if (r.reason === 'fell') {
         // A fall the walk's budget left no time to try again ends in its timeout, not as the move's.
         if (!retryFits(m, ctx.state().tick, deadline)) {
             yield* log(`walk: ${r.message}; no time to try it again`);
-            return;
+            return false;
         }
         const key = moveKey(m);
         const falls = (rec.falls.get(key) ?? 0) + 1;
         rec.falls.set(key, falls);
         if (falls < MAX_FALLS) {
             yield* log(`walk: ${r.message}; planning again from here`);
-            return;
+            return false;
         }
         rec.avoid.add(key);
         rec.failed = `${r.message} (fell ${falls} times)`;
         yield* log(`walk: fell: ${rec.failed}; planning without it`);
-        return;
+        return false;
     }
     rec.avoid.add(moveKey(m));
     rec.failed = r.message;
     yield* log(`walk: ${r.reason}: ${r.message}; planning without it`);
+    return false;
 }
 
 /**
