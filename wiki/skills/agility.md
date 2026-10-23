@@ -33,6 +33,7 @@ Gotchas: [v 2026-10-11 conductor2w3 local]
 | Barbarian Outpost course | (2548, 3555) yard | 35 | `agility` task `{course:"barbarian"}`, 3487 XP a lap, 74-76 ticks a clean lap; 67,200 XP in 10 min (Agility 41 to 63, 19 laps, 3 falls, no food eaten) | 404k (local) | 2026-10-16 conductor2w4 local |
 | Wilderness agility course | (2998, 3915) door | 52 | `agility` task `{course:"wilderness", minFood:3}`, 15,035 XP a lap, 115 ticks a clean lap; 180,045 XP in 10 min (Agility 55 to 77, 11 laps, 4 falls, 1 Salmon eaten). In the Wilderness: PvP, wolves, skeletons | 1.09M (local) | 2026-10-16 conductor2w4 local |
 | Gnome Stronghold course, Agility 41-52 | (2480, 3428) | 41 | plan `conductor/plans/agility-52.ts`: 41 to 52 (+20,462 XP) in 564 s total; 10 laps in 290 s, ~29 s and ~2.0k XP per lap | ~254k (laps only, local) | 2026-10-16 conductor2 local |
+| Gnome Stronghold course, Agility 1-52 from Ardougne | (2480, 3428) | 1 | plan `conductor/plans/agility-from-ardougne.ts`: Ardougne market (2650, 3295) -> course by `travel` 107 s, no attacks; laps take Agility 1 to 52 (+37,762 XP) in 550 s; 657 s total | ~247k (laps only, local) | 2026-10-23 conductor3 local |
 
 | Obstacle | XP | Failable |
 |----------|-----|---------|

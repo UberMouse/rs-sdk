@@ -81,6 +81,10 @@ if (dist > 5) {
 
 - Varrock East bank (3254, 3420) -> course start (2474, 3436): `travel` to {x:2474, z:3436}, tolerance 3, no waypoints. 250 s; the task's `gnome-gate` step opens the Stronghold gate itself (a few dialogs, suspended by the dialog guard). Arrived (2473, 3436) with HP 19/23 at combat 25; no food eaten, no combat logged, the travel log records no damage event. White-wolf trouble is not confirmed or ruled out by one trip (HP was 19/23 on arrival, cause not logged). Repeat at combat ~50: 245 s, no attack, 16 fish carried and none eaten. [v 2026-10-16 conductor2 local]
 
+### Ardougne, Gnome Stronghold and Catherby legs
+
+- Ardougne market (2650, 3295) -> Gnome Stronghold course (2474, 3436) by `travel`: 107 s, no attacks. Stronghold -> Catherby by `travel` via waypoints (2650,3295), (2725,3485), (2800,3440): 220 s, no attacks (stays west of White Wolf Mountain's wolves, see `learnings/hazards.md`). [v 2026-10-23 conductor3 local]
+
 ### Smithing loop legs (avoid the Varrock stone circle)
 
 - Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).
