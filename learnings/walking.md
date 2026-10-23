@@ -92,6 +92,8 @@ if (dist > 5) {
 
 - Ardougne market (2650, 3295) -> Gnome Stronghold course (2474, 3436) by `travel`: 107 s, no attacks. Stronghold -> Catherby by `travel` via waypoints (2650,3295), (2725,3485), (2800,3440): 220 s, no attacks (stays west of White Wolf Mountain's wolves, see `learnings/hazards.md`). [v 2026-10-23 conductor3 local]
 
+- Camelot first floor (Lancelot's, L1) -> Catherby: the walk stops 54 tiles short at (2767, 3497). `travel` to the level-0 courtyard (2762, 3508) first, then on. See [Merlin's Crystal](../wiki/quests/merlins-crystal.md). [v 2026-10-23 questw3 local]
+
 ### Smithing loop legs (avoid the Varrock stone circle)
 
 - Mine -> Lumbridge furnace (3225, 3256) is not a travel leg: the smithing task's `smelt` phase walks it itself (area at the furnace).
