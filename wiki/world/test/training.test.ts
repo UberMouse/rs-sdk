@@ -478,6 +478,15 @@ describe('a kill method (a gather on an attack rate)', () => {
             '  - **Supplies/hr** at 99: none; Food/hr uncalibrated: no worker run has checked the damage these kills ' +
                 'take (wiki/world/methods.ts CALIBRATIONS), so the XP/hr leaves out food trips.',
         ]);
+        // A kill that takes no damage has nothing to gate.
+        const harmless: Family = { ...fighting, model: (...a) => ({ ...fighting.model(...a), damage: undefined }) };
+        const safe = new Map(
+            renderTraining(
+                { ...world, sites: [...world.sites, rats], methods: [kill] },
+                { ...killData([]), model: { ...killData([]).model, families: new Map([['fighting', harmless]]) } },
+            ),
+        ).get('wiki/training/attack.md')!;
+        expect(safe).toContain('  - **Supplies/hr** at 99: none.\n');
         // A page with no kill has no kills/hr column.
         expect(rendered.get('wiki/training/woodcutting.md')).toBeUndefined();
         expect(new Map(renderTraining(world, data)).get('wiki/training/woodcutting.md')).not.toContain('kills/hr');

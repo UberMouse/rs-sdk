@@ -383,7 +383,7 @@ Prayer (by burying). Where it differs from phase 3b:
   so a combat record banks for food at it; `WORLD_FORMAT` is 21.
 - **The food gate.** A kill eats food only for an npc in `CALIBRATIONS` (`methods.ts`; `CALIBRATED_NPCS`): until a
   worker run has checked the model's damage on it, its cycle eats nothing, its trips end on a full inventory, and the
-  pages say Food/hr uncalibrated. A record is written when `killFigures` (`model/method.ts`) at the runs' profile is
+  pages say Food/hr uncalibrated where the npc can hit (the chicken's max hit is 0). A record is written when `killFigures` (`model/method.ts`) at the runs' profile is
   within `CALIBRATION_TOLERANCE` (25%) of the runs' damage and fight ticks a kill (first swing to killing swing);
   the whole kill's ticks and the gap between kills are reported only, as the gap is the combat task's overhead, not the
   floor's (the user's decision of 2026-10-23). The runs are `conductor/test/integration/smoke/combat-calibration.itest.ts`,

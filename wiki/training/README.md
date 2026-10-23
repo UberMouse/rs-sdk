@@ -39,7 +39,7 @@ Below the table, each method has its name, plans and notes, then:
 - **Requires**: what a walk from the Lumbridge spawn needs to get to every site of the method (as the place pages read Requires; `none` for nothing); each skill at its own lowest level, the others at 99, and the level every skill needs at once (Min); the tools (an axe or pickaxe is the best usable at the level, wielded, its Attack level not checked); the gear it wears (a kill's weapon and armour); the food it eats.
 - **Sink**: drop, bank, or a process step then bank, with the run ticks of each leg.
 - **Hazard**, a kill's: the npcs there that hunt players and up to which combat level, the largest max hit among them, whether it is multiway or in the Wilderness, and the target's retreat HP, which the floor leaves out.
-- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99. A kill eats food only once a worker run has checked the model's damage on its npc (wiki/world/methods.ts CALIBRATIONS); until then it says Food/hr uncalibrated, and its XP/hr leaves out food trips.
+- **Supplies/hr**: bait, feathers and food used an hour, and their value, at 99. A kill eats food only once a worker run has checked the model's damage on its npc (wiki/world/methods.ts CALIBRATIONS); until then, where the npc can hit, it says Food/hr uncalibrated, and its XP/hr leaves out food trips.
 - **Measured**: each figure with the bot that ran it, the date, the axe or pickaxe it used, if any, and the objs it wore, if recorded.
 
 ## Adding a method

@@ -15,13 +15,13 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Requires**: Reach: none. Levels: Attack 1, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 1. Tools: none. Gear: Bronze scimitar.
   - **Sink**: drop.
   - **Hazard**: no npc there hunts players; the npcs there hit for at most 0; single-way. The target retreats at 1 HP and stops hitting back; the floor prices the kill as if it fought on.
-  - **Supplies/hr** at 99: none; Food/hr uncalibrated: no worker run has checked the damage these kills take (wiki/world/methods.ts CALIBRATIONS), so the XP/hr leaves out food trips.
+  - **Supplies/hr** at 99: none.
 - `hill-giants-edgeville`: Hill giants in the Edgeville dungeon, big bones buried, food from Edgeville. Plans: hill-giants, giants-att-def. The plans eat trout and salmon; the record names trout, the smaller heal of the two. A rune scimitar (Attack 40) is the next weapon tier. Unmeasured: the plans' runs (conductor2, 2026-10-16) fought on the food they started with and never banked, so none is a whole cycle; test/methods.real.test.ts holds the fight-only floor above them.
   - **Requires**: Reach: none. Levels: Attack 20, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 20. Tools: none. Gear: Mithril scimitar, Iron kiteshield. Food: Trout.
   - **Sink**: bank at [Edgeville bank (Edgeville)](../places/edgeville-bank.md) `bank:edgeville-bank:0`; legs 105 + 105 run ticks.
   - **Hazard**: Giant hunts players of combat 56 and below; the npcs there hit for at most 4; single-way.
   - **Supplies/hr** at 99: 41.3 Trout; 826 gp.
-- `moss-giants-varrock-sewers`: Moss giants in the Varrock Sewers, big bones buried, food from Varrock East. The four spawns of the sewers' west pockets. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.
+- `moss-giants-varrock-sewers`: Moss giants in the Varrock Sewers, big bones buried, food from Varrock East. The four spawns of the sewers' west pocket. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.
   - **Requires**: Reach: none. Levels: Attack 20, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 20. Tools: none. Gear: Mithril scimitar, Iron kiteshield. Food: Trout.
   - **Sink**: bank at [Varrock East bank (Varrock)](../places/varrock-east-bank.md) `bank:varrock-east-bank:0`; legs 134 + 134 run ticks.
   - **Hazard**: Deadly red spider hunts players of combat 68 and below; Moss giant hunts players of combat 84 and below; the npcs there hit for at most 6; multiway.

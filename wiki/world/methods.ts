@@ -604,7 +604,7 @@ export const METHODS: MethodDef[] = [
         food: 'trout',
         loot: { bones: 'bury' },
         sink: { mode: 'bank' },
-        notes: "The four spawns of the sewers' west pockets. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.",
+        notes: "The four spawns of the sewers' west pocket. No promoted plan: a draft (moss-giants, 2026-10-16) named the hill giants' gear and food, and its first run failed on the path in.",
     },
     {
         id: 'chickens-lumbridge',

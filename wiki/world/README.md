@@ -302,8 +302,8 @@ What a record can say, beyond a gather and a sink (the code is the reference; ea
 - **The food gate.** A kill eats food only once its npc has a record in `CALIBRATIONS` (`methods.ts`): worker runs whose
   damage and fight ticks a kill agree with `killFigures` within `CALIBRATION_TOLERANCE` (25%), from
   `conductor/test/integration/smoke/combat-calibration.itest.ts` and `conductor/tools/combat-ledger.ts`. Until then it
-  eats nothing, its trips end on a full inventory, and its page says Food/hr uncalibrated: its XP/hr leaves out food
-  trips. `test/combat-method.real.test.ts` holds each record to the model.
+  eats nothing, its trips end on a full inventory, and where the npc can hit its page says Food/hr uncalibrated: its XP/hr
+  leaves out food trips. `test/combat-method.real.test.ts` holds each record to the model.
 - **Worn items** are `Profile.worn` (obj config names: a staff of fire, a ring of forging), which a family reads;
   `Measured.worn` records what a measured run wore.
 - **Use gates.** A site's reach also carries what using its feature asks (`USE_GATES` in `gates.ts`: Doric's anvil
