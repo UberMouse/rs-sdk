@@ -81,8 +81,8 @@ quest page for its own requirements before planning it. Status is conductor3's.
 | Baby blue dragons (Prayer 60-99) | dusty key: kill the jailer (combat 47, 2933,9693, always drops the jail key, `jailer.rs2:10`), open Velrak's cell, and he gives it; aggressive black knights nearby | later | - |
 | Anti-dragon shield | Dragon Slayer started: the Guildmaster inside the Champions' Guild, whose door needs 32 QP (`champions_guild.rs2:2`; Oziach has no QP check) | later | - |
 | 32 QP (rune sword, Dragon Slayer) | route quests (RG, RM, Imp, Waterfall, PiP, Druidic, Merlin, Grail) = 17 QP, plus Romeo & Juliet 5, Goblin Diplomacy 5, Ernest the Chicken 4, Cook's Assistant 1 = 32 exactly (no skill checks, goblins L2-5 only); spares Sheep Shearer, Doric's Quest. Plans being built in quest-library | todo | `wiki/quests/README.md` |
-| Smithing 1 -> 82 | The Knight's Sword (no fight) | todo, from scripts | `wiki/quests/README.md` |
-| Mining 1 -> 85, Herblore 28 -> 57 | Digsite | todo, from scripts | `wiki/quests/README.md` |
+| Smithing 1 -> 82 | The Knight's Sword: Mining 10 only (blurite, `mining.rs2:58`); reward Smithing 318,125 (`quest_squire.rs2:223`); redberry pie, 2 iron bars, pickaxe; ice warriors (L57) near the blurite route. Mine to 10 just before it, do it before any Smithing training | todo, from scripts; plan queued in quest-library | `wiki/quests/README.md` |
+| Mining 1 -> 85, Herblore 28 -> 57 | Digsite (members): Thieving 25, Agility 10, Herblore 10, checked mid-quest and boostable; reward Mining 382,500 + Herblore 50,000 (`quest_itexam.rs2:41-42`), no fights. So Druidic Ritual first; do it before any Mining training past 10 | todo, from scripts; plan queued after Knight's Sword | `wiki/quests/README.md` |
 | Ranged 79, Fletching 75 | Temple of Ikov | todo, from scripts | `wiki/quests/README.md` |
 | Morytania, Nature Spirit | Priest in Peril stage 61: one more talk to Drezel after completion (`holy_barrier.rs2`); the PiP plan includes it | todo | `wiki/quests/README.md` |
 
