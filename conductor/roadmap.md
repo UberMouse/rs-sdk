@@ -44,9 +44,10 @@ chaos druids + Herblore + melee + Prayer.
 2. Tools and food: steel axe (Bob, Lumbridge, 200; the best axe any shop sells), fly rod (5); Fishing net 1-20, lure
    to ~50 with Cooking alongside; ~40 cooked trout/salmon banked (food for thieving and the Wilderness course): done
    (tools-food, Fishing 68, Cooking 71, 50+ fish banked, 15 min).
-3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47), Rune Mysteries (essence), Imp Catcher (Magic 44,
+3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47) and Rune Mysteries (essence) done 07:06; Imp Catcher (Magic 44,
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
-4. Thieving 40-55 Ardougne guards, 55-99 knights; stay on knights for the gp (166k/h at 99) the route needs: adamant
+4. Thieving 40-55 guards (Falador: guard-thieve, measured 93% of floor; Ardougne rates the same), 55-99 knights (in
+   progress: to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
 5. Agility: gnome course 1-52, Wilderness course 52-99.
 6. Gathering 99s with their pairings. Melee: mithril scimitar (Zeke, 1,040), then the rune sword once at 32 QP. No
@@ -62,9 +63,9 @@ quest page for its own requirements before planning it. Status is conductor3's.
 
 | Unlock | Needs | Status | Page |
 |---|---|---|---|
-| Runecraft (essence mine) | Rune Mysteries (plan rune-mysteries) | todo | `wiki/quests/rune-mysteries.md` |
+| Runecraft (essence mine) | Rune Mysteries (plan rune-mysteries) | done (conductor3 2026-10-23, 342 s) | `wiki/quests/rune-mysteries.md` |
 | Herblore | nothing: identify and brew check only members + level (worker conductor3w5, 2026-10-23); Druidic Ritual only for its XP lump | open | `wiki/quests/druidic-ritual.md` |
-| Prayer 47 | Restless Ghost (plan restless-ghost, ~5 min) | todo | `wiki/quests/` |
+| Prayer 47 | Restless Ghost (plan restless-ghost, ~5 min) | done (conductor3 2026-10-23: Prayer 20 -> 49, 359 s) | `wiki/quests/` |
 | Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | todo | `wiki/quests/` |
 | Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
 | Defence 85 + Prayer 80 | Holy Grail (Merlin's Crystal first) | later | `wiki/quests/` |
@@ -164,7 +165,7 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 | Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
 | Attack / Strength / Defence | 21/20/20 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens) | no scimitar hunt: mithril scimitar (Zeke), then the rune sword at 32 QP (Str 1,083k at 60 vs 1,098k for the rune scimitar); chaos druids for 50+ (herbs) |
 | Hitpoints | 23 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
-| Prayer | 20 | Restless Ghost 47 -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | ~3 after melee | - | **long pole** |
+| Prayer | 49 | Restless Ghost 47 (done: 20 -> 49 in 359 s) -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | ~3 after melee | - | **long pole** |
 | Ranged | 1 | willow shortbow + mithril arrows on giants (by hand: 300k at 20 -> 1.48M at 99), ~72k gp arrows, 80% picked up | 0.81 | - | |
 
 Model gaps the research found (fix where a route row leans on them): no walk between a site's features is priced
