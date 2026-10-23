@@ -7,6 +7,7 @@ import {
     optionsOf,
     targetName,
     useOn,
+    useOnNpc,
 } from '../actions/interaction';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, ticks } from '../core/op';
@@ -72,7 +73,7 @@ const Params = z
          */
         unreachable: z.boolean().default(false),
         /**
-         * Use an inventory item on the loc instead of sending an option: `item` is a name regex, or `{ id }` for
+         * Use an inventory item on the loc or NPC instead of sending an option: `item` is a name regex, or `{ id }` for
          * one exact item (when several share a name). Judged by the effects below; a use the server discarded
          * (no feedback at all) is sent again, up to FAIL_LIMIT tries, but one that got a message or no effect is not.
          */
@@ -86,7 +87,7 @@ const Params = z
         minFood: z.number().int().min(0).default(WILDERNESS_MIN_FOOD),
     })
     .refine(p => (p.option === undefined) !== (p.use === undefined), 'give an option, or a use (not both)')
-    .refine(p => p.use === undefined || p.target === 'loc', 'a use works on a loc')
+    .refine(p => p.use === undefined || p.target === 'loc' || p.target === 'npc', 'a use works on a loc or an NPC')
     .refine(p => p.tile === undefined || p.target !== 'item', 'a tile picks a loc or an NPC, not an inventory item')
     .refine(
         p => !p.unreachable || (p.at !== undefined && p.target !== 'item'),
@@ -94,7 +95,14 @@ const Params = z
     );
 
 type InteractParams = z.infer<typeof Params>;
-type Ctx = TaskContext<InteractParams, object>;
+interface Memory {
+    /**
+     * Indexes of NPCs a use was sent to that the server discarded (per run): the retry takes another.
+     * When every match is refused the choice falls back to the nearest one. Option interactions never record here.
+     */
+    refusedNpcs: number[];
+}
+type Ctx = TaskContext<InteractParams, Memory>;
 
 const byDistance = <T extends { distance: number }>(xs: T[]) => xs.sort((a, b) => a.distance - b.distance);
 
@@ -138,8 +146,8 @@ export default defineTask({
         '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
         "(one pillar of six, a crate beside plain crates; a loc's tile is its south-west corner); `unreachable: true` (needs `at`) also takes a loc or NPC the client cannot route to " +
         'and sends the op from the stand tile, the server owning the reach check (swim to a rock, throw a rope across water); ' +
-        '`use` {item: name regex, or {id}} instead of `option` (loc targets) uses that inventory item on the loc ' +
-        '(a key on a door, a rope on a rock, a rune on a pillar); it is not re-sent after a message or no effect, only after a discarded op. Done once the game shows an effect ' +
+        '`use` {item: name regex, or {id}} instead of `option` (loc or NPC targets) uses that inventory item on the loc or NPC ' +
+        '(a key on a door, a rope on a rock, a rune on a pillar, an empty bucket on a cow); a use is re-sent only after a discarded op (on another match for an NPC), never after a message or no effect; without `expect` any inventory change ends the use as done, so pass `expect` (e.g. "you milk the cow") when the exact outcome matters. Done once the game shows an effect ' +
         '(a dialog or interface opened, the inventory or worn items changed, an animation, the loc changed, the player moved by the game: a teleport, swim, door pass-through, gangplank or whistle; a bare game message only when nothing else shows); after a use, an unreachable op or a move the game made it waits for the world to settle (position, floor and animation unchanged for 3 ticks) before it ends, so a rope throw ends once the bot has landed; it waits up to 16 ticks for the bot to stop moving, and a run that hits that cap says so in the effect; optional `expect` ' +
         '(regex) makes only a matching game message or dialog page count, and is the way to wait for a specific later message. It answers no dialog it opens (use `talk` to converse). Refuses the destructive options ' +
         '(Drop, Destroy, Release, Empty) on an item, Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
@@ -147,6 +155,7 @@ export default defineTask({
         'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
         'E.g. {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
     params: Params,
+    memory: (): Memory => ({ refusedNpcs: [] }),
     allowWilderness: params => params.wilderness,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
@@ -166,7 +175,7 @@ export default defineTask({
     },
 
     steps: [
-        walkToSpotStep<InteractParams, object>(FAIL_LIMIT),
+        walkToSpotStep<InteractParams, Memory>(FAIL_LIMIT),
         {
             name: 'interact',
             when: () => true,
@@ -201,7 +210,10 @@ export default defineTask({
                 missing.reset();
                 const chosen = optionRx
                     ? targets.find(t => optionsOf(t).some(o => optionRx.test(o)))
-                    : targets.find(t => t.kind === 'loc');
+                    : ctx.params.target === 'npc'
+                      ? (targets.find(t => t.kind === 'npc' && !ctx.memory.refusedNpcs.includes(t.npc.index)) ??
+                        nearest)
+                      : targets.find(t => t.kind === 'loc');
                 if (!chosen) {
                     const offered = optionsOf(nearest).join(' | ') || '(none)';
                     return { fail: `no ${optionRx} option on ${targetName(nearest)}; it offers: ${offered}` };
@@ -213,11 +225,13 @@ export default defineTask({
                     settle: takeUnreachable,
                     ...(expect === undefined ? {} : { expect: matcher(expect) }),
                 };
-                // The params guarantee one of the two: a use (on a loc) or an option.
+                // The params guarantee one of the two: a use (on a loc or an NPC) or an option.
                 const attempt =
                     held && chosen.kind === 'loc'
                         ? useOn(ctx, held, chosen.loc, effects)
-                        : optionRx && interact(ctx, chosen, optionRx, effects);
+                        : held && chosen.kind === 'npc'
+                          ? useOnNpc(ctx, held, chosen.npc, effects)
+                          : optionRx && interact(ctx, chosen, optionRx, effects);
                 if (!attempt) return { fail: 'give an option or a use' };
                 const r = yield* attempt;
                 const fails = ctx.streak('interactFails');
@@ -227,6 +241,13 @@ export default defineTask({
                 }
                 yield* log(`${what} on ${name} failed (${r.reason}): ${r.message}`);
                 // Only a send that never landed is worth repeating: an option sent twice can undo itself (Open, Wear).
+                if (
+                    r.reason === 'rejected' &&
+                    held &&
+                    chosen.kind === 'npc' &&
+                    !ctx.memory.refusedNpcs.includes(chosen.npc.index)
+                )
+                    ctx.memory.refusedNpcs.push(chosen.npc.index);
                 if (r.reason !== 'send-failed' && r.reason !== 'rejected') return { fail: `${r.reason}: ${r.message}` };
                 if (fails.add() >= FAIL_LIMIT)
                     return { fail: `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})` };

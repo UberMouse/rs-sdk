@@ -170,3 +170,30 @@ test(
     },
     itestTimeout({ taskMinutes: 2 }),
 );
+
+// Cook's Assistant milking (server/content/scripts/npc/scripts/cow_milking.rs2): an empty bucket used on a Cow
+// becomes a bucket of milk, with no level check. The Lumbridge cow pasture.
+const COW_PASTURE = { x: 3253, z: 3268 };
+const EMPTY_BUCKET = 1925;
+
+test(
+    'interact uses an empty bucket on a cow and gets milk',
+    async () => {
+        await withFixtureBot(
+            { position: COW_PASTURE, inventory: [{ id: EMPTY_BUCKET, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    { target: 'npc', name: '^cow$', use: { item: '^bucket$' }, expect: 'you milk the cow' },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta?.['Bucket of milk'], detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
