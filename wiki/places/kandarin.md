@@ -56,12 +56,6 @@
 | `fire:kandarin:20` | (2802, 3503) | Fire 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `fire:kandarin:21` | (2820, 3555) | Fire 1 | no | no | - | wear Climbing boots or Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Death Plateau done or Troll Stronghold at stage 10 + 15 Agility |
 
-## [Sand pits](../services/sand-pit.md)
-
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `sand-pit:kandarin:0` | (2816, 3341) | Sand pit 1 | no | no | - | no weapons/armour (Entrana rule) |
-
 ## [Water sources](../services/water-source.md)
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
@@ -179,14 +173,13 @@
 | `tree:kandarin:78` | (2766, 3772) | [normal](../resources/tree/normal.md) 52 | no | no | - | unreached |
 | `tree:kandarin:79` | (2764, 3427) | [willow](../resources/tree/willow.md) 2, [yew](../resources/tree/yew.md) 3 | no | no | - | - |
 | `tree:kandarin:80` | (2796, 3800) | [normal](../resources/tree/normal.md) 74 | no | no | - | wear Sled + Troll Stronghold at stage 20 + 28 Agility |
-| `tree:kandarin:81` | (2816, 3338) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:82` | (2812, 3372) | [normal](../resources/tree/normal.md) 23 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:81` | (2811, 3337) | [normal](../resources/tree/normal.md) 3 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:kandarin:82` | (2812, 3372) | [normal](../resources/tree/normal.md) 21 | no | no | - | no weapons/armour (Entrana rule) |
 | `tree:kandarin:83` | (2810, 3349) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
 | `tree:kandarin:84` | (2818, 3534) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
 | `tree:kandarin:85` | (2820, 3501) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
-| `tree:kandarin:86` | (2840, 3448) | [normal](../resources/tree/normal.md) 16 | no | yes | - | - |
-| `tree:kandarin:87` | (2840, 3340) | [normal](../resources/tree/normal.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:kandarin:88` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
+| `tree:kandarin:86` | (2838, 3453) | [normal](../resources/tree/normal.md) 11 | no | yes | - | - |
+| `tree:kandarin:87` | (2846, 3463) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
 
 ## Rocks
 
@@ -210,13 +203,11 @@
 |---|---|---|---|---|---|---|
 | `fishing-spot:kandarin:0` | (2466, 3152) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | - |
 | `fishing-spot:kandarin:1` | (2508, 3506) | [Fishing spot (loc_2027)](../resources/fishing-spot/loc_2027.md) 9 | no | no | - | - |
-| `fishing-spot:kandarin:2` | (2508, 3421) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | - |
+| `fishing-spot:kandarin:2` | (2528, 3411) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 6 | no | no | - | - |
 | `fishing-spot:kandarin:3` | (2520, 3518) | [Fishing spot (loc_2027)](../resources/fishing-spot/loc_2027.md) 1 | no | no | - | - |
-| `fishing-spot:kandarin:4` | (2532, 3409) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | - |
-| `fishing-spot:kandarin:5` | (2564, 3372) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - | - |
-| `fishing-spot:kandarin:6` | (2716, 3531) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | - |
-| `fishing-spot:kandarin:7` | (2792, 3277) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - | unreached |
-| `fishing-spot:kandarin:8` | (2841, 3430) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 1, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | - |
+| `fishing-spot:kandarin:4` | (2564, 3372) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - | - |
+| `fishing-spot:kandarin:5` | (2716, 3531) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | - |
+| `fishing-spot:kandarin:6` | (2792, 3277) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - | unreached |
 
 ## Pickpocket targets
 
@@ -253,7 +244,7 @@
 | `npc:kandarin:8` | (2449, 3330) | Hobgoblin 3 | no | no | - | - |
 | `npc:kandarin:9` | (2453, 3363) | Mounted terrorbird gnome (terrorbird2) 1 | no | no | - | - |
 | `npc:kandarin:10` | (2465, 3181) | Goblin (goblin) 5, Goblin (goblin_armed) 4, Rat 5 | no | no | - | - |
-| `npc:kandarin:11` | (2478, 3303) | Khazard trooper (khazard_troop) 2, Man (dskin_w_ardoungecitizen1) 2, Rat 58, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 5, Woman (dskin_w_ardoungecitizenlady3) 2, Woman (w_ardoungecitizenlady1) 1 | no | no | - | Biohazard done |
+| `npc:kandarin:11` | (2478, 3303) | Khazard trooper (khazard_troop) 2, Man (dskin_w_ardoungecitizen1) 2, Rat 58, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 5, Woman (dskin_w_ardoungecitizenlady3) 2, Woman (w_ardoungecitizenlady1) 1 | no | no | - | - |
 | `npc:kandarin:12` | (2461, 3166) | Rat 1 | no | no | - | - |
 | `npc:kandarin:13` | (2463, 3285) | Rat 1 | no | no | - | Biohazard done |
 | `npc:kandarin:14` | (2463, 3375) | Mounted terrorbird gnome (terrorbird2) 1 | no | no | - | - |
@@ -455,18 +446,7 @@
 | `connector:kandarin:76` | (2774, 3234) L1 | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins or The Grand Tree done |
 | `connector:kandarin:77` | (2776, 3234) | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
 | `connector:kandarin:78` | (2776, 3234) L1 | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:79` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:80` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:81` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:82` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:83` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:84` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:85` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:86` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:87` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:88` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:kandarin:89` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
-| `connector:kandarin:90` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `connector:kandarin:79` | (2848, 3235) | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Areas within
 
@@ -479,7 +459,7 @@
 | [Beehives](beehives.md) | tree 1 |
 | [Camelot Castle](camelot-castle.md) | water-source 2, connector 2 |
 | [Castle Wars](castle-wars.md) | bank 1, water-source 1, tree 1, connector 12 |
-| [Catherby](catherby.md) | bank 1, shop 3, range 2, fire 1, water-source 2, tree 1, pickpocket 2, connector 12 |
+| [Catherby](catherby.md) | bank 1, shop 3, range 2, fire 1, water-source 2, tree 2, fishing-spot 1, pickpocket 2, connector 13 |
 | [Coal Trucks](coal-trucks.md) | tree 4, rock 1, npc 2 |
 | [Combat Training Camp](combat-training-camp.md) | tree 1, npc 1 |
 | [East Ardougne](east-ardougne.md) | bank 2, shop 6, furnace 1, range 2, fire 2, pottery-wheel 2, pottery-oven 1, water-source 6, altar 1, tree 17, stall 3, thieving-chest 5, pickpocket 9, npc 8, connector 66 |

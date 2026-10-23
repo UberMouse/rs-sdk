@@ -70,12 +70,9 @@ The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fishing-spot:tirannwn:0` | (2165, 3267) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:1` | (2165, 3286) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:2` | (2212, 3235) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:3` | (2215, 3248) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:4` | (2225, 3243) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:5` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:0` | (2165, 3273) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:1` | (2216, 3240) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:2` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 

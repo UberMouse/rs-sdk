@@ -331,7 +331,7 @@
 | `npc:wilderness:79` | (3181, 3850) | Red dragon 1 | no | yes | 42 | unreached |
 | `npc:wilderness:80` | (3183, 3725) | Rat 3 | yes | no | 26 | unreached |
 | `npc:wilderness:81` | (3184, 3580) | Thug 1 | yes | yes | 8 | - |
-| `npc:wilderness:82` | (3191, 3960) | Magic axe 9 | no | no | 56 | carry Lockpick + 23 Thieving |
+| `npc:wilderness:82` | (3191, 3960) | Magic axe 9 | no | no | 56 | - |
 | `npc:wilderness:83` | (3189, 3563) | Thug 1 | yes | yes | 6 | - |
 | `npc:wilderness:84` | (3190, 3570) | Thug 1 | yes | yes | 7 | - |
 | `npc:wilderness:85` | (3219, 3742) | Skeleton (skeleton_armed) 4 | yes | yes | 29 | - |

@@ -37,8 +37,7 @@
 |---|---|---|---|---|---|---|
 | `fishing-spot:morytania:0` | (3430, 3411) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 | `fishing-spot:morytania:1` | (3441, 3274) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `fishing-spot:morytania:2` | (3481, 3434) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `fishing-spot:morytania:3` | (3487, 3447) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `fishing-spot:morytania:2` | (3483, 3439) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Monsters
 

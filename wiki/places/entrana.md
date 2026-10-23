@@ -13,6 +13,13 @@
 |---|---|---|---|---|---|---|
 | `range:entrana:0` | (2822, 3351) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
 | `range:entrana:1` | (2844, 3367) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `range:entrana:2` | (2856, 3334) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+
+## [Sand pits](../services/sand-pit.md)
+
+| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|
+| `sand-pit:entrana:0` | (2816, 3341) | Sand pit 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Water sources](../services/water-source.md)
 
@@ -36,16 +43,18 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `tree:entrana:0` | (2843, 3375) | [normal](../resources/tree/normal.md) 22, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:1` | (2824, 3348) | [normal](../resources/tree/normal.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:2` | (2863, 3350) | [normal](../resources/tree/normal.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:3` | (2879, 3402) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
+| `tree:entrana:0` | (2842, 3372) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:1` | (2822, 3342) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:2` | (2851, 3332) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:3` | (2860, 3347) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:4` | (2879, 3402) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
 
 ## Fishing spots
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
 | `fishing-spot:entrana:0` | (2844, 3358) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
+| `fishing-spot:entrana:1` | (2876, 3337) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Monsters
 
@@ -53,3 +62,20 @@
 |---|---|---|---|---|---|---|
 | `npc:entrana:0` | (2851, 3371) | Chicken 6 | no | no | - | no weapons/armour (Entrana rule) |
 | `npc:entrana:1` | (2847, 3386) | Entrana Fire Bird 1 | no | no | - | no weapons/armour (Entrana rule) |
+
+## Ladders and stairs
+
+| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|
+| `connector:entrana:0` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:1` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:2` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:3` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:4` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:5` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:6` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:7` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:8` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:9` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:10` | (2857, 3346) | Ladder 1 | up (2856, 3346) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:11` | (2857, 3346) L1 | Ladder 1 | down (2856, 3346) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |

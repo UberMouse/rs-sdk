@@ -101,6 +101,22 @@ export interface Site {
     nearest?: Nearest;
     /** On an `agility-course` site, its lap (sources/courses.ts). */
     course?: Course;
+    /** On a `fishing-spot` site, where its spots of each subtype can be, by subtype (sources/fishing-movement.ts). */
+    movement?: Record<string, SpotMovement>;
+}
+
+/**
+ * Where a fishing-spot subtype's spots at a site stand over time. A spot teleports to a random free tile of its
+ * config's `fishing_movement_enum` every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so a
+ * plan fishing there roams over every one of `tiles`; a config with no enum never moves.
+ */
+export interface SpotMovement {
+    /** Every tile a spot can stand on: the enum's coords and the placed spawns, by x, then z. */
+    tiles: Tile[];
+    /** The centre of `tiles`' box. */
+    centre: Tile;
+    /** Chebyshev tiles from `centre` covering every tile, plus COVER_MARGIN of margin: an `area` to copy. */
+    radius: number;
 }
 
 /**
@@ -514,7 +530,7 @@ export interface Crossing {
 }
 
 /** The shape world.json has; bumped when it changes, so a reader refuses a file in an older one. */
-export const WORLD_FORMAT = 21;
+export const WORLD_FORMAT = 22;
 
 /**
  * A curated method (methods.ts) as the build resolved it (model/method.ts): the record's own fields, then its site, the

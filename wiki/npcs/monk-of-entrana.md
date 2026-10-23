@@ -12,7 +12,7 @@
 
 | Area | Centre | Spawns | F2P |
 |------|--------|--------|-----|
-| [Kandarin](../places/kandarin.md) | (2835, 3335) | 3 | no |
+| [Entrana](../places/entrana.md) | (2835, 3335) | 3 | no |
 | [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | 3 | yes |
 
 ## Interactions

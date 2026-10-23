@@ -291,7 +291,16 @@ export const METHODS: MethodDef[] = [
         params: { npc: 'knight_of_ardougne' },
         food: 'lobster',
         sink: { mode: 'bank' },
+        plans: ['knight-thieve-bankfood'],
         measured: [
+            {
+                xpPerHour: { thieving: 2_958_274 },
+                level: { thieving: 72 },
+                bot: 'conductor3',
+                date: '2026-10-23',
+                hours: 0.2835,
+                from: 'stats.ts conductor3 --methods',
+            },
             {
                 xpPerHour: { thieving: 3_711_068 },
                 level: { thieving: 99, hitpoints: 46 },
@@ -303,7 +312,8 @@ export const METHODS: MethodDef[] = [
         ],
         notes:
             'knight-thieve also fishes and cooks its lobsters at Catherby, so it names no method; the measured figure ' +
-            'comes from its thieving and Ardougne South bank phases.',
+            'comes from its thieving and Ardougne South bank phases. knight-thieve-bankfood eats banked swordfish/tuna ' +
+            '(any cooked fish) instead, with a one-time travel in from Catherby.',
     },
     {
         id: 'willow-draynor-bank',
@@ -455,7 +465,17 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 2474, z: 3435 },
         params: {},
         sink: { mode: 'drop' },
-        plans: ['gnome-agility'],
+        plans: ['gnome-agility', 'agility-from-ardougne'],
+        measured: [
+            {
+                xpPerHour: { agility: 206_860 },
+                level: { agility: 1 },
+                bot: 'conductor3',
+                date: '2026-10-23',
+                hours: 0.1825,
+                from: 'stats.ts conductor3 --methods (includes the 107 s travel in from Ardougne)',
+            },
+        ],
         notes: "No obstacle rolls, so no food, and no product: the drop sink drops nothing. The plan's bank and travel from Varrock are a one-time prologue; unmeasured, as its runs' figures include it: seed it from stats.ts --phases (the agility phase) after its next goal.",
     },
     {
@@ -852,7 +872,74 @@ export const METHODS: MethodDef[] = [
             end: 'bank',
             bank: { level: 0, x: 2809, z: 3443 },
         },
-        notes: 'Cooking 60-99 band, Fishing alongside. No promoted plan; unmeasured.',
+        plans: ['catherby-swordfish'],
+        notes: 'Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.',
         source: 'research-artisan 2026-10-23',
+    },
+    {
+        id: 'shark-catherby-cook-bank',
+        name: 'Sharks harpooned at Catherby, cooked on the Catherby range, banked at Catherby',
+        family: 'fishing',
+        at: { level: 0, x: 2841, z: 3430 },
+        params: { spot: 'memberfish', tool: 'harpoon' },
+        sink: {
+            mode: 'process',
+            steps: [
+                {
+                    family: 'cooking',
+                    at: { level: 0, x: 2817, z: 3444 },
+                    params: [{ food: 'raw_shark' }],
+                },
+            ],
+            end: 'bank',
+            bank: { level: 0, x: 2809, z: 3443 },
+        },
+        notes:
+            'The Net/Harpoon spots (memberfish) at the Catherby shore, harpoon only: Fishing 76 for sharks, Cooking 80 to cook them. ' +
+            'The spots move over the whole shore (fishing_movement_catherby_enum, 280 + random(250) ticks), which the floor does not model: ' +
+            'it assumes a spot is always at hand. No promoted plan; unmeasured.',
+        source: 'fishing-spot movement audit 2026-10-23 (conductor3 Catherby run)',
+    },
+    {
+        id: 'swordfish-fishing-guild-cook-bank',
+        name: 'Tuna and swordfish harpooned at the Fishing Guild, cooked on its range, banked in the guild',
+        family: 'fishing',
+        at: { level: 0, x: 2605, z: 3416 },
+        params: { spot: 'rarefish', tool: 'harpoon' },
+        sink: {
+            mode: 'process',
+            steps: [
+                {
+                    family: 'cooking',
+                    at: { level: 0, x: 2616, z: 3396 },
+                    params: [{ food: 'raw_tuna' }, { food: 'raw_swordfish' }],
+                },
+            ],
+            end: 'bank',
+            bank: { level: 0, x: 2585, z: 3420 },
+        },
+        notes: 'Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.',
+        source: 'fishing-spot movement audit 2026-10-23: the Fishing Guild layout against Catherby',
+    },
+    {
+        id: 'shark-fishing-guild-cook-bank',
+        name: 'Sharks harpooned at the Fishing Guild, cooked on its range, banked in the guild',
+        family: 'fishing',
+        at: { level: 0, x: 2605, z: 3416 },
+        params: { spot: 'memberfish', tool: 'harpoon' },
+        sink: {
+            mode: 'process',
+            steps: [
+                {
+                    family: 'cooking',
+                    at: { level: 0, x: 2616, z: 3396 },
+                    params: [{ food: 'raw_shark' }],
+                },
+            ],
+            end: 'bank',
+            bank: { level: 0, x: 2585, z: 3420 },
+        },
+        notes: 'Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.',
+        source: 'fishing-spot movement audit 2026-10-23: the Fishing Guild layout against Catherby',
     },
 ];

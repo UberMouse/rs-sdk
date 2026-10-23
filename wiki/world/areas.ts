@@ -49,7 +49,11 @@ export const AREAS: readonly Area[] = [
         name: 'Asgarnia',
         rects: [
             { x1: 2968, z1: 3090, x2: 3064, z2: 3467 },
-            { x1: 2851, z1: 3206, x2: 2967, z2: 3467 },
+            // Not the Catherby shore (x 2851-2865, z 3415-3440), which is Kandarin's: the Catherby fishing spots
+            // (skill_fishing/configs/fishing_movement.enum, fishing_movement_catherby_enum) reach x 2860.
+            { x1: 2866, z1: 3206, x2: 2967, z2: 3467 },
+            { x1: 2851, z1: 3206, x2: 2865, z2: 3414 },
+            { x1: 2851, z1: 3441, x2: 2865, z2: 3467 },
             // The shore below Rimmington, down to the sea Karamja lies across (see Karamja).
             { x1: 2932, z1: 3190, x2: 2967, z2: 3205 },
             { x1: 2823, z1: 3468, x2: 3064, z2: 3519 },
@@ -171,7 +175,9 @@ export const AREAS: readonly Area[] = [
 
     // Islands off Asgarnia. Each is smaller than the region rects around it, so it wins their tiles.
     { id: 'crandor', name: 'Crandor', rects: [{ x1: 2807, z1: 3239, x2: 2870, z2: 3302 }] },
-    { id: 'entrana', name: 'Entrana', rects: [{ x1: 2818, z1: 3347, x2: 2881, z2: 3410 }] },
+    // From the dock (2834, 3334) in the south to the north shore, and east to the net spots at x 2879
+    // (fishing_movement_entrana2_enum).
+    { id: 'entrana', name: 'Entrana', rects: [{ x1: 2816, z1: 3328, x2: 2881, z2: 3410 }] },
 
     // Feldip Hills, south of Kandarin: the ogres and chompy birds.
     {
@@ -192,6 +198,8 @@ export const AREAS: readonly Area[] = [
         rects: [
             { x1: 2373, z1: 3061, x2: 2735, z2: 3467 },
             { x1: 2736, z1: 3206, x2: 2850, z2: 3467 },
+            // The Catherby shore east of the town, down to the sea (see Asgarnia).
+            { x1: 2851, z1: 3415, x2: 2865, z2: 3440 },
             { x1: 2373, z1: 3468, x2: 2822, z2: 3903 },
         ],
     },
@@ -230,7 +238,16 @@ export const AREAS: readonly Area[] = [
         parent: 'castle-wars',
         rects: [{ x1: 2443, z1: 3082, x2: 2445, z2: 3084 }],
     },
-    { id: 'catherby', name: 'Catherby', parent: 'kandarin', rects: [{ x1: 2779, z1: 3415, x2: 2832, z2: 3455 }] },
+    {
+        id: 'catherby',
+        name: 'Catherby',
+        parent: 'kandarin',
+        // The second rect is the shore east of the town, where the fishing spots are (Harry's Fishing Shop and the quay).
+        rects: [
+            { x1: 2779, z1: 3415, x2: 2832, z2: 3455 },
+            { x1: 2833, z1: 3415, x2: 2865, z2: 3440 },
+        ],
+    },
     {
         id: 'catherby-bank',
         name: 'Catherby bank',
@@ -1406,13 +1423,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     ...(
         [
             [
-                'tree:asgarnia:6',
-                "in the railed garden of Entrana's church, whose only op is a ladder up to a floor with no way down",
-                'its south rail, woodenrailing at maps/m44_52.jm2:6673',
-                'skill_woodcutting/scripts/woodcut.rs2:1',
-            ],
-            [
-                'tree:asgarnia:23',
+                'tree:asgarnia:20',
                 'a dead tree all eight tiles beside which the map flags blocked',
                 'f1, as maps/m45_55.jm2:3825',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
@@ -1638,7 +1649,7 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
             source: 'quests/quest_upass/scripts/upass_obstacles.rs2:150',
         }),
     ),
-    ...['fishing-spot:kandarin:7', 'range:kandarin:7'].map((site): ExpectedUnreached => ({
+    ...['fishing-spot:kandarin:6', 'range:kandarin:7'].map((site): ExpectedUnreached => ({
         site,
         reason: "on the fishing platform, which Holgart's boat telejumps the player to (holgart_ardougne.rs2:105); his dialogue goes by Sea Slug's stage, so gates.ts leaves the boat out as a quest boat (TRANSPORTS_OUT_OF_SCOPE)",
         source: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:105',

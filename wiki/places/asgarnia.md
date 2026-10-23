@@ -33,13 +33,12 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `range:asgarnia:0` | (2856, 3334) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `range:asgarnia:1` | (2917, 3318) | Range 1 | yes | no | - | - |
-| `range:asgarnia:2` | (3019, 3237) | Range 1 | yes | no | - | - |
-| `range:asgarnia:3` | (3036, 3342) | Range 1 | yes | no | - | - |
-| `range:asgarnia:4` | (3039, 3367) | Range 1 | yes | no | - | - |
-| `range:asgarnia:5` | (3046, 3375) | Range 1 | yes | no | - | - |
-| `range:asgarnia:6` | (3052, 3356) | Range 1 | yes | no | - | - |
+| `range:asgarnia:0` | (2917, 3318) | Range 1 | yes | no | - | - |
+| `range:asgarnia:1` | (3019, 3237) | Range 1 | yes | no | - | - |
+| `range:asgarnia:2` | (3036, 3342) | Range 1 | yes | no | - | - |
+| `range:asgarnia:3` | (3039, 3367) | Range 1 | yes | no | - | - |
+| `range:asgarnia:4` | (3046, 3375) | Range 1 | yes | no | - | - |
+| `range:asgarnia:5` | (3052, 3356) | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
@@ -109,40 +108,37 @@
 | `tree:asgarnia:0` | (2824, 3476) | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
 | `tree:asgarnia:1` | (2831, 3525) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
 | `tree:asgarnia:2` | (2854, 3533) | [normal](../resources/tree/normal.md) 39 | no | yes | - | - |
-| `tree:asgarnia:3` | (2851, 3332) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:asgarnia:4` | (2851, 3438) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:asgarnia:5` | (2855, 3461) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
-| `tree:asgarnia:6` | (2854, 3342) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
-| `tree:asgarnia:7` | (2874, 3421) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:asgarnia:8` | (2978, 3473) | [normal](../resources/tree/normal.md) 213, [oak](../resources/tree/oak.md) 7 | yes | yes | - | - |
-| `tree:asgarnia:9` | (2878, 3490) | [normal](../resources/tree/normal.md) 7 | no | yes | - | - |
-| `tree:asgarnia:10` | (2880, 3444) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:asgarnia:11` | (2905, 3372) | [normal](../resources/tree/normal.md) 76, [oak](../resources/tree/oak.md) 6, [willow](../resources/tree/willow.md) 19 | no | no | - | - |
-| `tree:asgarnia:12` | (2887, 3515) | [normal](../resources/tree/normal.md) 3 | no | no | - | Hero's Quest done |
-| `tree:asgarnia:13` | (2988, 3275) | [normal](../resources/tree/normal.md) 176, [oak](../resources/tree/oak.md) 34, [willow](../resources/tree/willow.md) 14, [yew](../resources/tree/yew.md) 1 | yes | yes | - | - |
-| `tree:asgarnia:14` | (2912, 3576) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:asgarnia:15` | (2917, 3248) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:16` | (2922, 3406) | [willow](../resources/tree/willow.md) 13 | no | no | - | - |
-| `tree:asgarnia:17` | (2948, 3423) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
-| `tree:asgarnia:18` | (2931, 3227) | [normal](../resources/tree/normal.md) 14, [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 4 | yes | no | - | - |
-| `tree:asgarnia:19` | (2926, 3566) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:asgarnia:20` | (2925, 3540) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:asgarnia:21` | (2931, 3552) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:asgarnia:22` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:23` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
-| `tree:asgarnia:24` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
-| `tree:asgarnia:25` | (2996, 3191) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - | - |
-| `tree:asgarnia:26` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
-| `tree:asgarnia:27` | (3023, 3172) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - | - |
-| `tree:asgarnia:28` | (3019, 3194) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:29` | (3048, 3321) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:asgarnia:30` | (3028, 3370) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:31` | (3035, 3507) | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
-| `tree:asgarnia:32` | (3051, 3396) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:33` | (3056, 3369) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:34` | (3055, 3386) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:35` | (3064, 3341) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:36` | (3064, 3351) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:3` | (2855, 3461) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
+| `tree:asgarnia:4` | (2874, 3421) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:asgarnia:5` | (2978, 3473) | [normal](../resources/tree/normal.md) 213, [oak](../resources/tree/oak.md) 7 | yes | yes | - | - |
+| `tree:asgarnia:6` | (2878, 3490) | [normal](../resources/tree/normal.md) 7 | no | yes | - | - |
+| `tree:asgarnia:7` | (2880, 3444) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:asgarnia:8` | (2905, 3372) | [normal](../resources/tree/normal.md) 76, [oak](../resources/tree/oak.md) 6, [willow](../resources/tree/willow.md) 19 | no | no | - | - |
+| `tree:asgarnia:9` | (2887, 3515) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:asgarnia:10` | (2988, 3275) | [normal](../resources/tree/normal.md) 176, [oak](../resources/tree/oak.md) 34, [willow](../resources/tree/willow.md) 14, [yew](../resources/tree/yew.md) 1 | yes | yes | - | - |
+| `tree:asgarnia:11` | (2912, 3576) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:asgarnia:12` | (2917, 3248) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:13` | (2922, 3406) | [willow](../resources/tree/willow.md) 13 | no | no | - | - |
+| `tree:asgarnia:14` | (2948, 3423) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
+| `tree:asgarnia:15` | (2931, 3227) | [normal](../resources/tree/normal.md) 14, [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 4 | yes | no | - | - |
+| `tree:asgarnia:16` | (2926, 3566) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:asgarnia:17` | (2925, 3540) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:asgarnia:18` | (2931, 3552) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:asgarnia:19` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:20` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
+| `tree:asgarnia:21` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:asgarnia:22` | (2996, 3191) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - | - |
+| `tree:asgarnia:23` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
+| `tree:asgarnia:24` | (3023, 3172) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - | - |
+| `tree:asgarnia:25` | (3019, 3194) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:26` | (3048, 3321) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:asgarnia:27` | (3028, 3370) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:28` | (3035, 3507) | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
+| `tree:asgarnia:29` | (3051, 3396) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:30` | (3056, 3369) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:31` | (3055, 3386) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:32` | (3064, 3341) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:33` | (3064, 3351) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Rocks
 
@@ -155,11 +151,7 @@
 
 | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|
-| `fishing-spot:asgarnia:0` | (2856, 3424) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 2, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 1 | no | no | - | - |
-| `fishing-spot:asgarnia:1` | (2876, 3342) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `fishing-spot:asgarnia:2` | (2877, 3331) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `fishing-spot:asgarnia:3` | (2986, 3176) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | no | - | - |
-| `fishing-spot:asgarnia:4` | (2996, 3158) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | no | - | - |
+| `fishing-spot:asgarnia:0` | (2991, 3167) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
 
 ## Pickpocket targets
 
@@ -228,58 +220,56 @@
 | `connector:asgarnia:5` | (2851, 3234) L2 | Ship's ladder 1 | down (2850, 3234) L1 by Climb-down | yes | no | - | unreached |
 | `connector:asgarnia:6` | (2851, 3236) L1 | Ship's ladder 1 | up (2852, 3236) L2 by Climb-up | yes | no | - | unreached |
 | `connector:asgarnia:7` | (2851, 3236) L2 | Ship's ladder 1 | down (2850, 3236) L1 by Climb-down | yes | no | - | unreached |
-| `connector:asgarnia:8` | (2857, 3346) | Ladder 1 | up (2856, 3346) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:asgarnia:9` | (2857, 3346) L1 | Ladder 1 | down (2856, 3346) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:asgarnia:10` | (2857, 3517) | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:11` | (2859, 3519) | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:12` | (2884, 3397) | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
-| `connector:asgarnia:13` | (2895, 3513) | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:14` | (2895, 3516) L1 | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:15` | (2895, 3516) L2 | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:16` | (2896, 3513) L1 | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:17` | (2898, 3428) | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:18` | (2898, 3428) L1 | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
-| `connector:asgarnia:19` | (2906, 3470) L1 | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
-| `connector:asgarnia:20` | (2907, 3476) | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
-| `connector:asgarnia:21` | (2915, 3323) | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:22` | (2915, 3323) L1 | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:23` | (2915, 3441) | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:24` | (2915, 3441) L1 | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
-| `connector:asgarnia:25` | (2915, 3450) | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:26` | (2915, 3450) L1 | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
-| `connector:asgarnia:27` | (2929, 3544) | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:28` | (2929, 3544) L1 | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
-| `connector:asgarnia:29` | (3008, 3150) | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
-| `connector:asgarnia:30` | (3011, 3235) | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:31` | (3011, 3235) L1 | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:32` | (3013, 3203) | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:33` | (3013, 3203) L1 | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:34` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:35` | (3023, 3261) | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:36` | (3024, 3261) L1 | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:37` | (3026, 3248) | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:38` | (3026, 3248) L1 | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:39` | (3027, 3353) | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:40` | (3027, 3353) L1 | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:41` | (3034, 3363) | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:42` | (3035, 3344) | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:43` | (3035, 3344) L1 | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:44` | (3035, 3363) L1 | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:45` | (3042, 3379) L1 | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:46` | (3042, 3379) L2 | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:47` | (3044, 3381) | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:48` | (3044, 3382) L1 | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:49` | (3045, 3363) | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:50` | (3045, 3364) L1 | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:51` | (3048, 3352) | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:52` | (3049, 3353) L1 | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:53` | (3050, 3355) L1 | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:54` | (3050, 3355) L2 | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:55` | (3059, 3354) | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:56` | (3059, 3354) L1 | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:57` | (3059, 3357) | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:58` | (3059, 3357) L1 | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:59` | (3059, 3376) | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:8` | (2857, 3517) | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:9` | (2859, 3519) | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:10` | (2884, 3397) | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
+| `connector:asgarnia:11` | (2895, 3513) | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:12` | (2895, 3516) L1 | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:13` | (2895, 3516) L2 | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:14` | (2896, 3513) L1 | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:15` | (2898, 3428) | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:16` | (2898, 3428) L1 | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
+| `connector:asgarnia:17` | (2906, 3470) L1 | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
+| `connector:asgarnia:18` | (2907, 3476) | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
+| `connector:asgarnia:19` | (2915, 3323) | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:20` | (2915, 3323) L1 | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:21` | (2915, 3441) | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:22` | (2915, 3441) L1 | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
+| `connector:asgarnia:23` | (2915, 3450) | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:24` | (2915, 3450) L1 | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
+| `connector:asgarnia:25` | (2929, 3544) | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:26` | (2929, 3544) L1 | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
+| `connector:asgarnia:27` | (3008, 3150) | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
+| `connector:asgarnia:28` | (3011, 3235) | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:29` | (3011, 3235) L1 | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:30` | (3013, 3203) | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:31` | (3013, 3203) L1 | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:32` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:33` | (3023, 3261) | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:34` | (3024, 3261) L1 | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:35` | (3026, 3248) | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:36` | (3026, 3248) L1 | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:37` | (3027, 3353) | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:38` | (3027, 3353) L1 | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:39` | (3034, 3363) | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:40` | (3035, 3344) | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:41` | (3035, 3344) L1 | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:42` | (3035, 3363) L1 | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:43` | (3042, 3379) L1 | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:44` | (3042, 3379) L2 | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:45` | (3044, 3381) | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:46` | (3044, 3382) L1 | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:47` | (3045, 3363) | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:48` | (3045, 3364) L1 | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:49` | (3048, 3352) | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:50` | (3049, 3353) L1 | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:51` | (3050, 3355) L1 | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:52` | (3050, 3355) L2 | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:53` | (3059, 3354) | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:54` | (3059, 3354) L1 | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:55` | (3059, 3357) | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:56` | (3059, 3357) L1 | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:57` | (3059, 3376) | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
 
 ## Areas within
 
