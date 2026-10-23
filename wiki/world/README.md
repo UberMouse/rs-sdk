@@ -223,7 +223,16 @@ hints' scripts, then either add the missing connector, gate or transport (the de
 entry to `EXPECTED_UNREACHED` in `areas.ts` (an area, its child areas included, or one site, with a reason and
 the script line that keeps the player out). The report leaves those sites out, and the build fails on an entry
 that names no such area or site, and on one no unreached site matches, so an entry goes once its sites are
-reached or gone. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
+reached or gone.
+
+A curated table names a site by a `SiteKey` (`site-key.ts`), never by its id: `{ kind, at }`, the site of that
+kind holding a feature on the tile `at` (`siteAt('tree', 2166, 3091)` in `areas.ts`; the report prints it as
+`tree (2166, 3091, 0)`). A site id (`tree:kandarin:7`) is an ordinal within its kind and leaf area, so a change to
+the clustering or the areas renumbers it, and an entry naming it would silently name another site. A feature
+belongs to exactly one site whatever happens to the others, where a site's bbox can overlap others', so a tile of
+one names it. Take any of the site's features' tiles from `world.json`; the build fails on a key no site of its
+kind holds, or several do. `EXPECTED_UNREACHED` and the bank `OVERRIDES` in `conductor/lib/banks.ts` are keyed so;
+ids stay in `world.json` and on the pages. A site walled in by collision, with no loc or npc op on or beside its pocket that moves the player
 but its own, cites the op it is used by (`woodcut.rs2:1` for a tree), whose reach test no tile a walk gets to passes,
 and its reason names a loc or map flag that walls it with the map square line (`hedge at maps/m45_54.jm2:5352`).
 One entry's reason may cover several sites walled in alike (the decoration trees of the Feldip Hills behind its
@@ -340,6 +349,7 @@ Adding a method:
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |
 | A staircase, ladder or trapdoor missing, or with the wrong landing | `wiki/world/sources/connectors.ts` (the scripts give landings; there is no table to patch) |
+| A bank a task must never pick as nearest, or its stand tile | `OVERRIDES` in `conductor/lib/banks.ts`, keyed by a `SiteKey` |
 | A connector's name or hazard note, or a connector the conductor's walker leaves out | `OVERRIDES` and `LEFT_OUT` in `conductor/lib/connectors.ts` (the rows themselves are generated from world.json) |
 | A method's tile, params, sink, plans or a measured figure | its record in `wiki/world/methods.ts`, then `bun run world` |
 | A method's floor (a formula, a cycle or tool rule) | the family module in `wiki/world/model/families/`, or `model/` (`cycle.ts`, `rate.ts`, `roll.ts`), with its hand-worked test |

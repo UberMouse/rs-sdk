@@ -108,6 +108,7 @@ import {
     type Trigger,
 } from './sources/triggers';
 import { coordTile } from './sources/runescript';
+import { siteKeyMatches, siteKeyName, unresolved, type SiteKeyWorld } from './site-key';
 import { readZones } from './sources/zones';
 import {
     WORLD_FORMAT,
@@ -505,30 +506,43 @@ export function addReach(
 
 /** An EXPECTED_UNREACHED entry as the report names it. */
 const expectedName = (e: ExpectedUnreached): string =>
-    `${'site' in e ? `site ${e.site}` : `area ${e.area}`} (${e.source})`;
+    `${'site' in e ? `site ${siteKeyName(e.site)}` : `area ${e.area}`} (${e.source})`;
 
 /**
- * The unreached sites areas.ts EXPECTED_UNREACHED does not match (an entry by site id, or by an area on the
- * site's area path), how many it does, the entries naming no area or site in `known`: invalid, and the other
- * entries that match no unreached site: stale. Both are errors.
+ * The unreached sites areas.ts EXPECTED_UNREACHED does not match (an entry by the site its SiteKey resolves to in
+ * `known.world`, or by an area on the site's area path), how many it does, the entries naming no area in `known`
+ * or whose key resolves to no site or several: invalid, and the other entries that match no unreached site:
+ * stale. Both are errors.
  */
 export function expectedUnreached(
     unreached: readonly Unreached[],
     expected: readonly ExpectedUnreached[],
-    known: { areas: ReadonlySet<string>; sites: ReadonlySet<string> },
+    known: { areas: ReadonlySet<string>; world: SiteKeyWorld },
 ): { left: Unreached[]; expected: number; invalid: string[]; stale: string[] } {
-    const exists = (e: ExpectedUnreached): boolean => ('site' in e ? known.sites.has(e.site) : known.areas.has(e.area));
+    const matches = siteKeyMatches(known.world);
+    const siteOf = new Map<ExpectedUnreached, string>();
+    const invalid: string[] = [];
+    for (const e of expected) {
+        if (!('site' in e)) {
+            if (!known.areas.has(e.area)) invalid.push(expectedName(e));
+            continue;
+        }
+        const ids = matches(e.site);
+        if (ids.length === 1) siteOf.set(e, ids[0]!);
+        else invalid.push(`${expectedName(e)}: ${unresolved(ids)}`);
+    }
+    const valid = (e: ExpectedUnreached): boolean => ('site' in e ? siteOf.has(e) : known.areas.has(e.area));
     const used = new Set<ExpectedUnreached>();
     const left = unreached.filter(u => {
-        const hits = expected.filter(e => ('site' in e ? e.site === u.id : u.areaPath.includes(e.area)));
+        const hits = expected.filter(e => ('site' in e ? siteOf.get(e) === u.id : u.areaPath.includes(e.area)));
         for (const e of hits) used.add(e);
         return !hits.length;
     });
     return {
         left,
         expected: unreached.length - left.length,
-        invalid: expected.filter(e => !exists(e)).map(expectedName),
-        stale: expected.filter(e => exists(e) && !used.has(e)).map(expectedName),
+        invalid,
+        stale: expected.filter(e => valid(e) && !used.has(e)).map(expectedName),
     };
 }
 
@@ -1041,7 +1055,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     );
     const expected = expectedUnreached(unreached, EXPECTED_UNREACHED, {
         areas: new Set(areas.map(a => a.id)),
-        sites: new Set(reached.sites.map(x => x.id)),
+        world: { sites: reached.sites, features },
     });
     // By the fill's own line for the row; rows the line can't tell apart share it, with every reason each gives.
     const noLanding = new Map<string, string[]>();
@@ -1423,7 +1437,7 @@ export function formatReport(report: BuildReport): string[] {
             report.stranded,
         ),
         ...list(
-            `ERROR unreached: ${report.unreached.invalid.length} areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):`,
+            `ERROR unreached: ${report.unreached.invalid.length} areas.ts EXPECTED_UNREACHED entries name no such area, or a site key no site or several sites hold (a typo?):`,
             report.unreached.invalid,
         ),
         ...list(

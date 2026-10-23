@@ -963,11 +963,16 @@ describe('formatReport', () => {
     test('lists the EXPECTED_UNREACHED entries naming no area or site as their own error', () => {
         const invalid = {
             ...report,
-            unreached: { pockets: [], expected: 0, invalid: ['site rock:cvae:0 (c.rs2:2)'], stale: [] },
+            unreached: {
+                pockets: [],
+                expected: 0,
+                invalid: ['site rock (5, 6406, 0) (c.rs2:2): no site holds it'],
+                stale: [],
+            },
         };
         expect(formatReport(invalid).slice(-2)).toEqual([
-            'ERROR unreached: 1 areas.ts EXPECTED_UNREACHED entries name no such area or site (a typo?):',
-            '  site rock:cvae:0 (c.rs2:2)',
+            'ERROR unreached: 1 areas.ts EXPECTED_UNREACHED entries name no such area, or a site key no site or several sites hold (a typo?):',
+            '  site rock (5, 6406, 0) (c.rs2:2): no site holds it',
         ]);
         expect(failed(invalid)).toBe(true);
     });
@@ -1459,34 +1464,55 @@ describe('the unreached report', () => {
         { id: 'cave', name: 'Cave', rects: [] },
     ];
 
-    test('EXPECTED_UNREACHED leaves out its sites, an area entry its child areas too, and names the stale and the invalid', () => {
+    test('EXPECTED_UNREACHED leaves out its sites, an area entry its child areas too, and names the stale and the invalid, a key naming no site or two', () => {
         const rows = [
             u('bank:isle-bank:0', ['isle', 'isle-bank'], tile(5, 5), null),
             u('tree:isle:0', ['isle'], tile(6, 6), null),
             u('rock:cave:0', ['cave'], tile(5, 6405), null),
             u('shop:town:0', ['town'], tile(9, 9), null),
         ];
+        // Each site holds one feature, on the tile it is listed with; the two tree sites by the shop share one.
+        const placed: [string, Site['kind'], Tile][] = [
+            ['bank:isle-bank:0', 'bank', tile(5, 5)],
+            ['tree:isle:0', 'tree', tile(6, 6)],
+            ['rock:cave:0', 'rock', tile(5, 6405)],
+            ['shop:town:0', 'shop', tile(9, 9)],
+            ['shop:town:9', 'shop', tile(9, 19)],
+            ['tree:town:0', 'tree', tile(9, 10)],
+            ['tree:town:1', 'tree', tile(9, 10)],
+        ];
+        const known = {
+            areas: new Set(['isle', 'cave', 'gone']),
+            world: {
+                sites: placed.map(([id, kind], i) => ({ id, kind, features: [i] })),
+                features: placed.map(([, , t]) => ({ tile: t })),
+            },
+        };
         expect(
             expectedUnreached(
                 rows,
                 [
                     { area: 'isle', reason: 'new accounts only', source: 'i.rs2:1' },
-                    { site: 'rock:cave:0', reason: 'a quest step', source: 'c.rs2:2' },
+                    { site: { kind: 'rock', at: tile(5, 6405) }, reason: 'a quest step', source: 'c.rs2:2' },
                     { area: 'gone', reason: 'reached now', source: 'g.rs2:3' },
-                    { site: 'shop:town:9', reason: 'gone', source: 's.rs2:4' },
+                    { site: { kind: 'shop', at: tile(9, 19) }, reason: 'gone', source: 's.rs2:4' },
                     { area: 'isel', reason: 'a typo', source: 't.rs2:5' },
-                    { site: 'rock:cvae:0', reason: 'a typo', source: 't.rs2:6' },
+                    { site: { kind: 'rock', at: tile(5, 6406) }, reason: 'a typo', source: 't.rs2:6' },
+                    { site: { kind: 'rock', at: tile(6, 6) }, reason: 'the wrong kind', source: 't.rs2:7' },
+                    { site: { kind: 'tree', at: tile(9, 10) }, reason: 'two sites', source: 't.rs2:8' },
                 ],
-                {
-                    areas: new Set(['isle', 'cave', 'gone']),
-                    sites: new Set([...rows.map(r => r.id), 'shop:town:9']),
-                },
+                known,
             ),
         ).toEqual({
             left: [rows[3]!],
             expected: 3,
-            invalid: ['area isel (t.rs2:5)', 'site rock:cvae:0 (t.rs2:6)'],
-            stale: ['area gone (g.rs2:3)', 'site shop:town:9 (s.rs2:4)'],
+            invalid: [
+                'area isel (t.rs2:5)',
+                'site rock (5, 6406, 0) (t.rs2:6): no site holds it',
+                'site rock (6, 6, 0) (t.rs2:7): no site holds it',
+                'site tree (9, 10, 0) (t.rs2:8): sites tree:town:0, tree:town:1 hold it',
+            ],
+            stale: ['area gone (g.rs2:3)', 'site shop (9, 19, 0) (s.rs2:4)'],
         });
     });
 

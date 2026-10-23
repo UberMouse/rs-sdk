@@ -6,6 +6,7 @@ import { reachCollision } from '../collision';
 import { loadWorld } from '../load';
 import { locSizes } from '../place';
 import { fillReach, LUMBRIDGE_SPAWN, MAX_SETS, type ReachInput } from '../reach';
+import { siteKeyMatches } from '../site-key';
 import { readConfigs } from '../sources/configs';
 import type { Tile, World } from '../types';
 
@@ -29,9 +30,10 @@ const withoutConnectors = (...locs: Tile[]): World => ({
 });
 /** Whether an area note explains a site the unreached report lists: it says so, and cites a script line. */
 const explains = (note: string): boolean => note.includes('unreached report') && /\.rs2:\d+/.test(note);
-/** Whether areas.ts EXPECTED_UNREACHED explains a site: an entry for it, or for an area on its path. */
+const keyed = siteKeyMatches(world);
+/** Whether areas.ts EXPECTED_UNREACHED explains a site: an entry whose key names it, or one for an area on its path. */
 const expected = (id: string, areaPath: readonly string[]): boolean =>
-    EXPECTED_UNREACHED.some(e => ('site' in e ? e.site === id : areaPath.includes(e.area)));
+    EXPECTED_UNREACHED.some(e => ('site' in e ? keyed(e.site).includes(id) : areaPath.includes(e.area)));
 const gateAt = (trigger: string, tile: Tile) =>
     world.gates.find(
         g => g.trigger === trigger && g.tile.x === tile.x && g.tile.z === tile.z && g.tile.level === tile.level,

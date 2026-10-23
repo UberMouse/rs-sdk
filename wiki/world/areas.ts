@@ -17,7 +17,8 @@
 // - Instanced planes (z 4400-5000) and underground areas (z + 6400) are their own top-level areas,
 //   named from their scripts and npcs. A note says when a name is descriptive rather than read from
 //   the data, and names the way in where the connectors or scripts show it.
-import type { Area, Rect } from './types';
+import type { SiteKey } from './site-key';
+import type { Area, FeatureKind, Rect } from './types';
 
 /**
  * Rects approximating the diamond |x - cx| + |z - cz| <= r, for a fence built on the diagonals: bands
@@ -1275,22 +1276,30 @@ export const AREAS: readonly Area[] = [
 ];
 
 /**
- * Sites no walk from the Lumbridge spawn reaches on purpose: one site by id, or every site in an area, its
- * child areas' included. build.ts leaves their sites out of the unreached report, and fails on an entry no
- * unreached site matches (one now reached, or gone).
+ * Sites no walk from the Lumbridge spawn reaches on purpose: one site by SiteKey (site-key.ts: a tile one of its
+ * features stands on, as ordinal site ids renumber), or every site in an area, its child areas' included. build.ts
+ * leaves their sites out of the unreached report, and fails on a key resolving to no site or several, and on an
+ * entry no unreached site matches (one now reached, or gone).
  */
-export type ExpectedUnreached = ({ area: string } | { site: string }) & {
+export type ExpectedUnreached = ({ area: string } | { site: SiteKey }) & {
     reason: string;
     /** The script line that keeps the player out, `file:line` under server/content/scripts. */
     source: string;
 };
+
+/** The site of `kind` with a feature on (x, z) of `level`. */
+const siteAt = (kind: FeatureKind, x: number, z: number, level = 0): SiteKey => ({ kind, at: { level, x, z } });
+
+/** The sites of `kind` with a feature on each [x, z] tile of `level`. */
+const sitesAt = (kind: FeatureKind, tiles: readonly (readonly [number, number])[], level = 0): SiteKey[] =>
+    tiles.map(([x, z]) => siteAt(kind, x, z, level));
 
 /**
  * A site walled in by collision: `why` says where, `wall` names a loc or map flag that walls it with its map square
  * line, and `source` is the op it is used by.
  */
 const walledIn = (
-    site: string,
+    site: SiteKey,
     why: string,
     wall: string,
     source = 'skill_woodcutting/scripts/woodcut.rs2:1',
@@ -1340,63 +1349,90 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     // The Fisher Realm's blighted copy, the quest's: the whistle sends a player who gave Percival one to the restored
     // realm.
     ...[
-        'range:fisher-realm:1',
-        'tree:fisher-realm:8',
-        'tree:fisher-realm:9',
-        'tree:fisher-realm:10',
-        'tree:fisher-realm:11',
+        siteAt('range', 2758, 4731),
+        ...sitesAt('tree', [
+            [2752, 4711],
+            [2753, 4682],
+            [2770, 4674],
+            [2788, 4673],
+        ]),
     ].map((site): ExpectedUnreached => ({
         site,
         reason: "the blighted Fisher Realm, the quest's: the whistle takes a player who gave Percival one (%grail >= ^grail_given_whistle) to the restored realm",
         source: 'quests/quest_grail/scripts/quest_grail.rs2:38',
     })),
     walledIn(
-        'tree:fisher-realm:6',
+        siteAt('tree', 2660, 4673),
         "on the restored realm's south edge, past a drystone wall, where no loc or npc op on or beside its pocket moves the player",
         "the report's hints are its trees' own",
         'quests/quest_grail/scripts/quest_grail.rs2:41',
     ),
     {
-        site: 'pickpocket:rogues-castle:2',
+        site: siteAt('pickpocket', 3286, 3939, 2),
         reason: "walled in on the castle's second floor: the stairs land beside their own loc, and the map places no door on that floor (maps/m51_61.jm2), so no walk gets from the landing to the rogues' room",
         source: 'ladders+stairs/scripts/stairs.rs2:249',
     },
     walledIn(
-        'tree:crash-island:1',
+        siteAt('tree', 2903, 2701),
         "south of the gliders' beach, where no loc or npc op on or beside its pocket moves the player",
         "the report's hint is its tree's own",
         'quests/quest_mm/scripts/mm_waydar.rs2:116',
     ),
     // North Tirannwn and the forest north of the Arandar pass: one stretch of land the grand wall round Prifddinas
     // (grandwall1) and the forest close in.
-    ...[
-        'tree:kandarin:7',
-        'tree:kandarin:8',
-        ...[3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 23, 24, 25].map(i => `tree:tirannwn:${i}`),
-        'tree:arandar:1',
-        'tree:prifddinas:0',
-    ].map((site): ExpectedUnreached => ({
+    ...sitesAt('tree', [
+        [2377, 3355],
+        [2379, 3342],
+        [2201, 3289],
+        [2224, 3284],
+        [2238, 3283],
+        [2247, 3281],
+        [2262, 3281],
+        [2269, 3371],
+        [2273, 3362],
+        [2279, 3374],
+        [2280, 3288],
+        [2283, 3298],
+        [2298, 3368],
+        [2304, 3459],
+        [2307, 3497],
+        [2344, 3488],
+        [2347, 3371],
+        [2348, 3466],
+        [2323, 3313],
+        [2216, 3285],
+    ]).map((site): ExpectedUnreached => ({
         site,
         reason: "walled in round Prifddinas: the city's gates turn every player away (@prif_guard_halt, prif_city_guard.rs2:7), the wall's tower ladders only climb to the towers' tops, and no other loc or npc op is on or beside the land (the report calls it open, as the towers' empty upper floors read as land)",
         source: 'quests/quest_regicide/scripts/prif_city_guard.rs2:12',
     })),
     // The forest north of the Tree Gnome Stronghold, past its north fence (gnomefence).
-    ...[5, 10, 13, 15, 17, 18, 23]
-        .map(i => `tree:kandarin:${i}`)
-        .concat(['tree:swamp:1', 'tree:swamp:3'])
-        .map(site =>
-            walledIn(
-                site,
-                'the forest north of the Tree Gnome Stronghold, past its north fence',
-                'gnomefence at maps/m37_54.jm2:4631',
-            ),
+    ...sitesAt('tree', [
+        [2374, 3503],
+        [2390, 3529],
+        [2407, 3539],
+        [2416, 3535],
+        [2427, 3538],
+        [2434, 3529],
+        [2459, 3529],
+        [2411, 3524],
+        [2427, 3524],
+    ]).map(site =>
+        walledIn(
+            site,
+            'the forest north of the Tree Gnome Stronghold, past its north fence',
+            'gnomefence at maps/m37_54.jm2:4631',
         ),
-    ...['range:west-ardougne:0', 'water-source:kandarin:2'].map((site): ExpectedUnreached => ({
+    ),
+    ...[siteAt('range', 2547, 3322), siteAt('water-source', 2548, 3321)].map((site): ExpectedUnreached => ({
         site,
         reason: "in the mourner headquarters, whose door lets a player in only at two Biohazard stages wearing a doctor's gown (^biohazard_poisoned_stew, ^biohazard_found_distillator) and is locked at every other, the quest done included (doors.rs2:69)",
         source: 'areas/area_ardougne_west/scripts/doors.rs2:57',
     })),
-    ...['tree:fight-arena:0', 'tree:fight-arena:1'].map((site): ExpectedUnreached => ({
+    ...sitesAt('tree', [
+        [2585, 3157],
+        [2587, 3169],
+    ]).map((site): ExpectedUnreached => ({
         site,
         reason: 'inside the Fight Arena, whose door opens only at two of its stages (^arena_entered_ogre_fight, ^arena_defeated_ogre); after the quest it is locked, and a guard by it attacks the player (khazard_guard.rs2:132)',
         source: 'quests/quest_arena/scripts/quest_arena.rs2:95',
@@ -1406,133 +1442,133 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
     ...(
         [
             [
-                'tree:asgarnia:6',
+                siteAt('tree', 2854, 3342),
                 "in the railed garden of Entrana's church, whose only op is a ladder up to a floor with no way down",
                 'its south rail, woodenrailing at maps/m44_52.jm2:6673',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:asgarnia:23',
+                siteAt('tree', 2939, 3568),
                 'a dead tree all eight tiles beside which the map flags blocked',
                 'f1, as maps/m45_55.jm2:3825',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:goblin-village:0',
+                siteAt('tree', 2951, 3513),
                 'a dead tree all eight tiles beside which the map flags blocked',
                 'f1, as maps/m46_54.jm2:506',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:arandar:2',
+                siteAt('tree', 2345, 3272),
                 'a dead tree all eight tiles beside which the map flags blocked',
                 'f1, as maps/m36_51.jm2:2633',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:arandar:3',
+                siteAt('tree', 2348, 3305),
                 'a dead tree used only from a nook the other dead trees close in',
                 'deadtree6 at maps/m36_51.jm2:4925',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:taverley:1',
+                siteAt('tree', 2910, 3465),
                 "in a strip between two of the Witch's House garden's hedges, closed at both ends",
                 'hedge at maps/m45_54.jm2:5352',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:kandarin:22',
+                siteAt('tree', 2457, 3252),
                 "a dead tree used only from a pit north of the lava's railings, whose rim the map flags blocked",
                 'f1, as maps/m38_50.jm2:1849',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:wilderness:153',
+                siteAt('tree', 3310, 3858),
                 'in a field of lava whose lava tiles the map flags blocked',
                 'f1, as maps/m51_60.jm2:2644',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:kharidian-desert:0',
+                siteAt('tree', 3335, 3330),
                 "in a fenced flower bed by the Exam Centre's south hedge",
                 'fencing at maps/m52_52.jm2:4448',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:kharidian-desert:1',
+                siteAt('tree', 3373, 3330),
                 "in a fenced flower bed by the Exam Centre's south hedge",
                 'fencing at maps/m52_52.jm2:5994',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:exam-centre:2',
+                siteAt('tree', 3371, 3334),
                 "in a strip behind the Exam Centre's east hedge",
                 'hedge at maps/m52_52.jm2:5877',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'fire:kandarin:9',
+                siteAt('fire', 2570, 3254),
                 "a fireplace used only from a nook its room's table and chairs close in",
                 'bigtable at maps/m40_50.jm2:4662',
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
-                'fire:east-ardougne:1',
+                siteAt('fire', 2594, 3335),
                 "Elena's house's cooking pot, used only from nooks the stairs, chairs and walls close in",
                 'stairs at maps/m40_52.jm2:5505',
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
-                'pottery-wheel:east-ardougne:1',
+                siteAt('pottery-wheel', 2595, 3321),
                 "two wheels whose forceapproach (east, turned with the loc to south) puts the tile they are used from under the house's wall and a table",
                 'potters_wheels.loc:5; paintedbrickwall at maps/m40_51.jm2:7098, bigtable at :7101',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
             [
-                'pottery-wheel:misthalin:0',
+                siteAt('pottery-wheel', 3358, 3332),
                 'a wheel whose forceapproach (east, turned to west) puts the tile it is used from in a nook a crate and a potted plant close in',
                 'potters_wheels.loc:5; crate3 at maps/m52_52.jm2:5351, egypt_plantpotted at :5392',
                 'skill_crafting/scripts/pottery/pottery.rs2:8',
             ],
             [
-                'tree:misthalin:38',
+                siteAt('tree', 3370, 3332),
                 "trees in a thicket by the Exam Centre's fence, used only from a tile the bushes close in",
                 'bush1 at maps/m52_52.jm2:6024',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'fishing-spot:brimhaven-dungeon:0',
+                siteAt('fishing-spot', 2750, 9533),
                 "two lava eel spots in the dungeon's lava, fished only from a tile beside them (lavafish_loc.rs2:6): the tiles beside them are lava the map flags blocked, or ground behind the dungeon's cave walls that no walk gets to",
                 'f1, as maps/m42_148.jm2:3968; loc_5091 at :7226',
                 'skill_fishing/scripts/fishing_spots/lavafish_loc.rs2:5',
             ],
             [
-                'fire:feldip-hills:0',
+                siteAt('fire', 2552, 3045),
                 "a fire in a ruined room east of Gu'Tanoth whose crumbling walls close it in",
                 'crumblywall1 at maps/m39_47.jm2:6117',
                 'skill_cooking/scripts/cooking.rs2:2',
             ],
             [
-                'tree:kandarin:46',
+                siteAt('tree', 2565, 3512),
                 "a willow on a patch of bank the river's water closes in",
                 'f1, as maps/m40_54.jm2:185',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:tirannwn:16',
+                siteAt('tree', 2303, 3349),
                 'in a strip between the grand wall and a cliff, whose edges the map flags blocked',
                 'f1, as maps/m35_52.jm2:3724',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:tirannwn:26',
+                siteAt('tree', 2349, 3072),
                 "on a strip of shore south of the Castle Wars arena, which water and the edge of the map's land close in",
                 'f1, as maps/m36_48.jm2:2820',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
             ],
             [
-                'tree:wilderness:159',
+                siteAt('tree', 3328, 3904),
                 'burnt dead trees on a plateau whose edge the map flags blocked',
                 'f1, as maps/m52_60.jm2:569',
                 'skill_woodcutting/scripts/woodcut.rs2:1',
@@ -1540,146 +1576,219 @@ export const EXPECTED_UNREACHED: readonly ExpectedUnreached[] = [
         ] as const
     ).map(([site, why, wall, source]) => walledIn(site, why, wall, source)),
     // Stretches of land with several trees walled in alike: no loc or npc op on or beside one moves the player onto it,
-    // and those the reason names lead off it.
+    // and those the reason names lead off it. Each lists a tile of each tree site on it, on level 0.
     ...(
         [
             [
-                [0, 1, 2, 3, 4, 6]
-                    .map(i => `tree:feldip-hills:${i}`)
-                    .concat(
-                        [9, 11, 14, 16].map(i => `tree:kandarin:${i}`),
-                        ['tree:tirannwn:30', 'tree:tirannwn:37'],
-                    ),
+                [
+                    [2368, 3050],
+                    [2467, 3059],
+                    [2470, 3041],
+                    [2480, 3026],
+                    [2483, 3039],
+                    [2490, 3056],
+                    [2383, 3066],
+                    [2394, 3064],
+                    [2409, 3062],
+                    [2423, 3061],
+                    [2361, 3074],
+                    [2370, 3070],
+                ],
                 "the land south of the Castle Wars arena and west of the ogres' plateau, which railings, drystone walls and cliffs the map flags blocked close in; the ogres' caves and battlement and Toban's cave on its edge lead off it",
                 'railing at maps/m38_46.jm2:4136, drystonewall at maps/m38_48.jm2:6449',
             ],
             [
                 [
-                    'tree:kandarin:1',
-                    'tree:kandarin:12',
-                    ...[19, 21, 27, 29, 31, 32, 33, 34, 38].map(i => `tree:tirannwn:${i}`),
+                    [2373, 3274],
+                    [2399, 3248],
+                    [2311, 3132],
+                    [2337, 3092],
+                    [2354, 3093],
+                    [2359, 3197],
+                    [2368, 3178],
+                    [2369, 3164],
+                    [2369, 3222],
+                    [2369, 3239],
+                    [2371, 3278],
                 ],
                 'a dead forest north of the Castle Wars arena, which dead trees, an old fence and tiles the map flags blocked close in',
                 'deadtree1 at maps/m37_51.jm2:4139, oldfencing at maps/m36_51.jm2:5112',
             ],
             [
-                ['tree:misthalin:43', 'tree:morytania:0', 'tree:morytania:1'],
+                [
+                    [3384, 3366],
+                    [3395, 3342],
+                    [3397, 3374],
+                ],
                 'a strip east of the Dig Site, which bushes and tiles the map flags blocked close in',
                 'f1, as maps/m52_52.jm2:3243',
             ],
             [
-                ['tree:misthalin:44', 'tree:misthalin:46', 'tree:misthalin:47'],
+                [
+                    [3384, 3416],
+                    [3387, 3405],
+                    [3388, 3433],
+                ],
                 "a strip east of the Dig Site, which the Dig Site's bushes and tiles the map flags blocked close in",
                 'digsitebush at maps/m52_53.jm2:7221',
             ],
             [
-                ['tree:morytania:12', 'tree:morytania:14', 'tree:morytania:15'],
+                [
+                    [3532, 3264],
+                    [3535, 3284],
+                    [3537, 3306],
+                ],
                 "a stretch of Morytania's swamp, which swamp plants, dead trees and tiles the map flags blocked close in",
                 'deadtree2_swamp at maps/m55_51.jm2:4342',
             ],
             [
-                ['tree:kandarin:4', 'tree:tirannwn:36'],
+                [
+                    [2374, 3462],
+                    [2369, 3470],
+                ],
                 'the forest west of the Tree Gnome Stronghold, past its west fence',
                 'gnomefence at maps/m37_54.jm2:4748',
             ],
         ] as const
-    ).flatMap(([sites, why, wall]) => sites.map(site => walledIn(site, why, wall))),
+    ).flatMap(([tiles, why, wall]) => sitesAt('tree', tiles).map(site => walledIn(site, why, wall))),
     {
-        site: 'tree:kandarin:78',
+        site: siteAt('tree', 2754, 3814),
         reason: "walled in on Troll Romance's piste near Trollheim: the barrier at its top only starts a sled ride, which lands at its foot past the barriers at its bottom (gates.ts CURATED_TRANSPORTS), and those do nothing (quest_troll_love.rs2:18); cliffs the map flags blocked close in the rest",
         source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:18',
     },
-    ...['water-source:castle-wars:0', 'water-source:tirannwn:0'].map((site): ExpectedUnreached => ({
+    ...sitesAt('water-source', [
+        [2431, 3077],
+        [2368, 3130],
+    ]).map((site): ExpectedUnreached => ({
         site,
         reason: "in the Castle Wars arena, a minigame: a player is put in it only as a game starts ([queue,castlewars_start]) or into a free place in one under way (castlewars_controller.rs2:119), from a team's waiting room",
         source: 'minigames/game_castlewars/scripts/castlewars_controller.rs2:146',
     })),
     {
-        site: 'fire:kandarin:14',
+        site: siteAt('fire', 2612, 3145, 2),
         reason: "upstairs in a building inside the Fight Arena's walls, whose doors let a player in only mid-quest (Khazard armour worn from ^arena_obtained_armour, or brought back after jail); from ^arena_freed_servils on the guard attacks (@khazard_guard_generals_pet, quest_arena.rs2:43)",
         source: 'quests/quest_arena/scripts/quest_arena.rs2:42',
     },
-    ...['rock:dig-site-dungeon:1', 'rock:dig-site-dungeon:3'].map((site): ExpectedUnreached => ({
+    ...sitesAt('rock', [
+        [3366, 9813],
+        [3385, 9814],
+    ]).map((site): ExpectedUnreached => ({
         site,
         reason: "the Dig Site dungeon's copy from before the blockage is cleared: the winches' rope lands in it only before ^itexam_removed_blockage (area_digsite.rs2:627), and in the copy south of it after",
         source: 'quests/quest_itexam/scripts/area_digsite.rs2:630',
     })),
     // Decoration trees round the runecrafting temples, on land no walk from the temple a talisman lands in gets to.
-    ...['tree:air-altar:0', 'tree:nature-altar:0', ...[0, 1, 2, 3, 4, 5, 6, 7].map(i => `tree:water-altar:${i}`)].map(
-        (site): ExpectedUnreached => ({
-            site,
-            reason: "decoration outside the temple: the ruins' teleport lands in the temple, and no walk from there gets beside the tree",
-            source: 'skill_runecraft/scripts/runecraft.rs2:45',
-        }),
-    ),
+    ...sitesAt('tree', [
+        [2819, 4826],
+        [2374, 4831],
+        [2694, 4811],
+        [2697, 4842],
+        [2701, 4825],
+        [2704, 4808],
+        [2726, 4820],
+        [2730, 4852],
+        [2733, 4806],
+        [2736, 4827],
+    ]).map((site): ExpectedUnreached => ({
+        site,
+        reason: "decoration outside the temple: the ruins' teleport lands in the temple, and no walk from there gets beside the tree",
+        source: 'skill_runecraft/scripts/runecraft.rs2:45',
+    })),
     // Land players do get to, by a crossing the index does not read yet: each reason names it, and
     // conductor/roadmap.md (Review follow-ups) tracks deriving it. An entry goes stale once its crossing lands.
-    ...[...[1, 3, 4, 5, 7, 9, 11, 12, 14, 15, 18, 19, 20].map(i => `tree:karamja:${i}`), 'tree:kharazi-jungle:0'].map(
-        (site): ExpectedUnreached => ({
-            site,
-            reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). The locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), and no row says the chain of cuts',
-            source: 'quests/quest_legends/scripts/jungle_tree.rs2:161',
-        }),
-    ),
-    ...[0, 1, 2, 3].map((i): ExpectedUnreached => ({
-        site: `fire:goblin-cave:${i}`,
+    ...sitesAt('tree', [
+        [2779, 2923],
+        [2793, 2901],
+        [2809, 2914],
+        [2813, 2925],
+        [2827, 2900],
+        [2856, 2904],
+        [2883, 2907],
+        [2892, 2924],
+        [2916, 2916],
+        [2923, 2903],
+        [2941, 2908],
+        [2945, 2927],
+        [2956, 2897],
+        [2852, 2925],
+    ]).map((site): ExpectedUnreached => ({
+        site,
+        reason: 'in the Kharazi Jungle, which players cut their way into: each cut of a jungle tree or bush moves the player two tiles on, onto open ground or the next jungle loc (jungle_tree.rs2:141, :149). The locs stand on tiles the map flags blocked (f1, as maps/m44_45.jm2:61), and no row says the chain of cuts',
+        source: 'quests/quest_legends/scripts/jungle_tree.rs2:161',
+    })),
+    ...sitesAt('fire', [
+        [2581, 9843],
+        [2582, 9850],
+        [2590, 9829],
+        [2595, 9824],
+    ]).map((site): ExpectedUnreached => ({
+        site,
         reason: "in Dwarf Cannon's goblin cave, whose entrance by the Fishing Guild always telejumps the player in (mcannoncave, mcannon_cave.rs2:10); gate-list.ts reads its check as a side effect, and a side-effect gate candidate gives no edge",
         source: 'quests/quest_mcannon/scripts/locs/mcannon_cave.rs2:10',
     })),
-    ...['rock:tirannwn:1', 'rock:arandar:0', 'tree:tirannwn:20', 'tree:arandar:0'].map((site): ExpectedUnreached => ({
+    ...[
+        ...sitesAt('rock', [
+            [2317, 3266],
+            [2324, 3272],
+        ]),
+        ...sitesAt('tree', [
+            [2327, 3265],
+            [2319, 3274],
+        ]),
+    ].map((site): ExpectedUnreached => ({
         site,
         reason: "past Regicide's pit traps, which players jump (@regicide_jump_pitfall, quest_regicide.rs2:239: an agility roll, :275, then an exactmove three tiles on, or a fall into the pit); gate-list.ts reads their checks as side effects, and a side-effect gate candidate gives no edge",
         source: 'quests/quest_regicide/scripts/quest_regicide.rs2:280',
     })),
-    ...['altar:underground-pass:1', 'fire:underground-pass:3', 'furnace:underground-pass:0'].map(
+    ...[siteAt('altar', 2414, 9680), siteAt('fire', 2454, 9678), siteAt('furnace', 2454, 9682)].map(
         (site): ExpectedUnreached => ({
             site,
             reason: "in the Underground Pass past its spear traps, whose moves no bound run settles (the build report's scripted moves with no settled landing): the other ops on its edge give no way in from land a walk gets to (the mud pile, quest_upass.rs2:149, the railings, :226, and the ledge, upass_obstacles.rs2:246), and the pipe (upass_pipe4, upass_obstacles.rs2:61) is a side-effect gate candidate, which gives no edge",
             source: 'quests/quest_upass/scripts/upass_obstacles.rs2:150',
         }),
     ),
-    ...['fishing-spot:kandarin:7', 'range:kandarin:7'].map((site): ExpectedUnreached => ({
+    ...[siteAt('fishing-spot', 2789, 3273), siteAt('range', 2763, 3274)].map((site): ExpectedUnreached => ({
         site,
         reason: "on the fishing platform, which Holgart's boat telejumps the player to (holgart_ardougne.rs2:105); his dialogue goes by Sea Slug's stage, so gates.ts leaves the boat out as a quest boat (TRANSPORTS_OUT_OF_SCOPE)",
         source: 'areas/area_ardougne_east/scripts/holgart_ardougne.rs2:105',
     })),
     {
-        site: 'fire:ardougne-sewers:0',
+        site: siteAt('fire', 2605, 9674),
         reason: 'at the end of the Hazeel Cult sewer, where the raft takes the player only once all five valves above are turned right (~count_correct_valves); fewer leave them at an island on the way or where they are, and gate-list.ts reads the raft as not a gate',
         source: 'quests/quest_hazeelcult/scripts/quest_hazeelcult.rs2:38',
     },
     {
-        site: 'rock:desert-mining-camp-mine:0',
+        site: siteAt('rock', 3284, 9428),
         reason: "on the desert mining camp's mine floor, where the lower mine cart takes the player (oploc2,touristtrap_minecart: a dialogue choice and an agility roll; gate-list.ts reads its check as a side effect, which gives no edge) from the barrel room, itself past the mine cave and the mine doors, whose teleport into the mine (quest_desertrescue.rs2:435) the doors' gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
         source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
     },
     {
-        site: 'rock:desert-mining-camp-mine:1',
-        reason: "rocks on the desert mining camp's mine floor, reached as rock:desert-mining-camp-mine:0 is (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, and the rock is mined from the floor too",
+        site: siteAt('rock', 3288, 9469),
+        reason: "rocks on the desert mining camp's mine floor, reached as the floor's rocks at (3284, 9428) are (the mine cart, quest_desertrescue.rs2:829, past the mine doors' teleport, :435); with no tile of the floor reached, its stand falls to the tile nearest its centre, and the rock is mined from the floor too",
         source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:829',
     },
     {
-        site: 'rock:desert-mining-camp-mine:2',
+        site: siteAt('rock', 3291, 9413),
         reason: "in the desert mining camp's barrel room, past the mine cave, whose gate row lands there (quest_desertrescue.rs2:488), from the tunnel inside the mine doors; that tunnel is entered from outside only by the doors' teleport into the mine, which their gate rows do not land: they have no `to`, so the fill crosses them as a door on the surface",
         source: 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:435',
     },
     {
-        site: 'tree:baxtorian-falls:0',
+        site: siteAt('tree', 2510, 3463),
         reason: "on the Baxtorian Falls ledge, which the rope tied to the overhanging tree lets the player down to (quest_waterfall.rs2:262; its gate row lands); the tree is used from the river's islet, reached only by the rope thrown on the crossing rock (aplocu,crossing_rock_waterfall_quest, :213), whose script throws from the bank north of it (inzone, :222) while a gate row is run from the tiles beside its loc, so that row derives no landing (the fill's rows it could not use)",
         source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:222',
     },
     {
-        site: 'tree:tirannwn:1',
+        site: siteAt('tree', 2166, 3091),
         reason: "past Regicide's dense forest: both crossings on the pocket's edge (regicide_cross_over3 at (2165, 3189) and (2173, 3156)) exactmove the player onto tiles off walkable land, which the gate rows leave out (the build report's gate landings off walkable land)",
         source: 'quests/quest_regicide/scripts/quest_regicide.rs2:462',
     },
     {
-        site: 'fire:underground-pass:0',
+        site: siteAt('fire', 2424, 9720),
         reason: "in the Underground Pass, past obstacles the index does not settle: the collapsed bridges' moves no bound run settles (upass_obstacles.rs2:368, the build report's scripted moves with no settled landing), the tunnels down from the level above (cavewalltunnel_upass_down, quest_upass.rs2:407) start on land no walk gets to, and the pipe (upass_pipe6, upass_obstacles.rs2:330) is a side-effect gate candidate, which gives no edge",
         source: 'quests/quest_upass/scripts/upass_obstacles.rs2:368',
     },
     {
-        site: 'fire:underground-pass:1',
+        site: siteAt('fire', 2439, 9697),
         reason: "west of the Underground Pass's old bridge, which players drop by shooting a lit arrow at its guide rope from the ledge north-east of it (aploc1,oldbridge_guiderope: east of the rope and from z 9720 on, upass_bridge.rs2:34, :38); its gate row lands here, but a gate row is run from the tiles beside its loc, and those are the chasm's. The lever (:89) and the swamp's bubbles (upass_obstacles.rs2:33) only move the player off",
         source: 'quests/quest_upass/scripts/upass_bridge.rs2:33',
     },

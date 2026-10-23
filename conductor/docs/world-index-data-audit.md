@@ -95,7 +95,7 @@ The near-miss scan found 47 service and resource sites within 3 tiles of a named
 
 | # | Finding | Evidence | Scale |
 |---|---|---|---|
-| F1 | `EXPECTED_UNREACHED` and other entries name sites by ordinal id; the build fails only on an entry matching nothing, so a renumbered id silently hides a different site | `W/areas.ts` (81 distinct `kind:area:n` ids at HEAD); the working-tree Catherby edit already renumbered `tree:asgarnia:23` to `:20` and removed `:6` | 172 sites suppressed |
+| F1 | `EXPECTED_UNREACHED` and other entries name sites by ordinal id; the build fails only on an entry matching nothing, so a renumbered id silently hides a different site | `W/areas.ts` (148 distinct `kind:area:n` ids at 3043e7c19, re-derived from the table: many are template-built, `` `tree:kandarin:${i}` ``); the working-tree Catherby edit already renumbered `tree:asgarnia:23` to `:20` and removed `:6` | 173 sites suppressed (148 by id, 25 by area) |
 | F2 | `USE_GATES` gates by loc config only; quest-state uses are missing | Viking stalls `S/skill_thieving/scripts/stalls/stealing.rs2:35,:42` (`%viking < ^viking_complete`); Miscellania coal (`mining.rs2:32-48`, `%misc_quest`) and maples (`woodcut.rs2:68-77`), and its intercept procs take the yield | 4 stall sites, Miscellania coal, maple and fishing sites |
 | F3 | Stall family ignores guards (5 tiles, line of sight) and the 10-tick post-combat block | `W/model/families/stall.ts` returns `success: 1`; `stealing.rs2` `stealing_check_for_guard` | latent: no stall record yet |
 | F4 | Shilo cart priced flat `coins:10`; script charges 5% of carried coins, 10-200 | `W/gates.ts:136`; `S/.../hajedy.rs2:51-55` | 1 transport pair |
