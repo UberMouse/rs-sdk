@@ -30,7 +30,7 @@
 
 ## Walkthrough
 
-Coordinates and dialog choices below were run on questw1 (plan draft `conductor/runs/questw1/plans/digsite.ts`, run from `digsite-probe-exam1` to quest done); the plan is in progress, paused on the Panning tray pickup (see Gotchas). Start save `digsite-start`: Lumbridge (3222,3218), Att 40 Str 47 Def 40 HP 48 Prayer 15 Thieving 25 Agility 10 Herblore 10, 8 Salmon, steel scimitar, 100 coins. Combat was not needed (skeletons did not attack at combat 52). [v 2026-10-23 questw1 local]
+Plan `conductor/plans/digsite.ts` (promoted) runs from a fresh load of `lib:digsite-start` to quest done in 23.3 min (one run, questw7, 2026-10-24); it buys the tinderbox, chisel, vial, pestle and mortar and cup of tea itself and takes the Panning tray from its table. Most of the time goes to the panning loop and the random workman steals. Start save `digsite-start`: Lumbridge (3222,3218), Att 40 Str 47 Def 40 HP 48 Prayer 15 Thieving 25 Agility 10 Herblore 10, 8 Salmon, steel scimitar, 100 coins. Combat was not needed (skeletons did not attack at combat 52). [v 2026-10-23 questw1 local]
 
 ### Shopping (about 20 coins)
 
@@ -70,6 +70,9 @@ Tinderbox and chisel (Falador general store), vial and pestle and mortar (Jatix,
 
 ## Gotchas
 
+- Chiselling an uncut opal at Crafting 4-5 often smashes it ("Nothing interesting happens", Crushed gemstone): pan again until an Opal is held, so the cut phase needs a high `maxFails` (15). [v 2026-10-24 questw7 local]
+- The Specimen tray (3367,3386) "Search" needs a Specimen jar, takes about 3 ticks and finds nothing, bones, a coin, a dagger, charcoal (about 1 in 11), a broken arrow, broken glass, pottery or a cracked rock (5 Mining XP); `interact` ends on "an animation started" unless `expect` is `^\s*You find`. [v 2026-10-24 questw7 local]
+- Workman steals pile up spare Specimen brushes (7 at once), which block steal phases needing 4 free slots: drop the extras. The Panning tray can be dropped once certificate 3 is held. [v 2026-10-24 questw7 local]
 - Panning tray: the only source is a ground spawn on a Table at (3369,3378) (map m52_52, obj 677); the state lists it `[UNREACHABLE]` (blocked tile). `pickup {area:{x:3369,z:3379,radius:4}, items:[{item:"Panning tray",count:1}]}` takes it from the adjacent (3369,3379) (items on blocked tiles: `learnings/walking.md`). [v 2026-10-24 questw7 local]
 - The `thieving` task refuses "Digsite workman" ("no pickpocket config"); the draft steals with `interact` "Steal-from". A failed or empty steal leaves the state unchanged, so the plan idle rail ends the plan "nothing left to do"; the draft alternates two steal phases at east and west anchors. [v 2026-10-23 questw1 local]
 
