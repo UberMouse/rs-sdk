@@ -187,7 +187,7 @@ await bot.walkTo(3092, 3243);  // May path through (3220, 3220)
 | Kebab seller | (3273, 3180) | Dialog-based shop, 1gp per kebab.
 | Scimitar shop (Zeke) | (3287, 3186) | Bronze to Mithril scimitars |
 | Al-Kharid warriors (palace) | ~(3293, 3170) | Good thieving/combat training.
-| Fishing spots | (3267, 3148) | Safe shrimp fishing (there is a lvl 14 scorpion)
+| Fishing spots | (3267, 3148) | Shrimp fishing; use this north spot, not (3276, 3140) where lvl 14 scorpions attacked a combat-29 bot [v 2026-10-23 conductor3 local]
 
 ### Al Kharid Detection
 
