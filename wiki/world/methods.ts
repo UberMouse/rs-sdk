@@ -615,6 +615,7 @@ export const METHODS: MethodDef[] = [
         gear: ['bronze_scimitar'],
         loot: { bones: 'bury' },
         sink: { mode: 'drop' },
+        plans: ['melee-chickens'],
         notes: 'A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.',
     },
 ];

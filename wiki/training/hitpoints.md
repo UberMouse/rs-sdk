@@ -11,7 +11,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `hill-giants-edgeville` | [Edgeville Dungeon](../places/edgeville-dungeon.md) `npc:edgeville-dungeon:8` | 58.8k at 20 | 37.3k | 58.8k | 93.4k | 143k | 178k | 209k | 256k | 286k | 312k | 337k | 291 | 5.04k | player | - |
 | `moss-giants-varrock-sewers` † | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 75.1k at 20 | 51.2k | 75.1k | 113k | 168k | 208k | 242k | 296k | 330k | 360k | 389k | 196 | 7.53k | player | - |
 
-- `chickens-lumbridge`: Chickens north of Lumbridge, bones buried, feathers kept. A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.
+- `chickens-lumbridge`: Chickens north of Lumbridge, bones buried, feathers kept. Plans: melee-chickens. A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.
   - **Requires**: Reach: none. Levels: Attack 1, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 1. Tools: none. Gear: Bronze scimitar.
   - **Sink**: drop.
   - **Hazard**: no npc there hunts players; single-way.
