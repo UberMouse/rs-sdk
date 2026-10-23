@@ -27,7 +27,7 @@
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
 | - | (2651, 9763) | 2 | 10 | (2638, 9751)-(2663, 9774) | 60 ticks | - | no |
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2606, 9640) | 15 | 15 | (2587, 9620)-(2630, 9676) | 4 ticks | - | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2606, 9640) | 15 | 10 | (2592, 9625)-(2625, 9671) | 60 ticks | - | no |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3097, 9878) | 2 | 10 | (3086, 9868)-(3107, 9888) | 60 ticks | - | yes |
 | [Feldip Hills](../places/feldip-hills.md) | (2517, 2976) | 1 | 10 | (2507, 2966)-(2527, 2986) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2550, 2981) | 1 | 10 | (2540, 2971)-(2560, 2991) | 60 ticks | - | no |
@@ -36,7 +36,7 @@
 | [Kandarin](../places/kandarin.md) | (2387, 3370) | 1 | 10 | (2377, 3360)-(2397, 3380) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2394, 3365) | 1 | 10 | (2384, 3355)-(2404, 3375) | 60 ticks | - | no |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3170, 3248) | 1 | 10 | (3160, 3238)-(3180, 3258) | 60 ticks | - | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3234) | 2 | 35 | (3203, 3177)-(3297, 3295) | 60 ticks | - | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3234) | 2 | 10 | (3228, 3202)-(3272, 3270) | 60 ticks | - | yes |
 | [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3170, 3245) | 1 | 10 | (3158, 3233)-(3180, 3255) | 60 ticks | - | yes |
 | [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3202, 3239) | 2 | 10 | (3190, 3228)-(3213, 3249) | 60 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3075, 3366) | 1 | 10 | (3065, 3356)-(3085, 3376) | 60 ticks | - | yes |

@@ -38,7 +38,7 @@
 | [Watchtower quest area](../places/watchtower-quest-area.md) | (2924, 4702) | 1 | 5 | (2919, 4697)-(2929, 4707) | 100 ticks | - | no |
 | [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2595, 3073) L1 | 1 | 5 | (2590, 3068)-(2600, 3078) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2540, 3102) | 1 | 5 | (2535, 3097)-(2545, 3107) | 100 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2545, 3090) | 5 | 8 | (2527, 3077)-(2555, 3102) | 100 ticks | - | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2545, 3090) | 5 | 5 | (2530, 3080)-(2552, 3099) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2535, 3096) L1 | 6 | 5 | (2528, 3081)-(2544, 3112) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2537, 3078) L1 | 1 | 5 | (2532, 3073)-(2542, 3083) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2551, 3109) L1 | 1 | 5 | (2546, 3104)-(2556, 3114) | 100 ticks | - | no |

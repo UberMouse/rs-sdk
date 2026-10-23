@@ -26,9 +26,9 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3295) | 3 | 15 | (2556, 3271)-(2602, 3323) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2631, 3297) | 2 | 5 | (2616, 3283)-(2637, 3304) | 50 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2572, 3386) | 4 | 5 | (2562, 3378)-(2580, 3393) | 50 ticks | - | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3295) | 3 | 5 | (2566, 3281)-(2592, 3313) | 100 ticks | - | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2631, 3297) | 2 | 5 | (2616, 3283)-(2637, 3304) | 100 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2572, 3386) | 4 | 5 | (2562, 3378)-(2580, 3393) | 100 ticks | - | no |
 | [Varrock Palace (Varrock)](../places/palace.md) | (3204, 3487) | 2 | 5 | (3197, 3482)-(3210, 3492) | 100 ticks | - | yes |
 
 ## Drops

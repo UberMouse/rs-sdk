@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2933, 9693) | 1 | 15 | (2915, 9672)-(2948, 9718) | 4 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2933, 9693) | 1 | 5 | (2925, 9682)-(2938, 9708) | 100 ticks | - | no |
 
 ## Drops
 

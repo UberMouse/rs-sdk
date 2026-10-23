@@ -129,7 +129,7 @@
 | [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) | (3196, 3206) | 1 | 15 | (3181, 3191)-(3211, 3221) | 4 ticks | - | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2928, 3251) | 3 | 15 | (2908, 3235)-(2948, 3266) | 4 ticks | - | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2930, 3243) | 1 | 15 | (2915, 3228)-(2945, 3258) | 4 ticks | - | yes |
-| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2939, 3242) | 1 | 25 | (2914, 3211)-(2966, 3267) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2939, 3242) | 1 | 15 | (2924, 3221)-(2956, 3257) | 4 ticks | - | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2933, 3241) L1 | 2 | 15 | (2917, 3225)-(2949, 3257) | 4 ticks | - | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2924, 3243) L2 | 2 | 15 | (2908, 3225)-(2948, 3271) | 4 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3151, 3414) | 1 | 15 | (3136, 3399)-(3166, 3429) | 4 ticks | - | yes |
@@ -146,7 +146,7 @@
 | [Underground Pass](../places/underground-pass.md) | (2421, 9632) | 1 | 15 | (2404, 9616)-(2437, 9651) | 4 ticks | - | no |
 | [Underground Pass](../places/underground-pass.md) | (2422, 9622) | 1 | 15 | (2407, 9607)-(2437, 9637) | 4 ticks | - | no |
 | [Varrock (Misthalin)](../places/varrock.md) | (3176, 3479) | 3 | 15 | (3158, 3461)-(3194, 3495) | 4 ticks | - | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3243, 3393) | 1 | 25 | (3213, 3365)-(3274, 3418) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3243, 3393) | 1 | 15 | (3223, 3375)-(3264, 3408) | 4 ticks | - | yes |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3229, 9865) | 15 | 15 | (3203, 9844)-(3261, 9887) | 4 ticks | - | yes |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3242, 9894) | 2 | 15 | (3227, 9878)-(3257, 9910) | 4 ticks | - | yes |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3244, 9875) | 1 | 15 | (3229, 9860)-(3259, 9890) | 4 ticks | - | yes |

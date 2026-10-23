@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3081, 3444) | 1 | 10 | (3065, 3426)-(3096, 3455) | 50 ticks | - | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3081, 3444) | 1 | 5 | (3070, 3431)-(3091, 3450) | 100 ticks | - | yes |
 
 ## Drops
 

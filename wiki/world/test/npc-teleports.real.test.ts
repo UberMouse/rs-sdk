@@ -39,6 +39,10 @@ describe('the essence mine teleports', () => {
             const spawn = world.npcSpawns.find(n => n.config === npc && n.centre.x === c.at.x && n.centre.z === c.at.z);
             const { x1, z1, x2, z2 } = spawn!.roam;
             expect(c.from.every(t => t.x >= x1 - 1 && t.x <= x2 + 1 && t.z >= z1 - 1 && t.z <= z2 + 1)).toBe(true);
+            // Wandering widens where it is used from, and still takes the ring beside where it spawns.
+            const b = spawn!.bbox;
+            const ring = (t: Tile) => Math.max(b.x1 - t.x, t.x - b.x2, b.z1 - t.z, t.z - b.z2) === 1;
+            expect(c.from.some(ring)).toBe(true);
         }
     });
 

@@ -42,7 +42,7 @@
 | [Kandarin](../places/kandarin.md) | (2463, 3317) | 1 | 5 | (2458, 3312)-(2468, 3322) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2468, 3290) | 1 | 5 | (2463, 3285)-(2473, 3295) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2475, 3325) | 1 | 5 | (2470, 3320)-(2480, 3330) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2479, 3303) | 9 | 15 | (2439, 3266)-(2507, 3341) | 4 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2479, 3303) | 9 | 5 | (2449, 3276)-(2497, 3331) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2479, 3311) | 1 | 5 | (2474, 3306)-(2484, 3316) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2482, 3286) | 1 | 5 | (2477, 3281)-(2487, 3291) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2482, 3296) | 1 | 5 | (2477, 3291)-(2487, 3301) | 100 ticks | - | no |
@@ -56,7 +56,7 @@
 | [Kandarin](../places/kandarin.md) | (2553, 3275) | 1 | 5 | (2548, 3270)-(2558, 3280) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2554, 3307) | 1 | 5 | (2549, 3302)-(2559, 3312) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2554, 3314) | 1 | 5 | (2545, 3309)-(2560, 3337) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2647, 3357) | 1 | 14 | (2631, 3337)-(2666, 3381) | 50 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2647, 3357) | 1 | 5 | (2640, 3346)-(2657, 3372) | 50 ticks | - | no |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3205) | 1 | 5 | (3212, 3200)-(3222, 3210) | 50 ticks | - | yes |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3231, 3240) | 1 | 5 | (3212, 3231)-(3236, 3245) | 50 ticks | - | yes |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3235, 3206) | 1 | 5 | (3226, 3201)-(3240, 3212) | 50 ticks | - | yes |
@@ -66,7 +66,7 @@
 | [Underground Pass entrance (Kandarin)](../places/underground-pass-entrance.md) | (2453, 3307) | 1 | 5 | (2448, 3302)-(2458, 3312) | 100 ticks | - | no |
 | [Varrock (Misthalin)](../places/varrock.md) | (3223, 3401) | 1 | 5 | (3218, 3393)-(3228, 3406) | 50 ticks | - | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3279, 3499) | 2 | 5 | (3273, 3491)-(3288, 3507) | 50 ticks | - | yes |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3320) | 4 | 15 | (2485, 3299)-(2536, 3346) | 4 ticks | - | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3320) | 4 | 5 | (2495, 3309)-(2526, 3336) | 100 ticks | - | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3315) | 1 | 5 | (2508, 3310)-(2518, 3320) | 100 ticks | - | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2525, 3309) | 1 | 5 | (2520, 3304)-(2530, 3314) | 100 ticks | - | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2526, 3304) | 2 | 5 | (2519, 3298)-(2533, 3310) | 100 ticks | - | no |

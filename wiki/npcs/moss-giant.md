@@ -44,15 +44,15 @@
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9594) | 1 | 3 | (2677, 9591)-(2683, 9597) | 60 ticks | - | no |
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2682, 9573) | 1 | 3 | (2679, 9570)-(2685, 9576) | 60 ticks | - | no |
 | [Crandor](../places/crandor.md) | (2831, 3244) | 3 | 3 | (2824, 3239)-(2837, 3249) | 60 ticks | - | yes |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | 9 | (2519, 9832)-(2539, 9855) | 60 ticks | - | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | 9 | (2532, 9831)-(2555, 9856) | 60 ticks | - | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | 9 | (2529, 9804)-(2555, 9831) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | 1 | 3 | (2525, 9838)-(2533, 9849) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | 1 | 3 | (2538, 9837)-(2549, 9850) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | 1 | 3 | (2535, 9810)-(2549, 9825) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2553, 3406) | 4 | 3 | (2546, 3398)-(2559, 3412) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2695, 3211) | 5 | 3 | (2688, 3201)-(2702, 3219) | 60 ticks | - | no |
 | [Varrock Sewers](../places/varrock-sewers.md) | (3158, 9903) | 2 | 3 | (3154, 9897)-(3162, 9908) | 60 ticks | - | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3165, 9879) | 2 | 10 | (3153, 9868)-(3193, 9901) | 60 ticks | - | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3165, 9879) | 2 | 3 | (3160, 9875)-(3186, 9894) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3139, 3818) | 1 | 3 | (3136, 3815)-(3142, 3821) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | 9 | (3131, 3793)-(3152, 3814) | 60 ticks | - | yes |
+| [Wilderness](../places/wilderness.md) | (3140, 3805) | 1 | 3 | (3137, 3799)-(3146, 3808) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3141, 3826) | 1 | 3 | (3138, 3823)-(3144, 3829) | 60 ticks | - | yes |
 
 ## Drops

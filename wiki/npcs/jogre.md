@@ -41,9 +41,9 @@
 | [Karamja](../places/karamja.md) | (2903, 2945) | 1 | 3 | (2900, 2942)-(2906, 2948) | 60 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2916, 3062) | 1 | 3 | (2913, 3059)-(2919, 3065) | 60 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2921, 2959) | 3 | 3 | (2915, 2953)-(2928, 2966) | 60 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2923, 2985) | 1 | 5 | (2913, 2980)-(2928, 2992) | 60 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2923, 2985) | 1 | 3 | (2915, 2982)-(2926, 2990) | 60 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2926, 3053) | 7 | 3 | (2911, 3037)-(2938, 3063) | 60 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2931, 2987) | 1 | 5 | (2926, 2982)-(2947, 3000) | 60 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2931, 2987) | 1 | 3 | (2928, 2984)-(2945, 2998) | 60 ticks | - | no |
 
 ## Drops
 

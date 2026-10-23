@@ -28,13 +28,13 @@
 |------|--------|--------|--------|------|---------|-------|-----|
 | [Kandarin](../places/kandarin.md) | (2727, 3160) | 9 | 5 | (2718, 3153)-(2736, 3169) | 100 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2772, 3016) | 2 | 5 | (2766, 3009)-(2778, 3022) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2777, 3068) | 1 | 5 | (2772, 3059)-(2785, 3073) | 50 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2777, 3068) | 1 | 5 | (2772, 3059)-(2785, 3073) | 100 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2842, 3017) | 1 | 5 | (2837, 3012)-(2847, 3022) | 100 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2866, 3061) | 1 | 5 | (2861, 3056)-(2871, 3066) | 100 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2868, 3054) | 1 | 5 | (2863, 3049)-(2873, 3059) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2918, 2987) | 1 | 5 | (2913, 2980)-(2928, 2992) | 60 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2939, 2994) | 4 | 5 | (2926, 2982)-(2947, 3000) | 60 ticks | - | no |
-| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2801, 3067) | 1 | 5 | (2796, 3059)-(2810, 3072) | 50 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2918, 2987) | 1 | 5 | (2913, 2980)-(2928, 2992) | 100 ticks | - | no |
+| [Karamja](../places/karamja.md) | (2939, 2994) | 4 | 5 | (2926, 2982)-(2947, 3000) | 100 ticks | - | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2801, 3067) | 1 | 5 | (2796, 3059)-(2810, 3072) | 100 ticks | - | no |
 
 ## Drops
 

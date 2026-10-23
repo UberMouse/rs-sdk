@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2855, 3591) | 1 | 5 | (2849, 3579)-(2881, 3605) | 50 ticks | - | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2855, 3591) | 1 | 3 | (2851, 3581)-(2879, 3603) | 100 ticks | - | no |
 
 ## Drops
 

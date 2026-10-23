@@ -15,18 +15,18 @@
 |------|--------|--------|--------|------|---------|-------|-----|
 | [Agility Arena (Karamja)](../places/agility-arena.md) | (2819, 3194) | 1 | 5 | (2814, 3189)-(2824, 3199) | 60 ticks | - | yes |
 | [Ape Atoll](../places/ape-atoll.md) | (2701, 2762) | 1 | 5 | (2696, 2757)-(2706, 2767) | 100 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2702, 2780) | 1 | 5 | (2695, 2771)-(2710, 2790) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2703, 2769) | 1 | 5 | (2698, 2764)-(2709, 2774) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2715, 2782) | 1 | 5 | (2709, 2776)-(2720, 2787) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2716, 2719) | 1 | 5 | (2711, 2714)-(2721, 2727) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2726, 2712) | 1 | 5 | (2721, 2707)-(2737, 2719) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2726, 2789) | 2 | 5 | (2717, 2782)-(2732, 2796) | 50 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2702, 2780) | 1 | 5 | (2695, 2771)-(2710, 2790) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2703, 2769) | 1 | 5 | (2698, 2764)-(2709, 2774) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2715, 2782) | 1 | 5 | (2709, 2776)-(2720, 2787) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2716, 2719) | 1 | 5 | (2711, 2714)-(2721, 2727) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2726, 2712) | 1 | 5 | (2721, 2707)-(2737, 2719) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2726, 2789) | 2 | 5 | (2717, 2782)-(2732, 2796) | 100 ticks | - | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2731, 2724) | 1 | 5 | (2726, 2719)-(2736, 2729) | 100 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2740, 2721) | 1 | 5 | (2733, 2716)-(2745, 2727) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2742, 2707) | 1 | 5 | (2737, 2699)-(2747, 2716) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2755, 2708) | 1 | 5 | (2744, 2700)-(2760, 2715) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2770, 2709) | 2 | 5 | (2761, 2697)-(2784, 2720) | 50 ticks | - | no |
-| [Ape Atoll](../places/ape-atoll.md) | (2784, 2714) | 1 | 5 | (2779, 2708)-(2793, 2719) | 50 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2740, 2721) | 1 | 5 | (2733, 2716)-(2745, 2727) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2742, 2707) | 1 | 5 | (2737, 2699)-(2747, 2716) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2755, 2708) | 1 | 5 | (2744, 2700)-(2760, 2715) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2770, 2709) | 2 | 5 | (2761, 2697)-(2784, 2720) | 100 ticks | - | no |
+| [Ape Atoll](../places/ape-atoll.md) | (2784, 2714) | 1 | 5 | (2779, 2708)-(2793, 2719) | 100 ticks | - | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2789, 2758) | 1 | 5 | (2784, 2753)-(2794, 2763) | 100 ticks | - | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2809, 2754) | 1 | 5 | (2804, 2749)-(2814, 2759) | 100 ticks | - | no |
 | [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2613, 3275) | 5 | 5 | (2605, 3270)-(2621, 3281) | 60 ticks | - | no |

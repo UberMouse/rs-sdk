@@ -33,7 +33,7 @@
 | [Kandarin](../places/kandarin.md) | (2532, 3217) | 3 | 12 | (2518, 3200)-(2551, 3229) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2537, 3236) | 1 | 12 | (2516, 3224)-(2556, 3264) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2381, 3428) | 1 | 12 | (2369, 3416)-(2393, 3440) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2392, 3405) | 1 | 35 | (2356, 3370)-(2439, 3448) | 60 ticks | - | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2392, 3405) | 1 | 12 | (2379, 3393)-(2416, 3425) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2413, 3397) | 1 | 12 | (2401, 3385)-(2425, 3409) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2415, 3408) | 1 | 12 | (2403, 3396)-(2439, 3425) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2432, 3387) | 1 | 12 | (2420, 3375)-(2444, 3399) | 60 ticks | - | no |

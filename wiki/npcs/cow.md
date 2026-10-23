@@ -32,7 +32,7 @@
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2664, 3342) | 5 | 5 | (2652, 3336)-(2676, 3349) | 90 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2583, 3119) | 3 | 5 | (2575, 3112)-(2593, 3127) | 90 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2666, 3351) | 5 | 5 | (2653, 3343)-(2677, 3359) | 90 ticks | - | no |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3258, 3259) | 3 | 35 | (3203, 3177)-(3297, 3295) | 60 ticks | - | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3258, 3259) | 3 | 5 | (3233, 3207)-(3267, 3265) | 90 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3154, 3325) | 1 | 5 | (3149, 3320)-(3159, 3330) | 90 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3160, 3318) | 1 | 5 | (3155, 3313)-(3165, 3323) | 90 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3173, 3323) | 1 | 5 | (3168, 3318)-(3178, 3328) | 90 ticks | - | yes |
@@ -44,7 +44,7 @@
 | [Misthalin](../places/misthalin.md) | (3259, 3292) | 2 | 5 | (3251, 3287)-(3266, 3297) | 90 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3261, 3270) | 1 | 5 | (3256, 3265)-(3266, 3275) | 90 ticks | - | yes |
 | [River Lum (Misthalin)](../places/river-lum.md) | (3156, 3342) | 1 | 5 | (3151, 3337)-(3161, 3347) | 90 ticks | - | yes |
-| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2733, 3561) | 1 | 5 | (2728, 3554)-(2743, 3567) | 50 ticks | - | no |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2733, 3561) | 1 | 5 | (2728, 3554)-(2743, 3567) | 90 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2604, 3114) | 1 | 5 | (2599, 3109)-(2609, 3119) | 90 ticks | - | no |
 | [Zanaris](../places/zanaris.md) | (3206, 9565) | 2 | 5 | (3198, 9557)-(3214, 9573) | 90 ticks | - | no |
 | [Zanaris](../places/zanaris.md) | (3207, 9577) | 1 | 5 | (3202, 9572)-(3212, 9582) | 90 ticks | - | no |

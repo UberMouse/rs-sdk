@@ -40,7 +40,7 @@
 | [Ape Atoll](../places/ape-atoll.md) | (2772, 2706) | 3 | 5 | (2761, 2697)-(2784, 2720) | 50 ticks | - | no |
 | [Ape Atoll](../places/ape-atoll.md) | (2788, 2713) | 1 | 5 | (2779, 2708)-(2793, 2719) | 50 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2676, 3090) | 18 | 3 | (2664, 3078)-(2686, 3100) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2678, 3112) | 3 | 8 | (2663, 3099)-(2689, 3122) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2678, 3112) | 3 | 3 | (2668, 3104)-(2684, 3117) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2768, 3210) | 1 | 3 | (2765, 3207)-(2771, 3213) | 60 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2767, 3204) | 1 | 3 | (2764, 3201)-(2770, 3207) | 60 ticks | - | no |
 | [Karamja](../places/karamja.md) | (2777, 3116) | 1 | 3 | (2774, 3113)-(2780, 3119) | 60 ticks | - | no |

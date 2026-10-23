@@ -36,8 +36,8 @@
 | - | (2861, 10080) | 1 | 5 | (2856, 10075)-(2866, 10085) | 100 ticks | - | no |
 | - | (2864, 10085) | 1 | 8 | (2856, 10077)-(2872, 10093) | 100 ticks | - | no |
 | [Asgarnia](../places/asgarnia.md) | (2966, 3397) | 3 | 2 | (2962, 3394)-(2970, 3400) | 100 ticks | - | yes |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2896, 3566) | 1 | 5 | (2891, 3559)-(2906, 3571) | 50 ticks | - | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3556) | 2 | 5 | (2888, 3551)-(2905, 3563) | 50 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2896, 3566) | 1 | 0 | (2896, 3564)-(2901, 3566) | 100 ticks | - | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3556) | 2 | 0 | (2893, 3556)-(2900, 3558) | 100 ticks | - | no |
 | [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2510, 3378) | 1 | 1 | (2509, 3377)-(2511, 3379) | 100 ticks | - | no |
 | [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2513, 3372) | 3 | 5 | (2503, 3365)-(2523, 3379) | 100 ticks | - | no |
 | [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2522, 3368) | 2 | 1 | (2518, 3365)-(2526, 3370) | 100 ticks | - | no |
@@ -45,9 +45,9 @@
 | [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2525, 3380) | 1 | 5 | (2520, 3375)-(2530, 3385) | 100 ticks | - | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2570, 3275) | 1 | 2 | (2568, 3273)-(2572, 3277) | 100 ticks | - | no |
 | [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2636, 3339) | 3 | 5 | (2630, 3334)-(2642, 3345) | 100 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2660, 3308) | 7 | 15 | (2632, 3283)-(2686, 3333) | 50 ticks | - | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2660, 3308) | 7 | 5 | (2642, 3293)-(2676, 3323) | 100 ticks | - | no |
 | [Falador (Asgarnia)](../places/falador.md) | (2952, 3381) | 2 | 2 | (2948, 3377)-(2955, 3384) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2965, 3381) | 3 | 5 | (2957, 3368)-(2975, 3394) | 50 ticks | - | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2965, 3381) | 3 | 2 | (2960, 3371)-(2972, 3391) | 100 ticks | - | yes |
 | [Falador (Asgarnia)](../places/falador.md) | (3006, 3322) | 3 | 2 | (3004, 3319)-(3009, 3325) | 100 ticks | - | yes |
 | [Kandarin](../places/kandarin.md) | (2511, 3383) | 1 | 1 | (2510, 3382)-(2512, 3384) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2517, 3356) | 2 | 1 | (2514, 3355)-(2520, 3357) | 100 ticks | - | no |
@@ -56,7 +56,7 @@
 | [Kandarin](../places/kandarin.md) | (2739, 3577) | 1 | 5 | (2734, 3572)-(2744, 3582) | 100 ticks | - | no |
 | [Miscellania and Etceteria](../places/miscellania.md) | (2505, 3856) L1 | 1 | 0 | (2505, 3856)-(2505, 3856) | 100 ticks | - | no |
 | [Miscellania and Etceteria](../places/miscellania.md) | (2505, 3864) L1 | 1 | 0 | (2505, 3864)-(2505, 3864) | 100 ticks | - | no |
-| [Misthalin](../places/misthalin.md) | (3089, 3518) | 2 | 5 | (3080, 3507)-(3102, 3523) | 50 ticks | - | yes |
+| [Misthalin](../places/misthalin.md) | (3089, 3518) | 2 | 2 | (3083, 3510)-(3099, 3520) | 100 ticks | - | yes |
 | [Misthalin](../places/misthalin.md) | (3112, 3514) | 4 | 2 | (3107, 3510)-(3116, 3519) | 100 ticks | - | yes |
 | [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2655, 3428) | 2 | 5 | (2650, 3421)-(2660, 3434) | 50 ticks | - | no |
 | [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2659, 3438) | 1 | 5 | (2654, 3433)-(2664, 3443) | 50 ticks | - | no |

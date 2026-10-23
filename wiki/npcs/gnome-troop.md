@@ -29,7 +29,7 @@
 | [Battlefield (Kandarin)](../places/battlefield.md) | (2531, 3226) | 9 | 5 | (2524, 3220)-(2538, 3232) | 60 ticks | - | no |
 | [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2465, 3502) L2 | 2 | 5 | (2458, 3489)-(2476, 3515) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2507, 3211) | 2 | 5 | (2502, 3205)-(2512, 3216) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2535, 3212) | 8 | 12 | (2518, 3200)-(2551, 3229) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2535, 3212) | 8 | 5 | (2525, 3207)-(2544, 3222) | 60 ticks | - | no |
 | [Swamp (Tree Gnome Stronghold)](../places/swamp.md) | (2409, 3507) | 1 | 5 | (2404, 3502)-(2414, 3512) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2384, 3481) | 1 | 5 | (2379, 3476)-(2389, 3486) | 60 ticks | - | no |
 | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2388, 3473) | 1 | 5 | (2383, 3468)-(2393, 3478) | 60 ticks | - | no |

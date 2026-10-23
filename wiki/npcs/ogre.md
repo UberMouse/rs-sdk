@@ -26,17 +26,17 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2586, 9609) | 3 | 15 | (2564, 9586)-(2612, 9659) | 4 ticks | - | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2586, 9609) | 3 | 3 | (2576, 9598)-(2600, 9647) | 60 ticks | - | no |
 | [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | (2526, 3375) | 6 | 5 | (2518, 3368)-(2534, 3381) | 100 ticks | - | no |
 | [Dungeon north of Ardougne](../places/dungeon-north-of-ardougne.md) | (2585, 9737) | 7 | 3 | (2578, 9730)-(2593, 9745) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2504, 2965) | 1 | 3 | (2501, 2962)-(2507, 2968) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2504, 2984) | 1 | 3 | (2501, 2981)-(2507, 2987) | 60 ticks | - | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2510, 3044) | 1 | 3 | (2502, 3029)-(2513, 3047) | 24 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2510, 3044) | 1 | 3 | (2502, 3029)-(2513, 3047) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2513, 3026) | 1 | 3 | (2509, 3019)-(2516, 3029) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2520, 2973) | 1 | 3 | (2517, 2970)-(2523, 2976) | 60 ticks | - | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2525, 2986) | 1 | 15 | (2510, 2971)-(2542, 3001) | 4 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2525, 2986) | 1 | 3 | (2522, 2983)-(2530, 2989) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2529, 3032) | 1 | 3 | (2526, 3029)-(2532, 3035) | 60 ticks | - | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2535, 2976) | 2 | 15 | (2516, 2960)-(2551, 2992) | 4 ticks | - | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2535, 2976) | 2 | 3 | (2528, 2972)-(2539, 2980) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2539, 2990) | 1 | 3 | (2536, 2987)-(2542, 2993) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2540, 3017) | 2 | 3 | (2536, 3013)-(2544, 3021) | 60 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2549, 2979) | 1 | 3 | (2546, 2976)-(2552, 2982) | 60 ticks | - | no |
@@ -60,8 +60,8 @@
 | [Kandarin](../places/kandarin.md) | (2506, 3113) | 4 | 3 | (2499, 3105)-(2511, 3122) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2512, 3085) | 4 | 3 | (2506, 3078)-(2517, 3090) | 60 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2532, 3375) | 2 | 5 | (2526, 3368)-(2537, 3381) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2554, 3192) | 1 | 15 | (2526, 3171)-(2572, 3213) | 60 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2388, 9684) | 2 | 10 | (2377, 9670)-(2412, 9695) | 60 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3192) | 1 | 3 | (2538, 3183)-(2560, 3201) | 60 ticks | - | no |
+| [Underground Pass](../places/underground-pass.md) | (2388, 9684) | 2 | 3 | (2384, 9677)-(2405, 9688) | 60 ticks | - | no |
 | [Witchaven dungeon](../places/witchaven-dungeon.md) | (2721, 9669) | 2 | 3 | (2716, 9665)-(2725, 9672) | 60 ticks | - | no |
 | [Witchaven dungeon](../places/witchaven-dungeon.md) | (2722, 9709) | 4 | 3 | (2716, 9699)-(2727, 9718) | 60 ticks | - | no |
 

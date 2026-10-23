@@ -53,23 +53,23 @@
 | [Karamja](../places/karamja.md) | (2837, 3184) | 1 | 25 | (2812, 3159)-(2862, 3209) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Karamja](../places/karamja.md) | (2841, 3163) | 1 | 25 | (2816, 3138)-(2866, 3188) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Karamja](../places/karamja.md) | (2849, 3186) | 1 | 25 | (2824, 3161)-(2874, 3211) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Karamja](../places/karamja.md) | (2850, 3165) | 1 | 25 | (2825, 3134)-(2878, 3190) | 50 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Karamja](../places/karamja.md) | (2858, 3178) | 2 | 25 | (2832, 3152)-(2887, 3205) | 50 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Kharidian Desert](../places/kharidian-desert.md) | (3299, 3273) | 1 | 25 | (3274, 3248)-(3326, 3303) | 50 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Karamja](../places/karamja.md) | (2850, 3165) | 1 | 25 | (2825, 3134)-(2878, 3190) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Karamja](../places/karamja.md) | (2858, 3178) | 2 | 25 | (2832, 3152)-(2887, 3205) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Kharidian Desert](../places/kharidian-desert.md) | (3299, 3273) | 1 | 25 | (3274, 3248)-(3326, 3303) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3226) | 1 | 25 | (3192, 3201)-(3242, 3251) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2941, 3236) | 1 | 25 | (2914, 3211)-(2966, 3267) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2941, 3236) | 1 | 25 | (2914, 3211)-(2966, 3267) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3073, 3250) | 1 | 25 | (3048, 3225)-(3098, 3275) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3073, 3498) | 1 | 25 | (3048, 3473)-(3098, 3523) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3078, 3461) | 1 | 25 | (3053, 3436)-(3103, 3486) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3134, 3487) | 1 | 25 | (3109, 3462)-(3159, 3512) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Misthalin](../places/misthalin.md) | (3214, 3281) | 1 | 35 | (3179, 3241)-(3258, 3323) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Misthalin](../places/misthalin.md) | (3214, 3281) | 1 | 25 | (3189, 3251)-(3248, 3313) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3234, 3506) | 1 | 25 | (3209, 3481)-(3259, 3531) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3240, 3307) | 1 | 25 | (3215, 3282)-(3265, 3332) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Misthalin](../places/misthalin.md) | (3261, 3514) | 1 | 25 | (3236, 3489)-(3286, 3539) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Port Khazard (Kandarin)](../places/port-khazard.md) | (2639, 3206) | 1 | 25 | (2614, 3181)-(2664, 3231) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | no |
 | [Varrock (Misthalin)](../places/varrock.md) | (3177, 3405) | 1 | 25 | (3152, 3380)-(3202, 3430) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3213, 3502) | 1 | 25 | (3188, 3477)-(3238, 3527) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3390) | 1 | 25 | (3213, 3365)-(3274, 3418) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3238, 3390) | 1 | 25 | (3213, 3365)-(3274, 3418) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3246, 3458) | 1 | 25 | (3221, 3433)-(3271, 3483) | 100 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
 
 ## Drops

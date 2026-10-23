@@ -15,7 +15,7 @@
 | - | (2515, 9570) | 5 | 15 | (2498, 9553)-(2534, 9588) | 100 ticks | - | no |
 | - | (2521, 9561) | 2 | 15 | (2504, 9546)-(2537, 9576) | 100 ticks | - | no |
 | - | (2531, 9556) | 2 | 15 | (2514, 9540)-(2548, 9571) | 100 ticks | - | no |
-| - | (3469, 9796) | 1 | 15 | (3450, 9781)-(3486, 9813) | 60 ticks | - | no |
+| - | (3469, 9796) | 1 | 3 | (3462, 9793)-(3474, 9801) | 100 ticks | - | no |
 | - | (3469, 9797) | 1 | 15 | (3454, 9782)-(3484, 9812) | 100 ticks | - | no |
 | [Asgarnia](../places/asgarnia.md) | (2906, 3291) | 3 | 15 | (2890, 3273)-(2923, 3310) | 100 ticks | - | yes |
 | [Asgarnia](../places/asgarnia.md) | (2909, 3294) | 1 | 3 | (2906, 3291)-(2912, 3297) | 100 ticks | - | yes |
@@ -30,7 +30,7 @@
 | [Crandor](../places/crandor.md) | (2824, 3298) | 1 | 15 | (2809, 3283)-(2839, 3313) | 100 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3118, 9871) | 1 | 3 | (3115, 9868)-(3121, 9874) | 100 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3124, 9875) | 2 | 15 | (3107, 9859)-(3141, 9890) | 100 ticks | - | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3126, 9878) | 2 | 15 | (3108, 9861)-(3143, 9897) | 4 ticks | - | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3126, 9878) | 2 | 3 | (3120, 9873)-(3131, 9885) | 100 ticks | - | yes |
 | [Kandarin](../places/kandarin.md) | (2445, 3358) | 3 | 3 | (2440, 3354)-(2449, 3362) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2446, 3362) | 2 | 15 | (2430, 3346)-(2462, 3377) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2449, 3330) | 3 | 3 | (2445, 3326)-(2454, 3334) | 100 ticks | - | no |

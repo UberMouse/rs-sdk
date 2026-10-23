@@ -26,8 +26,8 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2630, 3288) | 1 | 5 | (2616, 3283)-(2637, 3304) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2657, 3311) | 2 | 15 | (2632, 3283)-(2686, 3333) | 50 ticks | - | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2630, 3288) | 1 | 5 | (2616, 3283)-(2637, 3304) | 100 ticks | - | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2657, 3311) | 2 | 5 | (2642, 3293)-(2676, 3323) | 100 ticks | - | no |
 
 ## Drops
 

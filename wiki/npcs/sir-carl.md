@@ -25,7 +25,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Underground Pass](../places/underground-pass.md) | (2422, 9718) | 1 | 10 | (2412, 9708)-(2448, 9735) | 100 ticks | - | no |
+| [Underground Pass](../places/underground-pass.md) | (2422, 9718) | 1 | 5 | (2417, 9713)-(2443, 9730) | 100 ticks | - | no |
 
 ## Drops
 

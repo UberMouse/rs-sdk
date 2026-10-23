@@ -103,4 +103,25 @@ describe('npcMovements', () => {
         expect(read().get('werewolf')!.moves).toBeUndefined();
         expect(read().get('man')!.moves).toBeUndefined();
     });
+
+    test('a proc in a call cycle keeps the move of the member it was cut off from, entered from either end', () => {
+        const cycle = parseConfigs('[first]\nname=First\n\n[second]\nname=Second\n');
+        // first enters at ~cycle_a, which calls ~cycle_b back into it; second enters at ~cycle_b.
+        const text = `[ai_timer,first]
+~cycle_a;
+
+[ai_timer,second]
+~cycle_b;
+
+[proc,cycle_a]
+~cycle_b;
+npc_tele(npc_coord);
+
+[proc,cycle_b]
+~cycle_a;
+`;
+        const moves = npcMovements(cycle, [['cycle.rs2', text]], defaults);
+        expect(moves.get('first')!.moves).toEqual({ how: 'teleports', source: 'cycle.rs2:9' });
+        expect(moves.get('second')!.moves).toEqual({ how: 'teleports', source: 'cycle.rs2:9' });
+    });
 });

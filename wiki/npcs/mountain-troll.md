@@ -39,7 +39,7 @@
 | [Asgarnia](../places/asgarnia.md) | (2852, 3591) | 1 | 5 | (2847, 3586)-(2857, 3596) | 100 ticks | - | no |
 | [Asgarnia](../places/asgarnia.md) | (2907, 3642) | 2 | 5 | (2899, 3636)-(2914, 3647) | 100 ticks | - | no |
 | [Asgarnia](../places/asgarnia.md) | (2917, 3633) | 2 | 5 | (2911, 3626)-(2922, 3639) | 100 ticks | - | no |
-| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2869, 3591) | 14 | 5 | (2849, 3579)-(2881, 3605) | 50 ticks | - | no |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2869, 3591) | 14 | 5 | (2849, 3579)-(2881, 3605) | 100 ticks | - | no |
 | [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2843, 3675) | 1 | 5 | (2838, 3670)-(2848, 3680) | 100 ticks | - | no |
 | [Troll Stronghold (Asgarnia)](../places/troll-stronghold.md) | (2844, 3683) | 2 | 5 | (2838, 3677)-(2850, 3689) | 100 ticks | - | no |
 | [Troll caves](../places/troll-caves.md) | (2923, 10031) | 4 | 5 | (2916, 10022)-(2930, 10039) | 100 ticks | - | no |

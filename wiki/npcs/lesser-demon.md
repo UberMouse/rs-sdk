@@ -29,14 +29,14 @@
 | - | (2630, 9867) | 1 | 6 | (2624, 9861)-(2636, 9873) | 60 ticks | - | no |
 | - | (2632, 9877) | 2 | 6 | (2625, 9868)-(2638, 9886) | 60 ticks | - | no |
 | - | (2837, 9605) | 3 | 6 | (2829, 9596)-(2845, 9616) | 60 ticks | - | yes |
-| - | (2837, 9623) | 1 | 9 | (2821, 9614)-(2854, 9670) | 60 ticks | - | yes |
+| - | (2837, 9623) | 1 | 6 | (2824, 9617)-(2851, 9667) | 60 ticks | - | yes |
 | - | (2845, 9612) | 1 | 6 | (2839, 9606)-(2851, 9618) | 60 ticks | - | yes |
-| - | (2936, 9650) | 1 | 15 | (2915, 9625)-(2951, 9669) | 4 ticks | - | yes |
+| - | (2936, 9650) | 1 | 6 | (2924, 9634)-(2942, 9660) | 60 ticks | - | yes |
 | [Crandor](../places/crandor.md) | (2835, 3279) | 2 | 6 | (2826, 3272)-(2843, 3286) | 60 ticks | - | yes |
-| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2838, 9559) | 6 | 8 | (2823, 9544)-(2851, 9576) | 60 ticks | - | yes |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2838, 9559) | 6 | 6 | (2825, 9546)-(2849, 9574) | 60 ticks | - | yes |
 | [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4681) | 3 | 6 | (2406, 4671)-(2422, 4690) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9802) | 5 | 20 | (2906, 9764)-(2958, 9830) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (3016, 3849) | 4 | 10 | (3004, 3835)-(3052, 3866) | 50 ticks | - | yes |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9802) | 5 | 6 | (2920, 9778)-(2944, 9816) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (3016, 3849) | 4 | 6 | (3008, 3839)-(3048, 3862) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3091, 3861) | 1 | 6 | (3085, 3855)-(3097, 3867) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3094, 3869) | 1 | 6 | (3088, 3863)-(3100, 3875) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3311, 3845) | 1 | 6 | (3305, 3839)-(3317, 3851) | 60 ticks | - | yes |

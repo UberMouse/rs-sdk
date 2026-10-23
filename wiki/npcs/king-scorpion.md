@@ -32,7 +32,7 @@
 | [Crandor](../places/crandor.md) | (2851, 3298) | 1 | 8 | (2843, 3290)-(2859, 3306) | 50 ticks | - | yes |
 | [Crandor](../places/crandor.md) | (2859, 3283) | 1 | 8 | (2851, 3275)-(2867, 3291) | 50 ticks | - | yes |
 | [Crandor](../places/crandor.md) | (2861, 3295) | 1 | 8 | (2853, 3287)-(2869, 3303) | 50 ticks | - | yes |
-| [Dwarven Mine](../places/dwarven-mine.md) | (3044, 9773) | 2 | 12 | (3026, 9755)-(3068, 9805) | 50 ticks | - | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3044, 9773) | 2 | 8 | (3030, 9759)-(3064, 9801) | 50 ticks | - | yes |
 | [Lava Maze (Wilderness)](../places/lava-maze.md) | (3070, 3836) | 1 | 8 | (3062, 3828)-(3078, 3844) | 50 ticks | - | yes |
 | [Lava Maze (Wilderness)](../places/lava-maze.md) | (3075, 3848) | 1 | 8 | (3067, 3840)-(3083, 3856) | 50 ticks | - | yes |
 | [Lava Maze (Wilderness)](../places/lava-maze.md) | (3090, 3841) | 1 | 8 | (3082, 3833)-(3098, 3849) | 50 ticks | - | yes |

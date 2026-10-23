@@ -330,12 +330,11 @@ export interface StepCollision extends SiteCollision {
  * The tiles an npc of a cluster is used from (NpcSpawn.reach): where its npcs can be, and each tile round them
  * that can step onto one, or from which the engine's entity reach test passes to one (reachedEntity,
  * server/engine/src/engine/GameMap.ts:446, which Player.ts:1201 asks of an npc target): a tile across a wall is
- * not one. Where its npcs can be is every tile of its bbox, where its spawns stand, and each tile of its roam a
- * walk of one-tile steps the collision allows gets to from the bbox, as an npc walks to its wander destination a
- * step at a time (MoveStrategy.NAIVE, Npc.ts:78), on land (StepCollision.land), with doors shut
- * (StepCollision.walled): a roam tile behind a wall or a door is not one, and a roam the size of the map (Bob the cat's `wanderrange=30000`) costs the land the walk gets to, not its
- * box. An npc used by an approach
- * op from further off (a banker across its booth, interface_bank/scripts/banker.rs2:7) is not modelled: such a
+ * not one. Its npcs can be on its bbox, and on each tile of its roam that one-tile steps over land with doors
+ * shut (StepCollision.land, walled) get to from the bbox, as an npc walks to its wander destination a step at a
+ * time (MoveStrategy.NAIVE, Npc.ts:78). So a roam tile behind a wall or a door is not one, and a map-sized roam
+ * (Bob the cat's `wanderrange=30000`) costs the land the walk gets to, not its box. An npc used by an approach op
+ * from further off (a banker across its booth, interface_bank/scripts/banker.rs2:7) is not modelled: such a
  * cluster reads as its beside tiles do. By x, then z.
  */
 export function besideCluster(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: StepCollision): Tile[] {

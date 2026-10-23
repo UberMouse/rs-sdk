@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| - | (2574, 9892) | 10 | 15 | (2547, 9868)-(2604, 9913) | 4 ticks | - | no |
+| - | (2574, 9892) | 10 | 3 | (2559, 9880)-(2592, 9901) | 60 ticks | - | no |
 | - | (3050, 10342) | 5 | 3 | (3043, 10335)-(3057, 10350) | 60 ticks | - | no |
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2658, 9501) | 1 | 3 | (2655, 9498)-(2661, 9504) | 60 ticks | - | no |
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2659, 9481) | 3 | 3 | (2652, 9477)-(2667, 9485) | 60 ticks | - | no |

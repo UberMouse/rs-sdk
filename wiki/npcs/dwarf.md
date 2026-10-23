@@ -41,10 +41,10 @@
 | [Dwarven Mine](../places/dwarven-mine.md) | (3018, 9815) | 8 | 13 | (2997, 9796)-(3041, 9833) | 100 ticks | - | yes |
 | [Dwarven Mine](../places/dwarven-mine.md) | (3018, 9835) | 1 | 13 | (3005, 9822)-(3031, 9848) | 100 ticks | - | yes |
 | [Dwarven Mine](../places/dwarven-mine.md) | (3020, 9849) | 4 | 13 | (3004, 9832)-(3035, 9864) | 100 ticks | - | yes |
-| [Dwarven Mine](../places/dwarven-mine.md) | (3026, 9831) | 2 | 15 | (3010, 9813)-(3041, 9852) | 4 ticks | - | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3026, 9831) | 2 | 13 | (3012, 9815)-(3039, 9850) | 100 ticks | - | yes |
 | [Dwarven Mine](../places/dwarven-mine.md) | (3036, 9846) | 2 | 13 | (3021, 9831)-(3050, 9861) | 100 ticks | - | yes |
 | [Dwarven Mine](../places/dwarven-mine.md) | (3046, 9758) | 2 | 2 | (3043, 9756)-(3049, 9760) | 100 ticks | - | yes |
-| [Dwarven Mine](../places/dwarven-mine.md) | (3050, 9822) | 7 | 15 | (3027, 9798)-(3069, 9845) | 4 ticks | - | yes |
+| [Dwarven Mine](../places/dwarven-mine.md) | (3050, 9822) | 7 | 13 | (3029, 9800)-(3067, 9843) | 100 ticks | - | yes |
 | [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3008, 3436) | 1 | 13 | (2995, 3423)-(3021, 3449) | 100 ticks | - | yes |
 | [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3018, 3436) | 2 | 13 | (3002, 3422)-(3034, 3450) | 100 ticks | - | yes |
 | [Dwarven Mine entrance (Asgarnia)](../places/dwarven-mine-entrance.md) | (3018, 3448) | 4 | 5 | (3011, 3442)-(3026, 3455) | 100 ticks | - | yes |
@@ -55,8 +55,8 @@
 | [Feldip Hills](../places/feldip-hills.md) | (2596, 3056) | 1 | 13 | (2583, 3043)-(2609, 3069) | 100 ticks | - | no |
 | [Feldip Hills](../places/feldip-hills.md) | (2605, 3057) | 1 | 13 | (2591, 3044)-(2618, 3071) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2554, 3467) | 2 | 5 | (2549, 3460)-(2559, 3474) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2568, 3456) | 2 | 15 | (2549, 3438)-(2587, 3471) | 100 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9701) | 2 | 15 | (2915, 9672)-(2948, 9718) | 4 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2568, 3456) | 2 | 5 | (2559, 3448)-(2577, 3461) | 100 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9701) | 2 | 13 | (2917, 9674)-(2946, 9716) | 100 ticks | - | no |
 | [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2865, 9876) | 8 | 13 | (2847, 9861)-(2883, 9892) | 50 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2600, 3062) | 1 | 13 | (2587, 3049)-(2613, 3075) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2608, 3061) | 1 | 13 | (2595, 3048)-(2621, 3074) | 100 ticks | - | no |

@@ -29,7 +29,7 @@
 | - | (2834, 9940) | 1 | 3 | (2831, 9937)-(2837, 9943) | 60 ticks | - | no |
 | - | (2836, 9953) | 1 | 3 | (2833, 9950)-(2839, 9956) | 60 ticks | - | no |
 | - | (2844, 9944) | 1 | 3 | (2841, 9941)-(2847, 9947) | 60 ticks | - | no |
-| - | (2866, 9950) | 6 | 5 | (2859, 9943)-(2873, 9961) | 60 ticks | - | no |
+| - | (2866, 9950) | 6 | 3 | (2861, 9945)-(2871, 9959) | 60 ticks | - | no |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3046, 9580) | 3 | 3 | (3041, 9572)-(3051, 9586) | 60 ticks | - | yes |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3049, 9590) | 1 | 3 | (3046, 9587)-(3052, 9593) | 60 ticks | - | yes |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3053, 9576) | 1 | 3 | (3050, 9573)-(3056, 9579) | 60 ticks | - | yes |
@@ -43,13 +43,13 @@
 | [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | (2848, 9912) | 1 | 3 | (2845, 9909)-(2851, 9915) | 60 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (2945, 3866) | 1 | 3 | (2942, 3863)-(2948, 3869) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (2946, 3857) | 1 | 3 | (2943, 3854)-(2949, 3860) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (2951, 3925) | 7 | 10 | (2937, 3903)-(2975, 3946) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (2951, 3925) | 7 | 3 | (2944, 3910)-(2968, 3939) | 60 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (2953, 3858) | 1 | 3 | (2950, 3855)-(2956, 3861) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (2955, 3880) | 9 | 3 | (2944, 3871)-(2966, 3905) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (2958, 3866) | 1 | 3 | (2955, 3863)-(2961, 3869) | 60 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (2967, 3946) | 2 | 3 | (2961, 3941)-(2973, 3950) | 60 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (2971, 3938) | 1 | 3 | (2968, 3935)-(2974, 3941) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (2978, 3948) | 2 | 9 | (2968, 3933)-(2991, 3965) | 60 ticks | - | no |
+| [Wilderness](../places/wilderness.md) | (2978, 3948) | 2 | 3 | (2974, 3939)-(2985, 3959) | 60 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (2984, 3933) | 1 | 3 | (2981, 3930)-(2987, 3936) | 60 ticks | - | no |
 
 ## Drops

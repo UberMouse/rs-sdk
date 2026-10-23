@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2569, 9606) | 1 | 15 | (2549, 9590)-(2588, 9627) | 4 ticks | - | no |
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2569, 9606) | 1 | 5 | (2559, 9600)-(2578, 9617) | 50 ticks | - | no |
 
 ## Drops
 

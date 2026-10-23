@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2608, 3165) | 1 | 15 | (2591, 3144)-(2623, 3186) | 100 ticks | teleports (quests/quest_arena/scripts/quest_arena.rs2:262) | no |
+| [Kandarin](../places/kandarin.md) | (2608, 3165) | 1 | 15 | (2591, 3144)-(2623, 3186) | 100 ticks | - | no |
 
 ## Drops
 

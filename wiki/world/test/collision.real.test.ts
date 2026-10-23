@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { collisionPaths } from '../../../conductor/actions/paths';
-import { siteCollision } from '../collision';
+import { reachCollision, siteCollision } from '../collision';
 import { first, readConfigs } from '../sources/configs';
 import { readAllMapSquares } from '../sources/maps';
 import { readPack } from '../sources/packs';
@@ -49,4 +49,36 @@ test('every placed closed diagonal door is a door the walk knows', () => {
             shape: 9,
             angle: rotation,
         });
+});
+
+// A west-wall door in Lumbridge the bundle lists (sdk/collision-data.json doors, masked open), and the Wizards' Tower
+// ground-layer door (EXTRA_DOORS), which edited opens as the walk does: whether a step goes through each.
+const wall = (): boolean => reachCollision.canStep(0, 3213, 3220, -1, 0);
+const STEPS_IN: [number, number][] = [
+    [-1, 0],
+    [0, 1],
+    [1, 0],
+    [0, -1],
+];
+const ground = (): boolean => STEPS_IN.some(([dx, dz]) => reachCollision.canStep(0, 3107 - dx, 3162 - dz, dx, dz));
+const doors = (): boolean[] => [wall(), reachCollision.edited({ close: [], open: [] }, ground)];
+
+test('walled shuts every door for its run, a nested edit too, and opens them again after, also after a throw', () => {
+    expect(collisionPaths.doorAt(0, 3213, 3220)).toBeDefined();
+    expect(doors()).toEqual([true, true]);
+    expect(reachCollision.walled!(() => [wall(), ground()])).toEqual([false, false]);
+    const wizardsDoor = { tile: { level: 0, x: 3107, z: 3162 }, shape: 9, angle: 3 };
+    const westDoor = { tile: { level: 0, x: 3213, z: 3220 }, shape: 0, angle: 0 };
+    const nested = reachCollision.walled!(() => {
+        const inside = reachCollision.edited({ close: [westDoor, wizardsDoor], open: [] }, () => [wall(), ground()]);
+        return [...inside, wall(), ground()];
+    });
+    expect(nested).toEqual([false, false, false, false]);
+    expect(doors()).toEqual([true, true]);
+    expect(() =>
+        reachCollision.walled!(() => {
+            throw new Error('mid-run');
+        }),
+    ).toThrow('mid-run');
+    expect(doors()).toEqual([true, true]);
 });

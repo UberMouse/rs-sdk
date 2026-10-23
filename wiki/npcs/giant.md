@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| - | (3045, 10313) | 6 | 20 | (3009, 10286)-(3066, 10341) | 60 ticks | - | no |
+| - | (3045, 10313) | 6 | 3 | (3026, 10303)-(3049, 10324) | 60 ticks | - | no |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | 2 | 3 | (3096, 9829)-(3103, 9839) | 60 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | 1 | 3 | (3103, 9824)-(3109, 9830) | 60 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | 9 | 3 | (3104, 9828)-(3125, 9853) | 60 ticks | - | yes |

@@ -39,7 +39,7 @@
 | [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L2 | 4 | 5 | (2976, 3334)-(2995, 3355) | 100 ticks | - | yes |
 | [Falador (Asgarnia)](../places/falador.md) | (2982, 3352) L3 | 1 | 5 | (2977, 3347)-(2987, 3357) | 100 ticks | - | yes |
 | [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2959, 3338) | 2 | 5 | (2951, 3332)-(2967, 3343) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2972, 3345) | 1 | 5 | (2961, 3340)-(2977, 3351) | 50 ticks | - | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2972, 3345) | 1 | 5 | (2961, 3340)-(2977, 3351) | 100 ticks | - | yes |
 | [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2961, 3351) L1 | 1 | 5 | (2956, 3346)-(2966, 3356) | 100 ticks | - | yes |
 | [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2963, 3338) L1 | 3 | 5 | (2953, 3331)-(2974, 3346) | 100 ticks | - | yes |
 | [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2957, 3341) L2 | 1 | 5 | (2952, 3336)-(2962, 3346) | 100 ticks | - | yes |

@@ -134,25 +134,33 @@ export function npcMovements(
         }
     const kinds = new Set([...triggers.keys()].map(k => k.slice(0, k.indexOf(','))));
 
-    // The moves of each script and its callees, found once per script.
+    // The moves of each script and its callees. A result is cached only when whole: one that met a script already on
+    // the call stack (cut off, so without that script's moves) is found again from each entry.
     const found = new Map<Script, NpcMove[]>();
-    const movesOf = (s: Script, seen: Set<Script>): NpcMove[] => {
+    const movesOf = (s: Script, stack: Set<Script>): { moves: NpcMove[]; cut: Set<Script> } => {
         const known = found.get(s);
-        if (known) return known;
-        if (seen.has(s)) return [];
-        seen.add(s);
+        if (known) return { moves: known, cut: new Set() };
+        if (stack.has(s)) return { moves: [], cut: new Set([s]) };
+        stack.add(s);
         const own = [...s.code.matchAll(MOVE)].map(m => ({
             how: m[1] === 'npc_tele' ? ('teleports' as const) : ('changes-type' as const),
             source: `${s.file}:${s.line + s.code.slice(0, m.index).split('\n').length - 1}`,
         }));
+        const cut = new Set<Script>();
         const called = [...s.code.matchAll(CALL)].flatMap(m => {
             const proc = m[1] ?? m[2];
             const callee = callables.get(proc ? `~${proc}` : `@${m[3] ?? m[4]}`);
-            return callee ? movesOf(callee, seen) : [];
+            if (!callee) return [];
+            const r = movesOf(callee, stack);
+            for (const c of r.cut) cut.add(c);
+            return r.moves;
         });
-        const out = [...own, ...called];
-        found.set(s, out);
-        return out;
+        stack.delete(s);
+        // A cut back to s is no loss here: s's own moves are in this result.
+        cut.delete(s);
+        const moves = [...own, ...called];
+        if (cut.size === 0) found.set(s, moves);
+        return { moves, cut };
     };
 
     const out = new Map<string, NpcMovement>();
@@ -160,7 +168,7 @@ export function npcMovements(
         const category = first(cfg, 'category');
         const moves = [...kinds].sort().flatMap(kind => {
             const s = triggers.get(`${kind},${name}`) ?? (category && triggers.get(`${kind},_${category}`));
-            return s ? movesOf(s, new Set()) : [];
+            return s ? movesOf(s, new Set()).moves : [];
         });
         const move = moves.find(m => m.how === 'teleports') ?? moves[0];
         out.set(name, {

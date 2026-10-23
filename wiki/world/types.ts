@@ -72,7 +72,11 @@ export interface Area {
     notes?: string;
 }
 
-/** A site's NpcRoam fields are present on a site whose features are all npcs, and absent on others. */
+/**
+ * A site's NpcRoam fields are present on a site whose features are all npcs, and absent on others. On a fishing-spot
+ * site `moves` reports the spots' scripted teleport where they have one, and `roam` is wander's alone (`bbox`, as
+ * spots do not wander), so it is not where the spots can be: `movement` is.
+ */
 export interface Site extends Partial<NpcRoam> {
     id: string;
     kind: FeatureKind;

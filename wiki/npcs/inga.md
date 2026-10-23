@@ -25,7 +25,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2674, 3677) | 1 | 12 | (2662, 3663)-(2686, 3689) | 60 ticks | - | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2674, 3677) | 1 | 12 | (2662, 3663)-(2686, 3689) | 100 ticks | - | no |
 
 ## Drops
 

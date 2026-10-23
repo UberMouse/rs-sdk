@@ -26,9 +26,9 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3018, 3185) | 1 | 15 | (2996, 3167)-(3034, 3209) | 4 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (3018, 3185) | 1 | 12 | (2999, 3170)-(3031, 3206) | 100 ticks | - | yes |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2996, 9547) | 4 | 12 | (2981, 9532)-(3011, 9562) | 100 ticks | - | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3249, 3391) | 1 | 25 | (3213, 3365)-(3274, 3418) | 4 ticks | teleports (npc/scripts/imp.rs2:21) | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3249, 3391) | 1 | 12 | (3226, 3378)-(3261, 3405) | 100 ticks | - | yes |
 | [Varrock West mine (Misthalin)](../places/varrock-west-mine.md) | (3175, 3361) | 1 | 12 | (3163, 3349)-(3187, 3373) | 100 ticks | - | yes |
 
 ## Drops

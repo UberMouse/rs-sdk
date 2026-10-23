@@ -58,10 +58,10 @@ stand tiles and a method's site lookup do not move with it.
 A site's `reach` in world.json is what a walk from the Lumbridge spawn needs to get to its stand tile
 (`wiki/world/reach.ts`, `reachGraph` then `fillReach`), joined with a quest that locks the use of its locs
 (`USE_GATES` in `gates.ts`: the Doric and Rellekka anvils, the Rellekka furnaces and spinning wheel): its minimal requirement
-sets, `[[]]` for none and `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it (`besideCluster` in
-`place.ts`: the tiles of its roam a walk of steps from its spawns gets to, and the ring round them, with every
-door shut, as an npc opens none, and a wall check), because a bot talks to an npc from beside it, wherever it has wandered to. The fill keeps at most
-`MAX_SETS` (24) sets per tile.
+sets, `[[]]` for none and `[]` when no walk gets there. An npc cluster's `reach` is that of the tiles beside it,
+wherever it has wandered to, as a bot talks to an npc from beside it (`besideCluster` in `place.ts`: the tiles of
+its roam that steps from its spawns get to with every door shut, as an npc opens none, and the ring round them a
+wall does not cut off). The fill keeps at most `MAX_SETS` (24) sets per tile.
 
 The pages show it in a Requires column: `-` for none, the sets joined with "or", `unreached`, or `no stand`
 for a site with no stand tile; so a `-` row on a service or resource page is one a fresh account can walk to and use.

@@ -35,7 +35,7 @@
 | [Kandarin](../places/kandarin.md) | (2593, 3139) | 2 | 1 | (2590, 3138)-(2596, 3140) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2594, 3181) | 6 | 4 | (2588, 3172)-(2602, 3189) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2599, 3193) | 1 | 4 | (2595, 3189)-(2603, 3197) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2606, 3171) | 1 | 15 | (2591, 3144)-(2623, 3186) | 100 ticks | teleports (quests/quest_arena/scripts/quest_arena.rs2:262) | no |
+| [Kandarin](../places/kandarin.md) | (2606, 3171) | 1 | 4 | (2602, 3155)-(2612, 3175) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2609, 3185) | 4 | 4 | (2603, 3179)-(2618, 3190) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2610, 3193) | 1 | 4 | (2606, 3189)-(2614, 3197) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2611, 3149) | 3 | 4 | (2605, 3145)-(2618, 3154) | 100 ticks | - | no |

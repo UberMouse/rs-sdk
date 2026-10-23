@@ -48,8 +48,8 @@
 | [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2968, 3749) | 1 | 8 | (2960, 3741)-(2976, 3757) | 80 ticks | - | yes |
 | [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2968, 3761) | 1 | 8 | (2960, 3753)-(2976, 3769) | 80 ticks | - | yes |
 | [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2985, 3749) | 1 | 8 | (2977, 3741)-(2993, 3757) | 80 ticks | - | yes |
-| [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2985, 3761) | 1 | 9 | (2971, 3752)-(2994, 3772) | 80 ticks | - | yes |
-| [Varrock Sewers](../places/varrock-sewers.md) | (3241, 9914) | 3 | 12 | (3227, 9891)-(3266, 9928) | 50 ticks | - | yes |
+| [The Forgotten Cemetery (Wilderness)](../places/the-forgotten-cemetery.md) | (2985, 3761) | 1 | 8 | (2972, 3753)-(2993, 3771) | 80 ticks | - | yes |
+| [Varrock Sewers](../places/varrock-sewers.md) | (3241, 9914) | 3 | 8 | (3231, 9895)-(3262, 9924) | 80 ticks | - | yes |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2501, 3292) | 2 | 8 | (2493, 3281)-(2509, 3302) | 80 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (2962, 3755) | 1 | 8 | (2954, 3747)-(2970, 3763) | 80 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (2990, 3755) | 1 | 8 | (2982, 3747)-(2998, 3763) | 80 ticks | - | yes |

@@ -28,7 +28,7 @@
 |------|--------|--------|--------|------|---------|-------|-----|
 | [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | 1 | 5 | (2801, 3180)-(2811, 3190) | 50 ticks | - | no |
 | [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | 1 | 5 | (2806, 3193)-(2816, 3203) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | 15 | (2996, 3167)-(3034, 3209) | 4 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | 5 | (3006, 3177)-(3024, 3199) | 50 ticks | - | yes |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | 2 | 5 | (2981, 9577)-(2996, 9588) | 50 ticks | - | yes |
 | [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | 7 | 5 | (2979, 9564)-(3005, 9589) | 50 ticks | - | yes |
 | [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | 1 | 5 | (2756, 3181)-(2768, 3196) | 50 ticks | - | no |

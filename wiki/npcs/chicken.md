@@ -27,8 +27,8 @@
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
 | - | (3109, 9569) | 1 | 5 | (3104, 9564)-(3114, 9574) | 50 ticks | - | yes |
-| [Asgarnia](../places/asgarnia.md) | (3017, 3289) | 6 | 15 | (3000, 3268)-(3034, 3311) | 4 ticks | - | yes |
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2553, 3563) | 3 | 10 | (2536, 3550)-(2564, 3580) | 50 ticks | - | no |
+| [Asgarnia](../places/asgarnia.md) | (3017, 3289) | 6 | 5 | (3010, 3278)-(3024, 3301) | 50 ticks | - | yes |
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2553, 3563) | 3 | 5 | (2541, 3555)-(2559, 3575) | 50 ticks | - | no |
 | [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3197, 3353) | 5 | 5 | (3191, 3347)-(3203, 3360) | 50 ticks | - | yes |
 | [Entrana](../places/entrana.md) | (2851, 3371) | 6 | 5 | (2841, 3363)-(2858, 3379) | 50 ticks | - | no |
 | [Hemenster (Kandarin)](../places/hemenster.md) | (2651, 3442) | 4 | 5 | (2645, 3436)-(2656, 3447) | 50 ticks | - | no |

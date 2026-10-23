@@ -88,14 +88,16 @@ export const reachCollision: ReachCollision & TeleportCollision & Pick<StepColli
         try {
             // The doors and webs the walker opens (conductor/actions/paths.ts EXTRA_DOORS, SLASH_WEBS), which
             // collisionPaths masks open only on its first route: open for the fill, as the walk sees them.
-            for (const d of [...EXTRA_DOORS, ...SLASH_WEBS])
+            // Inside a walled run every door stays shut: only its webs open, which walled already has.
+            for (const d of walling ? [] : [...EXTRA_DOORS, ...SLASH_WEBS])
                 if (!collisionPaths.walkable(d.level, d.x, d.z)) {
                     rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
                     undo.push(() => rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, true));
                 }
             // A gated door the bundle has open (sdk/pathfinding.ts masks every door it lists) is walled again
             // as the data placed it; one it left walled (a one-way door, a door the data's list lacks) stays so.
-            for (const { tile } of edits.close) {
+            // Inside a walled run each is walled already; walling it again would open it on the undo.
+            for (const { tile } of walling ? [] : edits.close) {
                 const { level, x, z } = tile;
                 const d = collisionPaths.doorAt(level, x, z);
                 if (!d || !once(closed, level, x, z)) continue;
@@ -130,11 +132,13 @@ export const reachCollision: ReachCollision & TeleportCollision & Pick<StepColli
     // Inside a walled run a nested one runs as it is, so a caller can wall a batch once.
     walled(f) {
         if (walling) return f();
-        walling = true;
-        try {
-            return reachCollision.edited({ close: DOORS, open: [] }, f);
-        } finally {
-            walling = false;
-        }
+        return reachCollision.edited({ close: DOORS, open: [] }, () => {
+            walling = true;
+            try {
+                return f();
+            } finally {
+                walling = false;
+            }
+        });
     },
 };

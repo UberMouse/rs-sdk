@@ -52,7 +52,7 @@
 | [Falador (Asgarnia)](../places/falador.md) | (2967, 3373) | 1 | 5 | (2957, 3368)-(2975, 3394) | 50 ticks | - | yes |
 | [Falador (Asgarnia)](../places/falador.md) | (2981, 3378) | 1 | 5 | (2976, 3373)-(2986, 3383) | 50 ticks | - | yes |
 | [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2603, 3421) | 1 | 5 | (2598, 3416)-(2608, 3426) | 50 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2474, 3300) | 2 | 15 | (2439, 3266)-(2507, 3341) | 4 ticks | - | no |
+| [Kandarin](../places/kandarin.md) | (2474, 3300) | 2 | 5 | (2449, 3276)-(2497, 3331) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2520, 3279) | 1 | 5 | (2515, 3274)-(2531, 3284) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2524, 3270) | 1 | 5 | (2514, 3262)-(2533, 3276) | 100 ticks | - | no |
 | [Kandarin](../places/kandarin.md) | (2567, 3384) | 1 | 5 | (2562, 3378)-(2580, 3393) | 50 ticks | - | no |
@@ -78,7 +78,7 @@
 | [Varrock (Misthalin)](../places/varrock.md) | (3283, 3501) | 1 | 5 | (3273, 3491)-(3288, 3507) | 50 ticks | - | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3231, 3399) L1 | 1 | 5 | (3226, 3394)-(3236, 3404) | 50 ticks | - | yes |
 | [Varrock (Misthalin)](../places/varrock.md) | (3234, 3385) L1 | 1 | 5 | (3229, 3380)-(3239, 3390) | 50 ticks | - | yes |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3325) | 1 | 15 | (2485, 3299)-(2536, 3346) | 4 ticks | - | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3325) | 1 | 5 | (2495, 3309)-(2526, 3336) | 100 ticks | - | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2537, 3305) | 2 | 5 | (2531, 3297)-(2543, 3313) | 100 ticks | - | no |
 | [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2539, 3307) | 2 | 5 | (2532, 3301)-(2545, 3313) | 100 ticks | - | no |
 | [Yanille (Kandarin)](../places/yanille.md) | (2568, 3081) | 1 | 5 | (2561, 3076)-(2573, 3089) | 50 ticks | - | no |

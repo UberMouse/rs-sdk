@@ -17,13 +17,13 @@
 | - | (2541, 9569) | 1 | 9 | (2532, 9560)-(2550, 9578) | 70 ticks | - | no |
 | - | (2548, 9567) | 1 | 9 | (2539, 9558)-(2557, 9576) | 70 ticks | - | no |
 | - | (2589, 9492) | 8 | 9 | (2567, 9469)-(2616, 9517) | 70 ticks | - | no |
-| - | (2933, 9641) | 2 | 15 | (2915, 9625)-(2951, 9669) | 4 ticks | - | yes |
-| [Ardougne Sewers](../places/ardougne-sewers.md) | (2676, 9684) | 3 | 15 | (2654, 9663)-(2691, 9702) | 4 ticks | - | no |
+| - | (2933, 9641) | 2 | 9 | (2921, 9631)-(2945, 9663) | 70 ticks | - | yes |
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2676, 9684) | 3 | 9 | (2660, 9669)-(2685, 9696) | 70 ticks | - | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2533, 9842) | 1 | 9 | (2524, 9833)-(2542, 9851) | 70 ticks | - | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2540, 9823) | 1 | 9 | (2531, 9814)-(2549, 9832) | 70 ticks | - | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2540, 9843) | 1 | 9 | (2531, 9834)-(2549, 9852) | 70 ticks | - | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2544, 9841) | 2 | 9 | (2532, 9831)-(2555, 9856) | 60 ticks | - | no |
-| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2546, 9815) | 1 | 9 | (2529, 9804)-(2555, 9831) | 60 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2544, 9841) | 2 | 9 | (2532, 9831)-(2555, 9856) | 70 ticks | - | no |
+| [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2546, 9815) | 1 | 9 | (2529, 9804)-(2555, 9831) | 70 ticks | - | no |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3125, 9862) | 4 | 9 | (3110, 9851)-(3139, 9874) | 70 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3139, 9885) | 1 | 9 | (3130, 9876)-(3148, 9894) | 70 ticks | - | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3147, 9888) | 5 | 9 | (3131, 9874)-(3160, 9902) | 70 ticks | - | yes |

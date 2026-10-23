@@ -26,11 +26,11 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| - | (3032, 10311) | 4 | 20 | (3009, 10286)-(3066, 10341) | 60 ticks | - | no |
+| - | (3032, 10311) | 4 | 20 | (3009, 10286)-(3066, 10341) | 300 ticks | - | no |
 | [Taverley Dungeon](../places/taverley-dungeon.md) | (2915, 9760) | 1 | 20 | (2895, 9740)-(2935, 9780) | 300 ticks | - | no |
 | [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9759) | 2 | 20 | (2902, 9737)-(2948, 9781) | 300 ticks | - | no |
 | [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9769) | 1 | 20 | (2905, 9749)-(2945, 9789) | 300 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9786) | 2 | 20 | (2906, 9764)-(2958, 9830) | 60 ticks | - | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9786) | 2 | 20 | (2906, 9764)-(2958, 9830) | 300 ticks | - | no |
 | [Wilderness](../places/wilderness.md) | (3021, 3761) | 4 | 20 | (2999, 3735)-(3045, 3786) | 300 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3233, 3783) | 1 | 20 | (3213, 3763)-(3253, 3803) | 300 ticks | - | yes |
 | [Wilderness](../places/wilderness.md) | (3241, 3796) | 1 | 20 | (3221, 3776)-(3261, 3816) | 300 ticks | - | yes |

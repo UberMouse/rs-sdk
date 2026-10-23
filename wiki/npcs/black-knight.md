@@ -26,7 +26,7 @@
 
 | Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
 |------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3019, 3182) | 1 | 15 | (2996, 3167)-(3034, 3209) | 4 ticks | - | yes |
+| [Asgarnia](../places/asgarnia.md) | (3019, 3182) | 1 | 10 | (3001, 3172)-(3029, 3204) | 50 ticks | - | yes |
 | [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3026, 3515) | 5 | 10 | (2998, 3502)-(3039, 3527) | 50 ticks | - | yes |
 | [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3015, 3515) L1 | 1 | 10 | (3005, 3505)-(3025, 3525) | 50 ticks | - | yes |
 | [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3023, 3513) L1 | 3 | 10 | (3013, 3500)-(3034, 3526) | 50 ticks | - | yes |
