@@ -1,0 +1,176 @@
+{
+    "name": "merlin-mordred",
+    "purpose": "Merlin's Crystal stage 3 (varp 14 = 3): Att/Str/Def/HP 40, Prayer 43, rune mace + adamant armour worn, 8 lobsters, on Keep Le Faye top floor (2769,3401 L2) next to Sir Mordred (2769,3403). Tests combat stopOnDialog and Morgan Le Faye's choice.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2769,
+                "z": 3401,
+                "level": 2
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 40,
+                "Defence": 40,
+                "Hitpoints": 40,
+                "Prayer": 43
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1432,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1161,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1123,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1073,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1199,
+                    "count": 1,
+                    "slot": 5
+                }
+            ],
+            "varps": {
+                "14": 3
+            }
+        }
+    },
+    "sha1": "cf48f9dc3e9b425b8f0a4b722f0992796b4d72e8",
+    "createdAt": "2026-10-23T07:06:02.544Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2769,
+            "z": 3401,
+            "level": 2
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 40,
+            "Hitpoints": 40,
+            "Prayer": 43
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1161,
+                "name": "adamant_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1432,
+                "name": "rune_mace",
+                "count": 1
+            },
+            {
+                "id": 1123,
+                "name": "adamant_platebody",
+                "count": 1
+            },
+            {
+                "id": 1199,
+                "name": "adamant_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1073,
+                "name": "adamant_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "14": 3,
+            "281": 1000
+        }
+    }
+}

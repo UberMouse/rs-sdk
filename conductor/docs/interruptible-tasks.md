@@ -166,6 +166,13 @@ defineTask({
 });
 ```
 
+- `allowGuards(params)` is `allow` per params (non-critical guards only), applied to the run's
+  guards, to the settle after a stop and to the run-start stray-choice check. `onEnd(ctx)` is a
+  best-effort cleanup op run once on any end (done, fail, stop, watchdog, error), after the fight
+  settles and the low-HP eat before leaving, under no guards and no stops; throws are logged. It
+  must be a no-op with nothing to undo, undo only what the run did, and not close a dialog the run
+  leaves open.
+
 - `run` becomes `*run(ctx): Op<Outcome>`. `when` must be pure. The engine evaluates every
   step's `when` each loop (cheap) so it can reset per-step **streak counters**
   (`ctx.streak('chopFails')`) automatically when that step stops applying, which removes the

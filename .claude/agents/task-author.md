@@ -66,8 +66,8 @@ you never commit, and you only touch the bot you were given.
 
 ## The pattern
 
-A task is `defineTask({ name, description, params (zod from 'zod/v4'), memory?, allow?, guards?,
-preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
+A task is `defineTask({ name, description, params (zod from 'zod/v4'), memory?, allow?, allowGuards?,
+guards?, onEnd?, preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
 `when()` passes runs; a step returns nothing to keep going, `{ fail }` or `{ done }` to end the
 run. Every step is a generator over ops, or a plain function that only decides; an action no op
 covers yet is ported as one first.
@@ -175,6 +175,15 @@ because stopping half way leaves the world in a state no later step can finish o
 
 - **`allow: ['dialog' | 'interface']`** when the task drives one on purpose (it talks to an NPC,
   opens a book). `death` and `wilderness` cannot be allowed.
+- **`allowGuards(params)`** is `allow` per params (non-critical guards only): combat with
+  `stopOnDialog` leaves a quest dialog open for the next phase, so it allows `dialog` for that run
+  only. The engine applies it everywhere `allow` applies: the run's guards, the settle after a stop,
+  and the run-start stray-choice check.
+- **`onEnd(ctx)`** (an `Op<void>`) is best-effort cleanup, run once on any end (done, fail, a stop,
+  the watchdog, an error) after the fight has settled and the low-HP eat before leaving, under no
+  guards and no stops; a throw is logged and never changes the result. It must be a no-op when there
+  is nothing to undo, only undo what the run itself did (record it in `memory`), and must not close
+  a dialog the run leaves open (a prayer click, for one, closes it).
 - **`guards: [underAttackGuard]`** for a skilling task whose interaction would cancel
   auto-retaliate (chopping, mining): it holds off while something fights the bot, and fails on a
   stuck fight. It is opt-in. A task may declare its own `TaskGuard` (a `name` distinct from the
