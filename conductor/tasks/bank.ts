@@ -6,6 +6,7 @@ import { log, type Op } from '../core/op';
 import { type Area, AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { accountOf } from '../lib/account';
 import { type BankSite, bankArea, nearestBank } from '../lib/banks';
+import { configName, objInfo } from '../lib/packs';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -35,7 +36,7 @@ const Params = z.object({
     depositAllExcept: z.array(z.string().min(1)).optional(),
     /**
      * Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`,
-     * unless `upTo`: then it withdraws the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; stackability is not visible, so only an item already stacked, more than one in a slot, needs no slot), and none held or no room is skipped.
+     * unless `upTo`: then it withdraws the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots, or for a stackable item per the obj configs one free slot or a held stack), and none held or no room is skipped.
      */
     withdraw: z
         .array(
@@ -106,14 +107,24 @@ function noteUpToShort(ctx: Ctx, op: { item: string; count: number }, got: numbe
     ctx.memory.upToShort.push(got > 0 ? `${op.item} ${got}/${op.count}` : `${op.item} skipped (${why})`);
 }
 
+/** Whether the obj configs say an item stacks (one slot whatever the count); false for an id they do not list. */
+function stacks(id: number): boolean {
+    const obj = configName('obj', id);
+    return obj !== undefined && objInfo(obj)?.stackable === true;
+}
+
 /**
- * How many of an item the inventory can take: its free slots, or unlimited when the item is already a
- * stack there (a slot holding more than one is stackable; a single one may not be, so it still needs a slot).
+ * How many of an item the inventory can take: unlimited when it stacks and a stack is already held (no slot)
+ * or a slot is free (one slot whatever the count); otherwise its free slots. Stackability is the obj config's,
+ * read from the id of the banked or carried rows of that name.
  */
 function inventoryRoom(ctx: Ctx, pattern: RegExp): number {
-    const inv = ctx.state().inventory;
-    if (inv.some(i => pattern.test(i.name) && i.count > 1)) return Infinity;
-    return Math.max(0, INVENTORY_SLOTS - inv.length);
+    const s = ctx.state();
+    const free = Math.max(0, INVENTORY_SLOTS - s.inventory.length);
+    const rows = [...s.inventory, ...s.bank.items].filter(i => pattern.test(i.name));
+    if (!rows.some(i => stacks(i.id))) return free;
+    const held = s.inventory.some(i => pattern.test(i.name) && stacks(i.id));
+    return held || free > 0 ? Infinity : 0;
 }
 
 /** Returns a failure message, or null when the operation went through. */
@@ -227,7 +238,7 @@ export default defineTask({
         'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, members ones included, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), ' +
         'never Draynor (dark wizards; it works with an explicit area {x:3092,z:3243,radius:3}); fails if the walk cannot get there, and without an area refuses off the surface or where no walk reaches a bank, e.g. inside an agility course). ' +
         'The no-area walk can be long (from Lumbridge: Varrock West, ~120 run ticks, without coins; Al Kharid, ~56, with them), and NPCs attack unarmed low-level bots on the walks out of Lumbridge (learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
-        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count, what the bank holds and what the inventory can take (free slots; an item already stacked in the inventory needs none), and none held or no room is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
+        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count, what the bank holds and what the inventory can take (free slots; a stackable item needs one free slot, or none if a stack is held), and none held or no room is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
         'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge castle or anywhere in Lumbridge on this server: its map data has no booth or banker on any floor (learnings/banking.md).',
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null, upToShort: [] }),

@@ -1,0 +1,65 @@
+{
+    "name": "bank-feathers-empty-inv",
+    "purpose": "Varrock East bank (3254,3420), inventory just a bronze axe (no Feather), bank 200 Feather and 6 trout. Tests the bank task upTo withdraw of a stackable.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3254,
+                "z": 3420
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                }
+            ],
+            "bank": [
+                {
+                    "id": 314,
+                    "count": 200
+                },
+                {
+                    "id": 333,
+                    "count": 6
+                }
+            ]
+        }
+    },
+    "sha1": "c05766040c518c6a7fb86a738470f2531da27e48",
+    "createdAt": "2026-10-23T07:03:38.800Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3254,
+            "z": 3420,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 314,
+                "name": "feather",
+                "count": 200
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 6
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

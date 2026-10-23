@@ -56,3 +56,27 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+test(
+    'bank task upTo withdraws a stackable past the free slot count',
+    async () => {
+        await withFixtureBot(
+            // 155 Feather in the bank, 27 free slots: a stackable needs one slot, not one per feather.
+            {
+                position: { x: 3254, z: 3420 },
+                inventory: [{ id: Items.BRONZE_AXE, count: 1 }],
+                bank: [{ id: 314, count: 200 }],
+            },
+            async ({ name }) => {
+                const run = await runTask(name, 'bank', { withdraw: [{ item: 'Feather', count: 155, upTo: true }] }, [
+                    'minutes:3',
+                ]);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta.Feather, detail).toBe(155);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);

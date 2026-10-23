@@ -80,7 +80,7 @@ await sdk.sendBankDeposit(slot, -1);  // Deposits ALL items of that type from AN
 await sdk.sendBankWithdraw(bankSlot, count);
 ```
 
-- The bank task's `withdraw` with `upTo` is capped by the inventory's free slots (`inventoryRoom` in `conductor/tasks/bank.ts`), not by the game: the task cannot see stackability, so an item not already held as a stack (count > 1 in a slot) is treated as needing one slot per item. A stackable like Feather withdrawn into a mostly empty inventory came up 27 of 155 (the free slots); the game would take the whole stack in one slot. Withdraw stackables while already holding some of them (count > 1), or ask for an exact `count` below the free slots. [v 2026-10-23 conductor3 local]
+- The bank task's `withdraw` with `upTo` is capped by the inventory (`inventoryRoom` in `conductor/tasks/bank.ts`): a non-stackable item by the free slots, a stackable one (Feather, runes, coins; the obj config's `stackable`) only by needing one free slot, or none if a stack of it is held, even a stack of one. Before the fix (2026-10-23) a stackable not held as a stack of 2+ came up 27 of 155 Feather. [v 2026-10-23 conductor3 local]
 
 ## Closing the Bank
 

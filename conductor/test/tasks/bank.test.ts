@@ -390,6 +390,43 @@ describe('bank: failures', () => {
         );
     });
 
+    describe('upTo and stackable items', () => {
+        const FEATHER = 314;
+        const feathers = bankReact([...BANK_CONTENTS, { name: 'Feather', count: 200, id: FEATHER }]);
+        const upTo = async (w: World, count = 155) =>
+            simulate(bank, {
+                params: { withdraw: [{ item: 'Feather', count, upTo: true }] },
+                timeline: w.series(1),
+                react: feathers,
+            });
+
+        test('a stackable is not capped at the free slots', async () => {
+            const r = await upTo(standing.inv('Logs', 1));
+            expect(sentAs(r, 'withdraw Feather')).toMatchObject([{ amount: 155 }]);
+            expect(r.result.reason).toBe('finish: all 1 bank operations made');
+        });
+
+        test('a stackable with no free slot and none held is skipped', async () => {
+            const r = await upTo(standing.inv('Logs', 28));
+            expect(r.sends).toEqual([OPEN, CLOSE]);
+            expect(r.result.reason).toContain('Feather skipped (no free inventory slot)');
+        });
+
+        test('a held stack of one takes more with the inventory full', async () => {
+            const r = await upTo(standing.inv('Logs', 27).inv('Feather', 1, { id: FEATHER }));
+            expect(sentAs(r, 'withdraw Feather')).toMatchObject([{ amount: 155 }]);
+        });
+
+        test('a non-stackable is still capped at the free slots', async () => {
+            const r = await simulate(bank, {
+                params: { withdraw: [{ item: 'Copper ore', count: 8, upTo: true }] },
+                timeline: standing.inv('Logs', 25).series(1),
+                react,
+            });
+            expect(sentAs(r, 'withdraw Copper ore')).toMatchObject([{ amount: 3 }]);
+        });
+    });
+
     test('upTo with enough in the bank withdraws exactly count', async () => {
         const r = await simulate(bank, {
             params: { withdraw: [{ item: 'Copper ore', count: 3, upTo: true }] },

@@ -83,7 +83,7 @@ export function loadFixture(name: string): BotWorldState {
 const ITEM_IDS = new Map(Object.entries(Items).map(([key, id]) => [key.toLowerCase().replaceAll('_', ' '), id]));
 /** The options the live client publishes for the item kinds a task acts on (opIndex as captured). */
 const FOOD = /^(shrimps|bread|trout|salmon|lobster|swordfish|cooked .*)$/i;
-const stackable = (name: string) => /^(coins|.* rune|.* arrow)$/i.test(name);
+const stackable = (name: string) => /^(coins|.* rune|.* arrow|feather)$/i.test(name);
 
 export interface ItemOptions {
     /** Item id; default looked up by name in the save generator's `Items`. */
