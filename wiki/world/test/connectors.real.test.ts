@@ -152,10 +152,16 @@ describe('every row', () => {
 
 describe('the build report', () => {
     test('has a way back for every curated connector', () => {
-        const locs = [...OVERRIDES.keys()].map(k => {
-            const [level, x, z] = k.split(' ')[0]!.split(',').map(Number);
-            return show({ level: level!, x: x!, z: z! });
-        });
+        // Glarial's tomb ladder is curated for its name but genuinely one-way: the tomb is entered by using Glarial's
+        // pebble on the tombstone (oplocu glarials_tombstone_waterfall_quest, quest_waterfall.rs2:103), an item-on-loc
+        // move that is no connector row.
+        const ONE_WAY_BY_DESIGN = new Set(['0,2556,9844']);
+        const locs = [...OVERRIDES.keys()]
+            .filter(k => !ONE_WAY_BY_DESIGN.has(k.split(' ')[0]!))
+            .map(k => {
+                const [level, x, z] = k.split(' ')[0]!.split(',').map(Number);
+                return show({ level: level!, x: x!, z: z! });
+            });
         const curated = report.connectors.oneWay.filter(l => locs.some(loc => l.includes(` ${loc} op`)));
         expect(curated).toEqual([]);
     });
