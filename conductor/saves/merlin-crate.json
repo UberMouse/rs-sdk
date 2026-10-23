@@ -1,0 +1,57 @@
+{
+    "name": "merlin-crate",
+    "purpose": "Merlin's Crystal stage 3 (varp 14=3), combat ~40, 5 lobsters, at Catherby next to the Hide-in crate (2801,3442). Tests interact + talk continue.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2801,
+                "z": 3443
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 40,
+                "Defence": 40,
+                "Hitpoints": 40
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 5
+                }
+            ],
+            "varps": {
+                "14": 3
+            }
+        }
+    },
+    "sha1": "915573f9139351d68818d67903669e4d1a91d47f",
+    "createdAt": "2026-10-23T07:56:28.681Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2801,
+            "z": 3443,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 40,
+            "Hitpoints": 40
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 5
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "14": 3,
+            "281": 1000
+        }
+    }
+}

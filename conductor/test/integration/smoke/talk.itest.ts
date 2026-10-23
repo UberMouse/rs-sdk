@@ -62,3 +62,32 @@ test(
     },
     itestTimeout({ taskMinutes: 2 }),
 );
+
+// Merlin's Crystal stage 3: the Catherby crate (quest_arthur.rs2) opens a dialog `interact` leaves open;
+// `talk` with `continue` answers "Yes." twice and the ride ends on the Keep Le Faye jetty.
+test(
+    'talk continues the dialog the Catherby crate opened',
+    async () => {
+        await withFixtureBot(
+            { position: { x: 2801, z: 3443 }, varps: { 14: 3 } },
+            async ({ name }) => {
+                const hide = await runTask(
+                    name,
+                    'interact',
+                    { target: 'loc', name: '^Crate$', option: '^Hide-in$', at: { x: 2801, z: 3443, tolerance: 1 } },
+                    ['minutes:1'],
+                );
+                expect(hide.result.status, `${JSON.stringify(hide.result)}\n${hide.stderr}`).toBe('done');
+                const run = await runTask(name, 'talk', { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] }, [
+                    'minutes:3',
+                ]);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.reason, detail).toBe('continue-dialog: continued the open dialog, 2 choices made');
+                expect(run.result.finalPos, detail).toMatchObject({ x: 2778, z: 3401 });
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);

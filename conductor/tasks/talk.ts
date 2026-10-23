@@ -29,7 +29,7 @@ import { squareReachesWilderness } from '../lib/wilderness';
 
 /** Failed walks, talks or uses in a row before the task fails. */
 const FAIL_LIMIT = 3;
-/** Loops (2 ticks each) the NPC or loc may be out of sight before the task fails. */
+/** Loops (2 ticks each) the NPC, loc or dialog may be missing before the task fails. */
 const MISSING_LIMIT = 3;
 const MISSING_WAIT_TICKS = 2;
 /** A walk, then a conversation of up to CONVERSE_MAX_TICKS: both fit one step. */
@@ -61,8 +61,18 @@ const Params = z
          * tile instead of the nearest of that name (one of several monuments).
          */
         use: z.object({ items: z.array(ItemSpec).min(1), onLoc: Pattern, tile: TileSchema.optional() }).optional(),
+        /**
+         * Continue a dialog that is already open (a previous step opened it: a crate's "Hide-in", a drop that
+         * left an NPC talking): answer `choices` and click through, never look for anyone. Alone: no `npc`,
+         * `at` or `use`. Fails after a short wait when no dialog is open.
+         */
+        continue: z.boolean().default(false),
     })
-    .refine(p => p.npc !== undefined || p.use !== undefined, 'give an npc to talk to, a use, or both');
+    .refine(p => p.continue || p.npc !== undefined || p.use !== undefined, 'give an npc to talk to, a use, or both')
+    .refine(
+        p => !p.continue || (p.npc === undefined && p.use === undefined && p.at === undefined),
+        '`continue` takes the open dialog as it is: give no npc, use or at',
+    );
 
 type TalkParams = z.infer<typeof Params>;
 interface TalkMemory {
@@ -112,7 +122,7 @@ function findLoc(ctx: Ctx): NearbyLoc | undefined {
 export default defineTask({
     name: 'talk',
     description:
-        'Talk to an NPC and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?} ' +
+        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?} ' +
         '(walked to first, across floors and through doors), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
         '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
         'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
@@ -133,6 +143,27 @@ export default defineTask({
     },
 
     steps: [
+        {
+            name: 'continue-dialog',
+            when: ctx => ctx.params.continue,
+            *run(ctx) {
+                const { progress } = ctx.memory;
+                // answered > 0: a cut-off step resumed; converse waits out the grace for a dialog that just closed.
+                if (!ctx.state().dialog.isOpen && progress.answered === 0) {
+                    // The dialog may open a tick after the step that caused it.
+                    if (ctx.streak('noDialog').add() >= MISSING_LIMIT) return { fail: 'no dialog is open to continue' };
+                    yield* ticks(MISSING_WAIT_TICKS);
+                    return;
+                }
+                const r = yield* converse(ctx, ctx.params.choices.map(matcher), progress);
+                if (r.ok)
+                    return {
+                        done: `continued the open dialog, ${r.answered} choice${r.answered === 1 ? '' : 's'} made`,
+                    };
+                yield* closeDialog(ctx, 'close dialog after a failed continue');
+                return { fail: r.message };
+            },
+        },
         walkToSpotStep<TalkParams, TalkMemory>(FAIL_LIMIT),
         {
             name: 'use-items',
