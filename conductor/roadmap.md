@@ -20,9 +20,20 @@ goes through `stat_advance` at 25x, so Waterfall Quest alone is Attack and Stren
 
 **Floor hours to 99** (model, tick-perfect; bots measure ~55-85% of it): ~27 h in all, ~40 h expected. Long poles:
 Herblore 7-11 h (herbs only drop: no shop sells one), Runecraft ~5.6 h (earth, travel-bound), Prayer ~3 h after
-melee (bones only). Every other skill is 0.3-2 h. Explore goals go to the long poles first: herb sources and drop
-tables (research in flight 2026-10-23, the user asked for drop tables and time-to-drop: a rune scimitar is not sold,
-Fire giants drop it 1/128), Runecraft altar and essence layouts, Prayer by quests and dragons.
+melee (bones only). Every other skill is 0.3-2 h. Explore goals go to the long poles first: herb sources (chaos
+druids, Edgeville dungeon), Runecraft altar and essence layouts, Prayer by quests and dragons.
+
+**Drops** (research 2026-10-23, `.durable-state/research-2026-10-23.md` §Drops; the user asked for drop tables and
+time-to-drop): no drop is worth hunting.
+- The rune scimitar drops only from Fire giants (1/128): 93 min expected at melee 60 with rune, trains 8-25% slower
+  than moss giants, and has a 13.5% chance of nothing after twice that. The rune sword (20.8k, Champions' Guild,
+  32 QP, which Dragon Slayer needs anyway) gives 92-99% of its Strength rate. Otherwise smith one (Mining 85,
+  Smithing 90).
+- Axes: smith them (mithril 51, adamant 71, rune 86); the dragon and troll drops aren't modelled.
+- Pickaxes: buy the adamant one.
+- Armour: buy it; it doesn't change the XP floor.
+- Arrows and food: buy the arrows and fish the food.
+- Runes: buy them from Lundail or the Magic Guild.
 
 **Pairings** (processing takes minutes; gathering sets the time): WC + FM/Fletching (willows win for chop-and-process),
 Fishing + Cooking, flax + Crafting (strings feed Fletching), iron + Smithing + Magic (superheat), essence + Runecraft,
@@ -37,7 +48,8 @@ chaos druids + Herblore + melee + Prayer.
 4. Thieving 40-55 Ardougne guards, 55-99 knights; stay on knights for the gp (166k/h at 99) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
 5. Agility: gnome course 1-52, Wilderness course 52-99.
-6. Gathering 99s with their pairings; melee per the drop research (a rune scimitar hunt can be a training leg).
+6. Gathering 99s with their pairings. Melee: mithril scimitar (Zeke, 1,040), then the rune sword once at 32 QP. No
+   fire giant hunt. Melee 50+ at Edgeville chaos druids doubles as the herb source.
 
 Account: Attack 21, Strength 20, Defence 20, HP 23, Prayer 20 (melee-chickens, 7 min); 155 feathers; no coins yet.
 
@@ -54,7 +66,7 @@ quest page for its own requirements before planning it. Status is conductor3's.
 | Magic 44 (superheat) | Imp Catcher (four bead drops from imps) | todo | `wiki/quests/` |
 | Attack + Strength 83 | Waterfall Quest (no skill requirements; rope, runes) | todo, unverified reward | `wiki/quests/` |
 | Defence 85 + Prayer 80 | Holy Grail (Merlin's Crystal first) | later | `wiki/quests/` |
-| Baby blue dragons (Prayer 60-99) | dusty key (Velrak, Taverley dungeon jail) | later | - |
+| Baby blue dragons (Prayer 60-99) | dusty key: kill the jailer (combat 47, 2933,9693, always drops the jail key, `jailer.rs2:10`), open Velrak's cell, and he gives it; aggressive black knights nearby | later | - |
 | Anti-dragon shield | Dragon Slayer started (Champions' Guild, 32 QP; `oziach.rs2:14`) | later | - |
 
 ## Backlog
@@ -146,9 +158,9 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 | Fishing | 1 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (547k-2.16M; banking +10 min) | 0.53 | - | fly rod |
 | Cooking | 1 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (0.83-1.36M plus Fishing) | 0.85 with Fishing | - | |
 | Crafting | 1 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat; spot unverified) | 1.3-2.0 | - | |
-| Herblore | 1 | herbs from chaos druids, Taverley dungeon (~200-320 herbs/h), quests (Jungle Potion 42, Eadgar's Ruse 80) | 7-11 | - | **long pole**: drop research ranks herb sources |
+| Herblore | 1 | herbs from chaos druids, Edgeville dungeon (11 spawns, 0.445 herbs/kill; 126/203/247 herbs/h at melee 40/60/85; Wilderness 2 at the thugs beside them), with melee trained there (0.9-1.1M Str/h). Yanille druid warriors (Agility 40) are second, at 50-144/h; Taverley has only 6 spawns. XP per herb: 146 identify-only, 643 with buyable secondaries (eye of newt, chocolate dust), 1,261 with snape grass and limpwurt (tribesmen on Karamja give both at 37-50 and 22-30/h, and poison). Druidic Ritual 28 then 1,542 herbs: 6.2 h at melee 85; Eadgar's Ruse 80 cuts it to 4.6 h | 6-8 | - | **long pole**: rated with thugs as a proxy, since druids aren't combat features |
 | Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
-| Attack / Strength / Defence | 21/20/20 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens) | drop research: rune scimitar from Fire giants 1/128 |
+| Attack / Strength / Defence | 21/20/20 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens) | no scimitar hunt: mithril scimitar (Zeke), then the rune sword at 32 QP (Str 1,083k at 60 vs 1,098k for the rune scimitar); chaos druids for 50+ (herbs) |
 | Hitpoints | 23 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
 | Prayer | 20 | Restless Ghost 47 -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | ~3 after melee | - | **long pole** |
 | Ranged | 1 | willow shortbow + mithril arrows on giants (by hand: 300k at 20 -> 1.48M at 99), ~72k gp arrows, 80% picked up | 0.81 | - | |
@@ -156,8 +168,9 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 Model gaps the research found (fix where a route row leans on them): no walk between a site's features is priced
 (multi-rock sites overstated: `iron-se-varrock-drop` 1.43M where no tile reaches all 4 rocks); `BANK_TICKS = 0`
 inflates bank-standing floors; the training pages may rate every level with a rune axe (checking 2026-10-23);
-Ranged and Magic combat unmodelled; no family for herblore, arrows, gems; chaos druids are not npc sites in
-`classify.ts`; the stall family ignores being caught; pickpocket with food can't rate non-stackable loot; adult
+Ranged and Magic combat unmodelled; no family for herblore, arrows, gems; chaos druids (and men, druids, unicorns)
+are not combat npc features, and their drop table needs `%itgronigen`, which the drop varps don't set; the
+combat model can't do food with no bank trip (hill giants); the stall family ignores being caught; pickpocket with food can't rate non-stackable loot; adult
 dragons and trolls are ModelErrors.
 
 ## Experiments
