@@ -1,7 +1,7 @@
 // Shared by the tasks that stand at a spot first and then work on what is there (talk, interact): the
 // `at` param, the regex param type, and the step that walks to the spot.
 import { z } from 'zod/v4';
-import type { BotWorldState } from '../../sdk/types';
+import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log } from '../core/op';
 import type { Step, TaskContext } from './task';
@@ -37,6 +37,33 @@ export const AtSchema = z.object({
     met: z.array(z.string()).optional(),
 });
 export type At = z.infer<typeof AtSchema>;
+
+/**
+ * One exact tile: picks the loc (or NPC) standing on it instead of the nearest one of that name. `level`
+ * applies to locs only: an NPC reports no level, so it is matched on x and z.
+ */
+export const TileSchema = z.object({ x: z.number().int(), z: z.number().int(), level: z.number().int().optional() });
+export type Tile = z.infer<typeof TileSchema>;
+
+/** A thing at (x, z) stands on `tile`; the level counts only when the tile gives one and the thing knows its own. */
+export const onTile = (thing: { x: number; z: number; level?: number }, tile: Tile): boolean =>
+    thing.x === tile.x &&
+    thing.z === tile.z &&
+    (tile.level === undefined || (thing.level ?? tile.level) === tile.level);
+
+/** An inventory item to use: a name regex, or `{ id }` for one exact item (three buckets of water share a name). */
+export const ItemSpec = z.union([Pattern, z.object({ id: z.number().int() })]);
+export type ItemSpec = z.infer<typeof ItemSpec>;
+
+export const itemMatches = (spec: ItemSpec, item: InventoryItem): boolean =>
+    typeof spec === 'string' ? matcher(spec).test(item.name) : item.id === spec.id;
+
+/** How a spec reads in a message: the regex, or `#id`. */
+export const itemLabel = (spec: ItemSpec): string => (typeof spec === 'string' ? `/${spec}/` : `#${spec.id}`);
+
+/** The message for an inventory with no item matching `spec`, to use on `on`. */
+export const missingItem = (spec: ItemSpec, on: string): string =>
+    `no item matching ${itemLabel(spec)} in the inventory to use on ${on}`;
 
 /** Within `tolerance` tiles of `at` as walkTo counts them (Chebyshev, not straight-line), on its level. */
 export function atSpot(at: At | undefined, state: BotWorldState): boolean {

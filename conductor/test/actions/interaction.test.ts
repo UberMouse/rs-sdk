@@ -1,6 +1,13 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
-import { INTERACT_WAIT_TICKS, interact, type InteractTarget } from '../../actions/interaction';
+import {
+    INTERACT_WAIT_TICKS,
+    interact,
+    type InteractTarget,
+    SETTLE_MAX_TICKS,
+    SETTLE_STABLE_TICKS,
+    useOn,
+} from '../../actions/interaction';
 import { type World, world } from '../world';
 import { refuse, runOp } from './harness';
 
@@ -148,6 +155,10 @@ describe('interact: failures', () => {
         'Nothing interesting happens.',
         "You can't do that.",
         'You need a key.',
+        "You don't see that being any help.",
+        "It's a little far with that strong current.",
+        "You can't get a good shot from here.",
+        'You remember putting that type of rune there.',
     ])('the refusal "%s" is refused, not an effect', async message => {
         const { result } = await runOp(
             after(x => x.message(message), 6),
@@ -228,5 +239,178 @@ describe('interact: failures', () => {
             ctx => interact(ctx, coffin, /^open$/i),
         );
         expect(result).toMatchObject({ ok: false, reason: 'rejected' });
+    });
+});
+
+const at = (x: number, z: number, level?: number) => (m: World) => m.player({ at: { x, z, level } });
+
+describe('interact: the player moved by the game, and an item used on a loc', () => {
+    test('a jump of more than a run step in one tick is the effect of an option', async () => {
+        const { result } = await runOp(after(at(3262, 3192), 5), ctx => interact(ctx, coffin, /^open$/i));
+        expect(result).toEqual({ ok: true, effect: 'the player moved to (3262,3192)' });
+    });
+
+    test('steps of a run (two tiles a tick) are a walk, not an effect', async () => {
+        const states = [
+            w.build(),
+            ...Array.from({ length: INTERACT_WAIT_TICKS + 2 }, (_, i) =>
+                at(3222 + 2 * (i + 1), 3218)(w.tick(2 + i)).build(),
+            ),
+        ];
+        const { result } = await runOp(states, ctx => interact(ctx, coffin, /^open$/i));
+        expect(result).toMatchObject({ ok: false, reason: 'no-effect' });
+    });
+
+    test('a bot standing on the loc, moved one tile, is the effect', async () => {
+        const door = START.player({ at: { x: 3249, z: 3192 } }).loc('Door', 3249, 3192, { options: ['Open'] });
+        const target: InteractTarget = { kind: 'loc', loc: door.build().nearbyLocs[0]! };
+        const states = [
+            door.build(),
+            ...Array.from({ length: 3 }, (_, i) =>
+                door
+                    .tick(2 + i)
+                    .player({ at: { x: 3249, z: 3193 } })
+                    .build(),
+            ),
+        ];
+        const { result } = await runOp(states, ctx => interact(ctx, target, /^open$/i));
+        expect(result).toEqual({ ok: true, effect: 'the player moved to (3249,3193)' });
+    });
+
+    test('useOn sends useItemOnLoc once and takes the first effect, with no inventory change needed', async () => {
+        const rope = START.inv('Rope', 1, { id: 954 }).loc('Rock', 3249, 3192, { options: ['Swim to'] });
+        const item = rope.build().inventory[0]!;
+        const loc = rope.build().nearbyLocs[0]!;
+        const states = [
+            rope.build(),
+            ...Array.from({ length: 4 }, (_, i) =>
+                rope
+                    .tick(2 + i)
+                    .message('You tie the rope.')
+                    .build(),
+            ),
+        ];
+        const { result, sends } = await runOp(states, ctx => useOn(ctx, item, loc, { expect: /tie the rope/ }));
+        expect(result).toEqual({ ok: true, effect: '"You tie the rope."' });
+        expect(sends).toEqual([
+            { type: 'useItemOnLoc', itemSlot: 0, x: 3249, z: 3192, locId: loc.id, reason: 'use Rope on Rock' },
+        ]);
+    });
+
+    test('useOn: a refusal message fails as refused, a quiet wait as no-effect', async () => {
+        const rope = START.inv('Rope', 1, { id: 954 }).loc('Rock', 3249, 3192, { options: ['Swim to'] });
+        const item = rope.build().inventory[0]!;
+        const loc = rope.build().nearbyLocs[0]!;
+        const refused = await runOp(
+            [
+                rope.build(),
+                ...Array.from({ length: 3 }, (_, i) =>
+                    rope
+                        .tick(2 + i)
+                        .message('Nothing interesting happens.')
+                        .build(),
+                ),
+            ],
+            ctx => useOn(ctx, item, loc),
+        );
+        expect(refused.result).toMatchObject({ ok: false, reason: 'refused' });
+        const quiet = await runOp(
+            [rope.build(), ...Array.from({ length: INTERACT_WAIT_TICKS + 2 }, (_, i) => rope.tick(2 + i).build())],
+            ctx => useOn(ctx, item, loc),
+        );
+        expect(quiet.result).toMatchObject({ ok: false, reason: 'no-effect' });
+    });
+
+    test('a state the client skipped does not turn a run into a jump (the threshold scales with the ticks elapsed)', async () => {
+        // Four tiles over two ticks is a run; four tiles in one tick is not.
+        const skipped = [
+            w.build(),
+            ...Array.from({ length: INTERACT_WAIT_TICKS + 2 }, (_, i) => at(3226, 3218)(w.tick(3 + i)).build()),
+        ];
+        const run = await runOp(skipped, ctx => interact(ctx, coffin, /^open$/i));
+        expect(run.result).toMatchObject({ ok: false, reason: 'no-effect' });
+        const jumped = [w.build(), ...Array.from({ length: 4 }, (_, i) => at(3226, 3218)(w.tick(2 + i)).build())];
+        const jump = await runOp(jumped, ctx => interact(ctx, coffin, /^open$/i));
+        expect(jump.result).toEqual({ ok: true, effect: 'the player moved to (3226,3218)' });
+    });
+});
+
+describe('interact: settling after a game-driven move', () => {
+    const rope = START.inv('Rope', 1, { id: 954 }).loc('Rock', 3249, 3192, { options: ['Swim to'] });
+    const item = rope.build().inventory[0]!;
+    const loc = rope.build().nearbyLocs[0]!;
+    /** The rope world at tick `t` with the player at x and animation `anim`. */
+    const frame = (t: number, x: number, anim: number): BotWorldState => {
+        const s = at(x, 3218)(rope.tick(t)).build();
+        return { ...s, player: s.player && { ...s.player, animId: anim } };
+    };
+
+    test('a use ends once position, floor and animation hold for three ticks after the effect', async () => {
+        // The throw animation at tick 2 is the effect; the landing (a step and the end of the animation) follows.
+        const states = [
+            frame(1, 3222, -1),
+            frame(2, 3222, 4),
+            frame(3, 3223, 4),
+            frame(4, 3223, -1),
+            frame(5, 3223, -1),
+        ];
+        const run = await runOp(states, ctx => useOn(ctx, item, loc));
+        expect(run.result).toEqual({ ok: true, effect: 'an animation started' });
+        expect(run.driver.ticksElapsed).toBe(6);
+    });
+
+    test('an option does not settle unless asked; with settle it does', async () => {
+        const states = [
+            frame(1, 3222, -1),
+            frame(2, 3222, 4),
+            frame(3, 3223, 4),
+            frame(4, 3223, -1),
+            frame(5, 3223, -1),
+        ];
+        const quick = await runOp(states, ctx => interact(ctx, { kind: 'loc', loc }, /swim/i));
+        expect(quick.driver.ticksElapsed).toBe(1);
+        const settled = await runOp(states, ctx => interact(ctx, { kind: 'loc', loc }, /swim/i, { settle: true }));
+        expect(settled.driver.ticksElapsed).toBe(6);
+    });
+
+    test('a move the game made settles too', async () => {
+        const states = [
+            frame(1, 3222, -1),
+            frame(2, 3262, -1),
+            frame(3, 3263, -1),
+            frame(4, 3263, -1),
+            frame(5, 3263, -1),
+        ];
+        const run = await runOp(states, ctx => interact(ctx, { kind: 'loc', loc }, /swim/i));
+        expect(run.result).toEqual({ ok: true, effect: 'the player moved to (3262,3218)' });
+        expect(run.driver.ticksElapsed).toBe(5);
+    });
+
+    test('a world that never settles is cut off at SETTLE_MAX_TICKS and still succeeds', async () => {
+        const states = [
+            frame(1, 3222, -1),
+            frame(2, 3222, 4),
+            ...Array.from({ length: SETTLE_MAX_TICKS + 3 }, (_, i) => frame(3 + i, 3223 + (i % 2), 4)),
+        ];
+        const run = await runOp(states, ctx => useOn(ctx, item, loc));
+        expect(run.result).toEqual({
+            ok: true,
+            effect: `an animation started (still moving after ${SETTLE_MAX_TICKS} ticks)`,
+        });
+        expect(run.driver.ticksElapsed).toBe(1 + SETTLE_MAX_TICKS);
+    });
+
+    test('a two-tick pause and then eight single-tile moves settle at the last tile', async () => {
+        // The rope on the Rock: the throw animation, a stationary pause, then the swim a tile a tick.
+        const states = [
+            frame(1, 3222, -1),
+            frame(2, 3222, 4),
+            frame(3, 3222, -1),
+            frame(4, 3222, -1),
+            ...Array.from({ length: 8 }, (_, i) => frame(5 + i, 3223 + i, -1)),
+        ];
+        const run = await runOp(states, ctx => useOn(ctx, item, loc));
+        expect(run.result).toEqual({ ok: true, effect: 'an animation started' });
+        expect(run.driver.ticksElapsed).toBe(1 + 2 + 8 + SETTLE_STABLE_TICKS);
     });
 });

@@ -188,6 +188,10 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   settles the fight (at most 100 ticks); any phase that does not end done after the stop or `until`
   fired (a guard failing in the settle is the common case) ends the plan failed, whatever `onFail` says. Combat that starts in the gap between phases goes through the next phase's `onFail` like any
   refusal.
+- **The Wilderness is opted in per phase.** A phase that ends in the Wilderness (`travel` or `interact`
+  with `wilderness: true`) leaves the bot there, and the Wilderness guard ends any later phase that has not
+  opted in too, so the phase that follows (the next `interact`, the `travel` out) sets `wilderness: true`
+  as well; each opted-in phase needs its own `minFood` food at its start.
 - **One controller connection for the whole plan**, so nothing can take the bot between phases.
 
 ## Stops and the engine hooks

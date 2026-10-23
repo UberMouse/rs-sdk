@@ -30,3 +30,143 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+// The Waterfall Quest (server/content/scripts/quests/quest_waterfall/scripts/quest_waterfall.rs2): Hudon's island,
+// whose Rock and Dead trees the client cannot route to (the ops go out from the stand tile), and the dungeon's
+// pillars (waterfall_pillars.rs2). Varp 65 is the quest stage. The island tests share the Rock and its loc change,
+// so they run one after the other in this file.
+const ISLAND = { x: 2512, z: 3477 };
+const RAFT_SHORE = { x: 2512, z: 3476, tolerance: 1 };
+// The server accepts the rope on the Rock only from x 2510-2514, z 3476-3481: stand well inside it.
+const ROPE_STAND = { x: 2512, z: 3478, tolerance: 1 };
+const ROCK = { x: 2512, z: 3468 };
+const SKILLS = { Attack: 60, Strength: 60, Defence: 60, Hitpoints: 70 };
+const ROPE = 954;
+const LOBSTER = 379;
+const island = {
+    position: ISLAND,
+    skills: SKILLS,
+    inventory: [{ id: ROPE, count: 1 }, ...Array.from({ length: 5 }, () => ({ id: LOBSTER, count: 1 }))],
+    varps: { 65: 2 },
+};
+
+test(
+    'interact swims from the island: an op on the unreachable Rock, the wash-up lands downstream',
+    async () => {
+        await withFixtureBot(
+            island,
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Rock$',
+                        option: '^Swim',
+                        tile: ROCK,
+                        unreachable: true,
+                        at: RAFT_SHORE,
+                        expect: 'washed downstream',
+                    },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                const { x, z } = run.result.finalPos;
+                expect(Math.max(Math.abs(x - 2527), Math.abs(z - 3413)), detail).toBeLessThanOrEqual(3);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
+
+test(
+    'interact throws the rope on the Rock and then on the Dead tree, each picked by tile',
+    async () => {
+        await withFixtureBot(
+            island,
+            async ({ name }) => {
+                const rock = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Rock$',
+                        use: { item: { id: ROPE } },
+                        tile: ROCK,
+                        unreachable: true,
+                        at: ROPE_STAND,
+                    },
+                    ['minutes:2'],
+                );
+                const rockDetail = `${JSON.stringify(rock.result)}\n${rock.stderr}`;
+                expect(rock.result.status, rockDetail).toBe('done');
+                expect(rock.result.reason, rockDetail).toMatch(/^interact: use #954 on \^Rock\$: /);
+                expect(rock.result.reason, rockDetail).not.toContain('still moving');
+                expect(rock.result.finalPos, rockDetail).toMatchObject({ x: 2513, z: 3468 });
+                // The run settles after the throw, so the next one starts once the bot has been pulled across.
+                const tree = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Dead tree$',
+                        use: { item: '^Rope$' },
+                        tile: { x: 2512, z: 3465 },
+                        unreachable: true,
+                        at: { x: 2512, z: 3466, tolerance: 1 },
+                    },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(tree.result)}\n${tree.stderr}`;
+                expect(tree.result.status, detail).toBe('done');
+                expect(tree.result.reason, detail).toBe(
+                    'interact: use /^Rope$/ on ^Dead tree$: the player moved to (2511,3463)',
+                );
+                expect(tree.result.finalPos, detail).toMatchObject({ x: 2511, z: 3463 });
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 4 }),
+);
+
+test(
+    'interact puts a rune on the pillar chosen by tile',
+    async () => {
+        await withFixtureBot(
+            {
+                position: { x: 2563, z: 9912 },
+                skills: SKILLS,
+                inventory: [
+                    { id: 295, count: 1 },
+                    { id: 296, count: 1 },
+                    { id: 556, count: 6 },
+                    { id: 557, count: 6 },
+                    { id: 555, count: 6 },
+                ],
+                varps: { 65: 6 },
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Pillar$',
+                        use: { item: { id: 556 } },
+                        tile: { x: 2562, z: 9912 },
+                        at: { x: 2563, z: 9912, tolerance: 1 },
+                    },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta['Air rune'], detail).toBe(-1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);

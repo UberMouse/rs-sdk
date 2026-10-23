@@ -1,0 +1,93 @@
+{
+    "name": "waterfall-pillars",
+    "purpose": "Waterfall dungeon pillar room (stage 6) at (2563,9912) beside the west Pillar (2562,9912): Glarial's amulet and urn, 6 each air/earth/water runes, Att/Str/Def 60, HP 70. Tests runes on a pillar picked by tile.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2563,
+                "z": 9912
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 295,
+                    "count": 1
+                },
+                {
+                    "id": 296,
+                    "count": 1
+                },
+                {
+                    "id": 556,
+                    "count": 6
+                },
+                {
+                    "id": 557,
+                    "count": 6
+                },
+                {
+                    "id": 555,
+                    "count": 6
+                }
+            ],
+            "varps": {
+                "65": 6
+            }
+        }
+    },
+    "sha1": "b11e7569490c8e88a7c9f6ac365232609ce31af3",
+    "createdAt": "2026-10-23T07:06:42.177Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2563,
+            "z": 9912,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 70
+        },
+        "inventory": [
+            {
+                "id": 295,
+                "name": "glarials_amulet_waterfall_quest",
+                "count": 1
+            },
+            {
+                "id": 296,
+                "name": "glarials_urn_full_waterfall_quest",
+                "count": 1
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 6
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 6
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 6
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "65": 6,
+            "281": 1000
+        }
+    }
+}

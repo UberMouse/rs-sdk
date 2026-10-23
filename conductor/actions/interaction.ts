@@ -5,7 +5,7 @@ import type { BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../s
 import { type Op, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import type { ActionContext } from './context';
-import { type InteractResult, interactItem, interactLoc, interactNpc } from './interact';
+import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc } from './interact';
 import { CANT_REACH, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
 
 /** Ticks to wait for the effect (10 s as `use`: the walk up to the target plus the action). */
@@ -19,7 +19,7 @@ export const MESSAGE_GRACE_TICKS = 2;
 
 /** Game messages that say the interaction did nothing. */
 export const REFUSAL =
-    /nothing interesting happens|maybe i should|can't do that|cannot do that|you need|you'll need|too busy|you don't have|you haven't|you are not|you're not|isn't possible|already/i;
+    /nothing interesting happens|maybe i should|can't do that|cannot do that|you need|you'll need|too busy|you don't have|you haven't|you are not|you're not|isn't possible|already|don't see that being any help|little far with that strong current|can't get a good shot|remember putting that type of rune/i;
 
 /** What to interact with. */
 export type InteractTarget =
@@ -35,7 +35,22 @@ export type InteractionResult =
           message: string;
       };
 
+/**
+ * Most ticks the settle after a game-driven move waits: a rope thrown across water ends on the throw
+ * animation, the bot then holds two ticks and swims the crossing a tile a tick (about 10 ticks in all).
+ */
+export const SETTLE_MAX_TICKS = 16;
+/** Consecutive ticks with position, floor and animation unchanged that count as settled. */
+export const SETTLE_STABLE_TICKS = 3;
+
 export interface InteractOptions {
+    /**
+     * Wait for the world to settle after the effect (position, floor and animation unchanged for
+     * SETTLE_STABLE_TICKS ticks, at most SETTLE_MAX_TICKS; the effect notes when the cap ended it) before returning: for an op whose effect is a move the
+     * game makes a few ticks later (a rope thrown across water). A `use` always settles, and so does any
+     * effect that is the player moved by the game; `expect` still names a specific later message.
+     */
+    settle?: boolean;
     /**
      * When given, only a game message or dialog page matching it is the effect (a state change alone is
      * not): the caller names the outcome it needs.
@@ -53,15 +68,60 @@ export function optionsOf(target: InteractTarget): string[] {
 export const targetName = (t: InteractTarget): string =>
     t.kind === 'npc' ? t.npc.name : t.kind === 'loc' ? t.loc.name : t.item.name;
 
+/** Running covers two tiles a tick: a player further off than that per elapsed tick was moved by the game. */
+const MAX_STEP_TILES = 2;
+
+/** The effect text of a move the game made. */
+const MOVED_PREFIX = 'the player moved to ';
+
 const signature = (xs: readonly { slot?: number; id: number; count: number }[]) =>
     xs.map(i => `${i.slot ?? ''}:${i.id}:${i.count}`).join(',');
 
-/** What changed in the world between `before` and `s`, or null while nothing shows. */
-function stateChange(target: InteractTarget, before: BotWorldState, s: BotWorldState): string | null {
+/**
+ * Watches the player across the ticks of a wait for a move the game made (a teleport, a swim wash-up, a pass
+ * through a door, a gangplank, a whistle), which a walk toward the target never is: it covers at most
+ * MAX_STEP_TILES a tick and stays on its floor. A bot that began on the target's own tile has nothing to
+ * walk, so any move of it counts. Sticky: once seen, it stays seen. Call it with each state of the wait.
+ */
+function movementWatch(target: InteractTarget, before: BotWorldState): (s: BotWorldState) => string | null {
+    const start = before.player;
+    let prev = start;
+    let prevTick = before.tick;
+    let seen: string | null = null;
+    const onTarget =
+        target.kind === 'loc' &&
+        !!start &&
+        start.worldX === target.loc.x &&
+        start.worldZ === target.loc.z &&
+        start.level === target.loc.level;
+    return s => {
+        const now = s.player;
+        if (!seen && prev && now) {
+            const jump = Math.max(Math.abs(now.worldX - prev.worldX), Math.abs(now.worldZ - prev.worldZ));
+            // A state the client skipped covers more ticks of walking.
+            const reach = MAX_STEP_TILES * Math.max(1, s.tick - prevTick);
+            const away = !!start && (now.worldX !== start.worldX || now.worldZ !== start.worldZ);
+            if (now.level !== prev.level || jump > reach || (onTarget && away))
+                seen = `${MOVED_PREFIX}(${now.worldX},${now.worldZ})`;
+        }
+        prev = now ?? prev;
+        prevTick = s.tick;
+        return seen;
+    };
+}
+
+/** What changed in the world between `before` and `s`, or null while nothing shows. `moved` is the movement watch's finding. */
+function stateChange(
+    target: InteractTarget,
+    before: BotWorldState,
+    s: BotWorldState,
+    moved: string | null,
+): string | null {
     if (s.dialog.isOpen && !before.dialog.isOpen) return 'a dialog opened';
     if (s.interface.isOpen && !before.interface.isOpen) return 'an interface opened';
     if (signature(s.inventory) !== signature(before.inventory)) return 'the inventory changed';
     if (signature(s.equipment) !== signature(before.equipment)) return 'the worn items changed';
+    if (moved) return moved;
     if (target.kind === 'loc') {
         const { x, z, id } = target.loc;
         const at = s.nearbyLocs.filter(l => l.x === x && l.z === z);
@@ -88,6 +148,7 @@ function verdictOf(
     expect: RegExp | undefined,
     grace: number,
     s: BotWorldState,
+    moved: string | null,
 ): Verdict | null {
     const name = targetName(target);
     if (messageSince(s, cursor, CANT_REACH))
@@ -97,7 +158,7 @@ function verdictOf(
         const said = messageSince(s, cursor, expect) ?? dialogSince(s, cursor, expect);
         if (said) return { kind: 'effect', effect: `"${said}"` };
     } else {
-        const change = stateChange(target, before, s);
+        const change = stateChange(target, before, s, moved);
         if (change) return { kind: 'effect', effect: change };
     }
     const refusal = messages.find(m => REFUSAL.test(m.text));
@@ -111,39 +172,109 @@ function verdictOf(
  * carries the effect seen. `no-option` and `send-failed` mean nothing reached the game; `cant-reach` is
  * the server's "I can't reach that!", `refused` a refusal message ("Nothing interesting happens."),
  * `rejected` a discarded op with nothing else shown, `no-effect` a timeout. A walk to a far target
- * counts against the wait, so the caller walks near first.
+ * counts against the wait, so the caller walks near first. The effect can also be the player moved by the
+ * game (a teleport, a door pass-through) or the loc changed.
  */
 export function* interact(
     ctx: ActionContext,
     target: InteractTarget,
     option: number | RegExp,
-    { expect }: InteractOptions = {},
+    opts: InteractOptions = {},
+): Op<InteractionResult> {
+    return yield* attempt(
+        ctx,
+        target,
+        `${option}`,
+        () =>
+            target.kind === 'npc'
+                ? interactNpc(target.npc, option)
+                : target.kind === 'loc'
+                  ? interactLoc(target.loc, option)
+                  : interactItem(target.item, option),
+        opts,
+    );
+}
+
+/**
+ * Uses inventory `item` on `loc`, sent once, and waits for the same effects as `interact` (judged here,
+ * not as `useItemOnLoc` does: no inventory change is needed, and a use that only moves the player or prints
+ * a message, like a key on a door or a rope on a rock, is an effect). It sends once per call; the caller decides on a retry
+ * (a key door used from the far side walks the bot back through). It settles after the effect (see `InteractOptions.settle`).
+ */
+export function* useOn(
+    ctx: ActionContext,
+    item: InventoryItem,
+    loc: NearbyLoc,
+    opts: InteractOptions = {},
+): Op<InteractionResult> {
+    return yield* attempt(ctx, { kind: 'loc', loc }, `use ${item.name}`, () => sendUseOnLoc(item, loc), {
+        ...opts,
+        settle: true,
+    });
+}
+
+/** What the settle compares from tick to tick. */
+const look = (s: BotWorldState) => `${s.player?.worldX},${s.player?.worldZ},${s.player?.level},${s.player?.animId}`;
+
+/** Waits (bounded by SETTLE_MAX_TICKS) until the player's tile, floor and animation hold for SETTLE_STABLE_TICKS ticks; false when the cap ended it. */
+function* settled(from: BotWorldState): Op<boolean> {
+    let last = look(from);
+    let stable = 0;
+    let first = true;
+    const w = yield* wait(
+        'settle',
+        s => {
+            // The wait checks the state the effect was seen in first: that one is the baseline, not a stable tick.
+            if (first) {
+                first = false;
+                return false;
+            }
+            const now = look(s);
+            stable = now === last ? stable + 1 : 0;
+            last = now;
+            return stable >= SETTLE_STABLE_TICKS;
+        },
+        SETTLE_MAX_TICKS,
+    );
+    return w.kind !== 'timeout';
+}
+
+function* attempt(
+    ctx: ActionContext,
+    target: InteractTarget,
+    what: string,
+    send: () => Op<InteractResult>,
+    { expect, settle }: InteractOptions,
 ): Op<InteractionResult> {
     const before = ctx.state();
     const cursor = messageCursor(before);
     const rejected = before.opFeedback?.opRejectedCount ?? 0;
     const name = targetName(target);
-    const sent: InteractResult =
-        target.kind === 'npc'
-            ? yield* interactNpc(target.npc, option)
-            : target.kind === 'loc'
-              ? yield* interactLoc(target.loc, option)
-              : yield* interactItem(target.item, option);
+    const sent = yield* send();
     if (!sent.ok) return sent;
+    const watch = movementWatch(target, before);
     const w = yield* wait(
-        `${option} ${name}`,
-        s => verdictOf(target, before, cursor, expect, MESSAGE_GRACE_TICKS, s) !== null,
+        `${what} ${name}`,
+        s => verdictOf(target, before, cursor, expect, MESSAGE_GRACE_TICKS, s, watch(s)) !== null,
         INTERACT_WAIT_TICKS,
     );
     // At the end of the wait a bare message counts at once.
-    const verdict = verdictOf(target, before, cursor, expect, 0, w.state);
-    if (verdict?.kind === 'effect') return { ok: true, effect: verdict.effect };
+    const verdict = verdictOf(target, before, cursor, expect, 0, w.state, watch(w.state));
+    if (verdict?.kind === 'effect') {
+        const moved = verdict.effect.startsWith(MOVED_PREFIX);
+        if (settle || moved) {
+            const stable = yield* settled(w.state);
+            if (!stable)
+                return { ok: true, effect: `${verdict.effect} (still moving after ${SETTLE_MAX_TICKS} ticks)` };
+        }
+        return { ok: true, effect: verdict.effect };
+    }
     if (verdict) return { ok: false, reason: verdict.reason, message: verdict.message };
     if ((w.state.opFeedback?.opRejectedCount ?? 0) > rejected)
-        return { ok: false, reason: 'rejected', message: `the server discarded the ${option} on ${name}` };
+        return { ok: false, reason: 'rejected', message: `the server discarded the ${what} on ${name}` };
     return {
         ok: false,
         reason: 'no-effect',
-        message: `${option} on ${name} showed no effect within ${INTERACT_WAIT_TICKS} ticks`,
+        message: `${what} on ${name} showed no effect within ${INTERACT_WAIT_TICKS} ticks`,
     };
 }

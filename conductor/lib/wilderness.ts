@@ -29,3 +29,15 @@ export const isInWilderness = (level: number, worldX: number, worldZ: number): b
 /** True when the square of `radius` around (x, z) on plane 0 overlaps the Wilderness. */
 export const squareReachesWilderness = (x: number, z: number, radius: number): boolean =>
     x + radius >= WILDERNESS_MIN_X && x - radius <= WILDERNESS_MAX_X && zReaches(z - radius, z + radius);
+
+/** Food a Wilderness trip starts with unless `minFood` says otherwise: skeletons and wolves hit on the way. */
+export const WILDERNESS_MIN_FOOD = 3;
+
+/**
+ * Why a Wilderness run may not start with `food` items held, or null. It needs `minFood` food (at least 1: with
+ * none the low-hp guard has nothing to eat). `what` names the run in the message ("a Wilderness trip").
+ */
+export function wildernessFoodRefusal(food: number, minFood: number, what: string): string | null {
+    const needed = Math.max(1, minFood);
+    return food < needed ? `${what} needs ${needed} food (minFood), bot has ${food}` : null;
+}

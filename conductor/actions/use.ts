@@ -62,14 +62,17 @@ export function* useItemOnItem(ctx: ActionContext, item: InventoryItem, target: 
     });
 }
 
+/** The send for inventory `item` used on `loc`. */
+export const useOnLocAction = (item: InventoryItem, loc: NearbyLoc): BotAction => ({
+    type: 'useItemOnLoc',
+    itemSlot: item.slot,
+    x: loc.x,
+    z: loc.z,
+    locId: loc.id,
+    reason: `use ${item.name} on ${loc.name}`,
+});
+
 /** Uses inventory `item` on `loc` (a bucket on a fountain, ore on a furnace). */
 export function* useItemOnLoc(ctx: ActionContext, item: InventoryItem, loc: NearbyLoc): Op<UseResult> {
-    return yield* used(ctx, item, loc.name, {
-        type: 'useItemOnLoc',
-        itemSlot: item.slot,
-        x: loc.x,
-        z: loc.z,
-        locId: loc.id,
-        reason: `use ${item.name} on ${loc.name}`,
-    });
+    return yield* used(ctx, item, loc.name, useOnLocAction(item, loc));
 }

@@ -1,0 +1,102 @@
+{
+    "name": "waterfall-island",
+    "purpose": "Hudon's island after the raft (Waterfall Quest stage 2) at (2512,3477): Att/Str/Def 60, HP 70, a Rope and 5 lobsters in separate slots, nothing worn. Tests interact swim/rope on the unreachable Rock and Dead tree.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2512,
+                "z": 3477
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 954,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "varps": {
+                "65": 2
+            }
+        }
+    },
+    "sha1": "cf068ab351111a6cd55caf62b96933b2823705bf",
+    "createdAt": "2026-10-23T07:06:41.605Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2512,
+            "z": 3477,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 70
+        },
+        "inventory": [
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "65": 2,
+            "281": 1000
+        }
+    }
+}

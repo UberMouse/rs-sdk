@@ -11,7 +11,18 @@ import {
 import { useItemOnLoc } from '../actions/use';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, send, ticks } from '../core/op';
-import { AtSchema, atSpot, matcher, Pattern, walkToSpotStep } from '../lib/spot';
+import {
+    AtSchema,
+    atSpot,
+    ItemSpec,
+    missingItem,
+    itemMatches,
+    matcher,
+    onTile,
+    Pattern,
+    TileSchema,
+    walkToSpotStep,
+} from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -44,10 +55,12 @@ const Params = z
          */
         choices: z.array(Pattern).default([]),
         /**
-         * Inventory items (name regexes) to use, one each in order, on a loc (name regex) before the
-         * conversation: raw meats on the Cauldron of Thunder.
+         * Inventory items to use, one each in order, on a loc (name regex) before the conversation: raw
+         * meats on the Cauldron of Thunder. An item is a name regex, or `{ id }` for one exact item (the
+         * murky, blessed and plain buckets of water share a name). `tile` picks the loc standing on that
+         * tile instead of the nearest of that name (one of several monuments).
          */
-        use: z.object({ items: z.array(Pattern).min(1), onLoc: Pattern }).optional(),
+        use: z.object({ items: z.array(ItemSpec).min(1), onLoc: Pattern, tile: TileSchema.optional() }).optional(),
     })
     .refine(p => p.npc !== undefined || p.use !== undefined, 'give an npc to talk to, a use, or both');
 
@@ -89,9 +102,10 @@ function unreachableNote(ctx: Ctx): string {
 
 function findLoc(ctx: Ctx): NearbyLoc | undefined {
     const name = ctx.params.use && matcher(ctx.params.use.onLoc);
+    const tile = ctx.params.use?.tile;
     return ctx
         .state()
-        .nearbyLocs.filter(l => name && name.test(l.name) && l.reachable === true)
+        .nearbyLocs.filter(l => name && name.test(l.name) && l.reachable === true && (!tile || onTile(l, tile)))
         .sort((a, b) => a.distance - b.distance)[0];
 }
 
@@ -100,7 +114,7 @@ export default defineTask({
     description:
         'Talk to an NPC and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?} ' +
         '(walked to first, across floors and through doors), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
-        '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item on a nearby loc first; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
+        '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
         'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
         "Done once the dialog has closed after the last choice. Fails with the dialog's options when an expected option is missing or an unexpected choice appears, " +
         'and when the dialog closes with choices left. E.g. {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}. ' +
@@ -126,15 +140,17 @@ export default defineTask({
             *run(ctx) {
                 const use = ctx.params.use;
                 // Narrowing only: when() guarantees it.
-                if (!use) return;
-                const pattern = use.items[ctx.memory.used];
-                const item = pattern && ctx.state().inventory.find(i => matcher(pattern).test(i.name));
-                if (!pattern || !item)
-                    return { fail: `no item matching /${pattern}/ in the inventory to use on ${use.onLoc}` };
+                const pattern = use?.items[ctx.memory.used];
+                if (!use || pattern === undefined) return;
+                const item = ctx.state().inventory.find(i => itemMatches(pattern, i));
+                if (!item) return { fail: missingItem(pattern, use.onLoc) };
                 const loc = findLoc(ctx);
                 const missing = ctx.streak('noLoc');
                 if (!loc) {
-                    if (missing.add() >= MISSING_LIMIT) return { fail: `no reachable ${use.onLoc} in sight` };
+                    if (missing.add() >= MISSING_LIMIT)
+                        return {
+                            fail: `no reachable ${use.onLoc}${use.tile ? ` at (${use.tile.x},${use.tile.z})` : ''} in sight`,
+                        };
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }

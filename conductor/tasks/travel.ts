@@ -8,7 +8,7 @@ import { foodCount } from '../lib/interrupts';
 import { FINAL_WALK_FAILURES } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
-import { squareReachesWilderness } from '../lib/wilderness';
+import { squareReachesWilderness, WILDERNESS_MIN_FOOD, wildernessFoodRefusal } from '../lib/wilderness';
 
 /** Failed walks in a row (not out of ticks while closing in) before the task fails. */
 const WALK_FAIL_LIMIT = 3;
@@ -21,9 +21,6 @@ const FLEE_SETTLE_LOOPS = 15;
 const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
 const GATE_STAND_TOLERANCE = 2;
-
-/** Food a Wilderness trip starts with unless `minFood` says otherwise: skeletons and wolves hit on the way. */
-const WILDERNESS_MIN_FOOD = 3;
 
 const Point = z.object({ x: z.number(), z: z.number() });
 const Params = z.object({
@@ -132,10 +129,7 @@ export default defineTask({
                     return `(${p.x},${p.z}) is in the Wilderness (set wilderness: true)`;
             return null;
         }
-        // At least one: a Wilderness trip with no food has nothing for the low-hp guard to eat.
-        const needed = Math.max(1, minFood);
-        const food = foodCount(ctx.state());
-        return food < needed ? `a Wilderness trip needs ${needed} food (minFood), bot has ${food}` : null;
+        return wildernessFoodRefusal(foodCount(ctx.state()), minFood, 'a Wilderness trip');
     },
 
     steps: [

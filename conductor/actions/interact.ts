@@ -3,8 +3,11 @@
 // waits for any animation, dialog or interface; here the client's own pathing takes the bot to the
 // loc, a task walks first itself when it must, and each caller waits for the effect it needs (logs,
 // ore) instead.
+// sendUseOnLoc is the send half of sdk/actions.ts useItemOnLoc @ 4c2069cc0 (the port line use.ts carries):
+// the evidence wait is left to the caller.
 import type { InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send } from '../core/op';
+import { useOnLocAction } from './use';
 
 export type InteractResult = { ok: true } | { ok: false; reason: 'no-option' | 'send-failed'; message: string };
 
@@ -72,6 +75,15 @@ export function* interactNpc(npc: NearbyNpc, option: number | RegExp): Op<Intera
             reason: `${picked.label} ${npc.name}`,
         }),
     );
+}
+
+/**
+ * Sends inventory `item` used on `loc` once, without waiting for evidence (`useItemOnLoc` in use.ts waits
+ * for an inventory, dialog or animation change): as interactLoc, `ok` only means sent, and a caller that
+ * judges the effect itself (`useOn` in interaction.ts) takes this.
+ */
+export function* sendUseOnLoc(item: InventoryItem, loc: NearbyLoc): Op<InteractResult> {
+    return sentResult(yield* send(useOnLocAction(item, loc)));
 }
 
 /** Sends `option` on the inventory `item` (Wear, Eat, Check...): as interactLoc, `ok` only means sent. */

@@ -394,3 +394,82 @@ describe('talk: params and budgets', () => {
         expect(stepBudgetTicks(talk.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(TALK_OPEN_TICKS + CONVERSE_MAX_TICKS);
     });
 });
+
+describe('talk: using items on a loc by tile, and an item by id', () => {
+    const monuments = base
+        .inv('Golden key', 1, { id: 2945 })
+        .loc('Monument', 3430, 9888, { options: ['Examine'] })
+        .loc('Monument', 3430, 9890, { options: ['Examine'] })
+        .loc('Monument', 3430, 9892, { options: ['Examine'] });
+    const consumed = (a: BotAction) =>
+        a.type === 'useItemOnLoc'
+            ? (s: ReturnType<typeof monuments.build>) => ({
+                  ...s,
+                  inventory: s.inventory.filter(i => i.slot !== a.itemSlot),
+              })
+            : undefined;
+    const sentTo = async (tile?: { x: number; z: number }) => {
+        const sent: BotAction[] = [];
+        const r = await simulate(talk, {
+            params: { use: { items: ['^golden key$'], onLoc: '^monument$', tile } },
+            timeline: monuments.series(40),
+            react: a => {
+                sent.push(a);
+                return consumed(a);
+            },
+        });
+        return { r, sent };
+    };
+
+    test('`tile` picks the loc standing there, not the nearest of that name', async () => {
+        const { r, sent } = await sentTo({ x: 3430, z: 9892 });
+        expect(r.result.status).toBe('done');
+        expect(sent[0]).toMatchObject({ type: 'useItemOnLoc', x: 3430, z: 9892 });
+    });
+
+    test('without `tile` the nearest is used', async () => {
+        const { sent } = await sentTo();
+        expect(sent[0]).toMatchObject({ x: 3430, z: 9888 });
+    });
+
+    test('a tile nothing stands on fails after waiting, naming it', async () => {
+        const { r, sent } = await sentTo({ x: 1, z: 2 });
+        expect(r.result.reason).toBe('use-items: no reachable ^monument$ at (1,2) in sight');
+        expect(sent).toEqual([]);
+    });
+
+    test('an item `{ id }` picks that item among several sharing a name', async () => {
+        const s0 = base
+            .inv('Bucket of water', 1, { id: 1929 })
+            .loc('Coffin', 3414, 3487, { options: ['Open'] })
+            .build();
+        const bucket = s0.inventory[0]!;
+        const state = {
+            ...s0,
+            inventory: [
+                { ...bucket, slot: 0, id: 1929 },
+                { ...bucket, slot: 1, id: 2954 },
+                { ...bucket, slot: 2, id: 2953 },
+            ],
+        };
+        const sent: BotAction[] = [];
+        const r = await simulate(talk, {
+            params: { use: { items: [{ id: 2954 }], onLoc: '^coffin$' } },
+            timeline: [state],
+            react: a => {
+                sent.push(a);
+                return a.type === 'useItemOnLoc' ? s => ({ ...s, inventory: [] }) : undefined;
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent[0]).toMatchObject({ type: 'useItemOnLoc', itemSlot: 1 });
+    });
+
+    test('an item id the bot does not hold fails naming the id', async () => {
+        const r = await simulate(talk, {
+            params: { use: { items: [{ id: 2954 }], onLoc: '^monument$' } },
+            timeline: monuments.series(10),
+        });
+        expect(r.result.reason).toBe('use-items: no item matching #2954 in the inventory to use on ^monument$');
+    });
+});

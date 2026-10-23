@@ -1,12 +1,31 @@
 import { z } from 'zod/v4';
 import type { InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
-import { INTERACT_WAIT_TICKS, interact, type InteractTarget, optionsOf, targetName } from '../actions/interaction';
+import {
+    INTERACT_WAIT_TICKS,
+    interact,
+    type InteractTarget,
+    optionsOf,
+    targetName,
+    useOn,
+} from '../actions/interaction';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, ticks } from '../core/op';
-import { AtSchema, matcher, Pattern, walkToSpotStep } from '../lib/spot';
+import { foodCount } from '../lib/interrupts';
+import {
+    AtSchema,
+    ItemSpec,
+    itemLabel,
+    missingItem,
+    itemMatches,
+    matcher,
+    onTile,
+    Pattern,
+    TileSchema,
+    walkToSpotStep,
+} from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
-import { squareReachesWilderness } from '../lib/wilderness';
+import { squareReachesWilderness, WILDERNESS_MIN_FOOD, wildernessFoodRefusal } from '../lib/wilderness';
 
 /** Failed walks or interactions in a row before the task fails. */
 const FAIL_LIMIT = 3;
@@ -26,31 +45,62 @@ const DESTRUCTIVE_ITEM_OPTIONS = ['Drop', 'Destroy', 'Release', 'Empty'];
 /** Combat has its own task (HP, food and threat checks); an NPC target is never attacked here. */
 const ATTACK_OPTION = 'Attack';
 
-const Params = z.object({
-    /** What is interacted with: an NPC or a loc standing near, or an item in the inventory. */
-    target: z.enum(['loc', 'npc', 'item']),
-    /** Its name (case-insensitive regex). */
-    name: Pattern,
-    /** The option to send (regex on the option text): "Open", "Search", "Wear", "Talk-to"... */
-    option: Pattern,
-    /** Where to stand first. */
-    at: AtSchema.optional(),
-    /**
-     * A regex the outcome must match: a game message or dialog page after the send. Without it any state
-     * change (a dialog or interface opening, the inventory or worn items changing, ...) is the effect, and
-     * a bare message only after a moment with nothing else shown.
-     */
-    expect: Pattern.optional(),
-});
+const Params = z
+    .object({
+        /** What is interacted with: an NPC or a loc standing near, or an item in the inventory. */
+        target: z.enum(['loc', 'npc', 'item']),
+        /** Its name (case-insensitive regex). */
+        name: Pattern,
+        /** The option to send (regex on the option text): "Open", "Search", "Wear", "Talk-to"... Not with `use`. */
+        option: Pattern.optional(),
+        /** Where to stand first. */
+        at: AtSchema.optional(),
+        /**
+         * A regex the outcome must match: a game message or dialog page after the send. Without it any state
+         * change (a dialog or interface opening, the inventory or worn items changing, the player moved by the
+         * game, the loc changing, ...) is the effect, and a bare message only after a moment with nothing else shown.
+         */
+        expect: Pattern.optional(),
+        /**
+         * The exact tile of the loc or NPC, instead of the nearest one of that name: one of six pillars, a crate
+         * beside plain crates, one of three "Ledge" locs. A loc's tile is its south-west corner.
+         */
+        tile: TileSchema.optional(),
+        /**
+         * Also take a target the client cannot route to (an islet in a river, a rock across water) and send the
+         * op from the stand tile `at`, leaving the reach check to the server. Needs `at`.
+         */
+        unreachable: z.boolean().default(false),
+        /**
+         * Use an inventory item on the loc instead of sending an option: `item` is a name regex, or `{ id }` for
+         * one exact item (when several share a name). Judged by the effects below; a use the server discarded
+         * (no feedback at all) is sent again, up to FAIL_LIMIT tries, but one that got a message or no effect is not.
+         */
+        use: z.object({ item: ItemSpec }).optional(),
+        /**
+         * Opt in to a target (and `at`) in the Wilderness; the Wilderness guard then stands down (death still
+         * ends the run) and the run needs `minFood` food to start, as `travel` does.
+         */
+        wilderness: z.boolean().default(false),
+        /** Food items a `wilderness` run must carry to start (at least 1 whatever is set). */
+        minFood: z.number().int().min(0).default(WILDERNESS_MIN_FOOD),
+    })
+    .refine(p => (p.option === undefined) !== (p.use === undefined), 'give an option, or a use (not both)')
+    .refine(p => p.use === undefined || p.target === 'loc', 'a use works on a loc')
+    .refine(p => p.tile === undefined || p.target !== 'item', 'a tile picks a loc or an NPC, not an inventory item')
+    .refine(
+        p => !p.unreachable || (p.at !== undefined && p.target !== 'item'),
+        'unreachable needs `at` and a loc or NPC',
+    );
 
 type InteractParams = z.infer<typeof Params>;
 type Ctx = TaskContext<InteractParams, object>;
 
 const byDistance = <T extends { distance: number }>(xs: T[]) => xs.sort((a, b) => a.distance - b.distance);
 
-/** What matches `name` in view, nearest first; `unreachable` counts those the client cannot route to. */
+/** What matches `name` (and `tile`) in view, nearest first; `unreachable` counts those the client cannot route to and the task leaves. */
 function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number } {
-    const { target, name } = ctx.params;
+    const { target, name, tile, unreachable: takeUnreachable } = ctx.params;
     const state = ctx.state();
     const rx = matcher(name);
     if (target === 'item') {
@@ -58,46 +108,61 @@ function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number 
         return { targets: items.map(item => ({ kind: 'item', item })), unreachable: 0 };
     }
     if (target === 'npc') {
-        const named: NearbyNpc[] = state.nearbyNpcs.filter(n => rx.test(n.name));
-        const reachable = byDistance(named.filter(n => n.reachable !== false));
-        return {
-            targets: reachable.map(npc => ({ kind: 'npc', npc })),
-            unreachable: named.length - reachable.length,
-        };
+        const named: NearbyNpc[] = state.nearbyNpcs.filter(n => rx.test(n.name) && (!tile || onTile(npcTile(n), tile)));
+        const usable = byDistance(named.filter(n => takeUnreachable || n.reachable !== false));
+        return { targets: usable.map(npc => ({ kind: 'npc', npc })), unreachable: named.length - usable.length };
     }
-    const named: NearbyLoc[] = state.nearbyLocs.filter(l => rx.test(l.name));
-    const reachable = byDistance(named.filter(l => l.reachable !== false));
-    return { targets: reachable.map(loc => ({ kind: 'loc', loc })), unreachable: named.length - reachable.length };
+    const named: NearbyLoc[] = state.nearbyLocs.filter(l => rx.test(l.name) && (!tile || onTile(l, tile)));
+    const usable = byDistance(named.filter(l => takeUnreachable || l.reachable !== false));
+    return { targets: usable.map(loc => ({ kind: 'loc', loc })), unreachable: named.length - usable.length };
 }
+
+/** The tile an NPC stands on: its own tile when the state gives one, else the (x, z) it reports. */
+const npcTile = (n: NearbyNpc) => ({ x: n.tileX ?? n.x, z: n.tileZ ?? n.z });
 
 /** The tile an NPC or loc target stands on; items have none. */
 const tileOf = (t: InteractTarget) =>
-    t.kind === 'npc' ? { x: t.npc.x, z: t.npc.z } : t.kind === 'loc' ? { x: t.loc.x, z: t.loc.z } : undefined;
+    t.kind === 'npc' ? npcTile(t.npc) : t.kind === 'loc' ? { x: t.loc.x, z: t.loc.z } : undefined;
+
+/** The inventory item `use` names, if held. */
+const heldItem = (ctx: Ctx) => {
+    const spec = ctx.params.use?.item;
+    return spec === undefined ? undefined : ctx.state().inventory.find(i => itemMatches(spec, i));
+};
 
 export default defineTask({
     name: 'interact',
     description:
-        'One interaction with an NPC, a loc or an inventory item by option, done when its effect is seen. Params: `target` ("loc" | "npc" | "item"), ' +
+        'One interaction with an NPC, a loc or an inventory item by option, or one item used on a loc, done when its effect is seen. Params: `target` ("loc" | "npc" | "item"), ' +
         '`name` (regex), `option` (regex on the option text, e.g. "Open", "Search", "Wear", "Talk-to"), optional `at` {x,z,level?,tolerance?} ' +
-        '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option. Done once the game shows an effect ' +
-        '(a dialog or interface opened, the inventory or worn items changed, an animation, the loc changed; a bare game message only when nothing else shows); optional `expect` ' +
-        '(regex) makes only a matching game message or dialog page count. It answers no dialog it opens (use `talk` to converse). Refuses the destructive options ' +
-        '(Drop, Destroy, Release, Empty) on an item and Attack on an NPC (use `combat`), and a target in the Wilderness. Fails with the options on offer when the target has none matching, ' +
+        '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
+        "(one pillar of six, a crate beside plain crates; a loc's tile is its south-west corner); `unreachable: true` (needs `at`) also takes a loc or NPC the client cannot route to " +
+        'and sends the op from the stand tile, the server owning the reach check (swim to a rock, throw a rope across water); ' +
+        '`use` {item: name regex, or {id}} instead of `option` (loc targets) uses that inventory item on the loc ' +
+        '(a key on a door, a rope on a rock, a rune on a pillar); it is not re-sent after a message or no effect, only after a discarded op. Done once the game shows an effect ' +
+        '(a dialog or interface opened, the inventory or worn items changed, an animation, the loc changed, the player moved by the game: a teleport, swim, door pass-through, gangplank or whistle; a bare game message only when nothing else shows); after a use, an unreachable op or a move the game made it waits for the world to settle (position, floor and animation unchanged for 3 ticks) before it ends, so a rope throw ends once the bot has landed; it waits up to 16 ticks for the bot to stop moving, and a run that hits that cap says so in the effect; optional `expect` ' +
+        '(regex) makes only a matching game message or dialog page count, and is the way to wait for a specific later message. It answers no dialog it opens (use `talk` to converse). Refuses the destructive options ' +
+        '(Drop, Destroy, Release, Empty) on an item, Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
+        '(then it needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and death still ends the run; carry only food and no valuables; the bot is left in the Wilderness, so whatever runs next, a plan phase or a `travel` out, must opt in to the Wilderness too). Fails with the options on offer when the target has none matching, ' +
         'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
-        'E.g. {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}. Uses: wiki/quests/restless-ghost.md.',
+        'E.g. {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
     params: Params,
+    allowWilderness: params => params.wilderness,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
-        const { at, target, option } = ctx.params;
-        if (at && squareReachesWilderness(at.x, at.z, 0)) return `(${at.x},${at.z}) is in the Wilderness`;
+        const { at, target, option, use, name, wilderness, minFood } = ctx.params;
+        if (!wilderness && at && squareReachesWilderness(at.x, at.z, 0))
+            return `(${at.x},${at.z}) is in the Wilderness`;
         // The pattern is checked against the option names themselves: refused if it could match one.
-        const rx = matcher(option);
-        if (target === 'item' && DESTRUCTIVE_ITEM_OPTIONS.some(o => rx.test(o)))
+        const rx = option !== undefined ? matcher(option) : undefined;
+        if (rx && target === 'item' && DESTRUCTIVE_ITEM_OPTIONS.some(o => rx.test(o)))
             return `/${option}/ could send a destructive option (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}) on an item; use the drop task for dropping`;
-        if (target === 'npc' && rx.test(ATTACK_OPTION)) return 'attacking is the combat task, not interact';
-        return null;
+        if (rx && target === 'npc' && rx.test(ATTACK_OPTION)) return 'attacking is the combat task, not interact';
+        if (use && !heldItem(ctx)) return missingItem(use.item, name);
+        if (!wilderness) return null;
+        return wildernessFoodRefusal(foodCount(ctx.state()), minFood, 'a Wilderness trip');
     },
 
     steps: [
@@ -106,40 +171,61 @@ export default defineTask({
             name: 'interact',
             when: () => true,
             *run(ctx) {
-                const { target, name, option, expect } = ctx.params;
-                const optionRx = matcher(option);
+                const {
+                    target,
+                    name,
+                    option,
+                    expect,
+                    tile,
+                    use,
+                    unreachable: takeUnreachable,
+                    wilderness,
+                } = ctx.params;
+                const optionRx = option === undefined ? undefined : matcher(option);
+                const what = use ? `use ${itemLabel(use.item)}` : option;
+                const held = heldItem(ctx);
+                if (use && !held) return { fail: missingItem(use.item, name) };
                 const { targets, unreachable } = candidates(ctx);
                 const missing = ctx.streak('missing');
                 const nearest = targets[0];
                 if (!nearest) {
                     if (missing.add() >= MISSING_LIMIT)
                         return {
-                            fail: `no reachable ${target} /${name}/ in sight${unreachable > 0 ? ` (${unreachable} in view but unreachable from here)` : ''}`,
+                            fail:
+                                `no ${takeUnreachable ? '' : 'reachable '}${target} /${name}/${tile ? ` at (${tile.x},${tile.z})` : ''} in sight` +
+                                (unreachable > 0 ? ` (${unreachable} in view but unreachable from here)` : ''),
                         };
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
                 missing.reset();
-                const chosen = targets.find(t => optionsOf(t).some(o => optionRx.test(o)));
+                const chosen = optionRx
+                    ? targets.find(t => optionsOf(t).some(o => optionRx.test(o)))
+                    : targets.find(t => t.kind === 'loc');
                 if (!chosen) {
                     const offered = optionsOf(nearest).join(' | ') || '(none)';
                     return { fail: `no ${optionRx} option on ${targetName(nearest)}; it offers: ${offered}` };
                 }
-                const tile = tileOf(chosen);
-                if (tile && squareReachesWilderness(tile.x, tile.z, 0))
-                    return { fail: `${targetName(chosen)} at (${tile.x},${tile.z}) is in the Wilderness` };
-                const r = yield* interact(
-                    ctx,
-                    chosen,
-                    optionRx,
-                    expect === undefined ? {} : { expect: matcher(expect) },
-                );
+                const where = tileOf(chosen);
+                if (!wilderness && where && squareReachesWilderness(where.x, where.z, 0))
+                    return { fail: `${targetName(chosen)} at (${where.x},${where.z}) is in the Wilderness` };
+                const effects = {
+                    settle: takeUnreachable,
+                    ...(expect === undefined ? {} : { expect: matcher(expect) }),
+                };
+                // The params guarantee one of the two: a use (on a loc) or an option.
+                const attempt =
+                    held && chosen.kind === 'loc'
+                        ? useOn(ctx, held, chosen.loc, effects)
+                        : optionRx && interact(ctx, chosen, optionRx, effects);
+                if (!attempt) return { fail: 'give an option or a use' };
+                const r = yield* attempt;
                 const fails = ctx.streak('interactFails');
                 if (r.ok) {
                     fails.reset();
-                    return { done: `${option} on ${name}: ${r.effect}` };
+                    return { done: `${what} on ${name}: ${r.effect}` };
                 }
-                yield* log(`${option} on ${name} failed (${r.reason}): ${r.message}`);
+                yield* log(`${what} on ${name} failed (${r.reason}): ${r.message}`);
                 // Only a send that never landed is worth repeating: an option sent twice can undo itself (Open, Wear).
                 if (r.reason !== 'send-failed' && r.reason !== 'rejected') return { fail: `${r.reason}: ${r.message}` };
                 if (fails.add() >= FAIL_LIMIT)
