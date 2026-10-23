@@ -126,7 +126,10 @@ results and lessons in your next report as well, marked `(re-sent)`.
    `conductor/runs/<bot>/*Z-<task>.ndjson`; log names are `<stamp>Z-<task>.ndjson` and
    `<stamp>Z-plan-<name>.ndjson`, so the `Z-` anchor keeps a task lookup from matching a plan
    log). A log with no `"type":"result"` line (the run was killed hard) is an `error` result,
-   reason `no result: run cut off`, counted like any error.
+   reason `no result: run cut off`, counted like any error. A run killed by SIGTERM or cut off
+   while `free -g` shows more than 8 GiB available (the kill was memory pressure from elsewhere):
+   restart the same plan once, since plans resume from the world state; report only a second kill
+   in a row (retro #3: an imp run killed at 61 min waited a conductor turn for this).
 3. Journal it unless `grep -F '<its runId>' <journal>` finds a line (every journal line carries
    the runId, below). A result with an empty `runId` never ran (a usage or connection failure
    before a log opened): don't journal it (an empty `grep -F ''` matches every line) and don't
