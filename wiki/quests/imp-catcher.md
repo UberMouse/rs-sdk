@@ -1,38 +1,105 @@
 # Imp Catcher
 
-| Detail     | Info       |
-|------------|------------|
-| Difficulty | Novice     |
-| Length     | Medium     |
-| Quest Points | 1       |
+| Detail | Info |
+|---|---|
+| Difficulty | Novice |
+| Quest points | 1 (`general/configs/quest.constant:104`) |
+| Quest id (plans, `v.quest('imp')`) | `imp` |
+| Reward | Amulet of accuracy, 875 Magic XP base = **21,875 Magic XP** at 25x (Magic 1 -> 44 on this server's level table) |
 
-## Requirements
+Script paths below are under `server/content/scripts/`. Everything on this page comes from the server
+scripts and map data [server data, unverified in game 2026-10-23] unless it carries a `[v ...]` tag.
 
-None.
+## Requirements and hazards
 
-## Items Needed
+- No quest or skill requirement: Mizgog's start dialog checks nothing (`areas/area_wizard_tower/scripts/wizard_mizgog.rs2:1-5`).
+- Imps are level 2, 8 HP, not aggressive (no `huntmode`, `givechase=false`), with -42 attack and strength bonuses
+  (`_unpack/225/all.npc:5266-5294`): a combat-3 bot kills them; no food needed.
+- Imps teleport: a hit that does not kill has a 1 in 10 chance to send the imp to a random tile up to 20 away
+  (`npc/scripts/imp.rs2:10-23`), and out of combat for 8 ticks it may teleport every 50-200 ticks (`imp.rs2:1-8`). An
+  imp at 4 HP or less runs from its attacker (`param=retreat,4`, `skill_combat/scripts/npc/npc_combat.rs2:12-14`).
+- The Wizards' Tower top floor (Mizgog's floor) has a lesser demon (level 82, `huntmode=cowardly`) at (3110, 3157)
+  level 2 (`learnings/hazards.md`). The SDK pathfinder finds no route from its spawn to the stairs landing (3104, 3161)
+  or to Mizgog's spawn: it is shut in. [server data: collision probe 2026-10-23]
 
-- Red bead
-- White bead
-- Black bead
-- Yellow bead
+## Quest state
 
-All four beads are dropped by imps found throughout the world, or can be purchased from other players.
+Varp `%imp` (id 160, `pack/varp.pack:161`; `quests/quest_imp/configs/quest_imp.varp:1`). The server never sends it to
+the client: a plan sees only the quest tab colour (`v.quest('imp')`: none, started, done) and the inventory.
 
-## Rewards
+| Value | Constant | Set by | Plan sees |
+|---|---|---|---|
+| 0 | `^imp_not_started` (`quest_imp/configs/quest_imp.constant:1`) | - | tab red |
+| 1 | `^imp_started` (`quest_imp.constant:2`) | Mizgog, choice "Give me a quest please." (`wizard_mizgog.rs2:50`) | tab yellow |
+| 2 | `^imp_complete` (`general/configs/quest.constant:37`) | Mizgog with all four beads held (`wizard_mizgog.rs2:8-16`, `quests/quest_imp/scripts/quest_imp.rs2:2`) | tab green, `v.questDone('imp')` |
 
-- 375 Magic XP
-- Amulet of Accuracy (+4 accuracy)
+## Steps
 
-## Walkthrough
+| # | Who / what (config name) | Where (x, z, level) | Dialog choices, in order | Items | Moves the varp |
+|---|---|---|---|---|---|
+| 1 | NPC **Wizard Mizgog** (op Talk-to) | spawn (3103, 3163) level 2, Wizards' Tower top floor (`maps/m48_49.jm2:6252`); wanders | `Give me a quest!`, then `Give me a quest please.` (`wizard_mizgog.rs2:5`, `:42`) | none | 0 -> 1 |
+| 2 | NPC **Imp**: kill until each bead colour has dropped once | see Imp spawns below | - | loot **Red bead**, **Yellow bead**, **Black bead**, **White bead** (ground items under the imp) | none |
+| 3 | NPC **Wizard Mizgog** | as step 1 | none (continue pages only) | the four beads, one of each, consumed (`wizard_mizgog.rs2:12-15`) | 1 -> 2; Amulet of accuracy added, Magic XP (`quest_imp.rs2:2-6`) |
 
-1. Speak to **Wizard Mizgog** on the 3rd floor of the **Wizard Tower** south of Draynor Village. He has had his beads stolen by imps and needs them back.
-2. Collect one of each bead colour: **red**, **white**, **black**, and **yellow**. Imps can be found throughout the overworld and drop beads at random.
-3. Return all four beads to Wizard Mizgog to complete the quest. He rewards you with the Amulet of Accuracy.
+- The wrong choices are harmless: "Most of your friends are pretty quiet aren't they?" and "Give me a quest or else!" /
+  "Just stop messing around and give me a quest!" end the talk with the varp still 0 (`wizard_mizgog.rs2:53-64`).
+- Talking at stage 1 without all four beads changes nothing (`wizard_mizgog.rs2:21-27`).
+- Recovery: a lost or dropped bead is just killed for again; beads do not exist in any shop stock (`.inv` configs) and
+  only imps drop them (`drop tables/scripts/imp.rs2`). Bots do not trade, so drops are the only source.
 
-## Key NPCs & Locations
+## Bead drops
 
-| NPC / Location         | Where                                      |
-|------------------------|---------------------------------------------|
-| Wizard Mizgog          | Wizard Tower, 3rd floor                      |
-| Imps                   | Found throughout the world (common near Falador, Varrock, Lumbridge) |
+Every imp kill rolls `random(128)` once (`drop tables/scripts/imp.rs2:10-19`), after the always-drop Ashes, and only
+for the player who did the most damage (`npc_findhero`, `imp.rs2:3`):
+
+| Roll | Drop | Chance per kill |
+|---|---|---|
+| 0-4 | Black bead | 5/128 (3.9%) |
+| 5-9 | Red bead | 5/128 |
+| 10-14 | White bead | 5/128 |
+| 15-19 | Yellow bead | 5/128 |
+| 20-127 | other junk (bolts, wizard hat, hammer, ball of wool, mind talisman, ...) | 108/128 |
+
+At most one bead per kill. Expected kills to hold all four colours (coupon collector, 4 colours at 5/128 each):
+128/5 x (1 + 1/2 + 1/3 + 1/4) = **53.3 kills**; median 47, 90% done by 92 kills, 99% by 151. About 20/128 of kills
+drop a bead, so a full run picks up ~8 beads, ~4 of them duplicates (one inventory slot each; they do not stack).
+
+## Imp spawns
+
+All 45 static imp spawns are npc `imp` (id 708, `pack/npc.pack:709`), one per tile, respawn 100 ticks, wander 25
+tiles (`all.npc:5274-5277`). The clusters worth a trip (nearest bank and run ticks from `wiki/world.json`):
+
+| Cluster | Imps | Spawn tiles | Map | Nearest bank | Requires |
+|---|---|---|---|---|---|
+| North of Yanille | 8 | (2595,3131) (2597,3120) (2606,3126) (2608,3134) (2614,3116) (2616,3126) (2621,3133) (2622,3118) | `maps/m40_48.jm2:9352-9365` | Yanille, 14-23 run ticks | - |
+| South of Ardougne, north of Port Khazard | 9 | (2625,3203) (2625,3217) (2629,3233) (2630,3210) (2632,3202) (2633,3222) (2633,3243) (2639,3206) (2639,3230) | `maps/m41_50.jm2:5331-5339` | Ardougne South, 25-46 run ticks | - |
+| Karamja, north-west of Brimhaven | 8 | (2832,3170) (2832,3177) (2837,3184) (2841,3163) (2849,3186) (2850,3165) (2857,3179) (2859,3177) | `maps/m44_49.jm2:5449-5458` | Ardougne South, 80-94 run ticks | 30 coins (boat) or The Grand Tree |
+| South of Falador | 3 | (3009,3307) (3011,3314) (3015,3314) | `maps/m47_51.jm2:6933-6937` | Falador East, 26-29 run ticks | - |
+
+Single imps (a few kills per respawn cycle only): Edgeville (3078,3499) 9 run ticks from Edgeville bank; (3073,3498),
+(3078,3461), (3134,3487); Falador (2947,3329), (2951,3360); Varrock (3177,3405), (3213,3502), (3238,3390), (3246,3458);
+north of Varrock (3234,3506), (3261,3514); Champions' Guild (3205,3355); Lumbridge (3217,3226); Draynor (3073,3250);
+(3214,3281), (3240,3307); Kharidian Desert (3299,3273); Melzar's Maze (2941,3236, needs its keys).
+
+Combat-task areas that cover a cluster: Yanille `{x:2609,z:3125,radius:15}`, Ardougne south `{x:2632,z:3222,radius:22}`.
+
+## Catalog coverage
+
+| Step | Task | Params (sketch) | Notes |
+|---|---|---|---|
+| 1 start | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}, choices:["^Give me a quest!$","^Give me a quest please"]}` | The walk climbs the Wizards' Tower stairs (`conductor/lib/connectors.ts` OVERRIDES, ungated rows; logs the lesser demon hazard). Those stairs were walked only in integration tests (`learnings/walking.md`). Anchor the first regex: "Give me a quest" also matches the "or else" option. |
+| reach the imps | `travel` / `bank` | `{to:{x:2609,z:3125}}` | Yanille is a long walk from Misthalin; bank there. |
+| 2 beads | `combat` | `{target:"Imp", area:{x:2609,z:3125,radius:15}, loot:["Red bead","Yellow bead","Black bead","White bead"]}`, phase `until` all four `v.inv(...) > 0`, `onFail:"continue"` | With no imp in the area for 20 looks of 3 ticks the run fails `no free reachable Imp` (`conductor/tasks/combat.ts:40-41,291-292`); respawn is 100 ticks, so a small cluster needs `onFail:"continue"`. Teleporting and fleeing imps leave fights early; the task picks the next target. |
+| 3 finish | `talk` | `{npc:"^Wizard Mizgog$", at:{x:3104,z:3162,level:2,tolerance:3}}` (no choices) | Plan `until: v => v.questDone('imp')`. |
+
+No step needs a new task. Nice-to-have: a `loot` mode that skips an item already held (duplicate beads take slots).
+
+## Library save for testing
+
+None exists. Suggested (generated, `bun conductor/tools/library.ts generate`; varps can be set):
+
+- `imp-catcher-beads`: varp 160 = 1, the four beads in the inventory (obj ids 1470 red, 1472 yellow, 1474 black,
+  1476 white, `pack/obj.pack`), Attack/Strength/Defence 20, Hitpoints 20, a bronze scimitar worn, at the Wizards'
+  Tower door outside (3109, 3168), level 0 (the door is at (3109, 3166)). Tests the finish talk and the tower stairs.
+- `imp-catcher-yanille`: varp 160 = 1, no beads, same levels and weapon, at (2609, 3125) north of Yanille. Tests the
+  bead hunt and its `until`.
