@@ -40,9 +40,10 @@ Fishing + Cooking, flax + Crafting (strings feed Fletching), iron + Smithing + M
 chaos druids + Herblore + melee + Prayer.
 
 **Opening queue** (objectives in order; revise as goals report):
-1. Thieving 40 (Lumbridge men, then Al-Kharid warriors with shrimp food) and a raw chicken banked: in progress.
+1. Thieving 40 (Lumbridge men, then Al-Kharid warriors with shrimp food) and a raw chicken banked: done (thieving-40, 11 min).
 2. Tools and food: steel axe (Bob, Lumbridge, 200; the best axe any shop sells), fly rod (5); Fishing net 1-20, lure
-   to ~50 with Cooking alongside; ~40 cooked trout/salmon banked (food for thieving and the Wilderness course).
+   to ~50 with Cooking alongside; ~40 cooked trout/salmon banked (food for thieving and the Wilderness course): done
+   (tools-food, Fishing 68, Cooking 71, 50+ fish banked, 15 min).
 3. Quests with XP lumps or unlocks: Restless Ghost (Prayer 47), Rune Mysteries (essence), Imp Catcher (Magic 44,
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
 4. Thieving 40-55 Ardougne guards, 55-99 knights; stay on knights for the gp (166k/h at 99) the route needs: adamant
@@ -51,7 +52,8 @@ chaos druids + Herblore + melee + Prayer.
 6. Gathering 99s with their pairings. Melee: mithril scimitar (Zeke, 1,040), then the rune sword once at 32 QP. No
    fire giant hunt. Melee 50+ at Edgeville chaos druids doubles as the herb source.
 
-Account: Attack 21, Strength 20, Defence 20, HP 23, Prayer 20 (melee-chickens, 7 min); 155 feathers; no coins yet.
+Account (2026-10-23 06:51): total 302; Cooking 71, Fishing 68, Thieving 40, Attack 27, HP 25, Str/Def/Prayer 20; steel
+axe and 50+ trout/salmon banked, fly rod and ~105 feathers held, ~156 coins; at Varrock East bank.
 
 ## Unlocks
 
@@ -155,8 +157,8 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 | Mining | 1 | copper/tin 1-15 -> iron from a 3-rock stand tile, Al Kharid, dropped 15-99 (679k-1.07M, respawn-bound from 57); adamant pickaxe only (3.2k, rune doesn't pay back) | 0.98 | - | |
 | Smithing | 1 | bronze then iron 1-33 -> superheat iron platebodies at Varrock East 33-99 (Magic alongside; ~1,055 natures, ~22k gp) | 0.64-1.15 | - | |
 | Magic | 1 | Imp Catcher to 44, then superheat with Smithing; fire strike/bolt/blast 0.43 h as the alternative (~45k gp) | ~0.4 | - | |
-| Fishing | 1 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (547k-2.16M; banking +10 min) | 0.53 | - | fly rod |
-| Cooking | 1 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (0.83-1.36M plus Fishing) | 0.85 with Fishing | - | |
+| Fishing | 68 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (`lure-lumbridge-drop`, 547k-2.16M; banking +10 min) | 0.53 | net 1-10 in thieving-40; lure-cook-bank cycle (tools-food) 54-68 ~551k/h, ~85% of the `lure-lumbridge-cook-bank` floor; a loop of 24 fish is ~190 s fishing, 75 s cooking, ~60 s Varrock bank trip | 68-99: `lure-lumbridge-drop` (no bank walk) once food is stocked, or swordfish Catherby paired with Cooking |
+| Cooking | 71 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (`swordfish-catherby-cook-bank`, 0.83-1.36M plus Fishing) | 0.85 with Fishing | shrimps 1-34 in thieving-40; lure-cook-bank 54-71 ~746k/h, ~80% of floor (tools-food) | swordfish Catherby from 71 (harpoon 5 gp) |
 | Crafting | 1 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat; spot unverified) | 1.3-2.0 | - | |
 | Herblore | 1 | herbs from chaos druids, Edgeville dungeon (11 spawns, 0.445 herbs/kill; 126/203/247 herbs/h at melee 40/60/85; Wilderness 2 at the thugs beside them), with melee trained there (0.9-1.1M Str/h). Yanille druid warriors (Agility 40) are second, at 50-144/h; Taverley has only 6 spawns. XP per herb: 146 identify-only, 643 with buyable secondaries (eye of newt, chocolate dust), 1,261 with snape grass and limpwurt (tribesmen on Karamja give both at 37-50 and 22-30/h, and poison). Druidic Ritual 28 then 1,542 herbs: 6.2 h at melee 85; Eadgar's Ruse 80 cuts it to 4.6 h | 6-8 | - | **long pole**: rated with thugs as a proxy, since druids aren't combat features |
 | Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
