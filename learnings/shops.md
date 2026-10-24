@@ -29,7 +29,7 @@ overstocked on that item, not that the sale failed.
 | Burthorpe Games Room bar | Under Burthorpe | Barmaid "Sam" behind the bar at x 2201 | Trade (op 3) opens the shop from (2203, 4942), two tiles off across the bar pumps; from (2199, 494x), behind the shelves, it does not open. [v 2026-10-19 t9check1 local] |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear; fly fishing rod 5 gp; feather price climbs as stock drops: 277 feathers cost ~1,040 gp (a 450 order partial-filled) [v 2026-10-11 conductor2 local] |
 
-- The `shop` task failed twice with `cannot open shop via "Dwarf": No trade option on NPC` in the Dwarven Mine while a trading Dwarf (idx 5250, [Trade]) stood 3 tiles away: it picked a same-named Dwarf with no Trade option. A task fix is being dispatched; until then name the shop NPC so it resolves to the trading one. [v 2026-10-24 conductor3 local]
+- The `shop` task failed twice with `cannot open shop via "Dwarf": No trade option on NPC` in the Dwarven Mine while a trading Dwarf (idx 5250, [Trade]) stood 3 tiles away: it picked a same-named Dwarf with no Trade option. Fixed in 7d30f5a41: `shop` now picks the reachable, nearest same-named NPC that offers Trade. [v 2026-10-24 conductor3 local; fix v unit+itest 7d30f5a41]
 
 ## Starter tools: where to get each
 
