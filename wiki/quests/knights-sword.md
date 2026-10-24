@@ -68,7 +68,7 @@ Quest varp `%squire` stages: 1 started, 2 spoken to Reldo, 3 pie given, 4 spoken
 
 - Wydin's food store, Port Sarim (3014,3204), sells Pot of flour (10 gp) and Redberries (3 gp): no Frenita/Yanille or berry-bush trip needed. [v 2026-10-24 conductor3 local]
 - Pie dish: `crafting` product 'pie dish' with `fire:true` at the Barbarian Village potter's wheel (3086,3410), from 1 clay + a filled bucket or jug. Frenita (Yanille) is the only shop that sells one. [v 2026-10-24 conductor3 local]
-- Pot of flour used on a bucket/jug of water opens a Bread/Pastry/Pizza/Pitta dough menu. The `items` task leaves it open and the next phase fails ("clear-dialog: a dialog is open and could not be cleared: a choice is open"); answer it with a `talk` phase `{continue:true, choices:['Pastry dough']}`. [v 2026-10-24 conductor3 local]
+- Pot of flour used on a bucket/jug of water opens a Bread/Pastry/Pizza/Pitta dough menu. The `items` combine answers it with `choice` (`{combine:{use:'^Pot of flour$', on:'^(Bucket|Jug) of water$', choice:'^Pastry dough'}}`, 0a936e225); without `choice` it fails naming the options. [v 2026-10-24 conductor3 local; choice v unit+itest 0a936e225]
 - Rimmington mine (2980,3240) has tin, copper, iron and clay; the general store sells bucket and jug; sink (2966,3209); bronze bars from there take Smithing 1 to 20 ([smithing](../../learnings/smithing.md#xp-rates)). The Falador range at (3039,3366) cooked the pie. [v 2026-10-24 conductor3 local]
 
 ## Plan status

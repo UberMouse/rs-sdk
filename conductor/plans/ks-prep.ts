@@ -10,7 +10,6 @@ import items from '@conductor/tasks/items';
 import mining from '@conductor/tasks/mining';
 import shop from '@conductor/tasks/shop';
 import smithing from '@conductor/tasks/smithing';
-import talk from '@conductor/tasks/talk';
 
 const FURN = { x: 2975, z: 3368, radius: 5 };
 const WBANK = { x: 2947, z: 3368, radius: 4 };
@@ -27,12 +26,6 @@ export default definePlan({
     description: "Knight's Sword prep: Smithing 15 via bronze, 2 iron bars, Redberry pie",
     until: v => v.inv('Redberry pie') > 0 && v.inv('Iron bar') >= 2,
     phases: [
-        // The dough combine opens a menu (bread/pastry/pizza/pitta): pick pastry.
-        phase(
-            talk,
-            { continue: true, choices: ['Pastry dough'] },
-            { name: 'dough-menu', when: v => v.state.dialog.isOpen, onFail: 'continue' },
-        ),
         phase(
             interact,
             {
@@ -56,11 +49,11 @@ export default definePlan({
         ),
         phase(
             items,
-            { combine: { use: '^Pot of flour$', on: '^(Bucket|Jug) of water$' } },
+            // The dough combine opens a menu (bread/pastry/pizza/pitta): pick pastry.
+            { combine: { use: '^Pot of flour$', on: '^(Bucket|Jug) of water$', choice: '^Pastry dough' } },
             {
                 name: 'make-dough',
-                when: v => v.inv('Pot of flour') > 0 && water(v) > 0 && v.inv('Pie dish') > 0 && !v.state.dialog.isOpen,
-                onFail: 'continue',
+                when: v => v.inv('Pot of flour') > 0 && water(v) > 0 && v.inv('Pie dish') > 0,
             },
         ),
         phase(
