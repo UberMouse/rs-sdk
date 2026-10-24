@@ -9,7 +9,8 @@
 // Furnace make Elemental metal; the bar on the Workbench (hammer, the book, Smithing 20) makes the shield and ends it.
 // Puzzle state is a varp the client never sees, so the prep reads it from the game messages (50 deep), which the prep
 // phases alone produce (the ore is held first, so the fight cannot push them out).
-// Needs: Mining/Smithing/Crafting 20, combat ~50, a knife, a pickaxe, a hammer, a needle, thread, leather, 4 coal, food.
+// Needs: Mining/Smithing/Crafting 20, combat ~50, a knife or bronze sword, a pickaxe, a hammer, a needle, thread, leather
+// (or the Boxes at (2724,9894) give it), 4 coal, swordfish or lobsters.
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
 import { QUEST_TAB_REQUIRED } from '@conductor/lib/quests';
 import combat from '@conductor/tasks/combat';
@@ -81,7 +82,7 @@ export default definePlan({
             {
                 target: 'elemental',
                 area: { x: 2715, z: 9895, radius: 30 },
-                food: ['Lobster'],
+                food: ['Swordfish', 'Lobster'],
                 maxLevelGap: 25,
             },
             {
@@ -91,7 +92,7 @@ export default definePlan({
                     !done(v) &&
                     v.state.player?.combat.inCombat === true &&
                     v.hp.current > 0 &&
-                    v.inv('Lobster') > 0,
+                    v.inv(/^(Swordfish|Lobster)$/) > 0,
                 until: v => v.state.player?.combat.inCombat !== true,
                 onFail: 'continue',
                 maxFails: 10,
@@ -163,7 +164,7 @@ export default definePlan({
                 name: 'air-lever',
                 when: v => {
                     const p = puzzle(v);
-                    return prep(v) && p.water && !p.air && v.inv('Leather') === 0;
+                    return prep(v) && p.water && !p.air && v.inv('Leather') === 0 && v.runs('bellows') > 0;
                 },
                 maxFails: 4,
             },
@@ -192,6 +193,22 @@ export default definePlan({
             when: v => prep(v) && bowls(v) > 0 && !puzzle(v).water && puzzle(v).turns === 0,
             maxFails: 4,
         }),
+        phase(
+            interact,
+            { target: 'item', name: '^(Swordfish|Lobster)$', option: '^Eat$' },
+            {
+                name: 'make-room',
+                when: v => prep(v) && v.free < 2 && v.inv(/^(Swordfish|Lobster)$/) > 8,
+                onFail: 'continue',
+                maxFails: 6,
+            },
+        ),
+        phase(interact, loc('^Boxes$', '^Search$', 2724, 9894), {
+            name: 'leather',
+            when: v => prep(v) && v.inv('Leather') === 0 && v.runs('leather') === 0,
+            onFail: 'continue',
+            maxFails: 3,
+        }),
         phase(interact, loc('^Crate$', '^Search$', 2717, 9894), {
             name: 'bowl',
             when: v => prep(v) && bowls(v) === 0,
@@ -219,7 +236,7 @@ export default definePlan({
             {
                 target: 'Earth elemental',
                 area: { x: 2703, z: 9905, radius: 14 },
-                food: ['Lobster'],
+                food: ['Swordfish', 'Lobster'],
                 loot: ['Elemental ore'],
                 maxLevelGap: 25,
                 respawnWaitTicks: 40,
@@ -288,7 +305,7 @@ export default definePlan({
         ),
         phase(
             items,
-            { combine: { use: '^Knife$', on: '^Battered book$', product: '^Battered key$' } },
+            { combine: { use: '^(Knife|Bronze sword)$', on: '^Battered book$', product: '^Battered key$' } },
             {
                 name: 'cut',
                 when: v =>
