@@ -72,19 +72,22 @@ inside their rects).
 
 | # | Area | Committed rect | What falls outside |
 |---|---|---|---|
-| D1 | Port Sarim (line 148) | x 3023-3064, z 3197-3244 | `shop:asgarnia:4-8` (x 3012-3028), `range:asgarnia:2`, `fire:asgarnia:6`, `pickpocket:asgarnia:4`: ~9 sites as plain Asgarnia |
+| D1 | Port Sarim (line 148) | x 3023-3064, z 3197-3244 | `shop:asgarnia:4-8` (x 3012-3028), `range:asgarnia:2`, `fire:asgarnia:6`, `pickpocket:asgarnia:4`: ~9 sites as plain Asgarnia. Re-derived (Task 5): the five shops lie 6-15 tiles off the rect, past the near-miss check's 3; it finds only the fireplace (3024, 3245), a tile north |
 | D2 | Crafting Guild (line 73) | x 2909-2932 | interior is east: tanner, spinning wheel, pottery wheel, water source, a rock (x 2933-2941) |
 | D3 | Entrana | x2 2881 over z 3347-3410 | mainland coast (`tree:entrana:3` reach `[[]]`); its south edge is fixed in the working tree |
 | D4 | Catherby | working tree's shore rect is z 3415-3440 | `shop:kandarin:3` (2834, 3445) still outside |
 | D5 | SUSPECTED, 1-3 tiles out | Taverley shop and water sources, Burthorpe anvil, Chaos Temple altar, Champions' Guild range, Brimhaven/Shilo/Tai Bwo Wannai shops, Bandit Camp (2 shops, range, fishing), Camelot altar, Exam Centre pottery, Edgeville shop | ~15 sites |
 
 The near-miss scan found 47 service and resource sites within 3 tiles of a named area they're not in, 129 within 10.
+Re-derived at the near-miss check (`W/checks.ts`, Task 5, after main's Catherby refit): 63 covered non-tree sites lie
+1-3 tiles outside a leaf area not their own, 196 within 10; `W/allow.ts` `NEAR_MISS_ALLOW` lists the 63, 50 as rects
+for 2.5 to refit and 13 beside a leaf drawn round one thing (a bank, a resource, a course).
 
 ### 1.5 Site geometry (`W/place.ts`)
 
 | # | Finding | Evidence | Scale |
 |---|---|---|---|
-| E1 | Clustering runs per (kind, leaf area, level), so one place splits at an area edge | `place.ts` `buildSites`/`cluster` | pairs within `SITE_RADIUS` in different areas: rock 6 (Coal Trucks mine 2 + 16 coal, 90% outside its rect; Arandar limestone; Shilo gems; Pirates' Hideout), pickpocket 13, npc 84, tree 274, anvil 1, flax 1 (Rellekka 2 + 18), shop 1 |
+| E1 | Clustering runs per (kind, leaf area, level), so one place splits at an area edge | `place.ts` `buildSites`/`cluster` | pairs within `SITE_RADIUS` in different areas: rock 6 (Coal Trucks mine 2 + 16 coal, 90% outside its rect; Arandar limestone; Shilo gems; Pirates' Hideout), pickpocket 13, npc 84, tree 274, anvil 1, flax 1 (Rellekka 2 + 18), shop 1. Re-derived at the split check (`W/checks.ts`, Task 5: same config, bbox gap within the radius, one level): rock 6 (also the desert mining camp's tin, and the Mining Guild beside the Dwarven Mine, a split that is right), pickpocket 12, anvil 1 (West Ardougne), flax 1, shop 0; npc and tree not checked |
 | E2 | Trees cluster by kind, not species, and single-linkage chains forests | `place.ts:144-165` | `tree:kandarin:60`: 1245 trees (970 normal, 155 oak, 79 maple, 30 willow, 7 magic, 4 yew) over x 2608-2763, z 3291-3702; 170 of 795 tree sites span ≥20 tiles |
 | E3 | One radius per kind both over-merges forests and under-merges mines and town squares | near-miss pairs (radius < gap ≤ 2×radius): rock 24 (Al Kharid iron 11 apart), pickpocket 95 (Al Kharid men: 4 sites in one square), fishing 7 | |
 | E4 | Stand = walkable candidate nearest the centre; may not reach most members, or any bank | `place.ts` `standTile` | members unwalkable from the stand: `fishing-spot:kandarin:1` 7 of 9, `tirannwn:1` 3 of 4, `desert-mining-camp-mine:1` 21 of 22 (SUSPECTED gate); 2 fishing and 23 tree stands in pockets cut off from every bank. Mid-way through the other session's rebuild, Catherby's stand landed inside Harry's shop (a 111-tile pocket entered only by the Taverley cellar ladder), giving Falador West at 266 ticks behind a dusty key; nothing flagged it |

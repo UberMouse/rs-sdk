@@ -11,6 +11,9 @@ export interface SiteKey {
     at: Tile;
 }
 
+/** The site of `kind` with a feature on (x, z) of `level`. */
+export const siteAt = (kind: FeatureKind, x: number, z: number, level = 0): SiteKey => ({ kind, at: { level, x, z } });
+
 /** A key as reports name it: `tree (2731, 3487, 0)`. */
 export const siteKeyName = (key: SiteKey): string => `${key.kind} (${key.at.x}, ${key.at.z}, ${key.at.level})`;
 

@@ -13,7 +13,8 @@
 // needed, a sail site no npc op reaches that gates.ts does not list as out of scope, or one it lists that
 // is gone or now reached, a gate candidate gates.ts does not review, or a gates.ts gate entry that is
 // stale, malformed, at odds with the scan without saying why, or names a quest stage no constant does, an
-// areas.ts EXPECTED_UNREACHED entry no unreached site matches, or a method record that does not resolve. `--check`
+// areas.ts EXPECTED_UNREACHED entry no unreached site matches, a method record that does not resolve, or a build
+// check's finding (checks.ts) allow.ts does not allow, or an allow.ts entry naming no one site or matching nothing. `--check`
 // writes nothing: it exits 1 when world.json or a page differs from what the game data and this code
 // generate now, so a hand edit or a stale page fails verify:conductor, and on a report error as the
 // build does.
@@ -22,7 +23,9 @@ import { itemPages } from '../generate-items';
 import { npcPages } from '../generate-npcs';
 import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
+import { NEAR_MISS_ALLOW, SPLIT_ALLOW } from './allow';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
+import { applyAllow, nearMissAreas, splitResources, type CheckId, type CheckResult } from './checks';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { minimalSets, questFacts, type QuestFacts } from './requirements';
@@ -370,6 +373,8 @@ export interface BuildReport {
     };
     /** The methods.ts records resolved, and the ones that do not, as `methods.ts <id>: <reason>`: an error. */
     methods: { resolved: number; errors: string[] };
+    /** Each build check's findings less its allowlist (checks.ts, allow.ts): what is left, invalid or stale is an error. */
+    checks: Record<CheckId, CheckResult>;
 }
 
 /** Whether the report has an error, which fails `bun run world` and `--check`. */
@@ -387,7 +392,8 @@ export const failed = (r: BuildReport): boolean =>
     r.scripted.duplicates.length > 0 ||
     r.unreached.invalid.length > 0 ||
     r.unreached.stale.length > 0 ||
-    r.methods.errors.length > 0;
+    r.methods.errors.length > 0 ||
+    Object.values(r.checks).some(c => c.left.length > 0 || c.invalid.length > 0 || c.stale.length > 0);
 
 export interface BuildInput {
     generatedFrom: string;
@@ -1082,6 +1088,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         sails.unreached,
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
     );
+    const checkWorld = { sites, features, areas };
+    const checks: Record<CheckId, CheckResult> = {
+        'near-miss': applyAllow(nearMissAreas(checkWorld, COVERED), NEAR_MISS_ALLOW, checkWorld),
+        split: applyAllow(splitResources(checkWorld, COVERED), SPLIT_ALLOW, checkWorld),
+    };
     const expected = expectedUnreached(unreached, EXPECTED_UNREACHED, {
         areas: new Set(areas.map(a => a.id)),
         world: { sites: reached.sites, features },
@@ -1248,6 +1259,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
             stranded: priced.stranded,
             unreached: { pockets, expected: expected.expected, invalid: expected.invalid, stale: expected.stale },
             methods: { resolved: methods.methods.length, errors: methods.errors },
+            checks,
         },
     };
 }
@@ -1477,6 +1489,32 @@ export function formatReport(report: BuildReport): string[] {
     return lines;
 }
 
+/** What each check finds, as its ERROR lines name it, and the allow.ts table it is curated in. */
+const CHECKS: Record<CheckId, { finds: string; table: string }> = {
+    'near-miss': { finds: 'sites 1-3 tiles outside a leaf area not their own', table: 'NEAR_MISS_ALLOW' },
+    split: { finds: 'same-config site pairs split across leaf areas within their radius', table: 'SPLIT_ALLOW' },
+};
+
+/** Each check's count found and allowed, then its findings left, invalid entries and stale ones: all errors. */
+export function formatChecks(checks: BuildReport['checks']): string[] {
+    return (Object.keys(CHECKS) as CheckId[]).flatMap(id => {
+        const c = checks[id];
+        const { finds, table } = CHECKS[id];
+        return [
+            `checks: ${id}: ${c.left.length + c.allowed} ${finds}, ${c.allowed} allowed by allow.ts ${table}`,
+            ...list(`ERROR ${id}: ${c.left.length} ${finds} that allow.ts ${table} does not allow:`, c.left),
+            ...list(
+                `ERROR ${id}: ${c.invalid.length} allow.ts ${table} entries with a site key no site or several sites hold (a typo?):`,
+                c.invalid,
+            ),
+            ...list(
+                `ERROR ${id}: ${c.stale.length} allow.ts ${table} entries no finding matches (fixed now, or gone):`,
+                c.stale,
+            ),
+        ];
+    });
+}
+
 /** The unsettled scripted moves a trigger lists at most, after which it counts the rest. */
 const UNSETTLED_AT = 4;
 
@@ -1694,7 +1732,12 @@ if (import.meta.main) {
         // A fresh world.json can still have a report error: `bun run world` fails on it, so the check
         // does too.
         if (failed(report)) {
-            for (const line of [...formatReport(report), ...formatMethods(report.methods)]) console.log(line);
+            for (const line of [
+                ...formatReport(report),
+                ...formatMethods(report.methods),
+                ...formatChecks(report.checks),
+            ])
+                console.log(line);
             process.exitCode = 1;
         }
     } else {
@@ -1706,6 +1749,7 @@ if (import.meta.main) {
             ...formatReach(report.reach),
             ...formatDistance(report.distance),
             ...formatMethods(report.methods),
+            ...formatChecks(report.checks),
             ...formatUnreached(report.unreached, world.areas),
         ])
             console.log(line);

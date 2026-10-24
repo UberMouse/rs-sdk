@@ -17,7 +17,7 @@
 // - Instanced planes (z 4400-5000) and underground areas (z + 6400) are their own top-level areas,
 //   named from their scripts and npcs. A note says when a name is descriptive rather than read from
 //   the data, and names the way in where the connectors or scripts show it.
-import type { SiteKey } from './site-key';
+import { siteAt, type SiteKey } from './site-key';
 import type { Area, FeatureKind, Rect } from './types';
 
 /**
@@ -1303,9 +1303,6 @@ export type ExpectedUnreached = ({ area: string } | { site: SiteKey }) & {
     /** The script line that keeps the player out, `file:line` under server/content/scripts. */
     source: string;
 };
-
-/** The site of `kind` with a feature on (x, z) of `level`. */
-const siteAt = (kind: FeatureKind, x: number, z: number, level = 0): SiteKey => ({ kind, at: { level, x, z } });
 
 /** The sites of `kind` with a feature on each [x, z] tile of `level`. */
 const sitesAt = (kind: FeatureKind, tiles: readonly (readonly [number, number])[], level = 0): SiteKey[] =>

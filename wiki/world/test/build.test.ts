@@ -7,6 +7,7 @@ import {
     byWritten,
     expectedUnreached,
     failed,
+    formatChecks,
     formatMethods,
     formatReport,
     formatScripted,
@@ -782,6 +783,10 @@ describe('formatReport', () => {
         stranded: [],
         unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
         methods: { resolved: 6, errors: [] },
+        checks: {
+            'near-miss': { left: [], allowed: 2, invalid: [], stale: [] },
+            split: { left: [], allowed: 0, invalid: [], stale: [] },
+        },
     };
     const gatesLine =
         'gates: 3 candidates, by kind gate 2, side-effect 1; 4 placed; requirement forms quest 1, skill 1';
@@ -978,6 +983,41 @@ describe('formatReport', () => {
             '  site rock (5, 6406, 0) (c.rs2:2): no site holds it',
         ]);
         expect(failed(invalid)).toBe(true);
+    });
+
+    test('the checks section: found and allowed by check, then what is left, invalid and stale, all errors', () => {
+        expect(formatChecks(report.checks)).toEqual([
+            'checks: near-miss: 2 sites 1-3 tiles outside a leaf area not their own, 2 allowed by allow.ts NEAR_MISS_ALLOW',
+            'checks: split: 0 same-config site pairs split across leaf areas within their radius, 0 allowed by allow.ts SPLIT_ALLOW',
+        ]);
+        expect(failed(report)).toBe(false);
+        const bad = {
+            ...report,
+            checks: {
+                ...report.checks,
+                split: {
+                    left: ['rock (1, 2, 0) and rock (3, 4, 0): rock:a:0 and rock:b:0, 2 tiles apart, both hold coal'],
+                    allowed: 0,
+                    invalid: ['rock (9, 9, 0) (maps/m0_0.jm2:1): rock (9, 9, 0): no site holds it'],
+                    stale: ['rock (5, 6, 0) (maps/m0_0.jm2:2)'],
+                },
+            },
+        };
+        expect(formatChecks(bad.checks).slice(1)).toEqual([
+            'checks: split: 1 same-config site pairs split across leaf areas within their radius, 0 allowed by allow.ts SPLIT_ALLOW',
+            'ERROR split: 1 same-config site pairs split across leaf areas within their radius that allow.ts SPLIT_ALLOW does not allow:',
+            '  rock (1, 2, 0) and rock (3, 4, 0): rock:a:0 and rock:b:0, 2 tiles apart, both hold coal',
+            'ERROR split: 1 allow.ts SPLIT_ALLOW entries with a site key no site or several sites hold (a typo?):',
+            '  rock (9, 9, 0) (maps/m0_0.jm2:1): rock (9, 9, 0): no site holds it',
+            'ERROR split: 1 allow.ts SPLIT_ALLOW entries no finding matches (fixed now, or gone):',
+            '  rock (5, 6, 0) (maps/m0_0.jm2:2)',
+        ]);
+        for (const one of [
+            { left: bad.checks.split.left, invalid: [], stale: [] },
+            { left: [], invalid: bad.checks.split.invalid, stale: [] },
+            { left: [], invalid: [], stale: bad.checks.split.stale },
+        ])
+            expect(failed({ ...report, checks: { ...report.checks, split: { ...one, allowed: 0 } } })).toBe(true);
     });
 
     test('the methods section: how many resolved, and an error per record that did not', () => {

@@ -266,13 +266,33 @@ what stopped the derivation (no tile on land reaches the loc, every landing off 
 known offline).
 
 A curated table names a site by a `SiteKey` (`site-key.ts`), never by its id: `{ kind, at }`, the site of that
-kind holding a feature on the tile `at` (`siteAt('tree', 2166, 3091)` in `areas.ts`; the report prints it as
+kind holding a feature on the tile `at` (`siteAt('tree', 2166, 3091)`; the report prints it as
 `tree (2166, 3091, 0)`). A site id (`tree:kandarin:7`) is an ordinal within its kind and leaf area, so a change to
 the clustering or the areas renumbers it, and an entry naming it would silently name another site. A feature
 belongs to exactly one site whatever happens to the others, where a site's bbox can overlap others', so a tile of
 one names it. Take any of the site's features' tiles from `world.json`; the build fails on a key no site of its
-kind holds, or several do. `EXPECTED_UNREACHED` and the bank `OVERRIDES` in `conductor/lib/banks.ts` are keyed so;
-ids stay in `world.json` and on the pages.
+kind holds, or several do. `EXPECTED_UNREACHED`, the build checks' allowlists in `allow.ts` and the bank
+`OVERRIDES` in `conductor/lib/banks.ts` are keyed so; ids stay in `world.json` and on the pages.
+
+### Build checks
+
+`checks.ts` holds checks for classes of wrong data the index audit found (`conductor/docs/world-index-data-audit.md`
+§2.2). Each returns findings naming their sites by `SiteKey` with a detail line; its allowlist in `allow.ts` lists
+the findings known and explained, each entry `{ keys, reason, source }`: the keys of the finding's sites, what is
+wrong and what fixes it, and a map line (`maps/mX_Z.jm2:line`) of a feature or the script line of the op that
+settles it. `bun run world` and `--check` print a `checks:` line per check and fail with `ERROR <check>:` lines on
+a finding no entry allows, an entry whose key names no one site (invalid), and an entry no finding matches (stale:
+the rect it waited on was refitted, or the site is gone), so an entry goes when its fix lands. Both checks look at
+the COVERED kinds but trees, whose sites chain whole forests.
+
+- **`near-miss`** (`NEAR_MISS_ALLOW`): a site whose bbox lies outside every rect of a leaf area (one no area is the
+  parent of) on its level, but 1-3 tiles (Chebyshev) from one, while its own leaf area is another: usually a rect
+  drawn as a label square and never fitted to the place, with the site filed under the parent instead. A leaf drawn
+  round one thing (a bank's booths, a resource, a course) beside a site of the town around it is a near miss by
+  design; its entry says so.
+- **`split`** (`SPLIT_ALLOW`): two sites of one kind holding a feature of the same config, on one level, whose bboxes
+  lie within the kind's `SITE_RADIUS` (the gap `place.ts` links features by) in different leaf areas: one place
+  clustered as two because an area edge cuts it. An entry names both sites.
 
 ## Methods
 
@@ -379,6 +399,7 @@ Adding a method:
 | Sites split or merged wrongly, or a bad stand tile | `wiki/world/place.ts` (`SITE_RADIUS`, the stand rules) |
 | A page's layout or wording | `wiki/world/render/` |
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
+| A site just outside the area it is named after, or one place split into two sites at an area edge (`ERROR near-miss`, `ERROR split`) | the area's rects in `wiki/world/areas.ts`; a pair that is right as it is (a leaf round one thing, two places side by side) is an entry in `NEAR_MISS_ALLOW` or `SPLIT_ALLOW` in `wiki/world/allow.ts` saying why |
 | A site whose use (not the walk there) needs a quest: a Requires cell missing it | `USE_GATES` in `wiki/world/gates.ts` |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |
