@@ -1,8 +1,9 @@
 import { z } from 'zod/v4';
-import type { NearbyLoc } from '../../sdk/types';
+import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { PICK_OPTION, PICK_WAIT_TICKS, pick } from '../actions/pick';
 import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
@@ -44,6 +45,8 @@ type PickParams = z.infer<typeof Params>;
 interface PickMemory {
     /** The tick the bot first found nothing to pick, until it finds something again. */
     noLocSinceTick: number | null;
+    /** Idle ticks and the ones with a plant in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
 }
 type Ctx = TaskContext<PickParams, PickMemory>;
 
@@ -51,9 +54,14 @@ const held = (ctx: Ctx) => countItems(ctx.state(), exactName(ctx.params.item));
 
 /** A loc of the task's kind the bot can pick now, inside the area when there is one. */
 function pickable(params: PickParams): (loc: NearbyLoc) => boolean {
+    const isPlant = plantOfKind(params);
+    return l => isPlant(l) && inArea(params.area, l);
+}
+
+/** A loc of the task's kind the bot could pick, wherever it stands. */
+function plantOfKind(params: PickParams): (loc: NearbyLoc) => boolean {
     const name = exactName(params.loc);
-    return l =>
-        name.test(l.name) && l.reachable === true && l.options.some(o => PICK_OPTION.test(o)) && inArea(params.area, l);
+    return l => name.test(l.name) && l.reachable === true && l.options.some(o => PICK_OPTION.test(o));
 }
 
 /** Nothing to pick: stay put (returnToAreaStep keeps us inside) and wait for a respawn, failing after NO_LOC_GIVE_UP_TICKS. */
@@ -65,10 +73,12 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
     }
     const since = ctx.memory.noLocSinceTick;
     const isPickable = pickable(ctx.params);
-    const respawn = yield* wait(
-        'respawn',
-        s => s.nearbyLocs.some(isPickable),
-        Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now),
+    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, plantOfKind(ctx.params));
+    const respawn = yield* trackIdle(
+        ctx,
+        ctx.memory.areaWatch,
+        seen,
+        wait('respawn', s => s.nearbyLocs.some(isPickable), Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now)),
     );
     if (respawn.kind === 'met') return;
     const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
@@ -92,7 +102,8 @@ export default defineTask({
         'area {x:2743,z:3445,radius:10} (the field spans x 2732-2755, z 3433-3456). Needs nothing carried. ' +
         'Refuses areas reaching the Wilderness.',
     params: Params,
-    memory: (): PickMemory => ({ noLocSinceTick: null }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): PickMemory => ({ noLocSinceTick: null, areaWatch: newAreaWatch() }),
     // Interacting with a loc cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,

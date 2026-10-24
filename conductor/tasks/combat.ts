@@ -8,6 +8,15 @@ import { prayerActive, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
+import {
+    areaWatchReport,
+    type AreaWatch,
+    newAreaWatch,
+    trackIdle,
+    outsideSighting,
+    type Sighting,
+    WILDERNESS_MARGIN,
+} from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -192,6 +201,8 @@ const Params = z
 
 type CombatParams = z.infer<typeof Params>;
 interface CombatMemory {
+    /** Idle ticks and the ones with a target in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
     /** The tick the fight being waited out was first seen, until the bot is out of combat. */
     fightStartedAtTick: number | null;
     /** The tick a fight was first seen with no ammo left (Ranged), or null while ammo remains. */
@@ -321,9 +332,6 @@ const keptDialog = (s: BotWorldState, unlock: boolean) => s.dialog.isOpen && !is
 /** How long after a level-up click an unlock page still counts as part of it. */
 const UNLOCK_PAGE_TICKS = LEVEL_UP_WAIT_TICKS + 2;
 
-/** How close to the Wilderness a "visible" target or loot may stand: the bot walks to within two tiles of it. */
-const WILDERNESS_MARGIN = ATTACK_WALK_BEYOND + 1;
-
 /** `visible` mode only (Wilderness coordinates apply on the surface, hence `level === 0`): the point is on the surface within WILDERNESS_MARGIN of the Wilderness, where the bot must not go. */
 const nearWilderness = (state: BotWorldState, p: CombatParams, at: { x: number; z: number }) =>
     p.targetRange === 'visible' && state.player?.level === 0 && squareReachesWilderness(at.x, at.z, WILDERNESS_MARGIN);
@@ -344,6 +352,24 @@ function wantedGroundItems(ctx: Ctx) {
         .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inRange(ctx.state(), ctx.params, i))
         .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
+}
+
+/** A matching NPC the bot may attack now, wherever it stands: free, reachable, attackable, of a level the task wants. */
+const freeTarget = (n: BotWorldState['nearbyNpcs'][number], p: CombatParams) =>
+    matches(n, p) &&
+    n.reachable !== false &&
+    !n.inCombat &&
+    levelWanted(n, p) &&
+    n.options.some(o => ATTACK_OPTION.test(o));
+
+/**
+ * Diagnostic only: the nearest free in-limit target in view outside the area, for the idle count. Nothing in
+ * `visible` mode (it takes those) and nothing within WILDERNESS_MARGIN of the Wilderness (never taken).
+ */
+function outsideTarget(state: BotWorldState, p: CombatParams): Sighting | undefined {
+    if (p.targetRange !== 'area') return undefined;
+    const limit = levelLimit(state, p);
+    return outsideSighting(state, p.area, state.nearbyNpcs, n => freeTarget(n, p) && n.combatLevel <= limit);
 }
 
 /**
@@ -373,15 +399,7 @@ function pickTarget(state: BotWorldState, p: CombatParams) {
             n.options.some(o => ATTACK_OPTION.test(o)),
     );
     if (attacker) return { target: attacker, tooStrong: undefined, limit };
-    const candidates = state.nearbyNpcs.filter(
-        n =>
-            matches(n, p) &&
-            n.reachable !== false &&
-            !n.inCombat &&
-            levelWanted(n, p) &&
-            n.options.some(o => ATTACK_OPTION.test(o)) &&
-            inRange(state, p, n),
-    );
+    const candidates = state.nearbyNpcs.filter(n => freeTarget(n, p) && inRange(state, p, n));
     const target = candidates.filter(n => n.combatLevel <= limit).sort((a, b) => a.distance - b.distance)[0];
     return { target, tooStrong: candidates.find(n => n.combatLevel > limit), limit };
 }
@@ -457,7 +475,7 @@ function* chooseTarget(ctx: Ctx, engaged?: NearbyNpc): Op<{ target: NearbyNpc } 
                 fail: `no free reachable ${targetLabel(ctx.params)} ${ctx.params.targetRange === 'visible' ? 'in view' : 'in the area'}`,
             },
         };
-    yield* ticks(NO_TARGET_WAIT_TICKS);
+    yield* trackIdle(ctx, ctx.memory.areaWatch, s => outsideTarget(s, ctx.params), ticks(NO_TARGET_WAIT_TICKS));
     return { outcome: undefined };
 }
 
@@ -526,7 +544,9 @@ export default defineTask({
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): CombatMemory => ({
+        areaWatch: newAreaWatch(),
         fightStartedAtTick: null,
         noAmmoSinceTick: null,
         lootSkipped: new Map(),

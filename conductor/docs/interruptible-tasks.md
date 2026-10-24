@@ -188,6 +188,17 @@ defineTask({
 - Deleted: `waitUnlessThreatened`, `waitOrTimeout`, per-task combat-tick loops,
   `expectDialog`, `Date.now()` in tasks.
 
+### Diagnostics
+
+`TaskDef.diagnostics(ctx)` (optional) returns `{ diagnostics?, warnings? }`, read once as the run ends
+(done, failed or stopped). They land in `TaskResult.diagnostics` and `TaskResult.warnings`, are absent
+from the RESULT when empty, and each warning prints as a `warning:` line. A throwing hook is logged
+(`diagnostics failed`) and never changes the status; invalid params never reach it. It is diagnostic
+only, never a decision. Tasks working an `area` use `lib/area-watch.ts`: `trackIdle` wraps the idle
+wait and counts its ticks, and ticks with a matching free target in view outside the area (sampled at
+the wait's start and end), and `areaWatchReport` turns that into `idleTicks`, `seenOutsideAreaTicks`,
+`nearestOutsideArea` and a `seenOutsideArea` warning past 10% of the idle ticks.
+
 ### Engine and `run-task.ts`
 
 - `executeTask(def, { driver, sinks, now })`: pure of I/O. NDJSON log, progress printing and

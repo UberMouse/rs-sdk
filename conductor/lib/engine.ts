@@ -427,6 +427,16 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
+    /** The task's diagnostics hook, best effort: a throw is logged and the result carries none. */
+    const readDiagnostics = (): { diagnostics?: Record<string, unknown>; warnings?: string[] } => {
+        try {
+            return def.diagnostics?.(ctx) ?? {};
+        } catch (e) {
+            say(`diagnostics failed: ${errMessage(e)}`);
+            return {};
+        }
+    };
+
     const finish = async (endStatus: TaskStatus, endReason: string, endBy?: string): Promise<TaskResult> => {
         const atStop = stateOrNull();
         const keepsDialog = endStatus === 'done' && !!atStop && holdsDialog(atStop);
@@ -455,6 +465,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             }
         }
         const p = s?.player;
+        const extra = parsed.success ? readDiagnostics() : {};
         const result: TaskResult = {
             task: def.name,
             bot: botName,
@@ -476,7 +487,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             inCombat: p ? p.combat.inCombat : null,
             screenshots,
             logFile,
+            ...(extra.diagnostics && Object.keys(extra.diagnostics).length > 0 && { diagnostics: extra.diagnostics }),
+            ...(extra.warnings && extra.warnings.length > 0 && { warnings: extra.warnings }),
         };
+        for (const w of extra.warnings ?? []) say(`warning: ${w}`);
         emit({ type: 'result', ...result });
         say(`${status}: ${reason}`);
         return result;

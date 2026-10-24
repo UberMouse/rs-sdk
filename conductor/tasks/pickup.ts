@@ -3,6 +3,7 @@ import type { BotWorldState, GroundItem } from '../../sdk/types';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
@@ -47,6 +48,8 @@ interface PickupMemory {
     noItemSinceTick: number | null;
     /** Index into STANDS of the side to stand on next: advanced after each refused take or unwalkable side, reset on a pickup or when the item is gone. */
     standTries: number;
+    /** Idle ticks and the ones with the item in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
 }
 type Ctx = TaskContext<PickupParams, PickupMemory>;
 
@@ -97,7 +100,8 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
     if (now - ctx.memory.noItemSinceTick >= Math.ceil((maxWaitSeconds * 1000) / TICK_MS)) {
         return { fail: `no ${want} appeared in the area within ${maxWaitSeconds}s` };
     }
-    yield* ticks(WAIT_TICKS);
+    const seen = (s: BotWorldState) => outsideSighting(s, area, s.groundItems, g => exactName(want).test(g.name));
+    yield* trackIdle(ctx, ctx.memory.areaWatch, seen, ticks(WAIT_TICKS));
 }
 
 export default defineTask({
@@ -108,7 +112,8 @@ export default defineTask({
         'an adjacent tile once nothing reachable is left; a take the server refuses ("I can\'t reach that") counts as a failed pickup. Verified spots: Panning tray on a Table at area {x:3369,z:3379,radius:4}; Pot (kitchen) at {x:3210,z:3212,radius:3}; Knife at area {x:3224,z:3202,radius:4} ' +
         '(SE of Lumbridge castle). Fails if attacked or the inventory is full.',
     params: Params,
-    memory: (): PickupMemory => ({ noItemSinceTick: null, standTries: 0 }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): PickupMemory => ({ noItemSinceTick: null, standTries: 0, areaWatch: newAreaWatch() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 

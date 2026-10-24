@@ -296,3 +296,22 @@ describe('pickup: guards', () => {
         expect(r.sends).toEqual([TAKE, 'continue dialog']);
     });
 });
+
+describe('pickup: seenOutsideArea diagnostic', () => {
+    test('the item on the ground outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            timeline: inside.ground('Knife', KNIFE.x + 10, KNIFE.z).series(1),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(r.result.diagnostics?.idleTicks);
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain(`(${KNIFE.x + 10},${KNIFE.z})`);
+    });
+
+    test('nothing on the ground: idle ticks, no warning', async () => {
+        const r = await simulate(pickup, { params: PARAMS, timeline: inside.series(1) });
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+});

@@ -1782,3 +1782,91 @@ describe('combat: an eat the server ignored under fire', () => {
         expect(r.result.reason).toBe('reached +25 Attack xp');
     });
 });
+
+describe('combat: seenOutsideArea diagnostic', () => {
+    /** The only chicken stands 12 tiles out, beyond the area (radius 8). */
+    const outside = chickenAt(base, COOP.x + 12, COOP.z);
+    /** Twenty looks of three ticks, the last one ends the run. */
+    const IDLE = 19 * 3;
+
+    test('a free chicken in view outside the area while idle warns, naming its tile', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: outside.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(r.result.diagnostics).toEqual({
+            idleTicks: IDLE,
+            seenOutsideAreaTicks: IDLE,
+            nearestOutsideArea: { name: 'Chicken', x: COOP.x + 12, z: COOP.z },
+        });
+        expect(r.result.warnings).toHaveLength(1);
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain(`(${COOP.x + 12},${COOP.z})`);
+        expect(r.result.warnings?.[0]).toContain('widen the area to radius 12');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('the warning needs more than a tenth of the idle ticks', async () => {
+        // Seen for the first 3 of 57 idle ticks (one look, 5%), then gone.
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: base.series(30, (w, i) => (i < 3 ? chickenAt(w, COOP.x + 12, COOP.z) : w)),
+        });
+        expect(r.result.diagnostics?.idleTicks).toBe(IDLE);
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(3);
+        expect(r.result.warnings).toBeUndefined();
+        // Two looks (6 of 57 idle ticks, 10.5%) cross the line.
+        const more = await simulate(combat, {
+            params: PARAMS,
+            timeline: base.series(30, (w, i) => (i < 6 ? chickenAt(w, COOP.x + 12, COOP.z) : w)),
+        });
+        expect(more.result.diagnostics?.seenOutsideAreaTicks).toBe(6);
+        expect(more.result.warnings).toHaveLength(1);
+    });
+
+    test('nothing outside the area: counts idle ticks, no warning', async () => {
+        const taken = base.npc('Chicken', COOP.x + 1, COOP.z, { options: ['Attack'], inCombat: true });
+        const r = await simulate(combat, { params: PARAMS, timeline: taken.series(1) });
+        expect(r.result.diagnostics).toEqual({ idleTicks: IDLE, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('an outside chicken that is busy, unreachable or of another kind does not count', async () => {
+        const w = base
+            .npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true })
+            .npc('Chicken', COOP.x + 13, COOP.z, { index: 10, options: ['Attack'], reachable: false })
+            .npc('Cow', COOP.x + 14, COOP.z, { index: 11, options: ['Attack'] });
+        const r = await simulate(combat, { params: PARAMS, timeline: w.series(1) });
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('a successful kill with no idling reports nothing', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: kill(coop), react: walking(), stops: xp(25) });
+        expect(r.result.status).toBe('done');
+        expect(r.result.diagnostics).toBeUndefined();
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('visible mode takes those targets, so nothing is counted', async () => {
+        const w = base.npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true });
+        const r = await simulate(combat, { params: { ...PARAMS, targetRange: 'visible' }, timeline: w.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    describe('near the Wilderness', () => {
+        const EDGE = { x: 3100, z: 3490 };
+        const edgeParams = { target: 'Chicken', area: { ...EDGE, radius: 4 } };
+        const edge = world().player({ at: EDGE }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('a chicken within three tiles of it is not counted; a further one is', async () => {
+            const near = edge.npc('Chicken', EDGE.x, 3518, { index: CHICKEN, options: ['Attack'] });
+            const a = await simulate(combat, { params: edgeParams, timeline: near.series(1) });
+            expect(a.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+            expect(a.result.warnings).toBeUndefined();
+            const far = edge.npc('Chicken', EDGE.x, 3512, { index: CHICKEN, options: ['Attack'] });
+            const b = await simulate(combat, { params: edgeParams, timeline: far.series(1) });
+            expect(b.result.warnings).toHaveLength(1);
+        });
+    });
+});

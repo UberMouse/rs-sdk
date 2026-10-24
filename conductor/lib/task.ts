@@ -150,6 +150,12 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * Never fails the run: a throw is logged.
      */
     onEnd?(ctx: TaskContext<z.infer<S>, M>): Op<void>;
+    /**
+     * Counts and warnings for the result (`TaskResult.diagnostics` / `warnings`), read once as the run ends: what
+     * the run saw that its decisions did not use (targets in view outside the area, lib/area-watch.ts). Never
+     * changes the run's status; a throw is logged. Return empty parts when there is nothing to say.
+     */
+    diagnostics?(ctx: TaskContext<z.infer<S>, M>): { diagnostics?: Record<string, unknown>; warnings?: string[] };
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];
@@ -202,6 +208,10 @@ export interface TaskResult {
     inCombat: boolean | null;
     screenshots: string[];
     logFile: string;
+    /** Task-specific counts from the task's `diagnostics` hook (area tasks: idleTicks, seenOutsideAreaTicks, nearestOutsideArea); absent when empty. */
+    diagnostics?: Record<string, unknown>;
+    /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
+    warnings?: string[];
     /** A nudge run-task adds for the runner reading the RESULT (a chain of plain runs); absent normally. */
     hint?: string;
 }

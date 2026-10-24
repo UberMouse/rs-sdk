@@ -1,9 +1,10 @@
 import { z } from 'zod/v4';
-import type { NearbyLoc } from '../../sdk/types';
+import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { drop, dropOres } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
 import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { type Area, AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
@@ -106,6 +107,8 @@ type MiningParams = z.infer<typeof Params>;
 interface MiningMemory {
     /** The tick the bot first found no rock to mine, until it finds one again. */
     noRockSinceTick: number | null;
+    /** Idle ticks and the ones with a rock in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
 }
 type Ctx = TaskContext<MiningParams, MiningMemory>;
 
@@ -146,9 +149,14 @@ const oresHeld = (ctx: Ctx) => countItems(ctx.state(), derive(ctx.params).orePat
  * apart by loc id.
  */
 function minable(params: MiningParams): (loc: NearbyLoc) => boolean {
+    const isRock = rockOfKind(params);
+    return r => isRock(r) && inArea(params.area, r);
+}
+
+/** A rock of the listed types the bot could mine, wherever it stands. */
+function rockOfKind(params: MiningParams): (loc: NearbyLoc) => boolean {
     const { ids } = derive(params);
-    return r =>
-        ids.has(r.id) && r.reachable === true && r.options.some(o => MINE_OPTION.test(o)) && inArea(params.area, r);
+    return r => ids.has(r.id) && r.reachable === true && r.options.some(o => MINE_OPTION.test(o));
 }
 
 /** No minable rock: mined-out rocks count as none, so stay put (returnToAreaStep keeps us inside) and wait, until the give-up. */
@@ -163,7 +171,13 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
     const since = ctx.memory.noRockSinceTick;
     const left = Math.max(0, since + d.giveUpTicks - now);
     const isMinable = minable(ctx.params);
-    const respawn = yield* wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS));
+    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, rockOfKind(ctx.params));
+    const respawn = yield* trackIdle(
+        ctx,
+        ctx.memory.areaWatch,
+        seen,
+        wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS)),
+    );
     if (respawn.kind === 'met' || respawn.state.tick - since < d.giveUpTicks) return;
     const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
     const { area } = ctx.params;
@@ -205,7 +219,8 @@ export default defineTask({
         'without it "no reachable <rock> rock nearby for Ns". With `area` it stays within `radius` of that centre; without it, it mines ' +
         'wherever the bot stands, except `essence` inside the Rune Essence Mine, which walks to the nearest of the mine\'s four rock clusters when none is in view (teleport landings can be far from every rock). `essence` is the Rune Essence Mine rock (reach it with the essence-mine task); it needs onFull "stop" (refused with "drop") and never depletes. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
     params: Params,
-    memory: (): MiningMemory => ({ noRockSinceTick: null }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): MiningMemory => ({ noRockSinceTick: null, areaWatch: newAreaWatch() }),
     // Mining a rock cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,

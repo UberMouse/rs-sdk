@@ -537,3 +537,26 @@ describe('mining: under attack', () => {
         expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218), no food');
     });
 });
+
+describe('mining: seenOutsideArea diagnostic', () => {
+    test('a minable rock in view outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(mining, {
+            params: { ...PARAMS, area: { x: 3222, z: 3218, radius: 5 } },
+            timeline: rocks(mined, COPPER, 3240, 3218)
+                .loc('Rocks', 3238, 3218, { id: COPPER, options: ['Mine'] })
+                .series(1),
+        });
+        expect(r.result.diagnostics).toMatchObject({ idleTicks: 300, seenOutsideAreaTicks: 300 });
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain('(3238,3218)');
+    });
+
+    test('only mined-out rocks outside: no warning', async () => {
+        const r = await simulate(mining, {
+            params: { ...PARAMS, area: { x: 3222, z: 3218, radius: 5 } },
+            timeline: rocks(mined, DEPLETED, 3240, 3218).series(1),
+        });
+        expect(r.result.diagnostics).toEqual({ idleTicks: 300, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+});
