@@ -81,8 +81,9 @@ Each step: who or what (config display name), where, the exact dialog choices, i
    walking out of the front **Large door** (2763, 3401/3402) from inside, which opens west
    (`quest_arthur.rs2:94-116`): `travel` from the keep to (2802, 3440) level 0 succeeded. The exit **Crate**
    (`merlincrate_empty2`, "Hide-in", "Yes." then "Yes.", puts the player at (2802, 3441); `quest_arthur.rs2:38-66`) is a
-   level-1 map loc at (2779, 3401) on a bridge-flag tile; the client lists no locs east of x=2776 there, so `interact`
-   finds no Crate ("no reachable loc /^Crate$/ in sight"). The Morgan dialog opens on level 2, the crate-in dialog on
+   level-1 map loc at (2779, 3401) on a bridge-flag tile; the server lowers it to level 0 and the lite client does
+   too (SceneLite), so `interact {name:"^Crate$", option:"^Hide-in$", at:{x:2778,z:3401,level:0}}` opens its dialog
+   [v 2026-10-24 questw1 local]. The Morgan dialog opens on level 2, the crate-in dialog on
    level 0. [v 2026-10-23 questw3 local]
 6. **Chaos altar** (`thrantaxaltar`, op "Check") at (3239, 3608), the small Chaos Temple in Wilderness level 12.
    Only at exactly stage 4 (`quest_arthur.rs2:143`); sets bit 0 and shows the words "Snarthon Candtrick
@@ -182,7 +183,7 @@ for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temp
 | Camelot stairs (2750, 3510) and tower ladders (2769, 3493), (2767, 3491) | yes: `travel`/`at` climb them (walk-graph probe, 16-18 run ticks from the courtyard) |
 | Catherby crate to Keep Le Faye | **no**: a scripted ride the world index leaves out as a quest transport (`wiki/world/gate-list.ts:961-963`); do it with `interact` + `talk` (Catherby coverage below) |
 | Keep Le Faye front door (2763, 3401/3402) | **planner wrong from outside**: the SDK masks it as an ordinary door (not in `ONE_WAY_DOORS`, `sdk/pathfinding.ts:73-79`), so a walk from Catherby plans straight through it (probe: Catherby -> Mordred 45 run ticks, no hop) and is refused in game ("The door is securely locked"). From inside it opens west and `travel` from the keep to Catherby (2802, 3440) works. [v 2026-10-23 questw3 local] |
-| Keep crate back to Catherby (`merlincrate_empty2`) | not needed and not findable by `interact` (level-1 loc on a bridge-flag tile, see step 5); the world index has it only as far as the crate interior (2778, 9839) |
+| Keep crate back to Catherby (`merlincrate_empty2`) | `interact` finds it (the lite client lowers bridge-tile locs to the server level, step 5); the world index has it only as far as the crate interior (2778, 9839) |
 | Walks planned from Camelot L1 (Lancelot's floor) to Catherby | fail ("stops 54 tiles short at (2767,3497)"); `travel` to the level-0 courtyard (2762, 3508) first. [v 2026-10-23 questw3 local] |
 | Keep stairs (2769, 3404), (2769, 3398) | yes (probe: jetty -> Mordred 14 run ticks) |
 | Port Sarim jeweller's ladder | yes (a scripted crossing), but not needed |
