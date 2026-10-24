@@ -363,3 +363,14 @@ Gotchas the plan works around [v 2026-10-24 questw2 local]:
 - Searching the crate in Golrie's cellar draws Zombies and Giant bats. Hadley's house -> Tree Gnome Village ladder has
   no path: see `learnings/walking.md`.
 - A combat-35 account (HP 33, little food) died on the tomb chest -> urn leg (auto-retaliation about 25 HP/min).
+
+## Plan status: waterfall-armour
+
+Promoted: `conductor/plans/waterfall-armour.ts` (waterfall-quest with a Defence-40 armour prep). Run `2026-10-24T02-45-31-672Z-plan-waterfall-armour`, one run, 1628 s, no deaths: Attack 40 -> 84, Strength 62 -> 87 (343,750 XP each from the reward plus ~23.8k Strength from fights), HP 52 -> 54. [v 2026-10-24 conductor3 local]
+
+- Safe at Defence 40 / combat 62 in Mithril platebody + Mithril platelegs + Adamant full helm with a Mithril scimitar and 20 Swordfish: dungeon fights waited out with `travel` flee (5 fight and 5 wait phases, ~78 s each), HP lowest 37/54, 3 Swordfish eaten. This extends the proven range below Attack 60 / rune; below combat 45 stays untested.
+- Armour bought with the `shop` task by NPC name: Peksa (Adamant full helm 3,520), Horvik (Mithril platebody 5,200), Louie Legs (Mithril platelegs 2,600); see `learnings/equipment.md`.
+- Phase seconds: prep-bank 73, buy-helm 38, buy-body 41, buy-legs 75, bank-start 197, buy-runes 117, buy-rope 5, almera 60, to-island-1 11, hudon-talk 9, swim 5, bookcase 14, to-cellar 106, cell-key 61 (one of two runs failed on 3 key-on-door timeouts, retried), tombstone 109 (2 runs), bank-runes 163, tomb-flee 42, tomb-urn 12, tomb-chest 14, to-island-2 60, bank-gear 40, key-crate 13, door1 53, door2 42, statue 14, pillars 3-4 each, chalice 2. The long phases are walks: bank-start, bank-runes, tombstone (100-200 s each).
+- The statue phase's second run failing "no connector from (2603,9914) to (2565,9915)" after the chalice is harmless.
+- The run ends with interface 297 (quest-complete scroll) open in the chalice room (2603, 9912).
+- Loot kept: Glarial's urn, 2 Diamond, 2 Gold bar, 40 Mithril seeds.

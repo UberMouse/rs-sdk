@@ -22,3 +22,4 @@ How much each tier speeds up chopping and mining: `wiki/skills/woodcutting.md` (
 | Slot / tier | Requirement | Where | Cost | Verified |
 |---|---|---|---|---|
 | Bronze dagger, bronze sword, wooden shield, shortbow + 25 bronze arrows, starter runes | — | starter kit after `skipTutorial()` (in inventory, not equipped) | free | 2026-10-09 conductor1 local |
+| Adamant full helm (Defence 30), Mithril platebody (Defence 20), Mithril platelegs (Defence 20) | Defence 30 / 20 / 20 to wear (`levelrequire/scripts/tier30.rs2:27`, `tier20.rs2:24,27`) | `shop` task by NPC name: Peksa (Barbarian Village helmets) helm; Horvik (Varrock) platebody; Louie Legs (Al Kharid) platelegs. | 3,520 / 5,200 / 2,600 gp | all three bought and worn at Defence 40, 2026-10-24 conductor3 local (plan waterfall-armour) |
