@@ -1,0 +1,210 @@
+{
+    "name": "nature-spirit-start",
+    "purpose": "Nature Spirit start: conductor3 profile (Att 40 Str 54 Def 40 HP 47 Prayer 49 Crafting 18, mithril scimitar and Ghostspeak amulet worn, 12 swordfish in separate slots, Wolfbane dagger, Silver bar, 300 coins), Priest in Peril varp 302=61 (barrier stage), Restless Ghost varp 107=5 (done), Nature Spirit varp 0, at the Paterdomus trapdoor (3405,3503); no sickle mould",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3405,
+                "z": 3503,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49,
+                "Crafting": 18
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 2952,
+                    "count": 1
+                },
+                {
+                    "id": 2355,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 552,
+                    "count": 1,
+                    "slot": 2
+                }
+            ],
+            "coins": 300,
+            "varps": {
+                "107": 5,
+                "302": 61
+            }
+        }
+    },
+    "sha1": "d327eec9ea814e79c4172cad28effb3c520c7c8e",
+    "createdAt": "2026-10-24T03:17:49.645Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3405,
+            "z": 3503,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49,
+            "Crafting": 18
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 300
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 2952,
+                "name": "dagger_wolfbane",
+                "count": 1
+            },
+            {
+                "id": 2355,
+                "name": "silver_bar",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 552,
+                "name": "amulet_of_ghostspeak",
+                "count": 1
+            },
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "107": 5,
+            "281": 1000,
+            "302": 61
+        }
+    }
+}
