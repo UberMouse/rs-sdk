@@ -1,0 +1,218 @@
+{
+    "name": "dragon-slayer-start",
+    "purpose": "Dragon Slayer from the start at the Champions' Guild, Varrock (3193,3351): 32 real QP (Romeo and Juliet, Goblin Diplomacy, Ernest, Druidic Ritual, Merlin's Crystal, Demon Slayer, Cook's Assistant, Prince Ali Rescue, Doric's varps: qp is recounted at login, so a bare qp varp is overwritten), Att/Str/Def/HP 70, rune full helm/chainbody/platelegs/scimitar, amulet of strength, gloves, boots worn (shield slot empty for the Dragonfire shield), pack: silk, unfired bowl, lobster pot, wizard's mind bomb, 3 planks, 12 nails, hammer, 12 swordfish, 12000 coins (10000 Wormbrain + 2000 Klarense).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3193,
+                "z": 3351,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 950,
+                    "count": 1
+                },
+                {
+                    "id": 1791,
+                    "count": 1
+                },
+                {
+                    "id": 301,
+                    "count": 1
+                },
+                {
+                    "id": 1907,
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 3
+                },
+                {
+                    "id": 1539,
+                    "count": 12
+                },
+                {
+                    "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 12
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1725,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1113,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1059,
+                    "count": 1,
+                    "slot": 9
+                },
+                {
+                    "id": 1061,
+                    "count": 1,
+                    "slot": 10
+                }
+            ],
+            "coins": 12000,
+            "varps": {
+                "14": 7,
+                "29": 2,
+                "31": 100,
+                "32": 3,
+                "62": 6,
+                "80": 4,
+                "101": 32,
+                "144": 100,
+                "222": 30,
+                "273": 110
+            }
+        }
+    },
+    "sha1": "2a6ad80f9b63025b2c4d87c5e3fd9994cf7d693e",
+    "createdAt": "2026-10-23T23:52:20.819Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3193,
+            "z": 3351,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 12000
+            },
+            {
+                "id": 950,
+                "name": "silk",
+                "count": 1
+            },
+            {
+                "id": 1791,
+                "name": "bowl_unfired",
+                "count": 1
+            },
+            {
+                "id": 301,
+                "name": "lobster_pot",
+                "count": 1
+            },
+            {
+                "id": 1907,
+                "name": "wizards_mind_bomb",
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 3
+            },
+            {
+                "id": 1539,
+                "name": "nails",
+                "count": 12
+            },
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 12
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1725,
+                "name": "amulet_of_strength",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1113,
+                "name": "rune_chainbody",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1059,
+                "name": "leather_gloves",
+                "count": 1
+            },
+            {
+                "id": 1061,
+                "name": "leather_boots",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "14": 7,
+            "29": 2,
+            "31": 100,
+            "32": 3,
+            "62": 6,
+            "80": 4,
+            "101": 32,
+            "144": 100,
+            "222": 30,
+            "273": 110,
+            "281": 1000
+        }
+    }
+}

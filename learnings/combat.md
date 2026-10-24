@@ -21,6 +21,8 @@ if (npc && attackOpt) {
 }
 ```
 
+The `combat` task's `target` is a plain NPC name (`'Giant rat'`, `'Elvarg'`), not a regex. [v 2026-10-24 questw1 local]
+
 ## Combat Style Cycling
 
 Combat-style indices depend on the equipped weapon the SDK reads

@@ -137,6 +137,7 @@ const BANK_TO_MINE = [
 - The Lumber Yard's broken fence at (3305, 3493), climbed from the south (members), leaves the
   player standing on the fence's own tile; from there a walk goes on into the yard. [v 2026-10-19 t9check1 local]
 - Plan steps (`interact`, `talk`) take `at: {x, z, tolerance}` with a minimum tolerance of 1. A stand tile right beside a wall therefore lets the walker open the door itself and walk through. For a door step omit `at`, or put it two tiles from the door on the near side. Item pickup on level 1 works with `area.level: 1`. [v 2026-10-23 questw1 local]
+- `interact`'s `at` counts as arrived by Chebyshev distance to the stand tile, not by path. When the stand tile is behind a wall or door, pick a stand farther than the tolerance so the walker really walks. [v 2026-10-24 questw1 local]
 
 `bot.walkTo()` attempts to open doors and gates on its route. If a route fails,
 inspect nearby objects and open the specific obstacle before retrying:
