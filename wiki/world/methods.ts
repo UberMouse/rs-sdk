@@ -783,8 +783,11 @@ export const METHODS: MethodDef[] = [
         loot: { bones: 'bury' },
         sink: { mode: 'bank' },
         notes:
-            'Melee 1-25 band: seven cows, max hit 1, none hunts. No promoted plan; unmeasured, and uncalibrated (no ' +
-            'CALIBRATIONS record), so it eats nothing yet.',
+            'Melee 1-40 band: seven cows, max hit 1, none hunts; uncalibrated (no CALIBRATIONS record), so it eats ' +
+            'nothing yet. Plan melee40 (conductor3 2026-10-24, combat targetRange visible, area radius 22, Mithril ' +
+            'scimitar, bones not buried) ran Attack 28-40 and Defence 20-40 in 9.6 min with no idle waits; its rates ' +
+            'beat the steel-scimitar floor because the scimitar was better.',
+        plans: ['melee40'],
         source: 'research-combat 2026-10-23: a survey of every reachable npc site',
     },
     {
