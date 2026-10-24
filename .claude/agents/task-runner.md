@@ -62,7 +62,8 @@ script walked the bot under attack and it died, 2026-10-11).
 5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`. A RESULT `warnings` entry (e.g. `seenOutsideArea`) is advice to act on: widen the
-   area or move its centre as it says, not to ignore.
+   area or move its centre to the tile it names (re-check the Wilderness margin), and rerun before trusting
+   the run's rate; `diagnostics.idleTicks` and `seenOutsideAreaTicks` give the idle share.
 6. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
    first (Debugging, below).
 
