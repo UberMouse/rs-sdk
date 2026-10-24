@@ -78,8 +78,8 @@ export const NEAR_MISS_GAP = 3;
 
 /**
  * Check 2, near-miss area (audit D): a site whose bbox lies outside every rect of a leaf area (one no area is the
- * parent of) but within NEAR_MISS_GAP tiles of one of them, on its level, while its own leaf area is another: a
- * rect not fitted to the place its features are named after. One finding per site, naming each such area.
+ * parent of) but within NEAR_MISS_GAP tiles of one of them, on its level, while its own leaf area is another:
+ * usually a rect not fitted to the place, with the site filed under the place's parent. One finding per site, naming each such area.
  */
 export function nearMissAreas(world: CheckWorld, covered: ReadonlySet<FeatureKind>): Finding[] {
     const parents = new Set(world.areas.flatMap(a => (a.parent === undefined ? [] : [a.parent])));
