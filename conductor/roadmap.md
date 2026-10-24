@@ -101,18 +101,38 @@ before any more melee, Crafting or Herblore grinding**:
   at 99, so ~650k left is 3-6 h even after Grail; the Max route row below said ~3 h after melee. Treat it as the long pole
   with Runecraft and HP, and start the dusty-key/baby-blue work early.
 
-**Queue now (retro #4), in order.** 1. ~~Woodcutting~~ done: WC 1-50 in 328 s (oak-draynor-drop). 2. **Mining prep**:
-buy the adamant pickaxe (3,200 gp, Nurmof's, Dwarven Mine; the bot carries bronze, and every future mine leg is respawn- or
-tool-bound), and in the same trip make an **adamant axe** (below). 3. Quest sweep, cheapest-first: Waterfall (peer
-finishing), Tree Gnome Village (promoted), Death Plateau, Scorpion Catcher, Monk's Friend, Vampire Slayer, then Elemental
-Workshop (promoted; record the measured XP), Merlin + Grail (promoted), Priest in Peril, the 32 QP set (Romeo, Goblin,
-Ernest, Cook's: promoted), Dragon Slayer, Fight Arena, Nature Spirit, Observatory, Dwarf Cannon, Tourist Trap, Big Chompy
--> Temple of Ikov, Watchtower, Death Plateau -> Troll Stronghold -> Eadgar. One runner per 3-4 plans in a row (the chain
-runner took 4.3 M cache reads over 59 min and 3 plans: fine). Quests without a plan need a quest-library author first:
-queue Scorpion Catcher, Monk's Friend, Vampire Slayer, Death Plateau, Fight Arena, Nature Spirit, Observatory, Dwarf Cannon,
-Tourist Trap, Big Chompy, Watchtower, Troll Stronghold, Eadgar, Dragon Slayer (in progress) and Fremennik (in progress).
-4. WC/FM/Fletching 99s (oaks, then willows with the sinks), Mining 85-99 and Smithing 82-99 (superheat), Crafting 80-99
-remainder, then the long combat grind and Runecraft.
+**Account 2026-10-24 04:00 (retro #5):** total 1097 (28.6% of max XP). Thieving/Cooking/Fishing 99, Str 87, Smithing 87,
+Mining 86, Crafting 85, Attack 84, Woodcutting 68, Herblore 57, HP 57, Agility 52, Prayer 49, Magic 44, Defence 40;
+Ranged/Fletching/Firemaking/Runecraft 1. QP 12. Adamant pickaxe and axe held; ~8.7k coins (the waterfall armour and the
+adamant tools spent the rest). Merlin's Crystal + Holy Grail in flight on a runner (merlins-crystal run 3 SIGTERMed by host
+memory at beggar-door; restarting).
+
+**Retro #5 finding: lumps pay 5-10x the grind per bot-minute, but the chain is bound by pack items, coins and plan bugs.**
+Measured since retro #4: Waterfall 27 min = +711k Att/Str; Elemental Workshop 86 s of quest + ~25 min of prep and six
+plan runs = +125k Crafting +126k Smithing; Digsite/Knight's Sword/Druidic ~59 min = Mining 1-85, Smithing 20-82. Against
+that, WC oaks with the adamant axe is ~1.1M/h and WC 68-99 (881k) is ~0.8 h with no prep, so the grind is the right
+filler when a quest waits on a pack item or coins. The prep and plan debugging, not the quest, is the cost: a runner that
+adapts a promoted plan spends ~10 M cache reads (grail-chain, 175 turns, 45 min).
+
+**Queue now (retro #5), in order.**
+1. Finish Merlin + Holy Grail (runner in flight; Defence ~85, Prayer ~80 expected; record the measured XP).
+2. **Coins goal: Knights of Ardougne thieving to 60k gp** (plan knight-thieve-bankfood, ~1,160 gp/min, so ~45 min after the
+   walk). Needed for: the rune sword (20.8k), Dragon Slayer costs, Plague City / Observatory pack items, Fremennik. One runner,
+   milestone "60k banked", not a level. Do it before Dragon Slayer, and batch the Kandarin errands (Monk's Friend starts E
+   Ardougne; Plague City; Observatory's dome is Kandarin) while at Ardougne.
+3. **32-QP set** (QP 12 + Merlin 6 + Grail 2 = 20; Romeo 5, Goblin 5, Ernest 4, Cook 1 = 35; all promoted, cheap, no
+   combat): one runner, four plans in a row. Add Monk's Friend (319 s, E Ardougne, bronze axe + 500 gp, Woodcutting 50k) and
+   Vampire Slayer (312 s, Draynor, 10 swordfish + 200 gp; Attack 120k) in the same runner.
+4. Dragon Slayer (plan promoted; needs 32 QP, ~466k Str/Def; expect a boat and anti-dragon prep: snapshot first).
+5. **Woodcutting 68-99** on conductor3 with `oak-draynor-drop` north oaks (raise `until` to level:99 or a variant plan),
+   ~0.8 h at ~1.1M/h, one runner, no prep: use it as the filler whenever 2-4 are blocked. Then Firemaking/Fletching from level 1
+   alongside (willows).
+6. Pack-item quests, after a prep plan: **Plague City** (bucket of milk, chocolate dust, snape grass in the pack; not
+   Biohazard first; Mining 60k) and **Observatory** (3 planks, bronze bar, molten glass; Crafting 85 makes the glass; 56k
+   Crafting). The `lib:observatory-start` save shows the pack. Jungle-potion (Herblore 19k), Tree Gnome Village, Priest in Peril,
+   Death Plateau (blocked in review), Fight Arena/Nature Spirit/Dwarf Cannon (peer authoring) follow.
+7. Then Mining 86-99 / Smithing 87-99 superheat, Crafting remainder, Ranged/Fletching quests (Big Chompy -> Ikov), and the long
+   combat grind (HP, Prayer, Runecraft long poles).
 Before each run, check the plan's `until`/`when` gates and the combat floor.
 
 **Adamant axe pays back; the rune pickaxe does not.** Rate model (`methodRate` with the tool forced), WC oaks at Draynor,
@@ -184,6 +204,25 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   that worked 6x) or end the turn and be woken by the notification; never `sleep N` followed by a command.
 - **Fishing/Cooking 91-99 and the high-gp track (next)**: sharks at the Guild or Catherby (fallback in review), then
   gp: ~25.5k banked covers the adamant pickaxe (3.2k) and the mithril scimitar (Zeke); more gp from knights when needed.
+- **Waterfall dungeon connectors (retro #5, world/ops)**: three runs failed `No connector from level 0 (2603, 9912) to
+  (2946, 3369)` / `(2566, 9901) to (2604, 9901)` / `No path to (2575, 9861) from (2511, 3463): no waypoints`
+  (journal 03:15:40-03:18:09). The chalice room has regions in `lib/connectors.ts` (`waterfall-chalice`) but no exit: the
+  runner worked around it with its own `grail-exit-prep` plan (Door (2604,9900) teleports to (2566,9901); a key on Door
+  (2568,9893) from the north). Task-author: add the chalice-room exit and the dungeon <-> Glarial's tomb ladder to
+  `lib/connectors.ts` (or a travel gate), so no plan needs a hand-walked exit; same class as the Wizards' Tower connectors.
+- **Walker says unreachable for a wandering quest NPC (retro #5)**: `talk` ends `no reachable /^Sir Gawain$/ in sight (1 in view but
+  unreachable from here)` twice (03:41, 03:42): Gawain wanders into a garden behind Door (2766,3504). Runner fixed it with a
+  `gawain-door` phase; a task-author fix is for `talk`/`interact` to open the one closed door on the path to an NPC the walker flags
+  unreachable. A peer session is on NPC wandering in the world index: leave the modelling to it.
+- **Plan bugs, not game bugs (retro #5)**: the elemental-workshop plan took six runs on conductor3 (`nothing left to do`, `drop-sword`,
+  `drop-gem` no progress, `Eat on Swordfish no effect`, `no reachable Crate at (2724,9894)` because it is `Boxes`), then 86 s;
+  the promoted plan carries the fixes (7e38bc393). Brief rule: a promoted plan's foods, tools and loc names come from the state
+  notes; the conductor's brief for a chain names the food the bot holds (Swordfish) so a runner does not sed it in per plan.
+- **Host memory SIGTERMs (retro #5)**: three runs killed at 03:25 and 03:56 (oak worker, EW, merlins-crystal 13 min in) while another
+  session's `bun test wiki/world` held ~12 GB. Not a task fault. Fix is outside the bot: the peer worktrees run heavy tests with
+  `ulimit -v` or `systemd-run -p MemoryMax=8G`, and the conductor skill checks `free -g` before dispatching a long run.
+- **Jail-guard interrupts (done, retro #5)**: three adamant-tools runs failed `under-attack` (02:35-02:41) at the Draynor oak cluster;
+  fixed by the north oaks area (552bf14cb) and measured 1.1M/h with no attacks. Closed.
 - **White Wolf Mountain crossing (idea)**: every overland walk Asgarnia <-> Kandarin crosses it, and the wolves
   (cowardly, huntrange 2) hunt players up to combat 50 (lvl 25) and 76 (lvl 38). An `avoid` zone can't help with no
   other overland path; the options are combat 51+ (then only the lvl 38s), plenty of food with `travel` flee:true and
@@ -255,19 +294,19 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 |---|---|---|---|---|---|
 | Thieving | 99 | Man 1-25 -> Al-Kharid warrior 25-40 (476-633k) -> guards 40-55 (Falador or Ardougne, 0.76-1.13M) -> Knight of Ardougne 55-99 (2.0-7.0M; food 155 lobster-equivalents/h at 55, 52 at 99) | 0.28 | thieving-40: 1-40 in 11 min; Falador guards 40-62 ~678k/h; knights 72-99 in one 17-min run (plan knight-thieve-bankfood, area (2659,3308) r20, banked swordfish/tuna): 2.96M/h = 96.8% of floor, ~1,160 gp/min | done (conductor3 2026-10-23) |
 | Agility | 52 | gnome course 1-52 (319k) -> Wilderness course 52-99 (1.58-1.91M, salmon) | 0.66 | gnome 1-52 in 550 s of laps (+37.8k, ~247k/h, 77% of the 319k floor; plan agility-from-ardougne, travel from Ardougne 107 s by the west route) | Wilderness course 52-99 next time the account is north-east (needs food; hazards) |
-| Woodcutting | 68 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | plan `oak-draynor-drop` (steel axe, Draynor cluster, area (3112,3240) r16): 1-50 in 328 s; oaks phase 15-50 +30.9k in 143.6 s = ~775k/h, no idle waits; whole run 360k/h incl. the axe walk (conductor3 2026-10-24); **adamant axe** (smithed: Dwarven Mine ore + coal, Falador furnace, Dwarven Mine anvil): oaks WC 51-68 +81.6k in 270 s = ~1.09M/h, ~40% over steel; three runs there were stopped by the jail guards hitting through the fence; the plan moved to the north oaks `tree:draynor-village:1` area (3095,3283) r16 (552bf14cb): conductor3w1 WC 68-74 +67.5k in 247 s, ~1.1M/h chopping, no attacks | WC 68-99 on conductor3 with `oak-draynor-drop` (adamant axe from Falador West; `until` 50 needs raising or a 68-99 variant); Monk's Friend 50k + Fremennik 70k |
+| Woodcutting | 68 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | plan `oak-draynor-drop` (steel axe, Draynor cluster, area (3112,3240) r16): 1-50 in 328 s; oaks phase 15-50 +30.9k in 143.6 s = ~775k/h, no idle waits; whole run 360k/h incl. the axe walk (conductor3 2026-10-24); **adamant axe** (smithed: Dwarven Mine ore + coal, Falador furnace, Dwarven Mine anvil): oaks WC 51-68 +81.6k in 270 s = ~1.09M/h, ~40% over steel; three runs there were stopped by the jail guards hitting through the fence; the plan moved to the north oaks `tree:draynor-village:1` area (3095,3283) r16 (552bf14cb): conductor3w1 WC 68-74 +67.5k in 247 s, ~1.1M/h chopping, no attacks | WC 68-99 on conductor3 (881k left, ~0.8 h): `oak-draynor-drop` north oaks, raise `until` to 99 (queue item 5); Monk's Friend 50k + Fremennik 70k |
 | Firemaking | 1 | trees-lumbridge-burn 1-30, willow-draynor-burn 30-99 (with WC) | 0.56 with WC | - | |
 | Fletching | 1 | cut + string at a bank 1-40, willow-seers-longbow-bank 40-99 (474 strings from flax) | 0.54 with WC | - | |
 | Mining | 85 | copper/tin 1-15 -> iron from a 3-rock stand tile, Al Kharid, dropped 15-99 (679k-1.07M, respawn-bound from 57); adamant pickaxe only (3.2k, rune doesn't pay back) | 0.98 | Digsite 1 -> 85 (382.5k quest lump, ~20.7 min incl. the quest) | adamant pickaxe bought (2026-10-24); 85-99: best floors now `iron-se-varrock-drop` 1.43M at 85, then `coal-mining-guild-drop` 1.16-1.30M (8e35c441e; mithril/adamantite are respawn-bound, 215k/77k); Plague City 60k and Doric 32k are quest lumps |
-| Smithing | 82 | bronze then iron 1-33 -> superheat iron platebodies at Varrock East 33-99 (Magic alongside; ~1,055 natures, ~22k gp) | 0.64-1.15 | ks-prep bronze 1-20 (13 bars, 2,015 XP), Knight's Sword 20 -> 82 (318k lump) | Elemental Workshop +125k first (promoted plan), then 82-99 superheat: `superheat-mithril-varrock-east-platebody` 1.61M vs iron 1.55M (8e35c441e; mithril costs 804 ore + 3.2k coal + 804 natures an hour, so iron unless ore is cheap; adamant 88+ unmodelled) (Magic 44 ok for superheat 43); an adamant axe (Smithing 71) is the one smithing side-trip that pays (see Now) |
+| Smithing | 87 | bronze then iron 1-33 -> superheat iron platebodies at Varrock East 33-99 (Magic alongside; ~1,055 natures, ~22k gp) | 0.64-1.15 | ks-prep bronze 1-20 (13 bars, 2,015 XP), Knight's Sword 20 -> 82 (318k lump) | Elemental Workshop done (+125.7k, 82 -> 87); 87-99 superheat: `superheat-mithril-varrock-east-platebody` 1.61M vs iron 1.55M (8e35c441e; mithril costs 804 ore + 3.2k coal + 804 natures an hour, so iron unless ore is cheap; adamant 88+ unmodelled) (Magic 44 ok for superheat 43); an adamant axe (Smithing 71) is the one smithing side-trip that pays (see Now) |
 | Magic | 44 | Imp Catcher to 44, then superheat with Smithing; fire strike/bolt/blast 0.43 h as the alternative (~45k gp) | ~0.4 | Imp Catcher 1 -> 44 (21,875 XP quest lump) | |
 | Fishing | 99 | small net 1-20 -> fly fishing Lumbridge dropped 20-99 (`lure-lumbridge-drop`, 547k-2.16M; banking +10 min) | 0.53 | net 1-10 in thieving-40; lure-cook-bank cycle (tools-food) 54-68 ~551k/h, ~85% of the `lure-lumbridge-cook-bank` floor; Catherby swordfish 68-91 +466.5k in ~48 min (~580k/h, radius-5 area idle); 91-99 with plan `catherby-shark-fallback` (harpoon + shark fallback, area (2848,3427) r15): +413.5k in 28.2 min, 880k/h = 92.9% of the `swordfish-catherby-cook-bank` floor, no idle phases, fallback never needed | done. Gap left: the Fishing Guild variant (shorter legs, unmeasured) for the route's 68-99 band |
 | Cooking | 99 | lure-lumbridge-cook-bank 25-60 -> swordfish Catherby harpoon + range 60-99 (`swordfish-catherby-cook-bank`, 0.83-1.36M plus Fishing) | 0.85 with Fishing | shrimps 1-34 in thieving-40; lure-cook-bank 54-71 ~746k/h, ~80% of floor (tools-food); Catherby swordfish 71-93 +547k in ~48 min (~680k/h); 95-99 +262.5k in 186 s of cooking phases (~5.1M/h of range time) riding on Fishing | done. Cooking finishes before Fishing on this method: at 99 the plan banks raw fish and skips the range |
-| Crafting | 80 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat) | 1.3-2.0 | plan `crafting80` (Khazard shears, Ardougne sheep `npcId` 43, wool spun to 10, then the Stronghold flax loop): 1-80 in 55.8 min; flax loop 10-80 +266k in 48 min = ~332k/h, 68% of the `flax-gnome-spin-bank` floor (conductor3 2026-10-24) | 80-99: do the Crafting quests first (Elemental Workshop 125k, Shilo 97k, Nature Spirit 75k, Fremennik 70k, Observatory 56k, Shades 50k, Murder Mystery 35k; ~530k of 730k), then a flax-only plan naming `flax-gnome-spin-bank` so `--methods` measures it; the gap is picking (33% of loop time) and the walk down to the field (11%): spot search for a pick tile nearer the wheel stairs, fewer pick clicks per lap |
+| Crafting | 85 | pottery 1-10 -> flax picked and spun at the Gnome Stronghold 10-99 (490k flat) | 1.3-2.0 | plan `crafting80` (Khazard shears, Ardougne sheep `npcId` 43, wool spun to 10, then the Stronghold flax loop): 1-80 in 55.8 min; flax loop 10-80 +266k in 48 min = ~332k/h, 68% of the `flax-gnome-spin-bank` floor (conductor3 2026-10-24) | 85 now (Elemental Workshop +125k measured). 85-99: remaining Crafting quests first (Shilo 97k, Nature Spirit 75k, Fremennik 70k, Observatory 56k, Shades 50k, Murder Mystery 35k; ~530k of 730k), then a flax-only plan naming `flax-gnome-spin-bank` so `--methods` measures it; the gap is picking (33% of loop time) and the walk down to the field (11%): spot search for a pick tile nearer the wheel stairs, fewer pick clicks per lap |
 | Herblore | 57 | herbs from chaos druids, Edgeville dungeon (11 spawns, 0.445 herbs/kill; 126/203/247 herbs/h at melee 40/60/85; Wilderness 2 at the thugs beside them), with melee trained there (0.9-1.1M Str/h). Yanille druid warriors (Agility 40) are second, at 50-144/h; Taverley has only 6 spawns. XP per herb: 146 identify-only, 643 with buyable secondaries (eye of newt, chocolate dust), 1,261 with snape grass and limpwurt (tribesmen on Karamja give both at 37-50 and 22-30/h, and poison). Druidic Ritual 28 then 1,542 herbs: 6.2 h at melee 85; Eadgar's Ruse 80 cuts it to 4.6 h | 6-8 | Druidic Ritual 1 -> 28, Digsite 28 -> 57 (56.4k) | **long pole**: rated with thugs as a proxy, since druids aren't combat features |
 | Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
 | Attack / Strength / Defence | 84/87/40 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens); cows Falador (`melee40`, Zeke mithril scimitar, combat targetRange visible r22) Att 28-40 + Def 20-40 in 9.6 min: fight phases ~441k/h Att, ~403k/h Def, above the steel-scimitar floor (~430k at 40), no idle waits (conductor3 2026-10-24) | no scimitar hunt: mithril scimitar (Zeke), then the rune sword at 32 QP (Str 1,083k at 60 vs 1,098k for the rune scimitar); chaos druids for 50+ (herbs) |
-| Hitpoints | 23 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
+| Hitpoints | 57 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
 | Prayer | 49 | Restless Ghost 47 (done: 20 -> 49 in 359 s) -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | 3-6 (retro #4: bones 109-206k/h at 99) | - | **long pole**: 3-6 h of bones after Holy Grail 275k + PiP 35k (hill giants 109k/h, baby blue dragons 206k/h at 99); start the dusty-key route early |
 | Ranged | 1 | willow shortbow + mithril arrows on giants (by hand: 300k at 20 -> 1.48M at 99), ~72k gp arrows, 80% picked up | 0.81 | - | |
 
@@ -321,6 +360,12 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
   build), the runner reported and waited for the conductor (the notice told it not to restart), cost ~2 min and a
   conductor turn; the plan was resumable. Hypothesis: a runner may resume a resumable plan once when RESULT is
   `killed by SIGTERM` and `free -g` shows >8 GiB free. Status: proposal for task-runner.md.
+- Runner wait pattern (retro #5): the grail-chain runner (agent-a3143008830c82503, 175 turns, 10.3 M cache reads, 45 min) launched 28
+  background commands and ended 28 turns with a text-only "Waiting." (turns 21, 23, 36, 41, 43, 50, 57, 62, 66-68, 70-72, ...), each a
+  notification to the conductor; 9 were `sleep N; tail` check-ins (turns 35, 37, 42, 44, 49, 58, 59) and two `sleep 1`
+  no-ops (22, 117, 148), one blocked foreground `sleep 100` (turn 57) although task-runner.md item 3 allows one check-in per NEW
+  draft. Hypothesis: with a proven plan plus `--until`, zero check-ins and no text-only turns cuts runner turns by about a third.
+  Metric: text-only turns and `sleep` calls per runner.
 - Review delegate hygiene (retro #3): `Task-review: fishing shark fallback` (general-purpose, 354 turns, 39.8 M cache reads,
   267 Monitor calls) polled a fix author with `Monitor sleep N; echo` loops; its sibling reviews cost 0.9 M. Fix proposed in
   the task-review skill brief: "while a dispatched agent runs, end your turn; do not poll", and "never edit task files
