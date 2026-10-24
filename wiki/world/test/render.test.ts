@@ -13,7 +13,7 @@ import {
     writeFiles,
     type RenderData,
 } from '../render';
-import { bySiteId, link, reachLabel, slug } from '../render/common';
+import { bySiteId, link, movementLinks, reachLabel, slug } from '../render/common';
 import { stalePages } from '../stale';
 import type { Config } from '../sources/configs';
 import { WORLD_FORMAT, type Feature, type FeatureKind, type Site, type World } from '../types';
@@ -1177,4 +1177,18 @@ test("questListNames: each questlist component's text by its id", () => {
             ),
         ),
     ]).toEqual([['zanaris', 'Lost City']]);
+});
+
+describe('movementLinks', () => {
+    test('links each subtype to its fishing page Movement section, from the given page', () => {
+        const from = 'wiki/places/a.md';
+        expect(
+            movementLinks(from, [
+                ['Net', 'net'],
+                ['Lure', 'lure'],
+            ]),
+        ).toBe(
+            `[Net](${link(from, 'wiki/resources/fishing-spot/net.md')}#movement), [Lure](${link(from, 'wiki/resources/fishing-spot/lure.md')}#movement)`,
+        );
+    });
 });

@@ -12,7 +12,7 @@ import { loadFreshWorld } from './world/load';
 import { centreOf, roamOf } from './world/place';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
 import { boxCover } from './world/cover';
-import { areaCell, areasOf, box, coord, coverCell, KINDS, link, resourcePath, type Areas } from './world/render/common';
+import { areaCell, areasOf, box, coord, coverCell, KINDS, movementLinks, type Areas } from './world/render/common';
 import type { FeatureKind, NpcRoam, NpcSpawn, Rect, Site, Tile, World } from './world/types';
 import { readConfigs } from './world/sources/configs';
 import { readConstants } from './world/sources/constants';
@@ -1056,7 +1056,7 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
                   ]
                 : ['-', '-', '-', '-'];
             const copy = row.movement
-                ? row.movement.map(t => `[${t}](${link(pagePath, resourcePath('fishing-spot', t))}#movement)`).join(', ')
+                ? movementLinks(pagePath, row.movement.map(t => [t, t]))
                 : coverCell(boxCover(r?.roam ?? row.bbox, row.centre.level));
             const f2p = row.f2p ? 'yes' : 'no';
             lines.push(`| ${area} | ${coord(row.centre)} | ${box(row.bbox)} | ${row.spawns} | ${roamCells.join(' | ')} | ${copy} | ${f2p} |`);

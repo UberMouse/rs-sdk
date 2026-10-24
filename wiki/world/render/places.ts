@@ -13,6 +13,7 @@ import {
     isResourceKind,
     kindTitle,
     labeller,
+    movementLinks,
     link,
     parts,
     placePath,
@@ -116,7 +117,10 @@ export function renderPlaces(world: World, data: PageData): Page[] {
             const roam = showsRoam(ofKind.map(({ site }) => site));
             // A fishing site's area to copy is each subtype's movement cover, under Movement on its resource page.
             const movement = (ps: readonly Part[]): string =>
-                ps.map(p => `[${label(kind, p)}](${link(path, resourcePath(kind, p.key))}#movement)`).join(', ');
+                movementLinks(
+                    path,
+                    ps.map(p => [label(kind, p), p.key]),
+                );
             lines.push(
                 `## ${heading}`,
                 '',

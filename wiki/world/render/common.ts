@@ -50,6 +50,10 @@ export function boxCells(s: Site, roam: boolean, copy?: string): string[] {
     return [box(s.bbox), ...(roam ? [r ? box(r) : '-'] : []), copy ?? coverCell(boxCover(r ?? s.bbox, s.centre.level))];
 }
 
+/** A fishing site's area to copy: each subtype's movement cover, under Movement on its resource page (text, subtype). */
+export const movementLinks = (from: string, subtypes: readonly (readonly [text: string, subtype: string])[]): string =>
+    subtypes.map(([text, t]) => `[${text}](${link(from, resourcePath('fishing-spot', t))}#movement)`).join(', ');
+
 export const yesNo = (b: boolean): string => (b ? 'yes' : 'no');
 
 /** `1 site`, `3 sites`. */
