@@ -17,7 +17,103 @@
             "inventory": [
                 {
                     "id": 315,
-                    "count": 25
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
                 }
             ],
             "equipment": [
@@ -29,8 +125,8 @@
             ]
         }
     },
-    "sha1": "01e23fe07a3ba7172428dec6b3c0bf7dc54205fe",
-    "createdAt": "2026-10-11T04:15:51.396Z",
+    "sha1": "301a66f50f2fce49f6b93279f449aaeb5381be70",
+    "createdAt": "2026-10-24T01:27:08.530Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -48,7 +144,127 @@
             {
                 "id": 315,
                 "name": "shrimp",
-                "count": 25
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
             }
         ],
         "worn": [

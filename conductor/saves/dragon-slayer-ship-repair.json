@@ -18,7 +18,15 @@
             "inventory": [
                 {
                     "id": 960,
-                    "count": 3
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
                 },
                 {
                     "id": 1539,
@@ -30,7 +38,51 @@
                 },
                 {
                     "id": 373,
-                    "count": 12
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
                 },
                 {
                     "id": 1542,
@@ -100,8 +152,8 @@
             }
         }
     },
-    "sha1": "ecc8fe58c8266fc5cda07bd6194d557773a23094",
-    "createdAt": "2026-10-24T00:23:55.812Z",
+    "sha1": "c04602a27851496f35b485227c3219d6eaf80465",
+    "createdAt": "2026-10-24T01:27:07.785Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -119,7 +171,17 @@
             {
                 "id": 960,
                 "name": "woodplank",
-                "count": 3
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
             },
             {
                 "id": 1539,
@@ -134,7 +196,62 @@
             {
                 "id": 373,
                 "name": "swordfish",
-                "count": 12
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
             },
             {
                 "id": 1542,

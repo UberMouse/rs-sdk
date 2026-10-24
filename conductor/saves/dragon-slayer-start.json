@@ -34,7 +34,15 @@
                 },
                 {
                     "id": 960,
-                    "count": 3
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
                 },
                 {
                     "id": 1539,
@@ -46,7 +54,51 @@
                 },
                 {
                     "id": 373,
-                    "count": 12
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
                 }
             ],
             "equipment": [
@@ -101,8 +153,8 @@
             }
         }
     },
-    "sha1": "2a6ad80f9b63025b2c4d87c5e3fd9994cf7d693e",
-    "createdAt": "2026-10-23T23:52:20.819Z",
+    "sha1": "c870794bd3d1fd81151c67658fbb56ae40708558",
+    "createdAt": "2026-10-24T01:27:07.395Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -145,7 +197,17 @@
             {
                 "id": 960,
                 "name": "woodplank",
-                "count": 3
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
             },
             {
                 "id": 1539,
@@ -160,7 +222,62 @@
             {
                 "id": 373,
                 "name": "swordfish",
-                "count": 12
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
             }
         ],
         "worn": [

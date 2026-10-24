@@ -29,7 +29,23 @@
                 },
                 {
                     "id": 379,
-                    "count": 5
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
                 }
             ],
             "equipment": [
@@ -65,8 +81,8 @@
             }
         }
     },
-    "sha1": "d0bdb703b4cda1cf15fa24e854706fc0d8a279d7",
-    "createdAt": "2026-10-23T22:18:51.434Z",
+    "sha1": "d52990ee2f25de0ae134d5de9ae91019d8b50012",
+    "createdAt": "2026-10-24T01:27:09.480Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -99,7 +115,27 @@
             {
                 "id": 379,
                 "name": "lobster",
-                "count": 5
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
             }
         ],
         "worn": [

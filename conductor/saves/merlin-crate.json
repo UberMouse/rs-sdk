@@ -17,7 +17,23 @@
             "inventory": [
                 {
                     "id": 379,
-                    "count": 5
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
                 }
             ],
             "varps": {
@@ -25,8 +41,8 @@
             }
         }
     },
-    "sha1": "915573f9139351d68818d67903669e4d1a91d47f",
-    "createdAt": "2026-10-23T07:56:28.681Z",
+    "sha1": "6083f8aff1322853e34817a77eecceca5401e409",
+    "createdAt": "2026-10-24T01:27:08.973Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -44,7 +60,27 @@
             {
                 "id": 379,
                 "name": "lobster",
-                "count": 5
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
             }
         ],
         "worn": [],

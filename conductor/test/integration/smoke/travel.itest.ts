@@ -59,7 +59,11 @@ test(
     async () => {
         // Combat level about 8 (Hitpoints 30), well under twice a dark wizard's level, so they are aggressive.
         await withFixtureBot(
-            { position: STONE_CIRCLE, skills: { Hitpoints: 30 }, inventory: [{ id: Items.SHRIMPS, count: 4 }] },
+            {
+                position: STONE_CIRCLE,
+                skills: { Hitpoints: 30 },
+                inventory: Array.from({ length: 4 }, () => ({ id: Items.SHRIMPS, count: 1 })),
+            },
             async ({ name, sdk }) => {
                 const fight = await sdk.waitForCondition(s => !!s.player?.combat.inCombat, ATTACKED_WAIT_MS);
                 expect(fight.player?.combat.inCombat, 'the bot is attacked before the run').toBe(true);
@@ -115,7 +119,7 @@ test(
     'travel enters the Wilderness only with wilderness: true',
     async () => {
         await withFixtureBot(
-            { position: EDGEVILLE, inventory: [{ id: Items.SHRIMPS, count: 3 }] },
+            { position: EDGEVILLE, inventory: Array.from({ length: 3 }, () => ({ id: Items.SHRIMPS, count: 1 })) },
             async ({ name }) => {
                 const refused = await runTask(name, 'travel', { to: WILDERNESS_GOAL }, ['minutes:1']);
                 expect(refused.result.reason ?? '', refused.stderr).toContain('is in the Wilderness');

@@ -1,0 +1,55 @@
+{
+    "name": "karamja-shipyard-log",
+    "purpose": "Worker on the Karamja shipyard peninsula east of the river log (2907..2909,3049), combat 80s so the jungle spiders and jogres leave it alone; tests that the client lists the log and travel/interact crosses it.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2915,
+                "z": 3050
+            },
+            "skills": {
+                "Agility": 30,
+                "Attack": 80,
+                "Strength": 80,
+                "Defence": 80,
+                "Hitpoints": 85
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 1000
+                }
+            ]
+        }
+    },
+    "sha1": "ff8f84a872e60898827596abbfd59bdfc40418d9",
+    "createdAt": "2026-10-24T01:17:51.694Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2915,
+            "z": 3050,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 80,
+            "Defence": 80,
+            "Strength": 80,
+            "Hitpoints": 85,
+            "Agility": 30
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1000
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

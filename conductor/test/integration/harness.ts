@@ -13,7 +13,7 @@ import { crc32 } from 'node:zlib';
 import { createSaveData, Skills, type SaveConfig } from '../../../sdk/test/utils/save-generator';
 import { type LiteClient, startLiteClient } from '../../lib/client';
 import { connectSdk, disconnectQuietly, loadBotEnv, REPO_ROOT, type BotEnv } from '../../lib/env';
-import { writeSave } from '../../lib/saves';
+import { unstackableStacks, writeSave } from '../../lib/saves';
 import { distance } from '../../lib/util';
 
 const LITE_START_TIMEOUT_MS = 60_000;
@@ -165,6 +165,11 @@ function patchSkillXp(save: Uint8Array, config: SaveConfig, xp: Record<string, n
 
 /** Write a generated save where the running engine loads it (writeSave asks the engine which file); returns its path. */
 export async function writeFixtureSave(env: BotEnv, config: SaveConfig, xp?: Record<string, number>): Promise<string> {
+    const stacked = unstackableStacks(config.inventory);
+    if (stacked.length)
+        throw new Error(
+            `fixture inventory puts several of a non-stackable item in one slot (the first use removes them all): ${stacked.join(', ')}; list one entry per copy`,
+        );
     const bytes = createSaveData(config);
     return (await writeSave(env, xp ? patchSkillXp(bytes, config, xp) : bytes)).path;
 }

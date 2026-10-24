@@ -1,9 +1,9 @@
 // Saves built byte for byte as the engine writes them (Player.save, server/engine/src/engine/entity/Player.ts)
 // read back through decodeSave and verifySave.
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { decodeSave, LIBRARY_DIR, verifySave } from '../../lib/saves';
+import { decodeSave, LIBRARY_DIR, unstackableStacks, verifySave } from '../../lib/saves';
 
 /** Packet.getcrc (server/engine/src/io/Packet.ts): CRC-32, as a signed int. */
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
@@ -175,5 +175,32 @@ describe('a save written by the real engine', () => {
         expect(saveVersion).toBe(8);
         expect(decoded).toEqual(summary);
         verifySave(bytes);
+    });
+});
+
+describe('unstackableStacks', () => {
+    test('flags several of a non-stackable obj in one slot, not one copy, a stackable obj or none', () => {
+        expect(unstackableStacks([{ id: 373, count: 20 }])).toEqual(['swordfish (id 373) x20']);
+        expect(
+            unstackableStacks([
+                { id: 373, count: 1 },
+                { id: 373, count: 1 },
+            ]),
+        ).toEqual([]);
+        expect(unstackableStacks([{ id: 995, count: 3000 }])).toEqual([]);
+        expect(unstackableStacks(undefined)).toEqual([]);
+    });
+
+    test('treats a noted item as stackable', () => {
+        expect(unstackableStacks([{ id: 374, count: 20 }])).toEqual([]);
+    });
+
+    test('no library save holds several of a non-stackable obj in one slot', () => {
+        const names = readdirSync(LIBRARY_DIR).filter(f => f.endsWith('.sav'));
+        expect(names.length).toBeGreaterThan(0);
+        for (const file of names) {
+            const { inventory } = decodeSave(new Uint8Array(readFileSync(join(LIBRARY_DIR, file))));
+            expect({ file, stacked: unstackableStacks(inventory) }).toEqual({ file, stacked: [] });
+        }
     });
 });

@@ -17,7 +17,23 @@
             "inventory": [
                 {
                     "id": 315,
-                    "count": 5
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
                 }
             ],
             "equipment": [
@@ -29,8 +45,8 @@
             ]
         }
     },
-    "sha1": "5ea998d6cf3b67cde0f14fb1174425bc784e724d",
-    "createdAt": "2026-10-10T02:48:32.320Z",
+    "sha1": "d0b8bd6fb33a374563bba3fabbadd2b67dcbbba5",
+    "createdAt": "2026-10-24T01:27:06.537Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -48,7 +64,27 @@
             {
                 "id": 315,
                 "name": "shrimp",
-                "count": 5
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
             }
         ],
         "worn": [

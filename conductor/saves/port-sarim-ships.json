@@ -18,13 +18,21 @@
                 },
                 {
                     "id": 329,
-                    "count": 3
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
                 }
             ]
         }
     },
-    "sha1": "0dcdb48528eaf080e539e919d9dbddc90fbf805a",
-    "createdAt": "2026-10-23T08:06:16.785Z",
+    "sha1": "ad4e307b3ffef7b2f5abae17e285fd1d2faf6d1e",
+    "createdAt": "2026-10-24T01:27:09.934Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -44,7 +52,17 @@
             {
                 "id": 329,
                 "name": "salmon",
-                "count": 3
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
             }
         ],
         "worn": [],

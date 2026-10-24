@@ -18,7 +18,51 @@
             "inventory": [
                 {
                     "id": 373,
-                    "count": 12
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
                 },
                 {
                     "id": 1542,
@@ -87,8 +131,8 @@
             }
         }
     },
-    "sha1": "f3842eb9329dafcbdfbb7b5d5bf33a7d7326fbfc",
-    "createdAt": "2026-10-24T00:23:56.560Z",
+    "sha1": "d23555a2d39eb602eeef1939ec3aa02cb7bda0a1",
+    "createdAt": "2026-10-24T01:52:34.282Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -106,7 +150,62 @@
             {
                 "id": 373,
                 "name": "swordfish",
-                "count": 12
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
             },
             {
                 "id": 1542,

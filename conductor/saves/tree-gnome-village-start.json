@@ -17,11 +17,107 @@
             "inventory": [
                 {
                     "id": 373,
-                    "count": 20
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
                 },
                 {
                     "id": 1511,
-                    "count": 6
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
                 },
                 {
                     "id": 995,
@@ -62,8 +158,8 @@
             ]
         }
     },
-    "sha1": "7ba4f4c9832e43725fe741b7d2eef9b87016a592",
-    "createdAt": "2026-10-23T23:13:04.098Z",
+    "sha1": "010fb6d3d29814cb47007bce5a9aac49c92d8655",
+    "createdAt": "2026-10-24T01:27:11.361Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -81,12 +177,132 @@
             {
                 "id": 373,
                 "name": "swordfish",
-                "count": 20
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
             },
             {
                 "id": 1511,
                 "name": "logs",
-                "count": 6
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
             },
             {
                 "id": 995,
