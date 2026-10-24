@@ -7,7 +7,7 @@ import { CONVERSE_MAX_TICKS, converse, type TalkProgress } from '../actions/talk
 import { unequip } from '../actions/unequip';
 import { useItemOnItem } from '../actions/use';
 import { WALK_MAX_TICKS } from '../actions/walk';
-import { log } from '../core/op';
+import { log, wait } from '../core/op';
 import { AtSchema, matcher, Pattern, walkToSpotStep } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { INVENTORY_SLOTS } from '../lib/util';
@@ -16,6 +16,8 @@ import { squareReachesWilderness } from '../lib/wilderness';
 
 /** Failed walks or ops in a row before the task fails. */
 const FAIL_LIMIT = 3;
+/** Ticks to wait after an accepted combine for its product (or a choice menu) to show: an unrelated inventory change can end the use's own wait first. */
+export const COMBINE_SETTLE_TICKS = 3;
 /** A walk, then the op or a dialog of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
 const STUCK_AFTER_MS = stuckWindowMs(CONVERSE_MAX_TICKS, failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS));
@@ -51,7 +53,15 @@ const isSlotName = (s: string) => Object.hasOwn(WORN_SLOTS, s.toLowerCase());
 const Params = z
     .object({
         /** Use `use` on `on` (both in the inventory): Tinderbox on Black candle. */
-        combine: z.object({ use: ItemRef, on: ItemRef, product: ItemRef.optional() }).optional(),
+        combine: z
+            .object({
+                use: ItemRef,
+                on: ItemRef,
+                product: ItemRef.optional(),
+                /** The option to pick when the use opens a choice menu (Pot of flour on a Bucket of water: "Pastry dough"). */
+                choice: Pattern.optional(),
+            })
+            .optional(),
         /**
          * Drop these inventory items (name patterns; `count` = inventory slots, a stack is one) where the bot
          * stands, or at `at`. Only what is named is ever dropped.
@@ -118,13 +128,16 @@ function ambiguousRef(inv: InventoryItem[], r: ItemRef): string | null {
     return `${nameOf(r)} matches several different items (${[...new Set(hits.map(i => i.name))].join(', ')}): name one exactly or give {name, id}`;
 }
 
-function combineDone(ctx: Ctx): boolean {
+function combineDone(ctx: Ctx, s: BotWorldState = ctx.state()): boolean {
     const { combine } = ctx.params;
     const base = ctx.memory.base;
     if (!combine || !base) return false;
-    const now = combineCounts(ctx.state(), combine);
+    const now = combineCounts(s, combine);
     return (!!combine.product && now[0]! > base[0]!) || now[1]! < base[1]! || now[2]! < base[2]!;
 }
+
+/** The answers to the dialog the work opened: a drop's `choices`, a combine's `choice`. */
+const answers = (ctx: Ctx): string[] => (ctx.params.combine?.choice ? [ctx.params.combine.choice] : ctx.params.choices);
 
 // --- drop ---
 /** Slots holding the entry's item: by the pinned obj id once there is one, else every name match. */
@@ -191,7 +204,7 @@ export default defineTask({
     name: 'items',
     description:
         'Inventory and equipment steps quest plans need; give exactly one of: ' +
-        '`combine` {use, on, product?} uses one inventory item on another (Tinderbox on Black candle; names are case-insensitive regexes or {name, id}), done when the product appears or either item is used up (a combine that keeps both inputs needs `product`, else it fails after 3 uses that changed nothing; a name matching several different items must be {name, id}); ' +
+        '`combine` {use, on, product?, choice?} uses one inventory item on another (Tinderbox on Black candle; names are case-insensitive regexes or {name, id}), done when the product appears or either item is used up (`choice` answers the menu the use opens, e.g. "Pastry dough" for Pot of flour on Bucket of water; a menu with no `choice` fails; a combine that keeps both inputs needs `product`, else it fails after 3 uses that changed nothing; a name matching several different items must be {name, id}); ' +
         '`drop` [{item, count}] drops the named items (count = slots) where the bot stands or at `at` (tolerance 1 for a spot such as the Camelot magic symbol {x:2780,z:3515}); only named items are dropped, and a name that matches different items is refused. ' +
         'Any dialog the drop opens (a level-up too) ends it: check the result reason. ' +
         'A drop that opens a dialog (Bat bones on the symbol summon Thrantax and stay in the pack) ends the task with the dialog left open for the next `talk` (an npc-less talk continues it), or answers it with `choices`; ' +
@@ -275,11 +288,16 @@ export default defineTask({
         },
         {
             name: 'answer',
-            when: ctx => ctx.memory.dialogOpened && !ctx.memory.answered && ctx.params.choices.length > 0,
+            when: ctx => ctx.memory.dialogOpened && !ctx.memory.answered && answers(ctx).length > 0,
             *run(ctx) {
-                const r = yield* converse(ctx, ctx.params.choices.map(matcher), ctx.memory.progress);
+                const r = yield* converse(ctx, answers(ctx).map(matcher), ctx.memory.progress);
                 if (!r.ok) return { fail: r.message };
-                ctx.memory.answered = true;
+                if (ctx.params.combine) {
+                    // A combine may need the menu again for its next use; the product can land a tick after the answer.
+                    ctx.memory.dialogOpened = false;
+                    ctx.memory.progress = { answered: 0 };
+                    yield* wait('combine product', st => combineDone(ctx, st), COMBINE_SETTLE_TICKS);
+                } else ctx.memory.answered = true;
             },
         },
         {
@@ -302,15 +320,38 @@ export default defineTask({
                 const fails = ctx.streak('combineFails');
                 if (used.ok) {
                     fails.reset();
+                    // The product (or the menu that asks for it) may land a tick after the use's own wait ended.
+                    const settled = yield* wait(
+                        'combine effect',
+                        st => combineDone(ctx, st) || (st.dialog.isOpen && st.dialog.options.length > 1),
+                        COMBINE_SETTLE_TICKS,
+                    );
+                    const menu = settled.state.dialog;
+                    if (menu.isOpen && menu.options.length > 1 && !combineDone(ctx, settled.state)) {
+                        if (!combine.choice)
+                            return {
+                                fail: `using ${item.name} on ${target.name} opened a choice (${menu.options.map(o => o.text).join(' | ')}): give \`choice\``,
+                            };
+                        // Each menu cycle counts as a use: a menu answered every time that never makes the product ends.
+                        if (ctx.streak('combineNoEffect').add() >= FAIL_LIMIT)
+                            return {
+                                fail: `used ${item.name} on ${target.name} and answered its menu ${FAIL_LIMIT} times: no product appeared (a level requirement?)`,
+                            };
+                        ctx.memory.dialogOpened = true;
+                        return;
+                    }
                     // An ok use that used nothing up and made no product (both inputs kept, no `product` given).
                     const idle = ctx.streak('combineNoEffect');
-                    if (!combineDone(ctx) && idle.add() >= FAIL_LIMIT)
+                    if (combineDone(ctx)) idle.reset();
+                    else if (idle.add() >= FAIL_LIMIT)
                         return {
                             fail: `used ${item.name} on ${target.name} ${FAIL_LIMIT} times: nothing was used up and no product appeared (give \`product\` if both items are kept)`,
                         };
                     return;
                 }
                 yield* log(`using ${item.name} on ${target.name} failed: ${used.message}`);
+                // A use that already made its product (an earlier send landing late) is not a failure.
+                if (combineDone(ctx)) return;
                 // The game said it does nothing: trying again cannot change that.
                 if (used.reason === 'nothing-happened') return { fail: used.message };
                 if (fails.add() >= FAIL_LIMIT)

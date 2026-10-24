@@ -103,6 +103,47 @@ describe('items: combine', () => {
         expect(r.sends).toHaveLength(1);
     });
 
+    test('an unrelated inventory change ending the use wait does not send a second use', async () => {
+        const grind = { combine: { use: '^Pestle and mortar$', on: '^Charcoal$' } };
+        const before = world().inv('Pestle and mortar', 1, { id: 233 }).inv('Charcoal', 1, { id: 973 });
+        const r = await simulate(items, {
+            params: grind,
+            timeline: before.series(10, (w, i) =>
+                i >= 3
+                    ? world().inv('Pestle and mortar', 1, { id: 233 }).inv('Ground charcoal', 1, { id: 704 }).tick(i)
+                    : i >= 2
+                      ? world()
+                            .inv('Pestle and mortar', 1, { id: 233 })
+                            .inv('Charcoal', 1, { id: 973 })
+                            .inv('Pottery', 1, { id: 1931 })
+                            .tick(i)
+                      : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual(['use Pestle and mortar on Charcoal']);
+    });
+
+    test('a refusal message alongside the made product is not a failure', async () => {
+        const grind = { combine: { use: '^Pestle and mortar$', on: '^Charcoal$' } };
+        const r = await simulate(items, {
+            params: grind,
+            timeline: world()
+                .inv('Pestle and mortar', 1, { id: 233 })
+                .inv('Charcoal', 1, { id: 973 })
+                .series(8, (w, i) =>
+                    i >= 3
+                        ? world()
+                              .inv('Pestle and mortar', 1, { id: 233 })
+                              .inv('Ground charcoal', 1, { id: 704 })
+                              .message('Nothing interesting happens.')
+                              .tick(i)
+                        : w,
+                ),
+        });
+        expect(r.result.status).toBe('done');
+    });
+
     test('three uses in a row that show nothing fail', async () => {
         const r = await simulate(items, { params, timeline: unlit.series(1) });
         expect(r.result.status).toBe('failed');
@@ -421,5 +462,97 @@ describe('items: equip', () => {
             timeline: [world().inv('Rope', 1, { id: 954 }).build()],
         });
         expect(r.result.reason).toBe('equip: No equip option on Rope');
+    });
+});
+
+describe('items: combine choice', () => {
+    const dough = world().inv('Pot of flour', 1, { id: 1933 }).inv('Bucket of water', 1, { id: 1929 });
+    const made = world().inv('Pastry dough', 1, { id: 1953 });
+    const MENU = ['Bread dough.', 'Pastry dough.', 'Pizza dough.', 'Pitta dough.'];
+    const params = { combine: { use: '^Pot of flour$', on: '^Bucket of water$' } };
+    const scripted = () => {
+        const script = dialogScript([MENU, null], a => a.type === 'useItemOnItem');
+        return {
+            script,
+            react: (a: BotAction, st: BotWorldState): Effect | undefined => {
+                const eff = script.react(a, st);
+                if (a.type !== 'clickDialogOption' || !eff) return eff;
+                const chosen = st.dialog.options.find(o => o.index === a.optionIndex)?.text;
+                return chosen === 'Pastry dough.' ? s => ({ ...eff(s), inventory: made.build().inventory }) : eff;
+            },
+        };
+    };
+
+    test('answers the menu the use opens with `choice`', async () => {
+        const { react } = scripted();
+        const r = await simulate(items, {
+            params: { combine: { ...params.combine, choice: 'Pastry dough' } },
+            timeline: dough.series(40),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual(['use Pot of flour on Bucket of water', 'dialog choice']);
+        expect(r.driver.state().dialog.isOpen).toBe(false);
+    });
+
+    test('a menu with no `choice` fails naming the options and leaves it open', async () => {
+        const { react } = scripted();
+        const r = await simulate(items, { params, timeline: dough.series(40), react });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(
+            /^combine: using Pot of flour on Bucket of water opened a choice \(Bread dough/,
+        );
+        expect(r.result.reason).toContain('give `choice`');
+    });
+
+    test('a `choice` the menu does not offer fails with its options', async () => {
+        const { react } = scripted();
+        const r = await simulate(items, {
+            params: { combine: { ...params.combine, choice: 'Cake' } },
+            timeline: dough.series(40),
+            react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/^answer: no option matching/);
+    });
+
+    /** Every use opens the menu; a click closes it and, from the `makeOn`th answer on, makes the product. */
+    const everyUse = (makeOn: number) => {
+        let answers = 0;
+        return (a: BotAction): Effect | undefined => {
+            if (a.type === 'useItemOnItem') return s => world(s).dialog({ text: 'menu', options: MENU }).build();
+            if (a.type !== 'clickDialogOption') return undefined;
+            const make = ++answers >= makeOn;
+            return s => ({
+                ...world(s).dialog(false).build(),
+                ...(make ? { inventory: made.build().inventory } : {}),
+            });
+        };
+    };
+
+    test('a menu answered every time that never makes the product fails after three cycles', async () => {
+        const r = await simulate(items, {
+            params: { combine: { ...params.combine, choice: 'Pastry dough' } },
+            timeline: dough.series(80),
+            react: everyUse(Infinity),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('answered its menu 3 times');
+        expect(r.sends.filter(x => x.startsWith('use '))).toHaveLength(3);
+    });
+
+    test('the menu is answered again on a second use when the first answer made nothing', async () => {
+        const r = await simulate(items, {
+            params: { combine: { ...params.combine, choice: 'Pastry dough' } },
+            timeline: dough.series(80),
+            react: everyUse(2),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([
+            'use Pot of flour on Bucket of water',
+            'dialog choice',
+            'use Pot of flour on Bucket of water',
+            'dialog choice',
+        ]);
     });
 });
