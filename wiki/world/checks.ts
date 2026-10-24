@@ -307,8 +307,8 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             if (start < 0 || !tiles.length) return [];
             const grow = 2 * SITE_RADIUS[site.kind];
             const { x1, z1, x2, z2 } = site.bbox;
-            // The members each tile is a use tile of; the walk stops once half are usable, so a passing site's
-            // flood is the few tiles to them, and a failing one's the whole bounded component, its count exact.
+            // The members each tile is a use tile of. The walk stops once half are usable, so only a failing site
+            // floods its whole bounded component, and the count it reports is exact.
             const membersAt = new Map<number, number[]>();
             tiles.forEach((ts, m) => {
                 for (const t of ts) {
