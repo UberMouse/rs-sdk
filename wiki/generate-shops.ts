@@ -215,11 +215,76 @@ interface ObjInfo {
 
 // A `~openshop(<inv>, ...)` call (shop/scripts/shop.rs2 [proc,openshop]).
 const OPENSHOP = /~openshop\(\s*([a-z0-9_]+)\s*,/g;
+// The call's next three args, `int $shop_buy, int $shop_sell, int $shop_haggle` (shop.rs2:3), as integer literals.
+const OPENSHOP_PRICES = /^~openshop\(\s*[a-z0-9_]+\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,/;
+
+/** Per mille of an item's value at normal stock: `sell` is what the player pays, `buy` what the player gets. */
+export interface Multipliers {
+    sell: number;
+    buy: number;
+    haggle: number;
+}
+
+/** One explicit ~openshop call: `<file>:<line>` under server/content/scripts, and its multipliers when literals. */
+export interface OpenshopCall {
+    at: string;
+    prices?: Multipliers;
+}
+
+/** The ~openshop calls in a script body whose header is `line` of `file`, by the inv each opens. */
+export function openshopCalls(file: string, line: number, body: string): { inv: string; call: OpenshopCall }[] {
+    const text = code(body);
+    return [...text.matchAll(OPENSHOP)].map(m => {
+        const at = `${file}:${line + text.slice(0, m.index).split('\n').length - 1}`;
+        const p = text.slice(m.index).match(OPENSHOP_PRICES);
+        // shop.rs2:5-6: %shop_buy prices what the shop buys (adjusted_item_cost_selling, :152), %shop_sell what it sells (:141).
+        return { inv: m[1]!, call: p ? { at, prices: { buy: +p[1]!, sell: +p[2]!, haggle: +p[3]! } } : { at } };
+    });
+}
+
+// The multipliers a page uses when nothing names the shop's own (an owned_shop owner's params default to these too).
+const DEFAULT_PRICES = { sell: 1000, buy: 600 };
+
+/**
+ * The multipliers an ownerless shop's page prices its stock by, one set per distinct set its ~openshop calls
+ * pass, and the line saying where they come from. A call whose multipliers are not literals is named, not read.
+ */
+export function ownerlessPricing(calls: readonly OpenshopCall[]): { sets: { sell: number; buy: number }[]; note: string } {
+    const bySet = new Map<string, { prices: Multipliers; ats: string[] }>();
+    for (const { at, prices } of calls) {
+        if (!prices) continue;
+        const key = `${prices.sell}/${prices.buy}/${prices.haggle}`;
+        if (!bySet.has(key)) bySet.set(key, { prices, ats: [] });
+        if (!bySet.get(key)!.ats.includes(at)) bySet.get(key)!.ats.push(at);
+    }
+    const groups = [...bySet.values()].sort((a, b) => cmp(a.ats[0]!, b.ats[0]!));
+    const unread = [...new Set(calls.filter(c => !c.prices).map(c => c.at))].sort(cmp);
+    const unreadNote = unread.length === 0 ? '' :
+        ` The \`~openshop\` call at ${unread.join(', ')} passes multipliers that are not integer literals, which this page does not read.`;
+    const lead = "No npc's `owned_shop` param names this shop";
+    const numbers = ({ prices, ats }: (typeof groups)[number]) =>
+        `${prices.sell} to buy, ${prices.buy} to sell, haggle delta ${prices.haggle} (${ats.join(', ')})`;
+    if (groups.length === 0) {
+        const why = unread.length === 0 ? ' and no `~openshop` call opens it' : '';
+        return {
+            sets: [DEFAULT_PRICES],
+            note: `${lead}${why}, so these prices use this page's default multipliers (${DEFAULT_PRICES.sell} to buy, ${DEFAULT_PRICES.buy} to sell, per mille of value), not a shopkeeper's.${unreadNote}`,
+        };
+    }
+    const sets = groups.map(g => ({ sell: g.prices.sell, buy: g.prices.buy }));
+    if (groups.length === 1)
+        return { sets, note: `${lead}; these prices use the multipliers its \`~openshop\` call passes, per mille of value at normal stock: ${numbers(groups[0]!)}.${unreadNote}` };
+    return {
+        sets,
+        note: `${lead}, and its \`~openshop\` calls pass different multipliers, per mille of value at normal stock: ${groups.map(numbers).join('; ')}. Each price below gives them in that order.${unreadNote}`,
+    };
+}
 
 interface Openers {
     files: Set<string>; // script file names making the call
     npcs: Set<string>; // npc configs whose own op trigger reaches the call
     members: boolean; // some call is on a branch a members world runs (classify.ts membersCode)
+    calls: OpenshopCall[]; // every call, wherever it is reached from
 }
 
 /** A script body without its `//` comments, so a commented-out call is no call. */
@@ -233,7 +298,7 @@ const code = (body: string): string => body.split('\n').map(line => line.replace
 function readOpeners(): Map<string, Openers> {
     const openers = new Map<string, Openers>();
     const opener = (inv: string): Openers => {
-        if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set(), members: false });
+        if (!openers.has(inv)) openers.set(inv, { files: new Set(), npcs: new Set(), members: false, calls: [] });
         return openers.get(inv)!;
     };
     const invsIn = (body: string): string[] => [...code(body).matchAll(OPENSHOP)].map(m => m[1]!);
@@ -245,13 +310,15 @@ function readOpeners(): Map<string, Openers> {
     const callables = readCallables();
     const callable = new Map(callables.map(c => [c.call, c.body]));
     const membersInvs = (body: string): string[] => [...membersCode(codeOf(body)).matchAll(OPENSHOP)].map(m => m[1]!);
-    for (const c of callables) {
-        for (const inv of invsIn(c.body)) opener(inv).files.add(basename(c.file));
-        for (const inv of membersInvs(c.body)) opener(inv).members = true;
+    const triggers = readTriggers();
+    for (const s of [...callables, ...triggers]) {
+        for (const { inv, call } of openshopCalls(s.file, s.line, s.body)) {
+            opener(inv).files.add(basename(s.file));
+            opener(inv).calls.push(call);
+        }
+        for (const inv of membersInvs(s.body)) opener(inv).members = true;
     }
-    for (const t of readTriggers()) {
-        for (const inv of invsIn(t.body)) opener(inv).files.add(basename(t.file));
-        for (const inv of membersInvs(t.body)) opener(inv).members = true;
+    for (const t of triggers) {
         if (t.on !== 'npc' || t.category) continue;
         const bodies = [t.body];
         const seen = new Set<string>();
@@ -281,9 +348,8 @@ function readOpeners(): Map<string, Openers> {
  *   sites follow; a call reached only through a dialogue choice's label argument names no npc, so
  *   only the file is given.
  */
-function shopLocator(world: World): (inv: string, pagePath: string) => string {
+function shopLocator(world: World, openers: Map<string, Openers>): (inv: string, pagePath: string) => string {
     const areas = areasOf(world);
-    const openers = readOpeners();
     const siteOf = new Map<number, Site>();
     for (const site of world.sites) {
         for (const i of site.features) siteOf.set(i, site);
@@ -497,7 +563,8 @@ export function shopPages(
 
     log('\nStep 3b: Loading shop sites from the world index...');
 
-    const locate = shopLocator(world);
+    const openers = readOpeners();
+    const locate = shopLocator(world, openers);
     log(`  world.json: ${world.sites.filter(s => s.kind === 'shop').length} shop sites`);
 
     // ─── Step 4: Build shop pages ───────────────────────────────────────
@@ -557,7 +624,7 @@ export function shopPages(
         if (first !== undefined) throw new Error(`two pages slug to ${fileName}: ${first} and ${page.shopName}`);
         nameOfFile.set(fileName, page.shopName);
         const path = `${SHOP_DIR}/${fileName}`;
-        files.set(path, generateShopMarkdown(page, objData, locate(page.shopName, path)));
+        files.set(path, generateShopMarkdown(page, objData, locate(page.shopName, path), openers.get(page.shopName)?.calls ?? []));
 
         pageIndex.push({ name: page.shopTitle, file: fileName, location: page.location });
     }
@@ -584,13 +651,17 @@ function generateShopMarkdown(
     page: ShopPage,
     objData: Map<string, ObjInfo>,
     coordinates: string,
+    calls: readonly OpenshopCall[],
 ): string {
     const lines: string[] = [];
     const primaryOwner = page.owners[0];
 
-    // Price multipliers (confusing naming in source: shop_sell_multiplier = price when shop sells TO player)
-    const sellToPlayerMul = primaryOwner?.sellMultiplier || 1000;
-    const buyFromPlayerMul = primaryOwner?.buyMultiplier || 600;
+    // Price multipliers (confusing naming in source: shop_sell_multiplier = price when shop sells TO player):
+    // the first owned_shop owner's params, else what the ~openshop calls pass (ownerlessPricing).
+    const ownerless = primaryOwner ? undefined : ownerlessPricing(calls);
+    const sets = primaryOwner
+        ? [{ sell: primaryOwner.sellMultiplier || DEFAULT_PRICES.sell, buy: primaryOwner.buyMultiplier || DEFAULT_PRICES.buy }]
+        : ownerless!.sets;
 
     lines.push(`# ${page.shopTitle}`);
     lines.push('');
@@ -625,12 +696,8 @@ function generateShopMarkdown(
     // Stock table with computed prices
     lines.push('## Stock');
     lines.push('');
-    // The multipliers come from an owned_shop owner's params; an ~openshop call passes its own
-    // ($shop_buy, $shop_sell: shop/scripts/shop.rs2:3), which this page does not read.
-    if (!primaryOwner) {
-        lines.push(
-            `No npc's \`owned_shop\` param names this shop, so these prices use this page's default multipliers (${sellToPlayerMul} to buy, ${buyFromPlayerMul} to sell, per mille of value), not a shopkeeper's: an \`~openshop\` call passes its own.`,
-        );
+    if (ownerless) {
+        lines.push(ownerless.note);
         lines.push('');
     }
     lines.push('| Item | Stock | Buy Price | Sell Price |');
@@ -642,13 +709,13 @@ function generateShopMarkdown(
         const baseCost = info?.cost || 0;
 
         // Buy price = what player pays to buy from shop (at normal stock)
-        const buyPrice = Math.max(1, Math.floor(baseCost * sellToPlayerMul / 1000));
+        const buyPrice = sets.map(m => `${Math.max(1, Math.floor(baseCost * m.sell / 1000))} gp`).join(' / ');
         // Sell price = what player gets selling to shop (at normal stock)
-        const sellPrice = Math.floor(baseCost * buyFromPlayerMul / 1000);
+        const sellPrice = sets.map(m => `${Math.floor(baseCost * m.buy / 1000)} gp`).join(' / ');
 
         const itemSlug = slugify(displayName);
         const itemLink = `[${displayName}](../items/${itemSlug}.md)`;
-        lines.push(`| ${itemLink} | ${item.quantity} | ${buyPrice} gp | ${sellPrice} gp |`);
+        lines.push(`| ${itemLink} | ${item.quantity} | ${buyPrice} | ${sellPrice} |`);
     }
 
     lines.push('');

@@ -9,10 +9,10 @@
 
 ## Stock
 
-No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1050 to buy, 650 to sell, haggle delta 40 (quests/quest_mortton/scripts/razmire_keelgan.rs2:243).
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|
 | [Plank](../items/plank.md) | 1000 | 1 gp | 0 gp |
-| [Limestone brick](../items/limestone-brick.md) | 1000 | 20 gp | 12 gp |
-| [Swamp paste](../items/swamp-paste.md) | 1000 | 30 gp | 18 gp |
+| [Limestone brick](../items/limestone-brick.md) | 1000 | 21 gp | 13 gp |
+| [Swamp paste](../items/swamp-paste.md) | 1000 | 31 gp | 19 gp |

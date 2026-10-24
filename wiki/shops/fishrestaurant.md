@@ -9,7 +9,7 @@
 
 ## Stock
 
-No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+No npc's `owned_shop` param names this shop and no `~openshop` call opens it, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's.
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|

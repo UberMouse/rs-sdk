@@ -59,3 +59,20 @@ describe('itemPages on the real content', () => {
         expect(out.endsWith('\n## Shops\n\nshops\n')).toBe(true);
     });
 });
+
+describe('shopPages on the real content', () => {
+    test("prices Razmire's two ownerless shops by the multipliers each ~openshop call passes", () => {
+        const pages = shopPages(loadWorld()).files;
+        const lines = (page: string, pattern: RegExp) =>
+            (pages.get(`wiki/shops/${page}.md`) ?? '').split('\n').filter(l => pattern.test(l));
+        // quest_mortton/scripts/razmire_keelgan.rs2:240 and :243.
+        expect(lines('razmiregeneralstore', /multipliers|Olive oil\(3\)/)).toEqual([
+            "No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1300 to buy, 400 to sell, haggle delta 30 (quests/quest_mortton/scripts/razmire_keelgan.rs2:240).",
+            '| [Olive oil(3)](../items/olive-oil-3.md) | 150 | 26 gp | 8 gp |',
+        ]);
+        expect(lines('razmirebuildingstore', /multipliers|Limestone brick/)).toEqual([
+            "No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1050 to buy, 650 to sell, haggle delta 40 (quests/quest_mortton/scripts/razmire_keelgan.rs2:243).",
+            '| [Limestone brick](../items/limestone-brick.md) | 1000 | 21 gp | 13 gp |',
+        ]);
+    }, 30_000);
+});

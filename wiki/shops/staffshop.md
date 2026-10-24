@@ -9,13 +9,13 @@
 
 ## Stock
 
-No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1000 to buy, 550 to sell, haggle delta 20 (areas/area_varrock/scripts/zaff.rs2:18).
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|
-| [Staff](../items/staff.md) | 5 | 15 gp | 9 gp |
-| [Magic staff](../items/magic-staff.md) | 5 | 200 gp | 120 gp |
-| [Staff of air](../items/staff-of-air.md) | 2 | 1500 gp | 900 gp |
-| [Staff of water](../items/staff-of-water.md) | 2 | 1500 gp | 900 gp |
-| [Staff of earth](../items/staff-of-earth.md) | 2 | 1500 gp | 900 gp |
-| [Staff of fire](../items/staff-of-fire.md) | 2 | 1500 gp | 900 gp |
+| [Staff](../items/staff.md) | 5 | 15 gp | 8 gp |
+| [Magic staff](../items/magic-staff.md) | 5 | 200 gp | 110 gp |
+| [Staff of air](../items/staff-of-air.md) | 2 | 1500 gp | 825 gp |
+| [Staff of water](../items/staff-of-water.md) | 2 | 1500 gp | 825 gp |
+| [Staff of earth](../items/staff-of-earth.md) | 2 | 1500 gp | 825 gp |
+| [Staff of fire](../items/staff-of-fire.md) | 2 | 1500 gp | 825 gp |

@@ -165,6 +165,9 @@ function blockEnd(code: string, open: number): number {
  * else chain, an `if (map_members = ^false)`'s own block. Zaff opens staffshop only in the else of
  * `if(map_members = ^true)` (area_varrock/scripts/zaff.rs2:15-18), and bots play members worlds only.
  * Only a test of map_members alone is read: `map_members = ^false | ...` can run on either world.
+ * Left as is, so over-inclusive: combined tests (general_use/scripts/spade.rs2:26), the `map_members()`
+ * call form (macro events/scripts/general/macro_event_maze.rs2:157), and free-world code that falls
+ * through after `if (map_members = ^true) { ...; return; }` (general_use/scripts/chests.rs2:3-16).
  * Blanking keeps every line and column, as codeOf does.
  */
 export function membersCode(code: string): string {

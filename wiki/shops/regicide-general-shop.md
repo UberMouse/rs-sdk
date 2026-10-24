@@ -9,7 +9,7 @@
 
 ## Stock
 
-No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1300 to buy, 400 to sell, haggle delta 30 (quests/quest_regicide/scripts/regicidegeneralshopkeeper.rs2:14).
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|
@@ -17,11 +17,11 @@ No npc's `owned_shop` param names this shop, so these prices use this page's def
 | [Jug](../items/jug.md) | 2 | 1 gp | 0 gp |
 | [Shears](../items/shears.md) | 3 | 1 gp | 0 gp |
 | [Tinderbox](../items/tinderbox.md) | 3 | 1 gp | 0 gp |
-| [Bread](../items/bread.md) | 10 | 12 gp | 7 gp |
-| [Bronze halberd](../items/bronze-halberd.md) | 10 | 80 gp | 48 gp |
-| [Iron halberd](../items/iron-halberd.md) | 10 | 280 gp | 168 gp |
-| [Steel halberd](../items/steel-halberd.md) | 10 | 1000 gp | 600 gp |
-| [Black halberd](../items/black-halberd.md) | 10 | 1920 gp | 1152 gp |
-| [Mithril halberd](../items/mithril-halberd.md) | 7 | 2600 gp | 1560 gp |
-| [Adamant halberd](../items/adamant-halberd.md) | 7 | 6400 gp | 3840 gp |
-| [Rune halberd](../items/rune-halberd.md) | 7 | 64000 gp | 38400 gp |
+| [Bread](../items/bread.md) | 10 | 15 gp | 4 gp |
+| [Bronze halberd](../items/bronze-halberd.md) | 10 | 104 gp | 32 gp |
+| [Iron halberd](../items/iron-halberd.md) | 10 | 364 gp | 112 gp |
+| [Steel halberd](../items/steel-halberd.md) | 10 | 1300 gp | 400 gp |
+| [Black halberd](../items/black-halberd.md) | 10 | 2496 gp | 768 gp |
+| [Mithril halberd](../items/mithril-halberd.md) | 7 | 3380 gp | 1040 gp |
+| [Adamant halberd](../items/adamant-halberd.md) | 7 | 8320 gp | 2560 gp |
+| [Rune halberd](../items/rune-halberd.md) | 7 | 83200 gp | 25600 gp |

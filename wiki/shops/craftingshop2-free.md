@@ -9,7 +9,7 @@
 
 ## Stock
 
-No npc's `owned_shop` param names this shop, so these prices use this page's default multipliers (1000 to buy, 600 to sell, per mille of value), not a shopkeeper's: an `~openshop` call passes its own.
+No npc's `owned_shop` param names this shop; these prices use the multipliers its `~openshop` call passes, per mille of value at normal stock: 1000 to buy, 650 to sell, haggle delta 20 (areas/area_alkharid/scripts/dommik.rs2:7).
 
 | Item | Stock | Buy Price | Sell Price |
 |------|-------|-----------|------------|
