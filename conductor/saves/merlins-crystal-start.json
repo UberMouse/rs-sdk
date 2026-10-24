@@ -1,6 +1,6 @@
 {
     "name": "merlins-crystal-start",
-    "purpose": "Merlin's Crystal start: Att/Str/Def/HP 45, mithril mace + iron armour, 10 lobster, bread, tinderbox, bucket, 600 coins, at Camelot (2758,3505), varp 14 = 0",
+    "purpose": "Merlin's Crystal start: Att/Str/Def/HP 70, mithril mace (crush) + rune armour, 10 lobster, bread, tinderbox, bucket, 600 coins, at Camelot (2758,3505), varp 14 = 0",
     "source": {
         "kind": "generated",
         "spec": {
@@ -9,10 +9,10 @@
                 "z": 3505
             },
             "skills": {
-                "Attack": 45,
-                "Strength": 45,
-                "Defence": 45,
-                "Hitpoints": 45
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70
             },
             "inventory": [
                 {
@@ -74,7 +74,7 @@
             ],
             "equipment": [
                 {
-                    "id": 1153,
+                    "id": 1163,
                     "count": 1,
                     "slot": 0
                 },
@@ -84,17 +84,17 @@
                     "slot": 3
                 },
                 {
-                    "id": 1115,
+                    "id": 1127,
                     "count": 1,
                     "slot": 4
                 },
                 {
-                    "id": 1191,
+                    "id": 1201,
                     "count": 1,
                     "slot": 5
                 },
                 {
-                    "id": 1067,
+                    "id": 1079,
                     "count": 1,
                     "slot": 7
                 }
@@ -104,8 +104,8 @@
             }
         }
     },
-    "sha1": "7e4eb5aae2117b7bfbbd5de9ca14e6968f563178",
-    "createdAt": "2026-10-23T22:18:46.686Z",
+    "sha1": "d065603540ebf412ce4882a3923edba357a8e008",
+    "createdAt": "2026-10-23T23:57:39.245Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -114,10 +114,10 @@
             "level": 0
         },
         "levels": {
-            "Attack": 45,
-            "Defence": 45,
-            "Strength": 45,
-            "Hitpoints": 45
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70
         },
         "inventory": [
             {
@@ -193,8 +193,8 @@
         ],
         "worn": [
             {
-                "id": 1153,
-                "name": "iron_full_helm",
+                "id": 1163,
+                "name": "rune_full_helm",
                 "count": 1
             },
             {
@@ -203,18 +203,18 @@
                 "count": 1
             },
             {
-                "id": 1115,
-                "name": "iron_platebody",
+                "id": 1127,
+                "name": "rune_platebody",
                 "count": 1
             },
             {
-                "id": 1191,
-                "name": "iron_kiteshield",
+                "id": 1201,
+                "name": "rune_kiteshield",
                 "count": 1
             },
             {
-                "id": 1067,
-                "name": "iron_platelegs",
+                "id": 1079,
+                "name": "rune_platelegs",
                 "count": 1
             }
         ],
