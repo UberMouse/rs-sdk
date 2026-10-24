@@ -1,0 +1,38 @@
+{
+    "name": "peer-riddle-door-mind",
+    "purpose": "Rellekka, outside Peer the Seer's puzzle-room door (2631,3667); Fremennik Trials started, Peer's trial started (viking_bits peer=1) and the riddle id 0 (MIND, bits 3-5); tests combolock",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2631,
+                "z": 3669
+            },
+            "varps": {
+                "347": 1,
+                "348": 262144
+            }
+        }
+    },
+    "sha1": "6566ed74977fbf7009f73e0eac610aa23f19cc07",
+    "createdAt": "2026-10-23T23:38:11.555Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2631,
+            "z": 3669,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "347": 1,
+            "348": 262144
+        }
+    }
+}

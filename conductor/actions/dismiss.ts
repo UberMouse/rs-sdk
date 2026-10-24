@@ -10,6 +10,7 @@
 import type { BotAction, BotWorldState, DialogState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
+import { COMBOLOCK_INTERFACES } from './combolock';
 import type { ActionContext } from './context';
 
 /**
@@ -37,9 +38,11 @@ export const SMITHING_INTERFACE = 994;
  * Main modals an op opens on purpose and owns until it ends, which no guard may close under it. Unlike
  * NEVER_CLOSE_INTERFACES, bot.dismissBlockingUI would close these: an op's wait inside one would have
  * it closed every tick by the interface guard. One left open when a run starts is closed then
- * (leftoverModal, lib/engine.ts).
+ * (leftoverModal, lib/engine.ts). The combination locks (combolockdoor, tribal_door2: actions/combolock.ts) are
+ * opened by a door interaction and worked by the combolock task's solve step, which runs under withModal so every
+ * exit path closes the lock; one left from a killed run is a leftoverModal, closed at the next run's start.
  */
-export const OP_OWNED_INTERFACES: ReadonlySet<number> = new Set([SMITHING_INTERFACE]);
+export const OP_OWNED_INTERFACES: ReadonlySet<number> = new Set([SMITHING_INTERFACE, ...COMBOLOCK_INTERFACES]);
 
 /**
  * An open main modal bot.dismissBlockingUI would close: a book, scroll or other informational one, not a

@@ -1,0 +1,36 @@
+{
+    "name": "totem-door-lock",
+    "purpose": "Handelmort Mansion, one tile south of the Tribal Totem combination door (combodoor 2634,3323, reachable from here); lock not yet solved; tests combolock",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2634,
+                "z": 3322
+            },
+            "varps": {
+                "200": 2
+            }
+        }
+    },
+    "sha1": "abaca3eadc4c85629eb8e108d7bf32d6b4e5e963",
+    "createdAt": "2026-10-23T23:44:28.071Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2634,
+            "z": 3322,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "200": 2,
+            "281": 1000
+        }
+    }
+}
