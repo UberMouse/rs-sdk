@@ -1,0 +1,53 @@
+{
+    "name": "dwarf-shop-hammer",
+    "purpose": "Combat ~69 with 200 coins in the Falador Dwarven Mine at (2995,9826) by the Dwarf shop (2993,9828); scorpions ignore it. Tests shop npc 'Dwarf' with several same-named Dwarves.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2995,
+                "z": 9826
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 60
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 200
+                }
+            ]
+        }
+    },
+    "sha1": "85e6e0458236da6d2b35afd6ab2144e6810ed6fd",
+    "createdAt": "2026-10-24T02:45:10.865Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2995,
+            "z": 9826,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 60
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 200
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

@@ -68,22 +68,36 @@ export type SellResult =
 const targetLabel = (target: RegExp | string | { name: string }) =>
     typeof target === 'string' || target instanceof RegExp ? String(target) : target.name;
 
-/** The shopkeeper `target` names, or with none the nearest "Shop keeper", else the nearest NPC offering Trade. */
+export const offersTrade = (n: NearbyNpc) => n.optionsWithIndex.some(o => /trade/i.test(o.text));
+
+/** Reachable NPCs first (`reachable` unknown counts as reachable), then nearest. */
+const byReachThenDistance = (a: NearbyNpc, b: NearbyNpc) =>
+    Number(a.reachable === false) - Number(b.reachable === false) || a.distance - b.distance;
+
+/**
+ * The NPC matching `pattern` that a shop should be opened with: among several of one name (Dwarf, Man)
+ * one offering Trade, reachable before not, then nearest; only when none offers Trade, the best named one.
+ * Shared by `openShop` and the shop task's walk to the keeper, so both pick the same NPC.
+ */
+export function pickShopkeeper(npcs: readonly NearbyNpc[], pattern: string | RegExp): NearbyNpc | null {
+    const ranked = [...npcs].sort(byReachThenDistance);
+    return shortestNameMatch(ranked.filter(offersTrade), pattern) ?? shortestNameMatch(ranked, pattern);
+}
+
+/** The shopkeeper `target` names, or with none the nearest "Shop keeper", else the best NPC offering Trade. */
 function findShopkeeper(s: BotWorldState, target: NearbyNpc | string | RegExp | undefined): NearbyNpc | null {
     if (typeof target === 'object' && !(target instanceof RegExp)) return target;
-    const named = shortestNameMatch(s.nearbyNpcs, target ?? /shop\s*keeper/i);
+    const named = pickShopkeeper(s.nearbyNpcs, target ?? /shop\s*keeper/i);
     if (named || target !== undefined) return named;
-    return (
-        s.nearbyNpcs
-            .filter(n => n.optionsWithIndex.some(o => /trade/i.test(o.text)))
-            .sort((a, b) => a.distance - b.distance)[0] ?? null
-    );
+    return [...s.nearbyNpcs].sort(byReachThenDistance).find(offersTrade) ?? null;
 }
 
 /**
  * Opens the shop by trading with `target` (a nearby NPC, or a name or pattern for one; none = the
  * nearest shopkeeper, else the nearest NPC with a Trade option), and waits for the shop to open. A
  * named target that does not match stays `npc-not-found`: trading with someone else would be worse.
+ * Among several NPCs of that name the reachable one offering Trade is used, nearest first; only when
+ * none offers it is the nearest named one returned, and the open fails `no-trade-option`.
  * Any open shop counts as open, so a caller that must trade with a particular one checks `shop.title`.
  */
 export function* openShop(ctx: ActionContext, target?: NearbyNpc | string | RegExp): Op<OpenShopResult> {
